@@ -4,22 +4,23 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tu Carrito | Café Cortero</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
   <style>
     :root {
       --cafe: #512615;
-      --verde: #377b4c;
+      --verde: #33673B;
       --blanco: #ffffff;
     }
-    * {margin:0; padding:0; box-sizing:border-box;}
+
+    * {margin: 0; padding: 0; box-sizing: border-box;}
     body {
       font-family: "Poppins", sans-serif;
-      background: #ffffff;
+      background: var(--blanco);
       color: var(--cafe);
     }
 
-    /* Header flotante */
+    /* HEADER */
     header {
       position: fixed;
       top: 0; left: 0;
@@ -29,48 +30,56 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: .5rem 1.4rem;
+      padding: 0.6rem 1.5rem;
       z-index: 50;
       box-shadow: 0 2px 12px rgba(0,0,0,0.04);
     }
     .logo-wrap img {
-      height: 70px;
+      height: 75px;
     }
     .logo-wrap a {
       display: inline-block;
     }
     .cart-title {
       font-weight: 600;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
+      color: var(--cafe);
     }
 
+    /* MAIN */
     main {
       padding: 7rem 1rem 3rem;
       max-width: 900px;
       margin: 0 auto;
     }
+
     h2 {
-      font-family: "Playfair Display", serif;
-      font-size: 2rem;
-      margin-bottom: 1.5rem;
       text-align: center;
+      font-size: 2rem;
+      margin-bottom: 1.8rem;
+      color: var(--cafe);
     }
 
     .cart-item {
-      background: #ffffff;
+      background: var(--blanco);
       border-radius: 16px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.04);
-      margin-bottom: 1rem;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+      margin-bottom: 1.2rem;
       padding: 1rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 1rem;
+      transition: transform 0.2s;
+    }
+    .cart-item:hover {
+      transform: translateY(-3px);
     }
     .cart-item img {
-      width: 60px;
-      height: 60px;
+      width: 70px;
+      height: 70px;
       object-fit: contain;
+      border-radius: 12px;
     }
     .cart-item-info {
       flex: 1;
@@ -83,6 +92,7 @@
       font-size: .9rem;
       color: #6d5541;
     }
+
     .cart-item-controls {
       display: flex;
       gap: .4rem;
@@ -97,13 +107,22 @@
       border-radius: 50%;
       font-size: 1rem;
       cursor: pointer;
+      transition: background 0.2s;
+    }
+    .cart-item-controls button:hover {
+      background: #2d5a33;
+    }
+
+    .cart-item-controls .remove {
+      background: #d72638;
     }
 
     .total {
       text-align: right;
       font-weight: 600;
-      margin-top: 1rem;
-      font-size: 1.1rem;
+      margin-top: 1.5rem;
+      font-size: 1.2rem;
+      color: var(--cafe);
     }
 
     .actions {
@@ -111,15 +130,45 @@
       justify-content: center;
       gap: 1rem;
       margin-top: 2rem;
+      flex-wrap: wrap;
     }
     .btn {
       background: var(--verde);
       color: white;
       border: none;
-      padding: .7rem 1.4rem;
+      padding: .8rem 1.6rem;
       border-radius: 999px;
       cursor: pointer;
       font-weight: 500;
+      font-size: 0.95rem;
+      transition: transform 0.2s, background 0.2s;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+      background: #2d5a33;
+    }
+
+    /* WhatsApp flotante */
+    .whatsapp-float {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      background: #25D366;
+      color: white;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+      z-index: 99;
+      text-decoration: none;
+      transition: transform 0.2s ease;
+    }
+    .whatsapp-float:hover {
+      transform: scale(1.1);
     }
 
     @media (max-width: 768px) {
@@ -127,10 +176,15 @@
         flex-direction: column;
         text-align: center;
       }
+      .cart-item img {
+        width: 90px;
+        height: 90px;
+      }
     }
   </style>
 </head>
 <body>
+
   <header>
     <div class="logo-wrap">
       <a href="index.html">
@@ -151,6 +205,11 @@
     </div>
   </main>
 
+  <!-- Botón flotante de WhatsApp -->
+  <a href="https://wa.me/50494546047?text=Hola%2C%20quiero%20más%20información%20sobre%20Café%20Cortero%20☕️" class="whatsapp-float" target="_blank">
+    <i class="fa-brands fa-whatsapp"></i>
+  </a>
+
   <script>
     const cartContainer = document.getElementById('cart-container');
     const cartTotal = document.getElementById('cart-total');
@@ -159,9 +218,12 @@
     function renderCart() {
       cartContainer.innerHTML = '';
       let total = 0;
+
       for (let name in cart) {
         const item = cart[name];
-        total += item.price * item.qty;
+        const subtotal = item.price * item.qty;
+        total += subtotal;
+
         const div = document.createElement('div');
         div.className = 'cart-item';
         div.innerHTML = `
@@ -171,14 +233,15 @@
             <p>L ${item.price.toFixed(2)} / unidad</p>
           </div>
           <div class="cart-item-controls">
-            <button onclick="updateQty('${name}', -1)">-</button>
+            <button onclick="updateQty('${name}', -1)">−</button>
             <span>${item.qty}</span>
             <button onclick="updateQty('${name}', 1)">+</button>
-            <button onclick="removeItem('${name}')">×</button>
+            <button class="remove" onclick="removeItem('${name}')">×</button>
           </div>
         `;
         cartContainer.appendChild(div);
       }
+
       cartTotal.textContent = `Total: L ${total.toFixed(2)}`;
       if (Object.keys(cart).length === 0) {
         cartContainer.innerHTML = '<p style="text-align:center;">Tu carrito está vacío.</p>';
@@ -203,10 +266,12 @@
     function checkout() {
       alert('Pedido enviado (simulado)');
       localStorage.removeItem('cart');
+      cart = {};
       renderCart();
     }
 
     renderCart();
   </script>
+
 </body>
 </html>
