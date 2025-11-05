@@ -1,95 +1,214 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Tu Carrito | Café Cortero</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<style>
-:root{--marron:#512615;--verde:#33673B;}
-body{font-family:"Poppins",sans-serif;margin:0;padding:6rem 1rem 2rem;background:#fff;color:var(--marron);}
-header{position:fixed;top:0;left:0;width:100%;display:flex;justify-content:space-between;align-items:center;padding:.6rem 1.2rem;background:rgba(255,255,255,.9);backdrop-filter:blur(5px);box-shadow:0 2px 10px rgba(0,0,0,.05);z-index:10;}
-header img{height:60px;}
-main{max-width:700px;margin:0 auto;}
-h1{text-align:center;margin-bottom:2rem;}
-.cart-item{background:#fff;border-radius:20px;box-shadow:0 3px 12px rgba(0,0,0,.05);display:flex;align-items:center;gap:1rem;padding:1rem;margin-bottom:1rem;}
-.cart-item img{width:90px;height:90px;object-fit:contain;border-radius:12px;background:#f8f8f8;}
-.cart-info h3{margin:.2rem 0;}
-.cart-controls{display:flex;align-items:center;gap:.4rem;margin-top:.4rem;}
-.btn-round{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;font-size:1rem;color:#fff;}
-.btn-minus{background:#ccc;color:#000;}
-.btn-plus{background:var(--verde);}
-.btn-del{background:#d72638;}
-.total{font-weight:600;text-align:right;margin-top:1rem;font-size:1.2rem;}
-.empty{text-align:center;color:#8b6e5f;margin-top:2rem;}
-.whatsapp-float{position:fixed;bottom:25px;right:25px;background:#25D366;color:#fff;border-radius:50%;width:60px;height:60px;display:flex;align-items:center;justify-content:center;font-size:30px;box-shadow:0 3px 10px rgba(0,0,0,.3);text-decoration:none;}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tu carrito | Café Cortero</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root {
+      --marron: #512615;
+      --verde: #33673B;
+      --blanco: #ffffff;
+      --fondo: #f5eee6;
+    }
+    * {margin:0; padding:0; box-sizing:border-box;}
+    body {
+      font-family: "Poppins", sans-serif;
+      background: var(--fondo);
+      color: var(--marron);
+    }
+    header {
+      background: #fff;
+      padding: .8rem 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 10px rgba(0,0,0,.03);
+    }
+    header img {height: 60px;}
+    .cart-title {font-size: 1.6rem; font-weight: 600;}
+    main {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1rem 3rem;
+    }
+    .item {
+      background: #fff;
+      border-radius: 20px;
+      padding: 1.1rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 10px 25px rgba(0,0,0,.02);
+    }
+    .item img {
+      width: 72px;
+      height: 72px;
+      object-fit: contain;
+      background: #eff5ff;
+      border-radius: 14px;
+    }
+    .item-info {
+      flex: 1;
+    }
+    .item-name {font-weight: 600; margin-bottom: .2rem;}
+    .item-price {font-size: .9rem; margin-bottom: .5rem;}
+    .qty-controls {
+      display: flex;
+      gap: .4rem;
+      align-items: center;
+    }
+    .qty-btn {
+      background: var(--verde);
+      color: #fff;
+      border: none;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    .del-btn {
+      background: #d72638;
+      color: #fff;
+      border: none;
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+    }
+    .total-box {
+      text-align: right;
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-top: 2rem;
+    }
+    .actions {
+      margin-top: 2rem;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .btn {
+      border: none;
+      background: var(--verde);
+      color: #fff;
+      padding: .7rem 1.5rem;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    .empty {
+      background: #fff;
+      padding: 1.5rem 1rem;
+      border-radius: 18px;
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
-<header>
-  <a href="index.html"><img src="imagenes/logo%20mejorado%20trasmparente.png" alt="Café Cortero"></a>
-  <span style="font-weight:600;">Tu Carrito</span>
-</header>
+  <header>
+    <a href="index.html">
+      <img src="imagenes/logo%20mejorado%20trasmparente.png" alt="Café Cortero">
+    </a>
+    <span class="cart-title">Tu Carrito</span>
+  </header>
 
-<main>
-  <h1>Tu Carrito</h1>
-  <div id="cart-container"></div>
-  <div class="total" id="cart-total">Total: L 0.00</div>
-</main>
+  <main>
+    <div id="cart-container"></div>
+    <div class="total-box" id="total-box">Total: L 0.00</div>
 
-<a href="https://wa.me/50494546047" class="whatsapp-float" target="_blank"><i class="fa-brands fa-whatsapp"></i></a>
+    <div class="actions">
+      <button class="btn" onclick="window.location.href='index.html'">Seguir comprando</button>
+      <button class="btn" style="background:#512615;">Proceder con pedido</button>
+    </div>
+  </main>
 
-<script>
-const container=document.getElementById('cart-container');
-const totalEl=document.getElementById('cart-total');
-let cart=JSON.parse(localStorage.getItem('cart'))||{};
+  <!-- botón flotante whatsapp también aquí -->
+  <a href="https://wa.me/50494546047?text=Hola%2C%20quiero%20hacer%20un%20pedido%20de%20Café%20Cortero" class="whatsapp-float" style="position:fixed;bottom:22px;right:22px;background:#25D366;width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:30px;text-decoration:none;box-shadow:0 4px 12px rgba(0,0,0,.3);">
+    <i class="fa-brands fa-whatsapp"></i>
+  </a>
 
-function normalize(item){
-  if(!item.qty)item.qty=1;
-  if(!item.price)item.price='L 0';
-  if(!item.img)item.img='imagenes/4.png';
-  return item;
-}
-function priceNum(p){return Number(p.replace(/[^\d.]/g,''))||0;}
+  <script>
+    const CART_KEY = 'cafecortero_cart';
 
-function render(){
-  container.innerHTML='';
-  let total=0;
-  const names=Object.keys(cart);
-  if(names.length===0){
-    container.innerHTML='<p class="empty">Tu carrito está vacío.</p>';
-    totalEl.textContent='Total: L 0.00';
-    return;
-  }
-  names.forEach(n=>{
-    const i=normalize(cart[n]);
-    const unit=priceNum(i.price);
-    total+=unit*i.qty;
-    const div=document.createElement('div');
-    div.className='cart-item';
-    div.innerHTML=`
-      <img src="${i.img}" alt="${n}">
-      <div class="cart-info">
-        <h3>${n}</h3>
-        <small>L ${unit.toFixed(2)} / unidad</small>
-        <div class="cart-controls">
-          <button class="btn-round btn-minus">-</button>
-          <span>${i.qty}</span>
-          <button class="btn-round btn-plus"><i class="fa-solid fa-plus" style="font-size:.7rem"></i></button>
-          <button class="btn-round btn-del"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-      </div>`;
-    div.querySelector('.btn-minus').onclick=()=>{if(i.qty>1)i.qty--;else delete cart[n];save();};
-    div.querySelector('.btn-plus').onclick=()=>{i.qty++;save();};
-    div.querySelector('.btn-del').onclick=()=>{delete cart[n];save();};
-    container.appendChild(div);
-  });
-  totalEl.textContent='Total: L '+total.toFixed(2);
-  localStorage.setItem('cart',JSON.stringify(cart));
-}
-function save(){localStorage.setItem('cart',JSON.stringify(cart));render();}
-render();
-</script>
+    function getCart() {
+      return JSON.parse(localStorage.getItem(CART_KEY)) || [];
+    }
+    function saveCart(cart) {
+      localStorage.setItem(CART_KEY, JSON.stringify(cart));
+    }
+
+    function renderCart() {
+      const cart = getCart();
+      const container = document.getElementById('cart-container');
+      container.innerHTML = '';
+
+      if (cart.length === 0) {
+        container.innerHTML = '<div class="empty">No tienes productos en el carrito.</div>';
+        document.getElementById('total-box').textContent = 'Total: L 0.00';
+        return;
+      }
+
+      let total = 0;
+
+      cart.forEach((item, index) => {
+        // precio: viene como "L 180" → quitamos la L y espacio
+        const priceNumber = parseFloat(item.price.replace('L','').trim());
+        const lineTotal = priceNumber * item.qty;
+        total += lineTotal;
+
+        const div = document.createElement('div');
+        div.className = 'item';
+        div.innerHTML = `
+          <img src="${item.img}" alt="${item.name}">
+          <div class="item-info">
+            <div class="item-name">${item.name}</div>
+            <div class="item-price">L ${priceNumber.toFixed(2)} / unidad</div>
+            <div class="qty-controls">
+              <button class="qty-btn" data-action="minus" data-index="${index}">-</button>
+              <span>${item.qty}</span>
+              <button class="qty-btn" data-action="plus" data-index="${index}">+</button>
+              <button class="del-btn" data-action="del" data-index="${index}">&times;</button>
+            </div>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+
+      document.getElementById('total-box').textContent = 'Total: L ' + total.toFixed(2);
+    }
+
+    // manejar clicks en cantidades
+    document.getElementById('cart-container').addEventListener('click', (e) => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      const action = btn.dataset.action;
+      const index = parseInt(btn.dataset.index, 10);
+      const cart = getCart();
+
+      if (action === 'plus') {
+        cart[index].qty += 1;
+      } else if (action === 'minus') {
+        cart[index].qty -= 1;
+        if (cart[index].qty <= 0) {
+          cart.splice(index, 1);
+        }
+      } else if (action === 'del') {
+        cart.splice(index, 1);
+      }
+
+      saveCart(cart);
+      renderCart();
+    });
+
+    renderCart();
+  </script>
 </body>
 </html>
