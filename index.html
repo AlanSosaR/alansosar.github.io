@@ -3,304 +3,235 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Café Cortero | Café hondureño</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <title>Café Cortero | La esencia de Honduras en cada sorbo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
-    :root {
-      --fondo: #f6f1eb;
-      --blanco: #ffffff;
-      --cafe: #4b2e1b;
-      --cafe-oscuro: #2f1d13;
-      --crema: #f0dfc7;
-      --acento: #c9844a;
-    }
-    * {margin:0; padding:0; box-sizing:border-box;}
+    * {margin: 0; padding: 0; box-sizing: border-box;}
     body {
       font-family: "Poppins", sans-serif;
-      background: var(--fondo);
-      color: var(--cafe-oscuro);
+      background-color: #fafafa;
+      color: #3e2e21;
+      scroll-behavior: smooth;
     }
 
     /* HEADER */
     header {
       position: fixed;
-      top: 0; left: 0;
       width: 100%;
-      background: rgba(246,241,235,0.92);
-      backdrop-filter: blur(4px);
+      top: 0;
+      left: 0;
+      background: rgba(255, 255, 255, 0.95);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      padding: 0.6rem 1.5rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: .5rem 1.5rem;
-      z-index: 50;
-      border-bottom: 1px solid rgba(75,46,27,0.08);
-    }
-    .logo-wrap {
-      display: flex;
-      align-items: center;
-      gap: .5rem;
+      z-index: 10;
     }
     .logo-wrap img {
-      height: 70px;
+      height: 80px;
       width: auto;
+      transition: transform 0.3s ease;
     }
-    nav a {
+    .logo-wrap img:hover {transform: scale(1.03);}
+    header nav a {
+      margin-left: 1rem;
       text-decoration: none;
-      color: var(--cafe-oscuro);
-      margin-left: 1.3rem;
+      color: #4b2e1b;
       font-weight: 500;
-      transition: .2s;
+      transition: color 0.2s;
     }
-    nav a:hover {color: var(--cafe);}
+    header nav a:hover {color: #7b4a2d;}
 
-    /* SECCIONES BASE */
-    main {
-      max-width: 1180px;
-      margin: 0 auto;
-      padding: 0 1.2rem;
-    }
-
-    /* HERO estilo pinterest */
+    /* HERO (con tu imagen nueva y más bajo) */
     .hero {
-      margin-top: 90px;
-      background: var(--blanco);
-      border-radius: 1.6rem;
-      min-height: 360px;
-      display: grid;
-      grid-template-columns: 1.05fr .95fr;
-      gap: 1.5rem;
-      padding: 2.4rem 2rem 2.4rem 2rem;
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 20px 35px rgba(0,0,0,.04);
-    }
-    .hero::after {
-      content:"";
-      position:absolute;
-      right:-80px;
-      top:-80px;
-      width:250px;
-      height:250px;
-      border: 26px solid rgba(75,46,27,0.03);
-      border-radius: 50%;
-    }
-    .hero-left h1 {
-      font-size: clamp(2.2rem, 3vw, 3rem);
-      line-height: 1.02;
-      margin-bottom: .8rem;
-      color: var(--cafe-oscuro);
-    }
-    .hero-left p {
-      color: #6e5a4c;
-      margin-bottom: 1.1rem;
-      max-width: 450px;
-    }
-    .hero-tags {
-      display: flex;
-      gap: .5rem;
-      margin-bottom: 1rem;
-      flex-wrap: wrap;
-    }
-    .tag {
-      background: rgba(75,46,27,.08);
-      padding: .25rem .8rem;
-      border-radius: 999px;
-      font-size: .7rem;
-      color: var(--cafe-oscuro);
-    }
-    .hero-actions {
-      display: flex;
-      gap: .7rem;
-      flex-wrap: wrap;
-    }
-    .btn-primary {
-      background: var(--cafe);
-      color: #fff;
-      padding: .7rem 1.2rem;
-      border-radius: .8rem;
-      text-decoration: none;
-      font-weight: 500;
-      display: inline-flex;
-      gap: .4rem;
-      align-items: center;
-      box-shadow: 0 12px 25px rgba(75,46,27,.25);
-    }
-    .btn-secondary {
-      background: #fff;
-      border: 1px solid rgba(75,46,27,.12);
-      color: var(--cafe-oscuro);
-      padding: .7rem 1.2rem;
-      border-radius: .8rem;
-      text-decoration: none;
-      font-weight: 500;
-    }
-    .hero-right {
-      background: linear-gradient(160deg, #ffffff 0%, #f4e8da 100%);
-      border-radius: 1.4rem;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      position: relative;
-      min-height: 270px;
-    }
-    .hero-right img {
-      max-height: 300px;
-      width: auto;
-      filter: drop-shadow(0 14px 30px rgba(0,0,0,.18));
-    }
-
-    /* FEATURES (Hand roasted / Direct trade / etc.) */
-    .features {
-      margin-top: 3rem;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px,1fr));
-      gap: 1rem;
-    }
-    .feature-card {
-      background: #fff;
-      border-radius: 1.2rem;
-      padding: 1.1rem 1rem;
-      box-shadow: 0 10px 20px rgba(0,0,0,.03);
-      display: flex;
-      gap: .8rem;
-      align-items: center;
-    }
-    .feature-icon {
-      background: rgba(75,46,27,.08);
-      width: 46px; height: 46px;
-      border-radius: 1rem;
+      margin-top: 75px;
+      height: 55vh;
+      background: #f8f5f1 url('Café%20Cortero%20es%20un%20proyecto%20familiar%20con%20la%20iniciativa%20de%20producir%20un%20café%20de%20calidad%20amigable%20con%20el%20medio%20ambiente..png') center/contain no-repeat;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: var(--cafe);
-      font-size: 1.1rem;
     }
-    .feature-card h3 {font-size: .9rem; margin-bottom:.25rem;}
-    .feature-card p {font-size: .7rem; color: #7a6d62;}
 
-    /* PRODUCTOS POPULARES */
-    .section-title {
-      margin-top: 3.5rem;
-      font-size: 1.9rem;
+    section {
+      padding: 4rem 1rem;
+      max-width: 1100px;
+      margin: auto;
+    }
+    h2.section-title {
       text-align: center;
-      margin-bottom: 2rem;
-      color: var(--cafe-oscuro);
+      font-size: 2.2rem;
+      margin-bottom: 2.5rem;
+      color: #4b2e1b;
     }
-    .products-grid {
+
+    /* TARJETAS PRODUCTOS MEJORADAS */
+    .products {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-      gap: 1.5rem;
-      margin-bottom: 3rem;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.8rem;
     }
-    .product-card {
+    .card {
       background: #fff;
-      border-radius: 1.2rem;
+      border-radius: 18px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
       overflow: hidden;
-      box-shadow: 0 12px 25px rgba(0,0,0,.04);
-      display: flex;
-      flex-direction: column;
-      min-height: 360px;
+      text-align: center;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      border: 1px solid rgba(75, 46, 27, 0.03);
+      position: relative;
     }
-    .product-card img {
+    /* barra superior de color */
+    .card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 6px;
+      background: linear-gradient(90deg, #4b2e1b, #8f5e3b);
+    }
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 16px 30px rgba(0, 0, 0, 0.08);
+    }
+    .card img {
       width: 100%;
-      height: 210px;
+      height: auto;
+      max-height: 360px;
       object-fit: contain;
-      background: #e5f0ff;
-      padding: 10px;
+      background-color: #f5efe8;
+      padding: 18px 18px 5px;
+      display: block;
+      margin: 0 auto;
     }
-    .product-body {
-      padding: 1.1rem 1rem 1.3rem;
-      flex: 1;
+    .card-body {
+      padding: 1.5rem 1.3rem 1.6rem;
     }
-    .product-body h3 {color: var(--cafe-oscuro); margin-bottom:.4rem;}
-    .product-body p {color: #736356; font-size: .85rem; margin-bottom:.5rem;}
-    .price {color: var(--cafe); font-weight: 600; margin-bottom:.8rem;}
+    .card-body h3 {
+      font-size: 1.25rem;
+      margin-bottom: 0.4rem;
+      color: #4b2e1b;
+    }
+    .card-body p {
+      color: #6d5541;
+      font-size: 0.95rem;
+      margin-bottom: 1rem;
+    }
+    .price {
+      font-weight: 700;
+      color: #4b2e1b;
+      margin-bottom: 1rem;
+      letter-spacing: 0.04em;
+    }
+
+    /* BOTÓN DE WHATSAPP MEJORADO */
     .btn-whatsapp {
-      display: inline-flex;
+      display: flex;
       align-items: center;
-      gap: .45rem;
-      background: linear-gradient(135deg, #4b2e1b 0%, #8f5e3b 100%);
+      justify-content: center;
+      gap: 0.5rem;
+      background: linear-gradient(135deg, #4b2e1b 0%, #6d3f24 100%);
       color: #fff;
-      text-decoration: none;
-      padding: .55rem .9rem;
+      border: none;
+      width: 100%;
+      padding: 0.75rem 1rem;
       border-radius: 999px;
-      font-size: .8rem;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.98rem;
+      box-shadow: 0 8px 14px rgba(109, 63, 36, 0.25);
+      transition: transform 0.15s ease;
     }
     .btn-whatsapp i {
       background: #25d366;
-      width: 22px; height: 22px;
-      border-radius: 999px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: .9rem;
+      color: #fff;
+      width: 26px;
+      height: 26px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      font-size: 15px;
+    }
+    .btn-whatsapp:hover {
+      transform: translateY(-2px);
     }
 
-    /* CONTACTO */
-    .contact-block {
-      background: #fff;
-      border-radius: 1.4rem;
-      padding: 2rem 1.3rem;
+    /* ABOUT */
+    .about {
       text-align: center;
-      box-shadow: 0 12px 25px rgba(0,0,0,.03);
-      margin-bottom: 3rem;
+      line-height: 1.7;
+      color: #4b2e1b;
+      max-width: 800px;
+      margin: auto;
+      font-size: 1rem;
     }
 
+    /* FOOTER */
     footer {
+      background: #4b2e1b;
+      color: white;
       text-align: center;
-      padding: 1.5rem 1rem 3rem;
-      color: #776b62;
+      padding: 1.5rem 1rem;
+      margin-top: 2rem;
+    }
+    footer a {
+      color: #ffe0b2;
+      text-decoration: none;
+      margin: 0 0.5rem;
     }
 
-    /* FLOATING WHATSAPP */
+    /* WHATSAPP FLOAT */
     .whatsapp-float {
       position: fixed;
       bottom: 25px;
       right: 25px;
       background: #25D366;
-      color: #fff;
-      width: 60px; height: 60px;
+      color: white;
       border-radius: 50%;
+      width: 60px;
+      height: 60px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 30px;
-      text-decoration: none;
-      box-shadow: 0 4px 13px rgba(0,0,0,.22);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
       z-index: 99;
+      text-decoration: none;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .whatsapp-float:hover {
+      transform: scale(1.1);
+      box-shadow: 0 5px 14px rgba(0, 0, 0, 0.4);
     }
 
-    /* ANIMATIONS */
+    /* ANIMACIONES */
     [data-animate] {
       opacity: 0;
       transform: translateY(20px);
-      transition: .6s ease;
+      transition: all 0.7s ease;
     }
     [data-animate].visible {
       opacity: 1;
       transform: translateY(0);
     }
 
-    /* RESPONSIVE */
-    @media (max-width: 900px) {
+    @media (max-width: 768px) {
+      .logo-wrap img {height: 65px;}
       .hero {
-        grid-template-columns: 1fr;
+        height: 38vh;
+        background-size: contain;
       }
-      .hero-right {
-        min-height: 240px;
+      .card img {
+        max-height: 320px;
       }
-    }
-    @media (max-width: 650px) {
-      nav a {margin-left: .6rem; font-size:.9rem;}
-      .hero {padding: 1.7rem 1.1rem;}
-      .hero-left h1 {font-size: 1.8rem;}
-      .products-grid {grid-template-columns: 1fr;}
-      .features {grid-template-columns: 1fr;}
     }
   </style>
 </head>
 <body>
 
-  <!-- HEADER -->
   <header>
     <div class="logo-wrap">
       <img src="logo%20mejorado.png" alt="Café Cortero">
@@ -312,150 +243,106 @@
     </nav>
   </header>
 
-  <main>
-    <!-- HERO -->
-    <section class="hero">
-      <div class="hero-left" data-animate>
-        <div class="hero-tags">
-          <span class="tag">Café hondureño</span>
-          <span class="tag">Proyecto familiar</span>
-          <span class="tag">Amigable con el ambiente</span>
-        </div>
-        <h1>Café Cortero con sabor real de nuestras montañas</h1>
-        <p>La esencia de Honduras en cada sorbo. Café seleccionado y tostado para que lo disfrutes y lo compartas.</p>
-        <div class="hero-actions">
-          <a href="#productos" class="btn-primary">
-            Ver productos
-            <i class="fa-solid fa-arrow-right"></i>
-          </a>
-          <a href="https://wa.me/50494546047?text=Hola%2C%20me%20interesa%20comprar%20Café%20Cortero%20☕️" class="btn-secondary">
+  <!-- BANNER -->
+  <section class="hero"></section>
+
+  <!-- PRODUCTOS -->
+  <section id="productos">
+    <h2 class="section-title">Nuestros Productos</h2>
+    <div class="products">
+
+      <div class="card" data-animate>
+        <img src="3.png" alt="Café Cortero 250g">
+        <div class="card-body">
+          <h3>Café Cortero 250g</h3>
+          <p>Tueste medio, ideal para filtro o prensa francesa.</p>
+          <div class="price">L 180</div>
+          <a href="https://wa.me/50494546047?text=Hola%2C%20me%20interesa%20comprar%20Café%20Cortero%20250g%20☕️" class="btn-whatsapp">
+            <i class="fa-brands fa-whatsapp"></i>
             Comprar por WhatsApp
           </a>
         </div>
       </div>
-      <div class="hero-right" data-animate>
-        <!-- tu bolsa -->
-        <img src="3.png" alt="Café Cortero bolsa">
-      </div>
-    </section>
 
-    <!-- FEATURES -->
-    <section class="features" data-animate>
-      <div class="feature-card">
-        <div class="feature-icon"><i class="fa-solid fa-mug-hot"></i></div>
-        <div>
-          <h3>Selección de origen</h3>
-          <p>Grano de altura</p>
+      <div class="card" data-animate>
+        <img src="3.png" alt="Café Cortero 500g">
+        <div class="card-body">
+          <h3>Café Cortero 500g</h3>
+          <p>Tostado artesanal, cuerpo balanceado y aroma intenso.</p>
+          <div class="price">L 320</div>
+          <a href="https://wa.me/50494546047?text=Hola%2C%20me%20interesa%20comprar%20Café%20Cortero%20500g%20☕️" class="btn-whatsapp">
+            <i class="fa-brands fa-whatsapp"></i>
+            Comprar por WhatsApp
+          </a>
         </div>
       </div>
-      <div class="feature-card">
-        <div class="feature-icon"><i class="fa-solid fa-leaf"></i></div>
-        <div>
-          <h3>Amigable ambiente</h3>
-          <p>Proceso responsable</p>
+
+      <div class="card" data-animate>
+        <img src="3.png" alt="Café Cortero 1lb">
+        <div class="card-body">
+          <h3>Café Cortero 1lb</h3>
+          <p>Blend de finca, ideal para cafeterías o consumo familiar.</p>
+          <div class="price">L 550</div>
+          <a href="https://wa.me/50494546047?text=Hola%2C%20me%20interesa%20comprar%20Café%20Cortero%201lb%20☕️" class="btn-whatsapp">
+            <i class="fa-brands fa-whatsapp"></i>
+            Comprar por WhatsApp
+          </a>
         </div>
       </div>
-      <div class="feature-card">
-        <div class="feature-icon"><i class="fa-solid fa-truck"></i></div>
-        <div>
-          <h3>Pedidos fácil</h3>
-          <p>WhatsApp directo</p>
-        </div>
-      </div>
-    </section>
 
-    <!-- PRODUCTOS -->
-    <section id="productos" data-animate>
-      <h2 class="section-title">Nuestros Productos</h2>
-      <div class="products-grid">
-        <div class="product-card">
-          <img src="3.png" alt="Café Cortero 250g">
-          <div class="product-body">
-            <h3>Café Cortero 250g</h3>
-            <p>Tueste medio, ideal para filtro o prensa francesa.</p>
-            <div class="price">L 180</div>
-            <a href="https://wa.me/50494546047?text=Hola%2C%20me%20interesa%20comprar%20Café%20Cortero%20250g%20☕️" class="btn-whatsapp">
-              <i class="fa-brands fa-whatsapp"></i>
-              Comprar
-            </a>
-          </div>
-        </div>
+    </div>
+  </section>
 
-        <div class="product-card">
-          <img src="3.png" alt="Café Cortero 500g">
-          <div class="product-body">
-            <h3>Café Cortero 500g</h3>
-            <p>Tostado artesanal, cuerpo balanceado y aroma intenso.</p>
-            <div class="price">L 320</div>
-            <a href="https://wa.me/50494546047?text=Hola%2C%20me%20interesa%20comprar%20Café%20Cortero%20500g%20☕️" class="btn-whatsapp">
-              <i class="fa-brands fa-whatsapp"></i>
-              Comprar
-            </a>
-          </div>
-        </div>
+  <!-- NOSOTROS -->
+  <section id="nosotros">
+    <h2 class="section-title">Sobre Nosotros</h2>
+    <p class="about">
+      Café Cortero es un proyecto familiar con la iniciativa de producir un café de calidad, amigable con el medio ambiente
+      y con el sabor auténtico de Honduras. Desde la cosecha hasta el tueste, cuidamos cada etapa para que disfrutes una taza
+      llena de aroma, cuerpo y tradición.
+    </p>
+  </section>
 
-        <div class="product-card">
-          <img src="3.png" alt="Café Cortero 1lb">
-          <div class="product-body">
-            <h3>Café Cortero 1lb</h3>
-            <p>Perfecto para consumo familiar o cafeterías.</p>
-            <div class="price">L 550</div>
-            <a href="https://wa.me/50494546047?text=Hola%2C%20me%20interesa%20comprar%20Café%20Cortero%201lb%20☕️" class="btn-whatsapp">
-              <i class="fa-brands fa-whatsapp"></i>
-              Comprar
-            </a>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- NOSOTROS -->
-    <section id="nosotros" data-animate>
-      <h2 class="section-title">Sobre Café Cortero</h2>
-      <div class="contact-block">
-        Café Cortero es un proyecto familiar con la iniciativa de producir un café de calidad amigable con el medio ambiente.
-        Desde la finca hasta el empaque, buscamos que recibas un producto con sabor auténtico de Honduras.
-      </div>
-    </section>
-
-    <!-- CONTACTO -->
-    <section id="contacto" data-animate>
-      <h2 class="section-title">Contáctanos</h2>
-      <div class="contact-block">
-        ¿Quieres hacer un pedido o distribuir nuestro café?
-        <br><br>
-        <a href="https://wa.me/50494546047?text=Hola%2C%20me%20interesa%20Café%20Cortero%20☕️" class="btn-whatsapp" style="font-size:.9rem;">
-          <i class="fa-brands fa-whatsapp"></i>
-          Escribir por WhatsApp
-        </a>
-        <br><br>
-        <a href="https://www.facebook.com/share/1FsrT4DYrU/" style="color:var(--cafe);text-decoration:none;font-weight:500;">
-          Facebook de Café Cortero
-        </a>
-      </div>
-    </section>
-  </main>
+  <!-- CONTACTO -->
+  <section id="contacto">
+    <h2 class="section-title">Contáctanos</h2>
+    <p class="about">
+      Haz tu pedido o consulta directamente por WhatsApp o en nuestra página de Facebook.
+    </p>
+    <p style="text-align:center;">
+      <a href="https://wa.me/50494546047?text=Hola%2C%20me%20interesa%20comprar%20Café%20Cortero%20☕️" class="btn-whatsapp" style="max-width:340px;margin-inline:auto;">
+        <i class="fa-brands fa-whatsapp"></i>
+        Escribir por WhatsApp
+      </a>
+      <br><br>
+      <a href="https://www.facebook.com/share/1FsrT4DYrU/" class="btn-whatsapp" style="background:#3b5998;max-width:340px;margin-inline:auto;">
+        <i class="fa-brands fa-facebook-f" style="background:transparent;font-size:1.1rem;"></i>
+        Ir a Facebook
+      </a>
+    </p>
+  </section>
 
   <footer>
-    © 2025 Café Cortero — Honduras
+    <p>&copy; 2025 Café Cortero. Todos los derechos reservados.</p>
   </footer>
 
-  <!-- botón flotante -->
-  <a href="https://wa.me/50494546047?text=Hola%2C%20me%20interesa%20Café%20Cortero%20☕️" class="whatsapp-float" target="_blank">
+  <!-- Botón flotante de WhatsApp -->
+  <a href="https://wa.me/50494546047?text=Hola%2C%20quiero%20más%20información%20sobre%20Café%20Cortero%20☕️" class="whatsapp-float" target="_blank">
     <i class="fa-brands fa-whatsapp"></i>
   </a>
 
   <script>
-    const els = document.querySelectorAll('[data-animate]');
-    const obs = new IntersectionObserver(entries => {
-      entries.forEach(e => {
-        if (e.isIntersecting) {
-          e.target.classList.add('visible');
-          obs.unobserve(e.target);
+    // Animación al hacer scroll
+    const elements = document.querySelectorAll('[data-animate]');
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
         }
-      })
+      });
     }, {threshold: 0.2});
-    els.forEach(el => obs.observe(el));
+    elements.forEach(el => observer.observe(el));
   </script>
 </body>
 </html>
