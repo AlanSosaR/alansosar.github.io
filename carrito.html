@@ -57,7 +57,7 @@
       display:flex;align-items:center;justify-content:center;
       border:none;cursor:pointer;font-size:1rem;color:#fff;
     }
-    .btn-minus{background:#cfdddd;}
+    .btn-minus{background:#cfdddd;color:#222;}
     .btn-plus{background:var(--verde);}
     .btn-del{background:#d72638;}
     .total-line{display:flex;justify-content:flex-end;font-weight:600;margin-top:.8rem;font-size:1.1rem;}
@@ -72,7 +72,6 @@
       cursor:pointer;
     }
     .empty{text-align:center;color:#8b6e5f;margin-top:2rem;}
-    /* whatsapp flotante */
     .whatsapp-float {
       position: fixed;
       bottom: 25px;
@@ -94,9 +93,8 @@
 </head>
 <body>
   <header>
-    <a href="index.html">
-      <img src="imagenes/logo mejorado transparente.png" alt="Café Cortero">
-    </a>
+    <!-- mismo nombre con espacios codificados -->
+    <a href="index.html"><img src="imagenes/logo%20mejorado%20trasmparente.png" alt="Café Cortero"></a>
     <span style="font-weight:600;">Tu Carrito</span>
   </header>
 
@@ -121,12 +119,28 @@
     let cart = {};
     const saved = localStorage.getItem('cart');
     if (saved) {
-      try { cart = JSON.parse(saved); }
-      catch(e) { cart = {}; }
+      try {
+        cart = JSON.parse(saved);
+      } catch(e) {
+        cart = {};
+      }
+    }
+
+    // por si hay datos viejos tipo "L 180" sin qty
+    function normalizeItem(name, data) {
+      if (typeof data === 'string') {
+        return { qty: 1, price: data, img: 'imagenes/4.png' };
+      }
+      if (typeof data === 'number') {
+        return { qty: data, price: 'L 0', img: 'imagenes/4.png' };
+      }
+      if (!data.img) data.img = 'imagenes/4.png';
+      if (!data.qty) data.qty = 1;
+      if (!data.price) data.price = 'L 0';
+      return data;
     }
 
     function priceToNumber(p) {
-      // p viene como "L 180" -> 180
       if (!p) return 0;
       return Number(p.replace(/[^\d.]/g, "")) || 0;
     }
@@ -141,8 +155,8 @@
       }
 
       let total = 0;
-
       names.forEach(name => {
+        cart[name] = normalizeItem(name, cart[name]);
         const item = cart[name];
         const unit = priceToNumber(item.price);
         const sub = unit * item.qty;
@@ -151,19 +165,19 @@
         const div = document.createElement('div');
         div.className = 'cart-item';
         div.innerHTML = `
-          <img src="${item.img || 'imagenes/4.png'}" alt="${name}">
+          <img src="${item.img}" alt="${name}">
           <div class="cart-info">
             <h3>${name}</h3>
             <small>L ${unit.toFixed(2)} / unidad</small>
             <div class="cart-controls">
               <button class="btn-round btn-minus">-</button>
               <span>${item.qty}</span>
-              <button class="btn-round btn-plus"><i class="fa-solid fa-plus" style="font-size:.7rem;"></i></button>
+              <button class="btn-round btn-plus"><i class="fa-solid fa-plus" style="font-size:.65rem;"></i></button>
               <button class="btn-round btn-del"><i class="fa-solid fa-xmark"></i></button>
             </div>
           </div>
         `;
-        // listeners
+
         div.querySelector('.btn-minus').onclick = () => {
           if (cart[name].qty > 1) {
             cart[name].qty--;
@@ -188,6 +202,7 @@
       });
 
       totalEl.textContent = 'Total: L ' + total.toFixed(2);
+      localStorage.setItem('cart', JSON.stringify(cart));
     }
 
     renderCart();
