@@ -10,7 +10,6 @@
     :root {
       --marron: #512615;
       --verde: #33673B;
-      --crema: #f9f6f2;
       --blanco: #ffffff;
     }
     * {margin:0; padding:0; box-sizing:border-box;}
@@ -26,154 +25,211 @@
       position: fixed;
       top: 0; left: 0;
       width: 100%;
-      background: rgba(255,255,255,.92);
+      background: rgba(255,255,255,0.92);
       backdrop-filter: blur(6px);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: .6rem 1.4rem;
-      box-shadow: 0 2px 12px rgba(0,0,0,.04);
-      z-index: 50;
+      padding: .6rem 1.5rem;
+      z-index: 20;
+      box-shadow: 0 2px 10px rgba(0,0,0,.05);
     }
-    .logo-wrap img {
-      height: 64px;
-      display: block;
-    }
+    .logo-wrap img {height: 70px;}
     header nav {
       display: flex;
-      gap: 1rem;
       align-items: center;
+      gap: 1rem;
     }
     header nav a {
       text-decoration: none;
       color: var(--marron);
       font-weight: 500;
-      transition: .2s;
+      transition:.2s;
     }
-    header nav a:hover {color:#7e5036;}
+    header nav a:hover {color:#7b4a2d;}
 
+    /* carrito */
     .cart-btn {
       position: relative;
-      width: 40px;
-      height: 40px;
+      width: 38px;
+      height: 38px;
       border-radius: 50%;
       border: none;
-      background: rgba(81,38,21,.1);
+      background: rgba(51,103,59,0.1);
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
+      transition: transform 0.2s ease;
     }
-    .cart-btn i {color: var(--marron); font-size: 1.05rem;}
+    .cart-btn i {
+      color: var(--verde);
+      font-size: 1.2rem;
+      transition: transform 0.3s ease;
+    }
+    .cart-btn.animate i {
+      transform: scale(1.3);
+    }
     .cart-count {
       position: absolute;
-      top: -6px; right: -6px;
+      top: -5px;
+      right: -5px;
       background: #d72638;
       color: #fff;
-      width: 18px; height: 18px;
-      border-radius: 50%;
+      border-radius: 999px;
       font-size: .6rem;
+      width: 18px;
+      height: 18px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 600;
     }
 
-    main {
+    /* HERO */
+    .hero {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      align-items: center;
+      gap: 2rem;
       max-width: 1100px;
-      margin: 0 auto;
-      padding: 6.3rem 1rem 3rem;
+      margin: 6.5rem auto 2rem;
+      padding: 0 1rem;
+    }
+    .hero-text h1 {
+      font-family: "Playfair Display", serif;
+      font-size: 2rem;
+      color: var(--marron);
+      margin-bottom: .8rem;
+    }
+    .hero-text p {
+      color: #6a5244;
+      font-size: 1rem;
+      line-height: 1.7;
+      margin-bottom: 1rem;
+    }
+    .hero-text em {
+      color: var(--verde);
+      font-style: italic;
+      font-weight: 600;
+    }
+    .hero-text a {
+      display: inline-block;
+      background: var(--verde);
+      color: #fff;
+      padding: .6rem 1.4rem;
+      border-radius: 999px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: transform .2s ease;
+    }
+    .hero-text a:hover {transform: translateY(-2px);}
+    .hero-img img {
+      width: 100%;
+      border-radius: 20px;
+      object-fit: cover;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
     }
 
-    /* PRODUCTO PRINCIPAL */
-    .product-main {
-      background: #fff;
-      border-radius: 26px;
-      box-shadow: 0 12px 35px rgba(0,0,0,.025);
-      display: grid;
-      grid-template-columns: 1.02fr .98fr;
-      gap: 2rem;
-      padding: 2rem 2.2rem 2.4rem;
-      margin-bottom: 3rem;
+    /* SECCIONES */
+    section {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 3rem 1rem 0;
     }
-    .product-text small {
+    h2.section-title {
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 2rem;
+      color: var(--marron);
+    }
+
+    /* PRODUCTOS PRINCIPALES */
+    .product-page {
+      background: #ffffff;
+      border-radius: 26px;
+      padding: 2.2rem 2.4rem;
+      box-shadow: 0 14px 35px rgba(0,0,0,0.03);
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 2rem;
+      align-items: center;
+      margin-bottom: 2.5rem;
+    }
+
+    .product-text .p-label {
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
       text-transform: uppercase;
-      letter-spacing: .2em;
-      font-size: .68rem;
-      color: #9b8779;
+      color: #957f70;
       display: block;
       margin-bottom: .6rem;
     }
-    .product-text h1 {
-      font-size: 2.45rem;
+    .product-text h3 {
+      font-size: 2rem;
       color: var(--marron);
-      line-height: 1.1;
-      margin-bottom: .75rem;
+      margin-bottom: .7rem;
     }
     .product-text p {
-      color: #6f5a4e;
-      line-height: 1.6;
+      color: #6a5244;
+      line-height: 1.5;
       margin-bottom: 1rem;
     }
-    .pill {
-      background: #f0e8e2;
+    .p-badge {
       display: inline-block;
-      padding: .42rem 1rem;
-      border-radius: 999px;
-      font-size: .78rem;
+      background: #f1ebe5;
       color: var(--marron);
+      padding: .35rem .85rem;
+      border-radius: 999px;
+      font-size: .75rem;
       margin-bottom: 1.1rem;
     }
-    .price {
+    .p-price {
       font-size: 1.7rem;
       font-weight: 700;
-      margin-bottom: 1rem;
+      color: var(--marron);
+      margin-bottom: 1.2rem;
     }
-    .btn-main {
+    .p-btn {
       display: inline-flex;
       align-items: center;
-      gap: .45rem;
+      gap: .55rem;
       background: var(--verde);
       color: #fff;
       border: none;
       border-radius: 999px;
-      padding: .65rem 1.4rem;
+      padding: .6rem 1.35rem;
       font-weight: 500;
       cursor: pointer;
-      box-shadow: 0 10px 20px rgba(51,103,59,.25);
-      transition: .15s;
+      box-shadow: 0 10px 20px rgba(51,103,59,0.25);
+      transition: transform .15s ease;
     }
-    .btn-main i {
-      background: rgba(255,255,255,.18);
-      width: 26px; height: 26px;
+    .p-btn i {
+      background: rgba(255,255,255,.12);
+      width: 26px;
+      height: 26px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: .85rem;
+      font-size: .95rem;
     }
-    .btn-main:hover {transform: translateY(-2px);}
-    .product-img-wrap {
-      background: radial-gradient(circle at center, #d8e6f7 0%, #fff 60%);
-      border-radius: 30px;
-      min-height: 270px;
+    .p-btn:hover {transform: translateY(-2px);}
+    .product-media {
+      background: radial-gradient(circle at center, #e2edf7 0%, #ffffff 55%);
+      border-radius: 999px;
       display: flex;
       align-items: center;
       justify-content: center;
+      min-height: 280px;
     }
-    .product-img-wrap img {
+    .product-media img {
       max-height: 320px;
       width: auto;
-      filter: drop-shadow(0 16px 28px rgba(0,0,0,.12));
+      filter: drop-shadow(0 18px 28px rgba(0,0,0,0.1));
     }
 
     /* CARRUSEL */
-    .similar-title {
-      font-weight: 600;
-      font-size: 1.2rem;
-      margin-bottom: 1rem;
-      color: var(--marron);
-    }
     .similar-list {
       display: flex;
       gap: 1rem;
@@ -182,157 +238,70 @@
       padding-bottom: 1rem;
     }
     .similar-card {
-      flex: 0 0 165px;
+      flex: 0 0 160px;
       background: #fff;
       border-radius: 18px;
-      padding: .8rem .8rem 1rem;
+      padding: 1rem;
       text-align: center;
-      box-shadow: 0 10px 25px rgba(0,0,0,.02);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.02);
       border: 2px solid transparent;
       transition: .2s;
-      scroll-snap-align: start;
       cursor: pointer;
-    }
-    .similar-card.active,
-    .similar-card:hover {
-      border-color: rgba(81,38,21,.15);
+      scroll-snap-align: start;
     }
     .similar-card img {
       width: 100%;
-      height: 135px;
+      height: 140px;
       object-fit: contain;
-      background: #eaf2ff;
       border-radius: 12px;
-      margin-bottom: .6rem;
+      margin-bottom: .5rem;
     }
-    .similar-card h4 {
-      font-size: .9rem;
-      color: var(--marron);
-      margin-bottom: .25rem;
-    }
-    .similar-card .price-sm {
-      font-weight: 600;
-      font-size: .8rem;
-      margin-bottom: .4rem;
-    }
+    .similar-card h4 {font-size: .9rem; color: var(--marron);}
+    .similar-card .price {font-size: .8rem; font-weight: 600; color: var(--marron);}
     .similar-card button {
       background: var(--verde);
       color: #fff;
       border: none;
       border-radius: 999px;
-      padding: .35rem .7rem;
+      padding: .4rem .8rem;
       font-size: .7rem;
-      display: inline-flex;
-      align-items: center;
-      gap: .3rem;
+      margin-top: .4rem;
       cursor: pointer;
     }
 
-    /* SOBRE NOSOTROS */
-    .about {
-      margin-top: 3.4rem;
-      display: grid;
-      grid-template-columns: 1.02fr .98fr;
-      gap: 2rem;
-      align-items: center;
-    }
-    .about small {
-      text-transform: uppercase;
-      letter-spacing: .25em;
-      font-size: .65rem;
-      color: #a48974;
-    }
-    .about h2 {
-      font-family: "Playfair Display", serif;
-      font-size: 2.3rem;
-      margin: .8rem 0 1rem;
-      color: var(--marron);
-    }
-    .about p {
-      color: #5a483c;
-      line-height: 1.7;
-      margin-bottom: 1rem;
-    }
-    .about-pills {
-      display: flex;
-      gap: .6rem;
-      flex-wrap: wrap;
-    }
-    .about-pill {
-      background: rgba(81,38,21,.08);
-      padding: .4rem 1rem;
-      border-radius: 999px;
-      font-size: .78rem;
-      color: var(--marron);
-      font-weight: 500;
-    }
-    .about-img img {
-      width: 100%;
-      border-radius: 18px;
-      display: block;
-      object-fit: cover;
-    }
-
-    /* CONTACTO */
-    #contacto {
-      margin-top: 3.5rem;
-      text-align: center;
-    }
-    #contacto h2 {
-      font-size: 2rem;
-      margin-bottom: 1rem;
-    }
-    .btn-facebook {
-      display: inline-flex;
-      align-items: center;
-      gap: .5rem;
-      background: #3b5998;
-      color: #fff;
-      text-decoration: none;
-      padding: .6rem 1.4rem;
-      border-radius: 999px;
-      font-weight: 500;
-      box-shadow: 0 5px 14px rgba(59,89,152,.28);
-    }
-
+    /* FOOTER */
     footer {
-      margin-top: 3rem;
+      background: var(--marron);
+      color: white;
       text-align: center;
-      padding: 1.5rem 1rem 2.5rem;
-      background: #f1ece7;
-      color: #4e2c1f;
+      padding: 1.5rem 1rem;
+      margin-top: 3rem;
     }
 
+    /* WHATSAPP */
     .whatsapp-float {
       position: fixed;
-      bottom: 22px;
-      right: 22px;
+      bottom: 25px;
+      right: 25px;
       background: #25D366;
       color: white;
       border-radius: 50%;
-      width: 60px; height: 60px;
+      width: 60px;
+      height: 60px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 30px;
-      box-shadow: 0 3px 12px rgba(0,0,0,.3);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
       z-index: 99;
       text-decoration: none;
-    }
-
-    @media (max-width: 900px) {
-      .product-main {grid-template-columns: 1fr; }
-      .about {grid-template-columns: 1fr;}
-      .product-img-wrap {min-height: 230px;}
     }
   </style>
 </head>
 <body>
-
   <header>
     <div class="logo-wrap">
-      <!-- el nombre del archivo tiene espacios, por eso van %20 -->
-      <a href="index.html"><img src="imagenes/logo%20mejorado%20trasmparente.png" alt="Café Cortero"></a>
+      <a href="index.html"><img src="imagenes/logo mejorado transparente.png" alt="Café Cortero"></a>
     </div>
     <nav>
       <a href="#productos">Productos</a>
@@ -345,215 +314,110 @@
     </nav>
   </header>
 
-  <main>
-    <!-- PRODUCTO PRINCIPAL -->
-    <section id="productos" class="product-main" data-main-product>
+  <!-- HERO / SLOGAN -->
+  <section class="hero">
+    <div class="hero-text">
+      <h1>Café Cortero</h1>
+      <p>Café Cortero es un proyecto familiar con la iniciativa de producir un café de calidad amigable con el medio ambiente.</p>
+      <p><em>¡Disfrútalo y compártelo!</em></p>
+      <a href="#productos">Ver productos</a>
+    </div>
+    <div class="hero-img">
+      <img src="imagenes/IMG-20251025-WA0034.jpg" alt="Café Cortero">
+    </div>
+  </section>
+
+  <!-- PRODUCTOS -->
+  <section id="productos">
+    <h2 class="section-title">Nuestros Productos</h2>
+
+    <div class="product-page" id="producto-principal">
       <div class="product-text">
-        <small id="product-type">Café en grano / molido</small>
-        <h1 id="product-name">Café Cortero 250g</h1>
-        <p id="product-desc">
-          Café hondureño de altura, tueste medio, ideal para filtro o prensa francesa.
-          Proyecto familiar, amigable con el medio ambiente.
-        </p>
-        <span class="pill" id="product-badge">100% arábica · Danlí</span>
-        <div class="price" id="product-price">L 180</div>
-        <button class="btn-main" id="product-add">
-          <i class="fa-solid fa-cart-plus"></i>
-          Agregar al carrito
+        <small class="p-label">CAFÉ EN GRANO / MOLIDO</small>
+        <h3 id="product-name">Café Cortero 250g</h3>
+        <p id="product-desc">Café hondureño de altura, tueste medio, ideal para filtro o prensa francesa. Proyecto familiar, amigable con el medio ambiente.</p>
+        <span class="p-badge" id="product-badge">100% arábica · Danlí</span>
+        <div class="p-price" id="product-price">L 180</div>
+        <button id="product-cart" class="p-btn">
+          <i class="fa-solid fa-cart-plus"></i> Agregar al carrito
         </button>
       </div>
-      <div class="product-img-wrap">
-        <img id="product-image" src="imagenes/4.png" alt="Bolsa de café Cortero">
+      <div class="product-media">
+        <img id="product-image" src="imagenes/4.png" alt="Café Cortero bolsa">
       </div>
-    </section>
+    </div>
 
-    <!-- CARRUSEL -->
-    <section>
-      <h3 class="similar-title">También te puede interesar</h3>
-      <div class="similar-list" id="lista-similares">
-
-        <!-- tarjeta 1 -->
-        <div class="similar-card active"
-             data-name="Café Cortero 250g"
-             data-price="L 180"
-             data-desc="Café de altura, tueste medio, ideal para filtro o prensa."
-             data-badge="100% arábica · Danlí"
-             data-img="imagenes/4.png">
-          <img src="imagenes/4.png" alt="Café Cortero 250g">
-          <h4>Café Cortero 250g</h4>
-          <div class="price-sm">L 180</div>
-          <button><i class="fa-solid fa-cart-plus"></i> </button>
-        </div>
-
-        <!-- tarjeta 2 -->
-        <div class="similar-card"
-             data-name="Café Cortero 500g"
-             data-price="L 320"
-             data-desc="Tostado artesanal y cuerpo balanceado."
-             data-badge="Tueste medio"
-             data-img="imagenes/IMG-20251025-WA0034.jpg">
-          <img src="imagenes/IMG-20251025-WA0034.jpg" alt="Café Cortero 500g">
-          <h4>Café Cortero 500g</h4>
-          <div class="price-sm">L 320</div>
-          <button><i class="fa-solid fa-cart-plus"></i></button>
-        </div>
-
-        <!-- tarjeta 3 -->
-        <div class="similar-card"
-             data-name="Café Cortero 1lb"
-             data-price="L 550"
-             data-desc="Presentación ideal para familias o cafeterías."
-             data-badge="Cosecha seleccionada"
-             data-img="imagenes/4.png">
-          <img src="imagenes/4.png" alt="Café Cortero 1lb">
-          <h4>Café Cortero 1lb</h4>
-          <div class="price-sm">L 550</div>
-          <button><i class="fa-solid fa-cart-plus"></i></button>
-        </div>
-
-        <!-- tarjeta 4 -->
-        <div class="similar-card"
-             data-name="Pack regalo Cortero"
-             data-price="L 260"
-             data-desc="Incluye café Cortero + empaque bonito para obsequio."
-             data-badge="Ideal para regalar"
-             data-img="imagenes/IMG-20251025-WA0034.jpg">
-          <img src="imagenes/IMG-20251025-WA0034.jpg" alt="Pack regalo">
-          <h4>Pack regalo</h4>
-          <div class="price-sm">L 260</div>
-          <button><i class="fa-solid fa-cart-plus"></i></button>
-        </div>
-
+    <div class="similar-list" id="lista-similares">
+      <div class="similar-card" data-name="Café Cortero 250g" data-price="L 180" data-desc="Café de altura, tueste medio." data-badge="100% arábica" data-img="imagenes/4.png">
+        <img src="imagenes/4.png" alt="">
+        <h4>Café Cortero 250g</h4>
+        <div class="price">L 180</div>
+        <button><i class="fa-solid fa-cart-plus"></i></button>
       </div>
-    </section>
-
-    <!-- SOBRE NOSOTROS -->
-    <section id="nosotros" class="about">
-      <div>
-        <small>Nuestra historia</small>
-        <h2>Sobre Café Cortero</h2>
-        <p>
-          Café Cortero es un proyecto familiar con la iniciativa de producir un café de calidad
-          amigable con el medio ambiente y con el sabor auténtico de Honduras.
-        </p>
-        <p>
-          Cada grano es cultivado con respeto, cosechado a mano y tostado con dedicación
-          para conservar su esencia natural.
-        </p>
-        <div class="about-pills">
-          <span class="about-pill">Proyecto familiar</span>
-          <span class="about-pill">Origen hondureño</span>
-          <span class="about-pill">Café sostenible</span>
-        </div>
+      <div class="similar-card" data-name="Café Cortero 500g" data-price="L 320" data-desc="Tostado artesanal y cuerpo balanceado." data-badge="Tueste medio" data-img="imagenes/coffee-bag-mockup (4).png">
+        <img src="imagenes/coffee-bag-mockup (4).png" alt="">
+        <h4>Café Cortero 500g</h4>
+        <div class="price">L 320</div>
+        <button><i class="fa-solid fa-cart-plus"></i></button>
       </div>
-      <div class="about-img">
-        <img src="imagenes/FB_IMG_1762305864060.jpg" alt="Productor de Café Cortero">
-      </div>
-    </section>
-
-    <!-- CONTACTO -->
-    <section id="contacto">
-      <h2>Contáctanos</h2>
-      <p>Haz tu pedido directo por WhatsApp o síguenos en Facebook para ver novedades.</p>
-      <a href="https://www.facebook.com/share/1FsrT4DYrU/" class="btn-facebook" target="_blank">
-        <i class="fa-brands fa-facebook-f"></i> Síguenos en Facebook
-      </a>
-    </section>
-
-  </main>
+    </div>
+  </section>
 
   <footer>
-    &copy; 2025 Café Cortero. Todos los derechos reservados.
+    <p>&copy; 2025 Café Cortero. Todos los derechos reservados.</p>
   </footer>
 
-  <!-- botón flotante -->
   <a href="https://wa.me/50494546047?text=Hola%2C%20quiero%20más%20información%20sobre%20Café%20Cortero" class="whatsapp-float" target="_blank">
     <i class="fa-brands fa-whatsapp"></i>
   </a>
 
   <script>
-    // misma clave para index y carrito
-    const CART_KEY = 'cafecortero_cart';
-
-    // leer carrito
-    function getCart() {
-      return JSON.parse(localStorage.getItem(CART_KEY)) || [];
-    }
-    // guardar
-    function saveCart(cart) {
-      localStorage.setItem(CART_KEY, JSON.stringify(cart));
-    }
-    // contador
-    function updateCartCount() {
-      const cart = getCart();
-      const total = cart.reduce((acc, item) => acc + item.qty, 0);
-      document.getElementById('cart-count').textContent = total;
-    }
-    // agregar
-    function addToCart(product) {
-      const cart = getCart();
-      const index = cart.findIndex(p => p.name === product.name);
-      if (index >= 0) {
-        cart[index].qty += 1;
-      } else {
-        cart.push(product);
-      }
-      saveCart(cart);
-      updateCartCount();
-      // vibración ligera en móvil
-      if (window.navigator.vibrate) {
-        window.navigator.vibrate(80);
-      }
+    const cart = JSON.parse(localStorage.getItem('cart')) || {};
+    const cartCount = document.getElementById('cart-count');
+    const cartBtn = document.getElementById('cart-btn');
+    function updateCount() {
+      const total = Object.values(cart).reduce((acc, item) => acc + item.qty, 0);
+      cartCount.textContent = total;
+      localStorage.setItem('cart', JSON.stringify(cart));
     }
 
-    // botón principal
-    document.getElementById('product-add').addEventListener('click', () => {
-      const product = {
-        name: document.getElementById('product-name').textContent,
-        price: document.getElementById('product-price').textContent,
-        img: document.getElementById('product-image').getAttribute('src'),
-        qty: 1
-      };
-      addToCart(product);
-    });
+    function addToCart(name, price) {
+      if (!cart[name]) cart[name] = {qty:1, price};
+      else cart[name].qty++;
+      updateCount();
+      cartBtn.classList.add('animate');
+      setTimeout(()=>cartBtn.classList.remove('animate'),300);
+    }
 
-    // tarjetas del carrusel
-    document.querySelectorAll('.similar-card').forEach(card => {
-      // cambiar producto grande
-      card.addEventListener('click', (e) => {
-        // si el clic fue en el botón, no cambiamos la tarjeta, solo agregamos
-        if (e.target.closest('button')) return;
+    document.getElementById('product-cart').onclick = () => {
+      const name = document.getElementById('product-name').textContent;
+      const price = document.getElementById('product-price').textContent;
+      addToCart(name, price);
+    };
 
-        document.querySelectorAll('.similar-card').forEach(c => c.classList.remove('active'));
-        card.classList.add('active');
-
-        document.getElementById('product-name').textContent = card.dataset.name;
-        document.getElementById('product-desc').textContent = card.dataset.desc;
-        document.getElementById('product-badge').textContent = card.dataset.badge;
-        document.getElementById('product-price').textContent = card.dataset.price;
-        document.getElementById('product-image').src = card.dataset.img;
-      });
-
-      // botón dentro de la tarjeta
-      card.querySelector('button').addEventListener('click', (e) => {
+    document.querySelectorAll('.similar-card button').forEach(btn=>{
+      btn.onclick = (e)=>{
         e.stopPropagation();
-        const product = {
-          name: card.dataset.name,
-          price: card.dataset.price,
-          img: card.dataset.img,
-          qty: 1
-        };
-        addToCart(product);
-      });
+        const card = e.target.closest('.similar-card');
+        addToCart(card.dataset.name, card.dataset.price);
+      };
     });
 
-    // botón del carrito -> ir a carrito.html
-    document.getElementById('cart-btn').addEventListener('click', () => {
-      window.location.href = 'carrito.html';
+    document.getElementById('cart-btn').onclick = ()=>{
+      window.location.href = "carrito.html";
+    };
+
+    document.querySelectorAll('.similar-card').forEach(card=>{
+      card.onclick=()=>{
+        document.getElementById('product-name').textContent=card.dataset.name;
+        document.getElementById('product-desc').textContent=card.dataset.desc;
+        document.getElementById('product-badge').textContent=card.dataset.badge;
+        document.getElementById('product-price').textContent=card.dataset.price;
+        document.getElementById('product-image').src=card.dataset.img;
+      };
     });
 
-    // al cargar
-    updateCartCount();
+    updateCount();
   </script>
 </body>
 </html>
