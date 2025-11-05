@@ -7,11 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * {margin: 0; padding: 0; box-sizing: border-box;}
     body {
       font-family: "Poppins", sans-serif;
       background-color: #fafafa;
@@ -32,17 +28,14 @@
       justify-content: space-between;
       align-items: center;
       z-index: 10;
-      gap: 1rem;
-    }
-    .logo-wrap {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
     }
     .logo-wrap img {
-      height: 48px;
+      height: 80px;
       width: auto;
-      display: block;
+      transition: transform 0.3s ease;
+    }
+    .logo-wrap img:hover {
+      transform: scale(1.05);
     }
     header nav a {
       margin-left: 1rem;
@@ -51,38 +44,16 @@
       font-weight: 500;
       transition: color 0.2s;
     }
-    header nav a:hover {
-      color: #7b4a2d;
-    }
+    header nav a:hover {color: #7b4a2d;}
 
     /* HERO */
     .hero {
       margin-top: 75px;
       height: 75vh;
-      background: url('https://YOUR-BANNER-URL-HERE') center/cover no-repeat;
+      background: url('Café%20Cortero%20es%20un%20proyecto%20familiar%20con%20la%20iniciativa%20de%20producir%20un%20café%20de%20calidad%20amigable%20con%20el%20medio%20ambiente..png') center/cover no-repeat;
       display: flex;
       align-items: center;
       justify-content: center;
-      text-align: center;
-      color: white;
-      position: relative;
-    }
-    .hero::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.35);
-    }
-    .hero-content {
-      position: relative;
-      z-index: 1;
-    }
-    .hero-content h2 {
-      font-size: 2.2rem;
-      margin-bottom: 1rem;
-    }
-    .hero-content p {
-      font-size: 1.1rem;
     }
 
     /* SECTIONS */
@@ -109,7 +80,7 @@
       border-radius: 12px;
       box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
       overflow: hidden;
-      transform: translateY(0);
+      text-align: center;
       transition: all 0.3s ease;
     }
     .card:hover {
@@ -118,9 +89,13 @@
     }
     .card img {
       width: 100%;
-      height: 225px;
-      object-fit: cover;
-      background: #f1ede7;
+      height: auto;
+      max-height: 400px;
+      object-fit: contain;
+      background-color: #f5efe8;
+      padding: 15px;
+      display: block;
+      margin: 0 auto;
     }
     .card-body {
       padding: 1.2rem;
@@ -213,18 +188,9 @@
     }
 
     @media (max-width: 768px) {
-      header nav a {
-        margin-left: 0.5rem;
-      }
-      .hero-content h2 {
-        font-size: 1.6rem;
-      }
-      .hero {
-        height: 55vh;
-      }
-      .logo-wrap img {
-        height: 42px;
-      }
+      .logo-wrap img {height: 65px;}
+      .hero {height: 55vh;}
+      .card img {max-height: 320px;}
     }
   </style>
 </head>
@@ -241,12 +207,7 @@
     </nav>
   </header>
 
-  <section class="hero">
-    <div class="hero-content">
-      <h2>La esencia de Honduras en cada sorbo</h2>
-      <p>Calidad, tradición y sabor de nuestras montañas.</p>
-    </div>
-  </section>
+  <section class="hero"></section>
 
   <section id="productos">
     <h2 class="section-title">Nuestros Productos</h2>
@@ -298,34 +259,33 @@
       Haz tu pedido o consulta directamente por WhatsApp o en nuestra página de Facebook.
     </p>
     <p style="text-align:center;">
-      <a href="https://wa.me/50494546047?text=Hola%2C%20me%20interesa%20comprar%20Café%20Cortero%20☕️" class="btn">Contactar por WhatsApp</a>
+      <a href="https://wa.me/50494546047?text=Hola%2C%20me%20interesa%20comprar%20Café%20Cortero%20☕️" class="btn">Escríbenos por WhatsApp</a>
+      <br><br>
+      <a href="https://www.facebook.com/share/1FsrT4DYrU/" class="btn" style="background:#3b5998;">Síguenos en Facebook</a>
     </p>
   </section>
 
   <footer>
-    <p>© 2025 Café Cortero — Valle de Jamastrán, Honduras</p>
-    <p>
-      <a href="https://www.facebook.com/share/1FsrT4DYrU/" target="_blank" rel="noopener">Facebook</a>
-    </p>
+    <p>&copy; 2025 Café Cortero. Todos los derechos reservados.</p>
   </footer>
 
-  <!-- Botón flotante WhatsApp -->
-  <a href="https://wa.me/50494546047?text=Hola%2C%20me%20interesa%20comprar%20Café%20Cortero%20☕️" class="whatsapp-float" target="_blank" title="Chatear por WhatsApp">
-    <i class="fab fa-whatsapp"></i>
+  <!-- Botón flotante de WhatsApp -->
+  <a href="https://wa.me/50494546047?text=Hola%2C%20quiero%20más%20información%20sobre%20Café%20Cortero%20☕️" class="whatsapp-float" target="_blank">
+    <i class="fa-brands fa-whatsapp"></i>
   </a>
 
   <script>
-    const animatedElements = document.querySelectorAll('[data-animate]');
-    function handleScroll() {
-      animatedElements.forEach(el => {
-        const rect = el.getBoundingClientRect();
-        if (rect.top < window.innerHeight - 50) {
-          el.classList.add('visible');
+    // Animaciones de aparición
+    const elements = document.querySelectorAll('[data-animate]');
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
         }
       });
-    }
-    window.addEventListener('scroll', handleScroll);
-    handleScroll();
+    }, {threshold: 0.2});
+    elements.forEach(el => observer.observe(el));
   </script>
 </body>
 </html>
