@@ -61,6 +61,7 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
+      transition: transform .15s ease;
     }
     .cart-btn i {color: var(--marron); font-size: 1.1rem;}
     .cart-count {
@@ -78,6 +79,14 @@
       justify-content: center;
       font-weight: 600;
     }
+    .cart-btn.bump {
+      animation: bump .35s;
+    }
+    @keyframes bump {
+      0% {transform: scale(1);}
+      30% {transform: scale(1.12);}
+      100% {transform: scale(1);}
+    }
 
     /* SECCIONES */
     main {padding-top: 5.4rem;}
@@ -93,7 +102,7 @@
       color: var(--marron);
     }
 
-    /* PRODUCTO PRINCIPAL (como tu captura) */
+    /* PRODUCTO PRINCIPAL */
     .product-page {
       background: #ffffff;
       border-radius: 26px;
@@ -105,7 +114,6 @@
       align-items: center;
       margin-bottom: 2.5rem;
     }
-
     .product-text .p-label {
       font-size: 0.7rem;
       letter-spacing: 0.18em;
@@ -179,7 +187,7 @@
       filter: drop-shadow(0 18px 28px rgba(0,0,0,0.1));
     }
 
-    /* CARRUSEL DE PRODUCTOS ABAJO */
+    /* CARRUSEL */
     .similar-title {
       font-weight: 600;
       margin-bottom: 1rem;
@@ -320,7 +328,8 @@
   <!-- HEADER -->
   <header>
     <div class="logo-wrap">
-      <a href="index.html"><img src="imagenes/logo mejorado transparente.png" alt="Café Cortero"></a>
+      <!-- nombre EXACTO con espacios codificados -->
+      <a href="index.html"><img src="imagenes/logo%20mejorado%20trasmparente.png" alt="Café Cortero"></a>
     </div>
     <nav>
       <a href="#productos">Productos</a>
@@ -375,8 +384,8 @@
              data-price="L 320"
              data-desc="Tostado artesanal y cuerpo balanceado."
              data-badge="Tueste medio"
-             data-img="imagenes/coffee-bag-mockup (4).png">
-          <img src="imagenes/coffee-bag-mockup (4).png" alt="Café Cortero 500g">
+             data-img="imagenes/coffee-bag-mockup%20(4).png">
+          <img src="imagenes/coffee-bag-mockup%20(4).png" alt="Café Cortero 500g">
           <h4>Café Cortero 500g</h4>
           <div class="price">L 320</div>
           <button><i class="fa-solid fa-cart-plus"></i></button>
@@ -466,10 +475,11 @@
   </a>
 
   <script>
-    // recuperar carrito
+    // recuperar carrito (aunque tenga formato viejo)
     const saved = localStorage.getItem('cart');
     const cart = saved ? JSON.parse(saved) : {};
     const cartCountEl = document.getElementById('cart-count');
+    const cartBtn = document.getElementById('cart-btn');
 
     function refreshCount() {
       const total = Object.values(cart).reduce((acc, item) => acc + (item.qty || 0), 0);
@@ -482,8 +492,12 @@
         cart[name] = { qty: 1, price: price, img: img };
       } else {
         cart[name].qty += 1;
+        // si no tenía imagen (estructura vieja), se la ponemos ahora
+        if (!cart[name].img) cart[name].img = img;
       }
       refreshCount();
+      cartBtn.classList.add('bump');
+      setTimeout(() => cartBtn.classList.remove('bump'), 350);
     }
 
     // botón grande
@@ -518,7 +532,7 @@
     });
 
     // ir al carrito
-    document.getElementById('cart-btn').addEventListener('click', () => {
+    cartBtn.addEventListener('click', () => {
       window.location.href = 'carrito.html';
     });
 
