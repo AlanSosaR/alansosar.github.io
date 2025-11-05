@@ -9,7 +9,6 @@
   <style>
     :root {
       --cafe: #4b2e1b;
-      --cafe-oscuro: #2b1a11;
       --fondo: #e9dfd2;
       --blanco: #ffffff;
       --crema: #f6efe7;
@@ -109,7 +108,7 @@
       color: #4b2e1b;
       margin-bottom: 1rem;
     }
-    /* botón de compra solo icono */
+    /* botón de compra solo icono en producto grande */
     .btn-whatsapp {
       display: inline-flex;
       align-items: center;
@@ -182,8 +181,31 @@
       margin-bottom: .5rem;
     }
     .similar-card h4 {font-size: .9rem; color: #4b2e1b; margin-bottom: .2rem;}
-    .similar-card .price {font-size: .8rem; font-weight: 600; color: #4b2e1b; margin-bottom: .4rem;}
-    .similar-card small {font-size: .7rem; color: #6d5541;}
+    .similar-card .price {font-size: .8rem; font-weight: 600; color: #4b2e1b; margin-bottom: .6rem;}
+
+    /* botón dentro de tarjeta */
+    .similar-card a.buy-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: .35rem;
+      background: #4b2e1b;
+      color: #fff;
+      text-decoration: none;
+      font-size: .7rem;
+      padding: .4rem .6rem;
+      border-radius: 999px;
+    }
+    .similar-card a.buy-btn i {
+      background: #25d366;
+      width: 19px;
+      height: 19px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .55rem;
+    }
 
     /* SOBRE NOSOTROS SIN TARJETA */
     .about-section {
@@ -354,7 +376,9 @@
           <img src="3.png" alt="Café Cortero 250g">
           <h4>Café Cortero 250g</h4>
           <div class="price">L 180</div>
-          <small>Seleccionar</small>
+          <a href="https://wa.me/50494546047?text=Hola%2C%20me%20interesa%20comprar%20Café%20Cortero%20250g%20☕️" class="buy-btn">
+            <i class="fa-brands fa-whatsapp"></i> Comprar
+          </a>
         </div>
 
         <div class="similar-card"
@@ -366,7 +390,9 @@
           <img src="3.png" alt="Café Cortero 500g">
           <h4>Café Cortero 500g</h4>
           <div class="price">L 320</div>
-          <small>Seleccionar</small>
+          <a href="https://wa.me/50494546047?text=Hola%2C%20me%20interesa%20comprar%20Café%20Cortero%20500g%20☕️" class="buy-btn">
+            <i class="fa-brands fa-whatsapp"></i> Comprar
+          </a>
         </div>
 
         <div class="similar-card"
@@ -378,7 +404,9 @@
           <img src="3.png" alt="Café Cortero 1lb">
           <h4>Café Cortero 1lb</h4>
           <div class="price">L 550</div>
-          <small>Seleccionar</small>
+          <a href="https://wa.me/50494546047?text=Hola%2C%20me%20interesa%20comprar%20Café%20Cortero%201lb%20☕️" class="buy-btn">
+            <i class="fa-brands fa-whatsapp"></i> Comprar
+          </a>
         </div>
 
         <div class="similar-card"
@@ -390,7 +418,9 @@
           <img src="3.png" alt="Pack regalo">
           <h4>Pack regalo</h4>
           <div class="price">L 260</div>
-          <small>Seleccionar</small>
+          <a href="https://wa.me/50494546047?text=Hola%2C%20me%20interesa%20el%20Pack%20regalo%20Cortero%20☕️" class="buy-btn">
+            <i class="fa-brands fa-whatsapp"></i> Comprar
+          </a>
         </div>
       </div>
     </div>
@@ -429,11 +459,7 @@
       Haz tu pedido directo por WhatsApp o síguenos en Facebook para ver novedades.
     </p>
     <div class="contact-actions">
-      <!-- solo icono -->
-      <a href="https://wa.me/50494546047?text=Hola%2C%20quiero%20más%20información%20sobre%20Café%20Cortero%20☕️" class="btn-whatsapp" style="margin:1rem auto 1.5rem;">
-        <i class="fa-brands fa-whatsapp"></i>
-      </a>
-      <br>
+      <!-- quitamos el icono del centro -->
       <a href="https://www.facebook.com/share/1FsrT4DYrU/" class="btn-facebook" target="_blank">
         <i class="fa-brands fa-facebook-f"></i>
         Síguenos en Facebook
@@ -474,7 +500,6 @@
 
     similarCards.forEach(card => {
       card.addEventListener('click', () => {
-        // quitar active
         similarCards.forEach(c => c.classList.remove('active'));
         card.classList.add('active');
 
