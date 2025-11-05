@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Café Cortero | La esencia de Honduras en cada sorbo</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     :root {
@@ -12,11 +12,12 @@
       --cafe-oscuro: #2b1a11;
       --fondo: #e9dfd2;
       --blanco: #ffffff;
+      --crema: #f6efe7;
     }
     * {margin:0; padding:0; box-sizing:border-box;}
     body {
       font-family: "Poppins", sans-serif;
-      background: #e9dfd2;
+      background: var(--fondo);
       color: #3e2e21;
       scroll-behavior: smooth;
     }
@@ -42,8 +43,9 @@
       color: #4b2e1b;
       font-weight: 500;
     }
+    header nav a:hover {color:#7b4a2d;}
 
-    /* HERO BANNER */
+    /* HERO */
     .hero {
       margin-top: 75px;
       height: 48vh;
@@ -129,7 +131,6 @@
       font-size: .9rem;
       color: #fff;
     }
-
     .product-visual {
       background: radial-gradient(circle at center, #e7e2dc 0%, #ffffff 70%);
       border-radius: 999px;
@@ -180,21 +181,79 @@
     .similar-card .price {font-size: .8rem; font-weight: 600; color: #4b2e1b; margin-bottom: .4rem;}
     .similar-card small {font-size: .7rem; color: #6d5541;}
 
-    /* ABOUT y CONTACTO igual */
-    .about {
-      text-align: center;
-      line-height: 1.7;
-      color: #4b2e1b;
-      max-width: 780px;
-      margin: 3rem auto 0;
-      font-size: 1rem;
-      background: rgba(255,255,255,.7);
-      padding: 1.8rem 1.5rem;
-      border-radius: 20px;
-      box-shadow: 0 15px 35px rgba(0,0,0,.02);
+    /* === SOBRE NOSOTROS NUEVO === */
+    .about-section {
+      max-width: 1200px;
+      margin: 3.5rem auto 0;
+      padding: 0 1rem 0;
     }
-    .contact-actions {text-align:center; margin-top:1.5rem;}
+    .about-box {
+      background: linear-gradient(135deg, #fefdfb 0%, #f6efe7 100%);
+      border-radius: 28px;
+      display: grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap: 2.3rem;
+      align-items: center;
+      padding: 3rem 3rem 3rem 3rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .about-box::after {
+      content: "";
+      position: absolute;
+      width: 150px;
+      height: 150px;
+      border: 14px solid rgba(75,46,27,0.03);
+      border-radius: 50%;
+      bottom: -60px;
+      right: -40px;
+    }
+    .about-text small {
+      text-transform: uppercase;
+      letter-spacing: .28em;
+      font-size: .63rem;
+      color: #a08874;
+    }
+    .about-text h2 {
+      font-family: "Playfair Display", serif;
+      font-size: 2.2rem;
+      color: #4b2e1b;
+      margin: .7rem 0 1rem;
+    }
+    .about-text p {
+      line-height: 1.75;
+      color: #5f4c3d;
+      margin-bottom: 1.2rem;
+    }
+    .about-pills {
+      display: flex;
+      gap: .5rem;
+      flex-wrap: wrap;
+    }
+    .about-pill {
+      background: rgba(75,46,27,.08);
+      padding: .4rem .9rem;
+      border-radius: 999px;
+      font-size: .7rem;
+      color: #4b2e1b;
+    }
+    .about-img-wrap {
+      background: #fff;
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 20px 30px rgba(0,0,0,.03);
+      border: 1px solid rgba(75,46,27,.04);
+    }
+    .about-img-wrap img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      max-height: 370px;
+    }
 
+    /* CONTACTO Y FOOTER */
+    .contact-actions {text-align:center; margin-top:1.5rem;}
     footer {
       background: #4b2e1b;
       color: white;
@@ -203,6 +262,7 @@
       margin-top: 3rem;
     }
 
+    /* FLOAT WHATSAPP */
     .whatsapp-float {
       position: fixed;
       bottom: 25px;
@@ -228,6 +288,8 @@
     @media (max-width: 880px) {
       .product-page {grid-template-columns: 1fr;}
       .product-visual {max-width: 380px; margin:0 auto;}
+      .about-box {grid-template-columns: 1fr; padding: 2.3rem 1.5rem 2.5rem;}
+      .about-img-wrap img {max-height: 280px;}
     }
     @media (max-width: 768px) {
       .hero {height: 36vh; background-size: contain;}
@@ -254,7 +316,7 @@
   <section id="productos">
     <h2 class="section-title">Nuestros Productos</h2>
 
-    <!-- PRODUCTO PRINCIPAL (se actualiza con JS) -->
+    <!-- PRODUCTO PRINCIPAL -->
     <div class="product-page" id="producto-principal" data-animate>
       <div class="product-info">
         <small id="product-type">Café en grano / molido</small>
@@ -276,7 +338,6 @@
     <div class="similar-wrapper" data-animate>
       <h3 class="similar-title">También te puede interesar</h3>
       <div class="similar-list" id="lista-similares">
-        <!-- Cada tarjeta tiene los datos que usará el JS -->
         <div class="similar-card active"
              data-name="Café Cortero 250g"
              data-price="L 180"
@@ -328,20 +389,35 @@
     </div>
   </section>
 
-  <!-- NOSOTROS -->
-  <section id="nosotros">
-    <h2 class="section-title">Sobre Nosotros</h2>
-    <p class="about">
-      Café Cortero es un proyecto familiar con la iniciativa de producir un café de calidad,
-      amigable con el medio ambiente y con el sabor auténtico de Honduras. Desde la cosecha
-      hasta el tueste, cuidamos cada etapa para que disfrutes una taza llena de aroma, cuerpo y tradición.
-    </p>
+  <!-- SOBRE NOSOTROS NUEVO -->
+  <section id="nosotros" class="about-section">
+    <div class="about-box" data-animate>
+      <div class="about-text">
+        <small>Nuestra historia</small>
+        <h2>Sobre Café Cortero</h2>
+        <p>
+          En las montañas de Honduras nace Café Cortero, un proyecto familiar que honra la tradición cafetalera de nuestra tierra.
+          Cada grano es cultivado con respeto por el medio ambiente, cosechado a mano y tostado con cuidado para conservar su esencia natural.
+        </p>
+        <p>
+          Más que un café, compartimos una experiencia: el aroma de la finca, el sabor del trabajo honesto y la calidez de una taza que une generaciones.
+        </p>
+        <div class="about-pills">
+          <span class="about-pill">Proyecto familiar</span>
+          <span class="about-pill">Origen hondureño</span>
+          <span class="about-pill">Amigable con el ambiente</span>
+        </div>
+      </div>
+      <div class="about-img-wrap">
+        <img src="FB_IMG_1762305864060.jpg" alt="Productores de Café Cortero">
+      </div>
+    </div>
   </section>
 
   <!-- CONTACTO -->
   <section id="contacto">
     <h2 class="section-title">Contáctanos</h2>
-    <p class="about">
+    <p class="about" style="max-width:780px;margin-top:0;">
       Haz tu pedido o consulta directamente por WhatsApp o en nuestra página de Facebook.
     </p>
     <div class="contact-actions">
@@ -390,7 +466,6 @@
 
     similarCards.forEach(card => {
       card.addEventListener('click', () => {
-        // quitar active a todos
         similarCards.forEach(c => c.classList.remove('active'));
         card.classList.add('active');
 
@@ -406,7 +481,6 @@
         badgeEl.textContent = badge;
         imgEl.src = img;
 
-        // actualizar mensaje de WhatsApp
         const mensaje = encodeURIComponent(`Hola, me interesa comprar ${name} ☕️`);
         waBtn.href = `https://wa.me/50494546047?text=${mensaje}`;
       });
