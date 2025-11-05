@@ -36,14 +36,78 @@
       box-shadow: 0 2px 12px rgba(0,0,0,.03);
     }
     .logo-wrap img {height: 80px;}
+    header nav {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
     header nav a {
-      margin-left: 1rem;
       text-decoration: none;
       color: #4b2e1b;
       font-weight: 500;
       transition:.2s;
     }
     header nav a:hover {color:#7b4a2d;}
+
+    /* carrito en header */
+    .cart-btn {
+      position: relative;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(75,46,27,0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .cart-btn i {color: #4b2e1b; font-size: 1.1rem;}
+    .cart-count {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: #d72638;
+      color: #fff;
+      border-radius: 999px;
+      font-size: .6rem;
+      width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+    }
+    /* panel del carrito */
+    .cart-panel {
+      position: fixed;
+      top: 70px;
+      right: 15px;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 10px 20px rgba(0,0,0,.12);
+      width: 280px;
+      max-height: 360px;
+      overflow-y: auto;
+      padding: 1rem;
+      z-index: 200;
+      display: none;
+    }
+    .cart-panel h4 {
+      margin-bottom: .6rem;
+      color: #4b2e1b;
+    }
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: .4rem;
+      font-size: .85rem;
+    }
+    .cart-empty {
+      font-size: .8rem;
+      color: #7f6a58;
+    }
 
     /* HERO */
     .hero {
@@ -109,8 +173,8 @@
       margin-bottom: 1.1rem;
     }
 
-    /* botón principal de WhatsApp (texto + icono) */
-    .btn-main-whatsapp {
+    /* botón principal agregar al carrito */
+    .btn-main-cart {
       display: inline-flex;
       align-items: center;
       gap: .55rem;
@@ -122,9 +186,11 @@
       font-weight: 500;
       box-shadow: 0 8px 16px rgba(76,46,27,.25);
       font-size: .9rem;
+      cursor: pointer;
+      border: none;
     }
-    .btn-main-whatsapp i {
-      background: #25d366;
+    .btn-main-cart i {
+      background: rgba(255,255,255,.12);
       width: 28px;
       height: 28px;
       border-radius: 50%;
@@ -150,7 +216,7 @@
       filter: drop-shadow(0 14px 30px rgba(0,0,0,.15));
     }
 
-    /* SIMILARES (tarjetas de abajo) */
+    /* SIMILARES */
     .similar-wrapper {margin-top: 2.6rem;}
     .similar-title {font-size: 1.2rem; color: #4b2e1b; margin-bottom: 1.3rem;}
     .similar-list {
@@ -184,20 +250,22 @@
     .similar-card h4 {font-size: .9rem; color: #4b2e1b; margin-bottom: .2rem;}
     .similar-card .price {font-size: .8rem; font-weight: 600; color: #4b2e1b; margin-bottom: .6rem;}
 
-    .similar-card a.buy-btn {
+    /* botón dentro de tarjeta -> agregar al carrito */
+    .similar-card button.buy-btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: .35rem;
       background: #4b2e1b;
       color: #fff;
-      text-decoration: none;
+      border: none;
       font-size: .7rem;
       padding: .4rem .6rem;
       border-radius: 999px;
+      cursor: pointer;
     }
-    .similar-card a.buy-btn i {
-      background: #25d366;
+    .similar-card button.buy-btn i {
+      background: rgba(255,255,255,.12);
       width: 19px;
       height: 19px;
       border-radius: 50%;
@@ -207,7 +275,7 @@
       font-size: .55rem;
     }
 
-    /* SOBRE NOSOTROS SIN TARJETA PERO ELEVADA LA FOTO */
+    /* SOBRE NOSOTROS */
     .about-section {
       width: 100%;
       max-width: 1200px;
@@ -252,16 +320,16 @@
       border-radius: 999px;
       font-weight: 500;
     }
-    /* contenedor elevado */
+    /* imagen sin marco */
     .about-img {
-      background: #f6efe7;
-      border-radius: 26px;
-      padding: .8rem;
-      box-shadow: 0 12px 28px rgba(0,0,0,.08);
+      background: none;
+      border-radius: 0;
+      padding: 0;
+      box-shadow: none;
     }
     .about-img img {
       width: 100%;
-      border-radius: 20px;
+      border-radius: 18px;
       display: block;
       object-fit: cover;
     }
@@ -329,6 +397,7 @@
     @media (max-width: 768px) {
       .hero {height: 36vh; background-size: contain;}
       .logo-wrap img {height: 68px;}
+      .cart-panel {right: 8px; width: 90%;}
     }
   </style>
 </head>
@@ -342,8 +411,18 @@
       <a href="#productos">Productos</a>
       <a href="#nosotros">Nosotros</a>
       <a href="#contacto">Contacto</a>
+      <button class="cart-btn" id="cart-btn" aria-label="Carrito">
+        <i class="fa-solid fa-cart-shopping"></i>
+        <span class="cart-count" id="cart-count">0</span>
+      </button>
     </nav>
   </header>
+
+  <!-- panel carrito -->
+  <div class="cart-panel" id="cart-panel">
+    <h4>Tu carrito</h4>
+    <div id="cart-items" class="cart-empty">No hay productos aún.</div>
+  </div>
 
   <section class="hero"></section>
 
@@ -359,11 +438,10 @@
         <p id="product-desc">Café hondureño de altura, tueste medio, ideal para filtro o prensa francesa. Proyecto familiar, amigable con el medio ambiente.</p>
         <span class="badge" id="product-badge">100% arábica · Danlí</span>
         <div class="price-big" id="product-price">L 180</div>
-        <!-- botón con texto -->
-        <a id="product-whatsapp" href="https://wa.me/50494546047?text=Hola%2C%20me%20interesa%20comprar%20Café%20Cortero%20250g%20☕️" class="btn-main-whatsapp">
-          <i class="fa-brands fa-whatsapp"></i>
-          Comprar por WhatsApp
-        </a>
+        <button id="product-cart" class="btn-main-cart">
+          <i class="fa-solid fa-cart-plus"></i>
+          Agregar al carrito
+        </button>
       </div>
       <div class="product-visual">
         <img id="product-image" src="3.png" alt="Bolsa de Café Cortero">
@@ -383,9 +461,9 @@
           <img src="3.png" alt="Café Cortero 250g">
           <h4>Café Cortero 250g</h4>
           <div class="price">L 180</div>
-          <a href="https://wa.me/50494546047?text=Hola%2C%20me%20interesa%20comprar%20Café%20Cortero%20250g%20☕️" class="buy-btn">
-            <i class="fa-brands fa-whatsapp"></i> Comprar
-          </a>
+          <button class="buy-btn">
+            <i class="fa-solid fa-cart-plus"></i> Agregar al carrito
+          </button>
         </div>
 
         <div class="similar-card"
@@ -397,9 +475,9 @@
           <img src="3.png" alt="Café Cortero 500g">
           <h4>Café Cortero 500g</h4>
           <div class="price">L 320</div>
-          <a href="https://wa.me/50494546047?text=Hola%2C%20me%20interesa%20comprar%20Café%20Cortero%20500g%20☕️" class="buy-btn">
-            <i class="fa-brands fa-whatsapp"></i> Comprar
-          </a>
+          <button class="buy-btn">
+            <i class="fa-solid fa-cart-plus"></i> Agregar al carrito
+          </button>
         </div>
 
         <div class="similar-card"
@@ -411,9 +489,9 @@
           <img src="3.png" alt="Café Cortero 1lb">
           <h4>Café Cortero 1lb</h4>
           <div class="price">L 550</div>
-          <a href="https://wa.me/50494546047?text=Hola%2C%20me%20interesa%20comprar%20Café%20Cortero%201lb%20☕️" class="buy-btn">
-            <i class="fa-brands fa-whatsapp"></i> Comprar
-          </a>
+          <button class="buy-btn">
+            <i class="fa-solid fa-cart-plus"></i> Agregar al carrito
+          </button>
         </div>
 
         <div class="similar-card"
@@ -425,9 +503,9 @@
           <img src="3.png" alt="Pack regalo">
           <h4>Pack regalo</h4>
           <div class="price">L 260</div>
-          <a href="https://wa.me/50494546047?text=Hola%2C%20me%20interesa%20el%20Pack%20regalo%20Cortero%20☕️" class="buy-btn">
-            <i class="fa-brands fa-whatsapp"></i> Comprar
-          </a>
+          <button class="buy-btn">
+            <i class="fa-solid fa-cart-plus"></i> Agregar al carrito
+          </button>
         </div>
       </div>
     </div>
@@ -495,17 +573,55 @@
     }, {threshold: 0.2});
     elements.forEach(el => observer.observe(el));
 
-    // cambio de producto al hacer clic en tarjetas de abajo
+    // referencias del producto principal (para cambiarlo con las tarjetas)
     const similarCards = document.querySelectorAll('.similar-card');
     const nameEl = document.getElementById('product-name');
     const descEl = document.getElementById('product-desc');
     const priceEl = document.getElementById('product-price');
     const badgeEl = document.getElementById('product-badge');
     const imgEl = document.getElementById('product-image');
-    const waBtn = document.getElementById('product-whatsapp');
 
+    // carrito
+    const cartBtn = document.getElementById('cart-btn');
+    const cartPanel = document.getElementById('cart-panel');
+    const cartCount = document.getElementById('cart-count');
+    const cartItemsContainer = document.getElementById('cart-items');
+    const mainAddBtn = document.getElementById('product-cart');
+
+    const cart = {}; // { "Café Cortero 250g": {qty: 2, price: "L 180"} }
+
+    function updateCartPanel() {
+      const keys = Object.keys(cart);
+      if (keys.length === 0) {
+        cartItemsContainer.innerHTML = '<p class="cart-empty">No hay productos aún.</p>';
+        return;
+      }
+      cartItemsContainer.innerHTML = '';
+      keys.forEach(k => {
+        const row = document.createElement('div');
+        row.className = 'cart-item';
+        row.innerHTML = `<span>${k} x ${cart[k].qty}</span><span>${cart[k].price}</span>`;
+        cartItemsContainer.appendChild(row);
+      });
+    }
+
+    function addToCart(name, price) {
+      if (!cart[name]) {
+        cart[name] = {qty: 1, price};
+      } else {
+        cart[name].qty += 1;
+      }
+      // actualizar contador
+      const totalItems = Object.values(cart).reduce((acc, item) => acc + item.qty, 0);
+      cartCount.textContent = totalItems;
+      updateCartPanel();
+    }
+
+    // cambios de producto al darle click a las tarjetas (pero si hacen click en el botón, solo agrega)
     similarCards.forEach(card => {
-      card.addEventListener('click', () => {
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('.buy-btn')) return;
+
         similarCards.forEach(c => c.classList.remove('active'));
         card.classList.add('active');
 
@@ -520,10 +636,35 @@
         descEl.textContent = desc;
         badgeEl.textContent = badge;
         imgEl.src = img;
-
-        const mensaje = encodeURIComponent(`Hola, me interesa comprar ${name} ☕️`);
-        waBtn.href = `https://wa.me/50494546047?text=${mensaje}`;
       });
+
+      // botón interno "Agregar al carrito"
+      const btnInside = card.querySelector('.buy-btn');
+      btnInside.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const name = card.dataset.name;
+        const price = card.dataset.price;
+        addToCart(name, price);
+      });
+    });
+
+    // botón grande agregar al carrito
+    mainAddBtn.addEventListener('click', () => {
+      const name = nameEl.textContent;
+      const price = priceEl.textContent;
+      addToCart(name, price);
+    });
+
+    // mostrar/ocultar carrito
+    cartBtn.addEventListener('click', () => {
+      cartPanel.style.display = cartPanel.style.display === 'block' ? 'none' : 'block';
+    });
+
+    // cerrar carrito al hacer click fuera
+    document.addEventListener('click', (e) => {
+      if (!cartPanel.contains(e.target) && !cartBtn.contains(e.target)) {
+        cartPanel.style.display = 'none';
+      }
     });
   </script>
 </body>
