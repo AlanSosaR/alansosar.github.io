@@ -106,31 +106,32 @@
       font-size: 1.6rem;
       font-weight: 700;
       color: #4b2e1b;
-      margin-bottom: 1rem;
+      margin-bottom: 1.1rem;
     }
-    /* botón de compra solo icono en producto grande */
-    .btn-whatsapp {
+
+    /* botón principal de WhatsApp (texto + icono) */
+    .btn-main-whatsapp {
       display: inline-flex;
       align-items: center;
-      justify-content: center;
+      gap: .55rem;
       background: linear-gradient(135deg, #4b2e1b 0%, #6d3f24 100%);
       color: #fff;
       text-decoration: none;
-      padding: .45rem;
+      padding: .55rem 1.2rem;
       border-radius: 999px;
-      width: 46px;
-      height: 46px;
+      font-weight: 500;
       box-shadow: 0 8px 16px rgba(76,46,27,.25);
+      font-size: .9rem;
     }
-    .btn-whatsapp i {
+    .btn-main-whatsapp i {
       background: #25d366;
-      width: 36px;
-      height: 36px;
+      width: 28px;
+      height: 28px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.1rem;
+      font-size: 1rem;
       color: #fff;
     }
 
@@ -183,7 +184,6 @@
     .similar-card h4 {font-size: .9rem; color: #4b2e1b; margin-bottom: .2rem;}
     .similar-card .price {font-size: .8rem; font-weight: 600; color: #4b2e1b; margin-bottom: .6rem;}
 
-    /* botón dentro de tarjeta */
     .similar-card a.buy-btn {
       display: inline-flex;
       align-items: center;
@@ -207,7 +207,7 @@
       font-size: .55rem;
     }
 
-    /* SOBRE NOSOTROS SIN TARJETA */
+    /* SOBRE NOSOTROS SIN TARJETA PERO ELEVADA LA FOTO */
     .about-section {
       width: 100%;
       max-width: 1200px;
@@ -252,12 +252,18 @@
       border-radius: 999px;
       font-weight: 500;
     }
+    /* contenedor elevado */
+    .about-img {
+      background: #f6efe7;
+      border-radius: 26px;
+      padding: .8rem;
+      box-shadow: 0 12px 28px rgba(0,0,0,.08);
+    }
     .about-img img {
       width: 100%;
       border-radius: 20px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      display: block;
       object-fit: cover;
-      max-height: 380px;
     }
 
     /* CONTACTO */
@@ -318,7 +324,7 @@
       .product-visual {max-width: 380px; margin:0 auto;}
       .about-open {grid-template-columns: 1fr; text-align:center;}
       .about-pills {justify-content: center;}
-      .about-img img {max-height: 300px; margin-top:1.5rem;}
+      .about-img {margin-top:1.5rem;}
     }
     @media (max-width: 768px) {
       .hero {height: 36vh; background-size: contain;}
@@ -353,9 +359,10 @@
         <p id="product-desc">Café hondureño de altura, tueste medio, ideal para filtro o prensa francesa. Proyecto familiar, amigable con el medio ambiente.</p>
         <span class="badge" id="product-badge">100% arábica · Danlí</span>
         <div class="price-big" id="product-price">L 180</div>
-        <!-- botón solo icono -->
-        <a id="product-whatsapp" href="https://wa.me/50494546047?text=Hola%2C%20me%20interesa%20comprar%20Café%20Cortero%20250g%20☕️" class="btn-whatsapp">
+        <!-- botón con texto -->
+        <a id="product-whatsapp" href="https://wa.me/50494546047?text=Hola%2C%20me%20interesa%20comprar%20Café%20Cortero%20250g%20☕️" class="btn-main-whatsapp">
           <i class="fa-brands fa-whatsapp"></i>
+          Comprar por WhatsApp
         </a>
       </div>
       <div class="product-visual">
@@ -459,7 +466,6 @@
       Haz tu pedido directo por WhatsApp o síguenos en Facebook para ver novedades.
     </p>
     <div class="contact-actions">
-      <!-- quitamos el icono del centro -->
       <a href="https://www.facebook.com/share/1FsrT4DYrU/" class="btn-facebook" target="_blank">
         <i class="fa-brands fa-facebook-f"></i>
         Síguenos en Facebook
