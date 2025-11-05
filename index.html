@@ -1,119 +1,406 @@
-<script>
-  // animación scroll
-  const elements = document.querySelectorAll('[data-animate]');
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        observer.unobserve(entry.target);
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Café Cortero | La esencia de Honduras en cada sorbo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root {
+      --cafe: #512615;
+      --verde: #377b4c;
+      --blanco: #ffffff;
+      --fondo: #f5ebdf;
+    }
+
+    * {margin:0; padding:0; box-sizing:border-box;}
+    body {
+      font-family: "Poppins", sans-serif;
+      background: var(--fondo);
+      color: var(--cafe);
+      scroll-behavior: smooth;
+    }
+
+    /* HEADER */
+    header {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      background: rgba(255,255,255,.95);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: .6rem 1.5rem;
+      z-index: 20;
+      box-shadow: 0 2px 10px rgba(0,0,0,.05);
+    }
+
+    .logo-wrap img {height: 70px;}
+    header nav {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    header nav a {
+      text-decoration: none;
+      color: var(--cafe);
+      font-weight: 500;
+      transition:.2s;
+    }
+    header nav a:hover {color: var(--verde);}
+    .cart-btn {
+      position: relative;
+      border: none;
+      background: rgba(75,46,27,0.1);
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .cart-btn i {color: var(--cafe);}
+    .cart-count {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      background: red;
+      color: #fff;
+      border-radius: 50%;
+      font-size: 0.7rem;
+      padding: 2px 6px;
+    }
+
+    /* PANEL CARRITO */
+    .cart-panel {
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      background: var(--blanco);
+      border-radius: 16px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+      width: 280px;
+      max-height: 360px;
+      overflow-y: auto;
+      padding: 1rem;
+      z-index: 200;
+      display: none;
+    }
+
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: .5rem;
+      font-size: .9rem;
+    }
+
+    /* HERO */
+    .hero {
+      margin-top: 85px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      padding: 2rem 1.5rem;
+      background: var(--fondo);
+    }
+
+    .hero img {
+      width: 100%;
+      border-radius: 18px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+
+    .hero-text {
+      padding: 1rem 2rem;
+    }
+
+    .hero-text h1 {
+      font-family: "Playfair Display", serif;
+      color: var(--cafe);
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    .hero-text p {
+      color: #5c4636;
+      line-height: 1.8;
+      font-size: 1rem;
+      max-width: 420px;
+    }
+
+    /* PRODUCTOS */
+    section {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 3rem 1rem;
+    }
+
+    h2.section-title {
+      text-align: center;
+      font-size: 2.2rem;
+      margin-bottom: 2rem;
+      color: var(--cafe);
+    }
+
+    .product-page {
+      background: var(--blanco);
+      border-radius: 24px;
+      padding: 2rem;
+      box-shadow: 0 16px 30px rgba(0,0,0,.05);
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .product-info h3 {font-size: 1.6rem; color: var(--cafe);}
+    .product-info p {color: #6d5541; margin: .6rem 0 1rem;}
+    .price-big {font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem;}
+
+    .btn-main-cart {
+      background: linear-gradient(135deg, var(--verde) 0%, #2f653f 100%);
+      color: var(--blanco);
+      border: none;
+      border-radius: 999px;
+      padding: .7rem 1.4rem;
+      cursor: pointer;
+      font-weight: 500;
+      box-shadow: 0 5px 15px rgba(55,123,76,.3);
+    }
+
+    .product-visual img {
+      width: 100%;
+      border-radius: 20px;
+      box-shadow: 0 8px 18px rgba(0,0,0,.1);
+    }
+
+    .similar-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .similar-card {
+      background: var(--blanco);
+      border-radius: 16px;
+      text-align: center;
+      padding: 1rem;
+      box-shadow: 0 8px 18px rgba(0,0,0,.05);
+      transition: 0.2s;
+    }
+
+    .similar-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .similar-card img {
+      width: 100%;
+      height: 200px;
+      object-fit: contain;
+    }
+
+    .similar-card button {
+      background: var(--verde);
+      color: var(--blanco);
+      border: none;
+      border-radius: 20px;
+      padding: 8px 12px;
+      margin-top: 10px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .similar-card button:hover {
+      background: #2f653f;
+    }
+
+    /* SOBRE NOSOTROS */
+    .about-section {
+      display: grid;
+      grid-template-columns: 1.05fr .95fr;
+      align-items: center;
+      gap: 2rem;
+      margin-top: 4rem;
+    }
+
+    .about-text h2 {
+      font-family: "Playfair Display", serif;
+      font-size: 2rem;
+      color: var(--cafe);
+      margin-bottom: 1rem;
+    }
+
+    .about-text p {
+      color: #5c4636;
+      line-height: 1.8;
+      margin-bottom: 1rem;
+    }
+
+    .about-img img {
+      width: 100%;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+
+    footer {
+      background: var(--cafe);
+      color: var(--blanco);
+      text-align: center;
+      padding: 20px;
+    }
+
+    @media (max-width: 880px) {
+      .hero {grid-template-columns: 1fr; text-align: center;}
+      .hero-text {padding: 1rem;}
+      .product-page {grid-template-columns: 1fr;}
+      .about-section {grid-template-columns: 1fr; text-align: center;}
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo-wrap">
+      <img src="imagenes/logo%20mejorado%20trasmparente.png" alt="Café Cortero">
+    </div>
+    <nav>
+      <a href="#productos">Productos</a>
+      <a href="#nosotros">Nosotros</a>
+      <a href="#contacto">Contacto</a>
+      <button class="cart-btn" id="cart-btn">
+        <i class="fa-solid fa-cart-shopping"></i>
+        <span class="cart-count" id="cart-count">0</span>
+      </button>
+    </nav>
+  </header>
+
+  <div class="cart-panel" id="cart-panel">
+    <h4>Tu carrito</h4>
+    <div id="cart-items"><p>No hay productos aún.</p></div>
+  </div>
+
+  <!-- HERO -->
+  <section class="hero">
+    <img src="imagenes/IMG-20251025-WA0034.jpg" alt="Café Cortero">
+    <div class="hero-text">
+      <h1>Café Cortero</h1>
+      <p>Café Cortero es un proyecto familiar con la iniciativa de producir un café de calidad amigable con el medio ambiente.</p>
+    </div>
+  </section>
+
+  <!-- PRODUCTOS -->
+  <section id="productos">
+    <h2 class="section-title">Nuestros Productos</h2>
+
+    <div class="product-page">
+      <div class="product-info">
+        <h3 id="product-name">Café Cortero 250g</h3>
+        <p id="product-desc">Café hondureño de altura, tueste medio, ideal para filtro o prensa francesa.</p>
+        <div class="price-big" id="product-price">L 180</div>
+        <button id="product-cart" class="btn-main-cart">Agregar al carrito</button>
+      </div>
+      <div class="product-visual">
+        <img id="product-image" src="imagenes/4.png" alt="Café Cortero 250g">
+      </div>
+    </div>
+
+    <div class="similar-list" id="lista-similares">
+      <div class="similar-card" data-name="Café Cortero 250g" data-price="L 180" data-desc="Café hondureño de altura." data-img="imagenes/4.png">
+        <img src="imagenes/4.png" alt="Café Cortero 250g">
+        <h4>Café Cortero 250g</h4>
+        <p>L 180</p>
+        <button>Agregar al carrito</button>
+      </div>
+
+      <div class="similar-card" data-name="Café Cortero 500g" data-price="L 320" data-desc="Tostado artesanal, cuerpo balanceado." data-img="imagenes/coffee-bag-mockup (4).png">
+        <img src="imagenes/coffee-bag-mockup (4).png" alt="Café Cortero 500g">
+        <h4>Café Cortero 500g</h4>
+        <p>L 320</p>
+        <button>Agregar al carrito</button>
+      </div>
+
+      <div class="similar-card" data-name="Café Cortero 1lb" data-price="L 550" data-desc="Ideal para consumo familiar o cafeterías." data-img="imagenes/4.png">
+        <img src="imagenes/4.png" alt="Café Cortero 1lb">
+        <h4>Café Cortero 1lb</h4>
+        <p>L 550</p>
+        <button>Agregar al carrito</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- SOBRE NOSOTROS -->
+  <section id="nosotros" class="about-section">
+    <div class="about-text">
+      <h2>Sobre Café Cortero</h2>
+      <p>En las montañas de Honduras nace Café Cortero, un proyecto familiar que honra la tradición cafetalera de nuestra tierra.</p>
+      <p>Cada grano es cultivado con respeto por el medio ambiente, cosechado a mano y tostado con dedicación para conservar su esencia natural.</p>
+    </div>
+    <div class="about-img">
+      <img src="imagenes/FB_IMG_1762305864060.jpg" alt="Productores de Café Cortero">
+    </div>
+  </section>
+
+  <footer>
+    © 2025 Café Cortero. Todos los derechos reservados.
+  </footer>
+
+  <script>
+    const cart = JSON.parse(localStorage.getItem("cart")) || {};
+    const cartBtn = document.getElementById("cart-btn");
+    const cartPanel = document.getElementById("cart-panel");
+    const cartItems = document.getElementById("cart-items");
+    const cartCount = document.getElementById("cart-count");
+
+    function updateCart() {
+      localStorage.setItem("cart", JSON.stringify(cart));
+      const totalItems = Object.values(cart).reduce((a, b) => a + b.qty, 0);
+      cartCount.textContent = totalItems;
+      if (totalItems === 0) {
+        cartItems.innerHTML = "<p>No hay productos aún.</p>";
+      } else {
+        cartItems.innerHTML = Object.entries(cart)
+          .map(([name, item]) => `<div class='cart-item'><span>${name} x${item.qty}</span><span>${item.price}</span></div>`)
+          .join("");
+      }
+    }
+
+    function addToCart(name, price) {
+      if (!cart[name]) cart[name] = { qty: 0, price };
+      cart[name].qty++;
+      updateCart();
+      cartBtn.classList.add("cart-bounce");
+      setTimeout(() => cartBtn.classList.remove("cart-bounce"), 400);
+      if (navigator.vibrate) navigator.vibrate(70);
+    }
+
+    document.getElementById("product-cart").onclick = () => {
+      const name = document.getElementById("product-name").textContent;
+      const price = document.getElementById("product-price").textContent;
+      addToCart(name, price);
+    };
+
+    document.querySelectorAll(".similar-card button").forEach(btn => {
+      btn.onclick = e => {
+        const card = e.target.closest(".similar-card");
+        addToCart(card.dataset.name, card.dataset.price);
+      };
+    });
+
+    cartBtn.onclick = e => {
+      e.stopPropagation();
+      cartPanel.style.display = cartPanel.style.display === "block" ? "none" : "block";
+    };
+
+    document.addEventListener("click", e => {
+      if (!cartPanel.contains(e.target) && !cartBtn.contains(e.target)) {
+        cartPanel.style.display = "none";
       }
     });
-  }, {threshold: 0.2});
-  elements.forEach(el => observer.observe(el));
 
-  // referencias del producto principal
-  const similarCards = document.querySelectorAll('.similar-card');
-  const nameEl = document.getElementById('product-name');
-  const descEl = document.getElementById('product-desc');
-  const priceEl = document.getElementById('product-price');
-  const badgeEl = document.getElementById('product-badge');
-  const imgEl = document.getElementById('product-image');
-
-  // carrito
-  const cartBtn = document.getElementById('cart-btn');
-  const cartPanel = document.getElementById('cart-panel');
-  const cartCount = document.getElementById('cart-count');
-  const cartItemsContainer = document.getElementById('cart-items');
-  const mainAddBtn = document.getElementById('product-cart');
-
-  let cart = {}; // estructura del carrito
-
-  function updateCartPanel() {
-    const keys = Object.keys(cart);
-    if (keys.length === 0) {
-      cartItemsContainer.innerHTML = '<p class="cart-empty">No hay productos aún.</p>';
-      return;
-    }
-    cartItemsContainer.innerHTML = '';
-    keys.forEach(k => {
-      const item = cart[k];
-      const row = document.createElement('div');
-      row.className = 'cart-item';
-      row.innerHTML = `
-        <span>${k} x ${item.qty}</span>
-        <div style="display:flex;align-items:center;gap:6px;">
-          <strong>${item.price}</strong>
-          <button style="border:none;background:none;color:#d72638;font-size:1rem;cursor:pointer;" title="Eliminar" onclick="removeFromCart('${k}')">&times;</button>
-        </div>
-      `;
-      cartItemsContainer.appendChild(row);
-    });
-  }
-
-  function addToCart(name, price) {
-    if (!cart[name]) {
-      cart[name] = { qty: 1, price };
-    } else {
-      cart[name].qty += 1;
-    }
-
-    // actualizar contador
-    const totalItems = Object.values(cart).reduce((acc, item) => acc + item.qty, 0);
-    cartCount.textContent = totalItems;
-    updateCartPanel();
-
-    // animación de carrito
-    cartBtn.classList.add('cart-bounce');
-    setTimeout(() => cartBtn.classList.remove('cart-bounce'), 400);
-    if (navigator.vibrate) navigator.vibrate(80);
-  }
-
-  function removeFromCart(name) {
-    if (cart[name]) {
-      cart[name].qty -= 1;
-      if (cart[name].qty <= 0) delete cart[name];
-      const totalItems = Object.values(cart).reduce((acc, item) => acc + item.qty, 0);
-      cartCount.textContent = totalItems;
-      updateCartPanel();
-    }
-  }
-
-  // cambiar producto principal al hacer click en tarjetas
-  similarCards.forEach(card => {
-    card.addEventListener('click', e => {
-      if (e.target.closest('.buy-btn')) return;
-
-      similarCards.forEach(c => c.classList.remove('active'));
-      card.classList.add('active');
-
-      nameEl.textContent = card.dataset.name;
-      priceEl.textContent = card.dataset.price;
-      descEl.textContent = card.dataset.desc;
-      badgeEl.textContent = card.dataset.badge;
-      imgEl.src = card.dataset.img;
-    });
-
-    const btnInside = card.querySelector('.buy-btn');
-    btnInside.addEventListener('click', e => {
-      e.stopPropagation();
-      addToCart(card.dataset.name, card.dataset.price);
-    });
-  });
-
-  mainAddBtn.addEventListener('click', () => {
-    addToCart(nameEl.textContent, priceEl.textContent);
-  });
-
-  // mostrar / ocultar carrito
-  cartBtn.addEventListener('click', e => {
-    e.stopPropagation();
-    cartPanel.style.display = cartPanel.style.display === 'block' ? 'none' : 'block';
-  });
-
-  // cerrar carrito si se hace click fuera
-  document.addEventListener('click', e => {
-    if (!cartPanel.contains(e.target) && !cartBtn.contains(e.target)) {
-      cartPanel.style.display = 'none';
-    }
-  });
-</script>
+    updateCart();
+  </script>
+</body>
+</html>
