@@ -1,1 +1,282 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tu Carrito | Café Cortero</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --marron: #512615;
+      --verde: #377b4c;
+      --crema: #f5efe8;
+      --blanco: #ffffff;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--crema);
+      color: var(--marron);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
 
+    header {
+      text-align: center;
+      padding: 1rem 0 0.5rem;
+    }
+    header img {
+      height: 90px;
+      cursor: pointer;
+    }
+
+    main {
+      flex: 1;
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 1rem;
+    }
+
+    h1 {
+      text-align: center;
+      font-weight: 600;
+      margin: 1rem 0 2rem;
+      color: var(--marron);
+    }
+
+    .cart-item {
+      display: flex;
+      align-items: center;
+      background: var(--blanco);
+      border-radius: 12px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+    }
+
+    .cart-item img {
+      width: 90px;
+      height: 90px;
+      object-fit: contain;
+      border-radius: 10px;
+      background: #fff;
+      margin-right: 1rem;
+    }
+
+    .item-info {
+      flex: 1;
+    }
+
+    .item-name {
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .item-price {
+      font-size: 0.95rem;
+      color: var(--marron);
+    }
+
+    .item-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .item-actions button {
+      background: var(--verde);
+      color: var(--blanco);
+      border: none;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .item-actions button:hover {
+      transform: scale(1.1);
+    }
+
+    .item-actions span {
+      min-width: 25px;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    .remove-btn {
+      background: transparent;
+      color: var(--marron);
+      border: none;
+      font-size: 1.2rem;
+      margin-left: 0.5rem;
+      cursor: pointer;
+    }
+
+    .cart-total {
+      text-align: right;
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-top: 2rem;
+      transition: transform 0.2s;
+    }
+
+    .cart-total.bounce {
+      transform: scale(1.1);
+    }
+
+    .cart-buttons {
+      text-align: center;
+      margin-top: 2rem;
+    }
+
+    .cart-buttons a, .cart-buttons button {
+      background: var(--verde);
+      color: var(--blanco);
+      border: none;
+      text-decoration: none;
+      padding: 0.8rem 1.8rem;
+      margin: 0.5rem;
+      border-radius: 999px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+    }
+
+    .cart-buttons a:hover, .cart-buttons button:hover {
+      background: #2f623e;
+      transform: translateY(-2px);
+    }
+
+    .empty-cart {
+      text-align: center;
+      margin-top: 5rem;
+    }
+
+    .empty-cart p {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem;
+      color: var(--marron);
+      font-size: 0.9rem;
+      margin-top: auto;
+    }
+
+    @media (max-width: 600px) {
+      .cart-item {
+        flex-direction: column;
+        text-align: center;
+      }
+      .cart-item img {
+        margin: 0 0 1rem;
+      }
+      .item-actions {
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="index.html"><img src="imagenes/logo%20mejorado%20transparente.png" alt="Café Cortero Logo"></a>
+  </header>
+
+  <main>
+    <h1>Tu Carrito</h1>
+    <div id="cart-items"></div>
+    <div id="cart-total" class="cart-total"></div>
+
+    <div class="cart-buttons" id="cart-actions">
+      <a href="index.html#productos">Seguir comprando</a>
+      <button id="checkout-btn">Proceder con pedido</button>
+    </div>
+
+    <div id="empty-cart" class="empty-cart" style="display:none;">
+      <p>Tu carrito está vacío ☕ ¡Agrega productos para continuar!</p>
+      <a href="index.html#productos">Volver a la tienda</a>
+    </div>
+  </main>
+
+  <footer>
+    &copy; 2025 Café Cortero. Todos los derechos reservados.
+  </footer>
+
+  <script>
+    const cartContainer = document.getElementById('cart-items');
+    const totalDisplay = document.getElementById('cart-total');
+    const emptyMessage = document.getElementById('empty-cart');
+    const cartActions = document.getElementById('cart-actions');
+
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+    function renderCart() {
+      cartContainer.innerHTML = '';
+      if (cart.length === 0) {
+        emptyMessage.style.display = 'block';
+        totalDisplay.style.display = 'none';
+        cartActions.style.display = 'none';
+        return;
+      }
+      emptyMessage.style.display = 'none';
+      totalDisplay.style.display = 'block';
+      cartActions.style.display = 'block';
+
+      let total = 0;
+      cart.forEach((item, index) => {
+        const subtotal = item.price * item.quantity;
+        total += subtotal;
+
+        const div = document.createElement('div');
+        div.classList.add('cart-item');
+        div.innerHTML = `
+          <img src="${item.img}" alt="${item.name}">
+          <div class="item-info">
+            <div class="item-name">${item.name}</div>
+            <div class="item-price">L ${item.price.toFixed(2)} / unidad</div>
+          </div>
+          <div class="item-actions">
+            <button onclick="changeQuantity(${index}, -1)">-</button>
+            <span>${item.quantity}</span>
+            <button onclick="changeQuantity(${index}, 1)">+</button>
+            <button class="remove-btn" onclick="removeItem(${index})">&times;</button>
+          </div>
+        `;
+        cartContainer.appendChild(div);
+      });
+
+      totalDisplay.textContent = `Total: L ${total.toFixed(2)}`;
+      totalDisplay.classList.add('bounce');
+      setTimeout(() => totalDisplay.classList.remove('bounce'), 200);
+    }
+
+    function changeQuantity(index, delta) {
+      cart[index].quantity += delta;
+      if (cart[index].quantity <= 0) {
+        cart.splice(index, 1);
+      }
+      localStorage.setItem('cart', JSON.stringify(cart));
+      renderCart();
+    }
+
+    function removeItem(index) {
+      cart.splice(index, 1);
+      localStorage.setItem('cart', JSON.stringify(cart));
+      renderCart();
+    }
+
+    document.getElementById('checkout-btn').addEventListener('click', () => {
+      alert('Esta función estará disponible pronto ☕');
+    });
+
+    renderCart();
+  </script>
+</body>
+</html>
