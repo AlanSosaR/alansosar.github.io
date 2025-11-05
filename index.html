@@ -109,28 +109,29 @@
       color: #4b2e1b;
       margin-bottom: 1rem;
     }
+    /* botón de compra solo icono */
     .btn-whatsapp {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: .5rem;
       background: linear-gradient(135deg, #4b2e1b 0%, #6d3f24 100%);
       color: #fff;
       text-decoration: none;
-      padding: .6rem 1.15rem;
+      padding: .45rem;
       border-radius: 999px;
-      font-weight: 500;
+      width: 46px;
+      height: 46px;
       box-shadow: 0 8px 16px rgba(76,46,27,.25);
     }
     .btn-whatsapp i {
       background: #25d366;
-      width: 30px;
-      height: 30px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1rem;
+      font-size: 1.1rem;
       color: #fff;
     }
 
@@ -149,7 +150,7 @@
       filter: drop-shadow(0 14px 30px rgba(0,0,0,.15));
     }
 
-    /* SIMILARES */
+    /* SIMILARES (tarjetas de abajo) */
     .similar-wrapper {margin-top: 2.6rem;}
     .similar-title {font-size: 1.2rem; color: #4b2e1b; margin-bottom: 1.3rem;}
     .similar-list {
@@ -196,7 +197,6 @@
       grid-template-columns: 1.05fr .95fr;
       gap: 3rem;
       align-items: center;
-      background: transparent;
     }
     .about-text small {
       text-transform: uppercase;
@@ -331,6 +331,7 @@
         <p id="product-desc">Café hondureño de altura, tueste medio, ideal para filtro o prensa francesa. Proyecto familiar, amigable con el medio ambiente.</p>
         <span class="badge" id="product-badge">100% arábica · Danlí</span>
         <div class="price-big" id="product-price">L 180</div>
+        <!-- botón solo icono -->
         <a id="product-whatsapp" href="https://wa.me/50494546047?text=Hola%2C%20me%20interesa%20comprar%20Café%20Cortero%20250g%20☕️" class="btn-whatsapp">
           <i class="fa-brands fa-whatsapp"></i>
         </a>
@@ -340,7 +341,7 @@
       </div>
     </div>
 
-    <!-- SIMILARES -->
+    <!-- TARJETAS DE ABAJO -->
     <div class="similar-wrapper" data-animate>
       <h3 class="similar-title">También te puede interesar</h3>
       <div class="similar-list" id="lista-similares">
@@ -353,6 +354,7 @@
           <img src="3.png" alt="Café Cortero 250g">
           <h4>Café Cortero 250g</h4>
           <div class="price">L 180</div>
+          <small>Seleccionar</small>
         </div>
 
         <div class="similar-card"
@@ -364,6 +366,7 @@
           <img src="3.png" alt="Café Cortero 500g">
           <h4>Café Cortero 500g</h4>
           <div class="price">L 320</div>
+          <small>Seleccionar</small>
         </div>
 
         <div class="similar-card"
@@ -375,6 +378,7 @@
           <img src="3.png" alt="Café Cortero 1lb">
           <h4>Café Cortero 1lb</h4>
           <div class="price">L 550</div>
+          <small>Seleccionar</small>
         </div>
 
         <div class="similar-card"
@@ -386,6 +390,7 @@
           <img src="3.png" alt="Pack regalo">
           <h4>Pack regalo</h4>
           <div class="price">L 260</div>
+          <small>Seleccionar</small>
         </div>
       </div>
     </div>
@@ -421,8 +426,74 @@
   <section id="contacto">
     <h2 class="section-title">Contáctanos</h2>
     <p style="text-align:center;max-width:780px;margin:0 auto 1.5rem;">
-      Haz tu pedido o consulta directamente por WhatsApp o síguenos en nuestras redes sociales.
+      Haz tu pedido directo por WhatsApp o síguenos en Facebook para ver novedades.
     </p>
     <div class="contact-actions">
-      <a href="https://wa.me/50494546047?text=Hola%2C%20quiero%20más%20información%20sobre%20Café%20Cortero%20☕️" class="btn-whatsapp" style="max-width:80px;margin:1rem auto 0;">
-        <i class="fa-brands fa-whatsapp"></i
+      <!-- solo icono -->
+      <a href="https://wa.me/50494546047?text=Hola%2C%20quiero%20más%20información%20sobre%20Café%20Cortero%20☕️" class="btn-whatsapp" style="margin:1rem auto 1.5rem;">
+        <i class="fa-brands fa-whatsapp"></i>
+      </a>
+      <br>
+      <a href="https://www.facebook.com/share/1FsrT4DYrU/" class="btn-facebook" target="_blank">
+        <i class="fa-brands fa-facebook-f"></i>
+        Síguenos en Facebook
+      </a>
+    </div>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 Café Cortero. Todos los derechos reservados.</p>
+  </footer>
+
+  <!-- Botón flotante de WhatsApp -->
+  <a href="https://wa.me/50494546047?text=Hola%2C%20quiero%20más%20información%20sobre%20Café%20Cortero%20☕️" class="whatsapp-float" target="_blank">
+    <i class="fa-brands fa-whatsapp"></i>
+  </a>
+
+  <script>
+    // animación scroll
+    const elements = document.querySelectorAll('[data-animate]');
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, {threshold: 0.2});
+    elements.forEach(el => observer.observe(el));
+
+    // cambio de producto al hacer clic en tarjetas de abajo
+    const similarCards = document.querySelectorAll('.similar-card');
+    const nameEl = document.getElementById('product-name');
+    const descEl = document.getElementById('product-desc');
+    const priceEl = document.getElementById('product-price');
+    const badgeEl = document.getElementById('product-badge');
+    const imgEl = document.getElementById('product-image');
+    const waBtn = document.getElementById('product-whatsapp');
+
+    similarCards.forEach(card => {
+      card.addEventListener('click', () => {
+        // quitar active
+        similarCards.forEach(c => c.classList.remove('active'));
+        card.classList.add('active');
+
+        const name = card.dataset.name;
+        const price = card.dataset.price;
+        const desc = card.dataset.desc;
+        const badge = card.dataset.badge;
+        const img = card.dataset.img;
+
+        nameEl.textContent = name;
+        priceEl.textContent = price;
+        descEl.textContent = desc;
+        badgeEl.textContent = badge;
+        imgEl.src = img;
+
+        const mensaje = encodeURIComponent(`Hola, me interesa comprar ${name} ☕️`);
+        waBtn.href = `https://wa.me/50494546047?text=${mensaje}`;
+      });
+    });
+  </script>
+</body>
+</html>
