@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Café Cortero | La esencia de Honduras en cada sorbo</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tu Carrito | Café Cortero</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     :root {
@@ -17,215 +17,90 @@
       font-family: "Poppins", sans-serif;
       background: var(--blanco);
       color: var(--marron);
-      scroll-behavior: smooth;
+      padding-top: 6rem;
     }
-
-    /* HEADER */
     header {
       position: fixed;
-      top: 0; left: 0;
+      top: 0;
       width: 100%;
       background: rgba(255,255,255,0.92);
       backdrop-filter: blur(6px);
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
-      padding: .6rem 1.5rem;
-      z-index: 20;
       box-shadow: 0 2px 10px rgba(0,0,0,.05);
+      padding: .7rem 1rem;
+      z-index: 50;
     }
-    .logo-wrap img {height: 70px;}
-    header nav {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-    header nav a {
-      text-decoration: none;
-      color: var(--marron);
-      font-weight: 500;
-      transition:.2s;
-    }
-    header nav a:hover {color:#7b4a2d;}
-
-    /* carrito */
-    .cart-btn {
-      position: relative;
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      border: none;
-      background: rgba(81,38,21,0.08);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-    }
-    .cart-btn i {color: var(--marron); font-size: 1.1rem;}
-    .cart-count {
-      position: absolute;
-      top: -5px;
-      right: -5px;
-      background: #d72638;
-      color: #fff;
-      border-radius: 999px;
-      font-size: .6rem;
-      width: 18px;
-      height: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 600;
-    }
-
-    /* SECCIONES */
-    section {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 6rem 1rem 0;
-    }
-    h2.section-title {
-      text-align: center;
-      font-size: 2rem;
-      margin-bottom: 2rem;
-      color: var(--marron);
-    }
-
-    /* PRODUCTO PRINCIPAL */
-    .product-page {
-      background: #ffffff;
-      border-radius: 26px;
-      padding: 2.2rem 2.4rem;
-      box-shadow: 0 14px 35px rgba(0,0,0,0.03);
-      display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
-      gap: 2rem;
-      align-items: center;
-      margin-bottom: 2.5rem;
-    }
-
-    .product-text .p-label {
-      font-size: 0.7rem;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: #957f70;
-      display: block;
-      margin-bottom: .6rem;
-    }
-    .product-text h3 {
-      font-size: 2rem;
-      color: var(--marron);
-      margin-bottom: .7rem;
-    }
-    .product-text p {
-      color: #6a5244;
-      line-height: 1.5;
-      margin-bottom: 1rem;
-    }
-    .p-badge {
-      display: inline-block;
-      background: #f1ebe5;
-      color: var(--marron);
-      padding: .35rem .85rem;
-      border-radius: 999px;
-      font-size: .75rem;
-      margin-bottom: 1.1rem;
-    }
-    .p-price {
-      font-size: 1.7rem;
-      font-weight: 700;
-      color: var(--marron);
-      margin-bottom: 1.2rem;
-    }
-    .p-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: .55rem;
-      background: var(--verde);
-      color: #fff;
-      border: none;
-      border-radius: 999px;
-      padding: .6rem 1.35rem;
-      font-weight: 500;
-      cursor: pointer;
-      box-shadow: 0 10px 20px rgba(51,103,59,0.25);
-      transition: transform .15s ease;
-    }
-    .p-btn i {
-      background: rgba(255,255,255,.12);
-      width: 26px;
-      height: 26px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: .95rem;
-    }
-    .p-btn:hover {transform: translateY(-2px);}
-    .product-media {
-      background: radial-gradient(circle at center, #e2edf7 0%, #ffffff 55%);
-      border-radius: 999px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 280px;
-    }
-    .product-media img {
-      max-height: 320px;
-      width: auto;
-      filter: drop-shadow(0 18px 28px rgba(0,0,0,0.1));
-    }
-
-    /* CARRUSEL */
-    .similar-list {
-      display: flex;
-      gap: 1rem;
-      overflow-x: auto;
-      scroll-snap-type: x mandatory;
-      padding-bottom: 1rem;
-    }
-    .similar-card {
-      flex: 0 0 160px;
+    header img {height: 60px;}
+    main {max-width: 700px; margin: 0 auto; padding: 1rem;}
+    h1 {text-align: center; font-size: 2rem; margin-bottom: 2rem;}
+    .cart-item {
       background: #fff;
-      border-radius: 18px;
-      padding: 1rem;
-      text-align: center;
-      box-shadow: 0 10px 20px rgba(0,0,0,0.02);
-      border: 2px solid transparent;
-      transition: .2s;
-      cursor: pointer;
-      scroll-snap-align: start;
+      border-radius: 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
     }
-    .similar-card img {
-      width: 100%;
-      height: 140px;
+    .cart-item img {
+      width: 90px;
+      height: 90px;
       object-fit: contain;
       border-radius: 12px;
-      margin-bottom: .5rem;
+      background: #f8f8f8;
     }
-    .similar-card h4 {font-size: .9rem; color: var(--marron);}
-    .similar-card .price {font-size: .8rem; font-weight: 600; color: var(--marron);}
-    .similar-card button {
+    .cart-info h3 {font-size: 1.1rem; margin-bottom: .3rem;}
+    .cart-info p {font-size: .9rem; color: #6c5544;}
+    .cart-controls {
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+      margin-top: .5rem;
+    }
+    .btn-round {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      color: #fff;
+    }
+    .btn-round.minus {background: var(--verde);}
+    .btn-round.plus {background: var(--verde);}
+    .btn-round.remove {background: #d72638;}
+    .cart-total {
+      text-align: right;
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-top: 1rem;
+    }
+    .actions {
+      text-align: center;
+      margin-top: 2rem;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .btn {
       background: var(--verde);
       color: #fff;
       border: none;
+      padding: .8rem 1.5rem;
       border-radius: 999px;
-      padding: .4rem .8rem;
-      font-size: .7rem;
-      margin-top: .4rem;
+      font-weight: 500;
       cursor: pointer;
     }
-
-    /* FOOTER */
     footer {
-      background: var(--marron);
-      color: white;
       text-align: center;
-      padding: 1.5rem 1rem;
-      margin-top: 3rem;
+      padding: 2rem;
+      color: #999;
+      font-size: .9rem;
     }
-
-    /* WHATSAPP */
     .whatsapp-float {
       position: fixed;
       bottom: 25px;
@@ -239,7 +114,7 @@
       align-items: center;
       justify-content: center;
       font-size: 30px;
-      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 3px 10px rgba(0,0,0,0.3);
       z-index: 99;
       text-decoration: none;
     }
@@ -248,72 +123,19 @@
 <body>
 
   <header>
-    <div class="logo-wrap">
-      <a href="index.html"><img src="imagenes/logo mejorado transparente.png" alt="Café Cortero"></a>
-    </div>
-    <nav>
-      <a href="#productos">Productos</a>
-      <a href="#nosotros">Nosotros</a>
-      <a href="#contacto">Contacto</a>
-      <button class="cart-btn" id="cart-btn">
-        <i class="fa-solid fa-cart-shopping"></i>
-        <span class="cart-count" id="cart-count">0</span>
-      </button>
-    </nav>
+    <a href="index.html"><img src="imagenes/logo mejorado transparente.png" alt="Café Cortero Logo"></a>
   </header>
 
-  <section id="productos">
-    <h2 class="section-title">Nuestros Productos</h2>
+  <main>
+    <h1>Tu Carrito</h1>
+    <div id="cart-container"></div>
+    <div class="cart-total" id="cart-total">Total: L 0.00</div>
 
-    <div class="product-page" id="producto-principal">
-      <div class="product-text">
-        <small class="p-label">CAFÉ EN GRANO / MOLIDO</small>
-        <h3 id="product-name">Café Cortero 250g</h3>
-        <p id="product-desc">Café hondureño de altura, tueste medio, ideal para filtro o prensa francesa. Proyecto familiar, amigable con el medio ambiente.</p>
-        <span class="p-badge" id="product-badge">100% arábica · Danlí</span>
-        <div class="p-price" id="product-price">L 180</div>
-        <button id="product-cart" class="p-btn">
-          <i class="fa-solid fa-cart-plus"></i> Agregar al carrito
-        </button>
-      </div>
-      <div class="product-media">
-        <img id="product-image" src="imagenes/4.png" alt="Café Cortero bolsa">
-      </div>
+    <div class="actions">
+      <button class="btn" onclick="window.location.href='index.html'">Seguir comprando</button>
+      <button class="btn" onclick="alert('Tu pedido será procesado pronto ☕')">Proceder con pedido</button>
     </div>
-
-    <div class="similar-list" id="lista-similares">
-      <div class="similar-card" data-name="Café Cortero 250g" data-price="L 180" data-desc="Café de altura, tueste medio." data-badge="100% arábica" data-img="imagenes/4.png">
-        <img src="imagenes/4.png" alt="">
-        <h4>Café Cortero 250g</h4>
-        <div class="price">L 180</div>
-        <button><i class="fa-solid fa-cart-plus"></i></button>
-      </div>
-      <div class="similar-card" data-name="Café Cortero 500g" data-price="L 320" data-desc="Tostado artesanal y cuerpo balanceado." data-badge="Tueste medio" data-img="imagenes/coffee-bag-mockup (4).png">
-        <img src="imagenes/coffee-bag-mockup (4).png" alt="">
-        <h4>Café Cortero 500g</h4>
-        <div class="price">L 320</div>
-        <button><i class="fa-solid fa-cart-plus"></i></button>
-      </div>
-      <div class="similar-card" data-name="Café Cortero 1lb" data-price="L 550" data-desc="Perfecto para compartir." data-badge="Cosecha seleccionada" data-img="imagenes/4.png">
-        <img src="imagenes/4.png" alt="">
-        <h4>Café Cortero 1lb</h4>
-        <div class="price">L 550</div>
-        <button><i class="fa-solid fa-cart-plus"></i></button>
-      </div>
-      <div class="similar-card" data-name="Pack regalo Cortero" data-price="L 260" data-desc="Incluye café y empaque especial." data-badge="Ideal para regalar" data-img="imagenes/4.png">
-        <img src="imagenes/4.png" alt="">
-        <h4>Pack regalo Cortero</h4>
-        <div class="price">L 260</div>
-        <button><i class="fa-solid fa-cart-plus"></i></button>
-      </div>
-      <div class="similar-card" data-name="Café Premium" data-price="L 600" data-desc="Selección especial para baristas." data-badge="Premium" data-img="imagenes/4.png">
-        <img src="imagenes/4.png" alt="">
-        <h4>Café Premium</h4>
-        <div class="price">L 600</div>
-        <button><i class="fa-solid fa-cart-plus"></i></button>
-      </div>
-    </div>
-  </section>
+  </main>
 
   <footer>
     <p>&copy; 2025 Café Cortero. Todos los derechos reservados.</p>
@@ -324,51 +146,63 @@
   </a>
 
   <script>
-    // localStorage carrito
-    const cart = JSON.parse(localStorage.getItem('cart')) || {};
-    const cartCount = document.getElementById('cart-count');
-    function updateCount() {
-      const total = Object.values(cart).reduce((acc, item) => acc + item.qty, 0);
-      cartCount.textContent = total;
+    const cartContainer = document.getElementById('cart-container');
+    const totalDisplay = document.getElementById('cart-total');
+    let cart = JSON.parse(localStorage.getItem('cart')) || {};
+
+    function renderCart() {
+      cartContainer.innerHTML = '';
+      let total = 0;
+
+      for (const [name, item] of Object.entries(cart)) {
+        const priceNumber = parseFloat(item.price.replace('L', '').trim());
+        const subtotal = item.qty * priceNumber;
+        total += subtotal;
+
+        const div = document.createElement('div');
+        div.classList.add('cart-item');
+        div.innerHTML = `
+          <img src="imagenes/4.png" alt="${name}">
+          <div class="cart-info">
+            <h3>${name}</h3>
+            <p>${item.price} / unidad</p>
+            <div class="cart-controls">
+              <button class="btn-round minus">−</button>
+              <span>${item.qty}</span>
+              <button class="btn-round plus">+</button>
+              <button class="btn-round remove"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+          </div>
+        `;
+        cartContainer.appendChild(div);
+
+        // botones
+        div.querySelector('.minus').onclick = () => {
+          if (item.qty > 1) item.qty--;
+          else delete cart[name];
+          saveCart();
+        };
+        div.querySelector('.plus').onclick = () => {
+          item.qty++;
+          saveCart();
+        };
+        div.querySelector('.remove').onclick = () => {
+          delete cart[name];
+          saveCart();
+        };
+      }
+
+      totalDisplay.textContent = `Total: L ${total.toFixed(2)}`;
+      if (Object.keys(cart).length === 0)
+        cartContainer.innerHTML = '<p style="text-align:center;color:#777;">Tu carrito está vacío.</p>';
+    }
+
+    function saveCart() {
       localStorage.setItem('cart', JSON.stringify(cart));
+      renderCart();
     }
 
-    function addToCart(name, price) {
-      if (!cart[name]) cart[name] = {qty:1, price};
-      else cart[name].qty++;
-      updateCount();
-    }
-
-    document.getElementById('product-cart').onclick = () => {
-      const name = document.getElementById('product-name').textContent;
-      const price = document.getElementById('product-price').textContent;
-      addToCart(name, price);
-    };
-
-    document.querySelectorAll('.similar-card button').forEach(btn=>{
-      btn.onclick = (e)=>{
-        e.stopPropagation();
-        const card = e.target.closest('.similar-card');
-        addToCart(card.dataset.name, card.dataset.price);
-      };
-    });
-
-    document.getElementById('cart-btn').onclick = ()=>{
-      window.location.href = "carrito.html";
-    };
-
-    // cambiar tarjeta grande al tocar una pequeña
-    document.querySelectorAll('.similar-card').forEach(card=>{
-      card.onclick=()=>{
-        document.getElementById('product-name').textContent=card.dataset.name;
-        document.getElementById('product-desc').textContent=card.dataset.desc;
-        document.getElementById('product-badge').textContent=card.dataset.badge;
-        document.getElementById('product-price').textContent=card.dataset.price;
-        document.getElementById('product-image').src=card.dataset.img;
-      };
-    });
-
-    updateCount();
+    renderCart();
   </script>
 </body>
 </html>
