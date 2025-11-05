@@ -22,7 +22,7 @@
       top: 0;
       left: 0;
       background: rgba(255, 255, 255, 0.95);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
       padding: 0.6rem 1.5rem;
       display: flex;
       justify-content: space-between;
@@ -34,9 +34,7 @@
       width: auto;
       transition: transform 0.3s ease;
     }
-    .logo-wrap img:hover {
-      transform: scale(1.05);
-    }
+    .logo-wrap img:hover {transform: scale(1.03);}
     header nav a {
       margin-left: 1rem;
       text-decoration: none;
@@ -46,17 +44,16 @@
     }
     header nav a:hover {color: #7b4a2d;}
 
-    /* HERO */
+    /* HERO (con tu imagen nueva y más bajo) */
     .hero {
       margin-top: 75px;
-      height: 75vh;
-      background: url('Café%20Cortero%20es%20un%20proyecto%20familiar%20con%20la%20iniciativa%20de%20producir%20un%20café%20de%20calidad%20amigable%20con%20el%20medio%20ambiente..png') center/cover no-repeat;
+      height: 55vh;
+      background: #f8f5f1 url('Café%20Cortero%20es%20un%20proyecto%20familiar%20con%20la%20iniciativa%20de%20producir%20un%20café%20de%20calidad%20amigable%20con%20el%20medio%20ambiente..png') center/contain no-repeat;
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
-    /* SECTIONS */
     section {
       padding: 4rem 1rem;
       max-width: 1100px;
@@ -64,68 +61,102 @@
     }
     h2.section-title {
       text-align: center;
-      font-size: 2rem;
-      margin-bottom: 2rem;
+      font-size: 2.2rem;
+      margin-bottom: 2.5rem;
       color: #4b2e1b;
     }
 
-    /* PRODUCTS */
+    /* TARJETAS PRODUCTOS MEJORADAS */
     .products {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.5rem;
+      gap: 1.8rem;
     }
     .card {
       background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+      border-radius: 18px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
       overflow: hidden;
       text-align: center;
-      transition: all 0.3s ease;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      border: 1px solid rgba(75, 46, 27, 0.03);
+      position: relative;
+    }
+    /* barra superior de color */
+    .card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 6px;
+      background: linear-gradient(90deg, #4b2e1b, #8f5e3b);
     }
     .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
+      transform: translateY(-6px);
+      box-shadow: 0 16px 30px rgba(0, 0, 0, 0.08);
     }
     .card img {
       width: 100%;
       height: auto;
-      max-height: 400px;
+      max-height: 360px;
       object-fit: contain;
       background-color: #f5efe8;
-      padding: 15px;
+      padding: 18px 18px 5px;
       display: block;
       margin: 0 auto;
     }
     .card-body {
-      padding: 1.2rem;
+      padding: 1.5rem 1.3rem 1.6rem;
     }
     .card-body h3 {
-      font-size: 1.2rem;
-      margin-bottom: 0.5rem;
+      font-size: 1.25rem;
+      margin-bottom: 0.4rem;
       color: #4b2e1b;
     }
     .card-body p {
       color: #6d5541;
       font-size: 0.95rem;
-      margin-bottom: 0.8rem;
-    }
-    .price {
-      font-weight: 600;
-      color: #4b2e1b;
       margin-bottom: 1rem;
     }
-    .btn {
-      display: inline-block;
-      background-color: #4b2e1b;
-      color: white;
-      padding: 0.7rem 1.2rem;
-      border-radius: 6px;
-      text-decoration: none;
-      transition: background 0.3s ease;
+    .price {
+      font-weight: 700;
+      color: #4b2e1b;
+      margin-bottom: 1rem;
+      letter-spacing: 0.04em;
     }
-    .btn:hover {
-      background-color: #6d3f24;
+
+    /* BOTÓN DE WHATSAPP MEJORADO */
+    .btn-whatsapp {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      background: linear-gradient(135deg, #4b2e1b 0%, #6d3f24 100%);
+      color: #fff;
+      border: none;
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.98rem;
+      box-shadow: 0 8px 14px rgba(109, 63, 36, 0.25);
+      transition: transform 0.15s ease;
+    }
+    .btn-whatsapp i {
+      background: #25d366;
+      color: #fff;
+      width: 26px;
+      height: 26px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      font-size: 15px;
+    }
+    .btn-whatsapp:hover {
+      transform: translateY(-2px);
     }
 
     /* ABOUT */
@@ -152,7 +183,7 @@
       margin: 0 0.5rem;
     }
 
-    /* WHATSAPP BUTTON */
+    /* WHATSAPP FLOAT */
     .whatsapp-float {
       position: fixed;
       bottom: 25px;
@@ -176,11 +207,11 @@
       box-shadow: 0 5px 14px rgba(0, 0, 0, 0.4);
     }
 
-    /* ANIMATION */
+    /* ANIMACIONES */
     [data-animate] {
       opacity: 0;
       transform: translateY(20px);
-      transition: all 0.8s ease;
+      transition: all 0.7s ease;
     }
     [data-animate].visible {
       opacity: 1;
@@ -189,8 +220,13 @@
 
     @media (max-width: 768px) {
       .logo-wrap img {height: 65px;}
-      .hero {height: 55vh;}
-      .card img {max-height: 320px;}
+      .hero {
+        height: 38vh;
+        background-size: contain;
+      }
+      .card img {
+        max-height: 320px;
+      }
     }
   </style>
 </head>
@@ -207,18 +243,24 @@
     </nav>
   </header>
 
+  <!-- BANNER -->
   <section class="hero"></section>
 
+  <!-- PRODUCTOS -->
   <section id="productos">
     <h2 class="section-title">Nuestros Productos</h2>
     <div class="products">
+
       <div class="card" data-animate>
         <img src="3.png" alt="Café Cortero 250g">
         <div class="card-body">
           <h3>Café Cortero 250g</h3>
           <p>Tueste medio, ideal para filtro o prensa francesa.</p>
           <div class="price">L 180</div>
-          <a href="https://wa.me/50494546047?text=Hola%2C%20me%20interesa%20comprar%20Café%20Cortero%20250g%20☕️" class="btn">Comprar por WhatsApp</a>
+          <a href="https://wa.me/50494546047?text=Hola%2C%20me%20interesa%20comprar%20Café%20Cortero%20250g%20☕️" class="btn-whatsapp">
+            <i class="fa-brands fa-whatsapp"></i>
+            Comprar por WhatsApp
+          </a>
         </div>
       </div>
 
@@ -228,7 +270,10 @@
           <h3>Café Cortero 500g</h3>
           <p>Tostado artesanal, cuerpo balanceado y aroma intenso.</p>
           <div class="price">L 320</div>
-          <a href="https://wa.me/50494546047?text=Hola%2C%20me%20interesa%20comprar%20Café%20Cortero%20500g%20☕️" class="btn">Comprar por WhatsApp</a>
+          <a href="https://wa.me/50494546047?text=Hola%2C%20me%20interesa%20comprar%20Café%20Cortero%20500g%20☕️" class="btn-whatsapp">
+            <i class="fa-brands fa-whatsapp"></i>
+            Comprar por WhatsApp
+          </a>
         </div>
       </div>
 
@@ -238,12 +283,17 @@
           <h3>Café Cortero 1lb</h3>
           <p>Blend de finca, ideal para cafeterías o consumo familiar.</p>
           <div class="price">L 550</div>
-          <a href="https://wa.me/50494546047?text=Hola%2C%20me%20interesa%20comprar%20Café%20Cortero%201lb%20☕️" class="btn">Comprar por WhatsApp</a>
+          <a href="https://wa.me/50494546047?text=Hola%2C%20me%20interesa%20comprar%20Café%20Cortero%201lb%20☕️" class="btn-whatsapp">
+            <i class="fa-brands fa-whatsapp"></i>
+            Comprar por WhatsApp
+          </a>
         </div>
       </div>
+
     </div>
   </section>
 
+  <!-- NOSOTROS -->
   <section id="nosotros">
     <h2 class="section-title">Sobre Nosotros</h2>
     <p class="about">
@@ -253,15 +303,22 @@
     </p>
   </section>
 
+  <!-- CONTACTO -->
   <section id="contacto">
     <h2 class="section-title">Contáctanos</h2>
     <p class="about">
       Haz tu pedido o consulta directamente por WhatsApp o en nuestra página de Facebook.
     </p>
     <p style="text-align:center;">
-      <a href="https://wa.me/50494546047?text=Hola%2C%20me%20interesa%20comprar%20Café%20Cortero%20☕️" class="btn">Escríbenos por WhatsApp</a>
+      <a href="https://wa.me/50494546047?text=Hola%2C%20me%20interesa%20comprar%20Café%20Cortero%20☕️" class="btn-whatsapp" style="max-width:340px;margin-inline:auto;">
+        <i class="fa-brands fa-whatsapp"></i>
+        Escribir por WhatsApp
+      </a>
       <br><br>
-      <a href="https://www.facebook.com/share/1FsrT4DYrU/" class="btn" style="background:#3b5998;">Síguenos en Facebook</a>
+      <a href="https://www.facebook.com/share/1FsrT4DYrU/" class="btn-whatsapp" style="background:#3b5998;max-width:340px;margin-inline:auto;">
+        <i class="fa-brands fa-facebook-f" style="background:transparent;font-size:1.1rem;"></i>
+        Ir a Facebook
+      </a>
     </p>
   </section>
 
@@ -275,7 +332,7 @@
   </a>
 
   <script>
-    // Animaciones de aparición
+    // Animación al hacer scroll
     const elements = document.querySelectorAll('[data-animate]');
     const observer = new IntersectionObserver(entries => {
       entries.forEach(entry => {
