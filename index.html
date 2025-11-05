@@ -1,284 +1,119 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Café Cortero</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    :root {
-      --cafe: #512615;
-      --verde: #377b4c;
-      --blanco: #ffffff;
-      --fondo: #f5ebdf;
+<script>
+  // animación scroll
+  const elements = document.querySelectorAll('[data-animate]');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, {threshold: 0.2});
+  elements.forEach(el => observer.observe(el));
+
+  // referencias del producto principal
+  const similarCards = document.querySelectorAll('.similar-card');
+  const nameEl = document.getElementById('product-name');
+  const descEl = document.getElementById('product-desc');
+  const priceEl = document.getElementById('product-price');
+  const badgeEl = document.getElementById('product-badge');
+  const imgEl = document.getElementById('product-image');
+
+  // carrito
+  const cartBtn = document.getElementById('cart-btn');
+  const cartPanel = document.getElementById('cart-panel');
+  const cartCount = document.getElementById('cart-count');
+  const cartItemsContainer = document.getElementById('cart-items');
+  const mainAddBtn = document.getElementById('product-cart');
+
+  let cart = {}; // estructura del carrito
+
+  function updateCartPanel() {
+    const keys = Object.keys(cart);
+    if (keys.length === 0) {
+      cartItemsContainer.innerHTML = '<p class="cart-empty">No hay productos aún.</p>';
+      return;
+    }
+    cartItemsContainer.innerHTML = '';
+    keys.forEach(k => {
+      const item = cart[k];
+      const row = document.createElement('div');
+      row.className = 'cart-item';
+      row.innerHTML = `
+        <span>${k} x ${item.qty}</span>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <strong>${item.price}</strong>
+          <button style="border:none;background:none;color:#d72638;font-size:1rem;cursor:pointer;" title="Eliminar" onclick="removeFromCart('${k}')">&times;</button>
+        </div>
+      `;
+      cartItemsContainer.appendChild(row);
+    });
+  }
+
+  function addToCart(name, price) {
+    if (!cart[name]) {
+      cart[name] = { qty: 1, price };
+    } else {
+      cart[name].qty += 1;
     }
 
-    body {
-      font-family: "Poppins", sans-serif;
-      margin: 0;
-      background-color: var(--fondo);
-      color: var(--cafe);
+    // actualizar contador
+    const totalItems = Object.values(cart).reduce((acc, item) => acc + item.qty, 0);
+    cartCount.textContent = totalItems;
+    updateCartPanel();
+
+    // animación de carrito
+    cartBtn.classList.add('cart-bounce');
+    setTimeout(() => cartBtn.classList.remove('cart-bounce'), 400);
+    if (navigator.vibrate) navigator.vibrate(80);
+  }
+
+  function removeFromCart(name) {
+    if (cart[name]) {
+      cart[name].qty -= 1;
+      if (cart[name].qty <= 0) delete cart[name];
+      const totalItems = Object.values(cart).reduce((acc, item) => acc + item.qty, 0);
+      cartCount.textContent = totalItems;
+      updateCartPanel();
     }
+  }
 
-    header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 15px 30px;
-      background-color: var(--blanco);
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  // cambiar producto principal al hacer click en tarjetas
+  similarCards.forEach(card => {
+    card.addEventListener('click', e => {
+      if (e.target.closest('.buy-btn')) return;
+
+      similarCards.forEach(c => c.classList.remove('active'));
+      card.classList.add('active');
+
+      nameEl.textContent = card.dataset.name;
+      priceEl.textContent = card.dataset.price;
+      descEl.textContent = card.dataset.desc;
+      badgeEl.textContent = card.dataset.badge;
+      imgEl.src = card.dataset.img;
+    });
+
+    const btnInside = card.querySelector('.buy-btn');
+    btnInside.addEventListener('click', e => {
+      e.stopPropagation();
+      addToCart(card.dataset.name, card.dataset.price);
+    });
+  });
+
+  mainAddBtn.addEventListener('click', () => {
+    addToCart(nameEl.textContent, priceEl.textContent);
+  });
+
+  // mostrar / ocultar carrito
+  cartBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    cartPanel.style.display = cartPanel.style.display === 'block' ? 'none' : 'block';
+  });
+
+  // cerrar carrito si se hace click fuera
+  document.addEventListener('click', e => {
+    if (!cartPanel.contains(e.target) && !cartBtn.contains(e.target)) {
+      cartPanel.style.display = 'none';
     }
-
-    header img {
-      height: 50px;
-    }
-
-    nav a {
-      text-decoration: none;
-      color: var(--cafe);
-      margin: 0 15px;
-      font-weight: 500;
-    }
-
-    .cart-icon {
-      position: relative;
-      font-size: 1.5rem;
-      color: var(--cafe);
-      cursor: pointer;
-    }
-
-    .cart-count {
-      position: absolute;
-      top: -8px;
-      right: -10px;
-      background-color: red;
-      color: white;
-      border-radius: 50%;
-      font-size: 0.75rem;
-      padding: 2px 6px;
-    }
-
-    section {
-      padding: 50px 20px;
-      text-align: center;
-    }
-
-    .sobre {
-      max-width: 900px;
-      margin: auto;
-      text-align: left;
-    }
-
-    .sobre h2 {
-      font-size: 2rem;
-      margin-bottom: 20px;
-      color: var(--cafe);
-    }
-
-    .sobre p {
-      line-height: 1.8;
-      margin-bottom: 20px;
-    }
-
-    .tags {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 30px;
-    }
-
-    .tags span {
-      background-color: #e8dccd;
-      padding: 8px 15px;
-      border-radius: 20px;
-      font-size: 0.9rem;
-    }
-
-    .sobre img {
-      width: 100%;
-      border-radius: 20px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-    }
-
-    .productos h2 {
-      font-size: 2rem;
-      margin-bottom: 20px;
-    }
-
-    .carousel {
-      display: flex;
-      overflow-x: auto;
-      scroll-behavior: smooth;
-      gap: 20px;
-      padding: 10px;
-    }
-
-    .producto {
-      flex: 0 0 80%;
-      max-width: 300px;
-      background: var(--blanco);
-      border-radius: 15px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-      padding: 20px;
-      text-align: center;
-      margin: auto;
-    }
-
-    .producto img {
-      width: 100%;
-      border-radius: 10px;
-    }
-
-    .producto h3 {
-      margin: 15px 0 5px;
-      color: var(--cafe);
-    }
-
-    .producto p {
-      color: var(--cafe);
-      font-weight: bold;
-    }
-
-    .producto button {
-      background-color: var(--verde);
-      color: var(--blanco);
-      border: none;
-      border-radius: 20px;
-      padding: 10px 20px;
-      font-size: 1rem;
-      cursor: pointer;
-      margin-top: 10px;
-      transition: 0.3s;
-    }
-
-    .producto button:hover {
-      background-color: #2f653f;
-    }
-
-    footer {
-      background-color: var(--cafe);
-      color: var(--blanco);
-      text-align: center;
-      padding: 20px;
-      font-size: 0.9rem;
-    }
-
-    .whatsapp-btn {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background-color: #25d366;
-      color: white;
-      border-radius: 50%;
-      padding: 15px;
-      font-size: 1.8rem;
-      text-align: center;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-      z-index: 1000;
-    }
-
-    .cart-bounce {
-      animation: bounce 0.5s;
-    }
-
-    @keyframes bounce {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.3); }
-    }
-  </style>
-</head>
-
-<body>
-  <header>
-    <a href="index.html"><img src="imagenes/logo mejorado trasmparente.png" alt="Café Cortero"></a>
-    <nav>
-      <a href="#productos">Productos</a>
-      <a href="#nosotros">Nosotros</a>
-      <a href="#contacto">Contacto</a>
-    </nav>
-    <div class="cart-icon" id="cart-icon">
-      <i class="fas fa-shopping-cart"></i>
-      <span class="cart-count" id="cart-count">0</span>
-    </div>
-  </header>
-
-  <section id="nosotros" class="sobre">
-    <h2>Sobre Café Cortero</h2>
-    <p>En las montañas de Honduras nace Café Cortero, un proyecto familiar que honra la tradición cafetalera de nuestra tierra. Cada grano es cultivado con respeto por el medio ambiente, cosechado a mano y tostado con cuidado para conservar su esencia natural.</p>
-    <p>Más que un café, compartimos una experiencia: el aroma de la finca, el sabor del trabajo honesto y la calidez de una taza que une generaciones.</p>
-    <div class="tags">
-      <span>Proyecto familiar</span>
-      <span>Origen hondureño</span>
-      <span>Amigable con el ambiente</span>
-    </div>
-    <img src="imagenes/FB_IMG_1762305864060.jpg" alt="Sobre Café Cortero">
-  </section>
-
-  <section id="productos" class="productos">
-    <h2>Nuestros Productos</h2>
-    <div class="carousel">
-      <div class="producto">
-        <img src="imagenes/4.png" alt="Café Cortero 250g">
-        <h3>Café Cortero 250g</h3>
-        <p>L 180</p>
-        <button onclick="addToCart('Café Cortero 250g', 180)">Agregar al carrito</button>
-      </div>
-      <div class="producto">
-        <img src="imagenes/coffee-bag-mockup (4).png" alt="Café Cortero 500g">
-        <h3>Café Cortero 500g</h3>
-        <p>L 320</p>
-        <button onclick="addToCart('Café Cortero 500g', 320)">Agregar al carrito</button>
-      </div>
-      <div class="producto">
-        <img src="imagenes/4.png" alt="Café Cortero 1lb">
-        <h3>Café Cortero 1lb</h3>
-        <p>L 550</p>
-        <button onclick="addToCart('Café Cortero 1lb', 550)">Agregar al carrito</button>
-      </div>
-      <div class="producto">
-        <img src="imagenes/coffee-bag-mockup (4).png" alt="Café Cortero Premium">
-        <h3>Café Cortero Premium</h3>
-        <p>L 620</p>
-        <button onclick="addToCart('Café Cortero Premium', 620)">Agregar al carrito</button>
-      </div>
-      <div class="producto">
-        <img src="imagenes/4.png" alt="Café Cortero Tradicional">
-        <h3>Café Cortero Tradicional</h3>
-        <p>L 250</p>
-        <button onclick="addToCart('Café Cortero Tradicional', 250)">Agregar al carrito</button>
-      </div>
-      <div class="producto">
-        <img src="imagenes/coffee-bag-mockup (4).png" alt="Café Cortero Selección">
-        <h3>Café Cortero Selección</h3>
-        <p>L 480</p>
-        <button onclick="addToCart('Café Cortero Selección', 480)">Agregar al carrito</button>
-      </div>
-    </div>
-  </section>
-
-  <footer>
-    © 2025 Café Cortero. Todos los derechos reservados.
-  </footer>
-
-  <a href="https://wa.me/94546047" class="whatsapp-btn" target="_blank">
-    <i class="fab fa-whatsapp"></i>
-  </a>
-
-  <script>
-    const cartCount = document.getElementById("cart-count");
-    const cartIcon = document.getElementById("cart-icon");
-    let count = 0;
-
-    function addToCart(product, price) {
-      count++;
-      cartCount.textContent = count;
-      cartIcon.classList.add("cart-bounce");
-      setTimeout(() => cartIcon.classList.remove("cart-bounce"), 500);
-      if (navigator.vibrate) navigator.vibrate(80);
-    }
-  </script>
-</body>
-</html>
+  });
+</script>
