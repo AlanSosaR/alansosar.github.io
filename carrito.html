@@ -7,100 +7,72 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
-    :root {
-      --marron: #512615;
-      --verde: #33673B;
-      --blanco: #ffffff;
+    :root{
+      --marron:#512615;
+      --verde:#33673B;
+      --blanco:#ffffff;
     }
-    * {margin:0; padding:0; box-sizing:border-box;}
-    body {
-      font-family: "Poppins", sans-serif;
-      background: var(--blanco);
-      color: var(--marron);
-      padding-top: 6rem;
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{
+      font-family:"Poppins",sans-serif;
+      background:var(--blanco);
+      color:var(--marron);
+      padding-top:6rem;
     }
-    header {
-      position: fixed;
-      top: 0;
-      width: 100%;
-      background: rgba(255,255,255,0.92);
-      backdrop-filter: blur(6px);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      box-shadow: 0 2px 10px rgba(0,0,0,.05);
-      padding: .7rem 1rem;
-      z-index: 50;
+    header{
+      position:fixed;
+      top:0;width:100%;
+      background:rgba(255,255,255,0.92);
+      backdrop-filter:blur(6px);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:.6rem 1.2rem;
+      box-shadow:0 2px 10px rgba(0,0,0,.04);
+      z-index:40;
     }
-    header img {height: 60px;}
-    main {max-width: 700px; margin: 0 auto; padding: 1rem;}
-    h1 {text-align: center; font-size: 2rem; margin-bottom: 2rem;}
-    .cart-item {
-      background: #fff;
-      border-radius: 20px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-      padding: 1.5rem;
-      margin-bottom: 1.5rem;
-      display: flex;
-      align-items: center;
-      gap: 1.5rem;
+    header img{height:60px;}
+    header a{color:var(--marron);text-decoration:none;font-weight:500;}
+    main{max-width:700px;margin:0 auto;padding:1rem;}
+    h1{text-align:center;font-size:2rem;margin-bottom:2rem;}
+    .cart-item{
+      background:#fff;
+      border-radius:20px;
+      box-shadow:0 4px 20px rgba(0,0,0,0.05);
+      padding:1.5rem;
+      margin-bottom:1.5rem;
+      display:flex;
+      align-items:center;
+      gap:1.5rem;
     }
-    .cart-item img {
-      width: 90px;
-      height: 90px;
-      object-fit: contain;
-      border-radius: 12px;
-      background: #f8f8f8;
+    .cart-item img{
+      width:90px;height:90px;object-fit:contain;
+      border-radius:12px;background:#f8f8f8;
     }
-    .cart-info h3 {font-size: 1.1rem; margin-bottom: .3rem;}
-    .cart-info p {font-size: .9rem; color: #6c5544;}
-    .cart-controls {
-      display: flex;
-      align-items: center;
-      gap: .4rem;
-      margin-top: .5rem;
+    .cart-info h3{font-size:1.03rem;margin-bottom:.3rem;}
+    .cart-info small{color:#8c7866;font-size:.78rem;}
+    .cart-controls{display:flex;align-items:center;gap:.4rem;margin-top:.7rem;}
+    .btn-round{
+      width:28px;height:28px;border-radius:50%;
+      display:flex;align-items:center;justify-content:center;
+      border:none;cursor:pointer;font-size:1rem;color:#fff;
     }
-    .btn-round {
-      width: 28px; height: 28px;
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      border: none;
-      cursor: pointer;
-      font-size: 1rem;
-      color: #fff;
+    .btn-minus{background:#cfdddd;}
+    .btn-plus{background:var(--verde);}
+    .btn-del{background:#d72638;}
+    .total-line{display:flex;justify-content:flex-end;font-weight:600;margin-top:.8rem;font-size:1.1rem;}
+    .actions{display:flex;gap:1rem;justify-content:center;margin-top:2.2rem;}
+    .btn-main{
+      background:var(--verde);
+      color:#fff;
+      border:none;
+      border-radius:999px;
+      padding:.7rem 1.5rem;
+      font-weight:500;
+      cursor:pointer;
     }
-    .btn-round.minus {background: var(--verde);}
-    .btn-round.plus {background: var(--verde);}
-    .btn-round.remove {background: #d72638;}
-    .cart-total {
-      text-align: right;
-      font-size: 1.2rem;
-      font-weight: 600;
-      margin-top: 1rem;
-    }
-    .actions {
-      text-align: center;
-      margin-top: 2rem;
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
-    .btn {
-      background: var(--verde);
-      color: #fff;
-      border: none;
-      padding: .8rem 1.5rem;
-      border-radius: 999px;
-      font-weight: 500;
-      cursor: pointer;
-    }
-    footer {
-      text-align: center;
-      padding: 2rem;
-      color: #999;
-      font-size: .9rem;
-    }
+    .empty{text-align:center;color:#8b6e5f;margin-top:2rem;}
+    /* whatsapp flotante */
     .whatsapp-float {
       position: fixed;
       bottom: 25px;
@@ -114,92 +86,108 @@
       align-items: center;
       justify-content: center;
       font-size: 30px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
       z-index: 99;
       text-decoration: none;
     }
   </style>
 </head>
 <body>
-
   <header>
-    <a href="index.html"><img src="imagenes/logo mejorado transparente.png" alt="Café Cortero Logo"></a>
+    <a href="index.html">
+      <img src="imagenes/logo mejorado transparente.png" alt="Café Cortero">
+    </a>
+    <span style="font-weight:600;">Tu Carrito</span>
   </header>
 
   <main>
     <h1>Tu Carrito</h1>
     <div id="cart-container"></div>
-    <div class="cart-total" id="cart-total">Total: L 0.00</div>
-
+    <div class="total-line" id="cart-total">Total: L 0.00</div>
     <div class="actions">
-      <button class="btn" onclick="window.location.href='index.html'">Seguir comprando</button>
-      <button class="btn" onclick="alert('Tu pedido será procesado pronto ☕')">Proceder con pedido</button>
+      <button class="btn-main" onclick="location.href='index.html'">Seguir comprando</button>
+      <button class="btn-main" onclick="alert('Aquí pones tu forma de pedido (WhatsApp, formulario, etc.)');">Proceder con pedido</button>
     </div>
   </main>
 
-  <footer>
-    <p>&copy; 2025 Café Cortero. Todos los derechos reservados.</p>
-  </footer>
-
-  <a href="https://wa.me/50494546047?text=Hola%2C%20quiero%20más%20información%20sobre%20Café%20Cortero" class="whatsapp-float" target="_blank">
+  <a href="https://wa.me/50494546047?text=Hola%2C%20quiero%20confirmar%20mi%20pedido%20de%20Café%20Cortero" class="whatsapp-float" target="_blank">
     <i class="fa-brands fa-whatsapp"></i>
   </a>
 
   <script>
-    const cartContainer = document.getElementById('cart-container');
-    const totalDisplay = document.getElementById('cart-total');
-    let cart = JSON.parse(localStorage.getItem('cart')) || {};
+    const container = document.getElementById('cart-container');
+    const totalEl = document.getElementById('cart-total');
+
+    let cart = {};
+    const saved = localStorage.getItem('cart');
+    if (saved) {
+      try { cart = JSON.parse(saved); }
+      catch(e) { cart = {}; }
+    }
+
+    function priceToNumber(p) {
+      // p viene como "L 180" -> 180
+      if (!p) return 0;
+      return Number(p.replace(/[^\d.]/g, "")) || 0;
+    }
 
     function renderCart() {
-      cartContainer.innerHTML = '';
+      container.innerHTML = '';
+      const names = Object.keys(cart);
+      if (names.length === 0) {
+        container.innerHTML = '<p class="empty">Tu carrito está vacío.</p>';
+        totalEl.textContent = 'Total: L 0.00';
+        return;
+      }
+
       let total = 0;
 
-      for (const [name, item] of Object.entries(cart)) {
-        const priceNumber = parseFloat(item.price.replace('L', '').trim());
-        const subtotal = item.qty * priceNumber;
-        total += subtotal;
+      names.forEach(name => {
+        const item = cart[name];
+        const unit = priceToNumber(item.price);
+        const sub = unit * item.qty;
+        total += sub;
 
         const div = document.createElement('div');
-        div.classList.add('cart-item');
+        div.className = 'cart-item';
         div.innerHTML = `
-          <img src="imagenes/4.png" alt="${name}">
+          <img src="${item.img || 'imagenes/4.png'}" alt="${name}">
           <div class="cart-info">
             <h3>${name}</h3>
-            <p>${item.price} / unidad</p>
+            <small>L ${unit.toFixed(2)} / unidad</small>
             <div class="cart-controls">
-              <button class="btn-round minus">−</button>
+              <button class="btn-round btn-minus">-</button>
               <span>${item.qty}</span>
-              <button class="btn-round plus">+</button>
-              <button class="btn-round remove"><i class="fa-solid fa-xmark"></i></button>
+              <button class="btn-round btn-plus"><i class="fa-solid fa-plus" style="font-size:.7rem;"></i></button>
+              <button class="btn-round btn-del"><i class="fa-solid fa-xmark"></i></button>
             </div>
           </div>
         `;
-        cartContainer.appendChild(div);
-
-        // botones
-        div.querySelector('.minus').onclick = () => {
-          if (item.qty > 1) item.qty--;
-          else delete cart[name];
-          saveCart();
+        // listeners
+        div.querySelector('.btn-minus').onclick = () => {
+          if (cart[name].qty > 1) {
+            cart[name].qty--;
+          } else {
+            delete cart[name];
+          }
+          localStorage.setItem('cart', JSON.stringify(cart));
+          renderCart();
         };
-        div.querySelector('.plus').onclick = () => {
-          item.qty++;
-          saveCart();
+        div.querySelector('.btn-plus').onclick = () => {
+          cart[name].qty++;
+          localStorage.setItem('cart', JSON.stringify(cart));
+          renderCart();
         };
-        div.querySelector('.remove').onclick = () => {
+        div.querySelector('.btn-del').onclick = () => {
           delete cart[name];
-          saveCart();
+          localStorage.setItem('cart', JSON.stringify(cart));
+          renderCart();
         };
-      }
 
-      totalDisplay.textContent = `Total: L ${total.toFixed(2)}`;
-      if (Object.keys(cart).length === 0)
-        cartContainer.innerHTML = '<p style="text-align:center;color:#777;">Tu carrito está vacío.</p>';
-    }
+        container.appendChild(div);
+      });
 
-    function saveCart() {
-      localStorage.setItem('cart', JSON.stringify(cart));
-      renderCart();
+      totalEl.textContent = 'Total: L ' + total.toFixed(2);
     }
 
     renderCart();
