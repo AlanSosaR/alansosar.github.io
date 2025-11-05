@@ -324,7 +324,6 @@
   </a>
 
   <script>
-    // localStorage carrito
     const cart = JSON.parse(localStorage.getItem('cart')) || {};
     const cartCount = document.getElementById('cart-count');
     function updateCount() {
@@ -333,8 +332,8 @@
       localStorage.setItem('cart', JSON.stringify(cart));
     }
 
-    function addToCart(name, price) {
-      if (!cart[name]) cart[name] = {qty:1, price};
+    function addToCart(name, price, img) {
+      if (!cart[name]) cart[name] = {qty:1, price, img};
       else cart[name].qty++;
       updateCount();
     }
@@ -342,14 +341,15 @@
     document.getElementById('product-cart').onclick = () => {
       const name = document.getElementById('product-name').textContent;
       const price = document.getElementById('product-price').textContent;
-      addToCart(name, price);
+      const img = document.getElementById('product-image').src;
+      addToCart(name, price, img);
     };
 
     document.querySelectorAll('.similar-card button').forEach(btn=>{
       btn.onclick = (e)=>{
         e.stopPropagation();
         const card = e.target.closest('.similar-card');
-        addToCart(card.dataset.name, card.dataset.price);
+        addToCart(card.dataset.name, card.dataset.price, card.dataset.img);
       };
     });
 
@@ -357,7 +357,6 @@
       window.location.href = "carrito.html";
     };
 
-    // cambiar tarjeta grande al tocar una pequeña
     document.querySelectorAll('.similar-card').forEach(card=>{
       card.onclick=()=>{
         document.getElementById('product-name').textContent=card.dataset.name;
