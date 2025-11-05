@@ -10,15 +10,13 @@
     :root {
       --cafe: #4b2e1b;
       --cafe-oscuro: #2b1a11;
-      --crema: #f4eee7;
+      --fondo: #e9dfd2;
       --blanco: #ffffff;
-      --verde: #25d366;
-      --verde-texto: #3d5f46;
     }
-    * {margin: 0; padding: 0; box-sizing: border-box;}
+    * {margin:0; padding:0; box-sizing:border-box;}
     body {
       font-family: "Poppins", sans-serif;
-      background-color: #f0eae3;
+      background: #e9dfd2;
       color: #3e2e21;
       scroll-behavior: smooth;
     }
@@ -26,47 +24,38 @@
     /* HEADER */
     header {
       position: fixed;
+      top: 0; left: 0;
       width: 100%;
-      top: 0;
-      left: 0;
-      background: rgba(255, 255, 255, 0.95);
-      box-shadow: 0 2px 14px rgba(0, 0, 0, 0.04);
-      padding: 0.6rem 1.5rem;
+      background: rgba(255,255,255,.95);
+      backdrop-filter: blur(5px);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      z-index: 10;
-      backdrop-filter: blur(6px);
+      padding: .6rem 1.5rem;
+      z-index: 20;
+      box-shadow: 0 2px 12px rgba(0,0,0,.03);
     }
-    .logo-wrap img {
-      height: 80px;
-      width: auto;
-    }
+    .logo-wrap img {height: 80px;}
     header nav a {
-      margin-left: 1.1rem;
+      margin-left: 1rem;
       text-decoration: none;
       color: #4b2e1b;
       font-weight: 500;
-      transition: color 0.2s;
     }
-    header nav a:hover {color: #7b4a2d;}
 
-    /* HERO */
+    /* HERO BANNER */
     .hero {
       margin-top: 75px;
-      height: 50vh;
+      height: 48vh;
       background:
-        linear-gradient(180deg, rgba(240,234,227,0) 70%, rgba(240,234,227,1) 100%),
+        linear-gradient(180deg, rgba(233,223,210,0) 70%, rgba(233,223,210,1) 100%),
         #f8f5f1 url('Café%20Cortero%20es%20un%20proyecto%20familiar%20con%20la%20iniciativa%20de%20producir%20un%20café%20de%20calidad%20amigable%20con%20el%20medio%20ambiente..png')
         center/contain no-repeat;
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
 
     section {
       max-width: 1100px;
-      margin: auto;
+      margin: 0 auto;
       padding: 3.5rem 1rem 0;
     }
     h2.section-title {
@@ -76,15 +65,14 @@
       color: #4b2e1b;
     }
 
-    /* === PRODUCTO PRINCIPAL (layout tipo pinterest) === */
+    /* PRODUCTO PRINCIPAL */
     .product-page {
       background: #fff;
       border-radius: 24px;
       padding: 2.2rem 2rem;
       box-shadow: 0 16px 30px rgba(0,0,0,.03);
-      border: 1px solid rgba(75,46,27,0.03);
       display: grid;
-      grid-template-columns: 1.1fr .9fr;
+      grid-template-columns: 1.08fr .92fr;
       gap: 2rem;
       align-items: center;
     }
@@ -103,18 +91,14 @@
       color: #6d5541;
       margin-bottom: 1rem;
     }
-    .product-meta {
-      display: flex;
-      gap: 1rem;
-      margin-bottom: 1.1rem;
-      flex-wrap: wrap;
-    }
     .badge {
       background: rgba(75,46,27,.07);
       padding: .3rem .8rem;
       border-radius: 999px;
       font-size: .7rem;
       color: #4b2e1b;
+      display: inline-block;
+      margin-bottom: 1rem;
     }
     .price-big {
       font-size: 1.6rem;
@@ -129,7 +113,7 @@
       background: linear-gradient(135deg, #4b2e1b 0%, #6d3f24 100%);
       color: #fff;
       text-decoration: none;
-      padding: .65rem 1.2rem;
+      padding: .6rem 1.15rem;
       border-radius: 999px;
       font-weight: 500;
       box-shadow: 0 8px 16px rgba(76,46,27,.25);
@@ -146,7 +130,6 @@
       color: #fff;
     }
 
-    /* Lado derecho: imagen dentro de círculo */
     .product-visual {
       background: radial-gradient(circle at center, #e7e2dc 0%, #ffffff 70%);
       border-radius: 999px;
@@ -155,7 +138,6 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      position: relative;
     }
     .product-visual img {
       max-height: 78%;
@@ -163,15 +145,9 @@
       filter: drop-shadow(0 14px 30px rgba(0,0,0,.15));
     }
 
-    /* === PRODUCTOS SIMILARES (fila) === */
-    .similar-wrapper {
-      margin-top: 2.6rem;
-    }
-    .similar-title {
-      font-size: 1.2rem;
-      color: #4b2e1b;
-      margin-bottom: 1.3rem;
-    }
+    /* SIMILARES */
+    .similar-wrapper {margin-top: 2.6rem;}
+    .similar-title {font-size: 1.2rem; color: #4b2e1b; margin-bottom: 1.3rem;}
     .similar-list {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -179,11 +155,18 @@
     }
     .similar-card {
       background: #fff;
-      border-radius: 16px;
+      border-radius: 18px;
       padding: 1rem .8rem 1.1rem;
       text-align: center;
       box-shadow: 0 10px 20px rgba(0,0,0,.02);
-      border: 1px solid rgba(75,46,27,.02);
+      border: 2px solid transparent;
+      transition: .2s;
+      cursor: pointer;
+    }
+    .similar-card.active,
+    .similar-card:hover {
+      border-color: rgba(75,46,27,.25);
+      box-shadow: 0 14px 26px rgba(0,0,0,.03);
     }
     .similar-card img {
       width: 100%;
@@ -193,25 +176,11 @@
       border-radius: 12px;
       margin-bottom: .5rem;
     }
-    .similar-card h4 {
-      font-size: .9rem;
-      color: #4b2e1b;
-      margin-bottom: .2rem;
-    }
-    .similar-card .price {
-      font-size: .8rem;
-      font-weight: 600;
-      color: #4b2e1b;
-      margin-bottom: .4rem;
-    }
-    .similar-card a {
-      font-size: .7rem;
-      color: #4b2e1b;
-      text-decoration: none;
-      font-weight: 500;
-    }
+    .similar-card h4 {font-size: .9rem; color: #4b2e1b; margin-bottom: .2rem;}
+    .similar-card .price {font-size: .8rem; font-weight: 600; color: #4b2e1b; margin-bottom: .4rem;}
+    .similar-card small {font-size: .7rem; color: #6d5541;}
 
-    /* ABOUT */
+    /* ABOUT y CONTACTO igual */
     .about {
       text-align: center;
       line-height: 1.7;
@@ -224,14 +193,8 @@
       border-radius: 20px;
       box-shadow: 0 15px 35px rgba(0,0,0,.02);
     }
+    .contact-actions {text-align:center; margin-top:1.5rem;}
 
-    /* CONTACTO */
-    .contact-actions {
-      text-align: center;
-      margin-top: 1.5rem;
-    }
-
-    /* FOOTER */
     footer {
       background: #4b2e1b;
       color: white;
@@ -240,7 +203,6 @@
       margin-top: 3rem;
     }
 
-    /* FLOAT WHATSAPP */
     .whatsapp-float {
       position: fixed;
       bottom: 25px;
@@ -257,34 +219,19 @@
       box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
       z-index: 99;
       text-decoration: none;
-      transition: transform 0.2s ease;
     }
-    .whatsapp-float:hover {transform: scale(1.08);}
 
-    /* ANIMACION SCROLL */
-    [data-animate] {
-      opacity: 0;
-      transform: translateY(20px);
-      transition: all 0.7s ease;
-    }
-    [data-animate].visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    /* ANIMACIÓN */
+    [data-animate] {opacity:0;transform:translateY(20px);transition:.7s;}
+    [data-animate].visible {opacity:1;transform:translateY(0);}
 
     @media (max-width: 880px) {
-      .product-page {
-        grid-template-columns: 1fr;
-      }
-      .product-visual {
-        max-width: 380px;
-        margin: 0 auto;
-      }
+      .product-page {grid-template-columns: 1fr;}
+      .product-visual {max-width: 380px; margin:0 auto;}
     }
     @media (max-width: 768px) {
+      .hero {height: 36vh; background-size: contain;}
       .logo-wrap img {height: 68px;}
-      .hero {height: 38vh; background-size: contain;}
-      .similar-list {grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));}
     }
   </style>
 </head>
@@ -301,64 +248,81 @@
     </nav>
   </header>
 
-  <!-- BANNER -->
   <section class="hero"></section>
 
-  <!-- PRODUCTO DESTACADO -->
+  <!-- PRODUCTOS -->
   <section id="productos">
     <h2 class="section-title">Nuestros Productos</h2>
 
-    <div class="product-page" data-animate>
-      <!-- Info de la izquierda -->
+    <!-- PRODUCTO PRINCIPAL (se actualiza con JS) -->
+    <div class="product-page" id="producto-principal" data-animate>
       <div class="product-info">
-        <small>Café en grano / molido</small>
-        <h3>Café Cortero 250g</h3>
-        <p>Café hondureño de altura, tueste medio, ideal para filtro o prensa francesa. Proyecto familiar, amigable con el medio ambiente.</p>
-        <div class="product-meta">
-          <span class="badge">100% arábica</span>
-          <span class="badge">Danlí, El Paraíso</span>
-          <span class="badge">Tueste medio</span>
-        </div>
-        <div class="price-big">L 180</div>
-        <a href="https://wa.me/50494546047?text=Hola%2C%20me%20interesa%20comprar%20Café%20Cortero%20250g%20☕️" class="btn-whatsapp">
+        <small id="product-type">Café en grano / molido</small>
+        <h3 id="product-name">Café Cortero 250g</h3>
+        <p id="product-desc">Café hondureño de altura, tueste medio, ideal para filtro o prensa francesa. Proyecto familiar, amigable con el medio ambiente.</p>
+        <span class="badge" id="product-badge">100% arábica · Danlí</span>
+        <div class="price-big" id="product-price">L 180</div>
+        <a id="product-whatsapp" href="https://wa.me/50494546047?text=Hola%2C%20me%20interesa%20comprar%20Café%20Cortero%20250g%20☕️" class="btn-whatsapp">
           <i class="fa-brands fa-whatsapp"></i>
           Comprar por WhatsApp
         </a>
       </div>
-
-      <!-- Imagen de la derecha -->
       <div class="product-visual">
-        <img src="3.png" alt="Bolsa de Café Cortero">
+        <img id="product-image" src="3.png" alt="Bolsa de Café Cortero">
       </div>
     </div>
 
     <!-- SIMILARES -->
     <div class="similar-wrapper" data-animate>
       <h3 class="similar-title">También te puede interesar</h3>
-      <div class="similar-list">
-        <div class="similar-card">
+      <div class="similar-list" id="lista-similares">
+        <!-- Cada tarjeta tiene los datos que usará el JS -->
+        <div class="similar-card active"
+             data-name="Café Cortero 250g"
+             data-price="L 180"
+             data-desc="Café hondureño de altura, tueste medio, ideal para filtro o prensa francesa."
+             data-badge="100% arábica · Danlí"
+             data-img="3.png">
+          <img src="3.png" alt="Café Cortero 250g">
+          <h4>Café Cortero 250g</h4>
+          <div class="price">L 180</div>
+          <small>Seleccionar</small>
+        </div>
+
+        <div class="similar-card"
+             data-name="Café Cortero 500g"
+             data-price="L 320"
+             data-desc="Tostado artesanal, cuerpo balanceado y aroma intenso. Perfecto para compartir."
+             data-badge="Tueste medio · Familiar"
+             data-img="3.png">
           <img src="3.png" alt="Café Cortero 500g">
           <h4>Café Cortero 500g</h4>
           <div class="price">L 320</div>
-          <a href="https://wa.me/50494546047?text=Hola%2C%20me%20interesa%20comprar%20Café%20Cortero%20500g%20☕️">Comprar</a>
+          <small>Ver detalle</small>
         </div>
-        <div class="similar-card">
+
+        <div class="similar-card"
+             data-name="Café Cortero 1lb"
+             data-price="L 550"
+             data-desc="Presentación de 1 libra ideal para consumo familiar o cafeterías."
+             data-badge="Cosecha seleccionada"
+             data-img="3.png">
           <img src="3.png" alt="Café Cortero 1lb">
           <h4>Café Cortero 1lb</h4>
           <div class="price">L 550</div>
-          <a href="https://wa.me/50494546047?text=Hola%2C%20me%20interesa%20comprar%20Café%20Cortero%201lb%20☕️">Comprar</a>
+          <small>Ver detalle</small>
         </div>
-        <div class="similar-card">
-          <img src="3.png" alt="Café Cortero regalo">
+
+        <div class="similar-card"
+             data-name="Pack regalo Cortero"
+             data-price="L 260"
+             data-desc="Incluye café Cortero + empaque bonito para obsequio."
+             data-badge="Ideal para regalar"
+             data-img="3.png">
+          <img src="3.png" alt="Pack regalo">
           <h4>Pack regalo</h4>
           <div class="price">L 260</div>
-          <a href="https://wa.me/50494546047?text=Hola%2C%20me%20interesa%20el%20pack%20de%20Café%20Cortero%20☕️">Comprar</a>
-        </div>
-        <div class="similar-card">
-          <img src="3.png" alt="Café Cortero molino">
-          <h4>Café molido</h4>
-          <div class="price">L 185</div>
-          <a href="https://wa.me/50494546047?text=Hola%2C%20quiero%20Café%20Cortero%20molido%20☕️">Comprar</a>
+          <small>Ver detalle</small>
         </div>
       </div>
     </div>
@@ -403,7 +367,7 @@
   </a>
 
   <script>
-    // Animación al hacer scroll
+    // animación scroll
     const elements = document.querySelectorAll('[data-animate]');
     const observer = new IntersectionObserver(entries => {
       entries.forEach(entry => {
@@ -414,6 +378,39 @@
       });
     }, {threshold: 0.2});
     elements.forEach(el => observer.observe(el));
+
+    // cambio de producto al hacer clic en similares
+    const similarCards = document.querySelectorAll('.similar-card');
+    const nameEl = document.getElementById('product-name');
+    const descEl = document.getElementById('product-desc');
+    const priceEl = document.getElementById('product-price');
+    const badgeEl = document.getElementById('product-badge');
+    const imgEl = document.getElementById('product-image');
+    const waBtn = document.getElementById('product-whatsapp');
+
+    similarCards.forEach(card => {
+      card.addEventListener('click', () => {
+        // quitar active a todos
+        similarCards.forEach(c => c.classList.remove('active'));
+        card.classList.add('active');
+
+        const name = card.dataset.name;
+        const price = card.dataset.price;
+        const desc = card.dataset.desc;
+        const badge = card.dataset.badge;
+        const img = card.dataset.img;
+
+        nameEl.textContent = name;
+        priceEl.textContent = price;
+        descEl.textContent = desc;
+        badgeEl.textContent = badge;
+        imgEl.src = img;
+
+        // actualizar mensaje de WhatsApp
+        const mensaje = encodeURIComponent(`Hola, me interesa comprar ${name} ☕️`);
+        waBtn.href = `https://wa.me/50494546047?text=${mensaje}`;
+      });
+    });
   </script>
 </body>
 </html>
