@@ -1,10 +1,11 @@
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Café Cortero | La esencia de Honduras en cada sorbo</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     * {
       margin: 0;
@@ -26,16 +27,22 @@
       left: 0;
       background: rgba(255, 255, 255, 0.95);
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      padding: 1rem 2rem;
+      padding: 0.6rem 1.5rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
       z-index: 10;
+      gap: 1rem;
     }
-    header h1 {
-      font-size: 1.4rem;
-      font-weight: 600;
-      color: #4b2e1b;
+    .logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .logo-wrap img {
+      height: 48px;
+      width: auto;
+      display: block;
     }
     header nav a {
       margin-left: 1rem;
@@ -64,7 +71,7 @@
       content: "";
       position: absolute;
       inset: 0;
-      background: rgba(0, 0, 0, 0.4);
+      background: rgba(0, 0, 0, 0.35);
     }
     .hero-content {
       position: relative;
@@ -78,7 +85,7 @@
       font-size: 1.1rem;
     }
 
-    /* PRODUCTS */
+    /* SECTIONS */
     section {
       padding: 4rem 1rem;
       max-width: 1100px;
@@ -90,6 +97,8 @@
       margin-bottom: 2rem;
       color: #4b2e1b;
     }
+
+    /* PRODUCTS */
     .products {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -109,8 +118,9 @@
     }
     .card img {
       width: 100%;
-      height: 220px;
+      height: 225px;
       object-fit: cover;
+      background: #f1ede7;
     }
     .card-body {
       padding: 1.2rem;
@@ -180,14 +190,15 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 28px;
-      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+      font-size: 30px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
       z-index: 99;
       text-decoration: none;
-      transition: transform 0.2s ease;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
     .whatsapp-float:hover {
       transform: scale(1.1);
+      box-shadow: 0 5px 14px rgba(0, 0, 0, 0.4);
     }
 
     /* ANIMATION */
@@ -202,11 +213,17 @@
     }
 
     @media (max-width: 768px) {
+      header nav a {
+        margin-left: 0.5rem;
+      }
       .hero-content h2 {
         font-size: 1.6rem;
       }
       .hero {
         height: 55vh;
+      }
+      .logo-wrap img {
+        height: 42px;
       }
     }
   </style>
@@ -214,7 +231,9 @@
 <body>
 
   <header>
-    <h1>Café Cortero</h1>
+    <div class="logo-wrap">
+      <img src="logo%20mejorado.png" alt="Café Cortero">
+    </div>
     <nav>
       <a href="#productos">Productos</a>
       <a href="#nosotros">Nosotros</a>
@@ -222,7 +241,6 @@
     </nav>
   </header>
 
-  <!-- HERO -->
   <section class="hero">
     <div class="hero-content">
       <h2>La esencia de Honduras en cada sorbo</h2>
@@ -230,12 +248,11 @@
     </div>
   </section>
 
-  <!-- PRODUCTS -->
   <section id="productos">
     <h2 class="section-title">Nuestros Productos</h2>
     <div class="products">
       <div class="card" data-animate>
-        <img src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=800" alt="Café 250g">
+        <img src="3.png" alt="Café Cortero 250g">
         <div class="card-body">
           <h3>Café Cortero 250g</h3>
           <p>Tueste medio, ideal para filtro o prensa francesa.</p>
@@ -245,7 +262,7 @@
       </div>
 
       <div class="card" data-animate>
-        <img src="https://images.unsplash.com/photo-1559741034-3f2b8e6f5f1d?w=800" alt="Café 500g">
+        <img src="3.png" alt="Café Cortero 500g">
         <div class="card-body">
           <h3>Café Cortero 500g</h3>
           <p>Tostado artesanal, cuerpo balanceado y aroma intenso.</p>
@@ -255,7 +272,7 @@
       </div>
 
       <div class="card" data-animate>
-        <img src="https://images.unsplash.com/photo-1512568400610-62da28bc8a13?w=800" alt="Café 1lb">
+        <img src="3.png" alt="Café Cortero 1lb">
         <div class="card-body">
           <h3>Café Cortero 1lb</h3>
           <p>Blend de finca, ideal para cafeterías o consumo familiar.</p>
@@ -266,39 +283,35 @@
     </div>
   </section>
 
-  <!-- ABOUT -->
   <section id="nosotros">
     <h2 class="section-title">Sobre Nosotros</h2>
     <p class="about">
-      Café Cortero nace en el Valle de Jamastrán, donde el sol, la altitud y la pasión por el campo
-      se combinan para ofrecer un café con alma hondureña.  
-      Cuidamos cada etapa: desde la cosecha a mano, el secado natural y el tueste artesanal,
-      para garantizar un sabor auténtico y consistente en cada taza.
+      Café Cortero es un proyecto familiar con la iniciativa de producir un café de calidad, amigable con el medio ambiente
+      y con el sabor auténtico de Honduras. Desde la cosecha hasta el tueste, cuidamos cada etapa para que disfrutes una taza
+      llena de aroma, cuerpo y tradición.
     </p>
   </section>
 
-  <!-- CONTACT -->
   <section id="contacto">
     <h2 class="section-title">Contáctanos</h2>
     <p class="about">
-      Haz tu pedido o consulta directamente por WhatsApp o en nuestras redes sociales.
+      Haz tu pedido o consulta directamente por WhatsApp o en nuestra página de Facebook.
     </p>
     <p style="text-align:center;">
       <a href="https://wa.me/50494546047?text=Hola%2C%20me%20interesa%20comprar%20Café%20Cortero%20☕️" class="btn">Contactar por WhatsApp</a>
     </p>
   </section>
 
-  <!-- FOOTER -->
   <footer>
     <p>© 2025 Café Cortero — Valle de Jamastrán, Honduras</p>
     <p>
-      <a href="https://www.facebook.com/share/1FsrT4DYrU/" target="_blank">Facebook</a>
+      <a href="https://www.facebook.com/share/1FsrT4DYrU/" target="_blank" rel="noopener">Facebook</a>
     </p>
   </footer>
 
-  <!-- WHATSAPP FLOAT -->
+  <!-- Botón flotante WhatsApp -->
   <a href="https://wa.me/50494546047?text=Hola%2C%20me%20interesa%20comprar%20Café%20Cortero%20☕️" class="whatsapp-float" target="_blank" title="Chatear por WhatsApp">
-    💬
+    <i class="fab fa-whatsapp"></i>
   </a>
 
   <script>
