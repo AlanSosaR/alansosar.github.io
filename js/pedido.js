@@ -67,14 +67,6 @@ function renderRecibo() {
       <p>📱 <strong>Tigo Money:</strong> +504 9454-6047</p>
       <p>💳 <strong>PayPal:</strong> <a href="https://www.paypal.me/cafecortero" target="_blank">paypal.me/cafecortero</a></p>
     </div>
-
-    <div style="text-align:center; margin-top:1.5rem;">
-      <button class="btn" onclick="enviarPedido()">Enviar pedido</button>
-    </div>
-
-    <div id="confirm-box" class="confirm-box" style="display:none;">
-      ✅ Pedido enviado con éxito. ¡Gracias por comprar con Café Cortero!
-    </div>
   `;
 }
 
