@@ -68,7 +68,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 15px;
+  gap: 20px;
   margin: 30px auto;
   flex-wrap: wrap;
 }
@@ -98,14 +98,6 @@ body {
 .btn:hover {
   transform: scale(1.03);
   opacity: 0.9;
-}
-
-/* ----------- CONFIRMACIÓN ----------- */
-.confirm-box {
-  text-align: center;
-  margin-top: 20px;
-  font-weight: 500;
-  color: #20603d;
 }
 
 /* ----------- RESPONSIVE ----------- */
@@ -145,11 +137,11 @@ body {
   }
 
   .actions {
-    flex-direction: column;
-    gap: 10px;
+    flex-direction: row;
+    justify-content: space-between;
   }
 
   .btn {
-    width: 100%;
+    width: 48%;
   }
 }
