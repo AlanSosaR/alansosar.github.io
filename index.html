@@ -469,14 +469,100 @@
   </a>
 
   <script>
+    // misma clave para index y carrito
     const CART_KEY = 'cafecortero_cart';
+
     function getCart() {
       return JSON.parse(localStorage.getItem(CART_KEY)) || [];
     }
+
     function saveCart(cart) {
       localStorage.setItem(CART_KEY, JSON.stringify(cart));
     }
+
     function updateCartCount() {
       const cart = getCart();
       const total = cart.reduce((acc, item) => acc + item.qty, 0);
-      document.getElementById('cart-count').textContent
+      const badge = document.getElementById('cart-count');
+      badge.textContent = total;
+    }
+
+    function animateCartIcon() {
+      const cartBtn = document.getElementById('cart-btn');
+      cartBtn.classList.add('animate');
+      setTimeout(() => cartBtn.classList.remove('animate'), 650);
+    }
+
+    function addToCart(product) {
+      const cart = getCart();
+      const index = cart.findIndex(p => p.name === product.name);
+      if (index >= 0) {
+        cart[index].qty += 1;
+      } else {
+        cart.push(product);
+      }
+      saveCart(cart);
+      updateCartCount();
+
+      // animación de carrito
+      animateCartIcon();
+
+      // vibración en móvil
+      if (window.navigator.vibrate) {
+        window.navigator.vibrate(80);
+      }
+    }
+
+    // botón grande
+    document.getElementById('product-add').addEventListener('click', () => {
+      const product = {
+        name: document.getElementById('product-name').textContent,
+        price: document.getElementById('product-price').textContent,
+        img: document.getElementById('product-image').getAttribute('src'),
+        qty: 1
+      };
+      addToCart(product);
+    });
+
+    // tarjetas del carrusel
+    const cards = document.querySelectorAll('.similar-card');
+    cards.forEach(card => {
+      // cambiar la tarjeta grande al tocar la tarjeta
+      card.addEventListener('click', (e) => {
+        // si el clic fue en el botón, no cambiamos la tarjeta grande
+        if (e.target.closest('button')) return;
+
+        cards.forEach(c => c.classList.remove('active'));
+        card.classList.add('active');
+
+        document.getElementById('product-name').textContent = card.dataset.name;
+        document.getElementById('product-desc').textContent = card.dataset.desc;
+        document.getElementById('product-badge').textContent = card.dataset.badge;
+        document.getElementById('product-price').textContent = card.dataset.price;
+        document.getElementById('product-image').src = card.dataset.img;
+      });
+
+      // botón dentro de la tarjeta -> agregar al carrito
+      const btn = card.querySelector('button');
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation(); // para que no cambie la tarjeta grande
+        const product = {
+          name: card.dataset.name,
+          price: card.dataset.price,
+          img: card.dataset.img,
+          qty: 1
+        };
+        addToCart(product);
+      });
+    });
+
+    // ir al carrito
+    document.getElementById('cart-btn').addEventListener('click', () => {
+      window.location.href = 'carrito.html';
+    });
+
+    // al cargar
+    updateCartCount();
+  </script>
+</body>
+</html>
