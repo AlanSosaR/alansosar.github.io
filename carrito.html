@@ -1,137 +1,154 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tu carrito | Café Cortero</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tu Carrito | Café Cortero</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
-    :root {
-      --marron: #512615;
-      --verde: #33673B;
-      --blanco: #ffffff;
-      --fondo: #f5eee6;
-    }
-    * {margin:0; padding:0; box-sizing:border-box;}
     body {
-      font-family: "Poppins", sans-serif;
-      background: var(--fondo);
-      color: var(--marron);
+      font-family: 'Poppins', sans-serif;
+      background-color: #ffffff; /* FONDO BLANCO */
+      color: #4e2c1f;
+      margin: 0;
+      padding: 0;
     }
+
     header {
-      background: #fff;
-      padding: .8rem 1.2rem;
+      background-color: #fff;
+      padding: 0.8rem 1.2rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, .05);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    header h1 {
+      font-size: 1.6rem; /* más pequeño */
+      margin: 0;
+      color: #512615;
+      text-align: center;
+    }
+
+    main {
+      max-width: 900px;
+      margin: 1.5rem auto;
+      padding: 1rem;
+    }
+
+    .cart-item {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      box-shadow: 0 2px 10px rgba(0,0,0,.03);
-    }
-    header img {height: 60px;}
-    .cart-title {font-size: 1.6rem; font-weight: 600;}
-    main {
-      max-width: 1100px;
-      margin: 2rem auto;
-      padding: 0 1rem 3rem;
-    }
-    .item {
       background: #fff;
-      border-radius: 20px;
-      padding: 1.1rem 1rem;
-      display: flex;
-      align-items: center;
-      gap: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 0.8rem 1rem;
       margin-bottom: 1rem;
-      box-shadow: 0 10px 25px rgba(0,0,0,.02);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.02);
     }
-    .item img {
-      width: 72px;
-      height: 72px;
-      object-fit: contain;
-      background: #eff5ff;
-      border-radius: 14px;
+
+    .cart-item img {
+      width: 70px;
+      height: 70px;
+      border-radius: 10px;
+      object-fit: cover;
+      margin-right: 1rem;
     }
-    .item-info {
+
+    .cart-details {
       flex: 1;
     }
-    .item-name {font-weight: 600; margin-bottom: .2rem;}
-    .item-price {font-size: .9rem; margin-bottom: .5rem;}
+
+    .cart-details h3 {
+      margin: 0;
+      font-size: 1rem;
+      color: #4e2c1f;
+    }
+
+    .cart-details p {
+      margin: 0.2rem 0;
+      color: #7a6a5f;
+      font-size: 0.9rem;
+    }
+
     .qty-controls {
       display: flex;
-      gap: .4rem;
       align-items: center;
+      gap: 0.4rem;
     }
-    .qty-btn {
-      background: var(--verde);
-      color: #fff;
+
+    .qty-btn, .del-btn {
       border: none;
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      padding: 0.3rem 0.6rem;
+      border-radius: 6px;
       cursor: pointer;
       font-size: 1rem;
     }
+
+    .qty-btn {
+      background-color: #33673B;
+      color: #fff;
+    }
+
+    .qty-btn:hover {
+      background-color: #28502d;
+    }
+
     .del-btn {
-      background: #d72638;
+      background-color: #d72638;
       color: #fff;
-      border: none;
-      width: 30px; height: 30px;
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer;
     }
-    .total-box {
+
+    .del-btn:hover {
+      background-color: #b51f2e;
+    }
+
+    #total-box {
       text-align: right;
-      font-size: 1.3rem;
+      font-size: 1.1rem;
       font-weight: 600;
-      margin-top: 2rem;
+      color: #512615;
+      margin-top: 1.5rem;
     }
-    .actions {
-      margin-top: 2rem;
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-    .btn {
-      border: none;
-      background: var(--verde);
-      color: #fff;
-      padding: .7rem 1.5rem;
-      border-radius: 999px;
-      cursor: pointer;
-      font-weight: 500;
-    }
+
     .empty {
-      background: #fff;
-      padding: 1.5rem 1rem;
-      border-radius: 18px;
       text-align: center;
+      color: #7c6b5e;
+      margin-top: 3rem;
+      font-size: 1rem;
+    }
+
+    .whatsapp-float {
+      position: fixed;
+      bottom: 22px;
+      right: 22px;
+      background: #25D366;
+      color: white;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+      box-shadow: 0 3px 12px rgba(0,0,0,.3);
+      text-decoration: none;
     }
   </style>
 </head>
 <body>
   <header>
-    <a href="index.html">
-      <img src="imagenes/logo%20mejorado%20trasmparente.png" alt="Café Cortero">
-    </a>
-    <span class="cart-title">Tu Carrito</span>
+    <h1>Tu Carrito</h1>
   </header>
 
   <main>
     <div id="cart-container"></div>
-    <div class="total-box" id="total-box">Total: L 0.00</div>
-
-    <div class="actions">
-      <button class="btn" onclick="window.location.href='index.html'">Seguir comprando</button>
-      <button class="btn" style="background:#512615;">Proceder con pedido</button>
-    </div>
+    <div id="total-box">Total: L 0.00</div>
   </main>
 
-  <!-- botón flotante whatsapp también aquí -->
-  <a href="https://wa.me/50494546047?text=Hola%2C%20quiero%20hacer%20un%20pedido%20de%20Café%20Cortero" class="whatsapp-float" style="position:fixed;bottom:22px;right:22px;background:#25D366;width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:30px;text-decoration:none;box-shadow:0 4px 12px rgba(0,0,0,.3);">
+  <a href="https://wa.me/50494546047?text=Hola%2C%20quiero%20finalizar%20mi%20pedido%20de%20Café%20Cortero" class="whatsapp-float" target="_blank">
     <i class="fa-brands fa-whatsapp"></i>
   </a>
 
@@ -141,42 +158,41 @@
     function getCart() {
       return JSON.parse(localStorage.getItem(CART_KEY)) || [];
     }
+
     function saveCart(cart) {
       localStorage.setItem(CART_KEY, JSON.stringify(cart));
     }
 
     function renderCart() {
-      const cart = getCart();
       const container = document.getElementById('cart-container');
+      const cart = getCart();
       container.innerHTML = '';
 
       if (cart.length === 0) {
-        container.innerHTML = '<div class="empty">No tienes productos en el carrito.</div>';
+        container.innerHTML = '<p class="empty">Tu carrito está vacío 🛒</p>';
         document.getElementById('total-box').textContent = 'Total: L 0.00';
         return;
       }
 
       let total = 0;
-
       cart.forEach((item, index) => {
-        // precio: viene como "L 180" → quitamos la L y espacio
-        const priceNumber = parseFloat(item.price.replace('L','').trim());
-        const lineTotal = priceNumber * item.qty;
-        total += lineTotal;
+        const price = parseFloat(item.price.replace('L', '').trim());
+        const subtotal = price * item.qty;
+        total += subtotal;
 
         const div = document.createElement('div');
-        div.className = 'item';
+        div.className = 'cart-item';
         div.innerHTML = `
           <img src="${item.img}" alt="${item.name}">
-          <div class="item-info">
-            <div class="item-name">${item.name}</div>
-            <div class="item-price">L ${priceNumber.toFixed(2)} / unidad</div>
-            <div class="qty-controls">
-              <button class="qty-btn" data-action="minus" data-index="${index}">-</button>
-              <span>${item.qty}</span>
-              <button class="qty-btn" data-action="plus" data-index="${index}">+</button>
-              <button class="del-btn" data-action="del" data-index="${index}">&times;</button>
-            </div>
+          <div class="cart-details">
+            <h3>${item.name}</h3>
+            <p>Precio: ${item.price}</p>
+            <p>Cantidad: ${item.qty}</p>
+          </div>
+          <div class="qty-controls">
+            <button class="qty-btn" data-action="minus" data-index="${index}">−</button>
+            <button class="qty-btn" data-action="plus" data-index="${index}">+</button>
+            <button class="del-btn" data-action="del" data-index="${index}">&times;</button>
           </div>
         `;
         container.appendChild(div);
@@ -185,7 +201,6 @@
       document.getElementById('total-box').textContent = 'Total: L ' + total.toFixed(2);
     }
 
-    // manejar clicks en cantidades
     document.getElementById('cart-container').addEventListener('click', (e) => {
       const btn = e.target.closest('button');
       if (!btn) return;
