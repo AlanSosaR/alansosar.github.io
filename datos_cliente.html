@@ -5,153 +5,62 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Datos del cliente | Café Cortero</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="stylesheet" href="css/recibo.css">
-  <style>
-    body {
-      background: #f5eee6;
-      font-family: "Poppins", sans-serif;
-      color: #512615;
-      margin: 0;
-    }
-
-    header {
-      background: #fff;
-      padding: 0.8rem 1.2rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      box-shadow: 0 2px 10px rgba(0,0,0,.05);
-    }
-
-    header img {
-      height: 60px;
-    }
-
-    .form-container {
-      max-width: 600px;
-      margin: 2rem auto;
-      background: #fff;
-      padding: 2rem;
-      border-radius: 18px;
-      box-shadow: 0 10px 25px rgba(0,0,0,.05);
-    }
-
-    h2 {
-      text-align: center;
-      color: #33673B;
-      margin-bottom: 1rem;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 0.3rem;
-      font-weight: 500;
-    }
-
-    input, textarea, select {
-      width: 100%;
-      padding: 0.7rem;
-      border-radius: 10px;
-      border: 1px solid #ccc;
-      margin-bottom: 1rem;
-      font-family: "Poppins", sans-serif;
-    }
-
-    textarea {
-      resize: none;
-      height: 80px;
-    }
-
-    .btn {
-      background: #33673B;
-      color: #fff;
-      border: none;
-      padding: 0.8rem 1.5rem;
-      border-radius: 999px;
-      cursor: pointer;
-      display: block;
-      width: 100%;
-      font-weight: 600;
-      font-size: 1rem;
-    }
-
-    .btn:hover {
-      background: #28552f;
-    }
-
-    .note {
-      font-size: 0.9rem;
-      text-align: center;
-      margin-top: 1rem;
-      color: #666;
-    }
-  </style>
+  <link rel="stylesheet" href="css/datos_cliente.css">
 </head>
 <body>
-
   <header>
-    <a href="index.html">
-      <img src="imagenes/logo%20mejorado%20trasmparente.png" alt="Café Cortero">
-    </a>
-    <span class="recibo-title">Datos del cliente</span>
+    <img src="imagenes/logo%20mejorado%20trasmparente.png" alt="Café Cortero">
+    <span class="form-title">Datos del cliente</span>
   </header>
 
   <main>
-    <div class="form-container">
-      <h2>Completa tus datos</h2>
-      <form id="cliente-form">
+    <form id="cliente-form" class="form-box">
+      <div class="form-group">
         <label for="nombre">Nombre completo *</label>
         <input type="text" id="nombre" required>
+      </div>
 
+      <div class="form-group">
         <label for="correo">Correo electrónico *</label>
         <input type="email" id="correo" required>
+      </div>
 
+      <div class="form-group">
         <label for="telefono">Teléfono</label>
-        <input type="text" id="telefono" placeholder="Opcional">
+        <input type="tel" id="telefono" placeholder="Opcional">
+      </div>
 
-        <label for="zona">Zona o ciudad *</label>
-        <input type="text" id="zona" required>
+      <div class="form-group">
+        <label for="zona">Zona / Ciudad *</label>
+        <select id="zona" required>
+          <option value="">Seleccionar...</option>
+          <option value="Danlí">Danlí</option>
+          <option value="El Paraíso">El Paraíso</option>
+          <option value="Tegucigalpa">Tegucigalpa</option>
+          <option value="Yuscarán">Yuscarán</option>
+          <option value="Otro">Otro</option>
+        </select>
+      </div>
 
-        <label for="direccion">Dirección completa *</label>
-        <input type="text" id="direccion" required>
+      <div class="form-group">
+        <label for="direccion">Dirección de entrega *</label>
+        <textarea id="direccion" rows="3" required></textarea>
+      </div>
 
-        <label for="nota">Nota del pedido (opcional)</label>
-        <textarea id="nota" placeholder="Ej: Entregar por la mañana"></textarea>
+      <div class="form-group">
+        <label for="nota">Nota adicional</label>
+        <textarea id="nota" rows="2" placeholder="Ej: Entregar por la mañana"></textarea>
+      </div>
 
-        <button type="submit" class="btn">Continuar al resumen</button>
-      </form>
+      <div class="actions">
+        <button type="button" class="btn-secondary" onclick="window.location.href='index.html'">Volver</button>
+        <button type="submit" class="btn">Guardar y continuar</button>
+      </div>
+    </form>
 
-      <p class="note">Tu información solo se usa para procesar tu pedido.</p>
-    </div>
+    <div id="guardado" class="guardado">✅ Datos guardados correctamente</div>
   </main>
 
-  <script>
-    document.getElementById("cliente-form").addEventListener("submit", (e) => {
-      e.preventDefault();
-
-      const cliente = {
-        nombre: document.getElementById("nombre").value.trim(),
-        correo: document.getElementById("correo").value.trim(),
-        telefono: document.getElementById("telefono").value.trim(),
-        zona: document.getElementById("zona").value.trim(),
-        direccion: document.getElementById("direccion").value.trim(),
-        nota: document.getElementById("nota").value.trim()
-      };
-
-      // Validar campos obligatorios
-      if (!cliente.nombre || !cliente.correo || !cliente.zona || !cliente.direccion) {
-        alert("Por favor, completa los campos obligatorios marcados con *");
-        return;
-      }
-
-      // Guardar datos del cliente en localStorage
-      localStorage.setItem("cliente_info", JSON.stringify(cliente));
-
-      // Redirigir al recibo
-      window.location.href = "recibo.html";
-    });
-  </script>
-
+  <script src="js/datos_cliente.js"></script>
 </body>
 </html>
