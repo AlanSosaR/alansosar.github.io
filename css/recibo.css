@@ -5,34 +5,37 @@ body {
   color: #4b2e1e;
 }
 
-/* ----- ENCABEZADO ----- */
+/* ----------- HEADER ----------- */
 .recibo-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   background: #fff;
-  padding: 10px 20px;
+  padding: 12px 20px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  flex-wrap: wrap;
 }
 
 .logo {
-  width: 60px;
+  width: 65px;
   height: auto;
+  cursor: pointer;
 }
 
 .recibo-title {
-  font-size: 1.3rem;
+  font-size: 1.4rem;
   color: #4b2e1e;
+  font-weight: 600;
   margin: 0;
 }
 
-/* ----- CONTENEDOR PRINCIPAL ----- */
+/* ----------- CAJA DE RECIBO ----------- */
 .recibo-box {
   background: #fff;
   border-radius: 12px;
   padding: 20px;
-  max-width: 600px;
-  margin: 20px auto;
+  max-width: 700px;
+  margin: 25px auto;
   box-shadow: 0 3px 10px rgba(0,0,0,0.05);
 }
 
@@ -48,36 +51,38 @@ body {
 .product-list li {
   list-style: none;
   background: #f3f2ef;
-  padding: 8px 12px;
-  border-radius: 8px;
-  margin-bottom: 6px;
+  padding: 10px 15px;
+  border-radius: 10px;
+  margin-bottom: 8px;
 }
 
 .total {
   font-weight: 600;
   text-align: right;
   color: #4b2e1e;
+  margin-top: 10px;
 }
 
-/* ----- BOTONES ----- */
+/* ----------- BOTONES ----------- */
 .actions {
   display: flex;
   justify-content: center;
+  align-items: center;
   gap: 15px;
-  margin: 25px auto;
+  margin: 30px auto;
   flex-wrap: wrap;
 }
 
 .btn {
-  padding: 12px 22px;
+  padding: 12px 24px;
   border: none;
-  border-radius: 25px;
+  border-radius: 30px;
   font-weight: 600;
-  font-size: 15px;
+  font-size: 16px;
   cursor: pointer;
   transition: all 0.3s ease;
   width: 45%;
-  max-width: 200px;
+  max-width: 220px;
 }
 
 .btn-brown {
@@ -95,7 +100,7 @@ body {
   opacity: 0.9;
 }
 
-/* ----- CONFIRMACIÓN ----- */
+/* ----------- CONFIRMACIÓN ----------- */
 .confirm-box {
   text-align: center;
   margin-top: 20px;
@@ -103,17 +108,47 @@ body {
   color: #20603d;
 }
 
-/* ----- RESPONSIVE ----- */
-@media (max-width: 600px) {
+/* ----------- RESPONSIVE ----------- */
+@media (max-width: 768px) {
+  .recibo-header {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
   .recibo-title {
-    font-size: 1.1rem;
+    font-size: 1.2rem;
   }
+
   .logo {
-    width: 50px;
+    width: 55px;
   }
+
+  .actions {
+    flex-direction: row;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .btn {
+    width: 45%;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .recibo-header {
+    flex-direction: row;
+  }
+
+  .recibo-title {
+    font-size: 1rem;
+  }
+
   .actions {
     flex-direction: column;
+    gap: 10px;
   }
+
   .btn {
     width: 100%;
   }
