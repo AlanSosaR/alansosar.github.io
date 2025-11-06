@@ -6,7 +6,6 @@
   <title>Café Cortero | La esencia de Honduras en cada sorbo</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
   <style>
     :root {
       --marron: #512615;
@@ -66,8 +65,8 @@
       cursor: pointer;
     }
     .cart-btn i {
-      color: var(--verde);
-      font-size: 1.05rem;
+      color: var(--verde); /* ✅ color verde permanente */
+      font-size: 1.2rem;
     }
     .cart-count {
       position: absolute;
@@ -109,20 +108,17 @@
       margin-bottom: .6rem;
     }
     .product-text h1 {
-      font-size: 2rem;
+      font-size: 2rem; /* ligeramente reducido para que se vea mejor */
       color: var(--marron);
-      line-height: 1.1;
-      margin-bottom: .75rem;
-    }
-    @media (max-width: 600px) {
-      .product-text h1 {
-        font-size: 1.6rem;
-      }
+      line-height: 1.15;
+      margin-bottom: .7rem;
+      font-weight: 600;
     }
     .product-text p {
       color: #6f5a4e;
       line-height: 1.6;
       margin-bottom: 1rem;
+      font-size: 0.95rem; /* ajuste sutil en tamaño */
     }
     .pill {
       background: #f0e8e2;
@@ -151,8 +147,6 @@
       cursor: pointer;
       box-shadow: 0 10px 20px rgba(51,103,59,.25);
       transition: .15s;
-      position: relative;
-      overflow: hidden;
     }
     .btn-main i {
       background: rgba(255,255,255,.18);
@@ -192,14 +186,9 @@
       scroll-snap-type: x mandatory;
       padding-bottom: 1rem;
     }
-    /* Ocultar barra de scroll */
-    .similar-list::-webkit-scrollbar {
-      display: none;
-    }
-    .similar-list {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-    }
+    /* Ocultar barra de scroll visualmente */
+    .similar-list::-webkit-scrollbar {display: none;}
+    .similar-list {-ms-overflow-style: none; scrollbar-width: none;}
 
     .similar-card {
       flex: 0 0 165px;
@@ -214,9 +203,7 @@
       cursor: pointer;
     }
     .similar-card.active,
-    .similar-card:hover {
-      border-color: rgba(81,38,21,.15);
-    }
+    .similar-card:hover {border-color: rgba(81,38,21,.15);}
     .similar-card img {
       width: 100%;
       height: 135px;
@@ -248,18 +235,6 @@
       cursor: pointer;
     }
 
-    /* ESTRELLAS EFECTO */
-    .sparkle {
-      position: absolute;
-      font-size: 12px;
-      color: var(--marron);
-      animation: sparkle 700ms ease-out forwards;
-    }
-    @keyframes sparkle {
-      0% {opacity: 1; transform: scale(1) translate(0,0);}
-      100% {opacity: 0; transform: scale(0.5) translate(var(--x), var(--y));}
-    }
-
     /* SOBRE NOSOTROS */
     .about {
       margin-top: 3.4rem;
@@ -284,25 +259,6 @@
       color: #5a483c;
       line-height: 1.7;
       margin-bottom: 1rem;
-    }
-    .about-pills {
-      display: flex;
-      gap: .6rem;
-      flex-wrap: wrap;
-    }
-    .about-pill {
-      background: rgba(81,38,21,.08);
-      padding: .4rem 1rem;
-      border-radius: 999px;
-      font-size: .78rem;
-      color: var(--marron);
-      font-weight: 500;
-    }
-    .about-img img {
-      width: 100%;
-      border-radius: 18px;
-      display: block;
-      object-fit: cover;
     }
 
     footer {
@@ -332,7 +288,6 @@
   </style>
 </head>
 <body>
-  <!-- HEADER -->
   <header>
     <div class="logo-wrap">
       <a href="index.html"><img src="imagenes/logo%20mejorado%20trasmparente.png" alt="Café Cortero"></a>
@@ -352,128 +307,51 @@
     <!-- PRODUCTO PRINCIPAL -->
     <section id="productos" class="product-main" data-main-product>
       <div class="product-text">
-        <small>Café en grano / molido</small>
+        <small id="product-type">Café en grano / molido</small>
         <h1 id="product-name">Café Cortero 250g</h1>
-        <p>Café hondureño de altura, tueste medio, ideal para filtro o prensa francesa. Proyecto familiar, amigable con el medio ambiente.</p>
-        <span class="pill">100% arábica · Danlí</span>
-        <div class="price">L 180</div>
-        <button class="btn-main" id="product-add">
-          <i class="fa-solid fa-cart-plus"></i> Agregar al carrito
-        </button>
+        <p id="product-desc">Café hondureño de altura, tueste medio, ideal para filtro o prensa francesa. Proyecto familiar, amigable con el medio ambiente.</p>
+        <span class="pill" id="product-badge">100% arábica · Danlí</span>
+        <div class="price" id="product-price">L 180</div>
+        <button class="btn-main" id="product-add"><i class="fa-solid fa-cart-plus"></i> Agregar al carrito</button>
       </div>
       <div class="product-img-wrap">
-        <img id="product-image" src="imagenes/4.png" alt="Café Cortero 250g">
-      </div>
-    </section>
-
-    <!-- CARRUSEL -->
-    <section>
-      <h3 class="similar-title">También te puede interesar</h3>
-      <div class="similar-list" id="lista-similares">
-        <div class="similar-card active" data-name="Café Cortero 250g" data-price="L 180" data-img="imagenes/4.png">
-          <img src="imagenes/4.png" alt="">
-          <h4>Café Cortero 250g</h4>
-          <div class="price-sm">L 180</div>
-          <button><i class="fa-solid fa-cart-plus"></i></button>
-        </div>
-        <div class="similar-card" data-name="Café Cortero 500g" data-price="L 320" data-img="imagenes/IMG-20251025-WA0034.jpg">
-          <img src="imagenes/IMG-20251025-WA0034.jpg" alt="">
-          <h4>Café Cortero 500g</h4>
-          <div class="price-sm">L 320</div>
-          <button><i class="fa-solid fa-cart-plus"></i></button>
-        </div>
-        <div class="similar-card" data-name="Café Cortero 1lb" data-price="L 550" data-img="imagenes/4.png">
-          <img src="imagenes/4.png" alt="">
-          <h4>Café Cortero 1lb</h4>
-          <div class="price-sm">L 550</div>
-          <button><i class="fa-solid fa-cart-plus"></i></button>
-        </div>
-      </div>
-    </section>
-
-    <!-- SOBRE NOSOTROS -->
-    <section id="nosotros" class="about">
-      <div>
-        <small>Nuestra historia</small>
-        <h2>Sobre Café Cortero</h2>
-        <p>Café Cortero es un proyecto familiar con la iniciativa de producir un café de calidad amigable con el medio ambiente y con el sabor auténtico de Honduras.</p>
-        <p>Cada grano es cultivado con respeto, cosechado a mano y tostado con dedicación para conservar su esencia natural.</p>
-      </div>
-      <div class="about-img">
-        <img src="imagenes/FB_IMG_1762305864060.jpg" alt="Café Cortero Honduras">
+        <img id="product-image" src="imagenes/4.png" alt="Bolsa de café Cortero">
       </div>
     </section>
   </main>
 
-  <footer>&copy; 2025 Café Cortero. Todos los derechos reservados.</footer>
+  <footer>
+    &copy; 2025 Café Cortero. Todos los derechos reservados.
+  </footer>
 
-  <a href="https://wa.me/50494546047?text=Hola,%20quiero%20más%20información%20sobre%20Café%20Cortero" class="whatsapp-float" target="_blank">
+  <a href="https://wa.me/50494546047?text=Hola%2C%20quiero%20más%20información%20sobre%20Café%20Cortero" class="whatsapp-float" target="_blank">
     <i class="fa-brands fa-whatsapp"></i>
   </a>
 
   <script>
     const CART_KEY = 'cafecortero_cart';
-    const cartBtn = document.getElementById('cart-btn');
-    const cartCount = document.getElementById('cart-count');
-
-    const getCart = () => JSON.parse(localStorage.getItem(CART_KEY)) || [];
-    const saveCart = cart => localStorage.setItem(CART_KEY, JSON.stringify(cart));
-
-    const updateCartCount = () => {
-      const total = getCart().reduce((a, b) => a + b.qty, 0);
-      cartCount.textContent = total;
-    };
-
-    function addToCart(product, btn) {
-      const cart = getCart();
-      const existing = cart.find(p => p.name === product.name);
-      if (existing) existing.qty++;
-      else cart.push(product);
-      saveCart(cart);
-      updateCartCount();
-      if (navigator.vibrate) navigator.vibrate(80);
-      addSparkles(btn);
+    function getCart() {return JSON.parse(localStorage.getItem(CART_KEY)) || [];}
+    function saveCart(c) {localStorage.setItem(CART_KEY, JSON.stringify(c));}
+    function updateCartCount() {
+      const total = getCart().reduce((a,b)=>a+b.qty,0);
+      document.getElementById('cart-count').textContent = total;
     }
-
-    function addSparkles(btn) {
-      for (let i = 0; i < 7; i++) {
-        const s = document.createElement('span');
-        s.className = 'sparkle';
-        s.textContent = '✦';
-        s.style.setProperty('--x', `${(Math.random() - 0.5) * 120}px`);
-        s.style.setProperty('--y', `${(Math.random() - 0.5) * 120}px`);
-        s.style.left = '50%';
-        s.style.top = '50%';
-        btn.appendChild(s);
-        setTimeout(() => s.remove(), 700);
-      }
+    function addToCart(product){
+      const cart=getCart();
+      const i=cart.findIndex(p=>p.name===product.name);
+      if(i>=0)cart[i].qty++;else cart.push(product);
+      saveCart(cart);updateCartCount();
+      if(window.navigator.vibrate)window.navigator.vibrate(80);
     }
-
-    document.getElementById('product-add').addEventListener('click', e => {
-      const product = {
-        name: document.getElementById('product-name').textContent,
-        price: document.querySelector('.price').textContent,
-        img: document.getElementById('product-image').src,
-        qty: 1
-      };
-      addToCart(product, e.currentTarget);
+    document.getElementById('product-add').addEventListener('click',()=>{
+      const product={
+        name:document.getElementById('product-name').textContent,
+        price:document.getElementById('product-price').textContent,
+        img:document.getElementById('product-image').getAttribute('src'),
+        qty:1};
+      addToCart(product);
     });
-
-    document.querySelectorAll('.similar-card button').forEach(btn => {
-      btn.addEventListener('click', e => {
-        const card = e.currentTarget.closest('.similar-card');
-        const product = {
-          name: card.dataset.name,
-          price: card.dataset.price,
-          img: card.dataset.img,
-          qty: 1
-        };
-        addToCart(product, btn);
-        e.stopPropagation();
-      });
-    });
-
-    cartBtn.addEventListener('click', () => window.location.href = 'carrito.html');
+    document.getElementById('cart-btn').addEventListener('click',()=>{window.location.href='carrito.html';});
     updateCartCount();
   </script>
 </body>
