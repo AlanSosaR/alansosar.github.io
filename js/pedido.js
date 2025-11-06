@@ -3,10 +3,8 @@
 //  Café Cortero ☕
 // =============================
 
-// Inicializar EmailJS con tu clave pública
-emailjs.init("ruZ3fWeR8bNiW4jrN"); // ✅ Tu Public Key
+emailjs.init("ruZ3fWeR8bNiW4jrN"); // Clave pública de EmailJS
 
-// Cargar datos del carrito y del cliente desde localStorage
 const cart = JSON.parse(localStorage.getItem("cafecortero_cart")) || [];
 const cliente = JSON.parse(localStorage.getItem("cliente_info")) || null;
 const reciboContainer = document.getElementById("recibo-container");
@@ -22,7 +20,6 @@ if (!cart.length || !cliente) {
   renderRecibo();
 }
 
-// Mostrar recibo con datos del cliente y productos
 function renderRecibo() {
   let total = 0;
   let productosHTML = "";
@@ -70,7 +67,6 @@ function renderRecibo() {
   `;
 }
 
-// Enviar pedido por correo usando EmailJS
 function enviarPedido() {
   if (!cart.length || !cliente) return alert("No hay pedido para enviar.");
 
@@ -95,8 +91,6 @@ function enviarPedido() {
   emailjs.send("service_f20ze8o", "template_rn6l0o5", templateParams)
     .then(() => {
       document.getElementById("confirm-box").style.display = "block";
-
-      // Vaciar carrito
       localStorage.removeItem("cafecortero_cart");
 
       setTimeout(() => {
