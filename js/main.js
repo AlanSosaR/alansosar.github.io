@@ -1,7 +1,4 @@
-// ===============================
-// CAFÉ CORTERO - LÓGICA DEL SITIO
-// ===============================
-
+// clave única para index y carrito
 const CART_KEY = 'cafecortero_cart';
 
 function getCart() {
@@ -24,7 +21,7 @@ function animateCartIcon() {
   if (!cartBtn) return;
   cartBtn.classList.add('animate');
   setTimeout(() => cartBtn.classList.remove('animate'), 650);
-  if (window.navigator.vibrate) window.navigator.vibrate([60, 40, 60]);
+  if (navigator.vibrate) navigator.vibrate([60, 40, 60]);
 }
 
 function addToCart(product) {
@@ -40,27 +37,32 @@ function addToCart(product) {
   animateCartIcon();
 }
 
-// Inicialización
+// todo se engancha cuando el DOM ya cargó
 document.addEventListener('DOMContentLoaded', () => {
+  // botón del producto grande
   const btnMain = document.getElementById('product-add');
   if (btnMain) {
     btnMain.addEventListener('click', () => {
-      const p = {
+      const product = {
         name: document.getElementById('product-name').textContent,
         price: document.getElementById('product-price').textContent,
-        img: document.getElementById('product-image').src,
+        img: document.getElementById('product-image').getAttribute('src'),
         qty: 1
       };
-      addToCart(p);
+      addToCart(product);
     });
   }
 
+  // tarjetas del carrusel
   const cards = document.querySelectorAll('.similar-card');
   cards.forEach(card => {
-    card.addEventListener('click', e => {
+    // click en la tarjeta -> mostrar en el hero
+    card.addEventListener('click', (e) => {
       if (e.target.closest('button')) return;
+
       cards.forEach(c => c.classList.remove('active'));
       card.classList.add('active');
+
       document.getElementById('product-name').textContent = card.dataset.name;
       document.getElementById('product-desc').textContent = card.dataset.desc;
       document.getElementById('product-badge').textContent = card.dataset.badge;
@@ -68,8 +70,9 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('product-image').src = card.dataset.img;
     });
 
+    // botón dentro de la tarjeta -> agregar
     const btn = card.querySelector('button');
-    btn.addEventListener('click', e => {
+    btn.addEventListener('click', (e) => {
       e.stopPropagation();
       const product = {
         name: card.dataset.name,
@@ -81,6 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // click en el carrito -> ir a carrito.html
   const cartBtn = document.getElementById('cart-btn');
   if (cartBtn) {
     cartBtn.addEventListener('click', () => {
@@ -88,5 +92,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // pintar contador al inicio
   updateCartCount();
 });
