@@ -1,36 +1,142 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Recibo del pedido | Café Cortero</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="stylesheet" href="css/recibo.css">
-  <!-- EmailJS SDK -->
-  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-</head>
-<body>
-  <header>
-    <a href="index.html">
-      <img src="imagenes/logo%20mejorado%20trasmparente.png" alt="Café Cortero">
-    </a>
-    <span class="recibo-title">Resumen del pedido</span>
-  </header>
+:root {
+  --marron: #512615;
+  --verde: #33673B;
+  --blanco: #ffffff;
+  --fondo: #f5eee6;
+}
 
-  <main>
-    <div id="recibo-container" class="recibo-box"></div>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-    <div class="actions">
-      <button class="btn-secondary" onclick="window.location.href='datos_cliente.html'">Editar datos</button>
-      <button class="btn" onclick="enviarPedido()">Enviar pedido</button>
-    </div>
+body {
+  font-family: "Poppins", sans-serif;
+  background: var(--fondo);
+  color: var(--marron);
+}
 
-    <div id="confirm-box" class="confirm-box">
-      ✅ Pedido enviado correctamente. Te contactaremos pronto.
-    </div>
-  </main>
+/* HEADER */
+header {
+  background: var(--blanco);
+  padding: .8rem 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 10px rgba(0,0,0,.03);
+}
 
-  <script src="js/pedido.js"></script>
-</body>
-</html>
+header img {
+  height: 60px;
+}
+
+.recibo-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+/* RECIBO */
+main {
+  max-width: 800px;
+  margin: 2rem auto;
+  background: #fff;
+  padding: 2rem 1.5rem;
+  border-radius: 18px;
+  box-shadow: 0 8px 25px rgba(0,0,0,.03);
+}
+
+.recibo-box h3 {
+  text-align: center;
+  margin-bottom: 1rem;
+  color: var(--verde);
+}
+
+.recibo-section {
+  margin-bottom: 1.2rem;
+}
+
+.recibo-section h4 {
+  margin-bottom: .5rem;
+  border-bottom: 2px solid var(--verde);
+  display: inline-block;
+  padding-bottom: .2rem;
+}
+
+.recibo-section p {
+  margin: .2rem 0;
+}
+
+.product-list {
+  margin-top: .8rem;
+}
+
+.product-list li {
+  list-style: none;
+  padding: .4rem 0;
+  border-bottom: 1px solid #eee;
+}
+
+.total {
+  font-weight: 600;
+  text-align: right;
+  margin-top: 1rem;
+  font-size: 1.1rem;
+}
+
+/* BOTONES */
+.actions {
+  margin-top: 2rem;
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.btn {
+  border: none;
+  background: var(--verde);
+  color: #fff;
+  padding: .8rem 1.6rem;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.btn-secondary {
+  border: none;
+  background: #ccc;
+  color: #333;
+  padding: .8rem 1.6rem;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.btn:hover {
+  background: #28532c;
+}
+
+.btn-secondary:hover {
+  background: #bbb;
+}
+
+/* MENSAJE CONFIRMACIÓN */
+.confirm-box {
+  text-align: center;
+  background: #e9ffe9;
+  border: 2px solid #48c774;
+  color: #27632a;
+  padding: 1rem;
+  border-radius: 15px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-top: 1.5rem;
+  display: none;
+  animation: fadeIn .5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {opacity: 0; transform: translateY(10px);}
+  to {opacity: 1; transform: translateY(0);}
+}
