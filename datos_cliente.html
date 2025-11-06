@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Datos del cliente | Café Cortero</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="css/formulario.css">
+</head>
+<body>
+  <header>
+    <a href="index.html">
+      <img src="imagenes/logo%20mejorado%20trasmparente.png" alt="Café Cortero">
+    </a>
+    <span class="form-title">Datos del cliente</span>
+  </header>
+
+  <main>
+    <form id="cliente-form" class="formulario">
+      <h2>Completa tus datos para continuar con el pedido</h2>
+
+      <label for="nombre">Nombre completo*</label>
+      <input type="text" id="nombre" required placeholder="Ejemplo: Alan Sosa">
+
+      <label for="correo">Correo electrónico*</label>
+      <input type="email" id="correo" required placeholder="Ejemplo: alan@gmail.com">
+
+      <label for="telefono">Teléfono*</label>
+      <input type="tel" id="telefono" required minlength="8" maxlength="15" placeholder="Ejemplo: +504 9454-6047">
+
+      <label for="zona">Zona o punto de entrega*</label>
+      <select id="zona" required>
+        <option value="">Seleccione una opción</option>
+        <option value="San Ramón - Recoger en tienda">San Ramón (recoger en tienda)</option>
+        <option value="Valle de Jamastrán">Valle de Jamastrán (envío local)</option>
+        <option value="Danlí">Danlí (entrega a domicilio)</option>
+        <option value="Tegucigalpa">Tegucigalpa (por transporte)</option>
+      </select>
+
+      <label for="direccion">Dirección o punto de referencia*</label>
+      <textarea id="direccion" rows="2" required placeholder="Ejemplo: Frente a la escuela, Aldea San Ramón"></textarea>
+
+      <label for="nota">Nota del pedido (opcional)</label>
+      <textarea id="nota" rows="2" placeholder="Ejemplo: Entregar después de las 4 p.m."></textarea>
+
+      <div class="actions">
+        <button type="button" class="btn-secondary" onclick="window.location.href='carrito.html'">Volver al carrito</button>
+        <button type="submit" class="btn">Continuar</button>
+      </div>
+    </form>
+  </main>
+
+  <script src="js/cliente.js"></script>
+</body>
+</html>
