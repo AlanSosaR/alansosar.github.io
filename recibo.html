@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recibo del pedido | Café Cortero</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="css/recibo.css">
+  <!-- EmailJS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+</head>
+<body>
+  <header>
+    <a href="index.html">
+      <img src="imagenes/logo%20mejorado%20trasmparente.png" alt="Café Cortero">
+    </a>
+    <span class="recibo-title">Resumen del pedido</span>
+  </header>
+
+  <main>
+    <div id="recibo-container" class="recibo-box"></div>
+
+    <div class="actions">
+      <button class="btn-secondary" onclick="window.location.href='datos_cliente.html'">Editar datos</button>
+      <button class="btn" onclick="enviarPedido()">Enviar pedido</button>
+    </div>
+
+    <div id="confirm-box" class="confirm-box">
+      ✅ Pedido enviado correctamente. Te contactaremos pronto.
+    </div>
+  </main>
+
+  <script src="js/pedido.js"></script>
+</body>
+</html>
