@@ -19,16 +19,26 @@
       background: var(--fondo);
       color: var(--marron);
     }
+
+    /* HEADER */
     header {
-      background: #fff;
+      background: var(--blanco);
       padding: .8rem 1.2rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
       box-shadow: 0 2px 10px rgba(0,0,0,.03);
     }
-    header img {height: 60px;}
-    .cart-title {font-size: 1.6rem; font-weight: 600;}
+    header img {
+      height: 60px;
+    }
+    .cart-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--marron);
+    }
+
+    /* CONTENIDO */
     main {
       max-width: 1100px;
       margin: 2rem auto;
@@ -51,9 +61,7 @@
       background: #eff5ff;
       border-radius: 14px;
     }
-    .item-info {
-      flex: 1;
-    }
+    .item-info {flex: 1;}
     .item-name {font-weight: 600; margin-bottom: .2rem;}
     .item-price {font-size: .9rem; margin-bottom: .5rem;}
     .qty-controls {
@@ -110,6 +118,44 @@
       border-radius: 18px;
       text-align: center;
     }
+
+    /* MENSAJE DE CONFIRMACIÓN */
+    .confirm-box {
+      text-align: center;
+      background: #e9ffe9;
+      border: 2px solid #48c774;
+      color: #27632a;
+      padding: 1rem;
+      border-radius: 15px;
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-top: 1.5rem;
+      display: none;
+      animation: fadeIn .5s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(10px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+
+    /* BOTÓN WHATSAPP */
+    .whatsapp-float {
+      position: fixed;
+      bottom: 22px;
+      right: 22px;
+      background: #25D366;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 30px;
+      text-decoration: none;
+      box-shadow: 0 4px 12px rgba(0,0,0,.3);
+    }
   </style>
 </head>
 <body>
@@ -126,12 +172,16 @@
 
     <div class="actions">
       <button class="btn" onclick="window.location.href='index.html'">Seguir comprando</button>
-      <button class="btn" style="background:#512615;">Proceder con pedido</button>
+      <button class="btn" style="background:#512615;" onclick="sendToWhatsApp()">Proceder con pedido</button>
+    </div>
+
+    <div id="confirm-box" class="confirm-box">
+      ✅ Pedido enviado con éxito. ¡Gracias por comprar con Café Cortero!
     </div>
   </main>
 
-  <!-- botón flotante whatsapp también aquí -->
-  <a href="https://wa.me/50494546047?text=Hola%2C%20quiero%20hacer%20un%20pedido%20de%20Café%20Cortero" class="whatsapp-float" style="position:fixed;bottom:22px;right:22px;background:#25D366;width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:30px;text-decoration:none;box-shadow:0 4px 12px rgba(0,0,0,.3);">
+  <!-- Botón flotante WhatsApp -->
+  <a href="https://wa.me/50494546047?text=Hola%2C%20quiero%20hacer%20un%20pedido%20de%20Café%20Cortero" class="whatsapp-float">
     <i class="fa-brands fa-whatsapp"></i>
   </a>
 
@@ -157,9 +207,7 @@
       }
 
       let total = 0;
-
       cart.forEach((item, index) => {
-        // precio: viene como "L 180" → quitamos la L y espacio
         const priceNumber = parseFloat(item.price.replace('L','').trim());
         const lineTotal = priceNumber * item.qty;
         total += lineTotal;
@@ -185,7 +233,6 @@
       document.getElementById('total-box').textContent = 'Total: L ' + total.toFixed(2);
     }
 
-    // manejar clicks en cantidades
     document.getElementById('cart-container').addEventListener('click', (e) => {
       const btn = e.target.closest('button');
       if (!btn) return;
@@ -207,6 +254,51 @@
       saveCart(cart);
       renderCart();
     });
+
+    // Enviar pedido a WhatsApp, limpiar carrito y mostrar mensaje
+    function sendToWhatsApp() {
+      const cart = getCart();
+      if (cart.length === 0) {
+        alert('Tu carrito está vacío.');
+        return;
+      }
+
+      const fecha = new Date();
+      const opciones = { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' };
+      const fechaHora = fecha.toLocaleString('es-HN', opciones);
+
+      let message = `🕒 Pedido realizado el ${fechaHora}\n\n`;
+      message += 'Hola, quiero hacer un pedido de Café Cortero:\n\n';
+
+      let total = 0;
+      cart.forEach(item => {
+        const priceNumber = parseFloat(item.price.replace('L','').trim());
+        const subtotal = priceNumber * item.qty;
+        message += `• ${item.name} x${item.qty} = L ${subtotal.toFixed(2)}\n`;
+        total += subtotal;
+      });
+
+      message += `\n💰 Total: L ${total.toFixed(2)}\n\n`;
+      message += 'Gracias por su preferencia ☕';
+
+      const url = `https://wa.me/50494546047?text=${encodeURIComponent(message)}`;
+
+      // Vaciar carrito y actualizar
+      localStorage.removeItem(CART_KEY);
+      renderCart();
+
+      // Mostrar mensaje de confirmación
+      const confirmBox = document.getElementById('confirm-box');
+      confirmBox.style.display = 'block';
+
+      // Ocultar mensaje después de 5 segundos
+      setTimeout(() => {
+        confirmBox.style.display = 'none';
+      }, 5000);
+
+      // Abrir WhatsApp
+      window.open(url, '_blank');
+    }
 
     renderCart();
   </script>
