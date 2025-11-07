@@ -1,36 +1,44 @@
-// ============================
-//  CAFÉ CORTERO - MIS PEDIDOS
-// ============================
+// ==========================
+//   MIS PEDIDOS - CAFÉ CORTERO
+// ==========================
 
-const contenedor = document.getElementById("pedidos-container");
-const pedidos = JSON.parse(localStorage.getItem("cafecortero_pedidos")) || [];
+// Cargar pedidos desde localStorage
+document.addEventListener('DOMContentLoaded', () => {
+  const contenedor = document.getElementById('pedidos-container');
+  const pedidos = JSON.parse(localStorage.getItem('pedidos')) || [];
 
-if (!pedidos.length) {
-  contenedor.innerHTML = `
-    <div style="text-align:center;">
-      <p>No tienes pedidos registrados.</p>
-      <button class="btn-volver" onclick="window.location.href='index.html'">Volver al inicio</button>
-    </div>
-  `;
-} else {
-  renderPedidos();
-}
+  if (pedidos.length === 0) {
+    contenedor.innerHTML = `
+      <p style="text-align:center; margin-top:2rem; color:#4b2e1e; font-weight:500;">
+        No tienes pedidos registrados aún ☕
+      </p>
+    `;
+    return;
+  }
 
-function renderPedidos() {
-  contenedor.innerHTML = pedidos
-    .map(p => `
-      <div class="pedido">
-        <h3>Pedido N.º ${p.numero}</h3>
-        <p><strong>Fecha:</strong> ${p.fecha}</p>
-        <p class="estado"><strong>Estado:</strong> ${p.estado}</p>
-        <p><strong>Total:</strong> L ${p.total}</p>
-        <div class="detalle">
-          ${p.productos.map(prod => `
-            <p>${prod.name} x${prod.qty} = L ${(parseFloat(prod.price.replace("L", "").trim()) * prod.qty).toFixed(2)}</p>
-          `).join("")}
-        </div>
+  pedidos.forEach(pedido => {
+    const div = document.createElement('div');
+    div.classList.add('pedido');
+
+    // Formatear fecha
+    const fecha = new Date(pedido.fecha).toLocaleString('es-HN', {
+      dateStyle: 'short',
+      timeStyle: 'medium'
+    });
+
+    // Crear contenido del pedido
+    div.innerHTML = `
+      <h3>Pedido N.º ${pedido.numeroPedido}</h3>
+      <p><strong>Fecha:</strong> ${fecha}</p>
+      <p><strong>Estado:</strong> <span class="estado">${pedido.estado || 'Pendiente'}</span></p>
+      <p><strong>Total:</strong> L ${pedido.total.toFixed(2)}</p>
+      <div class="detalle">
+        ${pedido.productos.map(p => `
+          ${p.nombre} x${p.cantidad} = L ${p.subtotal.toFixed(2)}<br>
+        `).join('')}
       </div>
-    `)
-    .join("") +
-    `<button class="btn-volver" onclick="window.location.href='index.html'">Volver al inicio</button>`;
-}
+    `;
+
+    contenedor.appendChild(div);
+  });
+});
