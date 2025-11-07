@@ -1,30 +1,26 @@
-// =============================
-//  SISTEMA DE RECIBO + ENVÍO DE PEDIDO
-//  Café Cortero ☕
-// =============================
+// ============================
+//  CAFÉ CORTERO - PEDIDO
+// ============================
 
-// Inicializar EmailJS con tu clave pública
-emailjs.init("ruZ3fWeR8bNiW4jrN"); // ✅ Tu Public Key
+emailjs.init("ruZ3fWeR8bNiW4jrN"); // Tu clave pública EmailJS
 
-// Cargar datos del carrito y del cliente desde localStorage
+const reciboContainer = document.getElementById("recibo-container");
 const cart = JSON.parse(localStorage.getItem("cafecortero_cart")) || [];
 const cliente = JSON.parse(localStorage.getItem("cliente_info")) || null;
-const reciboContainer = document.getElementById("recibo-container");
 
+// Si no hay datos
 if (!cart.length || !cliente) {
   reciboContainer.innerHTML = `
-    <div style="text-align:center; padding: 2rem;">
+    <div style="text-align:center; padding:2rem;">
       <p>No hay datos del pedido.</p>
-      <button class="btn btn-green" onclick="window.location.href='index.html'">
-        Volver al inicio
-      </button>
+      <button class="btn btn-green" onclick="window.location.href='index.html'">Volver al inicio</button>
     </div>
   `;
 } else {
   renderRecibo();
 }
 
-// Mostrar recibo con datos del cliente y productos
+// Generar contenido del recibo
 function renderRecibo() {
   let total = 0;
   let productosHTML = "";
@@ -36,14 +32,14 @@ function renderRecibo() {
     productosHTML += `<li>${item.name} x${item.qty} = L ${subtotal.toFixed(2)}</li>`;
   });
 
-  const fecha = new Date().toLocaleString("es-HN", { 
-    day: "2-digit", month: "2-digit", year: "numeric", 
-    hour: "2-digit", minute: "2-digit" 
+  const fecha = new Date().toLocaleString("es-HN", {
+    day: "2-digit", month: "2-digit", year: "numeric",
+    hour: "2-digit", minute: "2-digit"
   });
 
   reciboContainer.innerHTML = `
-    <div class="recibo-section">
-      <h3><img src="imagenes/13.png" alt="Café Cortero" class="icono-cafe"> Café Cortero</h3>
+    <div class="recibo-section encabezado">
+      <h3><img src="imagenes/13.png" alt="icono café" class="icono-cafe"> Café Cortero</h3>
       <p><strong>Fecha:</strong> ${fecha}</p>
     </div>
 
@@ -72,7 +68,7 @@ function renderRecibo() {
   `;
 }
 
-// Enviar pedido por correo usando EmailJS
+// Enviar pedido con EmailJS
 function enviarPedido() {
   if (!cart.length || !cliente) return alert("No hay pedido para enviar.");
 
@@ -94,17 +90,14 @@ function enviarPedido() {
     total: total.toFixed(2)
   };
 
-  // Enviar correo con EmailJS
   emailjs.send("service_f20ze8o", "template_rn6l0o5", templateParams)
     .then(() => {
-      alert("✅ Pedido enviado con éxito. ¡Gracias por comprar con Café Cortero!");
+      alert("✅ Pedido enviado con éxito. ¡Gracias por comprar en Café Cortero!");
       localStorage.removeItem("cafecortero_cart");
-      setTimeout(() => {
-        window.location.href = "index.html";
-      }, 2500);
+      setTimeout(() => window.location.href = "index.html", 2500);
     })
     .catch(err => {
-      console.error("Error al enviar:", err);
-      alert("❌ Ocurrió un error al enviar el pedido. Inténtalo nuevamente.");
+      console.error("Error:", err);
+      alert("❌ Error al enviar el pedido. Intenta nuevamente.");
     });
 }
