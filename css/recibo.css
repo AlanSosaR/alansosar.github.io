@@ -1,3 +1,7 @@
+/* ================================
+   ESTILOS DEL RECIBO - CAFÉ CORTERO
+   ================================ */
+
 body {
   font-family: 'Poppins', sans-serif;
   margin: 0;
@@ -5,7 +9,7 @@ body {
   color: #4b2e1e;
 }
 
-/* ----------- HEADER ----------- */
+/* ---------- HEADER ---------- */
 .recibo-header {
   display: flex;
   justify-content: space-between;
@@ -29,7 +33,7 @@ body {
   margin: 0;
 }
 
-/* ----------- CAJA DE RECIBO ----------- */
+/* ---------- CONTENEDOR ---------- */
 .recibo-box {
   background: #fff;
   border-radius: 12px;
@@ -63,14 +67,36 @@ body {
   margin-top: 10px;
 }
 
-/* ----------- BOTONES ----------- */
+/* ---------- ICONO CAFÉ ---------- */
+.icono-cafe {
+  width: 65px;
+  height: 65px;
+  vertical-align: middle;
+  margin-right: 10px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: inline-block;
+}
+
+/* ---------- TÍTULO CON ICONO ---------- */
+.recibo-section h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #4b2e1e;
+  margin-bottom: 10px;
+}
+
+/* ---------- BOTONES ---------- */
 .actions {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 20px;
   margin: 30px auto;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 
 .btn {
@@ -100,48 +126,18 @@ body {
   opacity: 0.9;
 }
 
-/* ----------- RESPONSIVE ----------- */
+/* ---------- RESPONSIVE ---------- */
 @media (max-width: 768px) {
-  .recibo-header {
-    flex-direction: row;
-    justify-content: space-between;
-  }
-
-  .recibo-title {
-    font-size: 1.2rem;
-  }
-
-  .logo {
-    width: 55px;
-  }
-
-  .actions {
-    flex-direction: row;
-    justify-content: center;
-    gap: 10px;
-  }
-
-  .btn {
-    width: 45%;
-    font-size: 14px;
-  }
+  .logo { width: 55px; }
+  .icono-cafe { width: 55px; height: 55px; margin-right: 8px; }
+  .recibo-title { font-size: 1.2rem; }
+  .actions { gap: 12px; }
+  .btn { width: 48%; font-size: 14px; }
 }
 
 @media (max-width: 480px) {
-  .recibo-header {
-    flex-direction: row;
-  }
-
-  .recibo-title {
-    font-size: 1rem;
-  }
-
-  .actions {
-    flex-direction: row;
-    justify-content: space-between;
-  }
-
-  .btn {
-    width: 48%;
-  }
+  .icono-cafe { width: 50px; height: 50px; margin-right: 6px; }
+  .recibo-title { font-size: 1rem; }
+  .actions { justify-content: space-between; padding: 0 10px; }
+  .btn { width: 48%; font-size: 13px; }
 }
