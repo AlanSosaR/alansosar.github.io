@@ -3,23 +3,28 @@
 //  Café Cortero ☕
 // =============================
 
-emailjs.init("ruZ3fWeR8bNiW4jrN"); // Clave pública de EmailJS
+// Inicializar EmailJS con tu clave pública
+emailjs.init("ruZ3fWeR8bNiW4jrN"); // ✅ Tu Public Key
 
+// Cargar datos del carrito y del cliente desde localStorage
 const cart = JSON.parse(localStorage.getItem("cafecortero_cart")) || [];
 const cliente = JSON.parse(localStorage.getItem("cliente_info")) || null;
 const reciboContainer = document.getElementById("recibo-container");
 
 if (!cart.length || !cliente) {
   reciboContainer.innerHTML = `
-    <div style="text-align:center;">
+    <div style="text-align:center; padding: 2rem;">
       <p>No hay datos del pedido.</p>
-      <button class="btn" onclick="window.location.href='index.html'">Volver al inicio</button>
+      <button class="btn btn-green" onclick="window.location.href='index.html'">
+        Volver al inicio
+      </button>
     </div>
   `;
 } else {
   renderRecibo();
 }
 
+// Mostrar recibo con datos del cliente y productos
 function renderRecibo() {
   let total = 0;
   let productosHTML = "";
@@ -38,7 +43,7 @@ function renderRecibo() {
 
   reciboContainer.innerHTML = `
     <div class="recibo-section">
-      <h3>☕ Café Cortero</h3>
+      <h3><img src="imagenes/13.png" alt="Café Cortero"> Café Cortero</h3>
       <p><strong>Fecha:</strong> ${fecha}</p>
     </div>
 
@@ -67,6 +72,7 @@ function renderRecibo() {
   `;
 }
 
+// Enviar pedido por correo usando EmailJS
 function enviarPedido() {
   if (!cart.length || !cliente) return alert("No hay pedido para enviar.");
 
@@ -88,15 +94,18 @@ function enviarPedido() {
     total: total.toFixed(2)
   };
 
+  // Enviar correo con EmailJS
   emailjs.send("service_f20ze8o", "template_rn6l0o5", templateParams)
     .then(() => {
-      document.getElementById("confirm-box").style.display = "block";
+      alert("✅ Pedido enviado con éxito. ¡Gracias por comprar con Café Cortero!");
+
+      // Vaciar carrito
       localStorage.removeItem("cafecortero_cart");
 
+      // Redirigir al inicio después de 3 segundos
       setTimeout(() => {
-        document.getElementById("confirm-box").style.display = "none";
         window.location.href = "index.html";
-      }, 4000);
+      }, 3000);
     })
     .catch(err => {
       console.error("Error al enviar:", err);
