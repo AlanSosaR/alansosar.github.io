@@ -33,7 +33,7 @@ body {
   margin: 0;
 }
 
-/* ---------- CAJA PRINCIPAL ---------- */
+/* ---------- CONTENEDOR ---------- */
 .recibo-box {
   background: #fff;
   border-radius: 12px;
@@ -67,20 +67,15 @@ body {
   margin-top: 10px;
 }
 
-/* ---------- ICONO CAFÉ CORTERO ---------- */
+/* ---------- ICONO CAFÉ ---------- */
 .icono-cafe {
-  width: 65px; /* Igual que el logo principal */
+  width: 65px;
   height: 65px;
   vertical-align: middle;
   margin-right: 10px;
   border-radius: 50%;
   object-fit: cover;
   display: inline-block;
-  transition: transform 0.2s ease;
-}
-
-.icono-cafe:hover {
-  transform: scale(1.05);
 }
 
 /* ---------- TÍTULO CON ICONO ---------- */
@@ -131,62 +126,18 @@ body {
   opacity: 0.9;
 }
 
-/* ---------- RESPONSIVE DESIGN ---------- */
+/* ---------- RESPONSIVE ---------- */
 @media (max-width: 768px) {
-  .recibo-header {
-    flex-direction: row;
-    justify-content: space-between;
-  }
-
-  .recibo-title {
-    font-size: 1.2rem;
-  }
-
-  .logo {
-    width: 55px;
-  }
-
-  .icono-cafe {
-    width: 55px;
-    height: 55px;
-    margin-right: 8px;
-  }
-
-  .actions {
-    flex-wrap: nowrap;
-    justify-content: center;
-    gap: 12px;
-  }
-
-  .btn {
-    width: 48%;
-    font-size: 14px;
-  }
+  .logo { width: 55px; }
+  .icono-cafe { width: 55px; height: 55px; margin-right: 8px; }
+  .recibo-title { font-size: 1.2rem; }
+  .actions { gap: 12px; }
+  .btn { width: 48%; font-size: 14px; }
 }
 
 @media (max-width: 480px) {
-  .recibo-header {
-    flex-direction: row;
-  }
-
-  .recibo-title {
-    font-size: 1rem;
-  }
-
-  .icono-cafe {
-    width: 50px;
-    height: 50px;
-    margin-right: 6px;
-  }
-
-  .actions {
-    flex-wrap: nowrap;
-    justify-content: space-between;
-    padding: 0 10px;
-  }
-
-  .btn {
-    width: 48%;
-    font-size: 13px;
-  }
+  .icono-cafe { width: 50px; height: 50px; margin-right: 6px; }
+  .recibo-title { font-size: 1rem; }
+  .actions { justify-content: space-between; padding: 0 10px; }
+  .btn { width: 48%; font-size: 13px; }
 }
