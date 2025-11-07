@@ -9,10 +9,11 @@ body {
 .header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start; /* 🔹 Alinea todo a la izquierda */
   background: #fff;
   padding: 10px 20px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  gap: 10px; /* separa el logo del texto */
 }
 
 .logo {
@@ -24,8 +25,6 @@ body {
   font-size: 1.6rem;
   color: #4b2e1e;
   font-weight: 600;
-  text-align: center;
-  flex: 1;
 }
 
 /* CONTENEDOR PRINCIPAL */
