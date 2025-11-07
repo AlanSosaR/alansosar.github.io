@@ -63,12 +63,14 @@ body {
   margin-top: 10px;
 }
 
-/* ----------- CAFÉ CORTERO LOGO EN RECIBO ----------- */
-.recibo-section h3 img {
+/* ----------- ICONO CAFÉ ----------- */
+.icono-cafe {
   width: 28px;
   height: 28px;
   vertical-align: middle;
   margin-right: 6px;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
 /* ----------- BOTONES ----------- */
