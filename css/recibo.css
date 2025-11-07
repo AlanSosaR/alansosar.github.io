@@ -1,155 +1,120 @@
 body {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
+  background: #f8f6f3;
   margin: 0;
-  background-color: #f8f6f2;
-  color: #4b2e1e;
+  color: #4b2c1a;
 }
 
-/* ----------- HEADER ----------- */
-.recibo-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+header {
   background: #fff;
-  padding: 12px 20px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  flex-wrap: wrap;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.8rem 1rem;
 }
 
-.logo {
-  width: 65px;
-  height: auto;
-  cursor: pointer;
+header img {
+  height: 45px;
+  margin-right: 10px;
 }
 
 .recibo-title {
-  font-size: 1.4rem;
-  color: #4b2e1e;
+  font-size: 1.2rem;
   font-weight: 600;
-  margin: 0;
+  color: #4b2c1a;
 }
 
-/* ----------- CAJA DE RECIBO ----------- */
+main {
+  max-width: 700px;
+  margin: 1.5rem auto;
+  padding: 1rem;
+}
+
 .recibo-box {
   background: #fff;
-  border-radius: 12px;
-  padding: 20px;
-  max-width: 700px;
-  margin: 25px auto;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+  border-radius: 16px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+  padding: 1.5rem;
 }
 
 .recibo-section {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.3rem;
 }
 
-.recibo-section h4 {
-  color: #20603d;
-  margin-bottom: 10px;
+h3, h4 {
+  margin-bottom: .5rem;
 }
+
+h3 { color: #33673B; }
+h4 { color: #33673B; }
 
 .product-list li {
   list-style: none;
-  background: #f3f2ef;
-  padding: 10px 15px;
+  background: #f8f6f3;
+  margin: .3rem 0;
+  padding: .5rem .8rem;
   border-radius: 10px;
-  margin-bottom: 8px;
 }
 
 .total {
-  font-weight: 600;
   text-align: right;
-  color: #4b2e1e;
-  margin-top: 10px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-top: 0.8rem;
 }
 
-/* ----------- BOTONES ----------- */
 .actions {
   display: flex;
   justify-content: center;
-  align-items: center;
-  gap: 15px;
-  margin: 30px auto;
+  gap: 1rem;
   flex-wrap: wrap;
+  margin-top: 2rem;
+}
+
+.btn, .btn-secondary {
+  border: none;
+  padding: 0.7rem 1.5rem;
+  border-radius: 30px;
+  font-weight: 500;
+  cursor: pointer;
+  font-size: 0.95rem;
 }
 
 .btn {
-  padding: 12px 24px;
-  border: none;
-  border-radius: 30px;
-  font-weight: 600;
-  font-size: 16px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  width: 45%;
-  max-width: 220px;
-}
-
-.btn-brown {
-  background: #4b2e1e;
+  background: #33673B;
   color: #fff;
 }
 
-.btn-green {
-  background: #20603d;
+.btn-secondary {
+  background: #512615; /* Café */
   color: #fff;
 }
 
-.btn:hover {
-  transform: scale(1.03);
-  opacity: 0.9;
-}
-
-/* ----------- CONFIRMACIÓN ----------- */
 .confirm-box {
   text-align: center;
-  margin-top: 20px;
-  font-weight: 500;
-  color: #20603d;
+  background: #e9ffe9;
+  border: 2px solid #48c774;
+  color: #27632a;
+  padding: 1rem;
+  border-radius: 15px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-top: 1.5rem;
+  display: none;
+  animation: fadeIn .5s ease-in-out;
 }
 
-/* ----------- RESPONSIVE ----------- */
-@media (max-width: 768px) {
-  .recibo-header {
-    flex-direction: row;
-    justify-content: space-between;
-  }
-
-  .recibo-title {
-    font-size: 1.2rem;
-  }
-
-  .logo {
-    width: 55px;
-  }
-
-  .actions {
-    flex-direction: row;
-    justify-content: center;
-    gap: 10px;
-  }
-
-  .btn {
-    width: 45%;
-    font-size: 14px;
-  }
+@keyframes fadeIn {
+  from {opacity: 0; transform: translateY(10px);}
+  to {opacity: 1; transform: translateY(0);}
 }
 
-@media (max-width: 480px) {
-  .recibo-header {
-    flex-direction: row;
-  }
-
-  .recibo-title {
-    font-size: 1rem;
-  }
-
-  .actions {
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .btn {
+@media (max-width: 600px) {
+  .recibo-box { padding: 1rem; }
+  .btn, .btn-secondary {
     width: 100%;
   }
+  h3, h4 { font-size: 1rem; }
+  body { font-size: 0.9rem; }
 }
