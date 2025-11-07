@@ -5,42 +5,46 @@ body {
   color: #4b2e1e;
 }
 
-/* ENCABEZADO */
+/* ===== ENCABEZADO ===== */
 .header {
   display: flex;
   align-items: center;
   justify-content: flex-start; /* 🔹 Alinea todo a la izquierda */
   background: #fff;
-  padding: 10px 20px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  gap: 10px; /* separa el logo del texto */
+  padding: 12px 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  gap: 10px; /* separa logo y texto */
 }
 
-.logo {
+.header img {
   width: 60px;
   height: auto;
 }
 
-.title {
-  font-size: 1.6rem;
-  color: #4b2e1e;
+.header h1 {
+  font-size: 1.5rem;
   font-weight: 600;
+  color: #4b2e1e;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-/* CONTENEDOR PRINCIPAL */
+/* ===== CONTENEDOR PRINCIPAL ===== */
 .pedidos-container {
   max-width: 800px;
   margin: 2rem auto;
   padding: 1rem;
 }
 
-/* TARJETAS DE PEDIDOS */
+/* ===== TARJETAS DE PEDIDOS ===== */
 .pedido {
   background: #fff;
   padding: 1rem 1.5rem;
   border-radius: 15px;
   margin-bottom: 1.2rem;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
   transition: transform 0.2s ease;
 }
 
@@ -51,11 +55,11 @@ body {
 .pedido h3 {
   color: #4b2e1e;
   font-size: 1.1rem;
-  margin-bottom: .4rem;
+  margin-bottom: 0.4rem;
 }
 
 .pedido p {
-  margin: .2rem 0;
+  margin: 0.2rem 0;
   font-size: 0.95rem;
   line-height: 1.4;
 }
@@ -65,21 +69,21 @@ body {
   color: #20603d;
 }
 
-/* DETALLES */
+/* ===== DETALLES ===== */
 .detalle {
   background: #f2efe9;
-  padding: .7rem 1rem;
+  padding: 0.7rem 1rem;
   border-radius: 10px;
-  margin-top: .7rem;
+  margin-top: 0.7rem;
   font-size: 0.9rem;
 }
 
-/* BOTÓN */
+/* ===== BOTÓN ===== */
 .btn-volver {
   display: block;
   width: fit-content;
   margin: 2rem auto;
-  padding: .7rem 1.5rem;
+  padding: 0.7rem 1.5rem;
   border: none;
   border-radius: 999px;
   background: #4b2e1e;
@@ -93,10 +97,19 @@ body {
   background: #3a2316;
 }
 
-/* RESPONSIVO */
+/* ===== RESPONSIVO ===== */
 @media (max-width: 600px) {
-  .title {
-    font-size: 1.4rem;
+  .header {
+    justify-content: flex-start; /* 🔹 también izquierda en móviles */
+    padding: 10px 15px;
+  }
+
+  .header img {
+    width: 50px;
+  }
+
+  .header h1 {
+    font-size: 1.3rem;
   }
 
   .pedido {
