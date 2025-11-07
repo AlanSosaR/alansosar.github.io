@@ -1,133 +1,30 @@
-// ============================
-//  CAFÉ CORTERO - PEDIDO
-// ============================
+document.addEventListener('DOMContentLoaded', () => {
+  const btnProceder = document.getElementById('btnProceder');
 
-emailjs.init("ruZ3fWeR8bNiW4jrN"); // Clave pública EmailJS
+  if (btnProceder) {
+    btnProceder.addEventListener('click', () => {
+      // Datos simulados del cliente (estos se llenan desde el formulario real)
+      const pedido = {
+        numeroPedido: `CFC-${new Date().getFullYear()}-${Math.floor(10000 + Math.random() * 90000)}`,
+        fecha: new Date().toISOString(),
+        nombre: "Sosa Mattia",
+        correo: "alansosa225@gmail.com",
+        telefono: "963225123333333",
+        zona: "Danlí",
+        direccion: "Barrio abajo",
+        nota: "En la mañana",
+        productos: [
+          { nombre: "Café Cortero 250g", cantidad: 1, subtotal: 180 },
+          { nombre: "Café Cortero 500g", cantidad: 1, subtotal: 320 }
+        ],
+        total: 500
+      };
 
-const reciboContainer = document.getElementById("recibo-container");
-const cart = JSON.parse(localStorage.getItem("cafecortero_cart")) || [];
-const cliente = JSON.parse(localStorage.getItem("cliente_info")) || null;
+      // Guarda el pedido actual
+      localStorage.setItem('pedidoActual', JSON.stringify(pedido));
 
-// Si no hay datos
-if (!cart.length || !cliente) {
-  reciboContainer.innerHTML = `
-    <div style="text-align:center; padding:2rem;">
-      <p>No hay datos del pedido.</p>
-      <button class="btn btn-green" onclick="window.location.href='index.html'">Volver al inicio</button>
-    </div>
-  `;
-} else {
-  renderRecibo();
-}
-
-function generarNumeroPedido() {
-  const fecha = new Date();
-  const año = fecha.getFullYear();
-  const aleatorio = Math.floor(10000 + Math.random() * 90000);
-  return `CFC-${año}-${aleatorio}`;
-}
-
-// Generar contenido del recibo
-function renderRecibo() {
-  const numeroPedido = generarNumeroPedido();
-  localStorage.setItem("numero_pedido_actual", numeroPedido);
-
-  let total = 0;
-  let productosHTML = "";
-
-  cart.forEach(item => {
-    const precio = parseFloat(item.price.replace("L", "").trim());
-    const subtotal = precio * item.qty;
-    total += subtotal;
-    productosHTML += `<li>${item.name} x${item.qty} = L ${subtotal.toFixed(2)}</li>`;
-  });
-
-  const fecha = new Date().toLocaleString("es-HN", {
-    day: "2-digit", month: "2-digit", year: "numeric",
-    hour: "2-digit", minute: "2-digit"
-  });
-
-  reciboContainer.innerHTML = `
-    <div class="recibo-section encabezado">
-      <h3><img src="imagenes/13.png" alt="icono café" class="icono-cafe"> Café Cortero</h3>
-      <p><strong>Pedido N.º:</strong> ${numeroPedido}</p>
-      <p><strong>Fecha:</strong> ${fecha}</p>
-    </div>
-
-    <div class="recibo-section">
-      <h4>Datos del cliente</h4>
-      <p><strong>Nombre:</strong> ${cliente.nombre}</p>
-      <p><strong>Correo:</strong> ${cliente.correo}</p>
-      <p><strong>Teléfono:</strong> ${cliente.telefono || "No especificado"}</p>
-      <p><strong>Zona:</strong> ${cliente.zona}</p>
-      <p><strong>Dirección:</strong> ${cliente.direccion}</p>
-      ${cliente.nota ? `<p><strong>Nota:</strong> ${cliente.nota}</p>` : ""}
-    </div>
-
-    <div class="recibo-section">
-      <h4>Productos</h4>
-      <ul class="product-list">${productosHTML}</ul>
-      <div class="total">💰 Total: L ${total.toFixed(2)}</div>
-    </div>
-
-    <div class="recibo-section">
-      <h4>Métodos de pago</h4>
-      <p>💵 <strong>Transferencia bancaria:</strong> Banco Atlántida, cuenta 123456789 a nombre de Alan Sosa</p>
-      <p>📱 <strong>Tigo Money:</strong> +504 9454-6047</p>
-      <p>💳 <strong>PayPal:</strong> <a href="https://www.paypal.me/cafecortero" target="_blank">paypal.me/cafecortero</a></p>
-    </div>
-  `;
-}
-
-// Enviar pedido y guardar en lista de pedidos
-function enviarPedido() {
-  if (!cart.length || !cliente) return alert("No hay pedido para enviar.");
-
-  const numeroPedido = localStorage.getItem("numero_pedido_actual");
-  const total = cart.reduce(
-    (acc, item) => acc + parseFloat(item.price.replace("L", "").trim()) * item.qty,
-    0
-  );
-
-  const pedido = {
-    numero: numeroPedido,
-    fecha: new Date().toLocaleString("es-HN"),
-    cliente: cliente,
-    productos: cart,
-    total: total.toFixed(2),
-    estado: "Pendiente"
-  };
-
-  // Guardar pedido en historial
-  const historial = JSON.parse(localStorage.getItem("cafecortero_pedidos")) || [];
-  historial.push(pedido);
-  localStorage.setItem("cafecortero_pedidos", JSON.stringify(historial));
-
-  // Enviar correo con EmailJS
-  const templateParams = {
-    numero: numeroPedido,
-    nombre: cliente.nombre,
-    correo: cliente.correo,
-    telefono: cliente.telefono || "No especificado",
-    zona: cliente.zona,
-    direccion: cliente.direccion,
-    nota: cliente.nota || "Sin nota",
-    productos: cart
-      .map(p => `${p.name} x${p.qty} = L ${(parseFloat(p.price.replace("L", "").trim()) * p.qty).toFixed(2)}`)
-      .join("\n"),
-    total: total.toFixed(2)
-  };
-
-  emailjs.send("service_f20ze8o", "template_rn6l0o5", templateParams)
-    .then(() => {
-      localStorage.removeItem("cafecortero_cart");
-      alert(`✅ Pedido ${numeroPedido} enviado correctamente.`);
-      setTimeout(() => {
-        window.location.href = "mis-pedidos.html";
-      }, 1500);
-    })
-    .catch(err => {
-      console.error("Error:", err);
-      alert("❌ Error al enviar el pedido. Intenta nuevamente.");
+      // Redirige al recibo
+      window.location.href = "recibo.html";
     });
-}
+  }
+});
