@@ -1,50 +1,159 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Detalles del pedido - Café Cortero</title>
-  <link rel="stylesheet" href="css/recibo.css?v=12" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recibo del pedido | Café Cortero</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="css/recibo.css">
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: #f8f6f3;
+      margin: 0;
+      color: #4b2c1a;
+    }
+
+    header {
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.8rem 1rem;
+    }
+    header img {
+      height: 45px;
+      margin-right: 10px;
+    }
+    .recibo-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #4b2c1a;
+    }
+
+    main {
+      max-width: 700px;
+      margin: 1.5rem auto;
+      padding: 1rem;
+    }
+
+    .recibo-box {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+      padding: 1.5rem;
+    }
+
+    .recibo-section {
+      margin-bottom: 1.3rem;
+    }
+
+    h3, h4 {
+      margin-bottom: .5rem;
+    }
+    h3 { color: #33673B; }
+    h4 { color: #33673B; }
+
+    .product-list li {
+      list-style: none;
+      background: #f8f6f3;
+      margin: .3rem 0;
+      padding: .5rem .8rem;
+      border-radius: 10px;
+    }
+
+    .total {
+      text-align: right;
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-top: 0.8rem;
+    }
+
+    /* BOTONES */
+    .actions {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 2rem;
+    }
+
+    .btn, .btn-secondary {
+      border: none;
+      padding: 0.7rem 1.5rem;
+      border-radius: 30px;
+      font-weight: 500;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+
+    .btn {
+      background: #33673B;
+      color: #fff;
+    }
+    .btn-secondary {
+      background: #512615; /* café */
+      color: #fff;
+    }
+
+    .confirm-box {
+      text-align: center;
+      background: #e9ffe9;
+      border: 2px solid #48c774;
+      color: #27632a;
+      padding: 1rem;
+      border-radius: 15px;
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-top: 1.5rem;
+      display: none;
+      animation: fadeIn .5s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(10px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+
+    @media (max-width: 600px) {
+      .recibo-box { padding: 1rem; }
+      .btn, .btn-secondary {
+        width: 100%;
+      }
+      h3, h4 { font-size: 1rem; }
+      body { font-size: 0.9rem; }
+    }
+  </style>
 </head>
 <body>
-  <header class="header">
-    <div class="logo" onclick="window.location.href='index.html'">
-      <img src="imagenes/logo.png" alt="Café Cortero" />
-    </div>
-    <h1>Detalles del pedido</h1>
-    <button class="btn-mis-pedidos" onclick="window.location.href='mis-pedidos.html'">
-      Mis pedidos
-    </button>
+  <header>
+    <img src="imagenes/logo%20mejorado%20trasmparente.png" alt="Café Cortero">
+    <span class="recibo-title">Resumen del pedido</span>
   </header>
 
-  <main id="recibo">
-    <div class="recibo-card" id="recibo-card">
-      <h2><img src="imagenes/logo.png" alt="Logo" /> Café Cortero</h2>
-      <p class="pedido-numero">Pedido N.º: <span id="numeroPedido">Cargando...</span></p>
-      <p class="fecha" id="fechaPedido"></p>
+  <main>
+    <div id="recibo-container" class="recibo-box"></div>
 
-      <h3 class="section-title">Datos del cliente</h3>
-      <div id="datosCliente"></div>
+    <!-- BOTONES AL FINAL -->
+    <div class="actions">
+      <button class="btn-secondary" onclick="editarDatos()">Editar datos</button>
+      <button class="btn" onclick="enviarPedido()">Enviar pedido</button>
+    </div>
 
-      <h3 class="section-title">Productos</h3>
-      <div id="listaProductos"></div>
-
-      <p class="total">💰 <strong>Total:</strong> L <span id="totalPedido">0.00</span></p>
-
-      <h3 class="section-title">Métodos de pago</h3>
-      <div class="metodo-pago">
-        💵 <strong>Transferencia bancaria:</strong> Banco Atlántida, cuenta 123456789 a nombre de Alan Sosa <br />
-        📱 <strong>Tigo Money:</strong> +504 9454-6047 <br />
-        💳 <strong>PayPal:</strong> <a href="https://paypal.me/cafecortero" target="_blank">paypal.me/cafecortero</a>
-      </div>
-
-      <div class="botones">
-        <button onclick="window.location.href='datos_cliente.html'">Editar datos</button>
-        <button onclick="enviarPedido()">Enviar pedido</button>
-      </div>
+    <div id="confirm-box" class="confirm-box">
+      ✅ Pedido enviado correctamente. Te contactaremos pronto.
     </div>
   </main>
 
-  <script src="js/recibo.js?v=12"></script>
+  <script src="js/pedido.js"></script>
+  <script>
+    // ✅ Mantener datos del cliente al volver a editar
+    function editarDatos() {
+      window.location.href = "datos_cliente.html?edit=true";
+    }
+  </script>
 </body>
 </html>
