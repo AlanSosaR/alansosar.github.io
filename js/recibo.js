@@ -2,7 +2,7 @@
 //  CAFÉ CORTERO - PEDIDO
 // ============================
 
-emailjs.init("ruZ3fWeR8bNiW4jrN"); // Clave pública EmailJS
+emailjs.init("ruZ3fWeR8bNiW4jrN"); // Tu clave pública EmailJS
 
 const reciboContainer = document.getElementById("recibo-container");
 const cart = JSON.parse(localStorage.getItem("cafecortero_cart")) || [];
@@ -20,18 +20,8 @@ if (!cart.length || !cliente) {
   renderRecibo();
 }
 
-function generarNumeroPedido() {
-  const fecha = new Date();
-  const año = fecha.getFullYear();
-  const aleatorio = Math.floor(10000 + Math.random() * 90000);
-  return `CFC-${año}-${aleatorio}`;
-}
-
 // Generar contenido del recibo
 function renderRecibo() {
-  const numeroPedido = generarNumeroPedido();
-  localStorage.setItem("numero_pedido_actual", numeroPedido);
-
   let total = 0;
   let productosHTML = "";
 
@@ -50,7 +40,6 @@ function renderRecibo() {
   reciboContainer.innerHTML = `
     <div class="recibo-section encabezado">
       <h3><img src="imagenes/13.png" alt="icono café" class="icono-cafe"> Café Cortero</h3>
-      <p><strong>Pedido N.º:</strong> ${numeroPedido}</p>
       <p><strong>Fecha:</strong> ${fecha}</p>
     </div>
 
@@ -79,33 +68,16 @@ function renderRecibo() {
   `;
 }
 
-// Enviar pedido y guardar en lista de pedidos
+// Enviar pedido con EmailJS
 function enviarPedido() {
   if (!cart.length || !cliente) return alert("No hay pedido para enviar.");
 
-  const numeroPedido = localStorage.getItem("numero_pedido_actual");
   const total = cart.reduce(
     (acc, item) => acc + parseFloat(item.price.replace("L", "").trim()) * item.qty,
     0
   );
 
-  const pedido = {
-    numero: numeroPedido,
-    fecha: new Date().toLocaleString("es-HN"),
-    cliente: cliente,
-    productos: cart,
-    total: total.toFixed(2),
-    estado: "Pendiente"
-  };
-
-  // Guardar pedido en historial
-  const historial = JSON.parse(localStorage.getItem("cafecortero_pedidos")) || [];
-  historial.push(pedido);
-  localStorage.setItem("cafecortero_pedidos", JSON.stringify(historial));
-
-  // Enviar correo con EmailJS
   const templateParams = {
-    numero: numeroPedido,
     nombre: cliente.nombre,
     correo: cliente.correo,
     telefono: cliente.telefono || "No especificado",
@@ -120,11 +92,9 @@ function enviarPedido() {
 
   emailjs.send("service_f20ze8o", "template_rn6l0o5", templateParams)
     .then(() => {
+      alert("✅ Pedido enviado con éxito. ¡Gracias por comprar en Café Cortero!");
       localStorage.removeItem("cafecortero_cart");
-      alert(`✅ Pedido ${numeroPedido} enviado correctamente.`);
-      setTimeout(() => {
-        window.location.href = "mis-pedidos.html";
-      }, 1500);
+      setTimeout(() => window.location.href = "index.html", 2500);
     })
     .catch(err => {
       console.error("Error:", err);
