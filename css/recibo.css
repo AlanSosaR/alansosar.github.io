@@ -1,20 +1,20 @@
-/* ===== ESTILO GENERAL ===== */
+/* ======== ESTILO GENERAL ======== */
 body {
   margin: 0;
   padding: 0;
+  font-family: "Poppins", sans-serif;
   background-color: #f8f6f1;
-  font-family: 'Poppins', sans-serif;
   color: #4b2e1e;
 }
 
-/* ===== ENCABEZADO ===== */
+/* ======== ENCABEZADO ======== */
 .header-recibo {
   display: flex;
-  align-items: center;
   justify-content: space-between;
+  align-items: center;
   background-color: #fff;
-  padding: 10px 18px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  padding: 12px 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
   position: sticky;
   top: 0;
   z-index: 100;
@@ -26,9 +26,8 @@ body {
 }
 
 .logo-recibo {
-  width: 48px;
+  width: 50px;
   height: auto;
-  cursor: pointer;
   transition: transform 0.3s ease;
 }
 
@@ -41,6 +40,8 @@ body {
   font-weight: 600;
   color: #4b2e1e;
   margin: 0;
+  text-align: center;
+  flex-grow: 1;
 }
 
 .boton-mis-pedidos {
@@ -57,45 +58,49 @@ body {
   background-color: #5c3a25;
 }
 
-/* ===== CONTENEDOR DEL RECIBO ===== */
+/* ======== RECIBO ======== */
 .recibo-container {
   max-width: 600px;
   margin: 30px auto;
   background-color: #fff;
-  border-radius: 15px;
+  border-radius: 16px;
   padding: 25px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
 }
 
-/* ===== BLOQUES ===== */
 .recibo-container h2 {
   font-size: 1.1rem;
-  margin-top: 1.5rem;
   color: #2c1a10;
+  margin-top: 20px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 5px;
 }
 
 .recibo-container p {
-  margin: 4px 0;
+  margin: 5px 0;
+  line-height: 1.5;
+  font-size: 0.95rem;
 }
 
-/* ===== PRODUCTOS ===== */
+/* ======== PRODUCTOS ======== */
 .producto {
   background-color: #f1ece6;
   border-radius: 10px;
-  padding: 8px 12px;
+  padding: 10px 12px;
   margin-bottom: 8px;
   font-size: 0.95rem;
 }
 
-/* ===== TOTAL ===== */
+/* ======== TOTAL ======== */
 .total {
   font-weight: 700;
   color: #3c1e10;
   text-align: right;
   margin-top: 15px;
+  font-size: 1rem;
 }
 
-/* ===== RESPONSIVO ===== */
+/* ======== RESPONSIVO ======== */
 @media (max-width: 600px) {
   .recibo-container {
     width: 90%;
