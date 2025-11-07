@@ -1,12 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const reciboContainer = document.getElementById('recibo-container');
+  const contenedor = document.getElementById('recibo-container');
   const pedido = JSON.parse(localStorage.getItem('pedidoActual'));
 
   if (!pedido) {
-    reciboContainer.innerHTML = `
-      <p style="text-align:center; color:#4b2e1e; margin-top:2rem;">
+    contenedor.innerHTML = `
+      <div style="text-align:center; padding:20px; background:#fff; border-radius:12px;">
         No se encontró información del pedido ☕
-      </p>`;
+      </div>`;
     return;
   }
 
@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     timeStyle: 'short'
   });
 
-  reciboContainer.innerHTML = `
+  contenedor.innerHTML = `
     <h2>Café Cortero</h2>
     <p><strong>Pedido N.º:</strong> ${pedido.numeroPedido}</p>
     <p><strong>Fecha:</strong> ${fechaFormateada}</p>
@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
     <p><strong>Teléfono:</strong> ${pedido.telefono}</p>
     <p><strong>Zona:</strong> ${pedido.zona}</p>
     <p><strong>Dirección:</strong> ${pedido.direccion}</p>
-    <p><strong>Nota:</strong> ${pedido.nota || '—'}</p>
+    <p><strong>Nota:</strong> ${pedido.nota || "—"}</p>
 
     <h2>Productos</h2>
     ${pedido.productos.map(p => `
@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
     <p class="total">💰 Total: L ${pedido.total.toFixed(2)}</p>
 
     <h2>Métodos de pago</h2>
-    <p>💵 <strong>Transferencia bancaria:</strong> Banco Atlántida, cuenta 123456789 a nombre de Alan Sosa</p>
+    <p>💵 <strong>Transferencia:</strong> Banco Atlántida, cuenta 123456789 a nombre de Alan Sosa</p>
     <p>📱 <strong>Tigo Money:</strong> +504 9454-6047</p>
   `;
 });
