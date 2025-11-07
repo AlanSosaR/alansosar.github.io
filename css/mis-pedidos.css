@@ -9,48 +9,25 @@ body {
 .header {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: space-between; /* 🔹 Logo izquierda, título derecha */
   background: #fff;
   padding: 12px 20px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  gap: 12px;
 }
 
-.logo-container {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.logo-icono {
-  width: 48px;
+.logo {
+  width: 55px;
   height: auto;
 }
 
-.logo-texto {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.1;
-}
-
-.logo-texto .nombre {
-  font-size: 0.9rem;
-  color: #4b2e1e;
-  font-weight: 500;
-}
-
-.logo-texto .marca {
-  font-size: 1rem;
-  color: #4b2e1e;
-  font-weight: 700;
-}
-
-/* Título de la página */
 .header h1 {
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   font-weight: 600;
   color: #4b2e1e;
-  margin-left: 10px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 /* ===== CONTENIDO ===== */
@@ -68,10 +45,16 @@ body {
   margin-bottom: 1.2rem;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
   transition: transform 0.2s ease;
+  animation: fadeIn 0.5s ease-in;
 }
 
 .pedido:hover {
   transform: translateY(-3px);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .pedido h3 {
@@ -123,19 +106,10 @@ body {
 @media (max-width: 600px) {
   .header {
     padding: 10px 15px;
-    gap: 8px;
   }
 
-  .logo-icono {
-    width: 42px;
-  }
-
-  .logo-texto .nombre {
-    font-size: 0.85rem;
-  }
-
-  .logo-texto .marca {
-    font-size: 0.95rem;
+  .logo {
+    width: 48px;
   }
 
   .header h1 {
