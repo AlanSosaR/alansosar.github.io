@@ -5,31 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Detalles del pedido | Café Cortero</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="css/recibo.css">
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 </head>
 <body>
-  <!-- HEADER -->
   <header class="recibo-header">
-    <a href="index.html" class="logo-link">
+    <a href="index.html">
       <img src="imagenes/logo%20mejorado%20trasmparente.png" alt="Café Cortero" class="logo">
     </a>
-    <h1 class="recibo-title">Detalles del pedido</h1>
+    <span class="recibo-title">Detalles del pedido</span>
   </header>
 
-  <!-- MAIN CONTENT -->
   <main>
     <div id="recibo-container" class="recibo-box"></div>
 
-    <!-- BOTONES -->
     <div class="actions">
-      <button class="btn btn-brown" onclick="window.location.href='datos_cliente.html'">
-        Editar datos
-      </button>
-      <button class="btn btn-green" onclick="enviarPedido()">
-        Enviar pedido
-      </button>
+      <button class="btn btn-brown" onclick="window.location.href='datos_cliente.html'">Editar datos</button>
+      <button class="btn btn-green" onclick="enviarPedido()">Enviar pedido</button>
     </div>
   </main>
 
