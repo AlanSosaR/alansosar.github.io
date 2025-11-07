@@ -1,23 +1,29 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mis pedidos | Café Cortero</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/mis-pedidos.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mis pedidos - Café Cortero</title>
+  <link rel="stylesheet" href="css/mis-pedidos.css" />
+  <link rel="icon" href="img/logo.png" type="image/png" />
 </head>
 <body>
+
+  <!-- ENCABEZADO -->
   <header class="header">
-    <a href="index.html">
-      <img src="imagenes/logo%20mejorado%20trasmparente.png" alt="Café Cortero" class="logo">
-    </a>
-    <h1 class="title">📦 Mis pedidos</h1>
+    <img src="img/logo.png" alt="Logo Café Cortero" class="logo">
+    <h1>📦 Mis pedidos</h1>
   </header>
 
-  <main>
-    <div id="pedidos-container" class="pedidos-container"></div>
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="pedidos-container" id="pedidos-container">
+    <!-- Los pedidos se insertan dinámicamente con JS -->
   </main>
+
+  <!-- BOTÓN VOLVER -->
+  <button class="btn-volver" onclick="window.location.href='index.html'">
+    Volver al inicio
+  </button>
 
   <script src="js/mis-pedidos.js"></script>
 </body>
