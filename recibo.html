@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Recibo del pedido | Café Cortero</title>
+  <title>Café Cortero | Recibo del pedido</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/recibo.css">
 </head>
@@ -16,7 +16,41 @@
     <a href="mis-pedidos.html" class="boton-mis-pedidos">Mis pedidos</a>
   </header>
 
-  <main id="recibo-container" class="recibo-container"></main>
+  <main class="pedido-container">
+
+    <!-- FORMULARIO DEL CLIENTE -->
+    <section id="form-section">
+      <h2>Datos del cliente</h2>
+      <form id="form-datos-cliente">
+        <label>Nombre completo</label>
+        <input type="text" id="nombre" required>
+
+        <label>Correo electrónico</label>
+        <input type="email" id="correo" required>
+
+        <label>Teléfono</label>
+        <input type="tel" id="telefono" required>
+
+        <label>Zona o ciudad</label>
+        <input type="text" id="zona" required>
+
+        <label>Dirección</label>
+        <input type="text" id="direccion" required>
+
+        <label>Nota adicional (opcional)</label>
+        <textarea id="nota"></textarea>
+
+        <button type="submit" id="btnEnviarPedido">Confirmar pedido</button>
+      </form>
+    </section>
+
+    <!-- RECIBO (se muestra después) -->
+    <section id="recibo-section" style="display:none;">
+      <div id="recibo-container"></div>
+      <button id="volver-inicio">Volver al inicio</button>
+    </section>
+
+  </main>
 
   <script src="js/recibo.js"></script>
 </body>
