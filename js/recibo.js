@@ -1,68 +1,133 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const pedido = JSON.parse(localStorage.getItem("pedidoFinal"));
-  const numeroPedido = localStorage.getItem("numeroPedido");
+// ============================
+//  CAFÉ CORTERO - PEDIDO
+// ============================
 
-  const numeroPedidoSpan = document.getElementById("numeroPedido");
-  const fechaPedidoP = document.getElementById("fechaPedido");
-  const datosClienteDiv = document.getElementById("datosCliente");
-  const listaProductosDiv = document.getElementById("listaProductos");
-  const totalPedidoSpan = document.getElementById("totalPedido");
+emailjs.init("ruZ3fWeR8bNiW4jrN"); // Clave pública EmailJS
 
-  if (!pedido) {
-    document.getElementById("recibo-card").innerHTML =
-      "<p>No se encontró información del pedido ☕</p>";
-    return;
-  }
+const reciboContainer = document.getElementById("recibo-container");
+const cart = JSON.parse(localStorage.getItem("cafecortero_cart")) || [];
+const cliente = JSON.parse(localStorage.getItem("cliente_info")) || null;
 
-  numeroPedidoSpan.textContent = numeroPedido || "CFC-XXXX";
-  fechaPedidoP.textContent = pedido.fecha || new Date().toLocaleString("es-HN");
-
-  const c = pedido.cliente;
-  datosClienteDiv.innerHTML = `
-    <p><strong>Nombre:</strong> ${c.nombre}</p>
-    <p><strong>Correo:</strong> ${c.correo}</p>
-    <p><strong>Teléfono:</strong> ${c.telefono}</p>
-    <p><strong>Zona:</strong> ${c.zona}</p>
-    <p><strong>Dirección:</strong> ${c.direccion}</p>
-    <p><strong>Nota:</strong> ${c.nota || "Sin nota"}</p>
+// Si no hay datos
+if (!cart.length || !cliente) {
+  reciboContainer.innerHTML = `
+    <div style="text-align:center; padding:2rem;">
+      <p>No hay datos del pedido.</p>
+      <button class="btn btn-green" onclick="window.location.href='index.html'">Volver al inicio</button>
+    </div>
   `;
+} else {
+  renderRecibo();
+}
 
-  listaProductosDiv.innerHTML = pedido.carrito
-    .map(
-      (p) =>
-        `<div class="producto">${p.nombre} x${p.cantidad} = L ${(p.precio * p.cantidad).toFixed(2)}</div>`
-    )
-    .join("");
+function generarNumeroPedido() {
+  const fecha = new Date();
+  const año = fecha.getFullYear();
+  const aleatorio = Math.floor(10000 + Math.random() * 90000);
+  return `CFC-${año}-${aleatorio}`;
+}
 
-  totalPedidoSpan.textContent = pedido.total.toFixed(2);
-});
+// Generar contenido del recibo
+function renderRecibo() {
+  const numeroPedido = generarNumeroPedido();
+  localStorage.setItem("numero_pedido_actual", numeroPedido);
 
-// ✅ Función para enviar pedido a “Mis pedidos”
-function enviarPedido() {
-  const pedidoActual = JSON.parse(localStorage.getItem("pedidoFinal"));
-  const numeroPedido = localStorage.getItem("numeroPedido");
+  let total = 0;
+  let productosHTML = "";
 
-  if (!pedidoActual || !numeroPedido) {
-    alert("No se encontró información del pedido para enviar.");
-    return;
-  }
-
-  // Obtener pedidos previos
-  let pedidos = JSON.parse(localStorage.getItem("misPedidos")) || [];
-
-  // Agregar el nuevo pedido
-  pedidos.push({
-    id: numeroPedido,
-    fecha: pedidoActual.fecha,
-    cliente: pedidoActual.cliente,
-    carrito: pedidoActual.carrito,
-    total: pedidoActual.total,
-    estado: "Pendiente",
+  cart.forEach(item => {
+    const precio = parseFloat(item.price.replace("L", "").trim());
+    const subtotal = precio * item.qty;
+    total += subtotal;
+    productosHTML += `<li>${item.name} x${item.qty} = L ${subtotal.toFixed(2)}</li>`;
   });
 
-  // Guardar nuevamente
-  localStorage.setItem("misPedidos", JSON.stringify(pedidos));
+  const fecha = new Date().toLocaleString("es-HN", {
+    day: "2-digit", month: "2-digit", year: "numeric",
+    hour: "2-digit", minute: "2-digit"
+  });
 
-  alert("✅ Pedido enviado con éxito. Puedes verlo en 'Mis pedidos'.");
-  window.location.href = "mis-pedidos.html";
+  reciboContainer.innerHTML = `
+    <div class="recibo-section encabezado">
+      <h3><img src="imagenes/13.png" alt="icono café" class="icono-cafe"> Café Cortero</h3>
+      <p><strong>Pedido N.º:</strong> ${numeroPedido}</p>
+      <p><strong>Fecha:</strong> ${fecha}</p>
+    </div>
+
+    <div class="recibo-section">
+      <h4>Datos del cliente</h4>
+      <p><strong>Nombre:</strong> ${cliente.nombre}</p>
+      <p><strong>Correo:</strong> ${cliente.correo}</p>
+      <p><strong>Teléfono:</strong> ${cliente.telefono || "No especificado"}</p>
+      <p><strong>Zona:</strong> ${cliente.zona}</p>
+      <p><strong>Dirección:</strong> ${cliente.direccion}</p>
+      ${cliente.nota ? `<p><strong>Nota:</strong> ${cliente.nota}</p>` : ""}
+    </div>
+
+    <div class="recibo-section">
+      <h4>Productos</h4>
+      <ul class="product-list">${productosHTML}</ul>
+      <div class="total">💰 Total: L ${total.toFixed(2)}</div>
+    </div>
+
+    <div class="recibo-section">
+      <h4>Métodos de pago</h4>
+      <p>💵 <strong>Transferencia bancaria:</strong> Banco Atlántida, cuenta 123456789 a nombre de Alan Sosa</p>
+      <p>📱 <strong>Tigo Money:</strong> +504 9454-6047</p>
+      <p>💳 <strong>PayPal:</strong> <a href="https://www.paypal.me/cafecortero" target="_blank">paypal.me/cafecortero</a></p>
+    </div>
+  `;
+}
+
+// Enviar pedido y guardar en lista de pedidos
+function enviarPedido() {
+  if (!cart.length || !cliente) return alert("No hay pedido para enviar.");
+
+  const numeroPedido = localStorage.getItem("numero_pedido_actual");
+  const total = cart.reduce(
+    (acc, item) => acc + parseFloat(item.price.replace("L", "").trim()) * item.qty,
+    0
+  );
+
+  const pedido = {
+    numero: numeroPedido,
+    fecha: new Date().toLocaleString("es-HN"),
+    cliente: cliente,
+    productos: cart,
+    total: total.toFixed(2),
+    estado: "Pendiente"
+  };
+
+  // Guardar pedido en historial
+  const historial = JSON.parse(localStorage.getItem("cafecortero_pedidos")) || [];
+  historial.push(pedido);
+  localStorage.setItem("cafecortero_pedidos", JSON.stringify(historial));
+
+  // Enviar correo con EmailJS
+  const templateParams = {
+    numero: numeroPedido,
+    nombre: cliente.nombre,
+    correo: cliente.correo,
+    telefono: cliente.telefono || "No especificado",
+    zona: cliente.zona,
+    direccion: cliente.direccion,
+    nota: cliente.nota || "Sin nota",
+    productos: cart
+      .map(p => `${p.name} x${p.qty} = L ${(parseFloat(p.price.replace("L", "").trim()) * p.qty).toFixed(2)}`)
+      .join("\n"),
+    total: total.toFixed(2)
+  };
+
+  emailjs.send("service_f20ze8o", "template_rn6l0o5", templateParams)
+    .then(() => {
+      localStorage.removeItem("cafecortero_cart");
+      alert(`✅ Pedido ${numeroPedido} enviado correctamente.`);
+      setTimeout(() => {
+        window.location.href = "mis-pedidos.html";
+      }, 1500);
+    })
+    .catch(err => {
+      console.error("Error:", err);
+      alert("❌ Error al enviar el pedido. Intenta nuevamente.");
+    });
 }
