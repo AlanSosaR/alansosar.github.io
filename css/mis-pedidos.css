@@ -9,15 +9,15 @@ body {
 .header {
   display: flex;
   align-items: center;
-  justify-content: flex-start; /* 🔹 Alinea todo a la izquierda */
+  justify-content: flex-start; /* 🔹 alinea todo a la izquierda */
   background: #fff;
   padding: 12px 20px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  gap: 10px; /* separa logo y texto */
+  gap: 10px;
 }
 
-.header img {
-  width: 60px;
+.logo {
+  width: 55px;
   height: auto;
 }
 
@@ -31,14 +31,14 @@ body {
   gap: 8px;
 }
 
-/* ===== CONTENEDOR PRINCIPAL ===== */
+/* ===== CONTENIDO ===== */
 .pedidos-container {
   max-width: 800px;
   margin: 2rem auto;
   padding: 1rem;
 }
 
-/* ===== TARJETAS DE PEDIDOS ===== */
+/* ===== TARJETA DE PEDIDO ===== */
 .pedido {
   background: #fff;
   padding: 1rem 1.5rem;
@@ -100,12 +100,12 @@ body {
 /* ===== RESPONSIVO ===== */
 @media (max-width: 600px) {
   .header {
-    justify-content: flex-start; /* 🔹 también izquierda en móviles */
+    justify-content: flex-start;
     padding: 10px 15px;
   }
 
-  .header img {
-    width: 50px;
+  .logo {
+    width: 48px;
   }
 
   .header h1 {
