@@ -1,23 +1,20 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Recibo | Cafecor</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Recibo | Café Cortero</title>
   <link rel="stylesheet" href="recibo.css">
 </head>
 <body>
   <main class="recibo-container">
     <h2>🧾 Recibo del pedido</h2>
-
-    <section id="datosCliente" class="recibo-card"></section>
-
-    <section id="productos" class="recibo-card"></section>
-
-    <section id="total" class="recibo-card total"></section>
+    <section id="recibo-contenido" class="recibo-card">
+      <p>Cargando datos del pedido...</p>
+    </section>
 
     <div class="recibo-buttons">
-      <button id="btnAtras" class="btn-brown">← Editar datos</button>
+      <button id="btnEditar" class="btn-brown">← Editar datos</button>
       <button id="btnConfirmar" class="btn-green">Confirmar pedido →</button>
     </div>
   </main>
