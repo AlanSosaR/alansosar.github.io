@@ -16,7 +16,7 @@ body {
   align-items: center;
   background: #fff;
   padding: 12px 20px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   flex-wrap: wrap;
 }
 
@@ -33,14 +33,14 @@ body {
   margin: 0;
 }
 
-/* ---------- CONTENEDOR ---------- */
+/* ---------- CONTENEDOR PRINCIPAL ---------- */
 .recibo-box {
   background: #fff;
   border-radius: 12px;
   padding: 20px;
   max-width: 700px;
   margin: 25px auto;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
 }
 
 .recibo-section {
@@ -52,6 +52,7 @@ body {
   margin-bottom: 10px;
 }
 
+/* ---------- LISTA DE PRODUCTOS ---------- */
 .product-list li {
   list-style: none;
   background: #f3f2ef;
@@ -67,23 +68,30 @@ body {
   margin-top: 10px;
 }
 
-/* ---------- ICONO CAFÉ ---------- */
+/* ---------- ICONO CAFÉ (IMAGEN 13.PNG) ---------- */
 .icono-cafe {
-  width: 65px;
-  height: 65px;
+  width: 75px;
+  height: 75px;
   vertical-align: middle;
-  margin-right: 10px;
+  margin-right: 12px;
   border-radius: 50%;
   object-fit: cover;
   display: inline-block;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.icono-cafe:hover {
+  transform: scale(1.05);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
 }
 
 /* ---------- TÍTULO CON ICONO ---------- */
 .recibo-section h3 {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 1.5rem;
+  gap: 10px;
+  font-size: 1.7rem;
   font-weight: 600;
   color: #4b2e1e;
   margin-bottom: 10px;
@@ -126,18 +134,67 @@ body {
   opacity: 0.9;
 }
 
-/* ---------- RESPONSIVE ---------- */
+/* ---------- RESPONSIVE DESIGN ---------- */
 @media (max-width: 768px) {
-  .logo { width: 55px; }
-  .icono-cafe { width: 55px; height: 55px; margin-right: 8px; }
-  .recibo-title { font-size: 1.2rem; }
-  .actions { gap: 12px; }
-  .btn { width: 48%; font-size: 14px; }
+  .recibo-header {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .recibo-title {
+    font-size: 1.2rem;
+  }
+
+  .logo {
+    width: 55px;
+  }
+
+  .icono-cafe {
+    width: 65px;
+    height: 65px;
+    margin-right: 8px;
+  }
+
+  .recibo-section h3 {
+    font-size: 1.4rem;
+  }
+
+  .actions {
+    gap: 12px;
+  }
+
+  .btn {
+    width: 48%;
+    font-size: 14px;
+  }
 }
 
 @media (max-width: 480px) {
-  .icono-cafe { width: 50px; height: 50px; margin-right: 6px; }
-  .recibo-title { font-size: 1rem; }
-  .actions { justify-content: space-between; padding: 0 10px; }
-  .btn { width: 48%; font-size: 13px; }
+  .recibo-header {
+    flex-direction: row;
+  }
+
+  .recibo-title {
+    font-size: 1rem;
+  }
+
+  .icono-cafe {
+    width: 55px;
+    height: 55px;
+    margin-right: 6px;
+  }
+
+  .recibo-section h3 {
+    font-size: 1.3rem;
+  }
+
+  .actions {
+    justify-content: space-between;
+    padding: 0 10px;
+  }
+
+  .btn {
+    width: 48%;
+    font-size: 13px;
+  }
 }
