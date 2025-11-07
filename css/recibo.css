@@ -1,3 +1,7 @@
+/* ================================
+   ESTILOS DEL RECIBO - CAFÉ CORTERO
+   ================================ */
+
 body {
   font-family: 'Poppins', sans-serif;
   margin: 0;
@@ -5,7 +9,7 @@ body {
   color: #4b2e1e;
 }
 
-/* ----------- HEADER ----------- */
+/* ---------- HEADER ---------- */
 .recibo-header {
   display: flex;
   justify-content: space-between;
@@ -29,7 +33,7 @@ body {
   margin: 0;
 }
 
-/* ----------- CAJA DE RECIBO ----------- */
+/* ---------- CAJA PRINCIPAL ---------- */
 .recibo-box {
   background: #fff;
   border-radius: 12px;
@@ -63,17 +67,34 @@ body {
   margin-top: 10px;
 }
 
-/* ----------- ICONO CAFÉ ----------- */
+/* ---------- ICONO CAFÉ CORTERO ---------- */
 .icono-cafe {
-  width: 28px;
-  height: 28px;
+  width: 65px; /* Igual que el logo principal */
+  height: 65px;
   vertical-align: middle;
-  margin-right: 6px;
+  margin-right: 10px;
   border-radius: 50%;
   object-fit: cover;
+  display: inline-block;
+  transition: transform 0.2s ease;
 }
 
-/* ----------- BOTONES ----------- */
+.icono-cafe:hover {
+  transform: scale(1.05);
+}
+
+/* ---------- TÍTULO CON ICONO ---------- */
+.recibo-section h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #4b2e1e;
+  margin-bottom: 10px;
+}
+
+/* ---------- BOTONES ---------- */
 .actions {
   display: flex;
   justify-content: center;
@@ -110,7 +131,7 @@ body {
   opacity: 0.9;
 }
 
-/* ----------- RESPONSIVE ----------- */
+/* ---------- RESPONSIVE DESIGN ---------- */
 @media (max-width: 768px) {
   .recibo-header {
     flex-direction: row;
@@ -123,6 +144,12 @@ body {
 
   .logo {
     width: 55px;
+  }
+
+  .icono-cafe {
+    width: 55px;
+    height: 55px;
+    margin-right: 8px;
   }
 
   .actions {
@@ -144,6 +171,12 @@ body {
 
   .recibo-title {
     font-size: 1rem;
+  }
+
+  .icono-cafe {
+    width: 50px;
+    height: 50px;
+    margin-right: 6px;
   }
 
   .actions {
