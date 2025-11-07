@@ -11,9 +11,9 @@ body {
 .header-recibo {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 20px;
+  justify-content: space-between;
   background-color: #fff;
+  padding: 10px 18px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   position: sticky;
   top: 0;
@@ -26,7 +26,7 @@ body {
 }
 
 .logo-recibo {
-  width: 45px;
+  width: 48px;
   height: auto;
   cursor: pointer;
   transition: transform 0.3s ease;
@@ -40,28 +40,34 @@ body {
   font-size: 1.2rem;
   font-weight: 600;
   color: #4b2e1e;
+  margin: 0;
+}
+
+.boton-mis-pedidos {
+  background-color: #4b2e1e;
+  color: #fff;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: background 0.3s;
+}
+
+.boton-mis-pedidos:hover {
+  background-color: #5c3a25;
 }
 
 /* ===== CONTENEDOR DEL RECIBO ===== */
 .recibo-container {
   max-width: 600px;
-  margin: 20px auto;
+  margin: 30px auto;
   background-color: #fff;
   border-radius: 15px;
-  padding: 20px;
+  padding: 25px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
-/* ===== PRODUCTOS ===== */
-.recibo-container .producto {
-  background-color: #f1ece6;
-  border-radius: 10px;
-  padding: 8px 12px;
-  margin-bottom: 8px;
-  font-size: 0.95rem;
-}
-
-/* ===== TEXTO Y SECCIONES ===== */
+/* ===== BLOQUES ===== */
 .recibo-container h2 {
   font-size: 1.1rem;
   margin-top: 1.5rem;
@@ -72,11 +78,28 @@ body {
   margin: 4px 0;
 }
 
+/* ===== PRODUCTOS ===== */
+.producto {
+  background-color: #f1ece6;
+  border-radius: 10px;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+}
+
+/* ===== TOTAL ===== */
+.total {
+  font-weight: 700;
+  color: #3c1e10;
+  text-align: right;
+  margin-top: 15px;
+}
+
 /* ===== RESPONSIVO ===== */
 @media (max-width: 600px) {
   .recibo-container {
     width: 90%;
-    padding: 15px;
+    padding: 18px;
   }
 
   .titulo-recibo {
@@ -84,6 +107,11 @@ body {
   }
 
   .logo-recibo {
-    width: 38px;
+    width: 40px;
+  }
+
+  .boton-mis-pedidos {
+    font-size: 0.8rem;
+    padding: 5px 10px;
   }
 }
