@@ -1,67 +1,73 @@
-// Recuperar datos del cliente (ya guardados previamente)
-const cliente = JSON.parse(localStorage.getItem("datosCliente"));
-const detalle = JSON.parse(localStorage.getItem("detallePedido")) || [];
+// =============================
+// RECIBO DEL PEDIDO
+// Café Cortero ☕
+// =============================
 
-// Si no hay datos, regresar
-if (!cliente) {
-  window.location.href = "datosCliente.html";
-}
+document.addEventListener("DOMContentLoaded", () => {
+  const contenedor = document.getElementById("recibo-contenido");
 
-// Generar número de pedido único
-const numeroPedido = "PED-" + new Date().toISOString().replace(/[-T:.Z]/g, "").slice(0, 14);
-localStorage.setItem("numeroPedido", numeroPedido);
+  // Recuperar los datos del cliente desde cliente_info
+  const cliente = JSON.parse(localStorage.getItem("cliente_info"));
+  const detalle = JSON.parse(localStorage.getItem("detallePedido")) || [];
 
-// Calcular total
-const total = detalle.reduce((sum, item) => sum + item.total, 0);
+  // Si no hay datos, redirigir
+  if (!cliente) {
+    contenedor.innerHTML = "<p>No se encontraron datos del cliente. Regresando...</p>";
+    setTimeout(() => window.location.href = "datosCliente.html", 2000);
+    return;
+  }
 
-// Mostrar datos del cliente
-const datosDiv = document.getElementById("datosCliente");
-datosDiv.innerHTML = `
-  <p><b>Número de pedido:</b> ${numeroPedido}</p>
-  <p><b>Nombre:</b> ${cliente.nombre}</p>
-  <p><b>Correo:</b> ${cliente.correo}</p>
-  <p><b>Teléfono:</b> ${cliente.telefono}</p>
-  <p><b>Zona:</b> ${cliente.zona}</p>
-  <p><b>Dirección:</b> ${cliente.direccion}</p>
-  <p><b>Nota:</b> ${cliente.nota}</p>
-`;
+  // Generar número de pedido único
+  const numeroPedido = "PED-" + new Date().toISOString().replace(/[-T:.Z]/g, "").slice(0, 14);
+  localStorage.setItem("numeroPedido", numeroPedido);
 
-// Mostrar productos
-const productosDiv = document.getElementById("productos");
-if (detalle.length === 0) {
-  productosDiv.innerHTML = `<p>No hay productos en este pedido.</p>`;
-} else {
-  productosDiv.innerHTML = `
+  // Calcular total
+  const total = detalle.reduce((sum, item) => sum + item.total, 0);
+
+  // Mostrar los datos en pantalla
+  contenedor.innerHTML = `
+    <h3>Datos del cliente</h3>
+    <p><b>Número de pedido:</b> ${numeroPedido}</p>
+    <p><b>Nombre:</b> ${cliente.nombre}</p>
+    <p><b>Correo:</b> ${cliente.correo}</p>
+    <p><b>Teléfono:</b> ${cliente.telefono}</p>
+    <p><b>Zona:</b> ${cliente.zona}</p>
+    <p><b>Dirección:</b> ${cliente.direccion}</p>
+    <p><b>Nota:</b> ${cliente.nota || "-"}</p>
+    <hr>
     <h3>Productos</h3>
-    ${detalle.map(p => `
-      <div class="producto">${p.nombre} x${p.cantidad} = L ${p.total.toFixed(2)}</div>
-    `).join("")}
+    ${
+      detalle.length
+        ? detalle.map(p => `
+            <div class="producto">${p.nombre} x${p.cantidad} = L ${p.total.toFixed(2)}</div>
+          `).join("")
+        : "<p>No hay productos registrados.</p>"
+    }
+    <p class="total">💰 <b>Total:</b> L ${total.toFixed(2)}</p>
   `;
-}
 
-// Mostrar total
-document.getElementById("total").innerHTML = `<p>💰 <b>Total:</b> L ${total.toFixed(2)}</p>`;
+  // Botón para regresar a editar
+  document.getElementById("btnEditar").addEventListener("click", () => {
+    window.location.href = "datosCliente.html";
+  });
 
-// Botones
-document.getElementById("btnAtras").addEventListener("click", () => {
-  window.location.href = "datosCliente.html";
-});
+  // Botón para confirmar pedido
+  document.getElementById("btnConfirmar").addEventListener("click", () => {
+    const pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
 
-document.getElementById("btnConfirmar").addEventListener("click", () => {
-  const pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
+    const nuevoPedido = {
+      id: numeroPedido,
+      cliente,
+      detalle,
+      total,
+      fecha: new Date().toLocaleString(),
+      estado: "Pendiente"
+    };
 
-  const nuevoPedido = {
-    id: numeroPedido,
-    cliente,
-    detalle,
-    total,
-    fecha: new Date().toLocaleString(),
-    estado: "Pendiente"
-  };
+    pedidos.push(nuevoPedido);
+    localStorage.setItem("pedidos", JSON.stringify(pedidos));
 
-  pedidos.push(nuevoPedido);
-  localStorage.setItem("pedidos", JSON.stringify(pedidos));
-
-  alert("✅ Pedido confirmado correctamente.");
-  window.location.href = "misPedidos.html";
+    alert("✅ Pedido confirmado correctamente.");
+    window.location.href = "misPedidos.html";
+  });
 });
