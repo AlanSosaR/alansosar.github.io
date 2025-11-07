@@ -1,7 +1,3 @@
-// ==========================
-//   RECIBO - CAFÉ CORTERO
-// ==========================
-
 document.addEventListener('DOMContentLoaded', () => {
   const reciboContainer = document.getElementById('recibo-container');
   const pedido = JSON.parse(localStorage.getItem('pedidoActual'));
@@ -10,18 +6,15 @@ document.addEventListener('DOMContentLoaded', () => {
     reciboContainer.innerHTML = `
       <p style="text-align:center; color:#4b2e1e; margin-top:2rem;">
         No se encontró información del pedido ☕
-      </p>
-    `;
+      </p>`;
     return;
   }
 
-  // Formatear fecha
   const fechaFormateada = new Date(pedido.fecha).toLocaleString('es-HN', {
     dateStyle: 'long',
     timeStyle: 'short'
   });
 
-  // Crear estructura
   reciboContainer.innerHTML = `
     <h2>Café Cortero</h2>
     <p><strong>Pedido N.º:</strong> ${pedido.numeroPedido}</p>
