@@ -43,7 +43,7 @@ function renderRecibo() {
 
   reciboContainer.innerHTML = `
     <div class="recibo-section">
-      <h3><img src="imagenes/13.png" alt="Café Cortero"> Café Cortero</h3>
+      <h3><img src="imagenes/13.png" alt="Café Cortero" class="icono-cafe"> Café Cortero</h3>
       <p><strong>Fecha:</strong> ${fecha}</p>
     </div>
 
@@ -98,14 +98,10 @@ function enviarPedido() {
   emailjs.send("service_f20ze8o", "template_rn6l0o5", templateParams)
     .then(() => {
       alert("✅ Pedido enviado con éxito. ¡Gracias por comprar con Café Cortero!");
-
-      // Vaciar carrito
       localStorage.removeItem("cafecortero_cart");
-
-      // Redirigir al inicio después de 3 segundos
       setTimeout(() => {
         window.location.href = "index.html";
-      }, 3000);
+      }, 2500);
     })
     .catch(err => {
       console.error("Error al enviar:", err);
