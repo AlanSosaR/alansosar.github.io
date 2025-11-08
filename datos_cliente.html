@@ -21,35 +21,50 @@
       </div>
 
       <div class="form-group">
-        <label for="correo">Correo electrónico *</label>
-        <input type="email" id="correo" required>
+        <label for="correo">Correo electrónico</label>
+        <input type="email" id="correo" placeholder="Opcional">
       </div>
 
       <div class="form-group">
-        <label for="telefono">Teléfono</label>
-        <input type="tel" id="telefono" placeholder="Opcional">
+        <label for="telefono">Teléfono *</label>
+        <input type="tel" id="telefono" required>
       </div>
 
+      <!-- 🔽 Campo actualizado con todos los departamentos -->
       <div class="form-group">
-        <label for="zona">Zona / Ciudad *</label>
+        <label for="zona">Departamento *</label>
         <select id="zona" required>
           <option value="">Seleccionar...</option>
-          <option value="Danlí">Danlí</option>
+          <option value="Atlántida">Atlántida</option>
+          <option value="Choluteca">Choluteca</option>
+          <option value="Colón">Colón</option>
+          <option value="Comayagua">Comayagua</option>
+          <option value="Copán">Copán</option>
+          <option value="Cortés">Cortés</option>
           <option value="El Paraíso">El Paraíso</option>
-          <option value="Tegucigalpa">Tegucigalpa</option>
-          <option value="Yuscarán">Yuscarán</option>
-          <option value="Otro">Otro</option>
+          <option value="Francisco Morazán">Francisco Morazán</option>
+          <option value="Gracias a Dios">Gracias a Dios</option>
+          <option value="Intibucá">Intibucá</option>
+          <option value="Islas de la Bahía">Islas de la Bahía</option>
+          <option value="La Paz">La Paz</option>
+          <option value="Lempira">Lempira</option>
+          <option value="Ocotepeque">Ocotepeque</option>
+          <option value="Olancho">Olancho</option>
+          <option value="Santa Bárbara">Santa Bárbara</option>
+          <option value="Valle">Valle</option>
+          <option value="Yoro">Yoro</option>
         </select>
       </div>
+      <!-- 🔼 Fin campo zona -->
 
       <div class="form-group">
         <label for="direccion">Dirección de entrega *</label>
-        <textarea id="direccion" rows="3" required></textarea>
+        <textarea id="direccion" rows="3" placeholder="Ej: Aldea San Ramón, Valle de Jamastrán" required></textarea>
       </div>
 
       <div class="form-group">
         <label for="nota">Nota adicional</label>
-        <textarea id="nota" rows="2" placeholder="Ej: Entregar por la mañana"></textarea>
+        <textarea id="nota" rows="2" placeholder="Ej: Entregar por la mañana (opcional)"></textarea>
       </div>
 
       <div class="actions">
