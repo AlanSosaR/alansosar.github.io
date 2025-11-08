@@ -1,86 +1,45 @@
-// =============================
-// RECIBO DEL PEDIDO
-// Café Cortero ☕
-// =============================
+// paso 3: obtener o generar número consecutivo
+let numeroPedido = localStorage.getItem("ultimoPedido");
+numeroPedido = numeroPedido ? parseInt(numeroPedido) + 1 : 1;
+localStorage.setItem("ultimoPedido", numeroPedido);
 
-document.addEventListener("DOMContentLoaded", () => {
-  const contenedor = document.getElementById("recibo-contenido");
+// paso 4: mostrar número
+document.getElementById("numeroPedido").textContent = numeroPedido;
 
-  // Recuperar datos guardados
-  const cliente = JSON.parse(localStorage.getItem("cliente_info")); // ← esta es la clave correcta
-  const detalle = JSON.parse(localStorage.getItem("detallePedido")) || [];
+// paso 5: cargar datos del cliente desde localStorage
+const datosCliente = JSON.parse(localStorage.getItem("datosCliente")) || {};
+document.getElementById("nombreCliente").textContent = datosCliente.nombre || "N/A";
+document.getElementById("telefonoCliente").textContent = datosCliente.telefono || "N/A";
+document.getElementById("direccionCliente").textContent = datosCliente.direccion || "N/A";
 
-  // Si no hay datos del cliente, mostrar aviso
-  if (!cliente) {
-    contenedor.innerHTML = `
-      <p style="color:#a33;">⚠️ No se encontraron los datos del cliente.</p>
-      <p>Serás redirigido para completarlos nuevamente...</p>
-    `;
-    setTimeout(() => window.location.href = "datosCliente.html", 2500);
-    return;
-  }
+// paso 6: cargar productos
+const carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+const lista = document.getElementById("listaProductos");
+let total = 0;
 
-  // Generar número de pedido único
-  const numeroPedido = "PED-" + new Date().toISOString().replace(/[-T:.Z]/g, "").slice(0, 14);
-  localStorage.setItem("numeroPedido", numeroPedido);
+carrito.forEach(item => {
+  const li = document.createElement("li");
+  li.textContent = `${item.nombre} x${item.cantidad} - L. ${item.precio * item.cantidad}`;
+  lista.appendChild(li);
+  total += item.precio * item.cantidad;
+});
 
-  // Calcular total del pedido
-  const total = detalle.reduce((sum, item) => sum + item.total, 0);
+document.getElementById("totalPedido").textContent = total.toFixed(2);
 
-  // Construir HTML del recibo
-  contenedor.innerHTML = `
-    <div style="background:#f7efe9;padding:12px;border-radius:10px;margin-bottom:15px;text-align:center;">
-      <b style="color:#5C4033;">Número de pedido:</b> <br>
-      <span style="font-size:1.2em;color:#2E7D32;font-weight:bold;">${numeroPedido}</span>
-    </div>
+// paso 7: confirmar pedido (guardar todo)
+document.getElementById("btnConfirmar").addEventListener("click", () => {
+  const pedido = {
+    numeroPedido,
+    cliente: datosCliente,
+    productos: carrito,
+    total,
+    fecha: new Date().toLocaleString(),
+  };
 
-    <h3 style="margin-top:0;">Datos del cliente</h3>
-    <p><b>Nombre:</b> ${cliente.nombre}</p>
-    <p><b>Correo:</b> ${cliente.correo}</p>
-    <p><b>Teléfono:</b> ${cliente.telefono}</p>
-    <p><b>Zona:</b> ${cliente.zona}</p>
-    <p><b>Dirección:</b> ${cliente.direccion}</p>
-    <p><b>Nota:</b> ${cliente.nota || "-"}</p>
+  let pedidos = JSON.parse(localStorage.getItem("misPedidos")) || [];
+  pedidos.push(pedido);
+  localStorage.setItem("misPedidos", JSON.stringify(pedidos));
 
-    <hr style="margin:15px 0;">
-
-    <h3>Productos</h3>
-    ${
-      detalle.length
-        ? detalle.map(p => `
-          <div style="background:#eee;border-radius:6px;padding:8px;margin:4px 0;">
-            ${p.nombre} x${p.cantidad} = L ${p.total.toFixed(2)}
-          </div>
-        `).join("")
-        : "<p>No hay productos registrados.</p>"
-    }
-
-    <p style="font-weight:bold;margin-top:12px;text-align:right;">
-      💰 Total: L ${total.toFixed(2)}
-    </p>
-  `;
-
-  // Botones
-  document.getElementById("btnEditar").addEventListener("click", () => {
-    window.location.href = "datosCliente.html";
-  });
-
-  document.getElementById("btnConfirmar").addEventListener("click", () => {
-    const pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
-
-    const nuevoPedido = {
-      id: numeroPedido,
-      cliente,
-      detalle,
-      total,
-      fecha: new Date().toLocaleString(),
-      estado: "Pendiente"
-    };
-
-    pedidos.push(nuevoPedido);
-    localStorage.setItem("pedidos", JSON.stringify(pedidos));
-
-    alert("✅ Pedido confirmado correctamente.");
-    window.location.href = "misPedidos.html";
-  });
+  alert(`Pedido #${numeroPedido} confirmado`);
+  window.location.href = "mis_pedidos.html"; // redirigir
 });
