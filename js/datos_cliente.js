@@ -16,24 +16,20 @@ function isFromRecibo() {
 function clearForm() {
   form.reset();
   document.querySelectorAll(".error-msg").forEach(el => el.remove());
+  localStorage.removeItem(CLIENTE_KEY_TEMP);
 }
 
 // Cargar datos guardados (solo si venimos desde el recibo)
 function loadClientData() {
   const cliente = JSON.parse(localStorage.getItem(CLIENTE_KEY));
-  if (!cliente) return;
-
-  document.getElementById("nombre").value = cliente.nombre || "";
-  document.getElementById("correo").value = cliente.correo || "";
-  document.getElementById("telefono").value = cliente.telefono || "";
-  document.getElementById("zona").value = cliente.zona || "";
-
-  // Si la dirección se guardó como "Departamento - Detalle", mostrar solo el detalle
-  const direccionSoloDetalle =
-    cliente.direccion?.replace(`${cliente.zona} - `, "") || cliente.direccion || "";
-  document.getElementById("direccion").value = direccionSoloDetalle;
-
-  document.getElementById("nota").value = cliente.nota || "";
+  if (cliente) {
+    document.getElementById("nombre").value = cliente.nombre || "";
+    document.getElementById("correo").value = cliente.correo || "";
+    document.getElementById("telefono").value = cliente.telefono || "";
+    document.getElementById("zona").value = cliente.zona || "";
+    document.getElementById("direccion").value = cliente.direccion || "";
+    document.getElementById("nota").value = cliente.nota || "";
+  }
 }
 
 // Mostrar notificación tipo “toast”
@@ -103,7 +99,7 @@ function validarCampos() {
     valido = false;
   }
 
-  // Correo opcional, pero validar formato si se escribe
+  // Correo opcional: validar formato solo si se escribe algo
   if (correo.value.trim()) {
     const regex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
     if (!regex.test(correo.value.trim())) {
@@ -117,16 +113,14 @@ function validarCampos() {
 
 // Inicialización
 window.addEventListener("DOMContentLoaded", () => {
-  // 🔍 Detectar origen: recibo (editar) o carrito (nuevo)
   if (isFromRecibo()) {
-    loadClientData(); // Precargar datos
+    loadClientData(); // 🔁 Cargar solo al venir desde recibo
   } else {
-    clearForm(); // Limpiar campos
+    clearForm(); // 🧹 Limpiar si venís del carrito
   }
 
-  // Quitar errores al escribir
-  form.querySelectorAll("input, select, textarea").forEach(el => {
-    el.addEventListener("input", () => limpiarError(el));
+  form.querySelectorAll("input, select, textarea").forEach(input => {
+    input.addEventListener("input", () => limpiarError(input));
   });
 });
 
@@ -137,27 +131,18 @@ form.addEventListener("submit", (e) => {
 
   if (!validarCampos()) return;
 
-  const zona = document.getElementById("zona").value.trim();
-  const direccionDetalle = document.getElementById("direccion").value.trim();
-  const direccionCompleta = `${zona} - ${direccionDetalle}`;
-
   const cliente = {
     nombre: document.getElementById("nombre").value.trim(),
     correo: document.getElementById("correo").value.trim(),
     telefono: document.getElementById("telefono").value.trim(),
-    zona: zona,
-    direccion: direccionCompleta,
+    zona: document.getElementById("zona").value.trim(),
+    direccion: document.getElementById("direccion").value.trim(),
     nota: document.getElementById("nota").value.trim(),
   };
 
   localStorage.setItem(CLIENTE_KEY, JSON.stringify(cliente));
 
-  // Mensaje diferente según el origen
-  const mensaje = isFromRecibo()
-    ? "✏️ Datos actualizados correctamente"
-    : "✅ Datos guardados correctamente";
-
-  mostrarToast(mensaje, "ok");
+  mostrarToast("✅ Datos guardados correctamente");
 
   setTimeout(() => {
     window.location.href = "recibo.html";
