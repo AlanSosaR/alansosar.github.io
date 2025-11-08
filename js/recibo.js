@@ -12,16 +12,17 @@ document.getElementById("nombreCliente").textContent = cliente.nombre || "N/A";
 document.getElementById("telefonoCliente").textContent = cliente.telefono || "N/A";
 document.getElementById("direccionCliente").textContent = cliente.direccion || "N/A";
 
-// paso 4: cargar productos (usa tu clave real, por ejemplo 'carrito' o 'productos')
-const carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+// paso 4: cargar productos desde 'cafecortero_cart'
+const carrito = JSON.parse(localStorage.getItem("cafecortero_cart")) || [];
 const lista = document.getElementById("listaProductos");
 let total = 0;
 
 carrito.forEach(item => {
   const li = document.createElement("li");
-  li.textContent = `${item.nombre} x${item.cantidad} - L. ${item.precio * item.cantidad}`;
+  const precioNum = parseFloat(item.price) || 0; // aseguramos número
+  li.textContent = `${item.name} x${item.qty} - L. ${(precioNum * item.qty).toFixed(2)}`;
   lista.appendChild(li);
-  total += item.precio * item.cantidad;
+  total += precioNum * item.qty;
 });
 
 document.getElementById("totalPedido").textContent = total.toFixed(2);
