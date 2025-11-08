@@ -26,13 +26,14 @@ document.getElementById("zonaCliente").textContent = cliente.zona || "";
 document.getElementById("direccionCliente").textContent = cliente.direccion || "";
 document.getElementById("notaCliente").textContent = cliente.nota || "";
 
-// --- paso 4: cargar carrito
+// --- paso 4: cargar carrito con precio correcto
 const carrito = JSON.parse(localStorage.getItem("cafecortero_cart")) || [];
 const lista = document.getElementById("listaProductos");
 let total = 0;
 
 carrito.forEach(item => {
-  const precioNum = parseFloat(item.price) || 0;
+  // limpiar "L" u otros caracteres
+  const precioNum = parseFloat(item.price.toString().replace(/[^\d.-]/g, '')) || 0;
   const li = document.createElement("li");
   li.textContent = `${item.name} x${item.qty} = L ${(precioNum * item.qty).toFixed(2)}`;
   lista.appendChild(li);
@@ -46,7 +47,7 @@ document.getElementById("btnEditar").addEventListener("click", () => {
   window.location.href = "datos_cliente.html";
 });
 
-// --- paso 6: enviar pedido
+// --- paso 6: enviar pedido y redirigir a mis pedidos
 document.getElementById("btnEnviar").addEventListener("click", () => {
   const pedido = {
     numeroPedido,
@@ -60,9 +61,10 @@ document.getElementById("btnEnviar").addEventListener("click", () => {
   pedidos.push(pedido);
   localStorage.setItem("misPedidos", JSON.stringify(pedidos));
 
+  // limpiar temporales
   localStorage.removeItem("numeroPedidoActivo");
   localStorage.removeItem("cafecortero_cart");
 
   alert(`✅ Pedido #${numeroPedido} enviado con éxito`);
-  window.location.href = "mis_pedidos.html";
+  window.location.href = "mis-pedidos.html"; // <-- redirección final
 });
