@@ -1,103 +1,118 @@
-/* paso 2: estilo base */
 body {
-  font-family: 'Poppins', sans-serif;
-  background-color: #f3f3f3;
+  font-family: "Poppins", sans-serif;
+  background-color: #f6f5f3;
   margin: 0;
   padding: 0;
 }
 
-/* contenedor principal */
 .recibo-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 2rem;
+  padding: 1.5rem;
 }
 
-/* encabezado */
 .recibo-header {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 1.5rem;
-}
-.recibo-header h1 {
-  font-size: 1.5rem;
-  color: #333;
-}
-.recibo-logo {
-  width: 50px;
-  height: 50px;
+  margin-bottom: 1.2rem;
 }
 
-/* tarjeta */
+.recibo-logo {
+  width: 55px;
+  height: 55px;
+}
+
+.recibo-header h1 {
+  color: #3b2a1a;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
 .recibo-card {
   background: #fff;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   padding: 1.5rem;
   width: 100%;
-  max-width: 400px;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  max-width: 430px;
+  color: #333;
 }
 
-/* info */
-.recibo-info p {
-  margin: 0.3rem 0;
-  color: #444;
+.recibo-card h2 {
+  color: #4a3728;
+  margin-bottom: 0.3rem;
 }
 
-/* detalle */
-.detalle-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.recibo-card h3 {
+  color: #006241;
+  margin-top: 1rem;
+  margin-bottom: 0.3rem;
 }
-.detalle-icono {
-  width: 35px;
-  height: 35px;
+
+.fecha {
+  font-size: 0.9rem;
+  color: #666;
 }
+
 #listaProductos {
   list-style: none;
   padding: 0;
   margin: 0.5rem 0;
 }
+
 #listaProductos li {
-  border-bottom: 1px solid #eee;
-  padding: 5px 0;
+  background: #f3f2ee;
+  border-radius: 10px;
+  padding: 0.5rem;
+  margin-bottom: 5px;
 }
 
-/* total */
 .recibo-total {
-  font-size: 1.1rem;
   text-align: right;
-  font-weight: bold;
-  color: #333;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #4a3728;
 }
 
-/* botón */
-#btnConfirmar {
-  background-color: #4a3728;
-  color: white;
+.recibo-botones {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 1.3rem;
+}
+
+.recibo-botones button {
+  flex: 1;
   border: none;
-  border-radius: 12px;
   padding: 0.7rem;
+  border-radius: 12px;
   font-size: 1rem;
   cursor: pointer;
-  transition: background 0.3s;
-}
-#btnConfirmar:hover {
-  background-color: #6d4c3d;
+  transition: 0.3s;
 }
 
-/* responsive */
+#btnEditar {
+  background: #4a3728;
+  color: white;
+}
+
+#btnEditar:hover {
+  background: #6b4b3a;
+}
+
+#btnEnviar {
+  background: #006241;
+  color: white;
+}
+
+#btnEnviar:hover {
+  background: #038855;
+}
+
 @media (max-width: 480px) {
   .recibo-card {
-    padding: 1rem;
-  }
-  .recibo-header h1 {
-    font-size: 1.2rem;
+    padding: 1.2rem;
   }
 }
