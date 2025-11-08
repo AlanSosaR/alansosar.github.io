@@ -4,16 +4,21 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Detalles del pedido | Café Cortero</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="css/recibo.css" />
 </head>
 <body>
-  <main class="recibo-container">
-    <!-- Encabezado -->
-    <header class="recibo-header">
-      <img src="imagenes/13.png" alt="Logo Café Cortero" class="recibo-logo" />
-      <h1>Detalles del pedido</h1>
-    </header>
+  
+  <!-- ✅ Encabezado igual al carrito -->
+  <header class="recibo-header">
+    <a href="index.html">
+      <img src="imagenes/logo%20mejorado%20trasmparente.png" alt="Café Cortero" class="recibo-logo" />
+    </a>
+    <span class="recibo-title">Detalles del pedido</span>
+  </header>
 
+  <main class="recibo-container">
     <!-- Tarjeta principal -->
     <section class="recibo-card">
       <h2>Pedido N.º <span id="numeroPedido"></span></h2>
@@ -42,8 +47,8 @@
       </div>
 
       <div class="recibo-botones">
-        <button id="btnEditar">Editar datos</button>
-        <button id="btnEnviar">Enviar pedido</button>
+        <button id="btnEditar" class="btn-secondary"><i class="fa-solid fa-pen-to-square"></i> Editar datos</button>
+        <button id="btnEnviar" class="btn-primary"><i class="fa-solid fa-paper-plane"></i> Enviar pedido</button>
       </div>
     </section>
   </main>
