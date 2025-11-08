@@ -7,33 +7,41 @@
   <link rel="stylesheet" href="css/recibo.css" />
 </head>
 <body>
-  <!-- paso 1: contenedor principal -->
   <main class="recibo-container">
-    <!-- encabezado -->
+    <!-- Encabezado -->
     <header class="recibo-header">
       <img src="imagenes/13.png" alt="Logo Café Cortero" class="recibo-logo" />
-      <h1>Detalle del Pedido</h1>
+      <h1>Café Cortero</h1>
     </header>
 
-    <!-- tarjeta -->
+    <!-- Tarjeta principal -->
     <section class="recibo-card">
-      <div class="recibo-info">
-        <h2>Recibo #<span id="numeroPedido"></span></h2>
-        <p><strong>Cliente:</strong> <span id="nombreCliente"></span></p>
-        <p><strong>Teléfono:</strong> <span id="telefonoCliente"></span></p>
-        <p><strong>Dirección:</strong> <span id="direccionCliente"></span></p>
-      </div>
+      <h2>Pedido N.º: <span id="numeroPedido"></span></h2>
+      <p class="fecha"><strong>Fecha:</strong> <span id="fechaPedido"></span></p>
 
-      <div class="recibo-detalle">
-        <div class="detalle-header">
-          <img src="imagenes/13.png" alt="Detalle" class="detalle-icono" />
-          <h3>Detalles del pedido</h3>
-        </div>
-        <ul id="listaProductos"></ul>
-        <p class="recibo-total"><strong>Total:</strong> L. <span id="totalPedido"></span></p>
-      </div>
+      <h3>Datos del cliente</h3>
+      <p><strong>Nombre:</strong> <span id="nombreCliente"></span></p>
+      <p><strong>Correo:</strong> <span id="correoCliente"></span></p>
+      <p><strong>Teléfono:</strong> <span id="telefonoCliente"></span></p>
+      <p><strong>Zona:</strong> <span id="zonaCliente"></span></p>
+      <p><strong>Dirección:</strong> <span id="direccionCliente"></span></p>
+      <p><strong>Nota:</strong> <span id="notaCliente"></span></p>
 
-      <button id="btnConfirmar">Confirmar Pedido</button>
+      <h3>Productos</h3>
+      <ul id="listaProductos"></ul>
+
+      <p class="recibo-total"><strong>💰 Total:</strong> L. <span id="totalPedido"></span></p>
+
+      <h3>Métodos de pago</h3>
+      <p>💵 <strong>Transferencia bancaria:</strong> Banco Atlántida, cuenta 123456789 a nombre de Alan Sosa</p>
+      <p>📱 <strong>Tigo Money:</strong> +504 9454-6047</p>
+      <p>💳 <strong>PayPal:</strong> <a href="https://paypal.me/cafecortero" target="_blank">paypal.me/cafecortero</a></p>
+
+      <!-- Botones -->
+      <div class="recibo-botones">
+        <button id="btnEditar">Editar datos</button>
+        <button id="btnEnviar">Enviar pedido</button>
+      </div>
     </section>
   </main>
 
