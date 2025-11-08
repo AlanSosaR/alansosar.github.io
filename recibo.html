@@ -10,18 +10,19 @@
 </head>
 <body>
 
-  <!-- ✅ Encabezado igual al de la página principal -->
+  <!-- ✅ Encabezado con logo a la izquierda y texto a la derecha -->
   <header class="header-recibo">
-    <div class="logo-wrap">
+    <div class="logo-left">
       <a href="index.html">
-        <img src="imagenes/logo%20mejorado%20trasmparente.png" alt="Café Cortero">
+        <img src="imagenes/logo%20mejorado%20trasmparente.png" alt="Café Cortero" />
       </a>
     </div>
-    <h1 class="recibo-titulo">Detalles del pedido</h1>
+    <div class="title-right">
+      <h1>Detalles del pedido</h1>
+    </div>
   </header>
 
   <main class="recibo-container fade-in">
-    <!-- Tarjeta principal -->
     <section class="recibo-card">
       <h2>Pedido N.º <span id="numeroPedido"></span></h2>
       <p class="fecha"><strong>Fecha:</strong> <span id="fechaPedido"></span></p>
