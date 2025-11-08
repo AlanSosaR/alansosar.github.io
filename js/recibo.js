@@ -1,34 +1,49 @@
-// paso 1: generar número consecutivo
-let numeroPedido = localStorage.getItem("ultimoPedido");
-numeroPedido = numeroPedido ? parseInt(numeroPedido) + 1 : 1;
-localStorage.setItem("ultimoPedido", numeroPedido);
+// --- paso 1: cargar o generar número de pedido solo si no existe
+let numeroPedido = localStorage.getItem("numeroPedidoActivo");
 
-// paso 2: mostrar número
+if (!numeroPedido) {
+  const consecutivo = localStorage.getItem("ultimoPedido");
+  const nuevo = consecutivo ? parseInt(consecutivo) + 1 : 1;
+  localStorage.setItem("ultimoPedido", nuevo);
+  numeroPedido = `CFC-${new Date().getFullYear()}-${nuevo}`;
+  localStorage.setItem("numeroPedidoActivo", numeroPedido);
+}
+
+// --- paso 2: mostrar número y fecha
 document.getElementById("numeroPedido").textContent = numeroPedido;
+document.getElementById("fechaPedido").textContent = new Date().toLocaleString();
 
-// paso 3: cargar datos del cliente desde 'cliente_info'
+// --- paso 3: cargar cliente
 const cliente = JSON.parse(localStorage.getItem("cliente_info")) || {};
-document.getElementById("nombreCliente").textContent = cliente.nombre || "N/A";
-document.getElementById("telefonoCliente").textContent = cliente.telefono || "N/A";
-document.getElementById("direccionCliente").textContent = cliente.direccion || "N/A";
+document.getElementById("nombreCliente").textContent = cliente.nombre || "";
+document.getElementById("correoCliente").textContent = cliente.correo || "";
+document.getElementById("telefonoCliente").textContent = cliente.telefono || "";
+document.getElementById("zonaCliente").textContent = cliente.zona || "";
+document.getElementById("direccionCliente").textContent = cliente.direccion || "";
+document.getElementById("notaCliente").textContent = cliente.nota || "";
 
-// paso 4: cargar productos desde 'cafecortero_cart'
+// --- paso 4: cargar carrito
 const carrito = JSON.parse(localStorage.getItem("cafecortero_cart")) || [];
 const lista = document.getElementById("listaProductos");
 let total = 0;
 
 carrito.forEach(item => {
+  const precioNum = parseFloat(item.price) || 0;
   const li = document.createElement("li");
-  const precioNum = parseFloat(item.price) || 0; // aseguramos número
-  li.textContent = `${item.name} x${item.qty} - L. ${(precioNum * item.qty).toFixed(2)}`;
+  li.textContent = `${item.name} x${item.qty} = L ${(precioNum * item.qty).toFixed(2)}`;
   lista.appendChild(li);
   total += precioNum * item.qty;
 });
-
 document.getElementById("totalPedido").textContent = total.toFixed(2);
 
-// paso 5: confirmar pedido
-document.getElementById("btnConfirmar").addEventListener("click", () => {
+// --- paso 5: editar datos
+document.getElementById("btnEditar").addEventListener("click", () => {
+  // mantener número de pedido y carrito
+  window.location.href = "datos_cliente.html";
+});
+
+// --- paso 6: enviar pedido (confirmar)
+document.getElementById("btnEnviar").addEventListener("click", () => {
   const pedido = {
     numeroPedido,
     cliente,
@@ -41,6 +56,10 @@ document.getElementById("btnConfirmar").addEventListener("click", () => {
   pedidos.push(pedido);
   localStorage.setItem("misPedidos", JSON.stringify(pedidos));
 
-  alert(`Pedido #${numeroPedido} confirmado`);
+  // limpiar pedido activo y carrito
+  localStorage.removeItem("numeroPedidoActivo");
+  localStorage.removeItem("cafecortero_cart");
+
+  alert(`Pedido ${numeroPedido} enviado con éxito`);
   window.location.href = "mis_pedidos.html";
 });
