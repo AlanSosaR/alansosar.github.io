@@ -1,19 +1,23 @@
-// --- paso 1: cargar o generar número de pedido solo si no existe
+// --- paso 1: generar número solo si no existe
 let numeroPedido = localStorage.getItem("numeroPedidoActivo");
 
 if (!numeroPedido) {
-  const consecutivo = localStorage.getItem("ultimoPedido");
-  const nuevo = consecutivo ? parseInt(consecutivo) + 1 : 1;
-  localStorage.setItem("ultimoPedido", nuevo);
-  numeroPedido = `CFC-${new Date().getFullYear()}-${nuevo}`;
+  let consecutivo = localStorage.getItem("ultimoPedido");
+  consecutivo = consecutivo ? parseInt(consecutivo) + 1 : 1;
+  localStorage.setItem("ultimoPedido", consecutivo);
+  numeroPedido = consecutivo;
   localStorage.setItem("numeroPedidoActivo", numeroPedido);
 }
 
-// --- paso 2: mostrar número y fecha
+// --- paso 2: mostrar número y fecha actual
 document.getElementById("numeroPedido").textContent = numeroPedido;
-document.getElementById("fechaPedido").textContent = new Date().toLocaleString();
+document.getElementById("fechaPedido").textContent = new Date().toLocaleString("es-HN", {
+  dateStyle: "short",
+  timeStyle: "medium",
+  hour12: true
+});
 
-// --- paso 3: cargar cliente
+// --- paso 3: cargar datos del cliente
 const cliente = JSON.parse(localStorage.getItem("cliente_info")) || {};
 document.getElementById("nombreCliente").textContent = cliente.nombre || "";
 document.getElementById("correoCliente").textContent = cliente.correo || "";
@@ -34,32 +38,31 @@ carrito.forEach(item => {
   lista.appendChild(li);
   total += precioNum * item.qty;
 });
+
 document.getElementById("totalPedido").textContent = total.toFixed(2);
 
 // --- paso 5: editar datos
 document.getElementById("btnEditar").addEventListener("click", () => {
-  // mantener número de pedido y carrito
   window.location.href = "datos_cliente.html";
 });
 
-// --- paso 6: enviar pedido (confirmar)
+// --- paso 6: enviar pedido
 document.getElementById("btnEnviar").addEventListener("click", () => {
   const pedido = {
     numeroPedido,
     cliente,
     productos: carrito,
     total,
-    fecha: new Date().toLocaleString(),
+    fecha: new Date().toLocaleString("es-HN", { hour12: true }),
   };
 
   let pedidos = JSON.parse(localStorage.getItem("misPedidos")) || [];
   pedidos.push(pedido);
   localStorage.setItem("misPedidos", JSON.stringify(pedidos));
 
-  // limpiar pedido activo y carrito
   localStorage.removeItem("numeroPedidoActivo");
   localStorage.removeItem("cafecortero_cart");
 
-  alert(`Pedido ${numeroPedido} enviado con éxito`);
+  alert(`✅ Pedido #${numeroPedido} enviado con éxito`);
   window.location.href = "mis_pedidos.html";
 });
