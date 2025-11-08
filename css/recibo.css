@@ -1,38 +1,41 @@
-/* ====== Fuente base ====== */
+/* ===== Fuente y fondo ===== */
 body {
   font-family: 'Poppins', sans-serif;
-  background-color: #f8f6f3;
+  background: #f9f6f2;
+  color: #4b2c19;
   margin: 0;
   padding: 0;
 }
 
-/* ====== Encabezado ====== */
-.recibo-header {
+/* ===== Encabezado (idéntico al del index) ===== */
+.header-recibo {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(255,255,255,.92);
+  backdrop-filter: blur(6px);
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 10px;
-  background-color: #fff; /* Fondo blanco igual al carrito */
-  padding: 15px 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  border-radius: 0 0 15px 15px;
+  justify-content: flex-start;
+  padding: .6rem 1.4rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,.04);
+  z-index: 50;
 }
 
-.recibo-header img {
-  height: 45px;
+.header-recibo .logo-wrap img {
+  height: 58px;
+  display: block;
 }
 
-.recibo-title {
+.recibo-titulo {
+  font-size: 1.2rem;
   font-weight: 600;
-  font-size: 1.1rem;
   color: #4b2c19;
+  margin-left: 10px;
 }
 
-/* ====== Animación fade-in ====== */
+/* ===== Animación de entrada ===== */
 .fade-in {
   opacity: 0;
   transform: translateY(10px);
@@ -46,16 +49,16 @@ body {
   }
 }
 
-/* ====== Contenedor principal ====== */
+/* ===== Contenedor principal ===== */
 .recibo-container {
   display: flex;
   justify-content: center;
-  padding: 20px;
+  padding: 7rem 20px 30px; /* espacio para header fijo */
 }
 
-/* ====== Tarjeta ====== */
+/* ===== Tarjeta ===== */
 .recibo-card {
-  background: #ffffff;
+  background: #fff;
   border-radius: 18px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
   padding: 25px 20px;
@@ -106,7 +109,7 @@ ul#listaProductos li {
   text-align: right;
 }
 
-/* ====== Métodos de pago ====== */
+/* ===== Métodos de pago ===== */
 .pagos p {
   margin: 6px 0;
   color: #333;
@@ -122,7 +125,7 @@ ul#listaProductos li {
   text-decoration: underline;
 }
 
-/* ====== Botones ====== */
+/* ===== Botones ===== */
 .recibo-botones {
   display: flex;
   justify-content: space-between;
@@ -158,7 +161,7 @@ ul#listaProductos li {
   background-color: #3a2113;
 }
 
-/* ====== Responsive ====== */
+/* ===== Responsive ===== */
 @media (max-width: 600px) {
   .recibo-card {
     padding: 18px;
