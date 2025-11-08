@@ -37,15 +37,17 @@ function addToCart(product) {
   animateCartIcon();
 }
 
-// todo se engancha cuando el DOM ya cargó
 document.addEventListener('DOMContentLoaded', () => {
   // botón del producto grande
   const btnMain = document.getElementById('product-add');
   if (btnMain) {
     btnMain.addEventListener('click', () => {
+      const rawPrice = document.getElementById('product-price').textContent;
+      const numericPrice = parseFloat(rawPrice.toString().replace(/[^\d.-]/g, '')) || 0;
+
       const product = {
         name: document.getElementById('product-name').textContent,
-        price: document.getElementById('product-price').textContent,
+        price: numericPrice, // ✅ guardado como número limpio
         img: document.getElementById('product-image').getAttribute('src'),
         qty: 1
       };
@@ -74,9 +76,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const btn = card.querySelector('button');
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
+
+      const rawPrice = card.dataset.price;
+      const numericPrice = parseFloat(rawPrice.toString().replace(/[^\d.-]/g, '')) || 0;
+
       const product = {
         name: card.dataset.name,
-        price: card.dataset.price,
+        price: numericPrice, // ✅ limpio también aquí
         img: card.dataset.img,
         qty: 1
       };
