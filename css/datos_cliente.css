@@ -1,34 +1,181 @@
-/* === Validación visual === */
-.error-msg {
-  color: #d72638;
-  font-size: 0.8rem;
-  margin-top: 0.25rem;
+/* =============================
+   DATOS DEL CLIENTE - Café Cortero ☕
+   ============================= */
+
+body {
+  font-family: "Poppins", sans-serif;
+  background: #f8f6f3;
+  margin: 0;
+  color: #4b2c1a;
+}
+
+/* ===== Encabezado ===== */
+header {
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.8rem 1rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+header img {
+  height: 45px;
+  margin-right: 10px;
+}
+
+.form-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #4b2c1a;
+}
+
+/* ===== Contenedor principal ===== */
+main {
+  max-width: 600px;
+  margin: 1.5rem auto;
+  padding: 1rem;
+}
+
+/* ===== Caja del formulario ===== */
+.form-box {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  padding: 1.5rem;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== Campos ===== */
+.form-group {
+  margin-bottom: 1.2rem;
+  display: flex;
+  flex-direction: column;
+}
+
+label {
   font-weight: 500;
-  display: block;
+  margin-bottom: 0.4rem;
 }
 
+input, select, textarea {
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  padding: 0.6rem;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: #33673B;
+  box-shadow: 0 0 4px rgba(51, 103, 59, 0.3);
+}
+
+/* ===== Errores ===== */
 .input-error {
-  border-color: #d72638 !important;
+  border-color: #e63946 !important;
+  box-shadow: 0 0 3px rgba(230, 57, 70, 0.4);
 }
 
-/* === Toast verde (mensaje flotante de guardado) === */
+.error-msg {
+  color: #e63946;
+  font-size: 0.85rem;
+  margin-top: 0.3rem;
+  animation: fadeIn 0.2s ease-in;
+}
+
+/* ===== Botones ===== */
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 1.5rem;
+}
+
+.btn, .btn-secondary {
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 30px;
+  font-weight: 500;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: transform 0.2s, opacity 0.2s;
+}
+
+.btn:hover, .btn-secondary:hover {
+  transform: translateY(-1px);
+  opacity: 0.9;
+}
+
+.btn {
+  background: #33673B; /* Verde Café Cortero */
+  color: #fff;
+}
+
+.btn-secondary {
+  background: #512615; /* Café oscuro */
+  color: #fff;
+}
+
+/* ===== Toast flotante ===== */
 .toast {
   position: fixed;
-  bottom: 25px;
+  top: 10px;
   left: 50%;
-  transform: translateX(-50%) translateY(100%);
-  background: #48c774;
+  transform: translateX(-50%) translateY(-30px);
+  background: #33673B;
   color: #fff;
-  padding: 0.8rem 1.4rem;
-  border-radius: 999px;
-  font-weight: 600;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+  padding: 0.9rem 1.5rem;
+  border-radius: 10px;
+  font-weight: 500;
+  font-size: 0.95rem;
   opacity: 0;
-  transition: all 0.4s ease;
-  z-index: 9999;
+  pointer-events: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  z-index: 999;
 }
 
 .toast.visible {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
+}
+
+.toast.error {
+  background: #e63946;
+}
+
+/* ===== Mensaje guardado (ya no visible por defecto) ===== */
+.guardado {
+  display: none;
+}
+
+/* ===== Responsivo ===== */
+@media (max-width: 600px) {
+  .form-box {
+    padding: 1rem;
+  }
+
+  .btn, .btn-secondary {
+    width: 100%;
+  }
+
+  body {
+    font-size: 0.9rem;
+  }
+
+  .form-title {
+    font-size: 1rem;
+  }
 }
