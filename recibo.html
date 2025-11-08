@@ -3,22 +3,40 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Recibo | Café Cortero</title>
-  <link rel="stylesheet" href="recibo.css">
+  <title>Recibo del Pedido | Café Cortero</title>
+  <link rel="stylesheet" href="css/recibo.css" />
 </head>
 <body>
+  <!-- paso 1: contenedor principal -->
   <main class="recibo-container">
-    <h2>🧾 Recibo del pedido</h2>
-    <section id="recibo-contenido" class="recibo-card">
-      <p>Cargando datos del pedido...</p>
-    </section>
+    <!-- encabezado -->
+    <header class="recibo-header">
+      <img src="imagenes/13.png" alt="Logo Café Cortero" class="recibo-logo" />
+      <h1>Detalle del Pedido</h1>
+    </header>
 
-    <div class="recibo-buttons">
-      <button id="btnEditar" class="btn-brown">← Editar datos</button>
-      <button id="btnConfirmar" class="btn-green">Confirmar pedido →</button>
-    </div>
+    <!-- tarjeta -->
+    <section class="recibo-card">
+      <div class="recibo-info">
+        <h2>Recibo #<span id="numeroPedido"></span></h2>
+        <p><strong>Cliente:</strong> <span id="nombreCliente"></span></p>
+        <p><strong>Teléfono:</strong> <span id="telefonoCliente"></span></p>
+        <p><strong>Dirección:</strong> <span id="direccionCliente"></span></p>
+      </div>
+
+      <div class="recibo-detalle">
+        <div class="detalle-header">
+          <img src="imagenes/13.png" alt="Detalle" class="detalle-icono" />
+          <h3>Detalles del pedido</h3>
+        </div>
+        <ul id="listaProductos"></ul>
+        <p class="recibo-total"><strong>Total:</strong> L. <span id="totalPedido"></span></p>
+      </div>
+
+      <button id="btnConfirmar">Confirmar Pedido</button>
+    </section>
   </main>
 
-  <script src="recibo.js"></script>
+  <script src="js/recibo.js"></script>
 </body>
 </html>
