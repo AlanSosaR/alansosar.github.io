@@ -1,5 +1,6 @@
 const CART_KEY = 'cafecortero_cart';
 
+// --- obtener y guardar carrito
 function getCart() {
   return JSON.parse(localStorage.getItem(CART_KEY)) || [];
 }
@@ -7,6 +8,7 @@ function saveCart(cart) {
   localStorage.setItem(CART_KEY, JSON.stringify(cart));
 }
 
+// --- renderizar carrito
 function renderCart() {
   const cart = getCart();
   const container = document.getElementById('cart-container');
@@ -20,9 +22,13 @@ function renderCart() {
 
   let total = 0;
   cart.forEach((item, index) => {
-    const priceNumber = parseFloat(item.price.replace('L','').trim());
+    // limpiar precio si viene con texto (ej. "L 250" o "250 L")
+    const priceNumber = parseFloat(item.price.toString().replace(/[^\d.-]/g, '')) || 0;
     const lineTotal = priceNumber * item.qty;
     total += lineTotal;
+
+    // actualizar carrito con precio numérico limpio
+    item.price = priceNumber;
 
     const div = document.createElement('div');
     div.className = 'item';
@@ -42,9 +48,13 @@ function renderCart() {
     container.appendChild(div);
   });
 
+  // guardar carrito actualizado (precios limpios)
+  saveCart(cart);
+
   document.getElementById('total-box').textContent = 'Total: L ' + total.toFixed(2);
 }
 
+// --- controles del carrito
 document.getElementById('cart-container').addEventListener('click', (e) => {
   const btn = e.target.closest('button');
   if (!btn) return;
@@ -56,9 +66,7 @@ document.getElementById('cart-container').addEventListener('click', (e) => {
     cart[index].qty += 1;
   } else if (action === 'minus') {
     cart[index].qty -= 1;
-    if (cart[index].qty <= 0) {
-      cart.splice(index, 1);
-    }
+    if (cart[index].qty <= 0) cart.splice(index, 1);
   } else if (action === 'del') {
     cart.splice(index, 1);
   }
@@ -67,4 +75,5 @@ document.getElementById('cart-container').addEventListener('click', (e) => {
   renderCart();
 });
 
+// --- inicializar
 renderCart();
