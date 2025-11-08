@@ -16,7 +16,6 @@ function isFromRecibo() {
 function clearForm() {
   form.reset();
   document.querySelectorAll(".error-msg").forEach(el => el.remove());
-  localStorage.removeItem(CLIENTE_KEY_TEMP);
 }
 
 // Cargar datos guardados (solo si venimos desde el recibo)
@@ -27,7 +26,9 @@ function loadClientData() {
     document.getElementById("correo").value = cliente.correo || "";
     document.getElementById("telefono").value = cliente.telefono || "";
     document.getElementById("zona").value = cliente.zona || "";
-    document.getElementById("direccion").value = cliente.direccion || "";
+    // Mostrar solo el detalle sin el departamento si se guardó combinado
+    const direccionLimpia = cliente.direccion?.replace(`${cliente.zona} - `, "") || cliente.direccion || "";
+    document.getElementById("direccion").value = direccionLimpia;
     document.getElementById("nota").value = cliente.nota || "";
   }
 }
@@ -75,7 +76,6 @@ function validarCampos() {
 
   const nombre = document.getElementById("nombre");
   const correo = document.getElementById("correo");
-  const telefono = document.getElementById("telefono");
   const zona = document.getElementById("zona");
   const direccion = document.getElementById("direccion");
 
@@ -83,23 +83,15 @@ function validarCampos() {
     mostrarError("nombre", "El nombre es obligatorio");
     valido = false;
   }
-
-  if (!telefono.value.trim()) {
-    mostrarError("telefono", "El teléfono es obligatorio");
-    valido = false;
-  }
-
   if (!zona.value.trim()) {
     mostrarError("zona", "Selecciona un departamento");
     valido = false;
   }
-
   if (!direccion.value.trim()) {
     mostrarError("direccion", "La dirección es obligatoria");
     valido = false;
   }
 
-  // Correo opcional: validar formato solo si se escribe algo
   if (correo.value.trim()) {
     const regex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
     if (!regex.test(correo.value.trim())) {
@@ -113,36 +105,37 @@ function validarCampos() {
 
 // Inicialización
 window.addEventListener("DOMContentLoaded", () => {
-  if (isFromRecibo()) {
-    loadClientData(); // 🔁 Cargar solo al venir desde recibo
-  } else {
-    clearForm(); // 🧹 Limpiar si venís del carrito
-  }
+  if (isFromRecibo()) loadClientData();
+  else clearForm();
 
   form.querySelectorAll("input, select, textarea").forEach(input => {
     input.addEventListener("input", () => limpiarError(input));
   });
 });
 
-// Guardar datos y redirigir
+// Guardar datos
 form.addEventListener("submit", (e) => {
   e.preventDefault();
   document.querySelectorAll(".error-msg").forEach(el => el.remove());
 
   if (!validarCampos()) return;
 
+  const zona = document.getElementById("zona").value.trim();
+  const direccionDetalle = document.getElementById("direccion").value.trim();
+  const direccionCompleta = `${zona} - ${direccionDetalle}`;
+
   const cliente = {
     nombre: document.getElementById("nombre").value.trim(),
     correo: document.getElementById("correo").value.trim(),
     telefono: document.getElementById("telefono").value.trim(),
-    zona: document.getElementById("zona").value.trim(),
-    direccion: document.getElementById("direccion").value.trim(),
+    zona: zona,
+    direccion: direccionCompleta,
     nota: document.getElementById("nota").value.trim(),
   };
 
   localStorage.setItem(CLIENTE_KEY, JSON.stringify(cliente));
 
-  mostrarToast("✅ Datos guardados correctamente");
+  mostrarToast("✅ Datos guardados correctamente", "ok");
 
   setTimeout(() => {
     window.location.href = "recibo.html";
