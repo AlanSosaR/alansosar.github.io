@@ -1,44 +1,44 @@
+/* ====== Fuente base ====== */
 body {
   font-family: 'Poppins', sans-serif;
-  background: #f9f6f2;
-  color: #4b2c19;
+  background-color: #f8f6f3;
   margin: 0;
   padding: 0;
 }
 
-/* ===== Header ===== */
-.header-recibo {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  background: rgba(255,255,255,.92);
-  backdrop-filter: blur(6px);
+/* ====== Encabezado ====== */
+.recibo-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: .6rem 1.4rem;
-  box-shadow: 0 2px 12px rgba(0,0,0,.05);
-  z-index: 50;
+  justify-content: center;
+  gap: 10px;
+  background-color: #fff; /* Fondo blanco igual al carrito */
+  padding: 15px 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-radius: 0 0 15px 15px;
 }
 
-.header-recibo .logo-left img {
-  height: 58px;
-  display: block;
+.recibo-header img {
+  height: 45px;
 }
 
-.header-recibo .title-right h1 {
-  font-size: 1.15rem;
+.recibo-title {
   font-weight: 600;
+  font-size: 1.1rem;
   color: #4b2c19;
 }
 
-/* ===== Animación fade-in ===== */
+/* ====== Animación fade-in ====== */
 .fade-in {
   opacity: 0;
   transform: translateY(10px);
   animation: fadeIn 0.7s ease-in-out forwards;
 }
+
 @keyframes fadeIn {
   to {
     opacity: 1;
@@ -46,16 +46,16 @@ body {
   }
 }
 
-/* ===== Contenido ===== */
+/* ====== Contenedor principal ====== */
 .recibo-container {
   display: flex;
   justify-content: center;
-  padding: 7rem 20px 30px; /* espacio para header fijo */
+  padding: 20px;
 }
 
-/* ===== Tarjeta ===== */
+/* ====== Tarjeta ====== */
 .recibo-card {
-  background: #fff;
+  background: #ffffff;
   border-radius: 18px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
   padding: 25px 20px;
@@ -106,21 +106,23 @@ ul#listaProductos li {
   text-align: right;
 }
 
-/* ===== Métodos de pago ===== */
+/* ====== Métodos de pago ====== */
 .pagos p {
   margin: 6px 0;
   color: #333;
   font-size: 0.95rem;
 }
+
 .pagos a {
   color: #007bff;
   text-decoration: none;
 }
+
 .pagos a:hover {
   text-decoration: underline;
 }
 
-/* ===== Botones ===== */
+/* ====== Botones ====== */
 .recibo-botones {
   display: flex;
   justify-content: space-between;
@@ -142,31 +144,31 @@ ul#listaProductos li {
   background-color: #046d46;
   color: #fff;
 }
+
 .btn-primary:hover {
   background-color: #035c3b;
 }
+
 .btn-secondary {
   background-color: #4b2c19;
   color: #fff;
 }
+
 .btn-secondary:hover {
   background-color: #3a2113;
 }
 
-/* ===== Responsive ===== */
+/* ====== Responsive ====== */
 @media (max-width: 600px) {
-  .header-recibo {
-    flex-direction: row;
-    justify-content: center;
-    gap: 10px;
+  .recibo-card {
+    padding: 18px;
   }
-  .recibo-container {
-    padding: 6.5rem 15px;
-  }
+
   .recibo-botones {
     flex-direction: column;
     gap: 10px;
   }
+
   .btn-primary, .btn-secondary {
     width: 100%;
   }
