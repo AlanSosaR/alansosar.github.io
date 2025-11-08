@@ -16,13 +16,16 @@ body {
   backdrop-filter: blur(6px);
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: space-between; /* 🔥 separa logo y texto */
   padding: .6rem 1.4rem;
-  box-shadow: 0 2px 12px rgba(0,0,0,.04);
+  box-shadow: 0 2px 12px rgba(0,0,0,.05);
   z-index: 50;
-
-  /* 🔧 Elimina cualquier borde redondeado */
   border-radius: 0;
+}
+
+.recibo-header a {
+  display: flex;
+  align-items: center;
 }
 
 .recibo-header img {
@@ -34,7 +37,8 @@ body {
   font-weight: 600;
   font-size: 1.15rem;
   color: #4b2c19;
-  margin-left: 10px;
+  text-align: right; /* 🔥 fuerza alineación a la derecha */
+  flex: 1;
 }
 
 /* ===== Animación fade-in ===== */
@@ -54,7 +58,7 @@ body {
 .recibo-container {
   display: flex;
   justify-content: center;
-  padding: 7rem 20px 30px; /* deja espacio para el header fijo */
+  padding: 7rem 20px 30px; /* espacio para header fijo */
 }
 
 /* ===== Tarjeta ===== */
@@ -159,14 +163,18 @@ ul#listaProductos li {
 
 /* ===== Responsive ===== */
 @media (max-width: 600px) {
-  .recibo-container {
-    padding: 6.5rem 15px;
-  }
-
   .recibo-header {
     flex-direction: row;
-    justify-content: center;
-    gap: 10px;
+    justify-content: space-between;
+    padding: .6rem 1rem;
+  }
+
+  .recibo-title {
+    font-size: 1rem;
+  }
+
+  .recibo-container {
+    padding: 6.5rem 15px;
   }
 
   .recibo-botones {
