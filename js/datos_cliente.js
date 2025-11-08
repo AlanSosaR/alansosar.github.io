@@ -6,19 +6,19 @@
 const form = document.getElementById("cliente-form");
 const CLIENTE_KEY = "cliente_info";
 
-// saber si venimos de recibo.html?from=recibo
+// Detectar si viene desde el recibo (para editar)
 function isFromRecibo() {
   const params = new URLSearchParams(window.location.search);
   return params.get("from") === "recibo";
 }
 
-// limpiar cuando venimos del carrito
+// Limpiar formulario (cuando venimos del carrito)
 function clearForm() {
   form.reset();
   document.querySelectorAll(".error-msg").forEach(el => el.remove());
 }
 
-// cargar datos cuando venimos a editar
+// Cargar datos guardados (solo si venimos desde el recibo)
 function loadClientData() {
   const cliente = JSON.parse(localStorage.getItem(CLIENTE_KEY));
   if (!cliente) return;
@@ -28,7 +28,7 @@ function loadClientData() {
   document.getElementById("telefono").value = cliente.telefono || "";
   document.getElementById("zona").value = cliente.zona || "";
 
-  // si en localStorage está "DEPTO - detalle", aquí solo mostramos el detalle
+  // Si la dirección se guardó como "Departamento - Detalle", mostrar solo el detalle
   const direccionSoloDetalle =
     cliente.direccion?.replace(`${cliente.zona} - `, "") || cliente.direccion || "";
   document.getElementById("direccion").value = direccionSoloDetalle;
@@ -36,7 +36,7 @@ function loadClientData() {
   document.getElementById("nota").value = cliente.nota || "";
 }
 
-// toast flotante
+// Mostrar notificación tipo “toast”
 function mostrarToast(mensaje, tipo = "ok") {
   const toast = document.createElement("div");
   toast.className = `toast ${tipo}`;
@@ -46,11 +46,11 @@ function mostrarToast(mensaje, tipo = "ok") {
   setTimeout(() => toast.classList.add("visible"), 100);
   setTimeout(() => {
     toast.classList.remove("visible");
-    setTimeout(() => toast.remove(), 350);
+    setTimeout(() => toast.remove(), 400);
   }, 2500);
 }
 
-// mensaje de error debajo del campo
+// Mostrar mensaje de error debajo del campo
 function mostrarError(idCampo, mensaje) {
   const campo = document.getElementById(idCampo);
   const grupo = campo.closest(".form-group");
@@ -58,25 +58,24 @@ function mostrarError(idCampo, mensaje) {
   const anterior = grupo.querySelector(".error-msg");
   if (anterior) anterior.remove();
 
-  const small = document.createElement("small");
-  small.className = "error-msg";
-  small.textContent = mensaje;
-  grupo.appendChild(small);
-
+  const error = document.createElement("small");
+  error.className = "error-msg";
+  error.textContent = mensaje;
+  grupo.appendChild(error);
   campo.classList.add("input-error");
 }
 
-// quitar error al escribir
+// Quitar error cuando el usuario escribe
 function limpiarError(campo) {
   campo.classList.remove("input-error");
   const grupo = campo.closest(".form-group");
-  const err = grupo.querySelector(".error-msg");
-  if (err) err.remove();
+  const error = grupo.querySelector(".error-msg");
+  if (error) error.remove();
 }
 
-// validar obligatorios
+// Validar campos obligatorios
 function validarCampos() {
-  let ok = true;
+  let valido = true;
 
   const nombre = document.getElementById("nombre");
   const correo = document.getElementById("correo");
@@ -86,50 +85,52 @@ function validarCampos() {
 
   if (!nombre.value.trim()) {
     mostrarError("nombre", "El nombre es obligatorio");
-    ok = false;
-  }
-  if (!telefono.value.trim()) {
-    mostrarError("telefono", "El teléfono es obligatorio");
-    ok = false;
-  }
-  if (!zona.value.trim()) {
-    mostrarError("zona", "Selecciona un departamento");
-    ok = false;
-  }
-  if (!direccion.value.trim()) {
-    mostrarError("direccion", "La dirección es obligatoria");
-    ok = false;
+    valido = false;
   }
 
-  // correo opcional pero con formato
+  if (!telefono.value.trim()) {
+    mostrarError("telefono", "El teléfono es obligatorio");
+    valido = false;
+  }
+
+  if (!zona.value.trim()) {
+    mostrarError("zona", "Selecciona un departamento");
+    valido = false;
+  }
+
+  if (!direccion.value.trim()) {
+    mostrarError("direccion", "La dirección es obligatoria");
+    valido = false;
+  }
+
+  // Correo opcional, pero validar formato si se escribe
   if (correo.value.trim()) {
-    const re = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
-    if (!re.test(correo.value.trim())) {
-      mostrarError("correo", "El correo no es válido");
-      ok = false;
+    const regex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+    if (!regex.test(correo.value.trim())) {
+      mostrarError("correo", "El correo no tiene un formato válido");
+      valido = false;
     }
   }
 
-  return ok;
+  return valido;
 }
 
-// al cargar la página
+// Inicialización
 window.addEventListener("DOMContentLoaded", () => {
+  // 🔍 Detectar origen: recibo (editar) o carrito (nuevo)
   if (isFromRecibo()) {
-    // viene de recibo → cargar
-    loadClientData();
+    loadClientData(); // Precargar datos
   } else {
-    // viene del carrito → limpiar
-    clearForm();
+    clearForm(); // Limpiar campos
   }
 
-  // limpiar error al escribir
+  // Quitar errores al escribir
   form.querySelectorAll("input, select, textarea").forEach(el => {
     el.addEventListener("input", () => limpiarError(el));
   });
 });
 
-// enviar
+// Guardar datos y redirigir
 form.addEventListener("submit", (e) => {
   e.preventDefault();
   document.querySelectorAll(".error-msg").forEach(el => el.remove());
@@ -151,12 +152,12 @@ form.addEventListener("submit", (e) => {
 
   localStorage.setItem(CLIENTE_KEY, JSON.stringify(cliente));
 
-  // texto distinto si venimos desde recibo
-  const msg = isFromRecibo()
+  // Mensaje diferente según el origen
+  const mensaje = isFromRecibo()
     ? "✏️ Datos actualizados correctamente"
     : "✅ Datos guardados correctamente";
 
-  mostrarToast(msg, "ok");
+  mostrarToast(mensaje, "ok");
 
   setTimeout(() => {
     window.location.href = "recibo.html";
