@@ -4,10 +4,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tu carrito | Café Cortero</title>
+
+  <!-- Tipografía y Material Design 3 -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@material/web@2.1.0/all.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@material/web@2.1.0/all.min.css">
+
+  <!-- Íconos -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="stylesheet" href="css/carrito.css">
+
+  <!-- Tus estilos -->
+  <link rel="stylesheet" href="css/carrito.css?v=5">
 </head>
+
 <body>
   <header>
     <a href="index.html">
@@ -21,10 +30,15 @@
     <div class="total-box" id="total-box">Total: L 0.00</div>
 
     <div class="actions">
-      <button class="btn" onclick="window.location.href='index.html'">Seguir comprando</button>
-      <button class="btn" style="background:#512615;" onclick="window.location.href='datos_cliente.html'">
+      <md-filled-tonal-button onclick="window.location.href='index.html'">
+        <md-icon slot="icon">arrow_back</md-icon>
+        Seguir comprando
+      </md-filled-tonal-button>
+
+      <md-filled-button style="--md-sys-color-primary: var(--marron);" onclick="window.location.href='datos_cliente.html'">
+        <md-icon slot="icon">shopping_cart_checkout</md-icon>
         Proceder con pedido
-      </button>
+      </md-filled-button>
     </div>
 
     <div id="confirm-box" class="confirm-box">
