@@ -1,181 +1,166 @@
-/* =============================
-   DATOS DEL CLIENTE - Café Cortero ☕
-   ============================= */
+:root {
+  --cafe: #4b2e17;
+  --verde: #166534;
+  --borde: #e5e7eb;
+  --error: #dc2626;
+  --bg: #ffffff;
+}
+
+* {
+  box-sizing: border-box;
+}
 
 body {
   font-family: "Poppins", sans-serif;
-  background: #f8f6f3;
+  background: #fff;
   margin: 0;
-  color: #4b2c1a;
+  color: var(--cafe);
 }
 
-/* ===== Encabezado ===== */
-header {
+.topbar {
   background: #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0.8rem 1rem;
+  gap: .6rem;
+  padding: .9rem 1rem;
+  border-bottom: 1px solid #f1f1f1;
   position: sticky;
   top: 0;
   z-index: 10;
 }
 
-header img {
-  height: 45px;
-  margin-right: 10px;
+.topbar img {
+  height: 34px;
 }
 
 .form-title {
-  font-size: 1.2rem;
   font-weight: 600;
-  color: #4b2c1a;
+  font-size: 1.1rem;
 }
 
-/* ===== Contenedor principal ===== */
 main {
-  max-width: 600px;
-  margin: 1.5rem auto;
-  padding: 1rem;
+  max-width: 620px;
+  margin: 1.4rem auto;
+  padding: 0 1rem 2rem;
 }
 
-/* ===== Caja del formulario ===== */
 .form-box {
   background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-  padding: 1.5rem;
-  animation: fadeIn 0.3s ease-in-out;
+  border-radius: 18px;
+  box-shadow: 0 12px 25px rgba(0,0,0,.03);
+  border: 1px solid rgba(0,0,0,.018);
+  padding: 1.3rem 1.3rem 1.5rem;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* ===== Campos ===== */
 .form-group {
-  margin-bottom: 1.2rem;
   display: flex;
   flex-direction: column;
+  gap: .4rem;
+  margin-bottom: 1rem;
 }
 
 label {
   font-weight: 500;
-  margin-bottom: 0.4rem;
+  font-size: .9rem;
+}
+
+.muted {
+  font-weight: 400;
+  font-size: .75rem;
+  color: #9ca3af;
 }
 
 input, select, textarea {
-  border: 1px solid #d9d9d9;
-  border-radius: 8px;
-  padding: 0.6rem;
-  font-size: 1rem;
+  border: 1px solid var(--borde);
+  border-radius: 14px;
+  padding: .55rem .7rem;
+  font-size: .9rem;
   font-family: inherit;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  background: #fff;
+  transition: border .15s ease, box-shadow .15s ease;
 }
 
-input:focus, select:focus, textarea:focus {
+input:focus,
+select:focus,
+textarea:focus {
   outline: none;
-  border-color: #33673B;
-  box-shadow: 0 0 4px rgba(51, 103, 59, 0.3);
+  border: 1px solid rgba(22, 101, 52, .75);
+  box-shadow: 0 0 0 3px rgba(22,101,52,.08);
 }
 
-/* ===== Errores ===== */
-.input-error {
-  border-color: #e63946 !important;
-  box-shadow: 0 0 3px rgba(230, 57, 70, 0.4);
+textarea {
+  resize: vertical;
+  min-height: 85px;
 }
 
-.error-msg {
-  color: #e63946;
-  font-size: 0.85rem;
-  margin-top: 0.3rem;
-  animation: fadeIn 0.2s ease-in;
-}
-
-/* ===== Botones ===== */
 .actions {
   display: flex;
-  justify-content: center;
-  gap: 1rem;
-  flex-wrap: wrap;
-  margin-top: 1.5rem;
+  gap: .8rem;
+  margin-top: 1.1rem;
 }
 
-.btn, .btn-secondary {
+.btn-primary,
+.btn-secondary {
+  flex: 1;
   border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 30px;
+  border-radius: 999px;
+  padding: .65rem .8rem;
   font-weight: 500;
+  font-size: .9rem;
   cursor: pointer;
-  font-size: 0.95rem;
-  transition: transform 0.2s, opacity 0.2s;
 }
 
-.btn:hover, .btn-secondary:hover {
-  transform: translateY(-1px);
-  opacity: 0.9;
-}
-
-.btn {
-  background: #33673B; /* Verde Café Cortero */
+.btn-primary {
+  background: var(--verde);
   color: #fff;
 }
 
 .btn-secondary {
-  background: #512615; /* Café oscuro */
+  background: var(--cafe);
   color: #fff;
 }
 
-/* ===== Toast flotante ===== */
+.error-msg {
+  color: var(--error);
+  font-size: .7rem;
+}
+
+.input-error {
+  border-color: var(--error) !important;
+  box-shadow: 0 0 0 2px rgba(220,38,38,.07);
+}
+
 .toast {
   position: fixed;
-  top: 10px;
+  top: 1rem;
   left: 50%;
-  transform: translateX(-50%) translateY(-30px);
-  background: #33673B;
-  color: #fff;
-  padding: 0.9rem 1.5rem;
-  border-radius: 10px;
+  transform: translateX(-50%) translateY(-25px);
+  background: #ecfdf3;
+  color: #14532d;
+  border: 1px solid #bbf7d0;
+  padding: .55rem 1rem;
+  border-radius: 999px;
+  font-size: .8rem;
   font-weight: 500;
-  font-size: 0.95rem;
   opacity: 0;
   pointer-events: none;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  z-index: 999;
+  transition: .25s ease;
 }
 
-.toast.visible {
+.toast.show {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
 }
 
-.toast.error {
-  background: #e63946;
-}
-
-/* ===== Mensaje guardado (ya no visible por defecto) ===== */
-.guardado {
-  display: none;
-}
-
-/* ===== Responsivo ===== */
-@media (max-width: 600px) {
+@media (max-width: 520px) {
   .form-box {
-    padding: 1rem;
+    border-radius: 0;
+    box-shadow: none;
+    border: none;
+    padding-inline: 0;
   }
-
-  .btn, .btn-secondary {
-    width: 100%;
-  }
-
-  body {
-    font-size: 0.9rem;
-  }
-
-  .form-title {
-    font-size: 1rem;
+  .actions {
+    flex-direction: column;
   }
 }
