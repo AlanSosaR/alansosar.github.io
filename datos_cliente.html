@@ -5,80 +5,81 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Detalles de entrega | Café Cortero</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/datos_cliente.css?v=3">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="css/datos_cliente.css">
 </head>
-<body>
 
-  <!-- 🔹 ENCABEZADO -->
+<body>
+  <!-- ENCABEZADO -->
   <header>
-    <a href="index.html">
-      <img src="imagenes/logo%20mejorado%20trasmparente.png" alt="Café Cortero - Inicio">
+    <a href="index.html" class="logo-link">
+      <img src="imagenes/logo%20mejorado%20trasmparente.png" alt="Café Cortero">
     </a>
-    <span class="form-title">Detalles de entrega</span>
+    <span class="cart-title">Detalles de entrega</span>
   </header>
 
-  <!-- 🔹 CONTENIDO -->
+  <!-- FORMULARIO -->
   <main>
-    <form id="cliente-form" class="form-box">
-      <div class="form-group">
-        <label for="nombre">Nombre completo *</label>
-        <input type="text" id="nombre" required>
-      </div>
+    <form id="formDatosCliente">
+      <label for="nombre">Nombre completo *</label>
+      <input type="text" id="nombre" name="nombre" placeholder="Escribe tu nombre completo" required>
 
-      <div class="form-group">
-        <label for="correo">Correo electrónico <span style="font-weight:400;">(opcional)</span></label>
-        <input type="email" id="correo" placeholder="ej: tucorreo@gmail.com">
-      </div>
+      <label for="correo">Correo electrónico (opcional)</label>
+      <input type="email" id="correo" name="correo" placeholder="ej: tucorreo@gmail.com">
 
-      <div class="form-group">
-        <label for="telefono">Teléfono *</label>
-        <input type="tel" id="telefono" placeholder="ej: 9632-2522" required>
-      </div>
+      <label for="telefono">Teléfono *</label>
+      <input type="tel" id="telefono" name="telefono" placeholder="ej: 9632-2522" required>
 
-      <!-- 🔽 DEPARTAMENTO -->
-      <div class="form-group">
-        <label for="zona">Departamento *</label>
-        <select id="zona" required>
-          <option value="">Seleccionar...</option>
-          <option value="Atlántida">Atlántida</option>
-          <option value="Choluteca">Choluteca</option>
-          <option value="Colón">Colón</option>
-          <option value="Comayagua">Comayagua</option>
-          <option value="Copán">Copán</option>
-          <option value="Cortés">Cortés</option>
-          <option value="El Paraíso">El Paraíso</option>
-          <option value="Francisco Morazán">Francisco Morazán</option>
-          <option value="Gracias a Dios">Gracias a Dios</option>
-          <option value="Intibucá">Intibucá</option>
-          <option value="Islas de la Bahía">Islas de la Bahía</option>
-          <option value="La Paz">La Paz</option>
-          <option value="Lempira">Lempira</option>
-          <option value="Ocotepeque">Ocotepeque</option>
-          <option value="Olancho">Olancho</option>
-          <option value="Santa Bárbara">Santa Bárbara</option>
-          <option value="Valle">Valle</option>
-          <option value="Yoro">Yoro</option>
-        </select>
-      </div>
+      <label for="departamento">Departamento *</label>
+      <select id="departamento" name="departamento" required>
+        <option value="">Seleccionar...</option>
+        <option value="Atlántida">Atlántida</option>
+        <option value="Choluteca">Choluteca</option>
+        <option value="Colón">Colón</option>
+        <option value="Comayagua">Comayagua</option>
+        <option value="Copán">Copán</option>
+        <option value="Cortés">Cortés</option>
+        <option value="El Paraíso">El Paraíso</option>
+        <option value="Francisco Morazán">Francisco Morazán</option>
+        <option value="Gracias a Dios">Gracias a Dios</option>
+        <option value="Intibucá">Intibucá</option>
+        <option value="Islas de la Bahía">Islas de la Bahía</option>
+        <option value="La Paz">La Paz</option>
+        <option value="Lempira">Lempira</option>
+        <option value="Ocotepeque">Ocotepeque</option>
+        <option value="Olancho">Olancho</option>
+        <option value="Santa Bárbara">Santa Bárbara</option>
+        <option value="Valle">Valle</option>
+        <option value="Yoro">Yoro</option>
+      </select>
 
-      <div class="form-group">
-        <label for="direccion">Dirección de entrega *</label>
-        <textarea id="direccion" rows="3" placeholder="Ej: Aldea San Ramón, Valle de Jamastrán" required></textarea>
-      </div>
+      <label for="direccion">Dirección de entrega *</label>
+      <textarea id="direccion" name="direccion" rows="2" placeholder="Ej: Aldea San Ramón, Valle de Jamastrán" required></textarea>
 
-      <div class="form-group">
-        <label for="nota">Nota adicional</label>
-        <textarea id="nota" rows="2" placeholder="Ej: Entregar por la mañana (opcional)"></textarea>
-      </div>
+      <label for="nota">Nota adicional</label>
+      <textarea id="nota" name="nota" rows="2" placeholder="Ej: Entregar por la mañana (opcional)"></textarea>
 
-      <!-- 🔹 BOTONES -->
       <div class="actions">
-        <button type="button" class="btn btn-secondary" onclick="window.location.href='index.html'">Volver</button>
-        <button type="submit" class="btn btn-primary">Guardar y continuar</button>
+        <button type="button" class="btn volver" onclick="window.location.href='carrito.html'">
+          <i class="fa-solid fa-arrow-left"></i> Volver
+        </button>
+        <button type="submit" class="btn continuar">
+          <i class="fa-solid fa-check"></i> Proceder con el pedido
+        </button>
       </div>
     </form>
   </main>
 
-  <script src="js/datos_cliente.js"></script>
+  <!-- WHATSAPP -->
+  <a href="https://wa.me/50494546047?text=Hola%2C%20quiero%20hacer%20un%20pedido%20de%20Café%20Cortero" class="whatsapp-float">
+    <i class="fa-brands fa-whatsapp"></i>
+  </a>
+
+  <script>
+    document.getElementById("formDatosCliente").addEventListener("submit", function(e) {
+      e.preventDefault();
+      window.location.href = "confirmacion.html";
+    });
+  </script>
 </body>
 </html>
