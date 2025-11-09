@@ -2,8 +2,10 @@
   --marron: #512615;
   --verde: #33673B;
   --blanco: #ffffff;
+  --fondo: #ffffff;
 }
 
+/* RESETEO BÁSICO */
 * {
   margin: 0;
   padding: 0;
@@ -12,8 +14,9 @@
 
 body {
   font-family: "Poppins", sans-serif;
-  background: var(--blanco);
+  background: var(--fondo);
   color: var(--marron);
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* HEADER */
@@ -22,13 +25,13 @@ header {
   padding: 0.8rem 1.2rem;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  justify-content: flex-start;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  gap: 1rem;
 }
 
 header img {
   height: 60px;
-  cursor: pointer;
 }
 
 .cart-title {
@@ -37,30 +40,37 @@ header img {
   color: var(--marron);
 }
 
-/* CONTENIDO */
+/* ENLACES - Quitar azul al tocar */
+a, a:focus, a:active, a:visited {
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  text-decoration: none;
+}
+
+/* CONTENIDO PRINCIPAL */
 main {
   max-width: 1100px;
   margin: 2rem auto;
   padding: 0 1rem 3rem;
 }
 
-/* ITEM */
+/* TARJETA DE PRODUCTO */
 .item {
-  background: var(--blanco);
+  background: #fff;
   border-radius: 20px;
   padding: 1.1rem 1rem;
   display: flex;
   align-items: center;
   gap: 1rem;
   margin-bottom: 1rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
 
 .item img {
   width: 72px;
   height: 72px;
   object-fit: contain;
-  background: #f4f6f9;
+  background: #eff5ff;
   border-radius: 14px;
 }
 
@@ -76,10 +86,9 @@ main {
 .item-price {
   font-size: 0.9rem;
   margin-bottom: 0.5rem;
-  color: #555;
 }
 
-/* CANTIDAD */
+/* CONTROL DE CANTIDAD */
 .qty-controls {
   display: flex;
   gap: 0.4rem;
@@ -90,32 +99,37 @@ main {
   background: var(--verde);
   color: #fff;
   border: none;
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   font-size: 1rem;
-  transition: background 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .qty-btn:hover {
-  background: #285a30;
+  transform: scale(1.1);
 }
 
 .del-btn {
   background: #d72638;
   color: #fff;
   border: none;
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.del-btn:hover {
+  transform: scale(1.1);
 }
 
 /* TOTAL */
@@ -126,14 +140,13 @@ main {
   margin-top: 2rem;
 }
 
-/* BOTONES */
+/* BOTONES DE ACCIÓN */
 .actions {
   margin-top: 2rem;
   display: flex;
   justify-content: center;
-  align-items: center;
-  gap: 1rem;
-  flex-wrap: nowrap; /* 🔒 Nunca se apilan */
+  gap: 1.5rem;
+  flex-wrap: wrap;
 }
 
 .btn {
@@ -143,26 +156,58 @@ main {
   cursor: pointer;
   font-weight: 500;
   color: #fff;
+  transition: all 0.3s ease;
+  min-width: 180px;
   font-size: 1rem;
-  transition: all 0.25s ease;
-  min-width: 150px;
-  text-align: center;
 }
 
 .btn.volver {
   background: var(--marron);
 }
 
-.btn.continuar {
+.btn.volver:hover {
+  background: #6a3320;
+  box-shadow: 0 3px 8px rgba(81, 38, 21, 0.3);
+}
+
+.btn.proceder {
   background: var(--verde);
 }
 
-.btn:hover {
-  transform: translateY(-2px);
-  opacity: 0.9;
+.btn.proceder:hover {
+  background: #28552f;
+  box-shadow: 0 3px 8px rgba(51, 103, 59, 0.3);
 }
 
-/* WHATSAPP */
+/* CAJA VACÍA */
+.empty {
+  background: #fff;
+  padding: 1.5rem 1rem;
+  border-radius: 18px;
+  text-align: center;
+}
+
+/* MENSAJE DE CONFIRMACIÓN */
+.confirm-box {
+  text-align: center;
+  background: #e9ffe9;
+  border: 2px solid #48c774;
+  color: #27632a;
+  padding: 1rem;
+  border-radius: 15px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-top: 1.5rem;
+  display: none;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* BOTÓN WHATSAPP */
 .whatsapp-float {
   position: fixed;
   bottom: 22px;
@@ -178,9 +223,4 @@ main {
   font-size: 30px;
   text-decoration: none;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  transition: transform 0.2s ease;
-}
-
-.whatsapp-float:hover {
-  transform: scale(1.05);
 }
