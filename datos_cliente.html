@@ -4,34 +4,41 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Datos del cliente | Café Cortero</title>
-  <link rel="stylesheet" href="css/datos_cliente.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/datos_cliente.css?v=3">
 </head>
 <body>
-  <header class="topbar">
-    <img src="imagenes/logo%20mejorado%20trasmparente.png" alt="Café Cortero">
+
+  <!-- 🔹 ENCABEZADO -->
+  <header>
+    <a href="index.html">
+      <img src="imagenes/logo%20mejorado%20trasmparente.png" alt="Café Cortero - Inicio">
+    </a>
     <span class="form-title">Datos del cliente</span>
   </header>
 
+  <!-- 🔹 CONTENIDO -->
   <main>
     <form id="cliente-form" class="form-box">
       <div class="form-group">
         <label for="nombre">Nombre completo *</label>
-        <input type="text" id="nombre" autocomplete="name">
+        <input type="text" id="nombre" required>
       </div>
 
       <div class="form-group">
-        <label for="correo">Correo electrónico <span class="muted">(opcional)</span></label>
-        <input type="email" id="correo" autocomplete="email" placeholder="ej: tucorreo@gmail.com">
+        <label for="correo">Correo electrónico <span style="font-weight:400;">(opcional)</span></label>
+        <input type="email" id="correo" placeholder="ej: tucorreo@gmail.com">
       </div>
 
       <div class="form-group">
         <label for="telefono">Teléfono *</label>
-        <input type="tel" id="telefono" inputmode="tel" autocomplete="tel" placeholder="ej: 9632-2522">
+        <input type="tel" id="telefono" placeholder="ej: 9632-2522" required>
       </div>
 
+      <!-- 🔽 DEPARTAMENTO -->
       <div class="form-group">
         <label for="zona">Departamento *</label>
-        <select id="zona">
+        <select id="zona" required>
           <option value="">Seleccionar...</option>
           <option value="Atlántida">Atlántida</option>
           <option value="Choluteca">Choluteca</option>
@@ -56,25 +63,20 @@
 
       <div class="form-group">
         <label for="direccion">Dirección de entrega *</label>
-        <textarea id="direccion" rows="3" placeholder="Ej: Aldea San Ramón, Valle de Jamastrán"></textarea>
+        <textarea id="direccion" rows="3" placeholder="Ej: Aldea San Ramón, Valle de Jamastrán" required></textarea>
       </div>
 
       <div class="form-group">
         <label for="nota">Nota adicional</label>
-        <textarea id="nota" rows="2" placeholder="Ej: entregar por la mañana (opcional)"></textarea>
+        <textarea id="nota" rows="2" placeholder="Ej: Entregar por la mañana (opcional)"></textarea>
       </div>
 
+      <!-- 🔹 BOTONES -->
       <div class="actions">
-        <button type="button" class="btn-secondary" onclick="window.location.href='index.html'">
-          Volver
-        </button>
-        <button type="submit" class="btn-primary">
-          Guardar y continuar
-        </button>
+        <button type="button" class="btn btn-secondary" onclick="window.location.href='index.html'">Volver</button>
+        <button type="submit" class="btn btn-primary">Guardar y continuar</button>
       </div>
     </form>
-
-    <div id="toast" class="toast">✅ Datos guardados</div>
   </main>
 
   <script src="js/datos_cliente.js"></script>
