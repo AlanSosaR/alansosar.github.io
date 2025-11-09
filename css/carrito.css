@@ -16,7 +16,7 @@ body {
   font-family: "Poppins", sans-serif;
   background: var(--fondo);
   color: var(--marron);
-  -webkit-tap-highlight-color: transparent;
+  -webkit-tap-highlight-color: transparent; /* Quita el azul en todo el body */
 }
 
 /* HEADER */
@@ -40,7 +40,7 @@ header img {
   color: var(--marron);
 }
 
-/* ENLACES - Quitar azul al tocar */
+/* ENLACES - quitar color azul al tocar */
 a, a:focus, a:active, a:visited {
   outline: none;
   -webkit-tap-highlight-color: transparent;
@@ -107,11 +107,12 @@ main {
   justify-content: center;
   cursor: pointer;
   font-size: 1rem;
-  transition: all 0.2s ease;
+  transition: transform 0.1s ease;
+  -webkit-tap-highlight-color: transparent; /* Sin color azul */
 }
 
-.qty-btn:hover {
-  transform: scale(1.1);
+.qty-btn:active {
+  transform: scale(0.95);
 }
 
 .del-btn {
@@ -125,11 +126,12 @@ main {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: transform 0.1s ease;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.del-btn:hover {
-  transform: scale(1.1);
+.del-btn:active {
+  transform: scale(0.95);
 }
 
 /* TOTAL */
@@ -156,9 +158,10 @@ main {
   cursor: pointer;
   font-weight: 500;
   color: #fff;
-  transition: all 0.3s ease;
+  transition: background 0.2s ease, transform 0.1s ease;
   min-width: 180px;
   font-size: 1rem;
+  -webkit-tap-highlight-color: transparent; /* Sin color azul en móviles */
 }
 
 .btn.volver {
@@ -167,7 +170,10 @@ main {
 
 .btn.volver:hover {
   background: #6a3320;
-  box-shadow: 0 3px 8px rgba(81, 38, 21, 0.3);
+}
+
+.btn.volver:active {
+  transform: scale(0.97);
 }
 
 .btn.proceder {
@@ -176,7 +182,10 @@ main {
 
 .btn.proceder:hover {
   background: #28552f;
-  box-shadow: 0 3px 8px rgba(51, 103, 59, 0.3);
+}
+
+.btn.proceder:active {
+  transform: scale(0.97);
 }
 
 /* CAJA VACÍA */
@@ -208,4 +217,5 @@ main {
   font-size: 30px;
   text-decoration: none;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  -webkit-tap-highlight-color: transparent; /* Sin azul al tocar */
 }
