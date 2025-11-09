@@ -1,236 +1,82 @@
-/* =============================
-   ESTILO FORMULARIO DE CLIENTE
-   Café Cortero ☕
-   ============================= */
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Datos del cliente | Café Cortero</title>
+  <link rel="stylesheet" href="css/datos_cliente.css">
+</head>
+<body>
+  <header class="topbar">
+    <img src="imagenes/logo%20mejorado%20trasmparente.png" alt="Café Cortero">
+    <span class="form-title">Datos del cliente</span>
+  </header>
 
-:root {
-  --cafe: #4b2e17;
-  --verde: #166534;
-  --borde: #e5e7eb;
-  --error: #dc2626;
-  --bg: #ffffff;
-}
+  <main>
+    <form id="cliente-form" class="form-box">
+      <div class="form-group">
+        <label for="nombre">Nombre completo *</label>
+        <input type="text" id="nombre" autocomplete="name">
+      </div>
 
-* {
-  box-sizing: border-box;
-}
+      <div class="form-group">
+        <label for="correo">Correo electrónico <span class="muted">(opcional)</span></label>
+        <input type="email" id="correo" autocomplete="email" placeholder="ej: tucorreo@gmail.com">
+      </div>
 
-body {
-  font-family: "Poppins", sans-serif;
-  background: var(--bg);
-  margin: 0;
-  color: var(--cafe);
-}
+      <div class="form-group">
+        <label for="telefono">Teléfono *</label>
+        <input type="tel" id="telefono" inputmode="tel" autocomplete="tel" placeholder="ej: 9632-2522">
+      </div>
 
-/* 🔹 Encabezado */
-.topbar {
-  background: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 0.6rem;
-  padding: 0.9rem 1rem;
-  border-bottom: 1px solid #f1f1f1;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
+      <div class="form-group">
+        <label for="zona">Departamento *</label>
+        <select id="zona">
+          <option value="">Seleccionar...</option>
+          <option value="Atlántida">Atlántida</option>
+          <option value="Choluteca">Choluteca</option>
+          <option value="Colón">Colón</option>
+          <option value="Comayagua">Comayagua</option>
+          <option value="Copán">Copán</option>
+          <option value="Cortés">Cortés</option>
+          <option value="El Paraíso">El Paraíso</option>
+          <option value="Francisco Morazán">Francisco Morazán</option>
+          <option value="Gracias a Dios">Gracias a Dios</option>
+          <option value="Intibucá">Intibucá</option>
+          <option value="Islas de la Bahía">Islas de la Bahía</option>
+          <option value="La Paz">La Paz</option>
+          <option value="Lempira">Lempira</option>
+          <option value="Ocotepeque">Ocotepeque</option>
+          <option value="Olancho">Olancho</option>
+          <option value="Santa Bárbara">Santa Bárbara</option>
+          <option value="Valle">Valle</option>
+          <option value="Yoro">Yoro</option>
+        </select>
+      </div>
 
-.topbar img {
-  height: 34px;
-  flex-shrink: 0;
-}
+      <div class="form-group">
+        <label for="direccion">Dirección de entrega *</label>
+        <textarea id="direccion" rows="3" placeholder="Ej: Aldea San Ramón, Valle de Jamastrán"></textarea>
+      </div>
 
-.form-title {
-  font-weight: 600;
-  font-size: 1.1rem;
-  white-space: nowrap;
-}
+      <div class="form-group">
+        <label for="nota">Nota adicional</label>
+        <textarea id="nota" rows="2" placeholder="Ej: entregar por la mañana (opcional)"></textarea>
+      </div>
 
-/* 🔹 Contenedor principal */
-main {
-  max-width: 620px;
-  margin: 1.4rem auto;
-  padding: 0 1rem 2rem;
-}
+      <div class="actions">
+        <button type="button" class="btn-secondary" onclick="window.location.href='index.html'">
+          Volver
+        </button>
+        <button type="submit" class="btn-primary">
+          Guardar y continuar
+        </button>
+      </div>
+    </form>
 
-/* 🔹 Caja del formulario */
-.form-box {
-  background: #fff;
-  border-radius: 18px;
-  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.03);
-  border: 1px solid rgba(0, 0, 0, 0.018);
-  padding: 1.3rem 1.3rem 1.5rem;
-}
+    <div id="toast" class="toast">✅ Datos guardados</div>
+  </main>
 
-/* 🔹 Campos */
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-  margin-bottom: 1rem;
-}
-
-label {
-  font-weight: 500;
-  font-size: 0.9rem;
-}
-
-.muted {
-  font-weight: 400;
-  font-size: 0.75rem;
-  color: #9ca3af;
-}
-
-input,
-select,
-textarea {
-  border: 1px solid var(--borde);
-  border-radius: 14px;
-  padding: 0.55rem 0.7rem;
-  font-size: 0.9rem;
-  font-family: inherit;
-  background: #fff;
-  transition: border 0.15s ease, box-shadow 0.15s ease;
-  color: var(--cafe);
-}
-
-input::placeholder,
-textarea::placeholder {
-  color: #9ca3af;
-}
-
-/* 🔽 Campo SELECT con icono a la izquierda */
-select {
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  background-color: #fff;
-  background-image: url("data:image/svg+xml;utf8,<svg fill='%234b2e17' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
-  background-repeat: no-repeat;
-  background-position: left 0.9rem center;
-  background-size: 18px;
-  padding-left: 2.4rem; /* espacio para la flecha */
-  padding-right: 1rem;
-  text-align: right; /* texto hacia la derecha */
-}
-
-/* 🔼 Efecto al enfocar el select */
-select:focus {
-  border-color: rgba(22, 101, 52, 0.8);
-  box-shadow: 0 0 0 3px rgba(22, 101, 52, 0.08);
-  outline: none;
-}
-
-input:focus,
-textarea:focus {
-  outline: none;
-  border: 1px solid rgba(22, 101, 52, 0.75);
-  box-shadow: 0 0 0 3px rgba(22, 101, 52, 0.08);
-}
-
-textarea {
-  resize: vertical;
-  min-height: 85px;
-}
-
-/* 🔹 Botones */
-.actions {
-  display: flex;
-  gap: 0.8rem;
-  margin-top: 1.1rem;
-}
-
-.btn-primary,
-.btn-secondary {
-  flex: 1;
-  border: none;
-  border-radius: 999px;
-  padding: 0.65rem 0.8rem;
-  font-weight: 500;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: transform 0.1s ease, opacity 0.1s ease;
-}
-
-.btn-primary:hover,
-.btn-secondary:hover {
-  transform: translateY(-1px);
-  opacity: 0.95;
-}
-
-.btn-primary:active,
-.btn-secondary:active {
-  transform: translateY(0);
-  opacity: 1;
-}
-
-.btn-primary {
-  background: var(--verde);
-  color: #fff;
-}
-
-.btn-secondary {
-  background: var(--cafe);
-  color: #fff;
-}
-
-/* 🔹 Errores */
-.error-msg {
-  color: var(--error);
-  font-size: 0.7rem;
-}
-
-.input-error {
-  border-color: var(--error) !important;
-  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.07);
-}
-
-/* 🔔 Toast */
-.toast {
-  position: fixed;
-  top: 1rem;
-  left: 50%;
-  transform: translateX(-50%) translateY(-25px);
-  background: #ecfdf3;
-  color: #14532d;
-  border: 1px solid #bbf7d0;
-  padding: 0.55rem 1rem;
-  border-radius: 999px;
-  font-size: 0.8rem;
-  font-weight: 500;
-  opacity: 0;
-  pointer-events: none;
-  transition: 0.25s ease;
-}
-
-.toast.show {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
-}
-
-/* 📱 Responsive */
-@media (max-width: 520px) {
-  .topbar {
-    justify-content: center;
-  }
-
-  .topbar img {
-    height: 32px;
-  }
-
-  .form-box {
-    border-radius: 0;
-    box-shadow: none;
-    border: none;
-    padding-inline: 0;
-  }
-
-  .actions {
-    flex-direction: column;
-  }
-
-  select {
-    text-align: left; /* en móviles, texto normal */
-  }
-}
+  <script src="js/datos_cliente.js"></script>
+</body>
+</html>
