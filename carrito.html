@@ -3,37 +3,41 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tu carrito | Café Cortero</title>
-
-  <!-- Fuentes y librerías -->
+  <title>Tu selección de café | Café Cortero</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-  <!-- Estilos -->
-  <link rel="stylesheet" href="css/carrito.css?v=8">
+  <link rel="stylesheet" href="css/carrito.css">
+  <style>
+    /* Quitar el color azul al tocar el logo */
+    a, a:focus, a:active, a:visited {
+      outline: none;
+      -webkit-tap-highlight-color: transparent;
+      text-decoration: none;
+    }
+  </style>
 </head>
-
 <body>
-  <!-- Encabezado -->
   <header>
     <a href="index.html">
       <img src="imagenes/logo%20mejorado%20trasmparente.png" alt="Café Cortero">
     </a>
-    <span class="cart-title">Tu Carrito</span>
+    <span class="cart-title">Tu selección de café</span>
   </header>
 
-  <!-- Contenido principal -->
   <main>
     <div id="cart-container"></div>
     <div class="total-box" id="total-box">Total: L 0.00</div>
 
     <div class="actions">
       <button class="btn volver" onclick="window.location.href='index.html'">Volver</button>
-      <button class="btn continuar" onclick="window.location.href='datos_cliente.html'">Guardar y continuar</button>
+      <button class="btn proceder" onclick="window.location.href='datos_cliente.html'">Proceder con el pedido</button>
+    </div>
+
+    <div id="confirm-box" class="confirm-box">
+      ✅ Pedido enviado con éxito. ¡Gracias por comprar con Café Cortero!
     </div>
   </main>
 
-  <!-- Botón de WhatsApp -->
   <a href="https://wa.me/50494546047?text=Hola%2C%20quiero%20hacer%20un%20pedido%20de%20Café%20Cortero" class="whatsapp-float">
     <i class="fa-brands fa-whatsapp"></i>
   </a>
