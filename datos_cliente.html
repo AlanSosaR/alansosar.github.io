@@ -1,107 +1,93 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Datos del cliente | Café Cortero</title>
 
-  <!-- Fuente -->
+  <!-- Fuente principal -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
-  <!-- ✅ Material Design 3 desde JSDelivr (compatible con GitHub Pages) -->
-  <script type="module" src="https://cdn.jsdelivr.net/npm/@material/web@latest/all.min.js"></script>
+  <!-- Íconos Material -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
 
+  <!-- Estilos personalizados -->
+  <link rel="stylesheet" href="css/datos_cliente.css">
+
+  <!-- Material Design 3 local -->
+  <script type="module" src="libs/material/all.min.js"></script>
+
+  <!-- Tema expressivo -->
   <style>
     :root {
-      --md-sys-color-primary: #33673B; /* Verde Café Cortero */
+      color-scheme: light;
+      --md-sys-color-primary: #33673B;
       --md-sys-color-on-primary: #ffffff;
+      --md-sys-color-secondary: #6D4C41;
+      --md-sys-color-background: #ffffff;
       --md-sys-color-surface: #ffffff;
-      --md-sys-color-outline: #dadada;
-      --md-sys-typescale-body-medium-font-family-name: "Poppins";
+      --md-sys-color-outline: #d9d9d9;
+      --md-sys-shape-corner-full: 20px;
     }
 
     body {
       font-family: "Poppins", sans-serif;
-      background-color: #ffffff;
-      color: #3a2a20;
+      background: var(--md-sys-color-background);
       margin: 0;
+      color: #4b2c1a;
     }
 
     header {
       background: #fff;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
       display: flex;
       align-items: center;
-      padding: 0.9rem 1.2rem;
+      justify-content: center;
+      padding: 0.8rem 1rem;
       gap: 10px;
-      position: sticky;
-      top: 0;
-      z-index: 10;
     }
 
     header img {
-      height: 42px;
+      height: 45px;
     }
 
     .form-title {
       font-size: 1.2rem;
       font-weight: 600;
-      color: #4b2c1a;
+      color: var(--md-sys-color-secondary);
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
     }
 
     main {
-      max-width: 550px;
+      max-width: 600px;
       margin: 1.5rem auto;
       padding: 1rem;
     }
 
-    form {
-      background: #fff;
-      border-radius: 18px;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+    .form-box {
+      background: var(--md-sys-color-surface);
+      border-radius: 16px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
       padding: 1.5rem;
       display: flex;
       flex-direction: column;
       gap: 1rem;
     }
 
-    md-outlined-text-field,
-    md-outlined-select {
-      width: 100%;
-    }
-
     .actions {
       display: flex;
       justify-content: center;
-      flex-wrap: wrap;
       gap: 1rem;
-      margin-top: 1rem;
+      flex-wrap: wrap;
+      margin-top: 1.5rem;
     }
 
-    .btn,
-    .btn-secondary {
-      border: none;
-      border-radius: 30px;
+    md-filled-button,
+    md-tonal-button {
       font-weight: 500;
-      font-family: inherit;
-      font-size: 0.95rem;
-      cursor: pointer;
-      padding: 0.8rem 1.5rem;
-      transition: all 0.2s ease-in-out;
-    }
-
-    .btn {
-      background: var(--md-sys-color-primary);
-      color: var(--md-sys-color-on-primary);
-    }
-
-    .btn:hover {
-      opacity: 0.9;
-    }
-
-    .btn-secondary {
-      background: #512615;
-      color: #fff;
+      border-radius: 999px;
     }
 
     .guardado {
@@ -114,48 +100,12 @@
       border-radius: 12px;
       font-weight: 600;
       margin-top: 1.5rem;
-      animation: fadeIn 0.4s ease-in-out;
+      animation: fadeIn .4s ease-in-out;
     }
 
     @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .toast {
-      position: fixed;
-      bottom: 25px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #33673B;
-      color: #fff;
-      padding: 0.8rem 1.4rem;
-      border-radius: 8px;
-      font-size: 0.95rem;
-      opacity: 0;
-      transition: opacity 0.3s, transform 0.3s;
-      z-index: 100;
-    }
-
-    .toast.visible {
-      opacity: 1;
-      transform: translateX(-50%) translateY(-8px);
-    }
-
-    @media (max-width: 600px) {
-      form {
-        padding: 1.2rem;
-      }
-      .btn,
-      .btn-secondary {
-        width: 100%;
-      }
+      from {opacity: 0; transform: translateY(10px);}
+      to {opacity: 1; transform: translateY(0);}
     }
   </style>
 </head>
@@ -167,12 +117,12 @@
   </header>
 
   <main>
-    <form id="cliente-form">
-      <md-outlined-text-field label="Nombre completo *" id="nombre" required></md-outlined-text-field>
+    <form id="cliente-form" class="form-box">
+      <md-outlined-text-field id="nombre" label="Nombre completo *" required></md-outlined-text-field>
 
-      <md-outlined-text-field label="Correo electrónico" id="correo" type="email" placeholder="Opcional"></md-outlined-text-field>
+      <md-outlined-text-field id="correo" label="Correo electrónico" placeholder="Opcional" type="email"></md-outlined-text-field>
 
-      <md-outlined-text-field label="Teléfono *" id="telefono" type="tel" required></md-outlined-text-field>
+      <md-outlined-text-field id="telefono" label="Teléfono *" type="tel" required></md-outlined-text-field>
 
       <md-outlined-select id="zona" label="Departamento *" required>
         <md-select-option value="">Seleccionar...</md-select-option>
@@ -196,29 +146,24 @@
         <md-select-option value="Yoro">Yoro</md-select-option>
       </md-outlined-select>
 
-      <md-outlined-text-field
-        label="Dirección de entrega *"
-        id="direccion"
-        rows="3"
-        required
-        placeholder="Ej: Aldea San Ramón, Valle de Jamastrán">
-      </md-outlined-text-field>
+      <md-outlined-textarea id="direccion" label="Dirección de entrega *" rows="3" placeholder="Ej: Aldea San Ramón, Valle de Jamastrán" required></md-outlined-textarea>
 
-      <md-outlined-text-field
-        label="Nota adicional"
-        id="nota"
-        placeholder="Ej: Entregar por la mañana (opcional)">
-      </md-outlined-text-field>
+      <md-outlined-textarea id="nota" label="Nota adicional" rows="2" placeholder="Ej: Entregar por la mañana (opcional)"></md-outlined-textarea>
 
       <div class="actions">
-        <button type="button" class="btn-secondary" onclick="window.location.href='index.html'">Volver</button>
-        <button type="submit" class="btn">Guardar y continuar</button>
+        <md-tonal-button type="button" onclick="window.location.href='index.html'">
+          <span class="material-symbols-outlined">arrow_back</span> Volver
+        </md-tonal-button>
+        <md-filled-button type="submit">
+          <span class="material-symbols-outlined">check_circle</span> Guardar y continuar
+        </md-filled-button>
       </div>
     </form>
 
     <div id="guardado" class="guardado">✅ Datos guardados correctamente</div>
   </main>
 
+  <!-- Script principal -->
   <script src="js/datos_cliente.js"></script>
 </body>
 </html>
