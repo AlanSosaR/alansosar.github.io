@@ -2,7 +2,6 @@
   --marron: #512615;
   --verde: #33673B;
   --blanco: #ffffff;
-  --fondo: #f5eee6;
   --borde: #e0e0e0;
 }
 
@@ -14,11 +13,11 @@
 
 body {
   font-family: "Poppins", sans-serif;
-  background: var(--fondo);
+  background: var(--blanco);
   color: var(--marron);
 }
 
-/* 🔹 HEADER igual al del carrito */
+/* 🔹 HEADER */
 header {
   background: var(--blanco);
   padding: .8rem 1.2rem;
@@ -50,6 +49,7 @@ main {
   border-radius: 20px;
   padding: 1.5rem 1.2rem;
   box-shadow: 0 10px 25px rgba(0,0,0,.02);
+  border: 1px solid #f2f2f2;
 }
 
 .form-group {
@@ -63,6 +63,7 @@ label {
   margin-bottom: 0.4rem;
 }
 
+/* 🔹 CAMPOS */
 input, select, textarea {
   border: 1px solid var(--borde);
   border-radius: 12px;
@@ -107,14 +108,14 @@ select {
 
 .btn {
   border: none;
-  background: var(--verde);
-  color: #fff;
   padding: .8rem 1.5rem;
   border-radius: 999px;
   cursor: pointer;
   font-weight: 500;
   flex: 1;
   transition: transform .1s ease, opacity .1s ease;
+  font-size: 1rem;
+  color: #fff;
 }
 
 .btn:hover {
@@ -122,27 +123,16 @@ select {
   opacity: .95;
 }
 
+.btn:active {
+  transform: translateY(0);
+}
+
 .btn-secondary {
   background: var(--marron);
 }
 
-/* 🔹 MENSAJE DE CONFIRMACIÓN */
-.guardado {
-  display: none;
-  text-align: center;
-  background: #e9ffe9;
-  border: 2px solid #48c774;
-  color: #27632a;
-  padding: 0.8rem;
-  border-radius: 12px;
-  font-weight: 600;
-  margin-top: 1.5rem;
-  animation: fadeIn .4s ease-in-out;
-}
-
-@keyframes fadeIn {
-  from {opacity: 0; transform: translateY(10px);}
-  to {opacity: 1; transform: translateY(0);}
+.btn-primary {
+  background: var(--verde);
 }
 
 /* 📱 RESPONSIVE */
@@ -156,6 +146,6 @@ select {
   }
 
   select {
-    text-align: left; /* en móvil el texto vuelve a la izquierda */
+    text-align: left;
   }
 }
