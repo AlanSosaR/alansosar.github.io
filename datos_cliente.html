@@ -1,133 +1,80 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Datos del cliente | Café Cortero</title>
-
-  <!-- Fuente y estilos -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-
-  <!-- Material Design 3 local -->
-  <script type="module" src="libs/material/all.min.js"></script>
-
-  <style>
-    body {
-      font-family: 'Poppins', sans-serif;
-      background-color: #ffffff;
-      margin: 0;
-      padding: 0;
-    }
-
-    header {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 1rem;
-      border-bottom: 1px solid #eee;
-      justify-content: center;
-    }
-
-    header img {
-      width: 32px;
-      height: 32px;
-    }
-
-    .form-title {
-      font-weight: 600;
-      color: #4b2e17;
-    }
-
-    main {
-      display: flex;
-      justify-content: center;
-      padding: 2rem 1rem;
-    }
-
-    form {
-      background: #fff;
-      padding: 1.5rem;
-      border-radius: 1rem;
-      max-width: 480px;
-      width: 100%;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-      display: flex;
-      flex-direction: column;
-      gap: 1.2rem;
-    }
-
-    .actions {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 0.8rem;
-    }
-
-    md-filled-button,
-    md-outlined-button {
-      flex: 1;
-      font-weight: 500;
-    }
-  </style>
+  <link rel="stylesheet" href="css/datos_cliente.css">
 </head>
-
 <body>
-  <header>
-    <img src="imagenes/logo%20mejorado%20trasmparente.png" alt="Café Cortero" />
+  <header class="topbar">
+    <img src="imagenes/logo%20mejorado%20trasmparente.png" alt="Café Cortero">
     <span class="form-title">Datos del cliente</span>
   </header>
 
   <main>
-    <form id="cliente-form">
-      <!-- Nombre -->
-      <md-outlined-text-field id="nombre" label="Nombre completo *" required></md-outlined-text-field>
+    <form id="cliente-form" class="form-box">
+      <div class="form-group">
+        <label for="nombre">Nombre completo *</label>
+        <input type="text" id="nombre" autocomplete="name">
+      </div>
 
-      <!-- Correo -->
-      <md-outlined-text-field id="correo" label="Correo electrónico (opcional)" type="email"></md-outlined-text-field>
+      <div class="form-group">
+        <label for="correo">Correo electrónico <span class="muted">(opcional)</span></label>
+        <input type="email" id="correo" autocomplete="email" placeholder="ej: tucorreo@gmail.com">
+      </div>
 
-      <!-- Teléfono -->
-      <md-outlined-text-field id="telefono" label="Teléfono *" type="tel" required></md-outlined-text-field>
+      <div class="form-group">
+        <label for="telefono">Teléfono *</label>
+        <input type="tel" id="telefono" inputmode="tel" autocomplete="tel" placeholder="ej: 9632-2522">
+      </div>
 
-      <!-- Departamento -->
-      <md-outlined-select id="zona" label="Departamento *" required>
-        <md-select-option value="">Seleccionar...</md-select-option>
-        <md-select-option value="Atlántida">Atlántida</md-select-option>
-        <md-select-option value="Choluteca">Choluteca</md-select-option>
-        <md-select-option value="Colón">Colón</md-select-option>
-        <md-select-option value="Comayagua">Comayagua</md-select-option>
-        <md-select-option value="Copán">Copán</md-select-option>
-        <md-select-option value="Cortés">Cortés</md-select-option>
-        <md-select-option value="El Paraíso">El Paraíso</md-select-option>
-        <md-select-option value="Francisco Morazán">Francisco Morazán</md-select-option>
-        <md-select-option value="Gracias a Dios">Gracias a Dios</md-select-option>
-        <md-select-option value="Intibucá">Intibucá</md-select-option>
-        <md-select-option value="Islas de la Bahía">Islas de la Bahía</md-select-option>
-        <md-select-option value="La Paz">La Paz</md-select-option>
-        <md-select-option value="Lempira">Lempira</md-select-option>
-        <md-select-option value="Ocotepeque">Ocotepeque</md-select-option>
-        <md-select-option value="Olancho">Olancho</md-select-option>
-        <md-select-option value="Santa Bárbara">Santa Bárbara</md-select-option>
-        <md-select-option value="Valle">Valle</md-select-option>
-        <md-select-option value="Yoro">Yoro</md-select-option>
-      </md-outlined-select>
+      <div class="form-group">
+        <label for="zona">Departamento *</label>
+        <select id="zona">
+          <option value="">Seleccionar...</option>
+          <option value="Atlántida">Atlántida</option>
+          <option value="Choluteca">Choluteca</option>
+          <option value="Colón">Colón</option>
+          <option value="Comayagua">Comayagua</option>
+          <option value="Copán">Copán</option>
+          <option value="Cortés">Cortés</option>
+          <option value="El Paraíso">El Paraíso</option>
+          <option value="Francisco Morazán">Francisco Morazán</option>
+          <option value="Gracias a Dios">Gracias a Dios</option>
+          <option value="Intibucá">Intibucá</option>
+          <option value="Islas de la Bahía">Islas de la Bahía</option>
+          <option value="La Paz">La Paz</option>
+          <option value="Lempira">Lempira</option>
+          <option value="Ocotepeque">Ocotepeque</option>
+          <option value="Olancho">Olancho</option>
+          <option value="Santa Bárbara">Santa Bárbara</option>
+          <option value="Valle">Valle</option>
+          <option value="Yoro">Yoro</option>
+        </select>
+      </div>
 
-      <!-- Dirección -->
-      <md-outlined-text-field id="direccion" label="Dirección de entrega *" rows="3" textarea required></md-outlined-text-field>
+      <div class="form-group">
+        <label for="direccion">Dirección de entrega *</label>
+        <textarea id="direccion" rows="3" placeholder="Ej: Aldea San Ramón, Valle de Jamastrán"></textarea>
+      </div>
 
-      <!-- Nota -->
-      <md-outlined-text-field id="nota" label="Nota adicional (opcional)" rows="2" textarea></md-outlined-text-field>
+      <div class="form-group">
+        <label for="nota">Nota adicional</label>
+        <textarea id="nota" rows="2" placeholder="Ej: entregar por la mañana (opcional)"></textarea>
+      </div>
 
-      <!-- Botones -->
       <div class="actions">
-        <md-outlined-button onclick="window.location.href='index.html'">
-          <md-icon>arrow_back</md-icon> Volver
-        </md-outlined-button>
-
-        <md-filled-button type="submit">
-          <md-icon>check_circle</md-icon> Guardar y continuar
-        </md-filled-button>
+        <button type="button" class="btn-secondary" onclick="window.location.href='index.html'">
+          Volver
+        </button>
+        <button type="submit" class="btn-primary">
+          Guardar y continuar
+        </button>
       </div>
     </form>
+
+    <div id="toast" class="toast">✅ Datos guardados</div>
   </main>
 
   <script src="js/datos_cliente.js"></script>
