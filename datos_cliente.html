@@ -3,83 +3,76 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Detalles de entrega | Café Cortero</title>
+  <title>Datos del cliente | Café Cortero</title>
+
+  <!-- 🔹 Fuente y estilos -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="stylesheet" href="css/datos_cliente.css">
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@material/web@2.1.0/all.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@material/web@2.1.0/all.min.css">
+
+  <!-- 🔹 Tus estilos complementarios -->
+  <link rel="stylesheet" href="css/datos_cliente.css?v=5">
 </head>
 
 <body>
   <!-- ENCABEZADO -->
   <header>
-    <a href="index.html" class="logo-link">
-      <img src="imagenes/logo%20mejorado%20trasmparente.png" alt="Café Cortero">
+    <a href="index.html">
+      <img src="imagenes/logo%20mejorado%20trasmparente.png" alt="Café Cortero - Inicio">
     </a>
-    <span class="cart-title">Detalles de entrega</span>
+    <span class="form-title">Datos del cliente</span>
   </header>
 
   <!-- FORMULARIO -->
   <main>
-    <form id="formDatosCliente">
-      <label for="nombre">Nombre completo *</label>
-      <input type="text" id="nombre" name="nombre" placeholder="Escribe tu nombre completo" required>
+    <form id="cliente-form" class="form-box">
 
-      <label for="correo">Correo electrónico (opcional)</label>
-      <input type="email" id="correo" name="correo" placeholder="ej: tucorreo@gmail.com">
+      <md-outlined-text-field label="Nombre completo *" id="nombre" required></md-outlined-text-field>
 
-      <label for="telefono">Teléfono *</label>
-      <input type="tel" id="telefono" name="telefono" placeholder="ej: 9632-2522" required>
+      <md-outlined-text-field label="Correo electrónico (opcional)" id="correo" type="email"></md-outlined-text-field>
 
-      <label for="departamento">Departamento *</label>
-      <select id="departamento" name="departamento" required>
-        <option value="">Seleccionar...</option>
-        <option value="Atlántida">Atlántida</option>
-        <option value="Choluteca">Choluteca</option>
-        <option value="Colón">Colón</option>
-        <option value="Comayagua">Comayagua</option>
-        <option value="Copán">Copán</option>
-        <option value="Cortés">Cortés</option>
-        <option value="El Paraíso">El Paraíso</option>
-        <option value="Francisco Morazán">Francisco Morazán</option>
-        <option value="Gracias a Dios">Gracias a Dios</option>
-        <option value="Intibucá">Intibucá</option>
-        <option value="Islas de la Bahía">Islas de la Bahía</option>
-        <option value="La Paz">La Paz</option>
-        <option value="Lempira">Lempira</option>
-        <option value="Ocotepeque">Ocotepeque</option>
-        <option value="Olancho">Olancho</option>
-        <option value="Santa Bárbara">Santa Bárbara</option>
-        <option value="Valle">Valle</option>
-        <option value="Yoro">Yoro</option>
-      </select>
+      <md-outlined-text-field label="Teléfono *" id="telefono" type="tel" required></md-outlined-text-field>
 
-      <label for="direccion">Dirección de entrega *</label>
-      <textarea id="direccion" name="direccion" rows="2" placeholder="Ej: Aldea San Ramón, Valle de Jamastrán" required></textarea>
+      <md-outlined-select label="Departamento *" id="zona" required>
+        <md-select-option value="">Seleccionar...</md-select-option>
+        <md-select-option value="Atlántida">Atlántida</md-select-option>
+        <md-select-option value="Choluteca">Choluteca</md-select-option>
+        <md-select-option value="Colón">Colón</md-select-option>
+        <md-select-option value="Comayagua">Comayagua</md-select-option>
+        <md-select-option value="Copán">Copán</md-select-option>
+        <md-select-option value="Cortés">Cortés</md-select-option>
+        <md-select-option value="El Paraíso">El Paraíso</md-select-option>
+        <md-select-option value="Francisco Morazán">Francisco Morazán</md-select-option>
+        <md-select-option value="Gracias a Dios">Gracias a Dios</md-select-option>
+        <md-select-option value="Intibucá">Intibucá</md-select-option>
+        <md-select-option value="Islas de la Bahía">Islas de la Bahía</md-select-option>
+        <md-select-option value="La Paz">La Paz</md-select-option>
+        <md-select-option value="Lempira">Lempira</md-select-option>
+        <md-select-option value="Ocotepeque">Ocotepeque</md-select-option>
+        <md-select-option value="Olancho">Olancho</md-select-option>
+        <md-select-option value="Santa Bárbara">Santa Bárbara</md-select-option>
+        <md-select-option value="Valle">Valle</md-select-option>
+        <md-select-option value="Yoro">Yoro</md-select-option>
+      </md-outlined-select>
 
-      <label for="nota">Nota adicional</label>
-      <textarea id="nota" name="nota" rows="2" placeholder="Ej: Entregar por la mañana (opcional)"></textarea>
+      <md-outlined-text-field label="Dirección de entrega *" id="direccion" rows="3" textarea required></md-outlined-text-field>
+
+      <md-outlined-text-field label="Nota adicional (opcional)" id="nota" rows="2" textarea></md-outlined-text-field>
 
       <div class="actions">
-        <button type="button" class="btn volver" onclick="window.location.href='carrito.html'">
-          <i class="fa-solid fa-arrow-left"></i> Volver
-        </button>
-        <button type="submit" class="btn continuar">
-          <i class="fa-solid fa-check"></i> Proceder con el pedido
-        </button>
+        <md-filled-tonal-button type="button" onclick="window.location.href='index.html'">
+          <md-icon slot="icon">arrow_back</md-icon>
+          Volver
+        </md-filled-tonal-button>
+
+        <md-filled-button type="submit">
+          <md-icon slot="icon">check_circle</md-icon>
+          Guardar y continuar
+        </md-filled-button>
       </div>
     </form>
   </main>
 
-  <!-- WHATSAPP -->
-  <a href="https://wa.me/50494546047?text=Hola%2C%20quiero%20hacer%20un%20pedido%20de%20Café%20Cortero" class="whatsapp-float">
-    <i class="fa-brands fa-whatsapp"></i>
-  </a>
-
-  <script>
-    document.getElementById("formDatosCliente").addEventListener("submit", function(e) {
-      e.preventDefault();
-      window.location.href = "confirmacion.html";
-    });
-  </script>
+  <script src="js/datos_cliente.js"></script>
 </body>
 </html>
