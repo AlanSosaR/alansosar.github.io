@@ -37,7 +37,7 @@ body {
   padding: 0.7rem 1.2rem;
   display: flex;
   align-items: center;
-  justify-content: flex-start; /* pegado al carrito */
+  justify-content: flex-start;
   gap: 2rem;
 }
 
@@ -51,7 +51,7 @@ body {
   display: flex;
   align-items: center;
   gap: 1.5rem;
-  margin-left: auto; /* empuja menú hacia la derecha */
+  margin-left: auto;
 }
 
 .nav-links a {
@@ -77,7 +77,7 @@ body {
   justify-content: center;
   cursor: pointer;
   transition: transform 0.2s ease;
-  margin-left: 1rem; /* espacio entre menú y carrito */
+  margin-left: 1rem;
 }
 
 .cart-btn:hover {
@@ -196,7 +196,7 @@ body {
   overflow: hidden;
   max-width: 1100px;
   margin: 0 auto;
-  border-radius: 0; /* borde plano */
+  border-radius: 0;
   box-shadow: var(--sombra);
 }
 
@@ -317,85 +317,10 @@ body {
   object-fit: contain;
 }
 
-/* CARRUSEL DE PRODUCTOS */
-.related {
-  max-width: 1100px;
-  margin: 0 auto 3rem;
-  padding: 0 1rem;
-}
-
-.similar-title {
-  font-size: 1.4rem;
-  margin-bottom: 1rem;
-  color: var(--marron);
-  font-weight: 600;
-}
-
-.carousel-container {
-  position: relative;
-  overflow: hidden;
-}
-
-.similar-list {
-  display: flex;
-  gap: 1rem;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none;
-  scroll-behavior: smooth;
-}
-
-.similar-list::-webkit-scrollbar {
-  display: none;
-}
-
-.similar-card {
-  flex: 0 0 180px;
-  background: #fff;
-  border-radius: 14px;
-  box-shadow: var(--sombra);
-  text-align: center;
-  padding: 0.8rem;
-  scroll-snap-align: start;
-  transition: transform 0.2s ease;
-}
-
-.similar-card:hover {
-  transform: translateY(-3px);
-}
-
-.similar-card img {
-  width: 100%;
-  aspect-ratio: 3 / 4;
-  object-fit: contain;
-  border-radius: 12px;
-  margin-bottom: 0.6rem;
-}
-
-.similar-card h4 {
-  font-size: 0.9rem;
-  color: var(--marron);
-}
-
-.similar-card .price-sm {
-  color: var(--verde);
-  font-weight: 600;
-  margin-bottom: 0.4rem;
-}
-
-.similar-card button {
-  background: var(--verde);
-  color: #fff;
-  border: none;
-  border-radius: 999px;
-  padding: 0.4rem 0.8rem;
-  cursor: pointer;
-}
-
 /* SOBRE NOSOTROS */
 .about {
   max-width: 1100px;
-  margin: 3rem auto;
+  margin: 4rem auto;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 2rem;
@@ -409,41 +334,25 @@ body {
 
 .about-img {
   order: 2;
+  position: relative;
+  overflow: visible;
 }
 
 .about-img img {
   width: 100%;
-  aspect-ratio: 16 / 9;
-  object-fit: contain; /* Muestra la imagen completa */
-  border-radius: 18px;
-  box-shadow: var(--sombra);
+  height: auto;
+  border-radius: 14px;
+  object-fit: cover;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  transform: translateY(0);
+  transition: transform 0.6s ease, box-shadow 0.6s ease;
 }
 
-.about h2 {
-  font-family: "Playfair Display", serif;
-  font-size: 2rem;
-  margin: 0.8rem 0;
-  color: var(--marron);
-}
-
-.about p {
-  color: #5a483c;
-  line-height: 1.7;
-}
-
-.about-pills {
-  display: flex;
-  gap: 0.6rem;
-  flex-wrap: wrap;
-  margin-top: 1rem;
-}
-
-.about-pill {
-  background: rgba(81, 38, 21, 0.08);
-  padding: 0.4rem 1rem;
-  border-radius: 999px;
-  font-size: 0.8rem;
-  color: var(--marron);
+/* efecto flotante suave */
+.about-img img:hover,
+.about-img img.in-view {
+  transform: translateY(-8px);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.25);
 }
 
 /* CONTACTO */
@@ -468,11 +377,11 @@ footer {
   height: 40px;
 }
 
-/* === FAB (Floating Action Button) === */
+/* FAB */
 .fab-container {
   position: fixed;
   bottom: 24px;
-  right: 24px; /* lado derecho */
+  right: 24px;
   z-index: 150;
   display: flex;
   flex-direction: column-reverse;
@@ -501,49 +410,34 @@ footer {
   transform: scale(1.05);
 }
 
-.fab-options a {
-  background: #fff;
-  color: var(--marron);
-  border-radius: 50%;
-  width: 48px;
-  height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.3rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  opacity: 0;
-  pointer-events: none;
-  transform: translateY(10px);
-  transition: all 0.3s ease;
-}
-
-.fab-options a:hover {
-  transform: scale(1.08);
-}
-
-.fab-facebook { background: #3b5998; color: #fff; }
-.fab-whatsapp { background: #25D366; color: #fff; }
-
-.fab-container.active .fab-options a {
-  opacity: 1;
-  pointer-events: auto;
-  transform: translateY(0);
-}
-
 /* Elimina el toque azul */
 button:focus, a:focus {
   outline: none;
   -webkit-tap-highlight-color: transparent;
 }
 
-/* RESPONSIVE */
+/* === AJUSTES RESPONSIVE === */
 @media (max-width: 900px) {
   .menu-toggle {
     display: block;
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .cart-btn {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
   }
 
   .desktop-only {
+    display: none;
+  }
+
+  .nav-links {
     display: none;
   }
 
@@ -563,12 +457,7 @@ button:focus, a:focus {
     order: 1;
   }
 
-  .hero-prev, .hero-next,
-  .carousel-prev, .carousel-next {
+  .hero-prev, .hero-next {
     display: none;
-  }
-
-  .hero-track img {
-    aspect-ratio: 16 / 10;
   }
 }
