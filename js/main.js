@@ -1,4 +1,4 @@
-// === CONFIGURACIÓN BASE ===
+// === CONFIGURACIÓN BASEe===
 const CART_KEY = 'cafecortero_cart';
 
 // Obtener carrito
