@@ -6,22 +6,22 @@
   <title>Café Cortero | La esencia de Honduras en cada sorbo</title>
 
   <!-- Fuentes e íconos -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Playfair+Display:wght@600&family=Material+Symbols+Rounded" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <!-- Estilos principales -->
-  <link rel="stylesheet" href="css/main.css?v=4">
+  <link rel="stylesheet" href="css/main.css?v=5">
 </head>
 
 <body>
-  <!-- HEADER -->
+  <!-- === HEADER === -->
   <header class="header">
     <div class="header-content">
       <button class="menu-toggle" id="menu-toggle">
         <i class="fa-solid fa-bars"></i>
       </button>
 
-      <a href="index.html" class="logo">
+      <a href="index.html" class="logo desktop-only">
         <img src="imagenes/logo.png" alt="Café Cortero">
       </a>
 
@@ -29,7 +29,7 @@
         <a href="#productos">Productos</a>
         <a href="mis-pedidos.html">Mis Pedidos</a>
         <a href="#nosotros">Nosotros</a>
-        <a href="#contacto">Contacto</a>
+        <a href="#contacto" class="contact-link">Contacto</a>
       </nav>
 
       <button class="cart-btn" id="cart-btn">
@@ -39,7 +39,7 @@
     </div>
   </header>
 
-  <!-- DRAWER (MENÚ MÓVIL) -->
+  <!-- === DRAWER (MENÚ MÓVIL) === -->
   <div class="drawer" id="drawer">
     <div class="drawer-header">
       <a href="index.html">
@@ -55,10 +55,13 @@
   </div>
 
   <main>
-    <!-- HERO -->
+    <!-- === HERO === -->
     <section class="hero">
       <div class="hero-text">
-        <h1><span class="verde">La esencia de Honduras</span> <span class="marron">en cada sorbo.</span></h1>
+        <h1>
+          <span class="verde">La esencia de Honduras</span><br>
+          <span class="marron">en cada sorbo.</span>
+        </h1>
         <p>Café hondureño de altura, tueste medio y esencia familiar.</p>
       </div>
 
@@ -75,7 +78,7 @@
       </div>
     </section>
 
-    <!-- PRODUCTO PRINCIPAL -->
+    <!-- === PRODUCTO PRINCIPAL === -->
     <section id="productos" class="product-main">
       <div class="product-text">
         <div class="product-label">
@@ -91,12 +94,13 @@
           </button>
         </div>
       </div>
+
       <div class="product-img-wrap">
         <img src="imagenes/bolsa_1.png" alt="Bolsa Café Cortero">
       </div>
     </section>
 
-    <!-- CARRUSEL DE PRODUCTOS -->
+    <!-- === CARRUSEL DE PRODUCTOS === -->
     <section class="related">
       <h3 class="similar-title">También te puede interesar</h3>
       <div class="carousel-container">
@@ -116,8 +120,8 @@
                 <div class="similar-card">
                   <img src="${p.img}" alt="${p.nombre}">
                   <h4>${p.nombre}</h4>
-                  <div class="price-sm">
-                    ${p.precio} <i class="fa-solid fa-cart-plus icon-cart"></i>
+                  <div class="price-sm">${p.precio} 
+                    <i class="fa-solid fa-cart-plus icon-cart"></i>
                   </div>
                 </div>
               `).join('')
@@ -128,15 +132,19 @@
       </div>
     </section>
 
-    <!-- SOBRE NOSOTROS -->
+    <!-- === SOBRE NOSOTROS === -->
     <section id="nosotros" class="about">
       <div class="about-text">
         <small>Nuestra historia</small>
         <h2>Sobre Café Cortero</h2>
-        <p>Café Cortero es un proyecto familiar que produce café de calidad,
-          amigable con el medio ambiente y con el sabor auténtico de Honduras.</p>
-        <p>Cada grano es cultivado con respeto, cosechado a mano y tostado con dedicación
-          para conservar su esencia natural.</p>
+        <p>
+          Café Cortero es un proyecto familiar que produce café de calidad,
+          amigable con el medio ambiente y con el sabor auténtico de Honduras.
+        </p>
+        <p>
+          Cada grano es cultivado con respeto, cosechado a mano y tostado con dedicación
+          para conservar su esencia natural.
+        </p>
         <div class="about-pills">
           <span class="about-pill">Proyecto familiar</span>
           <span class="about-pill">Origen hondureño</span>
@@ -148,38 +156,49 @@
       </div>
     </section>
 
-    <!-- CONTACTO -->
+    <!-- === CONTACTO === -->
     <section id="contacto" class="contacto">
       <h2>Contáctanos</h2>
       <p>
         Queremos compartir contigo la pasión por el café hondureño.<br>
-        Escríbenos por <strong class="verde">WhatsApp</strong> o síguenos en <strong class="verde">Facebook</strong> desde el botón de mensaje en pantalla.
+        Escríbenos por <strong class="verde">WhatsApp</strong> o síguenos en 
+        <strong class="verde">Facebook</strong> desde el botón de mensaje en pantalla.
       </p>
     </section>
   </main>
 
-  <!-- FOOTER -->
+  <!-- === FOOTER === -->
   <footer>
-    <img src="imagenes/logo_secundario.png" alt="Logo Café Cortero" class="footer-logo">
-    <p>&copy; 2025 Café Cortero. Todos los derechos reservados.</p>
+    <div class="footer-content">
+      <img src="imagenes/logo_secundario.png" alt="Logo Café Cortero" class="footer-logo">
+      <p>&copy; 2025 Café Cortero. Todos los derechos reservados.</p>
+    </div>
   </footer>
 
-  <!-- FAB flotante -->
+  <!-- === FAB (Material 3 Expressive) === -->
   <div class="fab-container" id="fab">
     <button class="fab-main" id="fab-main">
-      <i class="fa-solid fa-message"></i>
+      <span class="material-symbols-rounded">chat_bubble</span>
     </button>
+
     <div class="fab-options">
-      <a href="https://wa.me/50494546047?text=Hola%2C%20quiero%20más%20información%20sobre%20Café%20Cortero" target="_blank" class="fab-whatsapp">
-        <i class="fa-brands fa-whatsapp"></i>
+      <a href="https://wa.me/50494546047?text=Hola%2C%20quiero%20más%20información%20sobre%20Café%20Cortero"
+         target="_blank"
+         class="fab-whatsapp"
+         title="WhatsApp">
+        <span class="material-symbols-rounded">sms</span>
       </a>
-      <a href="https://www.facebook.com/share/1FsrT4DYrU/" target="_blank" class="fab-facebook">
-        <i class="fa-brands fa-facebook-f"></i>
+
+      <a href="https://www.facebook.com/share/1FsrT4DYrU/"
+         target="_blank"
+         class="fab-facebook"
+         title="Facebook">
+        <span class="material-symbols-rounded">public</span>
       </a>
     </div>
   </div>
 
-  <!-- JS principal -->
-  <script src="js/main.js?v=4"></script>
+  <!-- === JS principal === -->
+  <script src="js/main.js?v=5"></script>
 </body>
 </html>
