@@ -5,78 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Detalles de entrega | Café Cortero</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/datos_cliente.css?v=4">
-  <style>
-    /* 🔹 Evita el resalte azul al tocar botones o enlaces */
-    * {
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    header a, button {
-      outline: none;
-      border: none;
-    }
-
-    /* 🔹 Encabezado igual al del carrito */
-    header {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      padding: 15px 20px;
-    }
-
-    header img {
-      height: 45px;
-    }
-
-    .form-title {
-      font-family: 'Poppins', sans-serif;
-      font-weight: 600;
-      color: #4a2b0f;
-      font-size: 1.3rem;
-    }
-
-    /* 🔹 Botones */
-    .actions {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      margin-top: 25px;
-    }
-
-    .btn {
-      font-family: 'Poppins', sans-serif;
-      border: none;
-      padding: 12px 28px;
-      border-radius: 40px;
-      font-size: 1rem;
-      cursor: pointer;
-      color: #fff;
-      transition: background 0.3s ease;
-    }
-
-    .btn:active, .btn:focus {
-      outline: none;
-      box-shadow: none;
-    }
-
-    .btn-primary {
-      background-color: #2f5233; /* Verde */
-    }
-
-    .btn-secondary {
-      background-color: #4a2b0f; /* Café */
-    }
-
-    .btn-primary:hover {
-      background-color: #37603b;
-    }
-
-    .btn-secondary:hover {
-      background-color: #5b3512;
-    }
-  </style>
+  <link rel="stylesheet" href="css/datos_cliente.css?v=6">
 </head>
 <body>
 
@@ -106,7 +35,6 @@
         <input type="tel" id="telefono" placeholder="ej: 9632-2522" required>
       </div>
 
-      <!-- 🔽 DEPARTAMENTO -->
       <div class="form-group">
         <label for="zona">Departamento *</label>
         <select id="zona" required>
@@ -150,6 +78,12 @@
     </form>
   </main>
 
-  <script src="js/datos_cliente.js"></script>
+  <script>
+    // Redirige al recibo cuando se envía el formulario
+    document.getElementById('cliente-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      window.location.href = 'recibo.html';
+    });
+  </script>
 </body>
 </html>
