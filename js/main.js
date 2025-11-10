@@ -1,4 +1,4 @@
-// clave única para index y carrito
+// === CONFIGURACIÓN BASE ===
 const CART_KEY = 'cafecortero_cart';
 
 function getCart() {
@@ -37,67 +37,144 @@ function addToCart(product) {
   animateCartIcon();
 }
 
+// === MENÚ MÓVIL ===
+const menuToggle = document.getElementById('menu-toggle');
+const drawer = document.getElementById('drawer');
+const drawerClose = document.getElementById('drawer-close');
+
+if (menuToggle && drawer) {
+  menuToggle.addEventListener('click', () => drawer.classList.add('open'));
+}
+if (drawerClose) {
+  drawerClose.addEventListener('click', () => drawer.classList.remove('open'));
+}
+
+// === FAB (BOTONES FLOTANTES) ===
+const fabMain = document.getElementById('fab-main');
+const fabContainer = document.querySelector('.fab');
+
+if (fabMain && fabContainer) {
+  fabMain.addEventListener('click', () => {
+    fabContainer.classList.toggle('show');
+  });
+}
+
+// === CARRITO ===
+const cartBtn = document.getElementById('cart-btn');
+if (cartBtn) {
+  cartBtn.addEventListener('click', () => {
+    window.location.href = 'carrito.html';
+  });
+}
+
+// === HERO CARRUSEL PRINCIPAL ===
+const heroTrack = document.querySelector('.hero-track');
+const heroImages = document.querySelectorAll('.hero-track img');
+const heroPrev = document.querySelector('.hero-prev');
+const heroNext = document.querySelector('.hero-next');
+let heroIndex = 0;
+
+function updateHeroCarousel() {
+  const width = heroImages[0].clientWidth;
+  heroTrack.style.transform = `translateX(-${heroIndex * width}px)`;
+}
+
+if (heroNext) {
+  heroNext.addEventListener('click', () => {
+    heroIndex = (heroIndex + 1) % heroImages.length;
+    updateHeroCarousel();
+  });
+}
+
+if (heroPrev) {
+  heroPrev.addEventListener('click', () => {
+    heroIndex = (heroIndex - 1 + heroImages.length) % heroImages.length;
+    updateHeroCarousel();
+  });
+}
+
+// Movimiento automático cada 5 segundos
+setInterval(() => {
+  heroIndex = (heroIndex + 1) % heroImages.length;
+  updateHeroCarousel();
+}, 5000);
+
+// === CARRUSEL DE PRODUCTOS ===
+const similarList = document.getElementById('lista-similares');
+const carouselPrev = document.querySelector('.carousel-prev');
+const carouselNext = document.querySelector('.carousel-next');
+
+if (carouselNext && similarList) {
+  carouselNext.addEventListener('click', () => {
+    similarList.scrollBy({ left: 220, behavior: 'smooth' });
+  });
+}
+
+if (carouselPrev && similarList) {
+  carouselPrev.addEventListener('click', () => {
+    similarList.scrollBy({ left: -220, behavior: 'smooth' });
+  });
+}
+
+// Soporte táctil para móvil
+let isDown = false;
+let startX;
+let scrollLeft;
+
+if (similarList) {
+  similarList.addEventListener('mousedown', (e) => {
+    isDown = true;
+    similarList.classList.add('active');
+    startX = e.pageX - similarList.offsetLeft;
+    scrollLeft = similarList.scrollLeft;
+  });
+  similarList.addEventListener('mouseleave', () => {
+    isDown = false;
+    similarList.classList.remove('active');
+  });
+  similarList.addEventListener('mouseup', () => {
+    isDown = false;
+    similarList.classList.remove('active');
+  });
+  similarList.addEventListener('mousemove', (e) => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - similarList.offsetLeft;
+    const walk = (x - startX) * 1.2;
+    similarList.scrollLeft = scrollLeft - walk;
+  });
+}
+
+// === AGREGAR PRODUCTOS AL CARRITO ===
 document.addEventListener('DOMContentLoaded', () => {
-  // botón del producto grande
+  updateCartCount();
+
+  // Botón principal del producto destacado
   const btnMain = document.getElementById('product-add');
   if (btnMain) {
     btnMain.addEventListener('click', () => {
-      const rawPrice = document.getElementById('product-price').textContent;
-      const numericPrice = parseFloat(rawPrice.toString().replace(/[^\d.-]/g, '')) || 0;
-
       const product = {
-        name: document.getElementById('product-name').textContent,
-        price: numericPrice, // ✅ guardado como número limpio
-        img: document.getElementById('product-image').getAttribute('src'),
+        name: 'Café Cortero 250g',
+        price: 180,
+        img: 'imagenes/bolsa-1.png',
         qty: 1
       };
       addToCart(product);
     });
   }
 
-  // tarjetas del carrusel
-  const cards = document.querySelectorAll('.similar-card');
-  cards.forEach(card => {
-    // click en la tarjeta -> mostrar en el hero
-    card.addEventListener('click', (e) => {
-      if (e.target.closest('button')) return;
+  // Botones de las tarjetas
+  const productButtons = document.querySelectorAll('.similar-card button');
+  productButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const card = btn.closest('.similar-card');
+      const name = card.querySelector('h4').textContent;
+      const priceText = card.querySelector('.price-sm').textContent;
+      const img = card.querySelector('img').src;
+      const price = parseFloat(priceText.replace(/[^\d.-]/g, '')) || 0;
 
-      cards.forEach(c => c.classList.remove('active'));
-      card.classList.add('active');
-
-      document.getElementById('product-name').textContent = card.dataset.name;
-      document.getElementById('product-desc').textContent = card.dataset.desc;
-      document.getElementById('product-badge').textContent = card.dataset.badge;
-      document.getElementById('product-price').textContent = card.dataset.price;
-      document.getElementById('product-image').src = card.dataset.img;
-    });
-
-    // botón dentro de la tarjeta -> agregar
-    const btn = card.querySelector('button');
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-
-      const rawPrice = card.dataset.price;
-      const numericPrice = parseFloat(rawPrice.toString().replace(/[^\d.-]/g, '')) || 0;
-
-      const product = {
-        name: card.dataset.name,
-        price: numericPrice, // ✅ limpio también aquí
-        img: card.dataset.img,
-        qty: 1
-      };
+      const product = { name, price, img, qty: 1 };
       addToCart(product);
     });
   });
-
-  // click en el carrito -> ir a carrito.html
-  const cartBtn = document.getElementById('cart-btn');
-  if (cartBtn) {
-    cartBtn.addEventListener('click', () => {
-      window.location.href = 'carrito.html';
-    });
-  }
-
-  // pintar contador al inicio
-  updateCartCount();
 });
