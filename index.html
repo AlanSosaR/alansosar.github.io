@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <!-- Estilos principales -->
-  <link rel="stylesheet" href="css/main.css?v=3">
+  <link rel="stylesheet" href="css/main.css?v=4">
 </head>
 
 <body>
@@ -21,7 +21,7 @@
         <i class="fa-solid fa-bars"></i>
       </button>
 
-      <a href="index.html" class="logo desktop-only">
+      <a href="index.html" class="logo">
         <img src="imagenes/logo.png" alt="Café Cortero">
       </a>
 
@@ -42,8 +42,9 @@
   <!-- DRAWER (MENÚ MÓVIL) -->
   <div class="drawer" id="drawer">
     <div class="drawer-header">
-      <img src="imagenes/logo.png" alt="Café Cortero">
-      <button id="drawer-close"><i class="fa-solid fa-xmark"></i></button>
+      <a href="index.html">
+        <img src="imagenes/logo.png" alt="Café Cortero">
+      </a>
     </div>
     <nav class="drawer-links">
       <a href="#productos">Productos</a>
@@ -57,12 +58,12 @@
     <!-- HERO -->
     <section class="hero">
       <div class="hero-text">
-        <h1>La esencia de Honduras en cada sorbo.</h1>
+        <h1><span class="verde">La esencia de Honduras</span> <span class="marron">en cada sorbo.</span></h1>
         <p>Café hondureño de altura, tueste medio y esencia familiar.</p>
       </div>
 
       <div class="hero-carousel" id="hero-carousel">
-        <button class="hero-prev"><i class="fa-solid fa-chevron-left"></i></button>
+        <button class="hero-prev desktop-only"><i class="fa-solid fa-chevron-left"></i></button>
         <div class="hero-track">
           <img src="imagenes/cafe_1.jpg" alt="Café Cortero 1">
           <img src="imagenes/cafe_2.jpg" alt="Café Cortero 2">
@@ -70,19 +71,25 @@
           <img src="imagenes/cafe_4.jpg" alt="Café Cortero 4">
           <img src="imagenes/cafe_5.jpg" alt="Café Cortero 5">
         </div>
-        <button class="hero-next"><i class="fa-solid fa-chevron-right"></i></button>
+        <button class="hero-next desktop-only"><i class="fa-solid fa-chevron-right"></i></button>
       </div>
     </section>
 
     <!-- PRODUCTO PRINCIPAL -->
     <section id="productos" class="product-main">
       <div class="product-text">
-        <small>Café en grano / molido</small>
+        <div class="product-label">
+          <small>CAFÉ EN GRANO / MOLIDO</small>
+          <p class="subtext">Tueste medio · Altura · Esencia familiar</p>
+        </div>
         <h2>Café Cortero 250g</h2>
-        <p>Café hondureño de altura, tueste medio, ideal para filtro o prensa francesa.</p>
         <span class="pill">100% arábica · Danlí</span>
-        <div class="price">L 180</div>
-        <button class="btn-main" id="product-add"><i class="fa-solid fa-cart-plus"></i> Agregar al carrito</button>
+        <div class="product-bottom">
+          <div class="price">L 180</div>
+          <button class="btn-main" id="product-add">
+            <i class="fa-solid fa-cart-plus"></i>
+          </button>
+        </div>
       </div>
       <div class="product-img-wrap">
         <img src="imagenes/bolsa_1.png" alt="Bolsa Café Cortero">
@@ -93,7 +100,7 @@
     <section class="related">
       <h3 class="similar-title">También te puede interesar</h3>
       <div class="carousel-container">
-        <button class="carousel-prev"><i class="fa-solid fa-chevron-left"></i></button>
+        <button class="carousel-prev desktop-only"><i class="fa-solid fa-chevron-left"></i></button>
         <div class="similar-list" id="lista-similares">
           <script>
             const productos = [
@@ -109,14 +116,15 @@
                 <div class="similar-card">
                   <img src="${p.img}" alt="${p.nombre}">
                   <h4>${p.nombre}</h4>
-                  <div class="price-sm">${p.precio}</div>
-                  <button><i class="fa-solid fa-cart-plus"></i></button>
+                  <div class="price-sm">
+                    ${p.precio} <i class="fa-solid fa-cart-plus icon-cart"></i>
+                  </div>
                 </div>
               `).join('')
             );
           </script>
         </div>
-        <button class="carousel-next"><i class="fa-solid fa-chevron-right"></i></button>
+        <button class="carousel-next desktop-only"><i class="fa-solid fa-chevron-right"></i></button>
       </div>
     </section>
 
@@ -143,19 +151,20 @@
     <!-- CONTACTO -->
     <section id="contacto" class="contacto">
       <h2>Contáctanos</h2>
-      <p>Haz tu pedido directo por WhatsApp o síguenos en Facebook para ver novedades.</p>
+      <p>
+        Queremos compartir contigo la pasión por el café hondureño.<br>
+        Escríbenos por <strong class="verde">WhatsApp</strong> o síguenos en <strong class="verde">Facebook</strong> desde el botón de mensaje en pantalla.
+      </p>
     </section>
   </main>
 
   <!-- FOOTER -->
   <footer>
-    <div class="footer-content">
-      <img src="imagenes/logo_secundario.png" alt="Logo Café Cortero" class="footer-logo">
-      <p>&copy; 2025 Café Cortero. Todos los derechos reservados.</p>
-    </div>
+    <img src="imagenes/logo_secundario.png" alt="Logo Café Cortero" class="footer-logo">
+    <p>&copy; 2025 Café Cortero. Todos los derechos reservados.</p>
   </footer>
 
-  <!-- FAB flotante estilo Material 3 -->
+  <!-- FAB flotante -->
   <div class="fab-container" id="fab">
     <button class="fab-main" id="fab-main">
       <i class="fa-solid fa-message"></i>
@@ -171,6 +180,6 @@
   </div>
 
   <!-- JS principal -->
-  <script src="js/main.js?v=3"></script>
+  <script src="js/main.js?v=4"></script>
 </body>
 </html>
