@@ -8,11 +8,29 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="css/carrito.css">
   <style>
-    /* Quitar el color azul al tocar el logo */
-    a, a:focus, a:active, a:visited {
-      outline: none;
+    /* Quitar el color azul al tocar el logo o botones */
+    * {
       -webkit-tap-highlight-color: transparent;
+    }
+    a, a:focus, a:active, a:visited, button {
+      outline: none;
       text-decoration: none;
+    }
+
+    /* 🔹 Mensaje del carrito vacío */
+    .mensaje-carrito {
+      color: #4a2b0f;
+      font-weight: 500;
+      text-align: center;
+      margin: 1rem 0;
+      font-size: 0.95rem;
+      display: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .mensaje-carrito.show {
+      display: block;
+      opacity: 1;
     }
   </style>
 </head>
@@ -26,11 +44,15 @@
 
   <main>
     <div id="cart-container"></div>
+
+    <!-- 🔹 Mensaje de validación -->
+    <p id="mensaje-carrito" class="mensaje-carrito">☕ Aún no tienes productos en tu carrito.</p>
+
     <div class="total-box" id="total-box">Total: L 0.00</div>
 
     <div class="actions">
       <button class="btn volver" onclick="window.location.href='index.html'">Volver</button>
-      <button class="btn proceder" onclick="window.location.href='datos_cliente.html'">Proceder con el pedido</button>
+      <button id="proceder-btn" class="btn proceder">Proceder con el pedido</button>
     </div>
 
     <div id="confirm-box" class="confirm-box">
@@ -42,6 +64,7 @@
     <i class="fa-brands fa-whatsapp"></i>
   </a>
 
-  <script src="js/cart.js"></script>
+  <!-- 🔹 Archivo JS actualizado -->
+  <script src="js/carrito.js?v=2"></script>
 </body>
 </html>
