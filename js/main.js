@@ -60,19 +60,25 @@ document.addEventListener('DOMContentLoaded', () => {
   // === MENÚ MÓVIL ===
   const menuToggle = document.getElementById('menu-toggle');
   const drawer = document.getElementById('drawer');
-  const drawerClose = document.getElementById('drawer-close');
+  const drawerLogo = drawer ? drawer.querySelector('img') : null;
 
   if (menuToggle && drawer) {
     menuToggle.addEventListener('click', () => drawer.classList.add('open'));
   }
-  if (drawerClose) {
-    drawerClose.addEventListener('click', () => drawer.classList.remove('open'));
+
+  // Cerrar al hacer clic en logo o enlaces
+  if (drawerLogo) {
+    drawerLogo.addEventListener('click', () => {
+      drawer.classList.remove('open');
+      window.location.href = 'index.html';
+    });
   }
+
   document.querySelectorAll('.drawer-links a').forEach(link => {
     link.addEventListener('click', () => drawer.classList.remove('open'));
   });
 
-  // === CARRITO (ir a carrito.html) ===
+  // === CARRITO ===
   const cartBtn = document.getElementById('cart-btn');
   if (cartBtn) {
     cartBtn.addEventListener('click', () => {
@@ -87,6 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const heroPrev = document.querySelector('.hero-prev');
   const heroNext = document.querySelector('.hero-next');
   let heroIndex = 0;
+  let heroTimer;
 
   function updateHeroCarousel() {
     if (!heroTrack || !heroImages.length) return;
@@ -94,27 +101,50 @@ document.addEventListener('DOMContentLoaded', () => {
     heroTrack.style.transform = `translateX(-${heroIndex * width}px)`;
   }
 
-  if (heroNext) {
-    heroNext.addEventListener('click', () => {
-      heroIndex = (heroIndex + 1) % heroImages.length;
-      updateHeroCarousel();
-    });
+  function nextHero() {
+    heroIndex = (heroIndex + 1) % heroImages.length;
+    updateHeroCarousel();
   }
-  if (heroPrev) {
-    heroPrev.addEventListener('click', () => {
-      heroIndex = (heroIndex - 1 + heroImages.length) % heroImages.length;
-      updateHeroCarousel();
+
+  function prevHero() {
+    heroIndex = (heroIndex - 1 + heroImages.length) % heroImages.length;
+    updateHeroCarousel();
+  }
+
+  // Navegación manual
+  if (heroNext) heroNext.addEventListener('click', () => {
+    nextHero();
+    restartHeroTimer();
+  });
+  if (heroPrev) heroPrev.addEventListener('click', () => {
+    prevHero();
+    restartHeroTimer();
+  });
+
+  // Swipe táctil
+  let startX = 0;
+  if (heroTrack) {
+    heroTrack.addEventListener('touchstart', e => startX = e.touches[0].clientX);
+    heroTrack.addEventListener('touchend', e => {
+      const diff = e.changedTouches[0].clientX - startX;
+      if (Math.abs(diff) > 50) {
+        diff > 0 ? prevHero() : nextHero();
+        restartHeroTimer();
+      }
     });
   }
 
-  // Auto
-  if (heroImages.length) {
-    setInterval(() => {
-      heroIndex = (heroIndex + 1) % heroImages.length;
-      updateHeroCarousel();
-    }, 5000);
+  // Auto avance
+  function startHeroTimer() {
+    heroTimer = setInterval(nextHero, 8000); // 8 segundos
   }
 
+  function restartHeroTimer() {
+    clearInterval(heroTimer);
+    startHeroTimer();
+  }
+
+  startHeroTimer();
   window.addEventListener('resize', updateHeroCarousel);
   updateHeroCarousel();
 
@@ -125,68 +155,82 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (carouselNext && similarList) {
     carouselNext.addEventListener('click', () => {
-      similarList.scrollBy({ left: 220, behavior: 'smooth' });
+      if (similarList.scrollLeft + similarList.clientWidth >= similarList.scrollWidth - 10) {
+        similarList.scrollTo({ left: 0, behavior: 'smooth' });
+      } else {
+        similarList.scrollBy({ left: 220, behavior: 'smooth' });
+      }
     });
   }
+
   if (carouselPrev && similarList) {
     carouselPrev.addEventListener('click', () => {
-      similarList.scrollBy({ left: -220, behavior: 'smooth' });
+      if (similarList.scrollLeft <= 0) {
+        similarList.scrollTo({ left: similarList.scrollWidth, behavior: 'smooth' });
+      } else {
+        similarList.scrollBy({ left: -220, behavior: 'smooth' });
+      }
     });
   }
 
-  // arrastre
+  // arrastre con mouse
   let isDown = false;
-  let startX = 0;
-  let scrollLeft = 0;
+  let startPosX = 0;
+  let scrollStart = 0;
 
   if (similarList) {
-    similarList.addEventListener('mousedown', (e) => {
+    similarList.addEventListener('mousedown', e => {
       isDown = true;
-      startX = e.pageX - similarList.offsetLeft;
-      scrollLeft = similarList.scrollLeft;
+      startPosX = e.pageX - similarList.offsetLeft;
+      scrollStart = similarList.scrollLeft;
+      similarList.classList.add('dragging');
     });
+
     similarList.addEventListener('mouseleave', () => isDown = false);
-    similarList.addEventListener('mouseup', () => isDown = false);
-    similarList.addEventListener('mousemove', (e) => {
+    similarList.addEventListener('mouseup', () => {
+      isDown = false;
+      similarList.classList.remove('dragging');
+    });
+
+    similarList.addEventListener('mousemove', e => {
       if (!isDown) return;
       e.preventDefault();
       const x = e.pageX - similarList.offsetLeft;
-      const walk = (x - startX) * 1.2;
-      similarList.scrollLeft = scrollLeft - walk;
+      const walk = (x - startPosX) * 1.2;
+      similarList.scrollLeft = scrollStart - walk;
     });
 
-    // táctil
+    // táctil (mejorado)
     let touchStartX = 0;
     similarList.addEventListener('touchstart', e => {
       touchStartX = e.touches[0].pageX;
     });
     similarList.addEventListener('touchmove', e => {
       const moveX = e.touches[0].pageX - touchStartX;
-      similarList.scrollLeft -= moveX / 3;
-      touchStartX = e.touches[0].pageX; // para que siga suave
+      similarList.scrollLeft -= moveX / 2;
+      touchStartX = e.touches[0].pageX;
     });
   }
 
-  // === BOTONES DE PRODUCTO ===
+  // === BOTONES DE PRODUCTOS ===
   const btnMain = document.getElementById('product-add');
   if (btnMain) {
     btnMain.addEventListener('click', () => {
       const mainImg = document.querySelector('.product-img-wrap img');
       const mainTitle = document.querySelector('.product-text h2');
       const mainPrice = document.querySelector('.product-text .price');
-
       if (!mainImg || !mainTitle || !mainPrice) return;
 
       const name = mainTitle.textContent;
       const price = parseFloat(mainPrice.textContent.replace(/[^\d.-]/g, '')) || 0;
       const img = mainImg.src;
-
       const product = { name, price, img, qty: 1 };
       addToCart(product);
     });
   }
 
-  const productButtons = document.querySelectorAll('.similar-card button');
+  // Íconos de carrito en las tarjetas pequeñas
+  const productButtons = document.querySelectorAll('.similar-card button, .icon-cart');
   productButtons.forEach(btn => {
     btn.addEventListener('click', () => {
       const card = btn.closest('.similar-card');
@@ -201,13 +245,20 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // === FAB ===
+  // === FAB (Floating Action Button) ===
   const fabMain = document.getElementById('fab-main');
   const fabContainer = document.querySelector('.fab-container');
 
   if (fabMain && fabContainer) {
     fabMain.addEventListener('click', () => {
       fabContainer.classList.toggle('active');
+    });
+
+    // Cerrar al hacer clic fuera
+    document.addEventListener('click', e => {
+      if (!fabContainer.contains(e.target) && !fabMain.contains(e.target)) {
+        fabContainer.classList.remove('active');
+      }
     });
   }
 });
