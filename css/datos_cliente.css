@@ -1,33 +1,32 @@
 :root {
-  --marron: #512615;
-  --verde: #33673B;
+  --marron: #4a2b0f;
+  --verde: #2f5233;
   --blanco: #ffffff;
-  --gris-claro: #f8f8f8;
 }
 
-/* 🔹 Reset general */
+/* 🔹 Reset general y sin highlight azul */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent; /* sin toque azul */
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
-  font-family: "Poppins", sans-serif;
-  background: var(--blanco);
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--blanco);
   color: var(--marron);
   line-height: 1.5;
 }
 
-/* 🔹 ENCABEZADO */
+/* 🔹 ENCABEZADO igual al del carrito */
 header {
   background: var(--blanco);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.8rem 1.2rem;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  padding: 1rem 1.5rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
 header a {
@@ -38,16 +37,16 @@ header a {
 }
 
 header img {
-  height: 55px;
+  height: 50px;
 }
 
 .form-title {
-  font-size: 1.2rem;
+  font-size: 1.25rem;
   font-weight: 600;
   color: var(--marron);
 }
 
-/* 🔹 CONTENIDO PRINCIPAL */
+/* 🔹 FORMULARIO */
 main {
   max-width: 600px;
   margin: 2rem auto;
@@ -61,7 +60,6 @@ main {
   padding: 1.8rem 1.5rem;
 }
 
-/* 🔹 GRUPOS DE FORMULARIO */
 .form-group {
   margin-bottom: 1.3rem;
   display: flex;
@@ -82,8 +80,8 @@ textarea {
   padding: 0.7rem 0.9rem;
   font-size: 1rem;
   font-family: inherit;
-  transition: border-color 0.2s, box-shadow 0.2s;
   background: #fff;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 input:focus,
@@ -91,13 +89,12 @@ select:focus,
 textarea:focus {
   outline: none;
   border-color: var(--verde);
-  box-shadow: 0 0 0 3px rgba(51,103,59,0.15);
+  box-shadow: 0 0 0 3px rgba(47, 82, 51, 0.15);
 }
 
-/* 🔹 Select más espacioso */
 select {
   appearance: none;
-  background-image: url("data:image/svg+xml;utf8,<svg fill='%23512615' height='18' viewBox='0 0 24 24' width='18' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-image: url("data:image/svg+xml;utf8,<svg fill='%234a2b0f' height='18' viewBox='0 0 24 24' width='18' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
   background-repeat: no-repeat;
   background-position: right 0.8rem center;
   background-size: 18px;
@@ -137,11 +134,11 @@ select {
 }
 
 .btn-primary:hover {
-  background: #2e5936;
+  background: #37603b;
 }
 
 .btn-secondary:hover {
-  background: #69331c;
+  background: #5b3512;
 }
 
 /* 🔹 RESPONSIVO */
@@ -150,12 +147,12 @@ select {
     padding: 1.2rem;
   }
 
-  .btn, .btn-secondary {
+  .btn {
     width: 100%;
   }
 
   header img {
-    height: 50px;
+    height: 45px;
   }
 
   .form-title {
