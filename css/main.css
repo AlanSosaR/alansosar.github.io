@@ -177,7 +177,7 @@ body {
 }
 .drawer-links a:hover { color: var(--verde); }
 
-/* === HERO === */
+/* === HERO PRINCIPAL === */
 .hero {
   padding-top: 7rem;
   margin-bottom: 3rem;
@@ -201,7 +201,7 @@ body {
   color: #6f5a4e;
 }
 
-/* === Carrusel adaptable === */
+/* === CARRUSEL PRINCIPAL === */
 .hero-carousel {
   position: relative;
   overflow: hidden;
@@ -210,16 +210,20 @@ body {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
   border-radius: 0;
   aspect-ratio: 16/7;
-  height: auto;
+  height: 560px;
+  transform: translateY(-10px);
 }
+
 .hero-track {
   display: flex;
   transition: transform 1.5s ease-in-out;
 }
+
 .hero-track img {
   width: 100%;
-  height: auto;
-  object-fit: contain;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.8s ease, opacity 0.8s ease;
 }
 
 /* Flechas */
@@ -312,7 +316,6 @@ body {
 }
 .btn-main:hover { transform: translateY(-2px); }
 
-/* Imagen principal */
 .product-img-wrap {
   display: flex;
   align-items: center;
@@ -369,11 +372,9 @@ footer {
   gap: 12px;
   flex-wrap: wrap;
 }
-.footer-logo {
-  height: 40px;
-}
+.footer-logo { height: 40px; }
 
-/* === FAB (Material 3 Expressive) === */
+/* === FAB === */
 .material-symbols-rounded {
   font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48;
 }
@@ -431,6 +432,9 @@ footer {
 }
 
 /* === RESPONSIVE === */
+@media (max-width: 1200px) and (min-width: 901px) {
+  .hero-carousel { height: 420px; }
+}
 @media (max-width: 900px) {
   .menu-toggle {
     display: block;
@@ -446,18 +450,7 @@ footer {
     transform: translateY(-50%);
   }
   .nav-links { display: none; }
-
-  .hero-carousel {
-    aspect-ratio: auto;
-    height: auto;
-  }
-  .hero-track img {
-    height: auto;
-    max-height: 380px;
-    object-fit: contain;
-  }
-
+  .hero-carousel { height: 360px; }
+  .hero-prev, .hero-next { display: none; }
   .product-main, .about { grid-template-columns: 1fr; }
-  .hero-prev, .hero-next,
-  .carousel-prev, .carousel-next { display: none; }
 }
