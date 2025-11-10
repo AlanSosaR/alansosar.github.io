@@ -73,7 +73,7 @@ body {
   cursor: pointer;
 }
 
-/* Drawer (menú lateral) */
+/* Drawer (menú lateral móvil) */
 .drawer {
   position: fixed;
   top: 0;
@@ -192,9 +192,9 @@ body {
 .hero-carousel {
   position: relative;
   overflow: hidden;
-  border-radius: 24px;
   max-width: 1100px;
   margin: 0 auto;
+  border-radius: 20px;
   box-shadow: var(--sombra);
 }
 
@@ -208,7 +208,6 @@ body {
   aspect-ratio: 16 / 9;
   object-fit: cover;
   height: auto;
-  border-radius: 24px;
 }
 
 /* Flechas (solo escritorio) */
@@ -241,7 +240,7 @@ body {
   max-width: 1100px;
   margin: 3rem auto;
   background: var(--blanco);
-  border-radius: 26px;
+  border-radius: 24px;
   box-shadow: var(--sombra);
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -305,17 +304,15 @@ body {
   align-items: center;
   justify-content: center;
   background: radial-gradient(circle at center, #eaf2ec 0%, #fff 70%);
-  border-radius: 20px;
+  border-radius: 18px;
   overflow: hidden;
 }
 
 .product-img-wrap img {
-  width: 100%;
-  max-width: 350px;
-  aspect-ratio: 3 / 4;
-  object-fit: contain;
+  width: 90%;
   height: auto;
-  border-radius: 20px;
+  max-width: 340px;
+  object-fit: contain;
 }
 
 /* CARRUSEL DE PRODUCTOS */
@@ -353,7 +350,7 @@ body {
 .similar-card {
   flex: 0 0 180px;
   background: #fff;
-  border-radius: 16px;
+  border-radius: 14px;
   box-shadow: var(--sombra);
   text-align: center;
   padding: 0.8rem;
@@ -371,8 +368,6 @@ body {
   object-fit: contain;
   border-radius: 12px;
   margin-bottom: 0.6rem;
-  background: radial-gradient(circle at center, #f8f8f8 0%, #fff 70%);
-  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.05);
 }
 
 .similar-card h4 {
@@ -458,6 +453,14 @@ body {
   color: var(--marron);
 }
 
+.about-img img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 18px;
+  box-shadow: var(--sombra);
+}
+
 /* CONTACTO */
 .contacto {
   text-align: center;
@@ -508,13 +511,13 @@ footer {
     grid-template-columns: 1fr;
   }
 
-  /* Ocultar flechas de carrusel en móvil */
+  /* Ocultar flechas en móvil */
   .hero-prev, .hero-next,
   .carousel-prev, .carousel-next {
     display: none;
   }
 
   .hero-track img {
-    height: auto;
+    aspect-ratio: 16 / 10;
   }
 }
