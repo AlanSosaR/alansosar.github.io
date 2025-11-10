@@ -45,15 +45,16 @@ main {
   margin: 2rem auto;
   padding: 0 1rem 3rem;
 }
-
 /* MENSAJE CUANDO ESTÁ VACÍO */
 .empty {
-  text-align: center;
+  text-align: left; /* ahora alineado a la izquierda */
   font-weight: 500;
   color: #4a2b0f;
   font-size: 1rem;
   margin: 2rem 0;
   line-height: 1.6;
+  padding-left: 1rem; /* margen visual agradable */
+  max-width: 500px; /* ancho de lectura cómodo */
 }
 
 /* TARJETA DE PRODUCTO */
