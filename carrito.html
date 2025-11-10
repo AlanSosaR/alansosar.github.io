@@ -8,7 +8,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="css/carrito.css">
   <style>
-    /* Quitar el color azul al tocar el logo */
     a, a:focus, a:active, a:visited {
       outline: none;
       -webkit-tap-highlight-color: transparent;
@@ -30,18 +29,18 @@
 
     <div class="actions">
       <button class="btn volver" onclick="window.location.href='index.html'">Volver</button>
-      <button class="btn proceder" onclick="window.location.href='datos_cliente.html'">Proceder con el pedido</button>
-    </div>
-
-    <div id="confirm-box" class="confirm-box">
-      ✅ Pedido enviado con éxito. ¡Gracias por comprar con Café Cortero!
+      <button id="proceder-btn" class="btn proceder">Proceder con el pedido</button>
     </div>
   </main>
 
+  <!-- 🔹 Snackbar MD3 -->
+  <div id="aviso-vacio" class="snackbar-md3"></div>
+
+  <!-- 🔹 WhatsApp flotante -->
   <a href="https://wa.me/50494546047?text=Hola%2C%20quiero%20hacer%20un%20pedido%20de%20Café%20Cortero" class="whatsapp-float">
     <i class="fa-brands fa-whatsapp"></i>
   </a>
 
-  <script src="js/cart.js"></script>
+  <script src="js/cart.js?v=4"></script>
 </body>
 </html>
