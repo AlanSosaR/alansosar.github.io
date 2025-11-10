@@ -56,6 +56,7 @@ function updateMainProduct(product) {
   if (mainSmall) mainSmall.textContent = 'Café en grano / molido';
 }
 
+// === EJECUCIÓN PRINCIPAL ===
 document.addEventListener('DOMContentLoaded', () => {
   // === MENÚ MÓVIL ===
   const menuToggle = document.getElementById('menu-toggle');
@@ -98,6 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function updateHeroCarousel() {
     if (!heroTrack || !heroImages.length) return;
     const width = heroImages[0].clientWidth;
+    heroTrack.style.transition = 'transform 1.5s ease-in-out';
     heroTrack.style.transform = `translateX(-${heroIndex * width}px)`;
   }
 
@@ -111,7 +113,6 @@ document.addEventListener('DOMContentLoaded', () => {
     updateHeroCarousel();
   }
 
-  // Navegación manual
   if (heroNext) heroNext.addEventListener('click', () => {
     nextHero();
     restartHeroTimer();
@@ -134,16 +135,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Auto avance
   function startHeroTimer() {
-    heroTimer = setInterval(nextHero, 8000); // 8 segundos
+    heroTimer = setInterval(nextHero, 8000);
   }
-
   function restartHeroTimer() {
     clearInterval(heroTimer);
     startHeroTimer();
   }
-
   startHeroTimer();
   window.addEventListener('resize', updateHeroCarousel);
   updateHeroCarousel();
@@ -173,25 +171,18 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // arrastre con mouse
+  // Arrastre con mouse/táctil
   let isDown = false;
   let startPosX = 0;
   let scrollStart = 0;
-
   if (similarList) {
     similarList.addEventListener('mousedown', e => {
       isDown = true;
       startPosX = e.pageX - similarList.offsetLeft;
       scrollStart = similarList.scrollLeft;
-      similarList.classList.add('dragging');
     });
-
     similarList.addEventListener('mouseleave', () => isDown = false);
-    similarList.addEventListener('mouseup', () => {
-      isDown = false;
-      similarList.classList.remove('dragging');
-    });
-
+    similarList.addEventListener('mouseup', () => isDown = false);
     similarList.addEventListener('mousemove', e => {
       if (!isDown) return;
       e.preventDefault();
@@ -200,7 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
       similarList.scrollLeft = scrollStart - walk;
     });
 
-    // táctil (mejorado)
+    // táctil
     let touchStartX = 0;
     similarList.addEventListener('touchstart', e => {
       touchStartX = e.touches[0].pageX;
@@ -212,7 +203,32 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // === BOTONES DE PRODUCTOS ===
+  // === TARJETAS DE PRODUCTOS ===
+  const cards = document.querySelectorAll('.similar-card');
+  cards.forEach(card => {
+    const name = card.querySelector('h4').textContent;
+    const priceText = card.querySelector('.price-sm').textContent;
+    const img = card.querySelector('img').src;
+    const price = parseFloat(priceText.replace(/[^\d.-]/g, '')) || 0;
+    const product = { name, price, img, qty: 1 };
+
+    // Click en la tarjeta (actualiza producto principal)
+    card.addEventListener('click', e => {
+      if (e.target.closest('.icon-cart')) return; // evita conflicto con botón del carrito
+      updateMainProduct(product);
+    });
+
+    // Click en ícono del carrito (agrega al carrito)
+    const btn = card.querySelector('.icon-cart');
+    if (btn) {
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        addToCart(product);
+      });
+    }
+  });
+
+  // === BOTÓN PRINCIPAL DE PRODUCTO ===
   const btnMain = document.getElementById('product-add');
   if (btnMain) {
     btnMain.addEventListener('click', () => {
@@ -229,32 +245,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Íconos de carrito en las tarjetas pequeñas
-  const productButtons = document.querySelectorAll('.similar-card button, .icon-cart');
-  productButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const card = btn.closest('.similar-card');
-      const name = card.querySelector('h4').textContent;
-      const priceText = card.querySelector('.price-sm').textContent;
-      const img = card.querySelector('img').src;
-      const price = parseFloat(priceText.replace(/[^\d.-]/g, '')) || 0;
-
-      const product = { name, price, img, qty: 1 };
-      addToCart(product);
-      updateMainProduct(product);
-    });
-  });
-
   // === FAB (Floating Action Button) ===
   const fabMain = document.getElementById('fab-main');
   const fabContainer = document.querySelector('.fab-container');
-
   if (fabMain && fabContainer) {
-    fabMain.addEventListener('click', () => {
-      fabContainer.classList.toggle('active');
+    fabMain.addEventListener('click', e => {
+      e.stopPropagation();
+      setTimeout(() => fabContainer.classList.toggle('active'), 80);
     });
-
-    // Cerrar al hacer clic fuera
     document.addEventListener('click', e => {
       if (!fabContainer.contains(e.target) && !fabMain.contains(e.target)) {
         fabContainer.classList.remove('active');
