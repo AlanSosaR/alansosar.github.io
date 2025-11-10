@@ -17,7 +17,7 @@ function renderCart() {
 
   // 🔹 Si el carrito está vacío
   if (cart.length === 0) {
-    container.innerHTML = '<div class="empty">No tienes productos en el carrito.</div>';
+    container.innerHTML = '<div class="empty">☕ Tu selección está vacía. Agrega un café para continuar.</div>';
     document.getElementById('total-box').textContent = 'Total: L 0.00';
     return;
   }
@@ -25,12 +25,10 @@ function renderCart() {
   // 🔹 Si hay productos
   let total = 0;
   cart.forEach((item, index) => {
-    // limpiar precio si viene con texto (ej. "L 250" o "250 L")
     const priceNumber = parseFloat(item.price.toString().replace(/[^\d.-]/g, '')) || 0;
     const lineTotal = priceNumber * item.qty;
     total += lineTotal;
 
-    // actualizar carrito con precio numérico limpio
     item.price = priceNumber;
 
     const div = document.createElement('div');
@@ -51,10 +49,7 @@ function renderCart() {
     container.appendChild(div);
   });
 
-  // guardar carrito actualizado (precios limpios)
   saveCart(cart);
-
-  // mostrar total
   document.getElementById('total-box').textContent = 'Total: L ' + total.toFixed(2);
 }
 
@@ -78,6 +73,22 @@ document.getElementById('cart-container').addEventListener('click', (e) => {
   saveCart(cart);
   renderCart();
 });
+
+// --- botón proceder
+const procederBtn = document.getElementById('proceder-btn');
+if (procederBtn) {
+  procederBtn.addEventListener('click', () => {
+    const cart = getCart();
+    const aviso = document.getElementById('aviso-vacio');
+    if (cart.length === 0) {
+      aviso.textContent = "☕ Tu selección está vacía. Agrega un café para continuar.";
+      aviso.classList.add('show');
+      setTimeout(() => aviso.classList.remove('show'), 3000);
+    } else {
+      window.location.href = "datos_cliente.html";
+    }
+  });
+}
 
 // --- inicializar
 renderCart();
