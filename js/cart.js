@@ -17,7 +17,11 @@ function renderCart() {
 
   // 🔹 Si el carrito está vacío
   if (cart.length === 0) {
-    container.innerHTML = '<div class="empty">☕ Tu selección está vacía. Agrega un café para continuar.</div>';
+    container.innerHTML = `
+      <div class="empty">
+        Aún no has agregado cafés a tu selección.<br>
+        <small>Vuelve al inicio y elige uno.</small>
+      </div>`;
     document.getElementById('total-box').textContent = 'Total: L 0.00';
     return;
   }
@@ -28,7 +32,6 @@ function renderCart() {
     const priceNumber = parseFloat(item.price.toString().replace(/[^\d.-]/g, '')) || 0;
     const lineTotal = priceNumber * item.qty;
     total += lineTotal;
-
     item.price = priceNumber;
 
     const div = document.createElement('div');
@@ -81,7 +84,7 @@ if (procederBtn) {
     const cart = getCart();
     const aviso = document.getElementById('aviso-vacio');
     if (cart.length === 0) {
-      aviso.textContent = "☕ Tu selección está vacía. Agrega un café para continuar.";
+      aviso.textContent = "Tu selección está vacía. Agrega tu café favorito para continuar.";
       aviso.classList.add('show');
       setTimeout(() => aviso.classList.remove('show'), 3000);
     } else {
