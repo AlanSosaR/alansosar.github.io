@@ -205,8 +205,10 @@ body {
 
 .hero-track img {
   width: 100%;
-  height: 400px;
+  aspect-ratio: 16 / 9;
   object-fit: cover;
+  height: auto;
+  border-radius: 24px;
 }
 
 /* Flechas (solo escritorio) */
@@ -308,10 +310,12 @@ body {
 }
 
 .product-img-wrap img {
-  width: 90%;
-  max-width: 300px;
-  height: auto;
+  width: 100%;
+  max-width: 350px;
+  aspect-ratio: 3 / 4;
   object-fit: contain;
+  height: auto;
+  border-radius: 20px;
 }
 
 /* CARRUSEL DE PRODUCTOS */
@@ -363,9 +367,12 @@ body {
 
 .similar-card img {
   width: 100%;
-  height: 150px;
+  aspect-ratio: 3 / 4;
   object-fit: contain;
+  border-radius: 12px;
   margin-bottom: 0.6rem;
+  background: radial-gradient(circle at center, #f8f8f8 0%, #fff 70%);
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.05);
 }
 
 .similar-card h4 {
@@ -488,21 +495,26 @@ footer {
   .menu-toggle {
     display: block;
   }
+
   .desktop-only {
     display: none;
   }
+
   .product-main {
     grid-template-columns: 1fr;
   }
+
   .about {
     grid-template-columns: 1fr;
   }
+
   /* Ocultar flechas de carrusel en móvil */
   .hero-prev, .hero-next,
   .carousel-prev, .carousel-next {
     display: none;
   }
+
   .hero-track img {
-    height: 250px;
+    height: auto;
   }
 }
