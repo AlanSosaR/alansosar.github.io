@@ -12,11 +12,13 @@ function saveCart(cart) {
 function renderCart() {
   const cart = getCart();
   const container = document.getElementById('cart-container');
+  const mensaje = document.getElementById('mensaje-carrito');
   container.innerHTML = '';
 
   if (cart.length === 0) {
     container.innerHTML = '<div class="empty">No tienes productos en el carrito.</div>';
     document.getElementById('total-box').textContent = 'Total: L 0.00';
+    if (mensaje) mensaje.textContent = '';
     return;
   }
 
@@ -52,6 +54,7 @@ function renderCart() {
   saveCart(cart);
 
   document.getElementById('total-box').textContent = 'Total: L ' + total.toFixed(2);
+  if (mensaje) mensaje.textContent = '';
 }
 
 // --- controles del carrito
@@ -74,6 +77,25 @@ document.getElementById('cart-container').addEventListener('click', (e) => {
   saveCart(cart);
   renderCart();
 });
+
+// --- botón Proceder con el pedido
+const procederBtn = document.getElementById('proceder-btn');
+if (procederBtn) {
+  procederBtn.addEventListener('click', () => {
+    const cart = getCart();
+    const mensaje = document.getElementById('mensaje-carrito');
+
+    if (cart.length === 0) {
+      if (mensaje) {
+        mensaje.textContent = "☕ Aún no tienes productos en tu carrito. Agrega tu café favorito para continuar.";
+      } else {
+        alert("☕ Tu carrito está vacío. Agrega productos antes de continuar.");
+      }
+    } else {
+      window.location.href = "datos_cliente.html";
+    }
+  });
+}
 
 // --- inicializar
 renderCart();
