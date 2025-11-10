@@ -16,21 +16,22 @@ function renderCart() {
   container.innerHTML = '';
 
   if (cart.length === 0) {
-    container.innerHTML = '<div class="empty">No tienes productos en el carrito.</div>';
     document.getElementById('total-box').textContent = 'Total: L 0.00';
-    if (mensaje) mensaje.textContent = '';
+
+    if (mensaje) {
+      mensaje.textContent = "☕ Aún no tienes productos en tu carrito. Agrega tu café favorito para continuar.";
+      mensaje.classList.add('show');
+    }
     return;
   }
 
+  if (mensaje) mensaje.classList.remove('show');
+
   let total = 0;
   cart.forEach((item, index) => {
-    // limpiar precio si viene con texto (ej. "L 250" o "250 L")
     const priceNumber = parseFloat(item.price.toString().replace(/[^\d.-]/g, '')) || 0;
     const lineTotal = priceNumber * item.qty;
     total += lineTotal;
-
-    // actualizar carrito con precio numérico limpio
-    item.price = priceNumber;
 
     const div = document.createElement('div');
     div.className = 'item';
@@ -50,11 +51,8 @@ function renderCart() {
     container.appendChild(div);
   });
 
-  // guardar carrito actualizado (precios limpios)
   saveCart(cart);
-
   document.getElementById('total-box').textContent = 'Total: L ' + total.toFixed(2);
-  if (mensaje) mensaje.textContent = '';
 }
 
 // --- controles del carrito
@@ -86,14 +84,12 @@ if (procederBtn) {
     const mensaje = document.getElementById('mensaje-carrito');
 
     if (cart.length === 0) {
-      if (mensaje) {
-        mensaje.textContent = "☕ Aún no tienes productos en tu carrito. Agrega tu café favorito para continuar.";
-      } else {
-        alert("☕ Tu carrito está vacío. Agrega productos antes de continuar.");
-      }
-    } else {
-      window.location.href = "datos_cliente.html";
+      mensaje.textContent = "☕ Aún no tienes productos en tu carrito. Agrega tu café favorito para continuar.";
+      mensaje.classList.add('show');
+      return;
     }
+
+    window.location.href = "datos_cliente.html";
   });
 }
 
