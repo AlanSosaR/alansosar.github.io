@@ -101,11 +101,7 @@
               { img: 'imagenes/bolsa_1.png', nombre: 'Café Cortero 1lb', precio: 'L 550' },
               { img: 'imagenes/bolsa_2.png', nombre: 'Café Regalo', precio: 'L 260' },
               { img: 'imagenes/bolsa_1.png', nombre: 'Café Premium', precio: 'L 480' },
-              { img: 'imagenes/bolsa_2.png', nombre: 'Café Tradicional', precio: 'L 150' },
-              { img: 'imagenes/bolsa_1.png', nombre: 'Café Gourmet', precio: 'L 400' },
-              { img: 'imagenes/bolsa_2.png', nombre: 'Café Espresso', precio: 'L 500' },
-              { img: 'imagenes/bolsa_1.png', nombre: 'Café Molido Especial', precio: 'L 300' },
-              { img: 'imagenes/bolsa_2.png', nombre: 'Café Selección', precio: 'L 600' }
+              { img: 'imagenes/bolsa_2.png', nombre: 'Café Tradicional', precio: 'L 150' }
             ];
             document.write(
               productos.map(p => `
@@ -147,9 +143,6 @@
     <section id="contacto" class="contacto">
       <h2>Contáctanos</h2>
       <p>Haz tu pedido directo por WhatsApp o síguenos en Facebook para ver novedades.</p>
-      <a href="https://www.facebook.com/share/1FsrT4DYrU/" class="btn-facebook" target="_blank">
-        <i class="fa-brands fa-facebook-f"></i> Síguenos en Facebook
-      </a>
     </section>
   </main>
 
@@ -161,16 +154,16 @@
     </div>
   </footer>
 
-  <!-- FAB EXPANDIBLE (WhatsApp + Facebook) -->
+  <!-- FAB flotante -->
   <div class="fab-container">
     <button class="fab-main" id="fab-main">
-      <i class="fa-solid fa-message"></i>
+      <i class="fa-solid fa-plus"></i>
     </button>
     <div class="fab-options" id="fab-options">
-      <a href="https://wa.me/50494546047?text=Hola%2C%20quiero%20más%20información%20sobre%20Café%20Cortero" target="_blank" class="fab-btn whatsapp">
+      <a href="https://wa.me/50494546047?text=Hola%2C%20quiero%20más%20información%20sobre%20Café%20Cortero" target="_blank">
         <i class="fa-brands fa-whatsapp"></i>
       </a>
-      <a href="https://www.facebook.com/share/1FsrT4DYrU/" target="_blank" class="fab-btn facebook">
+      <a href="https://www.facebook.com/share/1FsrT4DYrU/" target="_blank">
         <i class="fa-brands fa-facebook-f"></i>
       </a>
     </div>
