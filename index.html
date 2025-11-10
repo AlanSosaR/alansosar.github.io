@@ -13,24 +13,32 @@
   <!-- HEADER -->
   <header class="header">
     <div class="header-content">
-      <a href="index.html" class="logo">
+      <button class="menu-toggle" id="menu-toggle">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+
+      <!-- logo visible solo en escritorio -->
+      <a href="index.html" class="logo desktop-only">
         <img src="imagenes/logo.png" alt="Café Cortero">
       </a>
-      <nav class="nav-links">
+
+      <!-- menú de navegación -->
+      <nav class="nav-links desktop-only">
         <a href="#productos">Productos</a>
         <a href="mis-pedidos.html">Mis Pedidos</a>
         <a href="#nosotros">Nosotros</a>
         <a href="#contacto">Contacto</a>
       </nav>
+
+      <!-- carrito -->
       <button class="cart-btn" id="cart-btn">
         <i class="fa-solid fa-cart-shopping"></i>
         <span class="cart-count" id="cart-count">0</span>
       </button>
-      <button class="menu-toggle" id="menu-toggle"><i class="fa-solid fa-bars"></i></button>
     </div>
   </header>
 
-  <!-- MENU MÓVIL -->
+  <!-- DRAWER (MENÚ MÓVIL) -->
   <div class="drawer" id="drawer">
     <div class="drawer-header">
       <img src="imagenes/logo.png" alt="Café Cortero">
@@ -49,18 +57,19 @@
     <section class="hero">
       <div class="hero-text">
         <h1>La esencia de Honduras en cada sorbo.</h1>
-        <p>Café hondureño de altura, tueste medio, y esencia familiar.</p>
+        <p>Café hondureño de altura, tueste medio y esencia familiar.</p>
       </div>
+
       <div class="hero-carousel" id="hero-carousel">
         <button class="hero-prev"><i class="fa-solid fa-chevron-left"></i></button>
         <div class="hero-track">
-          <img src="imagenes/cafe_1.jpg" alt="Café Cortero 1">
-          <img src="imagenes/cafe_2.jpg" alt="Café Cortero 2">
-          <img src="imagenes/cafe_3.jpg" alt="Café Cortero 3">
-          <img src="imagenes/cafe_4.jpg" alt="Café Cortero 4">
-          <img src="imagenes/cafe_5.jpg" alt="Café Cortero 5">
-          <img src="imagenes/cafe_6.jpg" alt="Café Cortero 6">
-          <img src="imagenes/cafe_7.jpg" alt="Café Cortero 7">
+          <img src="imagenes/cafe-1.jpg" alt="Café Cortero 1">
+          <img src="imagenes/cafe-2.jpg" alt="Café Cortero 2">
+          <img src="imagenes/cafe-3.jpg" alt="Café Cortero 3">
+          <img src="imagenes/cafe-4.jpg" alt="Café Cortero 4">
+          <img src="imagenes/cafe-5.jpg" alt="Café Cortero 5">
+          <img src="imagenes/cafe-6.jpg" alt="Café Cortero 6">
+          <img src="imagenes/cafe-7.jpg" alt="Café Cortero 7">
         </div>
         <button class="hero-next"><i class="fa-solid fa-chevron-right"></i></button>
       </div>
@@ -87,19 +96,18 @@
       <div class="carousel-container">
         <button class="carousel-prev"><i class="fa-solid fa-chevron-left"></i></button>
         <div class="similar-list" id="lista-similares">
-          <!-- Productos (10) -->
           <script>
             const productos = [
               { img: 'imagenes/bolsa-1.png', nombre: 'Café Cortero 250g', precio: 'L 180' },
               { img: 'imagenes/bolsa-2.png', nombre: 'Café Cortero 500g', precio: 'L 320' },
               { img: 'imagenes/bolsa-1.png', nombre: 'Café Cortero 1lb', precio: 'L 550' },
-              { img: 'imagenes/bolsa-2.png', nombre: 'Café Cortero Regalo', precio: 'L 260' },
+              { img: 'imagenes/bolsa-2.png', nombre: 'Café Regalo', precio: 'L 260' },
               { img: 'imagenes/bolsa-1.png', nombre: 'Café Premium', precio: 'L 480' },
               { img: 'imagenes/bolsa-2.png', nombre: 'Café Tradicional', precio: 'L 150' },
               { img: 'imagenes/bolsa-1.png', nombre: 'Café Gourmet', precio: 'L 400' },
               { img: 'imagenes/bolsa-2.png', nombre: 'Café Espresso', precio: 'L 500' },
               { img: 'imagenes/bolsa-1.png', nombre: 'Café Molido Especial', precio: 'L 300' },
-              { img: 'imagenes/bolsa-2.png', nombre: 'Café Cortero Selección', precio: 'L 600' }
+              { img: 'imagenes/bolsa-2.png', nombre: 'Café Selección', precio: 'L 600' }
             ];
             document.write(
               productos.map(p => `
@@ -122,10 +130,10 @@
       <div class="about-text">
         <small>Nuestra historia</small>
         <h2>Sobre Café Cortero</h2>
-        <p>Café Cortero es un proyecto familiar con la iniciativa de producir un café de calidad
-        amigable con el medio ambiente y con el sabor auténtico de Honduras.</p>
+        <p>Café Cortero es un proyecto familiar que produce café de calidad,
+          amigable con el medio ambiente y con el sabor auténtico de Honduras.</p>
         <p>Cada grano es cultivado con respeto, cosechado a mano y tostado con dedicación
-        para conservar su esencia natural.</p>
+          para conservar su esencia natural.</p>
         <div class="about-pills">
           <span class="about-pill">Proyecto familiar</span>
           <span class="about-pill">Origen hondureño</span>
@@ -153,15 +161,6 @@
     <p>&copy; 2025 Café Cortero. Todos los derechos reservados.</p>
   </footer>
 
-  <!-- FAB (WhatsApp + Facebook) -->
-  <div class="fab">
-    <button class="fab-main" id="fab-main"><i class="fa-solid fa-comments"></i></button>
-    <div class="fab-options">
-      <a href="https://wa.me/50494546047?text=Hola%2C%20quiero%20más%20información%20sobre%20Café%20Cortero" target="_blank" class="fab-btn whatsapp"><i class="fa-brands fa-whatsapp"></i></a>
-      <a href="https://www.facebook.com/share/1FsrT4DYrU/" target="_blank" class="fab-btn facebook"><i class="fa-brands fa-facebook-f"></i></a>
-    </div>
-  </div>
-
-  <script src="main.js"></script>
+  <script src="js/main.js"></script>
 </body>
 </html>
