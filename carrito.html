@@ -8,31 +8,11 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="css/carrito.css">
   <style>
-    /* Quitar el color azul al tocar el logo o botones */
-    * {
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    a, a:focus, a:active, a:visited, button {
+    /* Quitar el color azul al tocar el logo */
+    a, a:focus, a:active, a:visited {
       outline: none;
+      -webkit-tap-highlight-color: transparent;
       text-decoration: none;
-    }
-
-    /* 🔹 Mensaje del carrito vacío */
-    .mensaje-carrito {
-      color: #4a2b0f;
-      font-weight: 500;
-      text-align: center;
-      margin: 1.5rem 0;
-      font-size: 1rem;
-      display: none;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
-
-    .mensaje-carrito.show {
-      display: block;
-      opacity: 1;
     }
   </style>
 </head>
@@ -45,33 +25,23 @@
   </header>
 
   <main>
-    <!-- 🔹 Contenedor de productos -->
     <div id="cart-container"></div>
-
-    <!-- 🔹 Mensaje del carrito vacío -->
-    <div id="mensaje-carrito" class="mensaje-carrito"></div>
-
-    <!-- 🔹 Total -->
     <div class="total-box" id="total-box">Total: L 0.00</div>
 
-    <!-- 🔹 Botones -->
     <div class="actions">
       <button class="btn volver" onclick="window.location.href='index.html'">Volver</button>
-      <button id="proceder-btn" class="btn proceder">Proceder con el pedido</button>
+      <button class="btn proceder" onclick="window.location.href='datos_cliente.html'">Proceder con el pedido</button>
     </div>
 
-    <!-- 🔹 Confirmación -->
     <div id="confirm-box" class="confirm-box">
       ✅ Pedido enviado con éxito. ¡Gracias por comprar con Café Cortero!
     </div>
   </main>
 
-  <!-- 🔹 WhatsApp flotante -->
   <a href="https://wa.me/50494546047?text=Hola%2C%20quiero%20hacer%20un%20pedido%20de%20Café%20Cortero" class="whatsapp-float">
     <i class="fa-brands fa-whatsapp"></i>
   </a>
 
-  <!-- 🔹 Script actualizado -->
-  <script src="js/carrito.js?v=3"></script>
+  <script src="js/cart.js"></script>
 </body>
 </html>
