@@ -82,9 +82,9 @@ if (procederBtn) {
     const cart = getCart();
     const aviso = document.getElementById('aviso-vacio');
     if (cart.length === 0) {
-      aviso.textContent = "Tu selección está vacía. Agrega tu café favorito para continuar.";
+      aviso.textContent = "Aún no has agregado cafés a tu selección.";
       aviso.classList.add('show');
-      setTimeout(() => aviso.classList.remove('show'), 3000);
+      setTimeout(() => aviso.classList.remove('show'), 3200);
     } else {
       window.location.href = "datos_cliente.html";
     }
