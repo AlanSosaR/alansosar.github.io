@@ -55,11 +55,8 @@ if (drawerClose) {
   drawerClose.addEventListener('click', () => drawer.classList.remove('open'));
 }
 
-// Cerrar menú al hacer clic en un enlace
 document.querySelectorAll('.drawer-links a').forEach(link => {
-  link.addEventListener('click', () => {
-    drawer.classList.remove('open');
-  });
+  link.addEventListener('click', () => drawer.classList.remove('open'));
 });
 
 // === CARRITO ===
@@ -99,13 +96,11 @@ if (heroPrev) {
   });
 }
 
-// Movimiento automático del carrusel principal
 setInterval(() => {
   heroIndex = (heroIndex + 1) % heroImages.length;
   updateHeroCarousel();
 }, 5000);
 
-// Ajustar tamaño al redimensionar pantalla
 window.addEventListener('resize', updateHeroCarousel);
 
 // === CARRUSEL DE PRODUCTOS ===
@@ -152,25 +147,51 @@ if (similarList) {
     const walk = (x - startX) * 1.2;
     similarList.scrollLeft = scrollLeft - walk;
   });
+
+  // Soporte táctil real en móviles
+  let startTouchX = 0;
+  similarList.addEventListener('touchstart', e => {
+    startTouchX = e.touches[0].pageX;
+  });
+  similarList.addEventListener('touchmove', e => {
+    const moveX = e.touches[0].pageX - startTouchX;
+    similarList.scrollLeft -= moveX / 3;
+  });
+}
+
+// === CAMBIAR PRODUCTO PRINCIPAL DINÁMICAMENTE ===
+function updateMainProduct(product) {
+  const mainImg = document.querySelector('.product-img-wrap img');
+  const mainTitle = document.querySelector('.product-text h2');
+  const mainPrice = document.querySelector('.product-text .price');
+  const mainSmall = document.querySelector('.product-text small');
+
+  if (!mainImg || !mainTitle || !mainPrice) return;
+
+  mainImg.src = product.img;
+  mainTitle.textContent = product.name;
+  mainPrice.textContent = `L ${product.price}`;
+  mainSmall.textContent = 'Café en grano / molido';
 }
 
 // === AGREGAR PRODUCTOS AL CARRITO ===
 document.addEventListener('DOMContentLoaded', () => {
-  // Botón del producto principal
   const btnMain = document.getElementById('product-add');
   if (btnMain) {
     btnMain.addEventListener('click', () => {
-      const product = {
-        name: 'Café Cortero 250g',
-        price: 180,
-        img: 'imagenes/bolsa-1.png',
-        qty: 1
-      };
+      const mainImg = document.querySelector('.product-img-wrap img');
+      const mainTitle = document.querySelector('.product-text h2');
+      const mainPrice = document.querySelector('.product-text .price');
+
+      const name = mainTitle.textContent;
+      const price = parseFloat(mainPrice.textContent.replace(/[^\d.-]/g, '')) || 0;
+      const img = mainImg.src;
+
+      const product = { name, price, img, qty: 1 };
       addToCart(product);
     });
   }
 
-  // Botones de productos del carrusel
   const productButtons = document.querySelectorAll('.similar-card button');
   productButtons.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -182,6 +203,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const product = { name, price, img, qty: 1 };
       addToCart(product);
+      updateMainProduct(product); // <— aquí actualiza el producto principal
     });
   });
 });
+
+// === FAB (Floating Action Button) ===
+const fabMain = document.getElementById('fab-main');
+const fabContainer = document.getElementById('fab');
+
+if (fabMain && fabContainer) {
+  fabMain.addEventListener('click', () => {
+    fabContainer.classList.toggle('active');
+  });
+}
