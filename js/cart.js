@@ -15,18 +15,16 @@ function renderCart() {
   const container = document.getElementById('cart-container');
   container.innerHTML = '';
 
-  // 🔹 Si el carrito está vacío
   if (cart.length === 0) {
     container.innerHTML = `
       <div class="empty">
-        Aún no has agregado cafés a tu selección.<br>
-        <small>Vuelve al inicio y elige uno.</small>
+        Tu selección está vacía.<br>
+        <small>Agrega tu café favorito para continuar.</small>
       </div>`;
     document.getElementById('total-box').textContent = 'Total: L 0.00';
     return;
   }
 
-  // 🔹 Si hay productos
   let total = 0;
   cart.forEach((item, index) => {
     const priceNumber = parseFloat(item.price.toString().replace(/[^\d.-]/g, '')) || 0;
