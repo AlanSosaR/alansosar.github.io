@@ -96,6 +96,7 @@ if (heroPrev) {
   });
 }
 
+// Movimiento automático del carrusel principal
 setInterval(() => {
   heroIndex = (heroIndex + 1) % heroImages.length;
   updateHeroCarousel();
@@ -132,14 +133,17 @@ if (similarList) {
     startX = e.pageX - similarList.offsetLeft;
     scrollLeft = similarList.scrollLeft;
   });
+
   similarList.addEventListener('mouseleave', () => {
     isDown = false;
     similarList.classList.remove('active');
   });
+
   similarList.addEventListener('mouseup', () => {
     isDown = false;
     similarList.classList.remove('active');
   });
+
   similarList.addEventListener('mousemove', (e) => {
     if (!isDown) return;
     e.preventDefault();
@@ -192,6 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Clic en productos del carrusel
   const productButtons = document.querySelectorAll('.similar-card button');
   productButtons.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -203,14 +208,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const product = { name, price, img, qty: 1 };
       addToCart(product);
-      updateMainProduct(product); // <— aquí actualiza el producto principal
+      updateMainProduct(product); // ✅ cambia el producto principal
     });
   });
 });
 
 // === FAB (Floating Action Button) ===
 const fabMain = document.getElementById('fab-main');
-const fabContainer = document.getElementById('fab');
+const fabContainer = document.querySelector('.fab-container'); // ✅ corregido
 
 if (fabMain && fabContainer) {
   fabMain.addEventListener('click', () => {
