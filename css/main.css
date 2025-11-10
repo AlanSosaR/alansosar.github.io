@@ -194,7 +194,7 @@ body {
   overflow: hidden;
   max-width: 1100px;
   margin: 0 auto;
-  border-radius: 20px;
+  border-radius: 0; /* borde plano */
   box-shadow: var(--sombra);
 }
 
@@ -416,11 +416,31 @@ body {
 .carousel-next { right: 0; }
 
 /* SOBRE NOSOTROS */
+.about {
+  max-width: 1100px;
+  margin: 3rem auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: center;
+  padding: 0 1rem;
+}
+
+.about-text {
+  order: 1;
+}
+
+.about-img {
+  order: 2;
+}
+
 .about-img img {
   width: 100%;
-  border-radius: 18px;
-  display: block;
+  aspect-ratio: 16 / 9;
   object-fit: cover;
+  border-radius: 18px;
+  box-shadow: var(--sombra);
+  transform: translateY(-10px);
 }
 
 .about h2 {
@@ -450,14 +470,6 @@ body {
   color: var(--marron);
 }
 
-.about-img img {
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  object-fit: cover;
-  border-radius: 18px;
-  box-shadow: var(--sombra);
-}
-
 /* CONTACTO */
 .contacto {
   text-align: center;
@@ -482,12 +494,96 @@ footer {
   background: var(--blanco);
   border-top: 1px solid rgba(0, 0, 0, 0.05);
   text-align: center;
-  padding: 2rem 1rem;
+  padding: 1rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 }
 
 .footer-logo {
+  height: 40px;
+}
+
+/* === FAB (Floating Action Button) === */
+.fab-container {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  z-index: 150;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: 12px;
+}
+
+.fab-main {
+  background: var(--verde);
+  color: #fff;
+  width: 60px;
   height: 60px;
-  margin-bottom: 0.8rem;
+  border-radius: 50%;
+  border: none;
+  outline: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  cursor: pointer;
+  transition: transform 0.3s ease, background 0.3s ease;
+}
+
+.fab-main:hover {
+  background: #2a5b32;
+  transform: scale(1.05);
+}
+
+.fab-option {
+  background: #fff;
+  color: var(--marron);
+  border: none;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(10px);
+  transition: all 0.3s ease;
+}
+
+.fab-option.facebook {
+  background: #3b5998;
+  color: #fff;
+}
+.fab-option.whatsapp {
+  background: #25D366;
+  color: #fff;
+}
+
+.fab-container.active .fab-option {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.fab-container.active .fab-option:nth-child(2) {
+  transition-delay: 0.05s;
+}
+.fab-container.active .fab-option:nth-child(3) {
+  transition-delay: 0.1s;
+}
+
+/* Elimina el toque azul */
+button:focus, a:focus {
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* RESPONSIVE */
@@ -508,7 +604,14 @@ footer {
     grid-template-columns: 1fr;
   }
 
-  /* Ocultar flechas en móvil */
+  .about-text {
+    order: 2;
+  }
+
+  .about-img {
+    order: 1;
+  }
+
   .hero-prev, .hero-next,
   .carousel-prev, .carousel-next {
     display: none;
