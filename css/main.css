@@ -18,27 +18,28 @@ body {
   background: var(--blanco);
   color: var(--marron);
   scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
 }
 
-/* HEADER */
+/* === HEADER === */
 .header {
   position: fixed;
   top: 0;
   width: 100%;
-  background: rgba(255, 255, 255, 0.96);
-  backdrop-filter: blur(10px);
-  box-shadow: var(--sombra);
-  z-index: 100;
+  background: var(--blanco);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  z-index: 1000;
 }
 
 .header-content {
+  position: relative;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0.7rem 1.2rem;
+  padding: 0.8rem 1.2rem;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-  gap: 2rem;
+  justify-content: space-between;
+  height: 64px;
 }
 
 .logo img {
@@ -78,7 +79,6 @@ body {
   justify-content: center;
   cursor: pointer;
   transition: transform 0.2s ease;
-  margin-left: 1rem;
 }
 
 .cart-btn:hover {
@@ -106,7 +106,7 @@ body {
   justify-content: center;
 }
 
-/* Menú móvil */
+/* BOTÓN MENÚ MÓVIL */
 .menu-toggle {
   background: none;
   border: none;
@@ -116,7 +116,7 @@ body {
   cursor: pointer;
 }
 
-/* Drawer (menú lateral móvil) */
+/* DRAWER (menú lateral móvil) */
 .drawer {
   position: fixed;
   top: 0;
@@ -129,7 +129,7 @@ body {
   display: flex;
   flex-direction: column;
   transition: right 0.3s ease;
-  z-index: 200;
+  z-index: 2000;
 }
 
 .drawer.open {
@@ -167,9 +167,9 @@ body {
   color: var(--verde);
 }
 
-/* HERO */
+/* === HERO === */
 .hero {
-  padding-top: 6.5rem;
+  padding-top: 7rem; /* espacio para el header fijo */
   margin-bottom: 3rem;
   text-align: left;
 }
@@ -238,7 +238,7 @@ body {
 .hero-prev { left: 16px; }
 .hero-next { right: 16px; }
 
-/* PRODUCTO PRINCIPAL */
+/* === PRODUCTO PRINCIPAL === */
 .product-main {
   max-width: 1100px;
   margin: 3rem auto;
@@ -318,7 +318,7 @@ body {
   object-fit: contain;
 }
 
-/* CARRUSEL DE PRODUCTOS */
+/* === CARRUSEL DE PRODUCTOS === */
 .related {
   max-width: 1100px;
   margin: 0 auto 3rem;
@@ -395,7 +395,7 @@ body {
   cursor: pointer;
 }
 
-/* SOBRE NOSOTROS */
+/* === SOBRE NOSOTROS === */
 .about {
   max-width: 1100px;
   margin: 4rem auto;
@@ -425,13 +425,13 @@ body {
   box-shadow: 0 14px 34px rgba(0,0,0,0.3);
 }
 
-/* CONTACTO */
+/* === CONTACTO === */
 .contacto {
   text-align: center;
   margin: 3rem 0;
 }
 
-/* FOOTER */
+/* === FOOTER === */
 footer {
   background: var(--blanco);
   border-top: 1px solid rgba(0,0,0,0.05);
@@ -506,6 +506,7 @@ footer {
     left: 1rem;
     top: 50%;
     transform: translateY(-50%);
+    z-index: 2;
   }
 
   .cart-btn {
@@ -513,9 +514,10 @@ footer {
     right: 1rem;
     top: 50%;
     transform: translateY(-50%);
+    z-index: 2;
   }
 
-  .desktop-only {
+  .nav-links {
     display: none;
   }
 
