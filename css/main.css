@@ -591,10 +591,10 @@ body {
   max-width: 700px !important;
 }
 
-/* === FOOTER CON LOGO EN LUGAR DEL SÍMBOLO © === */
+/* === FOOTER CON LOGO PEQUEÑO EN LA MISMA LÍNEA === */
 footer {
   background: var(--blanco) !important;
-  border-top: 1px solid rgba(0, 0, 0, 0.05) !important;
+  border-top: 1px solid rgba(0,0,0,0.05) !important;
   text-align: center !important;
   padding: 1rem !important;
 }
@@ -604,33 +604,32 @@ footer p {
   font-size: 0.95rem !important;
   color: var(--marron) !important;
   display: inline-flex !important;
-  align-items: center !important;   /* ✅ alinea el logo con el texto */
+  align-items: center !important;
   justify-content: center !important;
-  gap: 8px !important;              /* pequeño espacio entre logo y texto */
+  gap: 6px !important;              /* espacio entre logo y texto */
   flex-wrap: nowrap !important;
-  white-space: nowrap !important;   /* evita que se rompa la línea */
+  white-space: nowrap !important;
 }
 
 .footer-logo-inline {
-  height: 22px !important;          /* tamaño óptico del logo en línea */
+  height: 16px !important;          /* ✅ tamaño equilibrado con el texto */
   width: auto !important;
   vertical-align: middle !important;
   display: inline-block !important;
-  transform: translateY(1px);       /* ajuste visual fino */
+  transform: translateY(1px);       /* leve ajuste óptico */
+  opacity: 0.95;                    /* se integra mejor con el texto */
 }
 
 @media (max-width: 500px) {
   footer p {
     font-size: 0.85rem !important;
-    gap: 6px !important;
+    gap: 5px !important;
   }
 
   .footer-logo-inline {
-    height: 20px !important;
+    height: 14px !important;        /* ✅ tamaño perfecto en móvil */
   }
 }
-
-
 
 /* === FAB === */
 /* NO TOCAR: mantengo el FAB igual que antes */
