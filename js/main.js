@@ -1,4 +1,4 @@
-// === CONFIGURACIÓN BASEe===
+// === CONFIGURACIÓN BASE ===
 const CART_KEY = 'cafecortero_cart';
 
 // Obtener carrito
@@ -88,64 +88,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   updateCartCount();
 
-  // === CARRUSEL PRINCIPAL (HERO) ===
-  const heroTrack = document.querySelector('.hero-track');
-  const heroImages = document.querySelectorAll('.hero-track img');
-  const heroPrev = document.querySelector('.hero-prev');
-  const heroNext = document.querySelector('.hero-next');
-  let heroIndex = 0;
-  let heroTimer;
-
-  function updateHeroCarousel() {
-    if (!heroTrack || !heroImages.length) return;
-    const width = heroImages[0].clientWidth;
-    heroTrack.style.transition = 'transform 1.5s ease-in-out';
-    heroTrack.style.transform = `translateX(-${heroIndex * width}px)`;
-  }
-
-  function nextHero() {
-    heroIndex = (heroIndex + 1) % heroImages.length;
-    updateHeroCarousel();
-  }
-
-  function prevHero() {
-    heroIndex = (heroIndex - 1 + heroImages.length) % heroImages.length;
-    updateHeroCarousel();
-  }
-
-  if (heroNext) heroNext.addEventListener('click', () => {
-    nextHero();
-    restartHeroTimer();
-  });
-  if (heroPrev) heroPrev.addEventListener('click', () => {
-    prevHero();
-    restartHeroTimer();
-  });
-
-  // Swipe táctil
-  let startX = 0;
-  if (heroTrack) {
-    heroTrack.addEventListener('touchstart', e => startX = e.touches[0].clientX);
-    heroTrack.addEventListener('touchend', e => {
-      const diff = e.changedTouches[0].clientX - startX;
-      if (Math.abs(diff) > 50) {
-        diff > 0 ? prevHero() : nextHero();
-        restartHeroTimer();
-      }
-    });
-  }
-
-  function startHeroTimer() {
-    heroTimer = setInterval(nextHero, 8000);
-  }
-  function restartHeroTimer() {
-    clearInterval(heroTimer);
-    startHeroTimer();
-  }
-  startHeroTimer();
-  window.addEventListener('resize', updateHeroCarousel);
-  updateHeroCarousel();
-
   // === CARRUSEL DE PRODUCTOS ===
   const similarList = document.getElementById('lista-similares');
   const carouselPrev = document.querySelector('.carousel-prev');
@@ -214,7 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Click en la tarjeta (actualiza producto principal)
     card.addEventListener('click', e => {
-      if (e.target.closest('.icon-cart')) return; // evita conflicto con botón del carrito
+      if (e.target.closest('.icon-cart')) return;
       updateMainProduct(product);
     });
 
@@ -258,5 +200,20 @@ document.addEventListener('DOMContentLoaded', () => {
         fabContainer.classList.remove('active');
       }
     });
+  }
+
+  // === HERO FADE SLIDER (nuevo sin distorsión + fade inicial) ===
+  const fadeSlides = document.querySelectorAll('.fade-slide');
+  if (fadeSlides.length > 0) {
+    let fadeIndex = 0;
+
+    // Mostrar la primera imagen con fade suave al cargar
+    fadeSlides[fadeIndex].classList.add('active');
+
+    setInterval(() => {
+      fadeSlides[fadeIndex].classList.remove('active');
+      fadeIndex = (fadeIndex + 1) % fadeSlides.length;
+      fadeSlides[fadeIndex].classList.add('active');
+    }, 8000); // cada 8 segundos
   }
 });
