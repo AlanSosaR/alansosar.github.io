@@ -3,7 +3,11 @@ const CART_KEY = 'cafecortero_cart';
 
 // Obtener carrito
 function getCart() {
-  return JSON.parse(localStorage.getItem(CART_KEY)) || [];
+  try {
+    return JSON.parse(localStorage.getItem(CART_KEY)) || [];
+  } catch {
+    return [];
+  }
 }
 
 // Guardar carrito
@@ -82,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(nextHeroImage, 8000);
   }
 
-  // === CARRITO ===
+  // === CARRITO (botón superior) ===
   const cartBtn = document.getElementById('cart-btn');
   if (cartBtn) {
     cartBtn.addEventListener('click', () => {
@@ -95,12 +99,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnMain = document.getElementById('product-add');
   if (btnMain) {
     btnMain.addEventListener('click', () => {
-      const name = document.getElementById('product-name').textContent;
-      const price = parseFloat(document.getElementById('product-price').textContent.replace(/[^\d.-]/g, '')) || 0;
+      const name = document.getElementById('product-name').textContent.trim();
+      const price = parseFloat(document.getElementById('product-price')?.textContent.replace(/[^\d.-]/g, '')) ||
+                    parseFloat(document.querySelector('.price-part')?.textContent.replace(/[^\d.-]/g, '')) || 0;
       const img = document.getElementById('product-image').getAttribute('src');
       const product = { name, price, img, qty: 1 };
       addToCart(product);
-      window.location.href = 'carrito.html'; // ✅ Redirige al carrito
+      window.location.href = 'carrito.html'; // ✅ redirige al carrito después de agregar
     });
   }
 
@@ -108,60 +113,50 @@ document.addEventListener('DOMContentLoaded', () => {
   const cards = document.querySelectorAll('.similar-card');
 
   cards.forEach(card => {
-    const icon = card.querySelector('.icon-cart');
     const name = card.dataset.name;
     const price = parseFloat(card.dataset.price.replace(/[^\d.-]/g, '')) || 0;
     const img = card.dataset.img;
     const product = { name, price, img, qty: 1 };
 
-    // Click tarjeta = cambiar producto principal + scroll suave + marcar tarjeta
-    card.addEventListener('click', e => {
-      if (e.target.classList.contains('icon-cart')) return;
-
-      // 1. marcar tarjeta seleccionada
+    // Click tarjeta = cambia producto principal + scroll suave + marcar tarjeta
+    card.addEventListener('click', () => {
       cards.forEach(c => c.classList.remove('active-card'));
       card.classList.add('active-card');
 
-      // 2. actualizar producto principal
+      // Actualiza producto principal
       document.getElementById('product-name').textContent = name;
-      document.getElementById('product-price').textContent = `L ${price}`;
+      const priceEl = document.querySelector('.price-part');
+      if (priceEl) priceEl.textContent = `L ${price}`;
       const imageEl = document.getElementById('product-image');
       imageEl.src = img;
 
-      // 3. fade animado en la imagen
+      // Pequeña animación de fade
       imageEl.style.opacity = '0';
       setTimeout(() => {
         imageEl.style.transition = 'opacity 0.4s ease';
         imageEl.style.opacity = '1';
       }, 100);
 
-      // 4. scroll suave hacia arriba
-      document.getElementById('productos')?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'center'
-      });
+      // Scroll suave hacia el producto principal
+      const productoSection = document.getElementById('productos');
+      if (productoSection) {
+        const offset = productoSection.getBoundingClientRect().top + window.scrollY - 90;
+        window.scrollTo({ top: offset, behavior: 'smooth' });
+      }
     });
-
-    // Click ícono carrito = agregar
-    if (icon) {
-      icon.addEventListener('click', e => {
-        e.stopPropagation();
-        addToCart(product);
-      });
-    }
   });
 
-  // === FLECHAS DEL CARRUSEL === ✅ nuevo bloque funcional
+  // === FLECHAS DEL CARRUSEL ===
   const carousel = document.querySelector('.similar-list');
   const prevBtn = document.querySelector('.carousel-prev');
   const nextBtn = document.querySelector('.carousel-next');
 
   if (carousel && prevBtn && nextBtn) {
     prevBtn.addEventListener('click', () => {
-      carousel.scrollBy({ left: -200, behavior: 'smooth' });
+      carousel.scrollBy({ left: -220, behavior: 'smooth' });
     });
     nextBtn.addEventListener('click', () => {
-      carousel.scrollBy({ left: 200, behavior: 'smooth' });
+      carousel.scrollBy({ left: 220, behavior: 'smooth' });
     });
   }
 
