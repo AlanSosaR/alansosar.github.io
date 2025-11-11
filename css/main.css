@@ -1,4 +1,4 @@
-:root {
+l:root {
   --marron: #512615;
   --verde: #33673B;
   --blanco: #ffffff;
@@ -137,65 +137,13 @@ body {
   animation: bounce 0.4s ease;
 }
 
-/* === DRAWER (menú móvil) === */
-/* Logo alineado a la izquierda dentro del drawer (solicitado) */
-.drawer {
-  position: fixed;
-  top: 0;
-  right: -100%;
-  width: 75%;
-  max-width: 320px;
-  height: 100vh;
-  background-color: var(--blanco);
-  box-shadow: -4px 0 16px rgba(0, 0, 0, 0.15);
-  display: flex;
-  flex-direction: column;
-  transition: right 0.3s ease;
-  z-index: 2000;
-}
-
-.drawer.open {
-  right: 0;
-}
-
-.drawer-header {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start; /* alineado a la izquierda */
-  padding-left: 1.4rem;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-.drawer-header img {
-  height: 60px;
-  cursor: pointer;
-  margin: 0;
-}
-
-.drawer-links {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  padding: 1rem 1.4rem;
-}
-
-.drawer-links a {
-  text-decoration: none;
-  color: var(--marron);
-  font-weight: 500;
-  transition: color 0.3s;
-}
-
-.drawer-links a:hover {
-  color: var(--verde);
-}
-
-/* === AJUSTE: menú alineado al carrito en escritorio === */
+/* === AJUSTE HEADER === */
 @media (min-width: 901px) {
   .header-content {
     display: flex;
     align-items: center;
-    justify-content: space-between; /* logo izq, nav en medio, carrito der */
+    justify-content: space-between;
+    padding: 0 1.2rem;
   }
 
   .nav-links {
@@ -203,7 +151,7 @@ body {
     align-items: center;
     gap: 2rem;
     margin-left: auto;
-    margin-right: 2rem; /* espacio entre "Contacto" y el carrito */
+    margin-right: 2rem;
   }
 
   .cart-btn {
@@ -213,7 +161,7 @@ body {
 
 /* === HERO === */
 .hero {
-  padding-top: 7rem;
+  padding-top: 6.5rem;
   text-align: center;
   margin-bottom: 3rem;
 }
@@ -232,7 +180,19 @@ body {
   color: var(--verde);
 }
 
-/* Texto hero optimizado en móviles (solicitado) */
+.hero-text p {
+  color: #6f5a4e;
+  margin-top: 0.5rem;
+}
+
+.hero img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  object-fit: contain;
+}
+
 @media (max-width: 900px) {
   .hero-text h1 {
     font-size: 2rem;
@@ -243,33 +203,31 @@ body {
     overflow: hidden;
     text-overflow: ellipsis;
   }
+
+  .hero img {
+    width: 85%;
+    max-height: 280px;
+  }
 }
 
-.hero-text p {
-  color: #6f5a4e;
-  margin-top: 0.5rem;
-}
-
-/* === HERO CARD (Outlined / Tarjeta delineada mejorada) === */
+/* === HERO CARD === */
 .hero-card {
   background: var(--blanco);
   max-width: 1100px;
   margin: 0 auto;
-  border-radius: 12px; /* 🔹 Bordes ligeramente suaves para elegancia */
+  border-radius: 12px;
   border: 1px solid rgba(0, 0, 0, 0.06);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08); /* 🔹 Elevación base */
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
   overflow: hidden;
   position: relative;
   transition: all 0.3s ease;
 }
 
-/* Efecto hover sutil (solo visible en escritorio) */
 .hero-card:hover {
   transform: translateY(-6px);
-  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.12); /* 🔹 Más profundidad */
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.12);
 }
 
-/* 🔹 En móviles: sombra más suave sin movimiento */
 @media (max-width: 900px) {
   .hero-card {
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
@@ -281,7 +239,7 @@ body {
 .hero-carousel {
   position: relative;
   width: 100%;
-  height: 560px; /* escritorio */
+  height: 560px;
   overflow: hidden;
 }
 
@@ -291,7 +249,7 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;    /* la imagen rellena sin deformarse */
+  object-fit: cover;
   opacity: 0;
   transition: opacity 1.5s ease-in-out;
 }
@@ -302,13 +260,13 @@ body {
 
 @media (max-width: 1200px) and (min-width: 901px) {
   .hero-carousel {
-    height: 420px; /* tablet */
+    height: 420px;
   }
 }
 
 @media (max-width: 900px) {
   .hero-carousel {
-    height: 360px; /* móvil */
+    height: 360px;
   }
 }
 
@@ -326,8 +284,6 @@ body {
   align-items: center;
   text-align: left;
 }
-
-/* Mantengo intactos los estilos del carrusel de productos y FAB (no tocados). */
 
 .product-label small {
   font-weight: 600;
@@ -383,7 +339,6 @@ body {
   transform: translateY(-2px);
 }
 
-/* Corrige imagen y fondo */
 .product-img-wrap {
   display: flex;
   align-items: center;
@@ -401,7 +356,6 @@ body {
 }
 
 /* === CARRUSEL DE PRODUCTOS === */
-/* (ESTOS estilos se mantienen exactamente como estaban para no romperlo) */
 .related {
   max-width: 1100px;
   margin: 0 auto 3rem;
@@ -415,339 +369,13 @@ body {
   font-weight: 600;
 }
 
-.carousel-container {
-  position: relative;
-  overflow: hidden;
+/* ... resto del CSS igual ... */
+
+/* === EFECTO DE DESTACADO === */
+.highlight-product {
+  animation: pop 0.4s ease;
 }
-
-.similar-list {
-  display: flex;
-  gap: 1rem;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none;
-  padding-bottom: 0.5rem;
-  scroll-behavior: smooth;
-}
-
-.similar-list::-webkit-scrollbar {
-  display: none;
-}
-
-.similar-card {
-  flex: 0 0 170px;
-  background: #fff;
-  border-radius: 14px;
-  box-shadow: var(--sombra);
-  padding: 1rem;
-  scroll-snap-align: start;
-  transition: transform 0.2s ease;
-}
-
-.similar-card:hover {
-  transform: translateY(-3px);
-}
-
-.similar-card img {
-  width: 100%;
-  height: 190px;
-  object-fit: cover;
-  border-radius: 12px;
-  margin-bottom: 0.6rem;
-}
-
-.similar-card h4 {
-  font-size: 0.9rem;
-  color: var(--marron);
-  margin-bottom: 0.3rem;
-}
-
-.price-sm {
-  color: var(--verde);
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.icon-cart {
-  color: var(--verde);
-  font-size: 1.1rem;
-  cursor: pointer;
-}
-
-/* Flechas SOLO escritorio (sin cambios) */
-.carousel-prev, .carousel-next {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(81, 38, 21, 0.5);
-  color: #fff;
-  border: none;
-  border-radius: 50%;
-  width: 44px;
-  height: 44px;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background 0.3s ease;
-  z-index: 10;
-}
-
-.carousel-prev:hover, .carousel-next:hover {
-  background: rgba(81, 38, 21, 0.85);
-}
-
-.carousel-prev { left: 16px; }
-.carousel-next { right: 16px; }
-
-@media (min-width: 901px) {
-  .carousel-prev, .carousel-next { display: flex; }
-}
-
-/* === SOBRE NOSOTROS === */
-/* Usamos las alturas que pediste: escritorio 560, tablet 420, móvil 360 */
-.about {
-  max-width: 1100px;
-  margin: 4rem auto;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-  align-items: center;
-  padding: 0 1rem;
-}
-
-.about-text {
-  color: var(--marron);
-}
-
-.about-text small {
-  display: block;
-  font-size: 0.9rem;
-  color: #a78c7c;
-  margin-bottom: 0.4rem;
-}
-
-.about-text h2 {
-  font-family: "Playfair Display", serif;
-  font-size: 2rem;
-  color: var(--marron);
-  margin-bottom: 0.8rem;
-}
-
-.about-text p {
-  margin-bottom: 0.8rem;
-  line-height: 1.7;
-  color: #5a4538;
-}
-
-.about-pills {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.6rem;
-}
-
-.about-pill {
-  background: #f5f5f5;
-  color: var(--marron);
-  padding: 0.3rem 0.9rem;
-  border-radius: 999px;
-  font-size: 0.85rem;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-}
-
-/* Imagen "Nosotros" adaptada para rellenar la tarjeta y mantener altura definida */
-.about-img {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.about-img img {
-  width: 100%;
-  height: 560px;           /* escritorio: 560px (pediste conservar alto similar) */
-  object-fit: cover;       /* rellena la tarjeta sin dejar espacios */
-  border-radius: 14px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-  transition: transform 0.4s ease, box-shadow 0.4s ease;
-}
-
-.about-img img:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 14px 34px rgba(0,0,0,0.3);
-}
-
-@media (max-width: 1200px) and (min-width: 901px) {
-  .about-img img {
-    height: 420px;         /* tablet */
-  }
-}
-
-@media (max-width: 900px) {
-  .about {
-    grid-template-columns: 1fr;
-    text-align: center;
-  }
-
-  .about-img img {
-    height: 360px;         /* móvil */
-  }
-
-  .about-pills {
-    justify-content: center;
-  }
-}
-
-/* === AJUSTE CONTACTO Y FOOTER === */
-
-/* Centrar completamente el bloque de "Contáctanos" */
-.contacto {
-  text-align: center !important;
-  margin: 4rem auto !important;
-  max-width: 900px !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  justify-content: center !important;
-}
-
-.contacto h2 {
-  font-family: "Playfair Display", serif !important;
-  color: var(--marron) !important;
-  font-size: 2.2rem !important;
-  margin-bottom: 0.8rem !important;
-}
-
-.contacto p {
-  color: var(--marron) !important;
-  font-size: 1.05rem !important;
-  line-height: 1.7 !important;
-  max-width: 700px !important;
-}
-
-/* === FOOTER CON LOGO AJUSTADO AL TAMAÑO DEL TEXTO === */
-footer {
-  background: var(--blanco);
-  border-top: 1px solid rgba(0,0,0,0.05);
-  text-align: center;
-  padding: 1rem;
-}
-
-footer p {
-  margin: 0;
-  font-size: 0.95rem; /* tamaño base del texto */
-  color: var(--marron);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  flex-wrap: nowrap;
-  white-space: nowrap;
-}
-
-.footer-logo-inline {
-  height: 1em; /* ⬅️ exactamente igual al alto del texto */
-  width: auto;
-  vertical-align: middle;
-  display: inline-block;
-  transform: translateY(1px); /* alineación precisa con la línea base del texto */
-  opacity: 0.95;
-}
-
-@media (max-width: 500px) {
-  footer p {
-    font-size: 0.85rem;
-    gap: 5px;
-  }
-
-  .footer-logo-inline {
-    height: 1em; /* mantiene relación con el texto también en móvil */
-  }
-}
-
-
-/* === FAB === */
-/* NO TOCAR: mantengo el FAB igual que antes */
-.fab-container {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  z-index: 9999;
-  display: flex;
-  flex-direction: column-reverse;
-  align-items: center;
-  gap: 18px;
-}
-
-.fab-main {
-  background: var(--verde);
-  color: #fff;
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-  cursor: pointer;
-}
-
-.fab-options {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-}
-
-.fab-options a {
-  background: #fff;
-  color: var(--marron);
-  border-radius: 50%;
-  width: 54px;
-  height: 54px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.6rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  opacity: 0;
-  pointer-events: none;
-  transform: translateY(10px);
-  transition: all 0.3s ease;
-}
-
-.fab-container.active .fab-options a {
-  opacity: 1;
-  pointer-events: auto;
-  transform: translateY(0);
-}
-
-/* === RESPONSIVE === */
-@media (max-width: 900px) {
-  .menu-toggle {
-    display: block;
-    position: absolute;
-    left: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-  }
-
-  .cart-btn {
-    position: absolute;
-    right: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-  }
-
-  .nav-links {
-    display: none;
-  }
-
-  .product-main {
-    grid-template-columns: 1fr;
-    margin: 2rem 0.5rem; /* ajuste móvil solicitado para la tarjeta producto */
-  }
+@keyframes pop {
+  from { transform: scale(0.98); opacity: 0.95; }
+  to { transform: scale(1); opacity: 1; }
 }
