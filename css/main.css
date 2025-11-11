@@ -137,57 +137,25 @@ body {
   animation: bounce 0.4s ease;
 }
 
-/* === DRAWER (menú móvil) === */
-/* Logo alineado a la izquierda dentro del drawer (solicitado) */
-.drawer {
-  position: fixed;
-  top: 0;
-  right: -100%;
-  width: 75%;
-  max-width: 320px;
-  height: 100vh;
-  background-color: var(--blanco);
-  box-shadow: -4px 0 16px rgba(0, 0, 0, 0.15);
-  display: flex;
-  flex-direction: column;
-  transition: right 0.3s ease;
-  z-index: 2000;
-}
+/* === AJUSTE: Menú alineado a la derecha junto al carrito === */
+@media (min-width: 901px) {
+  .header-content {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end; /* 🔹 Alinea todo el bloque a la derecha */
+    padding-right: 2rem; /* margen lateral derecho del contenedor */
+  }
 
-.drawer.open {
-  right: 0;
-}
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 2rem; /* Espaciado entre los enlaces */
+    margin-right: 1.5rem; /* 🔹 Espacio entre el último enlace y el carrito */
+  }
 
-.drawer-header {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start; /* alineado a la izquierda */
-  padding-left: 1.4rem;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-.drawer-header img {
-  height: 60px;
-  cursor: pointer;
-  margin: 0;
-}
-
-.drawer-links {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  padding: 1rem 1.4rem;
-}
-
-.drawer-links a {
-  text-decoration: none;
-  color: var(--marron);
-  font-weight: 500;
-  transition: color 0.3s;
-}
-
-.drawer-links a:hover {
-  color: var(--verde);
+  .cart-btn {
+    flex-shrink: 0; /* evita que se mueva */
+  }
 }
 
 /* === HERO === */
