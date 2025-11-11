@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <!-- Estilos principales -->
-  <link rel="stylesheet" href="css/main.css?v=8">
+  <link rel="stylesheet" href="css/main.css?v=7">
 </head>
 
 <body>
@@ -21,6 +21,7 @@
         <i class="fa-solid fa-bars"></i>
       </button>
 
+      <!-- Logo visible solo en escritorio -->
       <a href="index.html" class="logo desktop-only">
         <img src="imagenes/logo.png" alt="Café Cortero">
       </a>
@@ -39,7 +40,7 @@
     </div>
   </header>
 
-  <!-- === DRAWER MÓVIL === -->
+  <!-- === DRAWER (MENÚ MÓVIL) === -->
   <div class="drawer" id="drawer">
     <div class="drawer-header">
       <a href="index.html" class="drawer-logo">
@@ -55,9 +56,9 @@
   </div>
 
   <main>
-    <!-- === HERO FADE === -->
+    <!-- === HERO === -->
     <section class="hero">
-      <div class="hero-text fade-in">
+      <div class="hero-text">
         <h1>
           <span class="verde">La esencia de Honduras</span><br>
           <span class="marron">en cada sorbo.</span>
@@ -65,11 +66,13 @@
         <p>Café hondureño de altura, tueste medio y esencia familiar.</p>
       </div>
 
-      <div class="hero-fade">
-        <img src="imagenes/cafe_1.jpg" alt="Café Cortero 1" class="fade-slide active">
-        <img src="imagenes/cafe_2.jpg" alt="Café Cortero 2" class="fade-slide">
-        <img src="imagenes/cafe_3.jpg" alt="Café Cortero 3" class="fade-slide">
-        <img src="imagenes/cafe_4.jpg" alt="Café Cortero 4" class="fade-slide">
+      <!-- Carrusel principal (sin distorsión) -->
+      <div class="hero-carousel">
+        <img src="imagenes/cafe_1.jpg" alt="Café Cortero 1">
+        <img src="imagenes/cafe_2.jpg" alt="Café Cortero 2">
+        <img src="imagenes/cafe_3.jpg" alt="Café Cortero 3">
+        <img src="imagenes/cafe_4.jpg" alt="Café Cortero 4">
+        <img src="imagenes/cafe_5.jpg" alt="Café Cortero 5">
       </div>
     </section>
 
@@ -170,24 +173,30 @@
     </div>
   </footer>
 
-  <!-- === FAB === -->
+  <!-- === FAB (Material 3 Expressive) === -->
   <div class="fab-container" id="fab">
     <button class="fab-main" id="fab-main">
-      <i class="fa-solid fa-comment"></i>
+      <span class="material-symbols-rounded">chat_bubble</span>
     </button>
 
     <div class="fab-options">
       <a href="https://wa.me/50494546047?text=Hola%2C%20quiero%20más%20información%20sobre%20Café%20Cortero"
-         target="_blank" class="fab-whatsapp" title="WhatsApp">
-        <i class="fa-brands fa-whatsapp"></i>
+         target="_blank"
+         class="fab-whatsapp"
+         title="WhatsApp">
+        <span class="material-symbols-rounded">sms</span>
       </a>
+
       <a href="https://www.facebook.com/share/1FsrT4DYrU/"
-         target="_blank" class="fab-facebook" title="Facebook">
-        <i class="fa-brands fa-facebook-f"></i>
+         target="_blank"
+         class="fab-facebook"
+         title="Facebook">
+        <span class="material-symbols-rounded">public</span>
       </a>
     </div>
   </div>
 
-  <script src="js/main.js?v=8"></script>
+  <!-- === JS principal === -->
+  <script src="js/main.js?v=7"></script>
 </body>
 </html>
