@@ -328,6 +328,7 @@ body {
   padding: 2rem;
   align-items: center;
   text-align: left;
+  margin-bottom: 2.5rem; /* 🟢 espacio extra entre el producto y el carrusel */
 }
 
 /* Mantengo intactos los estilos del carrusel de productos y FAB (no tocados). */
