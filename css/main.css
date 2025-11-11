@@ -131,15 +131,16 @@ body {
 /* Animación rebote carrito */
 
 @keyframes cartAmazon {
-  0% { transform: scale(1); filter: brightness(1); }
-  40% { transform: scale(1.1); filter: brightness(1.15); }
-  60% { transform: scale(0.98); filter: brightness(1.05); }
+  0%   { transform: scale(1); filter: brightness(1); }
+  40%  { transform: scale(1.05); filter: brightness(1.15); } /* 🟢 efecto más suave */
+  60%  { transform: scale(0.98); filter: brightness(1.05); }
   100% { transform: scale(1); filter: brightness(1); }
 }
 
 .cart-btn.animate {
-  animation: cartAmazon 0.45s ease-out;
+  animation: cartAmazon 0.4s ease-out;
 }
+
 /* === DRAWER (menú móvil) === */
 /* Logo alineado a la izquierda dentro del drawer (solicitado) */
 .drawer {
