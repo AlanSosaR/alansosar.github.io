@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(nextHeroImage, 8000);
   }
 
-  // === CARRITO BTN ===
+  // === CARRITO ===
   const cartBtn = document.getElementById('cart-btn');
   if (cartBtn) {
     cartBtn.addEventListener('click', () => {
@@ -104,39 +104,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // === CARRUSEL DE PRODUCTOS ===
   const cards = document.querySelectorAll('.similar-card');
-  const productSection = document.querySelector('.product-main');
-
   cards.forEach(card => {
     const icon = card.querySelector('.icon-cart');
     const name = card.dataset.name;
-    const price = parseFloat(card.dataset.price?.replace(/[^\d.-]/g, '') || '0') || 0;
+    const price = parseFloat(card.dataset.price.replace(/[^\d.-]/g, '')) || 0;
     const img = card.dataset.img;
     const product = { name, price, img, qty: 1 };
 
-    // Click en la tarjeta = cambiar producto principal + scroll suave hacia arriba
+    // Click tarjeta = cambiar producto principal
     card.addEventListener('click', e => {
       if (e.target.classList.contains('icon-cart')) return;
-
-      // Actualizar datos en la tarjeta grande
       document.getElementById('product-name').textContent = name;
       document.getElementById('product-price').textContent = `L ${price}`;
       document.getElementById('product-image').src = img;
-
-      // 🔹 Scroll suave hacia la tarjeta principal (arriba)
-      if (productSection) {
-        const yOffset = -80; // compensar header fijo
-        const y = productSection.getBoundingClientRect().top + window.pageYOffset + yOffset;
-        window.scrollTo({ top: y, behavior: 'smooth' });
-      }
-
-      // 🔹 Animación ligera al actualizar
-      productSection.classList.add('highlight-product');
-      setTimeout(() => {
-        productSection.classList.remove('highlight-product');
-      }, 500);
     });
 
-    // Click en el ícono del carrito = agregar al carrito
+    // Click ícono carrito = agregar
     if (icon) {
       icon.addEventListener('click', e => {
         e.stopPropagation();
@@ -144,23 +127,6 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
   });
-
-  // === FLECHAS DEL CARRUSEL ===
-  const list = document.querySelector('.similar-list');
-  const prevBtn = document.querySelector('.carousel-prev');
-  const nextBtn = document.querySelector('.carousel-next');
-
-  if (list && prevBtn && nextBtn) {
-    const step = 230; // distancia en px por clic
-
-    prevBtn.addEventListener('click', () => {
-      list.scrollBy({ left: -step, behavior: 'smooth' });
-    });
-
-    nextBtn.addEventListener('click', () => {
-      list.scrollBy({ left: step, behavior: 'smooth' });
-    });
-  }
 
   // === FAB ===
   const fabMain = document.getElementById('fab-main');
