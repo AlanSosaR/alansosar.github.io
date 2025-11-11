@@ -113,24 +113,28 @@ document.addEventListener('DOMContentLoaded', () => {
     const img = card.dataset.img;
     const product = { name, price, img, qty: 1 };
 
-    // Click tarjeta = cambiar producto principal + scroll suave hacia arriba
+    // Click tarjeta = cambiar producto principal + scroll suave + marcar tarjeta
     card.addEventListener('click', e => {
       if (e.target.classList.contains('icon-cart')) return;
 
-      // Actualiza producto principal
+      // 1. marcar tarjeta seleccionada
+      cards.forEach(c => c.classList.remove('active-card'));
+      card.classList.add('active-card');
+
+      // 2. Actualiza producto principal
       document.getElementById('product-name').textContent = name;
       document.getElementById('product-price').textContent = `L ${price}`;
       const imageEl = document.getElementById('product-image');
       imageEl.src = img;
 
-      // Efecto de desvanecimiento sutil
+      // 3. pequeñito fade
       imageEl.style.opacity = '0';
       setTimeout(() => {
         imageEl.style.transition = 'opacity 0.4s ease';
         imageEl.style.opacity = '1';
       }, 100);
 
-      // Scroll suave hacia la sección del producto
+      // 4. scroll suave
       if (sectionProducto) {
         sectionProducto.scrollIntoView({
           behavior: 'smooth',
@@ -139,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // Click ícono carrito = agregar al carrito
+    // Click ícono carrito = agregar
     if (icon) {
       icon.addEventListener('click', e => {
         e.stopPropagation();
