@@ -412,7 +412,7 @@ body {
 }
 
 .similar-list {
-  margin-top: 3rem; /* 🟢 baja solo las tarjetas, no el título */
+  margin-top: 2.5rem; /* 🟢 baja solo las tarjetas, no el título */
 }
 
 .similar-title {
