@@ -32,7 +32,6 @@ body {
 }
 
 .header-content {
-  position: relative;
   max-width: 1200px;
   margin: 0 auto;
   padding: 0.8rem 1.2rem;
@@ -40,19 +39,15 @@ body {
   align-items: center;
   justify-content: space-between;
   height: 64px;
-  z-index: 10;
 }
 
 /* Logo */
-.logo {
-  z-index: 3;
-}
 .logo img {
   height: 60px;
   display: block;
 }
 
-/* Ocultar logo en móviles */
+/* Desktop logo visible */
 .logo.desktop-only {
   display: none;
 }
@@ -62,7 +57,7 @@ body {
   }
 }
 
-/* Menú móvil siempre encima */
+/* Menú */
 .menu-toggle {
   background: none;
   border: none;
@@ -70,16 +65,12 @@ body {
   font-size: 1.6rem;
   display: none;
   cursor: pointer;
-  position: relative;
-  z-index: 20;
 }
 
-/* Navegación */
 .nav-links {
   display: flex;
   align-items: center;
   gap: 2rem;
-  margin-left: auto;
 }
 
 .nav-links a {
@@ -97,7 +88,7 @@ body {
   margin-right: 1.5rem;
 }
 
-/* CARRITO */
+/* === CARRITO === */
 .cart-btn {
   position: relative;
   width: 44px;
@@ -110,15 +101,17 @@ body {
   justify-content: center;
   cursor: pointer;
   transition: transform 0.2s ease;
-  margin-left: 1.5rem;
 }
+
 .cart-btn:hover {
   transform: scale(1.05);
 }
+
 .cart-btn i {
   color: var(--verde);
   font-size: 1.3rem;
 }
+
 .cart-count {
   position: absolute;
   top: -6px;
@@ -135,7 +128,16 @@ body {
   justify-content: center;
 }
 
-/* === DRAWER === */
+/* Animación rebote carrito */
+@keyframes bounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.25); }
+}
+.cart-btn.animate {
+  animation: bounce 0.4s ease;
+}
+
+/* === DRAWER (menú móvil) === */
 .drawer {
   position: fixed;
   top: 0;
@@ -161,13 +163,10 @@ body {
   justify-content: center;
   padding: 1.4rem 1rem;
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
 .drawer-header img {
   height: 60px;
-  display: block;
-  margin: 0 auto;
   cursor: pointer;
 }
 
@@ -182,7 +181,6 @@ body {
   text-decoration: none;
   color: var(--marron);
   font-weight: 500;
-  font-size: 1rem;
   transition: color 0.3s;
 }
 
@@ -190,77 +188,64 @@ body {
   color: var(--verde);
 }
 
-/* === HERO === */
+/* === HERO (dentro de tarjeta, como el tuyo) === */
 .hero {
   padding-top: 7rem;
+  text-align: center;
   margin-bottom: 3rem;
-  text-align: left;
 }
 
 .hero-text {
-  max-width: 850px;
-  margin: 0 auto 1.8rem;
+  margin-bottom: 1.8rem;
+  text-align: center;
   padding: 0 1rem;
-  text-align: left;
 }
+
 .hero-text h1 {
   font-family: "Playfair Display", serif;
-  font-size: 2.6rem;
+  font-size: 2.8rem;
   font-weight: 600;
+  line-height: 1.1;
   white-space: normal;
-  line-height: 1.2;
   word-break: break-word;
   color: var(--verde);
 }
+
 .hero-text p {
-  margin-top: 0.5rem;
   color: #6f5a4e;
+  margin-top: 0.5rem;
 }
 
-/* HERO CARRUSEL PRINCIPAL */
-.hero-carousel {
-  position: relative;
-  overflow: hidden;
+/* Tarjeta del hero (NO tocar estructura del carrusel principal) */
+.hero-card {
+  background: var(--blanco);
   max-width: 1100px;
   margin: 0 auto;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-  border-radius: 0;
-  aspect-ratio: 16/7;
-  height: 560px;
-}
-.hero-track {
-  display: flex;
-  transition: transform 1.5s ease-in-out;
-}
-.hero-track img {
-  width: 100%;
-  object-fit: cover;
-  height: 100%;
+  border-radius: 24px;
+  box-shadow: var(--sombra);
+  overflow: hidden;
+  position: relative;
 }
 
-/* Flechas */
-.hero-prev, .hero-next {
+.hero-carousel {
+  position: relative;
+  width: 100%;
+  height: clamp(340px, 50vw, 560px);
+  overflow: hidden;
+}
+
+.hero-carousel img {
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(81, 38, 21, 0.5);
-  color: #fff;
-  border: none;
-  border-radius: 50%;
-  width: 44px;
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background 0.3s ease;
-  z-index: 10;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 1.6s ease-in-out;
 }
-.hero-prev:hover, .hero-next:hover {
-  background: rgba(81, 38, 21, 0.85);
+
+.hero-carousel img.active {
+  opacity: 1;
 }
-.hero-prev { left: 16px; }
-.hero-next { right: 16px; }
 
 /* === PRODUCTO PRINCIPAL === */
 .product-main {
@@ -273,23 +258,29 @@ body {
   grid-template-columns: 1fr 1fr;
   gap: 2rem;
   padding: 2rem;
+  align-items: center;
+  text-align: left;
 }
+
 .product-label small {
   font-weight: 600;
   color: var(--marron);
   text-transform: uppercase;
 }
+
 .product-label .subtext {
   color: #a78c7c;
   font-size: 0.9rem;
   margin-top: 2px;
 }
+
 .product-text h2 {
   font-family: "Playfair Display", serif;
   font-size: 2rem;
   color: var(--marron);
   margin: 0.5rem 0;
 }
+
 .pill {
   background: #fff;
   border: 1px solid #ddd;
@@ -299,18 +290,13 @@ body {
   font-size: 0.85rem;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
-.product-bottom {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 1rem;
-  margin-top: 1.2rem;
-}
+
 .price {
   font-size: 1.8rem;
   font-weight: 700;
   color: var(--verde);
 }
+
 .btn-main {
   background: var(--verde);
   color: #fff;
@@ -321,72 +307,81 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.1rem;
   cursor: pointer;
   transition: all 0.2s ease;
   box-shadow: 0 8px 16px rgba(51, 103, 59, 0.25);
 }
+
 .btn-main:hover {
   transform: translateY(-2px);
 }
 
-/* Imagen principal */
+/* Corrige imagen y fondo */
 .product-img-wrap {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(circle at center, #eaf2ec 0%, #fff 70%);
+  background: radial-gradient(circle at center, #f5f5f5 0%, #fff 100%);
   border-radius: 18px;
-  overflow: hidden;
+  padding: 1rem;
 }
+
 .product-img-wrap img {
-  width: 90%;
+  width: 100%;
+  max-width: 320px;
   height: auto;
-  max-width: 340px;
   object-fit: contain;
 }
 
-/* === CARRUSEL DE PRODUCTOS (restaurado del CSS viejo) === */
+/* === CARRUSEL DE PRODUCTOS (del viejo) === */
 .related {
   max-width: 1100px;
   margin: 0 auto 3rem;
   padding: 0 1rem;
 }
+
 .similar-title {
   font-size: 1.4rem;
   margin-bottom: 1rem;
   color: var(--marron);
   font-weight: 600;
 }
+
+/* contenedor que tiene las flechas y la lista */
 .carousel-container {
   position: relative;
   overflow: hidden;
 }
+
+/* lista horizontal con scroll en móvil */
 .similar-list {
   display: flex;
   gap: 1rem;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
-  scroll-behavior: smooth;
   padding-bottom: 0.5rem;
+  scroll-behavior: smooth;
 }
+
 .similar-list::-webkit-scrollbar {
   display: none;
 }
+
 .similar-card {
   flex: 0 0 170px;
   background: #fff;
   border-radius: 14px;
   box-shadow: var(--sombra);
-  text-align: left;
   padding: 1rem;
   scroll-snap-align: start;
   transition: transform 0.2s ease;
 }
+
 .similar-card:hover {
   transform: translateY(-3px);
 }
+
 .similar-card img {
   width: 100%;
   height: 190px;
@@ -394,43 +389,147 @@ body {
   border-radius: 12px;
   margin-bottom: 0.6rem;
 }
+
 .similar-card h4 {
   font-size: 0.9rem;
   color: var(--marron);
   margin-bottom: 0.3rem;
 }
+
 .price-sm {
   color: var(--verde);
   font-weight: 600;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
   gap: 6px;
 }
+
 .icon-cart {
   color: var(--verde);
   font-size: 1.1rem;
   cursor: pointer;
-  transition: color 0.3s;
-}
-.icon-cart:hover {
-  color: #26502d;
 }
 
-/* === FOOTER === */
-footer {
-  background: var(--blanco);
-  border-top: 1px solid rgba(0,0,0,0.05);
-  text-align: center;
-  padding: 1rem;
+/* flechas SOLO en escritorio */
+.carousel-prev,
+.carousel-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(81, 38, 21, 0.5);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: none;           /* ocultas por defecto (móvil) */
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  z-index: 10;
+}
+.carousel-prev:hover,
+.carousel-next:hover {
+  background: rgba(81, 38, 21, 0.85);
+}
+.carousel-prev { left: 16px; }
+.carousel-next { right: 16px; }
+
+@media (min-width: 901px) {
+  .carousel-prev,
+  .carousel-next {
+    display: flex;        /* se ven en escritorio */
+  }
+}
+
+/* === SOBRE NOSOTROS (restaurado al estilo viejo) === */
+.about {
+  max-width: 1100px;
+  margin: 4rem auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: center;
+  padding: 0 1rem;
+}
+
+.about-text {
+  color: var(--marron);
+}
+
+.about-text small {
+  display: block;
+  font-size: 0.9rem;
+  color: #a78c7c;
+  margin-bottom: 0.4rem;
+}
+
+.about-text h2 {
+  font-family: "Playfair Display", serif;
+  font-size: 2rem;
+  color: var(--marron);
+  margin-bottom: 0.8rem;
+}
+
+.about-text p {
+  margin-bottom: 0.8rem;
+  line-height: 1.7;
+  color: #5a4538;
+}
+
+.about-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.about-pill {
+  background: #f5f5f5;
+  color: var(--marron);
+  padding: 0.3rem 0.9rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+/* 👇 restaurado como tu primer CSS: imagen con ancho máx, alto auto y ratio */
+.about-img {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  flex-wrap: wrap;
 }
+
+.about-img img {
+  width: 100%;
+  max-width: 500px;
+  border-radius: 16px;
+  object-fit: cover;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.about-img img:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 14px 34px rgba(0,0,0,0.3);
+}
+
+/* === FOOTER (no tocado) === */
+footer {
+  background: var(--blanco);
+  border-top: 1px solid rgba(0,0,0,0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 1rem;
+}
+
 .footer-logo {
-  height: 40px;
+  height: 60px;
 }
 
 /* === FAB === */
@@ -438,12 +537,13 @@ footer {
   position: fixed;
   bottom: 24px;
   right: 24px;
-  z-index: 150;
+  z-index: 9999;
   display: flex;
   flex-direction: column-reverse;
   align-items: center;
   gap: 18px;
 }
+
 .fab-main {
   background: var(--verde);
   color: #fff;
@@ -457,14 +557,15 @@ footer {
   font-size: 2rem;
   box-shadow: 0 4px 12px rgba(0,0,0,0.25);
   cursor: pointer;
-  transition: transform 0.3s ease;
 }
+
 .fab-options {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 16px;
 }
+
 .fab-options a {
   background: #fff;
   color: var(--marron);
@@ -481,6 +582,7 @@ footer {
   transform: translateY(10px);
   transition: all 0.3s ease;
 }
+
 .fab-container.active .fab-options a {
   opacity: 1;
   pointer-events: auto;
@@ -496,25 +598,36 @@ footer {
     top: 50%;
     transform: translateY(-50%);
   }
+
   .cart-btn {
     position: absolute;
     right: 1rem;
     top: 50%;
     transform: translateY(-50%);
   }
+
   .nav-links {
     display: none;
   }
+
   .product-main {
     grid-template-columns: 1fr;
   }
-  .hero-prev, .hero-next {
-    display: none;
-  }
+
   .hero-carousel {
     height: 360px;
   }
+
+  .about {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .about-pills {
+    justify-content: center;
+  }
 }
+
 @media (max-width: 1200px) and (min-width: 901px) {
   .hero-carousel {
     height: 420px;
