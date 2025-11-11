@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <!-- Estilos principales -->
-  <link rel="stylesheet" href="css/main.css?v=7">
+  <link rel="stylesheet" href="css/main.css?v=10">
 </head>
 
 <body>
@@ -21,7 +21,6 @@
         <i class="fa-solid fa-bars"></i>
       </button>
 
-      <!-- Logo visible solo en escritorio -->
       <a href="index.html" class="logo desktop-only">
         <img src="imagenes/logo.png" alt="Café Cortero">
       </a>
@@ -40,7 +39,7 @@
     </div>
   </header>
 
-  <!-- === DRAWER (MENÚ MÓVIL) === -->
+  <!-- === DRAWER MÓVIL === -->
   <div class="drawer" id="drawer">
     <div class="drawer-header">
       <a href="index.html" class="drawer-logo">
@@ -66,13 +65,13 @@
         <p>Café hondureño de altura, tueste medio y esencia familiar.</p>
       </div>
 
-      <!-- Carrusel principal (sin distorsión) -->
-      <div class="hero-carousel">
-        <img src="imagenes/cafe_1.jpg" alt="Café Cortero 1">
-        <img src="imagenes/cafe_2.jpg" alt="Café Cortero 2">
-        <img src="imagenes/cafe_3.jpg" alt="Café Cortero 3">
-        <img src="imagenes/cafe_4.jpg" alt="Café Cortero 4">
-        <img src="imagenes/cafe_5.jpg" alt="Café Cortero 5">
+      <!-- Carrusel tipo fade -->
+      <div class="hero-fade">
+        <img src="imagenes/cafe_1.jpg" class="fade-slide active" alt="Café Cortero 1">
+        <img src="imagenes/cafe_2.jpg" class="fade-slide" alt="Café Cortero 2">
+        <img src="imagenes/cafe_3.jpg" class="fade-slide" alt="Café Cortero 3">
+        <img src="imagenes/cafe_4.jpg" class="fade-slide" alt="Café Cortero 4">
+        <img src="imagenes/cafe_5.jpg" class="fade-slide" alt="Café Cortero 5">
       </div>
     </section>
 
@@ -118,7 +117,7 @@
                 <div class="similar-card">
                   <img src="${p.img}" alt="${p.nombre}">
                   <h4>${p.nombre}</h4>
-                  <div class="price-sm">${p.precio} 
+                  <div class="price-sm">${p.precio}
                     <i class="fa-solid fa-cart-plus icon-cart"></i>
                   </div>
                 </div>
@@ -167,13 +166,11 @@
 
   <!-- === FOOTER === -->
   <footer>
-    <div class="footer-content">
-      <img src="imagenes/logo_secundario.png" alt="Logo Café Cortero" class="footer-logo">
-      <p>&copy; 2025 Café Cortero. Todos los derechos reservados.</p>
-    </div>
+    <img src="imagenes/logo_secundario.png" alt="Logo Café Cortero" class="footer-logo">
+    <p>&copy; 2025 Café Cortero. Todos los derechos reservados.</p>
   </footer>
 
-  <!-- === FAB (Material 3 Expressive) === -->
+  <!-- === FAB === -->
   <div class="fab-container" id="fab">
     <button class="fab-main" id="fab-main">
       <span class="material-symbols-rounded">chat_bubble</span>
@@ -184,19 +181,19 @@
          target="_blank"
          class="fab-whatsapp"
          title="WhatsApp">
-        <span class="material-symbols-rounded">sms</span>
+        <i class="fa-brands fa-whatsapp"></i>
       </a>
 
       <a href="https://www.facebook.com/share/1FsrT4DYrU/"
          target="_blank"
          class="fab-facebook"
          title="Facebook">
-        <span class="material-symbols-rounded">public</span>
+        <i class="fa-brands fa-facebook-f"></i>
       </a>
     </div>
   </div>
 
   <!-- === JS principal === -->
-  <script src="js/main.js?v=7"></script>
+  <script src="js/main.js?v=10"></script>
 </body>
 </html>
