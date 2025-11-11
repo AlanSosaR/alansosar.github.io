@@ -104,6 +104,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // === CARRUSEL DE PRODUCTOS ===
   const cards = document.querySelectorAll('.similar-card');
+  const sectionProducto = document.getElementById('productos');
+
   cards.forEach(card => {
     const icon = card.querySelector('.icon-cart');
     const name = card.dataset.name;
@@ -111,15 +113,33 @@ document.addEventListener('DOMContentLoaded', () => {
     const img = card.dataset.img;
     const product = { name, price, img, qty: 1 };
 
-    // Click tarjeta = cambiar producto principal
+    // Click tarjeta = cambiar producto principal + scroll suave hacia arriba
     card.addEventListener('click', e => {
       if (e.target.classList.contains('icon-cart')) return;
+
+      // Actualiza producto principal
       document.getElementById('product-name').textContent = name;
       document.getElementById('product-price').textContent = `L ${price}`;
-      document.getElementById('product-image').src = img;
+      const imageEl = document.getElementById('product-image');
+      imageEl.src = img;
+
+      // Efecto de desvanecimiento sutil
+      imageEl.style.opacity = '0';
+      setTimeout(() => {
+        imageEl.style.transition = 'opacity 0.4s ease';
+        imageEl.style.opacity = '1';
+      }, 100);
+
+      // Scroll suave hacia la sección del producto
+      if (sectionProducto) {
+        sectionProducto.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        });
+      }
     });
 
-    // Click ícono carrito = agregar
+    // Click ícono carrito = agregar al carrito
     if (icon) {
       icon.addEventListener('click', e => {
         e.stopPropagation();
