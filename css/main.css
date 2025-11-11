@@ -138,7 +138,6 @@ body {
 }
 
 /* === DRAWER (menú móvil) === */
-/* Logo alineado a la izquierda dentro del drawer (solicitado) */
 .drawer {
   position: fixed;
   top: 0;
@@ -161,7 +160,7 @@ body {
 .drawer-header {
   display: flex;
   align-items: center;
-  justify-content: flex-start; /* alineado a la izquierda */
+  justify-content: flex-start;
   padding-left: 1.4rem;
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
@@ -211,12 +210,10 @@ body {
   color: var(--verde);
 }
 
-/* Texto hero optimizado en móviles (solicitado) */
 @media (max-width: 900px) {
   .hero-text h1 {
     font-size: 2rem;
     line-height: 1.2;
-    /* Quitar saltos inesperados: permitir máximo 2 líneas */
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
@@ -230,14 +227,14 @@ body {
   margin-top: 0.5rem;
 }
 
-/* === HERO CARD (Outlined / Tarjeta delineada) === */
+/* === HERO CARD === */
 .hero-card {
   background: var(--blanco);
   max-width: 1100px;
   margin: 0 auto;
-  border-radius: 0;              /* esquinas planas */
-  border: 1px solid rgba(0,0,0,0.08); /* delineada */
-  box-shadow: 0 6px 20px rgba(0,0,0,0.04); /* ligera profundidad sin ser elevado */
+  border-radius: 0;
+  border: 1px solid rgba(0,0,0,0.08);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.04);
   overflow: hidden;
   position: relative;
 }
@@ -246,7 +243,7 @@ body {
 .hero-carousel {
   position: relative;
   width: 100%;
-  height: 560px; /* escritorio */
+  height: 560px;
   overflow: hidden;
 }
 
@@ -256,7 +253,7 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;    /* la imagen rellena sin deformarse */
+  object-fit: cover;
   opacity: 0;
   transition: opacity 1.5s ease-in-out;
 }
@@ -267,13 +264,13 @@ body {
 
 @media (max-width: 1200px) and (min-width: 901px) {
   .hero-carousel {
-    height: 420px; /* tablet */
+    height: 420px;
   }
 }
 
 @media (max-width: 900px) {
   .hero-carousel {
-    height: 360px; /* móvil */
+    height: 360px;
   }
 }
 
@@ -291,8 +288,6 @@ body {
   align-items: center;
   text-align: left;
 }
-
-/* Mantengo intactos los estilos del carrusel de productos y FAB (no tocados). */
 
 .product-label small {
   font-weight: 600;
@@ -366,7 +361,6 @@ body {
 }
 
 /* === CARRUSEL DE PRODUCTOS === */
-/* (ESTOS estilos se mantienen exactamente como estaban para no romperlo) */
 .related {
   max-width: 1100px;
   margin: 0 auto 3rem;
@@ -441,7 +435,6 @@ body {
   cursor: pointer;
 }
 
-/* Flechas SOLO escritorio (sin cambios) */
 .carousel-prev, .carousel-next {
   position: absolute;
   top: 50%;
@@ -472,7 +465,6 @@ body {
 }
 
 /* === SOBRE NOSOTROS === */
-/* Usamos las alturas que pediste: escritorio 560, tablet 420, móvil 360 */
 .about {
   max-width: 1100px;
   margin: 4rem auto;
@@ -522,7 +514,6 @@ body {
   box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
 
-/* Imagen "Nosotros" adaptada para rellenar la tarjeta y mantener altura definida */
 .about-img {
   display: flex;
   align-items: center;
@@ -531,8 +522,8 @@ body {
 
 .about-img img {
   width: 100%;
-  height: 560px;           /* escritorio: 560px (pediste conservar alto similar) */
-  object-fit: cover;       /* rellena la tarjeta sin dejar espacios */
+  height: 640px;
+  object-fit: cover;
   border-radius: 14px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.2);
   transition: transform 0.4s ease, box-shadow 0.4s ease;
@@ -545,7 +536,7 @@ body {
 
 @media (max-width: 1200px) and (min-width: 901px) {
   .about-img img {
-    height: 420px;         /* tablet */
+    height: 520px;
   }
 }
 
@@ -556,7 +547,7 @@ body {
   }
 
   .about-img img {
-    height: 360px;         /* móvil */
+    height: 440px;
   }
 
   .about-pills {
@@ -565,31 +556,30 @@ body {
 }
 
 /* === FOOTER === */
-/* Footer centrado y logo en una línea con el texto (ajustado para móviles) */
 footer {
   background: var(--blanco);
   border-top: 1px solid rgba(0,0,0,0.05);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 16px;
-  flex-wrap: wrap;
+  gap: 10px;
+  flex-wrap: nowrap;
   padding: 1rem;
   text-align: center;
+  white-space: nowrap;
 }
 
 .footer-logo {
-  height: 60px;
+  height: 48px;
 }
 
 @media (max-width: 600px) {
   .footer-logo {
-    height: 40px;
+    height: 36px;
   }
 }
 
 /* === FAB === */
-/* NO TOCAR: mantengo el FAB igual que antes */
 .fab-container {
   position: fixed;
   bottom: 24px;
@@ -669,6 +659,6 @@ footer {
 
   .product-main {
     grid-template-columns: 1fr;
-    margin: 2rem 0.5rem; /* ajuste móvil solicitado para la tarjeta producto */
+    margin: 2rem 0.5rem;
   }
 }
