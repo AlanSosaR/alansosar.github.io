@@ -591,46 +591,45 @@ body {
   max-width: 700px !important;
 }
 
-/* === FIX FINAL FOOTER (LOGO + TEXTO EN UNA SOLA LÍNEA) === */
+/* === FOOTER CON LOGO EN LUGAR DEL SÍMBOLO © === */
 footer {
   background: var(--blanco) !important;
   border-top: 1px solid rgba(0, 0, 0, 0.05) !important;
-  display: flex !important;
-  align-items: center !important;     /* centra verticalmente */
-  justify-content: center !important; /* centra horizontalmente */
-  gap: 10px !important;               /* pequeño espacio entre logo y texto */
-  padding: 1rem !important;
   text-align: center !important;
-  flex-wrap: nowrap !important;       /* ✅ mantiene una sola línea */
-  white-space: nowrap !important;     /* ✅ evita que el texto salte a otra línea */
-}
-
-.footer-logo {
-  height: 40px !important;
-  vertical-align: middle !important;
+  padding: 1rem !important;
 }
 
 footer p {
   margin: 0 !important;
   font-size: 0.95rem !important;
   color: var(--marron) !important;
-  display: inline-block !important;
+  display: inline-flex !important;
+  align-items: center !important;   /* ✅ alinea el logo con el texto */
+  justify-content: center !important;
+  gap: 8px !important;              /* pequeño espacio entre logo y texto */
+  flex-wrap: nowrap !important;
+  white-space: nowrap !important;   /* evita que se rompa la línea */
 }
 
-/* ✅ En móviles, si el espacio es muy pequeño, reducimos el tamaño del texto */
+.footer-logo-inline {
+  height: 22px !important;          /* tamaño óptico del logo en línea */
+  width: auto !important;
+  vertical-align: middle !important;
+  display: inline-block !important;
+  transform: translateY(1px);       /* ajuste visual fino */
+}
+
 @media (max-width: 500px) {
-  footer {
+  footer p {
+    font-size: 0.85rem !important;
     gap: 6px !important;
   }
 
-  .footer-logo {
-    height: 32px !important;
-  }
-
-  footer p {
-    font-size: 0.85rem !important;
+  .footer-logo-inline {
+    height: 20px !important;
   }
 }
+
 
 
 /* === FAB === */
