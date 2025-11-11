@@ -598,7 +598,12 @@ body {
     grid-template-columns: 1fr;
     text-align: center;
   }
-
+@media (max-width: 600px) {
+  .about-img img {
+    height: 420px; /* 🟢 más alta en móvil */
+    border-radius: 16px; /* bordes suaves */
+  }
+}
   .about-img img {
     height: 360px;         /* móvil */
   }
