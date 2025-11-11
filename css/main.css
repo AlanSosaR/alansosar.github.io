@@ -5,14 +5,12 @@
   --gris: #f5f5f5;
   --sombra: 0 6px 20px rgba(0, 0, 0, 0.08);
 }
-
 /* RESET */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
-
 body {
   font-family: "Poppins", sans-serif;
   background: var(--blanco);
@@ -20,7 +18,6 @@ body {
   scroll-behavior: smooth;
   -webkit-tap-highlight-color: transparent;
 }
-
 /* === HEADER === */
 .header {
   position: fixed;
@@ -30,7 +27,6 @@ body {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
   z-index: 1000;
 }
-
 .header-content {
   max-width: 1200px;
   margin: 0 auto;
@@ -40,13 +36,11 @@ body {
   justify-content: space-between;
   height: 64px;
 }
-
 /* Logo */
 .logo img {
   height: 60px;
   display: block;
 }
-
 /* Desktop logo visible */
 .logo.desktop-only {
   display: none;
@@ -56,7 +50,6 @@ body {
     display: block;
   }
 }
-
 /* Menú */
 .menu-toggle {
   background: none;
@@ -66,28 +59,23 @@ body {
   display: none;
   cursor: pointer;
 }
-
 .nav-links {
   display: flex;
   align-items: center;
   gap: 2rem;
 }
-
 .nav-links a {
   text-decoration: none;
   color: var(--marron);
   font-weight: 500;
   transition: color 0.3s ease;
 }
-
 .nav-links a:hover {
   color: var(--verde);
 }
-
 .contact-link {
   margin-right: 1.5rem;
 }
-
 /* === CARRITO === */
 .cart-btn {
   position: relative;
@@ -102,16 +90,13 @@ body {
   cursor: pointer;
   transition: transform 0.2s ease;
 }
-
 .cart-btn:hover {
   transform: scale(1.05);
 }
-
 .cart-btn i {
   color: var(--verde);
   font-size: 1.3rem;
 }
-
 .cart-count {
   position: absolute;
   top: -6px;
@@ -127,7 +112,6 @@ body {
   align-items: center;
   justify-content: center;
 }
-
 /* Animación rebote carrito */
 @keyframes bounce {
   0%, 100% { transform: scale(1); }
@@ -136,7 +120,6 @@ body {
 .cart-btn.animate {
   animation: bounce 0.4s ease;
 }
-
 /* === DRAWER (menú móvil) === */
 .drawer {
   position: fixed;
@@ -152,11 +135,7 @@ body {
   transition: right 0.3s ease;
   z-index: 2000;
 }
-
-.drawer.open {
-  right: 0;
-}
-
+.drawer.open { right: 0; }
 .drawer-header {
   display: flex;
   align-items: center;
@@ -164,30 +143,24 @@ body {
   padding-left: 1.4rem;
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
-
 .drawer-header img {
   height: 60px;
   cursor: pointer;
   margin: 0;
 }
-
 .drawer-links {
   display: flex;
   flex-direction: column;
   gap: 1rem;
   padding: 1rem 1.4rem;
 }
-
 .drawer-links a {
   text-decoration: none;
   color: var(--marron);
   font-weight: 500;
   transition: color 0.3s;
 }
-
-.drawer-links a:hover {
-  color: var(--verde);
-}
+.drawer-links a:hover { color: var(--verde); }
 
 /* === HERO === */
 .hero {
@@ -195,13 +168,11 @@ body {
   text-align: center;
   margin-bottom: 3rem;
 }
-
 .hero-text {
   margin-bottom: 1.8rem;
   text-align: center;
   padding: 0 1rem;
 }
-
 .hero-text h1 {
   font-family: "Playfair Display", serif;
   font-size: 2.8rem;
@@ -209,7 +180,6 @@ body {
   line-height: 1.1;
   color: var(--verde);
 }
-
 @media (max-width: 900px) {
   .hero-text h1 {
     font-size: 2rem;
@@ -221,7 +191,6 @@ body {
     text-overflow: ellipsis;
   }
 }
-
 .hero-text p {
   color: #6f5a4e;
   margin-top: 0.5rem;
@@ -239,20 +208,16 @@ body {
   position: relative;
   transition: all 0.3s ease;
 }
-
 .hero-card:hover {
   transform: translateY(-6px);
   box-shadow: 0 18px 36px rgba(0, 0, 0, 0.12);
 }
-
-/* === HERO CARRUSEL === */
 .hero-carousel {
   position: relative;
   width: 100%;
   height: 560px;
   overflow: hidden;
 }
-
 .hero-carousel img {
   position: absolute;
   top: 0;
@@ -263,10 +228,7 @@ body {
   opacity: 0;
   transition: opacity 1.5s ease-in-out;
 }
-
-.hero-carousel img.active {
-  opacity: 1;
-}
+.hero-carousel img.active { opacity: 1; }
 
 /* === PRODUCTO PRINCIPAL === */
 .product-main {
@@ -282,13 +244,39 @@ body {
   align-items: center;
   text-align: left;
 }
+.product-label small {
+  font-weight: 600;
+  color: var(--marron);
+  text-transform: uppercase;
+}
+.product-label .subtext {
+  color: #a78c7c;
+  font-size: 0.9rem;
+  margin-top: 2px;
+}
+.product-text h2 {
+  font-family: "Playfair Display", serif;
+  font-size: 2rem;
+  color: var(--marron);
+  margin: 0.5rem 0;
+}
+.pill {
+  background: #fff;
+  border: 1px solid #ddd;
+  color: var(--marron);
+  border-radius: 999px;
+  padding: 0.4rem 1rem;
+  font-size: 0.85rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
 
-/* === Botón dividido (precio + carrito) === */
+/* === BOTÓN DIVIDIDO === */
 .product-bottom {
   display: flex;
   align-items: center;
   justify-content: flex-start;
   margin-top: 1.5rem;
+  margin-bottom: 2rem;
   background: var(--blanco);
   border-radius: 50px;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
@@ -296,12 +284,10 @@ body {
   width: fit-content;
   transition: all 0.3s ease;
 }
-
 .product-bottom:hover {
   box-shadow: 0 10px 22px rgba(0, 0, 0, 0.12);
   transform: translateY(-2px);
 }
-
 .price {
   font-size: 1.2rem;
   font-weight: 700;
@@ -309,7 +295,6 @@ body {
   padding: 0.6rem 1.2rem;
   pointer-events: none;
 }
-
 .btn-main {
   background: var(--verde);
   color: #fff;
@@ -324,42 +309,17 @@ body {
   transition: all 0.25s ease;
   box-shadow: 0 6px 14px rgba(51, 103, 59, 0.25);
 }
-
 .btn-main:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 18px rgba(51, 103, 59, 0.35);
 }
-
 .btn-main:active {
   transform: translateY(1px);
   box-shadow: 0 4px 10px rgba(51, 103, 59, 0.25);
 }
-
 .btn-main i {
   font-size: 1.2rem;
   color: #fff;
-}
-
-/* === Ajuste visual para que no quede pegado al FAB === */
-.product-bottom {
-  margin-bottom: 2.5rem;
-}
-
-/* Corrige imagen y fondo */
-.product-img-wrap {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: radial-gradient(circle at center, #f5f5f5 0%, #fff 100%);
-  border-radius: 18px;
-  padding: 1rem;
-}
-
-.product-img-wrap img {
-  width: 100%;
-  max-width: 320px;
-  height: auto;
-  object-fit: contain;
 }
 
 /* === RESPONSIVE === */
@@ -368,19 +328,19 @@ body {
     grid-template-columns: 1fr;
     margin: 2rem 0.5rem;
   }
-
   .product-bottom {
     width: 100%;
     justify-content: space-between;
     margin-bottom: 1.2rem;
   }
-
   .btn-main {
     width: 46px;
     height: 46px;
   }
-
   .price {
     font-size: 1rem;
   }
 }
+
+/* === CARRUSEL DE PRODUCTOS, SOBRE NOSOTROS, CONTACTO, FOOTER, FAB === */
+/* (SIN CAMBIOS — TODO SE MANTIENE IGUAL) */
