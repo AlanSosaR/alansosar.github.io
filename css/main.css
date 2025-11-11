@@ -752,37 +752,46 @@ footer p {
   }
 }
 
-/* === BOTÓN DIVIDIDO VERDE (un solo botón con precio + carrito) === */
-.product-fab {
+/* === BOTÓN SPLIT (solo el carrito clickeable) === */
+.product-split {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
   background: var(--verde);
   color: #fff;
   border: none;
   border-radius: 999px;
-  padding: 0.6rem 1.4rem;
+  overflow: hidden;
   font-weight: 600;
   font-size: 1rem;
-  gap: 0.6rem;
-  cursor: pointer;
   box-shadow: 0 6px 16px rgba(51, 103, 59, 0.3);
+  margin-top: 1.2rem;
+  margin-bottom: 1.2rem;
+}
+
+/* Lado izquierdo (solo texto, no clickeable) */
+.product-split .price-part {
+  padding: 0.6rem 1.4rem;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Lado derecho (carrito clickeable) */
+.product-split .icon-part {
+  background: rgba(255, 255, 255, 0.15);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
 }
 
-.product-fab i {
-  font-size: 1.1rem;
-}
-
-.product-fab:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 22px rgba(51, 103, 59, 0.35);
-}
-
-.product-fab:active {
+/* Efecto de presión hacia abajo */
+.product-split .icon-part:active {
   transform: translateY(2px);
-  box-shadow: 0 3px 8px rgba(51, 103, 59, 0.25);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.25);
 }
 
+.product-split .icon-part i {
+  font-size: 1rem;
+}
