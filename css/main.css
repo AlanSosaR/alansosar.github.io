@@ -188,7 +188,7 @@ body {
   color: var(--verde);
 }
 
-/* === HERO (dentro de tarjeta) === */
+/* === HERO === */
 .hero {
   padding-top: 7rem;
   text-align: center;
@@ -206,8 +206,6 @@ body {
   font-size: 2.8rem;
   font-weight: 600;
   line-height: 1.1;
-  white-space: normal;
-  word-break: break-word;
   color: var(--verde);
 }
 
@@ -221,7 +219,7 @@ body {
   background: var(--blanco);
   max-width: 1100px;
   margin: 0 auto;
-  border-radius: 0; /* ✅ bordes rectos */
+  border-radius: 0;
   box-shadow: var(--sombra);
   overflow: hidden;
   position: relative;
@@ -423,7 +421,7 @@ body {
   cursor: pointer;
 }
 
-/* flechas SOLO escritorio */
+/* Flechas SOLO escritorio */
 .carousel-prev, .carousel-next {
   position: absolute;
   top: 50%;
@@ -441,9 +439,11 @@ body {
   transition: background 0.3s ease;
   z-index: 10;
 }
+
 .carousel-prev:hover, .carousel-next:hover {
   background: rgba(81, 38, 21, 0.85);
 }
+
 .carousel-prev { left: 16px; }
 .carousel-next { right: 16px; }
 
@@ -501,6 +501,7 @@ body {
   box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
 
+/* ✅ Imagen ajustada al tamaño real sin espacios */
 .about-img {
   display: flex;
   align-items: center;
@@ -509,10 +510,9 @@ body {
 
 .about-img img {
   width: 100%;
-  height: auto;               /* ✅ mantiene proporción natural */
-  max-height: 560px;          /* ✅ límite escritorio */
+  height: 640px; /* ✅ altura real escritorio */
+  object-fit: cover; /* ✅ rellena sin espacios */
   border-radius: 14px;
-  object-fit: contain;        /* ✅ sin recortes ni deformaciones */
   box-shadow: 0 10px 30px rgba(0,0,0,0.2);
   transition: transform 0.4s ease, box-shadow 0.4s ease;
 }
@@ -524,7 +524,7 @@ body {
 
 @media (max-width: 1200px) and (min-width: 901px) {
   .about-img img {
-    max-height: 420px;
+    height: 480px; /* ✅ tablet */
   }
 }
 
@@ -535,7 +535,7 @@ body {
   }
 
   .about-img img {
-    max-height: 360px;
+    height: 420px; /* ✅ móvil */
   }
 
   .about-pills {
