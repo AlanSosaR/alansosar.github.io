@@ -136,9 +136,26 @@ body {
 .cart-btn.animate {
   animation: bounce 0.4s ease;
 }
+/* === AJUSTE: Menú alineado a la derecha junto al carrito === */
+@media (min-width: 901px) {
+  .header-content {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end; /* 🔹 Alinea todo el bloque a la derecha */
+    padding-right: 2rem; /* margen lateral derecho del contenedor */
+  }
 
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 2rem; /* Espaciado entre los enlaces */
+    margin-right: 1.5rem; /* 🔹 Espacio entre el último enlace y el carrito */
+  }
 
-
+  .cart-btn {
+    flex-shrink: 0; /* evita que se mueva */
+  }
+}
 /* === HERO === */
 .hero {
   padding-top: 7rem;
