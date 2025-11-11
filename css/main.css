@@ -137,30 +137,31 @@ body {
   animation: bounce 0.4s ease;
 }
 
-/* === AJUSTE: Menú alineado a la derecha junto al carrito === */
+/* === AJUSTE HEADER (logo izq - menú centrado - carrito der) === */
 @media (min-width: 901px) {
   .header-content {
     display: flex;
     align-items: center;
-    justify-content: flex-end; /* 🔹 Alinea menú + carrito a la derecha */
-    padding-right: 1.2rem; /* igual al padding general */
+    justify-content: space-between;
+    padding: 0 1.2rem;
   }
 
   .nav-links {
     display: flex;
     align-items: center;
-    gap: 2rem; /* Espaciado entre enlaces */
-    margin-right: 2rem; /* 🔹 separación visual ampliada con el carrito */
+    gap: 2rem;
+    margin-left: auto;
+    margin-right: 2rem; /* separación del carrito */
   }
 
   .cart-btn {
-    flex-shrink: 0; /* evita movimiento del carrito */
+    flex-shrink: 0;
   }
 }
 
 /* === HERO === */
 .hero {
-  padding-top: 7rem;
+  padding-top: 6.5rem; /* espacio bajo el header fijo */
   text-align: center;
   margin-bottom: 3rem;
 }
@@ -179,7 +180,20 @@ body {
   color: var(--verde);
 }
 
-/* Texto hero optimizado en móviles (solicitado) */
+.hero-text p {
+  color: #6f5a4e;
+  margin-top: 0.5rem;
+}
+
+/* Ajuste del logo del hero */
+.hero img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  object-fit: contain;
+}
+
 @media (max-width: 900px) {
   .hero-text h1 {
     font-size: 2rem;
@@ -190,11 +204,11 @@ body {
     overflow: hidden;
     text-overflow: ellipsis;
   }
-}
 
-.hero-text p {
-  color: #6f5a4e;
-  margin-top: 0.5rem;
+  .hero img {
+    width: 85%;
+    max-height: 280px;
+  }
 }
 
 /* === HERO CARD === */
@@ -356,4 +370,4 @@ body {
   font-weight: 600;
 }
 
-/* ... resto del CSS sigue igual sin cambios ... */
+/* ... resto de tu CSS (sobre nosotros, contacto, footer, fab, responsive) sigue igual ... */
