@@ -591,21 +591,22 @@ body {
   max-width: 700px !important;
 }
 
-/* Logo secundario y derechos en una sola línea centrada */
+/* === FIX FINAL FOOTER (LOGO + TEXTO EN UNA SOLA LÍNEA) === */
 footer {
   background: var(--blanco) !important;
   border-top: 1px solid rgba(0, 0, 0, 0.05) !important;
   display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 12px !important;
+  align-items: center !important;     /* centra verticalmente */
+  justify-content: center !important; /* centra horizontalmente */
+  gap: 10px !important;               /* pequeño espacio entre logo y texto */
   padding: 1rem !important;
   text-align: center !important;
-  flex-wrap: nowrap !important;
+  flex-wrap: nowrap !important;       /* ✅ mantiene una sola línea */
+  white-space: nowrap !important;     /* ✅ evita que el texto salte a otra línea */
 }
 
 .footer-logo {
-  height: 46px !important;
+  height: 40px !important;
   vertical-align: middle !important;
 }
 
@@ -613,6 +614,22 @@ footer p {
   margin: 0 !important;
   font-size: 0.95rem !important;
   color: var(--marron) !important;
+  display: inline-block !important;
+}
+
+/* ✅ En móviles, si el espacio es muy pequeño, reducimos el tamaño del texto */
+@media (max-width: 500px) {
+  footer {
+    gap: 6px !important;
+  }
+
+  .footer-logo {
+    height: 32px !important;
+  }
+
+  footer p {
+    font-size: 0.85rem !important;
+  }
 }
 
 
