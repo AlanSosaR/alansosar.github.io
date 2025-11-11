@@ -591,45 +591,46 @@ body {
   max-width: 700px !important;
 }
 
-/* === FOOTER CON LOGO PEQUEÑO EN LA MISMA LÍNEA === */
+/* === FOOTER CON LOGO AJUSTADO AL TAMAÑO DEL TEXTO === */
 footer {
-  background: var(--blanco) !important;
-  border-top: 1px solid rgba(0,0,0,0.05) !important;
-  text-align: center !important;
-  padding: 1rem !important;
+  background: var(--blanco);
+  border-top: 1px solid rgba(0,0,0,0.05);
+  text-align: center;
+  padding: 1rem;
 }
 
 footer p {
-  margin: 0 !important;
-  font-size: 0.95rem !important;
-  color: var(--marron) !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 6px !important;
-  flex-wrap: nowrap !important;
-  white-space: nowrap !important;
+  margin: 0;
+  font-size: 0.95rem; /* tamaño base del texto */
+  color: var(--marron);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex-wrap: nowrap;
+  white-space: nowrap;
 }
 
 .footer-logo-inline {
-  height: 16px !important;
-  width: auto !important;
-  vertical-align: middle !important;
-  display: inline-block !important;
-  transform: translateY(1px);
+  height: 1em; /* ⬅️ exactamente igual al alto del texto */
+  width: auto;
+  vertical-align: middle;
+  display: inline-block;
+  transform: translateY(1px); /* alineación precisa con la línea base del texto */
   opacity: 0.95;
 }
 
 @media (max-width: 500px) {
   footer p {
-    font-size: 0.85rem !important;
-    gap: 5px !important;
+    font-size: 0.85rem;
+    gap: 5px;
   }
 
   .footer-logo-inline {
-    height: 14px !important;
+    height: 1em; /* mantiene relación con el texto también en móvil */
   }
 }
+
 
 /* === FAB === */
 /* NO TOCAR: mantengo el FAB igual que antes */
