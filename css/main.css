@@ -752,40 +752,37 @@ footer p {
   }
 }
 
-
-/* === BOTÓN DIVIDIDO DEL PRODUCTO (nuevo) === */
-.product-bottom {
-  display: flex;
+/* === BOTÓN DIVIDIDO VERDE (un solo botón con precio + carrito) === */
+.product-fab {
+  display: inline-flex;
   align-items: center;
-  gap: 1rem;
-  margin-top: 1.2rem;
-  margin-bottom: 1.2rem; /* un poco de aire para que no choque con el FAB */
-}
-
-.product-bottom .price {
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: var(--verde);
-  pointer-events: none;     /* el precio no se clickea */
-  user-select: none;
-}
-
-.product-bottom .btn-main {
+  justify-content: center;
   background: var(--verde);
   color: #fff;
   border: none;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  border-radius: 999px;
+  padding: 0.6rem 1.4rem;
+  font-weight: 600;
+  font-size: 1rem;
+  gap: 0.6rem;
   cursor: pointer;
-  box-shadow: 0 8px 16px rgba(51, 103, 59, 0.25);
+  box-shadow: 0 6px 16px rgba(51, 103, 59, 0.3);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
 }
 
-.product-bottom .btn-main:active {
-  transform: translateY(2px);
-  box-shadow: 0 4px 10px rgba(51, 103, 59, 0.25);
+.product-fab i {
+  font-size: 1.1rem;
 }
+
+.product-fab:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px rgba(51, 103, 59, 0.35);
+}
+
+.product-fab:active {
+  transform: translateY(2px);
+  box-shadow: 0 3px 8px rgba(51, 103, 59, 0.25);
+}
+
