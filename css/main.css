@@ -211,6 +211,25 @@ body {
   color: var(--verde);
 }
 
+/* === AJUSTE: Alinear menú al carrito en escritorio === */
+@media (min-width: 901px) {
+  .header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 2rem; /* Espaciado entre enlaces */
+    margin-right: 1.5rem; /* 🔹 separa el último enlace del carrito */
+  }
+
+  .cart-btn {
+    margin-left: auto; /* mantiene el carrito al extremo derecho */
+  }
+}
 /* Texto hero optimizado en móviles (solicitado) */
 @media (max-width: 900px) {
   .hero-text h1 {
