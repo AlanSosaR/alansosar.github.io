@@ -283,42 +283,12 @@ body {
   text-align: left;
 }
 
-.product-label small {
-  font-weight: 600;
-  color: var(--marron);
-  text-transform: uppercase;
-}
-
-.product-label .subtext {
-  color: #a78c7c;
-  font-size: 0.9rem;
-  margin-top: 2px;
-}
-
-.product-text h2 {
-  font-family: "Playfair Display", serif;
-  font-size: 2rem;
-  color: var(--marron);
-  margin: 0.5rem 0;
-}
-
-.pill {
-  background: #fff;
-  border: 1px solid #ddd;
-  color: var(--marron);
-  border-radius: 999px;
-  padding: 0.4rem 1rem;
-  font-size: 0.85rem;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-}
-
-/* === 💡 BOTÓN DIVIDIDO (Precio + Carrito ajustado con sombra y separación) === */
+/* === Botón dividido (precio + carrito) === */
 .product-bottom {
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  margin-top: 1.8rem;
-  margin-bottom: 1.8rem;
+  margin-top: 1.5rem;
   background: var(--blanco);
   border-radius: 50px;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
@@ -370,6 +340,11 @@ body {
   color: #fff;
 }
 
+/* === Ajuste visual para que no quede pegado al FAB === */
+.product-bottom {
+  margin-bottom: 2.5rem;
+}
+
 /* Corrige imagen y fondo */
 .product-img-wrap {
   display: flex;
@@ -397,7 +372,7 @@ body {
   .product-bottom {
     width: 100%;
     justify-content: space-between;
-    margin-bottom: 1.4rem;
+    margin-bottom: 1.2rem;
   }
 
   .btn-main {
