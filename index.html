@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <!-- Estilos principales -->
-  <link rel="stylesheet" href="css/main.css?v=10">
+  <link rel="stylesheet" href="css/main.css?v=11">
 </head>
 
 <body>
@@ -21,7 +21,6 @@
         <i class="fa-solid fa-bars"></i>
       </button>
 
-      <!-- Logo visible solo en escritorio -->
       <a href="index.html" class="logo desktop-only">
         <img src="imagenes/logo.png" alt="Café Cortero">
       </a>
@@ -60,13 +59,11 @@
     <section class="hero">
       <div class="hero-text">
         <h1>
-          <span class="verde">La esencia de Honduras</span><br>
-          <span class="marron">en cada sorbo.</span>
+          <span class="verde">La esencia de Honduras en cada sorbo.</span>
         </h1>
         <p>Café hondureño de altura, tueste medio y esencia familiar.</p>
       </div>
 
-      <!-- Tarjeta que contiene el carrusel -->
       <div class="hero-card">
         <div class="hero-carousel">
           <img src="imagenes/cafe_1.jpg" alt="Café Cortero 1">
@@ -85,10 +82,10 @@
           <small>CAFÉ EN GRANO / MOLIDO</small>
           <p class="subtext">Tueste medio · Altura · Esencia familiar</p>
         </div>
-        <h2>Café Cortero 250g</h2>
-        <span class="pill">100% arábica · Danlí</span>
+        <h2 id="product-name">Café Cortero 250g</h2>
+        <span id="product-badge" class="pill">100% arábica · Danlí</span>
         <div class="product-bottom">
-          <div class="price">L 180</div>
+          <div class="price" id="product-price">L 180</div>
           <button class="btn-main" id="product-add">
             <i class="fa-solid fa-cart-plus"></i>
           </button>
@@ -96,7 +93,7 @@
       </div>
 
       <div class="product-img-wrap">
-        <img src="imagenes/bolsa_1.png" alt="Bolsa Café Cortero">
+        <img id="product-image" src="imagenes/bolsa_1.png" alt="Bolsa Café Cortero">
       </div>
     </section>
 
@@ -117,7 +114,10 @@
             ];
             document.write(
               productos.map(p => `
-                <div class="similar-card">
+                <div class="similar-card" 
+                     data-name="${p.nombre}" 
+                     data-price="${p.precio}" 
+                     data-img="${p.img}">
                   <img src="${p.img}" alt="${p.nombre}">
                   <h4>${p.nombre}</h4>
                   <div class="price-sm">${p.precio} 
@@ -178,24 +178,25 @@
   <!-- === FAB === -->
   <div class="fab-container" id="fab">
     <button class="fab-main" id="fab-main">
-      <span class="material-symbols-rounded">chat_bubble</span>
+      <i class="fa-solid fa-comments"></i>
     </button>
     <div class="fab-options">
       <a href="https://wa.me/50494546047?text=Hola%2C%20quiero%20más%20información%20sobre%20Café%20Cortero"
          target="_blank"
          class="fab-whatsapp"
          title="WhatsApp">
-        <span class="material-symbols-rounded">sms</span>
+        <i class="fa-brands fa-whatsapp"></i>
       </a>
       <a href="https://www.facebook.com/share/1FsrT4DYrU/"
          target="_blank"
          class="fab-facebook"
          title="Facebook">
-        <span class="material-symbols-rounded">public</span>
+        <i class="fa-brands fa-facebook-f"></i>
       </a>
     </div>
   </div>
 
-  <script src="js/main.js?v=10"></script>
+  <!-- === JS principal === -->
+  <script src="js/main.js?v=11"></script>
 </body>
 </html>
