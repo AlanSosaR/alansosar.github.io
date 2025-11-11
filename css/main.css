@@ -188,7 +188,7 @@ body {
   color: var(--verde);
 }
 
-/* === HERO (dentro de tarjeta, como el tuyo) === */
+/* === HERO (dentro de tarjeta) === */
 .hero {
   padding-top: 7rem;
   text-align: center;
@@ -216,35 +216,50 @@ body {
   margin-top: 0.5rem;
 }
 
-/* Tarjeta del hero (NO tocar estructura del carrusel principal) */
+/* === HERO CARD === */
 .hero-card {
   background: var(--blanco);
   max-width: 1100px;
   margin: 0 auto;
-  border-radius: 24px;
+  border-radius: 0; /* ✅ bordes rectos */
   box-shadow: var(--sombra);
   overflow: hidden;
   position: relative;
 }
 
+/* === HERO CARRUSEL === */
 .hero-carousel {
   position: relative;
   width: 100%;
-  height: clamp(340px, 50vw, 560px);
+  height: 560px; /* ✅ altura completa */
   overflow: hidden;
 }
 
 .hero-carousel img {
   position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: 100%; /* ✅ llena la tarjeta */
+  object-fit: cover; /* ✅ mantiene proporción sin dejar espacios */
   opacity: 0;
-  transition: opacity 1.6s ease-in-out;
+  transition: opacity 1.5s ease-in-out;
 }
 
 .hero-carousel img.active {
   opacity: 1;
+}
+
+@media (max-width: 1200px) and (min-width: 901px) {
+  .hero-carousel {
+    height: 420px; /* ✅ tamaño tablet */
+  }
+}
+
+@media (max-width: 900px) {
+  .hero-carousel {
+    height: 360px; /* ✅ tamaño móvil */
+  }
 }
 
 /* === PRODUCTO PRINCIPAL === */
@@ -333,7 +348,7 @@ body {
   object-fit: contain;
 }
 
-/* === CARRUSEL DE PRODUCTOS (del viejo) === */
+/* === CARRUSEL DE PRODUCTOS === */
 .related {
   max-width: 1100px;
   margin: 0 auto 3rem;
@@ -347,13 +362,11 @@ body {
   font-weight: 600;
 }
 
-/* contenedor que tiene las flechas y la lista */
 .carousel-container {
   position: relative;
   overflow: hidden;
 }
 
-/* lista horizontal con scroll en móvil */
 .similar-list {
   display: flex;
   gap: 1rem;
@@ -410,9 +423,8 @@ body {
   cursor: pointer;
 }
 
-/* flechas SOLO en escritorio */
-.carousel-prev,
-.carousel-next {
+/* flechas SOLO escritorio */
+.carousel-prev, .carousel-next {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
@@ -422,28 +434,24 @@ body {
   border-radius: 50%;
   width: 44px;
   height: 44px;
-  display: none;           /* ocultas por defecto (móvil) */
+  display: none;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: background 0.3s ease;
   z-index: 10;
 }
-.carousel-prev:hover,
-.carousel-next:hover {
+.carousel-prev:hover, .carousel-next:hover {
   background: rgba(81, 38, 21, 0.85);
 }
 .carousel-prev { left: 16px; }
 .carousel-next { right: 16px; }
 
 @media (min-width: 901px) {
-  .carousel-prev,
-  .carousel-next {
-    display: flex;        /* se ven en escritorio */
-  }
+  .carousel-prev, .carousel-next { display: flex; }
 }
 
-/* === SOBRE NOSOTROS (restaurado al estilo viejo) === */
+/* === SOBRE NOSOTROS === */
 .about {
   max-width: 1100px;
   margin: 4rem auto;
@@ -493,7 +501,6 @@ body {
   box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
 
-/* 👇 restaurado como tu primer CSS: imagen con ancho máx, alto auto y ratio */
 .about-img {
   display: flex;
   align-items: center;
@@ -502,11 +509,9 @@ body {
 
 .about-img img {
   width: 100%;
-  max-width: 500px;
-  border-radius: 16px;
+  height: 560px;
+  border-radius: 14px;
   object-fit: cover;
-  height: auto;
-  aspect-ratio: 4 / 3;
   box-shadow: 0 10px 30px rgba(0,0,0,0.2);
   transition: transform 0.4s ease, box-shadow 0.4s ease;
 }
@@ -516,7 +521,28 @@ body {
   box-shadow: 0 14px 34px rgba(0,0,0,0.3);
 }
 
-/* === FOOTER (no tocado) === */
+@media (max-width: 1200px) and (min-width: 901px) {
+  .about-img img {
+    height: 420px;
+  }
+}
+
+@media (max-width: 900px) {
+  .about {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .about-img img {
+    height: 360px;
+  }
+
+  .about-pills {
+    justify-content: center;
+  }
+}
+
+/* === FOOTER === */
 footer {
   background: var(--blanco);
   border-top: 1px solid rgba(0,0,0,0.05);
@@ -612,24 +638,5 @@ footer {
 
   .product-main {
     grid-template-columns: 1fr;
-  }
-
-  .hero-carousel {
-    height: 360px;
-  }
-
-  .about {
-    grid-template-columns: 1fr;
-    text-align: center;
-  }
-
-  .about-pills {
-    justify-content: center;
-  }
-}
-
-@media (max-width: 1200px) and (min-width: 901px) {
-  .hero-carousel {
-    height: 420px;
   }
 }
