@@ -200,7 +200,6 @@ body {
 }
 
 /* === HERO CARD === */
-/* ✅ Tarjeta delineada tipo outlined con leve sombra */
 .hero-card {
   background: var(--blanco);
   max-width: 1100px;
@@ -332,7 +331,6 @@ body {
 }
 
 /* === SOBRE NOSOTROS === */
-/* ✅ Más altura en tarjeta */
 .about {
   max-width: 1100px;
   margin: 4rem auto;
@@ -376,7 +374,6 @@ body {
 }
 
 /* === CONTACTO === */
-/* ✅ Texto centrado */
 .contacto {
   text-align: center;
   margin: 3rem auto;
@@ -397,7 +394,6 @@ body {
 }
 
 /* === FOOTER === */
-/* ✅ Logo y texto en una sola línea centrada */
 footer {
   background: var(--blanco);
   border-top: 1px solid rgba(0,0,0,0.05);
@@ -483,4 +479,41 @@ footer p {
   .menu-toggle { display: block; }
   .nav-links { display: none; }
   .product-main { grid-template-columns: 1fr; }
+}
+
+/* === CORRECCIÓN FINAL DEL CARRUSEL DE PRODUCTOS === */
+.similar-list {
+  display: flex !important;
+  gap: 1rem !important;
+  overflow-x: auto !important;
+  scroll-snap-type: x mandatory !important;
+  scrollbar-width: none !important;
+  padding-bottom: 0.5rem !important;
+  scroll-behavior: smooth !important;
+}
+
+.similar-list::-webkit-scrollbar {
+  display: none !important;
+}
+
+.similar-card {
+  flex: 0 0 170px !important;
+  background: #fff !important;
+  border-radius: 14px !important;
+  box-shadow: var(--sombra) !important;
+  padding: 1rem !important;
+  scroll-snap-align: start !important;
+  transition: transform 0.2s ease !important;
+}
+
+.similar-card:hover {
+  transform: translateY(-3px) !important;
+}
+
+.similar-card img {
+  width: 100% !important;
+  height: 190px !important;
+  object-fit: cover !important;
+  border-radius: 12px !important;
+  margin-bottom: 0.6rem !important;
 }
