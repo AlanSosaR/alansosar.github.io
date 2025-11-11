@@ -230,16 +230,31 @@ body {
   margin-top: 0.5rem;
 }
 
-/* === HERO CARD (Outlined / Tarjeta delineada) === */
+/* === HERO CARD (Outlined / Tarjeta delineada mejorada) === */
 .hero-card {
   background: var(--blanco);
   max-width: 1100px;
   margin: 0 auto;
-  border-radius: 0;              /* esquinas planas */
-  border: 1px solid rgba(0,0,0,0.08); /* delineada */
-  box-shadow: 0 6px 20px rgba(0,0,0,0.04); /* ligera profundidad sin ser elevado */
+  border-radius: 12px; /* 🔹 Bordes ligeramente suaves para elegancia */
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08); /* 🔹 Elevación base */
   overflow: hidden;
   position: relative;
+  transition: all 0.3s ease;
+}
+
+/* Efecto hover sutil (solo visible en escritorio) */
+.hero-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.12); /* 🔹 Más profundidad */
+}
+
+/* 🔹 En móviles: sombra más suave sin movimiento */
+@media (max-width: 900px) {
+  .hero-card {
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    border-radius: 8px;
+  }
 }
 
 /* === HERO CARRUSEL === */
