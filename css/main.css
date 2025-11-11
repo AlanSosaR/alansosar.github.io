@@ -606,18 +606,18 @@ footer p {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  gap: 6px !important;              /* espacio entre logo y texto */
+  gap: 6px !important;
   flex-wrap: nowrap !important;
   white-space: nowrap !important;
 }
 
 .footer-logo-inline {
-  height: 16px !important;          /* ✅ tamaño equilibrado con el texto */
+  height: 16px !important;
   width: auto !important;
   vertical-align: middle !important;
   display: inline-block !important;
-  transform: translateY(1px);       /* leve ajuste óptico */
-  opacity: 0.95;                    /* se integra mejor con el texto */
+  transform: translateY(1px);
+  opacity: 0.95;
 }
 
 @media (max-width: 500px) {
@@ -627,7 +627,7 @@ footer p {
   }
 
   .footer-logo-inline {
-    height: 14px !important;        /* ✅ tamaño perfecto en móvil */
+    height: 14px !important;
   }
 }
 
