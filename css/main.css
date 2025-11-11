@@ -564,29 +564,57 @@ body {
   }
 }
 
-/* === FOOTER === */
-/* Footer centrado y logo en una línea con el texto (ajustado para móviles) */
+/* === AJUSTE CONTACTO Y FOOTER === */
+
+/* Centrar completamente el bloque de "Contáctanos" */
+.contacto {
+  text-align: center !important;
+  margin: 4rem auto !important;
+  max-width: 900px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.contacto h2 {
+  font-family: "Playfair Display", serif !important;
+  color: var(--marron) !important;
+  font-size: 2.2rem !important;
+  margin-bottom: 0.8rem !important;
+}
+
+.contacto p {
+  color: var(--marron) !important;
+  font-size: 1.05rem !important;
+  line-height: 1.7 !important;
+  max-width: 700px !important;
+}
+
+/* Logo secundario y derechos en una sola línea centrada */
 footer {
-  background: var(--blanco);
-  border-top: 1px solid rgba(0,0,0,0.05);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  flex-wrap: wrap;
-  padding: 1rem;
-  text-align: center;
+  background: var(--blanco) !important;
+  border-top: 1px solid rgba(0, 0, 0, 0.05) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 12px !important;
+  padding: 1rem !important;
+  text-align: center !important;
+  flex-wrap: nowrap !important;
 }
 
 .footer-logo {
-  height: 60px;
+  height: 46px !important;
+  vertical-align: middle !important;
 }
 
-@media (max-width: 600px) {
-  .footer-logo {
-    height: 40px;
-  }
+footer p {
+  margin: 0 !important;
+  font-size: 0.95rem !important;
+  color: var(--marron) !important;
 }
+
 
 /* === FAB === */
 /* NO TOCAR: mantengo el FAB igual que antes */
