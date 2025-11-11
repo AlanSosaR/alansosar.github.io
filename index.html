@@ -84,16 +84,18 @@
         </div>
         <h2 id="product-name">Café Cortero 250g</h2>
         <span id="product-badge" class="pill">100% arábica · Danlí</span>
-        <div class="product-bottom">
-          <div class="price" id="product-price">L 180</div>
-          <button class="btn-main" id="product-add">
-            <i class="fa-solid fa-cart-plus"></i>
-          </button>
-        </div>
       </div>
 
       <div class="product-img-wrap">
         <img id="product-image" src="imagenes/bolsa_1.png" alt="Bolsa Café Cortero">
+      </div>
+
+      <!-- === BOTÓN DIVIDIDO (PRECIO + CARRITO) === -->
+      <div class="product-fab">
+        <div class="product-price-static" id="product-price">L 180</div>
+        <button class="product-fab-cart" id="product-add" title="Agregar al carrito">
+          <i class="fa-solid fa-cart-plus"></i>
+        </button>
       </div>
     </section>
 
@@ -120,9 +122,7 @@
                      data-img="${p.img}">
                   <img src="${p.img}" alt="${p.nombre}">
                   <h4>${p.nombre}</h4>
-                  <div class="price-sm">${p.precio} 
-                    <i class="fa-solid fa-cart-plus icon-cart"></i>
-                  </div>
+                  <div class="price-sm">${p.precio}</div>
                 </div>
               `).join('')
             );
@@ -168,15 +168,12 @@
   </main>
 
   <!-- === FOOTER === -->
-<footer>
-  <p>
-    <img src="imagenes/logo_secundario.png" alt="Logo Café Cortero" class="footer-logo-inline">
-    2025 Café Cortero. Todos los derechos reservados.
-  </p>
-</footer>
-
-
-
+  <footer>
+    <p>
+      <img src="imagenes/logo_secundario.png" alt="Logo Café Cortero" class="footer-logo-inline">
+      2025 Café Cortero. Todos los derechos reservados.
+    </p>
+  </footer>
 
   <!-- === FAB === -->
   <div class="fab-container" id="fab">
