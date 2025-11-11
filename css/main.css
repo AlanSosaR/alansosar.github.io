@@ -129,14 +129,17 @@ body {
 }
 
 /* Animación rebote carrito */
-@keyframes bounce {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.25); }
-}
-.cart-btn.animate {
-  animation: bounce 0.4s ease;
+
+@keyframes cartAmazon {
+  0% { transform: scale(1); filter: brightness(1); }
+  40% { transform: scale(1.1); filter: brightness(1.15); }
+  60% { transform: scale(0.98); filter: brightness(1.05); }
+  100% { transform: scale(1); filter: brightness(1); }
 }
 
+.cart-btn.animate {
+  animation: cartAmazon 0.45s ease-out;
+}
 /* === DRAWER (menú móvil) === */
 /* Logo alineado a la izquierda dentro del drawer (solicitado) */
 .drawer {
