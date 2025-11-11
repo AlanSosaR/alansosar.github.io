@@ -407,7 +407,7 @@ body {
 /* (ESTOS estilos se mantienen exactamente como estaban para no romperlo) */
 .related {
   max-width: 1100px;
-  margin: 0 auto 3rem;
+  margin: 5rem auto 3rem; /* 🟢 más espacio arriba */
   padding: 0 1rem;
 }
 
