@@ -231,7 +231,7 @@ body {
 .hero-carousel {
   position: relative;
   width: 100%;
-  height: 560px; /* ✅ altura completa */
+  height: 560px;
   overflow: hidden;
 }
 
@@ -240,8 +240,8 @@ body {
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%; /* ✅ llena la tarjeta */
-  object-fit: cover; /* ✅ mantiene proporción sin dejar espacios */
+  height: 100%;
+  object-fit: cover;
   opacity: 0;
   transition: opacity 1.5s ease-in-out;
 }
@@ -252,13 +252,13 @@ body {
 
 @media (max-width: 1200px) and (min-width: 901px) {
   .hero-carousel {
-    height: 420px; /* ✅ tamaño tablet */
+    height: 420px;
   }
 }
 
 @media (max-width: 900px) {
   .hero-carousel {
-    height: 360px; /* ✅ tamaño móvil */
+    height: 360px;
   }
 }
 
@@ -509,9 +509,10 @@ body {
 
 .about-img img {
   width: 100%;
-  height: 560px;
+  height: auto;               /* ✅ mantiene proporción natural */
+  max-height: 560px;          /* ✅ límite escritorio */
   border-radius: 14px;
-  object-fit: cover;
+  object-fit: contain;        /* ✅ sin recortes ni deformaciones */
   box-shadow: 0 10px 30px rgba(0,0,0,0.2);
   transition: transform 0.4s ease, box-shadow 0.4s ease;
 }
@@ -523,7 +524,7 @@ body {
 
 @media (max-width: 1200px) and (min-width: 901px) {
   .about-img img {
-    height: 420px;
+    max-height: 420px;
   }
 }
 
@@ -534,7 +535,7 @@ body {
   }
 
   .about-img img {
-    height: 360px;
+    max-height: 360px;
   }
 
   .about-pills {
