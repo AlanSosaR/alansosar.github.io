@@ -23,16 +23,16 @@ function updateCartCount() {
   if (badge) badge.textContent = total;
 }
 
-// Animación del carrito
+// 🟡 Animación tipo Amazon (pulso suave + brillo sutil)
 function animateCartIcon() {
   const cartBtn = document.getElementById('cart-btn');
   if (!cartBtn) return;
   cartBtn.classList.add('animate');
-  setTimeout(() => cartBtn.classList.remove('animate'), 650);
-  if (navigator.vibrate) navigator.vibrate([60, 40, 60]);
+  setTimeout(() => cartBtn.classList.remove('animate'), 600);
+  if (navigator.vibrate) navigator.vibrate([40, 30, 40]);
 }
 
-// Agregar producto
+// Agregar producto al carrito
 function addToCart(product) {
   const cart = getCart();
   const index = cart.findIndex(p => p.name === product.name);
@@ -43,7 +43,7 @@ function addToCart(product) {
   }
   saveCart(cart);
   updateCartCount();
-  animateCartIcon();
+  animateCartIcon(); // ✅ Solo efecto visual, no redirección
 }
 
 // === MAIN ===
@@ -100,18 +100,15 @@ document.addEventListener('DOMContentLoaded', () => {
   if (btnMain) {
     btnMain.addEventListener('click', () => {
       const name = document.getElementById('product-name').textContent.trim();
-      const price = parseFloat(document.getElementById('product-price')?.textContent.replace(/[^\d.-]/g, '')) ||
-                    parseFloat(document.querySelector('.price-part')?.textContent.replace(/[^\d.-]/g, '')) || 0;
+      const price = parseFloat(document.querySelector('.price-part')?.textContent.replace(/[^\d.-]/g, '')) || 0;
       const img = document.getElementById('product-image').getAttribute('src');
       const product = { name, price, img, qty: 1 };
-      addToCart(product);
-      window.location.href = 'carrito.html'; // ✅ redirige al carrito después de agregar
+      addToCart(product); // ✅ Solo efecto visual, sin redirigir
     });
   }
 
   // === CARRUSEL DE PRODUCTOS ===
   const cards = document.querySelectorAll('.similar-card');
-
   cards.forEach(card => {
     const name = card.dataset.name;
     const price = parseFloat(card.dataset.price.replace(/[^\d.-]/g, '')) || 0;
@@ -119,11 +116,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const product = { name, price, img, qty: 1 };
 
     // Click tarjeta = cambia producto principal + scroll suave + marcar tarjeta
-    card.addEventListener('click', () => {
+    card.addEventListener('click', e => {
+      if (e.target.classList.contains('icon-cart')) return;
+
+      // Marcar tarjeta seleccionada
       cards.forEach(c => c.classList.remove('active-card'));
       card.classList.add('active-card');
 
-      // Actualiza producto principal
+      // Actualizar producto principal
       document.getElementById('product-name').textContent = name;
       const priceEl = document.querySelector('.price-part');
       if (priceEl) priceEl.textContent = `L ${price}`;
