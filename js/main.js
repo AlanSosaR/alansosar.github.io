@@ -44,6 +44,7 @@ function addToCart(product) {
 
 // === MAIN ===
 document.addEventListener('DOMContentLoaded', () => {
+
   // === MENÚ MÓVIL ===
   const menuToggle = document.getElementById('menu-toggle');
   const drawer = document.getElementById('drawer');
@@ -99,12 +100,12 @@ document.addEventListener('DOMContentLoaded', () => {
       const img = document.getElementById('product-image').getAttribute('src');
       const product = { name, price, img, qty: 1 };
       addToCart(product);
+      window.location.href = 'carrito.html'; // ✅ Redirige al carrito
     });
   }
 
   // === CARRUSEL DE PRODUCTOS ===
   const cards = document.querySelectorAll('.similar-card');
-  const sectionProducto = document.getElementById('productos');
 
   cards.forEach(card => {
     const icon = card.querySelector('.icon-cart');
@@ -121,26 +122,24 @@ document.addEventListener('DOMContentLoaded', () => {
       cards.forEach(c => c.classList.remove('active-card'));
       card.classList.add('active-card');
 
-      // 2. Actualiza producto principal
+      // 2. actualizar producto principal
       document.getElementById('product-name').textContent = name;
       document.getElementById('product-price').textContent = `L ${price}`;
       const imageEl = document.getElementById('product-image');
       imageEl.src = img;
 
-      // 3. pequeñito fade
+      // 3. fade animado en la imagen
       imageEl.style.opacity = '0';
       setTimeout(() => {
         imageEl.style.transition = 'opacity 0.4s ease';
         imageEl.style.opacity = '1';
       }, 100);
 
-      // 4. scroll suave
-      if (sectionProducto) {
-        sectionProducto.scrollIntoView({
-          behavior: 'smooth',
-          block: 'center'
-        });
-      }
+      // 4. scroll suave hacia arriba
+      document.getElementById('productos')?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center'
+      });
     });
 
     // Click ícono carrito = agregar
@@ -151,6 +150,20 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
   });
+
+  // === FLECHAS DEL CARRUSEL === ✅ nuevo bloque funcional
+  const carousel = document.querySelector('.similar-list');
+  const prevBtn = document.querySelector('.carousel-prev');
+  const nextBtn = document.querySelector('.carousel-next');
+
+  if (carousel && prevBtn && nextBtn) {
+    prevBtn.addEventListener('click', () => {
+      carousel.scrollBy({ left: -200, behavior: 'smooth' });
+    });
+    nextBtn.addEventListener('click', () => {
+      carousel.scrollBy({ left: 200, behavior: 'smooth' });
+    });
+  }
 
   // === FAB ===
   const fabMain = document.getElementById('fab-main');
