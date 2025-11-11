@@ -752,7 +752,7 @@ footer p {
   }
 }
 
-/* === BOTÓN SPLIT (solo el carrito clickeable) === */
+/* === BOTÓN SPLIT (ajustado y visualmente más balanceado) === */
 .product-split {
   display: inline-flex;
   align-items: center;
@@ -764,34 +764,49 @@ footer p {
   font-weight: 600;
   font-size: 1rem;
   box-shadow: 0 6px 16px rgba(51, 103, 59, 0.3);
-  margin-top: 1.2rem;
+  margin-top: 1.4rem;
   margin-bottom: 1.2rem;
 }
 
-/* Lado izquierdo (solo texto, no clickeable) */
+/* Lado del precio (fijo, no clickeable) */
 .product-split .price-part {
-  padding: 0.6rem 1.4rem;
+  padding: 0.7rem 1.6rem;
   pointer-events: none;
   user-select: none;
 }
 
-/* Lado derecho (carrito clickeable) */
+/* Lado del carrito (clickeable) */
 .product-split .icon-part {
-  background: rgba(255, 255, 255, 0.15);
-  padding: 0.6rem 1rem;
+  background: rgba(255, 255, 255, 0.18);
+  padding: 0.7rem 1.3rem;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  border-left: 1px solid rgba(255, 255, 255, 0.25);
+  transition: transform 0.12s ease, background 0.2s ease, box-shadow 0.12s ease;
 }
 
-/* Efecto de presión hacia abajo */
+/* 🔹 Efecto hover (ligeramente más claro) */
+.product-split .icon-part:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* 🔹 Al presionar (efecto hacia abajo más físico) */
 .product-split .icon-part:active {
   transform: translateY(2px);
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.25);
+  box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.35);
 }
 
+/* Ícono del carrito */
 .product-split .icon-part i {
   font-size: 1rem;
+  color: #fff;
+}
+
+/* 🔹 En pantallas pequeñas: ocupa el ancho justo y centrado */
+@media (max-width: 600px) {
+  .product-split {
+    transform: scale(1.02);
+  }
 }
