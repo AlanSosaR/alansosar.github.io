@@ -444,13 +444,23 @@ body {
 }
 
 .similar-card {
-  flex: 0 0 170px;
+  flex: 0 0 190px;                  /* 🔹 un poco más ancha */
   background: #fff;
-  border-radius: 14px;
+  border-radius: 18px;              /* 🔹 igual que las tarjetas del sitio */
   box-shadow: var(--sombra);
-  padding: 1rem;
+  padding: 1.5rem 1rem;             /* 🔹 más espacio interno */
   scroll-snap-align: start;
-  transition: transform 0.2s ease;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.similar-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.similar-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .similar-card:hover {
