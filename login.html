@@ -16,6 +16,44 @@
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="imagenes/logo.png">
+
+  <style>
+    /* ====== Crear cuenta (login) ====== */
+    .links {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      margin-top: 1rem;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .links a {
+      font-size: 0.9rem;
+      text-decoration: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    #forgotPassword {
+      color: #512615; /* marrón */
+    }
+
+    #createAccount {
+      color: #33673B; /* verde */
+      font-weight: 500;
+    }
+
+    #createAccount:hover {
+      text-decoration: underline;
+      color: #24522A; /* tono verde más oscuro */
+      transition: color 0.2s ease;
+    }
+
+    /* Quitar destello azul del logo */
+    .logo-container img {
+      -webkit-tap-highlight-color: transparent;
+    }
+  </style>
 </head>
 
 <body>
@@ -61,7 +99,7 @@
         <!-- Enlaces secundarios -->
         <div class="links">
           <a href="#" id="forgotPassword">¿Olvidaste tu contraseña?</a>
-          <a href="#" id="createAccount">¿No tienes cuenta? Crear cuenta</a>
+          <a href="registro-cliente.html" id="createAccount">¿No tienes cuenta? Crear cuenta</a>
         </div>
       </div>
     </section>
@@ -70,20 +108,7 @@
   <!-- Snackbar (mensaje visual) -->
   <div id="snackbar"></div>
 
-  <!-- Firebase SDK -->
-  <script type="module" src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js"></script>
-  <script type="module" src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js"></script>
-
-  <!-- Configuración de Firebase -->
-  <script type="module" src="js/firebase-config.js"></script>
-
-  <!-- Lógica de autenticación general -->
-  <script type="module" src="js/firebase-auth.js"></script>
-
-  <!-- Lógica específica del login -->
-  <script type="module" src="js/login.js"></script>
-
-  <!-- Script global del sitio (animaciones y snackbar) -->
-  <script src="js/scripts.js"></script>
+  <!-- Scripts externos del login -->
+  <script src="js/login-scripts.js" type="module"></script>
 </body>
 </html>
