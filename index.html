@@ -24,8 +24,8 @@
       color: #33673B;
       text-decoration: none;
       font-weight: 500;
-      touch-action: none; /* quita efecto touch */
-      -webkit-tap-highlight-color: transparent; /* quita flash táctil */
+      -webkit-tap-highlight-color: transparent;
+      touch-action: none;
     }
   </style>
 </head>
@@ -47,8 +47,9 @@
         <a href="mis-pedidos.html">Mis Pedidos</a>
         <a href="#nosotros">Nosotros</a>
         <a href="#contacto" class="contact-link">Contacto</a>
-        <!-- 🔹 NUEVO: botón iniciar sesión (vista escritorio) -->
+        <!-- 🔹 Botón iniciar sesión (vista escritorio) -->
         <a href="login.html" class="login-link">Iniciar sesión</a>
+        <!-- 🔹 Texto “Crear cuenta” -->
         <p class="crear-cuenta-label">
           ¿No tienes cuenta? <a href="registro-cliente.html">Crear cuenta</a>
         </p>
@@ -73,8 +74,9 @@
       <a href="mis-pedidos.html">Mis Pedidos</a>
       <a href="#nosotros">Nosotros</a>
       <a href="#contacto">Contacto</a>
-      <!-- 🔹 NUEVO: botón iniciar sesión (vista móvil) -->
+      <!-- 🔹 Botón iniciar sesión (vista móvil) -->
       <a href="login.html" class="drawer-login">Iniciar sesión</a>
+      <!-- 🔹 Texto “Crear cuenta” -->
       <p class="crear-cuenta-label">
         ¿No tienes cuenta? <a href="registro-cliente.html">Crear cuenta</a>
       </p>
@@ -112,7 +114,7 @@
         <h2 id="product-name">Café Cortero 250g</h2>
         <span id="product-badge" class="pill">100% arábica · Danlí</span>
 
-        <!-- === NUEVO BOTÓN SPLIT (PRECIO + CARRITO CLICKEABLE) === -->
+        <!-- === BOTÓN SPLIT (PRECIO + CARRITO CLICKEABLE) === -->
         <div style="margin-top: 1.2rem;">
           <div class="product-split" title="Agregar al carrito">
             <span class="price-part">L 180</span>
