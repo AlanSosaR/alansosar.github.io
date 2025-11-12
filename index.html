@@ -11,6 +11,23 @@
 
   <!-- Estilos principales -->
   <link rel="stylesheet" href="css/main.css?v=11">
+  <style>
+    /* 🔹 Estilo del texto de “Crear cuenta” */
+    .crear-cuenta-label {
+      text-align: center;
+      font-size: 0.9rem;
+      margin-top: 0.8rem;
+      color: #512615;
+      font-family: 'Poppins', sans-serif;
+    }
+    .crear-cuenta-label a {
+      color: #33673B;
+      text-decoration: none;
+      font-weight: 500;
+      touch-action: none; /* quita efecto touch */
+      -webkit-tap-highlight-color: transparent; /* quita flash táctil */
+    }
+  </style>
 </head>
 
 <body>
@@ -32,6 +49,9 @@
         <a href="#contacto" class="contact-link">Contacto</a>
         <!-- 🔹 NUEVO: botón iniciar sesión (vista escritorio) -->
         <a href="login.html" class="login-link">Iniciar sesión</a>
+        <p class="crear-cuenta-label">
+          ¿No tienes cuenta? <a href="registro-cliente.html">Crear cuenta</a>
+        </p>
       </nav>
 
       <button class="cart-btn" id="cart-btn">
@@ -55,6 +75,9 @@
       <a href="#contacto">Contacto</a>
       <!-- 🔹 NUEVO: botón iniciar sesión (vista móvil) -->
       <a href="login.html" class="drawer-login">Iniciar sesión</a>
+      <p class="crear-cuenta-label">
+        ¿No tienes cuenta? <a href="registro-cliente.html">Crear cuenta</a>
+      </p>
     </nav>
   </div>
 
