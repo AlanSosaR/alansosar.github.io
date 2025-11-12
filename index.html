@@ -11,21 +11,31 @@
 
   <!-- Estilos principales -->
   <link rel="stylesheet" href="css/main.css?v=11">
+
   <style>
-    /* 🔹 Estilo del texto de “Crear cuenta” */
-    .crear-cuenta-label {
-      text-align: center;
-      font-size: 0.9rem;
-      margin-top: 0.8rem;
-      color: #512615;
-      font-family: 'Poppins', sans-serif;
+    /* === Efecto hover para el texto "Crear cuenta" === */
+    .crear-cuenta-label a:hover {
+      color: #24522A;
+      text-decoration: underline;
+      transition: color 0.25s ease, text-decoration 0.25s ease;
     }
-    .crear-cuenta-label a {
-      color: #33673B;
-      text-decoration: none;
-      font-weight: 500;
-      -webkit-tap-highlight-color: transparent;
-      touch-action: none;
+
+    /* === Eliminar efecto azul táctil en "Crear cuenta", logo y enlaces === */
+    a, a:focus, a:active, a:visited {
+      -webkit-tap-highlight-color: transparent !important;
+      outline: none !important;
+    }
+
+    .logo img,
+    .drawer-links a,
+    .nav-links a {
+      -webkit-tap-highlight-color: transparent !important;
+      touch-action: manipulation;
+    }
+
+    * {
+      -webkit-user-select: none;
+      user-select: none;
     }
   </style>
 </head>
@@ -47,12 +57,7 @@
         <a href="mis-pedidos.html">Mis Pedidos</a>
         <a href="#nosotros">Nosotros</a>
         <a href="#contacto" class="contact-link">Contacto</a>
-        <!-- 🔹 Botón iniciar sesión (vista escritorio) -->
         <a href="login.html" class="login-link">Iniciar sesión</a>
-        <!-- 🔹 Texto “Crear cuenta” -->
-        <p class="crear-cuenta-label">
-          ¿No tienes cuenta? <a href="registro-cliente.html">Crear cuenta</a>
-        </p>
       </nav>
 
       <button class="cart-btn" id="cart-btn">
@@ -74,12 +79,7 @@
       <a href="mis-pedidos.html">Mis Pedidos</a>
       <a href="#nosotros">Nosotros</a>
       <a href="#contacto">Contacto</a>
-      <!-- 🔹 Botón iniciar sesión (vista móvil) -->
       <a href="login.html" class="drawer-login">Iniciar sesión</a>
-      <!-- 🔹 Texto “Crear cuenta” -->
-      <p class="crear-cuenta-label">
-        ¿No tienes cuenta? <a href="registro-cliente.html">Crear cuenta</a>
-      </p>
     </nav>
   </div>
 
@@ -114,7 +114,6 @@
         <h2 id="product-name">Café Cortero 250g</h2>
         <span id="product-badge" class="pill">100% arábica · Danlí</span>
 
-        <!-- === BOTÓN SPLIT (PRECIO + CARRITO CLICKEABLE) === -->
         <div style="margin-top: 1.2rem;">
           <div class="product-split" title="Agregar al carrito">
             <span class="price-part">L 180</span>
