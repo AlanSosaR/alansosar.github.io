@@ -232,3 +232,30 @@ body {
     width: 90px;
   }
 }
+/* ====== Crear cuenta (login) ====== */
+.crear-cuenta-label{
+  text-align:center;
+  font-size:0.9rem;
+  margin-top:0.8rem;
+  color:#512615;            /* marrón */
+  font-family:'Poppins',sans-serif;
+}
+
+.crear-cuenta-label a{
+  color:#33673B;            /* verde */
+  text-decoration:none;
+  font-weight:500;
+  -webkit-tap-highlight-color:transparent; /* sin destello azul en móvil */
+}
+
+.crear-cuenta-label a:hover{
+  color:#24522A;
+  text-decoration:underline;
+  transition:color .25s ease, text-decoration .25s ease;
+}
+
+/* Quitar destello azul al tocar el logo (sin afectar estilos) */
+.logo img,
+.drawer-logo img{
+  -webkit-tap-highlight-color:transparent;
+}
