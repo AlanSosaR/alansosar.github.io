@@ -1,0 +1,234 @@
+/* ===============================
+   ESTILOS GENERALES
+   =============================== */
+body {
+  font-family: "Roboto", sans-serif;
+  background-color: #ffffff; /* Fondo blanco global */
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  color: #2E2A27;
+}
+
+/* Contenedor general centrado */
+.login-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 20px;
+}
+
+/* ===============================
+   TARJETA PRINCIPAL
+   =============================== */
+.login-card {
+  background: #ffffff;
+  border: 1.5px solid #E0E0E0;
+  border-radius: 20px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  padding: 30px 40px;
+  max-width: 420px;
+  width: 100%;
+  transition: box-shadow 0.3s ease, transform 0.2s ease;
+}
+
+.login-card:hover {
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+/* ===============================
+   ENCABEZADO (LOGO Y TÍTULO)
+   =============================== */
+.login-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.logo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.logo-img {
+  width: 110px;
+  height: auto;
+  transition: transform 0.3s ease;
+}
+
+.logo-container:hover .logo-img {
+  transform: scale(1.05);
+}
+
+.login-title {
+  font-family: "Fraunces", serif;
+  font-size: 1.8rem;
+  color: #33673B;
+  margin: 0;
+  letter-spacing: 0.5px;
+}
+
+/* ===============================
+   TARJETA INTERIOR (FORMULARIO)
+   =============================== */
+.login-inner-card {
+  background: #ffffff;
+  border: 1.5px solid #E8E8E8;
+  border-radius: 16px;
+  padding: 25px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* ===============================
+   CAMPOS DE TEXTO (INPUTS)
+   =============================== */
+.input-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border: 1.5px solid #E0E0E0;
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin-bottom: 18px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  background-color: #fff;
+}
+
+.input-group:focus-within {
+  border-color: #33673B;
+  box-shadow: 0 0 0 2px rgba(51, 103, 59, 0.1);
+}
+
+/* Estado de error (validación inline) */
+.input-group.error {
+  border-color: #B3261E;
+  box-shadow: 0 0 0 2px rgba(179, 38, 30, 0.1);
+}
+
+.input-group.error input::placeholder {
+  color: #B3261E;
+  opacity: 0.9;
+}
+
+.input-group input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 1rem;
+  color: #2E2A27;
+  font-family: "Roboto", sans-serif;
+}
+
+.material-symbols-outlined {
+  font-size: 22px;
+  color: #33673B;
+  margin-right: 8px;
+  user-select: none;
+}
+
+/* ===============================
+   BOTÓN DE INICIO DE SESIÓN
+   =============================== */
+.btn-login {
+  width: 100%;
+  background-color: #33673B;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 12px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-login:hover {
+  background-color: #28532E;
+  transform: scale(1.01);
+}
+
+/* ===============================
+   ENLACES INFERIORES
+   =============================== */
+.links {
+  margin-top: 18px;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  gap: 6px;
+}
+
+.links a {
+  text-decoration: none;
+  font-size: 0.9rem;
+  color: #512615;
+  transition: color 0.3s ease;
+}
+
+.links a:hover {
+  color: #33673B;
+}
+
+/* ===============================
+   SNACKBAR (MENSAJE VISUAL)
+   =============================== */
+#snackbar {
+  visibility: hidden;
+  min-width: 280px;
+  background-color: #33673B;
+  color: #fff;
+  text-align: center;
+  border-radius: 8px;
+  padding: 14px;
+  position: fixed;
+  left: 50%;
+  bottom: 30px;
+  transform: translateX(-50%);
+  font-size: 0.95rem;
+  z-index: 1000;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+}
+
+#snackbar.show {
+  visibility: visible;
+  animation: fadein 0.4s, fadeout 0.4s 1.8s;
+}
+
+@keyframes fadein {
+  from { bottom: 20px; opacity: 0; }
+  to { bottom: 30px; opacity: 1; }
+}
+
+@keyframes fadeout {
+  from { bottom: 30px; opacity: 1; }
+  to { bottom: 20px; opacity: 0; }
+}
+
+/* ===============================
+   RESPONSIVE (MÓVILES Y TABLETS)
+   =============================== */
+@media (max-width: 480px) {
+  .login-card {
+    padding: 25px;
+  }
+
+  .login-inner-card {
+    padding: 20px;
+  }
+
+  .login-title {
+    font-size: 1.5rem;
+  }
+
+  .logo-img {
+    width: 90px;
+  }
+}
