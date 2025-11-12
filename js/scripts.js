@@ -15,12 +15,6 @@ function mostrarSnackbar(mensaje) {
     snackbar.className = snackbar.className.replace("show", "");
   }, 2000);
 }
-// === login-scripts.js ===
-import "./firebase-config.js";
-import "./firebase-auth.js";
-import "./login.js";
-import "./scripts.js";
 
-document.addEventListener("DOMContentLoaded", () => {
-  console.log("✅ Scripts del login cargados correctamente.");
-});
+// Hacerla accesible globalmente
+window.mostrarSnackbar = mostrarSnackbar;
