@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Iniciar Sesión | Café Cortero</title>
+
+  <!-- Tipografía Material 3 Expressive -->
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- Iconos Material Symbols -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+
+  <!-- Estilos del login -->
+  <link rel="stylesheet" href="css/login.css">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="imagenes/logo.png">
+</head>
+
+<body>
+  <main class="login-container">
+    <!-- Tarjeta principal -->
+    <section class="login-card">
+      <div class="login-header">
+        <!-- Logo en imagen clickeable -->
+        <div class="logo-container" onclick="window.location.href='index.html'">
+          <img src="imagenes/logo.png" alt="Café Cortero" class="logo-img" />
+        </div>
+
+        <h2 class="login-title">Iniciar sesión</h2>
+      </div>
+
+      <!-- Tarjeta interior -->
+      <div class="login-inner-card">
+        <form id="loginForm">
+          <!-- Campo correo o teléfono -->
+          <div class="input-group">
+            <span class="material-symbols-outlined">mail</span>
+            <input 
+              type="text" 
+              id="userInput" 
+              placeholder="Correo electrónico o teléfono" 
+              required />
+          </div>
+
+          <!-- Campo contraseña -->
+          <div class="input-group">
+            <span class="material-symbols-outlined">lock</span>
+            <input 
+              type="password" 
+              id="passwordInput" 
+              placeholder="Contraseña" 
+              required />
+          </div>
+
+          <!-- Botón de acceso -->
+          <button type="submit" class="btn-login">Iniciar sesión</button>
+        </form>
+
+        <!-- Enlaces secundarios -->
+        <div class="links">
+          <a href="#" id="forgotPassword">¿Olvidaste tu contraseña?</a>
+          <a href="#" id="createAccount">¿No tienes cuenta? Crear cuenta</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Snackbar (mensaje visual) -->
+  <div id="snackbar"></div>
+
+  <!-- Firebase SDK -->
+  <script type="module" src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js"></script>
+  <script type="module" src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js"></script>
+
+  <!-- Configuración de Firebase -->
+  <script type="module" src="js/firebase-config.js"></script>
+
+  <!-- Lógica de autenticación general -->
+  <script type="module" src="js/firebase-auth.js"></script>
+
+  <!-- Lógica específica del login -->
+  <script type="module" src="js/login.js"></script>
+
+  <!-- Script global del sitio (animaciones y snackbar) -->
+  <script src="js/scripts.js"></script>
+</body>
+</html>
