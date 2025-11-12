@@ -840,3 +840,30 @@ footer p {
   border: 1px solid #33673B;
   transition: all 0.3s ease;
 }
+/* === Efecto hover para el texto "Crear cuenta" === */
+.crear-cuenta-label a:hover {
+  color: #24522A; /* tono verde un poco más oscuro */
+  text-decoration: underline; /* subrayado sutil y elegante */
+  transition: color 0.25s ease, text-decoration 0.25s ease;
+}
+
+/* === Eliminar efecto azul táctil en "Crear cuenta", logo y enlaces === */
+a, a:focus, a:active, a:visited {
+  -webkit-tap-highlight-color: transparent !important;
+  outline: none !important;
+}
+
+/* Aplica también a logo, enlaces de menú y drawer */
+.logo img,
+.crear-cuenta-label a,
+.drawer-links a,
+.nav-links a {
+  -webkit-tap-highlight-color: transparent !important;
+  touch-action: manipulation;
+}
+
+/* Desactiva selección de texto accidental */
+* {
+  -webkit-user-select: none;
+  user-select: none;
+}
