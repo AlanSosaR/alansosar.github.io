@@ -85,7 +85,7 @@ body {
    =============================== */
 .login-inner-card {
   background: #ffffff;
-  border: 1.6px solid rgba(81, 38, 21, 0.25); /* 💡 borde café sutil */
+  border: 1.6px solid #512615; /* borde café sólido coherente */
   border-radius: 16px;
   padding: 25px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
