@@ -5,11 +5,11 @@ body {
   font-family: "Roboto", sans-serif;
   background-color: #ffffff;
   margin: 0;
-  padding: 0;
+  padding: 40px 20px; /* ✔ Para respiración y que no quede pegado en móvil */
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100vh;
+  min-height: 100vh;  /* ✔ Se adapta a PC y centra */
   color: #2E2A27;
 }
 
@@ -19,7 +19,6 @@ body {
   align-items: center;
   justify-content: center;
   width: 100%;
-  padding: 20px;
 }
 
 /* ===============================
@@ -33,8 +32,9 @@ body {
   padding: 30px 40px;
   max-width: 420px;
   width: 100%;
-  min-height: 520px; /* 💡 altura más generosa */
+  min-height: 520px; /* altura generosa */
   transition: box-shadow 0.3s ease, transform 0.2s ease;
+  margin: 20px 0; /* ✔ Para que no quede pegado arriba */
 }
 
 .login-card:hover {
@@ -142,7 +142,7 @@ body {
   cursor: pointer;
   font-family: "Roboto", sans-serif;
   transition: all 0.25s ease;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* 💡 elevación inicial */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -181,7 +181,6 @@ body {
   text-decoration: underline;
 }
 
-/* Texto de registro */
 .crear-cuenta-texto {
   font-size: 0.9rem;
   color: #512615;
