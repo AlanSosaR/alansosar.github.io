@@ -22,7 +22,7 @@
   <main class="register-container">
 
     <!-- TARJETA PRINCIPAL -->
-    <section class="register-card">
+    <section class="register-card reduced-card">
 
       <!-- LOGO + TÍTULO -->
       <div class="register-header">
@@ -33,9 +33,18 @@
         <h2 class="register-title">Crear cuenta</h2>
       </div>
 
-      <!-- AVATAR (fuera de la tarjeta secundaria) -->
+      <!-- AVATAR (CLICKABLE PARA SUBIR FOTO) -->
       <div class="avatar-container">
-        <img src="imagenes/avatar-default.svg" alt="Avatar" class="avatar-img">
+        <label for="avatarInput">
+          <img src="imagenes/avatar-default.svg" alt="Avatar" class="avatar-img" id="avatarPreview">
+        </label>
+
+        <!-- input oculto -->
+        <input 
+          type="file" 
+          id="avatarInput" 
+          accept="image/*"
+          style="display:none;">
       </div>
 
       <!-- TARJETA SECUNDARIA (inputs) -->
