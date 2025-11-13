@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crear Cuenta | Café Cortero</title>
+
+  <!-- Tipografías -->
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- Iconos Material -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+
+  <!-- CSS del registro -->
+  <link rel="stylesheet" href="css/registro-cliente.css">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="imagenes/logo.png">
+</head>
+
+<body>
+  <main class="registro-container">
+
+    <!-- Tarjeta principal -->
+    <section class="registro-card">
+
+      <!-- Logo + Título -->
+      <div class="registro-header">
+        <div class="logo-container" onclick="window.location.href='index.html'">
+          <img src="imagenes/logo.png" class="logo-img" alt="Café Cortero">
+        </div>
+
+        <h2 class="registro-title">Crear cuenta</h2>
+      </div>
+
+      <!-- Avatar -->
+      <div class="avatar-container">
+        <img src="imagenes/avatar-default.png" id="preview-avatar" alt="Avatar" class="avatar-img">
+        <input type="file" id="avatarInput" accept="image/*" hidden>
+      </div>
+
+      <!-- Tarjeta secundaria -->
+      <div class="registro-inner-card">
+
+        <form id="registroForm">
+
+          <!-- ID invisible -->
+          <input type="hidden" id="clienteID">
+
+          <!-- Nombre -->
+          <div class="input-group">
+            <span class="material-symbols-outlined">person</span>
+            <input 
+              type="text" 
+              id="nombreInput" 
+              placeholder="Nombre completo" 
+              required>
+          </div>
+
+          <!-- Correo -->
+          <div class="input-group">
+            <span class="material-symbols-outlined">mail</span>
+            <input 
+              type="email" 
+              id="correoInput" 
+              placeholder="Correo electrónico" 
+              required>
+          </div>
+
+          <!-- Teléfono -->
+          <div class="input-group">
+            <span class="material-symbols-outlined">call</span>
+            <input 
+              type="tel" 
+              id="telefonoInput" 
+              placeholder="Teléfono" 
+              required>
+          </div>
+
+          <!-- Contraseña -->
+          <div class="input-group">
+            <span class="material-symbols-outlined">lock</span>
+            <input 
+              type="password" 
+              id="passwordInput" 
+              placeholder="Contraseña" 
+              required>
+          </div>
+
+          <!-- Confirmar contraseña -->
+          <div class="input-group">
+            <span class="material-symbols-outlined">lock</span>
+            <input 
+              type="password" 
+              id="confirmPasswordInput" 
+              placeholder="Confirmar contraseña" 
+              required>
+          </div>
+
+          <!-- Botón principal -->
+          <button type="submit" class="btn-crear-cuenta">
+            Crear cuenta
+          </button>
+
+        </form>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- Snackbar -->
+  <div id="snackbar"></div>
+
+  <!-- Scripts separados -->
+  <script src="js/registro-cliente.js" type="module"></script>
+</body>
+</html>
