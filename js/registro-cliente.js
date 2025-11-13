@@ -1,5 +1,5 @@
 // ===============================
-// PREVISUALIZAR AVATAR
+// PREVISUALIZAR AVATAR (alta calidad con background-image)
 // ===============================
 const avatarInput = document.getElementById("avatarInput");
 const avatarPreview = document.getElementById("avatarPreview");
@@ -10,7 +10,8 @@ if (avatarInput) {
     if (file) {
       const reader = new FileReader();
       reader.onload = e => {
-        avatarPreview.src = e.target.result;
+        // Cambiar imagen del avatar
+        avatarPreview.style.backgroundImage = `url('${e.target.result}')`;
       };
       reader.readAsDataURL(file);
     }
@@ -38,11 +39,11 @@ const form = document.getElementById("registroForm");
 form.addEventListener("submit", (e) => {
   e.preventDefault();
 
-  const nombre = document.getElementById("nombre").value.trim();
-  const correo = document.getElementById("correo").value.trim();
-  const telefono = document.getElementById("telefono").value.trim();
-  const password = document.getElementById("password").value.trim();
-  const confirm = document.getElementById("confirmPassword").value.trim();
+  const nombre = document.getElementById("nombreInput").value.trim();
+  const correo = document.getElementById("correoInput").value.trim();
+  const telefono = document.getElementById("telefonoInput").value.trim();
+  const password = document.getElementById("passwordInput").value.trim();
+  const confirm = document.getElementById("confirmPasswordInput").value.trim();
 
   // Sin espacios en contraseña
   if (password.includes(" ")) {
@@ -65,5 +66,5 @@ form.addEventListener("submit", (e) => {
 
   // Reset visual
   form.reset();
-  avatarPreview.src = "imagenes/avatar-default.svg";
+  avatarPreview.style.backgroundImage = "url('imagenes/avatar-default.svg')";
 });
