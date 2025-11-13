@@ -178,7 +178,6 @@ body {
   transform: scale(0.98);
 }
 
-/* Quitar destellos azules */
 button, a, img, input {
   -webkit-tap-highlight-color: transparent;
 }
@@ -246,4 +245,11 @@ button, a, img, input {
     width: 75px;
     height: 75px;
   }
+}
+
+/* ===============================
+   AJUSTE: BAJAR UN POCO EL LOGO
+   =============================== */
+.logo-container {
+  margin-top: 12px !important;
 }
