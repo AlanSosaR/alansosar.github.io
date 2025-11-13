@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Iniciar Sesión | Café Cortero</title>
+  <title>Bienvenido de nuevo | Café Cortero</title>
 
   <!-- Tipografía Material 3 Expressive -->
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
@@ -18,12 +18,12 @@
   <link rel="icon" type="image/png" href="imagenes/logo.png">
 
   <style>
-    /* ====== Crear cuenta (login) ====== */
+    /* ====== Crear cuenta, redes sociales y estilos finos ====== */
     .links {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 6px;
+      gap: 10px;
       margin-top: 1rem;
       font-family: 'Poppins', sans-serif;
     }
@@ -38,15 +38,80 @@
       color: #512615; /* marrón */
     }
 
-    #createAccount {
-      color: #33673B; /* verde */
-      font-weight: 500;
+    /* Texto "¿No tienes cuenta? Regístrate ahora" */
+    .crear-cuenta-texto {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #512615;
+      font-family: 'Poppins', sans-serif;
     }
 
-    #createAccount:hover {
+    .registrate-link {
+      color: #33673B; /* verde */
+      font-weight: 500;
+      text-decoration: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .registrate-link:hover {
       text-decoration: underline;
-      color: #24522A; /* tono verde más oscuro */
-      transition: color 0.2s ease;
+      color: #24522A;
+    }
+
+    /* Separador “o” */
+    .separator {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 1rem 0;
+      color: rgba(81, 38, 21, 0.5);
+      font-size: 0.9rem;
+    }
+
+    .separator::before,
+    .separator::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: rgba(81, 38, 21, 0.15);
+      margin: 0 10px;
+    }
+
+    /* Botones sociales */
+    .social-login {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .btn-social {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border: 1.5px solid #E0E0E0;
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 0.9rem;
+      background: #fff;
+      cursor: pointer;
+      font-family: 'Roboto', sans-serif;
+      transition: all 0.25s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn-social img {
+      width: 18px;
+      height: 18px;
+    }
+
+    .btn-social.google:hover {
+      border-color: #DB4437;
+      color: #DB4437;
+    }
+
+    .btn-social.facebook:hover {
+      border-color: #1877F2;
+      color: #1877F2;
     }
 
     /* Quitar destello azul del logo */
@@ -66,7 +131,7 @@
           <img src="imagenes/logo.png" alt="Café Cortero" class="logo-img" />
         </div>
 
-        <h2 class="login-title">Iniciar sesión</h2>
+        <h2 class="login-title" style="color:#512615;">Bienvenido de nuevo</h2>
       </div>
 
       <!-- Tarjeta interior -->
@@ -99,7 +164,22 @@
         <!-- Enlaces secundarios -->
         <div class="links">
           <a href="#" id="forgotPassword">¿Olvidaste tu contraseña?</a>
-          <a href="registro-cliente.html" id="createAccount">¿No tienes cuenta? Crear cuenta</a>
+
+          <p class="crear-cuenta-texto">
+            ¿No tienes cuenta? 
+            <a href="registro-cliente.html" class="registrate-link">Regístrate ahora</a>
+          </p>
+
+          <div class="separator"><span>o</span></div>
+
+          <div class="social-login">
+            <button class="btn-social google">
+              <img src="imagenes/icon-google.svg" alt="Google"> Google
+            </button>
+            <button class="btn-social facebook">
+              <img src="imagenes/icon-facebook.svg" alt="Facebook"> Facebook
+            </button>
+          </div>
         </div>
       </div>
     </section>
