@@ -3,7 +3,7 @@
    =============================== */
 body {
   font-family: "Roboto", sans-serif;
-  background-color: #ffffff; /* Fondo blanco global */
+  background-color: #ffffff;
   margin: 0;
   padding: 0;
   display: flex;
@@ -33,6 +33,7 @@ body {
   padding: 30px 40px;
   max-width: 420px;
   width: 100%;
+  min-height: 520px; /* 💡 altura más generosa */
   transition: box-shadow 0.3s ease, transform 0.2s ease;
 }
 
@@ -55,7 +56,7 @@ body {
   align-items: center;
   cursor: pointer;
   margin-bottom: 10px;
-  -webkit-tap-highlight-color: transparent; /* elimina destello azul */
+  -webkit-tap-highlight-color: transparent;
 }
 
 .logo-container img {
@@ -74,7 +75,7 @@ body {
 .login-title {
   font-family: "Fraunces", serif;
   font-size: 1.8rem;
-  color: #33673B;
+  color: #512615; /* café */
   margin: 0;
   letter-spacing: 0.5px;
 }
@@ -84,14 +85,14 @@ body {
    =============================== */
 .login-inner-card {
   background: #ffffff;
-  border: 1.5px solid #E8E8E8;
+  border: 1.6px solid rgba(81, 38, 21, 0.25); /* 💡 borde café sutil */
   border-radius: 16px;
   padding: 25px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
 
 /* ===============================
-   CAMPOS DE TEXTO (INPUTS)
+   CAMPOS DE TEXTO
    =============================== */
 .input-group {
   position: relative;
@@ -110,17 +111,6 @@ body {
   box-shadow: 0 0 0 2px rgba(51, 103, 59, 0.1);
 }
 
-/* Estado de error (validación inline) */
-.input-group.error {
-  border-color: #B3261E;
-  box-shadow: 0 0 0 2px rgba(179, 38, 30, 0.1);
-}
-
-.input-group.error input::placeholder {
-  color: #B3261E;
-  opacity: 0.9;
-}
-
 .input-group input {
   flex: 1;
   border: none;
@@ -128,7 +118,6 @@ body {
   background: transparent;
   font-size: 1rem;
   color: #2E2A27;
-  font-family: "Roboto", sans-serif;
 }
 
 .material-symbols-outlined {
@@ -151,59 +140,120 @@ body {
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  font-family: "Roboto", sans-serif;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* 💡 elevación inicial */
+  -webkit-tap-highlight-color: transparent;
 }
 
-.btn-login:hover {
+.btn-login:hover,
+.btn-login:focus-visible {
   background-color: #28532E;
-  transform: scale(1.01);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+.btn-login:active {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  transform: translateY(1px);
 }
 
 /* ===============================
-   ENLACES INFERIORES
+   ENLACES Y TEXTO DE REGISTRO
    =============================== */
 .links {
   margin-top: 18px;
   display: flex;
   flex-direction: column;
   text-align: center;
-  gap: 6px;
+  gap: 8px;
 }
 
-.links a {
-  text-decoration: none;
+#forgotPassword {
   font-size: 0.9rem;
   color: #512615;
-  transition: color 0.3s ease;
-  -webkit-tap-highlight-color: transparent; /* sin efecto azul */
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.links a:hover {
+#forgotPassword:hover {
   color: #33673B;
   text-decoration: underline;
 }
 
-/* ====== Crear cuenta (login) ====== */
-.crear-cuenta-label {
-  text-align: center;
+/* Texto de registro */
+.crear-cuenta-texto {
   font-size: 0.9rem;
-  margin-top: 1rem;
-  color: #512615; /* marrón */
-  font-family: 'Poppins', sans-serif;
+  color: #512615;
 }
 
-.crear-cuenta-label a {
-  color: #33673B; /* verde */
-  text-decoration: none;
+.registrate-link {
+  color: #33673B;
   font-weight: 500;
-  -webkit-tap-highlight-color: transparent; /* sin destello azul */
-  touch-action: manipulation;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.crear-cuenta-label a:hover {
+.registrate-link:hover {
   color: #24522A;
   text-decoration: underline;
-  transition: color .25s ease, text-decoration .25s ease;
+}
+
+/* ===============================
+   SEPARADOR Y REDES SOCIALES
+   =============================== */
+.separator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 1rem 0;
+  color: rgba(81, 38, 21, 0.5);
+  font-size: 0.9rem;
+}
+
+.separator::before,
+.separator::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: rgba(81, 38, 21, 0.15);
+  margin: 0 10px;
+}
+
+.social-login {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.btn-social {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 1.5px solid #E0E0E0;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 0.9rem;
+  background: #fff;
+  cursor: pointer;
+  font-family: 'Roboto', sans-serif;
+  transition: all 0.25s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn-social img {
+  width: 18px;
+  height: 18px;
+}
+
+.btn-social.google:hover {
+  border-color: #DB4437;
+  color: #DB4437;
+}
+
+.btn-social.facebook:hover {
+  border-color: #1877F2;
+  color: #1877F2;
 }
 
 /* ===============================
