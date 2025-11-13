@@ -1,5 +1,4 @@
-/* GENERAL -------------------------------------------------- */
-
+/* RESET GENERAL -------------------------------------------------- */
 * {
   margin: 0;
   padding: 0;
@@ -10,35 +9,31 @@
 body {
   font-family: "Roboto", sans-serif;
   background: #faf7f3;
+}
+
+/* CONTENEDOR PRINCIPAL ------------------------------------------- */
+.register-container {
+  width: 100%;
+  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
   padding: 20px;
 }
 
-/* CONTENEDOR PRINCIPAL ------------------------------------- */
-
-.register-container {
-  width: 100%;
-  max-width: 520px;
-  display: flex;
-  justify-content: center;
-}
-
-/* TARJETA PRINCIPAL ---------------------------------------- */
-
+/* TARJETA PRINCIPAL ---------------------------------------------- */
 .register-card {
   width: 100%;
+  max-width: 420px;
   background: #ffffff;
   border-radius: 22px;
-  padding: 35px 25px 40px;
+  padding: 35px 26px 40px;
   text-align: center;
-  box-shadow: 0 4px 25px rgba(0,0,0,0.06);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+  position: relative;
 }
 
-/* LOGO ------------------------------------------------------ */
-
+/* LOGO ------------------------------------------------------------ */
 .logo-container {
   width: 100%;
   display: flex;
@@ -47,36 +42,36 @@ body {
 }
 
 .logo-img {
-  width: 80px;
+  width: 78px;
   height: auto;
 }
 
-/* TÍTULO ---------------------------------------------------- */
-
+/* TÍTULO ---------------------------------------------------------- */
 .register-title {
   font-family: 'Fraunces', serif;
-  font-size: 28px;
+  font-size: 26px;
+  margin-top: 18px;
+  margin-bottom: 15px;
   color: #512615;
-  margin-top: 15px;
-  margin-bottom: 18px;
 }
 
-/* AVATAR ---------------------------------------------------- */
-
+/* AVATAR ---------------------------------------------------------- */
 .avatar-wrapper {
-  margin-bottom: 15px;
+  margin-bottom: 10px;
 }
 
 .avatar-preview {
   width: 115px;
   height: 115px;
-  object-fit: cover;
   border-radius: 50%;
-  border: 4px solid rgba(51, 103, 59, 0.35); /* Verde suave */
+  object-fit: cover;
+  border: 4px solid rgba(51,103,59,0.35); /* verde suave */
   padding: 4px;
-  background: #ffffff;
+  background: white;
   cursor: pointer;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+
+  /* elevación suave */
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
   transition: transform 0.2s ease;
 }
 
@@ -84,20 +79,17 @@ body {
   transform: scale(1.03);
 }
 
-/* TARJETA SECUNDARIA --------------------------------------- */
-
+/* TARJETA SECUNDARIA --------------------------------------------- */
 .form-card {
-  width: 100%;
   background: #ffffff;
-  border: 2px solid #512615; /* Café real */
-  border-radius: 22px;
-  padding: 25px 18px;
-  margin-top: 15px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+  border: 2px solid #512615; /* café real */
+  border-radius: 20px;
+  padding: 26px 18px;
+  margin-top: 10px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.05);
 }
 
-/* INPUTS ---------------------------------------------------- */
-
+/* INPUTS ---------------------------------------------------------- */
 .input-group {
   width: 100%;
   display: flex;
@@ -125,40 +117,38 @@ body {
   border: none;
   outline: none;
   font-size: 16px;
-  background: transparent;
   color: #333;
+  background: transparent;
 }
 
-/* BOTÓN ----------------------------------------------------- */
-
+/* BOTÓN ----------------------------------------------------------- */
 .btn-register {
   width: 100%;
   background: #33673B;
   color: white;
   border: none;
   padding: 15px;
-  font-size: 17px;
   border-radius: 14px;
-  cursor: pointer;
-  margin-top: 10px;
+  font-size: 17px;
   font-weight: 500;
+  cursor: pointer;
+  margin-top: 8px;
 
-  /* Elevación Material 3 */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  /* float effect */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.14);
   transition: all 0.25s ease;
 }
 
 .btn-register:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.20);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.20);
 }
 
 .btn-register:active {
-  transform: scale(0.98);
+  transform: scale(0.97);
 }
 
-/* SNACKBAR -------------------------------------------------- */
-
+/* SNACKBAR -------------------------------------------------------- */
 #snackbar {
   visibility: hidden;
   min-width: 250px;
@@ -168,7 +158,7 @@ body {
   border-radius: 12px;
   padding: 14px;
   position: fixed;
-  z-index: 1000;
+  z-index: 9999;
   left: 50%;
   bottom: 30px;
   transform: translateX(-50%);
@@ -181,27 +171,22 @@ body {
 
 @keyframes fadein {
   from { bottom: 0; opacity: 0; }
-  to   { bottom: 30px; opacity: 1; }
+  to { bottom: 30px; opacity: 1; }
 }
 
 @keyframes fadeout {
   from { bottom: 30px; opacity: 1; }
-  to   { bottom: 0; opacity: 0; }
+  to { bottom: 0; opacity: 0; }
 }
 
-/* RESPONSIVE ----------------------------------------------- */
-
+/* PC -------------------------------------------------------------- */
 @media (min-width: 900px) {
   .register-card {
     padding: 45px 40px 55px;
-    max-width: 480px;
+    max-width: 450px;
   }
 
   .form-card {
-    padding: 30px 24px;
-  }
-
-  .register-title {
-    font-size: 30px;
+    padding: 32px 24px;
   }
 }
