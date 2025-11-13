@@ -1,125 +1,174 @@
-// -------------------------------------------------------
-// AVATAR PREVIEW (Foto de perfil)
-// -------------------------------------------------------
-const avatarInput = document.getElementById("avatarInput");
-const avatarPreview = document.querySelector(".avatar-preview");
+// ===========================================================
+//  REGISTRO DE CLIENTE – JS PRINCIPAL
+// ===========================================================
 
-avatarInput.addEventListener("change", function () {
-  const file = this.files[0];
-  if (!file) return;
+// === Importar Firebase ===
+import { 
+  auth, 
+  db, 
+  storage 
+} from "./firebase-config.js";
 
-  const reader = new FileReader();
-  reader.onload = function (e) {
-    avatarPreview.src = e.target.result;
-  };
-  reader.readAsDataURL(file);
+import { 
+  createUserWithEmailAndPassword 
+} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+import { 
+  doc, 
+  setDoc 
+} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+import {
+  ref,
+  uploadBytes,
+  getDownloadURL
+} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-storage.js";
+
+
+// ===========================================================
+// ELEMENTOS DEL DOM
+// ===========================================================
+const form = document.getElementById("registroForm");
+const nombreInput = document.getElementById("nombreInput");
+const correoInput = document.getElementById("correoInput");
+const telefonoInput = document.getElementById("telefonoInput");
+const passInput = document.getElementById("passInput");
+const passConfirmInput = document.getElementById("passConfirmInput");
+const fotoInput = document.getElementById("fotoInput");
+const avatarImg = document.getElementById("avatarImg");
+
+// Avatar por defecto (inclúyelo en /imagenes/avatar_default.png)
+const AVATAR_DEFAULT = "imagenes/avatar_default.png";
+
+let fotoSeleccionada = null;
+
+
+// ===========================================================
+// PREVISUALIZAR FOTO
+// ===========================================================
+fotoInput.addEventListener("change", () => {
+  const file = fotoInput.files[0];
+
+  if (file) {
+    fotoSeleccionada = file;
+    avatarImg.src = URL.createObjectURL(file);
+  }
 });
 
-// -------------------------------------------------------
-// SNACKBAR
-// -------------------------------------------------------
-function showSnackbar(message) {
-  const snackbar = document.getElementById("snackbar");
-  snackbar.textContent = message;
-  snackbar.className = "show";
 
-  setTimeout(() => {
-    snackbar.className = snackbar.className.replace("show", "");
-  }, 2800);
-}
-
-// -------------------------------------------------------
+// ===========================================================
 // VALIDACIONES
-// -------------------------------------------------------
+// ===========================================================
+
+// Solo letras y espacios — Nombre
 function validarNombre(nombre) {
-  return /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]{3,50}$/.test(nombre);
+  return /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ ]+$/.test(nombre.trim());
 }
 
-function validarCorreo(correo) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo);
+// Email válido
+function validarEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
 }
 
+// Teléfono solo números (8–12 dígitos)
 function validarTelefono(tel) {
-  return /^[0-9]{8,15}$/.test(tel);
+  return /^[0-9]{8,12}$/.test(tel.trim());
 }
 
+// Contraseña sin espacios, mínimo 6
 function validarPassword(pass) {
-  // Sin espacios, mínimo 6
-  return /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,50}$/.test(pass);
+  return pass.length >= 6 && !/\s/.test(pass);
 }
 
-// -------------------------------------------------------
-// FORMULARIO DE REGISTRO
-// -------------------------------------------------------
-const form = document.getElementById("registroForm");
+// Muestra error visual en el input
+function marcarError(input, mensaje) {
+  const grupo = input.parentElement;
+  grupo.classList.add("error");
+  mostrarSnackbar(mensaje);
+}
 
-form.addEventListener("submit", (e) => {
+// Limpia errores al escribir
+[nombreInput, correoInput, telefonoInput, passInput, passConfirmInput].forEach(inp => {
+  inp.addEventListener("input", () => {
+    inp.parentElement.classList.remove("error");
+  });
+});
+
+
+// ===========================================================
+// FUNCIÓN PRINCIPAL — REGISTRO
+// ===========================================================
+form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const nombre = document.getElementById("nombre").value.trim();
-  const correo = document.getElementById("correo").value.trim();
-  const telefono = document.getElementById("telefono").value.trim();
-  const password = document.getElementById("password").value.trim();
-  const confirmPassword = document.getElementById("confirmPassword").value.trim();
+  const nombre = nombreInput.value.trim();
+  const correo = correoInput.value.trim();
+  const telefono = telefonoInput.value.trim();
+  const pass = passInput.value;
+  const confirmPass = passConfirmInput.value;
 
-  // 🛑 Validaciones completas
+  // ------------------ VALIDACIONES ------------------
+
   if (!validarNombre(nombre)) {
-    showSnackbar("Escribe un nombre válido (solo letras).");
-    return;
+    return marcarError(nombreInput, "Escribe un nombre válido.");
   }
 
-  if (!validarCorreo(correo)) {
-    showSnackbar("Correo electrónico inválido.");
-    return;
+  if (!validarEmail(correo)) {
+    return marcarError(correoInput, "Correo inválido.");
   }
 
   if (!validarTelefono(telefono)) {
-    showSnackbar("Número de teléfono inválido.");
-    return;
+    return marcarError(telefonoInput, "Teléfono inválido.");
   }
 
-  if (!validarPassword(password)) {
-    showSnackbar("La contraseña debe tener mínimo 6 caracteres sin espacios, con letras y números.");
-    return;
+  if (!validarPassword(pass)) {
+    return marcarError(passInput, "La contraseña debe ser mínimo 6 caracteres y sin espacios.");
   }
 
-  if (password !== confirmPassword) {
-    showSnackbar("Las contraseñas no coinciden.");
-    return;
+  if (pass !== confirmPass) {
+    return marcarError(passConfirmInput, "Las contraseñas no coinciden.");
   }
 
-  // Obtiene avatar BASE64 (si el usuario seleccionó)
-  let avatarBase64 = null;
+  // ------------------ CREAR CUENTA ------------------
+  try {
+    mostrarSnackbar("Creando cuenta...");
 
-  if (avatarInput.files.length > 0) {
-    const reader = new FileReader();
-    reader.onload = function (event) {
-      avatarBase64 = event.target.result;
-      continuarRegistro();
-    };
-    reader.readAsDataURL(avatarInput.files[0]);
-  } else {
-    continuarRegistro();
-  }
+    const cred = await createUserWithEmailAndPassword(auth, correo, pass);
+    const uid = cred.user.uid;
 
-  // -------------------------------------------------------
-  // FUNCIÓN FINAL
-  // -------------------------------------------------------
-  function continuarRegistro() {
-    const usuario = {
+    let urlFoto = AVATAR_DEFAULT;
+
+    // Si seleccionó una imagen → subir a Storage
+    if (fotoSeleccionada) {
+      const storageRef = ref(storage, `usuarios/${uid}/avatar.jpg`);
+      await uploadBytes(storageRef, fotoSeleccionada);
+      urlFoto = await getDownloadURL(storageRef);
+    }
+
+    // Datos del usuario a Firestore
+    await setDoc(doc(db, "usuarios", uid), {
+      uid,
       nombre,
       correo,
       telefono,
-      avatar: avatarBase64 || "imagenes/avatar-default.svg",
-      fechaRegistro: new Date().toISOString(),
-    };
+      foto: urlFoto,
+      creadoEn: new Date().toISOString(),
+      estado: "activo"
+    });
 
-    console.log("📌 Datos listos para enviar a Firebase:", usuario);
-
-    showSnackbar("Cuenta creada correctamente.");
+    mostrarSnackbar("Cuenta creada con éxito ✨");
 
     setTimeout(() => {
       window.location.href = "login.html";
-    }, 1400);
+    }, 1200);
+
+  } catch (error) {
+    console.error("Error al registrar:", error);
+
+    if (error.code === "auth/email-already-in-use") {
+      mostrarSnackbar("Correo ya está registrado.");
+    } else {
+      mostrarSnackbar("Error al crear la cuenta.");
+    }
   }
 });
