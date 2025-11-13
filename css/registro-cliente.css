@@ -1,135 +1,103 @@
 /* ===============================
-   ESTILOS GENERALES
+   CONTENEDOR PRINCIPAL
    =============================== */
 body {
-  font-family: "Roboto", sans-serif;
-  background-color: #ffffff;
   margin: 0;
   padding: 0;
+  background: #ffffff;
+  font-family: "Roboto", sans-serif;
   display: flex;
-  align-items: center;
   justify-content: center;
-  min-height: 100vh; /* permite crecer sin cortar */
-  color: #2E2A27;
-  -webkit-tap-highlight-color: transparent;
+  align-items: center;
+  min-height: 100vh;
 }
 
 .register-container {
+  width: 100%;
+  max-width: 480px;
+  padding: 20px;
   display: flex;
   justify-content: center;
-  width: 100%;
-  padding: 30px 20px;
 }
 
 /* ===============================
    TARJETA PRINCIPAL
    =============================== */
 .register-card {
-  background: #ffffff;
-  border-radius: 20px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-  padding: 30px 40px;
-  max-width: 420px;
   width: 100%;
-  transition: 0.25s ease;
-  position: relative;
-}
-
-/* ===============================
-   LOGO + TÍTULO
-   =============================== */
-.register-header {
+  background: #fff;
+  border-radius: 20px;
+  padding: 25px;
   text-align: center;
-  margin-bottom: 25px;
+  border: 1.5px solid #E0E0E0;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
 }
 
-.logo-container {
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  margin-bottom: 12px;
-  -webkit-tap-highlight-color: transparent;
-}
-
+/* Logo */
 .logo-container img {
-  width: 105px;
-  height: auto;
-  user-select: none;
-  -webkit-user-drag: none;
-  transition: transform 0.3s ease;
+  width: 110px;
+  -webkit-tap-highlight-color: transparent;
+  cursor: pointer;
 }
 
-.logo-container:hover img {
-  transform: scale(1.05);
-}
-
+/* Título */
 .register-title {
   font-family: "Fraunces", serif;
-  font-size: 1.7rem;
-  margin: 0;
+  font-size: 1.9rem;
   color: #512615;
+  margin: 5px 0 12px 0;
 }
 
 /* ===============================
    AVATAR
    =============================== */
-.avatar-container {
-  width: 110px;
-  height: 110px;
-  border-radius: 50%;
-  background: #ffffff;
-  border: 3px solid #33673B;
-  margin: 0 auto;
-  margin-bottom: 22px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-
-  /* Elevación */
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+.avatar-wrapper {
+  margin: 12px 0 18px 0;
 }
 
-.avatar-img {
-  width: 90px;
-  height: 90px;
-  user-select: none;
-  -webkit-user-drag: none;
+.avatar-preview {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+
+  border: 3px solid #33673B; /* ← verde fuerte real */
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  
+  transition: transform 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.avatar-preview:hover {
+  transform: scale(1.03);
 }
 
 /* ===============================
-   TARJETA SECUNDARIA (INPUTS)
+   TARJETA SECUNDARIA (FORM)
    =============================== */
-.register-inner-card {
-  background: #ffffff;
+.form-card {
+  background: #fff;
   border-radius: 16px;
-  padding: 25px;
+
+  border: 1.8px solid #512615; /* ← borde café real */
+  padding: 20px;
   margin-top: 10px;
 
-  /* borde café real */
-  border: 1.7px solid #512615;
-
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 5px 14px rgba(0,0,0,0.06);
 }
 
 /* ===============================
-   INPUT GROUP
+   INPUTS
    =============================== */
 .input-group {
-  position: relative;
   display: flex;
   align-items: center;
-  border: 1.6px solid #D9D9D9;
+  border: 1.5px solid #E0E0E0;
   border-radius: 12px;
-  padding: 10px 12px;
-  margin-bottom: 18px;
-  background-color: #fff;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.input-group:focus-within {
-  border-color: #33673B;
-  box-shadow: 0 0 0 2px rgba(51, 103, 59, 0.12);
+  padding: 10px;
+  margin-bottom: 16px;
+  transition: border 0.2s ease, box-shadow 0.2s ease;
 }
 
 .input-group input {
@@ -137,50 +105,39 @@ body {
   border: none;
   outline: none;
   font-size: 1rem;
-  color: #2E2A27;
-  font-family: "Roboto", sans-serif;
-  background: transparent;
+  background: none;
+}
+
+.input-group:focus-within {
+  border-color: #33673B;
+  box-shadow: 0 0 0 2px rgba(51,103,59,0.12);
 }
 
 .material-symbols-outlined {
   color: #33673B;
-  margin-right: 8px;
-  font-size: 22px;
-  user-select: none;
+  margin-right: 6px;
 }
 
 /* ===============================
-   BOTÓN CREAR CUENTA
+   BOTÓN REGISTRAR
    =============================== */
 .btn-register {
   width: 100%;
-  background-color: #33673B;
-  color: #fff;
+  background: #33673B;
   border: none;
-  border-radius: 12px;
-  padding: 14px;
+  color: #fff;
   font-size: 1rem;
-  font-weight: 500;
+  padding: 13px;
+  border-radius: 12px;
   cursor: pointer;
-  margin-top: 10px;
-  transition: background-color 0.3s ease, transform 0.2s ease;
 
-  /* Elevación */
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+  transition: transform 0.2s ease, background-color 0.3s ease;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.15);
 }
 
 .btn-register:hover {
-  background-color: #28532E;
+  background: #2a5630;
   transform: translateY(-2px);
-}
-
-.btn-register:active {
-  transform: scale(0.98);
-}
-
-/* Quitar destellos azules */
-button, a, img, input {
-  -webkit-tap-highlight-color: transparent;
 }
 
 /* ===============================
@@ -189,7 +146,7 @@ button, a, img, input {
 #snackbar {
   visibility: hidden;
   min-width: 280px;
-  background-color: #33673B;
+  background: #33673B;
   color: #fff;
   text-align: center;
   border-radius: 8px;
@@ -198,52 +155,20 @@ button, a, img, input {
   left: 50%;
   bottom: 30px;
   transform: translateX(-50%);
-  font-size: 0.95rem;
   z-index: 1000;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
 }
 
 #snackbar.show {
   visibility: visible;
-  animation: fadein 0.4s, fadeout 0.4s 1.8s;
+  animation: fadein .4s, fadeout .4s 2s;
 }
 
 @keyframes fadein {
-  from { opacity: 0; bottom: 10px; }
-  to { opacity: 1; bottom: 30px; }
+  from { bottom: 20px; opacity: 0; }
+  to { bottom: 30px; opacity: 1; }
 }
 
 @keyframes fadeout {
-  from { opacity: 1; bottom: 30px; }
-  to { opacity: 0; bottom: 10px; }
-}
-
-/* ===============================
-   RESPONSIVE
-   =============================== */
-
-@media (max-width: 480px) {
-
-  .register-card {
-    padding: 22px;
-    max-width: 360px;
-  }
-
-  .register-inner-card {
-    padding: 20px;
-  }
-
-  .register-title {
-    font-size: 1.5rem;
-  }
-
-  .avatar-container {
-    width: 95px;
-    height: 95px;
-  }
-
-  .avatar-img {
-    width: 75px;
-    height: 75px;
-  }
+  from { bottom: 30px; opacity: 1; }
+  to { bottom: 20px; opacity: 0; }
 }
