@@ -3,230 +3,111 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Café Cortero | La esencia de Honduras en cada sorbo</title>
+  <title>Crear Cuenta | Café Cortero</title>
 
-  <!-- Fuentes e íconos -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Playfair+Display:wght@600&family=Material+Symbols+Rounded" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <!-- Tipografía Material 3 Expressive -->
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
 
-  <!-- Estilos principales -->
-  <link rel="stylesheet" href="css/main.css?v=11">
+  <!-- Iconos Material Symbols -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
 
-  <style>
-    /* === Efecto hover para el texto "Crear cuenta" === */
-    .crear-cuenta-label a:hover {
-      color: #24522A;
-      text-decoration: underline;
-      transition: color 0.25s ease, text-decoration 0.25s ease;
-    }
+  <!-- Estilos del registro -->
+  <link rel="stylesheet" href="css/registro-cliente.css">
 
-    /* === Eliminar efecto azul táctil en "Crear cuenta", logo y enlaces === */
-    a, a:focus, a:active, a:visited {
-      -webkit-tap-highlight-color: transparent !important;
-      outline: none !important;
-    }
-
-    .logo img,
-    .drawer-links a,
-    .nav-links a {
-      -webkit-tap-highlight-color: transparent !important;
-      touch-action: manipulation;
-    }
-
-    * {
-      -webkit-user-select: none;
-      user-select: none;
-    }
-  </style>
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="imagenes/logo.png">
 </head>
 
 <body>
-  <!-- === HEADER === -->
-  <header class="header">
-    <div class="header-content">
-      <button class="menu-toggle" id="menu-toggle">
-        <i class="fa-solid fa-bars"></i>
-      </button>
+  <main class="register-container">
 
-      <a href="index.html" class="logo desktop-only">
-        <img src="imagenes/logo.png" alt="Café Cortero">
-      </a>
+    <!-- TARJETA PRINCIPAL -->
+    <section class="register-card">
 
-      <nav class="nav-links desktop-only">
-        <a href="#productos">Productos</a>
-        <a href="mis-pedidos.html">Mis Pedidos</a>
-        <a href="#nosotros">Nosotros</a>
-        <a href="#contacto" class="contact-link">Contacto</a>
-        <a href="login.html" class="login-link">Iniciar sesión</a>
-      </nav>
+      <!-- LOGO + TÍTULO -->
+      <div class="register-header">
+        <div class="logo-container" onclick="window.location.href='index.html'">
+          <img src="imagenes/logo.png" alt="Café Cortero" class="logo-img">
+        </div>
 
-      <button class="cart-btn" id="cart-btn">
-        <i class="fa-solid fa-cart-shopping"></i>
-        <span class="cart-count" id="cart-count">0</span>
-      </button>
-    </div>
-  </header>
-
-  <!-- === DRAWER (MENÚ MÓVIL) === -->
-  <div class="drawer" id="drawer">
-    <div class="drawer-header">
-      <a href="index.html" class="drawer-logo">
-        <img src="imagenes/logo.png" alt="Café Cortero">
-      </a>
-    </div>
-    <nav class="drawer-links">
-      <a href="#productos">Productos</a>
-      <a href="mis-pedidos.html">Mis Pedidos</a>
-      <a href="#nosotros">Nosotros</a>
-      <a href="#contacto">Contacto</a>
-      <a href="login.html" class="drawer-login">Iniciar sesión</a>
-    </nav>
-  </div>
-
-  <main>
-    <!-- === HERO EN TARJETA === -->
-    <section class="hero">
-      <div class="hero-text">
-        <h1>
-          <span class="verde">La esencia de Honduras en cada sorbo.</span>
-        </h1>
-        <p>Café hondureño de altura, tueste medio y esencia familiar.</p>
+        <h2 class="register-title">Crear cuenta</h2>
       </div>
 
-      <div class="hero-card">
-        <div class="hero-carousel">
-          <img src="imagenes/cafe_1.jpg" alt="Café Cortero 1">
-          <img src="imagenes/cafe_2.jpg" alt="Café Cortero 2">
-          <img src="imagenes/cafe_3.jpg" alt="Café Cortero 3">
-          <img src="imagenes/cafe_4.jpg" alt="Café Cortero 4">
-          <img src="imagenes/cafe_5.jpg" alt="Café Cortero 5">
-        </div>
+      <!-- AVATAR (fuera de la tarjeta secundaria) -->
+      <div class="avatar-container">
+        <img src="imagenes/avatar-default.svg" alt="Avatar" class="avatar-img">
       </div>
-    </section>
 
-    <!-- === PRODUCTO PRINCIPAL === -->
-    <section id="productos" class="product-main">
-      <div class="product-text">
-        <div class="product-label">
-          <small>CAFÉ EN GRANO / MOLIDO</small>
-          <p class="subtext">Tueste medio · Altura · Esencia familiar</p>
-        </div>
-        <h2 id="product-name">Café Cortero 250g</h2>
-        <span id="product-badge" class="pill">100% arábica · Danlí</span>
+      <!-- TARJETA SECUNDARIA (inputs) -->
+      <div class="register-inner-card">
 
-        <div style="margin-top: 1.2rem;">
-          <div class="product-split" title="Agregar al carrito">
-            <span class="price-part">L 180</span>
-            <span class="icon-part" id="product-add">
-              <i class="fa-solid fa-cart-plus"></i>
-            </span>
+        <form id="registroForm">
+
+          <!-- Nombre -->
+          <div class="input-group">
+            <span class="material-symbols-outlined">person</span>
+            <input 
+              type="text" 
+              id="nombreInput" 
+              placeholder="Nombre completo"
+              required>
           </div>
-        </div>
+
+          <!-- Correo -->
+          <div class="input-group">
+            <span class="material-symbols-outlined">mail</span>
+            <input 
+              type="email" 
+              id="correoInput" 
+              placeholder="Correo electrónico"
+              required>
+          </div>
+
+          <!-- Teléfono -->
+          <div class="input-group">
+            <span class="material-symbols-outlined">call</span>
+            <input 
+              type="tel" 
+              id="telefonoInput" 
+              placeholder="Teléfono"
+              required>
+          </div>
+
+          <!-- Contraseña -->
+          <div class="input-group">
+            <span class="material-symbols-outlined">lock</span>
+            <input 
+              type="password" 
+              id="passwordInput" 
+              placeholder="Contraseña"
+              required>
+          </div>
+
+          <!-- Confirmar Contraseña -->
+          <div class="input-group">
+            <span class="material-symbols-outlined">lock</span>
+            <input 
+              type="password" 
+              id="confirmPasswordInput" 
+              placeholder="Confirmar contraseña"
+              required>
+          </div>
+
+          <!-- Botón crear cuenta -->
+          <button type="submit" class="btn-register">
+            Crear cuenta
+          </button>
+
+        </form>
       </div>
 
-      <div class="product-img-wrap">
-        <img id="product-image" src="imagenes/bolsa_1.png" alt="Bolsa Café Cortero">
-      </div>
-    </section>
-
-    <!-- === CARRUSEL DE PRODUCTOS === -->
-    <section class="related" style="margin-top: 6 rem;">
-      <h3 class="similar-title">También te puede interesar</h3>
-      <div class="carousel-container">
-        <button class="carousel-prev desktop-only"><i class="fa-solid fa-chevron-left"></i></button>
-        <div class="similar-list" id="lista-similares">
-          <script>
-            const productos = [
-              { img: 'imagenes/bolsa_1.png', nombre: 'Café Cortero 250g', precio: 'L 180' },
-              { img: 'imagenes/bolsa_2.png', nombre: 'Café Cortero 500g', precio: 'L 320' },
-              { img: 'imagenes/bolsa_1.png', nombre: 'Café Cortero 1lb', precio: 'L 550' },
-              { img: 'imagenes/bolsa_2.png', nombre: 'Café Regalo', precio: 'L 260' },
-              { img: 'imagenes/bolsa_1.png', nombre: 'Café Premium', precio: 'L 480' },
-              { img: 'imagenes/bolsa_2.png', nombre: 'Café Tradicional', precio: 'L 150' }
-            ];
-            document.write(
-              productos.map(p => `
-                <div class="similar-card" 
-                     data-name="${p.nombre}" 
-                     data-price="${p.precio}" 
-                     data-img="${p.img}">
-                  <img src="${p.img}" alt="${p.nombre}">
-                  <h4>${p.nombre}</h4>
-                  <div class="price-sm">${p.precio}</div>
-                </div>
-              `).join('')
-            );
-          </script>
-        </div>
-        <button class="carousel-next desktop-only"><i class="fa-solid fa-chevron-right"></i></button>
-      </div>
-    </section>
-
-    <!-- === SOBRE NOSOTROS === -->
-    <section id="nosotros" class="about">
-      <div class="about-text">
-        <small>Nuestra historia</small>
-        <h2>Sobre Café Cortero</h2>
-        <p>
-          Café Cortero es un proyecto familiar que produce café de calidad,
-          amigable con el medio ambiente y con el sabor auténtico de Honduras.
-        </p>
-        <p>
-          Cada grano es cultivado con respeto, cosechado a mano y tostado con dedicación
-          para conservar su esencia natural.
-        </p>
-        <div class="about-pills">
-          <span class="about-pill">Proyecto familiar</span>
-          <span class="about-pill">Origen hondureño</span>
-          <span class="about-pill">Café sostenible</span>
-        </div>
-      </div>
-      <div class="about-img">
-        <img src="imagenes/nosotros.jpg" alt="Productor de Café Cortero">
-      </div>
-    </section>
-
-    <!-- === CONTACTO === -->
-    <section id="contacto" class="contacto">
-      <h2>Contáctanos</h2>
-      <p>
-        Queremos compartir contigo la pasión por el café hondureño.<br>
-        Escríbenos por <strong class="verde">WhatsApp</strong> o síguenos en 
-        <strong class="verde">Facebook</strong> desde el botón de mensaje en pantalla.
-      </p>
     </section>
   </main>
 
-  <!-- === FOOTER === -->
-  <footer>
-    <p>
-      <img src="imagenes/logo_secundario.png" alt="Logo Café Cortero" class="footer-logo-inline">
-      2025 Café Cortero. Todos los derechos reservados.
-    </p>
-  </footer>
+  <!-- Snackbar para errores -->
+  <div id="snackbar"></div>
 
-  <!-- === FAB === -->
-  <div class="fab-container" id="fab">
-    <button class="fab-main" id="fab-main">
-      <i class="fa-solid fa-comments"></i>
-    </button>
-    <div class="fab-options">
-      <a href="https://wa.me/50494546047?text=Hola%2C%20quiero%20más%20información%20sobre%20Café%20Cortero"
-         target="_blank"
-         class="fab-whatsapp"
-         title="WhatsApp">
-        <i class="fa-brands fa-whatsapp"></i>
-      </a>
-      <a href="https://www.facebook.com/share/1FsrT4DYrU/"
-         target="_blank"
-         class="fab-facebook"
-         title="Facebook">
-        <i class="fa-brands fa-facebook-f"></i>
-      </a>
-    </div>
-  </div>
-
-  <!-- === JS principal === -->
-  <script src="js/main.js?v=11"></script>
+  <!-- JS externo del registro -->
+  <script src="js/registro-cliente.js" type="module"></script>
 </body>
 </html>
