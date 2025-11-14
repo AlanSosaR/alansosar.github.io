@@ -684,18 +684,18 @@ footer p {
 }
 
 .footer-logo-inline {
-  height: 1.35em;        /* ⬅️ ahora queda visualmente igual al texto */
+  height: 1.65em; /* ⬅️ más grande para compensar el espacio interno */
   width: auto;
   vertical-align: middle;
   display: inline-block;
-  transform: translateY(2px); /* alineación fina */
+  transform: translateY(3px); /* ⬅️ alineación fina */
   opacity: 0.95;
 }
 
 @media (max-width: 500px) {
   .footer-logo-inline {
-    height: 1.15em;      /* ⬅️ más pequeño para pantallas pequeñas */
-    transform: translateY(1px);
+    height: 1.45em; /* versión móvil */
+    transform: translateY(2px);
   }
 }
 
