@@ -474,6 +474,19 @@ body {
   border-radius: 12px;
   margin-bottom: 0.6rem;
 }
+/* === Tarjeta seleccionada — evita que se corte arriba === */
+.similar-card.active-card {
+  transform: translateY(-6px);
+  box-shadow: 0 6px 18px rgba(51, 103, 59, 0.25);
+  border: 1px solid var(--verde);
+  z-index: 5 !important;
+}
+
+/* Más respiro arriba y abajo del carrusel */
+.similar-list {
+  padding-top: 14px !important;
+  padding-bottom: 14px !important;
+}
 
 .similar-card h4 {
   font-size: 0.9rem;
