@@ -656,38 +656,40 @@ body {
 
 /* === FOOTER CON LOGO AJUSTADO AL TAMAÑO DEL TEXTO === */
 footer {
+/* === FOOTER === */
+footer {
   background: var(--blanco);
   border-top: 1px solid rgba(0,0,0,0.05);
   text-align: center;
-  padding: 1rem;
+  padding: 1.2rem 1rem;
 }
 
 footer p {
   margin: 0;
-  font-size: 0.95rem; /* tamaño base del texto */
+  font-size: 1rem;
   color: var(--marron);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 10px;
   flex-wrap: nowrap;
   white-space: nowrap;
+  line-height: 1;
 }
 
-/* === LOGO INLINE AJUSTADO === */
 .footer-logo-inline {
-  height: 1.25em;   /* ⬅️ tamaño ligeramente mayor que el texto */
+  height: 1.65em; 
   width: auto;
   vertical-align: middle;
   display: inline-block;
-  transform: translateY(2px); /* ⬅️ alineación fina */
+  transform: translateY(2px);
   opacity: 0.95;
 }
 
 @media (max-width: 500px) {
   .footer-logo-inline {
-    height: 1.15em;  /* versión móvil */
-    transform: translateY(2px);
+    height: 1.5em;
+    transform: translateY(1px);
   }
 }
 
