@@ -589,7 +589,7 @@ body {
   box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
 
-/* Imagen "Nosotros" adaptada para rellenar la tarjeta y mantener altura definida */
+/* === SOBRE NOSOTROS — Imagen más grande premium === */
 .about-img {
   display: flex;
   align-items: center;
@@ -598,41 +598,42 @@ body {
 
 .about-img img {
   width: 100%;
-  height: 560px;           /* escritorio: 560px (pediste conservar alto similar) */
-  object-fit: cover;       /* rellena la tarjeta sin dejar espacios */
+  height: 650px;  /* ⭐ Altura premium escritorio */
+  object-fit: cover;
   border-radius: 14px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.2);
   transition: transform 0.4s ease, box-shadow 0.4s ease;
 }
 
+/* Hover solo en PC */
 .about-img img:hover {
   transform: translateY(-8px);
   box-shadow: 0 14px 34px rgba(0,0,0,0.3);
 }
 
+/* Tablet */
 @media (max-width: 1200px) and (min-width: 901px) {
   .about-img img {
-    height: 420px;         /* tablet */
+    height: 520px;
   }
 }
 
+/* Móvil grande */
 @media (max-width: 900px) {
   .about {
     grid-template-columns: 1fr;
     text-align: center;
   }
-@media (max-width: 600px) {
+
   .about-img img {
-    height: 420px; /* 🟢 más alta en móvil */
-    border-radius: 16px; /* bordes suaves */
+    height: 460px;
   }
 }
-  .about-img img {
-    height: 360px;         /* móvil */
-  }
 
-  .about-pills {
-    justify-content: center;
+/* Móvil pequeño */
+@media (max-width: 600px) {
+  .about-img img {
+    height: 480px;
   }
 }
 
