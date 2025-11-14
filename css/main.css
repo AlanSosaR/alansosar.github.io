@@ -663,6 +663,7 @@ body {
   max-width: 700px !important;
 }
 
+
 /* === FOOTER CON LOGO AJUSTADO AL TAMAÑO DEL TEXTO === */
 footer {
   background: var(--blanco);
@@ -683,18 +684,19 @@ footer p {
   white-space: nowrap;
 }
 
+/* === LOGO INLINE AJUSTADO === */
 .footer-logo-inline {
-  height: 1.65em; /* ⬅️ más grande para compensar el espacio interno */
+  height: 1.25em;   /* ⬅️ tamaño ligeramente mayor que el texto */
   width: auto;
   vertical-align: middle;
   display: inline-block;
-  transform: translateY(3px); /* ⬅️ alineación fina */
+  transform: translateY(2px); /* ⬅️ alineación fina */
   opacity: 0.95;
 }
 
 @media (max-width: 500px) {
   .footer-logo-inline {
-    height: 1.45em; /* versión móvil */
+    height: 1.15em;  /* versión móvil */
     transform: translateY(2px);
   }
 }
