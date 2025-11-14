@@ -49,20 +49,25 @@ function addToCart(product) {
 // === MAIN ===
 document.addEventListener('DOMContentLoaded', () => {
 
-  // === MENÚ MÓVIL ===
+  // === MENÚ MÓVIL (CORREGIDO) ===
   const menuToggle = document.getElementById('menu-toggle');
   const drawer = document.getElementById('drawer');
   const drawerLogo = drawer ? drawer.querySelector('img') : null;
 
   if (menuToggle && drawer) {
-    menuToggle.addEventListener('click', () => drawer.classList.add('open'));
+    // ⭐ Ahora abre y cierra con toggle
+    menuToggle.addEventListener('click', () => {
+      drawer.classList.toggle('open');
+    });
   }
+
   if (drawerLogo) {
     drawerLogo.addEventListener('click', () => {
       drawer.classList.remove('open');
       window.location.href = 'index.html';
     });
   }
+
   document.querySelectorAll('.drawer-links a').forEach(link => {
     link.addEventListener('click', () => drawer.classList.remove('open'));
   });
