@@ -847,9 +847,3 @@ footer p {
     transform: scale(1.02);
   }
 }
-.similar-card.active-card {
-  transform: translateY(-4px);
-  box-shadow: 0 6px 18px rgba(51, 103, 59, 0.25);
-  border: 1px solid #33673B;
-  transition: all 0.3s ease;
-}
