@@ -1,839 +1,208 @@
-:root {
-  --marron: #512615;
-  --verde: #33673B;
-  --blanco: #ffffff;
-  --gris: #f5f5f5;
-  --sombra: 0 6px 20px rgba(0, 0, 0, 0.08);
-}
-
-/* RESET */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: "Poppins", sans-serif;
-  background: var(--blanco);
-  color: var(--marron);
-  scroll-behavior: smooth;
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* === HEADER === */
-.header {
-  position: fixed;
-  top: 0;
-  width: 100%;
-  background: var(--blanco);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
-  z-index: 1000;
-}
-
-.header-content {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0.8rem 1.2rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 64px;
-}
-
-/* Logo */
-.logo img {
-  height: 60px;
-  display: block;
-}
-
-/* Desktop logo visible */
-.logo.desktop-only {
-  display: none;
-}
-@media (min-width: 901px) {
-  .logo.desktop-only {
-    display: block;
-  }
-}
-
-/* Menú */
-.menu-toggle {
-  background: none;
-  border: none;
-  color: var(--marron);
-  font-size: 1.6rem;
-  display: none;
-  cursor: pointer;
-}
-
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 2rem;
-}
-
-.nav-links a {
-  text-decoration: none;
-  color: var(--marron);
-  font-weight: 500;
-  transition: color 0.3s ease;
-}
-
-.nav-links a:hover {
-  color: var(--verde);
-}
-
-.contact-link {
-  margin-right: 1.5rem;
-}
-
-/* === CARRITO === */
-.cart-btn {
-  position: relative;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  border: none;
-  background: rgba(51, 103, 59, 0.15);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-}
-
-.cart-btn:hover {
-  transform: scale(1.05);
-}
-
-.cart-btn i {
-  color: var(--verde);
-  font-size: 1.3rem;
-}
-
-.cart-count {
-  position: absolute;
-  top: -6px;
-  right: -6px;
-  background: #d72638;
-  color: #fff;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  font-size: 0.7rem;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Animación rebote carrito */
-
-@keyframes cartAmazon {
-  0%   { transform: scale(1); filter: brightness(1); }
-  40%  { transform: scale(1.05); filter: brightness(1.15); } /* 🟢 efecto más suave */
-  60%  { transform: scale(0.98); filter: brightness(1.05); }
-  100% { transform: scale(1); filter: brightness(1); }
-}
-
-.cart-btn.animate {
-  animation: cartAmazon 0.4s ease-out;
-}
-
-/* === DRAWER (menú móvil) === */
-/* Logo alineado a la izquierda dentro del drawer (solicitado) */
-.drawer {
-  position: fixed;
-  top: 0;
-  right: -100%;
-  width: 75%;
-  max-width: 320px;
-  height: 100vh;
-  background-color: var(--blanco);
-  box-shadow: -4px 0 16px rgba(0, 0, 0, 0.15);
-  display: flex;
-  flex-direction: column;
-  transition: right 0.3s ease;
-  z-index: 2000;
-}
-
-.drawer.open {
-  right: 0;
-}
-
-.drawer-header {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start; /* alineado a la izquierda */
-  padding-left: 1.4rem;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-.drawer-header img {
-  height: 60px;
-  cursor: pointer;
-  margin: 0;
-}
-
-.drawer-links {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  padding: 1rem 1.4rem;
-}
-
-.drawer-links a {
-  text-decoration: none;
-  color: var(--marron);
-  font-weight: 500;
-  transition: color 0.3s;
-}
-
-.drawer-links a:hover {
-  color: var(--verde);
-}
-
-/* === AJUSTE: menú alineado al carrito en escritorio === */
-@media (min-width: 901px) {
-  .header-content {
-    display: flex;
-    align-items: center;
-    justify-content: space-between; /* logo izq, nav en medio, carrito der */
-  }
-
-  .nav-links {
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-    margin-left: auto;
-    margin-right: 2rem; /* espacio entre "Contacto" y el carrito */
-  }
-
-  .cart-btn {
-    flex-shrink: 0;
-  }
-}
-
-/* === HERO === */
-.hero {
-  padding-top: 7rem;
-  text-align: center;
-  margin-bottom: 3rem;
-}
-
-.hero-text {
-  margin-bottom: 1.8rem;
-  text-align: center;
-  padding: 0 1rem;
-}
-
-.hero-text h1 {
-  font-family: "Playfair Display", serif;
-  font-size: 2.8rem;
-  font-weight: 600;
-  line-height: 1.1;
-  color: var(--verde);
-}
-
-/* Texto hero optimizado en móviles (solicitado) */
-@media (max-width: 900px) {
-  .hero-text h1 {
-    font-size: 2rem;
-    line-height: 1.2;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-}
-
-.hero-text p {
-  color: #6f5a4e;
-  margin-top: 0.5rem;
-}
-
-/* === HERO CARD (Outlined / Tarjeta delineada mejorada) === */
-.hero-card {
-  background: var(--blanco);
-  max-width: 1100px;
-  margin: 0 auto;
-  border-radius: 12px; /* 🔹 Bordes ligeramente suaves para elegancia */
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08); /* 🔹 Elevación base */
-  overflow: hidden;
-  position: relative;
-  transition: all 0.3s ease;
-}
-
-/* Efecto hover sutil (solo visible en escritorio) */
-.hero-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.12); /* 🔹 Más profundidad */
-}
-
-/* 🔹 En móviles: sombra más suave sin movimiento */
-@media (max-width: 900px) {
-  .hero-card {
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-    border-radius: 8px;
-  }
-}
-
-/* === HERO CARRUSEL === */
-.hero-carousel {
-  position: relative;
-  width: 100%;
-  height: 560px; /* escritorio */
-  overflow: hidden;
-}
-
-.hero-carousel img {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;    /* la imagen rellena sin deformarse */
-  opacity: 0;
-  transition: opacity 1.5s ease-in-out;
-}
-
-.hero-carousel img.active {
-  opacity: 1;
-}
-
-@media (max-width: 1200px) and (min-width: 901px) {
-  .hero-carousel {
-    height: 420px; /* tablet */
-  }
-}
-
-@media (max-width: 900px) {
-  .hero-carousel {
-    height: 360px; /* móvil */
-  }
-}
-
-/* === PRODUCTO PRINCIPAL === */
-.product-main {
-  max-width: 1100px;
-  margin: 3rem auto;
-  background: var(--blanco);
-  border-radius: 24px;
-  box-shadow: var(--sombra);
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-  padding: 2rem;
-  align-items: center;
-  text-align: left;
-  margin-bottom: 2.5rem; /* 🟢 espacio extra entre el producto y el carrusel */
-}
-
-/* Mantengo intactos los estilos del carrusel de productos y FAB (no tocados). */
-
-.product-label small {
-  font-weight: 600;
-  color: var(--marron);
-  text-transform: uppercase;
-}
-
-.product-label .subtext {
-  color: #a78c7c;
-  font-size: 0.9rem;
-  margin-top: 2px;
-}
-
-.product-text h2 {
-  font-family: "Playfair Display", serif;
-  font-size: 2rem;
-  color: var(--marron);
-  margin: 0.5rem 0;
-}
-
-.pill {
-  background: #fff;
-  border: 1px solid #ddd;
-  color: var(--marron);
-  border-radius: 999px;
-  padding: 0.4rem 1rem;
-  font-size: 0.85rem;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-}
-
-.price {
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: var(--verde);
-}
-
-.btn-main {
-  background: var(--verde);
-  color: #fff;
-  border: none;
-  border-radius: 50%;
-  width: 46px;
-  height: 46px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 8px 16px rgba(51, 103, 59, 0.25);
-}
-
-.btn-main:hover {
-  transform: translateY(-2px);
-}
-
-/* Corrige imagen y fondo */
-.product-img-wrap {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: radial-gradient(circle at center, #f5f5f5 0%, #fff 100%);
-  border-radius: 18px;
-  padding: 1rem;
-}
-
-.product-img-wrap img {
-  width: 100%;
-  max-width: 320px;
-  height: auto;
-  object-fit: contain;
-}
-
-/* === CARRUSEL DE PRODUCTOS === */
-/* (ESTOS estilos se mantienen exactamente como estaban para no romperlo) */
-.related {
-  max-width: 1100px;
-  margin: 0 auto 4rem;
-  padding: 0 1rem;
-}
-
-.similar-list {
-  margin-top: 2.5rem; /* 🟢 baja solo las tarjetas, no el título */
-}
-
-.similar-title {
-  font-size: 1.4rem;
-  margin-bottom: 1rem;
-  color: var(--marron);
-  font-weight: 600;
-}
-
-.carousel-container {
-  position: relative;
-  overflow: hidden;
-}
-
-.similar-list {
-  display: flex;
-  gap: 1rem;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none;
-  padding-bottom: 0.5rem;
-  scroll-behavior: smooth;
-}
-
-.similar-list::-webkit-scrollbar {
-  display: none;
-}
-
-.similar-card {
-  flex: 0 0 190px;                  /* 🔹 un poco más ancha */
-  background: #fff;
-  border-radius: 18px;              /* 🔹 igual que las tarjetas del sitio */
-  box-shadow: var(--sombra);
-  padding: 1.5rem 1rem;             /* 🔹 más espacio interno */
-  scroll-snap-align: start;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-
-.similar-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
-.similar-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
-.similar-card:hover {
-  transform: translateY(-3px);
-}
-
-.similar-card img {
-  width: 100%;
-  height: 190px;
-  object-fit: cover;
-  border-radius: 12px;
-  margin-bottom: 0.6rem;
-}
-/* === Tarjeta seleccionada — evita que se corte arriba === */
-.similar-card.active-card {
-  transform: translateY(-6px);
-  box-shadow: 0 6px 18px rgba(51, 103, 59, 0.25);
-  border: 1px solid var(--verde);
-  z-index: 5 !important;
-}
-
-/* Más respiro arriba y abajo del carrusel */
-.similar-list {
-  padding-top: 14px !important;
-  padding-bottom: 14px !important;
-}
-
-.similar-card h4 {
-  font-size: 0.9rem;
-  color: var(--marron);
-  margin-bottom: 0.3rem;
-}
-
-.price-sm {
-  color: var(--verde);
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.icon-cart {
-  color: var(--verde);
-  font-size: 1.1rem;
-  cursor: pointer;
-}
-
-/* Flechas SOLO escritorio (sin cambios) */
-.carousel-prev, .carousel-next {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(81, 38, 21, 0.5);
-  color: #fff;
-  border: none;
-  border-radius: 50%;
-  width: 44px;
-  height: 44px;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background 0.3s ease;
-  z-index: 10;
-}
-
-.carousel-prev:hover, .carousel-next:hover {
-  background: rgba(81, 38, 21, 0.85);
-}
-
-.carousel-prev { left: 16px; }
-.carousel-next { right: 16px; }
-
-@media (min-width: 901px) {
-  .carousel-prev, .carousel-next { display: flex; }
-}
-
-/* === SOBRE NOSOTROS === */
-/* Usamos las alturas que pediste: escritorio 560, tablet 420, móvil 360 */
-.about {
-  max-width: 1100px;
-  margin: 4rem auto;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-  align-items: center;
-  padding: 0 1rem;
-}
-
-.about-text {
-  color: var(--marron);
-}
-
-.about-text small {
-  display: block;
-  font-size: 0.9rem;
-  color: #a78c7c;
-  margin-bottom: 0.4rem;
-}
-
-.about-text h2 {
-  font-family: "Playfair Display", serif;
-  font-size: 2rem;
-  color: var(--marron);
-  margin-bottom: 0.8rem;
-}
-
-.about-text p {
-  margin-bottom: 0.8rem;
-  line-height: 1.7;
-  color: #5a4538;
-}
-
-.about-pills {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.6rem;
-}
-
-.about-pill {
-  background: #f5f5f5;
-  color: var(--marron);
-  padding: 0.3rem 0.9rem;
-  border-radius: 999px;
-  font-size: 0.85rem;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-}
-
-/* === SOBRE NOSOTROS — Imagen más grande premium === */
-.about-img img {
-  width: 100%;
-  height: 640px;              /* más grande y premium */
-  object-fit: cover;
-  border-radius: 18px;        /* curva premium */
-  box-shadow: 0 18px 40px rgba(0,0,0,0.12); /* sombra elegante */
-  transition: transform 0.4s ease, box-shadow 0.4s ease;
-}
-
-.about-img img:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 22px 48px rgba(0,0,0,0.18); /* hover premium */
-}
-
-/* Tablet */
-@media (max-width: 1200px) and (min-width: 901px) {
-  .about-img img {
-    height: 480px;
-  }
-}
-
-/* Mobile */
-@media (max-width: 900px) {
-  .about {
-    grid-template-columns: 1fr;
-    text-align: center;
-  }
-}
-
-@media (max-width: 600px) {
-  .about-img img {
-    height: 420px; /* móvil */
-    border-radius: 16px;
-  }
-}
-
-/* === AJUSTE CONTACTO Y FOOTER === */
-
-/* Centrar completamente el bloque de "Contáctanos" */
-.contacto {
-  text-align: center !important;
-  margin: 4rem auto !important;
-  max-width: 900px !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  justify-content: center !important;
-}
-
-.contacto h2 {
-  font-family: "Playfair Display", serif !important;
-  color: var(--marron) !important;
-  font-size: 2.2rem !important;
-  margin-bottom: 0.8rem !important;
-}
-
-.contacto p {
-  color: var(--marron) !important;
-  font-size: 1.05rem !important;
-  line-height: 1.7 !important;
-  max-width: 700px !important;
-}
-
-
-/* === FOOTER CON LOGO AJUSTADO AL TAMAÑO DEL TEXTO === */
-footer {
-/* === FOOTER === */
-footer {
-  background: var(--blanco);
-  border-top: 1px solid rgba(0,0,0,0.05);
-  text-align: center;
-  padding: 1.2rem 1rem;
-}
-
-footer p {
-  margin: 0;
-  font-size: 1rem;
-  color: var(--marron);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  flex-wrap: nowrap;
-  white-space: nowrap;
-  line-height: 1;
-}
-
-.footer-logo-inline {
-  height: 1.65em; 
-  width: auto;
-  vertical-align: middle;
-  display: inline-block;
-  transform: translateY(2px);
-  opacity: 0.95;
-}
-
-@media (max-width: 500px) {
-  .footer-logo-inline {
-    height: 1.5em;
-    transform: translateY(1px);
-  }
-}
-
-
-/* === FAB === */
-/* NO TOCAR: mantengo el FAB igual que antes */
-.fab-container {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  z-index: 9999;
-  display: flex;
-  flex-direction: column-reverse;
-  align-items: center;
-  gap: 18px;
-}
-
-.fab-main {
-  background: var(--verde);
-  color: #fff;
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-  cursor: pointer;
-}
-
-.fab-options {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-}
-
-.fab-options a {
-  background: #fff;
-  color: var(--marron);
-  border-radius: 50%;
-  width: 54px;
-  height: 54px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.6rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  opacity: 0;
-  pointer-events: none;
-  transform: translateY(10px);
-  transition: all 0.3s ease;
-}
-
-.fab-container.active .fab-options a {
-  opacity: 1;
-  pointer-events: auto;
-  transform: translateY(0);
-}
-
-/* === RESPONSIVE === */
-@media (max-width: 900px) {
-  .menu-toggle {
-    display: block;
-    position: absolute;
-    left: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-  }
-
-  .cart-btn {
-    position: absolute;
-    right: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-  }
-
-  .nav-links {
-    display: none;
-  }
-
-  .product-main {
-    grid-template-columns: 1fr;
-    margin: 2rem 0.5rem; /* ajuste móvil solicitado para la tarjeta producto */
-  }
-}
-
-/* === BOTÓN SPLIT (ajustado y visualmente más balanceado) === */
-.product-split {
-  display: inline-flex;
-  align-items: center;
-  background: var(--verde);
-  color: #fff;
-  border: none;
-  border-radius: 999px;
-  overflow: hidden;
-  font-weight: 600;
-  font-size: 1rem;
-  box-shadow: 0 6px 16px rgba(51, 103, 59, 0.3);
-  margin-top: 1.4rem;
-  margin-bottom: 1.2rem;
-}
-
-/* Lado del precio (fijo, no clickeable) */
-.product-split .price-part {
-  padding: 0.7rem 1.6rem;
-  pointer-events: none;
-  user-select: none;
-}
-
-/* Lado del carrito (clickeable) */
-.product-split .icon-part {
-  background: rgba(255, 255, 255, 0.18);
-  padding: 0.7rem 1.3rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  border-left: 1px solid rgba(255, 255, 255, 0.25);
-  transition: transform 0.12s ease, background 0.2s ease, box-shadow 0.12s ease;
-}
-
-/* 🔹 Efecto hover (ligeramente más claro) */
-.product-split .icon-part:hover {
-  background: rgba(255, 255, 255, 0.3);
-}
-
-/* 🔹 Al presionar (efecto hacia abajo más físico) */
-.product-split .icon-part:active {
-  transform: translateY(2px);
-  box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.35);
-}
-
-/* Ícono del carrito */
-.product-split .icon-part i {
-  font-size: 1rem;
-  color: #fff;
-}
-
-/* 🔹 En pantallas pequeñas: ocupa el ancho justo y centrado */
-@media (max-width: 600px) {
-  .product-split {
-    transform: scale(1.02);
-  }
-}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Café Cortero | La esencia de Honduras en cada sorbo</title>
+
+  <!-- Fuentes e íconos -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Playfair+Display:wght@600&family=Material+Symbols+Rounded" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- Estilos principales -->
+  <link rel="stylesheet" href="css/main.css?v=11">
+</head>
+
+<body>
+  <!-- === HEADER === -->
+  <header class="header">
+    <div class="header-content">
+      <button class="menu-toggle" id="menu-toggle">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+
+      <a href="index.html" class="logo desktop-only">
+        <img src="imagenes/logo.png" alt="Café Cortero">
+      </a>
+
+      <nav class="nav-links desktop-only">
+        <a href="#productos">Productos</a>
+        <a href="#nosotros">Nosotros</a>
+        <a href="#contacto" class="contact-link">Contacto</a>
+
+        <!-- 🔹 Botón iniciar sesión (vista escritorio) -->
+        <a href="login.html" class="login-link">Iniciar sesión</a>
+      </nav>
+
+      <button class="cart-btn" id="cart-btn">
+        <i class="fa-solid fa-cart-shopping"></i>
+        <span class="cart-count" id="cart-count">0</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- === DRAWER (MENÚ MÓVIL) === -->
+  <div class="drawer" id="drawer">
+    <div class="drawer-header">
+      <a href="index.html" class="drawer-logo">
+        <img src="imagenes/logo.png" alt="Café Cortero">
+      </a>
+    </div>
+    <nav class="drawer-links">
+      <a href="#productos">Productos</a>
+      <a href="#nosotros">Nosotros</a>
+      <a href="#contacto">Contacto</a>
+
+      <!-- 🔹 Botón iniciar sesión (vista móvil) -->
+      <a href="login.html" class="drawer-login">Iniciar sesión</a>
+    </nav>
+  </div>
+
+  <main>
+    <!-- === HERO EN TARJETA === -->
+    <section class="hero">
+      <div class="hero-text">
+        <h1>
+          <span class="verde">La esencia de Honduras en cada sorbo.</span>
+        </h1>
+        <p>Café hondureño de altura, tueste medio y esencia familiar.</p>
+      </div>
+
+      <div class="hero-card">
+        <div class="hero-carousel">
+          <img src="imagenes/cafe_1.jpg" alt="Café Cortero 1">
+          <img src="imagenes/cafe_2.jpg" alt="Café Cortero 2">
+          <img src="imagenes/cafe_3.jpg" alt="Café Cortero 3">
+          <img src="imagenes/cafe_4.jpg" alt="Café Cortero 4">
+          <img src="imagenes/cafe_5.jpg" alt="Café Cortero 5">
+        </div>
+      </div>
+    </section>
+
+    <!-- === PRODUCTO PRINCIPAL === -->
+    <section id="productos" class="product-main">
+      <div class="product-text">
+        <div class="product-label">
+          <small>CAFÉ EN GRANO / MOLIDO</small>
+          <p class="subtext">Tueste medio · Altura · Esencia familiar</p>
+        </div>
+        <h2 id="product-name">Café Cortero 250g</h2>
+        <span id="product-badge" class="pill">100% arábica · Danlí</span>
+
+        <!-- === BOTÓN SPLIT (PRECIO + CARRITO) === -->
+        <div style="margin-top: 1.2rem;">
+          <div class="product-split" title="Agregar al carrito">
+            <span class="price-part">L 180</span>
+            <span class="icon-part" id="product-add">
+              <i class="fa-solid fa-cart-plus"></i>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="product-img-wrap">
+        <img id="product-image" src="imagenes/bolsa_1.png" alt="Bolsa Café Cortero">
+      </div>
+    </section>
+
+    <!-- === CARRUSEL DE PRODUCTOS === -->
+    <section class="related" style="margin-top: 6 rem;">
+      <h3 class="similar-title">También te puede interesar</h3>
+      <div class="carousel-container">
+        <button class="carousel-prev desktop-only"><i class="fa-solid fa-chevron-left"></i></button>
+        <div class="similar-list" id="lista-similares">
+          <script>
+            const productos = [
+              { img: 'imagenes/bolsa_1.png', nombre: 'Café Cortero 250g', precio: 'L 180' },
+              { img: 'imagenes/bolsa_2.png', nombre: 'Café Cortero 500g', precio: 'L 320' },
+              { img: 'imagenes/bolsa_1.png', nombre: 'Café Cortero 1lb', precio: 'L 550' },
+              { img: 'imagenes/bolsa_2.png', nombre: 'Café Regalo', precio: 'L 260' },
+              { img: 'imagenes/bolsa_1.png', nombre: 'Café Premium', precio: 'L 480' },
+              { img: 'imagenes/bolsa_2.png', nombre: 'Café Tradicional', precio: 'L 150' }
+            ];
+            document.write(
+              productos.map(p => `
+                <div class="similar-card" 
+                     data-name="${p.nombre}" 
+                     data-price="${p.precio}" 
+                     data-img="${p.img}">
+                  <img src="${p.img}" alt="${p.nombre}">
+                  <h4>${p.nombre}</h4>
+                  <div class="price-sm">${p.precio}</div>
+                </div>
+              `).join('')
+            );
+          </script>
+        </div>
+        <button class="carousel-next desktop-only"><i class="fa-solid fa-chevron-right"></i></button>
+      </div>
+    </section>
+
+    <!-- === SOBRE NOSOTROS === -->
+    <section id="nosotros" class="about">
+      <div class="about-text">
+        <small>Nuestra historia</small>
+        <h2>Sobre Café Cortero</h2>
+        <p>
+          Café Cortero es un proyecto familiar que produce café de calidad,
+          amigable con el medio ambiente y con el sabor auténtico de Honduras.
+        </p>
+        <p>
+          Cada grano es cultivado con respeto, cosechado a mano y tostado con dedicación
+          para conservar su esencia natural.
+        </p>
+        <div class="about-pills">
+          <span class="about-pill">Proyecto familiar</span>
+          <span class="about-pill">Origen hondureño</span>
+          <span class="about-pill">Café sostenible</span>
+        </div>
+      </div>
+      <div class="about-img">
+        <img src="imagenes/nosotros.jpg" alt="Productor de Café Cortero">
+      </div>
+    </section>
+
+    <!-- === CONTACTO === -->
+    <section id="contacto" class="contacto">
+      <h2>Contáctanos</h2>
+      <p>
+        Queremos compartir contigo la pasión por el café hondureño.<br>
+        Escríbenos por <strong class="verde">WhatsApp</strong> o síguenos en 
+        <strong class="verde">Facebook</strong> desde el botón de mensaje en pantalla.
+      </p>
+    </section>
+  </main>
+
+  <!-- === FOOTER === -->
+  <footer>
+    <p>
+      <img src="imagenes/logo_secundario.png" alt="Logo Café Cortero" class="footer-logo-inline">
+      2025 Café Cortero. Todos los derechos reservados.
+    </p>
+  </footer>
+
+  <!-- === FAB === -->
+  <div class="fab-container" id="fab">
+    <button class="fab-main" id="fab-main">
+      <i class="fa-solid fa-comments"></i>
+    </button>
+    <div class="fab-options">
+      <a href="https://wa.me/50494546047?text=Hola%2C%20quiero%20más%20información%20sobre%20Café%20Cortero"
+         target="_blank"
+         class="fab-whatsapp"
+         title="WhatsApp">
+        <i class="fa-brands fa-whatsapp"></i>
+      </a>
+      <a href="https://www.facebook.com/share/1FsrT4DYrU/"
+         target="_blank"
+         class="fab-facebook"
+         title="Facebook">
+        <i class="fa-brands fa-facebook-f"></i>
+      </a>
+    </div>
+  </div>
+
+  <!-- === JS principal === -->
+  <script src="js/main.js?v=11"></script>
+</body>
+</html>
