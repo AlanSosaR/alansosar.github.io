@@ -50,8 +50,8 @@ function addToCart(product) {
     cart.push(product);
   }
   saveCart(cart);
-  updateCartCount();
-  animateCartIcon(); // ✅ Solo efecto visual, no redirección
+updateCartCount();
+animateCartBadge();   // ✅ animación premium SOLO del numerito rojo
 }
 
 // === MAIN ===
