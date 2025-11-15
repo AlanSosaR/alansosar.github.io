@@ -102,14 +102,21 @@ body {
   justify-content: center;
   cursor: pointer;
 
-  /* ❗ SIN transform, para que no se mueva */
-  transition: none !important;
+/* --- EFECTO DEL CARRITO --- */
+
+/* 🔥 Hover solo en PC (no afecta móvil) */
+@media (min-width: 768px) {
+  .cart-btn:hover {
+    transform: scale(1.05);
+  }
 }
 
-.cart-btn:hover,
-.cart-btn:active {
-  /* ❗ Evita que se expanda o se salga */
-  transform: none !important;
+/* 🚫 Sin animación al tocar en móvil */
+@media (max-width: 767px) {
+  .cart-btn {
+    transition: none !important;
+    transform: none !important;
+  }
 }
 
 .cart-btn i {
