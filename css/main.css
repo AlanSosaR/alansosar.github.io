@@ -1,208 +1,451 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Café Cortero | La esencia de Honduras en cada sorbo</title>
+:root {
+  --marron: #512615;
+  --verde: #33673B;
+  --blanco: #ffffff;
+  --gris: #f5f5f5;
+  --sombra: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
 
-  <!-- Fuentes e íconos -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Playfair+Display:wght@600&family=Material+Symbols+Rounded" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+/* RESET */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-  <!-- Estilos principales -->
-  <link rel="stylesheet" href="css/main.css?v=11">
-</head>
+body {
+  font-family: "Poppins", sans-serif;
+  background: var(--blanco);
+  color: var(--marron);
+  scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
+}
 
-<body>
-  <!-- === HEADER === -->
-  <header class="header">
-    <div class="header-content">
-      <button class="menu-toggle" id="menu-toggle">
-        <i class="fa-solid fa-bars"></i>
-      </button>
+/* === HEADER === */
+.header {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background: var(--blanco);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  z-index: 1000;
+}
 
-      <a href="index.html" class="logo desktop-only">
-        <img src="imagenes/logo.png" alt="Café Cortero">
-      </a>
+.header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0.8rem 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
 
-      <nav class="nav-links desktop-only">
-        <a href="#productos">Productos</a>
-        <a href="#nosotros">Nosotros</a>
-        <a href="#contacto" class="contact-link">Contacto</a>
+.logo img {
+  height: 60px;
+  display: block;
+}
 
-        <!-- 🔹 Botón iniciar sesión (vista escritorio) -->
-        <a href="login.html" class="login-link">Iniciar sesión</a>
-      </nav>
+.logo.desktop-only {
+  display: none;
+}
 
-      <button class="cart-btn" id="cart-btn">
-        <i class="fa-solid fa-cart-shopping"></i>
-        <span class="cart-count" id="cart-count">0</span>
-      </button>
-    </div>
-  </header>
+@media (min-width: 901px) {
+  .logo.desktop-only {
+    display: block;
+  }
+}
 
-  <!-- === DRAWER (MENÚ MÓVIL) === -->
-  <div class="drawer" id="drawer">
-    <div class="drawer-header">
-      <a href="index.html" class="drawer-logo">
-        <img src="imagenes/logo.png" alt="Café Cortero">
-      </a>
-    </div>
-    <nav class="drawer-links">
-      <a href="#productos">Productos</a>
-      <a href="#nosotros">Nosotros</a>
-      <a href="#contacto">Contacto</a>
+/* Menú */
+.menu-toggle {
+  background: none;
+  border: none;
+  color: var(--marron);
+  font-size: 1.6rem;
+  display: none;
+  cursor: pointer;
+}
 
-      <!-- 🔹 Botón iniciar sesión (vista móvil) -->
-      <a href="login.html" class="drawer-login">Iniciar sesión</a>
-    </nav>
-  </div>
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
 
-  <main>
-    <!-- === HERO EN TARJETA === -->
-    <section class="hero">
-      <div class="hero-text">
-        <h1>
-          <span class="verde">La esencia de Honduras en cada sorbo.</span>
-        </h1>
-        <p>Café hondureño de altura, tueste medio y esencia familiar.</p>
-      </div>
+.nav-links a {
+  text-decoration: none;
+  color: var(--marron);
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
 
-      <div class="hero-card">
-        <div class="hero-carousel">
-          <img src="imagenes/cafe_1.jpg" alt="Café Cortero 1">
-          <img src="imagenes/cafe_2.jpg" alt="Café Cortero 2">
-          <img src="imagenes/cafe_3.jpg" alt="Café Cortero 3">
-          <img src="imagenes/cafe_4.jpg" alt="Café Cortero 4">
-          <img src="imagenes/cafe_5.jpg" alt="Café Cortero 5">
-        </div>
-      </div>
-    </section>
+.nav-links a:hover {
+  color: var(--verde);
+}
 
-    <!-- === PRODUCTO PRINCIPAL === -->
-    <section id="productos" class="product-main">
-      <div class="product-text">
-        <div class="product-label">
-          <small>CAFÉ EN GRANO / MOLIDO</small>
-          <p class="subtext">Tueste medio · Altura · Esencia familiar</p>
-        </div>
-        <h2 id="product-name">Café Cortero 250g</h2>
-        <span id="product-badge" class="pill">100% arábica · Danlí</span>
+.contact-link {
+  margin-right: 1.5rem;
+}
 
-        <!-- === BOTÓN SPLIT (PRECIO + CARRITO) === -->
-        <div style="margin-top: 1.2rem;">
-          <div class="product-split" title="Agregar al carrito">
-            <span class="price-part">L 180</span>
-            <span class="icon-part" id="product-add">
-              <i class="fa-solid fa-cart-plus"></i>
-            </span>
-          </div>
-        </div>
-      </div>
+/* === CARRITO === */
+.cart-btn {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(51, 103, 59, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
 
-      <div class="product-img-wrap">
-        <img id="product-image" src="imagenes/bolsa_1.png" alt="Bolsa Café Cortero">
-      </div>
-    </section>
+.cart-btn:hover {
+  transform: scale(1.05);
+}
 
-    <!-- === CARRUSEL DE PRODUCTOS === -->
-    <section class="related" style="margin-top: 6 rem;">
-      <h3 class="similar-title">También te puede interesar</h3>
-      <div class="carousel-container">
-        <button class="carousel-prev desktop-only"><i class="fa-solid fa-chevron-left"></i></button>
-        <div class="similar-list" id="lista-similares">
-          <script>
-            const productos = [
-              { img: 'imagenes/bolsa_1.png', nombre: 'Café Cortero 250g', precio: 'L 180' },
-              { img: 'imagenes/bolsa_2.png', nombre: 'Café Cortero 500g', precio: 'L 320' },
-              { img: 'imagenes/bolsa_1.png', nombre: 'Café Cortero 1lb', precio: 'L 550' },
-              { img: 'imagenes/bolsa_2.png', nombre: 'Café Regalo', precio: 'L 260' },
-              { img: 'imagenes/bolsa_1.png', nombre: 'Café Premium', precio: 'L 480' },
-              { img: 'imagenes/bolsa_2.png', nombre: 'Café Tradicional', precio: 'L 150' }
-            ];
-            document.write(
-              productos.map(p => `
-                <div class="similar-card" 
-                     data-name="${p.nombre}" 
-                     data-price="${p.precio}" 
-                     data-img="${p.img}">
-                  <img src="${p.img}" alt="${p.nombre}">
-                  <h4>${p.nombre}</h4>
-                  <div class="price-sm">${p.precio}</div>
-                </div>
-              `).join('')
-            );
-          </script>
-        </div>
-        <button class="carousel-next desktop-only"><i class="fa-solid fa-chevron-right"></i></button>
-      </div>
-    </section>
+.cart-btn i {
+  color: var(--verde);
+  font-size: 1.3rem;
+}
 
-    <!-- === SOBRE NOSOTROS === -->
-    <section id="nosotros" class="about">
-      <div class="about-text">
-        <small>Nuestra historia</small>
-        <h2>Sobre Café Cortero</h2>
-        <p>
-          Café Cortero es un proyecto familiar que produce café de calidad,
-          amigable con el medio ambiente y con el sabor auténtico de Honduras.
-        </p>
-        <p>
-          Cada grano es cultivado con respeto, cosechado a mano y tostado con dedicación
-          para conservar su esencia natural.
-        </p>
-        <div class="about-pills">
-          <span class="about-pill">Proyecto familiar</span>
-          <span class="about-pill">Origen hondureño</span>
-          <span class="about-pill">Café sostenible</span>
-        </div>
-      </div>
-      <div class="about-img">
-        <img src="imagenes/nosotros.jpg" alt="Productor de Café Cortero">
-      </div>
-    </section>
+.cart-count {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: #d72638;
+  color: #fff;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  font-size: 0.7rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-    <!-- === CONTACTO === -->
-    <section id="contacto" class="contacto">
-      <h2>Contáctanos</h2>
-      <p>
-        Queremos compartir contigo la pasión por el café hondureño.<br>
-        Escríbenos por <strong class="verde">WhatsApp</strong> o síguenos en 
-        <strong class="verde">Facebook</strong> desde el botón de mensaje en pantalla.
-      </p>
-    </section>
-  </main>
+/* Animación rebote carrito */
+@keyframes cartAmazon {
+  0% { transform: scale(1); filter: brightness(1); }
+  40% { transform: scale(1.05); filter: brightness(1.15); }
+  60% { transform: scale(0.98); filter: brightness(1.05); }
+  100% { transform: scale(1); filter: brightness(1); }
+}
 
-  <!-- === FOOTER === -->
-  <footer>
-    <p>
-      <img src="imagenes/logo_secundario.png" alt="Logo Café Cortero" class="footer-logo-inline">
-      2025 Café Cortero. Todos los derechos reservados.
-    </p>
-  </footer>
+.cart-btn.animate {
+  animation: cartAmazon 0.4s ease-out;
+}
 
-  <!-- === FAB === -->
-  <div class="fab-container" id="fab">
-    <button class="fab-main" id="fab-main">
-      <i class="fa-solid fa-comments"></i>
-    </button>
-    <div class="fab-options">
-      <a href="https://wa.me/50494546047?text=Hola%2C%20quiero%20más%20información%20sobre%20Café%20Cortero"
-         target="_blank"
-         class="fab-whatsapp"
-         title="WhatsApp">
-        <i class="fa-brands fa-whatsapp"></i>
-      </a>
-      <a href="https://www.facebook.com/share/1FsrT4DYrU/"
-         target="_blank"
-         class="fab-facebook"
-         title="Facebook">
-        <i class="fa-brands fa-facebook-f"></i>
-      </a>
-    </div>
-  </div>
+/* === DRAWER (menú móvil) === */
+.drawer {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 75%;
+  max-width: 320px;
+  height: 100vh;
+  background-color: var(--blanco);
+  box-shadow: -4px 0 16px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  transition: right 0.3s ease;
+  z-index: 2000;
+}
 
-  <!-- === JS principal === -->
-  <script src="js/main.js?v=11"></script>
-</body>
-</html>
+.drawer.open {
+  right: 0;
+}
+
+.drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: 1.4rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.drawer-header img {
+  height: 60px;
+  cursor: pointer;
+}
+
+/* Drawer links */
+.drawer-links {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem 1.4rem;
+}
+
+.drawer-links a {
+  text-decoration: none;
+  color: var(--marron);
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.drawer-links a:hover {
+  color: var(--verde);
+}
+
+/* === AJUSTE: menú alineado al carrito en escritorio === */
+@media (min-width: 901px) {
+  .header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-left: auto;
+    margin-right: 2rem;
+  }
+
+  .cart-btn {
+    flex-shrink: 0;
+  }
+}
+
+/* === HERO === */
+.hero {
+  padding-top: 7rem;
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.hero-text {
+  margin-bottom: 1.8rem;
+  text-align: center;
+  padding: 0 1rem;
+}
+
+.hero-text h1 {
+  font-family: "Playfair Display", serif;
+  font-size: 2.8rem;
+  font-weight: 600;
+  line-height: 1.1;
+  color: var(--verde);
+}
+
+@media (max-width: 900px) {
+  .hero-text h1 {
+    font-size: 2rem;
+    line-height: 1.2;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+.hero-text p {
+  color: #6f5a4e;
+  margin-top: 0.5rem;
+}
+
+/* === HERO CARD === */
+.hero-card {
+  background: var(--blanco);
+  max-width: 1100px;
+  margin: 0 auto;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: all 0.3s;
+}
+
+.hero-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.12);
+}
+
+@media (max-width: 900px) {
+  .hero-card {
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    border-radius: 8px;
+  }
+}
+
+/* === HERO CARRUSEL === */
+.hero-carousel {
+  position: relative;
+  width: 100%;
+  height: 560px;
+  overflow: hidden;
+}
+
+.hero-carousel img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 1.5s ease-in-out;
+}
+
+.hero-carousel img.active {
+  opacity: 1;
+}
+
+@media (max-width: 1200px) and (min-width: 901px) {
+  .hero-carousel {
+    height: 420px;
+  }
+}
+
+@media (max-width: 900px) {
+  .hero-carousel {
+    height: 360px;
+  }
+}
+
+/* === PRODUCTO PRINCIPAL === */
+.product-main {
+  max-width: 1100px;
+  margin: 3rem auto;
+  background: var(--blanco);
+  border-radius: 24px;
+  box-shadow: var(--sombra);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  padding: 2rem;
+}
+
+/* Imagen */
+.product-img-wrap img {
+  width: 100%;
+  max-width: 320px;
+  object-fit: contain;
+}
+
+/* === CARRUSEL DE PRODUCTOS — ESTABLE === */
+.related {
+  max-width: 1100px;
+  margin: 0 auto 4rem;
+  padding: 0 1rem;
+}
+
+.similar-list {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.similar-card {
+  flex: 0 0 190px;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: var(--sombra);
+  padding: 1.5rem 1rem;
+  scroll-snap-align: start;
+  transition: 0.25s;
+}
+
+.similar-card img {
+  width: 100%;
+  height: 190px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.similar-card.active-card {
+  transform: translateY(-6px);
+  box-shadow: 0 6px 18px rgba(51, 103, 59, 0.25);
+  border: 1px solid var(--verde);
+}
+
+/* Flechas escritorio */
+.carousel-prev, .carousel-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(81, 38, 21, 0.5);
+  color: #fff;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: none;
+}
+
+@media (min-width: 901px) {
+  .carousel-prev, .carousel-next {
+    display: flex;
+  }
+}
+
+/* === SOBRE NOSOTROS — VERSIÓN ESTABLE === */
+.about {
+  max-width: 1100px;
+  margin: 4rem auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.about-text small {
+  color: #a78c7c;
+}
+
+.about-img img {
+  width: 100%;
+  height: 560px;
+  object-fit: cover;
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+/* Tablet */
+@media (max-width: 1200px) and (min-width: 901px) {
+  .about-img img {
+    height: 420px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 900px) {
+  .about {
+    grid-template-columns: 1fr;
+  }
+  .about-img img {
+    height: 360px;
+  }
+}
+
+/* === CONTACTO === */
+.contacto {
+  text-align: center;
+  margin: 4rem auto;
+  max-width: 900px;
+}
+
+/* === FOOTER === */
+footer {
+  background: var(--blanco);
+  border-top: 1px solid rgba(0,0,0,0.05);
+  text-align: center;
+  padding: 1rem;
+}
+
+footer p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--marron);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.footer-logo-inline {
+  height: 1.25em;
+  vertical-align: middle;
+}
