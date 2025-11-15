@@ -133,22 +133,6 @@ body {
   justify-content: center;
 }
 
-.cart-count {
-  position: absolute;
-  top: -6px;
-  right: -6px;
-  background: #d72638;
-  color: #fff;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  font-size: 0.7rem;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 /* Animación rebote carrito */
 
 /* Animación premium SOLO en el número rojo */
