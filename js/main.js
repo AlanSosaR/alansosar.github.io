@@ -22,7 +22,15 @@ function updateCartCount() {
   const badge = document.getElementById('cart-count');
   if (badge) badge.textContent = total;
 }
+// Animación premium SOLO para el circulito rojo (badge)
+function animateCartBadge() {
+    const badge = document.getElementById('cart-count');
+    if (!badge) return;
 
+    badge.classList.remove('animate');  // Reset
+    void badge.offsetWidth;             // Reiniciar animación
+    badge.classList.add('animate');     // Activar animación
+}
 // 🟡 Animación tipo Amazon (pulso suave + brillo sutil)
 function animateCartIcon() {
   const cartBtn = document.getElementById('cart-btn');
