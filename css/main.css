@@ -89,6 +89,7 @@ body {
 }
 
 /* === CARRITO === */
+/* === Carrito Premium fijo === */
 .cart-btn {
   position: relative;
   width: 44px;
@@ -100,16 +101,36 @@ body {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: transform 0.2s ease;
+
+  /* ❗ SIN transform, para que no se mueva */
+  transition: none !important;
 }
 
-.cart-btn:hover {
-  transform: scale(1.05);
+.cart-btn:hover,
+.cart-btn:active {
+  /* ❗ Evita que se expanda o se salga */
+  transform: none !important;
 }
 
 .cart-btn i {
   color: var(--verde);
   font-size: 1.3rem;
+}
+
+.cart-count {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: #d72638;
+  color: #fff;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  font-size: 0.7rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .cart-count {
