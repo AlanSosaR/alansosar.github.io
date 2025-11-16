@@ -40,18 +40,22 @@ function animateCartIcon() {
   if (navigator.vibrate) navigator.vibrate([40, 30, 40]);
 }
 
-// Agregar producto al carrito
+// Agregar producto al carrito (respeta la cantidad seleccionada)
 function addToCart(product) {
   const cart = getCart();
   const index = cart.findIndex(p => p.name === product.name);
+
   if (index >= 0) {
-    cart[index].qty += 1;
+    // Si ya existe, sumar la cantidad que el usuario seleccionó
+    cart[index].qty += product.qty;
   } else {
+    // Si es nuevo, agregarlo tal cual viene con qty seleccionada
     cart.push(product);
   }
+
   saveCart(cart);
-updateCartCount();
-animateCartBadge();   // ✅ animación premium SOLO del numerito rojo
+  updateCartCount();
+  animateCartBadge(); // animación del numerito rojo
 }
 
 // === MAIN ===
