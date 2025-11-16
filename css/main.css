@@ -137,23 +137,31 @@ body {
   }
 }
 
-/* === FIX: mantener carrito dentro de la barra en móvil === */
-@media (max-width: 767px) {
+/* === FIX DEFINITIVO: carrito siempre dentro de la barra en móvil === */
+@media (max-width: 768px) {
+
+  /* Botón del carrito */
   .cart-btn {
-    position: absolute;
-    top: 10px;
-    right: 16px;
+    position: absolute !important;
+    top: 10px !important;
+    right: 16px !important;
+    width: 44px !important;
+    height: 44px !important;
     transform: none !important;
     transition: none !important;
     z-index: 2000;
   }
 
+  /* Contador del carrito */
   .cart-count {
-    top: -4px !important;
+    position: absolute !important;
+    top: -6px !important;
     right: -2px !important;
+    width: 18px !important;
+    height: 18px !important;
+    font-size: 0.70rem !important;
   }
 }
-
 /* ⛔ Sin animación en móvil */
 @media (max-width: 767px) {
    ...
