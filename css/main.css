@@ -88,7 +88,7 @@ body {
   margin-right: 1.5rem;
 }
 
-/* === CARRITO === */
+
 /* === CARRITO === */
 /* === Carrito Premium fijo === */
 
@@ -104,7 +104,23 @@ body {
   justify-content: center;
   cursor: pointer;
 }
+/* Ajuste del carrito SOLO en móvil */
+@media (max-width: 767px) {
+  .cart-btn {
+    width: 40px;
+    height: 40px;
+    transform: none !important;
+    transition: none !important;
+  }
 
+  .cart-count {
+    top: -4px;
+    right: -4px;
+    width: 16px;
+    height: 16px;
+    font-size: 0.65rem;
+  }
+}
 /* --- EFECTO DEL CARRITO --- */
 
 /* 🔥 Hover solo en PC */
