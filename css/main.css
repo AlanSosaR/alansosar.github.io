@@ -473,7 +473,16 @@ body {
   height: auto;
   object-fit: contain;
 }
+/* === FIX: hacer la imagen realmente redondeada === */
+.product-img-wrap {
+  border-radius: 18px !important;
+  overflow: hidden !important;
+}
 
+.product-img-wrap img {
+  border-radius: 18px !important;
+  display: block;
+}
 /* === CARRUSEL DE PRODUCTOS === */
 /* (ESTOS estilos se mantienen exactamente como estaban para no romperlo) */
 .related {
