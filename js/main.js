@@ -113,7 +113,7 @@ const btnMain = document.getElementById('product-add');
 if (btnMain) {
   btnMain.addEventListener('click', () => {
 
-    // 🟢 Obtener la cantidad seleccionada del nuevo selector
+    // 🟢 Obtener la cantidad seleccionada del selector
     const qty = parseInt(document.getElementById('qty-number')?.textContent) || 1;
 
     const name = document.getElementById('product-name').textContent.trim();
@@ -124,15 +124,17 @@ if (btnMain) {
 
     const product = { name, price, img, qty };
 
-    // 🛒 Agrega al carrito con la cantidad seleccionada
+    // 🛒 Agregar al carrito
     addToCart(product);
 
     // 🔄 Reiniciar la cantidad a 1 después de agregar
-    const qtyNumber = document.getElementById('qty-number');
-    if (qtyNumber) qtyNumber.textContent = "1";
+    qtyNumber.textContent = "1";
   });
 }
-  // === SELECTOR DE CANTIDAD (botones + y -) ===
+
+
+
+// === SELECTOR DE CANTIDAD (botones + y -) ===
 const qtyNumber = document.getElementById('qty-number');
 const qtyMinus = document.getElementById('qty-minus');
 const qtyPlus = document.getElementById('qty-plus');
