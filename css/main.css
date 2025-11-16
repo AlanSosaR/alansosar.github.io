@@ -89,7 +89,9 @@ body {
 }
 
 /* === CARRITO === */
+/* === CARRITO === */
 /* === Carrito Premium fijo === */
+
 .cart-btn {
   position: relative;
   width: 44px;
@@ -101,17 +103,18 @@ body {
   align-items: center;
   justify-content: center;
   cursor: pointer;
+}
 
 /* --- EFECTO DEL CARRITO --- */
 
-/* 🔥 Hover solo en PC (no afecta móvil) */
+/* 🔥 Hover solo en PC */
 @media (min-width: 768px) {
   .cart-btn:hover {
     transform: scale(1.05);
   }
 }
 
-/* 🚫 Sin animación al tocar en móvil */
+/* 🚫 Sin animación en móvil */
 @media (max-width: 767px) {
   .cart-btn {
     transition: none !important;
