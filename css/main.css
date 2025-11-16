@@ -467,12 +467,6 @@ body {
   padding: 1rem;
 }
 
-.product-img-wrap img {
-  width: 100%;
-  max-width: 320px;
-  height: auto;
-  object-fit: contain;
-}
 /* === FIX: hacer la imagen realmente redondeada === */
 .product-img-wrap {
   border-radius: 18px !important;
@@ -480,6 +474,10 @@ body {
 }
 
 .product-img-wrap img {
+  width: 100%;
+  max-width: 320px;
+  height: auto;
+  object-fit: contain;
   border-radius: 18px !important;
   display: block;
 }
