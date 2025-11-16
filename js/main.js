@@ -109,16 +109,29 @@ document.addEventListener('DOMContentLoaded', () => {
   updateCartCount();
 
   // === PRODUCTO PRINCIPAL ===
-  const btnMain = document.getElementById('product-add');
-  if (btnMain) {
-    btnMain.addEventListener('click', () => {
-      const name = document.getElementById('product-name').textContent.trim();
-      const price = parseFloat(document.querySelector('.price-part')?.textContent.replace(/[^\d.-]/g, '')) || 0;
-      const img = document.getElementById('product-image').getAttribute('src');
-      const product = { name, price, img, qty: 1 };
-      addToCart(product); // ✅ Solo efecto visual, sin redirigir
-    });
-  }
+const btnMain = document.getElementById('product-add');
+if (btnMain) {
+  btnMain.addEventListener('click', () => {
+
+    // 🟢 Obtener la cantidad seleccionada del nuevo selector
+    const qty = parseInt(document.getElementById('qty-number')?.textContent) || 1;
+
+    const name = document.getElementById('product-name').textContent.trim();
+    const price = parseFloat(
+      document.querySelector('.price-part')?.textContent.replace(/[^\d.-]/g, '')
+    ) || 0;
+    const img = document.getElementById('product-image').getAttribute('src');
+
+    const product = { name, price, img, qty };
+
+    // 🛒 Agrega al carrito con la cantidad seleccionada
+    addToCart(product);
+
+    // 🔄 Reiniciar la cantidad a 1 después de agregar
+    const qtyNumber = document.getElementById('qty-number');
+    if (qtyNumber) qtyNumber.textContent = "1";
+  });
+}
 
   // === CARRUSEL DE PRODUCTOS ===
   const cards = document.querySelectorAll('.similar-card');
