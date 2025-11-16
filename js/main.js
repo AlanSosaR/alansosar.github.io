@@ -132,6 +132,26 @@ if (btnMain) {
     if (qtyNumber) qtyNumber.textContent = "1";
   });
 }
+  // === SELECTOR DE CANTIDAD (botones + y -) ===
+const qtyNumber = document.getElementById('qty-number');
+const qtyMinus = document.getElementById('qty-minus');
+const qtyPlus = document.getElementById('qty-plus');
+
+if (qtyMinus) {
+  qtyMinus.addEventListener('click', () => {
+    let current = parseInt(qtyNumber.textContent);
+    if (current > 1) {
+      qtyNumber.textContent = current - 1;
+    }
+  });
+}
+
+if (qtyPlus) {
+  qtyPlus.addEventListener('click', () => {
+    let current = parseInt(qtyNumber.textContent);
+    qtyNumber.textContent = current + 1;
+  });
+}
 
   // === CARRUSEL DE PRODUCTOS ===
   const cards = document.querySelectorAll('.similar-card');
