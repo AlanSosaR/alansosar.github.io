@@ -80,30 +80,38 @@
     </section>
 
     <!-- === PRODUCTO PRINCIPAL === -->
-    <section id="productos" class="product-main">
-      <div class="product-text">
-        <div class="product-label">
-          <small>CAFÉ EN GRANO / MOLIDO</small>
-          <p class="subtext">Tueste medio · Altura · Esencia familiar</p>
-        </div>
-        <h2 id="product-name">Café Cortero 250g</h2>
-        <span id="product-badge" class="pill">100% arábica · Danlí</span>
+<section id="productos" class="product-main">
+  <div class="product-text">
+    <div class="product-label">
+      <small>CAFÉ EN GRANO / MOLIDO</small>
+      <p class="subtext">Tueste medio · Altura · Esencia familiar</p>
+    </div>
+    <h2 id="product-name">Café Cortero 250g</h2>
+    <span id="product-badge" class="pill">100% arábica · Danlí</span>
 
-        <!-- === BOTÓN SPLIT (PRECIO + CARRITO) === -->
-        <div style="margin-top: 1.2rem;">
-          <div class="product-split" title="Agregar al carrito">
-            <span class="price-part">L 180</span>
-            <span class="icon-part" id="product-add">
-              <i class="fa-solid fa-cart-plus"></i>
-            </span>
-          </div>
-        </div>
+    <!-- === BOTÓN SPLIT (PRECIO + CARRITO) === -->
+    <div style="margin-top: 1.2rem;">
+      <div class="product-split" title="Agregar al carrito">
+        <span class="price-part">L 180</span>
+        <span class="icon-part" id="product-add">
+          <i class="fa-solid fa-cart-plus"></i>
+        </span>
       </div>
+    </div>
 
-      <div class="product-img-wrap">
-        <img id="product-image" src="imagenes/bolsa_1.png" alt="Bolsa Café Cortero">
-      </div>
-    </section>
+    <!-- === SELECTOR DE CANTIDAD (Opción A: premium, simple, flotante) === -->
+    <div class="quantity-container">
+      <button class="qty-btn minus-btn" id="qty-minus">−</button>
+      <span class="qty-number" id="qty-number">1</span>
+      <button class="qty-btn plus-btn" id="qty-plus">+</button>
+    </div>
+
+  </div>
+
+  <div class="product-img-wrap">
+    <img id="product-image" src="imagenes/bolsa_1.png" alt="Bolsa Café Cortero">
+  </div>
+</section>
 
     <!-- === CARRUSEL DE PRODUCTOS === -->
     <section class="related" style="margin-top: 6 rem;">
