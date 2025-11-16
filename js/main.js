@@ -108,13 +108,34 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   updateCartCount();
 
-  // === PRODUCTO PRINCIPAL ===
+  // === SELECTOR DE CANTIDAD (botones + y -) ===
+const qtyNumber = document.getElementById('qty-number');
+const qtyMinus = document.getElementById('qty-minus');
+const qtyPlus = document.getElementById('qty-plus');
+
+if (qtyMinus) {
+  qtyMinus.addEventListener('click', () => {
+    let current = parseInt(qtyNumber.textContent);
+    if (current > 1) qtyNumber.textContent = current - 1;
+  });
+}
+
+if (qtyPlus) {
+  qtyPlus.addEventListener('click', () => {
+    let current = parseInt(qtyNumber.textContent);
+    qtyNumber.textContent = current + 1;
+  });
+}
+
+
+
+// === PRODUCTO PRINCIPAL ===
 const btnMain = document.getElementById('product-add');
 if (btnMain) {
   btnMain.addEventListener('click', () => {
 
-    // 🟢 Obtener la cantidad seleccionada del selector
-    const qty = parseInt(document.getElementById('qty-number')?.textContent) || 1;
+    // 🟢 Obtener la cantidad actual
+    const qty = parseInt(qtyNumber.textContent) || 1;
 
     const name = document.getElementById('product-name').textContent.trim();
     const price = parseFloat(
@@ -127,31 +148,8 @@ if (btnMain) {
     // 🛒 Agregar al carrito
     addToCart(product);
 
-    // 🔄 Reiniciar la cantidad a 1 después de agregar
+    // 🔄 Reiniciar a 1 DESPUÉS de agregar
     qtyNumber.textContent = "1";
-  });
-}
-
-
-
-// === SELECTOR DE CANTIDAD (botones + y -) ===
-const qtyNumber = document.getElementById('qty-number');
-const qtyMinus = document.getElementById('qty-minus');
-const qtyPlus = document.getElementById('qty-plus');
-
-if (qtyMinus) {
-  qtyMinus.addEventListener('click', () => {
-    let current = parseInt(qtyNumber.textContent);
-    if (current > 1) {
-      qtyNumber.textContent = current - 1;
-    }
-  });
-}
-
-if (qtyPlus) {
-  qtyPlus.addEventListener('click', () => {
-    let current = parseInt(qtyNumber.textContent);
-    qtyNumber.textContent = current + 1;
   });
 }
 
