@@ -709,20 +709,23 @@ footer p {
   white-space: nowrap;
 }
 
-/* === LOGO INLINE AJUSTADO === */
+/* === LOGO INLINE AJUSTADO (VERSIÓN PREMIUM Y CONSISTENTE) === */
 .footer-logo-inline {
-  height: 1.25em;   /* ⬅️ tamaño ligeramente mayor que el texto */
-  width: auto;
-  vertical-align: middle;
+  width: 32px;          /* tamaño estable en todas las pantallas */
+  height: 32px;
+  object-fit: contain;
   display: inline-block;
-  transform: translateY(2px); /* ⬅️ alineación fina */
+  vertical-align: middle;
+  transform: translateY(1px); /* alineación fina */
   opacity: 0.95;
 }
 
+/* Tamaño especial para pantallas muy pequeñas */
 @media (max-width: 500px) {
   .footer-logo-inline {
-    height: 1.15em;  /* versión móvil */
-    transform: translateY(2px);
+    width: 28px;        /* ligeramente más pequeño solo en móviles mini */
+    height: 28px;
+    transform: translateY(1px);
   }
 }
 
