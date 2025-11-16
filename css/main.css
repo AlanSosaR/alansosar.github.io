@@ -792,7 +792,15 @@ footer p {
   align-items: center;
   gap: 16px;
 }
+/* === Colores oficiales para íconos del FAB (WhatsApp y Facebook) === */
+.fab-options i.fa-whatsapp {
+  color: #25D366 !important;  /* Verde WhatsApp */
+}
 
+.fab-options i.fa-facebook,
+.fab-options i.fa-facebook-f {
+  color: #1877F2 !important;  /* Azul Facebook */
+}
 .fab-options a {
   background: #fff;
   color: var(--marron);
