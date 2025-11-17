@@ -122,14 +122,12 @@ main {
 /* ============================================
    CONTROLES: + / – / 🗑 (alineados en una sola línea)
    ============================================ */
-.controls-row {
+.controls-row,
+.qty-controls {
   display: flex;
   align-items: center;
-  gap: 0.85rem;     /* separación correcta */
-  margin-top: 0.4rem;
-
-  /* IMPORTANTE → evitamos que baje a otra línea */
-  flex-wrap: nowrap;
+  gap: 0.7rem;
+  flex-direction: row !important; /* Fuerza línea horizontal */
 }
 
 /* Botones circulares */
