@@ -2,7 +2,7 @@
   --marron: #512615;
   --verde: #33673B;
   --blanco: #ffffff;
-  --fondo: #ffffff;
+  --fondo: #fafafa;
 }
 
 /* RESET */
@@ -19,157 +19,180 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* HEADER */
+/* ============================================
+   HEADER – MISMO ESTILO DEL INDEX (Opción B)
+   ============================================ */
 header {
-  background: var(--blanco);
-  padding: 0.8rem 1.2rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
-
-  /* === OPCIÓN 1: Header fijo como en el Index === */
   position: sticky;
   top: 0;
   z-index: 1000;
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 
-  /* === OPCIÓN 2: Efecto premium tipo glass === */
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  height: 72px;
+  padding: 0 1.2rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1.5px solid rgba(0,0,0,0.05);
 }
 
 header img {
-  height: 60px;
+  height: 52px;
 }
 
 .cart-title {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-weight: 600;
   color: var(--marron);
 }
 
-/* CONTENIDO */
+/* ============================================
+   CONTENIDO GENERAL
+   ============================================ */
 main {
   max-width: 1100px;
-  margin: 2rem auto;
-  padding: 1rem 1rem 3rem; /* agregado padding-top para separarlo del header fijo */
+  margin: 1.5rem auto;
+  padding: 0 1rem 3.5rem;
 }
-/* MENSAJE CUANDO ESTÁ VACÍO */
+
+/* CUANDO ESTÁ VACÍO */
 .empty {
-  text-align: left; /* ahora alineado a la izquierda */
-  font-weight: 500;
-  color: #4a2b0f;
   font-size: 1rem;
-  margin: 2rem 0;
+  color: var(--marron);
   line-height: 1.6;
-  padding-left: 1rem; /* margen visual agradable */
-  max-width: 500px; /* ancho de lectura cómodo */
 }
 
-/* TARJETA DE PRODUCTO */
+/* ============================================
+   TARJETA MATERIAL 3 – OUTLINED CARD
+   ============================================ */
 .item {
-  background: #fff;
-  border-radius: 20px;
-  padding: 1.1rem 1rem;
   display: flex;
-  align-items: center;
   gap: 1rem;
-  margin-bottom: 1rem;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  padding: 1.1rem;
+  border-radius: 18px;
+  background: #ffffff;
+
+  border: 1.8px solid rgba(0,0,0,0.08);  /* Outlined */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+
+  margin-bottom: 1.2rem;
+  align-items: center;
 }
 
+/* Imagen */
 .item img {
-  width: 72px;
-  height: 72px;
-  object-fit: contain;
-  background: #eff5ff;
+  width: 82px;
+  height: 82px;
+  background: #f6f6f6;
   border-radius: 14px;
+  object-fit: contain;
 }
 
+/* Info */
 .item-info {
   flex: 1;
 }
 
 .item-name {
   font-weight: 600;
-  margin-bottom: 0.2rem;
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
 }
 
 .item-price {
   font-size: 0.9rem;
-  margin-bottom: 0.5rem;
+  opacity: 0.85;
+  margin-bottom: 0.6rem;
 }
 
-/* CONTROL DE CANTIDAD */
-.qty-controls {
-  display: flex;
-  gap: 0.4rem;
-  align-items: center;
-}
-
-.qty-btn {
-  background: var(--verde);
-  color: #fff;
-  border: none;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
+/* ============================================
+   CONTROLES: + / – / 🗑 (Mismo estilo del principal)
+   ============================================ */
+.controls-row {
   display: flex;
   align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: transform 0.1s ease;
+  gap: 0.7rem;
+  margin-top: 0.3rem;
 }
 
-.qty-btn:active {
-  transform: scale(0.95);
-}
-
+/* Botones circulares blancos */
+.qty-btn,
 .del-btn {
-  background: #d72638;
-  color: #fff;
-  border: none;
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
+  background: #ffffff;
+  border: 1.5px solid rgba(0,0,0,0.12);
+
   display: flex;
   align-items: center;
   justify-content: center;
+
+  font-size: 0.9rem;
   cursor: pointer;
-  transition: transform 0.1s ease;
+
+  transition: transform 0.12s ease, background 0.2s;
 }
 
+/* Iconos */
+.qty-btn.minus i {
+  color: var(--marron);   /* café */
+}
+
+.qty-btn.plus i {
+  color: var(--verde);    /* verde */
+}
+
+.del-btn i {
+  color: #d72638;         /* rojo premium */
+}
+
+/* Efecto premium MD3 */
+.qty-btn:active,
 .del-btn:active {
-  transform: scale(0.95);
+  transform: scale(0.92);
 }
 
-/* TOTAL */
+/* Cantidad en número suelto (premium, limpio) */
+.qty-number {
+  font-size: 1rem;
+  font-weight: 600;
+  min-width: 18px;
+  text-align: center;
+}
+
+/* ============================================
+   TOTAL
+   ============================================ */
 .total-box {
   text-align: right;
-  font-size: 1.3rem;
+  font-size: 1.35rem;
   font-weight: 600;
-  margin-top: 2rem;
+  margin-top: 1.8rem;
 }
 
-/* BOTONES */
+/* ============================================
+   BOTONES FINALES
+   ============================================ */
 .actions {
-  margin-top: 2rem;
   display: flex;
   justify-content: center;
   gap: 1rem;
+  margin-top: 2rem;
 }
 
 .btn {
-  border: none;
-  padding: 0.9rem 2rem;
+  padding: 0.95rem 2rem;
   border-radius: 999px;
-  cursor: pointer;
-  font-weight: 500;
+  border: none;
   color: #fff;
-  transition: all 0.2s ease;
-  min-width: 160px;
+  cursor: pointer;
+  font-weight: 600;
   font-size: 1rem;
+  transition: all 0.2s ease;
 }
 
 .btn.volver {
@@ -180,52 +203,33 @@ main {
   background: var(--verde);
 }
 
-/* 🔹 Snackbar Material Design 3 EXPRESSIVE Light */
+/* ============================================
+   SNACKBAR MATERIAL 3 EXPRESSIVE
+   ============================================ */
 .snackbar-md3 {
   position: fixed;
-  bottom: 90px;
+  bottom: 85px;
   left: 50%;
-  transform: translateX(-50%) translateY(16px);
-  background: rgba(255, 255, 255, 0.9); /* translúcido */
-  color: var(--marron);
-  text-align: left;
-  font-family: 'Poppins', sans-serif;
-  font-size: 0.96rem;
-  font-weight: 500;
-  padding: 16px 26px;
-  border-radius: 28px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  transform: translateX(-50%) translateY(20px);
+  opacity: 0;
+
+  background: rgba(255,255,255,0.9);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(81, 38, 21, 0.15);
-  opacity: 0;
-  pointer-events: none;
-  transition:
-    opacity 0.5s cubic-bezier(0.25, 0.8, 0.25, 1),
-    transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+  padding: 18px 28px;
+  border-radius: 28px;
+  border: 1px solid rgba(0,0,0,0.15);
+
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  font-size: 0.95rem;
+  font-weight: 500;
+
+  transition: opacity .4s ease, transform .4s ease;
   z-index: 999;
 }
 
 .snackbar-md3.show {
   opacity: 1;
-  pointer-events: auto;
   transform: translateX(-50%) translateY(0);
-}
-
-/* BOTÓN WHATSAPP */
-.whatsapp-float {
-  position: fixed;
-  bottom: 22px;
-  right: 22px;
-  background: #25D366;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  font-size: 30px;
-  text-decoration: none;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
