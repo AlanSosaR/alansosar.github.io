@@ -1,0 +1,35 @@
+/* ============================================================
+   TIPOGRAFÍA GLOBAL — Café Cortero
+   Inspirada en Apple (SF Pro) + Material 3 Expressive
+   ============================================================ */
+
+/* Familia base estilo Apple */
+:root {
+  --font-base: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+               "SF Pro Display", "Segoe UI", Roboto, Oxygen,
+               Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+}
+
+/* Aplicar a TODA la página donde se importe este archivo */
+body {
+  font-family: var(--font-base);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Títulos */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  letter-spacing: -0.2px;
+}
+
+/* Texto general */
+p, span, a, li, input, button, label {
+  font-weight: 400;
+  letter-spacing: -0.1px;
+}
+
+/* Negritas */
+strong, b {
+  font-weight: 600;
+}
