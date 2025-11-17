@@ -4,43 +4,61 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tu selección de café | Café Cortero</title>
+
+  <!-- Tipografía (Poppins + futura integración con SF Pro Display) -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Iconos -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- CSS del carrito -->
   <link rel="stylesheet" href="css/carrito.css">
+
   <style>
-    a, a:focus, a:active, a:visited {
+    /* Eliminar highlight azul en móviles */
+    a, a:focus, a:active, a:visited, button {
       outline: none;
       -webkit-tap-highlight-color: transparent;
-      text-decoration: none;
     }
   </style>
 </head>
+
 <body>
-  <header>
-    <a href="index.html">
-      <img src="imagenes/logo.png" alt="Café Cortero">
+
+  <!-- === HEADER FIJO — ESTILO INDEX (Material 3 Expressive) === -->
+  <header class="header-fixed">
+    <a href="index.html" class="header-logo-link">
+      <img src="imagenes/logo.png" alt="Café Cortero" class="header-logo">
     </a>
+
     <span class="cart-title">Tu selección de café</span>
   </header>
 
-  <main>
-    <div id="cart-container"></div>
-    <div class="total-box" id="total-box">Total: L 0.00</div>
 
+  <!-- === CONTENIDO PRINCIPAL === -->
+  <main>
+    <!-- Contenedor donde se insertan dinámicamente las tarjetas outline del carrito -->
+    <div id="cart-container"></div>
+
+    <!-- Total -->
+    <div class="total-box" id="total-box">
+      Total: L 0.00
+    </div>
+
+    <!-- Acciones -->
     <div class="actions">
       <button class="btn volver" onclick="window.location.href='index.html'">Volver</button>
       <button id="proceder-btn" class="btn proceder">Proceder con el pedido</button>
     </div>
   </main>
 
-  <!-- 🔹 Snackbar estilo MD3 Expressive Light -->
+
+  <!-- === SNACKBAR (MD3 Expressive Light) === -->
   <div id="aviso-vacio" class="snackbar-md3"></div>
 
-  <!-- 🔹 WhatsApp flotante -->
-  <a href="https://wa.me/50494546047?text=Hola%2C%20quiero%20hacer%20un%20pedido%20de%20Café%20Cortero" class="whatsapp-float">
-    <i class="fa-brands fa-whatsapp"></i>
-  </a>
 
-  <script src="js/cart.js?v=8"></script>
+  <!-- === SCRIPT DEL CARRITO === -->
+  <script src="js/cart.js?v=9"></script>
+
 </body>
 </html>
