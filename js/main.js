@@ -132,14 +132,14 @@ if (qtyPlus) {
 }
 
 
-
 // === PRODUCTO PRINCIPAL ===
 const btnMain = document.getElementById('product-add');
 if (btnMain) {
   btnMain.addEventListener('click', () => {
 
-    // 🟢 Obtener la cantidad actual
-    const qty = parseInt(qtyNumber.textContent) || 1;
+    // Siempre obtener qty en el momento EXACTO del click
+    const qtyNumber = document.getElementById('qty-number');
+    const qty = parseInt(qtyNumber?.textContent) || 1;
 
     const name = document.getElementById('product-name').textContent.trim();
     const price = parseFloat(
@@ -149,14 +149,12 @@ if (btnMain) {
 
     const product = { name, price, img, qty };
 
-    // 🛒 Agregar al carrito
     addToCart(product);
 
-    // 🔄 Reiniciar a 1 DESPUÉS de agregar
+    // Reiniciar a 1 DESPUÉS de agregar
     qtyNumber.textContent = "1";
   });
 }
-
   // === CARRUSEL DE PRODUCTOS ===
   const cards = document.querySelectorAll('.similar-card');
   cards.forEach(card => {
