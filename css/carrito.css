@@ -80,24 +80,35 @@ main {
 }
 
 /* ============================================
-   🔥 IMAGEN PREMIUM DENTRO DE LA TARJETA
-   ============================================ */
-.item img {
-  width: 95px;        /* AUMENTADO (antes 82px) */
-  height: 95px;       /* AUMENTADO */
-  object-fit: cover;  /* Ahora llena mejor el espacio */
-  
-  background: #f2f4f7;        /* fondo premium */
-  border-radius: 16px;         /* más elegante */
-  padding: 6px;                /* margen interno premium */
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+   TARJETA PREMIUM PARA LA IMAGEN
+============================================ */
+.item-img-wrapper {
+  background: #ffffff;
+  border: 1.4px solid rgba(0,0,0,0.07);     /* borde súper suave */
+  border-radius: 20px;                      /* más elegante */
+  padding: 10px;                            /* espacio interno premium */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.03);    /* sombra MUY suave */
+  width: 115px;                              /* aumentamos tamaño */
+  height: 115px;                             /* aumentamos tamaño */
+}
+
+/* Imagen dentro de la nueva tarjeta */
+.item-img-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 14px;                       /* bordes premium */
 }
 
 /* Ajuste para pantallas grandes */
 @media (min-width: 768px) {
-  .item img {
-    width: 110px;
-    height: 110px;
+  .item-img-wrapper {
+    width: 135px;
+    height: 135px;
+    padding: 12px;
   }
 }
 
