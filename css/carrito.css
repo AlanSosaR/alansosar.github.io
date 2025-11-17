@@ -27,6 +27,15 @@ header {
   align-items: center;
   justify-content: space-between;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+
+  /* === OPCIÓN 1: Header fijo como en el Index === */
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+
+  /* === OPCIÓN 2: Efecto premium tipo glass === */
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
 }
 
 header img {
@@ -43,7 +52,7 @@ header img {
 main {
   max-width: 1100px;
   margin: 2rem auto;
-  padding: 0 1rem 3rem;
+  padding: 1rem 1rem 3rem; /* agregado padding-top para separarlo del header fijo */
 }
 /* MENSAJE CUANDO ESTÁ VACÍO */
 .empty {
