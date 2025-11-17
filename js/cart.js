@@ -34,7 +34,9 @@ function renderCart() {
     const div = document.createElement('div');
     div.className = 'item';
     div.innerHTML = `
-      <img src="${item.img}">
+      <div class="item-img-box">
+    <img src="${item.img}">
+</div>
       <div class="item-info">
         <div class="item-name">${item.name}</div>
         <div class="item-price">L ${priceNum.toFixed(2)} / unidad</div>
