@@ -7,19 +7,12 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
-               "Helvetica Neue", Arial, sans-serif;
-}
+  font-family:
+    -apple-system, BlinkMacSystemFont,
+    "SF Pro Display", "SF Pro Text",
+    "Helvetica Neue", Helvetica, Arial,
+    sans-serif;
 
-/* RESET */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: "Poppins", sans-serif;
   background: var(--blanco);
   color: var(--marron);
   scroll-behavior: smooth;
