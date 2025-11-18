@@ -1,13 +1,13 @@
 import { registerUser } from "./supabase-auth.js";
 
 /* ===============================
-   PREVISUALIZAR AVATAR
+   AVATAR PREVIEW
 ================================ */
-const avatarInput = document.getElementById("avatarInput");
-const avatarPreview = document.getElementById("avatarPreview");
-let fotoBase64 = null;
+document.addEventListener("DOMContentLoaded", () => {
+  const avatarInput = document.getElementById("avatarInput");
+  const avatarPreview = document.getElementById("avatarPreview");
+  let fotoBase64 = null;
 
-if (avatarInput && avatarPreview) {
   avatarInput.addEventListener("change", () => {
     const file = avatarInput.files[0];
     if (!file) return;
@@ -19,90 +19,91 @@ if (avatarInput && avatarPreview) {
     };
     reader.readAsDataURL(file);
   });
-}
-
-/* ===============================
-   VALIDACIÓN NORMAL
-================================ */
-const form = document.getElementById("registroForm");
-
-const campos = {
-  nombre: document.getElementById("nombreInput"),
-  correo: document.getElementById("correoInput"),
-  telefono: document.getElementById("telefonoInput"),
-  password: document.getElementById("passwordInput"),
-  confirm: document.getElementById("confirmPasswordInput"),
-};
-
-const errores = {
-  nombre: document.getElementById("errorNombre"),
-  correo: document.getElementById("errorCorreo"),
-  telefono: document.getElementById("errorTelefono"),
-  password: document.getElementById("errorPassword"),
-  confirm: document.getElementById("errorConfirm"),
-};
-
-function limpiarErrores() {
-  Object.values(errores).forEach((span) => (span.textContent = ""));
-  document.querySelectorAll(".input-group").forEach((g) => g.classList.remove("error"));
-}
-
-function marcar(campo, mensaje) {
-  errores[campo].textContent = mensaje;
-  campos[campo].closest(".input-group").classList.add("error");
-}
-
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  limpiarErrores();
-
-  let valido = true;
-
-  if (campos.nombre.value.trim() === "") {
-    marcar("nombre", "Ingresa tu nombre completo");
-    valido = false;
-  }
-
-  if (!campos.correo.value.includes("@")) {
-    marcar("correo", "Correo inválido");
-    valido = false;
-  }
-
-  if (campos.telefono.value.trim().length < 8) {
-    marcar("telefono", "Número de teléfono inválido");
-    valido = false;
-  }
-
-  if (campos.password.value.length < 6) {
-    marcar("password", "Mínimo 6 caracteres");
-    valido = false;
-  }
-
-  if (campos.password.value !== campos.confirm.value) {
-    marcar("confirm", "Las contraseñas no coinciden");
-    valido = false;
-  }
-
-  if (!valido) return;
 
   /* ===============================
-     SUPABASE
+     VALIDACIONES
   ================================ */
-  try {
-    await registerUser(
-      campos.correo.value.trim(),
-      campos.password.value.trim(),
-      campos.telefono.value.trim(),
-      campos.nombre.value.trim(),
-      "Honduras",
-      fotoBase64 || null
-    );
+  const form = document.getElementById("registroForm");
 
-    alert("Cuenta creada con éxito ✔");
-    window.location.href = "login.html";
+  const campos = {
+    nombre: document.getElementById("nombreInput"),
+    correo: document.getElementById("correoInput"),
+    telefono: document.getElementById("telefonoInput"),
+    password: document.getElementById("passwordInput"),
+    confirm: document.getElementById("confirmPasswordInput"),
+  };
 
-  } catch (err) {
-    alert("Error registrando usuario");
-    console.error(err);
+  const errores = {
+    nombre: document.getElementById("errorNombre"),
+    correo: document.getElementById("errorCorreo"),
+    telefono: document.getElementById("errorTelefono"),
+    password: document.getElementById("errorPassword"),
+    confirm: document.getElementById("errorConfirm"),
+  };
+
+  function limpiarErrores() {
+    Object.values(errores).forEach((e) => (e.textContent = ""));
+    document.querySelectorAll(".input-group").forEach(g => g.classList.remove("error"));
   }
+
+  function marcar(campo, mensaje) {
+    errores[campo].textContent = mensaje;
+    campos[campo].closest(".input-group").classList.add("error");
+  }
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    limpiarErrores();
+
+    let valido = true;
+
+    if (campos.nombre.value.trim() === "") {
+      marcar("nombre", "Ingresa tu nombre completo");
+      valido = false;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(campos.correo.value.trim())) {
+      marcar("correo", "Correo inválido");
+      valido = false;
+    }
+
+    if (campos.telefono.value.trim().length < 8) {
+      marcar("telefono", "Número de teléfono inválido");
+      valido = false;
+    }
+
+    if (campos.password.value.length < 6) {
+      marcar("password", "Mínimo 6 caracteres");
+      valido = false;
+    }
+
+    if (campos.password.value !== campos.confirm.value) {
+      marcar("confirm", "Las contraseñas no coinciden");
+      valido = false;
+    }
+
+    if (!valido) return;
+
+    /* ===============================
+       SUPABASE
+    ================================ */
+    try {
+      await registerUser(
+        campos.correo.value.trim(),
+        campos.password.value.trim(),
+        campos.telefono.value.trim(),
+        campos.nombre.value.trim(),
+        "Honduras",
+        fotoBase64
+      );
+
+      alert("Cuenta creada con éxito ✔");
+      window.location.href = "login.html";
+
+    } catch (err) {
+      alert("Error registrando usuario");
+      console.error(err);
+    }
+  });
 });
