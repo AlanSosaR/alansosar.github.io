@@ -1,113 +1,109 @@
-// ===============================
-// IMPORTAR SUPABASE
-// ===============================
 import { registerUser } from "./supabase-auth.js";
 
-// ===============================
-// PREVISUALIZAR AVATAR
-// ===============================
+/* ===============================
+   AVATAR PREVIEW
+================================ */
 const avatarInput = document.getElementById("avatarInput");
 const avatarPreview = document.getElementById("avatarPreview");
 let fotoBase64 = null;
 
-if (avatarInput) {
-  avatarInput.addEventListener("change", () => {
-    const file = avatarInput.files[0];
-    if (!file) return;
+avatarInput.addEventListener("change", () => {
+  const file = avatarInput.files[0];
+  if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      fotoBase64 = e.target.result; // guardamos la imagen
-      avatarPreview.style.backgroundImage = `url('${fotoBase64}')`;
-    };
-    reader.readAsDataURL(file);
-  });
-}
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    fotoBase64 = e.target.result;  // Guardamos base64
+    avatarPreview.style.backgroundImage = `url('${fotoBase64}')`;
+  };
+  reader.readAsDataURL(file);
+});
 
-// ===============================
-// SNACKBAR
-// ===============================
-function mostrarSnackbar(msg) {
-  const bar = document.getElementById("snackbar");
-  bar.innerText = msg;
-  bar.className = "show";
-
-  setTimeout(() => {
-    bar.classList.remove("show");
-  }, 2200);
-}
-
-// ===============================
-// VALIDACIÓN DEL FORMULARIO
-// ===============================
+/* ===============================
+   VALIDACIONES SIMPLES
+================================ */
 const form = document.getElementById("registroForm");
 
+const campos = {
+  nombre: document.getElementById("nombreInput"),
+  correo: document.getElementById("correoInput"),
+  telefono: document.getElementById("telefonoInput"),
+  password: document.getElementById("passwordInput"),
+  confirm: document.getElementById("confirmPasswordInput"),
+};
+
+const errores = {
+  nombre: document.getElementById("errorNombre"),
+  correo: document.getElementById("errorCorreo"),
+  telefono: document.getElementById("errorTelefono"),
+  password: document.getElementById("errorPassword"),
+  confirm: document.getElementById("errorConfirm"),
+};
+
+function limpiarErrores() {
+  Object.values(errores).forEach((e) => e.textContent = "");
+  document.querySelectorAll(".input-group").forEach(g => g.classList.remove("error"));
+}
+
+function marcar(campo, mensaje) {
+  errores[campo].textContent = mensaje;
+  campos[campo].closest(".input-group").classList.add("error");
+}
+
+/* ===============================
+   SUBMIT
+================================ */
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
+  limpiarErrores();
 
-  const nombre = document.getElementById("nombreInput").value.trim();
-  const correo = document.getElementById("correoInput").value.trim();
-  const telefono = document.getElementById("telefonoInput").value.trim();
-  const password = document.getElementById("passwordInput").value.trim();
-  const confirm = document.getElementById("confirmPasswordInput").value.trim();
+  let valido = true;
 
-  // Validaciones básicas
-  if (!nombre) {
-    mostrarSnackbar("Ingresa tu nombre completo");
-    return;
+  if (campos.nombre.value.trim() === "") {
+    marcar("nombre", "Ingresa tu nombre");
+    valido = false;
   }
 
-  if (!correo.includes("@")) {
-    mostrarSnackbar("Ingresa un correo válido");
-    return;
+  if (!campos.correo.value.includes("@")) {
+    marcar("correo", "Correo inválido");
+    valido = false;
   }
 
-  if (telefono.length < 8) {
-    mostrarSnackbar("Ingresa un número de teléfono válido");
-    return;
+  if (campos.telefono.value.trim().length < 8) {
+    marcar("telefono", "Teléfono inválido");
+    valido = false;
   }
 
-  if (password.includes(" ")) {
-    mostrarSnackbar("La contraseña no puede contener espacios");
-    return;
+  if (campos.password.value.length < 6) {
+    marcar("password", "Mínimo 6 caracteres");
+    valido = false;
   }
 
-  if (password.length < 6) {
-    mostrarSnackbar("La contraseña debe tener al menos 6 caracteres");
-    return;
+  if (campos.password.value !== campos.confirm.value) {
+    marcar("confirm", "No coinciden");
+    valido = false;
   }
 
-  if (password !== confirm) {
-    mostrarSnackbar("Las contraseñas no coinciden");
-    return;
-  }
+  if (!valido) return;
 
-  // ===============================
-  // REGISTRAR EN SUPABASE
-  // ===============================
+  /* ===============================
+     SUPABASE
+  ================================ */
   try {
     await registerUser(
-      correo,
-      password,
-      telefono,
-      nombre,
+      campos.correo.value.trim(),
+      campos.password.value.trim(),
+      campos.telefono.value.trim(),
+      campos.nombre.value.trim(),
       "Honduras",
-      fotoBase64 || null
+      fotoBase64        // ← AQUÍ SE ENVÍA LA FOTO
     );
 
-    mostrarSnackbar("Cuenta creada con éxito ✔️");
-
-    setTimeout(() => {
-      window.location.href = "login.html";
-    }, 1500);
+    alert("Cuenta creada con éxito ✔");
+    window.location.href = "login.html";
 
   } catch (err) {
-    console.error("SUPABASE ERROR:", err);
-
-    if (err.message.includes("already")) {
-      mostrarSnackbar("Este correo ya está registrado");
-    } else {
-      mostrarSnackbar("No se pudo crear la cuenta");
-    }
+    alert("Error registrando usuario");
+    console.error(err);
   }
 });
