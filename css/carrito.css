@@ -187,31 +187,28 @@ main {
   text-align: center;
 }
 
-/* ============================================================
-   TOTAL PREMIUM — Versión final
-   ============================================================ */
+/* ===========================
+   TOTAL — Estilo Premium
+   =========================== */
 
 .total-box {
   text-align: right;
-  font-size: 1.45rem;          /* Tamaño elegante */
+  font-size: 1.35rem;   /* Escritorio se mantiene igual */
   font-weight: 600;
-  margin-top: 1.8rem;
-  color: #512615;              /* Café elegante */
+  margin-top: 2rem;
+  color: #512615; /* café */
 }
 
-/* "L" en verde premium */
-.total-box .currency {
-  color: #33673B;              /* Verde premium */
-  font-weight: 700;
+/* Cambiar el color SOLO de la "L" */
+.total-box .moneda {
+  color: #33673B; /* verde premium */
 }
 
-/* Texto "Total de tu selección" más delicado */
-.total-box small {
-  display: block;
-  font-size: 0.9rem;
-  font-weight: 500;
-  opacity: 0.75;
-  margin-bottom: 0.25rem;
+/* ---- Ajuste automático para teléfonos ---- */
+@media (max-width: 480px) {
+  .total-box {
+    font-size: 1.15rem;  /* 15% más pequeño para móviles */
+  }
 }
 
 /* ============================================
