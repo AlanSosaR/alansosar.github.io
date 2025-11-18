@@ -1,162 +1,121 @@
 // =============================================
-// REGISTRO – Café Cortero ☕ Supabase Premium
+// REGISTRO-CLIENTE.JS — Café Cortero + Supabase
 // =============================================
+import { registerUser } from "./supabase-auth.js";
 
-// Inicializar Supabase
-const supabase = window.supabaseClient;
-
-// Inputs
-const form = document.getElementById("registroForm");
+// ===============================
+// PREVISUALIZAR AVATAR
+// ===============================
 const avatarInput = document.getElementById("avatarInput");
 const avatarPreview = document.getElementById("avatarPreview");
 
-// Snackbar
-function mostrarSnackbar(msg) {
-  const bar = document.getElementById("snackbar");
-  bar.innerText = msg;
-  bar.className = "show";
-  setTimeout(() => (bar.className = bar.className.replace("show", "")), 2200);
-}
+let avatarFileBase64 = null;
 
-// ============================================================
-// PREVISUALIZAR AVATAR
-// ============================================================
 if (avatarInput) {
   avatarInput.addEventListener("change", () => {
     const file = avatarInput.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = e => {
-        avatarPreview.style.backgroundImage = `url('${e.target.result}')`;
+        avatarFileBase64 = e.target.result;
+        avatarPreview.style.backgroundImage = `url('${avatarFileBase64}')`;
       };
       reader.readAsDataURL(file);
     }
   });
 }
 
-// ============================================================
-// SUBIR IMAGEN A SUPABASE STORAGE
-// ============================================================
-async function subirAvatar(file, userId) {
-  if (!file) return "imagenes/avatar-default.svg";
-
-  const fileExt = file.name.split(".").pop();
-  const fileName = `avatar-${userId}.${fileExt}`;
-  const filePath = `avatars/${fileName}`;
-
-  const { error: uploadError } = await supabase.storage
-    .from("avatars")
-    .upload(filePath, file, {
-      upsert: true,
-      contentType: file.type
-    });
-
-  if (uploadError) {
-    console.error("Error subiendo avatar:", uploadError);
-    return "imagenes/avatar-default.svg";
-  }
-
-  const { data: publicURL } = supabase.storage
-    .from("avatars")
-    .getPublicUrl(filePath);
-
-  return publicURL.publicUrl;
+// ===============================
+// SNACKBAR
+// ===============================
+function snackbar(msg) {
+  const bar = document.getElementById("snackbar");
+  bar.innerText = msg;
+  bar.classList.add("show");
+  setTimeout(() => bar.classList.remove("show"), 2200);
 }
 
-// ============================================================
-// REGISTRO PRINCIPAL
-// ============================================================
+// ===============================
+// FORMULARIO
+// ===============================
+const form = document.getElementById("registroForm");
+
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const fullName = document.getElementById("nombreInput").value.trim();
-  const emailInput = document.getElementById("correoInput").value.trim();
-  const phone = document.getElementById("telefonoInput").value.trim();
-  const pass = document.getElementById("passwordInput").value.trim();
-  const confirm = document.getElementById("confirmPasswordInput").value.trim();
-  const avatarFile = avatarInput.files[0];
+  const nombre   = document.getElementById("nombreInput").value.trim();
+  const correo   = document.getElementById("correoInput").value.trim();
+  const telefono = document.getElementById("telefonoInput").value.trim();
+  const pais     = document.getElementById("paisInput").value.trim();
+  const password = document.getElementById("passwordInput").value.trim();
+  const confirm  = document.getElementById("confirmPasswordInput").value.trim();
 
-  // ---------------------
-  // VALIDACIONES
-  // ---------------------
-  if (!fullName) return mostrarSnackbar("Ingresa tu nombre completo.");
-  if (phone.length < 8) return mostrarSnackbar("Teléfono inválido.");
-  if (pass.includes(" ")) return mostrarSnackbar("La contraseña no debe tener espacios.");
-  if (pass !== confirm) return mostrarSnackbar("Las contraseñas no coinciden.");
-
-  // Permitir registro con teléfono → correo virtual
-  let email = emailInput;
-  if (!email.includes("@")) {
-    email = `${phone}@cortero.hn`;
-  }
-
-  // ============================================================
-  // 1️⃣ CREAR USUARIO EN SUPABASE AUTH
-  // ============================================================
-  const { data: signupData, error: signupError } = await supabase.auth.signUp({
-    email,
-    password: pass,
-    options: {
-      data: {
-        full_name: fullName,
-        phone: phone,
-        country: "HN",
-        photo_url: null
-      }
-    }
-  });
-
-  if (signupError) {
-    console.error(signupError);
-    mostrarSnackbar("Error al crear la cuenta.");
+  // Validaciones
+  if (!nombre || nombre.length < 3) {
+    snackbar("Ingresa un nombre válido.");
     return;
   }
 
-  const userId = signupData.user.id;
-
-  // ============================================================
-  // 2️⃣ SUBIR FOTO (si existe)
-  // ============================================================
-  let avatarURL = await subirAvatar(avatarFile, userId);
-
-  // ============================================================
-  // 3️⃣ ACTUALIZAR PERFIL EN AUTH
-  // ============================================================
-  await supabase.auth.updateUser({
-    data: {
-      full_name: fullName,
-      phone: phone,
-      photo_url: avatarURL
-    }
-  });
-
-  // ============================================================
-  // 4️⃣ INSERTAR EN TABLA "usuarios"
-  // ============================================================
-  const { error: dbError } = await supabase
-    .from("usuarios")
-    .insert({
-      id: userId,
-      full_name: fullName,
-      email: email,
-      phone: phone,
-      photo_url: avatarURL,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    });
-
-  if (dbError) {
-    console.error(dbError);
-    mostrarSnackbar("Error guardando datos en la base.");
+  if (!correo.includes("@")) {
+    snackbar("Ingresa un correo electrónico válido.");
     return;
   }
 
-  // ============================================================
-  // ✔ REGISTRO TERMINADO
-  // ============================================================
-  mostrarSnackbar("Cuenta creada con éxito ✔️");
+  if (telefono.length < 8) {
+    snackbar("Número de teléfono no válido.");
+    return;
+  }
 
-  setTimeout(() => {
-    window.location.href = "login.html";
-  }, 1500);
+  if (password.includes(" ")) {
+    snackbar("La contraseña no puede contener espacios.");
+    return;
+  }
+
+  if (password.length < 6) {
+    snackbar("La contraseña debe tener al menos 6 caracteres.");
+    return;
+  }
+
+  if (password !== confirm) {
+    snackbar("Las contraseñas no coinciden.");
+    return;
+  }
+
+  // Foto de perfil: la que escogió o la default
+  const photoURL = avatarFileBase64 || "/imagenes/avatar-default.svg";
+
+  try {
+    // ===============================
+    // REGISTRO REAL EN SUPABASE
+    // ===============================
+    await registerUser(
+      correo,
+      password,
+      telefono,
+      nombre,
+      pais,
+      photoURL
+    );
+
+    snackbar("Cuenta creada con éxito ✔️");
+
+    // Reset
+    form.reset();
+    avatarFileBase64 = null;
+    avatarPreview.style.backgroundImage = "url('/imagenes/avatar-default.svg')";
+
+    // Redirigir en 1.5s
+    setTimeout(() => {
+      window.location.href = "login.html";
+    }, 1500);
+
+  } catch (err) {
+    console.error(err);
+
+    if (err.message.includes("already registered")) {
+      snackbar("Este correo ya está registrado.");
+    } else {
+      snackbar("Error al crear la cuenta.");
+    }
+  }
 });
