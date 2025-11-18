@@ -14,9 +14,9 @@
 
 <body>
   <main class="register-container">
+
     <section class="register-card">
 
-      <!-- LOGO -->
       <div class="register-header">
         <div class="logo-container" onclick="window.location.href='index.html'">
           <img src="imagenes/logo.png" alt="Café Cortero">
@@ -27,10 +27,9 @@
       <!-- AVATAR -->
       <div class="avatar-container">
         <label for="avatarInput" class="avatar-label">
-          <div class="avatar-img" id="avatarPreview"
+          <div id="avatarPreview" class="avatar-img"
             style="background-image: url('imagenes/avatar-default.svg');"></div>
         </label>
-
         <input type="file" id="avatarInput" accept="image/*" hidden>
       </div>
 
@@ -38,32 +37,48 @@
       <div class="register-inner-card">
         <form id="registroForm" novalidate>
 
-          <div class="input-group">
-            <span class="material-symbols-outlined">person</span>
-            <input type="text" id="nombreInput" placeholder="Nombre completo">
+          <div class="input-wrapper">
+            <div class="input-group">
+              <span class="material-symbols-outlined">person</span>
+              <input type="text" id="nombreInput" placeholder="Nombre completo">
+            </div>
+            <small class="error-message" id="errorNombre"></small>
           </div>
 
-          <div class="input-group">
-            <span class="material-symbols-outlined">mail</span>
-            <input type="email" id="correoInput" placeholder="Correo electrónico">
+          <div class="input-wrapper">
+            <div class="input-group">
+              <span class="material-symbols-outlined">mail</span>
+              <input type="email" id="correoInput" placeholder="Correo electrónico">
+            </div>
+            <small class="error-message" id="errorCorreo"></small>
           </div>
 
-          <div class="input-group">
-            <span class="material-symbols-outlined">call</span>
-            <input type="tel" id="telefonoInput" placeholder="Teléfono">
+          <div class="input-wrapper">
+            <div class="input-group">
+              <span class="material-symbols-outlined">call</span>
+              <input type="tel" id="telefonoInput" placeholder="Teléfono">
+            </div>
+            <small class="error-message" id="errorTelefono"></small>
           </div>
 
-          <div class="input-group">
-            <span class="material-symbols-outlined">lock</span>
-            <input type="password" id="passwordInput" placeholder="Contraseña">
+          <div class="input-wrapper">
+            <div class="input-group">
+              <span class="material-symbols-outlined">lock</span>
+              <input type="password" id="passwordInput" placeholder="Contraseña">
+            </div>
+            <small class="error-message" id="errorPassword"></small>
           </div>
 
-          <div class="input-group">
-            <span class="material-symbols-outlined">lock</span>
-            <input type="password" id="confirmPasswordInput" placeholder="Confirmar contraseña">
+          <div class="input-wrapper">
+            <div class="input-group">
+              <span class="material-symbols-outlined">lock</span>
+              <input type="password" id="confirmPasswordInput" placeholder="Confirmar contraseña">
+            </div>
+            <small class="error-message" id="errorConfirm"></small>
           </div>
 
           <button type="submit" class="btn-register">Crear cuenta</button>
+
         </form>
       </div>
 
