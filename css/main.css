@@ -87,7 +87,127 @@ body {
 .contact-link {
   margin-right: 1.5rem;
 }
+/* ============================================================
+   MENÚ PREMIUM LOGUEADO – DESKTOP
+   ============================================================ */
 
+/* Foto perfil redonda */
+.profile-photo-round {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+  border: 2px solid rgba(51, 103, 59, 0.35);
+  transition: transform 0.2s ease;
+}
+
+.profile-photo-round:hover {
+  transform: scale(1.05);
+}
+
+/* Contenedor del perfil */
+.profile-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+/* Submenú flotante */
+.profile-menu {
+  position: absolute;
+  top: 58px;
+  right: 0;
+  width: 220px;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 1rem 0.8rem;
+  box-shadow: 0 10px 26px rgba(0,0,0,0.15);
+  display: none;
+  flex-direction: column;
+  animation: fadeDown 0.22s ease-out;
+  z-index: 3000;
+}
+
+.profile-menu a {
+  padding: 0.55rem 0.4rem;
+  font-size: 0.95rem;
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--marron);
+  transition: background 0.2s ease;
+}
+
+.profile-menu a:hover {
+  background: rgba(51, 103, 59, 0.12);
+}
+
+.profile-menu .logout {
+  color: #b30000;
+  font-weight: 600;
+}
+
+.profile-hello {
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 0 0.4rem 0.5rem;
+  color: var(--marron);
+}
+
+@keyframes fadeDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Mostrar menú cuando está activo */
+.profile-wrapper.active .profile-menu {
+  display: flex;
+}
+
+/* ============================================================
+   MENÚ PREMIUM LOGUEADO – MÓVIL (DRAWER)
+   ============================================================ */
+
+.drawer-profile-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1.4rem;
+}
+
+.drawer-profile-photo {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid rgba(51,103,59,0.35);
+  margin-bottom: 0.5rem;
+}
+
+.drawer-hello {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--marron);
+  margin-bottom: 1.2rem;
+}
+
+/* Enlaces del menú logueado dentro del drawer */
+#drawer-links-logged a {
+  padding: 0.75rem 0.2rem;
+  border-radius: 10px;
+  transition: background 0.2s ease;
+}
+
+#drawer-links-logged a:hover {
+  background: rgba(51, 103, 59, 0.08);
+}
+
+/* Cerrar sesión rojo */
+#drawer-links-logged .logout {
+  color: #b30000;
+  font-weight: 600;
+}
 
 /* === CARRITO === */
 /* === Carrito Premium fijo === */
