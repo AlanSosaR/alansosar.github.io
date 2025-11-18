@@ -193,21 +193,22 @@ main {
 
 .total-box {
   text-align: right;
-  font-size: 1.35rem;   /* Escritorio se mantiene igual */
+  font-size: 1.35rem;
   font-weight: 600;
   margin-top: 2rem;
   color: #512615; /* café */
 }
 
-/* Cambiar el color SOLO de la "L" */
+/* Cambiar SOLO la L */
 .total-box .moneda {
-  color: #33673B; /* verde premium */
+  color: #33673B; /* Verde premium */
+  font-weight: 700;
 }
 
-/* ---- Ajuste automático para teléfonos ---- */
+/* Ajuste para teléfono */
 @media (max-width: 480px) {
   .total-box {
-    font-size: 1.15rem;  /* 15% más pequeño para móviles */
+    font-size: 1.15rem; /* más pequeño */
   }
 }
 
