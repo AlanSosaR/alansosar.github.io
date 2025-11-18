@@ -8,7 +8,9 @@ function saveCart(cart) {
   localStorage.setItem(CART_KEY, JSON.stringify(cart));
 }
 
-/* === Render === */
+/* =====================================================
+   RENDER PRINCIPAL DEL CARRITO
+===================================================== */
 function renderCart() {
   const cart = getCart();
   const container = document.getElementById('cart-container');
@@ -19,10 +21,12 @@ function renderCart() {
       <div class="empty">
         Tu selección está vacía.<br>
         <small>Agrega tu café favorito para continuar.</small>
-      </div>`;
-    
-    document.getElementById('total-box').textContent = 'Total: L 0.00';
-    actualizarTextoBoton(); // 🔥 también actualizar botón aquí
+      </div>
+    `;
+    document.getElementById('total-box').innerHTML =
+      `Total de tu selección: <span class="total-green">L 0.00</span>`;
+
+    actualizarTextoBoton();
     return;
   }
 
@@ -65,32 +69,36 @@ function renderCart() {
   });
 
   saveCart(cart);
-  document.getElementById('total-box').textContent = 'Total: L ' + total.toFixed(2);
 
-  actualizarTextoBoton(); // 🔥 actualiza el botón dinámicamente
+  // TOTAL PREMIUM
+  document.getElementById('total-box').innerHTML =
+    `Total de tu selección: <span class="total-green">L ${total.toFixed(2)}</span>`;
+
+  actualizarTextoBoton();
 }
 
-/* === NUEVA FUNCIÓN: Actualizar texto premium del botón === */
+/* =====================================================
+   ACTUALIZAR TEXTO DEL BOTÓN PREMIUM
+===================================================== */
 function actualizarTextoBoton() {
   const procederBtn = document.getElementById('proceder-btn');
   const cart = getCart();
 
-  // calcular total de cafés
   let totalCafes = 0;
-  cart.forEach(item => totalCafes += item.qty);
+  cart.forEach(item => (totalCafes += item.qty));
 
   if (totalCafes === 0) {
     procederBtn.textContent = "Proceder al pago";
     return;
   }
 
-  // plural o singular
   const palabra = totalCafes === 1 ? "café" : "cafés";
-
   procederBtn.textContent = `Proceder al pago (${totalCafes} ${palabra})`;
 }
 
-/* === Controles === */
+/* =====================================================
+   CONTROLES (+)(-)(🗑)
+===================================================== */
 document.getElementById('cart-container').addEventListener('click', e => {
   const btn = e.target.closest('button');
   if (!btn) return;
@@ -107,10 +115,12 @@ document.getElementById('cart-container').addEventListener('click', e => {
   if (action === 'del') cart.splice(index, 1);
 
   saveCart(cart);
-  renderCart(); // 🔥 vuelve a pintar todo
+  renderCart();
 });
 
-/* === Proceder === */
+/* =====================================================
+   BOTÓN PROCEDER
+===================================================== */
 document.getElementById('proceder-btn').addEventListener('click', () => {
   const cart = getCart();
   const aviso = document.getElementById('aviso-vacio');
