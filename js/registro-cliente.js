@@ -4,144 +4,167 @@
 import { registerUser } from "./supabase-auth.js";
 
 // ===============================
-// CAMPOS DEL FORM
+// PREVISUALIZAR AVATAR
+// ===============================
+const avatarInput = document.getElementById("avatarInput");
+const avatarPreview = document.getElementById("avatarPreview");
+let fotoBase64 = null;
+
+if (avatarInput && avatarPreview) {
+  avatarInput.addEventListener("change", () => {
+    const file = avatarInput.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      fotoBase64 = e.target.result;          // Guardamos la imagen en base64
+      avatarPreview.style.backgroundImage = `url('${fotoBase64}')`; // Vista previa
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+// ===============================
+// SNACKBAR
+// ===============================
+function mostrarSnackbar(msg) {
+  const bar = document.getElementById("snackbar");
+  if (!bar) return;
+  bar.innerText = msg;
+  bar.className = "show";
+  setTimeout(() => {
+    bar.className = bar.className.replace("show", "");
+  }, 2200);
+}
+
+// ===============================
+// HELPERS DE VALIDACIÓN ESTILO APPLE
 // ===============================
 const form = document.getElementById("registroForm");
-
-// Campos
 const nombreInput = document.getElementById("nombreInput");
 const correoInput = document.getElementById("correoInput");
 const telefonoInput = document.getElementById("telefonoInput");
 const passwordInput = document.getElementById("passwordInput");
 const confirmPasswordInput = document.getElementById("confirmPasswordInput");
 
-// Avatar
-const avatarInput = document.getElementById("avatarInput");
-const avatarPreview = document.getElementById("avatarPreview");
-let fotoBase64 = null;
-
-// ===============================
-// PREVISUALIZAR AVATAR (CORREGIDO)
-// ===============================
-avatarInput.addEventListener("change", () => {
-  const file = avatarInput.files[0];
-  if (!file) return;
-
-  // Validaciones estilo Apple
-  if (!file.type.startsWith("image/")) {
-    mostrarError(avatarInput, "Selecciona una imagen válida.");
-    return;
-  }
-
-  if (file.size > 2 * 1024 * 1024) {
-    mostrarError(avatarInput, "La imagen debe ser menor de 2 MB.");
-    return;
-  }
-
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    fotoBase64 = e.target.result;
-
-    avatarPreview.style.backgroundImage = `url('${fotoBase64}')`;
-    avatarPreview.style.backgroundSize = "cover";
-    avatarPreview.style.backgroundPosition = "center center";
-  };
-  reader.readAsDataURL(file);
+// Guardar placeholders originales
+document.querySelectorAll(".input-group input").forEach((input) => {
+  input.dataset.originalPlaceholder = input.placeholder;
 });
 
-// ===============================
-// VALIDACIONES TIPO APPLE
-// ===============================
-
-// Remueve mensajes existentes
-function limpiarErrores() {
-  document.querySelectorAll(".input-error-msg").forEach((el) => el.remove());
-  document.querySelectorAll(".input-error").forEach((el) =>
-    el.classList.remove("input-error")
-  );
+// Marca un campo con error (borde rojo + placeholder rojo)
+function marcarError(input, mensaje) {
+  const group = input.closest(".input-group");
+  if (!group) return;
+  group.classList.add("error");
+  input.value = "";
+  input.placeholder = mensaje;
 }
 
-// Muestra error debajo del input
-function mostrarError(input, mensaje) {
-  input.classList.add("input-error");
-
-  // Si ya existe un mensaje, no duplicar
-  if (input.parentElement.querySelector(".input-error-msg")) return;
-
-  const msg = document.createElement("small");
-  msg.className = "input-error-msg";
-  msg.innerText = mensaje;
-
-  input.parentElement.appendChild(msg);
+// Limpia el estado de error y restaura placeholder
+function limpiarError(input) {
+  const group = input.closest(".input-group");
+  if (!group) return;
+  group.classList.remove("error");
+  input.placeholder = input.dataset.originalPlaceholder || "";
 }
 
+// Limpiar error al escribir de nuevo
+[nombreInput, correoInput, telefonoInput, passwordInput, confirmPasswordInput]
+  .forEach((input) => {
+    if (!input) return;
+    input.addEventListener("input", () => limpiarError(input));
+  });
+
 // ===============================
-// ENVIAR FORMULARIO
+// MANEJO DEL FORMULARIO
 // ===============================
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  limpiarErrores();
+if (form) {
+  // Desactivar validación nativa por si acaso (extra además de novalidate)
+  form.setAttribute("novalidate", "true");
 
-  const nombre = nombreInput.value.trim();
-  const correo = correoInput.value.trim();
-  const telefono = telefonoInput.value.trim();
-  const password = passwordInput.value.trim();
-  const confirmPassword = confirmPasswordInput.value.trim();
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-  // ===========================
-  // VALIDACIONES APPLE-LIKE
-  // ===========================
-  let valido = true;
+    // Limpiar errores previos
+    limpiarError(nombreInput);
+    limpiarError(correoInput);
+    limpiarError(telefonoInput);
+    limpiarError(passwordInput);
+    limpiarError(confirmPasswordInput);
 
-  if (nombre.length < 3) {
-    mostrarError(nombreInput, "Ingresa tu nombre completo.");
-    valido = false;
-  }
+    const nombre = nombreInput.value.trim();
+    const correo = correoInput.value.trim();
+    const telefono = telefonoInput.value.trim();
+    const password = passwordInput.value.trim();
+    const confirm = confirmPasswordInput.value.trim();
 
-  if (!correo.includes("@") || correo.length < 6) {
-    mostrarError(correoInput, "Ingresa un correo válido.");
-    valido = false;
-  }
+    // ===========================
+    // VALIDACIONES (en el propio campo)
+    // ===========================
+    if (!nombre || nombre.length < 3) {
+      marcarError(nombreInput, "Ingresa tu nombre completo");
+      return;
+    }
 
-  if (telefono.length < 8) {
-    mostrarError(telefonoInput, "Número de teléfono inválido.");
-    valido = false;
-  }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(correo)) {
+      marcarError(correoInput, "Correo electrónico no válido");
+      return;
+    }
 
-  if (password.length < 6) {
-    mostrarError(passwordInput, "Mínimo 6 caracteres.");
-    valido = false;
-  }
+    const phoneRegex = /^[0-9]{8,15}$/;
+    if (!phoneRegex.test(telefono)) {
+      marcarError(telefonoInput, "Teléfono no válido");
+      return;
+    }
 
-  if (password !== confirmPassword) {
-    mostrarError(confirmPasswordInput, "Las contraseñas no coinciden.");
-    valido = false;
-  }
+    if (password.length < 6) {
+      marcarError(passwordInput, "Mínimo 6 caracteres");
+      return;
+    }
 
-  if (!valido) return;
+    if (password.includes(" ")) {
+      marcarError(passwordInput, "Sin espacios en la contraseña");
+      return;
+    }
 
-  // ===========================
-  // REGISTRO EN SUPABASE
-  // ===========================
-  try {
-    await registerUser(
-      correo,
-      password,
-      telefono,
-      nombre,
-      "Honduras",
-      fotoBase64 || null
-    );
+    if (password !== confirm) {
+      marcarError(confirmPasswordInput, "Las contraseñas no coinciden");
+      return;
+    }
 
-    // Animación rápida tipo Apple
-    form.classList.add("form-success");
+    // ===========================
+    // REGISTRO EN SUPABASE
+    // ===========================
+    try {
+      await registerUser(
+        correo,
+        password,
+        telefono,
+        nombre,
+        "Honduras",
+        fotoBase64 || null   // si no hay foto, Supabase usará el avatar por defecto
+      );
 
-    setTimeout(() => {
-      window.location.href = "login.html";
-    }, 900);
+      mostrarSnackbar("Cuenta creada con éxito ✔️");
 
-  } catch (error) {
-    mostrarError(correoInput, "El correo ya está registrado.");
-    console.error(error);
-  }
-});
+      // Pequeña pausa y redirigir al login
+      setTimeout(() => {
+        window.location.href = "login.html";
+      }, 1500);
+
+    } catch (error) {
+      console.error("Error de registro:", error);
+
+      const message = (error.message || "").toLowerCase();
+
+      if (message.includes("already registered") || message.includes("duplicate")) {
+        marcarError(correoInput, "Este correo ya está registrado");
+        mostrarSnackbar("El correo ya está registrado");
+      } else {
+        mostrarSnackbar("No se pudo crear la cuenta");
+      }
+    }
+  });
+}
