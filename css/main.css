@@ -368,27 +368,24 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* ====================== LINKS DEL DRAWER ====================== */
+/* === DRAWER (estilo Apple) === */
 .drawer-links {
   display: flex;
   flex-direction: column;
-  gap: 0.9rem;
-  padding: 1.4rem;
+  padding: 0.8rem 1.4rem;
 }
 
 .drawer-links a {
-  padding: 0.75rem 0.4rem;
-  background: none;
-  color: var(--marron);
   text-decoration: none;
+  color: var(--marron);
   font-weight: 500;
-  border-radius: 10px;
-  transition: background 0.22s ease, color 0.22s ease;
-  -webkit-tap-highlight-color: transparent;
+  font-size: 1.05rem;
+  padding: 0.65rem 0;   /* ← Espaciado Apple: compacto, limpio */
+  letter-spacing: -0.2px; /* ← Micro ajuste Apple */
+  transition: color 0.25s ease;
 }
 
 .drawer-links a:hover {
-  background: rgba(51,103,59,0.08);
   color: var(--verde);
 }
 
