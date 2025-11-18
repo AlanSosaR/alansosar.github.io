@@ -13,6 +13,7 @@ export async function registerUser(
   photoURL = null
 ) {
 
+  // 1️⃣ Crear usuario en Auth
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
@@ -21,13 +22,28 @@ export async function registerUser(
         full_name: fullName,
         phone: phone,
         country: country,
-        // 👇 Foto de perfil: si no envían foto, usa TU imagen local
         photo_url: photoURL || "/imagenes/avatar-default.svg"
       }
     }
   });
 
   if (error) throw error;
+
+  const user = data.user;  // <-- UID del usuario creado
+
+  // 2️⃣ Insertarlo en la tabla users
+  const { error: insertError } = await supabase.from("users").insert({
+    id: user.id,          // UID de Auth
+    name: fullName,
+    email: email,
+    phone: phone,
+    country: country,
+    photo_url: photoURL || "/imagenes/avatar-default.svg",
+    rol: "usuario"        // 👈 rol por defecto
+  });
+
+  if (insertError) throw insertError;
+
   return data;
 }
 
