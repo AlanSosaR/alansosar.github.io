@@ -187,14 +187,31 @@ main {
   text-align: center;
 }
 
-/* ============================================
-   TOTAL
-   ============================================ */
+/* ============================================================
+   TOTAL PREMIUM — Versión final
+   ============================================================ */
+
 .total-box {
   text-align: right;
-  font-size: 1.35rem;
+  font-size: 1.45rem;          /* Tamaño elegante */
   font-weight: 600;
   margin-top: 1.8rem;
+  color: #512615;              /* Café elegante */
+}
+
+/* "L" en verde premium */
+.total-box .currency {
+  color: #33673B;              /* Verde premium */
+  font-weight: 700;
+}
+
+/* Texto "Total de tu selección" más delicado */
+.total-box small {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 500;
+  opacity: 0.75;
+  margin-bottom: 0.25rem;
 }
 
 /* ============================================
