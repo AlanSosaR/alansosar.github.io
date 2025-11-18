@@ -2,7 +2,7 @@ import { registerUser } from "./supabase-auth.js";
 
 /* ===============================
    AVATAR PREVIEW
-   =============================== */
+================================ */
 const avatarInput = document.getElementById("avatarInput");
 const avatarPreview = document.getElementById("avatarPreview");
 let fotoBase64 = null;
@@ -12,7 +12,7 @@ avatarInput.addEventListener("change", () => {
   if (!file) return;
 
   const reader = new FileReader();
-  reader.onload = e => {
+  reader.onload = (e) => {
     fotoBase64 = e.target.result;
     avatarPreview.style.backgroundImage = `url('${fotoBase64}')`;
   };
@@ -20,95 +20,90 @@ avatarInput.addEventListener("change", () => {
 });
 
 /* ===============================
-   SNACKBAR
-   =============================== */
-function snackbar(msg) {
-  const bar = document.getElementById("snackbar");
-  bar.textContent = msg;
-  bar.classList.add("show");
-  setTimeout(() => bar.classList.remove("show"), 2000);
-}
-
-/* ===============================
-   VALIDACIÓN ESTILO APPLE
-   =============================== */
+   VALIDACIONES
+================================ */
 const form = document.getElementById("registroForm");
 
-const nombre = document.getElementById("nombreInput");
-const correo = document.getElementById("correoInput");
-const telefono = document.getElementById("telefonoInput");
-const password = document.getElementById("passwordInput");
-const confirm = document.getElementById("confirmPasswordInput");
+const campos = {
+  nombre: document.getElementById("nombreInput"),
+  correo: document.getElementById("correoInput"),
+  telefono: document.getElementById("telefonoInput"),
+  password: document.getElementById("passwordInput"),
+  confirm: document.getElementById("confirmPasswordInput"),
+};
 
-document.querySelectorAll(".input-group input").forEach(input => {
-  input.dataset.original = input.placeholder;
-});
+const errores = {
+  nombre: document.getElementById("errorNombre"),
+  correo: document.getElementById("errorCorreo"),
+  telefono: document.getElementById("errorTelefono"),
+  password: document.getElementById("errorPassword"),
+  confirm: document.getElementById("errorConfirm"),
+};
 
-function marcarError(input, mensaje) {
-  const group = input.closest(".input-group");
-  group.classList.add("error");
-  input.value = "";
-  input.placeholder = mensaje;
+function limpiarErrores() {
+  Object.values(errores).forEach((e) => (e.textContent = ""));
+  document.querySelectorAll(".input-group").forEach(g => g.classList.remove("error"));
 }
 
-function limpiarError(input) {
-  const group = input.closest(".input-group");
-  group.classList.remove("error");
-  input.placeholder = input.dataset.original;
+function marcar(campo, mensaje) {
+  errores[campo].textContent = mensaje;
+  campos[campo].closest(".input-group").classList.add("error");
 }
-
-[nombre, correo, telefono, password, confirm].forEach(input => {
-  input.addEventListener("input", () => limpiarError(input));
-});
 
 /* ===============================
    SUBMIT
-   =============================== */
-form.addEventListener("submit", async e => {
+================================ */
+form.addEventListener("submit", async (e) => {
   e.preventDefault();
+  limpiarErrores();
 
-  limpiarError(nombre);
-  limpiarError(correo);
-  limpiarError(telefono);
-  limpiarError(password);
-  limpiarError(confirm);
+  let valido = true;
 
-  if (nombre.value.trim().length < 3)
-    return marcarError(nombre, "Ingresa tu nombre");
+  if (campos.nombre.value.trim() === "") {
+    marcar("nombre", "Ingresa tu nombre completo");
+    valido = false;
+  }
 
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(correo.value.trim()))
-    return marcarError(correo, "Correo inválido");
+  if (!campos.correo.value.includes("@")) {
+    marcar("correo", "Correo inválido");
+    valido = false;
+  }
 
-  const phoneRegex = /^[0-9]{8,15}$/;
-  if (!phoneRegex.test(telefono.value.trim()))
-    return marcarError(telefono, "Teléfono inválido");
+  if (campos.telefono.value.trim().length < 8) {
+    marcar("telefono", "Número de teléfono inválido");
+    valido = false;
+  }
 
-  if (password.value.length < 6)
-    return marcarError(password, "Mínimo 6 caracteres");
+  if (campos.password.value.length < 6) {
+    marcar("password", "Mínimo 6 caracteres");
+    valido = false;
+  }
 
-  if (password.value !== confirm.value)
-    return marcarError(confirm, "No coinciden");
+  if (campos.password.value !== campos.confirm.value) {
+    marcar("confirm", "Las contraseñas no coinciden");
+    valido = false;
+  }
 
+  if (!valido) return;
+
+  /* ===============================
+     SUPABASE
+  ================================ */
   try {
     await registerUser(
-      correo.value.trim(),
-      password.value.trim(),
-      telefono.value.trim(),
-      nombre.value.trim(),
+      campos.correo.value.trim(),
+      campos.password.value.trim(),
+      campos.telefono.value.trim(),
+      campos.nombre.value.trim(),
       "Honduras",
       fotoBase64
     );
 
-    snackbar("Cuenta creada ✔");
-    setTimeout(() => window.location.href = "login.html", 1300);
+    alert("Cuenta creada con éxito ✔");
+    window.location.href = "login.html";
 
   } catch (err) {
+    alert("Error registrando usuario");
     console.error(err);
-    snackbar("No se pudo crear la cuenta");
-
-    if (err.message && err.message.includes("duplicate")) {
-      marcarError(correo, "Correo ya registrado");
-    }
   }
 });
