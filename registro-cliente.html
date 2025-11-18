@@ -7,15 +7,16 @@
 
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+
   <link rel="stylesheet" href="css/registro-cliente.css">
   <link rel="icon" type="image/png" href="imagenes/logo.png">
 </head>
 
 <body>
   <main class="register-container">
+    <section class="register-card">
 
-    <section class="register-card reduced-card">
-
+      <!-- LOGO -->
       <div class="register-header">
         <div class="logo-container" onclick="window.location.href='index.html'">
           <img src="imagenes/logo.png" alt="Café Cortero">
@@ -27,16 +28,14 @@
       <div class="avatar-container">
         <label for="avatarInput" class="avatar-label">
           <div class="avatar-img" id="avatarPreview"
-            style="background-image: url('imagenes/avatar-default.svg');">
-          </div>
+            style="background-image: url('imagenes/avatar-default.svg');"></div>
         </label>
 
-        <input type="file" id="avatarInput" accept="image/*" style="display:none;">
+        <input type="file" id="avatarInput" accept="image/*" hidden>
       </div>
 
-      <!-- TARJETA SECUNDARIA -->
+      <!-- FORMULARIO -->
       <div class="register-inner-card">
-
         <form id="registroForm" novalidate>
 
           <div class="input-group">
@@ -65,7 +64,6 @@
           </div>
 
           <button type="submit" class="btn-register">Crear cuenta</button>
-
         </form>
       </div>
 
