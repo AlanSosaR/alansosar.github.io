@@ -33,22 +33,16 @@
         <h2 class="register-title">Crear cuenta</h2>
       </div>
 
-      <!-- AVATAR (CLICKABLE PARA SUBIR FOTO) -->
+      <!-- AVATAR -->
       <div class="avatar-container">
-
-        <!--  ✔ Se agregó class="avatar-label" → hace el círculo clickable -->
         <label for="avatarInput" class="avatar-label">
-
-          <!-- Avatar como div para fondo de alta calidad -->
           <div 
             class="avatar-img" 
             id="avatarPreview"
             style="background-image: url('imagenes/avatar-default.svg');">
           </div>
-
         </label>
 
-        <!-- input oculto -->
         <input 
           type="file" 
           id="avatarInput" 
@@ -62,53 +56,68 @@
         <form id="registroForm">
 
           <!-- Nombre -->
-          <div class="input-group">
-            <span class="material-symbols-outlined">person</span>
-            <input 
-              type="text" 
-              id="nombreInput" 
-              placeholder="Nombre completo"
-              required>
+          <div class="input-wrapper">
+            <div class="input-group">
+              <span class="material-symbols-outlined">person</span>
+              <input 
+                type="text" 
+                id="nombreInput" 
+                placeholder="Nombre completo"
+                required>
+            </div>
+            <small class="input-error" id="errorNombre"></small>
           </div>
 
           <!-- Correo -->
-          <div class="input-group">
-            <span class="material-symbols-outlined">mail</span>
-            <input 
-              type="email" 
-              id="correoInput" 
-              placeholder="Correo electrónico"
-              required>
+          <div class="input-wrapper">
+            <div class="input-group">
+              <span class="material-symbols-outlined">mail</span>
+              <input 
+                type="email" 
+                id="correoInput" 
+                placeholder="Correo electrónico"
+                required>
+            </div>
+            <small class="input-error" id="errorCorreo"></small>
           </div>
 
           <!-- Teléfono -->
-          <div class="input-group">
-            <span class="material-symbols-outlined">call</span>
-            <input 
-              type="tel" 
-              id="telefonoInput" 
-              placeholder="Teléfono"
-              required>
+          <div class="input-wrapper">
+            <div class="input-group">
+              <span class="material-symbols-outlined">call</span>
+              <input 
+                type="tel" 
+                id="telefonoInput" 
+                placeholder="Teléfono"
+                required>
+            </div>
+            <small class="input-error" id="errorTelefono"></small>
           </div>
 
           <!-- Contraseña -->
-          <div class="input-group">
-            <span class="material-symbols-outlined">lock</span>
-            <input 
-              type="password" 
-              id="passwordInput" 
-              placeholder="Contraseña"
-              required>
+          <div class="input-wrapper">
+            <div class="input-group">
+              <span class="material-symbols-outlined">lock</span>
+              <input 
+                type="password" 
+                id="passwordInput" 
+                placeholder="Contraseña"
+                required>
+            </div>
+            <small class="input-error" id="errorPassword"></small>
           </div>
 
           <!-- Confirmar Contraseña -->
-          <div class="input-group">
-            <span class="material-symbols-outlined">lock</span>
-            <input 
-              type="password" 
-              id="confirmPasswordInput" 
-              placeholder="Confirmar contraseña"
-              required>
+          <div class="input-wrapper">
+            <div class="input-group">
+              <span class="material-symbols-outlined">lock</span>
+              <input 
+                type="password" 
+                id="confirmPasswordInput" 
+                placeholder="Confirmar contraseña"
+                required>
+            </div>
+            <small class="input-error" id="errorConfirm"></small>
           </div>
 
           <!-- Botón crear cuenta -->
