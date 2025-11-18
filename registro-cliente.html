@@ -7,15 +7,13 @@
 
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
-
   <link rel="stylesheet" href="css/registro-cliente.css">
-  <link rel="icon" type="image/png" href="imagenes/logo.png">
 </head>
 
 <body>
   <main class="register-container">
 
-    <section class="register-card">
+    <section class="register-card reduced-card">
 
       <div class="register-header">
         <div class="logo-container" onclick="window.location.href='index.html'">
@@ -27,14 +25,16 @@
       <!-- AVATAR -->
       <div class="avatar-container">
         <label for="avatarInput" class="avatar-label">
-          <div id="avatarPreview" class="avatar-img"
-            style="background-image: url('imagenes/avatar-default.svg');"></div>
+          <div class="avatar-img" id="avatarPreview"
+            style="background-image: url('imagenes/avatar-default.svg');">
+          </div>
         </label>
-        <input type="file" id="avatarInput" accept="image/*" hidden>
+        <input type="file" id="avatarInput" accept="image/*" style="display:none;">
       </div>
 
       <!-- FORMULARIO -->
       <div class="register-inner-card">
+
         <form id="registroForm" novalidate>
 
           <div class="input-wrapper">
@@ -42,7 +42,7 @@
               <span class="material-symbols-outlined">person</span>
               <input type="text" id="nombreInput" placeholder="Nombre completo">
             </div>
-            <small class="error-message" id="errorNombre"></small>
+            <small class="input-error" id="errorNombre"></small>
           </div>
 
           <div class="input-wrapper">
@@ -50,7 +50,7 @@
               <span class="material-symbols-outlined">mail</span>
               <input type="email" id="correoInput" placeholder="Correo electrónico">
             </div>
-            <small class="error-message" id="errorCorreo"></small>
+            <small class="input-error" id="errorCorreo"></small>
           </div>
 
           <div class="input-wrapper">
@@ -58,7 +58,7 @@
               <span class="material-symbols-outlined">call</span>
               <input type="tel" id="telefonoInput" placeholder="Teléfono">
             </div>
-            <small class="error-message" id="errorTelefono"></small>
+            <small class="input-error" id="errorTelefono"></small>
           </div>
 
           <div class="input-wrapper">
@@ -66,7 +66,7 @@
               <span class="material-symbols-outlined">lock</span>
               <input type="password" id="passwordInput" placeholder="Contraseña">
             </div>
-            <small class="error-message" id="errorPassword"></small>
+            <small class="input-error" id="errorPassword"></small>
           </div>
 
           <div class="input-wrapper">
@@ -74,7 +74,7 @@
               <span class="material-symbols-outlined">lock</span>
               <input type="password" id="confirmPasswordInput" placeholder="Confirmar contraseña">
             </div>
-            <small class="error-message" id="errorConfirm"></small>
+            <small class="input-error" id="errorConfirm"></small>
           </div>
 
           <button type="submit" class="btn-register">Crear cuenta</button>
