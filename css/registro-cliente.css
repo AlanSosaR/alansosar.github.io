@@ -162,6 +162,37 @@ body {
 }
 
 /* ===============================
+   VALIDACIONES ESTILO APPLE
+   =============================== */
+
+/* Borde rojo suave cuando hay error */
+.input-error {
+  border-color: #D93025 !important;
+  box-shadow: 0 0 0 2px rgba(217, 48, 37, 0.15) !important;
+}
+
+/* Placeholder rojo suave */
+.input-error::placeholder {
+  color: #D93025 !important;
+  opacity: 0.8;
+}
+
+/* Quitar el tooltip amarillo nativo del navegador */
+input:invalid {
+  box-shadow: none !important;
+}
+
+/* Evitar el popup de validación */
+input:invalid:focus {
+  outline: none !important;
+}
+
+/* Estilo Apple cuando el input está OK */
+.input-success {
+  border-color: #34C759 !important; /* verde Apple */
+  box-shadow: 0 0 0 2px rgba(52,199,89,0.18) !important;
+}
+/* ===============================
    BOTÓN CREAR CUENTA
    =============================== */
 .btn-register {
