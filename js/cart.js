@@ -20,7 +20,9 @@ function renderCart() {
         Tu selección está vacía.<br>
         <small>Agrega tu café favorito para continuar.</small>
       </div>`;
+    
     document.getElementById('total-box').textContent = 'Total: L 0.00';
+    actualizarTextoBoton(); // 🔥 también actualizar botón aquí
     return;
   }
 
@@ -35,8 +37,9 @@ function renderCart() {
     div.className = 'item';
     div.innerHTML = `
       <div class="item-img-box">
-    <img src="${item.img}">
-</div>
+        <img src="${item.img}">
+      </div>
+
       <div class="item-info">
         <div class="item-name">${item.name}</div>
         <div class="item-price">L ${priceNum.toFixed(2)} / unidad</div>
@@ -63,6 +66,28 @@ function renderCart() {
 
   saveCart(cart);
   document.getElementById('total-box').textContent = 'Total: L ' + total.toFixed(2);
+
+  actualizarTextoBoton(); // 🔥 actualiza el botón dinámicamente
+}
+
+/* === NUEVA FUNCIÓN: Actualizar texto premium del botón === */
+function actualizarTextoBoton() {
+  const procederBtn = document.getElementById('proceder-btn');
+  const cart = getCart();
+
+  // calcular total de cafés
+  let totalCafes = 0;
+  cart.forEach(item => totalCafes += item.qty);
+
+  if (totalCafes === 0) {
+    procederBtn.textContent = "Proceder al pago";
+    return;
+  }
+
+  // plural o singular
+  const palabra = totalCafes === 1 ? "café" : "cafés";
+
+  procederBtn.textContent = `Proceder al pago (${totalCafes} ${palabra})`;
 }
 
 /* === Controles === */
@@ -82,7 +107,7 @@ document.getElementById('cart-container').addEventListener('click', e => {
   if (action === 'del') cart.splice(index, 1);
 
   saveCart(cart);
-  renderCart();
+  renderCart(); // 🔥 vuelve a pintar todo
 });
 
 /* === Proceder === */
