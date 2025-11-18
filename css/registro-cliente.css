@@ -186,23 +186,22 @@ input:invalid:focus {
   box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.15) !important;
 }
 
-
-/* ===============================
-   VALIDACIONES ESTILO APPLE
-   =============================== */
-.input-error {
-  font-size: 0.82rem;
-  color: #D60000;
-  margin-top: -10px;
-  margin-bottom: 14px;
-  padding-left: 4px;
-  display: none; /* Se muestra solo cuando hay error */
-  font-weight: 400;
+/* validacion tipo apple*/
+/* Campo en error: borde rojo suave + sombra ligera */
+.input-group.error {
+  border-color: #d72638;
+  box-shadow: 0 0 0 2px rgba(215, 38, 56, 0.12);
 }
 
-.input-group.error {
-  border-color: #D60000 !important;
-  box-shadow: 0 0 0 1.5px rgba(214, 0, 0, 0.25);
+/* Placeholder rojo cuando hay error */
+.input-group.error input::placeholder {
+  color: #d72638;
+}
+
+/* Transición suave al entrar/salir del error */
+.input-group,
+.input-group input::placeholder {
+  transition: all 0.25s ease;
 }
 /* ===============================
    BOTÓN CREAR CUENTA
