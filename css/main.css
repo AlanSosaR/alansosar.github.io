@@ -842,29 +842,40 @@ body {
   padding: 0 1rem;
 }
 
-.about-text {
-  color: var(--marron);
+/* ============================================================
+   =======  TIPOGRAFÍA PREMIUM ESTILO APPLE PARA ABOUT  =======
+   ============================================================ */
+
+.about-text,
+.about-text p,
+.about-text h2,
+.about-text h3,
+.about-text span,
+.about-text * {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+               Helvetica, Arial, sans-serif !important;
+  font-weight: 350; /* Estilo Apple: delgado pero legible */
+  line-height: 1.45;
+  letter-spacing: -0.015em; /* microajuste Apple */
+  color: #512615; /* mantienes tu marrón premium */
 }
 
-.about-text small {
-  display: block;
-  font-size: 0.9rem;
-  color: #a78c7c;
-  margin-bottom: 0.4rem;
-}
-
+/* Título estilo Apple */
 .about-text h2 {
-  font-family: "Playfair Display", serif;
-  font-size: 2rem;
-  color: var(--marron);
-  margin-bottom: 0.8rem;
+  font-weight: 600;      /* Apple usa 600 para títulos */
+  font-size: 2.1rem;
+  margin-bottom: 1rem;
+  letter-spacing: -0.02em;
 }
 
+/* Párrafos estilo Apple: suaves y limpios */
 .about-text p {
-  margin-bottom: 0.8rem;
-  line-height: 1.7;
-  color: #5a4538;
+  font-size: 1.28rem;
+  font-weight: 350;
+  margin-bottom: 1.4rem;
 }
+
+/* Pills se mantienen igual */
 
 .about-pills {
   display: flex;
