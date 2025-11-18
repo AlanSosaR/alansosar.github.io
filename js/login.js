@@ -1,6 +1,10 @@
 // ===========================
 // LOGIN.JS – Café Cortero ☕
+// Supabase versión premium
 // ===========================
+
+// Inicializar Supabase
+const supabase = window.supabaseClient;
 
 // Referencias a los campos
 const loginForm = document.getElementById("loginForm");
@@ -31,7 +35,9 @@ function limpiarError(input) {
 const params = new URLSearchParams(window.location.search);
 const from = params.get("from");
 
-// Escuchar el envío del formulario
+// ===============================
+// MANEJO DEL FORMULARIO
+// ===============================
 loginForm.addEventListener("submit", async (e) => {
   e.preventDefault();
 
@@ -42,21 +48,19 @@ loginForm.addEventListener("submit", async (e) => {
   const userValue = userInput.value.trim();
   const passValue = passInput.value.trim();
 
-  // ====== Validaciones Inline ======
+  // ====== VALIDACIONES ======
   if (!userValue) {
     marcarError(userInput, "Ingresa tu correo o teléfono");
     return;
   }
 
   if (userValue.includes("@")) {
-    // Validar correo
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(userValue)) {
       marcarError(userInput, "Correo no válido");
       return;
     }
   } else {
-    // Validar teléfono
     const phoneRegex = /^[0-9]{8,15}$/;
     if (!phoneRegex.test(userValue)) {
       marcarError(userInput, "Teléfono no válido");
@@ -69,22 +73,36 @@ loginForm.addEventListener("submit", async (e) => {
     return;
   }
 
-  // ====== Lógica de autenticación Firebase ======
+  // ===========================
+  // LOGIN CON SUPABASE
+  // ===========================
   try {
-    // Detectar si el usuario usa correo o teléfono
-    if (userValue.includes("@")) {
-      // Login con correo
-      const { getAuth, signInWithEmailAndPassword } = await import("https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js");
-      const auth = getAuth();
-      await signInWithEmailAndPassword(auth, userValue, passValue);
-    } else {
-      // (Opción futura: autenticación con teléfono)
-      console.warn("Login con teléfono aún no implementado en Firebase.");
-      marcarError(userInput, "Login con teléfono aún no disponible");
+    let emailToUse = userValue;
+
+    // Si es teléfono, lo convertimos a correo virtual
+    if (!userValue.includes("@")) {
+      emailToUse = `${userValue}@cortero.hn`; 
+    }
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: emailToUse,
+      password: passValue
+    });
+
+    if (error) {
+      console.error("Supabase login error:", error);
+      
+      if (error.message.includes("Invalid login credentials")) {
+        marcarError(passInput, "Credenciales incorrectas");
+      } else {
+        marcarError(userInput, "Error al iniciar sesión");
+      }
       return;
     }
 
-    // ====== Login exitoso ======
+    // ===========================
+    // LOGIN EXITOSO
+    // ===========================
     mostrarSnackbar("Inicio de sesión exitoso ☕ Bienvenido a Café Cortero");
 
     setTimeout(() => {
@@ -93,17 +111,10 @@ loginForm.addEventListener("submit", async (e) => {
       } else {
         window.location.href = "index.html";
       }
-    }, 2000);
+    }, 1500);
 
-  } catch (error) {
-    console.error("Error en inicio de sesión:", error.message);
-
-    if (error.code === "auth/user-not-found") {
-      marcarError(userInput, "Usuario no registrado");
-    } else if (error.code === "auth/wrong-password") {
-      marcarError(passInput, "Contraseña incorrecta");
-    } else {
-      marcarError(userInput, "Error al iniciar sesión");
-    }
+  } catch (err) {
+    console.error("Error inesperado:", err);
+    marcarError(userInput, "Error al iniciar sesión");
   }
 });
