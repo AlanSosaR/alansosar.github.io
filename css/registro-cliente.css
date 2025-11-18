@@ -1,79 +1,53 @@
-/* ===============================
-   ESTILOS GENERALES
-   =============================== */
 body {
   font-family: "Roboto", sans-serif;
   background: #fff;
   margin: 0;
   padding: 0;
-  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  -webkit-tap-highlight-color: transparent;
+  min-height: 100vh;
 }
 
 .register-container {
   width: 100%;
-  padding: 30px 20px;
-  display: flex;
-  justify-content: center;
+  padding: 25px;
 }
 
-/* ===============================
-   TARJETA PRINCIPAL
-   =============================== */
 .register-card {
-  background: #fff;
-  border-radius: 20px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-  padding: 30px 40px;
   max-width: 420px;
   width: 100%;
+  background: #fff;
+  border-radius: 22px;
+  padding: 30px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
 }
 
-/* ===============================
-   LOGO + TÍTULO
-   =============================== */
 .register-header {
   text-align: center;
-  margin-bottom: 25px;
+  margin-bottom: 20px;
 }
 
 .logo-container img {
-  width: 105px;
-  transition: 0.3s;
+  width: 110px;
 }
 
-.logo-container:hover img {
-  transform: scale(1.06);
-}
-
-.register-title {
-  font-family: "Fraunces", serif;
-  font-size: 1.7rem;
-  margin: 10px 0 0;
-  color: #512615;
-}
-
-/* ===============================
-   AVATAR
-   =============================== */
+/* AVATAR */
 .avatar-container {
-  width: 112px;
-  height: 112px;
+  width: 115px;
+  height: 115px;
+  margin: 0 auto 20px;
+  background: #fff;
   border-radius: 50%;
   overflow: hidden;
-  margin: 0 auto 22px;
-  background: #fff;
-  box-shadow: 0 10px 35px rgba(0,0,0,0.15);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
 }
 
 .avatar-label {
-  display: block;
   width: 100%;
   height: 100%;
   cursor: pointer;
+  display: block;
 }
 
 .avatar-img {
@@ -81,61 +55,40 @@ body {
   height: 100%;
   background-size: cover;
   background-position: center;
-  pointer-events: none;
 }
 
-/* ===============================
-   TARJETA SECUNDARIA
-   =============================== */
-.register-inner-card {
-  margin-top: 10px;
-  padding: 25px;
-  border-radius: 16px;
-  border: 1.7px solid #512615;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+/* INPUTS */
+.input-wrapper {
+  margin-bottom: 16px;
 }
 
-/* ===============================
-   INPUTS + VALIDACIONES APPLE
-   =============================== */
 .input-group {
   display: flex;
   align-items: center;
   border: 1.6px solid #D9D9D9;
   border-radius: 12px;
-  padding: 10px 12px;
-  background: #fff;
-  margin-bottom: 18px;
-  transition: all 0.25s ease;
+  padding: 10px;
+  transition: border 0.25s ease;
+}
+
+.input-group.error {
+  border-color: #d72638;
 }
 
 .input-group input {
   flex: 1;
   border: none;
   outline: none;
-  background: none;
   font-size: 1rem;
 }
 
-.material-symbols-outlined {
-  font-size: 22px;
-  margin-right: 8px;
-  color: #33673B;
-}
-
-/* 🔴 ERROR */
-.input-group.error {
-  border-color: #d72638;
-  box-shadow: 0 0 0 2px rgba(215, 38, 56, 0.12);
-}
-
-.input-group.error input::placeholder {
+.error-message {
   color: #d72638;
+  font-size: 0.83rem;
+  margin-top: 4px;
 }
 
-/* ===============================
-   BOTÓN
-   =============================== */
+/* BOTÓN */
 .btn-register {
   width: 100%;
   padding: 14px;
@@ -143,44 +96,23 @@ body {
   color: #fff;
   border: none;
   border-radius: 12px;
-  font-size: 1rem;
   cursor: pointer;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.18);
-  transition: 0.25s ease;
+  font-size: 1rem;
+  margin-top: 5px;
 }
 
-.btn-register:hover {
-  background: #28532E;
-  transform: translateY(-2px);
-}
-
-/* ===============================
-   SNACKBAR
-   =============================== */
 #snackbar {
-  visibility: hidden;
-  background: #33673B;
-  color: #fff;
-  padding: 14px;
-  border-radius: 10px;
   position: fixed;
   bottom: 30px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 1000;
+  background: #33673B;
+  padding: 14px;
+  border-radius: 10px;
+  color: #fff;
+  visibility: hidden;
 }
 
 #snackbar.show {
   visibility: visible;
-  animation: fadein 0.3s, fadeout 0.3s 2s;
-}
-
-@keyframes fadein {
-  from { opacity: 0; bottom: 15px; }
-  to { opacity: 1; bottom: 30px; }
-}
-
-@keyframes fadeout {
-  from { opacity: 1; bottom: 30px; }
-  to { opacity: 0; bottom: 15px; }
 }
