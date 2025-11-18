@@ -1,116 +1,162 @@
-/* ============================================================
-   ================  IMPORTS DE SUPABASE  ======================
-   ============================================================ */
-import { registerUser } from "./supabase-auth.js";
-import { supabase } from "./supabase-client.js";
+// =============================================
+// REGISTRO – Café Cortero ☕ Supabase Premium
+// =============================================
 
-/* ============================================================
-   ===============  PREVISUALIZAR AVATAR  ======================
-   ============================================================ */
+// Inicializar Supabase
+const supabase = window.supabaseClient;
+
+// Inputs
+const form = document.getElementById("registroForm");
 const avatarInput = document.getElementById("avatarInput");
 const avatarPreview = document.getElementById("avatarPreview");
-let avatarFile = null;
 
-if (avatarInput) {
-  avatarInput.addEventListener("change", () => {
-    avatarFile = avatarInput.files[0];
-    if (avatarFile) {
-      const reader = new FileReader();
-      reader.onload = e => {
-        avatarPreview.style.backgroundImage = `url('${e.target.result}')`;
-      };
-      reader.readAsDataURL(avatarFile);
-    }
-  });
-}
-
-/* ============================================================
-   ======================  SNACKBAR  ===========================
-   ============================================================ */
+// Snackbar
 function mostrarSnackbar(msg) {
   const bar = document.getElementById("snackbar");
   bar.innerText = msg;
   bar.className = "show";
-  setTimeout(() => bar.className = bar.className.replace("show", ""), 2200);
+  setTimeout(() => (bar.className = bar.className.replace("show", "")), 2200);
 }
 
-/* ============================================================
-   =====================  REGISTRO  ============================
-   ============================================================ */
-const form = document.getElementById("registroForm");
+// ============================================================
+// PREVISUALIZAR AVATAR
+// ============================================================
+if (avatarInput) {
+  avatarInput.addEventListener("change", () => {
+    const file = avatarInput.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        avatarPreview.style.backgroundImage = `url('${e.target.result}')`;
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+}
 
+// ============================================================
+// SUBIR IMAGEN A SUPABASE STORAGE
+// ============================================================
+async function subirAvatar(file, userId) {
+  if (!file) return "imagenes/avatar-default.svg";
+
+  const fileExt = file.name.split(".").pop();
+  const fileName = `avatar-${userId}.${fileExt}`;
+  const filePath = `avatars/${fileName}`;
+
+  const { error: uploadError } = await supabase.storage
+    .from("avatars")
+    .upload(filePath, file, {
+      upsert: true,
+      contentType: file.type
+    });
+
+  if (uploadError) {
+    console.error("Error subiendo avatar:", uploadError);
+    return "imagenes/avatar-default.svg";
+  }
+
+  const { data: publicURL } = supabase.storage
+    .from("avatars")
+    .getPublicUrl(filePath);
+
+  return publicURL.publicUrl;
+}
+
+// ============================================================
+// REGISTRO PRINCIPAL
+// ============================================================
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const fullName = document.getElementById("nombreInput").value.trim();
-  const email = document.getElementById("correoInput").value.trim();
+  const emailInput = document.getElementById("correoInput").value.trim();
   const phone = document.getElementById("telefonoInput").value.trim();
-  const password = document.getElementById("passwordInput").value.trim();
+  const pass = document.getElementById("passwordInput").value.trim();
   const confirm = document.getElementById("confirmPasswordInput").value.trim();
-  let photoURL = "imagenes/avatar-default.svg";
+  const avatarFile = avatarInput.files[0];
 
-  /* --- VALIDACIONES --- */
-  if (password.includes(" ")) {
-    return mostrarSnackbar("La contraseña no puede contener espacios.");
+  // ---------------------
+  // VALIDACIONES
+  // ---------------------
+  if (!fullName) return mostrarSnackbar("Ingresa tu nombre completo.");
+  if (phone.length < 8) return mostrarSnackbar("Teléfono inválido.");
+  if (pass.includes(" ")) return mostrarSnackbar("La contraseña no debe tener espacios.");
+  if (pass !== confirm) return mostrarSnackbar("Las contraseñas no coinciden.");
+
+  // Permitir registro con teléfono → correo virtual
+  let email = emailInput;
+  if (!email.includes("@")) {
+    email = `${phone}@cortero.hn`;
   }
 
-  if (password !== confirm) {
-    return mostrarSnackbar("Las contraseñas no coinciden.");
-  }
-
-  if (phone.length < 8) {
-    return mostrarSnackbar("Número de teléfono inválido.");
-  }
-
-  mostrarSnackbar("Creando tu cuenta… ⏳");
-
-  /* ============================================================
-     ============== SUBIR FOTO A SUPABASE STORAGE ===============
-     ============================================================ */
-  if (avatarFile) {
-    const filePath = `avatars/${Date.now()}_${avatarFile.name}`;
-    const { error: uploadError } = await supabase.storage
-      .from("usuarios")
-      .upload(filePath, avatarFile);
-
-    if (uploadError) {
-      console.error(uploadError);
-      return mostrarSnackbar("Error al subir foto.");
+  // ============================================================
+  // 1️⃣ CREAR USUARIO EN SUPABASE AUTH
+  // ============================================================
+  const { data: signupData, error: signupError } = await supabase.auth.signUp({
+    email,
+    password: pass,
+    options: {
+      data: {
+        full_name: fullName,
+        phone: phone,
+        country: "HN",
+        photo_url: null
+      }
     }
+  });
 
-    const { data: publicURL } = supabase.storage
-      .from("usuarios")
-      .getPublicUrl(filePath);
-
-    photoURL = publicURL.publicUrl;
+  if (signupError) {
+    console.error(signupError);
+    mostrarSnackbar("Error al crear la cuenta.");
+    return;
   }
 
-  /* ============================================================
-     ============== CREAR USUARIO EN SUPABASE ===================
-     ============================================================ */
-  try {
-    const data = await registerUser(
-      email,
-      password,
-      phone,
-      fullName,
-      "Honduras",
-      photoURL
-    );
+  const userId = signupData.user.id;
 
-    mostrarSnackbar("Cuenta creada con éxito ✔️");
+  // ============================================================
+  // 2️⃣ SUBIR FOTO (si existe)
+  // ============================================================
+  let avatarURL = await subirAvatar(avatarFile, userId);
 
-    // Reset visual
-    form.reset();
-    avatarPreview.style.backgroundImage = "url('imagenes/avatar-default.svg')";
+  // ============================================================
+  // 3️⃣ ACTUALIZAR PERFIL EN AUTH
+  // ============================================================
+  await supabase.auth.updateUser({
+    data: {
+      full_name: fullName,
+      phone: phone,
+      photo_url: avatarURL
+    }
+  });
 
-    // Redirigir después de 1.5s
-    setTimeout(() => {
-      window.location.href = "login.html";
-    }, 1500);
+  // ============================================================
+  // 4️⃣ INSERTAR EN TABLA "usuarios"
+  // ============================================================
+  const { error: dbError } = await supabase
+    .from("usuarios")
+    .insert({
+      id: userId,
+      full_name: fullName,
+      email: email,
+      phone: phone,
+      photo_url: avatarURL,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    });
 
-  } catch (error) {
-    console.error(error);
-    mostrarSnackbar(error.message || "Error al registrar usuario.");
+  if (dbError) {
+    console.error(dbError);
+    mostrarSnackbar("Error guardando datos en la base.");
+    return;
   }
+
+  // ============================================================
+  // ✔ REGISTRO TERMINADO
+  // ============================================================
+  mostrarSnackbar("Cuenta creada con éxito ✔️");
+
+  setTimeout(() => {
+    window.location.href = "login.html";
+  }, 1500);
 });
