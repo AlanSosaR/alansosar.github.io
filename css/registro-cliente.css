@@ -9,7 +9,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 100vh; /* permite crecer sin cortar */
+  min-height: 100vh;
   color: #2E2A27;
   -webkit-tap-highlight-color: transparent;
 }
@@ -48,8 +48,7 @@ body {
   display: flex;
   justify-content: center;
   margin-bottom: 12px;
-  -webkit-tap-highlight-color: transparent;
-  margin-top: 12px !important; /* ✔ Ajuste solicitado */
+  margin-top: 12px !important;
 }
 
 .logo-container img {
@@ -71,49 +70,39 @@ body {
   color: #512615;
 }
 
-
-/* === AVATAR estilo Apple === */
+/* ===============================
+   AVATAR ESTILO APPLE
+   =============================== */
 .avatar-container {
   width: 112px;
   height: 112px;
   margin: 0 auto 22px auto;
   border-radius: 50%;
   overflow: hidden;
-  position: relative;
   background: #fff;
-  box-shadow: 0 10px 35px rgba(0,0,0,0.15); /* sombra premium tipo Apple */
+  position: relative;
+  box-shadow: 0px 10px 38px rgba(0, 0, 0, 0.18);
 }
 
-/* Div donde se carga la imagen */
+.avatar-label {
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  display: block;
+}
+
 .avatar-img {
   width: 100%;
   height: 100%;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-}
-
-/* Hace que todo el avatar sea clickable */
-.avatar-label {
-  cursor: pointer;
-  width: 100%;
-  height: 100%;
-  display: block;
-}
-
-/* Imagen como background con máxima calidad */
-.avatar-img {
-  width: 100%;
-  height: 100%;
-  background-size: cover;        /* Relleno perfecto */
-  background-position: center;   /* Centrado */
-  background-repeat: no-repeat;  /* Sin repetir */
   user-select: none;
   -webkit-user-drag: none;
 }
 
 /* ===============================
-   TARJETA SECUNDARIA (INPUTS)
+   TARJETA SECUNDARIA
    =============================== */
 .register-inner-card {
   background: #ffffff;
@@ -125,8 +114,12 @@ body {
 }
 
 /* ===============================
-   INPUT GROUP
+   INPUT GROUP + VALIDACIONES APPLE
    =============================== */
+.input-wrapper {
+  margin-bottom: 18px;
+}
+
 .input-group {
   position: relative;
   display: flex;
@@ -134,14 +127,8 @@ body {
   border: 1.6px solid #D9D9D9;
   border-radius: 12px;
   padding: 10px 12px;
-  margin-bottom: 18px;
-  background-color: #fff;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.input-group:focus-within {
-  border-color: #33673B;
-  box-shadow: 0 0 0 2px rgba(51, 103, 59, 0.12);
+  background-color: white;
+  transition: all 0.25s ease;
 }
 
 .input-group input {
@@ -149,8 +136,6 @@ body {
   border: none;
   outline: none;
   font-size: 1rem;
-  color: #2E2A27;
-  font-family: "Roboto", sans-serif;
   background: transparent;
 }
 
@@ -158,53 +143,20 @@ body {
   color: #33673B;
   margin-right: 8px;
   font-size: 22px;
-  user-select: none;
 }
 
-/* ===== VALIDACIONES TIPO APPLE ===== */
-
-/* Quita el mensaje amarillo del navegador (Chrome, Safari, Edge) */
-input:invalid {
-  box-shadow: none !important;
-}
-
-/* Evita burbujas automáticas de validación */
-input:invalid:focus {
-  box-shadow: none !important;
-  outline: none !important;
-}
-
-/* Línea inferior roja suave cuando es inválido */
-.input-group.invalid {
-  border-color: #d64545 !important;
-  box-shadow: 0 0 0 2px rgba(214, 69, 69, 0.15) !important;
-}
-
-/* Línea inferior verde cuando es válido */
-.input-group.valid {
-  border-color: #2e7d32 !important;
-  box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.15) !important;
-}
-
-/* validacion tipo apple*/
-/* Campo en error: borde rojo suave + sombra ligera */
+/* ERROR estilo Apple */
 .input-group.error {
-  border-color: #d72638;
-  box-shadow: 0 0 0 2px rgba(215, 38, 56, 0.12);
+  border-color: #d72638 !important;
+  box-shadow: 0 0 0 2px rgba(215, 38, 56, 0.12) !important;
 }
 
-/* Placeholder rojo cuando hay error */
 .input-group.error input::placeholder {
-  color: #d72638;
+  color: #d72638 !important;
 }
 
-/* Transición suave al entrar/salir del error */
-.input-group,
-.input-group input::placeholder {
-  transition: all 0.25s ease;
-}
 /* ===============================
-   BOTÓN CREAR CUENTA
+   BOTÓN
    =============================== */
 .btn-register {
   width: 100%;
@@ -214,24 +166,15 @@ input:invalid:focus {
   border-radius: 12px;
   padding: 14px;
   font-size: 1rem;
-  font-weight: 500;
   cursor: pointer;
   margin-top: 10px;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+  transition: background-color 0.25s ease, transform 0.15s ease;
+  box-shadow: 0px 8px 20px rgba(0,0,0,0.18);
 }
 
 .btn-register:hover {
-  background-color: #28532E;
   transform: translateY(-2px);
-}
-
-.btn-register:active {
-  transform: scale(0.98);
-}
-
-button, a, img, input {
-  -webkit-tap-highlight-color: transparent;
+  background-color: #28532E;
 }
 
 /* ===============================
@@ -243,7 +186,7 @@ button, a, img, input {
   background-color: #33673B;
   color: #fff;
   text-align: center;
-  border-radius: 8px;
+  border-radius: 10px;
   padding: 14px;
   position: fixed;
   left: 50%;
@@ -251,59 +194,19 @@ button, a, img, input {
   transform: translateX(-50%);
   font-size: 0.95rem;
   z-index: 1000;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
 }
 
 #snackbar.show {
   visibility: visible;
-  animation: fadein 0.4s, fadeout 0.4s 1.8s;
+  animation: fadein 0.3s, fadeout 0.3s 1.9s;
 }
 
 @keyframes fadein {
-  from { opacity: 0; bottom: 10px; }
+  from { opacity: 0; bottom: 15px; }
   to { opacity: 1; bottom: 30px; }
 }
 
 @keyframes fadeout {
   from { opacity: 1; bottom: 30px; }
-  to { opacity: 0; bottom: 10px; }
-}
-
-/* ===============================
-   RESPONSIVE
-   =============================== */
-@media (max-width: 480px) {
-
-  .register-card {
-    padding: 22px;
-    max-width: 360px;
-  }
-
-  .register-inner-card {
-    padding: 20px;
-  }
-
-  .register-title {
-    font-size: 1.5rem;
-  }
-
-  .avatar-container {
-    width: 95px;
-    height: 95px;
-  }
-
-  .avatar-img {
-    width: 100%;
-    height: 100%;
-  }
-}
-
-/* ===============================
-   ✔ NUEVO: HACER EL AVATAR CLICKEABLE
-   =============================== */
-.avatar-label {
-  width: 100%;
-  height: 100%;
-  display: block;
-  cursor: pointer;
+  to { opacity: 0; bottom: 15px; }
 }
