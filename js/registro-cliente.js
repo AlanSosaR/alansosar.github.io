@@ -1,26 +1,28 @@
 import { registerUser } from "./supabase-auth.js";
 
 /* ===============================
-   AVATAR PREVIEW
+   PREVISUALIZAR AVATAR
 ================================ */
 const avatarInput = document.getElementById("avatarInput");
 const avatarPreview = document.getElementById("avatarPreview");
 let fotoBase64 = null;
 
-avatarInput.addEventListener("change", () => {
-  const file = avatarInput.files[0];
-  if (!file) return;
+if (avatarInput && avatarPreview) {
+  avatarInput.addEventListener("change", () => {
+    const file = avatarInput.files[0];
+    if (!file) return;
 
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    fotoBase64 = e.target.result;
-    avatarPreview.style.backgroundImage = `url('${fotoBase64}')`;
-  };
-  reader.readAsDataURL(file);
-});
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      fotoBase64 = e.target.result;
+      avatarPreview.style.backgroundImage = `url('${fotoBase64}')`;
+    };
+    reader.readAsDataURL(file);
+  });
+}
 
 /* ===============================
-   VALIDACIONES
+   VALIDACIÓN NORMAL
 ================================ */
 const form = document.getElementById("registroForm");
 
@@ -41,8 +43,8 @@ const errores = {
 };
 
 function limpiarErrores() {
-  Object.values(errores).forEach((e) => (e.textContent = ""));
-  document.querySelectorAll(".input-group").forEach(g => g.classList.remove("error"));
+  Object.values(errores).forEach((span) => (span.textContent = ""));
+  document.querySelectorAll(".input-group").forEach((g) => g.classList.remove("error"));
 }
 
 function marcar(campo, mensaje) {
@@ -50,9 +52,6 @@ function marcar(campo, mensaje) {
   campos[campo].closest(".input-group").classList.add("error");
 }
 
-/* ===============================
-   SUBMIT
-================================ */
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
   limpiarErrores();
@@ -96,7 +95,7 @@ form.addEventListener("submit", async (e) => {
       campos.telefono.value.trim(),
       campos.nombre.value.trim(),
       "Honduras",
-      fotoBase64
+      fotoBase64 || null
     );
 
     alert("Cuenta creada con éxito ✔");
