@@ -3,36 +3,33 @@
    =============================== */
 body {
   font-family: "Roboto", sans-serif;
-  background-color: #ffffff;
+  background: #fff;
   margin: 0;
   padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   min-height: 100vh;
-  color: #2E2A27;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   -webkit-tap-highlight-color: transparent;
 }
 
 .register-container {
-  display: flex;
-  justify-content: center;
   width: 100%;
   padding: 30px 20px;
+  display: flex;
+  justify-content: center;
 }
 
 /* ===============================
    TARJETA PRINCIPAL
    =============================== */
 .register-card {
-  background: #ffffff;
+  background: #fff;
   border-radius: 20px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
   padding: 30px 40px;
   max-width: 420px;
   width: 100%;
-  transition: 0.25s ease;
-  position: relative;
 }
 
 /* ===============================
@@ -43,52 +40,40 @@ body {
   margin-bottom: 25px;
 }
 
-.logo-container {
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  margin-bottom: 12px;
-  margin-top: 12px !important;
-}
-
 .logo-container img {
   width: 105px;
-  height: auto;
-  user-select: none;
-  -webkit-user-drag: none;
-  transition: transform 0.3s ease;
+  transition: 0.3s;
 }
 
 .logo-container:hover img {
-  transform: scale(1.05);
+  transform: scale(1.06);
 }
 
 .register-title {
   font-family: "Fraunces", serif;
   font-size: 1.7rem;
-  margin: 0;
+  margin: 10px 0 0;
   color: #512615;
 }
 
 /* ===============================
-   AVATAR ESTILO APPLE
+   AVATAR
    =============================== */
 .avatar-container {
   width: 112px;
   height: 112px;
-  margin: 0 auto 22px auto;
   border-radius: 50%;
   overflow: hidden;
+  margin: 0 auto 22px;
   background: #fff;
-  position: relative;
-  box-shadow: 0px 10px 38px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 10px 35px rgba(0,0,0,0.15);
 }
 
 .avatar-label {
+  display: block;
   width: 100%;
   height: 100%;
   cursor: pointer;
-  display: block;
 }
 
 .avatar-img {
@@ -96,38 +81,31 @@ body {
   height: 100%;
   background-size: cover;
   background-position: center;
-  background-repeat: no-repeat;
-  user-select: none;
-  -webkit-user-drag: none;
+  pointer-events: none;
 }
 
 /* ===============================
    TARJETA SECUNDARIA
    =============================== */
 .register-inner-card {
-  background: #ffffff;
-  border-radius: 16px;
-  padding: 25px;
   margin-top: 10px;
+  padding: 25px;
+  border-radius: 16px;
   border: 1.7px solid #512615;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
 }
 
 /* ===============================
-   INPUT GROUP + VALIDACIONES APPLE
+   INPUTS + VALIDACIONES APPLE
    =============================== */
-.input-wrapper {
-  margin-bottom: 18px;
-}
-
 .input-group {
-  position: relative;
   display: flex;
   align-items: center;
   border: 1.6px solid #D9D9D9;
   border-radius: 12px;
   padding: 10px 12px;
-  background-color: white;
+  background: #fff;
+  margin-bottom: 18px;
   transition: all 0.25s ease;
 }
 
@@ -135,24 +113,24 @@ body {
   flex: 1;
   border: none;
   outline: none;
+  background: none;
   font-size: 1rem;
-  background: transparent;
 }
 
 .material-symbols-outlined {
-  color: #33673B;
-  margin-right: 8px;
   font-size: 22px;
+  margin-right: 8px;
+  color: #33673B;
 }
 
-/* ERROR estilo Apple */
+/* 🔴 ERROR */
 .input-group.error {
-  border-color: #d72638 !important;
-  box-shadow: 0 0 0 2px rgba(215, 38, 56, 0.12) !important;
+  border-color: #d72638;
+  box-shadow: 0 0 0 2px rgba(215, 38, 56, 0.12);
 }
 
 .input-group.error input::placeholder {
-  color: #d72638 !important;
+  color: #d72638;
 }
 
 /* ===============================
@@ -160,21 +138,20 @@ body {
    =============================== */
 .btn-register {
   width: 100%;
-  background-color: #33673B;
+  padding: 14px;
+  background: #33673B;
   color: #fff;
   border: none;
   border-radius: 12px;
-  padding: 14px;
   font-size: 1rem;
   cursor: pointer;
-  margin-top: 10px;
-  transition: background-color 0.25s ease, transform 0.15s ease;
-  box-shadow: 0px 8px 20px rgba(0,0,0,0.18);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.18);
+  transition: 0.25s ease;
 }
 
 .btn-register:hover {
+  background: #28532E;
   transform: translateY(-2px);
-  background-color: #28532E;
 }
 
 /* ===============================
@@ -182,23 +159,20 @@ body {
    =============================== */
 #snackbar {
   visibility: hidden;
-  min-width: 280px;
-  background-color: #33673B;
+  background: #33673B;
   color: #fff;
-  text-align: center;
-  border-radius: 10px;
   padding: 14px;
+  border-radius: 10px;
   position: fixed;
-  left: 50%;
   bottom: 30px;
+  left: 50%;
   transform: translateX(-50%);
-  font-size: 0.95rem;
   z-index: 1000;
 }
 
 #snackbar.show {
   visibility: visible;
-  animation: fadein 0.3s, fadeout 0.3s 1.9s;
+  animation: fadein 0.3s, fadeout 0.3s 2s;
 }
 
 @keyframes fadein {
