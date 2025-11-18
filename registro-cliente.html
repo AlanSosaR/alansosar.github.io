@@ -5,125 +5,78 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Crear Cuenta | Café Cortero</title>
 
-  <!-- Tipografía Material 3 Expressive -->
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
-
-  <!-- Iconos Material Symbols -->
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
 
-  <!-- Estilos del registro -->
   <link rel="stylesheet" href="css/registro-cliente.css">
-
-  <!-- Favicon -->
   <link rel="icon" type="image/png" href="imagenes/logo.png">
 </head>
 
 <body>
   <main class="register-container">
 
-    <!-- TARJETA PRINCIPAL -->
-    <section class="register-card reduced-card">
+    <section class="register-card">
 
-      <!-- LOGO + TÍTULO -->
       <div class="register-header">
-        <div class="logo-container" onclick="window.location.href='index.html'">
-          <img src="imagenes/logo.png" alt="Café Cortero" class="logo-img">
+        <div class="logo-container" onclick="location.href='index.html'">
+          <img src="imagenes/logo.png" class="logo-img">
         </div>
-
         <h2 class="register-title">Crear cuenta</h2>
       </div>
 
       <!-- AVATAR -->
       <div class="avatar-container">
         <label for="avatarInput" class="avatar-label">
-          <div 
-            class="avatar-img" 
-            id="avatarPreview"
-            style="background-image: url('imagenes/avatar-default.svg');">
-          </div>
+          <div class="avatar-img" id="avatarPreview" style="background-image:url('imagenes/avatar-default.svg');"></div>
         </label>
-
-        <input 
-          type="file" 
-          id="avatarInput" 
-          accept="image/*"
-          style="display:none;">
+        <input type="file" id="avatarInput" accept="image/*" hidden>
       </div>
 
-      <!-- TARJETA SECUNDARIA (inputs) -->
+      <!-- FORMULARIO -->
       <div class="register-inner-card">
+        <form id="registroForm">
 
-        <form id="registroForm" novalidate>
-
-          <!-- Nombre -->
           <div class="input-wrapper">
             <div class="input-group">
               <span class="material-symbols-outlined">person</span>
-              <input 
-                type="text" 
-                id="nombreInput" 
-                placeholder="Nombre completo"
-                required>
+              <input id="nombreInput" type="text" placeholder="Nombre completo">
             </div>
             <small class="input-error" id="errorNombre"></small>
           </div>
 
-          <!-- Correo -->
           <div class="input-wrapper">
             <div class="input-group">
               <span class="material-symbols-outlined">mail</span>
-              <input 
-                type="email" 
-                id="correoInput" 
-                placeholder="Correo electrónico"
-                required>
+              <input id="correoInput" type="email" placeholder="Correo electrónico">
             </div>
             <small class="input-error" id="errorCorreo"></small>
           </div>
 
-          <!-- Teléfono -->
           <div class="input-wrapper">
             <div class="input-group">
               <span class="material-symbols-outlined">call</span>
-              <input 
-                type="tel" 
-                id="telefonoInput" 
-                placeholder="Teléfono"
-                required>
+              <input id="telefonoInput" type="tel" placeholder="Teléfono">
             </div>
             <small class="input-error" id="errorTelefono"></small>
           </div>
 
-          <!-- Contraseña -->
           <div class="input-wrapper">
             <div class="input-group">
               <span class="material-symbols-outlined">lock</span>
-              <input 
-                type="password" 
-                id="passwordInput" 
-                placeholder="Contraseña"
-                required>
+              <input id="passwordInput" type="password" placeholder="Contraseña">
             </div>
             <small class="input-error" id="errorPassword"></small>
           </div>
 
-          <!-- Confirmar Contraseña -->
           <div class="input-wrapper">
             <div class="input-group">
               <span class="material-symbols-outlined">lock</span>
-              <input 
-                type="password" 
-                id="confirmPasswordInput" 
-                placeholder="Confirmar contraseña"
-                required>
+              <input id="confirmPasswordInput" type="password" placeholder="Confirmar contraseña">
             </div>
             <small class="input-error" id="errorConfirm"></small>
           </div>
 
-          <!-- Botón crear cuenta -->
-          <button type="submit" class="btn-register">
-            Crear cuenta
-          </button>
+          <button class="btn-register" type="submit">Crear cuenta</button>
 
         </form>
       </div>
@@ -131,10 +84,8 @@
     </section>
   </main>
 
-  <!-- Snackbar para errores -->
   <div id="snackbar"></div>
 
-  <!-- JS externo del registro -->
   <script type="module" src="registro.js"></script>
 </body>
 </html>
