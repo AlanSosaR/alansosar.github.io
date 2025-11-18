@@ -161,36 +161,44 @@ body {
   user-select: none;
 }
 
-/* ===============================
-   VALIDACIONES ESTILO APPLE
-   =============================== */
+/* ===== VALIDACIONES TIPO APPLE ===== */
 
-/* Borde rojo suave cuando hay error */
-.input-error {
-  border-color: #D93025 !important;
-  box-shadow: 0 0 0 2px rgba(217, 48, 37, 0.15) !important;
-}
-
-/* Placeholder rojo suave */
-.input-error::placeholder {
-  color: #D93025 !important;
-  opacity: 0.8;
-}
-
-/* Quitar el tooltip amarillo nativo del navegador */
+/* Quita el mensaje amarillo del navegador (Chrome, Safari, Edge) */
 input:invalid {
   box-shadow: none !important;
 }
 
-/* Evitar el popup de validación */
+/* Evita burbujas automáticas de validación */
 input:invalid:focus {
+  box-shadow: none !important;
   outline: none !important;
 }
 
-/* Estilo Apple cuando el input está OK */
-.input-success {
-  border-color: #34C759 !important; /* verde Apple */
-  box-shadow: 0 0 0 2px rgba(52,199,89,0.18) !important;
+/* Línea inferior roja suave cuando es inválido */
+.input-group.invalid {
+  border-color: #d64545 !important;
+  box-shadow: 0 0 0 2px rgba(214, 69, 69, 0.15) !important;
+}
+
+/* Línea inferior verde cuando es válido */
+.input-group.valid {
+  border-color: #2e7d32 !important;
+  box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.15) !important;
+}
+
+/* Texto pequeño debajo del input estilo Apple */
+.input-error-text {
+  font-size: 0.82rem;
+  color: #d64545;
+  margin-top: -10px;
+  margin-bottom: 12px;
+  font-weight: 400;
+  padding-left: 4px;
+  display: none;
+}
+
+.input-error-text.show {
+  display: block;
 }
 /* ===============================
    BOTÓN CREAR CUENTA
