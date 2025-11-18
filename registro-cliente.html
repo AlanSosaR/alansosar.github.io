@@ -7,7 +7,6 @@
 
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
-
   <link rel="stylesheet" href="css/registro-cliente.css">
   <link rel="icon" type="image/png" href="imagenes/logo.png">
 </head>
@@ -15,11 +14,11 @@
 <body>
   <main class="register-container">
 
-    <section class="register-card">
+    <section class="register-card reduced-card">
 
       <div class="register-header">
-        <div class="logo-container" onclick="location.href='index.html'">
-          <img src="imagenes/logo.png" class="logo-img">
+        <div class="logo-container" onclick="window.location.href='index.html'">
+          <img src="imagenes/logo.png" alt="Café Cortero">
         </div>
         <h2 class="register-title">Crear cuenta</h2>
       </div>
@@ -27,56 +26,45 @@
       <!-- AVATAR -->
       <div class="avatar-container">
         <label for="avatarInput" class="avatar-label">
-          <div class="avatar-img" id="avatarPreview" style="background-image:url('imagenes/avatar-default.svg');"></div>
+          <div class="avatar-img" id="avatarPreview"
+            style="background-image: url('imagenes/avatar-default.svg');">
+          </div>
         </label>
-        <input type="file" id="avatarInput" accept="image/*" hidden>
+
+        <input type="file" id="avatarInput" accept="image/*" style="display:none;">
       </div>
 
-      <!-- FORMULARIO -->
+      <!-- TARJETA SECUNDARIA -->
       <div class="register-inner-card">
-        <form id="registroForm">
 
-          <div class="input-wrapper">
-            <div class="input-group">
-              <span class="material-symbols-outlined">person</span>
-              <input id="nombreInput" type="text" placeholder="Nombre completo">
-            </div>
-            <small class="input-error" id="errorNombre"></small>
+        <form id="registroForm" novalidate>
+
+          <div class="input-group">
+            <span class="material-symbols-outlined">person</span>
+            <input type="text" id="nombreInput" placeholder="Nombre completo">
           </div>
 
-          <div class="input-wrapper">
-            <div class="input-group">
-              <span class="material-symbols-outlined">mail</span>
-              <input id="correoInput" type="email" placeholder="Correo electrónico">
-            </div>
-            <small class="input-error" id="errorCorreo"></small>
+          <div class="input-group">
+            <span class="material-symbols-outlined">mail</span>
+            <input type="email" id="correoInput" placeholder="Correo electrónico">
           </div>
 
-          <div class="input-wrapper">
-            <div class="input-group">
-              <span class="material-symbols-outlined">call</span>
-              <input id="telefonoInput" type="tel" placeholder="Teléfono">
-            </div>
-            <small class="input-error" id="errorTelefono"></small>
+          <div class="input-group">
+            <span class="material-symbols-outlined">call</span>
+            <input type="tel" id="telefonoInput" placeholder="Teléfono">
           </div>
 
-          <div class="input-wrapper">
-            <div class="input-group">
-              <span class="material-symbols-outlined">lock</span>
-              <input id="passwordInput" type="password" placeholder="Contraseña">
-            </div>
-            <small class="input-error" id="errorPassword"></small>
+          <div class="input-group">
+            <span class="material-symbols-outlined">lock</span>
+            <input type="password" id="passwordInput" placeholder="Contraseña">
           </div>
 
-          <div class="input-wrapper">
-            <div class="input-group">
-              <span class="material-symbols-outlined">lock</span>
-              <input id="confirmPasswordInput" type="password" placeholder="Confirmar contraseña">
-            </div>
-            <small class="input-error" id="errorConfirm"></small>
+          <div class="input-group">
+            <span class="material-symbols-outlined">lock</span>
+            <input type="password" id="confirmPasswordInput" placeholder="Confirmar contraseña">
           </div>
 
-          <button class="btn-register" type="submit">Crear cuenta</button>
+          <button type="submit" class="btn-register">Crear cuenta</button>
 
         </form>
       </div>
