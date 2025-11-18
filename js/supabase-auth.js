@@ -4,7 +4,15 @@ import { supabase } from "./supabase-client.js";
 /* ================================
    REGISTRO DE USUARIO
 ================================ */
-export async function registerUser(email, password, phone, fullName, country) {
+export async function registerUser(
+  email,
+  password,
+  phone,
+  fullName,
+  country,
+  photoURL = null
+) {
+
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
@@ -12,7 +20,9 @@ export async function registerUser(email, password, phone, fullName, country) {
       data: {
         full_name: fullName,
         phone: phone,
-        country: country
+        country: country,
+        // 👇 Foto de perfil: si no envían foto, usa TU imagen local
+        photo_url: photoURL || "/imagenes/avatar-default.svg"
       }
     }
   });
