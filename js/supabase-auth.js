@@ -7,13 +7,16 @@ async function subirFotoBase64(userId, fotoBase64) {
   if (!fotoBase64) return null;
 
   try {
-    const base64Data = fotoBase64.split(",")[1];
     const fileName = `${userId}.png`;
+
+    // Convertir base64 → Blob (ESTE ES EL MÉTODO CORRECTO)
+    const response = await fetch(fotoBase64);
+    const blob = await response.blob();
 
     const { error: uploadError } = await supabase.storage
       .from("avatars")
-      .upload(fileName, atob(base64Data), {
-        contentType: "image/png",
+      .upload(fileName, blob, {
+        contentType: blob.type || "image/png",
         upsert: true
       });
 
@@ -22,6 +25,7 @@ async function subirFotoBase64(userId, fotoBase64) {
       return null;
     }
 
+    // Obtener URL pública
     const { data } = supabase.storage
       .from("avatars")
       .getPublicUrl(fileName);
@@ -87,7 +91,7 @@ export async function registerUser(
 }
 
 /* ================================
-   LOGIN DE USUARIO
+   LOGIN
 ================================ */
 export async function loginUser(email, password) {
   const { data, error } = await supabase.auth.signInWithPassword({
@@ -96,7 +100,6 @@ export async function loginUser(email, password) {
   });
 
   if (error) throw error;
-
   return data;
 }
 
