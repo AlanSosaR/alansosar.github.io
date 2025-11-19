@@ -173,10 +173,13 @@
 <!-- 1) SDK Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<!-- 2) CORE SCRIPTS (carga global) -->
+<!-- 2) CORE SCRIPTS (crea window.supabaseClient) -->
 <script src="js/core-scripts.js?v=3"></script>
 
-<!-- 3) AUTH UI (solo login y registro) -->
+<!-- 3) SUPABASE AUTH (crea window.supabaseAuth) -->
+<script src="js/supabase-auth.js?v=3"></script>
+
+<!-- 4) AUTH UI (usa supabaseAuth ya creado) -->
 <script src="js/auth-ui.js?v=3"></script>
 </body>
 </html>
