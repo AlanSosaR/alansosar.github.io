@@ -171,15 +171,19 @@
 
   <div id="snackbar"></div>
 
-  <!-- ============ INTEGRACIÓN SUPABASE CORRECTA ============ -->
+  <!-- Supabase SDK Global -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <!-- SDK Supabase -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- 1️⃣ Cliente global -->
+<script src="js/supabase-client.js?v=1"></script>
 
-  <!-- Cliente global -->
-  <script src="js/supabase-client.js"></script>
+<!-- 2️⃣ Auth global (define window.supabaseAuth) -->
+<script src="js/supabase-auth.js?v=1"></script>
 
-  <!-- Lógica de login -->
-  <script type="module" src="js/login-scripts.js"></script>
+<!-- 3️⃣ UI (usa supabaseAuth, debe ir de último antes del main) -->
+<script src="js/auth-ui.js?v=1"></script>
+
+<!-- 4️⃣ Main del sitio (menú, carrusel, etc) -->
+<script src="js/main.js?v=11"></script>
 </body>
 </html>
