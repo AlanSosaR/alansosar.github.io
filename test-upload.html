@@ -1,45 +1,45 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Test Upload Supabase</title>
+  <meta charset="UTF-8" />
+  <title>Prueba Upload Supabase</title>
 </head>
-<body style="font-family: Arial; padding: 20px;">
+<body>
 
-<h2>Prueba de subida a Supabase Storage</h2>
-<p>Esto sube un archivo de prueba directamente al bucket <b>avatars</b>.</p>
+  <h2>Prueba de subida a Supabase Storage</h2>
+  <p>Esto sube un archivo de prueba al bucket <b>avatars</b>.</p>
 
-<button id="btnTest" style="padding:10px 20px; font-size:18px;">
-  Subir archivo de prueba
-</button>
+  <button id="btnUpload">Subir archivo de prueba</button>
 
-<script type="module">
-  import { supabase } from "./supabase-client.js";
+  <script type="module">
+    import { createClient } from "https://esm.sh/@supabase/supabase-js";
 
-  document.getElementById("btnTest").addEventListener("click", async () => {
-    alert("Iniciando prueba...");
+    // 🔥 Tus datos reales
+    const supabase = createClient(
+      "https://eaipcuuvddyrqkbmjmwv.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVhaXBjdXV2ZGR5cnFrYm1qbXciLCJyb2xlIjoiYW5vbiIsImlhdCI6MTcyOTk2MzY2NCwiZXhwIjoxNzYxNTE1NjY0fQ._PusuyuHukGNtkAO643Xjq4jS5Er3NePVKyFJHG2oJY"
+    );
 
-    try {
-      const blob = new Blob(["Hola test"], { type: "text/plain" });
+    const btn = document.getElementById("btnUpload");
+
+    btn.addEventListener("click", async () => {
+      alert("Subiendo archivo…");
+
+      const archivo = new Blob(["Hola desde prueba"], { type: "text/plain" });
 
       const { data, error } = await supabase.storage
         .from("avatars")
-        .upload("test-file.txt", blob, { upsert: true });
+        .upload("test-file.txt", archivo, { upsert: true });
 
       if (error) {
-        console.error(error);
-        alert("❌ ERROR: " + error.message);
-        return;
+        console.error("❌ Error:", error);
+        alert("ERROR subiendo: " + error.message);
+      } else {
+        console.log("✔️ Subido:", data);
+        alert("✔️ Archivo subido con éxito!");
       }
-
-      console.log("✔️ Subido correctamente");
-      alert("✔️ Archivo subido correctamente");
-    } catch (e) {
-      console.error(e);
-      alert("❌ Error grave: " + e.message);
-    }
-  });
-</script>
+    });
+  </script>
 
 </body>
 </html>
