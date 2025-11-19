@@ -3,20 +3,16 @@
 // Supabase versión premium
 // ===========================
 
-// Inicializar Supabase
 const supabase = window.supabaseClient;
 
-// Referencias a los campos
 const loginForm = document.getElementById("loginForm");
 const userInput = document.getElementById("userInput");
 const passInput = document.getElementById("passwordInput");
 
-// Guardar placeholders originales
 document.querySelectorAll(".input-group input").forEach(input => {
   input.dataset.originalPlaceholder = input.placeholder;
 });
 
-// Función para marcar error visual inline
 function marcarError(input, mensaje) {
   const group = input.parentElement;
   group.classList.add("error");
@@ -24,48 +20,27 @@ function marcarError(input, mensaje) {
   input.placeholder = mensaje;
 }
 
-// Función para limpiar el error
 function limpiarError(input) {
   const group = input.parentElement;
   group.classList.remove("error");
   input.placeholder = input.dataset.originalPlaceholder;
 }
 
-// Detectar origen del login (desde carrito o menú)
 const params = new URLSearchParams(window.location.search);
 const from = params.get("from");
 
-// ===============================
-// MANEJO DEL FORMULARIO
-// ===============================
 loginForm.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  // Limpiar errores anteriores
   limpiarError(userInput);
   limpiarError(passInput);
 
   const userValue = userInput.value.trim();
   const passValue = passInput.value.trim();
 
-  // ====== VALIDACIONES ======
   if (!userValue) {
     marcarError(userInput, "Ingresa tu correo o teléfono");
     return;
-  }
-
-  if (userValue.includes("@")) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(userValue)) {
-      marcarError(userInput, "Correo no válido");
-      return;
-    }
-  } else {
-    const phoneRegex = /^[0-9]{8,15}$/;
-    if (!phoneRegex.test(userValue)) {
-      marcarError(userInput, "Teléfono no válido");
-      return;
-    }
   }
 
   if (!passValue) {
@@ -73,17 +48,31 @@ loginForm.addEventListener("submit", async (e) => {
     return;
   }
 
-  // ===========================
-  // LOGIN CON SUPABASE
-  // ===========================
-  try {
-    let emailToUse = userValue;
+  let emailToUse = userValue;
 
-    // Si es teléfono, lo convertimos a correo virtual
+  try {
+    // =============================================
+    // 🔎 SI ES TELÉFONO → BUSCAR CORREO EN SUPABASE
+    // =============================================
     if (!userValue.includes("@")) {
-      emailToUse = `${userValue}@cortero.hn`; 
+      const { data: rows, error: phoneError } = await supabase
+        .from("users")
+        .select("email")
+        .eq("phone", userValue)
+        .limit(1);
+
+      if (phoneError || !rows || rows.length === 0) {
+        marcarError(userInput, "Teléfono no registrado");
+        return;
+      }
+
+      // Email real del usuario
+      emailToUse = rows[0].email;
     }
 
+    // ===========================
+    // LOGIN CON SUPABASE AUTH
+    // ===========================
     const { data, error } = await supabase.auth.signInWithPassword({
       email: emailToUse,
       password: passValue
@@ -91,7 +80,7 @@ loginForm.addEventListener("submit", async (e) => {
 
     if (error) {
       console.error("Supabase login error:", error);
-      
+
       if (error.message.includes("Invalid login credentials")) {
         marcarError(passInput, "Credenciales incorrectas");
       } else {
