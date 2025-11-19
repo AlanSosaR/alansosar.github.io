@@ -3,7 +3,7 @@
 // ===========================================
 
 // usar SIEMPRE el cliente global que crea core-scripts.js
-const supabase = window.supabaseClient;
+const sb = window.supabaseClient;
 
 // Exponer funciones globales
 window.supabaseAuth = {};
@@ -19,7 +19,7 @@ async function esperarSesion() {
     let intentos = 0;
 
     const check = setInterval(async () => {
-      const { data } = await supabase.auth.getSession();
+      const { data } = await sb.auth.getSession();
 
       if (data.session || intentos > 10) {
         clearInterval(check);
@@ -44,7 +44,7 @@ async function subirFotoBase64(userId, fotoBase64) {
     const response = await fetch(fotoBase64);
     const blob = await response.blob();
 
-    const { error: uploadError } = await supabase.storage
+    const { error: uploadError } = await sb.storage
       .from("avatars")
       .upload(fileName, blob, {
         contentType: blob.type || "image/png",
@@ -56,7 +56,7 @@ async function subirFotoBase64(userId, fotoBase64) {
       return null;
     }
 
-    const { data } = await supabase.storage
+    const { data } = await sb.storage
       .from("avatars")
       .getPublicUrl(fileName);
 
@@ -82,7 +82,7 @@ window.supabaseAuth.registerUser = async function (
 ) {
 
   // 1) Crear usuario en AUTH
-  const { data, error } = await supabase.auth.signUp({
+  const { data, error } = await sb.auth.signUp({
     email,
     password,
     options: {
@@ -100,12 +100,12 @@ window.supabaseAuth.registerUser = async function (
   let photoURL = "/imagenes/avatar-default.svg";
 
   if (fotoBase64) {
-    const url = await subirFotoBase64(user.id, fotoBase64);
+    const url = await subirFotoBase64(user.id, fotoBaseBase64);
     if (url) photoURL = url;
   }
 
   // 4) Insertar en tabla USERS
-  const { error: insertError } = await supabase.from("users").insert({
+  const { error: insertError } = await sb.from("users").insert({
     id: user.id,
     name: fullName,
     email,
@@ -125,7 +125,7 @@ window.supabaseAuth.registerUser = async function (
 // LOGIN
 // ================================
 window.supabaseAuth.loginUser = async function (email, password) {
-  const { data, error } = await supabase.auth.signInWithPassword({
+  const { data, error } = await sb.auth.signInWithPassword({
     email,
     password
   });
@@ -139,7 +139,7 @@ window.supabaseAuth.loginUser = async function (email, password) {
 // GET USER
 // ================================
 window.supabaseAuth.getCurrentUser = async function () {
-  const { data } = await supabase.auth.getUser();
+  const { data } = await sb.auth.getUser();
   return data.user || null;
 };
 
@@ -148,7 +148,7 @@ window.supabaseAuth.getCurrentUser = async function () {
 // LOGOUT
 // ================================
 window.supabaseAuth.logoutUser = async function () {
-  const { error } = await supabase.auth.signOut();
+  const { error } = await sb.auth.signOut();
   if (error) {
     console.error("⚠️ Error cerrando sesión:", error);
     return false;
