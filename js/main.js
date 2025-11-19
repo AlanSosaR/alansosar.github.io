@@ -1,53 +1,37 @@
-/* ============================================================
-   ======================  SUPABASE AUTH  ======================
-   ============================================================ */
+/* ===================== SUPABASE AUTH ===================== */
 
-// Cliente global
 const supabase = window.supabaseClient;
 
-// Función obtener usuario actual
 async function getCurrentUser() {
   const { data: { session } } = await supabase.auth.getSession();
   return session?.user || null;
 }
 
-// Función cerrar sesión
 async function logoutUser() {
   await supabase.auth.signOut();
 }
 
-/* ============================================================
-   ==========  ESCUCHAR CAMBIOS DE SESIÓN (NUEVO) =============
-   ============================================================ */
-
-supabase.auth.onAuthStateChange(async (event, session) => {
+supabase.auth.onAuthStateChange(async (_, session) => {
   if (session?.user) {
     const uid = session.user.id;
-
     const { data: userRow } = await supabase
       .from("users")
       .select("*")
       .eq("id", uid)
       .single();
-
     actualizarMenuLogin(userRow);
   } else {
     actualizarMenuLogout();
   }
 });
 
-/* ============================================================
-   =====================  CARRITO BASE  ========================
-   ============================================================ */
+/* ===================== CARRITO ===================== */
 
 const CART_KEY = 'cafecortero_cart';
 
 function getCart() {
-  try {
-    return JSON.parse(localStorage.getItem(CART_KEY)) || [];
-  } catch {
-    return [];
-  }
+  try { return JSON.parse(localStorage.getItem(CART_KEY)) || []; }
+  catch { return []; }
 }
 
 function saveCart(cart) {
@@ -55,8 +39,7 @@ function saveCart(cart) {
 }
 
 function updateCartCount() {
-  const cart = getCart();
-  const total = cart.reduce((acc, item) => acc + item.qty, 0);
+  const total = getCart().reduce((acc, item) => acc + item.qty, 0);
   const badge = document.getElementById('cart-count');
   if (badge) badge.textContent = total;
 }
@@ -69,77 +52,48 @@ function animateCartBadge() {
   badge.classList.add('animate');
 }
 
-function animateCartIcon() {
-  const cartBtn = document.getElementById('cart-btn');
-  if (!cartBtn) return;
-  cartBtn.classList.add('animate');
-  setTimeout(() => cartBtn.classList.remove('animate'), 600);
-  if (navigator.vibrate) navigator.vibrate([40, 30, 40]);
-}
-
 function addToCart(product) {
   const cart = getCart();
   const index = cart.findIndex(p => p.name === product.name);
-
   if (index >= 0) cart[index].qty += product.qty;
   else cart.push(product);
-
   saveCart(cart);
   updateCartCount();
   animateCartBadge();
 }
 
-/* ============================================================
-   ========================  MAIN UI  ==========================
-   ============================================================ */
+/* ===================== MAIN ===================== */
 
 document.addEventListener("DOMContentLoaded", async () => {
 
-  /* ============================================================
-     ================  LOGIN STATUS INICIAL =====================
-     ============================================================ */
-
+  /* Estado inicial de login */
   const user = await getCurrentUser();
-
   if (user) {
     const { data: row } = await supabase
       .from("users")
       .select("*")
       .eq("id", user.id)
       .single();
-
     actualizarMenuLogin(row);
   } else {
     actualizarMenuLogout();
   }
 
-  /* ============================================================
-     ================== LOGOUT ==================
-     ============================================================ */
-
+  /* Logout */
   const logoutDesktopBtn = document.getElementById("logout-desktop");
   const logoutMobileBtn = document.getElementById("logout-mobile");
 
-  if (logoutDesktopBtn) {
-    logoutDesktopBtn.addEventListener("click", async (e) => {
-      e.preventDefault();
-      await logoutUser();
-      window.location.reload();
+  if (logoutDesktopBtn)
+    logoutDesktopBtn.addEventListener("click", async e => {
+      e.preventDefault(); await logoutUser(); window.location.reload();
     });
-  }
 
-  if (logoutMobileBtn) {
-    logoutMobileBtn.addEventListener("click", async (e) => {
-      e.preventDefault();
-      await logoutUser();
-      window.location.reload();
+  if (logoutMobileBtn)
+    logoutMobileBtn.addEventListener("click", async e => {
+      e.preventDefault(); await logoutUser(); window.location.reload();
     });
-  }
 
-  /* ============================================================
-     ================== MENÚ FLOTANTE (ESCRITORIO) ===============
-     ============================================================ */
-
+  /* Menú escritorio */
   const profileMenu = document.getElementById("profile-menu");
   const profileWrapper = document.getElementById("profile-desktop");
 
@@ -148,17 +102,12 @@ document.addEventListener("DOMContentLoaded", async () => {
       profileMenu.classList.toggle("open");
     });
 
-    document.addEventListener("click", (e) => {
-      if (!profileWrapper.contains(e.target)) {
-        profileMenu.classList.remove("open");
-      }
+    document.addEventListener("click", e => {
+      if (!profileWrapper.contains(e.target)) profileMenu.classList.remove("open");
     });
   }
 
-  /* ============================================================
-     ======================= MENÚ MÓVIL ==========================
-     ============================================================ */
-
+  /* Drawer móvil */
   const menuToggle = document.getElementById("menu-toggle");
   const drawer = document.getElementById("drawer");
 
@@ -172,87 +121,62 @@ document.addEventListener("DOMContentLoaded", async () => {
     link.addEventListener("click", () => drawer.classList.remove("open"));
   });
 
-  /* ============================================================
-     ======================= HERO CAROUSEL =======================
-     ============================================================ */
-
+  /* Hero carousel */
   const heroImgs = document.querySelectorAll(".hero-carousel img");
   let heroIndex = 0;
 
-  function showHeroImage(index) {
+  const showHero = i => {
     heroImgs.forEach(img => img.classList.remove("active"));
-    heroImgs[index].classList.add("active");
-  }
-
-  function nextHeroImage() {
-    heroIndex = (heroIndex + 1) % heroImgs.length;
-    showHeroImage(heroIndex);
-  }
+    heroImgs[i].classList.add("active");
+  };
 
   if (heroImgs.length) {
-    heroImgs[0].classList.add("active");
-    setInterval(nextHeroImage, 8000);
+    showHero(0);
+    setInterval(() => {
+      heroIndex = (heroIndex + 1) % heroImgs.length;
+      showHero(heroIndex);
+    }, 8000);
   }
 
-  /* ============================================================
-     ======================= CARRITO =============================
-     ============================================================ */
-
+  /* Carrito */
   const cartBtn = document.getElementById("cart-btn");
-  if (cartBtn) {
-    cartBtn.addEventListener("click", () => {
-      window.location.href = "carrito.html";
-    });
-  }
+  if (cartBtn) cartBtn.addEventListener("click", () => {
+    window.location.href = "carrito.html";
+  });
   updateCartCount();
 
-  /* ============================================================
-     ================= SELECTOR DE CANTIDAD ======================
-     ============================================================ */
-
+  /* Selector de cantidad */
   const qtyNumber = document.getElementById("qty-number");
   const qtyMinus = document.getElementById("qty-minus");
   const qtyPlus = document.getElementById("qty-plus");
 
-  if (qtyMinus) {
+  if (qtyMinus)
     qtyMinus.addEventListener("click", () => {
-      let current = parseInt(qtyNumber.textContent);
-      if (current > 1) qtyNumber.textContent = current - 1;
+      let n = parseInt(qtyNumber.textContent);
+      if (n > 1) qtyNumber.textContent = n - 1;
     });
-  }
 
-  if (qtyPlus) {
+  if (qtyPlus)
     qtyPlus.addEventListener("click", () => {
-      let current = parseInt(qtyNumber.textContent);
-      qtyNumber.textContent = current + 1;
+      let n = parseInt(qtyNumber.textContent);
+      qtyNumber.textContent = n + 1;
     });
-  }
 
-  /* ============================================================
-     ================= PRODUCTO PRINCIPAL ========================
-     ============================================================ */
-
+  /* Producto principal */
   const btnMain = document.getElementById("product-add");
 
-  if (btnMain) {
+  if (btnMain)
     btnMain.addEventListener("click", () => {
-      const qty = parseInt(document.getElementById("qty-number")?.textContent) || 1;
+      const qty = parseInt(qtyNumber.textContent) || 1;
       const name = document.getElementById("product-name").textContent.trim();
-      const price = parseFloat(
-        document.querySelector(".price-part").textContent.replace(/[^\d.-]/g, "")
-      );
-      const img = document.getElementById("product-image").getAttribute("src");
+      const price = parseFloat(document.querySelector(".price-part").textContent.replace(/[^\d.-]/g, ""));
+      const img = document.getElementById("product-image").src;
 
       addToCart({ name, price, img, qty });
-
-      document.getElementById("qty-number").textContent = "1";
+      qtyNumber.textContent = "1";
     });
-  }
 
-  /* ============================================================
-     ======================= CARRUSEL ============================
-     ============================================================ */
-
+  /* Carrusel productos */
   const cards = document.querySelectorAll(".similar-card");
 
   cards.forEach(card => {
@@ -260,23 +184,23 @@ document.addEventListener("DOMContentLoaded", async () => {
     const price = parseFloat(card.dataset.price.replace(/[^\d.-]/g, ""));
     const img = card.dataset.img;
 
-    card.addEventListener("click", e => {
+    card.addEventListener("click", () => {
       document.querySelectorAll(".similar-card").forEach(c => c.classList.remove("active-card"));
       card.classList.add("active-card");
 
       document.getElementById("product-name").textContent = name;
       document.querySelector(".price-part").textContent = `L ${price}`;
       const imageEl = document.getElementById("product-image");
-      imageEl.src = img;
 
+      imageEl.src = img;
       imageEl.style.opacity = "0";
       setTimeout(() => {
         imageEl.style.transition = "opacity 0.4s ease";
         imageEl.style.opacity = "1";
-      }, 100);
+      }, 80);
 
-      const productoSection = document.getElementById("productos");
-      const offset = productoSection.getBoundingClientRect().top + window.scrollY - 90;
+      const sec = document.getElementById("productos");
+      const offset = sec.getBoundingClientRect().top + window.scrollY - 90;
       window.scrollTo({ top: offset, behavior: "smooth" });
     });
   });
@@ -286,18 +210,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   const nextBtn = document.querySelector(".carousel-next");
 
   if (carousel && prevBtn && nextBtn) {
-    prevBtn.addEventListener("click", () => {
-      carousel.scrollBy({ left: -220, behavior: "smooth" });
-    });
-    nextBtn.addEventListener("click", () => {
-      carousel.scrollBy({ left: 220, behavior: "smooth" });
-    });
+    prevBtn.addEventListener("click", () => carousel.scrollBy({ left: -220, behavior: "smooth" }));
+    nextBtn.addEventListener("click", () => carousel.scrollBy({ left: 220, behavior: "smooth" }));
   }
 
-  /* ============================================================
-     ========================== FAB ==============================
-     ============================================================ */
-
+  /* FAB */
   const fabMain = document.getElementById("fab-main");
   const fabContainer = document.querySelector(".fab-container");
 
@@ -308,25 +225,20 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     document.addEventListener("click", e => {
-      if (!fabContainer.contains(e.target)) {
-        fabContainer.classList.remove("active");
-      }
+      if (!fabContainer.contains(e.target)) fabContainer.classList.remove("active");
     });
   }
+
 });
 
-/* ============================================================
-   =========== FUNCIONES PARA CAMBIAR EL MENÚ ==================
-   ============================================================ */
+/* ===================== LOGIN/MENÚ ===================== */
 
 function actualizarMenuLogin(user) {
-  // Desktop
   document.getElementById("login-desktop").style.display = "none";
   document.getElementById("profile-desktop").style.display = "flex";
   document.getElementById("hello-desktop").textContent = `Hola, ${user.name}`;
   document.getElementById("profile-photo-desktop").src = user.photo_url;
 
-  // Móvil
   document.getElementById("drawer-links-default").style.display = "none";
   document.getElementById("drawer-links-logged").style.display = "block";
   document.getElementById("hello-mobile").textContent = `Hola, ${user.name}`;
@@ -336,7 +248,6 @@ function actualizarMenuLogin(user) {
 function actualizarMenuLogout() {
   document.getElementById("login-desktop").style.display = "inline-block";
   document.getElementById("profile-desktop").style.display = "none";
-
   document.getElementById("drawer-links-default").style.display = "block";
   document.getElementById("drawer-links-logged").style.display = "none";
 }
