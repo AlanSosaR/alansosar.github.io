@@ -1,21 +1,11 @@
 /* ============================================================
    MAIN.JS — Café Cortero
-   VERSIÓN OFICIAL (CORREGIDA)
+   VERSIÓN OFICIAL 100% CORREGIDA
    ============================================================ */
-
-/* ===================== SUPABASE AUTH (modo GLOBAL) ===================== */
-
-// Usar SIEMPRE el cliente global que viene de core-scripts.js
-const supabase = window.supabaseClient;
-
-// Usar funciones globales creadas en supabase-auth.js
-const { getCurrentUser, logoutUser } = window.supabaseAuth;
-
-
 
 /* ===================== CARRITO ===================== */
 
-const CART_KEY = 'cafecortero_cart';
+const CART_KEY = "cafecortero_cart";
 
 function getCart() {
   try { return JSON.parse(localStorage.getItem(CART_KEY)) || []; }
@@ -28,74 +18,36 @@ function saveCart(cart) {
 
 function updateCartCount() {
   const total = getCart().reduce((acc, item) => acc + item.qty, 0);
-  const badge = document.getElementById('cart-count');
+  const badge = document.getElementById("cart-count");
   if (badge) badge.textContent = total;
 }
 
 function animateCartBadge() {
-  const badge = document.getElementById('cart-count');
+  const badge = document.getElementById("cart-count");
   if (!badge) return;
-  badge.classList.remove('animate');
+  badge.classList.remove("animate");
   void badge.offsetWidth;
-  badge.classList.add('animate');
+  badge.classList.add("animate");
 }
 
 function addToCart(product) {
   const cart = getCart();
-  const index = cart.findIndex(p => p.name === product.name);
+  const index = cart.findIndex((p) => p.name === product.name);
+
   if (index >= 0) cart[index].qty += product.qty;
   else cart.push(product);
+
   saveCart(cart);
   updateCartCount();
   animateCartBadge();
 }
 
-
-
 /* ===================== EVENTO PRINCIPAL ===================== */
 
-document.addEventListener("DOMContentLoaded", async () => {
+document.addEventListener("DOMContentLoaded", () => {
 
-  /* Estado inicial de login */
-  const user = await getCurrentUser();
-  if (user) {
-    const { data: row } = await supabase
-      .from("users")
-      .select("*")
-      .eq("id", user.id)
-      .single();
-    actualizarMenuLogin(row);
-  } else {
-    actualizarMenuLogout();
-  }
-
-  /* LOGOUT */
-  const logoutDesktopBtn = document.getElementById("logout-desktop");
-  const logoutMobileBtn = document.getElementById("logout-mobile");
-
-  if (logoutDesktopBtn)
-    logoutDesktopBtn.addEventListener("click", async e => {
-      e.preventDefault(); await logoutUser(); window.location.reload();
-    });
-
-  if (logoutMobileBtn)
-    logoutMobileBtn.addEventListener("click", async e => {
-      e.preventDefault(); await logoutUser(); window.location.reload();
-    });
-
-  /* Menú escritorio */
-  const profileMenu = document.getElementById("profile-menu");
-  const profileWrapper = document.getElementById("profile-desktop");
-
-  if (profileWrapper) {
-    profileWrapper.addEventListener("click", () => {
-      profileMenu.classList.toggle("open");
-    });
-
-    document.addEventListener("click", e => {
-      if (!profileWrapper.contains(e.target)) profileMenu.classList.remove("open");
-    });
-  }
+  /* Estado inicial del menú (auth-ui.js lo controla) */
+  // Nada de supabase aquí.
 
   /* Drawer móvil */
   const menuToggle = document.getElementById("menu-toggle");
@@ -107,7 +59,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  document.querySelectorAll(".drawer-links a").forEach(link => {
+  document.querySelectorAll(".drawer-links a").forEach((link) => {
     link.addEventListener("click", () => drawer.classList.remove("open"));
   });
 
@@ -115,8 +67,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   const heroImgs = document.querySelectorAll(".hero-carousel img");
   let heroIndex = 0;
 
-  const showHero = i => {
-    heroImgs.forEach(img => img.classList.remove("active"));
+  const showHero = (i) => {
+    heroImgs.forEach((img) => img.classList.remove("active"));
     heroImgs[i].classList.add("active");
   };
 
@@ -130,9 +82,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   /* Carrito */
   const cartBtn = document.getElementById("cart-btn");
-  if (cartBtn) cartBtn.addEventListener("click", () => {
-    window.location.href = "carrito.html";
-  });
+  if (cartBtn) {
+    cartBtn.addEventListener("click", () => {
+      window.location.href = "carrito.html";
+    });
+  }
   updateCartCount();
 
   /* Selector de cantidad */
@@ -159,23 +113,27 @@ document.addEventListener("DOMContentLoaded", async () => {
     btnMain.addEventListener("click", () => {
       const qty = parseInt(qtyNumber.textContent) || 1;
       const name = document.getElementById("product-name").textContent.trim();
-      const price = parseFloat(document.querySelector(".price-part").textContent.replace(/[^\d.-]/g, ""));
+      const price = parseFloat(
+        document.querySelector(".price-part").textContent.replace(/[^\d.-]/g, "")
+      );
       const img = document.getElementById("product-image").src;
 
       addToCart({ name, price, img, qty });
       qtyNumber.textContent = "1";
     });
 
-  /* Carrusel de productos similares */
+  /* Carrusel productos similares */
   const cards = document.querySelectorAll(".similar-card");
 
-  cards.forEach(card => {
+  cards.forEach((card) => {
     const name = card.dataset.name;
     const price = parseFloat(card.dataset.price.replace(/[^\d.-]/g, ""));
     const img = card.dataset.img;
 
     card.addEventListener("click", () => {
-      document.querySelectorAll(".similar-card").forEach(c => c.classList.remove("active-card"));
+      document
+        .querySelectorAll(".similar-card")
+        .forEach((c) => c.classList.remove("active-card"));
       card.classList.add("active-card");
 
       document.getElementById("product-name").textContent = name;
@@ -201,8 +159,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   const nextBtn = document.querySelector(".carousel-next");
 
   if (carousel && prevBtn && nextBtn) {
-    prevBtn.addEventListener("click", () => carousel.scrollBy({ left: -220, behavior: "smooth" }));
-    nextBtn.addEventListener("click", () => carousel.scrollBy({ left: 220, behavior: "smooth" }));
+    prevBtn.addEventListener("click", () =>
+      carousel.scrollBy({ left: -220, behavior: "smooth" })
+    );
+    nextBtn.addEventListener("click", () =>
+      carousel.scrollBy({ left: 220, behavior: "smooth" })
+    );
   }
 
   /* FAB */
@@ -210,37 +172,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   const fabContainer = document.querySelector(".fab-container");
 
   if (fabMain && fabContainer) {
-    fabMain.addEventListener("click", e => {
+    fabMain.addEventListener("click", (e) => {
       e.stopPropagation();
       fabContainer.classList.toggle("active");
     });
 
-    document.addEventListener("click", e => {
-      if (!fabContainer.contains(e.target)) fabContainer.classList.remove("active");
+    document.addEventListener("click", (e) => {
+      if (!fabContainer.contains(e.target))
+        fabContainer.classList.remove("active");
     });
   }
-
-}); // DOM Loaded END
-
-
-
-/* ===================== LOGIN / MENÚ ===================== */
-
-function actualizarMenuLogin(user) {
-  document.getElementById("login-desktop").style.display = "none";
-  document.getElementById("profile-desktop").style.display = "flex";
-  document.getElementById("hello-desktop").textContent = `Hola, ${user.name}`;
-  document.getElementById("profile-photo-desktop").src = user.photo_url;
-
-  document.getElementById("drawer-links-default").style.display = "none";
-  document.getElementById("drawer-links-logged").style.display = "block";
-  document.getElementById("hello-mobile").textContent = `Hola, ${user.name}`;
-  document.getElementById("profile-photo-mobile").src = user.photo_url;
-}
-
-function actualizarMenuLogout() {
-  document.getElementById("login-desktop").style.display = "inline-block";
-  document.getElementById("profile-desktop").style.display = "none";
-  document.getElementById("drawer-links-default").style.display = "block";
-  document.getElementById("drawer-links-logged").style.display = "none";
-}
+});
