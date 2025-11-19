@@ -9,6 +9,7 @@ const loginForm = document.getElementById("loginForm");
 const userInput = document.getElementById("userInput");
 const passInput = document.getElementById("passwordInput");
 
+// Guardamos placeholder original
 document.querySelectorAll(".input-group input").forEach(input => {
   input.dataset.originalPlaceholder = input.placeholder;
 });
@@ -26,9 +27,15 @@ function limpiarError(input) {
   input.placeholder = input.dataset.originalPlaceholder;
 }
 
+userInput.addEventListener("input", () => limpiarError(userInput));
+passInput.addEventListener("input", () => limpiarError(passInput));
+
 const params = new URLSearchParams(window.location.search);
 const from = params.get("from");
 
+// ===============================
+// LOGIN
+// ===============================
 loginForm.addEventListener("submit", async (e) => {
   e.preventDefault();
 
@@ -38,6 +45,9 @@ loginForm.addEventListener("submit", async (e) => {
   const userValue = userInput.value.trim();
   const passValue = passInput.value.trim();
 
+  // =====================
+  // VALIDACIONES
+  // =====================
   if (!userValue) {
     marcarError(userInput, "Ingresa tu correo o teléfono");
     return;
@@ -48,12 +58,12 @@ loginForm.addEventListener("submit", async (e) => {
     return;
   }
 
+  // =====================
+  // OBTENER CORREO REAL
+  // =====================
   let emailToUse = userValue;
 
   try {
-    // =============================================
-    // 🔎 SI ES TELÉFONO → BUSCAR CORREO EN SUPABASE
-    // =============================================
     if (!userValue.includes("@")) {
       const { data: rows, error: phoneError } = await supabase
         .from("users")
@@ -66,7 +76,6 @@ loginForm.addEventListener("submit", async (e) => {
         return;
       }
 
-      // Email real del usuario
       emailToUse = rows[0].email;
     }
 
@@ -90,9 +99,9 @@ loginForm.addEventListener("submit", async (e) => {
     }
 
     // ===========================
-    // LOGIN EXITOSO
+    // LOGIN ÉXITOSO
     // ===========================
-    mostrarSnackbar("Inicio de sesión exitoso ☕ Bienvenido a Café Cortero");
+    mostrarSnackbar("Inicio de sesión exitoso ☕ Bienvenido");
 
     setTimeout(() => {
       if (from === "carrito") {
@@ -107,3 +116,13 @@ loginForm.addEventListener("submit", async (e) => {
     marcarError(userInput, "Error al iniciar sesión");
   }
 });
+
+// ===============================
+// SNACKBAR
+// ===============================
+function mostrarSnackbar(msg) {
+  const s = document.getElementById("snackbar");
+  s.textContent = msg;
+  s.classList.add("show");
+  setTimeout(() => s.classList.remove("show"), 2600);
+}
