@@ -1,15 +1,17 @@
 // =========================
 //  AUTH UI (Supabase + UI)
+//  Compatible con modo GLOBAL
 // =========================
 
-// Usar el cliente global creado en supabase-client.js
+// Cliente Supabase global
 const supabase = window.supabaseClient;
 
-import { logoutUser, getCurrentUser } from "./supabase-auth.js";
+// Funciones auth globales
+const { getCurrentUser, logoutUser } = window.supabaseAuth;
 
-/* =====================================================================
-   CARGA DE USUARIO LOGUEADO + CONEXIÓN CON EL HEADER & DRAWER
-   ===================================================================== */
+/* ============================================================
+   CARGA DE USUARIO LOGUEADO + ACTUALIZACIÓN DE UI
+   ============================================================ */
 
 document.addEventListener("DOMContentLoaded", async () => {
   const user = await getCurrentUser();
@@ -22,9 +24,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   updateUIForUser(user);
 });
 
-/* =====================================================================
-   MOSTRAR TODO EL HEADER MODO NO LOGUEADO
-   ===================================================================== */
+/* ============================================================
+   MOSTRAR HEADER PARA NO LOGUEADOS
+   ============================================================ */
 function showLoggedOutUI() {
   // Desktop
   document.getElementById("login-desktop").style.display = "inline-block";
@@ -35,22 +37,23 @@ function showLoggedOutUI() {
   document.getElementById("drawer-links-logged").style.display = "none";
 }
 
-/* =====================================================================
-   ACTUALIZAR HEADER Y DRAWER CON DATOS DEL USUARIO LOGUEADO
-   ===================================================================== */
+/* ============================================================
+   MOSTRAR HEADER PARA USUARIOS LOGUEADOS
+   ============================================================ */
 function updateUIForUser(user) {
   const name = user.user_metadata?.full_name || "Usuario";
   const photo = user.user_metadata?.photo_url || "imagenes/avatar-default.svg";
 
-  // ================= DESKTOP =================
+  // ========== DESKTOP ==========
   document.getElementById("login-desktop").style.display = "none";
+
   const desktopProfile = document.getElementById("profile-desktop");
   desktopProfile.style.display = "flex";
 
   document.getElementById("profile-photo-desktop").src = photo;
   document.getElementById("hello-desktop").textContent = `Hola, ${name}`;
 
-  // Abrir/cerrar menú
+  // Menú flotante escritorio
   desktopProfile.addEventListener("click", () => {
     document.getElementById("profile-menu").classList.toggle("open");
   });
@@ -61,23 +64,23 @@ function updateUIForUser(user) {
     }
   });
 
-  // ================= MÓVIL =================
+  // ========== MÓVIL ==========
   document.getElementById("drawer-links-default").style.display = "none";
   document.getElementById("drawer-links-logged").style.display = "flex";
 
   document.getElementById("profile-photo-mobile").src = photo;
   document.getElementById("hello-mobile").textContent = `Hola, ${name}`;
 
-  // ================= LOGOUT =================
-  document.getElementById("logout-desktop").addEventListener("click", async (e) => {
+  // ========== LOGOUT ==========
+  document.getElementById("logout-desktop").onclick = async (e) => {
     e.preventDefault();
     await logoutUser();
     window.location.reload();
-  });
+  };
 
-  document.getElementById("logout-mobile").addEventListener("click", async (e) => {
+  document.getElementById("logout-mobile").onclick = async (e) => {
     e.preventDefault();
     await logoutUser();
     window.location.reload();
-  });
+  };
 }
