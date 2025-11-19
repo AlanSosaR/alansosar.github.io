@@ -1,10 +1,10 @@
+import { registerUser } from "./supabase-auth.js";
+
 document.addEventListener("DOMContentLoaded", () => {
 
-  import { registerUser } from "./supabase-auth.js";
-
   /* ===============================
-    AVATAR PREVIEW
-  ================================ */
+     AVATAR PREVIEW
+  ================================= */
   const avatarInput = document.getElementById("avatarInput");
   const avatarPreview = document.getElementById("avatarPreview");
   let fotoBase64 = null;
@@ -22,8 +22,15 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   /* ===============================
-    VALIDACIONES SIMPLES
-  ================================ */
+     VALIDACIONES
+  ================================= */
+
+  // Validación profesional de correo
+  function esCorreoValido(email) {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+  }
+
   const form = document.getElementById("registroForm");
 
   const campos = {
@@ -44,7 +51,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function limpiarErrores() {
     Object.values(errores).forEach((e) => e.textContent = "");
-    document.querySelectorAll(".input-group").forEach(g => g.classList.remove("error"));
+    document.querySelectorAll(".input-group").forEach(g =>
+      g.classList.remove("error")
+    );
   }
 
   function marcar(campo, mensaje) {
@@ -53,8 +62,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* ===============================
-    SUBMIT
-  ================================ */
+     SUBMIT FORM
+  ================================= */
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     limpiarErrores();
@@ -66,8 +75,8 @@ document.addEventListener("DOMContentLoaded", () => {
       valido = false;
     }
 
-    if (!campos.correo.value.includes("@")) {
-      marcar("correo", "Correo inválido");
+    if (!esCorreoValido(campos.correo.value.trim())) {
+      marcar("correo", "Correo electrónico no válido");
       valido = false;
     }
 
@@ -82,12 +91,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (campos.password.value !== campos.confirm.value) {
-      marcar("confirm", "No coinciden");
+      marcar("confirm", "Las contraseñas no coinciden");
       valido = false;
     }
 
     if (!valido) return;
 
+    /* ===============================
+       SUPABASE
+    ================================= */
     try {
       await registerUser(
         campos.correo.value.trim(),
