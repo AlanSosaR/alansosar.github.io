@@ -97,7 +97,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!valido) return;
 
     /* ===============================
-       SUPABASE
+         SUPABASE REGISTRO
     ================================= */
     try {
       await registerUser(
@@ -106,24 +106,19 @@ document.addEventListener("DOMContentLoaded", () => {
         campos.telefono.value.trim(),
         campos.nombre.value.trim(),
         "Honduras",
-        fotoBase64
+        fotoBase64   // ⬅ SE ENVÍA PERO NO BLOQUEA EL REGISTRO SI FALLA
       );
 
-      alert("Cuenta creada con éxito ✔");
+      alert("Cuenta creada con éxito ✔\nInicia sesión para continuar.");
       window.location.href = "login.html";
 
     } catch (err) {
 
-      console.error(err);
+      console.error("❌ ERROR REGISTRO:", err);
 
       // =============== ERRORES COMUNES ===============
 
-      if (err.message?.includes("correo") || err.message?.includes("email")) {
-        marcar("correo", "El correo ya está registrado");
-        return;
-      }
-
-      if (err.message === "El correo ya está registrado.") {
+      if (err.message?.includes("email") || err.message?.includes("correo")) {
         marcar("correo", "El correo ya está registrado");
         return;
       }
