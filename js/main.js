@@ -5,6 +5,27 @@ import { supabase } from "./supabase-client.js";
 import { getCurrentUser, logoutUser } from "./supabase-auth.js";
 
 /* ============================================================
+   ==========  ESCUCHAR CAMBIOS DE SESIÓN (NUEVO) =============
+   ============================================================ */
+
+supabase.auth.onAuthStateChange(async (event, session) => {
+  if (session?.user) {
+    const uid = session.user.id;
+
+    // Obtener datos completos desde la tabla users
+    const { data: userRow } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", uid)
+      .single();
+
+    actualizarMenuLogin(userRow);
+  } else {
+    actualizarMenuLogout();
+  }
+});
+
+/* ============================================================
    =====================  CARRITO BASE  ========================
    ============================================================ */
 
@@ -64,55 +85,30 @@ function addToCart(product) {
 document.addEventListener("DOMContentLoaded", async () => {
 
   /* ============================================================
-     ================  LOGIN STATUS (SUPABASE)  =================
+     ================  LOGIN STATUS INICIAL =====================
      ============================================================ */
 
   const user = await getCurrentUser();
 
-  const loginDesktop = document.getElementById("login-desktop");
-  const profileDesktop = document.getElementById("profile-desktop");
-  const helloDesktop = document.getElementById("hello-desktop");
-  const profilePhotoDesktop = document.getElementById("profile-photo-desktop");
+  if (user) {
+    // Buscar datos completos
+    const { data: row } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", user.id)
+      .single();
 
-  const drawerDefault = document.getElementById("drawer-links-default");
-  const drawerLogged = document.getElementById("drawer-links-logged");
-  const helloMobile = document.getElementById("hello-mobile");
-  const profilePhotoMobile = document.getElementById("profile-photo-mobile");
+    actualizarMenuLogin(row);
+  } else {
+    actualizarMenuLogout();
+  }
+
+  /* ============================================================
+     ================== LOGOUT ==================
+     ============================================================ */
 
   const logoutDesktopBtn = document.getElementById("logout-desktop");
   const logoutMobileBtn = document.getElementById("logout-mobile");
-
-  if (user) {
-    // ================== MOSTRAR MENÚ LOGUEADO ==================
-    if (loginDesktop) loginDesktop.style.display = "none";
-    if (profileDesktop) profileDesktop.style.display = "flex";
-
-    if (drawerDefault) drawerDefault.style.display = "none";
-    if (drawerLogged) drawerLogged.style.display = "block";
-
-    // ================== NOMBRE ==================
-    const fullName = user.user_metadata?.full_name || "Usuario";
-    if (helloDesktop) helloDesktop.textContent = `Hola, ${fullName}`;
-    if (helloMobile) helloMobile.textContent = `Hola, ${fullName}`;
-
-    // ================== FOTO PERFIL ==================
-    const photo =
-      user.user_metadata?.profile_photo ||
-      "imagenes/avatar-default.svg";
-
-    profilePhotoDesktop.src = photo;
-    profilePhotoMobile.src = photo;
-
-  } else {
-    // ================== MODO SIN LOGIN ==================
-    if (loginDesktop) loginDesktop.style.display = "inline-block";
-    if (profileDesktop) profileDesktop.style.display = "none";
-
-    if (drawerDefault) drawerDefault.style.display = "block";
-    if (drawerLogged) drawerLogged.style.display = "none";
-  }
-
-  // ================== LOGOUT ==================
 
   if (logoutDesktopBtn) {
     logoutDesktopBtn.addEventListener("click", async (e) => {
@@ -308,3 +304,31 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 });
+
+/* ============================================================
+   =========== FUNCIONES PARA CAMBIAR EL MENÚ ==================
+   ============================================================ */
+
+function actualizarMenuLogin(user) {
+  // Desktop
+  document.getElementById("login-desktop").style.display = "none";
+  document.getElementById("profile-desktop").style.display = "flex";
+  document.getElementById("hello-desktop").textContent = `Hola, ${user.name}`;
+  document.getElementById("profile-photo-desktop").src = user.photo_url;
+
+  // Móvil
+  document.getElementById("drawer-links-default").style.display = "none";
+  document.getElementById("drawer-links-logged").style.display = "block";
+  document.getElementById("hello-mobile").textContent = `Hola, ${user.name}`;
+  document.getElementById("profile-photo-mobile").src = user.photo_url;
+}
+
+function actualizarMenuLogout() {
+  // Desktop
+  document.getElementById("login-desktop").style.display = "inline-block";
+  document.getElementById("profile-desktop").style.display = "none";
+
+  // Móvil
+  document.getElementById("drawer-links-default").style.display = "block";
+  document.getElementById("drawer-links-logged").style.display = "none";
+}
