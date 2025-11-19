@@ -1,8 +1,9 @@
 // ===========================================
-// SUPABASE AUTH — MODO GLOBAL
+// SUPABASE AUTH — GLOBAL & OFICIAL
+// Usado por CORE-SCRIPTS.JS (no tocar)
 // ===========================================
 
-// Usar el cliente global cargado en supabase-client.js
+// Cliente Supabase global creado por core-scripts.js
 const supabase = window.supabaseClient;
 
 /* ================================
@@ -26,7 +27,7 @@ async function esperarSesion() {
 }
 
 /* ================================
-   SUBIR FOTO BASE64
+   SUBIR FOTO BASE64 A STORAGE
 ================================ */
 async function subirFotoBase64(userId, fotoBase64) {
   if (!fotoBase64) return null;
@@ -37,6 +38,7 @@ async function subirFotoBase64(userId, fotoBase64) {
     const response = await fetch(fotoBase64);
     const blob = await response.blob();
 
+    // Subir foto
     const { error: uploadError } = await supabase.storage
       .from("avatars")
       .upload(fileName, blob, {
@@ -49,6 +51,7 @@ async function subirFotoBase64(userId, fotoBase64) {
       return null;
     }
 
+    // Obtener URL pública
     const { data } = await supabase.storage
       .from("avatars")
       .getPublicUrl(fileName);
@@ -62,7 +65,7 @@ async function subirFotoBase64(userId, fotoBase64) {
 }
 
 /* ================================
-   REGISTRO DE USUARIO
+   REGISTRO DE USUARIO COMPLETO
 ================================ */
 export async function registerUser(
   email,
@@ -72,7 +75,7 @@ export async function registerUser(
   country,
   fotoBase64 = null
 ) {
-  // 1️⃣ Crear usuario en AUTH
+  // 1) Crear usuario en Supabase Auth
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
@@ -84,19 +87,18 @@ export async function registerUser(
   if (error) throw error;
   const user = data.user;
 
-  // 2️⃣ Esperar sesión
-  console.log("⏳ Esperando sesión Supabase...");
+  // 2) Esperar que Supabase genere sesión
   await esperarSesion();
 
-  // 3️⃣ Subir avatar
-  let photoURL = "/imagenes/avatar-default.svg";
+  // 3) Subir foto si existe
+  let photoURL = "imagenes/avatar-default.svg";
 
   if (fotoBase64) {
     const url = await subirFotoBase64(user.id, fotoBase64);
     if (url) photoURL = url;
   }
 
-  // 4️⃣ Insertar en tabla "users"
+  // 4) Guardar datos en tabla "users"
   const { error: insertError } = await supabase.from("users").insert({
     id: user.id,
     name: fullName,
@@ -126,7 +128,7 @@ export async function loginUser(email, password) {
 }
 
 /* ================================
-   GET USER
+   GET CURRENT USER
 ================================ */
 export async function getCurrentUser() {
   const { data } = await supabase.auth.getUser();
