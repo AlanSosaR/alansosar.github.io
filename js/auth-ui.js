@@ -1,133 +1,68 @@
 // =====================================================
-// SUPABASE AUTH — MODO GLOBAL
+// AUTH UI — Header + Drawer + Perfil (GLOBAL)
 // =====================================================
 
 const supabase = window.supabaseClient;
+const { getCurrentUser, logoutUser } = window.supabaseAuth;
 
-// -----------------------------------
-// Esperar sesión después del registro
-// -----------------------------------
-async function esperarSesion() {
-  return new Promise(resolve => {
-    let intentos = 0;
+document.addEventListener("DOMContentLoaded", async () => {
+  const user = await getCurrentUser();
+  if (!user) return showLoggedOutUI();
+  updateUIForUser(user);
+});
 
-    const check = setInterval(async () => {
-      const { data } = await supabase.auth.getSession();
+// --------------------------
+// No logueado
+// --------------------------
+function showLoggedOutUI() {
+  document.getElementById("login-desktop").style.display = "inline-block";
+  document.getElementById("profile-desktop").style.display = "none";
 
-      if (data.session || intentos > 10) {
-        clearInterval(check);
-        resolve(data.session);
-      }
-
-      intentos++;
-    }, 300);
-  });
+  document.getElementById("drawer-links-default").style.display = "flex";
+  document.getElementById("drawer-links-logged").style.display = "none";
 }
 
 // --------------------------
-// Subir avatar en Storage
+// Logueado
 // --------------------------
-async function subirFotoBase64(userId, fotoBase64) {
-  if (!fotoBase64) return null;
+function updateUIForUser(user) {
+  const name = user.user_metadata?.full_name || "Usuario";
+  const photo = user.user_metadata?.photo_url || "imagenes/avatar-default.svg";
 
-  try {
-    const fileName = `${userId}.png`;
-    const blob = await (await fetch(fotoBase64)).blob();
+  // Desktop
+  document.getElementById("login-desktop").style.display = "none";
+  const desktopProfile = document.getElementById("profile-desktop");
+  desktopProfile.style.display = "flex";
 
-    const { error } = await supabase.storage
-      .from("avatars")
-      .upload(fileName, blob, { upsert: true });
+  document.getElementById("profile-photo-desktop").src = photo;
+  document.getElementById("hello-desktop").textContent = `Hola, ${name}`;
 
-    if (error) return null;
+  desktopProfile.onclick = () => {
+    document.getElementById("profile-menu").classList.toggle("open");
+  };
 
-    const { data } = await supabase.storage
-      .from("avatars")
-      .getPublicUrl(fileName);
-
-    return data.publicUrl;
-
-  } catch {
-    return null;
-  }
-}
-
-// --------------------------
-// REGISTRO COMPLETO
-// --------------------------
-async function registerUser(email, password, phone, fullName, country, fotoBase64=null) {
-
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      data: { full_name: fullName, phone, country }
+  document.addEventListener("click", (e) => {
+    if (!desktopProfile.contains(e.target)) {
+      document.getElementById("profile-menu").classList.remove("open");
     }
   });
 
-  if (error) throw error;
+  // Móvil
+  document.getElementById("drawer-links-default").style.display = "none";
+  document.getElementById("drawer-links-logged").style.display = "flex";
 
-  const user = data.user;
+  document.getElementById("profile-photo-mobile").src = photo;
+  document.getElementById("hello-mobile").textContent = `Hola, ${name}`;
 
-  await esperarSesion();
-
-  let photoURL = "/imagenes/avatar-default.svg";
-
-  if (fotoBase64) {
-    const url = await subirFotoBase64(user.id, fotoBase64);
-    if (url) photoURL = url;
-  }
-
-  const { error: insertError } = await supabase
-    .from("users")
-    .insert({
-      id: user.id,
-      name: fullName,
-      email,
-      phone,
-      country,
-      photo_url: photoURL,
-      rol: "usuario"
-    });
-
-  if (insertError) throw insertError;
-
-  return data;
+  document.getElementById("logout-desktop").onclick = logoutAndReload;
+  document.getElementById("logout-mobile").onclick = logoutAndReload;
 }
 
 // --------------------------
-// LOGIN
-// --------------------------
-async function loginUser(email, password) {
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) throw error;
-  return data;
+async function logoutAndReload(e) {
+  e.preventDefault();
+  await logoutUser();
+  window.location.reload();
 }
 
-// --------------------------
-// GET CURRENT USER
-// --------------------------
-async function getCurrentUser() {
-  const { data } = await supabase.auth.getUser();
-  return data.user || null;
-}
-
-// --------------------------
-// LOGOUT
-// --------------------------
-async function logoutUser() {
-  const { error } = await supabase.auth.signOut();
-  return !error;
-}
-
-
-// =====================================================
-// EXPORTAR AL WINDOW COMO API GLOBAL
-// =====================================================
-window.supabaseAuth = {
-  registerUser,
-  loginUser,
-  getCurrentUser,
-  logoutUser
-};
-
-console.log("🔐 supabase-auth.js cargado en modo GLOBAL");
+console.log("👤 auth-ui.js cargado en modo GLOBAL");
