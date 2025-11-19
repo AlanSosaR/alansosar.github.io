@@ -1,84 +1,37 @@
-import { registerUser } from "./supabase-auth.js";
-
-/* ===============================
-   AVATAR PREVIEW
-================================ */
-const avatarInput = document.getElementById("avatarInput");
-const avatarPreview = document.getElementById("avatarPreview");
-let fotoBase64 = null;
-
-avatarInput.addEventListener("change", () => {
-  const file = avatarInput.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    fotoBase64 = e.target.result;  // Guardamos base64
-    avatarPreview.style.backgroundImage = `url('${fotoBase64}')`;
-  };
-  reader.readAsDataURL(file);
-});
-
-/* ===============================
-   VALIDACIONES SIMPLES
-================================ */
-const form = document.getElementById("registroForm");
-
-const campos = {
-  nombre: document.getElementById("nombreInput"),
-  correo: document.getElementById("correoInput"),
-  telefono: document.getElementById("telefonoInput"),
-  password: document.getElementById("passwordInput"),
-  confirm: document.getElementById("confirmPasswordInput"),
-};
-
-const errores = {
-  nombre: document.getElementById("errorNombre"),
-  correo: document.getElementById("errorCorreo"),
-  telefono: document.getElementById("errorTelefono"),
-  password: document.getElementById("errorPassword"),
-  confirm: document.getElementById("errorConfirm"),
-};
-
-function limpiarErrores() {
-  Object.values(errores).forEach((e) => e.textContent = "");
-  document.querySelectorAll(".input-group").forEach(g => g.classList.remove("error"));
-}
-
-function marcar(campo, mensaje) {
-  errores[campo].textContent = mensaje;
-  campos[campo].closest(".input-group").classList.add("error");
-}
-
-/* ===============================
-   SUBMIT
-================================ */
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
   limpiarErrores();
 
   let valido = true;
 
+  // NOMBRE
   if (campos.nombre.value.trim() === "") {
     marcar("nombre", "Ingresa tu nombre");
     valido = false;
   }
 
-  if (!campos.correo.value.includes("@")) {
+  // CORREO — VALIDACIÓN REAL
+  const email = campos.correo.value.trim();
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  if (!emailRegex.test(email)) {
     marcar("correo", "Correo inválido");
     valido = false;
   }
 
+  // TELÉFONO
   if (campos.telefono.value.trim().length < 8) {
     marcar("telefono", "Teléfono inválido");
     valido = false;
   }
 
+  // CONTRASEÑA
   if (campos.password.value.length < 6) {
     marcar("password", "Mínimo 6 caracteres");
     valido = false;
   }
 
+  // CONFIRMAR CONTRASEÑA
   if (campos.password.value !== campos.confirm.value) {
     marcar("confirm", "No coinciden");
     valido = false;
@@ -91,12 +44,12 @@ form.addEventListener("submit", async (e) => {
   ================================ */
   try {
     await registerUser(
-      campos.correo.value.trim(),
+      email,                                  // ← correo correcto
       campos.password.value.trim(),
       campos.telefono.value.trim(),
       campos.nombre.value.trim(),
       "Honduras",
-      fotoBase64        // ← AQUÍ SE ENVÍA LA FOTO
+      fotoBase64
     );
 
     alert("Cuenta creada con éxito ✔");
