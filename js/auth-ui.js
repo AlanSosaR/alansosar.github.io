@@ -2,7 +2,9 @@
 //  AUTH UI (Supabase + UI)
 // =========================
 
-import { supabase } from "./supabase-client.js";
+// Usar el cliente global creado en supabase-client.js
+const supabase = window.supabaseClient;
+
 import { logoutUser, getCurrentUser } from "./supabase-auth.js";
 
 /* =====================================================================
@@ -13,12 +15,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   const user = await getCurrentUser();
 
   if (!user) {
-    // ================= NO LOGUEADO =================
     showLoggedOutUI();
     return;
   }
 
-  // ================= LOGUEADO =================
   updateUIForUser(user);
 });
 
@@ -50,7 +50,7 @@ function updateUIForUser(user) {
   document.getElementById("profile-photo-desktop").src = photo;
   document.getElementById("hello-desktop").textContent = `Hola, ${name}`;
 
-  // Toggle menú flotante escritorio
+  // Abrir/cerrar menú
   desktopProfile.addEventListener("click", () => {
     document.getElementById("profile-menu").classList.toggle("open");
   });
