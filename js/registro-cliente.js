@@ -25,7 +25,6 @@ document.addEventListener("DOMContentLoaded", () => {
      VALIDACIONES
   ================================= */
 
-  // Validación profesional de correo
   function esCorreoValido(email) {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(email);
@@ -114,8 +113,27 @@ document.addEventListener("DOMContentLoaded", () => {
       window.location.href = "login.html";
 
     } catch (err) {
-      alert("Error registrando usuario");
+
       console.error(err);
+
+      // =============== ERRORES COMUNES ===============
+
+      if (err.message?.includes("correo") || err.message?.includes("email")) {
+        marcar("correo", "El correo ya está registrado");
+        return;
+      }
+
+      if (err.message === "El correo ya está registrado.") {
+        marcar("correo", "El correo ya está registrado");
+        return;
+      }
+
+      if (err.message?.includes("phone")) {
+        marcar("telefono", "El teléfono ya está registrado");
+        return;
+      }
+
+      alert("Error registrando usuario");
     }
   });
 
