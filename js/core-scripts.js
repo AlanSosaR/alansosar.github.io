@@ -1,29 +1,40 @@
+// =============================================
+// CORE SCRIPTS — Café Cortero (VERSIÓN OFICIAL)
+// Cargar este archivo UNA SOLA VEZ por página
+// =============================================
 
-// ==========================================
-// CORE SCRIPTS — Café Cortero
-// Archivo central que controla TODO el sitio
-// Se importa UNA SOLA VEZ en cada página
-// ==========================================
+// 1) SDK Supabase ES Module (createClient)
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 
-// 1) SDK de Supabase (ES modules)
-import "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+// -------------------------------
+// 2) Configurar cliente global
+// -------------------------------
+const SUPABASE_URL = "https://eaipcuvvddyrqkbmjmvw.supabase.co";
+const SUPABASE_ANON_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVhaXBjdXZ2ZGR5cnFrYm1qbXZ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMwOTcxMDEsImV4cCI6MjA3ODY3MzEwMX0.2qICLx3qZgeGr0oXZ8PYRxXPL1X5Vog4UoOnTQBFzNA";
 
-// 2) Cliente Supabase global (window.supabaseClient)
-import "./supabase-client.js";
+// Cliente Supabase global disponible en TODAS las páginas
+window.supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// 3) Módulo de autenticación (login, logout, session, signUp)
+console.log("🔥 Supabase conectado desde CORE");
+
+// -------------------------------------------
+// 3) Módulos del proyecto (cargan en orden)
+// -------------------------------------------
+
+// Autenticación (signUp, login, logout, getUser)
 import "./supabase-auth.js";
 
-// 4) UI del header y drawer (foto, nombre, estado login)
+// UI del header + drawer
 import "./auth-ui.js";
 
-// 5) Lógica principal del sitio (drawer, carrusel, carrito, FAB, producto)
+// Lógica del sitio (carrito, hero, drawer, producto)
 import "./main.js";
 
-// 6) Lógica de registro (solo si existe la página de registro)
+// Registro (si existe la página)
 try { await import("./registro-cliente.js"); } catch (err) {}
 
-// 7) Lógica de login (solo si existe la página de login)
+// Login (si existe la página)
 try { await import("./login-scripts.js"); } catch (err) {}
 
-console.log("🔥 Core Scripts cargados correctamente");
+console.log("⚡ Core Scripts cargados correctamente");
