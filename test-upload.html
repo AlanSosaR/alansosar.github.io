@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Test Upload Supabase</title>
+</head>
+<body style="font-family: Arial; padding: 20px;">
+
+<h2>Prueba de subida a Supabase Storage</h2>
+<p>Esto sube un archivo de prueba directamente al bucket <b>avatars</b>.</p>
+
+<button id="btnTest" style="padding:10px 20px; font-size:18px;">
+  Subir archivo de prueba
+</button>
+
+<script type="module">
+  import { supabase } from "./supabase-client.js";
+
+  document.getElementById("btnTest").addEventListener("click", async () => {
+    alert("Iniciando prueba...");
+
+    try {
+      const blob = new Blob(["Hola test"], { type: "text/plain" });
+
+      const { data, error } = await supabase.storage
+        .from("avatars")
+        .upload("test-file.txt", blob, { upsert: true });
+
+      if (error) {
+        console.error(error);
+        alert("❌ ERROR: " + error.message);
+        return;
+      }
+
+      console.log("✔️ Subido correctamente");
+      alert("✔️ Archivo subido correctamente");
+    } catch (e) {
+      console.error(e);
+      alert("❌ Error grave: " + e.message);
+    }
+  });
+</script>
+
+</body>
+</html>
