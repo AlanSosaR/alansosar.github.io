@@ -1,8 +1,20 @@
 /* ============================================================
    ======================  SUPABASE AUTH  ======================
    ============================================================ */
-import { supabase } from "./supabase-client.js";
-import { getCurrentUser, logoutUser } from "./supabase-auth.js";
+
+// Cliente global
+const supabase = window.supabaseClient;
+
+// Función obtener usuario actual
+async function getCurrentUser() {
+  const { data: { session } } = await supabase.auth.getSession();
+  return session?.user || null;
+}
+
+// Función cerrar sesión
+async function logoutUser() {
+  await supabase.auth.signOut();
+}
 
 /* ============================================================
    ==========  ESCUCHAR CAMBIOS DE SESIÓN (NUEVO) =============
@@ -12,7 +24,6 @@ supabase.auth.onAuthStateChange(async (event, session) => {
   if (session?.user) {
     const uid = session.user.id;
 
-    // Obtener datos completos desde la tabla users
     const { data: userRow } = await supabase
       .from("users")
       .select("*")
@@ -91,7 +102,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   const user = await getCurrentUser();
 
   if (user) {
-    // Buscar datos completos
     const { data: row } = await supabase
       .from("users")
       .select("*")
@@ -324,11 +334,9 @@ function actualizarMenuLogin(user) {
 }
 
 function actualizarMenuLogout() {
-  // Desktop
   document.getElementById("login-desktop").style.display = "inline-block";
   document.getElementById("profile-desktop").style.display = "none";
 
-  // Móvil
   document.getElementById("drawer-links-default").style.display = "block";
   document.getElementById("drawer-links-logged").style.display = "none";
 }
