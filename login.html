@@ -171,19 +171,19 @@
 
   <div id="snackbar"></div>
 
-  <!-- Supabase SDK Global -->
+  <!-- SDK Supabase (modo global) -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<!-- 1️⃣ Cliente global -->
+<!-- Cliente global -->
 <script src="js/supabase-client.js?v=1"></script>
 
-<!-- 2️⃣ Auth global (define window.supabaseAuth) -->
+<!-- Funciones de autenticación globales -->
 <script src="js/supabase-auth.js?v=1"></script>
 
-<!-- 3️⃣ UI (usa supabaseAuth, debe ir de último antes del main) -->
+<!-- UI de autenticación (header + drawer) -->
 <script src="js/auth-ui.js?v=1"></script>
 
-<!-- 4️⃣ Main del sitio (menú, carrusel, etc) -->
-<script src="js/main.js?v=11"></script>
+<!-- Scripts del login/registro (NO módulo) -->
+<script src="js/login-scripts.js?v=1"></script>
 </body>
 </html>
