@@ -1,13 +1,12 @@
 // ===========================================
-// SUPABASE AUTH — GLOBAL & OFICIAL
-// Usado por CORE-SCRIPTS.JS (no tocar)
+// SUPABASE AUTH — MODO GLOBAL
 // ===========================================
 
-// Cliente Supabase global creado por core-scripts.js
+// Cliente Supabase global
 const supabase = window.supabaseClient;
 
 /* ================================
-   ESPERAR LA SESIÓN TRAS SIGNUP
+   ESPERAR SESIÓN TRAS SIGNUP
 ================================ */
 async function esperarSesion() {
   return new Promise((resolve) => {
@@ -27,7 +26,7 @@ async function esperarSesion() {
 }
 
 /* ================================
-   SUBIR FOTO BASE64 A STORAGE
+   SUBIR FOTO BASE64
 ================================ */
 async function subirFotoBase64(userId, fotoBase64) {
   if (!fotoBase64) return null;
@@ -38,7 +37,6 @@ async function subirFotoBase64(userId, fotoBase64) {
     const response = await fetch(fotoBase64);
     const blob = await response.blob();
 
-    // Subir foto
     const { error: uploadError } = await supabase.storage
       .from("avatars")
       .upload(fileName, blob, {
@@ -51,7 +49,6 @@ async function subirFotoBase64(userId, fotoBase64) {
       return null;
     }
 
-    // Obtener URL pública
     const { data } = await supabase.storage
       .from("avatars")
       .getPublicUrl(fileName);
@@ -65,17 +62,9 @@ async function subirFotoBase64(userId, fotoBase64) {
 }
 
 /* ================================
-   REGISTRO DE USUARIO COMPLETO
+   REGISTRO DE USUARIO
 ================================ */
-export async function registerUser(
-  email,
-  password,
-  phone,
-  fullName,
-  country,
-  fotoBase64 = null
-) {
-  // 1) Crear usuario en Supabase Auth
+async function registerUser(email, password, phone, fullName, country, fotoBase64 = null) {
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
@@ -87,18 +76,15 @@ export async function registerUser(
   if (error) throw error;
   const user = data.user;
 
-  // 2) Esperar que Supabase genere sesión
   await esperarSesion();
 
-  // 3) Subir foto si existe
-  let photoURL = "imagenes/avatar-default.svg";
+  let photoURL = "/imagenes/avatar-default.svg";
 
   if (fotoBase64) {
     const url = await subirFotoBase64(user.id, fotoBase64);
     if (url) photoURL = url;
   }
 
-  // 4) Guardar datos en tabla "users"
   const { error: insertError } = await supabase.from("users").insert({
     id: user.id,
     name: fullName,
@@ -117,7 +103,7 @@ export async function registerUser(
 /* ================================
    LOGIN
 ================================ */
-export async function loginUser(email, password) {
+async function loginUser(email, password) {
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password
@@ -128,9 +114,9 @@ export async function loginUser(email, password) {
 }
 
 /* ================================
-   GET CURRENT USER
+   GET USER
 ================================ */
-export async function getCurrentUser() {
+async function getCurrentUser() {
   const { data } = await supabase.auth.getUser();
   return data.user || null;
 }
@@ -138,7 +124,7 @@ export async function getCurrentUser() {
 /* ================================
    LOGOUT
 ================================ */
-export async function logoutUser() {
+async function logoutUser() {
   const { error } = await supabase.auth.signOut();
   if (error) {
     console.error("⚠️ Error cerrando sesión:", error);
@@ -146,3 +132,16 @@ export async function logoutUser() {
   }
   return true;
 }
+
+
+/* ============================================================
+   REGISTRAR API GLOBAL (lo que faltaba)
+============================================================ */
+window.supabaseAuth = {
+  registerUser,
+  loginUser,
+  getCurrentUser,
+  logoutUser
+};
+
+console.log("🔥 supabase-auth.js cargado en modo GLOBAL");
