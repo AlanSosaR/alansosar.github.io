@@ -1,8 +1,9 @@
 /* ===============================
-   ESTILOS GENERALES
-   =============================== */
+   TIPOGRAFÍA ESTILO APPLE
+=============================== */
 body {
-  font-family: "Roboto", sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+               "Inter", "Roboto", sans-serif;
   background-color: #ffffff;
   margin: 0;
   padding: 0;
@@ -23,7 +24,7 @@ body {
 
 /* ===============================
    TARJETA PRINCIPAL
-   =============================== */
+=============================== */
 .register-card {
   background: #ffffff;
   border-radius: 20px;
@@ -31,13 +32,11 @@ body {
   padding: 30px 40px;
   max-width: 420px;
   width: 100%;
-  transition: 0.25s ease;
-  position: relative;
 }
 
 /* ===============================
    LOGO + TÍTULO
-   =============================== */
+=============================== */
 .register-header {
   text-align: center;
   margin-bottom: 25px;
@@ -48,78 +47,46 @@ body {
   display: flex;
   justify-content: center;
   margin-bottom: 12px;
-  -webkit-tap-highlight-color: transparent;
-  margin-top: 12px !important;
 }
 
 .logo-container img {
   width: 105px;
-  height: auto;
-  user-select: none;
-  -webkit-user-drag: none;
-  transition: transform 0.3s ease;
-}
-
-.logo-container:hover img {
-  transform: scale(1.05);
+  transition: 0.3s;
 }
 
 .register-title {
   font-family: "Fraunces", serif;
-  font-size: 1.7rem;
+  font-size: 1.8rem;
   margin: 0;
   color: #512615;
 }
 
 /* ===============================
-   AVATAR
-   =============================== */
-.avatar-container {
-  width: 110px;
-  height: 110px;
-  border-radius: 50%;
+   OUTLINED CARD
+=============================== */
+.register-inner-card {
+  border: 1.6px solid rgba(81, 38, 21, 0.25);
+  border-radius: 20px;
+  padding: 28px;
+  margin-top: 15px;
   background: #ffffff;
-  border: 3px solid #33673B;
-  margin: 0 auto 22px auto;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-}
-
-.avatar-label {
-  width: 100%;
-  height: 100%;
-  cursor: pointer;
-  display: block;
-}
-
-.avatar-img {
-  width: 100%;
-  height: 100%;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  user-select: none;
-  -webkit-user-drag: none;
+  box-shadow: none; /* Outlined: SIN sombra */
 }
 
 /* ===============================
-   TARJETA SECUNDARIA
-   =============================== */
-.register-inner-card {
-  background: #ffffff;
-  border-radius: 16px;
-  padding: 25px;
-  margin-top: 10px;
-  border: 1.7px solid #512615;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+   LABELS ESTILO M3 + APPLE
+=============================== */
+.input-label {
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: #512615;
+  margin-bottom: 6px;
+  display: block;
 }
 
 /* ===============================
    INPUT GROUP
-   =============================== */
+=============================== */
 .input-wrapper {
   margin-bottom: 18px;
 }
@@ -128,20 +95,26 @@ body {
   position: relative;
   display: flex;
   align-items: center;
-  border: 1.6px solid #D9D9D9;
+  border: 1.7px solid #D0D0D0;
   border-radius: 12px;
   padding: 10px 12px;
-  background-color: #fff;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  transition: all 0.25s ease;
+  background: #fff;
 }
 
 .input-group:focus-within {
   border-color: #33673B;
-  box-shadow: 0 0 0 2px rgba(51,103,59,0.12);
+  box-shadow: 0 0 0 3px rgba(51,103,59,0.15);
 }
 
 .input-group.error {
-  border-color: #d72638 !important;
+  border-color: #d72638;
+  box-shadow: 0 0 0 3px rgba(215,38,56,0.18);
+}
+
+.input-group.success {
+  border-color: #3CB043;
+  box-shadow: 0 0 0 3px rgba(60,176,67,0.18);
 }
 
 .input-group input {
@@ -154,16 +127,47 @@ body {
 }
 
 .material-symbols-outlined {
-  color: #33673B;
+  color: #512615;
   margin-right: 8px;
   font-size: 22px;
 }
 
+/* ÍCONO DE VER CONTRASEÑA */
+.toggle-pass {
+  cursor: pointer;
+  color: #777;
+  position: absolute;
+  right: 10px;
+  font-size: 23px;
+}
+
+/* ===============================
+   PASSWORD STRENGTH
+=============================== */
+.password-strength {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.password-weak {
+  color: #d72638;
+}
+
+.password-medium {
+  color: #e6a700;
+}
+
+.password-strong {
+  color: #3CB043;
+}
+
 /* ===============================
    TEXTO DE ERROR
-   =============================== */
+=============================== */
 .input-error {
-  font-size: 0.85rem;
+  font-size: 0.83rem;
   color: #d72638;
   margin-top: 5px;
   padding-left: 4px;
@@ -171,35 +175,55 @@ body {
 }
 
 /* ===============================
-   BOTÓN
-   =============================== */
+   BOTÓN CON LOADER PREMIUM
+=============================== */
 .btn-register {
   width: 100%;
   background-color: #33673B;
   color: #fff;
   border: none;
-  border-radius: 12px;
+  border-radius: 14px;
   padding: 14px;
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
-  margin-top: 10px;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.18);
+  margin-top: 8px;
+  position: relative;
+  overflow: hidden;
+  height: 48px;
+  transition: 0.25s ease;
 }
 
-.btn-register:hover {
-  background-color: #28532E;
-  transform: translateY(-2px);
+.btn-register.loading .btn-text {
+  opacity: 0;
 }
 
-.btn-register:active {
-  transform: scale(0.98);
+.btn-register.loading .loader {
+  opacity: 1;
+}
+
+/* LOADER CIRCULAR iOS */
+.loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 3px solid rgba(255,255,255,0.25);
+  border-top-color: #fff;
+  animation: spin 0.8s linear infinite;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+}
+
+@keyframes spin {
+  to { transform: translate(-50%, -50%) rotate(360deg); }
 }
 
 /* ===============================
    SNACKBAR
-   =============================== */
+=============================== */
 #snackbar {
   visibility: hidden;
   min-width: 280px;
@@ -214,7 +238,6 @@ body {
   transform: translateX(-50%);
   font-size: 0.95rem;
   z-index: 1000;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.25);
 }
 
 #snackbar.show {
@@ -222,19 +245,9 @@ body {
   animation: fadein 0.4s, fadeout 0.4s 1.8s;
 }
 
-@keyframes fadein {
-  from { opacity: 0; bottom: 10px; }
-  to   { opacity: 1; bottom: 30px; }
-}
-
-@keyframes fadeout {
-  from { opacity: 1; bottom: 30px; }
-  to   { opacity: 0; bottom: 10px; }
-}
-
 /* ===============================
    RESPONSIVE
-   =============================== */
+=============================== */
 @media (max-width: 480px) {
   .register-card {
     padding: 22px;
@@ -247,10 +260,5 @@ body {
 
   .register-title {
     font-size: 1.5rem;
-  }
-
-  .avatar-container {
-    width: 95px;
-    height: 95px;
   }
 }
