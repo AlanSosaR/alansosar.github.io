@@ -1,4 +1,9 @@
-import { supabase } from "./supabase-client.js";
+// ===========================================
+// SUPABASE AUTH — MODO GLOBAL
+// ===========================================
+
+// Usar el cliente global cargado en supabase-client.js
+const supabase = window.supabaseClient;
 
 /* ================================
    ESPERAR LA SESIÓN TRAS SIGNUP
@@ -79,7 +84,7 @@ export async function registerUser(
   if (error) throw error;
   const user = data.user;
 
-  // 2️⃣ Esperar a que Supabase cree la sesión
+  // 2️⃣ Esperar sesión
   console.log("⏳ Esperando sesión Supabase...");
   await esperarSesion();
 
@@ -91,7 +96,7 @@ export async function registerUser(
     if (url) photoURL = url;
   }
 
-  // 4️⃣ Insertar registro en tabla USERS
+  // 4️⃣ Insertar en tabla "users"
   const { error: insertError } = await supabase.from("users").insert({
     id: user.id,
     name: fullName,
