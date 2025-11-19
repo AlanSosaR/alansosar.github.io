@@ -1,45 +1,31 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <title>Prueba Upload Supabase</title>
-</head>
-<body>
+<input type="file" id="fileInput" accept="image/*">
 
-  <h2>Prueba de subida a Supabase Storage</h2>
-  <p>Esto sube un archivo de prueba al bucket <b>avatars</b>.</p>
+<button id="uploadBtn">Subir archivo de prueba</button>
 
-  <button id="btnUpload">Subir archivo de prueba</button>
+<script type="module">
+  import { supabase } from "./js/supabase-client.js";
 
-  <script type="module">
-    import { createClient } from "https://esm.sh/@supabase/supabase-js";
+  const fileInput = document.getElementById("fileInput");
+  const uploadBtn = document.getElementById("uploadBtn");
 
-    // 🔥 Tus datos reales
-    const supabase = createClient(
-      "https://eaipcuuvddyrqkbmjmwv.supabase.co",
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVhaXBjdXV2ZGR5cnFrYm1qbXciLCJyb2xlIjoiYW5vbiIsImlhdCI6MTcyOTk2MzY2NCwiZXhwIjoxNzYxNTE1NjY0fQ._PusuyuHukGNtkAO643Xjq4jS5Er3NePVKyFJHG2oJY"
-    );
+  uploadBtn.addEventListener("click", async () => {
+    const file = fileInput.files[0];
 
-    const btn = document.getElementById("btnUpload");
+    if (!file) {
+      alert("Selecciona un archivo primero.");
+      return;
+    }
 
-    btn.addEventListener("click", async () => {
-      alert("Subiendo archivo…");
+    const filePath = `${Date.now()}-${file.name}`;
 
-      const archivo = new Blob(["Hola desde prueba"], { type: "text/plain" });
+    const { data, error } = await supabase.storage
+      .from("avatars")
+      .upload(filePath, file);
 
-      const { data, error } = await supabase.storage
-        .from("avatars")
-        .upload("test-file.txt", archivo, { upsert: true });
-
-      if (error) {
-        console.error("❌ Error:", error);
-        alert("ERROR subiendo: " + error.message);
-      } else {
-        console.log("✔️ Subido:", data);
-        alert("✔️ Archivo subido con éxito!");
-      }
-    });
-  </script>
-
-</body>
-</html>
+    if (error) {
+      alert("Error subiendo: " + error.message);
+    } else {
+      alert("Subido con éxito: " + data.path);
+    }
+  });
+</script>
