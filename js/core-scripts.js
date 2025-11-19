@@ -4,7 +4,7 @@
 // Se importa UNA SOLA VEZ en cada página
 // ============================================================
 
-// 1) Supabase SDK YA ESTÁ CARGADO (script normal en index.html)
+// 1) SDK Supabase YA ESTÁ CARGADO desde el HTML
 //    Usamos la variable global "supabase"
 const { createClient } = supabase;
 
@@ -17,8 +17,7 @@ window.supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 console.log("🔥 Supabase conectado — Cliente GLOBAL cargado");
 
-
-// 3) Cargar módulos internos (sin imports ESM)
+// 3) Cargar módulos internos dinámicamente
 const cargarScript = (src) => {
   const s = document.createElement("script");
   s.src = src;
@@ -26,18 +25,18 @@ const cargarScript = (src) => {
   document.body.appendChild(s);
 };
 
-// Cargar auth, auth-ui y main
+// Cargar módulos base
 cargarScript("js/supabase-auth.js");
 cargarScript("js/auth-ui.js");
 cargarScript("js/main.js");
 
-// Registro (si existe la página)
-if (document.body.contains(document.querySelector("#registro-form"))) {
+// Registro (si existe)
+if (document.querySelector("#registroForm")) {
   cargarScript("js/registro-cliente.js");
 }
 
-// Login (si existe la página)
-if (document.body.contains(document.querySelector("#login-form"))) {
+// Login (si existe)
+if (document.querySelector("#loginForm")) {
   cargarScript("js/login-scripts.js");
 }
 
