@@ -100,7 +100,7 @@ window.supabaseAuth.registerUser = async function (
   let photoURL = "/imagenes/avatar-default.svg";
 
   if (fotoBase64) {
-    const url = await subirFotoBase64(user.id, fotoBaseBase64);
+    const url = await subirFotoBase64(user.id, fotoBase64); // ← CORREGIDO
     if (url) photoURL = url;
   }
 
