@@ -1,8 +1,31 @@
-// supabase-client.js
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+<input type="file" id="fileInput" accept="image/*" />
+<button id="btnUpload">Subir imagen</button>
 
-const SUPABASE_URL = "https://eaipcuvvddyrqkbmjmvw.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVhaXBjdXZ2ZGR5cnFrYm1qbXZ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMwOTcxMDEsImV4cCI6MjA3ODY3MzEwMX0.2qICLx3qZgeGr0oXZ8PYRxXPL1X5Vog4UoOnTQBFzNA";
+<script type="module">
+import { supabase } from "./supabase-client.js";
 
-// Cliente global de Supabase
-export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+document.getElementById("btnUpload").addEventListener("click", async () => {
+  const archivo = document.getElementById("fileInput").files[0];
+
+  if (!archivo) {
+    alert("Selecciona un archivo primero.");
+    return;
+  }
+
+  const nombreArchivo = `test-${Date.now()}.png`;
+
+  const { data, error } = await supabase.storage
+    .from("avatars")
+    .upload(nombreArchivo, archivo, {
+      cacheControl: "3600",
+      upsert: true,
+    });
+
+  if (error) {
+    console.error(error);
+    alert("❌ ERROR subiendo: " + error.message);
+  } else {
+    alert("✅ Archivo subido con éxito:\n" + data.path);
+  }
+});
+</script>
