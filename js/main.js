@@ -1,29 +1,17 @@
-/* ===================== SUPABASE AUTH ===================== */
+/* ============================================================
+   MAIN.JS — Café Cortero
+   VERSIÓN OFICIAL (CORREGIDA)
+   ============================================================ */
 
+/* ===================== SUPABASE AUTH (modo GLOBAL) ===================== */
+
+// Usar SIEMPRE el cliente global que viene de core-scripts.js
 const supabase = window.supabaseClient;
 
-async function getCurrentUser() {
-  const { data: { session } } = await supabase.auth.getSession();
-  return session?.user || null;
-}
+// Usar funciones globales creadas en supabase-auth.js
+const { getCurrentUser, logoutUser } = window.supabaseAuth;
 
-async function logoutUser() {
-  await supabase.auth.signOut();
-}
 
-supabase.auth.onAuthStateChange(async (_, session) => {
-  if (session?.user) {
-    const uid = session.user.id;
-    const { data: userRow } = await supabase
-      .from("users")
-      .select("*")
-      .eq("id", uid)
-      .single();
-    actualizarMenuLogin(userRow);
-  } else {
-    actualizarMenuLogout();
-  }
-});
 
 /* ===================== CARRITO ===================== */
 
@@ -62,7 +50,9 @@ function addToCart(product) {
   animateCartBadge();
 }
 
-/* ===================== MAIN ===================== */
+
+
+/* ===================== EVENTO PRINCIPAL ===================== */
 
 document.addEventListener("DOMContentLoaded", async () => {
 
@@ -79,7 +69,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     actualizarMenuLogout();
   }
 
-  /* Logout */
+  /* LOGOUT */
   const logoutDesktopBtn = document.getElementById("logout-desktop");
   const logoutMobileBtn = document.getElementById("logout-mobile");
 
@@ -176,7 +166,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       qtyNumber.textContent = "1";
     });
 
-  /* Carrusel productos */
+  /* Carrusel de productos similares */
   const cards = document.querySelectorAll(".similar-card");
 
   cards.forEach(card => {
@@ -205,6 +195,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   });
 
+  /* Carrusel horizontal */
   const carousel = document.querySelector(".similar-list");
   const prevBtn = document.querySelector(".carousel-prev");
   const nextBtn = document.querySelector(".carousel-next");
@@ -229,9 +220,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-});
+}); // DOM Loaded END
 
-/* ===================== LOGIN/MENÚ ===================== */
+
+
+/* ===================== LOGIN / MENÚ ===================== */
 
 function actualizarMenuLogin(user) {
   document.getElementById("login-desktop").style.display = "none";
