@@ -37,17 +37,11 @@ export async function registerUser(
   country,
   fotoBase64 = null
 ) {
-
-  // Crear usuario en Auth
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
-      data: {
-        full_name: fullName,
-        phone,
-        country
-      }
+      data: { full_name: fullName, phone, country }
     }
   });
 
@@ -62,7 +56,7 @@ export async function registerUser(
     if (url) photoURL = url;
   }
 
-  // Insertar en tabla user
+  // Insertar en tabla users
   const { error: insertError } = await supabase.from("users").insert({
     id: user.id,
     name: fullName,
@@ -76,4 +70,16 @@ export async function registerUser(
   if (insertError) throw insertError;
 
   return data;
+}
+
+/* ================================
+   OBTENER USUARIO ACTUAL
+================================ */
+export async function getCurrentUser() {
+  const { data, error } = await supabase.auth.getUser();
+  if (error) {
+    console.error("Error obteniendo usuario:", error);
+    return null;
+  }
+  return data.user;
 }
