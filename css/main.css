@@ -1157,24 +1157,7 @@ footer p {
     transform: scale(1.02);
   }
 }
-/* ============================================================
-   BLOQUE NECESARIO PARA FUNCIONALIDAD DEL MENÚ Y CARRUSEL
-   ============================================================ */
 
-/* ----- Drawer abierto ----- */
-.drawer.open {
-  transform: translateX(0);
-  opacity: 1;
-  visibility: visible;
-}
-
-/* Drawer cerrado (asegura animación) */
-.drawer {
-  transition: all 0.35s ease;
-  transform: translateX(-100%);
-  opacity: 0;
-  visibility: hidden;
-}
 
 /* ----- Submenú de perfil (escritorio) ----- */
 .profile-menu.open {
