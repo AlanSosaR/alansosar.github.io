@@ -30,60 +30,74 @@
 
         <form id="registroForm" novalidate>
 
-          <!-- NOMBRE -->
+          <!-- ===========================
+               NOMBRE
+          =========================== -->
           <div class="m3-field">
-            <label class="m3-label" for="nombreInput">Nombre completo</label>
             <div class="m3-input">
               <span class="material-symbols-outlined">person</span>
-              <input id="nombreInput" type="text" autocomplete="name">
+              <input id="nombreInput" type="text" placeholder=" " autocomplete="name">
+              <label for="nombreInput" class="m3-label floating-label">Nombre completo</label>
             </div>
             <small class="m3-error" id="errorNombre"></small>
           </div>
 
-          <!-- CORREO -->
+          <!-- ===========================
+               CORREO
+          =========================== -->
           <div class="m3-field">
-            <label class="m3-label" for="correoInput">Correo electrónico (opcional)</label>
             <div class="m3-input">
               <span class="material-symbols-outlined">mail</span>
-              <input id="correoInput" type="email" autocomplete="email">
+              <input id="correoInput" type="email" placeholder=" " autocomplete="email">
+              <label for="correoInput" class="m3-label floating-label">Correo electrónico (opcional)</label>
             </div>
             <small class="m3-error" id="errorCorreo"></small>
           </div>
 
-          <!-- TELÉFONO -->
+          <!-- ===========================
+               TELÉFONO
+          =========================== -->
           <div class="m3-field">
-            <label class="m3-label" for="telefonoInput">Teléfono</label>
             <div class="m3-input">
               <span class="material-symbols-outlined">call</span>
-              <input id="telefonoInput" type="tel" autocomplete="tel">
+              <input id="telefonoInput" type="tel" placeholder=" " autocomplete="tel">
+              <label for="telefonoInput" class="m3-label floating-label">Teléfono</label>
             </div>
             <small class="m3-error" id="errorTelefono"></small>
           </div>
 
-          <!-- CONTRASEÑA -->
+          <!-- ===========================
+               CONTRASEÑA
+          =========================== -->
           <div class="m3-field">
-            <label class="m3-label" for="passwordInput">Contraseña</label>
             <div class="m3-input">
               <span class="material-symbols-outlined">lock</span>
-              <input id="passwordInput" type="password" autocomplete="new-password">
+              <input id="passwordInput" type="password" placeholder=" " autocomplete="new-password">
+              <label for="passwordInput" class="m3-label floating-label">Contraseña</label>
               <span class="material-symbols-outlined toggle-pass" data-target="passwordInput">visibility</span>
             </div>
+
             <small id="passwordStrength" class="password-strength"></small>
             <small class="m3-error" id="errorPassword"></small>
           </div>
 
-          <!-- CONFIRMAR CONTRASEÑA -->
+          <!-- ===========================
+               CONFIRMAR CONTRASEÑA
+          =========================== -->
           <div class="m3-field">
-            <label class="m3-label" for="confirmPasswordInput">Confirmar contraseña</label>
             <div class="m3-input">
               <span class="material-symbols-outlined">lock</span>
-              <input id="confirmPasswordInput" type="password" autocomplete="new-password">
+              <input id="confirmPasswordInput" type="password" placeholder=" " autocomplete="new-password">
+              <label for="confirmPasswordInput" class="m3-label floating-label">Confirmar contraseña</label>
               <span class="material-symbols-outlined toggle-pass" data-target="confirmPasswordInput">visibility</span>
             </div>
+
             <small class="m3-error" id="errorConfirm"></small>
           </div>
 
-          <!-- BOTÓN -->
+          <!-- ===========================
+               BOTÓN
+          =========================== -->
           <button type="submit" class="m3-btn">
             <span class="btn-text">Crear cuenta</span>
             <span class="loader"></span>
