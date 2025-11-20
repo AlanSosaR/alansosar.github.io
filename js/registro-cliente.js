@@ -1,5 +1,5 @@
 // ============================================================
-// REGISTRO DE CLIENTE — VERSIÓN FINAL M3 EXPRESSIVE (FUNCIONANDO)
+// REGISTRO DE CLIENTE — VALIDACIÓN EN CADENA (Material 3 Expressive)
 // ============================================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -57,7 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // VALIDAR CORREO
   // ============================================================
   function esCorreoValido(email) {
-    if (!email) return true;
+    if (!email) return true; // opcional
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   }
 
@@ -112,6 +112,45 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ============================================================
+  // VALIDACIÓN EN CADENA
+  // ============================================================
+  function validarEnCadena() {
+
+    if (!campos.nombre.value.trim()) {
+      marcar("nombre", "Ingresa tu nombre");
+      return false;
+    }
+    marcar("nombre", "", true);
+
+    if (campos.telefono.value.trim().length < 8) {
+      marcar("telefono", "Teléfono inválido");
+      return false;
+    }
+    marcar("telefono", "", true);
+
+    const correo = campos.correo.value.trim();
+    if (!esCorreoValido(correo)) {
+      marcar("correo", "Correo no válido");
+      return false;
+    }
+    marcar("correo", "", true);
+
+    if (campos.password.value.length < 6) {
+      marcar("password", "Mínimo 6 caracteres");
+      return false;
+    }
+    marcar("password", "", true);
+
+    if (campos.password.value !== campos.confirm.value) {
+      marcar("confirm", "Las contraseñas no coinciden");
+      return false;
+    }
+    marcar("confirm", "", true);
+
+    return true;
+  }
+
+  // ============================================================
   // SUBMIT
   // ============================================================
   const btn = document.querySelector(".m3-btn");
@@ -120,34 +159,7 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault();
     limpiarErrores();
 
-    let valido = true;
-
-    if (!campos.nombre.value.trim()) {
-      marcar("nombre", "Ingresa tu nombre");
-      valido = false;
-    } else marcar("nombre", "", true);
-
-    if (campos.telefono.value.trim().length < 8) {
-      marcar("telefono", "Teléfono inválido");
-      valido = false;
-    } else marcar("telefono", "", true);
-
-    if (!esCorreoValido(campos.correo.value.trim())) {
-      marcar("correo", "Correo no válido");
-      valido = false;
-    } else marcar("correo", "", true);
-
-    if (campos.password.value.length < 6) {
-      marcar("password", "Mínimo 6 caracteres");
-      valido = false;
-    } else marcar("password", "", true);
-
-    if (campos.password.value !== campos.confirm.value) {
-      marcar("confirm", "Las contraseñas no coinciden");
-      valido = false;
-    } else marcar("confirm", "", true);
-
-    if (!valido) return;
+    if (!validarEnCadena()) return;
 
     btn.classList.add("loading");
     btn.disabled = true;
