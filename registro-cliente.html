@@ -41,17 +41,17 @@
           <div class="m3-field">
             <div class="m3-input">
               <span class="material-symbols-outlined">person</span>
-              <input id="nombreInput" type="text" placeholder=" ">
+              <input id="nombreInput" type="text" placeholder="">
               <label for="nombreInput" class="floating-label">Nombre completo</label>
             </div>
             <small class="m3-error" id="errorNombre"></small>
           </div>
 
-          <!-- CORREO (opcional) -->
+          <!-- CORREO -->
           <div class="m3-field">
             <div class="m3-input">
               <span class="material-symbols-outlined">mail</span>
-              <input id="correoInput" type="email" placeholder=" ">
+              <input id="correoInput" type="email" placeholder="">
               <label for="correoInput" class="floating-label">Correo electrónico (opcional)</label>
             </div>
             <small class="m3-error" id="errorCorreo"></small>
@@ -61,7 +61,7 @@
           <div class="m3-field">
             <div class="m3-input">
               <span class="material-symbols-outlined">call</span>
-              <input id="telefonoInput" type="tel" placeholder=" ">
+              <input id="telefonoInput" type="tel" placeholder="">
               <label for="telefonoInput" class="floating-label">Teléfono</label>
             </div>
             <small class="m3-error" id="errorTelefono"></small>
@@ -71,13 +71,13 @@
           <div class="m3-field">
             <div class="m3-input">
               <span class="material-symbols-outlined">lock</span>
-              <input id="passwordInput" type="password" placeholder=" ">
+              <input id="passwordInput" type="password" placeholder="">
               <label for="passwordInput" class="floating-label">Contraseña</label>
               <span class="material-symbols-outlined toggle-pass" data-target="passwordInput">visibility</span>
             </div>
 
             <!-- Barras de seguridad -->
-            <div class="strength-bars">
+            <div class="strength-bars" id="barsContainer">
               <div class="strength-bar"></div>
               <div class="strength-bar"></div>
               <div class="strength-bar"></div>
@@ -92,7 +92,7 @@
           <div class="m3-field">
             <div class="m3-input">
               <span class="material-symbols-outlined">lock</span>
-              <input id="confirmPasswordInput" type="password" placeholder=" ">
+              <input id="confirmPasswordInput" type="password" placeholder="">
               <label for="confirmPasswordInput" class="floating-label">Confirmar contraseña</label>
               <span class="material-symbols-outlined toggle-pass" data-target="confirmPasswordInput">visibility</span>
             </div>
@@ -107,11 +107,10 @@
 
         </form>
 
-        <!-- Snackbar dentro de la tarjeta -->
+        <!-- Snackbar -->
         <div id="snackbar"></div>
 
       </div>
-
     </section>
   </main>
 
