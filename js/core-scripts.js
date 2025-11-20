@@ -12,7 +12,6 @@ const SUPABASE_ANON_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVhaXBjdXZ2ZGR5cnFrYm1qbXZ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMwOTcxMDEsImV4cCI6MjA3ODY3MzEwMX0.2qICLx3qZgeGr0oXZ8PYRxXPL1X5Vog4UoOnTQBFzNA";
 
 window.supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
 console.log("🔥 Supabase conectado — Cliente GLOBAL cargado");
 
 
@@ -40,18 +39,14 @@ cargarUnico("js/main.js");
 
 
 // ============================================================
-// CARGA DE SCRIPTS DEPENDIENDO DE LA PÁGINA
-// (SE EJECUTA CUANDO EL DOM YA EXISTE) ⭐
+// CARGA SEGÚN PANTALLA
 // ============================================================
 document.addEventListener("DOMContentLoaded", () => {
 
-  // Registro → carga registro-cliente.js
-  if (document.querySelector("#registroForm")) {
-    console.log("📄 Cargando registro-cliente.js...");
-    cargarUnico("js/registro-cliente.js");
-  }
+  // ⚠️ REGISTRO: YA NO CARGA NADA AQUÍ  
+  // Se cargará solo desde el HTML para evitar duplicados.
 
-  // Login → carga login-scripts.js
+  // Login
   if (document.querySelector("#loginForm")) {
     console.log("📄 Cargando login-scripts.js...");
     cargarUnico("js/login-scripts.js");
