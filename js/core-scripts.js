@@ -1,7 +1,5 @@
 // ============================================================
-// CORE SCRIPTS — Café Cortero
-// Archivo central que controla TODO el sitio
-// Se importa UNA SOLA VEZ en cada página
+// CORE SCRIPTS — Café Cortero (VERSIÓN FINAL SIN DUPLICADOS)
 // ============================================================
 
 // 1) SDK Supabase YA ESTÁ CARGADO desde el HTML
@@ -17,27 +15,39 @@ window.supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 console.log("🔥 Supabase conectado — Cliente GLOBAL cargado");
 
-// 3) Cargar módulos internos dinámicamente
-const cargarScript = (src) => {
+// ============================================================
+// FUNCIÓN PARA CARGAR SCRIPTS UNA SOLA VEZ
+// ============================================================
+function cargarUnico(src) {
+  if ([...document.scripts].some(s => s.src.includes(src))) {
+    console.warn("⚠️ Script ya cargado, evitando duplicado:", src);
+    return;
+  }
   const s = document.createElement("script");
   s.src = src;
   s.defer = true;
   document.body.appendChild(s);
-};
-
-// Cargar módulos base
-cargarScript("js/supabase-auth.js");
-cargarScript("js/auth-ui.js");
-cargarScript("js/main.js");
-
-// Registro (si existe)
-if (document.querySelector("#registroForm")) {
-  cargarScript("js/registro-cliente.js");
 }
 
-// Login (si existe)
+// ============================================================
+// CARGA BASE — SIEMPRE
+// ============================================================
+cargarUnico("js/supabase-auth.js");
+cargarUnico("js/auth-ui.js");
+cargarUnico("js/main.js");
+
+// ============================================================
+// PÁGINAS ESPECÍFICAS
+// ============================================================
+
+// Registro
+if (document.querySelector("#registroForm")) {
+  cargarUnico("js/registro-cliente.js");
+}
+
+// Login
 if (document.querySelector("#loginForm")) {
-  cargarScript("js/login-scripts.js");
+  cargarUnico("js/login-scripts.js");
 }
 
 console.log("⚡ Core Scripts cargados completamente");
