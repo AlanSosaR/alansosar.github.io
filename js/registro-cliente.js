@@ -32,25 +32,65 @@ document.addEventListener("DOMContentLoaded", () => {
     Object.values(errores).forEach(e => (e.textContent = ""));
     document.querySelectorAll(".m3-input")
       .forEach(g => g.classList.remove("error", "success"));
+
+    // restaurar labels originales
+    document.querySelectorAll(".floating-label").forEach(l => {
+      if (l.dataset.original) {
+        l.textContent = l.dataset.original;
+        l.style.color = "";
+      }
+    });
   }
 
   // ============================================================
-  // MARCAR ERROR / ÉXITO
+  // MARCAR ERROR / ÉXITO (ESTILO GOOGLE FLOATING LABEL)
   // ============================================================
   function marcar(campo, mensaje, success = false) {
     const input = campos[campo];
     const grupo = input.closest(".m3-input");
+    const label = grupo.querySelector(".floating-label");
 
+    // guardar texto original del label
+    if (!label.dataset.original) {
+      label.dataset.original = label.textContent;
+    }
+
+    const vacio = input.value.trim().length === 0;
+
+    // -----------------------------
+    //        ÉXITO
+    // -----------------------------
     if (success) {
       grupo.classList.remove("error");
       grupo.classList.add("success");
+
+      // restaurar label
+      label.textContent = label.dataset.original;
+      label.style.color = "";
+
       errores[campo].textContent = "";
       return;
     }
 
+    // -----------------------------
+    //        ERROR
+    // -----------------------------
     grupo.classList.remove("success");
     grupo.classList.add("error");
-    errores[campo].textContent = mensaje;
+
+    if (vacio) {
+      // *** ERROR CUANDO ESTÁ VACÍO ***
+      // label sube y muestra el error adentro
+      label.textContent = mensaje;
+      label.style.color = "#d72638";
+      errores[campo].textContent = ""; // NO mostrar mensaje abajo
+    } else {
+      // *** ERROR CON TEXTO ***
+      // label normal, error abajo
+      label.textContent = label.dataset.original;
+      label.style.color = "";
+      errores[campo].textContent = mensaje;
+    }
   }
 
   // ============================================================
