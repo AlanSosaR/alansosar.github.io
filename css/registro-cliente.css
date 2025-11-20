@@ -1,10 +1,10 @@
 /* ===============================
-   MATERIAL 3 EXPRESSIVE — BASE
+   BASE / TIPOGRAFÍA
 =============================== */
-
 body {
-  font-family: "Inter", "Roboto", -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+               "Inter", "Roboto", sans-serif;
+  background-color: #ffffff;
   margin: 0;
   padding: 0;
   min-height: 100vh;
@@ -12,7 +12,6 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Contenedor general */
 .register-container {
   display: flex;
   justify-content: center;
@@ -20,17 +19,21 @@ body {
   padding: 30px 20px;
 }
 
-/* Tarjeta principal */
+/* ===============================
+   TARJETA PRINCIPAL
+=============================== */
 .register-card {
   background: #ffffff;
   border-radius: 20px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
   padding: 30px 40px;
   max-width: 420px;
   width: 100%;
 }
 
-/* Header */
+/* ===============================
+   HEADER
+=============================== */
 .register-header {
   text-align: center;
   margin-bottom: 25px;
@@ -45,6 +48,7 @@ body {
 
 .logo-container img {
   width: 105px;
+  transition: 0.3s;
 }
 
 .register-title {
@@ -54,187 +58,237 @@ body {
   color: #512615;
 }
 
-/* Outlined card */
+/* ===============================
+   CARD INTERIOR OUTLINED
+=============================== */
 .register-inner-card {
-  border: 1.6px solid rgba(81,38,21,0.25);
+  border: 1.6px solid rgba(81, 38, 21, 0.25);
   border-radius: 20px;
   padding: 28px;
   margin-top: 15px;
   background: #ffffff;
+  box-shadow: none;
 }
 
 /* ===============================
-   CAMPOS MATERIAL 3
+   OUTLINED TEXT FIELDS M3
 =============================== */
-
 .m3-field {
   margin-bottom: 18px;
 }
 
+/* label encima */
 .m3-label {
-  display: block;
-  font-size: 0.92rem;
+  font-size: 0.9rem;
   font-weight: 500;
   color: #512615;
   margin-bottom: 6px;
+  display: block;
 }
 
-/* Input container */
+/* contenedor del input + iconos */
 .m3-input {
+  position: relative;
   display: flex;
   align-items: center;
-  background: #FFF;
-  border: 1.8px solid #D3D3D3;
-  border-radius: 14px;
-  padding: 12px 14px;
-  transition: all .25s ease;
+  border-radius: 12px;                /* B: esquinas redondeadas suaves */
+  border: 1.7px solid #D0D0D0;
+  padding: 10px 12px;
+  background: #ffffff;
+  transition: all 0.22s ease;
 }
 
+/* estado focus */
 .m3-input:focus-within {
   border-color: #33673B;
-  box-shadow: 0 0 0 3px rgba(51,103,59,0.15);
+  box-shadow: 0 0 0 3px rgba(51, 103, 59, 0.16);
 }
 
+/* estado error */
 .m3-input.error {
   border-color: #d72638;
-  box-shadow: 0 0 0 3px rgba(215,38,56,0.18);
+  box-shadow: 0 0 0 3px rgba(215, 38, 56, 0.18);
 }
 
+/* estado success */
 .m3-input.success {
   border-color: #3CB043;
-  box-shadow: 0 0 0 3px rgba(60,176,67,0.18);
+  box-shadow: 0 0 0 3px rgba(60, 176, 67, 0.18);
 }
 
+/* input */
 .m3-input input {
   flex: 1;
   border: none;
   outline: none;
-  background: transparent;
   font-size: 1rem;
+  background: transparent;
   color: #2E2A27;
 }
 
-.material-symbols-outlined {
-  color: #512615;
-  margin-right: 10px;
-  font-size: 23px;
+/* iconos izquierda */
+.m3-input .material-symbols-outlined {
+  margin-right: 8px;
+  font-size: 22px;
+  color: #33673B;          /* íconos verdes */
 }
 
-/* Ver contraseña */
+/* toggle ver contraseña (derecha) */
 .toggle-pass {
   cursor: pointer;
-  color: #777;
-  font-size: 23px;
+  position: absolute;
+  right: 10px;
+  font-size: 22px;
+  color: #33673B;
 }
 
 /* ===============================
-   ERRORES
+   MENSAJES DE ERROR
 =============================== */
-
 .m3-error {
-  font-size: .83rem;
+  font-size: 0.83rem;
   color: #d72638;
-  margin-top: 5px;
-  padding-left: 4px;
-  display: block;
+  margin-top: 4px;
+  padding-left: 2px;
+  min-height: 16px;
 }
 
 /* ===============================
-   PASSWORD STRENGTH
+   FUERZA DE CONTRASEÑA
 =============================== */
-
 .password-strength {
-  margin-top: 5px;
+  display: block;
+  margin-top: 4px;
   font-size: 0.85rem;
+  font-weight: 500;
+  min-height: 18px;
 }
 
 .password-weak {
   color: #d72638;
 }
+
 .password-medium {
   color: #e6a700;
 }
+
 .password-strong {
   color: #3CB043;
 }
 
 /* ===============================
-   BOTÓN MATERIAL 3
+   BOTÓN (M3 TONAL) + LOADER
 =============================== */
-
 .m3-btn {
   width: 100%;
-  background: #33673B;
-  color: #fff;
+  background-color: #33673B;
+  color: #ffffff;
   border: none;
-  border-radius: 16px;
-  padding: 14px;
+  border-radius: 999px;
+  padding: 13px 16px;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  margin-top: 10px;
+  margin-top: 12px;
   position: relative;
   overflow: hidden;
   height: 48px;
-  transition: 0.25s ease;
+  transition: box-shadow 0.2s ease, transform 0.15s ease, opacity 0.2s ease;
+}
+
+.m3-btn:hover {
+  box-shadow: 0 4px 10px rgba(51, 103, 59, 0.35);
+  transform: translateY(-1px);
+}
+
+.m3-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.18);
+}
+
+.m3-btn:disabled {
+  opacity: 0.72;
+  cursor: default;
+  box-shadow: none;
+}
+
+.m3-btn .btn-text {
+  transition: opacity 0.18s ease;
 }
 
 .m3-btn.loading .btn-text {
   opacity: 0;
 }
 
-.m3-btn.loading .loader {
-  opacity: 1;
-}
-
-/* Loader */
-.loader {
+/* loader circular */
+.m3-btn .loader {
   position: absolute;
   top: 50%;
   left: 50%;
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  border: 3px solid rgba(255,255,255,0.25);
-  border-top-color: #fff;
-  animation: spin 0.8s linear infinite;
+  border: 3px solid rgba(255,255,255,0.3);
+  border-top-color: #ffffff;
+  animation: spin 0.9s linear infinite;
   transform: translate(-50%, -50%);
   opacity: 0;
+  transition: opacity 0.18s ease;
+}
+
+.m3-btn.loading .loader {
+  opacity: 1;
 }
 
 @keyframes spin {
-  to { transform: translate(-50%, -50%) rotate(360deg); }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
 }
 
 /* ===============================
-   SNACKBAR
+   SNACKBAR (M3, opción 1)
 =============================== */
-
 #snackbar {
-  visibility: hidden;
-  min-width: 280px;
-  background-color: #33673B;
-  color: #fff;
-  text-align: center;
-  border-radius: 8px;
-  padding: 14px;
   position: fixed;
+  top: 16px;
   left: 50%;
-  bottom: 30px;
-  transform: translateX(-50%);
-  font-size: 0.95rem;
-  z-index: 1000;
+  transform: translateX(-50%) translateY(-20px);
+  min-width: 260px;
+  max-width: 90%;
+  background-color: #512615;       /* café */
+  color: #ffffff;
+  border-radius: 999px;
+  padding: 10px 18px;
+  font-size: 0.92rem;
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 999;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+  transition: opacity 0.25s ease, transform 0.25s ease;
 }
 
+/* variante éxito */
+#snackbar.success {
+  border: 1px solid rgba(51, 103, 59, 0.6);  /* borde verde sutil */
+}
+
+/* variante error (por si lo usas luego) */
+#snackbar.error {
+  border: 1px solid rgba(215, 38, 56, 0.6);
+}
+
+/* visible */
 #snackbar.show {
-  visibility: visible;
-  animation: fadein 0.4s, fadeout 0.4s 1.8s;
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+  pointer-events: auto;
 }
 
 /* ===============================
    RESPONSIVE
 =============================== */
-
 @media (max-width: 480px) {
   .register-card {
     padding: 22px;
