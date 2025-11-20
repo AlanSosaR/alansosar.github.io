@@ -85,7 +85,7 @@ body {
   align-items: center;
   border-radius: 12px;
   border: 1.7px solid #D0D0D0;
-  padding: 16px 12px 6px 12px; /* espacio para floating label */
+  padding: 16px 12px 6px 12px;
   background: #ffffff;
   transition: all 0.22s ease;
 }
@@ -121,7 +121,7 @@ body {
   transition: all 0.20s ease;
 }
 
-/* cuando hay texto */
+/* cuando el usuario escribió algo */
 .m3-input input:not(:placeholder-shown) + .floating-label {
   top: -6px;
   font-size: 0.78rem;
@@ -130,7 +130,7 @@ body {
   padding: 0 4px;
 }
 
-/* cuando está en focus */
+/* estado focus */
 .m3-input:focus-within .floating-label {
   top: -6px;
   font-size: 0.78rem;
@@ -140,21 +140,28 @@ body {
 }
 
 /* ===============================
-   ESTADOS
+   ESTADOS DE ERROR
 =============================== */
-.m3-input:focus-within {
-  border-color: #33673B;
-  box-shadow: 0 0 0 3px rgba(51,103,59,0.16);
-}
-
 .m3-input.error {
-  border-color: #d72638;
+  border-color: #d72638 !important;
   box-shadow: 0 0 0 3px rgba(215,38,56,0.18);
 }
 
-.m3-input.success {
-  border-color: #3CB043;
-  box-shadow: 0 0 0 3px rgba(60,176,67,0.18);
+/* 🔥 ERROR DENTRO DEL CAMPO (al estilo Google) */
+.m3-input.error input:placeholder-shown + .floating-label {
+  top: 15px;
+  left: 44px;
+  font-size: 1rem;
+  color: #d72638;
+}
+
+/* 🔥 Si escribió algo → vuelve al error abajo */
+.m3-input.error input:not(:placeholder-shown) + .floating-label {
+  top: -6px;
+  font-size: 0.78rem;
+  color: #d72638;
+  background: white;
+  padding: 0 4px;
 }
 
 /* ===============================
@@ -169,7 +176,7 @@ body {
 }
 
 /* ===============================
-   MENSAJES DE ERROR
+   MENSAJES DE ERROR (cuando hay texto)
 =============================== */
 .m3-error {
   font-size: 0.83rem;
