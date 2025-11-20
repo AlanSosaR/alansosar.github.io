@@ -128,7 +128,7 @@ body {
   pointer-events: none;
 }
 
-/* LABEL SUBE NORMAL */
+/* SUBE NORMAL */
 .m3-input input:not(:placeholder-shown) + .floating-label,
 .m3-input:focus-within .floating-label {
   top: -6px;
@@ -138,7 +138,7 @@ body {
   padding: 0 4px;
 }
 
-/* LABEL SIEMPRE ARRIBA EN ERROR */
+/* ERROR — LABEL SIEMPRE ARRIBA */
 .m3-input.error .floating-label {
   top: -6px !important;
   font-size: 0.78rem !important;
@@ -147,7 +147,7 @@ body {
   padding: 0 4px;
 }
 
-/* PLACEHOLDER ROJO ADENTRO CUANDO HAY ERROR Y ESTÁ VACÍO */
+/* PLACEHOLDER ROJO (DENTRO DEL CAMPO) */
 .m3-input.error input::placeholder {
   color: #d72638 !important;
   opacity: 1;
@@ -170,9 +170,10 @@ body {
 =============================== */
 
 .strength-bars {
-  display: none; /* ocultas hasta que escriban */
+  display: none; /* Ocultas hasta escribir */
   gap: 4px;
   margin-top: 4px;
+  transition: 0.25s;
 }
 
 .strength-bars.visible {
@@ -184,7 +185,7 @@ body {
   flex: 1;
   border-radius: 4px;
   background-color: #e0e0e0;
-  transition: 0.25s;
+  transition: 0.25s ease;
 }
 
 .strength-bar.active-weak { background-color: #d72638; }
@@ -201,7 +202,7 @@ body {
 }
 
 /* ===============================
-   BOTÓN
+   BOTÓN + LOADER
 =============================== */
 .m3-btn {
   width: 100%;
@@ -242,18 +243,18 @@ body {
 }
 
 /* ===============================
-   SNACKBAR (ARRIBA DEL BOTÓN)
+   SNACKBAR — ARRIBA DEL BOTÓN
 =============================== */
 #snackbar {
   position: absolute;
-  bottom: 60px;
+  bottom: 75px; /* Justo arriba del botón */
   left: 50%;
   transform: translateX(-50%) translateY(10px);
-  background: rgba(81,38,21,0.90);
+  background: rgba(81,38,21,0.92);
   backdrop-filter: blur(8px);
-  color: #fff;
-  padding: 10px 22px;
-  border-radius: 14px;
+  color: #ffffff;
+  padding: 10px 24px;
+  border-radius: 16px;
   font-size: 0.92rem;
   opacity: 0;
   pointer-events: none;
@@ -263,4 +264,22 @@ body {
 #snackbar.show {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
+}
+
+/* ===============================
+   RESPONSIVE
+=============================== */
+@media (max-width: 480px) {
+  .register-card {
+    padding: 22px;
+    max-width: 360px;
+  }
+
+  .register-inner-card {
+    padding: 20px;
+  }
+
+  .register-title {
+    font-size: 1.5rem;
+  }
 }
