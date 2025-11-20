@@ -15,6 +15,7 @@ window.supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 console.log("🔥 Supabase conectado — Cliente GLOBAL cargado");
 
+
 // ============================================================
 // FUNCIÓN PARA CARGAR SCRIPTS UNA SOLA VEZ
 // ============================================================
@@ -29,6 +30,7 @@ function cargarUnico(src) {
   document.body.appendChild(s);
 }
 
+
 // ============================================================
 // CARGA BASE — SIEMPRE
 // ============================================================
@@ -36,18 +38,23 @@ cargarUnico("js/supabase-auth.js");
 cargarUnico("js/auth-ui.js");
 cargarUnico("js/main.js");
 
-// ============================================================
-// PÁGINAS ESPECÍFICAS
-// ============================================================
 
-// Registro
-if (document.querySelector("#registroForm")) {
-  cargarUnico("js/registro-cliente.js");
-}
+// ============================================================
+// CARGA DE SCRIPTS DEPENDIENDO DE LA PÁGINA
+// (SE EJECUTA CUANDO EL DOM YA EXISTE) ⭐
+// ============================================================
+document.addEventListener("DOMContentLoaded", () => {
 
-// Login
-if (document.querySelector("#loginForm")) {
-  cargarUnico("js/login-scripts.js");
-}
+  // Registro → carga registro-cliente.js
+  if (document.querySelector("#registroForm")) {
+    cargarUnico("js/registro-cliente.js");
+  }
+
+  // Login → carga login-scripts.js
+  if (document.querySelector("#loginForm")) {
+    cargarUnico("js/login-scripts.js");
+  }
+
+});
 
 console.log("⚡ Core Scripts cargados completamente");
