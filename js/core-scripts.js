@@ -47,11 +47,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Registro → carga registro-cliente.js
   if (document.querySelector("#registroForm")) {
+    console.log("📄 Cargando registro-cliente.js...");
     cargarUnico("js/registro-cliente.js");
   }
 
   // Login → carga login-scripts.js
   if (document.querySelector("#loginForm")) {
+    console.log("📄 Cargando login-scripts.js...");
     cargarUnico("js/login-scripts.js");
   }
 
