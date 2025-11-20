@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Crear Cuenta | Café Cortero</title>
 
-  <!-- TIPOGRAFÍA ESTILO APPLE -->
+  <!-- TIPOGRAFÍA MATERIAL 3 EXPRESSIVE -->
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
   <link rel="stylesheet" href="css/registro-cliente.css">
@@ -31,60 +31,60 @@
         <form id="registroForm" novalidate>
 
           <!-- NOMBRE -->
-          <div class="input-wrapper">
-            <label class="input-label" for="nombreInput">Nombre completo</label>
-            <div class="input-group">
+          <div class="m3-field">
+            <label class="m3-label" for="nombreInput">Nombre completo</label>
+            <div class="m3-input">
               <span class="material-symbols-outlined">person</span>
-              <input type="text" id="nombreInput">
+              <input id="nombreInput" type="text" autocomplete="name">
             </div>
-            <small class="input-error" id="errorNombre"></small>
+            <small class="m3-error" id="errorNombre"></small>
           </div>
 
           <!-- CORREO -->
-          <div class="input-wrapper">
-            <label class="input-label" for="correoInput">Correo electrónico (opcional)</label>
-            <div class="input-group">
+          <div class="m3-field">
+            <label class="m3-label" for="correoInput">Correo electrónico (opcional)</label>
+            <div class="m3-input">
               <span class="material-symbols-outlined">mail</span>
-              <input type="email" id="correoInput">
+              <input id="correoInput" type="email" autocomplete="email">
             </div>
-            <small class="input-error" id="errorCorreo"></small>
+            <small class="m3-error" id="errorCorreo"></small>
           </div>
 
           <!-- TELÉFONO -->
-          <div class="input-wrapper">
-            <label class="input-label" for="telefonoInput">Teléfono</label>
-            <div class="input-group">
+          <div class="m3-field">
+            <label class="m3-label" for="telefonoInput">Teléfono</label>
+            <div class="m3-input">
               <span class="material-symbols-outlined">call</span>
-              <input type="tel" id="telefonoInput">
+              <input id="telefonoInput" type="tel" autocomplete="tel">
             </div>
-            <small class="input-error" id="errorTelefono"></small>
+            <small class="m3-error" id="errorTelefono"></small>
           </div>
 
           <!-- CONTRASEÑA -->
-          <div class="input-wrapper">
-            <label class="input-label" for="passwordInput">Contraseña</label>
-            <div class="input-group">
+          <div class="m3-field">
+            <label class="m3-label" for="passwordInput">Contraseña</label>
+            <div class="m3-input">
               <span class="material-symbols-outlined">lock</span>
-              <input type="password" id="passwordInput">
+              <input id="passwordInput" type="password" autocomplete="new-password">
               <span class="material-symbols-outlined toggle-pass" data-target="passwordInput">visibility</span>
             </div>
-            <small class="password-strength" id="passwordStrength"></small>
-            <small class="input-error" id="errorPassword"></small>
+            <small id="passwordStrength" class="password-strength"></small>
+            <small class="m3-error" id="errorPassword"></small>
           </div>
 
           <!-- CONFIRMAR CONTRASEÑA -->
-          <div class="input-wrapper">
-            <label class="input-label" for="confirmPasswordInput">Confirmar contraseña</label>
-            <div class="input-group">
+          <div class="m3-field">
+            <label class="m3-label" for="confirmPasswordInput">Confirmar contraseña</label>
+            <div class="m3-input">
               <span class="material-symbols-outlined">lock</span>
-              <input type="password" id="confirmPasswordInput">
+              <input id="confirmPasswordInput" type="password" autocomplete="new-password">
               <span class="material-symbols-outlined toggle-pass" data-target="confirmPasswordInput">visibility</span>
             </div>
-            <small class="input-error" id="errorConfirm"></small>
+            <small class="m3-error" id="errorConfirm"></small>
           </div>
 
           <!-- BOTÓN -->
-          <button type="submit" class="btn-register">
+          <button type="submit" class="m3-btn">
             <span class="btn-text">Crear cuenta</span>
             <span class="loader"></span>
           </button>
@@ -97,8 +97,9 @@
 
   <!-- SNACKBAR -->
   <div id="snackbar"></div>
-  <!-- scrips -->
+
+  <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/core-scripts.js?v=6"></script>
+  <script src="js/core-scripts.js?v=6"></script>
 </body>
 </html>
