@@ -5,10 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Crear Cuenta | Café Cortero</title>
 
-  <!-- TIPOGRAFÍA MATERIAL 3 EXPRESSIVE -->
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600&display=swap" rel="stylesheet">
+  <!-- TIPOGRAFÍA GLOBAL (Apple + Material 3 Expressive) -->
+  <link rel="stylesheet" href="css/tipografia.css">
+
+  <!-- ICONOS M3 -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
-  <link rel="stylesheet" href="css/registro-cliente.css">
+
+  <!-- TIPOGRAFÍA TITULARES (Fraunces M3 Expressive) -->
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600&display=swap" rel="stylesheet">
+
+  <!-- CSS DEL FORMULARIO -->
+  <link rel="stylesheet" href="css/registro-cliente.css?v=3">
 </head>
 
 <body>
@@ -25,55 +32,47 @@
         <h2 class="register-title">Crear cuenta</h2>
       </div>
 
-      <!-- TARJETA OUTLINED FORMULARIO -->
+      <!-- CARD FORMULARIO -->
       <div class="register-inner-card outlined-card">
 
         <form id="registroForm" novalidate>
 
-          <!-- ===========================
-               NOMBRE
-          =========================== -->
+          <!-- NOMBRE -->
           <div class="m3-field">
             <div class="m3-input">
               <span class="material-symbols-outlined">person</span>
               <input id="nombreInput" type="text" placeholder=" " autocomplete="name">
-              <label for="nombreInput" class="m3-label floating-label">Nombre completo</label>
+              <label for="nombreInput" class="floating-label">Nombre completo</label>
             </div>
             <small class="m3-error" id="errorNombre"></small>
           </div>
 
-          <!-- ===========================
-               CORREO
-          =========================== -->
+          <!-- CORREO -->
           <div class="m3-field">
             <div class="m3-input">
               <span class="material-symbols-outlined">mail</span>
               <input id="correoInput" type="email" placeholder=" " autocomplete="email">
-              <label for="correoInput" class="m3-label floating-label">Correo electrónico (opcional)</label>
+              <label for="correoInput" class="floating-label">Correo electrónico (opcional)</label>
             </div>
             <small class="m3-error" id="errorCorreo"></small>
           </div>
 
-          <!-- ===========================
-               TELÉFONO
-          =========================== -->
+          <!-- TELÉFONO -->
           <div class="m3-field">
             <div class="m3-input">
               <span class="material-symbols-outlined">call</span>
               <input id="telefonoInput" type="tel" placeholder=" " autocomplete="tel">
-              <label for="telefonoInput" class="m3-label floating-label">Teléfono</label>
+              <label for="telefonoInput" class="floating-label">Teléfono</label>
             </div>
             <small class="m3-error" id="errorTelefono"></small>
           </div>
 
-          <!-- ===========================
-               CONTRASEÑA
-          =========================== -->
+          <!-- CONTRASEÑA -->
           <div class="m3-field">
             <div class="m3-input">
               <span class="material-symbols-outlined">lock</span>
               <input id="passwordInput" type="password" placeholder=" " autocomplete="new-password">
-              <label for="passwordInput" class="m3-label floating-label">Contraseña</label>
+              <label for="passwordInput" class="floating-label">Contraseña</label>
               <span class="material-symbols-outlined toggle-pass" data-target="passwordInput">visibility</span>
             </div>
 
@@ -81,23 +80,19 @@
             <small class="m3-error" id="errorPassword"></small>
           </div>
 
-          <!-- ===========================
-               CONFIRMAR CONTRASEÑA
-          =========================== -->
+          <!-- CONFIRMAR -->
           <div class="m3-field">
             <div class="m3-input">
               <span class="material-symbols-outlined">lock</span>
               <input id="confirmPasswordInput" type="password" placeholder=" " autocomplete="new-password">
-              <label for="confirmPasswordInput" class="m3-label floating-label">Confirmar contraseña</label>
+              <label for="confirmPasswordInput" class="floating-label">Confirmar contraseña</label>
               <span class="material-symbols-outlined toggle-pass" data-target="confirmPasswordInput">visibility</span>
             </div>
 
             <small class="m3-error" id="errorConfirm"></small>
           </div>
 
-          <!-- ===========================
-               BOTÓN
-          =========================== -->
+          <!-- BOTÓN -->
           <button type="submit" class="m3-btn">
             <span class="btn-text">Crear cuenta</span>
             <span class="loader"></span>
@@ -112,15 +107,15 @@
   <!-- SNACKBAR -->
   <div id="snackbar"></div>
 
-  <!-- Scripts -->
-<!-- Scripts base Supabase -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Supabase SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<!-- Sistema de autenticación global -->
-<script src="js/supabase-auth.js?v=6"></script>
-<script src="js/auth-ui.js?v=6"></script>
+  <!-- Scripts globales de autenticación -->
+  <script src="js/supabase-auth.js?v=6"></script>
+  <script src="js/auth-ui.js?v=6"></script>
 
-<!-- Script del formulario (lógica de registro) -->
-<script src="js/registro-cliente.js?v=3"></script>
+  <!-- LÓGICA DEL FORMULARIO -->
+  <script src="js/registro-cliente.js?v=3"></script>
+
 </body>
 </html>
