@@ -1,7 +1,13 @@
 /* ============================================================
    MAIN.JS — Café Cortero
-   VERSIÓN OFICIAL 100% CORREGIDA
+   VERSIÓN OFICIAL 100% CORREGIDA CON VALIDACIÓN SAFE()
    ============================================================ */
+
+/* ===================== FUNCIÓN SAFE ===================== */
+/* Evita errores cuando un elemento NO existe en la página */
+function safe(id) {
+  return document.getElementById(id);
+}
 
 /* ===================== CARRITO ===================== */
 
@@ -18,12 +24,12 @@ function saveCart(cart) {
 
 function updateCartCount() {
   const total = getCart().reduce((acc, item) => acc + item.qty, 0);
-  const badge = document.getElementById("cart-count");
+  const badge = safe("cart-count");
   if (badge) badge.textContent = total;
 }
 
 function animateCartBadge() {
-  const badge = document.getElementById("cart-count");
+  const badge = safe("cart-count");
   if (!badge) return;
   badge.classList.remove("animate");
   void badge.offsetWidth;
@@ -46,22 +52,19 @@ function addToCart(product) {
 
 document.addEventListener("DOMContentLoaded", () => {
 
-  /* Estado inicial del menú (auth-ui.js lo controla) */
-  // Nada de supabase aquí.
-
   /* Drawer móvil */
-  const menuToggle = document.getElementById("menu-toggle");
-  const drawer = document.getElementById("drawer");
+  const menuToggle = safe("menu-toggle");
+  const drawer = safe("drawer");
 
   if (menuToggle && drawer) {
     menuToggle.addEventListener("click", () => {
       drawer.classList.toggle("open");
     });
-  }
 
-  document.querySelectorAll(".drawer-links a").forEach((link) => {
-    link.addEventListener("click", () => drawer.classList.remove("open"));
-  });
+    document.querySelectorAll(".drawer-links a").forEach((link) => {
+      link.addEventListener("click", () => drawer.classList.remove("open"));
+    });
+  }
 
   /* Hero carousel */
   const heroImgs = document.querySelectorAll(".hero-carousel img");
@@ -69,10 +72,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const showHero = (i) => {
     heroImgs.forEach((img) => img.classList.remove("active"));
-    heroImgs[i].classList.add("active");
+    if (heroImgs[i]) heroImgs[i].classList.add("active");
   };
 
-  if (heroImgs.length) {
+  if (heroImgs.length > 0) {
     showHero(0);
     setInterval(() => {
       heroIndex = (heroIndex + 1) % heroImgs.length;
@@ -81,7 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* Carrito */
-  const cartBtn = document.getElementById("cart-btn");
+  const cartBtn = safe("cart-btn");
   if (cartBtn) {
     cartBtn.addEventListener("click", () => {
       window.location.href = "carrito.html";
@@ -90,68 +93,83 @@ document.addEventListener("DOMContentLoaded", () => {
   updateCartCount();
 
   /* Selector de cantidad */
-  const qtyNumber = document.getElementById("qty-number");
-  const qtyMinus = document.getElementById("qty-minus");
-  const qtyPlus = document.getElementById("qty-plus");
+  const qtyNumber = safe("qty-number");
+  const qtyMinus = safe("qty-minus");
+  const qtyPlus = safe("qty-plus");
 
-  if (qtyMinus)
+  if (qtyMinus && qtyNumber)
     qtyMinus.addEventListener("click", () => {
       let n = parseInt(qtyNumber.textContent);
       if (n > 1) qtyNumber.textContent = n - 1;
     });
 
-  if (qtyPlus)
+  if (qtyPlus && qtyNumber)
     qtyPlus.addEventListener("click", () => {
       let n = parseInt(qtyNumber.textContent);
       qtyNumber.textContent = n + 1;
     });
 
   /* Producto principal */
-  const btnMain = document.getElementById("product-add");
+  const btnMain = safe("product-add");
 
-  if (btnMain)
+  if (btnMain && qtyNumber) {
     btnMain.addEventListener("click", () => {
+      const nameEl = safe("product-name");
+      const imgEl = safe("product-image");
+      const priceEl = document.querySelector(".price-part");
+
+      if (!nameEl || !imgEl || !priceEl) return;
+
       const qty = parseInt(qtyNumber.textContent) || 1;
-      const name = document.getElementById("product-name").textContent.trim();
-      const price = parseFloat(
-        document.querySelector(".price-part").textContent.replace(/[^\d.-]/g, "")
-      );
-      const img = document.getElementById("product-image").src;
+      const name = nameEl.textContent.trim();
+      const price = parseFloat(priceEl.textContent.replace(/[^\d.-]/g, ""));
+      const img = imgEl.src;
 
       addToCart({ name, price, img, qty });
       qtyNumber.textContent = "1";
     });
+  }
 
   /* Carrusel productos similares */
   const cards = document.querySelectorAll(".similar-card");
 
-  cards.forEach((card) => {
-    const name = card.dataset.name;
-    const price = parseFloat(card.dataset.price.replace(/[^\d.-]/g, ""));
-    const img = card.dataset.img;
+  if (cards.length > 0) {
+    cards.forEach((card) => {
+      const name = card.dataset.name;
+      const price = parseFloat(card.dataset.price.replace(/[^\d.-]/g, ""));
+      const img = card.dataset.img;
 
-    card.addEventListener("click", () => {
-      document
-        .querySelectorAll(".similar-card")
-        .forEach((c) => c.classList.remove("active-card"));
-      card.classList.add("active-card");
+      card.addEventListener("click", () => {
+        document
+          .querySelectorAll(".similar-card")
+          .forEach((c) => c.classList.remove("active-card"));
 
-      document.getElementById("product-name").textContent = name;
-      document.querySelector(".price-part").textContent = `L ${price}`;
-      const imageEl = document.getElementById("product-image");
+        card.classList.add("active-card");
 
-      imageEl.src = img;
-      imageEl.style.opacity = "0";
-      setTimeout(() => {
-        imageEl.style.transition = "opacity 0.4s ease";
-        imageEl.style.opacity = "1";
-      }, 80);
+        const nameEl = safe("product-name");
+        const priceEl = document.querySelector(".price-part");
+        const imageEl = safe("product-image");
 
-      const sec = document.getElementById("productos");
-      const offset = sec.getBoundingClientRect().top + window.scrollY - 90;
-      window.scrollTo({ top: offset, behavior: "smooth" });
+        if (!nameEl || !priceEl || !imageEl) return;
+
+        nameEl.textContent = name;
+        priceEl.textContent = `L ${price}`;
+
+        imageEl.src = img;
+        imageEl.style.opacity = "0";
+        setTimeout(() => {
+          imageEl.style.transition = "opacity 0.4s ease";
+          imageEl.style.opacity = "1";
+        }, 80);
+
+        const sec = safe("productos");
+        if (sec) {
+          const offset = sec.getBoundingClientRect().top + window.scrollY - 90;
+          window.scrollTo({ top: offset, behavior: "smooth" });
+        }
+      });
     });
-  });
+  }
 
   /* Carrusel horizontal */
   const carousel = document.querySelector(".similar-list");
@@ -168,7 +186,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* FAB */
-  const fabMain = document.getElementById("fab-main");
+  const fabMain = safe("fab-main");
   const fabContainer = document.querySelector(".fab-container");
 
   if (fabMain && fabContainer) {
