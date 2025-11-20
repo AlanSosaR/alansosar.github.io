@@ -1,22 +1,18 @@
 /* ===============================
-   TIPOGRAFÍA ESTILO APPLE
+   MATERIAL 3 EXPRESSIVE — BASE
 =============================== */
+
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
-               "Inter", "Roboto", sans-serif;
-  background-color: #ffffff;
+  font-family: "Inter", "Roboto", -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #ffffff;
   margin: 0;
   padding: 0;
-  /* ❌ SE QUITÓ ESTO (era lo que rompía el touch en iOS)
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  */
   min-height: 100vh;
   color: #2E2A27;
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Contenedor general */
 .register-container {
   display: flex;
   justify-content: center;
@@ -24,21 +20,17 @@ body {
   padding: 30px 20px;
 }
 
-/* ===============================
-   TARJETA PRINCIPAL
-=============================== */
+/* Tarjeta principal */
 .register-card {
   background: #ffffff;
   border-radius: 20px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
   padding: 30px 40px;
   max-width: 420px;
   width: 100%;
 }
 
-/* ===============================
-   LOGO + TÍTULO
-=============================== */
+/* Header */
 .register-header {
   text-align: center;
   margin-bottom: 25px;
@@ -53,7 +45,6 @@ body {
 
 .logo-container img {
   width: 105px;
-  transition: 0.3s;
 }
 
 .register-title {
@@ -63,113 +54,85 @@ body {
   color: #512615;
 }
 
-/* ===============================
-   OUTLINED CARD
-=============================== */
+/* Outlined card */
 .register-inner-card {
-  border: 1.6px solid rgba(81, 38, 21, 0.25);
+  border: 1.6px solid rgba(81,38,21,0.25);
   border-radius: 20px;
   padding: 28px;
   margin-top: 15px;
   background: #ffffff;
-  box-shadow: none; /* Outlined: SIN sombra */
 }
 
 /* ===============================
-   LABELS ESTILO M3 + APPLE
+   CAMPOS MATERIAL 3
 =============================== */
-.input-label {
+
+.m3-field {
+  margin-bottom: 18px;
+}
+
+.m3-label {
+  display: block;
   font-size: 0.92rem;
   font-weight: 500;
   color: #512615;
   margin-bottom: 6px;
-  display: block;
 }
 
-/* ===============================
-   INPUT GROUP
-=============================== */
-.input-wrapper {
-  margin-bottom: 18px;
-}
-
-.input-group {
-  position: relative;
+/* Input container */
+.m3-input {
   display: flex;
   align-items: center;
-  border: 1.7px solid #D0D0D0;
-  border-radius: 12px;
-  padding: 10px 12px;
-  transition: all 0.25s ease;
-  background: #fff;
+  background: #FFF;
+  border: 1.8px solid #D3D3D3;
+  border-radius: 14px;
+  padding: 12px 14px;
+  transition: all .25s ease;
 }
 
-.input-group:focus-within {
+.m3-input:focus-within {
   border-color: #33673B;
   box-shadow: 0 0 0 3px rgba(51,103,59,0.15);
 }
 
-.input-group.error {
+.m3-input.error {
   border-color: #d72638;
   box-shadow: 0 0 0 3px rgba(215,38,56,0.18);
 }
 
-.input-group.success {
+.m3-input.success {
   border-color: #3CB043;
   box-shadow: 0 0 0 3px rgba(60,176,67,0.18);
 }
 
-.input-group input {
+.m3-input input {
   flex: 1;
   border: none;
   outline: none;
-  font-size: 1rem;
   background: transparent;
+  font-size: 1rem;
   color: #2E2A27;
 }
 
 .material-symbols-outlined {
   color: #512615;
-  margin-right: 8px;
-  font-size: 22px;
+  margin-right: 10px;
+  font-size: 23px;
 }
 
-/* ÍCONO DE VER CONTRASEÑA */
+/* Ver contraseña */
 .toggle-pass {
   cursor: pointer;
   color: #777;
-  position: absolute;
-  right: 10px;
   font-size: 23px;
 }
 
 /* ===============================
-   PASSWORD STRENGTH
+   ERRORES
 =============================== */
-.password-strength {
-  display: block;
-  margin-top: 4px;
-  font-size: 0.85rem;
-  font-weight: 500;
-}
 
-.password-weak {
-  color: #d72638;
-}
-
-.password-medium {
-  color: #e6a700;
-}
-
-.password-strong {
-  color: #3CB043;
-}
-
-/* ===============================
-   TEXTO DE ERROR
-=============================== */
-.input-error {
-  font-size: 0.83rem;
+.m3-error {
+  font-size: .83rem;
   color: #d72638;
   margin-top: 5px;
   padding-left: 4px;
@@ -177,34 +140,54 @@ body {
 }
 
 /* ===============================
-   BOTÓN CON LOADER PREMIUM
+   PASSWORD STRENGTH
 =============================== */
-.btn-register {
+
+.password-strength {
+  margin-top: 5px;
+  font-size: 0.85rem;
+}
+
+.password-weak {
+  color: #d72638;
+}
+.password-medium {
+  color: #e6a700;
+}
+.password-strong {
+  color: #3CB043;
+}
+
+/* ===============================
+   BOTÓN MATERIAL 3
+=============================== */
+
+.m3-btn {
   width: 100%;
-  background-color: #33673B;
+  background: #33673B;
   color: #fff;
   border: none;
-  border-radius: 14px;
+  border-radius: 16px;
   padding: 14px;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  margin-top: 8px;
+  margin-top: 10px;
   position: relative;
   overflow: hidden;
   height: 48px;
   transition: 0.25s ease;
 }
 
-.btn-register.loading .btn-text {
+.m3-btn.loading .btn-text {
   opacity: 0;
 }
 
-.btn-register.loading .loader {
+.m3-btn.loading .loader {
   opacity: 1;
 }
 
-/* LOADER CIRCULAR iOS */
+/* Loader */
 .loader {
   position: absolute;
   top: 50%;
@@ -226,6 +209,7 @@ body {
 /* ===============================
    SNACKBAR
 =============================== */
+
 #snackbar {
   visibility: hidden;
   min-width: 280px;
@@ -250,6 +234,7 @@ body {
 /* ===============================
    RESPONSIVE
 =============================== */
+
 @media (max-width: 480px) {
   .register-card {
     padding: 22px;
