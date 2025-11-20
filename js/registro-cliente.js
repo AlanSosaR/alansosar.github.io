@@ -1,14 +1,13 @@
 // ============================================================
-// REGISTRO DE CLIENTE — Versión estable con comentarios cortos
+// REGISTRO DE CLIENTE — VERSIÓN FINAL M3 EXPRESSIVE
 // ============================================================
 
 document.addEventListener("DOMContentLoaded", () => {
 
-  // Cliente global de Supabase y función de registro
   const sb = window.supabaseClient;
   const registerUser = window.supabaseAuth.registerUser;
 
-  // Formulario y campos
+  // Campos del formulario
   const form = document.getElementById("registroForm");
 
   const campos = {
@@ -27,47 +26,55 @@ document.addEventListener("DOMContentLoaded", () => {
     confirm: document.getElementById("errorConfirm"),
   };
 
-  // Limpia todos los errores visuales
+  // ============================================================
+  // LIMPIAR ERRORES
+  // ============================================================
   function limpiarErrores() {
-    Object.values(errores).forEach(e => e.textContent = "");
-    document.querySelectorAll(".input-group")
+    Object.values(errores).forEach(e => (e.textContent = ""));
+    document.querySelectorAll(".m3-input")
       .forEach(g => g.classList.remove("error", "success"));
   }
 
-  // Marca un campo como error o éxito
+  // ============================================================
+  // MARCAR ERROR O ÉXITO
+  // ============================================================
   function marcar(campo, mensaje, success = false) {
     const input = campos[campo];
-    if (!input) return;
+    const grupo = input.closest(".m3-input");
 
-    const grupo = input.closest(".input-group");
-    if (!grupo) return; // Seguridad: evita romper el script
+    if (!grupo) return;
 
     if (success) {
+      grupo.classList.remove("error");
       grupo.classList.add("success");
       errores[campo].textContent = "";
       return;
     }
 
+    grupo.classList.remove("success");
     grupo.classList.add("error");
     errores[campo].textContent = mensaje;
   }
 
-  // Validación de email opcional
+  // ============================================================
+  // VALIDACIÓN DE EMAIL
+  // ============================================================
   function esCorreoValido(email) {
     if (!email) return true;
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   }
 
-  // Indicador de fortaleza de contraseña
-  const passwordStrengthLabel = document.createElement("small");
-  passwordStrengthLabel.classList.add("password-strength");
-  campos.password.parentElement.after(passwordStrengthLabel);
+  // ============================================================
+  // FORTALEZA DE CONTRASEÑA
+  // ============================================================
+  const passwordStrengthLabel = document.getElementById("passwordStrength");
 
   campos.password.addEventListener("input", () => {
     const value = campos.password.value;
 
     if (!value) {
       passwordStrengthLabel.textContent = "";
+      passwordStrengthLabel.className = "password-strength";
       return;
     }
 
@@ -83,16 +90,21 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Mostrar/ocultar contraseña
+  // ============================================================
+  // MOSTRAR / OCULTAR CONTRASEÑA
+  // ============================================================
   document.querySelectorAll(".toggle-pass").forEach(icon => {
     icon.addEventListener("click", () => {
-      const input = icon.previousElementSibling;
+      const input = document.getElementById(icon.dataset.target);
       input.type = input.type === "password" ? "text" : "password";
-      icon.textContent = input.type === "password" ? "visibility_off" : "visibility";
+      icon.textContent =
+        input.type === "password" ? "visibility" : "visibility_off";
     });
   });
 
-  // Verifica si ya existe un correo o teléfono
+  // ============================================================
+  // VERIFICAR SI EL USUARIO YA EXISTE
+  // ============================================================
   async function existeUsuario(correo, telefono) {
     const { data } = await sb
       .from("users")
@@ -102,17 +114,21 @@ document.addEventListener("DOMContentLoaded", () => {
     return data?.length ? data[0] : null;
   }
 
-  // Botón con loader
-  const btn = document.querySelector(".btn-register");
+  // ============================================================
+  // BOTÓN CON LOADER
+  // ============================================================
+  const btn = document.querySelector(".m3-btn");
 
-  // Evento principal del formulario
+  // ============================================================
+  // SUBMIT DEL FORMULARIO
+  // ============================================================
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     limpiarErrores();
 
     let valido = true;
 
-    // Validaciones básicas
+    // Validaciones
     if (!campos.nombre.value.trim()) {
       marcar("nombre", "Ingresa tu nombre");
       valido = false;
@@ -159,7 +175,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // Registro final
+    // Registrar cuenta
     try {
       await registerUser(
         correo,
@@ -171,22 +187,23 @@ document.addEventListener("DOMContentLoaded", () => {
       );
 
       mostrarSnackbar("Cuenta creada con éxito");
-      setTimeout(() => window.location.href = "login.html", 1500);
+      setTimeout(() => (window.location.href = "login.html"), 1300);
 
     } catch (err) {
       console.error("❌ ERROR REGISTRO:", err);
       btn.classList.remove("loading");
       btn.disabled = false;
-      alert("Error registrando usuario");
+      mostrarSnackbar("Error creando la cuenta");
     }
   });
 
-  // Snackbar de confirmación
+  // ============================================================
+  // SNACKBAR
+  // ============================================================
   function mostrarSnackbar(msg) {
-    const s = document.getElementById("snackbar");
-    s.textContent = msg;
-    s.classList.add("show");
-    setTimeout(() => s.classList.remove("show"), 2600);
+    const bar = document.getElementById("snackbar");
+    bar.textContent = msg;
+    bar.classList.add("show");
+    setTimeout(() => bar.classList.remove("show"), 2600);
   }
-
 });
