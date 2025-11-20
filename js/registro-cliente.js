@@ -74,17 +74,20 @@ document.addEventListener("DOMContentLoaded", () => {
   const bars = document.querySelectorAll(".strength-bar");
   const barsContainer = document.getElementById("barsContainer");
 
+  // 🔥 IMPORTANTE → La barra inicia oculta siempre
+  barsContainer.style.opacity = "0";
+
   campos.password.addEventListener("input", () => {
     const v = campos.password.value.trim();
 
     bars.forEach(b => b.className = "strength-bar");
 
     if (v.length === 0) {
-      barsContainer.style.opacity = "0";
+      barsContainer.style.opacity = "0"; // se oculta de nuevo
       return;
     }
 
-    barsContainer.style.opacity = "1";
+    barsContainer.style.opacity = "1"; // aparece al escribir
 
     if (v.length < 6) {
       bars[0].classList.add("active-weak");
@@ -213,7 +216,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // ============================================================
-  // SNACKBAR
+  // SNACKBAR — ARRIBA DEL BOTÓN
   // ============================================================
   function mostrarSnackbar(msg) {
     const bar = document.getElementById("snackbar");
