@@ -1,5 +1,5 @@
 // ============================================================
-// REGISTRO DE CLIENTE — VALIDACIÓN EN CADENA + LABELS GOOGLE + BARRAS M3
+// REGISTRO DE CLIENTE — VALIDACIÓN EN CADENA + LABEL GOOGLE + BARRAS M3
 // ============================================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -32,10 +32,18 @@ document.addEventListener("DOMContentLoaded", () => {
     Object.values(errores).forEach(e => (e.textContent = ""));
     document.querySelectorAll(".m3-input")
       .forEach(g => g.classList.remove("error", "success"));
+
+    // restaurar labels a su texto original
+    document.querySelectorAll(".floating-label").forEach(label => {
+      if (label.dataset.original) {
+        label.textContent = label.dataset.original;
+        label.style.color = "";
+      }
+    });
   }
 
   // ============================================================
-  // MARCAR ERROR / ÉXITO (LABEL ADENTRO)
+  // MARCAR ERROR / ÉXITO — LABEL DENTRO DEL INPUT ESTILO GOOGLE
   // ============================================================
   function marcar(campo, mensaje, success = false) {
     const input = campos[campo];
@@ -59,11 +67,11 @@ document.addEventListener("DOMContentLoaded", () => {
     grupo.classList.add("error");
 
     if (vacio) {
-      // ERROR ADENTRO DEL CAMPO
+      // error adentro del campo
       label.textContent = mensaje;
       errores[campo].textContent = "";
     } else {
-      // SI HAY TEXTO → ERROR ABAJO
+      // error abajo
       label.textContent = label.dataset.original;
       errores[campo].textContent = mensaje;
     }
@@ -73,12 +81,12 @@ document.addEventListener("DOMContentLoaded", () => {
   // VALIDAR CORREO
   // ============================================================
   function esCorreoValido(email) {
-    if (!email) return true;
+    if (!email) return true; // opcional
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   }
 
   // ============================================================
-  // BARRAS DE FUERZA DE CONTRASEÑA M3
+  // BARRAS DE FUERZA (M3 EXPRESSIVE)
   // ============================================================
   const bars = document.querySelectorAll(".strength-bar");
 
@@ -87,7 +95,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     bars.forEach(b => b.className = "strength-bar"); // reset
 
-    if (v.length === 0) return;
+    if (!v) return;
 
     if (v.length < 6) {
       bars[0].classList.add("active-weak");
@@ -113,7 +121,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // ============================================================
-  // DUPLICADOS EN SUPABASE
+  // COMPROBAR DUPLICADOS EN SUPABASE
   // ============================================================
   async function existeUsuario(correo, telefono) {
     const { data } = await sb
@@ -141,6 +149,7 @@ document.addEventListener("DOMContentLoaded", () => {
     marcar("telefono", "", true);
 
     const correo = campos.correo.value.trim();
+
     if (!esCorreoValido(correo)) {
       marcar("correo", "Correo no válido");
       return false;
