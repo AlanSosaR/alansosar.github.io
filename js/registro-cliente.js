@@ -1,7 +1,13 @@
-import { registerUser } from "./supabase-auth.js";
-import { supabase } from "./supabase-client.js";
+// ============================================================
+// REGISTRO CLIENTE — VERSIÓN GLOBAL SIN IMPORTS
+// Usa el cliente ya creado en core-scripts.js
+// Usa window.supabaseAuth.registerUser desde supabase-auth.js
+// ============================================================
 
 document.addEventListener("DOMContentLoaded", () => {
+
+  const sb = window.supabaseClient; // cliente global
+  const registerUser = window.supabaseAuth.registerUser; // función global auth
 
   /* ===============================
      CAMPOS
@@ -94,10 +100,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   /* ===============================
-     CHECK DUPLICADOS SUPABASE
+     CHECK DUPLICADOS EN SUPABASE
   ================================= */
   async function existeUsuario(correo, telefono) {
-    const { data, error } = await supabase
+    const { data, error } = await sb
       .from("users")
       .select("email, phone")
       .or(`email.eq.${correo},phone.eq.${telefono}`);
@@ -107,20 +113,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   /* ===============================
-     BOTÓN: LOADER
+     BOTÓN LOADER
   ================================= */
   const btn = document.querySelector(".btn-register");
-  const btnText = document.createElement("span");
-  btnText.classList.add("btn-text");
-  btnText.textContent = "Crear cuenta";
-
-  const loader = document.createElement("div");
-  loader.classList.add("loader");
-
-  btn.innerHTML = "";
-  btn.appendChild(btnText);
-  btn.appendChild(loader);
-
 
   /* ===============================
      SUBMIT FORM
@@ -131,31 +126,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let valido = true;
 
-    // 🟤 Nombre
-    if (campos.nombre.value.trim() === "") {
+    // 🟤 Validaciones
+    if (!campos.nombre.value.trim()) {
       marcar("nombre", "Ingresa tu nombre");
       valido = false;
     } else marcar("nombre", "", true);
 
-    // 🟤 Telefono obligatorio
     if (campos.telefono.value.trim().length < 8) {
       marcar("telefono", "Teléfono inválido");
       valido = false;
     } else marcar("telefono", "", true);
 
-    // 🟤 Correo opcional pero si lo ponen debe ser valido
     if (!esCorreoValido(campos.correo.value.trim())) {
       marcar("correo", "Correo no válido");
       valido = false;
     } else marcar("correo", "", true);
 
-    // 🟤 Password
     if (campos.password.value.length < 6) {
       marcar("password", "Mínimo 6 caracteres");
       valido = false;
     } else marcar("password", "", true);
 
-    // 🟤 Confirmación
     if (campos.password.value !== campos.confirm.value) {
       marcar("confirm", "Las contraseñas no coinciden");
       valido = false;
@@ -169,12 +160,12 @@ document.addEventListener("DOMContentLoaded", () => {
     btn.classList.add("loading");
     btn.disabled = true;
 
-    /* ===========================
-       CHECK DUPLICADOS
-    ============================ */
     const correo = campos.correo.value.trim();
     const tel = campos.telefono.value.trim();
 
+    /* ===========================
+       DUPLICADOS
+    ============================ */
     const existente = await existeUsuario(correo, tel);
 
     if (existente) {
@@ -187,7 +178,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     /* ===============================
-       REGISTRO SUPABASE
+       REGISTRO FINAL
     ================================= */
     try {
       await registerUser(
@@ -196,7 +187,7 @@ document.addEventListener("DOMContentLoaded", () => {
         tel,
         campos.nombre.value.trim(),
         "Honduras",
-        null // avatar eliminado
+        null
       );
 
       mostrarSnackbar("Cuenta creada con éxito");
