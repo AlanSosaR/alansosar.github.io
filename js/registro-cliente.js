@@ -1,5 +1,5 @@
 // ============================================================
-// REGISTRO DE CLIENTE — VERSIÓN FINAL M3 EXPRESSIVE
+// REGISTRO DE CLIENTE — VERSIÓN FINAL M3 EXPRESSIVE (FUNCIONANDO)
 // ============================================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -7,7 +7,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const sb = window.supabaseClient;
   const registerUser = window.supabaseAuth.registerUser;
 
-  // Campos del formulario
   const form = document.getElementById("registroForm");
 
   const campos = {
@@ -36,13 +35,11 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ============================================================
-  // MARCAR ERROR O ÉXITO
+  // MARCAR ERROR / ÉXITO
   // ============================================================
   function marcar(campo, mensaje, success = false) {
     const input = campos[campo];
     const grupo = input.closest(".m3-input");
-
-    if (!grupo) return;
 
     if (success) {
       grupo.classList.remove("error");
@@ -57,7 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ============================================================
-  // VALIDACIÓN DE EMAIL
+  // VALIDAR CORREO
   // ============================================================
   function esCorreoValido(email) {
     if (!email) return true;
@@ -70,18 +67,18 @@ document.addEventListener("DOMContentLoaded", () => {
   const passwordStrengthLabel = document.getElementById("passwordStrength");
 
   campos.password.addEventListener("input", () => {
-    const value = campos.password.value;
+    const v = campos.password.value;
 
-    if (!value) {
+    if (!v) {
       passwordStrengthLabel.textContent = "";
       passwordStrengthLabel.className = "password-strength";
       return;
     }
 
-    if (value.length < 6) {
+    if (v.length < 6) {
       passwordStrengthLabel.textContent = "Contraseña débil";
       passwordStrengthLabel.className = "password-strength password-weak";
-    } else if (value.length < 10) {
+    } else if (v.length < 10) {
       passwordStrengthLabel.textContent = "Seguridad media";
       passwordStrengthLabel.className = "password-strength password-medium";
     } else {
@@ -103,7 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // ============================================================
-  // VERIFICAR SI EL USUARIO YA EXISTE
+  // VERIFICAR DUPLICADOS EN SUPABASE
   // ============================================================
   async function existeUsuario(correo, telefono) {
     const { data } = await sb
@@ -115,20 +112,16 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ============================================================
-  // BOTÓN CON LOADER
+  // SUBMIT
   // ============================================================
   const btn = document.querySelector(".m3-btn");
 
-  // ============================================================
-  // SUBMIT DEL FORMULARIO
-  // ============================================================
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     limpiarErrores();
 
     let valido = true;
 
-    // Validaciones
     if (!campos.nombre.value.trim()) {
       marcar("nombre", "Ingresa tu nombre");
       valido = false;
@@ -156,14 +149,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!valido) return;
 
-    // Activar loader
     btn.classList.add("loading");
     btn.disabled = true;
 
     const correo = campos.correo.value.trim();
     const tel = campos.telefono.value.trim();
 
-    // Verificar duplicados
     const existente = await existeUsuario(correo, tel);
 
     if (existente) {
@@ -175,7 +166,6 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // Registrar cuenta
     try {
       await registerUser(
         correo,
@@ -190,10 +180,10 @@ document.addEventListener("DOMContentLoaded", () => {
       setTimeout(() => (window.location.href = "login.html"), 1300);
 
     } catch (err) {
-      console.error("❌ ERROR REGISTRO:", err);
-      btn.classList.remove("loading");
-      btn.disabled = false;
       mostrarSnackbar("Error creando la cuenta");
+      console.error(err);
+      btn.disabled = false;
+      btn.classList.remove("loading");
     }
   });
 
