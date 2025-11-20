@@ -71,69 +71,95 @@ body {
 }
 
 /* ===============================
-   OUTLINED TEXT FIELDS M3
+   MATERIAL 3 FLOATING LABEL FIELDS
 =============================== */
 .m3-field {
-  margin-bottom: 18px;
+  margin-bottom: 22px;
+  position: relative;
 }
 
-/* label encima */
-.m3-label {
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: #512615;
-  margin-bottom: 6px;
-  display: block;
-}
-
-/* contenedor del input + iconos */
+/* CONTENEDOR */
 .m3-input {
   position: relative;
   display: flex;
   align-items: center;
-  border-radius: 12px;                /* B: esquinas redondeadas suaves */
+  border-radius: 12px;
   border: 1.7px solid #D0D0D0;
-  padding: 10px 12px;
+  padding: 16px 12px 6px 12px; /* espacio para floating label */
   background: #ffffff;
   transition: all 0.22s ease;
 }
 
-/* estado focus */
-.m3-input:focus-within {
-  border-color: #33673B;
-  box-shadow: 0 0 0 3px rgba(51, 103, 59, 0.16);
+/* Icono */
+.m3-input .material-symbols-outlined {
+  font-size: 22px;
+  margin-right: 8px;
+  color: #33673B;
 }
 
-/* estado error */
-.m3-input.error {
-  border-color: #d72638;
-  box-shadow: 0 0 0 3px rgba(215, 38, 56, 0.18);
-}
-
-/* estado success */
-.m3-input.success {
-  border-color: #3CB043;
-  box-shadow: 0 0 0 3px rgba(60, 176, 67, 0.18);
-}
-
-/* input */
+/* INPUT */
 .m3-input input {
   flex: 1;
   border: none;
   outline: none;
   font-size: 1rem;
+  padding: 4px 0 0 0;
   background: transparent;
   color: #2E2A27;
 }
 
-/* iconos izquierda */
-.m3-input .material-symbols-outlined {
-  margin-right: 8px;
-  font-size: 22px;
-  color: #33673B;          /* íconos verdes */
+/* ===============================
+   FLOATING LABEL
+=============================== */
+.floating-label {
+  position: absolute;
+  left: 44px;
+  top: 15px;
+  font-size: 1rem;
+  color: #8a8a8a;
+  pointer-events: none;
+  transition: all 0.20s ease;
 }
 
-/* toggle ver contraseña (derecha) */
+/* cuando hay texto */
+.m3-input input:not(:placeholder-shown) + .floating-label {
+  top: -6px;
+  font-size: 0.78rem;
+  color: #33673B;
+  background: white;
+  padding: 0 4px;
+}
+
+/* cuando está en focus */
+.m3-input:focus-within .floating-label {
+  top: -6px;
+  font-size: 0.78rem;
+  color: #33673B;
+  background: white;
+  padding: 0 4px;
+}
+
+/* ===============================
+   ESTADOS
+=============================== */
+.m3-input:focus-within {
+  border-color: #33673B;
+  box-shadow: 0 0 0 3px rgba(51,103,59,0.16);
+}
+
+.m3-input.error {
+  border-color: #d72638;
+  box-shadow: 0 0 0 3px rgba(215,38,56,0.18);
+}
+
+.m3-input.success {
+  border-color: #3CB043;
+  box-shadow: 0 0 0 3px rgba(60,176,67,0.18);
+}
+
+/* ===============================
+   BOTÓN VER CONTRASEÑA
+=============================== */
 .toggle-pass {
   cursor: pointer;
   position: absolute;
@@ -149,7 +175,6 @@ body {
   font-size: 0.83rem;
   color: #d72638;
   margin-top: 4px;
-  padding-left: 2px;
   min-height: 16px;
 }
 
@@ -164,20 +189,12 @@ body {
   min-height: 18px;
 }
 
-.password-weak {
-  color: #d72638;
-}
-
-.password-medium {
-  color: #e6a700;
-}
-
-.password-strong {
-  color: #3CB043;
-}
+.password-weak { color: #d72638; }
+.password-medium { color: #e6a700; }
+.password-strong { color: #3CB043; }
 
 /* ===============================
-   BOTÓN (M3 TONAL) + LOADER
+   BOTÓN TONAL M3 + LOADER
 =============================== */
 .m3-btn {
   width: 100%;
@@ -193,34 +210,12 @@ body {
   position: relative;
   overflow: hidden;
   height: 48px;
-  transition: box-shadow 0.2s ease, transform 0.15s ease, opacity 0.2s ease;
-}
-
-.m3-btn:hover {
-  box-shadow: 0 4px 10px rgba(51, 103, 59, 0.35);
-  transform: translateY(-1px);
-}
-
-.m3-btn:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.18);
-}
-
-.m3-btn:disabled {
-  opacity: 0.72;
-  cursor: default;
-  box-shadow: none;
-}
-
-.m3-btn .btn-text {
-  transition: opacity 0.18s ease;
 }
 
 .m3-btn.loading .btn-text {
   opacity: 0;
 }
 
-/* loader circular */
 .m3-btn .loader {
   position: absolute;
   top: 50%;
@@ -233,7 +228,6 @@ body {
   animation: spin 0.9s linear infinite;
   transform: translate(-50%, -50%);
   opacity: 0;
-  transition: opacity 0.18s ease;
 }
 
 .m3-btn.loading .loader {
@@ -241,13 +235,11 @@ body {
 }
 
 @keyframes spin {
-  to {
-    transform: translate(-50%, -50%) rotate(360deg);
-  }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
 }
 
 /* ===============================
-   SNACKBAR (M3, opción 1)
+   SNACKBAR
 =============================== */
 #snackbar {
   position: fixed;
@@ -256,7 +248,7 @@ body {
   transform: translateX(-50%) translateY(-20px);
   min-width: 260px;
   max-width: 90%;
-  background-color: #512615;       /* café */
+  background-color: #512615;
   color: #ffffff;
   border-radius: 999px;
   padding: 10px 18px;
@@ -265,25 +257,12 @@ body {
   opacity: 0;
   pointer-events: none;
   z-index: 999;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.25);
   transition: opacity 0.25s ease, transform 0.25s ease;
 }
 
-/* variante éxito */
-#snackbar.success {
-  border: 1px solid rgba(51, 103, 59, 0.6);  /* borde verde sutil */
-}
-
-/* variante error (por si lo usas luego) */
-#snackbar.error {
-  border: 1px solid rgba(215, 38, 56, 0.6);
-}
-
-/* visible */
 #snackbar.show {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
-  pointer-events: auto;
 }
 
 /* ===============================
