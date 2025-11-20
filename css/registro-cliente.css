@@ -147,21 +147,11 @@ body {
   box-shadow: 0 0 0 3px rgba(215,38,56,0.18);
 }
 
-/* 🔥 ERROR CUANDO EL CAMPO ESTÁ VACÍO */
-.m3-input.error input:placeholder-shown + .floating-label {
-  top: 15px;             /* NO sube */
-  left: 44px;
-  font-size: 1rem;
-  color: #d72638;        /* rojo */
-  background: transparent;
-  padding: 0;
-}
-
-/* 🔥 ERROR CUANDO EL CAMPO TIENE TEXTO */
-.m3-input.error input:not(:placeholder-shown) + .floating-label {
-  top: -6px;     
-  font-size: 0.78rem;
-  color: #d72638;        /* rojo */
+/* 🔥 SIEMPRE SUBE EL LABEL CUANDO HAY ERROR */
+.m3-input.error .floating-label {
+  top: -6px !important;
+  font-size: 0.78rem !important;
+  color: #d72638 !important;
   background: white;
   padding: 0 4px;
 }
@@ -178,7 +168,7 @@ body {
 }
 
 /* ===============================
-   MENSAJES DE ERROR (solo cuando hay texto)
+   MENSAJES DE ERROR
 =============================== */
 .m3-error {
   font-size: 0.83rem;
