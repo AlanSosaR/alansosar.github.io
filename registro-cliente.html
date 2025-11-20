@@ -5,17 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Crear Cuenta | Café Cortero</title>
 
-  <!-- TIPOGRAFÍA GLOBAL (Apple + Material 3 Expressive) -->
+  <!-- Tipografía global -->
   <link rel="stylesheet" href="css/tipografia.css">
 
-  <!-- ICONOS M3 -->
+  <!-- Iconos Material Symbols -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
 
-  <!-- TIPOGRAFÍA TITULARES (Fraunces M3 Expressive) -->
+  <!-- Titulares M3 Fraunces -->
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600&display=swap" rel="stylesheet">
 
-  <!-- CSS DEL FORMULARIO -->
-  <link rel="stylesheet" href="css/registro-cliente.css?v=3">
+  <!-- CSS del formulario -->
+  <link rel="stylesheet" href="css/registro-cliente.css?v=4">
 </head>
 
 <body>
@@ -41,17 +41,17 @@
           <div class="m3-field">
             <div class="m3-input">
               <span class="material-symbols-outlined">person</span>
-              <input id="nombreInput" type="text" placeholder=" " autocomplete="name">
+              <input id="nombreInput" type="text" placeholder=" ">
               <label for="nombreInput" class="floating-label">Nombre completo</label>
             </div>
             <small class="m3-error" id="errorNombre"></small>
           </div>
 
-          <!-- CORREO -->
+          <!-- CORREO (opcional) -->
           <div class="m3-field">
             <div class="m3-input">
               <span class="material-symbols-outlined">mail</span>
-              <input id="correoInput" type="email" placeholder=" " autocomplete="email">
+              <input id="correoInput" type="email" placeholder=" ">
               <label for="correoInput" class="floating-label">Correo electrónico (opcional)</label>
             </div>
             <small class="m3-error" id="errorCorreo"></small>
@@ -61,7 +61,7 @@
           <div class="m3-field">
             <div class="m3-input">
               <span class="material-symbols-outlined">call</span>
-              <input id="telefonoInput" type="tel" placeholder=" " autocomplete="tel">
+              <input id="telefonoInput" type="tel" placeholder=" ">
               <label for="telefonoInput" class="floating-label">Teléfono</label>
             </div>
             <small class="m3-error" id="errorTelefono"></small>
@@ -71,12 +71,20 @@
           <div class="m3-field">
             <div class="m3-input">
               <span class="material-symbols-outlined">lock</span>
-              <input id="passwordInput" type="password" placeholder=" " autocomplete="new-password">
+              <input id="passwordInput" type="password" placeholder=" ">
               <label for="passwordInput" class="floating-label">Contraseña</label>
               <span class="material-symbols-outlined toggle-pass" data-target="passwordInput">visibility</span>
             </div>
 
-            <small id="passwordStrength" class="password-strength"></small>
+            <!-- Barras de seguridad -->
+            <div class="strength-bars">
+              <div class="strength-bar"></div>
+              <div class="strength-bar"></div>
+              <div class="strength-bar"></div>
+              <div class="strength-bar"></div>
+              <div class="strength-bar"></div>
+            </div>
+
             <small class="m3-error" id="errorPassword"></small>
           </div>
 
@@ -84,11 +92,10 @@
           <div class="m3-field">
             <div class="m3-input">
               <span class="material-symbols-outlined">lock</span>
-              <input id="confirmPasswordInput" type="password" placeholder=" " autocomplete="new-password">
+              <input id="confirmPasswordInput" type="password" placeholder=" ">
               <label for="confirmPasswordInput" class="floating-label">Confirmar contraseña</label>
               <span class="material-symbols-outlined toggle-pass" data-target="confirmPasswordInput">visibility</span>
             </div>
-
             <small class="m3-error" id="errorConfirm"></small>
           </div>
 
@@ -107,12 +114,16 @@
   <!-- SNACKBAR -->
   <div id="snackbar"></div>
 
+  <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<script src="js/core-scripts.js"></script>
-<script src="js/supabase-auth.js"></script>
-<script src="js/auth-ui.js"></script>
-<script src="js/registro-cliente.js"></script>
+  <!-- Scripts base -->
+  <script src="js/core-scripts.js"></script>
+  <script src="js/supabase-auth.js"></script>
+  <script src="js/auth-ui.js"></script>
+
+  <!-- Registro -->
+  <script src="js/registro-cliente.js?v=4"></script>
 
 </body>
 </html>
