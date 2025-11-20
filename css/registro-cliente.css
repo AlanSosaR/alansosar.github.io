@@ -89,12 +89,12 @@ body {
 
 .m3-input.error {
   border-color: #d72638 !important;
-  box-shadow: 0 0 0 3px rgba(215,38,56,0.18);
+  box-shadow: 0 0 0 3px rgba(215, 38, 56, 0.18);
 }
 
 .m3-input.success {
   border-color: #3CB043 !important;
-  box-shadow: 0 0 0 3px rgba(60,176,67,0.18);
+  box-shadow: 0 0 0 3px rgba(60, 176, 67, 0.18);
 }
 
 /* Iconos */
@@ -147,7 +147,7 @@ body {
   padding: 0 4px;
 }
 
-/* PLACEHOLDER ROJO (DENTRO DEL CAMPO) */
+/* PLACEHOLDER ROJO — INSIDE FIELD */
 .m3-input.error input::placeholder {
   color: #d72638 !important;
   opacity: 1;
@@ -166,14 +166,14 @@ body {
 }
 
 /* ===============================
-   BARRAS DE SEGURIDAD (M3 EXPRESSIVE)
+   BARRAS DE SEGURIDAD — M3 EXPRESSIVE
 =============================== */
 
 .strength-bars {
-  display: none; /* Ocultas hasta escribir */
+  display: none; /* ocultas hasta escribir */
   gap: 4px;
   margin-top: 4px;
-  transition: 0.25s;
+  transition: 0.25s ease;
 }
 
 .strength-bars.visible {
@@ -247,10 +247,10 @@ body {
 =============================== */
 #snackbar {
   position: absolute;
-  bottom: 75px; /* Justo arriba del botón */
+  bottom: 75px; /* Justo arriba del botón verde */
   left: 50%;
   transform: translateX(-50%) translateY(10px);
-  background: rgba(81,38,21,0.92);
+  background: rgba(81, 38, 21, 0.92);
   backdrop-filter: blur(8px);
   color: #ffffff;
   padding: 10px 24px;
@@ -270,6 +270,7 @@ body {
    RESPONSIVE
 =============================== */
 @media (max-width: 480px) {
+
   .register-card {
     padding: 22px;
     max-width: 360px;
