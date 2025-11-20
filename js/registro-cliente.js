@@ -1,5 +1,5 @@
 // ============================================================
-// REGISTRO DE CLIENTE — VALIDACIÓN EN CADENA (Material 3 Expressive)
+// REGISTRO DE CLIENTE — VALIDACIÓN EN CADENA + LABELS GOOGLE + BARRAS M3
 // ============================================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -32,63 +32,39 @@ document.addEventListener("DOMContentLoaded", () => {
     Object.values(errores).forEach(e => (e.textContent = ""));
     document.querySelectorAll(".m3-input")
       .forEach(g => g.classList.remove("error", "success"));
-
-    // restaurar labels originales
-    document.querySelectorAll(".floating-label").forEach(l => {
-      if (l.dataset.original) {
-        l.textContent = l.dataset.original;
-        l.style.color = "";
-      }
-    });
   }
 
   // ============================================================
-  // MARCAR ERROR / ÉXITO (ESTILO GOOGLE FLOATING LABEL)
+  // MARCAR ERROR / ÉXITO (LABEL ADENTRO)
   // ============================================================
   function marcar(campo, mensaje, success = false) {
     const input = campos[campo];
     const grupo = input.closest(".m3-input");
     const label = grupo.querySelector(".floating-label");
 
-    // guardar texto original del label
     if (!label.dataset.original) {
       label.dataset.original = label.textContent;
     }
 
     const vacio = input.value.trim().length === 0;
 
-    // -----------------------------
-    //        ÉXITO
-    // -----------------------------
     if (success) {
       grupo.classList.remove("error");
       grupo.classList.add("success");
-
-      // restaurar label
       label.textContent = label.dataset.original;
-      label.style.color = "";
-
       errores[campo].textContent = "";
       return;
     }
 
-    // -----------------------------
-    //        ERROR
-    // -----------------------------
-    grupo.classList.remove("success");
     grupo.classList.add("error");
 
     if (vacio) {
-      // *** ERROR CUANDO ESTÁ VACÍO ***
-      // label sube y muestra el error adentro
+      // ERROR ADENTRO DEL CAMPO
       label.textContent = mensaje;
-      label.style.color = "#d72638";
-      errores[campo].textContent = ""; // NO mostrar mensaje abajo
+      errores[campo].textContent = "";
     } else {
-      // *** ERROR CON TEXTO ***
-      // label normal, error abajo
+      // SI HAY TEXTO → ERROR ABAJO
       label.textContent = label.dataset.original;
-      label.style.color = "";
       errores[campo].textContent = mensaje;
     }
   }
@@ -97,33 +73,30 @@ document.addEventListener("DOMContentLoaded", () => {
   // VALIDAR CORREO
   // ============================================================
   function esCorreoValido(email) {
-    if (!email) return true; // opcional
+    if (!email) return true;
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   }
 
   // ============================================================
-  // FORTALEZA DE CONTRASEÑA
+  // BARRAS DE FUERZA DE CONTRASEÑA M3
   // ============================================================
-  const passwordStrengthLabel = document.getElementById("passwordStrength");
+  const bars = document.querySelectorAll(".strength-bar");
 
   campos.password.addEventListener("input", () => {
     const v = campos.password.value;
 
-    if (!v) {
-      passwordStrengthLabel.textContent = "";
-      passwordStrengthLabel.className = "password-strength";
-      return;
-    }
+    bars.forEach(b => b.className = "strength-bar"); // reset
+
+    if (v.length === 0) return;
 
     if (v.length < 6) {
-      passwordStrengthLabel.textContent = "Contraseña débil";
-      passwordStrengthLabel.className = "password-strength password-weak";
+      bars[0].classList.add("active-weak");
     } else if (v.length < 10) {
-      passwordStrengthLabel.textContent = "Seguridad media";
-      passwordStrengthLabel.className = "password-strength password-medium";
+      bars[0].classList.add("active-medium");
+      bars[1].classList.add("active-medium");
+      bars[2].classList.add("active-medium");
     } else {
-      passwordStrengthLabel.textContent = "Contraseña fuerte";
-      passwordStrengthLabel.className = "password-strength password-strong";
+      bars.forEach(b => b.classList.add("active-strong"));
     }
   });
 
@@ -140,14 +113,13 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // ============================================================
-  // VERIFICAR DUPLICADOS EN SUPABASE
+  // DUPLICADOS EN SUPABASE
   // ============================================================
   async function existeUsuario(correo, telefono) {
     const { data } = await sb
       .from("users")
       .select("email, phone")
       .or(`email.eq.${correo},phone.eq.${telefono}`);
-
     return data?.length ? data[0] : null;
   }
 
@@ -191,7 +163,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ============================================================
-  // SUBMIT
+  // SUBMIT FINAL
   // ============================================================
   const btn = document.querySelector(".m3-btn");
 
@@ -213,8 +185,12 @@ document.addEventListener("DOMContentLoaded", () => {
       btn.classList.remove("loading");
       btn.disabled = false;
 
-      if (existente.email === correo) marcar("correo", "El correo ya existe");
-      if (existente.phone === tel) marcar("telefono", "El teléfono ya existe");
+      if (correo && existente.email === correo)
+        marcar("correo", "El correo ya existe");
+
+      if (existente.phone === tel)
+        marcar("telefono", "El teléfono ya existe");
+
       return;
     }
 
