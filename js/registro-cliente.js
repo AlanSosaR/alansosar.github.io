@@ -1,17 +1,14 @@
 // ============================================================
-// REGISTRO CLIENTE — VERSIÓN GLOBAL SIN IMPORTS
-// Usa el cliente ya creado en core-scripts.js
-// Usa window.supabaseAuth.registerUser desde supabase-auth.js
+// REGISTRO DE CLIENTE — Versión estable con comentarios cortos
 // ============================================================
 
 document.addEventListener("DOMContentLoaded", () => {
 
-  const sb = window.supabaseClient; // cliente global
-  const registerUser = window.supabaseAuth.registerUser; // función global auth
+  // Cliente global de Supabase y función de registro
+  const sb = window.supabaseClient;
+  const registerUser = window.supabaseAuth.registerUser;
 
-  /* ===============================
-     CAMPOS
-  ================================= */
+  // Formulario y campos
   const form = document.getElementById("registroForm");
 
   const campos = {
@@ -30,18 +27,20 @@ document.addEventListener("DOMContentLoaded", () => {
     confirm: document.getElementById("errorConfirm"),
   };
 
-  /* ===============================
-     UTILIDADES
-  ================================= */
+  // Limpia todos los errores visuales
   function limpiarErrores() {
     Object.values(errores).forEach(e => e.textContent = "");
-    document.querySelectorAll(".input-group").forEach(g => {
-      g.classList.remove("error", "success");
-    });
+    document.querySelectorAll(".input-group")
+      .forEach(g => g.classList.remove("error", "success"));
   }
 
+  // Marca un campo como error o éxito
   function marcar(campo, mensaje, success = false) {
-    const grupo = campos[campo].closest(".input-group");
+    const input = campos[campo];
+    if (!input) return;
+
+    const grupo = input.closest(".input-group");
+    if (!grupo) return; // Seguridad: evita romper el script
 
     if (success) {
       grupo.classList.add("success");
@@ -53,15 +52,13 @@ document.addEventListener("DOMContentLoaded", () => {
     errores[campo].textContent = mensaje;
   }
 
+  // Validación de email opcional
   function esCorreoValido(email) {
-    if (!email) return true; // correo es opcional
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return regex.test(email);
+    if (!email) return true;
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   }
 
-  /* ===============================
-     PASSWORD STRENGTH
-  ================================= */
+  // Indicador de fortaleza de contraseña
   const passwordStrengthLabel = document.createElement("small");
   passwordStrengthLabel.classList.add("password-strength");
   campos.password.parentElement.after(passwordStrengthLabel);
@@ -69,7 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
   campos.password.addEventListener("input", () => {
     const value = campos.password.value;
 
-    if (value.length < 1) {
+    if (!value) {
       passwordStrengthLabel.textContent = "";
       return;
     }
@@ -86,10 +83,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-
-  /* ===============================
-     MOSTRAR / OCULTAR CONTRASEÑA
-  ================================= */
+  // Mostrar/ocultar contraseña
   document.querySelectorAll(".toggle-pass").forEach(icon => {
     icon.addEventListener("click", () => {
       const input = icon.previousElementSibling;
@@ -98,12 +92,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-
-  /* ===============================
-     CHECK DUPLICADOS EN SUPABASE
-  ================================= */
+  // Verifica si ya existe un correo o teléfono
   async function existeUsuario(correo, telefono) {
-    const { data, error } = await sb
+    const { data } = await sb
       .from("users")
       .select("email, phone")
       .or(`email.eq.${correo},phone.eq.${telefono}`);
@@ -111,22 +102,17 @@ document.addEventListener("DOMContentLoaded", () => {
     return data?.length ? data[0] : null;
   }
 
-
-  /* ===============================
-     BOTÓN LOADER
-  ================================= */
+  // Botón con loader
   const btn = document.querySelector(".btn-register");
 
-  /* ===============================
-     SUBMIT FORM
-  ================================= */
+  // Evento principal del formulario
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     limpiarErrores();
 
     let valido = true;
 
-    // 🟤 Validaciones
+    // Validaciones básicas
     if (!campos.nombre.value.trim()) {
       marcar("nombre", "Ingresa tu nombre");
       valido = false;
@@ -154,18 +140,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!valido) return;
 
-    /* ===========================
-       ACTIVAR LOADER
-    ============================ */
+    // Activar loader
     btn.classList.add("loading");
     btn.disabled = true;
 
     const correo = campos.correo.value.trim();
     const tel = campos.telefono.value.trim();
 
-    /* ===========================
-       DUPLICADOS
-    ============================ */
+    // Verificar duplicados
     const existente = await existeUsuario(correo, tel);
 
     if (existente) {
@@ -177,9 +159,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    /* ===============================
-       REGISTRO FINAL
-    ================================= */
+    // Registro final
     try {
       await registerUser(
         correo,
@@ -195,18 +175,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     } catch (err) {
       console.error("❌ ERROR REGISTRO:", err);
-
       btn.classList.remove("loading");
       btn.disabled = false;
-
       alert("Error registrando usuario");
     }
   });
 
-
-  /* ===============================
-     SNACKBAR
-  ================================= */
+  // Snackbar de confirmación
   function mostrarSnackbar(msg) {
     const s = document.getElementById("snackbar");
     s.textContent = msg;
