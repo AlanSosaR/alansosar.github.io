@@ -1,5 +1,5 @@
 // ============================================================
-// REGISTRO DE CLIENTE — VALIDACIÓN EN CADENA + LABEL GOOGLE + BARRAS M3
+// REGISTRO DE CLIENTE — LABEL ARRIBA + ERROR ADENTRO + BARRAS M3
 // ============================================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -26,54 +26,37 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   // ============================================================
-  // LIMPIAR ERRORES
+  // LIMPIAR ERRORES DE TODOS LOS CAMPOS
   // ============================================================
   function limpiarErrores() {
-    Object.values(errores).forEach(e => (e.textContent = ""));
-    document.querySelectorAll(".m3-input")
-      .forEach(g => g.classList.remove("error", "success"));
-
-    // restaurar labels a su texto original
-    document.querySelectorAll(".floating-label").forEach(label => {
-      if (label.dataset.original) {
-        label.textContent = label.dataset.original;
-        label.style.color = "";
-      }
-    });
+    Object.values(errores).forEach(e => e.textContent = "");
+    document.querySelectorAll(".m3-input").forEach(g => g.classList.remove("error", "success"));
+    Object.values(campos).forEach(c => c.placeholder = "");
   }
 
   // ============================================================
-  // MARCAR ERROR / ÉXITO — LABEL DENTRO DEL INPUT ESTILO GOOGLE
+  // MARCAR ERROR O ÉXITO — LABEL SIEMPRE ARRIBA
   // ============================================================
   function marcar(campo, mensaje, success = false) {
     const input = campos[campo];
     const grupo = input.closest(".m3-input");
-    const label = grupo.querySelector(".floating-label");
-
-    if (!label.dataset.original) {
-      label.dataset.original = label.textContent;
-    }
-
-    const vacio = input.value.trim().length === 0;
 
     if (success) {
       grupo.classList.remove("error");
       grupo.classList.add("success");
-      label.textContent = label.dataset.original;
       errores[campo].textContent = "";
+      input.placeholder = "";
       return;
     }
 
     grupo.classList.add("error");
 
-    if (vacio) {
-      // error adentro del campo
-      label.textContent = mensaje;
+    if (input.value.trim() === "") {
+      input.placeholder = mensaje; // 🔥 mensaje rojo dentro del campo
       errores[campo].textContent = "";
     } else {
-      // error abajo
-      label.textContent = label.dataset.original;
       errores[campo].textContent = mensaje;
+      input.placeholder = "";
     }
   }
 
@@ -86,16 +69,22 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ============================================================
-  // BARRAS DE FUERZA (M3 EXPRESSIVE)
+  // BARRAS DE SEGURIDAD M3
   // ============================================================
   const bars = document.querySelectorAll(".strength-bar");
+  const barsContainer = document.getElementById("barsContainer");
 
   campos.password.addEventListener("input", () => {
-    const v = campos.password.value;
+    const v = campos.password.value.trim();
 
-    bars.forEach(b => b.className = "strength-bar"); // reset
+    bars.forEach(b => b.className = "strength-bar");
 
-    if (!v) return;
+    if (v.length === 0) {
+      barsContainer.style.opacity = "0";
+      return;
+    }
+
+    barsContainer.style.opacity = "1";
 
     if (v.length < 6) {
       bars[0].classList.add("active-weak");
@@ -115,24 +104,24 @@ document.addEventListener("DOMContentLoaded", () => {
     icon.addEventListener("click", () => {
       const input = document.getElementById(icon.dataset.target);
       input.type = input.type === "password" ? "text" : "password";
-      icon.textContent =
-        input.type === "password" ? "visibility" : "visibility_off";
+      icon.textContent = (input.type === "password") ? "visibility" : "visibility_off";
     });
   });
 
   // ============================================================
-  // COMPROBAR DUPLICADOS EN SUPABASE
+  // VERIFICAR DUPLICADOS EN SUPABASE
   // ============================================================
   async function existeUsuario(correo, telefono) {
     const { data } = await sb
       .from("users")
       .select("email, phone")
       .or(`email.eq.${correo},phone.eq.${telefono}`);
+
     return data?.length ? data[0] : null;
   }
 
   // ============================================================
-  // VALIDACIÓN EN CADENA
+  // VALIDACIÓN EN CADENA — ORDENADA Y ESTRICTA
   // ============================================================
   function validarEnCadena() {
 
@@ -149,7 +138,6 @@ document.addEventListener("DOMContentLoaded", () => {
     marcar("telefono", "", true);
 
     const correo = campos.correo.value.trim();
-
     if (!esCorreoValido(correo)) {
       marcar("correo", "Correo no válido");
       return false;
@@ -214,11 +202,11 @@ document.addEventListener("DOMContentLoaded", () => {
       );
 
       mostrarSnackbar("Cuenta creada con éxito");
-      setTimeout(() => (window.location.href = "login.html"), 1300);
+      setTimeout(() => window.location.href = "login.html", 1200);
 
     } catch (err) {
-      mostrarSnackbar("Error creando la cuenta");
       console.error(err);
+      mostrarSnackbar("Error creando la cuenta");
       btn.disabled = false;
       btn.classList.remove("loading");
     }
@@ -233,4 +221,5 @@ document.addEventListener("DOMContentLoaded", () => {
     bar.classList.add("show");
     setTimeout(() => bar.classList.remove("show"), 2600);
   }
+
 });
