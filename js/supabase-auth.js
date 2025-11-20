@@ -32,53 +32,16 @@ async function esperarSesion() {
 }
 
 
-// ================================
-// SUBIR AVATAR BASE64
-// ================================
-async function subirFotoBase64(userId, fotoBase64) {
-  if (!fotoBase64) return null;
-
-  try {
-    const fileName = `${userId}.png`;
-
-    const response = await fetch(fotoBase64);
-    const blob = await response.blob();
-
-    const { error: uploadError } = await sb.storage
-      .from("avatars")
-      .upload(fileName, blob, {
-        contentType: blob.type || "image/png",
-        upsert: true
-      });
-
-    if (uploadError) {
-      console.error("⚠️ Error subiendo avatar:", uploadError);
-      return null;
-    }
-
-    const { data } = await sb.storage
-      .from("avatars")
-      .getPublicUrl(fileName);
-
-    return data.publicUrl;
-
-  } catch (err) {
-    console.error("⚠️ Error procesando base64:", err);
-    return null;
-  }
-}
-
 
 // ================================
-// REGISTRO
+// REGISTRO (SIN FOTO POR AHORA)
 // ================================
 window.supabaseAuth.registerUser = async function (
   email,
   password,
   phone,
   fullName,
-  country,
-  fotoBase64 = null
+  country
 ) {
 
   // 1) Crear usuario en AUTH
@@ -91,20 +54,16 @@ window.supabaseAuth.registerUser = async function (
   });
 
   if (error) throw error;
+
   const user = data.user;
 
-  // 2) Esperar sesión
+  // 2) Esperar sesión temporal para asegurar creación
   await esperarSesion();
 
-  // 3) Subir foto si hay
-  let photoURL = "/imagenes/avatar-default.svg";
+  // 3) Foto por defecto
+  const photoURL = "/imagenes/avatar-default.svg";
 
-  if (fotoBase64) {
-    const url = await subirFotoBase64(user.id, fotoBase64); // ← CORREGIDO
-    if (url) photoURL = url;
-  }
-
-  // 4) Insertar en tabla USERS
+  // 4) Insertar en tabla USERS (tu tabla REAL)
   const { error: insertError } = await sb.from("users").insert({
     id: user.id,
     name: fullName,
@@ -112,13 +71,16 @@ window.supabaseAuth.registerUser = async function (
     phone,
     country,
     photo_url: photoURL,
-    rol: "usuario"
+    rol: "usuario",
+    created_at: new Date(),
+    updated_at: new Date()
   });
 
   if (insertError) throw insertError;
 
   return data;
 };
+
 
 
 // ================================
@@ -135,6 +97,7 @@ window.supabaseAuth.loginUser = async function (email, password) {
 };
 
 
+
 // ================================
 // GET USER
 // ================================
@@ -142,6 +105,7 @@ window.supabaseAuth.getCurrentUser = async function () {
   const { data } = await sb.auth.getUser();
   return data.user || null;
 };
+
 
 
 // ================================
