@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ============================================================
-  // MARCAR ERROR O ÉXITO — LABEL SIEMPRE ARRIBA
+  // MARCAR ERROR / ÉXITO — LABEL SIEMPRE ARRIBA
   // ============================================================
   function marcar(campo, mensaje, success = false) {
     const input = campos[campo];
@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
     grupo.classList.add("error");
 
     if (input.value.trim() === "") {
-      input.placeholder = mensaje; // 🔥 mensaje rojo dentro del campo
+      input.placeholder = mensaje; // 🔥 mensaje rojo dentro del input
       errores[campo].textContent = "";
     } else {
       errores[campo].textContent = mensaje;
@@ -69,26 +69,26 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ============================================================
-  // BARRAS DE SEGURIDAD M3
+  // BARRAS DE SEGURIDAD — SOLO APARECEN AL ESCRIBIR
   // ============================================================
   const bars = document.querySelectorAll(".strength-bar");
   const barsContainer = document.getElementById("barsContainer");
 
-  // 🔥 IMPORTANTE → La barra inicia oculta siempre
-  barsContainer.style.opacity = "0";
-
   campos.password.addEventListener("input", () => {
     const v = campos.password.value.trim();
 
+    // Reset completo
     bars.forEach(b => b.className = "strength-bar");
 
     if (v.length === 0) {
-      barsContainer.style.opacity = "0"; // se oculta de nuevo
+      barsContainer.style.opacity = "0";
       return;
     }
 
-    barsContainer.style.opacity = "1"; // aparece al escribir
+    // Mostrar barras
+    barsContainer.style.opacity = "1";
 
+    // Lógica de seguridad
     if (v.length < 6) {
       bars[0].classList.add("active-weak");
     } else if (v.length < 10) {
@@ -124,7 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ============================================================
-  // VALIDACIÓN EN CADENA — ORDENADA Y ESTRICTA
+  // VALIDACIÓN EN CADENA — ORDEN LÓGICO
   // ============================================================
   function validarEnCadena() {
 
@@ -216,7 +216,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // ============================================================
-  // SNACKBAR — ARRIBA DEL BOTÓN
+  // SNACKBAR
   // ============================================================
   function mostrarSnackbar(msg) {
     const bar = document.getElementById("snackbar");
