@@ -25,7 +25,7 @@
 
       <!-- HEADER -->
       <div class="login-header">
-        <div class="logo-container" onclick="window.location.href='index.html'">
+        <div class="logo-container" onclick="window.location.href='index.html'" style="-webkit-tap-highlight-color: transparent;">
           <img src="imagenes/logo.png" alt="Café Cortero" class="logo-img" />
         </div>
         <h2 class="login-title" style="color:#512615;">Iniciar sesión</h2>
@@ -46,6 +46,7 @@
                 id="userInput"
                 placeholder=""
                 autocomplete="username"
+                -webkit-tap-highlight-color: transparent;
               />
               <label for="userInput" class="floating-label">Correo o teléfono</label>
             </div>
@@ -60,6 +61,7 @@
                 id="passwordInput"
                 placeholder=""
                 autocomplete="current-password"
+                -webkit-tap-highlight-color: transparent;
               />
               <label for="passwordInput" class="floating-label">Contraseña</label>
               <span class="material-symbols-outlined toggle-pass" data-target="passwordInput">visibility</span>
@@ -67,7 +69,7 @@
           </div>
 
           <!-- BOTÓN -->
-          <button type="submit" class="m3-btn">
+          <button type="submit" class="m3-btn" style="-webkit-tap-highlight-color: transparent;">
             <span class="btn-text">Acceder</span>
             <span class="loader"></span>
           </button>
@@ -77,8 +79,7 @@
         <!-- SECCIÓN LINKS -->
         <div class="links">
 
-          <!-- RECUPERAR CONTRASEÑA -->
-          <a href="forgot-password.html" id="forgotPassword" class="forgot-link">
+          <a href="forgot-password.html" id="forgotPassword" class="forgot-link" style="-webkit-tap-highlight-color: transparent;">
             ¿Olvidaste tu contraseña?
           </a>
 
@@ -94,13 +95,13 @@
           <div class="social-login">
 
             <!-- GOOGLE -->
-            <button class="btn-social google" id="googleLoginBtn">
+            <button class="btn-social google" id="googleLoginBtn" style="-webkit-tap-highlight-color: transparent;">
               <img src="imagenes/icon-google.svg" alt="Google">
               Google
             </button>
 
             <!-- FACEBOOK -->
-            <button class="btn-social facebook" id="facebookLoginBtn">
+            <button class="btn-social facebook" id="facebookLoginBtn" style="-webkit-tap-highlight-color: transparent;">
               <img src="imagenes/icon-facebook.svg" alt="Facebook">
               Facebook
             </button>
