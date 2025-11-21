@@ -2,6 +2,14 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
+
+  <!-- ================================
+       ANTI-CACHE PARA GITHUB PAGES
+  ================================= -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Iniciar sesión | Café Cortero</title>
 
@@ -11,8 +19,8 @@
   <!-- Material Icons -->
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
 
-  <!-- Estilos -->
-  <link rel="stylesheet" href="css/login.css?v=3">
+  <!-- Estilos Login (sin versión, ahora funciona con anti-cache) -->
+  <link rel="stylesheet" href="css/login.css">
 
   <link rel="icon" type="image/png" href="imagenes/logo.png">
 </head>
@@ -39,11 +47,7 @@
           <div class="m3-field">
             <div class="m3-input">
               <span class="material-symbols-outlined">mail</span>
-              <input
-                type="text"
-                id="userInput"
-                autocomplete="username"
-              />
+              <input type="text" id="userInput" autocomplete="username" />
               <label for="userInput" class="floating-label">Correo o teléfono</label>
             </div>
           </div>
@@ -52,11 +56,7 @@
           <div class="m3-field">
             <div class="m3-input">
               <span class="material-symbols-outlined">lock</span>
-              <input
-                type="password"
-                id="passwordInput"
-                autocomplete="current-password"
-              />
+              <input type="password" id="passwordInput" autocomplete="current-password" />
               <label for="passwordInput" class="floating-label">Contraseña</label>
               <span class="material-symbols-outlined toggle-pass" data-target="passwordInput">visibility</span>
             </div>
@@ -87,11 +87,13 @@
           <!-- LOGIN SOCIAL -->
           <div class="social-login">
 
+            <!-- GOOGLE -->
             <button class="btn-social google" id="googleLoginBtn">
               <img src="imagenes/icon-google.svg" alt="Google">
               Google
             </button>
 
+            <!-- FACEBOOK -->
             <button class="btn-social facebook" id="facebookLoginBtn">
               <img src="imagenes/icon-facebook.svg" alt="Facebook">
               Facebook
@@ -114,8 +116,8 @@
   <script src="js/supabase-auth.js"></script>
   <script src="js/auth-ui.js"></script>
 
-  <!-- Login -->
-  <script src="js/login-scripts.js?v=4"></script>
+  <!-- Login (sin ?v=4, ya no se usará) -->
+  <script src="js/login-scripts.js"></script>
 
 </body>
 </html>
