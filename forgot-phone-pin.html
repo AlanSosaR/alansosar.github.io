@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Verificar código | Café Cortero</title>
+
+  <!-- Tipografía global -->
+  <link rel="stylesheet" href="css/tipografia.css">
+
+  <!-- Iconos Material Symbols -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+
+  <!-- Estilos -->
+  <link rel="stylesheet" href="css/forgot-phone-pin.css?v=1">
+
+  <link rel="icon" type="image/png" href="imagenes/logo.png">
+</head>
+
+<body>
+
+  <main class="login-container">
+    <section class="login-card">
+
+      <!-- HEADER -->
+      <div class="login-header">
+        <div class="logo-container" onclick="window.location.href='index.html'">
+          <img src="imagenes/logo.png" alt="Café Cortero" class="logo-img" />
+        </div>
+        <h2 class="login-title">Verificar código</h2>
+      </div>
+
+      <!-- TARJETA INTERIOR -->
+      <div class="login-inner-card">
+
+        <p class="descripcion">
+          Te enviamos un código de verificación por SMS.  
+          Escríbelo para continuar con el cambio de contraseña.
+        </p>
+
+        <form id="pinForm">
+
+          <!-- INPUT -->
+          <div class="m3-field">
+            <div class="m3-input">
+              <span class="material-symbols-outlined">dialpad</span>
+              <input 
+                type="text"
+                id="pinInput"
+                autocomplete="one-time-code"
+                placeholder=""
+                maxlength="6"
+              />
+              <label for="pinInput" class="floating-label">Código de 6 dígitos</label>
+            </div>
+          </div>
+
+          <!-- BOTÓN -->
+          <button type="submit" class="m3-btn">
+            <span class="btn-text">Verificar</span>
+            <span class="loader"></span>
+          </button>
+
+        </form>
+
+        <!-- REENVIAR -->
+        <div class="reenviar">
+          <span id="timer">Reenviar código en 60s</span>
+          <a id="reenviarBtn" class="reenviar-link disabled">Reenviar código</a>
+        </div>
+
+        <!-- VOLVER -->
+        <div class="links" style="margin-top:20px;">
+          <a href="login.html" class="back-link">Volver a iniciar sesión</a>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <div id="snackbar"></div>
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Core scripts -->
+  <script src="js/core-scripts.js"></script>
+
+  <!-- PIN Scripts -->
+  <script src="js/forgot-phone-pin.js?v=1"></script>
+
+</body>
+</html>
