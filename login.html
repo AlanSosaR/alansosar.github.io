@@ -3,9 +3,7 @@
 <head>
   <meta charset="UTF-8" />
 
-  <!-- ================================
-       ANTI-CACHE PARA GITHUB PAGES
-  ================================= -->
+  <!-- ANTI-CACHE PARA GITHUB PAGES -->
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
@@ -19,7 +17,7 @@
   <!-- Material Icons -->
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
 
-  <!-- Estilos Login (sin versión, ahora funciona con anti-cache) -->
+  <!-- Estilos Login -->
   <link rel="stylesheet" href="css/login.css">
 
   <link rel="icon" type="image/png" href="imagenes/logo.png">
@@ -47,7 +45,15 @@
           <div class="m3-field">
             <div class="m3-input">
               <span class="material-symbols-outlined">mail</span>
-              <input type="text" id="userInput" autocomplete="username" />
+
+              <!-- FIX: placeholder requerido -->
+              <input 
+                type="text" 
+                id="userInput" 
+                placeholder=" "
+                autocomplete="username" 
+              />
+
               <label for="userInput" class="floating-label">Correo o teléfono</label>
             </div>
           </div>
@@ -56,7 +62,15 @@
           <div class="m3-field">
             <div class="m3-input">
               <span class="material-symbols-outlined">lock</span>
-              <input type="password" id="passwordInput" autocomplete="current-password" />
+
+              <!-- FIX: placeholder requerido -->
+              <input 
+                type="password" 
+                id="passwordInput" 
+                placeholder=" "
+                autocomplete="current-password" 
+              />
+
               <label for="passwordInput" class="floating-label">Contraseña</label>
               <span class="material-symbols-outlined toggle-pass" data-target="passwordInput">visibility</span>
             </div>
@@ -87,13 +101,11 @@
           <!-- LOGIN SOCIAL -->
           <div class="social-login">
 
-            <!-- GOOGLE -->
             <button class="btn-social google" id="googleLoginBtn">
               <img src="imagenes/icon-google.svg" alt="Google">
               Google
             </button>
 
-            <!-- FACEBOOK -->
             <button class="btn-social facebook" id="facebookLoginBtn">
               <img src="imagenes/icon-facebook.svg" alt="Facebook">
               Facebook
