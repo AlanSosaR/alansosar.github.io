@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Correo enviado | Café Cortero</title>
+
+  <!-- Tipografías -->
+  <link rel="stylesheet" href="css/tipografia.css">
+
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+
+  <!-- Estilos -->
+  <link rel="stylesheet" href="css/forgot-email-sent.css?v=1">
+
+  <link rel="icon" type="image/png" href="imagenes/logo.png">
+</head>
+
+<body>
+
+  <main class="login-container">
+    <section class="login-card">
+
+      <!-- ENCABEZADO -->
+      <div class="login-header">
+        <div class="logo-container" onclick="window.location.href='index.html'">
+          <img src="imagenes/logo.png" alt="Café Cortero" class="logo-img" />
+        </div>
+        <h2 class="login-title">Revisa tu correo</h2>
+      </div>
+
+      <!-- TARJETA INTERIOR -->
+      <div class="login-inner-card">
+
+        <p class="descripcion">
+          Te enviamos un enlace para restablecer tu contraseña.  
+          Abre tu correo y busca el mensaje de <b>Café Cortero</b>.
+        </p>
+
+        <!-- BOTÓN: ABRIR CORREO -->
+        <button id="openMailBtn" class="m3-btn">
+          <span class="btn-text">Abrir mi correo</span>
+        </button>
+
+        <!-- VOLVER -->
+        <div class="links">
+          <a href="login.html" class="back-link">Volver a iniciar sesión</a>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <script src="js/open-mail.js?v=1"></script>
+
+</body>
+</html>
