@@ -1,0 +1,166 @@
+/* ===== GENERAL ===== */
+body {
+  font-family: "Roboto", sans-serif;
+  background-color: #ffffff;
+  margin: 0;
+  padding: 40px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  color: #2E2A27;
+}
+
+.login-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+/* ===== TARJETA PRINCIPAL ===== */
+.login-card {
+  background: #ffffff;
+  border: 1.5px solid #E0E0E0;
+  border-radius: 20px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  padding: 30px 40px;
+  max-width: 420px;
+  width: 100%;
+  min-height: 520px;
+  margin: 20px 0;
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.logo-container img {
+  width: 110px;
+  height: auto;
+}
+
+.login-title {
+  font-family: "Fraunces", serif;
+  font-size: 1.7rem;
+  color: #512615;
+}
+
+/* ===== TARJETA INTERIOR ===== */
+.login-inner-card {
+  background: #ffffff;
+  border: 1.6px solid #512615;
+  border-radius: 16px;
+  padding: 25px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.descripcion {
+  text-align: center;
+  color: #6A5F5B;
+  font-size: 0.95rem;
+  margin-bottom: 25px;
+}
+
+/* ===== CAMPOS ===== */
+.m3-field { margin-bottom: 20px; }
+
+.m3-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border: 1.5px solid #E0E0E0;
+  border-radius: 12px;
+  padding: 10px 12px;
+  background-color: #fff;
+  transition: .3s ease;
+}
+
+.m3-input:focus-within {
+  border-color: #33673B;
+  box-shadow: 0 0 0 2px rgba(51,103,59,0.1);
+}
+
+.m3-input input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 1rem;
+}
+
+.floating-label {
+  position: absolute;
+  left: 40px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1rem;
+  color: #6A5F5B;
+  pointer-events: none;
+  transition: 0.25s ease;
+}
+
+.m3-input input:not(:placeholder-shown) + .floating-label,
+.m3-input input:focus + .floating-label {
+  top: -6px;
+  background: #fff;
+  padding: 0 6px;
+  font-size: 0.75rem;
+  color: #33673B;
+}
+
+.m3-input.error {
+  border-color: #D32F2F !important;
+}
+
+/* ===== BOTÓN ===== */
+.m3-btn {
+  width: 100%;
+  background-color: #33673B;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 12px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: .25s ease;
+}
+
+.m3-btn:hover {
+  background-color: #28532E;
+}
+
+/* ===== REENVIAR ===== */
+.reenviar {
+  text-align: center;
+  margin-top: 15px;
+  font-size: 0.9rem;
+  color: #6A5F5B;
+}
+
+.reenviar-link {
+  display: block;
+  margin-top: 8px;
+  color: #33673B;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.reenviar-link.disabled {
+  opacity: .5;
+  pointer-events: none;
+}
+
+/* ===== LINKS ===== */
+.links a {
+  display: block;
+  text-align: center;
+  margin-top: 15px;
+  color: #33673B;
+  text-decoration: none;
+}
+
+.links a:hover {
+  text-decoration: underline;
+}
