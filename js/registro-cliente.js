@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
     grupo.classList.add("error");
 
     if (input.value.trim() === "") {
-      input.placeholder = mensaje; // 🔥 mensaje rojo dentro del input
+      input.placeholder = mensaje;
       errores[campo].textContent = "";
     } else {
       errores[campo].textContent = mensaje;
@@ -61,11 +61,13 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ============================================================
-  // VALIDAR CORREO
+  // VALIDAR CORREO — versión estricta
   // ============================================================
   function esCorreoValido(email) {
     if (!email) return true; // opcional
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+    const regex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+    return regex.test(email);
   }
 
   // ============================================================
@@ -77,18 +79,16 @@ document.addEventListener("DOMContentLoaded", () => {
   campos.password.addEventListener("input", () => {
     const v = campos.password.value.trim();
 
-    // Reset completo
+    // Reset
     bars.forEach(b => b.className = "strength-bar");
 
     if (v.length === 0) {
-      barsContainer.style.opacity = "0";
+      barsContainer.style.display = "none";
       return;
     }
 
-    // Mostrar barras
-    barsContainer.style.opacity = "1";
+    barsContainer.style.display = "flex";
 
-    // Lógica de seguridad
     if (v.length < 6) {
       bars[0].classList.add("active-weak");
     } else if (v.length < 10) {
@@ -112,7 +112,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // ============================================================
-  // VERIFICAR DUPLICADOS EN SUPABASE
+  // VERIFICAR DUPLICADOS
   // ============================================================
   async function existeUsuario(correo, telefono) {
     const { data } = await sb
@@ -124,35 +124,41 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ============================================================
-  // VALIDACIÓN EN CADENA — ORDEN LÓGICO
+  // VALIDACIÓN EN CADENA — CORREGIDA AL 100%
   // ============================================================
   function validarEnCadena() {
 
+    // 1) Nombre
     if (!campos.nombre.value.trim()) {
       marcar("nombre", "Ingresa tu nombre");
       return false;
     }
     marcar("nombre", "", true);
 
+    // 2) Correo
+    const correo = campos.correo.value.trim();
+
+    if (correo.length > 0 && !esCorreoValido(correo)) {
+      marcar("correo", "Correo no válido");
+      return false;
+    }
+    marcar("correo", "", true);
+
+    // 3) Teléfono
     if (campos.telefono.value.trim().length < 8) {
       marcar("telefono", "Teléfono inválido");
       return false;
     }
     marcar("telefono", "", true);
 
-    const correo = campos.correo.value.trim();
-    if (!esCorreoValido(correo)) {
-      marcar("correo", "Correo no válido");
-      return false;
-    }
-    marcar("correo", "", true);
-
+    // 4) Contraseña
     if (campos.password.value.length < 6) {
       marcar("password", "Mínimo 6 caracteres");
       return false;
     }
     marcar("password", "", true);
 
+    // 5) Confirmación
     if (campos.password.value !== campos.confirm.value) {
       marcar("confirm", "Las contraseñas no coinciden");
       return false;
