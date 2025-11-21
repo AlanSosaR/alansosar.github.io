@@ -1,19 +1,16 @@
-/* ===============================
-   ESTILOS GENERALES
-   =============================== */
+/* ==== General ==== */
 body {
   font-family: "Roboto", sans-serif;
   background-color: #ffffff;
   margin: 0;
-  padding: 40px 20px; /* ✔ Para respiración y que no quede pegado en móvil */
+  padding: 40px 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;  /* ✔ Se adapta a PC y centra */
+  min-height: 100vh;
   color: #2E2A27;
 }
 
-/* Contenedor general centrado */
 .login-container {
   display: flex;
   align-items: center;
@@ -21,9 +18,7 @@ body {
   width: 100%;
 }
 
-/* ===============================
-   TARJETA PRINCIPAL
-   =============================== */
+/* ==== Tarjeta principal ==== */
 .login-card {
   background: #ffffff;
   border: 1.5px solid #E0E0E0;
@@ -32,9 +27,9 @@ body {
   padding: 30px 40px;
   max-width: 420px;
   width: 100%;
-  min-height: 520px; /* altura generosa */
+  min-height: 520px;
   transition: box-shadow 0.3s ease, transform 0.2s ease;
-  margin: 20px 0; /* ✔ Para que no quede pegado arriba */
+  margin: 20px 0;
 }
 
 .login-card:hover {
@@ -42,9 +37,7 @@ body {
   transform: translateY(-2px);
 }
 
-/* ===============================
-   ENCABEZADO (LOGO Y TÍTULO)
-   =============================== */
+/* ==== Header ==== */
 .login-header {
   text-align: center;
   margin-bottom: 24px;
@@ -75,26 +68,22 @@ body {
 .login-title {
   font-family: "Fraunces", serif;
   font-size: 1.8rem;
-  color: #512615; /* café */
+  color: #512615;
   margin: 0;
   letter-spacing: 0.5px;
 }
 
-/* ===============================
-   TARJETA INTERIOR (FORMULARIO)
-   =============================== */
+/* ==== Tarjeta interior ==== */
 .login-inner-card {
   background: #ffffff;
-  border: 1.6px solid #512615; /* borde café sólido coherente */
+  border: 1.6px solid #512615;
   border-radius: 16px;
   padding: 25px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
 
-/* ===============================
-   CAMPOS DE TEXTO
-   =============================== */
-.input-group {
+/* ==== Campos ==== */
+.m3-input {
   position: relative;
   display: flex;
   align-items: center;
@@ -106,12 +95,16 @@ body {
   background-color: #fff;
 }
 
-.input-group:focus-within {
+.m3-input:focus-within {
   border-color: #33673B;
   box-shadow: 0 0 0 2px rgba(51, 103, 59, 0.1);
 }
 
-.input-group input {
+.m3-input.error {
+  border-color: #D32F2F !important;
+}
+
+.m3-input input {
   flex: 1;
   border: none;
   outline: none;
@@ -120,17 +113,42 @@ body {
   color: #2E2A27;
 }
 
-.material-symbols-outlined {
+.m3-input .material-symbols-outlined {
   font-size: 22px;
   color: #33673B;
   margin-right: 8px;
   user-select: none;
 }
 
-/* ===============================
-   BOTÓN DE INICIO DE SESIÓN
-   =============================== */
-.btn-login {
+.floating-label {
+  position: absolute;
+  left: 40px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.92rem;
+  color: rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+  transition: 0.25s ease;
+}
+
+.m3-input input:not(:placeholder-shown) + .floating-label,
+.m3-input input:focus + .floating-label {
+  top: -6px;
+  font-size: 0.75rem;
+  color: #33673B;
+}
+
+/* Mostrar/Ocultar contraseña */
+.toggle-pass {
+  cursor: pointer;
+  font-size: 22px;
+  margin-left: 8px;
+  color: #33673B;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ==== Botón iniciar sesión ==== */
+.m3-btn {
   width: 100%;
   background-color: #33673B;
   color: #fff;
@@ -143,24 +161,20 @@ body {
   font-family: "Roboto", sans-serif;
   transition: all 0.25s ease;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  -webkit-tap-highlight-color: transparent;
+  position: relative;
 }
 
-.btn-login:hover,
-.btn-login:focus-visible {
+.m3-btn:hover {
   background-color: #28532E;
   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
   transform: translateY(-1px);
 }
 
-.btn-login:active {
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
-  transform: translateY(1px);
+.loader {
+  display: none;
 }
 
-/* ===============================
-   ENLACES Y TEXTO DE REGISTRO
-   =============================== */
+/* ==== Links ==== */
 .links {
   margin-top: 18px;
   display: flex;
@@ -173,7 +187,6 @@ body {
   font-size: 0.9rem;
   color: #512615;
   text-decoration: none;
-  -webkit-tap-highlight-color: transparent;
 }
 
 #forgotPassword:hover {
@@ -190,7 +203,6 @@ body {
   color: #33673B;
   font-weight: 500;
   text-decoration: none;
-  -webkit-tap-highlight-color: transparent;
 }
 
 .registrate-link:hover {
@@ -198,9 +210,7 @@ body {
   text-decoration: underline;
 }
 
-/* ===============================
-   SEPARADOR Y REDES SOCIALES
-   =============================== */
+/* ==== Separador ==== */
 .separator {
   display: flex;
   align-items: center;
@@ -219,6 +229,7 @@ body {
   margin: 0 10px;
 }
 
+/* ==== Login Social ==== */
 .social-login {
   display: flex;
   justify-content: center;
@@ -235,9 +246,7 @@ body {
   font-size: 0.9rem;
   background: #fff;
   cursor: pointer;
-  font-family: 'Roboto', sans-serif;
   transition: all 0.25s ease;
-  -webkit-tap-highlight-color: transparent;
 }
 
 .btn-social img {
@@ -255,9 +264,7 @@ body {
   color: #1877F2;
 }
 
-/* ===============================
-   SNACKBAR (MENSAJE VISUAL)
-   =============================== */
+/* ==== Snackbar ==== */
 #snackbar {
   visibility: hidden;
   min-width: 280px;
@@ -290,23 +297,10 @@ body {
   to { bottom: 20px; opacity: 0; }
 }
 
-/* ===============================
-   RESPONSIVE (MÓVILES Y TABLETS)
-   =============================== */
+/* ==== Responsive ==== */
 @media (max-width: 480px) {
-  .login-card {
-    padding: 25px;
-  }
-
-  .login-inner-card {
-    padding: 20px;
-  }
-
-  .login-title {
-    font-size: 1.5rem;
-  }
-
-  .logo-img {
-    width: 90px;
-  }
+  .login-card { padding: 25px; }
+  .login-inner-card { padding: 20px; }
+  .login-title { font-size: 1.5rem; }
+  .logo-img { width: 90px; }
 }
