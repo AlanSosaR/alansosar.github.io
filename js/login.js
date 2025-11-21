@@ -62,7 +62,7 @@ loginForm.addEventListener("submit", async (e) => {
   let emailToUse = userValue;
 
   try {
-    // Usuario inició con teléfono
+    // Caso: login con TELÉFONO
     if (!userValue.includes("@")) {
       const { data: rows, error: phoneError } = await supabase
         .from("users")
@@ -96,9 +96,9 @@ loginForm.addEventListener("submit", async (e) => {
     }
 
     // -----------------------------
-    // ACTUALIZAR EL MENÚ SUPERIOR
+    // Guardar estado de login (versión GitHub Pages)
     // -----------------------------
-    actualizarMenuUsuario();
+    sessionStorage.setItem("cortero_logged", "1");
 
     // -----------------------------
     // Login exitoso
@@ -118,19 +118,6 @@ loginForm.addEventListener("submit", async (e) => {
     marcarError(userInput, "Error al iniciar sesión");
   }
 });
-
-// ========================================================
-// FUNCIÓN PARA ACTIVAR MENÚ LOGUEADO
-// ========================================================
-async function actualizarMenuUsuario() {
-  const { data: session } = await supabase.auth.getSession();
-  if (!session?.session) return;
-
-  localStorage.setItem("cortero_logged", "1");
-
-  // El header real se actualizará desde core-scripts.js 
-  // pero dejamos esta función por si se usa inmediatamente.
-}
 
 // ========================================================
 // SNACKBAR
