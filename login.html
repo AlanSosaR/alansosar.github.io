@@ -5,176 +5,126 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Iniciar sesión | Café Cortero</title>
 
-  <!-- Tipografía Material 3 Expressive -->
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+  <!-- Tipografía global -->
+  <link rel="stylesheet" href="css/tipografia.css">
 
   <!-- Iconos Material Symbols -->
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
 
   <!-- Estilos del login -->
-  <link rel="stylesheet" href="css/login.css">
+  <link rel="stylesheet" href="css/login.css?v=2">
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="imagenes/logo.png">
-
-  <style>
-    .links {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-      margin-top: 1rem;
-      font-family: 'Poppins', sans-serif;
-    }
-
-    .links a {
-      font-size: 0.9rem;
-      text-decoration: none;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    #forgotPassword {
-      color: #512615;
-    }
-
-    .crear-cuenta-texto {
-      text-align: center;
-      font-size: 0.9rem;
-      color: #512615;
-      font-family: 'Poppins', sans-serif;
-    }
-
-    .registrate-link {
-      color: #33673B;
-      font-weight: 500;
-      text-decoration: none;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .registrate-link:hover {
-      text-decoration: underline;
-      color: #24522A;
-    }
-
-    .separator {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 1rem 0;
-      color: rgba(81, 38, 21, 0.5);
-      font-size: 0.9rem;
-    }
-
-    .separator::before,
-    .separator::after {
-      content: "";
-      flex: 1;
-      height: 1px;
-      background: rgba(81, 38, 21, 0.15);
-      margin: 0 10px;
-    }
-
-    .social-login {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-    }
-
-    .btn-social {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      border: 1.5px solid #E0E0E0;
-      border-radius: 8px;
-      padding: 8px 14px;
-      font-size: 0.9rem;
-      background: #fff;
-      cursor: pointer;
-      font-family: 'Roboto', sans-serif;
-      transition: all 0.25s ease;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .btn-social img {
-      width: 18px;
-      height: 18px;
-    }
-
-    .btn-social.google:hover {
-      border-color: #DB4437;
-      color: #DB4437;
-    }
-
-    .btn-social.facebook:hover {
-      border-color: #1877F2;
-      color: #1877F2;
-    }
-  </style>
 </head>
 
 <body>
+
   <main class="login-container">
     <section class="login-card">
+
+      <!-- HEADER -->
       <div class="login-header">
         <div class="logo-container" onclick="window.location.href='index.html'">
           <img src="imagenes/logo.png" alt="Café Cortero" class="logo-img" />
         </div>
-
         <h2 class="login-title" style="color:#512615;">Iniciar sesión</h2>
       </div>
 
+      <!-- CARD INTERIOR -->
       <div class="login-inner-card">
+
+        <!-- FORMULARIO -->
         <form id="loginForm">
-          <div class="input-group">
-            <span class="material-symbols-outlined">mail</span>
-            <input 
-              type="text" 
-              id="userInput" 
-              placeholder="Correo electrónico o teléfono" 
-              required />
+
+          <!-- USUARIO -->
+          <div class="m3-field">
+            <div class="m3-input">
+              <span class="material-symbols-outlined">mail</span>
+              <input
+                type="text"
+                id="userInput"
+                placeholder=""
+                autocomplete="username"
+              />
+              <label for="userInput" class="floating-label">Correo o teléfono</label>
+            </div>
           </div>
 
-          <div class="input-group">
-            <span class="material-symbols-outlined">lock</span>
-            <input 
-              type="password" 
-              id="passwordInput" 
-              placeholder="Contraseña" 
-              required />
+          <!-- PASSWORD -->
+          <div class="m3-field">
+            <div class="m3-input">
+              <span class="material-symbols-outlined">lock</span>
+              <input
+                type="password"
+                id="passwordInput"
+                placeholder=""
+                autocomplete="current-password"
+              />
+              <label for="passwordInput" class="floating-label">Contraseña</label>
+              <span class="material-symbols-outlined toggle-pass" data-target="passwordInput">visibility</span>
+            </div>
           </div>
 
-          <button type="submit" class="btn-login">Acceder</button>
+          <!-- BOTÓN -->
+          <button type="submit" class="m3-btn">
+            <span class="btn-text">Acceder</span>
+            <span class="loader"></span>
+          </button>
+
         </form>
 
+        <!-- SECCIÓN LINKS -->
         <div class="links">
-          <a href="#" id="forgotPassword">¿Olvidaste tu contraseña?</a>
+
+          <!-- RECUPERAR CONTRASEÑA -->
+          <a href="forgot-password.html" id="forgotPassword" class="forgot-link">
+            ¿Olvidaste tu contraseña?
+          </a>
 
           <p class="crear-cuenta-texto">
             ¿No tienes cuenta?
             <a href="registro-cliente.html" class="registrate-link">Regístrate ahora</a>
           </p>
 
+          <!-- Separador -->
           <div class="separator"><span>o</span></div>
 
+          <!-- LOGIN SOCIAL -->
           <div class="social-login">
-            <button class="btn-social google">
-              <img src="imagenes/icon-google.svg" alt="Google"> Google
+
+            <!-- GOOGLE -->
+            <button class="btn-social google" id="googleLoginBtn">
+              <img src="imagenes/icon-google.svg" alt="Google">
+              Google
             </button>
-            <button class="btn-social facebook">
-              <img src="imagenes/icon-facebook.svg" alt="Facebook"> Facebook
+
+            <!-- FACEBOOK -->
+            <button class="btn-social facebook" id="facebookLoginBtn">
+              <img src="imagenes/icon-facebook.svg" alt="Facebook">
+              Facebook
             </button>
+
           </div>
         </div>
+
       </div>
     </section>
   </main>
 
+  <!-- SNACKBAR -->
   <div id="snackbar"></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<script src="js/core-scripts.js"></script>
-<script src="js/supabase-auth.js"></script>
-<script src="js/auth-ui.js"></script>
-<script src="js/login-scripts.js"></script>
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Scripts base -->
+  <script src="js/core-scripts.js"></script>
+  <script src="js/supabase-auth.js"></script>
+  <script src="js/auth-ui.js"></script>
+
+  <!-- Login Scripts -->
+  <script src="js/login-scripts.js?v=3"></script>
+
 </body>
 </html>
