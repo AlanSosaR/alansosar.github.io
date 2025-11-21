@@ -113,6 +113,7 @@ body {
   padding: 4px 0 0 0;
   background: transparent;
   color: #2E2A27;
+  caret-color: #512615;
 }
 
 /* ===============================
@@ -128,7 +129,6 @@ body {
   pointer-events: none;
 }
 
-/* SUBE NORMAL */
 .m3-input input:not(:placeholder-shown) + .floating-label,
 .m3-input:focus-within .floating-label {
   top: -6px;
@@ -138,20 +138,25 @@ body {
   padding: 0 4px;
 }
 
-/* ERROR — LABEL SIEMPRE ARRIBA */
+/* ERROR — LABEL SIEMPRE ARRIBA (MEJORADO) */
 .m3-input.error .floating-label {
   top: -6px !important;
+  transform: translateY(-2px);
   font-size: 0.78rem !important;
   color: #d72638 !important;
   background: #ffffff;
   padding: 0 4px;
 }
 
-/* PLACEHOLDER ROJO — INSIDE FIELD */
+/* PLACEHOLDER ROJO */
 .m3-input.error input::placeholder {
   color: #d72638 !important;
   opacity: 1;
   font-weight: 500;
+}
+
+.m3-input.error input {
+  caret-color: #d72638;
 }
 
 /* ===============================
@@ -170,16 +175,15 @@ body {
 =============================== */
 
 .strength-bars {
-  display: none; /* ocultas hasta escribir */
+  display: none;       /* ocultas hasta escribir */
+  margin-top: 8px;     /* ✔ margen mejorado */
   gap: 4px;
-  margin-top: 4px;
   transition: 0.25s ease;
 }
 
-.strength-bars.visible {
-  display: flex;
-}
+/* (ELIMINADO) .strength-bars.visible */
 
+/* BARRAS */
 .strength-bar {
   height: 6px;
   flex: 1;
@@ -238,16 +242,12 @@ body {
 
 .m3-btn.loading .loader { opacity: 1; }
 
-@keyframes spin {
-  to { transform: translate(-50%, -50%) rotate(360deg); }
-}
-
 /* ===============================
    SNACKBAR — ARRIBA DEL BOTÓN
 =============================== */
 #snackbar {
   position: absolute;
-  bottom: 75px; /* Justo arriba del botón verde */
+  bottom: 85px; /* ✔ mejor posición */
   left: 50%;
   transform: translateX(-50%) translateY(10px);
   background: rgba(81, 38, 21, 0.92);
