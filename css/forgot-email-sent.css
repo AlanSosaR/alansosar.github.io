@@ -1,0 +1,101 @@
+/* ===== GENERAL ===== */
+body {
+  font-family: "Roboto", sans-serif;
+  background-color: #ffffff;
+  margin: 0;
+  padding: 40px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  color: #2E2A27;
+}
+
+.login-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+/* ===== TARJETA PRINCIPAL ===== */
+.login-card {
+  background: #ffffff;
+  border: 1.5px solid #E0E0E0;
+  border-radius: 20px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  padding: 30px 40px;
+  max-width: 420px;
+  width: 100%;
+  min-height: 480px;
+  transition: 0.3s ease;
+  margin: 20px 0;
+}
+
+/* ===== HEADER ===== */
+.login-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.logo-container img {
+  width: 110px;
+  height: auto;
+}
+
+.login-title {
+  font-family: "Fraunces", serif;
+  font-size: 1.7rem;
+  color: #512615;
+  margin: 0;
+}
+
+/* ===== TARJETA INTERIOR ===== */
+.login-inner-card {
+  background: #ffffff;
+  border: 1.6px solid #512615;
+  border-radius: 16px;
+  padding: 25px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.descripcion {
+  font-size: 0.95rem;
+  text-align: center;
+  color: #6A5F5B;
+  margin-bottom: 25px;
+}
+
+/* ===== BOTÓN ===== */
+.m3-btn {
+  width: 100%;
+  background-color: #33673B;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 12px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.m3-btn:hover {
+  background-color: #28532E;
+}
+
+/* ===== LINKS ===== */
+.links {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.links a {
+  color: #33673B;
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+
+.links a:hover {
+  text-decoration: underline;
+}
