@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
     grupo.classList.add("error");
 
     if (input.value.trim() === "") {
-      input.placeholder = mensaje;
+      input.placeholder = mensaje; // texto rojo adentro
       errores[campo].textContent = "";
     } else {
       errores[campo].textContent = mensaje;
@@ -61,13 +61,39 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ============================================================
-  // VALIDAR CORREO — versión estricta
+  // VALIDAR CORREO — versión estricta por proveedor
   // ============================================================
   function esCorreoValido(email) {
     if (!email) return true; // opcional
 
-    const regex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
-    return regex.test(email);
+    const regexGeneral = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+    if (!regexGeneral.test(email)) return false;
+
+    // Reglas de proveedores
+    const reglas = {
+      "gmail.com": ["gmail"],
+      "yahoo.es": ["yahoo"],
+      "hotmail.com": ["hotmail"],
+      "outlook.com": ["outlook"],
+      "live.com": ["live"],
+      "icloud.com": ["icloud"]
+    };
+
+    const [usuario, dominioCompleto] = email.split("@");
+    const partes = dominioCompleto.split(".");
+    const proveedor = partes[0];
+    const extension = partes.slice(1).join(".");
+    const dominio = `${proveedor}.${extension}`;
+
+    for (const dominioCorrecto in reglas) {
+      const lista = reglas[dominioCorrecto];
+
+      if (lista.includes(proveedor)) {
+        return dominio === dominioCorrecto; // debe coincidir exacto
+      }
+    }
+
+    return true; // otros dominios válidos
   }
 
   // ============================================================
@@ -79,7 +105,6 @@ document.addEventListener("DOMContentLoaded", () => {
   campos.password.addEventListener("input", () => {
     const v = campos.password.value.trim();
 
-    // Reset
     bars.forEach(b => b.className = "strength-bar");
 
     if (v.length === 0) {
@@ -107,7 +132,7 @@ document.addEventListener("DOMContentLoaded", () => {
     icon.addEventListener("click", () => {
       const input = document.getElementById(icon.dataset.target);
       input.type = input.type === "password" ? "text" : "password";
-      icon.textContent = (input.type === "password") ? "visibility" : "visibility_off";
+      icon.textContent = input.type === "password" ? "visibility" : "visibility_off";
     });
   });
 
@@ -124,7 +149,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ============================================================
-  // VALIDACIÓN EN CADENA — CORREGIDA AL 100%
+  // VALIDACIÓN EN CADENA — CORREGIDA 100%
   // ============================================================
   function validarEnCadena() {
 
@@ -135,7 +160,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     marcar("nombre", "", true);
 
-    // 2) Correo
+    // 2) Correo (si escribe, debe ser válido)
     const correo = campos.correo.value.trim();
 
     if (correo.length > 0 && !esCorreoValido(correo)) {
