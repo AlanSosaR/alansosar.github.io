@@ -1,58 +1,73 @@
 // ============================================================
-// AUTH-UI.JS — CONTROL DE SESIÓN SIN ROMPER NINGUNA PÁGINA
+// AUTH-UI.JS — CONTROL DE MENÚ SEGÚN SESIÓN
 // ============================================================
 
-console.log("👤 auth-ui.js cargado — versión segura");
+console.log("👤 auth-ui.js cargado — versión estable");
 
+// Esperar DOM
 document.addEventListener("DOMContentLoaded", () => {
-  const sb = window.supabaseClient;
-  const auth = window.supabaseAuth;
-
+  const sb = window.supabaseClient;        // Cliente global
+  const auth = window.supabaseAuth;        // Funciones auth
   const getCurrentUser = auth?.getCurrentUser || (async () => null);
   const logoutUser = auth?.logoutUser || (async () => true);
 
   const $id = (id) => document.getElementById(id);
 
-  // ======================================
-  // 1) Ocultar todo cuando no hay usuario
-  // ======================================
+  // ------------------------------------------------------------
+  // 🔴 1. MODO INVITADO (mostrar login, ocultar menú usuario)
+  // ------------------------------------------------------------
   function showLoggedOut() {
-    const login = $id("login-desktop");
-    const profile = $id("profile-desktop");
+    const loginDesktop = $id("login-desktop");
+    const profileDesktop = $id("profile-desktop");
 
-    if (login) login.style.display = "inline-block";
-    if (profile) profile.style.display = "none";
+    if (loginDesktop) loginDesktop.style.display = "inline-block";
+    if (profileDesktop) profileDesktop.style.display = "none";
 
-    // Drawer móvil SOLO si existen los elementos
-    if ($id("drawer-links-default")) $id("drawer-links-default").style.display = "flex";
-    if ($id("drawer-links-logged")) $id("drawer-links-logged").style.display = "none";
+    // Móvil
+    if ($id("drawer-links-default"))
+      $id("drawer-links-default").style.display = "flex";
+
+    if ($id("drawer-links-logged"))
+      $id("drawer-links-logged").style.display = "none";
+
+    console.log("🔴 Menú en modo invitado");
   }
 
-  // ======================================
-  // 2) Mostrar usuario cuando está logueado
-  // ======================================
+  // ------------------------------------------------------------
+  // 🟢 2. MODO LOGUEADO (mostrar menú usuario)
+  // ------------------------------------------------------------
   function showLoggedIn(user) {
     const name = user.name || "Usuario";
     const photo = user.photo_url || "imagenes/avatar-default.svg";
 
+    // Escritorio
     if ($id("login-desktop")) $id("login-desktop").style.display = "none";
+
     if ($id("profile-desktop")) {
       $id("profile-desktop").style.display = "flex";
       $id("profile-photo-desktop").src = photo;
       $id("hello-desktop").textContent = `Hola, ${name}`;
     }
 
-    // Drawer móvil
-    if ($id("drawer-links-default")) $id("drawer-links-default").style.display = "none";
-    if ($id("drawer-links-logged")) $id("drawer-links-logged").style.display = "flex";
+    // Móvil
+    if ($id("drawer-links-default"))
+      $id("drawer-links-default").style.display = "none";
 
-    if ($id("profile-photo-mobile")) $id("profile-photo-mobile").src = photo;
-    if ($id("hello-mobile")) $id("hello-mobile").textContent = `Hola, ${name}`;
+    if ($id("drawer-links-logged"))
+      $id("drawer-links-logged").style.display = "flex";
+
+    if ($id("profile-photo-mobile"))
+      $id("profile-photo-mobile").src = photo;
+
+    if ($id("hello-mobile"))
+      $id("hello-mobile").textContent = `Hola, ${name}`;
+
+    console.log("🟢 Menú en modo usuario");
   }
 
-  // ======================================
-  // 3) Cargar estado de sesión
-  // ======================================
+  // ------------------------------------------------------------
+  // 🧠 3. COMPROBAR SESIÓN AL CARGAR LA PÁGINA
+  // ------------------------------------------------------------
   (async () => {
     try {
       const authUser = await getCurrentUser();
@@ -62,6 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
+      // Buscar usuario real en base de datos
       const { data, error } = await sb
         .from("users")
         .select("*")
@@ -75,15 +91,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
       showLoggedIn(data);
 
-    } catch (e) {
-      console.warn("Auth UI Error:", e);
+    } catch (error) {
+      console.warn("⚠ Error cargando sesión:", error);
       showLoggedOut();
     }
   })();
 
-  // ======================================
-  // 4) LOGOUT
-  // ======================================
+  // ------------------------------------------------------------
+  // 🚪 4. LOGOUT (escritorio y móvil)
+  // ------------------------------------------------------------
   if ($id("logout-desktop")) {
     $id("logout-desktop").addEventListener("click", async (e) => {
       e.preventDefault();
