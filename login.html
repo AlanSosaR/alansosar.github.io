@@ -46,7 +46,6 @@
             <div class="m3-input">
               <span class="material-symbols-outlined">mail</span>
 
-              <!-- FIX: placeholder requerido -->
               <input 
                 type="text" 
                 id="userInput" 
@@ -56,6 +55,10 @@
 
               <label for="userInput" class="floating-label">Correo o teléfono</label>
             </div>
+
+            <!-- 🌟 ESPACIO PARA MENSAJES DE ERROR -->
+            <div class="field-msg"></div>
+
           </div>
 
           <!-- CONTRASEÑA -->
@@ -63,7 +66,6 @@
             <div class="m3-input">
               <span class="material-symbols-outlined">lock</span>
 
-              <!-- FIX: placeholder requerido -->
               <input 
                 type="password" 
                 id="passwordInput" 
@@ -74,6 +76,10 @@
               <label for="passwordInput" class="floating-label">Contraseña</label>
               <span class="material-symbols-outlined toggle-pass" data-target="passwordInput">visibility</span>
             </div>
+
+            <!-- 🌟 ESPACIO PARA MENSAJES DE ERROR -->
+            <div class="field-msg"></div>
+
           </div>
 
           <!-- BOTÓN -->
@@ -124,11 +130,12 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <!-- Base scripts -->
-<script src="js/core-scripts-v2.js?v=1"></script>
+  <script src="js/core-scripts-v2.js?v=1"></script>
   <script src="js/supabase-auth.js?v=4"></script>
   <script src="js/auth-ui.js?v=4"></script>
 
   <!-- Login -->
-  <script src="js/login.js?v=4"></script>
+  <script src="js/login.js?v=5"></script>
+
 </body>
 </html>
