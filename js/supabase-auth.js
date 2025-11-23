@@ -63,7 +63,7 @@ window.supabaseAuth.registerUser = async function (
   // 3) Foto por defecto
   const photoURL = "/imagenes/avatar-default.svg";
 
-  // 4) Insertar en tabla USERS (tu tabla REAL)
+  // 4) Insertar en tabla USERS
   const { error: insertError } = await sb.from("users").insert({
     id: user.id,
     name: fullName,
@@ -84,7 +84,7 @@ window.supabaseAuth.registerUser = async function (
 
 
 // ================================
-// LOGIN
+// LOGIN NORMAL (PASSWORD)
 // ================================
 window.supabaseAuth.loginUser = async function (email, password) {
   const { data, error } = await sb.auth.signInWithPassword({
@@ -93,6 +93,31 @@ window.supabaseAuth.loginUser = async function (email, password) {
   });
 
   if (error) throw error;
+  return data;
+};
+
+
+
+// ================================
+// LOGIN CON MAGIC LINK (OTP)
+// ================================
+window.supabaseAuth.loginMagicLink = async function(email) {
+  console.log("📨 Enviando Magic Link a:", email);
+
+  const { data, error } = await sb.auth.signInWithOtp({
+    email,
+    options: {
+      // ESTA ES LA URL QUE ABRIRÁ AL CONFIRMAR
+      emailRedirectTo: "https://alansosar.github.io/cafecortero/login.html"
+    }
+  });
+
+  if (error) {
+    console.error("❌ Error enviando Magic Link:", error);
+    throw error;
+  }
+
+  console.log("✅ Magic Link enviado correctamente");
   return data;
 };
 
