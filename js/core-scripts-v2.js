@@ -14,10 +14,10 @@ const SUPABASE_ANON_KEY =
 const storage = {
   getItem: (key) => sessionStorage.getItem(key),
   setItem: (key, value) => sessionStorage.setItem(key, value),
-  removeItem: (key) => sessionStorage.removeItem(key),
+  removeItem: (key) => sessionStorage.removeItem(key)
 };
 
-// 🟢 Crear un solo cliente global
+// 🟢 Crear cliente global
 window.supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: {
     storage,
@@ -31,56 +31,97 @@ window.supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
 console.log("🔥 Supabase conectado con FIX sessionStorage (GitHub Pages OK)");
 
 
-// =====================================================================
-// 🚀 FIX DEFINITIVO DEL MENÚ — AUTO DETECTA LOGIN / LOGOUT
-// =====================================================================
+// ============================================================
+// 🔥 FIX DEFINITIVO DEL MENÚ – AUTO CAMBIO LOGIN/LOGOUT
+// ============================================================
 
-// ⚠ IMPORTANTE: estos IDs deben existir en tu HTML
-// <div id="menu-guest"></div>  → menú cuando NO hay sesión
-// <div id="menu-user"></div>   → menú cuando SÍ hay sesión
-// <span id="user-name"></span> → nombre del usuario
-// <img id="user-avatar">       → avatar del usuario
+function activarMenuUsuario(user) {
+  // ESCRITORIO
+  const loginDesktop = document.getElementById("login-desktop");
+  const profileDesktop = document.getElementById("profile-desktop");
+  const helloDesktop = document.getElementById("hello-desktop");
+  const avatarDesktop = document.getElementById("profile-photo-desktop");
 
-function actualizarMenuUsuario(user) {
-  const menuGuest = document.getElementById("menu-guest");
-  const menuUser = document.getElementById("menu-user");
-  const nameElem = document.getElementById("user-name");
-  const avatarElem = document.getElementById("user-avatar");
+  if (loginDesktop) loginDesktop.style.display = "none";
+  if (profileDesktop) profileDesktop.style.display = "flex";
 
-  if (menuGuest) menuGuest.style.display = "none";
-  if (menuUser) menuUser.style.display = "flex"; // flex para Material 3
+  if (helloDesktop)
+    helloDesktop.textContent = "Hola, " + (user.user_metadata.full_name || "Usuario");
 
-  if (nameElem) {
-    nameElem.textContent = user.user_metadata.full_name || "Usuario";
-  }
+  if (avatarDesktop)
+    avatarDesktop.src = user.user_metadata.photo_url || "imagenes/avatar-default.svg";
 
-  if (avatarElem) {
-    avatarElem.src = user.user_metadata.photo_url || "/imagenes/avatar-default.svg";
-  }
+  // MÓVIL
+  const drawerDefault = document.getElementById("drawer-links-default");
+  const drawerLogged = document.getElementById("drawer-links-logged");
+  const helloMobile = document.getElementById("hello-mobile");
+  const avatarMobile = document.getElementById("profile-photo-mobile");
 
-  console.log("👤 Menú actualizado → usuario logueado");
+  if (drawerDefault) drawerDefault.style.display = "none";
+  if (drawerLogged) drawerLogged.style.display = "block";
+
+  if (helloMobile)
+    helloMobile.textContent = "Hola, " + (user.user_metadata.full_name || "Usuario");
+
+  if (avatarMobile)
+    avatarMobile.src = user.user_metadata.photo_url || "imagenes/avatar-default.svg";
+
+  console.log("🟢 Menú → usuario logueado");
 }
 
-function actualizarMenuInvitado() {
-  const menuGuest = document.getElementById("menu-guest");
-  const menuUser = document.getElementById("menu-user");
+function activarMenuInvitado() {
+  // ESCRITORIO
+  const loginDesktop = document.getElementById("login-desktop");
+  const profileDesktop = document.getElementById("profile-desktop");
 
-  if (menuGuest) menuGuest.style.display = "flex";
-  if (menuUser) menuUser.style.display = "none";
+  if (loginDesktop) loginDesktop.style.display = "inline-block";
+  if (profileDesktop) profileDesktop.style.display = "none";
 
-  console.log("👤 Menú actualizado → invitado");
+  // MÓVIL
+  const drawerDefault = document.getElementById("drawer-links-default");
+  const drawerLogged = document.getElementById("drawer-links-logged");
+
+  if (drawerDefault) drawerDefault.style.display = "block";
+  if (drawerLogged) drawerLogged.style.display = "none";
+
+  console.log("🔴 Menú → invitado");
 }
 
 
-// =====================================================================
-// 🧠 LISTENER GLOBAL — DETECTA LOGIN, LOGOUT Y REFRESCO DE TOKEN
-// =====================================================================
+// ============================================================
+// 🧠 LISTENER GLOBAL — DETECTA LOGIN / LOGOUT AUTOMÁTICAMENTE
+// ============================================================
+
 window.supabaseClient.auth.onAuthStateChange(async (event, session) => {
-  console.log("🔄 Evento de Auth:", event);
+  console.log("🔄 Evento Auth:", event);
 
   if (session && session.user) {
-    actualizarMenuUsuario(session.user);
+    activarMenuUsuario(session.user);
   } else {
-    actualizarMenuInvitado();
+    activarMenuInvitado();
+  }
+});
+
+
+// ============================================================
+// Cerrar sesión en escritorio y móvil
+// ============================================================
+
+document.addEventListener("DOMContentLoaded", () => {
+  const logoutDesktop = document.getElementById("logout-desktop");
+  const logoutMobile = document.getElementById("logout-mobile");
+
+  if (logoutDesktop) {
+    logoutDesktop.addEventListener("click", async (e) => {
+      e.preventDefault();
+      await supabaseClient.auth.signOut();
+    });
+  }
+
+  if (logoutMobile) {
+    logoutMobile.addEventListener("click", async (e) => {
+      e.preventDefault();
+      await supabaseClient.auth.signOut();
+    });
   }
 });
