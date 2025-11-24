@@ -26,12 +26,39 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   // ============================================================
+  // DOMINIOS + AUTOCORRECCIONES (MISMOS QUE LOGIN)
+  // ============================================================
+  const dominiosValidos = [
+    "gmail.com", "hotmail.com", "outlook.com", "yahoo.com", "icloud.com",
+    "proton.me", "live.com", "msn.com",
+    "unah.hn", "unah.edu", "gmail.es", "correo.hn",
+    "googlemail.com", "outlook.es", "hotmail.es"
+  ];
+
+  const autocorrecciones = {
+    "gmal.com": "gmail.com",
+    "gmial.com": "gmail.com",
+    "hotmai.com": "hotmail.com",
+    "hotmal.com": "hotmail.com",
+    "outlok.com": "outlook.com",
+    "outllok.com": "outlook.com"
+  };
+
+  // ============================================================
   // LIMPIAR ERRORES
   // ============================================================
   function limpiarErrores() {
     Object.values(errores).forEach(e => e.textContent = "");
     document.querySelectorAll(".m3-input").forEach(g => g.classList.remove("error", "success"));
     Object.values(campos).forEach(c => c.placeholder = "");
+  }
+
+  function limpiarErrorCampo(campo) {
+    const input = campos[campo];
+    const grupo = input.closest(".m3-input");
+    grupo.classList.remove("error", "success");
+    errores[campo].textContent = "";
+    input.placeholder = "";
   }
 
   // ============================================================
@@ -52,7 +79,7 @@ document.addEventListener("DOMContentLoaded", () => {
     grupo.classList.add("error");
 
     if (input.value.trim() === "") {
-      input.placeholder = mensaje; 
+      input.placeholder = mensaje;
       errores[campo].textContent = "";
     } else {
       errores[campo].textContent = mensaje;
@@ -61,35 +88,32 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ============================================================
-  // VALIDAR CORREO
+  // VALIDAR CORREO + AUTOCORRECCIÓN ESTILO LOGIN
   // ============================================================
   function esCorreoValido(email) {
-    if (!email) return true;
+    if (!email) return true; // se valida aparte que sea obligatorio
 
     const regexGeneral = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
     if (!regexGeneral.test(email)) return false;
 
-    const reglas = {
-      "gmail.com": ["gmail"],
-      "yahoo.es": ["yahoo"],
-      "hotmail.com": ["hotmail"],
-      "outlook.com": ["outlook"],
-      "live.com": ["live"],
-      "icloud.com": ["icloud"]
-    };
+    const partes = email.split("@");
+    const usuario = partes[0];
+    let dominio = (partes[1] || "").toLowerCase();
 
-    const [usuario, dominioCompleto] = email.split("@");
-    const partes = dominioCompleto.split(".");
-    const proveedor = partes[0];
-    const extension = partes.slice(1).join(".");
-    const dominio = `${proveedor}.${extension}`;
-
-    for (const dominioCorrecto in reglas) {
-      if (reglas[dominioCorrecto].includes(proveedor)) {
-        return dominio === dominioCorrecto;
-      }
+    // autocorrección del dominio
+    if (autocorrecciones[dominio]) {
+      dominio = autocorrecciones[dominio];
+      const corregido = `${usuario}@${dominio}`;
+      campos.correo.value = corregido; // se corrige en vivo en el input
+      email = corregido;
     }
 
+    // si el dominio coincide con alguno de la lista, perfecto
+    if (dominiosValidos.some(d => dominio.endsWith(d))) {
+      return true;
+    }
+
+    // si no, igual permitimos otros dominios válidos (empresa, etc.)
     return true;
   }
 
@@ -102,6 +126,8 @@ document.addEventListener("DOMContentLoaded", () => {
   campos.password.addEventListener("input", () => {
     const v = campos.password.value.trim();
 
+    limpiarErrorCampo("password");
+
     // Reiniciar barras
     bars.forEach(b => b.className = "strength-bar");
 
@@ -112,28 +138,72 @@ document.addEventListener("DOMContentLoaded", () => {
 
     barsContainer.style.display = "flex";
 
-    // Fuerza por niveles usando 6 barras
     if (v.length < 6) {
-      // Muy débil → 1 barra
       bars[0].classList.add("active-weak");
-
     } else if (v.length < 10) {
-      // Media → 3 barras
       bars[0].classList.add("active-medium");
       bars[1].classList.add("active-medium");
       bars[2].classList.add("active-medium");
-
     } else if (v.length < 14) {
-      // Fuerte → 4 barras fuertes
       for (let i = 0; i < 4; i++) bars[i].classList.add("active-strong");
-
     } else if (v.length < 18) {
-      // Muy fuerte → 5 barras
       for (let i = 0; i < 5; i++) bars[i].classList.add("active-strong");
-
     } else {
-      // Ultra → 6 barras
       bars.forEach(b => b.classList.add("active-strong"));
+    }
+  });
+
+  // ============================================================
+  // VALIDACIÓN EN VIVO POR CAMPO (INPUT + BLUR)
+  // ============================================================
+
+  // Nombre
+  campos.nombre.addEventListener("input", () => limpiarErrorCampo("nombre"));
+  campos.nombre.addEventListener("blur", () => {
+    const v = campos.nombre.value.trim();
+    if (!v) {
+      marcar("nombre", "Ingresa tu nombre");
+    } else {
+      marcar("nombre", "", true);
+    }
+  });
+
+  // Correo
+  campos.correo.addEventListener("input", () => limpiarErrorCampo("correo"));
+  campos.correo.addEventListener("blur", () => {
+    const correo = campos.correo.value.trim();
+    if (!correo) {
+      marcar("correo", "Ingresa tu correo");
+      return;
+    }
+    if (!esCorreoValido(correo)) {
+      marcar("correo", "Correo no válido");
+      return;
+    }
+    marcar("correo", "", true);
+  });
+
+  // Teléfono
+  campos.telefono.addEventListener("input", () => limpiarErrorCampo("telefono"));
+  campos.telefono.addEventListener("blur", () => {
+    const tel = campos.telefono.value.trim();
+    if (tel.length < 8) {
+      marcar("telefono", "Teléfono inválido");
+    } else {
+      marcar("telefono", "", true);
+    }
+  });
+
+  // Confirmación en vivo
+  campos.confirm.addEventListener("input", () => limpiarErrorCampo("confirm"));
+  campos.confirm.addEventListener("blur", () => {
+    const pass = campos.password.value;
+    const conf = campos.confirm.value;
+    if (!conf) return;
+    if (pass !== conf) {
+      marcar("confirm", "Las contraseñas no coinciden");
+    } else {
+      marcar("confirm", "", true);
     }
   });
 
@@ -161,7 +231,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ============================================================
-  // VALIDACIÓN EN CADENA
+  // VALIDACIÓN EN CADENA (SUBMIT)
   // ============================================================
   function validarEnCadena() {
 
