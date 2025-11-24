@@ -243,9 +243,8 @@ body {
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* ===============================
-   LINKS — CON ESTILO EXACTO LOGIN
+   LINKS
 =============================== */
-
 .forgot-link {
   color: #512615;
   font-size: 0.92rem;
@@ -277,35 +276,42 @@ body {
 }
 
 /* ===============================
-   BOTONES SOCIALES
+   ICONOS SOCIALES FLOTANTES — NUEVO
 =============================== */
-.social-login {
+.social-login-icons {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  gap: 18px;
+  margin-top: 6px;
 }
 
-.btn-social {
-  width: 100%;
-  border-radius: 12px;
-  padding: 10px 14px;
-  border: 1.4px solid rgba(81,38,21,0.22);
-  background: #F4EFEA;
+.social-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: none;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+
   cursor: pointer;
-  transition: .22s ease;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
-.btn-social:hover {
-  background: #EDE6DF;
-  transform: translateY(-2px);
+.social-icon img {
+  width: 22px;
+  height: 22px;
 }
 
-.btn-social img {
-  width: 20px;
+.social-icon:active {
+  transform: scale(0.92);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.10);
 }
 
 /* ===============================
