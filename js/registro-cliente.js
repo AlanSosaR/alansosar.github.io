@@ -1,6 +1,6 @@
 // ============================================================
-// REGISTRO DE CLIENTE — VALIDACIÓN TIPO GMAIL
-// Label baja en error (igual que Login)
+// REGISTRO DE CLIENTE — VALIDACIÓN TIPO LOGIN (LABEL SUBE SIEMPRE)
+// Error dentro si está vacío / error abajo si está lleno
 // ============================================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -23,71 +23,63 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnLoader = btn.querySelector(".loader");
 
   // ============================================================
-  // FUNCIÓN: MOVER LABEL A ERROR (BAJO Y ROJO)
+  // AÑADIR / QUITAR .filled AUTOMÁTICAMENTE
   // ============================================================
-  function aplicarErrorLabel(inputEl) {
-    const label = inputEl.closest(".m3-input").querySelector(".floating-label");
+  Object.values(campos).forEach(input => {
+    input.addEventListener("input", () => {
+      const cont = input.closest(".m3-input");
 
-    label.style.top = "18px";
-    label.style.left = "42px";
-    label.style.fontSize = "0.95rem";
-    label.style.color = "#D32F2F";
-    label.style.background = "transparent";
-  }
+      if (input.value.trim().length > 0) {
+        cont.classList.add("filled");
+      } else {
+        cont.classList.remove("filled");
+      }
+    });
+  });
 
   // ============================================================
   // LIMPIAR ERRORES
   // ============================================================
   function limpiarErrores() {
     document.querySelectorAll(".m3-input").forEach(g => g.classList.remove("error", "success"));
-
-    // restaurar labels flotantes
-    document.querySelectorAll(".floating-label").forEach(l => {
-      l.style.top = "";
-      l.style.left = "";
-      l.style.fontSize = "";
-      l.style.color = "";
-      l.style.background = "";
-    });
   }
 
   // ============================================================
-  // MARCAR ERROR / ÉXITO
+  // MARCAR ERROR / SUCCESS — (LOGIN STYLE)
   // ============================================================
   function marcar(campo, mensaje, success = false) {
     const input = campos[campo];
-    const cont = input.closest(".m3-input");
+    const box = input.closest(".m3-input");
+    const msg = box.parentElement.querySelector(".field-msg");
 
     if (success) {
-      cont.classList.remove("error");
-      cont.classList.add("success");
-
-      // si tiene texto → label arriba
-      if (input.value.trim().length > 0) {
-        const label = cont.querySelector(".floating-label");
-        label.style.top = "-6px";
-        label.style.left = "12px";
-        label.style.fontSize = "0.75rem";
-        label.style.color = "#33673B";
-        label.style.background = "#fff";
-      }
-
+      box.classList.remove("error");
+      msg.style.opacity = "0";
+      box.classList.add("success");
       return;
     }
 
-    // marcar error
-    cont.classList.add("error");
-    aplicarErrorLabel(input);
+    box.classList.add("error");
+
+    // 📌 SI ESTÁ VACÍO → error DENTRO del input
+    if (input.value.trim().length === 0) {
+      msg.style.opacity = "0"; // No mostrar mensaje abajo
+      input.placeholder = mensaje; // placeholder rojo
+      return;
+    }
+
+    // 📌 SI TIENE TEXTO → error ABAJO (igual login)
+    msg.textContent = mensaje;
+    msg.style.opacity = "1";
   }
 
   // ============================================================
-  // VALIDACIÓN AVANZADA CORREO
+  // VALIDACIÓN CORREO
   // ============================================================
   const dominiosValidos = [
     "gmail.com","hotmail.com","outlook.com","yahoo.com","icloud.com",
-    "proton.me","live.com","msn.com",
-    "unah.hn","unah.edu","gmail.es","correo.hn",
-    "googlemail.com","outlook.es","hotmail.es"
+    "proton.me","live.com","msn.com","unah.hn","unah.edu",
+    "gmail.es","correo.hn","googlemail.com","outlook.es","hotmail.es"
   ];
 
   const autocorrecciones = {
@@ -115,32 +107,27 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ============================================================
-  // VALIDACIONES GENERALES
+  // VALIDACIÓN AUXILIAR
   // ============================================================
-  function telefonoValido(t) {
-    return /^[0-9]{7,15}$/.test(t.replace(/[\s-+]/g, ""));
-  }
-
-  function passwordValida(p) {
-    return p.length >= 6 && !p.includes(" ");
-  }
+  const telefonoValido = t => /^[0-9]{7,15}$/.test(t.replace(/[\s-+]/g, ""));
+  const passwordValida = p => p.length >= 6 && !p.includes(" ");
 
   // ============================================================
   // LOADER
   // ============================================================
-  function activarLoading() {
+  const activarLoading = () => {
     btn.classList.add("loading");
     btn.disabled = true;
     btnText.style.opacity = "0";
     btnLoader.style.display = "inline-block";
-  }
+  };
 
-  function desactivarLoading() {
+  const desactivarLoading = () => {
     btn.classList.remove("loading");
     btn.disabled = false;
     btnText.style.opacity = "1";
     btnLoader.style.display = "none";
-  }
+  };
 
   // ============================================================
   // VALIDACIÓN COMPLETA
@@ -185,7 +172,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ============================================================
-  // SUBMIT
+  // SUBMIT FINAL
   // ============================================================
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
