@@ -105,6 +105,21 @@ body {
 =============================== */
 .m3-field {
   margin-bottom: 22px;
+  position: relative;
+}
+
+.field-msg {
+  font-size: 0.78rem;
+  color: #d72638;
+  margin-top: 4px;
+  padding-left: 4px;
+  min-height: 16px;
+  opacity: 0;
+  transition: opacity .25s ease;
+}
+
+.m3-input.filled.error + .field-msg {
+  opacity: 1;
 }
 
 .m3-input {
@@ -161,6 +176,7 @@ body {
 .m3-input input:not(:placeholder-shown) + .floating-label,
 .m3-input:focus-within .floating-label {
   top: -6px;
+  left: 12px;
   font-size: 0.78rem;
   color: #33673B;
   background: #ffffff;
@@ -168,21 +184,10 @@ body {
 }
 
 /* ===============================
-   FLOATING LABEL — ERROR COMO LOGIN
+   FLOATING LABEL — ERROR (LOGIN STYLE)
 =============================== */
 
-/* ✔ Cuando está vacío y error → BAJA */
-.m3-input.error:not(.filled) .floating-label {
-  top: 16px !important;
-  left: 44px !important;
-  font-size: 1rem !important;
-  color: #d72638 !important;
-  background: transparent !important;
-  padding: 0 !important;
-}
-
-/* ✔ Cuando tiene texto pero está en error → SUBE rojo */
-.m3-input.error.filled .floating-label {
+.m3-input.error .floating-label {
   top: -6px !important;
   left: 12px !important;
   font-size: 0.78rem !important;
@@ -191,7 +196,14 @@ body {
   padding: 0 4px !important;
 }
 
-/* para que JS detecte si está lleno */
+/* Placeholder rojo (error dentro del input si está vacío) */
+.m3-input.error input::placeholder {
+  color: #d72638 !important;
+  opacity: 1 !important;
+  font-weight: 500;
+}
+
+/* JS usa esta clase */
 .m3-input.filled {}
 
 /* ===============================
