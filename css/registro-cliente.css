@@ -29,6 +29,36 @@ body {
   padding: 30px 40px;
   max-width: 420px;
   width: 100%;
+  position: relative; /* requerido para botón back */
+}
+
+/* ===============================
+   BOTÓN HACIA ATRÁS (IGUAL LOGIN)
+=============================== */
+.back-btn {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  border: 1.6px solid rgba(81, 38, 21, 0.30);
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: 0.25s ease;
+}
+
+.back-btn:hover {
+  background: #f5f1ef;
+}
+
+.back-btn .material-symbols-outlined {
+  font-size: 24px;
+  color: #512615;
 }
 
 /* ===============================
@@ -60,10 +90,9 @@ body {
 
 /* ===============================
    CARD INTERIOR OUTLINED
-   (CORREGIDO IGUAL QUE LOGIN)
 =============================== */
 .register-inner-card {
-  border: 1.6px solid rgba(81, 38, 21, 0.45); /* ← borde café igual login */
+  border: 1.6px solid rgba(81, 38, 21, 0.45);
   border-radius: 20px;
   padding: 28px;
   margin-top: 15px;
@@ -98,7 +127,6 @@ body {
   box-shadow: 0 0 0 3px rgba(60, 176, 67, 0.18);
 }
 
-/* Iconos */
 .m3-input .material-symbols-outlined {
   font-size: 22px;
   margin-right: 8px;
@@ -139,7 +167,6 @@ body {
   padding: 0 4px;
 }
 
-/* ERROR — LABEL SIEMPRE ARRIBA */
 .m3-input.error .floating-label {
   top: -6px !important;
   transform: translateY(-2px);
@@ -175,23 +202,23 @@ body {
    BARRAS DE SEGURIDAD (6 BARRAS)
 =============================== */
 .strength-bars {
-  display: none;          /* se muestra al escribir */
-  margin-top: 10px;       /* más espacio */
-  gap: 6px;               /* separación entre 6 barras */
+  display: none;
+  margin-top: 8px;
+  gap: 4px;
   transition: 0.25s ease;
 }
 
 .strength-bar {
-  height: 7px;            /* un poco más gruesa */
+  height: 6px;
   flex: 1;
-  border-radius: 5px;
+  border-radius: 4px;
   background-color: #e0e0e0;
   transition: 0.25s ease;
 }
 
-.strength-bar.active-weak    { background-color: #d72638; }
-.strength-bar.active-medium  { background-color: #e6a700; }
-.strength-bar.active-strong  { background-color: #3CB043; }
+.strength-bar.active-weak { background-color: #d72638; }
+.strength-bar.active-medium { background-color: #e6a700; }
+.strength-bar.active-strong { background-color: #3CB043; }
 
 /* ===============================
    MENSAJES DE ERROR
@@ -203,7 +230,7 @@ body {
 }
 
 /* ===============================
-   BOTÓN + LOADER
+   BOTÓN + LOADER CENTRADO
 =============================== */
 .m3-btn {
   width: 100%;
@@ -219,9 +246,15 @@ body {
   position: relative;
   overflow: hidden;
   height: 48px;
+
+  display: flex;              /* ← FIX */
+  align-items: center;        /* ← FIX */
+  justify-content: center;    /* ← FIX */
 }
 
-.m3-btn.loading .btn-text { opacity: 0; }
+.m3-btn.loading .btn-text {
+  opacity: 0;
+}
 
 .m3-btn .loader {
   position: absolute;
@@ -235,9 +268,12 @@ body {
   animation: spin 0.9s linear infinite;
   transform: translate(-50%, -50%);
   opacity: 0;
+  pointer-events: none;
 }
 
-.m3-btn.loading .loader { opacity: 1; }
+.m3-btn.loading .loader {
+  opacity: 1;
+}
 
 /* ===============================
    SNACKBAR
