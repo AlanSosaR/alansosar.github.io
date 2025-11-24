@@ -16,7 +16,6 @@ const btnLoader = loginBtn.querySelector(".loader");
 // REGLAS DE VALIDACIÓN
 // ========================================================
 
-// Dominios reales aceptados
 const dominiosValidos = [
   "gmail.com", "hotmail.com", "outlook.com", "yahoo.com", "icloud.com",
   "proton.me", "live.com", "msn.com",
@@ -24,7 +23,6 @@ const dominiosValidos = [
   "googlemail.com", "outlook.es", "hotmail.es"
 ];
 
-// Correcciones automáticas
 const autocorrecciones = {
   "gmal.com": "gmail.com",
   "gmial.com": "gmail.com",
@@ -35,11 +33,15 @@ const autocorrecciones = {
 };
 
 // ========================================================
-// LIMPIAR ERRORES
+// LIMPIEZA DE ERRORES
 // ========================================================
+
 function limpiarErrores() {
   document.querySelectorAll(".m3-input").forEach(g => g.classList.remove("error"));
-  document.querySelectorAll(".field-msg").forEach(msg => msg.textContent = "");
+  document.querySelectorAll(".field-msg").forEach(msg => {
+    msg.textContent = "";
+    msg.style.opacity = "0";
+  });
 }
 
 function marcarError(input, mensaje) {
@@ -48,13 +50,13 @@ function marcarError(input, mensaje) {
 
   group.querySelector(".m3-input").classList.add("error");
   msg.textContent = mensaje;
+  msg.style.opacity = "1";
 }
 
 // ========================================================
 // VALIDACIONES
 // ========================================================
 
-// CORREO
 function validarCorreo(valor) {
   if (!valor.includes("@")) return false;
 
@@ -71,17 +73,12 @@ function validarCorreo(valor) {
   return dominiosValidos.some(d => dominio.endsWith(d));
 }
 
-// TELÉFONO
 function validarTelefono(valor) {
   const limpio = valor.replace(/[\s-+]/g, "");
-
   if (!/^[0-9]+$/.test(limpio)) return false;
-  if (limpio.length < 7 || limpio.length > 15) return false;
-
-  return true;
+  return limpio.length >= 7 && limpio.length <= 15;
 }
 
-// PASSWORD
 function validarPassword(valor) {
   if (valor.length < 6) return false;
   if (valor.includes(" ")) return false;
@@ -90,7 +87,7 @@ function validarPassword(valor) {
 }
 
 // ========================================================
-// VALIDACIÓN EN VIVO (como Gmail)
+// VALIDACIÓN EN VIVO (tipo Gmail)
 // ========================================================
 
 userInput.addEventListener("blur", () => {
@@ -113,6 +110,7 @@ passInput.addEventListener("input", limpiarErrores);
 // ========================================================
 // LOADING INDICATOR
 // ========================================================
+
 function activarLoading() {
   loginBtn.classList.add("loading");
   btnText.style.opacity = "0";
@@ -126,14 +124,16 @@ function desactivarLoading() {
 }
 
 // ========================================================
-// DETECTAR CARRITO
+// DETECTAR FROM (carrito)
 // ========================================================
+
 const params = new URLSearchParams(window.location.search);
 const from = params.get("from");
 
 // ========================================================
 // LOGIN PRINCIPAL
 // ========================================================
+
 loginForm.addEventListener("submit", async (e) => {
   e.preventDefault();
 
@@ -174,14 +174,15 @@ loginForm.addEventListener("submit", async (e) => {
   let emailToUse = userValue;
 
   try {
+    // Si usa teléfono → buscar email real
     if (!esCorreo) {
-      const { data: rows, error } = await supabase
+      const { data: rows } = await supabase
         .from("users")
         .select("email")
         .eq("phone", userValue)
         .limit(1);
 
-      if (error || !rows || rows.length === 0) {
+      if (!rows || rows.length === 0) {
         desactivarLoading();
         marcarError(userInput, "Teléfono no registrado");
         return;
@@ -190,7 +191,7 @@ loginForm.addEventListener("submit", async (e) => {
       emailToUse = rows[0].email;
     }
 
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { error } = await supabase.auth.signInWithPassword({
       email: emailToUse,
       password: passValue
     });
@@ -206,9 +207,8 @@ loginForm.addEventListener("submit", async (e) => {
     mostrarSnackbar("Inicio de sesión exitoso ☕");
 
     setTimeout(() => {
-      window.location.href = from === "carrito"
-        ? "detalles-cliente.html"
-        : "index.html";
+      window.location.href =
+        from === "carrito" ? "detalles-cliente.html" : "index.html";
     }, 1300);
 
   } catch (err) {
@@ -221,21 +221,22 @@ loginForm.addEventListener("submit", async (e) => {
 // ========================================================
 // SNACKBAR
 // ========================================================
+
 function mostrarSnackbar(msg) {
   const s = document.getElementById("snackbar");
-  if (!s) return;
-
   s.textContent = msg;
   s.classList.add("show");
   setTimeout(() => s.classList.remove("show"), 2600);
 }
 
 // ========================================================
-// TOGGLE PASSWORD
+// MOSTRAR / OCULTAR CONTRASEÑA
 // ========================================================
+
 document.querySelectorAll(".toggle-pass").forEach(icon => {
   icon.addEventListener("click", () => {
     const target = document.getElementById(icon.dataset.target);
+
     if (target.type === "password") {
       target.type = "text";
       icon.textContent = "visibility_off";
@@ -245,3 +246,19 @@ document.querySelectorAll(".toggle-pass").forEach(icon => {
     }
   });
 });
+
+// ========================================================
+// BOTÓN ATRÁS (flecha dentro de la tarjeta)
+// ========================================================
+
+const backBtn = document.querySelector(".back-btn");
+
+if (backBtn) {
+  backBtn.addEventListener("click", () => {
+    if (from === "carrito") {
+      window.location.href = "carrito.html";
+      return;
+    }
+    window.location.href = "index.html";
+  });
+}
