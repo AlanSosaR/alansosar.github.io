@@ -41,7 +41,7 @@ body {
   left: 18px;
   width: 42px;
   height: 42px;
-  border-radius: 50%; 
+  border-radius: 50%;
   background: #ffffff;
   color: #33673B;
   border: none;
@@ -97,7 +97,7 @@ body {
 =============================== */
 .register-inner-card {
   background: #ffffff;
-  border: 1.6px solid #512615; 
+  border: 1.6px solid #512615;
   border-radius: 16px;
   padding: 28px 25px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
@@ -120,13 +120,13 @@ body {
   transition: all 0.22s ease;
 }
 
-/* BORDER ERROR */
+/* ERROR */
 .m3-input.error {
   border-color: #d72638 !important;
   box-shadow: 0 0 0 3px rgba(215, 38, 56, 0.18);
 }
 
-/* BORDER SUCCESS */
+/* SUCCESS */
 .m3-input.success {
   border-color: #3CB043 !important;
   box-shadow: 0 0 0 3px rgba(60, 176, 67, 0.18);
@@ -152,7 +152,7 @@ body {
 }
 
 /* ===============================
-   FLOATING LABEL
+   FLOATING LABEL — NORMAL
 =============================== */
 .floating-label {
   position: absolute;
@@ -164,6 +164,7 @@ body {
   pointer-events: none;
 }
 
+/* SUBE LABEL (NORMAL O FOCUS) */
 .m3-input input:not(:placeholder-shown) + .floating-label,
 .m3-input:focus-within .floating-label {
   top: -6px;
@@ -173,7 +174,9 @@ body {
   padding: 0 4px;
 }
 
-/* LABEL ERROR */
+/* ===============================
+   LABEL ERROR
+=============================== */
 .m3-input.error .floating-label {
   top: -6px !important;
   transform: translateY(-2px);
@@ -183,9 +186,20 @@ body {
   padding: 0 4px;
 }
 
-/* LABEL SUCCESS — MATCH LOGIN */
+/* ===============================
+   LABEL SUCCESS (COMPLETO)
+=============================== */
 .m3-input.success .floating-label {
   color: #3CB043 !important;
+}
+
+.m3-input.success input:not(:placeholder-shown) + .floating-label,
+.m3-input.success:focus-within .floating-label {
+  top: -6px;
+  font-size: 0.78rem;
+  color: #3CB043 !important;
+  background: #ffffff;
+  padding: 0 4px;
 }
 
 /* PLACEHOLDER ROJO */
@@ -207,7 +221,7 @@ body {
 }
 
 /* ===============================
-   BARRAS DE SEGURIDAD (6)
+   BARRAS DE SEGURIDAD
 =============================== */
 .strength-bars {
   display: none;
@@ -229,7 +243,7 @@ body {
 .strength-bar.active-strong { background-color: #3CB043; }
 
 /* ===============================
-   MENSAJES DE ERROR
+   ERROR TEXT
 =============================== */
 .m3-error {
   font-size: 0.83rem;
@@ -238,7 +252,7 @@ body {
 }
 
 /* ===============================
-   BOTÓN + LOADER (CENTRADO REAL)
+   BOTÓN + LOADER
 =============================== */
 .m3-btn {
   width: 100%;
@@ -260,13 +274,11 @@ body {
   justify-content: center;
 }
 
-/* Texto desaparece sin mover el loader */
 .m3-btn.loading .btn-text {
   opacity: 0;
-  position: absolute; /* ← FIX */
+  position: absolute;
 }
 
-/* Loader centrado exactamente */
 .m3-btn .loader {
   position: absolute;
   top: 50%;
@@ -279,14 +291,11 @@ body {
   animation: spin 0.9s linear infinite;
   transform: translate(-50%, -50%);
   opacity: 0;
-  pointer-events: none;
 }
 
 .m3-btn.loading .loader { opacity: 1; }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
+@keyframes spin { to { transform: rotate(360deg); } }
 
 /* ===============================
    SNACKBAR
