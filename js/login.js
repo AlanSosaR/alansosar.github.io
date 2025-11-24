@@ -1,6 +1,6 @@
 // ========================================================
 // LOGIN – Café Cortero ☕
-// Validación Gmail + Floating Label Real
+// Validación Gmail + Floating Label Real + Google Login
 // ========================================================
 
 const supabase = window.supabaseClient;
@@ -41,7 +41,7 @@ function tipoDeEntrada(valor) {
 }
 
 // ========================================================
-// LIMPIAR ERRORES (cuando escribís)
+// LIMPIAR ERRORES EN VIVO
 // ========================================================
 
 function limpiarErroresInput(event) {
@@ -54,7 +54,6 @@ function limpiarErroresInput(event) {
   msg.textContent = "";
   msg.style.opacity = "0";
 
-  // cuando escribís → label arriba + verde
   if (input.value.trim() !== "") {
     box.classList.add("success");
     input.classList.add("has-text");
@@ -70,7 +69,7 @@ userInput.addEventListener("input", limpiarErroresInput);
 passInput.addEventListener("input", limpiarErroresInput);
 
 // ========================================================
-// MARCAR ERROR (cuando presionás ACCEDER)
+// MARCAR ERROR
 // ========================================================
 
 function marcarError(input, placeholderText) {
@@ -78,17 +77,12 @@ function marcarError(input, placeholderText) {
   const box = field.querySelector(".m3-input");
   const msg = field.querySelector(".field-msg");
 
-  // activar error
   box.classList.add("error");
   box.classList.remove("success");
 
-  // SUBIR label
   input.classList.add("has-text");
-
-  // mostrar placeholder café adentro
   input.placeholder = placeholderText;
 
-  // mensaje abajo NO se usa, pero queda por si multiplica
   msg.textContent = placeholderText;
   msg.style.opacity = "1";
 }
@@ -127,7 +121,7 @@ function validarPassword(valor) {
 }
 
 // ========================================================
-// LOGIN SUBMIT
+// SUBMIT LOGIN
 // ========================================================
 
 loginForm.addEventListener("submit", async (e) => {
@@ -136,9 +130,6 @@ loginForm.addEventListener("submit", async (e) => {
   const userValue = userInput.value.trim();
   const passValue = passInput.value.trim();
 
-  // -------------------------------------------
-  // VALIDAR CAMPO USUARIO
-  // -------------------------------------------
   if (!userValue) {
     marcarError(userInput, "Ingresa tu correo o teléfono");
     return;
@@ -156,9 +147,6 @@ loginForm.addEventListener("submit", async (e) => {
     return;
   }
 
-  // -------------------------------------------
-  // VALIDAR CONTRASEÑA
-  // -------------------------------------------
   if (!passValue) {
     marcarError(passInput, "Ingresa tu contraseña");
     return;
@@ -169,9 +157,7 @@ loginForm.addEventListener("submit", async (e) => {
     return;
   }
 
-  // -------------------------------------------
   // LOADING
-  // -------------------------------------------
   loginBtn.classList.add("loading");
   btnText.style.opacity = "0";
   btnLoader.style.display = "inline-block";
@@ -179,7 +165,6 @@ loginForm.addEventListener("submit", async (e) => {
   let emailToUse = userValue;
 
   try {
-    // si es teléfono → buscar correo real
     if (tipo === "telefono") {
       const { data: rows } = await supabase
         .from("users")
@@ -263,6 +248,30 @@ document.querySelectorAll(".toggle-pass").forEach(icon => {
       icon.textContent = "visibility";
     }
   });
+});
+
+// ========================================================
+// LOGIN CON GOOGLE
+// ========================================================
+
+document.getElementById("googleLoginBtn").addEventListener("click", async () => {
+  try {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: window.location.origin + "/index.html"
+      }
+    });
+
+    if (error) {
+      mostrarSnackbar("Error al conectar con Google");
+      return;
+    }
+
+  } catch (err) {
+    console.error(err);
+    mostrarSnackbar("No se pudo iniciar con Google");
+  }
 });
 
 // ========================================================
