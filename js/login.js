@@ -33,11 +33,9 @@ const autocorrecciones = {
 };
 
 // ========================================================
-// TIPO DE ENTRADA (NUEVA LÓGICA)
+// TIPO DE ENTRADA
 // ========================================================
-// Si solo son números → teléfono
-// Si hay letras → correo
-// Si mezcla números/letras → correo
+
 function tipoDeEntrada(valor) {
   return /^[0-9]+$/.test(valor) ? "telefono" : "correo";
 }
@@ -52,15 +50,57 @@ function limpiarErrores() {
     msg.textContent = "";
     msg.style.opacity = "0";
   });
+
+  // reset label
+  document.querySelectorAll(".floating-label").forEach(l => {
+    l.style.color = "";
+    l.style.top = "";
+    l.style.left = "";
+    l.style.fontSize = "";
+    l.style.background = "";
+  });
 }
+
+// ========================================================
+// ERROR VISUAL MEJORADO (como Registro)
+// ========================================================
 
 function marcarError(input, mensaje) {
   const group = input.closest(".m3-field");
   const msg = group.querySelector(".field-msg");
+  const wrapper = group.querySelector(".m3-input");
+  const label = group.querySelector(".floating-label");
 
-  group.querySelector(".m3-input").classList.add("error");
+  wrapper.classList.add("error");
+
+  const valor = input.value.trim();
+
+  if (!valor) {
+    // ============================================
+    // ERROR CON CAMPO VACÍO — LABEL DENTRO
+    // ============================================
+    msg.textContent = "";
+    msg.style.opacity = "0";
+
+    label.style.top = "18px";
+    label.style.left = "42px";
+    label.style.fontSize = "0.95rem";
+    label.style.color = "#D32F2F";
+    label.style.background = "transparent";
+    return;
+  }
+
+  // ============================================
+  // ERROR CON TEXTO — LABEL ARRIBA + MENSAJE
+  // ============================================
   msg.textContent = mensaje;
   msg.style.opacity = "1";
+
+  label.style.top = "-6px";
+  label.style.left = "12px";
+  label.style.fontSize = "0.75rem";
+  label.style.color = "#D32F2F";
+  label.style.background = "#ffffff";
 }
 
 // ========================================================
@@ -85,8 +125,7 @@ function validarCorreo(valor) {
 
 function validarTelefono(valor) {
   const limpio = valor.replace(/[\s-+]/g, "");
-  if (!/^[0-9]+$/.test(limpio)) return false;
-  return limpio.length >= 7 && limpio.length <= 15;
+  return /^[0-9]+$/.test(limpio) && limpio.length >= 7 && limpio.length <= 15;
 }
 
 function validarPassword(valor) {
@@ -97,7 +136,7 @@ function validarPassword(valor) {
 }
 
 // ========================================================
-// VALIDACIÓN EN VIVO (Gmail-like)
+// VALIDACIÓN EN VIVO
 // ========================================================
 
 userInput.addEventListener("blur", () => {
@@ -106,13 +145,8 @@ userInput.addEventListener("blur", () => {
 
   const tipo = tipoDeEntrada(v);
 
-  if (tipo === "correo" && !validarCorreo(v)) {
-    marcarError(userInput, "Correo no válido");
-  }
-
-  if (tipo === "telefono" && !validarTelefono(v)) {
-    marcarError(userInput, "Teléfono inválido");
-  }
+  if (tipo === "correo" && !validarCorreo(v)) marcarError(userInput, "Correo no válido");
+  if (tipo === "telefono" && !validarTelefono(v)) marcarError(userInput, "Teléfono inválido");
 });
 
 userInput.addEventListener("input", limpiarErrores);
