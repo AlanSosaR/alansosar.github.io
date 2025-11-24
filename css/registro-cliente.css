@@ -12,21 +12,17 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* ===============================
-   CONTENEDOR PRINCIPAL
-=============================== */
 .register-container {
   display: flex;
   justify-content: center;
   width: 100%;
-  padding: 80px 20px 30px 20px;
+  padding: 30px 20px;
 }
 
 /* ===============================
    TARJETA PRINCIPAL
 =============================== */
 .register-card {
-  position: relative;
   background: #ffffff;
   border-radius: 20px;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
@@ -36,52 +32,25 @@ body {
 }
 
 /* ===============================
-   BOTÓN FLOTANTE ATRÁS
-=============================== */
-.back-btn {
-  position: absolute;
-  top: 16px;
-  left: 16px;
-  z-index: 10;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #ffffff;
-  color: #33673B;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.12);
-  cursor: pointer;
-  transition: all .25s ease;
-}
-.back-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.22);
-}
-.back-btn .material-symbols-outlined {
-  font-size: 26px;
-  font-weight: 500;
-}
-
-/* ===============================
    HEADER
 =============================== */
 .register-header {
   text-align: center;
   margin-bottom: 25px;
 }
+
 .logo-container {
   cursor: pointer;
   display: flex;
   justify-content: center;
   margin-bottom: 12px;
 }
+
 .logo-container img {
   width: 105px;
   transition: 0.3s;
 }
+
 .register-title {
   font-family: "Fraunces", serif;
   font-size: 1.8rem;
@@ -90,10 +59,11 @@ body {
 }
 
 /* ===============================
-   CARD INTERIOR
+   CARD INTERIOR OUTLINED
+   (CORREGIDO IGUAL QUE LOGIN)
 =============================== */
 .register-inner-card {
-  border: 1.6px solid rgba(81, 38, 21, 0.25);
+  border: 1.6px solid rgba(81, 38, 21, 0.45); /* ← cambiado */
   border-radius: 20px;
   padding: 28px;
   margin-top: 15px;
@@ -101,25 +71,10 @@ body {
 }
 
 /* ===============================
-   CAMPOS MATERIAL 3
+   MATERIAL 3 FLOATING LABEL
 =============================== */
 .m3-field {
   margin-bottom: 22px;
-  position: relative;
-}
-
-.field-msg {
-  font-size: 0.78rem;
-  color: #d72638;
-  margin-top: 4px;
-  padding-left: 4px;
-  min-height: 16px;
-  opacity: 0;
-  transition: opacity .25s ease;
-}
-
-.m3-input.filled.error + .field-msg {
-  opacity: 1;
 }
 
 .m3-input {
@@ -133,22 +88,24 @@ body {
   transition: all 0.22s ease;
 }
 
-/* estados */
 .m3-input.error {
   border-color: #d72638 !important;
   box-shadow: 0 0 0 3px rgba(215, 38, 56, 0.18);
 }
+
 .m3-input.success {
   border-color: #3CB043 !important;
   box-shadow: 0 0 0 3px rgba(60, 176, 67, 0.18);
 }
 
+/* Iconos */
 .m3-input .material-symbols-outlined {
   font-size: 22px;
   margin-right: 8px;
   color: #33673B;
 }
 
+/* INPUT */
 .m3-input input {
   flex: 1;
   border: none;
@@ -161,7 +118,7 @@ body {
 }
 
 /* ===============================
-   FLOATING LABEL — NORMAL
+   FLOATING LABEL
 =============================== */
 .floating-label {
   position: absolute;
@@ -176,38 +133,35 @@ body {
 .m3-input input:not(:placeholder-shown) + .floating-label,
 .m3-input:focus-within .floating-label {
   top: -6px;
-  left: 12px;
   font-size: 0.78rem;
   color: #33673B;
   background: #ffffff;
   padding: 0 4px;
 }
 
-/* ===============================
-   FLOATING LABEL — ERROR (LOGIN STYLE)
-=============================== */
-
+/* ERROR — LABEL SIEMPRE ARRIBA (MEJORADO) */
 .m3-input.error .floating-label {
   top: -6px !important;
-  left: 12px !important;
+  transform: translateY(-2px);
   font-size: 0.78rem !important;
   color: #d72638 !important;
-  background: #ffffff !important;
-  padding: 0 4px !important;
+  background: #ffffff;
+  padding: 0 4px;
 }
 
-/* Placeholder rojo (error dentro del input si está vacío) */
+/* PLACEHOLDER ROJO */
 .m3-input.error input::placeholder {
   color: #d72638 !important;
-  opacity: 1 !important;
+  opacity: 1;
   font-weight: 500;
 }
 
-/* JS usa esta clase */
-.m3-input.filled {}
+.m3-input.error input {
+  caret-color: #d72638;
+}
 
 /* ===============================
-   VER CONTRASEÑA
+   BOTÓN VER CONTRASEÑA
 =============================== */
 .toggle-pass {
   cursor: pointer;
@@ -218,22 +172,35 @@ body {
 }
 
 /* ===============================
-   BARRAS SEGURIDAD
+   BARRAS DE SEGURIDAD
 =============================== */
 .strength-bars {
   display: none;
-  margin-top: 10px;
-  gap: 6px;
+  margin-top: 8px;
+  gap: 4px;
+  transition: 0.25s ease;
 }
+
 .strength-bar {
   height: 6px;
   flex: 1;
   border-radius: 4px;
-  background-color: #E3E3E3;
+  background-color: #e0e0e0;
+  transition: 0.25s ease;
 }
+
 .strength-bar.active-weak { background-color: #d72638; }
 .strength-bar.active-medium { background-color: #e6a700; }
 .strength-bar.active-strong { background-color: #3CB043; }
+
+/* ===============================
+   MENSAJES DE ERROR
+=============================== */
+.m3-error {
+  font-size: 0.83rem;
+  color: #d72638;
+  min-height: 16px;
+}
 
 /* ===============================
    BOTÓN + LOADER
@@ -250,36 +217,27 @@ body {
   cursor: pointer;
   margin-top: 12px;
   position: relative;
+  overflow: hidden;
   height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
-.btn-text {
-  transition: opacity .25s ease;
-}
-.m3-btn.loading .btn-text {
-  opacity: 0;
-  position: absolute;
-}
+.m3-btn.loading .btn-text { opacity: 0; }
+
 .m3-btn .loader {
-  display: none;
   position: absolute;
+  top: 50%;
+  left: 50%;
   width: 22px;
   height: 22px;
   border-radius: 50%;
   border: 3px solid rgba(255,255,255,0.3);
   border-top-color: #ffffff;
   animation: spin 0.9s linear infinite;
-  top: 50%;
-  left: 50%;
   transform: translate(-50%, -50%);
+  opacity: 0;
 }
-.m3-btn.loading .loader {
-  display: inline-block;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
+
+.m3-btn.loading .loader { opacity: 1; }
 
 /* ===============================
    SNACKBAR
@@ -299,6 +257,7 @@ body {
   pointer-events: none;
   transition: opacity .25s ease, transform .25s ease;
 }
+
 #snackbar.show {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
@@ -308,20 +267,17 @@ body {
    RESPONSIVE
 =============================== */
 @media (max-width: 480px) {
+
   .register-card {
     padding: 22px;
     max-width: 360px;
   }
+
   .register-inner-card {
     padding: 20px;
   }
+
   .register-title {
     font-size: 1.5rem;
-  }
-  .back-btn {
-    top: 12px;
-    left: 12px;
-    width: 40px;
-    height: 40px;
   }
 }
