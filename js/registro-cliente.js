@@ -1,6 +1,6 @@
 // ============================================================
-// REGISTRO DE CLIENTE — Café Cortero
-// Floating Label + Error Rojo + Éxito Verde (Material 3)
+// REGISTRO DE CLIENTE — Café Cortero (VERSIÓN FINAL CORREGIDA)
+// Floating Label + Error Café + Éxito Verde + Validación en vivo
 // ============================================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   // ============================================================
-  // DOMINIOS + AUTOCORRECCIONES
+  // AUTOCORRECCIÓN DE CORREO
   // ============================================================
   const autocorrecciones = {
     "gmal.com": "gmail.com",
@@ -47,18 +47,15 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   // ============================================================
-  // NORMALIZAR TELÉFONO (WhatsApp Style)
+  // NORMALIZAR TELÉFONO
   // ============================================================
   function normalizarTelefono(tel) {
     if (!tel) return "";
 
-    // quitar espacios, guiones, paréntesis
     tel = tel.replace(/[\s\-()]/g, "");
 
-    // convertir 00 → +
     if (tel.startsWith("00")) tel = "+" + tel.slice(2);
 
-    // quitar el signo +
     tel = tel.replace(/^\+/, "");
 
     return tel;
@@ -104,7 +101,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ============================================================
-  // CORREO — VALIDACIÓN + AUTOCORRECCIÓN
+  // VALIDAR CORREO
   // ============================================================
   function esCorreoValido(email) {
     if (!email) return false;
@@ -113,6 +110,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!regexGeneral.test(email)) return false;
 
     let [usuario, dominio] = email.split("@");
+
     dominio = dominio.toLowerCase();
 
     if (autocorrecciones[dominio]) {
@@ -123,11 +121,11 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ============================================================
-  // VERDE EN VIVO
+  // VERDE EN VIVO (CORRECCIÓN AUTOMÁTICA)
   // ============================================================
   function activarVerdeEnVivo(campo, validador) {
-    campos[campo].addEventListener("input", () => {
 
+    campos[campo].addEventListener("input", () => {
       const input = campos[campo];
       const grupo = input.closest(".m3-input");
 
@@ -144,8 +142,8 @@ document.addEventListener("DOMContentLoaded", () => {
       } else {
         grupo.classList.remove("success");
       }
-
     });
+
   }
 
   activarVerdeEnVivo("nombre", v => v.length >= 2);
@@ -155,7 +153,7 @@ document.addEventListener("DOMContentLoaded", () => {
   activarVerdeEnVivo("confirm", v => v === campos.password.value.trim());
 
   // ============================================================
-  // BLUR (VALIDACIONES FINALES)
+  // BLUR FINAL
   // ============================================================
   campos.nombre.addEventListener("blur", () => {
     const v = campos.nombre.value.trim();
@@ -177,7 +175,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   campos.password.addEventListener("blur", () => {
-    if (campos.password.value.length < 6)
+    if (campos.password.value.trim().length < 6)
       marcar("password", mensajesVacios.password);
     else marcar("password", "", true);
   });
@@ -200,7 +198,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // ============================================================
-  // CHEQUEAR DUPLICADOS — TEL NORMALIZADO
+  // CHEQUEAR DUPLICADOS (EMAIL + TEL NORMALIZADO)
   // ============================================================
   async function existeUsuario(correo, telefonoRaw) {
 
@@ -219,7 +217,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ============================================================
-  // VALIDACIÓN EN CADENA
+  // VALIDACIÓN FINAL
   // ============================================================
   function validarEnCadena() {
 
@@ -264,7 +262,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ============================================================
-  // SUBMIT
+  // ENVÍO FINAL
   // ============================================================
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -309,12 +307,6 @@ document.addEventListener("DOMContentLoaded", () => {
       desactivarLoading();
     }
   });
-
-  // ============================================================
-  // BOTÓN ATRÁS
-  // ============================================================
-  const backBtn = document.querySelector(".back-btn");
-  if (backBtn) backBtn.addEventListener("click", () => window.location.href = "login.html");
 
   // ============================================================
   // SNACKBAR
