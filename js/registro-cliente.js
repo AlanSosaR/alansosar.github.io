@@ -30,9 +30,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnText = btn.querySelector(".btn-text");
   const btnLoader = btn.querySelector(".loader");
 
-
   // ============================================================
-  // Limpieza de errores
+  // LIMPIAR ERRORES
   // ============================================================
   function limpiarErrores() {
     Object.values(errores).forEach(e => e.textContent = "");
@@ -54,9 +53,8 @@ document.addEventListener("DOMContentLoaded", () => {
     errores[campo].textContent = mensaje;
   }
 
-
   // ============================================================
-  // VALIDACIÓN AVANZADA — CORREOS
+  // VALIDACIÓN AVANZADA CORREO
   // ============================================================
   const dominiosValidos = [
     "gmail.com", "hotmail.com", "outlook.com", "yahoo.com", "icloud.com",
@@ -93,7 +91,6 @@ document.addEventListener("DOMContentLoaded", () => {
     return dominiosValidos.some(d => dominio.endsWith(d));
   }
 
-
   // ============================================================
   // VALIDACIÓN TELÉFONO
   // ============================================================
@@ -101,7 +98,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const limpio = t.replace(/[\s-+]/g, "");
     return /^[0-9]{7,15}$/.test(limpio);
   }
-
 
   // ============================================================
   // VALIDACIÓN PASSWORD
@@ -112,9 +108,8 @@ document.addEventListener("DOMContentLoaded", () => {
     return true;
   }
 
-
   // ============================================================
-  // BARRAS SEGURIDAD PASSWORD — 6 BARRAS ESTILO APPLE
+  // BARRAS SEGURIDAD (6 BARRAS)
   // ============================================================
   const bars = document.querySelectorAll(".strength-bar");
   const barsContainer = document.getElementById("barsContainer");
@@ -122,7 +117,7 @@ document.addEventListener("DOMContentLoaded", () => {
   campos.password.addEventListener("input", () => {
     const v = campos.password.value.trim();
 
-    // resetear clases
+    // Reset
     bars.forEach(b => b.className = "strength-bar");
 
     if (v.length === 0) {
@@ -132,24 +127,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
     barsContainer.style.display = "flex";
 
-    // Nivel 1 y 2 — MUY DÉBIL
+    // Nivel 1
     if (v.length < 4) {
       bars[0].classList.add("active-weak");
       return;
     }
+
+    // Nivel 2
     if (v.length < 6) {
       bars[0].classList.add("active-weak");
       bars[1].classList.add("active-weak");
       return;
     }
 
-    // Nivel 3 y 4 — MEDIO
+    // Nivel 3
     if (v.length < 8) {
       bars[0].classList.add("active-medium");
       bars[1].classList.add("active-medium");
       bars[2].classList.add("active-medium");
       return;
     }
+
+    // Nivel 4
     if (v.length < 10) {
       bars[0].classList.add("active-medium");
       bars[1].classList.add("active-medium");
@@ -158,16 +157,16 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // Nivel 5 — FUERTE
+    // Nivel 5
     if (v.length < 14) {
       bars.forEach((b, i) => i < 5 && b.classList.add("active-strong"));
       return;
     }
 
-    // Nivel 6 — CONTRASEÑA MUY FUERTE
+    // Nivel 6 — FUERZA MÁXIMA
+    bars.forEach(b => b.classList.add("active-strong"));
     bars.forEach(b => b.classList.add("active-max"));
   });
-
 
   // ============================================================
   // MOSTRAR / OCULTAR PASSWORD
@@ -176,15 +175,12 @@ document.addEventListener("DOMContentLoaded", () => {
     icon.addEventListener("click", () => {
       const input = document.getElementById(icon.dataset.target);
       input.type = input.type === "password" ? "text" : "password";
-      icon.textContent = input.type === "password"
-        ? "visibility"
-        : "visibility_off";
+      icon.textContent = input.type === "password" ? "visibility" : "visibility_off";
     });
   });
 
-
   // ============================================================
-  // LOADING
+  // LOADING BTN
   // ============================================================
   function activarLoading() {
     btn.classList.add("loading");
@@ -199,7 +195,6 @@ document.addEventListener("DOMContentLoaded", () => {
     btnText.style.opacity = "1";
     btnLoader.style.display = "none";
   }
-
 
   // ============================================================
   // VALIDACIÓN COMPLETA
@@ -244,7 +239,6 @@ document.addEventListener("DOMContentLoaded", () => {
     return true;
   }
 
-
   // ============================================================
   // VERIFICAR DUPLICADOS
   // ============================================================
@@ -256,7 +250,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     return data?.length ? data[0] : null;
   }
-
 
   // ============================================================
   // SUBMIT FINAL
@@ -302,7 +295,6 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error(err);
     }
   });
-
 
   // ============================================================
   // SNACKBAR
