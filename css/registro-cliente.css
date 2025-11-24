@@ -202,11 +202,13 @@ body {
   padding: 0 4px;
 }
 
-/* PLACEHOLDER ROJO */
+/* ===============================
+   PLACEHOLDER EN ERROR — AHORA CAFÉ
+=============================== */
 .m3-input.error input::placeholder {
-  color: #d72638 !important;
-  opacity: 1;
-  font-weight: 500;
+  color: #512615 !important; /* café igual que en login */
+  opacity: .75;
+  font-weight: 400;
 }
 
 /* ===============================
