@@ -29,10 +29,7 @@ body {
   border: 1.5px solid #E0E0E0;
   border-radius: 20px;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-  
-  /* ✔ Ajuste para que la flecha no tape contenido */
   padding: 50px 40px 30px;
-  
   max-width: 420px;
   width: 100%;
   min-height: 520px;
@@ -76,7 +73,6 @@ body {
   box-shadow: 0 6px 20px rgba(0,0,0,0.18);
 }
 
-/* Icono */
 .back-btn .material-symbols-outlined {
   font-size: 26px;
   font-weight: 600;
@@ -119,10 +115,7 @@ body {
   background: #ffffff;
   border: 1.6px solid #512615;
   border-radius: 16px;
-
-  /* ✔ Ajuste igual que registro */
   padding: 28px 25px;
-
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
 
@@ -154,9 +147,7 @@ body {
   align-items: center;
   border: 1.5px solid #E0E0E0;
   border-radius: 12px;
-  
   padding: 12px 12px 8px 12px;
-  
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
   background-color: #fff;
 }
@@ -187,12 +178,12 @@ body {
 }
 
 /* ===============================
-   FLOATING LABEL (AJUSTE FINAL)
+   FLOATING LABEL
 =============================== */
 .floating-label {
   position: absolute;
   left: 42px;
-  top: 18px; /* ✔ mejor punto visual */
+  top: 18px;
   font-size: 0.95rem;
   color: rgba(0, 0, 0, 0.55);
   pointer-events: none;
@@ -225,7 +216,7 @@ body {
 }
 
 /* ===============================
-   BOTÓN ACCEDER
+   BOTÓN ACCEDER (CORREGIDO)
 =============================== */
 .m3-btn {
   width: 100%;
@@ -236,7 +227,6 @@ body {
   padding: 12px;
   font-size: 1rem;
   font-weight: 500;
-
   cursor: pointer;
   transition: all 0.25s ease;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
@@ -247,23 +237,28 @@ body {
   align-items: center;
 }
 
-.m3-btn:hover {
-  background-color: #28532E;
-  transform: translateY(-1px);
+.btn-text {
+  transition: opacity 0.25s ease;
 }
 
 .m3-btn.loading .btn-text {
   opacity: 0;
+  position: absolute; /* ✔ no ocupa espacio */
 }
 
-.m3-btn.loading .loader {
-  display: inline-block;
+.loader {
+  display: none;
+  position: absolute; /* ✔ SIEMPRE centrado */
   width: 22px;
   height: 22px;
   border-radius: 50%;
   border: 3px solid rgba(255, 255, 255, 0.4);
   border-top-color: #fff;
   animation: spin 0.8s linear infinite;
+}
+
+.m3-btn.loading .loader {
+  display: inline-block;
 }
 
 @keyframes spin {
@@ -279,77 +274,6 @@ body {
   flex-direction: column;
   text-align: center;
   gap: 8px;
-}
-
-#forgotPassword {
-  font-size: 0.9rem;
-  color: #512615;
-  text-decoration: none;
-}
-
-.crear-cuenta-texto {
-  font-size: 0.9rem;
-  color: #512615;
-}
-
-.registrate-link {
-  color: #33673B;
-  font-weight: 500;
-}
-
-/* ===============================
-   SEPARADOR
-=============================== */
-.separator {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 1rem 0;
-}
-
-/* ===============================
-   SOCIAL LOGIN
-=============================== */
-.social-login {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-}
-
-.btn-social {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  border: 1.5px solid #E0E0E0;
-  border-radius: 8px;
-  padding: 8px 14px;
-  font-size: 0.9rem;
-  background: #fff;
-  cursor: pointer;
-  transition: all 0.25s ease;
-}
-
-.btn-social img {
-  width: 18px;
-}
-
-/* ===============================
-   SNACKBAR
-=============================== */
-#snackbar {
-  visibility: hidden;
-  min-width: 280px;
-  background-color: #33673B;
-  color: #fff;
-  text-align: center;
-  border-radius: 8px;
-  padding: 14px;
-  position: fixed;
-  left: 50%;
-  bottom: 30px;
-  transform: translateX(-50%);
-  font-size: 0.95rem;
-  z-index: 1000;
 }
 
 /* ===============================
