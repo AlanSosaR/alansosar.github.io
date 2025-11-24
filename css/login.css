@@ -120,10 +120,20 @@ body {
   position: relative;
 }
 
-/* Oculto el mensaje tradicional */
-.field-msg { display: none !important; }
+.field-msg {
+  font-size: 0.78rem;
+  color: #D32F2F;
+  margin-top: 4px;
+  padding-left: 4px;
+  min-height: 16px;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
 
-/* Input */
+.m3-input.error + .field-msg {
+  opacity: 1;
+}
+
 .m3-input {
   position: relative;
   display: flex;
@@ -183,16 +193,21 @@ body {
   color: #33673B;
 }
 
-/* ===============================
-   LABEL COMO ERROR DENTRO DEL INPUT
-=============================== */
+/* LABEL en error (sube y se vuelve rojo) */
 .m3-input.error .floating-label {
-  top: 18px !important;
-  left: 42px !important;
-  font-size: 0.95rem !important;
+  top: -6px !important;
+  left: 12px !important;
+  font-size: 0.75rem !important;
+  background: #ffffff !important;
+  padding: 0 6px !important;
   color: #D32F2F !important;
-  background: transparent !important;
-  padding: 0 !important;
+}
+
+/* Placeholder rojo cuando está vacío y con error */
+.m3-input.error input::placeholder {
+  color: #D32F2F !important;
+  opacity: 1;
+  font-weight: 500;
 }
 
 /* ===============================
@@ -250,7 +265,6 @@ body {
   display: inline-block;
 }
 
-/* Spin */
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
