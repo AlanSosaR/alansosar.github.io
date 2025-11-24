@@ -123,8 +123,6 @@ body {
 .field-msg {
   font-size: 0.78rem;
   color: #D32F2F;
-  margin-top: 4px;
-  padding-left: 4px;
   min-height: 16px;
   opacity: 0;
   transition: opacity 0.25s ease;
@@ -141,18 +139,18 @@ body {
   border: 1.5px solid #E0E0E0;
   border-radius: 12px;
   padding: 12px 12px 8px 12px;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
   background-color: #fff;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .m3-input:focus-within {
   border-color: #33673B;
-  box-shadow: 0 0 0 2px rgba(51, 103, 59, 0.1);
+  box-shadow: 0 0 0 2px rgba(51,103,59,0.16);
 }
 
 .m3-input.error {
   border-color: #D32F2F !important;
-  box-shadow: 0 0 0 2px rgba(211,47,47,0.15);
+  box-shadow: 0 0 0 2px rgba(211,47,47,0.18);
 }
 
 .m3-input input {
@@ -162,12 +160,6 @@ body {
   background: transparent;
   font-size: 1rem;
   color: #2E2A27;
-}
-
-.m3-input .material-symbols-outlined {
-  font-size: 22px;
-  color: #33673B;
-  margin-right: 8px;
 }
 
 /* ===============================
@@ -194,11 +186,6 @@ body {
 }
 
 .m3-input.error .floating-label {
-  top: -6px !important;
-  left: 12px !important;
-  font-size: 0.75rem !important;
-  background: #ffffff;
-  padding: 0 6px;
   color: #D32F2F !important;
 }
 
@@ -213,12 +200,12 @@ body {
 }
 
 /* ===============================
-   BOTÓN ACCEDER — LOADER CENTRADO
+   BOTÓN ACCEDER
 =============================== */
 .m3-btn {
   width: 100%;
   background-color: #33673B;
-  color: #fff;
+  color: #ffffff;
   border: none;
   border-radius: 12px;
   padding: 12px;
@@ -233,10 +220,6 @@ body {
   align-items: center;
 }
 
-.btn-text {
-  transition: opacity 0.25s ease;
-}
-
 .m3-btn.loading .btn-text {
   opacity: 0;
   position: absolute;
@@ -248,92 +231,81 @@ body {
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  border: 3px solid rgba(255,255,255,0.4);
+  border: 3px solid rgba(255,255,255,0.3);
   border-top-color: #fff;
-  animation: spin 0.8s linear infinite;
+  animation: spin .9s linear infinite;
 }
 
 .m3-btn.loading .loader {
   display: inline-block;
 }
 
+@keyframes spin { to { transform: rotate(360deg); } }
+
 /* ===============================
-   LINKS — COLORES ACTUALIZADOS
+   LINKS — CON ESTILO EXACTO LOGIN
 =============================== */
-.links {
-  margin-top: 18px;
-  display: flex;
-  flex-direction: column;
-  text-align: center;
-  gap: 8px;
-}
 
-.links a {
-  text-decoration: none;
+.forgot-link {
+  color: #512615;
   font-size: 0.92rem;
-  transition: color .25s ease;
 }
 
-/* Olvidaste tu contraseña → café */
-.link-forgot {
+.crear-cuenta-texto {
   color: #512615;
+  font-size: 0.92rem;
 }
 
-/* ¿No tienes cuenta en Café Cortero? → café */
-.link-no-account {
-  color: #512615;
-}
-
-/* Regístrate ahora → verde */
-.link-register {
+.registrate-link {
   color: #33673B;
   font-weight: 600;
+  text-decoration: none;
 }
 
 /* ===============================
-   BOTONES GOOGLE & FACEBOOK
-   Material 3 — Filled Tonal
+   SEPARADOR
 =============================== */
-.social-buttons {
-  margin-top: 20px;
+.separator {
+  margin: 12px 0;
   text-align: center;
 }
 
-.social-row {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-  margin-top: 12px;
+.separator span {
+  background: #fff;
+  padding: 0 10px;
+  color: #512615;
 }
 
-.social-btn {
-  flex: 1;
+/* ===============================
+   BOTONES SOCIALES
+=============================== */
+.social-login {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.btn-social {
+  width: 100%;
+  border-radius: 12px;
+  padding: 10px 14px;
+  border: 1.4px solid rgba(81,38,21,0.22);
+  background: #F4EFEA;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 10px 14px;
-  border-radius: 12px;
-  background: #F4EFEA;
-  border: 1.4px solid rgba(81,38,21,0.25);
+  gap: 10px;
   cursor: pointer;
-  transition: background .25s ease, transform .2s ease;
+  transition: .22s ease;
 }
 
-.social-btn:hover {
+.btn-social:hover {
   background: #EDE6DF;
   transform: translateY(-2px);
 }
 
-.social-btn img {
+.btn-social img {
   width: 20px;
-  height: 20px;
-}
-
-.social-btn span {
-  font-size: 0.92rem;
-  font-weight: 500;
-  color: #512615;
 }
 
 /* ===============================
