@@ -35,7 +35,8 @@ const autocorrecciones = {
 // ========================================================
 // TIPO DE ENTRADA
 // ========================================================
-
+// Solo números → teléfono
+// Letras o mezcla → correo
 function tipoDeEntrada(valor) {
   return /^[0-9]+$/.test(valor) ? "telefono" : "correo";
 }
@@ -51,56 +52,32 @@ function limpiarErrores() {
     msg.style.opacity = "0";
   });
 
-  // reset label
-  document.querySelectorAll(".floating-label").forEach(l => {
-    l.style.color = "";
-    l.style.top = "";
-    l.style.left = "";
-    l.style.fontSize = "";
-    l.style.background = "";
-  });
+  // Restaurar placeholders "vacíos" para el floating-label
+  userInput.placeholder = " ";
+  passInput.placeholder = " ";
 }
-
-// ========================================================
-// ERROR VISUAL MEJORADO (como Registro)
-// ========================================================
 
 function marcarError(input, mensaje) {
   const group = input.closest(".m3-field");
   const msg = group.querySelector(".field-msg");
-  const wrapper = group.querySelector(".m3-input");
-  const label = group.querySelector(".floating-label");
+  const m3 = group.querySelector(".m3-input");
 
-  wrapper.classList.add("error");
+  m3.classList.add("error");
 
-  const valor = input.value.trim();
-
-  if (!valor) {
-    // ============================================
-    // ERROR CON CAMPO VACÍO — LABEL DENTRO
-    // ============================================
-    msg.textContent = "";
-    msg.style.opacity = "0";
-
-    label.style.top = "18px";
-    label.style.left = "42px";
-    label.style.fontSize = "0.95rem";
-    label.style.color = "#D32F2F";
-    label.style.background = "transparent";
-    return;
+  if (input.value.trim() === "") {
+    // CAMPO VACÍO → error dentro del input (placeholder rojo)
+    input.placeholder = mensaje;
+    if (msg) {
+      msg.textContent = "";
+      msg.style.opacity = "0";
+    }
+  } else {
+    // CAMPO CON TEXTO → error abajo
+    if (msg) {
+      msg.textContent = mensaje;
+      msg.style.opacity = "1";
+    }
   }
-
-  // ============================================
-  // ERROR CON TEXTO — LABEL ARRIBA + MENSAJE
-  // ============================================
-  msg.textContent = mensaje;
-  msg.style.opacity = "1";
-
-  label.style.top = "-6px";
-  label.style.left = "12px";
-  label.style.fontSize = "0.75rem";
-  label.style.color = "#D32F2F";
-  label.style.background = "#ffffff";
 }
 
 // ========================================================
@@ -111,7 +88,8 @@ function validarCorreo(valor) {
   if (!valor.includes("@")) return false;
 
   const partes = valor.split("@");
-  const dominio = partes[1].toLowerCase();
+  const dominio = partes[1]?.toLowerCase();
+  if (!dominio) return false;
 
   if (autocorrecciones[dominio]) {
     userInput.value = partes[0] + "@" + autocorrecciones[dominio];
@@ -119,13 +97,13 @@ function validarCorreo(valor) {
   }
 
   if (!dominio.includes(".")) return false;
-
   return dominiosValidos.some(d => dominio.endsWith(d));
 }
 
 function validarTelefono(valor) {
   const limpio = valor.replace(/[\s-+]/g, "");
-  return /^[0-9]+$/.test(limpio) && limpio.length >= 7 && limpio.length <= 15;
+  if (!/^[0-9]+$/.test(limpio)) return false;
+  return limpio.length >= 7 && limpio.length <= 15;
 }
 
 function validarPassword(valor) {
@@ -145,8 +123,13 @@ userInput.addEventListener("blur", () => {
 
   const tipo = tipoDeEntrada(v);
 
-  if (tipo === "correo" && !validarCorreo(v)) marcarError(userInput, "Correo no válido");
-  if (tipo === "telefono" && !validarTelefono(v)) marcarError(userInput, "Teléfono inválido");
+  if (tipo === "correo" && !validarCorreo(v)) {
+    marcarError(userInput, "Correo no válido");
+  }
+
+  if (tipo === "telefono" && !validarTelefono(v)) {
+    marcarError(userInput, "Teléfono inválido");
+  }
 });
 
 userInput.addEventListener("input", limpiarErrores);
