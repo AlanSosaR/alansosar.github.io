@@ -20,14 +20,14 @@
 
 <body>
 
-  <!-- BOTÓN FLOTANTE ATRÁS -->
-  <button class="back-btn" onclick="window.location.href='login.html'">
-    <span class="material-symbols-outlined">chevron_left</span>
-  </button>
-
   <main class="register-container">
 
     <section class="register-card">
+
+      <!-- BOTÓN BACK DENTRO DE LA TARJETA -->
+      <button class="back-btn" onclick="window.location.href='login.html'">
+        <span class="material-symbols-outlined">chevron_left</span>
+      </button>
 
       <!-- HEADER -->
       <div class="register-header">
@@ -52,7 +52,7 @@
             <small class="m3-error" id="errorNombre"></small>
           </div>
 
-          <!-- CORREO (OBLIGATORIO) -->
+          <!-- CORREO -->
           <div class="m3-field">
             <div class="m3-input">
               <span class="material-symbols-outlined">mail</span>
