@@ -25,8 +25,17 @@ document.addEventListener("DOMContentLoaded", () => {
     confirm: document.getElementById("errorConfirm"),
   };
 
+  // Placeholders correctos cuando el campo está vacío
+  const mensajesVacios = {
+    nombre: "Ingresa tu nombre",
+    correo: "Ingresa tu correo",
+    telefono: "Ingresa tu teléfono",
+    password: "Ingresa tu contraseña",
+    confirm: "Confirma tu contraseña",
+  };
+
   // ============================================================
-  // DOMINIOS + AUTOCORRECCIONES (MISMOS QUE LOGIN)
+  // DOMINIOS + AUTOCORRECCIONES (LOGIN)
   // ============================================================
   const dominiosValidos = [
     "gmail.com", "hotmail.com", "outlook.com", "yahoo.com", "icloud.com",
@@ -47,15 +56,10 @@ document.addEventListener("DOMContentLoaded", () => {
   // ============================================================
   // LIMPIAR ERRORES
   // ============================================================
-  function limpiarErrores() {
-    Object.values(errores).forEach(e => e.textContent = "");
-    document.querySelectorAll(".m3-input").forEach(g => g.classList.remove("error", "success"));
-    Object.values(campos).forEach(c => c.placeholder = "");
-  }
-
   function limpiarErrorCampo(campo) {
     const input = campos[campo];
     const grupo = input.closest(".m3-input");
+
     grupo.classList.remove("error", "success");
     errores[campo].textContent = "";
     input.placeholder = "";
@@ -79,19 +83,19 @@ document.addEventListener("DOMContentLoaded", () => {
     grupo.classList.add("error");
 
     if (input.value.trim() === "") {
-      input.placeholder = mensaje;
+      input.placeholder = mensajesVacios[campo]; // placeholder rojo
       errores[campo].textContent = "";
     } else {
-      errores[campo].textContent = mensaje;
+      errores[campo].textContent = mensaje; // texto arriba rojo
       input.placeholder = "";
     }
   }
 
   // ============================================================
-  // VALIDAR CORREO + AUTOCORRECCIÓN ESTILO LOGIN
+  // VALIDAR CORREO + AUTOCORRECIÓN
   // ============================================================
   function esCorreoValido(email) {
-    if (!email) return true; // se valida aparte que sea obligatorio
+    if (!email) return true;
 
     const regexGeneral = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
     if (!regexGeneral.test(email)) return false;
@@ -100,22 +104,72 @@ document.addEventListener("DOMContentLoaded", () => {
     const usuario = partes[0];
     let dominio = (partes[1] || "").toLowerCase();
 
-    // autocorrección del dominio
     if (autocorrecciones[dominio]) {
       dominio = autocorrecciones[dominio];
       const corregido = `${usuario}@${dominio}`;
-      campos.correo.value = corregido; // se corrige en vivo en el input
+      campos.correo.value = corregido;
       email = corregido;
     }
 
-    // si el dominio coincide con alguno de la lista, perfecto
-    if (dominiosValidos.some(d => dominio.endsWith(d))) {
-      return true;
+    if (dominiosValidos.some(d => dominio.endsWith(d))) return true;
+
+    return true; // permitir dominios empresariales
+  }
+
+  // ============================================================
+  // VALIDACIÓN EN VIVO (INPUT + BLUR)
+  // ============================================================
+
+  // NOMBRE
+  campos.nombre.addEventListener("input", () => limpiarErrorCampo("nombre"));
+  campos.nombre.addEventListener("blur", () => {
+    const v = campos.nombre.value.trim();
+    if (!v) marcar("nombre", mensajesVacios.nombre);
+    else marcar("nombre", "", true);
+  });
+
+  // CORREO
+  campos.correo.addEventListener("input", () => limpiarErrorCampo("correo"));
+  campos.correo.addEventListener("blur", () => {
+    let correo = campos.correo.value.trim();
+
+    if (!correo) {
+      marcar("correo", mensajesVacios.correo);
+      return;
     }
 
-    // si no, igual permitimos otros dominios válidos (empresa, etc.)
-    return true;
-  }
+    if (!esCorreoValido(correo)) {
+      marcar("correo", "Correo no válido");
+      return;
+    }
+
+    marcar("correo", "", true);
+  });
+
+  // TELÉFONO
+  campos.telefono.addEventListener("input", () => limpiarErrorCampo("telefono"));
+  campos.telefono.addEventListener("blur", () => {
+    const tel = campos.telefono.value.trim();
+    if (tel.length < 8) marcar("telefono", mensajesVacios.telefono);
+    else marcar("telefono", "", true);
+  });
+
+  // CONTRASEÑA
+  campos.password.addEventListener("input", () => limpiarErrorCampo("password"));
+  campos.password.addEventListener("blur", () => {
+    if (!campos.password.value.trim()) marcar("password", mensajesVacios.password);
+    else marcar("password", "", true);
+  });
+
+  // CONFIRMAR
+  campos.confirm.addEventListener("input", () => limpiarErrorCampo("confirm"));
+  campos.confirm.addEventListener("blur", () => {
+    const pass = campos.password.value;
+    const conf = campos.confirm.value;
+    if (!conf) marcar("confirm", mensajesVacios.confirm);
+    else if (pass !== conf) marcar("confirm", "Las contraseñas no coinciden");
+    else marcar("confirm", "", true);
+  });
 
   // ============================================================
   // BARRAS DE SEGURIDAD — 6 BARRAS
@@ -126,9 +180,6 @@ document.addEventListener("DOMContentLoaded", () => {
   campos.password.addEventListener("input", () => {
     const v = campos.password.value.trim();
 
-    limpiarErrorCampo("password");
-
-    // Reiniciar barras
     bars.forEach(b => b.className = "strength-bar");
 
     if (v.length === 0) {
@@ -154,61 +205,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // ============================================================
-  // VALIDACIÓN EN VIVO POR CAMPO (INPUT + BLUR)
-  // ============================================================
-
-  // Nombre
-  campos.nombre.addEventListener("input", () => limpiarErrorCampo("nombre"));
-  campos.nombre.addEventListener("blur", () => {
-    const v = campos.nombre.value.trim();
-    if (!v) {
-      marcar("nombre", "Ingresa tu nombre");
-    } else {
-      marcar("nombre", "", true);
-    }
-  });
-
-  // Correo
-  campos.correo.addEventListener("input", () => limpiarErrorCampo("correo"));
-  campos.correo.addEventListener("blur", () => {
-    const correo = campos.correo.value.trim();
-    if (!correo) {
-      marcar("correo", "Ingresa tu correo");
-      return;
-    }
-    if (!esCorreoValido(correo)) {
-      marcar("correo", "Correo no válido");
-      return;
-    }
-    marcar("correo", "", true);
-  });
-
-  // Teléfono
-  campos.telefono.addEventListener("input", () => limpiarErrorCampo("telefono"));
-  campos.telefono.addEventListener("blur", () => {
-    const tel = campos.telefono.value.trim();
-    if (tel.length < 8) {
-      marcar("telefono", "Teléfono inválido");
-    } else {
-      marcar("telefono", "", true);
-    }
-  });
-
-  // Confirmación en vivo
-  campos.confirm.addEventListener("input", () => limpiarErrorCampo("confirm"));
-  campos.confirm.addEventListener("blur", () => {
-    const pass = campos.password.value;
-    const conf = campos.confirm.value;
-    if (!conf) return;
-    if (pass !== conf) {
-      marcar("confirm", "Las contraseñas no coinciden");
-    } else {
-      marcar("confirm", "", true);
-    }
-  });
-
-  // ============================================================
-  // MOSTRAR / OCULTAR CONTRASEÑA
+  // TOGGLE PASS
   // ============================================================
   document.querySelectorAll(".toggle-pass").forEach(icon => {
     icon.addEventListener("click", () => {
@@ -236,7 +233,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function validarEnCadena() {
 
     if (!campos.nombre.value.trim()) {
-      marcar("nombre", "Ingresa tu nombre");
+      marcar("nombre", mensajesVacios.nombre);
       return false;
     }
     marcar("nombre", "", true);
@@ -249,13 +246,13 @@ document.addEventListener("DOMContentLoaded", () => {
     marcar("correo", "", true);
 
     if (campos.telefono.value.trim().length < 8) {
-      marcar("telefono", "Teléfono inválido");
+      marcar("telefono", mensajesVacios.telefono);
       return false;
     }
     marcar("telefono", "", true);
 
     if (campos.password.value.length < 6) {
-      marcar("password", "Mínimo 6 caracteres");
+      marcar("password", mensajesVacios.password);
       return false;
     }
     marcar("password", "", true);
@@ -270,7 +267,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ============================================================
-  // BOTÓN — LOADING M3 EXPRESSIVE
+  // LOADING BUTTON
   // ============================================================
   const btn = document.querySelector(".m3-btn");
   const btnText = btn.querySelector(".btn-text");
@@ -295,8 +292,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // ============================================================
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    limpiarErrores();
-
     if (!validarEnCadena()) return;
 
     activarLoading();
@@ -340,15 +335,10 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // ============================================================
-  // BOTÓN ATRÁS — IGUAL QUE LOGIN
+  // BOTÓN ATRÁS
   // ============================================================
   const backBtn = document.querySelector(".back-btn");
-
-  if (backBtn) {
-    backBtn.addEventListener("click", () => {
-      window.location.href = "login.html";
-    });
-  }
+  if (backBtn) backBtn.addEventListener("click", () => window.location.href = "login.html");
 
   // ============================================================
   // SNACKBAR
