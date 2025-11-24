@@ -142,25 +142,27 @@ body {
    CAMPOS
 =============================== */
 .m3-field {
-  margin-bottom: 18px;
+  margin-bottom: 22px;
   position: relative;
 }
 
 .field-msg {
-  display: none !important;
+  display: none !important; 
 }
 
+/* CONTENEDOR INPUT */
 .m3-input {
   position: relative;
   display: flex;
   align-items: center;
   border: 1.5px solid #E0E0E0;
   border-radius: 12px;
-  padding: 12px 12px 8px 12px;
+  padding: 16px 12px 6px 12px;
   background-color: #fff;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
+/* INPUT */
 .m3-input input {
   flex: 1;
   border: none;
@@ -171,39 +173,48 @@ body {
 }
 
 /* ===============================
-   LABEL SIEMPRE ARRIBA
+   FLOATING LABEL — CORRECTO
+   (Label inicia adentro, sube al escribir o error)
 =============================== */
+
+/* Label INICIAL — ADENTRO */
 .floating-label {
   position: absolute;
-  top: -6px !important;
-  left: 12px !important;
-  font-size: 0.75rem !important;
+  left: 44px;
+  top: 15px;
+  font-size: 1rem;
+  color: #8a8a8a;
+  background: transparent;
+  pointer-events: none;
+  transition: all .22s ease;
+}
+
+/* Label ARRIBA al escribir o focus */
+.m3-input input:not(:placeholder-shown) + .floating-label,
+.m3-input:focus-within .floating-label {
+  top: -6px;
+  left: 38px;
+  font-size: 0.78rem;
   background: #ffffff;
-  padding: 0 6px;
-  color: #512615;
-  transition: all 0.2s ease;
+  padding: 0 4px;
+  color: #33673B;
 }
 
 /* ===============================
-   ESTADOS DE LOS CAMPOS
+   ERROR
 =============================== */
-.m3-input:focus-within {
-  border-color: #33673B;
-  box-shadow: 0 0 0 2px rgba(51,103,59,0.16);
-}
-
-.m3-input:focus-within .floating-label {
-  color: #33673B !important;
-}
-
-/* Error */
 .m3-input.error {
   border-color: #D32F2F !important;
   box-shadow: 0 0 0 2px rgba(211,47,47,0.18);
 }
 
 .m3-input.error .floating-label {
-  color: #512615 !important;
+  top: -6px !important;
+  left: 38px !important;
+  font-size: 0.78rem !important;
+  background: #ffffff;
+  padding: 0 4px;
+  color: #D32F2F !important;
 }
 
 .m3-input.error input::placeholder {
@@ -211,7 +222,9 @@ body {
   opacity: 1 !important;
 }
 
-/* Correcto */
+/* ===============================
+   SUCCESS
+=============================== */
 .m3-input.success {
   border-color: #33673B !important;
   box-shadow: 0 0 0 2px rgba(51,103,59,0.18);
