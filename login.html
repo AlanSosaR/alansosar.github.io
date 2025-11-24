@@ -18,7 +18,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
 
   <!-- Estilos Login -->
-  <link rel="stylesheet" href="css/login.css?v=2">
+  <link rel="stylesheet" href="css/login.css?v=3">
 
   <link rel="icon" type="image/png" href="imagenes/logo.png">
 </head>
@@ -28,7 +28,7 @@
   <main class="login-container">
     <section class="login-card">
 
-      <!-- BOTÓN FLOTANTE INTERNO -->
+      <!-- BOTÓN ATRÁS -->
       <button class="back-btn" onclick="window.location.href='index.html'">
         <span class="material-symbols-outlined">chevron_left</span>
       </button>
@@ -81,7 +81,7 @@
             <div class="field-msg"></div>
           </div>
 
-          <!-- BOTÓN -->
+          <!-- BOTÓN ACCEDER -->
           <button type="submit" class="m3-btn">
             <span class="btn-text">Acceder</span>
             <span class="loader"></span>
@@ -92,12 +92,14 @@
         <!-- LINKS -->
         <div class="links">
 
-          <a href="forgot-password.html" id="forgotPassword" class="forgot-link">
+          <!-- Olvidaste contraseña -->
+          <a href="forgot-password.html" class="forgot-link">
             ¿Olvidaste tu contraseña?
           </a>
 
+          <!-- Registro -->
           <p class="crear-cuenta-texto">
-            ¿No tienes cuenta?
+            ¿No tienes cuenta en Café Cortero?
             <a href="registro-cliente.html" class="registrate-link">Regístrate ahora</a>
           </p>
 
@@ -108,15 +110,16 @@
 
             <button class="btn-social google" id="googleLoginBtn">
               <img src="imagenes/icon-google.svg" alt="Google">
-              Google
+              Continuar con Google
             </button>
 
             <button class="btn-social facebook" id="facebookLoginBtn">
               <img src="imagenes/icon-facebook.svg" alt="Facebook">
-              Facebook
+              Continuar con Facebook
             </button>
 
           </div>
+
         </div>
 
       </div>
