@@ -26,7 +26,7 @@ body {
    TARJETA PRINCIPAL
 =============================== */
 .register-card {
-  position: relative; /* ✔ necesario para la flecha interna */
+  position: relative;
   background: #ffffff;
   border-radius: 20px;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
@@ -36,10 +36,10 @@ body {
 }
 
 /* ===============================
-   BOTÓN FLOTANTE ATRÁS (DENTRO DE LA TARJETA)
+   BOTÓN FLOTANTE ATRÁS
 =============================== */
 .back-btn {
-  position: absolute;   /* ✔ ahora dentro de la tarjeta */
+  position: absolute;
   top: 16px;
   left: 16px;
   z-index: 10;
@@ -99,7 +99,7 @@ body {
 }
 
 /* ===============================
-   CARD INTERIOR OUTLINED (IGUAL A LOGIN)
+   CARD INTERIOR OUTLINED
 =============================== */
 .register-inner-card {
   border: 1.6px solid rgba(81, 38, 21, 0.25);
@@ -110,7 +110,7 @@ body {
 }
 
 /* ===============================
-   CAMPOS — MATERIAL 3 FLOATING LABEL
+   CAMPOS MATERIAL 3
 =============================== */
 .m3-field {
   margin-bottom: 22px;
@@ -179,7 +179,7 @@ body {
 }
 
 /* ===============================
-   LABEL EN ERROR
+   LABEL ERROR
 =============================== */
 .m3-input.error .floating-label {
   top: -6px !important;
@@ -190,15 +190,13 @@ body {
   padding: 0 4px;
 }
 
-/* placeholder rojo */
 .m3-input.error input::placeholder {
   color: #d72638 !important;
   opacity: 1;
-  font-weight: 500;
 }
 
 /* ===============================
-   BOTÓN VER CONTRASEÑA
+   VER CONTRASEÑA
 =============================== */
 .toggle-pass {
   cursor: pointer;
@@ -209,13 +207,12 @@ body {
 }
 
 /* ===============================
-   BARRAS DE SEGURIDAD — PREMIUM (6 BARRAS)
+   BARRAS SEGURIDAD
 =============================== */
 .strength-bars {
   display: none;
   margin-top: 10px;
   gap: 6px;
-  transition: 0.25s ease;
 }
 
 .strength-bar {
@@ -223,7 +220,6 @@ body {
   flex: 1;
   border-radius: 4px;
   background-color: #E3E3E3;
-  transition: background-color 0.25s ease;
 }
 
 .strength-bar.active-weak { background-color: #d72638; }
@@ -231,16 +227,7 @@ body {
 .strength-bar.active-strong { background-color: #3CB043; }
 
 /* ===============================
-   MENSAJES DE ERROR
-=============================== */
-.m3-error {
-  font-size: 0.83rem;
-  color: #d72638;
-  min-height: 16px;
-}
-
-/* ===============================
-   BOTÓN + LOADER
+   BOTÓN + LOADER (MEJORADO)
 =============================== */
 .m3-btn {
   width: 100%;
@@ -254,27 +241,42 @@ body {
   cursor: pointer;
   margin-top: 12px;
   position: relative;
-  overflow: hidden;
   height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.m3-btn.loading .btn-text { opacity: 0; }
+.btn-text {
+  transition: opacity .25s ease;
+}
+
+.m3-btn.loading .btn-text {
+  opacity: 0;
+  position: absolute;
+}
 
 .m3-btn .loader {
+  display: none;
   position: absolute;
-  top: 50%;
-  left: 50%;
   width: 22px;
   height: 22px;
   border-radius: 50%;
   border: 3px solid rgba(255,255,255,0.3);
   border-top-color: #ffffff;
   animation: spin 0.9s linear infinite;
+  top: 50%;
+  left: 50%;
   transform: translate(-50%, -50%);
-  opacity: 0;
 }
 
-.m3-btn.loading .loader { opacity: 1; }
+.m3-btn.loading .loader {
+  display: inline-block;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
 
 /* ===============================
    SNACKBAR
