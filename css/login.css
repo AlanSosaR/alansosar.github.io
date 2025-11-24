@@ -116,20 +116,12 @@ body {
    CAMPOS
 =============================== */
 .m3-field {
-  margin-bottom: 16px;
+  margin-bottom: 18px;
   position: relative;
 }
 
 .field-msg {
-  font-size: 0.78rem;
-  color: #D32F2F;
-  min-height: 16px;
-  opacity: 0;
-  transition: opacity 0.25s ease;
-}
-
-.m3-input.error + .field-msg {
-  opacity: 1;
+  display: none !important; /* nunca aparece abajo */
 }
 
 .m3-input {
@@ -143,16 +135,6 @@ body {
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.m3-input:focus-within {
-  border-color: #33673B;
-  box-shadow: 0 0 0 2px rgba(51,103,59,0.16);
-}
-
-.m3-input.error {
-  border-color: #D32F2F !important;
-  box-shadow: 0 0 0 2px rgba(211,47,47,0.18);
-}
-
 .m3-input input {
   flex: 1;
   border: none;
@@ -163,30 +145,56 @@ body {
 }
 
 /* ===============================
-   FLOATING LABEL
+   LABEL SIEMPRE ARRIBA
 =============================== */
 .floating-label {
   position: absolute;
-  left: 42px;
-  top: 18px;
-  font-size: 0.95rem;
-  color: rgba(0,0,0,0.55);
-  pointer-events: none;
-  transition: all 0.22s ease;
-}
-
-.m3-input input:not(:placeholder-shown) + .floating-label,
-.m3-input:focus-within .floating-label {
-  top: -6px;
-  left: 12px;
-  font-size: 0.75rem;
+  top: -6px !important;
+  left: 12px !important;
+  font-size: 0.75rem !important;
   background: #ffffff;
   padding: 0 6px;
-  color: #33673B;
+  color: #512615; /* café */
+  transition: all 0.2s ease;
+}
+
+/* ===============================
+   ESTADOS DE LOS CAMPOS
+=============================== */
+
+/* Focus */
+.m3-input:focus-within {
+  border-color: #33673B;
+  box-shadow: 0 0 0 2px rgba(51,103,59,0.16);
+}
+
+.m3-input:focus-within .floating-label {
+  color: #33673B !important;
+}
+
+/* Error */
+.m3-input.error {
+  border-color: #D32F2F !important;
+  box-shadow: 0 0 0 2px rgba(211,47,47,0.18);
 }
 
 .m3-input.error .floating-label {
-  color: #D32F2F !important;
+  color: #512615 !important; /* café */
+}
+
+.m3-input.error input::placeholder {
+  color: #512615 !important; /* café */
+  opacity: 1 !important;
+}
+
+/* Correcto */
+.m3-input.success {
+  border-color: #33673B !important;
+  box-shadow: 0 0 0 2px rgba(51,103,59,0.18);
+}
+
+.m3-input.success .floating-label {
+  color: #33673B !important;
 }
 
 /* ===============================
@@ -214,17 +222,15 @@ body {
   cursor: pointer;
   transition: all 0.25s ease;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  position: relative;              /* NECESARIO para centrar loader */
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.m3-btn.loading .btn-text {
-  opacity: 0;
-}
+.m3-btn.loading .btn-text { opacity: 0; }
 
-/* Loader perfectamente centrado */
+/* Loader centrado */
 .loader {
   display: none;
   position: absolute;
@@ -239,23 +245,32 @@ body {
   animation: spin .9s linear infinite;
 }
 
-.m3-btn.loading .loader {
-  display: inline-block;
+.m3-btn.loading .loader { display: inline-block; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ===============================
+   BLOQUE LINKS — CENTRADO Y ESPACIADO
+=============================== */
+.links {
+  margin-top: 20px;
+  text-align: center;
 }
 
-@keyframes spin { 
-  to { transform: rotate(360deg); }
+.forgot-link {
+  display: inline-block;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  font-size: 0.92rem;
+  color: #512615;
+  text-decoration: underline;
 }
 
 /* ===============================
-   LINKS
+   REGISTRO
 =============================== */
-.forgot-link {
-  color: #512615;
-  font-size: 0.92rem;
-}
-
 .crear-cuenta-texto {
+  margin: 8px 0;
   color: #512615;
   font-size: 0.92rem;
 }
@@ -275,20 +290,18 @@ body {
 }
 
 .separator span {
-  background: #fff;
   padding: 0 10px;
+  background: #fff;
   color: #512615;
 }
 
 /* ===============================
-   ICONOS SOCIALES FLOTANTES — NUEVO
+   ICONOS SOCIALES
 =============================== */
 .social-login-icons {
   display: flex;
   justify-content: center;
-  align-items: center;
   gap: 18px;
-  margin-top: 6px;
 }
 
 .social-icon {
@@ -300,10 +313,10 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  transition: transform .18s, box-shadow .18s;
 }
 
 .social-icon img {
