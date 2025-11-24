@@ -193,21 +193,13 @@ body {
   color: #33673B;
 }
 
-/* LABEL en error (sube y se vuelve rojo) */
 .m3-input.error .floating-label {
   top: -6px !important;
   left: 12px !important;
   font-size: 0.75rem !important;
-  background: #ffffff !important;
-  padding: 0 6px !important;
+  background: #ffffff;
+  padding: 0 6px;
   color: #D32F2F !important;
-}
-
-/* Placeholder rojo cuando está vacío y con error */
-.m3-input.error input::placeholder {
-  color: #D32F2F !important;
-  opacity: 1;
-  font-weight: 500;
 }
 
 /* ===============================
@@ -265,12 +257,8 @@ body {
   display: inline-block;
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
 /* ===============================
-   LINKS
+   LINKS — COLORES ACTUALIZADOS
 =============================== */
 .links {
   margin-top: 18px;
@@ -278,6 +266,74 @@ body {
   flex-direction: column;
   text-align: center;
   gap: 8px;
+}
+
+.links a {
+  text-decoration: none;
+  font-size: 0.92rem;
+  transition: color .25s ease;
+}
+
+/* Olvidaste tu contraseña → café */
+.link-forgot {
+  color: #512615;
+}
+
+/* ¿No tienes cuenta en Café Cortero? → café */
+.link-no-account {
+  color: #512615;
+}
+
+/* Regístrate ahora → verde */
+.link-register {
+  color: #33673B;
+  font-weight: 600;
+}
+
+/* ===============================
+   BOTONES GOOGLE & FACEBOOK
+   Material 3 — Filled Tonal
+=============================== */
+.social-buttons {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.social-row {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+.social-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: #F4EFEA;
+  border: 1.4px solid rgba(81,38,21,0.25);
+  cursor: pointer;
+  transition: background .25s ease, transform .2s ease;
+}
+
+.social-btn:hover {
+  background: #EDE6DF;
+  transform: translateY(-2px);
+}
+
+.social-btn img {
+  width: 20px;
+  height: 20px;
+}
+
+.social-btn span {
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: #512615;
 }
 
 /* ===============================
