@@ -35,8 +35,7 @@ const autocorrecciones = {
 // ========================================================
 // TIPO DE ENTRADA
 // ========================================================
-// Solo números → teléfono
-// Letras o mezcla → correo
+
 function tipoDeEntrada(valor) {
   return /^[0-9]+$/.test(valor) ? "telefono" : "correo";
 }
@@ -52,32 +51,43 @@ function limpiarErrores() {
     msg.style.opacity = "0";
   });
 
-  // Restaurar placeholders "vacíos" para el floating-label
+  // Restaurar placeholder vacío
   userInput.placeholder = " ";
   passInput.placeholder = " ";
+
+  // Quitar clases de error/estado
+  userInput.classList.remove("has-text");
+  passInput.classList.remove("has-text");
 }
+
+// ========================================================
+// NUEVA FUNCIÓN — CORREGIDA (FLOATING-LABEL PERFECTO)
+// ========================================================
 
 function marcarError(input, mensaje) {
   const group = input.closest(".m3-field");
   const msg = group.querySelector(".field-msg");
   const m3 = group.querySelector(".m3-input");
 
+  // Añadir borde rojo
   m3.classList.add("error");
 
+  // --------- CASO 1: CAMPO VACÍO ---------
   if (input.value.trim() === "") {
-    // CAMPO VACÍO → error dentro del input (placeholder rojo)
-    input.placeholder = mensaje;
-    if (msg) {
-      msg.textContent = "";
-      msg.style.opacity = "0";
-    }
-  } else {
-    // CAMPO CON TEXTO → error abajo
-    if (msg) {
-      msg.textContent = mensaje;
-      msg.style.opacity = "1";
-    }
+    input.placeholder = " "; // placeholder SIEMPRE vacío
+    msg.textContent = mensaje;
+    msg.style.opacity = "1";
+
+    // label NO flota
+    input.classList.remove("has-text");
+    return;
   }
+
+  // --------- CASO 2: CAMPO CON TEXTO PERO ERROR ---------
+  input.classList.add("has-text");
+
+  msg.textContent = mensaje;
+  msg.style.opacity = "1";
 }
 
 // ========================================================
