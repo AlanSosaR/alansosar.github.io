@@ -251,7 +251,7 @@ document.querySelectorAll(".toggle-pass").forEach(icon => {
 });
 
 // ========================================================
-// LOGIN CON GOOGLE
+// LOGIN CON GOOGLE (CORREGIDO)
 // ========================================================
 
 document.getElementById("googleLoginBtn").addEventListener("click", async () => {
@@ -259,7 +259,7 @@ document.getElementById("googleLoginBtn").addEventListener("click", async () => 
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: window.location.origin + "/index.html"
+        redirectTo: "https://alansosar.github.io/cafecortero/index.html"
       }
     });
 
