@@ -1,5 +1,6 @@
 // ============================================================
-// REGISTRO DE CLIENTE — LABEL ARRIBA + ERROR ADENTRO + BARRAS M3
+// REGISTRO DE CLIENTE — VALIDACIÓN AVANZADA TIPO GMAIL
+// Loader Material 3 (igual que login) + 6 barras Apple Style
 // ============================================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -25,18 +26,19 @@ document.addEventListener("DOMContentLoaded", () => {
     confirm: document.getElementById("errorConfirm"),
   };
 
+  const btn = document.querySelector(".m3-btn");
+  const btnText = btn.querySelector(".btn-text");
+  const btnLoader = btn.querySelector(".loader");
+
+
   // ============================================================
-  // LIMPIAR ERRORES DE TODOS LOS CAMPOS
+  // Limpieza de errores
   // ============================================================
   function limpiarErrores() {
     Object.values(errores).forEach(e => e.textContent = "");
     document.querySelectorAll(".m3-input").forEach(g => g.classList.remove("error", "success"));
-    Object.values(campos).forEach(c => c.placeholder = "");
   }
 
-  // ============================================================
-  // MARCAR ERROR / ÉXITO — LABEL SIEMPRE ARRIBA
-  // ============================================================
   function marcar(campo, mensaje, success = false) {
     const input = campos[campo];
     const grupo = input.closest(".m3-input");
@@ -45,59 +47,74 @@ document.addEventListener("DOMContentLoaded", () => {
       grupo.classList.remove("error");
       grupo.classList.add("success");
       errores[campo].textContent = "";
-      input.placeholder = "";
       return;
     }
 
     grupo.classList.add("error");
-
-    if (input.value.trim() === "") {
-      input.placeholder = mensaje; // texto rojo adentro
-      errores[campo].textContent = "";
-    } else {
-      errores[campo].textContent = mensaje;
-      input.placeholder = "";
-    }
+    errores[campo].textContent = mensaje;
   }
 
+
   // ============================================================
-  // VALIDAR CORREO — versión estricta por proveedor
+  // VALIDACIÓN AVANZADA — CORREOS
   // ============================================================
-  function esCorreoValido(email) {
-    if (!email) return true; // opcional
+  const dominiosValidos = [
+    "gmail.com", "hotmail.com", "outlook.com", "yahoo.com", "icloud.com",
+    "proton.me", "live.com", "msn.com",
+    "unah.hn", "unah.edu", "gmail.es", "correo.hn",
+    "googlemail.com", "outlook.es", "hotmail.es"
+  ];
 
-    const regexGeneral = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
-    if (!regexGeneral.test(email)) return false;
+  const autocorrecciones = {
+    "gmal.com": "gmail.com",
+    "gmial.com": "gmail.com",
+    "gmaik.com": "gmail.com",
+    "hotmai.com": "hotmail.com",
+    "hotmal.com": "hotmail.com",
+    "outlok.com": "outlook.com",
+    "outllok.com": "outlook.com"
+  };
 
-    // Reglas de proveedores
-    const reglas = {
-      "gmail.com": ["gmail"],
-      "yahoo.es": ["yahoo"],
-      "hotmail.com": ["hotmail"],
-      "outlook.com": ["outlook"],
-      "live.com": ["live"],
-      "icloud.com": ["icloud"]
-    };
+  function correoValido(correo) {
+    if (!correo.includes("@")) return false;
 
-    const [usuario, dominioCompleto] = email.split("@");
-    const partes = dominioCompleto.split(".");
-    const proveedor = partes[0];
-    const extension = partes.slice(1).join(".");
-    const dominio = `${proveedor}.${extension}`;
+    const partes = correo.split("@");
+    if (partes.length !== 2) return false;
 
-    for (const dominioCorrecto in reglas) {
-      const lista = reglas[dominioCorrecto];
+    const dominio = partes[1].toLowerCase();
 
-      if (lista.includes(proveedor)) {
-        return dominio === dominioCorrecto; // debe coincidir exacto
-      }
+    if (autocorrecciones[dominio]) {
+      campos.correo.value = partes[0] + "@" + autocorrecciones[dominio];
+      return true;
     }
 
-    return true; // otros dominios válidos
+    if (!dominio.includes(".")) return false;
+
+    return dominiosValidos.some(d => dominio.endsWith(d));
   }
 
+
   // ============================================================
-  // BARRAS DE SEGURIDAD — SOLO APARECEN AL ESCRIBIR
+  // VALIDACIÓN TELÉFONO
+  // ============================================================
+  function telefonoValido(t) {
+    const limpio = t.replace(/[\s-+]/g, "");
+    return /^[0-9]{7,15}$/.test(limpio);
+  }
+
+
+  // ============================================================
+  // VALIDACIÓN PASSWORD
+  // ============================================================
+  function passwordValida(p) {
+    if (p.length < 6) return false;
+    if (p.includes(" ")) return false;
+    return true;
+  }
+
+
+  // ============================================================
+  // BARRAS SEGURIDAD PASSWORD — 6 BARRAS ESTILO APPLE
   // ============================================================
   const bars = document.querySelectorAll(".strength-bar");
   const barsContainer = document.getElementById("barsContainer");
@@ -105,6 +122,7 @@ document.addEventListener("DOMContentLoaded", () => {
   campos.password.addEventListener("input", () => {
     const v = campos.password.value.trim();
 
+    // resetear clases
     bars.forEach(b => b.className = "strength-bar");
 
     if (v.length === 0) {
@@ -114,27 +132,118 @@ document.addEventListener("DOMContentLoaded", () => {
 
     barsContainer.style.display = "flex";
 
+    // Nivel 1 y 2 — MUY DÉBIL
+    if (v.length < 4) {
+      bars[0].classList.add("active-weak");
+      return;
+    }
     if (v.length < 6) {
       bars[0].classList.add("active-weak");
-    } else if (v.length < 10) {
+      bars[1].classList.add("active-weak");
+      return;
+    }
+
+    // Nivel 3 y 4 — MEDIO
+    if (v.length < 8) {
       bars[0].classList.add("active-medium");
       bars[1].classList.add("active-medium");
       bars[2].classList.add("active-medium");
-    } else {
-      bars.forEach(b => b.classList.add("active-strong"));
+      return;
     }
+    if (v.length < 10) {
+      bars[0].classList.add("active-medium");
+      bars[1].classList.add("active-medium");
+      bars[2].classList.add("active-medium");
+      bars[3].classList.add("active-medium");
+      return;
+    }
+
+    // Nivel 5 — FUERTE
+    if (v.length < 14) {
+      bars.forEach((b, i) => i < 5 && b.classList.add("active-strong"));
+      return;
+    }
+
+    // Nivel 6 — CONTRASEÑA MUY FUERTE
+    bars.forEach(b => b.classList.add("active-max"));
   });
 
+
   // ============================================================
-  // MOSTRAR / OCULTAR CONTRASEÑA
+  // MOSTRAR / OCULTAR PASSWORD
   // ============================================================
   document.querySelectorAll(".toggle-pass").forEach(icon => {
     icon.addEventListener("click", () => {
       const input = document.getElementById(icon.dataset.target);
       input.type = input.type === "password" ? "text" : "password";
-      icon.textContent = input.type === "password" ? "visibility" : "visibility_off";
+      icon.textContent = input.type === "password"
+        ? "visibility"
+        : "visibility_off";
     });
   });
+
+
+  // ============================================================
+  // LOADING
+  // ============================================================
+  function activarLoading() {
+    btn.classList.add("loading");
+    btn.disabled = true;
+    btnText.style.opacity = "0";
+    btnLoader.style.display = "inline-block";
+  }
+
+  function desactivarLoading() {
+    btn.classList.remove("loading");
+    btn.disabled = false;
+    btnText.style.opacity = "1";
+    btnLoader.style.display = "none";
+  }
+
+
+  // ============================================================
+  // VALIDACIÓN COMPLETA
+  // ============================================================
+  function validar() {
+
+    if (!campos.nombre.value.trim()) {
+      marcar("nombre", "Ingresa tu nombre");
+      return false;
+    }
+    marcar("nombre", "", true);
+
+    if (!campos.correo.value.trim()) {
+      marcar("correo", "Correo obligatorio");
+      return false;
+    }
+
+    if (!correoValido(campos.correo.value.trim())) {
+      marcar("correo", "Correo no válido");
+      return false;
+    }
+    marcar("correo", "", true);
+
+    if (!telefonoValido(campos.telefono.value.trim())) {
+      marcar("telefono", "Teléfono inválido");
+      return false;
+    }
+    marcar("telefono", "", true);
+
+    if (!passwordValida(campos.password.value.trim())) {
+      marcar("password", "Contraseña no válida");
+      return false;
+    }
+    marcar("password", "", true);
+
+    if (campos.password.value !== campos.confirm.value) {
+      marcar("confirm", "No coincide");
+      return false;
+    }
+    marcar("confirm", "", true);
+
+    return true;
+  }
+
 
   // ============================================================
   // VERIFICAR DUPLICADOS
@@ -148,79 +257,28 @@ document.addEventListener("DOMContentLoaded", () => {
     return data?.length ? data[0] : null;
   }
 
-  // ============================================================
-  // VALIDACIÓN EN CADENA — CORREGIDA 100%
-  // ============================================================
-  function validarEnCadena() {
-
-    // 1) Nombre
-    if (!campos.nombre.value.trim()) {
-      marcar("nombre", "Ingresa tu nombre");
-      return false;
-    }
-    marcar("nombre", "", true);
-
-    // 2) Correo (si escribe, debe ser válido)
-    const correo = campos.correo.value.trim();
-
-    if (correo.length > 0 && !esCorreoValido(correo)) {
-      marcar("correo", "Correo no válido");
-      return false;
-    }
-    marcar("correo", "", true);
-
-    // 3) Teléfono
-    if (campos.telefono.value.trim().length < 8) {
-      marcar("telefono", "Teléfono inválido");
-      return false;
-    }
-    marcar("telefono", "", true);
-
-    // 4) Contraseña
-    if (campos.password.value.length < 6) {
-      marcar("password", "Mínimo 6 caracteres");
-      return false;
-    }
-    marcar("password", "", true);
-
-    // 5) Confirmación
-    if (campos.password.value !== campos.confirm.value) {
-      marcar("confirm", "Las contraseñas no coinciden");
-      return false;
-    }
-    marcar("confirm", "", true);
-
-    return true;
-  }
 
   // ============================================================
   // SUBMIT FINAL
   // ============================================================
-  const btn = document.querySelector(".m3-btn");
-
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     limpiarErrores();
 
-    if (!validarEnCadena()) return;
+    if (!validar()) return;
 
-    btn.classList.add("loading");
-    btn.disabled = true;
+    activarLoading();
 
     const correo = campos.correo.value.trim();
     const tel = campos.telefono.value.trim();
 
-    const existente = await existeUsuario(correo, tel);
+    const existe = await existeUsuario(correo, tel);
 
-    if (existente) {
-      btn.classList.remove("loading");
-      btn.disabled = false;
+    if (existe) {
+      desactivarLoading();
 
-      if (correo && existente.email === correo)
-        marcar("correo", "El correo ya existe");
-
-      if (existente.phone === tel)
-        marcar("telefono", "El teléfono ya existe");
+      if (existe.email === correo) marcar("correo", "Correo ya existe");
+      if (existe.phone === tel) marcar("telefono", "Teléfono ya registrado");
 
       return;
     }
@@ -239,12 +297,12 @@ document.addEventListener("DOMContentLoaded", () => {
       setTimeout(() => window.location.href = "login.html", 1200);
 
     } catch (err) {
+      desactivarLoading();
+      mostrarSnackbar("Error creando cuenta");
       console.error(err);
-      mostrarSnackbar("Error creando la cuenta");
-      btn.disabled = false;
-      btn.classList.remove("loading");
     }
   });
+
 
   // ============================================================
   // SNACKBAR
