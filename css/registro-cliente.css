@@ -43,29 +43,23 @@ body {
   top: 16px;
   left: 16px;
   z-index: 10;
-
   width: 44px;
   height: 44px;
   border-radius: 50%;
   border: none;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   background: #ffffff;
   color: #33673B;
   box-shadow: 0 4px 14px rgba(0,0,0,0.12);
   cursor: pointer;
   transition: all .25s ease;
-  -webkit-tap-highlight-color: transparent;
 }
-
 .back-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(0,0,0,0.22);
 }
-
 .back-btn .material-symbols-outlined {
   font-size: 26px;
   font-weight: 500;
@@ -78,19 +72,16 @@ body {
   text-align: center;
   margin-bottom: 25px;
 }
-
 .logo-container {
   cursor: pointer;
   display: flex;
   justify-content: center;
   margin-bottom: 12px;
 }
-
 .logo-container img {
   width: 105px;
   transition: 0.3s;
 }
-
 .register-title {
   font-family: "Fraunces", serif;
   font-size: 1.8rem;
@@ -99,7 +90,7 @@ body {
 }
 
 /* ===============================
-   CARD INTERIOR OUTLINED
+   CARD INTERIOR
 =============================== */
 .register-inner-card {
   border: 1.6px solid rgba(81, 38, 21, 0.25);
@@ -127,24 +118,22 @@ body {
   transition: all 0.22s ease;
 }
 
+/* estados */
 .m3-input.error {
   border-color: #d72638 !important;
   box-shadow: 0 0 0 3px rgba(215, 38, 56, 0.18);
 }
-
 .m3-input.success {
   border-color: #3CB043 !important;
   box-shadow: 0 0 0 3px rgba(60, 176, 67, 0.18);
 }
 
-/* ICONOS */
 .m3-input .material-symbols-outlined {
   font-size: 22px;
   margin-right: 8px;
   color: #33673B;
 }
 
-/* INPUT */
 .m3-input input {
   flex: 1;
   border: none;
@@ -157,7 +146,7 @@ body {
 }
 
 /* ===============================
-   FLOATING LABEL
+   FLOATING LABEL — NORMAL
 =============================== */
 .floating-label {
   position: absolute;
@@ -179,21 +168,31 @@ body {
 }
 
 /* ===============================
-   LABEL ERROR
+   FLOATING LABEL — ERROR COMO LOGIN
 =============================== */
-.m3-input.error .floating-label {
-  top: -6px !important;
-  transform: translateY(-2px);
-  font-size: 0.78rem !important;
+
+/* ✔ Cuando está vacío y error → BAJA */
+.m3-input.error:not(.filled) .floating-label {
+  top: 16px !important;
+  left: 44px !important;
+  font-size: 1rem !important;
   color: #d72638 !important;
-  background: #ffffff;
-  padding: 0 4px;
+  background: transparent !important;
+  padding: 0 !important;
 }
 
-.m3-input.error input::placeholder {
+/* ✔ Cuando tiene texto pero está en error → SUBE rojo */
+.m3-input.error.filled .floating-label {
+  top: -6px !important;
+  left: 12px !important;
+  font-size: 0.78rem !important;
   color: #d72638 !important;
-  opacity: 1;
+  background: #ffffff !important;
+  padding: 0 4px !important;
 }
+
+/* para que JS detecte si está lleno */
+.m3-input.filled {}
 
 /* ===============================
    VER CONTRASEÑA
@@ -214,20 +213,18 @@ body {
   margin-top: 10px;
   gap: 6px;
 }
-
 .strength-bar {
   height: 6px;
   flex: 1;
   border-radius: 4px;
   background-color: #E3E3E3;
 }
-
 .strength-bar.active-weak { background-color: #d72638; }
 .strength-bar.active-medium { background-color: #e6a700; }
 .strength-bar.active-strong { background-color: #3CB043; }
 
 /* ===============================
-   BOTÓN + LOADER (MEJORADO)
+   BOTÓN + LOADER
 =============================== */
 .m3-btn {
   width: 100%;
@@ -250,12 +247,10 @@ body {
 .btn-text {
   transition: opacity .25s ease;
 }
-
 .m3-btn.loading .btn-text {
   opacity: 0;
   position: absolute;
 }
-
 .m3-btn .loader {
   display: none;
   position: absolute;
@@ -269,14 +264,10 @@ body {
   left: 50%;
   transform: translate(-50%, -50%);
 }
-
 .m3-btn.loading .loader {
   display: inline-block;
 }
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
+@keyframes spin { to { transform: rotate(360deg); } }
 
 /* ===============================
    SNACKBAR
@@ -296,7 +287,6 @@ body {
   pointer-events: none;
   transition: opacity .25s ease, transform .25s ease;
 }
-
 #snackbar.show {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
@@ -306,20 +296,16 @@ body {
    RESPONSIVE
 =============================== */
 @media (max-width: 480px) {
-
   .register-card {
     padding: 22px;
     max-width: 360px;
   }
-
   .register-inner-card {
     padding: 20px;
   }
-
   .register-title {
     font-size: 1.5rem;
   }
-
   .back-btn {
     top: 12px;
     left: 12px;
