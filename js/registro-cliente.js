@@ -1,6 +1,6 @@
 // ============================================================
-// REGISTRO DE CLIENTE — VALIDACIÓN AVANZADA TIPO GMAIL
-// Loader Material 3 (igual que login) + 6 barras Apple Style
+// REGISTRO DE CLIENTE — VALIDACIÓN TIPO GMAIL
+// Label baja en error (igual que Login)
 // ============================================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -18,64 +18,89 @@ document.addEventListener("DOMContentLoaded", () => {
     confirm: document.getElementById("confirmPasswordInput"),
   };
 
-  const errores = {
-    nombre: document.getElementById("errorNombre"),
-    correo: document.getElementById("errorCorreo"),
-    telefono: document.getElementById("errorTelefono"),
-    password: document.getElementById("errorPassword"),
-    confirm: document.getElementById("errorConfirm"),
-  };
-
   const btn = document.querySelector(".m3-btn");
   const btnText = btn.querySelector(".btn-text");
   const btnLoader = btn.querySelector(".loader");
 
   // ============================================================
+  // FUNCIÓN: MOVER LABEL A ERROR (BAJO Y ROJO)
+  // ============================================================
+  function aplicarErrorLabel(inputEl) {
+    const label = inputEl.closest(".m3-input").querySelector(".floating-label");
+
+    label.style.top = "18px";
+    label.style.left = "42px";
+    label.style.fontSize = "0.95rem";
+    label.style.color = "#D32F2F";
+    label.style.background = "transparent";
+  }
+
+  // ============================================================
   // LIMPIAR ERRORES
   // ============================================================
   function limpiarErrores() {
-    Object.values(errores).forEach(e => e.textContent = "");
     document.querySelectorAll(".m3-input").forEach(g => g.classList.remove("error", "success"));
+
+    // restaurar labels flotantes
+    document.querySelectorAll(".floating-label").forEach(l => {
+      l.style.top = "";
+      l.style.left = "";
+      l.style.fontSize = "";
+      l.style.color = "";
+      l.style.background = "";
+    });
   }
 
+  // ============================================================
+  // MARCAR ERROR / ÉXITO
+  // ============================================================
   function marcar(campo, mensaje, success = false) {
     const input = campos[campo];
-    const grupo = input.closest(".m3-input");
+    const cont = input.closest(".m3-input");
 
     if (success) {
-      grupo.classList.remove("error");
-      grupo.classList.add("success");
-      errores[campo].textContent = "";
+      cont.classList.remove("error");
+      cont.classList.add("success");
+
+      // si tiene texto → label arriba
+      if (input.value.trim().length > 0) {
+        const label = cont.querySelector(".floating-label");
+        label.style.top = "-6px";
+        label.style.left = "12px";
+        label.style.fontSize = "0.75rem";
+        label.style.color = "#33673B";
+        label.style.background = "#fff";
+      }
+
       return;
     }
 
-    grupo.classList.add("error");
-    errores[campo].textContent = mensaje;
+    // marcar error
+    cont.classList.add("error");
+    aplicarErrorLabel(input);
   }
 
   // ============================================================
   // VALIDACIÓN AVANZADA CORREO
   // ============================================================
   const dominiosValidos = [
-    "gmail.com", "hotmail.com", "outlook.com", "yahoo.com", "icloud.com",
-    "proton.me", "live.com", "msn.com",
-    "unah.hn", "unah.edu", "gmail.es", "correo.hn",
-    "googlemail.com", "outlook.es", "hotmail.es"
+    "gmail.com","hotmail.com","outlook.com","yahoo.com","icloud.com",
+    "proton.me","live.com","msn.com",
+    "unah.hn","unah.edu","gmail.es","correo.hn",
+    "googlemail.com","outlook.es","hotmail.es"
   ];
 
   const autocorrecciones = {
-    "gmal.com": "gmail.com",
-    "gmial.com": "gmail.com",
-    "gmaik.com": "gmail.com",
-    "hotmai.com": "hotmail.com",
-    "hotmal.com": "hotmail.com",
-    "outlok.com": "outlook.com",
-    "outllok.com": "outlook.com"
+    "gmal.com":"gmail.com",
+    "gmial.com":"gmail.com",
+    "hotmai.com":"hotmail.com",
+    "hotmal.com":"hotmail.com",
+    "outlok.com":"outlook.com",
+    "outllok.com":"outlook.com"
   };
 
   function correoValido(correo) {
     if (!correo.includes("@")) return false;
-
     const partes = correo.split("@");
     if (partes.length !== 2) return false;
 
@@ -86,101 +111,22 @@ document.addEventListener("DOMContentLoaded", () => {
       return true;
     }
 
-    if (!dominio.includes(".")) return false;
-
     return dominiosValidos.some(d => dominio.endsWith(d));
   }
 
   // ============================================================
-  // VALIDACIÓN TELÉFONO
+  // VALIDACIONES GENERALES
   // ============================================================
   function telefonoValido(t) {
-    const limpio = t.replace(/[\s-+]/g, "");
-    return /^[0-9]{7,15}$/.test(limpio);
+    return /^[0-9]{7,15}$/.test(t.replace(/[\s-+]/g, ""));
   }
 
-  // ============================================================
-  // VALIDACIÓN PASSWORD
-  // ============================================================
   function passwordValida(p) {
-    if (p.length < 6) return false;
-    if (p.includes(" ")) return false;
-    return true;
+    return p.length >= 6 && !p.includes(" ");
   }
 
   // ============================================================
-  // BARRAS SEGURIDAD (6 BARRAS)
-  // ============================================================
-  const bars = document.querySelectorAll(".strength-bar");
-  const barsContainer = document.getElementById("barsContainer");
-
-  campos.password.addEventListener("input", () => {
-    const v = campos.password.value.trim();
-
-    // Reset
-    bars.forEach(b => b.className = "strength-bar");
-
-    if (v.length === 0) {
-      barsContainer.style.display = "none";
-      return;
-    }
-
-    barsContainer.style.display = "flex";
-
-    // Nivel 1
-    if (v.length < 4) {
-      bars[0].classList.add("active-weak");
-      return;
-    }
-
-    // Nivel 2
-    if (v.length < 6) {
-      bars[0].classList.add("active-weak");
-      bars[1].classList.add("active-weak");
-      return;
-    }
-
-    // Nivel 3
-    if (v.length < 8) {
-      bars[0].classList.add("active-medium");
-      bars[1].classList.add("active-medium");
-      bars[2].classList.add("active-medium");
-      return;
-    }
-
-    // Nivel 4
-    if (v.length < 10) {
-      bars[0].classList.add("active-medium");
-      bars[1].classList.add("active-medium");
-      bars[2].classList.add("active-medium");
-      bars[3].classList.add("active-medium");
-      return;
-    }
-
-    // Nivel 5
-    if (v.length < 14) {
-      bars.forEach((b, i) => i < 5 && b.classList.add("active-strong"));
-      return;
-    }
-
-    // Nivel 6 — FUERZA MÁXIMA
-    bars.forEach(b => b.classList.add("active-strong"));
-    bars.forEach(b => b.classList.add("active-max"));
-  });
-
-  // ============================================================
-  // MOSTRAR / OCULTAR PASSWORD
-  // ============================================================
-  document.querySelectorAll(".toggle-pass").forEach(icon => {
-    icon.addEventListener("click", () => {
-      const input = document.getElementById(icon.dataset.target);
-      input.type = input.type === "password" ? "text" : "password";
-      icon.textContent = input.type === "password" ? "visibility" : "visibility_off";
-    });
-  });
-
-  // ============================================================
-  // LOADING BTN
+  // LOADER
   // ============================================================
   function activarLoading() {
     btn.classList.add("loading");
@@ -211,7 +157,6 @@ document.addEventListener("DOMContentLoaded", () => {
       marcar("correo", "Correo obligatorio");
       return false;
     }
-
     if (!correoValido(campos.correo.value.trim())) {
       marcar("correo", "Correo no válido");
       return false;
@@ -240,19 +185,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ============================================================
-  // VERIFICAR DUPLICADOS
-  // ============================================================
-  async function existeUsuario(correo, telefono) {
-    const { data } = await sb
-      .from("users")
-      .select("email, phone")
-      .or(`email.eq.${correo},phone.eq.${telefono}`);
-
-    return data?.length ? data[0] : null;
-  }
-
-  // ============================================================
-  // SUBMIT FINAL
+  // SUBMIT
   // ============================================================
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -262,25 +195,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     activarLoading();
 
-    const correo = campos.correo.value.trim();
-    const tel = campos.telefono.value.trim();
-
-    const existe = await existeUsuario(correo, tel);
-
-    if (existe) {
-      desactivarLoading();
-
-      if (existe.email === correo) marcar("correo", "Correo ya existe");
-      if (existe.phone === tel) marcar("telefono", "Teléfono ya registrado");
-
-      return;
-    }
-
     try {
       await registerUser(
-        correo,
+        campos.correo.value.trim(),
         campos.password.value.trim(),
-        tel,
+        campos.telefono.value.trim(),
         campos.nombre.value.trim(),
         "Honduras",
         null
