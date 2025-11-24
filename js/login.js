@@ -157,7 +157,6 @@ loginForm.addEventListener("submit", async (e) => {
     return;
   }
 
-  // LOADING
   loginBtn.classList.add("loading");
   btnText.style.opacity = "0";
   btnLoader.style.display = "inline-block";
@@ -251,7 +250,7 @@ document.querySelectorAll(".toggle-pass").forEach(icon => {
 });
 
 // ========================================================
-// LOGIN CON GOOGLE (CORREGIDO)
+// LOGIN CON GOOGLE (CORRECTO DEFINITIVO)
 // ========================================================
 
 document.getElementById("googleLoginBtn").addEventListener("click", async () => {
@@ -259,7 +258,7 @@ document.getElementById("googleLoginBtn").addEventListener("click", async () => 
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: "https://alansosar.github.io/cafecortero/index.html"
+        redirectTo: "https://alansosar.github.io/Cafe-Cortero/index.html"
       }
     });
 
