@@ -32,9 +32,7 @@ body {
   position: relative; 
 }
 
-/* ===============================
-   BOTÓN HACIA ATRÁS — IGUAL LOGIN
-=============================== */
+/* BOTÓN ATRÁS */
 .back-btn {
   position: absolute;
   top: 18px;
@@ -93,7 +91,7 @@ body {
 }
 
 /* ===============================
-   CARD INTERIOR — IGUAL LOGIN
+   CARD INTERIOR
 =============================== */
 .register-inner-card {
   background: #ffffff;
@@ -105,10 +103,13 @@ body {
 }
 
 /* ===============================
-   MATERIAL 3 FLOATING LABEL
+   CAMPOS MATERIAL 3
 =============================== */
-.m3-field { margin-bottom: 22px; }
+.m3-field {
+  margin-bottom: 26px;
+}
 
+/* CONTENEDOR INPUT */
 .m3-input {
   position: relative;
   display: flex;
@@ -118,6 +119,12 @@ body {
   padding: 16px 12px 6px 12px;
   background: #ffffff;
   transition: all 0.22s ease;
+}
+
+/* SHADOW AL FOCUS */
+.m3-input:focus-within {
+  border-color: #33673B;
+  box-shadow: 0 0 0 3px rgba(51, 103, 59, 0.16);
 }
 
 /* ERROR */
@@ -152,7 +159,7 @@ body {
 }
 
 /* ===============================
-   FLOATING LABEL — NORMAL
+   FLOATING LABEL
 =============================== */
 .floating-label {
   position: absolute;
@@ -164,7 +171,7 @@ body {
   pointer-events: none;
 }
 
-/* SUBE LABEL (NORMAL O FOCUS) */
+/* LABEL ARRIBA AL ESCRIBIR O FOCUS */
 .m3-input input:not(:placeholder-shown) + .floating-label,
 .m3-input:focus-within .floating-label {
   top: -6px;
@@ -174,62 +181,31 @@ body {
   padding: 0 4px;
 }
 
-/* ===============================
-   LABEL ERROR
-=============================== */
+/* ERROR LABEL */
 .m3-input.error .floating-label {
   top: -6px !important;
-  transform: translateY(-2px);
   font-size: 0.78rem !important;
   color: #d72638 !important;
-  background: #ffffff;
-  padding: 0 4px;
 }
 
-/* ===============================
-   LABEL SUCCESS (COMPLETO)
-=============================== */
+/* SUCCESS LABEL */
 .m3-input.success .floating-label {
   color: #3CB043 !important;
 }
 
-.m3-input.success input:not(:placeholder-shown) + .floating-label,
-.m3-input.success:focus-within .floating-label {
-  top: -6px;
-  font-size: 0.78rem;
-  color: #3CB043 !important;
-  background: #ffffff;
-  padding: 0 4px;
-}
-
-/* ===============================
-   PLACEHOLDER EN ERROR — AHORA CAFÉ
-=============================== */
+/* PLACEHOLDER EN ERROR — CAFÉ */
 .m3-input.error input::placeholder {
-  color: #512615 !important; /* café igual que en login */
+  color: #512615 !important;
   opacity: .75;
-  font-weight: 400;
 }
 
 /* ===============================
-   TOGGLE PASSWORD
-=============================== */
-.toggle-pass {
-  cursor: pointer;
-  position: absolute;
-  right: 10px;
-  font-size: 22px;
-  color: #33673B;
-}
-
-/* ===============================
-   BARRAS DE SEGURIDAD
+   BARRAS DE SEGURIDAD (6 BARRAS)
 =============================== */
 .strength-bars {
   display: none;
-  margin-top: 8px;
-  gap: 4px;
-  transition: 0.25s ease;
+  margin-top: 10px;
+  gap: 6px;
 }
 
 .strength-bar {
@@ -240,9 +216,12 @@ body {
   transition: 0.25s ease;
 }
 
-.strength-bar.active-weak { background-color: #d72638; }
-.strength-bar.active-medium { background-color: #e6a700; }
-.strength-bar.active-strong { background-color: #3CB043; }
+.strength-bar.level-1 { background-color: #d72638; }
+.strength-bar.level-2 { background-color: #ff6f00; }
+.strength-bar.level-3 { background-color: #f4c20d; }
+.strength-bar.level-4 { background-color: #7cb342; }
+.strength-bar.level-5 { background-color: #3cb043; }
+.strength-bar.level-6 { background-color: #0d8b31; }
 
 /* ===============================
    ERROR TEXT
