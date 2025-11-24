@@ -1,6 +1,5 @@
 // ============================================================
-// REGISTRO DE CLIENTE — VALIDACIÓN TIPO GMAIL
-// Label sube y muestra error igual que Login
+// REGISTRO DE CLIENTE — LABEL ARRIBA + ERROR ADENTRO + BARRAS M3
 // ============================================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -18,130 +17,180 @@ document.addEventListener("DOMContentLoaded", () => {
     confirm: document.getElementById("confirmPasswordInput"),
   };
 
-  const btn = document.querySelector(".m3-btn");
-  const btnText = btn.querySelector(".btn-text");
-  const btnLoader = btn.querySelector(".loader");
-
-  // ============================================================
-  // MARCAR ERROR / ÉXITO — versión Login aplicada a Registro
-  // ============================================================
-  function marcar(campo, mensaje, success = false) {
-    const input = campos[campo];
-    const box = input.closest(".m3-input");
-    const label = box.querySelector(".floating-label");
-    const msg = box.parentElement.querySelector(".field-msg");
-
-    // Reset mensaje
-    msg.style.opacity = "0";
-    msg.textContent = "";
-
-    // ================================
-    // ✔️ SUCCESS
-    // ================================
-    if (success) {
-      box.classList.remove("error");
-      box.classList.add("success");
-
-      label.style.top = "-6px";
-      label.style.left = "12px";
-      label.style.fontSize = "0.75rem";
-      label.style.color = "#33673B";
-      label.style.background = "#fff";
-      label.style.padding = "0 4px";
-
-      return;
-    }
-
-    // ================================
-    // ❌ ERROR
-    // ================================
-    box.classList.add("error");
-
-    // ------------------------------
-    // SI ESTÁ VACÍO → error ARRIBA (igual Login)
-    // ------------------------------
-    if (input.value.trim().length === 0) {
-      label.textContent = mensaje;
-      label.style.top = "-6px";
-      label.style.left = "12px";
-      label.style.fontSize = "0.75rem";
-      label.style.color = "#D32F2F";
-      label.style.background = "#fff";
-      label.style.padding = "0 4px";
-      return;
-    }
-
-    // ------------------------------
-    // SI TIENE TEXTO → error ABAJO
-    // ------------------------------
-    msg.textContent = mensaje;
-    msg.style.opacity = "1";
-
-    label.style.top = "-6px";
-    label.style.left = "12px";
-    label.style.fontSize = "0.75rem";
-    label.style.color = "#D32F2F";
-    label.style.background = "#fff";
-    label.style.padding = "0 4px";
-  }
+  const errores = {
+    nombre: document.getElementById("errorNombre"),
+    correo: document.getElementById("errorCorreo"),
+    telefono: document.getElementById("errorTelefono"),
+    password: document.getElementById("errorPassword"),
+    confirm: document.getElementById("errorConfirm"),
+  };
 
   // ============================================================
   // LIMPIAR ERRORES
   // ============================================================
   function limpiarErrores() {
-    document.querySelectorAll(".m3-input").forEach(c => c.classList.remove("error", "success"));
-    document.querySelectorAll(".field-msg").forEach(m => { m.textContent = ""; m.style.opacity = "0"; });
+    Object.values(errores).forEach(e => e.textContent = "");
+    document.querySelectorAll(".m3-input").forEach(g => g.classList.remove("error", "success"));
+    Object.values(campos).forEach(c => c.placeholder = "");
   }
 
   // ============================================================
-  // VALIDACIÓN AVANZADA CORREO
+  // MARCAR ERROR / ÉXITO — LABEL SIEMPRE ARRIBA
   // ============================================================
-  const dominiosValidos = [
-    "gmail.com","hotmail.com","outlook.com","yahoo.com","icloud.com",
-    "proton.me","live.com","msn.com",
-    "unah.hn","unah.edu","gmail.es","correo.hn",
-    "googlemail.com","outlook.es","hotmail.es"
-  ];
+  function marcar(campo, mensaje, success = false) {
+    const input = campos[campo];
+    const grupo = input.closest(".m3-input");
 
-  const autocorrecciones = {
-    "gmal.com":"gmail.com",
-    "gmial.com":"gmail.com",
-    "hotmai.com":"hotmail.com",
-    "hotmal.com":"hotmail.com",
-    "outlok.com":"outlook.com",
-    "outllok.com":"outlook.com"
-  };
-
-  function correoValido(correo) {
-    if (!correo.includes("@")) return false;
-
-    const partes = correo.split("@");
-    if (partes.length !== 2) return false;
-
-    const dominio = partes[1].toLowerCase();
-
-    if (autocorrecciones[dominio]) {
-      campos.correo.value = partes[0] + "@" + autocorrecciones[dominio];
-      return true;
+    if (success) {
+      grupo.classList.remove("error");
+      grupo.classList.add("success");
+      errores[campo].textContent = "";
+      input.placeholder = "";
+      return;
     }
 
-    return dominiosValidos.some(d => dominio.endsWith(d));
+    grupo.classList.add("error");
+
+    if (input.value.trim() === "") {
+      input.placeholder = mensaje; // texto rojo adentro
+      errores[campo].textContent = "";
+    } else {
+      errores[campo].textContent = mensaje;
+      input.placeholder = "";
+    }
   }
 
   // ============================================================
-  // VALIDACIONES GENERALES
+  // VALIDAR CORREO — versión estricta por proveedor
   // ============================================================
-  function telefonoValido(t) {
-    return /^[0-9]{7,15}$/.test(t.replace(/[\s-+]/g, ""));
+  function esCorreoValido(email) {
+    if (!email) return true; // (tú decides si lo haces obligatorio después)
+
+    const regexGeneral = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+    if (!regexGeneral.test(email)) return false;
+
+    const reglas = {
+      "gmail.com": ["gmail"],
+      "yahoo.es": ["yahoo"],
+      "hotmail.com": ["hotmail"],
+      "outlook.com": ["outlook"],
+      "live.com": ["live"],
+      "icloud.com": ["icloud"]
+    };
+
+    const [usuario, dominioCompleto] = email.split("@");
+    const partes = dominioCompleto.split(".");
+    const proveedor = partes[0];
+    const extension = partes.slice(1).join(".");
+    const dominio = `${proveedor}.${extension}`;
+
+    for (const dominioCorrecto in reglas) {
+      if (reglas[dominioCorrecto].includes(proveedor)) {
+        return dominio === dominioCorrecto;
+      }
+    }
+
+    return true;
   }
 
-  function passwordValida(p) {
-    return p.length >= 6 && !p.includes(" ");
+  // ============================================================
+  // BARRAS DE SEGURIDAD — SOLO APARECEN AL ESCRIBIR
+  // ============================================================
+  const bars = document.querySelectorAll(".strength-bar");
+  const barsContainer = document.getElementById("barsContainer");
+
+  campos.password.addEventListener("input", () => {
+    const v = campos.password.value.trim();
+
+    bars.forEach(b => b.className = "strength-bar");
+
+    if (v.length === 0) {
+      barsContainer.style.display = "none";
+      return;
+    }
+
+    barsContainer.style.display = "flex";
+
+    if (v.length < 6) {
+      bars[0].classList.add("active-weak");
+    } else if (v.length < 10) {
+      bars[0].classList.add("active-medium");
+      bars[1].classList.add("active-medium");
+      bars[2].classList.add("active-medium");
+    } else {
+      bars.forEach(b => b.classList.add("active-strong"));
+    }
+  });
+
+  // ============================================================
+  // MOSTRAR / OCULTAR CONTRASEÑA
+  // ============================================================
+  document.querySelectorAll(".toggle-pass").forEach(icon => {
+    icon.addEventListener("click", () => {
+      const input = document.getElementById(icon.dataset.target);
+      input.type = input.type === "password" ? "text" : "password";
+      icon.textContent = input.type === "password" ? "visibility" : "visibility_off";
+    });
+  });
+
+  // ============================================================
+  // VERIFICAR DUPLICADOS
+  // ============================================================
+  async function existeUsuario(correo, telefono) {
+    const { data } = await sb
+      .from("users")
+      .select("email, phone")
+      .or(`email.eq.${correo},phone.eq.${telefono}`);
+
+    return data?.length ? data[0] : null;
   }
 
   // ============================================================
-  // LOADER
+  // VALIDACIÓN EN CADENA
   // ============================================================
+  function validarEnCadena() {
+
+    if (!campos.nombre.value.trim()) {
+      marcar("nombre", "Ingresa tu nombre");
+      return false;
+    }
+    marcar("nombre", "", true);
+
+    const correo = campos.correo.value.trim();
+    if (!correo || !esCorreoValido(correo)) {
+      marcar("correo", "Correo no válido");
+      return false;
+    }
+    marcar("correo", "", true);
+
+    if (campos.telefono.value.trim().length < 8) {
+      marcar("telefono", "Teléfono inválido");
+      return false;
+    }
+    marcar("telefono", "", true);
+
+    if (campos.password.value.length < 6) {
+      marcar("password", "Mínimo 6 caracteres");
+      return false;
+    }
+    marcar("password", "", true);
+
+    if (campos.password.value !== campos.confirm.value) {
+      marcar("confirm", "Las contraseñas no coinciden");
+      return false;
+    }
+    marcar("confirm", "", true);
+
+    return true;
+  }
+
+  // ============================================================
+  // BOTÓN — LOADING M3 EXPRESSIVE
+  // ============================================================
+  const btn = document.querySelector(".m3-btn");
+  const btnText = btn.querySelector(".btn-text");
+  const btnLoader = btn.querySelector(".loader");
+
   function activarLoading() {
     btn.classList.add("loading");
     btn.disabled = true;
@@ -157,77 +206,64 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ============================================================
-  // VALIDACIÓN COMPLETA
-  // ============================================================
-  function validar() {
-
-    if (!campos.nombre.value.trim()) {
-      marcar("nombre", "Ingresa tu nombre");
-      return false;
-    }
-    marcar("nombre", "", true);
-
-    if (!campos.correo.value.trim()) {
-      marcar("correo", "Correo obligatorio");
-      return false;
-    }
-    if (!correoValido(campos.correo.value.trim())) {
-      marcar("correo", "Correo no válido");
-      return false;
-    }
-    marcar("correo", "", true);
-
-    if (!telefonoValido(campos.telefono.value.trim())) {
-      marcar("telefono", "Teléfono inválido");
-      return false;
-    }
-    marcar("telefono", "", true);
-
-    if (!passwordValida(campos.password.value.trim())) {
-      marcar("password", "Contraseña no válida");
-      return false;
-    }
-    marcar("password", "", true);
-
-    if (campos.password.value !== campos.confirm.value) {
-      marcar("confirm", "No coincide");
-      return false;
-    }
-    marcar("confirm", "", true);
-
-    return true;
-  }
-
-  // ============================================================
-  // SUBMIT
+  // SUBMIT FINAL
   // ============================================================
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     limpiarErrores();
 
-    if (!validar()) return;
+    if (!validarEnCadena()) return;
 
     activarLoading();
 
+    const correo = campos.correo.value.trim();
+    const tel = campos.telefono.value.trim();
+
+    const existente = await existeUsuario(correo, tel);
+
+    if (existente) {
+      desactivarLoading();
+
+      if (correo && existente.email === correo)
+        marcar("correo", "El correo ya existe");
+
+      if (existente.phone === tel)
+        marcar("telefono", "El teléfono ya existe");
+
+      return;
+    }
+
     try {
       await registerUser(
-        campos.correo.value.trim(),
+        correo,
         campos.password.value.trim(),
-        campos.telefono.value.trim(),
+        tel,
         campos.nombre.value.trim(),
         "Honduras",
         null
       );
 
       mostrarSnackbar("Cuenta creada con éxito");
+
       setTimeout(() => window.location.href = "login.html", 1200);
 
     } catch (err) {
-      desactivarLoading();
-      mostrarSnackbar("Error creando cuenta");
       console.error(err);
+      mostrarSnackbar("Error creando la cuenta");
+      desactivarLoading();
     }
   });
+
+  // ============================================================
+  // BOTÓN ATRÁS — IGUAL QUE LOGIN
+  // ============================================================
+  const backBtn = document.querySelector(".back-btn");
+
+  if (backBtn) {
+    backBtn.addEventListener("click", () => {
+      window.location.href = "login.html";
+    });
+  }
 
   // ============================================================
   // SNACKBAR
