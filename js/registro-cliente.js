@@ -1,6 +1,6 @@
 // ============================================================
-// REGISTRO DE CLIENTE — VALIDACIÓN TIPO LOGIN (LABEL SUBE SIEMPRE)
-// Error dentro si está vacío / error abajo si está lleno
+// REGISTRO DE CLIENTE — VALIDACIÓN TIPO GMAIL
+// Label sube y muestra error igual que Login
 // ============================================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -23,63 +23,84 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnLoader = btn.querySelector(".loader");
 
   // ============================================================
-  // AÑADIR / QUITAR .filled AUTOMÁTICAMENTE
+  // MARCAR ERROR / ÉXITO — versión Login aplicada a Registro
   // ============================================================
-  Object.values(campos).forEach(input => {
-    input.addEventListener("input", () => {
-      const cont = input.closest(".m3-input");
+  function marcar(campo, mensaje, success = false) {
+    const input = campos[campo];
+    const box = input.closest(".m3-input");
+    const label = box.querySelector(".floating-label");
+    const msg = box.parentElement.querySelector(".field-msg");
 
-      if (input.value.trim().length > 0) {
-        cont.classList.add("filled");
-      } else {
-        cont.classList.remove("filled");
-      }
-    });
-  });
+    // Reset mensaje
+    msg.style.opacity = "0";
+    msg.textContent = "";
+
+    // ================================
+    // ✔️ SUCCESS
+    // ================================
+    if (success) {
+      box.classList.remove("error");
+      box.classList.add("success");
+
+      label.style.top = "-6px";
+      label.style.left = "12px";
+      label.style.fontSize = "0.75rem";
+      label.style.color = "#33673B";
+      label.style.background = "#fff";
+      label.style.padding = "0 4px";
+
+      return;
+    }
+
+    // ================================
+    // ❌ ERROR
+    // ================================
+    box.classList.add("error");
+
+    // ------------------------------
+    // SI ESTÁ VACÍO → error ARRIBA (igual Login)
+    // ------------------------------
+    if (input.value.trim().length === 0) {
+      label.textContent = mensaje;
+      label.style.top = "-6px";
+      label.style.left = "12px";
+      label.style.fontSize = "0.75rem";
+      label.style.color = "#D32F2F";
+      label.style.background = "#fff";
+      label.style.padding = "0 4px";
+      return;
+    }
+
+    // ------------------------------
+    // SI TIENE TEXTO → error ABAJO
+    // ------------------------------
+    msg.textContent = mensaje;
+    msg.style.opacity = "1";
+
+    label.style.top = "-6px";
+    label.style.left = "12px";
+    label.style.fontSize = "0.75rem";
+    label.style.color = "#D32F2F";
+    label.style.background = "#fff";
+    label.style.padding = "0 4px";
+  }
 
   // ============================================================
   // LIMPIAR ERRORES
   // ============================================================
   function limpiarErrores() {
-    document.querySelectorAll(".m3-input").forEach(g => g.classList.remove("error", "success"));
+    document.querySelectorAll(".m3-input").forEach(c => c.classList.remove("error", "success"));
+    document.querySelectorAll(".field-msg").forEach(m => { m.textContent = ""; m.style.opacity = "0"; });
   }
 
   // ============================================================
-  // MARCAR ERROR / SUCCESS — (LOGIN STYLE)
-  // ============================================================
-  function marcar(campo, mensaje, success = false) {
-    const input = campos[campo];
-    const box = input.closest(".m3-input");
-    const msg = box.parentElement.querySelector(".field-msg");
-
-    if (success) {
-      box.classList.remove("error");
-      msg.style.opacity = "0";
-      box.classList.add("success");
-      return;
-    }
-
-    box.classList.add("error");
-
-    // 📌 SI ESTÁ VACÍO → error DENTRO del input
-    if (input.value.trim().length === 0) {
-      msg.style.opacity = "0"; // No mostrar mensaje abajo
-      input.placeholder = mensaje; // placeholder rojo
-      return;
-    }
-
-    // 📌 SI TIENE TEXTO → error ABAJO (igual login)
-    msg.textContent = mensaje;
-    msg.style.opacity = "1";
-  }
-
-  // ============================================================
-  // VALIDACIÓN CORREO
+  // VALIDACIÓN AVANZADA CORREO
   // ============================================================
   const dominiosValidos = [
     "gmail.com","hotmail.com","outlook.com","yahoo.com","icloud.com",
-    "proton.me","live.com","msn.com","unah.hn","unah.edu",
-    "gmail.es","correo.hn","googlemail.com","outlook.es","hotmail.es"
+    "proton.me","live.com","msn.com",
+    "unah.hn","unah.edu","gmail.es","correo.hn",
+    "googlemail.com","outlook.es","hotmail.es"
   ];
 
   const autocorrecciones = {
@@ -93,6 +114,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function correoValido(correo) {
     if (!correo.includes("@")) return false;
+
     const partes = correo.split("@");
     if (partes.length !== 2) return false;
 
@@ -107,27 +129,32 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ============================================================
-  // VALIDACIÓN AUXILIAR
+  // VALIDACIONES GENERALES
   // ============================================================
-  const telefonoValido = t => /^[0-9]{7,15}$/.test(t.replace(/[\s-+]/g, ""));
-  const passwordValida = p => p.length >= 6 && !p.includes(" ");
+  function telefonoValido(t) {
+    return /^[0-9]{7,15}$/.test(t.replace(/[\s-+]/g, ""));
+  }
+
+  function passwordValida(p) {
+    return p.length >= 6 && !p.includes(" ");
+  }
 
   // ============================================================
   // LOADER
   // ============================================================
-  const activarLoading = () => {
+  function activarLoading() {
     btn.classList.add("loading");
     btn.disabled = true;
     btnText.style.opacity = "0";
     btnLoader.style.display = "inline-block";
-  };
+  }
 
-  const desactivarLoading = () => {
+  function desactivarLoading() {
     btn.classList.remove("loading");
     btn.disabled = false;
     btnText.style.opacity = "1";
     btnLoader.style.display = "none";
-  };
+  }
 
   // ============================================================
   // VALIDACIÓN COMPLETA
@@ -172,7 +199,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ============================================================
-  // SUBMIT FINAL
+  // SUBMIT
   // ============================================================
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
