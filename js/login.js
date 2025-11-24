@@ -1,6 +1,6 @@
 // ========================================================
 // LOGIN – Café Cortero ☕
-// Validación estilo Gmail · Supabase Auth
+// Validación Gmail + Floating Label Real
 // ========================================================
 
 const supabase = window.supabaseClient;
@@ -41,52 +41,55 @@ function tipoDeEntrada(valor) {
 }
 
 // ========================================================
-// LIMPIAR ERRORES
+// LIMPIAR ERRORES (cuando escribís)
 // ========================================================
 
-function limpiarErrores() {
-  document.querySelectorAll(".m3-input").forEach(g => g.classList.remove("error"));
-  document.querySelectorAll(".field-msg").forEach(msg => {
-    msg.textContent = "";
-    msg.style.opacity = "0";
-  });
+function limpiarErroresInput(event) {
+  const input = event.target;
+  const field = input.closest(".m3-field");
+  const box = field.querySelector(".m3-input");
+  const msg = field.querySelector(".field-msg");
 
-  // Restaurar placeholder vacío
-  userInput.placeholder = " ";
-  passInput.placeholder = " ";
+  box.classList.remove("error");
+  msg.textContent = "";
+  msg.style.opacity = "0";
 
-  // Quitar clases de error/estado
-  userInput.classList.remove("has-text");
-  passInput.classList.remove("has-text");
+  // cuando escribís → label arriba + verde
+  if (input.value.trim() !== "") {
+    box.classList.add("success");
+    input.classList.add("has-text");
+    input.placeholder = "";
+  } else {
+    box.classList.remove("success");
+    input.classList.remove("has-text");
+    input.placeholder = " ";
+  }
 }
 
+userInput.addEventListener("input", limpiarErroresInput);
+passInput.addEventListener("input", limpiarErroresInput);
+
 // ========================================================
-// NUEVA FUNCIÓN — CORREGIDA (FLOATING-LABEL PERFECTO)
+// MARCAR ERROR (cuando presionás ACCEDER)
 // ========================================================
 
-function marcarError(input, mensaje) {
-  const group = input.closest(".m3-field");
-  const msg = group.querySelector(".field-msg");
-  const m3 = group.querySelector(".m3-input");
+function marcarError(input, placeholderText) {
+  const field = input.closest(".m3-field");
+  const box = field.querySelector(".m3-input");
+  const msg = field.querySelector(".field-msg");
 
-  // Añadir borde rojo
-  m3.classList.add("error");
+  // activar error
+  box.classList.add("error");
+  box.classList.remove("success");
 
-  // --------- CASO 1: CAMPO VACÍO ---------
-  if (input.value.trim() === "") {
-    input.placeholder = " "; // placeholder SIEMPRE vacío
-    msg.textContent = mensaje;
-    msg.style.opacity = "1";
-
-    // label NO flota
-    input.classList.remove("has-text");
-    return;
-  }
-
-  // --------- CASO 2: CAMPO CON TEXTO PERO ERROR ---------
+  // SUBIR label
   input.classList.add("has-text");
 
-  msg.textContent = mensaje;
+  // mostrar placeholder café adentro
+  input.placeholder = placeholderText;
+
+  // mensaje abajo NO se usa, pero queda por si multiplica
+  msg.textContent = placeholderText;
   msg.style.opacity = "1";
 }
 
@@ -124,62 +127,18 @@ function validarPassword(valor) {
 }
 
 // ========================================================
-// VALIDACIÓN EN VIVO
-// ========================================================
-
-userInput.addEventListener("blur", () => {
-  const v = userInput.value.trim();
-  if (!v) return;
-
-  const tipo = tipoDeEntrada(v);
-
-  if (tipo === "correo" && !validarCorreo(v)) {
-    marcarError(userInput, "Correo no válido");
-  }
-
-  if (tipo === "telefono" && !validarTelefono(v)) {
-    marcarError(userInput, "Teléfono inválido");
-  }
-});
-
-userInput.addEventListener("input", limpiarErrores);
-passInput.addEventListener("input", limpiarErrores);
-
-// ========================================================
-// LOADING
-// ========================================================
-
-function activarLoading() {
-  loginBtn.classList.add("loading");
-  btnText.style.opacity = "0";
-  btnLoader.style.display = "inline-block";
-}
-
-function desactivarLoading() {
-  loginBtn.classList.remove("loading");
-  btnText.style.opacity = "1";
-  btnLoader.style.display = "none";
-}
-
-// ========================================================
-// DETECTAR "from=carrito"
-// ========================================================
-
-const params = new URLSearchParams(window.location.search);
-const from = params.get("from");
-
-// ========================================================
-// LOGIN
+// LOGIN SUBMIT
 // ========================================================
 
 loginForm.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  limpiarErrores();
-
   const userValue = userInput.value.trim();
   const passValue = passInput.value.trim();
 
+  // -------------------------------------------
+  // VALIDAR CAMPO USUARIO
+  // -------------------------------------------
   if (!userValue) {
     marcarError(userInput, "Ingresa tu correo o teléfono");
     return;
@@ -197,6 +156,9 @@ loginForm.addEventListener("submit", async (e) => {
     return;
   }
 
+  // -------------------------------------------
+  // VALIDAR CONTRASEÑA
+  // -------------------------------------------
   if (!passValue) {
     marcarError(passInput, "Ingresa tu contraseña");
     return;
@@ -207,11 +169,17 @@ loginForm.addEventListener("submit", async (e) => {
     return;
   }
 
-  activarLoading();
+  // -------------------------------------------
+  // LOADING
+  // -------------------------------------------
+  loginBtn.classList.add("loading");
+  btnText.style.opacity = "0";
+  btnLoader.style.display = "inline-block";
 
   let emailToUse = userValue;
 
   try {
+    // si es teléfono → buscar correo real
     if (tipo === "telefono") {
       const { data: rows } = await supabase
         .from("users")
@@ -243,8 +211,12 @@ loginForm.addEventListener("submit", async (e) => {
     mostrarSnackbar("Inicio de sesión exitoso ☕");
 
     setTimeout(() => {
+      const params = new URLSearchParams(window.location.search);
+      const from = params.get("from");
+
       window.location.href =
         from === "carrito" ? "detalles-cliente.html" : "index.html";
+
     }, 1300);
 
   } catch (err) {
@@ -253,6 +225,16 @@ loginForm.addEventListener("submit", async (e) => {
     marcarError(userInput, "Error al iniciar sesión");
   }
 });
+
+// ========================================================
+// DESACTIVAR LOADING
+// ========================================================
+
+function desactivarLoading() {
+  loginBtn.classList.remove("loading");
+  btnText.style.opacity = "1";
+  btnLoader.style.display = "none";
+}
 
 // ========================================================
 // SNACKBAR
@@ -289,6 +271,9 @@ document.querySelectorAll(".toggle-pass").forEach(icon => {
 
 const backBtn = document.querySelector(".back-btn");
 if (backBtn) {
+  const params = new URLSearchParams(window.location.search);
+  const from = params.get("from");
+
   backBtn.addEventListener("click", () => {
     if (from === "carrito") {
       window.location.href = "carrito.html";
