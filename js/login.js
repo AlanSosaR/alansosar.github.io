@@ -1,6 +1,6 @@
 // ========================================================
 // LOGIN – Café Cortero ☕
-// Validación avanzada estilo Gmail · Supabase Auth
+// Validación estilo Gmail · Supabase Auth
 // ========================================================
 
 const supabase = window.supabaseClient;
@@ -13,7 +13,7 @@ const btnText = loginBtn.querySelector(".btn-text");
 const btnLoader = loginBtn.querySelector(".loader");
 
 // ========================================================
-// REGLAS DE VALIDACIÓN
+// DOMINIOS + AUTOCORRECCIONES
 // ========================================================
 
 const dominiosValidos = [
@@ -33,7 +33,17 @@ const autocorrecciones = {
 };
 
 // ========================================================
-// LIMPIEZA DE ERRORES
+// TIPO DE ENTRADA (NUEVA LÓGICA)
+// ========================================================
+// Si solo son números → teléfono
+// Si hay letras → correo
+// Si mezcla números/letras → correo
+function tipoDeEntrada(valor) {
+  return /^[0-9]+$/.test(valor) ? "telefono" : "correo";
+}
+
+// ========================================================
+// LIMPIAR ERRORES
 // ========================================================
 
 function limpiarErrores() {
@@ -87,19 +97,20 @@ function validarPassword(valor) {
 }
 
 // ========================================================
-// VALIDACIÓN EN VIVO (tipo Gmail)
+// VALIDACIÓN EN VIVO (Gmail-like)
 // ========================================================
 
 userInput.addEventListener("blur", () => {
   const v = userInput.value.trim();
-
   if (!v) return;
 
-  if (v.includes("@") && !validarCorreo(v)) {
+  const tipo = tipoDeEntrada(v);
+
+  if (tipo === "correo" && !validarCorreo(v)) {
     marcarError(userInput, "Correo no válido");
   }
 
-  if (!v.includes("@") && !validarTelefono(v)) {
+  if (tipo === "telefono" && !validarTelefono(v)) {
     marcarError(userInput, "Teléfono inválido");
   }
 });
@@ -108,7 +119,7 @@ userInput.addEventListener("input", limpiarErrores);
 passInput.addEventListener("input", limpiarErrores);
 
 // ========================================================
-// LOADING INDICATOR
+// LOADING
 // ========================================================
 
 function activarLoading() {
@@ -124,14 +135,14 @@ function desactivarLoading() {
 }
 
 // ========================================================
-// DETECTAR FROM (carrito)
+// DETECTAR "from=carrito"
 // ========================================================
 
 const params = new URLSearchParams(window.location.search);
 const from = params.get("from");
 
 // ========================================================
-// LOGIN PRINCIPAL
+// LOGIN
 // ========================================================
 
 loginForm.addEventListener("submit", async (e) => {
@@ -147,14 +158,14 @@ loginForm.addEventListener("submit", async (e) => {
     return;
   }
 
-  const esCorreo = userValue.includes("@");
+  const tipo = tipoDeEntrada(userValue);
 
-  if (esCorreo && !validarCorreo(userValue)) {
+  if (tipo === "correo" && !validarCorreo(userValue)) {
     marcarError(userInput, "Correo no válido");
     return;
   }
 
-  if (!esCorreo && !validarTelefono(userValue)) {
+  if (tipo === "telefono" && !validarTelefono(userValue)) {
     marcarError(userInput, "Teléfono inválido");
     return;
   }
@@ -174,8 +185,7 @@ loginForm.addEventListener("submit", async (e) => {
   let emailToUse = userValue;
 
   try {
-    // Si usa teléfono → buscar email real
-    if (!esCorreo) {
+    if (tipo === "telefono") {
       const { data: rows } = await supabase
         .from("users")
         .select("email")
@@ -203,7 +213,6 @@ loginForm.addEventListener("submit", async (e) => {
     }
 
     sessionStorage.setItem("cortero_logged", "1");
-
     mostrarSnackbar("Inicio de sesión exitoso ☕");
 
     setTimeout(() => {
@@ -230,7 +239,7 @@ function mostrarSnackbar(msg) {
 }
 
 // ========================================================
-// MOSTRAR / OCULTAR CONTRASEÑA
+// TOGGLE PASSWORD
 // ========================================================
 
 document.querySelectorAll(".toggle-pass").forEach(icon => {
@@ -248,11 +257,10 @@ document.querySelectorAll(".toggle-pass").forEach(icon => {
 });
 
 // ========================================================
-// BOTÓN ATRÁS (flecha dentro de la tarjeta)
+// BOTÓN ATRÁS
 // ========================================================
 
 const backBtn = document.querySelector(".back-btn");
-
 if (backBtn) {
   backBtn.addEventListener("click", () => {
     if (from === "carrito") {
