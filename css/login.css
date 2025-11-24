@@ -1,3 +1,29 @@
+/* ============================================================
+   ELIMINAR COMPLETAMENTE EL HIGHLIGHT AZUL EN TODA LA PÁGINA
+============================================================ */
+*,
+*::before,
+*::after {
+  -webkit-tap-highlight-color: transparent !important;
+  outline: none !important;
+}
+
+button,
+a,
+input,
+textarea,
+select,
+label,
+img,
+.material-symbols-outlined,
+.m3-input,
+.m3-btn,
+.back-btn,
+.social-icon {
+  -webkit-tap-highlight-color: transparent !important;
+  outline: none !important;
+}
+
 /* ===============================
    GENERAL
 =============================== */
@@ -121,7 +147,7 @@ body {
 }
 
 .field-msg {
-  display: none !important; /* nunca aparece abajo */
+  display: none !important;
 }
 
 .m3-input {
@@ -154,15 +180,13 @@ body {
   font-size: 0.75rem !important;
   background: #ffffff;
   padding: 0 6px;
-  color: #512615; /* café */
+  color: #512615;
   transition: all 0.2s ease;
 }
 
 /* ===============================
    ESTADOS DE LOS CAMPOS
 =============================== */
-
-/* Focus */
 .m3-input:focus-within {
   border-color: #33673B;
   box-shadow: 0 0 0 2px rgba(51,103,59,0.16);
@@ -179,11 +203,11 @@ body {
 }
 
 .m3-input.error .floating-label {
-  color: #512615 !important; /* café */
+  color: #512615 !important;
 }
 
 .m3-input.error input::placeholder {
-  color: #512615 !important; /* café */
+  color: #512615 !important;
   opacity: 1 !important;
 }
 
@@ -230,7 +254,7 @@ body {
 
 .m3-btn.loading .btn-text { opacity: 0; }
 
-/* Loader centrado */
+/* Loader */
 .loader {
   display: none;
   position: absolute;
@@ -250,7 +274,7 @@ body {
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* ===============================
-   BLOQUE LINKS — CENTRADO Y ESPACIADO
+   LINKS
 =============================== */
 .links {
   margin-top: 20px;
@@ -315,7 +339,6 @@ body {
   justify-content: center;
   box-shadow: 0 4px 12px rgba(0,0,0,0.12);
   cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
   transition: transform .18s, box-shadow .18s;
 }
 
