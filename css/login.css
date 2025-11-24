@@ -78,13 +78,38 @@ body {
   background: #ffffff;
   border: 1.6px solid #512615;
   border-radius: 16px;
-  padding: 25px;
+  padding: 30px 25px 25px 25px; /* ✔ subimos padding top */
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  position: relative;
+}
+
+/* ==== BOTÓN ATRÁS ==== */
+.back-btn {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  z-index: 20;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: none;
+  background: #ffffff;
+  color: #33673B;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.14);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: .25s ease;
+}
+
+.back-btn:hover {
+  transform: translateY(-2px);
 }
 
 /* ==== Campos ==== */
 .m3-field {
-  margin-bottom: 22px;
+  margin-bottom: 16px;  /* ✔ menos espacio entre campos */
   position: relative;
 }
 
@@ -108,7 +133,7 @@ body {
   align-items: center;
   border: 1.5px solid #E0E0E0;
   border-radius: 12px;
-  padding: 10px 12px;
+  padding: 12px 12px 8px 12px; /* ✔ más compacto */
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
   background-color: #fff;
 }
@@ -138,50 +163,33 @@ body {
   margin-right: 8px;
 }
 
-/* ===== Floating labels (VERSIÓN REGISTRO) ===== */
+/* ==== Floating label (ajuste solicitado) ==== */
 .floating-label {
   position: absolute;
-  left: 40px;
-  top: 50%;
-  transform: translateY(-50%);
+  left: 42px;
+  top: 20px; /* ✔ bajado */
   font-size: 0.95rem;
   color: rgba(0, 0, 0, 0.55);
+  transform: translateY(0);
   pointer-events: none;
-  transition: all 0.25s ease;
+  transition: all 0.22s ease;
 }
 
-.m3-input input:not(:placeholder-shown) + .floating-label {
+.m3-input input:not(:placeholder-shown) + .floating-label,
+.m3-input:focus-within .floating-label {
   top: -6px;
   left: 12px;
+  font-size: 0.75rem;
   background: #fff;
   padding: 0 6px;
-  font-size: 0.75rem;
-  color: #33673B;
-}
-
-.m3-input input:focus + .floating-label {
-  top: -6px;
-  left: 12px;
-  background: #fff;
-  padding: 0 6px;
-  font-size: 0.75rem;
   color: #33673B;
 }
 
 .m3-input.error .floating-label {
-  top: -6px !important;
-  left: 12px !important;
-  background: #fff;
-  padding: 0 6px;
-  font-size: 0.75rem !important;
   color: #D32F2F !important;
 }
 
-.m3-input.error input::placeholder {
-  color: transparent;
-}
-
-/* Mostrar/Ocultar contraseña */
+/* ==== Mostrar/Ocultar contraseña ==== */
 .toggle-pass {
   cursor: pointer;
   font-size: 22px;
@@ -201,25 +209,21 @@ body {
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
-  font-family: "Roboto", sans-serif;
   transition: all 0.25s ease;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 6px;
 }
 
 .m3-btn:hover {
   background-color: #28532E;
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
   transform: translateY(-1px);
 }
 
 .m3-btn.loading .btn-text {
   opacity: 0;
-  pointer-events: none;
 }
 
 .m3-btn.loading .loader {
@@ -251,11 +255,6 @@ body {
   text-decoration: none;
 }
 
-#forgotPassword:hover {
-  color: #33673B;
-  text-decoration: underline;
-}
-
 .crear-cuenta-texto {
   font-size: 0.9rem;
   color: #512615;
@@ -264,12 +263,6 @@ body {
 .registrate-link {
   color: #33673B;
   font-weight: 500;
-  text-decoration: none;
-}
-
-.registrate-link:hover {
-  color: #24522A;
-  text-decoration: underline;
 }
 
 /* ==== Separador ==== */
@@ -279,16 +272,6 @@ body {
   justify-content: center;
   margin: 1rem 0;
   color: rgba(81, 38, 21, 0.5);
-  font-size: 0.9rem;
-}
-
-.separator::before,
-.separator::after {
-  content: "";
-  flex: 1;
-  height: 1px;
-  background: rgba(81, 38, 21, 0.15);
-  margin: 0 10px;
 }
 
 /* ==== Login Social ==== */
@@ -313,17 +296,6 @@ body {
 
 .btn-social img {
   width: 18px;
-  height: 18px;
-}
-
-.btn-social.google:hover {
-  border-color: #DB4437;
-  color: #DB4437;
-}
-
-.btn-social.facebook:hover {
-  border-color: #1877F2;
-  color: #1877F2;
 }
 
 /* ==== Snackbar ==== */
@@ -341,28 +313,11 @@ body {
   transform: translateX(-50%);
   font-size: 0.95rem;
   z-index: 1000;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
-}
-
-#snackbar.show {
-  visibility: visible;
-  animation: fadein 0.4s, fadeout 0.4s 1.8s;
-}
-
-@keyframes fadein {
-  from { bottom: 20px; opacity: 0; }
-  to { bottom: 30px; opacity: 1; }
-}
-
-@keyframes fadeout {
-  from { bottom: 30px; opacity: 1; }
-  to { bottom: 20px; opacity: 0; }
 }
 
 /* ==== Responsive ==== */
 @media (max-width: 480px) {
   .login-card { padding: 25px; }
-  .login-inner-card { padding: 20px; }
+  .login-inner-card { padding: 22px; }
   .login-title { font-size: 1.5rem; }
-  .logo-img { width: 90px; }
 }
