@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
     grupo.classList.add("error");
 
     if (input.value.trim() === "") {
-      input.placeholder = mensaje; // texto rojo adentro
+      input.placeholder = mensaje; 
       errores[campo].textContent = "";
     } else {
       errores[campo].textContent = mensaje;
@@ -61,10 +61,10 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ============================================================
-  // VALIDAR CORREO — versión estricta por proveedor
+  // VALIDAR CORREO
   // ============================================================
   function esCorreoValido(email) {
-    if (!email) return true; // (tú decides si lo haces obligatorio después)
+    if (!email) return true;
 
     const regexGeneral = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
     if (!regexGeneral.test(email)) return false;
@@ -94,7 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ============================================================
-  // BARRAS DE SEGURIDAD — SOLO APARECEN AL ESCRIBIR
+  // BARRAS DE SEGURIDAD — 6 BARRAS
   // ============================================================
   const bars = document.querySelectorAll(".strength-bar");
   const barsContainer = document.getElementById("barsContainer");
@@ -102,6 +102,7 @@ document.addEventListener("DOMContentLoaded", () => {
   campos.password.addEventListener("input", () => {
     const v = campos.password.value.trim();
 
+    // Reiniciar barras
     bars.forEach(b => b.className = "strength-bar");
 
     if (v.length === 0) {
@@ -111,13 +112,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
     barsContainer.style.display = "flex";
 
+    // Fuerza por niveles usando 6 barras
     if (v.length < 6) {
+      // Muy débil → 1 barra
       bars[0].classList.add("active-weak");
+
     } else if (v.length < 10) {
+      // Media → 3 barras
       bars[0].classList.add("active-medium");
       bars[1].classList.add("active-medium");
       bars[2].classList.add("active-medium");
+
+    } else if (v.length < 14) {
+      // Fuerte → 4 barras fuertes
+      for (let i = 0; i < 4; i++) bars[i].classList.add("active-strong");
+
+    } else if (v.length < 18) {
+      // Muy fuerte → 5 barras
+      for (let i = 0; i < 5; i++) bars[i].classList.add("active-strong");
+
     } else {
+      // Ultra → 6 barras
       bars.forEach(b => b.classList.add("active-strong"));
     }
   });
