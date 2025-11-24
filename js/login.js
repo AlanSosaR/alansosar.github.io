@@ -41,7 +41,7 @@ function tipoDeEntrada(valor) {
 }
 
 // ========================================================
-// LIMPIAR ERRORES EN VIVO
+// LIMPIAR ERRORES AL ESCRIBIR
 // ========================================================
 
 function limpiarErroresInput(event) {
@@ -250,7 +250,7 @@ document.querySelectorAll(".toggle-pass").forEach(icon => {
 });
 
 // ========================================================
-// LOGIN CON GOOGLE (CORRECTO DEFINITIVO)
+// LOGIN CON GOOGLE (FINAL, FUNCIONANDO)
 // ========================================================
 
 document.getElementById("googleLoginBtn").addEventListener("click", async () => {
@@ -258,11 +258,12 @@ document.getElementById("googleLoginBtn").addEventListener("click", async () => 
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: "https://alansosar.github.io/Cafe-Cortero/index.html"
+        redirectTo: "https://alansosar.github.io/cafecortero/index.html"
       }
     });
 
     if (error) {
+      console.error(error);
       mostrarSnackbar("Error al conectar con Google");
       return;
     }
