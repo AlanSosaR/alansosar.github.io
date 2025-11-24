@@ -13,16 +13,39 @@ body {
 }
 
 /* ===============================
-   BOTÓN FLOTANTE ATRÁS
+   CONTENEDOR PRINCIPAL
+=============================== */
+.register-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: 80px 20px 30px 20px;
+}
+
+/* ===============================
+   TARJETA PRINCIPAL
+=============================== */
+.register-card {
+  position: relative; /* ✔ necesario para la flecha interna */
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  padding: 30px 40px;
+  max-width: 420px;
+  width: 100%;
+}
+
+/* ===============================
+   BOTÓN FLOTANTE ATRÁS (DENTRO DE LA TARJETA)
 =============================== */
 .back-btn {
-  position: fixed;
-  top: 22px;
-  left: 22px;
-  z-index: 50;
-  
-  width: 46px;
-  height: 46px;
+  position: absolute;   /* ✔ ahora dentro de la tarjeta */
+  top: 16px;
+  left: 16px;
+  z-index: 10;
+
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   border: none;
 
@@ -32,8 +55,7 @@ body {
 
   background: #ffffff;
   color: #33673B;
-
-  box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.12);
   cursor: pointer;
   transition: all .25s ease;
   -webkit-tap-highlight-color: transparent;
@@ -45,30 +67,8 @@ body {
 }
 
 .back-btn .material-symbols-outlined {
-  font-size: 28px;
+  font-size: 26px;
   font-weight: 500;
-}
-
-/* ===============================
-   CONTENEDOR PRINCIPAL
-=============================== */
-.register-container {
-  display: flex;
-  justify-content: center;
-  width: 100%;
-  padding: 80px 20px 30px 20px; /* ✔ deja espacio para el botón */
-}
-
-/* ===============================
-   TARJETA PRINCIPAL
-=============================== */
-.register-card {
-  background: #ffffff;
-  border-radius: 20px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-  padding: 30px 40px;
-  max-width: 420px;
-  width: 100%;
 }
 
 /* ===============================
@@ -110,7 +110,7 @@ body {
 }
 
 /* ===============================
-   MATERIAL 3 FLOATING LABEL
+   CAMPOS — MATERIAL 3 FLOATING LABEL
 =============================== */
 .m3-field {
   margin-bottom: 22px;
@@ -137,7 +137,7 @@ body {
   box-shadow: 0 0 0 3px rgba(60, 176, 67, 0.18);
 }
 
-/* Iconos */
+/* ICONOS */
 .m3-input .material-symbols-outlined {
   font-size: 22px;
   margin-right: 8px;
@@ -178,7 +178,9 @@ body {
   padding: 0 4px;
 }
 
-/* ERROR — LABEL */
+/* ===============================
+   LABEL EN ERROR
+=============================== */
 .m3-input.error .floating-label {
   top: -6px !important;
   transform: translateY(-2px);
@@ -188,15 +190,11 @@ body {
   padding: 0 4px;
 }
 
-/* PLACEHOLDER ROJO */
+/* placeholder rojo */
 .m3-input.error input::placeholder {
   color: #d72638 !important;
   opacity: 1;
   font-weight: 500;
-}
-
-.m3-input.error input {
-  caret-color: #d72638;
 }
 
 /* ===============================
@@ -279,7 +277,7 @@ body {
 .m3-btn.loading .loader { opacity: 1; }
 
 /* ===============================
-   SNACKBAR — ARRIBA DEL BOTÓN
+   SNACKBAR
 =============================== */
 #snackbar {
   position: absolute;
@@ -321,9 +319,9 @@ body {
   }
 
   .back-btn {
-    top: 16px;
-    left: 16px;
-    width: 42px;
-    height: 42px;
+    top: 12px;
+    left: 12px;
+    width: 40px;
+    height: 40px;
   }
 }
