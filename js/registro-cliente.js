@@ -1,5 +1,6 @@
 // ============================================================
-// REGISTRO DE CLIENTE — LABEL ARRIBA + ERROR ADENTRO + BARRAS M3
+// REGISTRO DE CLIENTE — Café Cortero
+// Floating Label + Error Rojo + Éxito Verde (Material 3)
 // ============================================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -25,7 +26,6 @@ document.addEventListener("DOMContentLoaded", () => {
     confirm: document.getElementById("errorConfirm"),
   };
 
-  // Placeholders correctos
   const mensajesVacios = {
     nombre: "Ingresa tu nombre",
     correo: "Ingresa tu correo",
@@ -37,13 +37,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // ============================================================
   // DOMINIOS + AUTOCORRECCIONES
   // ============================================================
-  const dominiosValidos = [
-    "gmail.com", "hotmail.com", "outlook.com", "yahoo.com", "icloud.com",
-    "proton.me", "live.com", "msn.com",
-    "unah.hn", "unah.edu", "gmail.es", "correo.hn",
-    "googlemail.com", "outlook.es", "hotmail.es"
-  ];
-
   const autocorrecciones = {
     "gmal.com": "gmail.com",
     "gmial.com": "gmail.com",
@@ -54,7 +47,25 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   // ============================================================
-  // LIMPIAR ERROR DE UN CAMPO
+  // NORMALIZAR TELÉFONO (WhatsApp Style)
+  // ============================================================
+  function normalizarTelefono(tel) {
+    if (!tel) return "";
+
+    // quitar espacios, guiones, paréntesis
+    tel = tel.replace(/[\s\-()]/g, "");
+
+    // convertir 00 → +
+    if (tel.startsWith("00")) tel = "+" + tel.slice(2);
+
+    // quitar el signo +
+    tel = tel.replace(/^\+/, "");
+
+    return tel;
+  }
+
+  // ============================================================
+  // LIMPIAR ERROR
   // ============================================================
   function limpiarErrorCampo(campo) {
     const input = campos[campo];
@@ -62,11 +73,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     grupo.classList.remove("error", "success");
     errores[campo].textContent = "";
-    input.placeholder = "";
+    input.placeholder = " ";
   }
 
   // ============================================================
-  // MARCAR ERROR / ÉXITO FINAL
+  // MARCAR ERROR / ÉXITO
   // ============================================================
   function marcar(campo, mensaje, success = false) {
     const input = campos[campo];
@@ -76,18 +87,19 @@ document.addEventListener("DOMContentLoaded", () => {
       grupo.classList.remove("error");
       grupo.classList.add("success");
       errores[campo].textContent = "";
-      input.placeholder = "";
+      input.placeholder = " ";
       return;
     }
 
     grupo.classList.add("error");
+    grupo.classList.remove("success");
 
-    if (input.value.trim() === "") {
+    if (!input.value.trim()) {
       input.placeholder = mensajesVacios[campo];
       errores[campo].textContent = "";
     } else {
       errores[campo].textContent = mensaje;
-      input.placeholder = "";
+      input.placeholder = " ";
     }
   }
 
@@ -100,27 +112,27 @@ document.addEventListener("DOMContentLoaded", () => {
     const regexGeneral = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
     if (!regexGeneral.test(email)) return false;
 
-    const partes = email.split("@");
-    const usuario = partes[0];
-    let dominio = (partes[1] || "").toLowerCase();
+    let [usuario, dominio] = email.split("@");
+    dominio = dominio.toLowerCase();
 
     if (autocorrecciones[dominio]) {
-      dominio = autocorrecciones[dominio];
-      campos.correo.value = `${usuario}@${dominio}`;
+      campos.correo.value = `${usuario}@${autocorrecciones[dominio]}`;
     }
 
     return true;
   }
 
   // ============================================================
-  // VERDE EN VIVO PARA TODA ENTRADA
+  // VERDE EN VIVO
   // ============================================================
   function activarVerdeEnVivo(campo, validador) {
     campos[campo].addEventListener("input", () => {
+
       const input = campos[campo];
       const grupo = input.closest(".m3-input");
 
-      limpiarErrorCampo(campo);
+      errores[campo].textContent = "";
+      grupo.classList.remove("error");
 
       if (!input.value.trim()) {
         grupo.classList.remove("success");
@@ -129,7 +141,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (validador(input.value.trim())) {
         grupo.classList.add("success");
+      } else {
+        grupo.classList.remove("success");
       }
+
     });
   }
 
@@ -140,7 +155,7 @@ document.addEventListener("DOMContentLoaded", () => {
   activarVerdeEnVivo("confirm", v => v === campos.password.value.trim());
 
   // ============================================================
-  // VALIDACIÓN ON BLUR (FINAL)
+  // BLUR (VALIDACIONES FINALES)
   // ============================================================
   campos.nombre.addEventListener("blur", () => {
     const v = campos.nombre.value.trim();
@@ -149,60 +164,28 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   campos.correo.addEventListener("blur", () => {
-    const correo = campos.correo.value.trim();
-    if (!correo) return marcar("correo", mensajesVacios.correo);
-    if (!esCorreoValido(correo)) return marcar("correo", "Correo no válido");
+    const v = campos.correo.value.trim();
+    if (!v) return marcar("correo", mensajesVacios.correo);
+    if (!esCorreoValido(v)) return marcar("correo", "Correo no válido");
     marcar("correo", "", true);
   });
 
   campos.telefono.addEventListener("blur", () => {
-    const v = campos.telefono.value.trim();
-    if (v.length < 8) marcar("telefono", mensajesVacios.telefono);
+    if (campos.telefono.value.trim().length < 8)
+      marcar("telefono", mensajesVacios.telefono);
     else marcar("telefono", "", true);
   });
 
   campos.password.addEventListener("blur", () => {
-    const v = campos.password.value.trim();
-    if (v.length < 6) marcar("password", mensajesVacios.password);
+    if (campos.password.value.length < 6)
+      marcar("password", mensajesVacios.password);
     else marcar("password", "", true);
   });
 
   campos.confirm.addEventListener("blur", () => {
-    const pass = campos.password.value.trim();
-    const conf = campos.confirm.value.trim();
-    if (!conf) marcar("confirm", mensajesVacios.confirm);
-    else if (pass !== conf) marcar("confirm", "Las contraseñas no coinciden");
+    if (campos.confirm.value !== campos.password.value)
+      marcar("confirm", "Las contraseñas no coinciden");
     else marcar("confirm", "", true);
-  });
-
-  // ============================================================
-  // BARRAS SEGURIDAD
-  // ============================================================
-  const bars = document.querySelectorAll(".strength-bar");
-  const barsContainer = document.getElementById("barsContainer");
-
-  campos.password.addEventListener("input", () => {
-    const v = campos.password.value.trim();
-
-    bars.forEach(b => b.className = "strength-bar");
-
-    if (v.length === 0) return barsContainer.style.display = "none";
-
-    barsContainer.style.display = "flex";
-
-    if (v.length < 6) {
-      bars[0].classList.add("active-weak");
-    } else if (v.length < 10) {
-      bars[0].classList.add("active-medium");
-      bars[1].classList.add("active-medium");
-      bars[2].classList.add("active-medium");
-    } else if (v.length < 14) {
-      for (let i = 0; i < 4; i++) bars[i].classList.add("active-strong");
-    } else if (v.length < 18) {
-      for (let i = 0; i < 5; i++) bars[i].classList.add("active-strong");
-    } else {
-      bars.forEach(b => b.classList.add("active-strong"));
-    }
   });
 
   // ============================================================
@@ -217,52 +200,44 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // ============================================================
-  // CHEQUEAR DUPLICADOS
+  // CHEQUEAR DUPLICADOS — TEL NORMALIZADO
   // ============================================================
-  async function existeUsuario(correo, telefono) {
+  async function existeUsuario(correo, telefonoRaw) {
+
+    const telefonoNormalizado = normalizarTelefono(telefonoRaw);
+
     const { data } = await sb
       .from("users")
-      .select("email, phone")
-      .or(`email.eq.${correo},phone.eq.${telefono}`);
+      .select("email, phone");
 
-    return data?.length ? data[0] : null;
+    const coincide = data?.find(row =>
+      row.email === correo ||
+      normalizarTelefono(row.phone) === telefonoNormalizado
+    );
+
+    return coincide || null;
   }
 
   // ============================================================
-  // VALIDAR EN CADENA
+  // VALIDACIÓN EN CADENA
   // ============================================================
   function validarEnCadena() {
 
-    if (!campos.nombre.value.trim()) {
-      marcar("nombre", mensajesVacios.nombre);
-      return false;
-    }
-    marcar("nombre", "", true);
+    if (!campos.nombre.value.trim())
+      return marcar("nombre", mensajesVacios.nombre), false;
 
     const correo = campos.correo.value.trim();
-    if (!correo || !esCorreoValido(correo)) {
-      marcar("correo", "Correo no válido");
-      return false;
-    }
-    marcar("correo", "", true);
+    if (!correo || !esCorreoValido(correo))
+      return marcar("correo", "Correo no válido"), false;
 
-    if (campos.telefono.value.trim().length < 8) {
-      marcar("telefono", mensajesVacios.telefono);
-      return false;
-    }
-    marcar("telefono", "", true);
+    if (campos.telefono.value.trim().length < 8)
+      return marcar("telefono", mensajesVacios.telefono), false;
 
-    if (campos.password.value.length < 6) {
-      marcar("password", mensajesVacios.password);
-      return false;
-    }
-    marcar("password", "", true);
+    if (campos.password.value.trim().length < 6)
+      return marcar("password", mensajesVacios.password), false;
 
-    if (campos.password.value !== campos.confirm.value) {
-      marcar("confirm", "Las contraseñas no coinciden");
-      return false;
-    }
-    marcar("confirm", "", true);
+    if (campos.password.value !== campos.confirm.value)
+      return marcar("confirm", "Las contraseñas no coinciden"), false;
 
     return true;
   }
@@ -278,7 +253,6 @@ document.addEventListener("DOMContentLoaded", () => {
     btn.classList.add("loading");
     btn.disabled = true;
     btnText.style.opacity = "0";
-    btnText.style.position = "absolute";
     btnLoader.style.display = "inline-block";
   }
 
@@ -286,7 +260,6 @@ document.addEventListener("DOMContentLoaded", () => {
     btn.classList.remove("loading");
     btn.disabled = false;
     btnText.style.opacity = "1";
-    btnText.style.position = "relative";
     btnLoader.style.display = "none";
   }
 
@@ -303,15 +276,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const correo = campos.correo.value.trim();
     const tel = campos.telefono.value.trim();
 
-    const existente = await existeUsuario(correo, tel);
+    const existe = await existeUsuario(correo, tel);
 
-    if (existente) {
+    if (existe) {
       desactivarLoading();
 
-      if (correo && existente.email === correo)
+      if (existe.email === correo)
         marcar("correo", "El correo ya existe");
 
-      if (existente.phone === tel)
+      if (normalizarTelefono(existe.phone) === normalizarTelefono(tel))
         marcar("telefono", "El teléfono ya existe");
 
       return;
