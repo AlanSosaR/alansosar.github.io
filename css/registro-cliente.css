@@ -12,11 +12,51 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* ===============================
+   BOTÓN FLOTANTE ATRÁS
+=============================== */
+.back-btn {
+  position: fixed;
+  top: 22px;
+  left: 22px;
+  z-index: 50;
+  
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: none;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #ffffff;
+  color: #33673B;
+
+  box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+  cursor: pointer;
+  transition: all .25s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.back-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.22);
+}
+
+.back-btn .material-symbols-outlined {
+  font-size: 28px;
+  font-weight: 500;
+}
+
+/* ===============================
+   CONTENEDOR PRINCIPAL
+=============================== */
 .register-container {
   display: flex;
   justify-content: center;
   width: 100%;
-  padding: 30px 20px;
+  padding: 80px 20px 30px 20px; /* ✔ deja espacio para el botón */
 }
 
 /* ===============================
@@ -59,7 +99,7 @@ body {
 }
 
 /* ===============================
-   CARD INTERIOR OUTLINED
+   CARD INTERIOR OUTLINED (IGUAL A LOGIN)
 =============================== */
 .register-inner-card {
   border: 1.6px solid rgba(81, 38, 21, 0.25);
@@ -138,7 +178,7 @@ body {
   padding: 0 4px;
 }
 
-/* ERROR — LABEL SIEMPRE ARRIBA (MEJORADO) */
+/* ERROR — LABEL */
 .m3-input.error .floating-label {
   top: -6px !important;
   transform: translateY(-2px);
@@ -171,25 +211,21 @@ body {
 }
 
 /* ===============================
-   BARRAS DE SEGURIDAD — M3 EXPRESSIVE
+   BARRAS DE SEGURIDAD — PREMIUM (6 BARRAS)
 =============================== */
-
 .strength-bars {
-  display: none;       /* ocultas hasta escribir */
-  margin-top: 8px;     /* ✔ margen mejorado */
-  gap: 4px;
+  display: none;
+  margin-top: 10px;
+  gap: 6px;
   transition: 0.25s ease;
 }
 
-/* (ELIMINADO) .strength-bars.visible */
-
-/* BARRAS */
 .strength-bar {
   height: 6px;
   flex: 1;
   border-radius: 4px;
-  background-color: #e0e0e0;
-  transition: 0.25s ease;
+  background-color: #E3E3E3;
+  transition: background-color 0.25s ease;
 }
 
 .strength-bar.active-weak { background-color: #d72638; }
@@ -247,7 +283,7 @@ body {
 =============================== */
 #snackbar {
   position: absolute;
-  bottom: 85px; /* ✔ mejor posición */
+  bottom: 85px;
   left: 50%;
   transform: translateX(-50%) translateY(10px);
   background: rgba(81, 38, 21, 0.92);
@@ -282,5 +318,12 @@ body {
 
   .register-title {
     font-size: 1.5rem;
+  }
+
+  .back-btn {
+    top: 16px;
+    left: 16px;
+    width: 42px;
+    height: 42px;
   }
 }
