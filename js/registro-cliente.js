@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
     confirm: document.getElementById("errorConfirm"),
   };
 
-  // Placeholders correctos cuando el campo está vacío
+  // Placeholders correctos para cuando el campo está vacío
   const mensajesVacios = {
     nombre: "Ingresa tu nombre",
     correo: "Ingresa tu correo",
@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   // ============================================================
-  // DOMINIOS + AUTOCORRECCIONES (LOGIN)
+  // DOMINIOS + AUTOCORRECCIONES (MISMOS QUE LOGIN)
   // ============================================================
   const dominiosValidos = [
     "gmail.com", "hotmail.com", "outlook.com", "yahoo.com", "icloud.com",
@@ -54,7 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   // ============================================================
-  // LIMPIAR ERRORES
+  // LIMPIAR ERRORES POR CAMPO
   // ============================================================
   function limpiarErrorCampo(campo) {
     const input = campos[campo];
@@ -83,16 +83,16 @@ document.addEventListener("DOMContentLoaded", () => {
     grupo.classList.add("error");
 
     if (input.value.trim() === "") {
-      input.placeholder = mensajesVacios[campo]; // placeholder rojo
+      input.placeholder = mensajesVacios[campo];
       errores[campo].textContent = "";
     } else {
-      errores[campo].textContent = mensaje; // texto arriba rojo
+      errores[campo].textContent = mensaje;
       input.placeholder = "";
     }
   }
 
   // ============================================================
-  // VALIDAR CORREO + AUTOCORRECIÓN
+  // VALIDAR CORREO + AUTOCORRECCIÓN EN VIVO (LOGIN STYLE)
   // ============================================================
   function esCorreoValido(email) {
     if (!email) return true;
@@ -106,21 +106,48 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (autocorrecciones[dominio]) {
       dominio = autocorrecciones[dominio];
-      const corregido = `${usuario}@${dominio}`;
-      campos.correo.value = corregido;
-      email = corregido;
+      campos.correo.value = `${usuario}@${dominio}`;
+      email = campos.correo.value;
     }
 
     if (dominiosValidos.some(d => dominio.endsWith(d))) return true;
 
-    return true; // permitir dominios empresariales
+    return true;
   }
+
+  // ============================================================
+  // AUTOCORRECCIÓN EN VIVO + BORDE VERDE INMEDIATO
+  // ============================================================
+  campos.correo.addEventListener("input", () => {
+    limpiarErrorCampo("correo");
+
+    let correo = campos.correo.value.trim();
+    if (!correo) return;
+
+    const partes = correo.split("@");
+    if (partes.length < 2) return;
+
+    const usuario = partes[0];
+    let dominio = partes[1].toLowerCase();
+
+    if (autocorrecciones[dominio]) {
+      dominio = autocorrecciones[dominio];
+      const corregido = `${usuario}@${dominio}`;
+
+      campos.correo.value = corregido;
+
+      const grupo = campos.correo.closest(".m3-input");
+      grupo.classList.remove("error");
+      grupo.classList.add("success");
+      errores.correo.textContent = "";
+    }
+  });
 
   // ============================================================
   // VALIDACIÓN EN VIVO (INPUT + BLUR)
   // ============================================================
 
-  // NOMBRE
+  // Nombre
   campos.nombre.addEventListener("input", () => limpiarErrorCampo("nombre"));
   campos.nombre.addEventListener("blur", () => {
     const v = campos.nombre.value.trim();
@@ -128,25 +155,15 @@ document.addEventListener("DOMContentLoaded", () => {
     else marcar("nombre", "", true);
   });
 
-  // CORREO
-  campos.correo.addEventListener("input", () => limpiarErrorCampo("correo"));
+  // Correo
   campos.correo.addEventListener("blur", () => {
-    let correo = campos.correo.value.trim();
-
-    if (!correo) {
-      marcar("correo", mensajesVacios.correo);
-      return;
-    }
-
-    if (!esCorreoValido(correo)) {
-      marcar("correo", "Correo no válido");
-      return;
-    }
-
+    const correo = campos.correo.value.trim();
+    if (!correo) return marcar("correo", mensajesVacios.correo);
+    if (!esCorreoValido(correo)) return marcar("correo", "Correo no válido");
     marcar("correo", "", true);
   });
 
-  // TELÉFONO
+  // Teléfono
   campos.telefono.addEventListener("input", () => limpiarErrorCampo("telefono"));
   campos.telefono.addEventListener("blur", () => {
     const tel = campos.telefono.value.trim();
@@ -154,25 +171,25 @@ document.addEventListener("DOMContentLoaded", () => {
     else marcar("telefono", "", true);
   });
 
-  // CONTRASEÑA
+  // Password
   campos.password.addEventListener("input", () => limpiarErrorCampo("password"));
   campos.password.addEventListener("blur", () => {
     if (!campos.password.value.trim()) marcar("password", mensajesVacios.password);
     else marcar("password", "", true);
   });
 
-  // CONFIRMAR
+  // Confirm password
   campos.confirm.addEventListener("input", () => limpiarErrorCampo("confirm"));
   campos.confirm.addEventListener("blur", () => {
     const pass = campos.password.value;
     const conf = campos.confirm.value;
-    if (!conf) marcar("confirm", mensajesVacios.confirm);
-    else if (pass !== conf) marcar("confirm", "Las contraseñas no coinciden");
-    else marcar("confirm", "", true);
+    if (!conf) return marcar("confirm", mensajesVacios.confirm);
+    if (pass !== conf) return marcar("confirm", "Las contraseñas no coinciden");
+    marcar("confirm", "", true);
   });
 
   // ============================================================
-  // BARRAS DE SEGURIDAD — 6 BARRAS
+  // BARRAS DE SEGURIDAD (6 barras)
   // ============================================================
   const bars = document.querySelectorAll(".strength-bar");
   const barsContainer = document.getElementById("barsContainer");
@@ -182,10 +199,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     bars.forEach(b => b.className = "strength-bar");
 
-    if (v.length === 0) {
-      barsContainer.style.display = "none";
-      return;
-    }
+    if (v.length === 0) return barsContainer.style.display = "none";
 
     barsContainer.style.display = "flex";
 
@@ -205,7 +219,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // ============================================================
-  // TOGGLE PASS
+  // TOGGLE PASSWORD
   // ============================================================
   document.querySelectorAll(".toggle-pass").forEach(icon => {
     icon.addEventListener("click", () => {
@@ -228,7 +242,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ============================================================
-  // VALIDACIÓN EN CADENA (SUBMIT)
+  // VALIDACIÓN FINAL (SUBMIT)
   // ============================================================
   function validarEnCadena() {
 
@@ -277,6 +291,7 @@ document.addEventListener("DOMContentLoaded", () => {
     btn.classList.add("loading");
     btn.disabled = true;
     btnText.style.opacity = "0";
+    btnText.style.position = "absolute"; // FIX loader position
     btnLoader.style.display = "inline-block";
   }
 
@@ -284,14 +299,16 @@ document.addEventListener("DOMContentLoaded", () => {
     btn.classList.remove("loading");
     btn.disabled = false;
     btnText.style.opacity = "1";
+    btnText.style.position = "relative";
     btnLoader.style.display = "none";
   }
 
   // ============================================================
-  // SUBMIT FINAL
+  // SUBMIT
   // ============================================================
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
+
     if (!validarEnCadena()) return;
 
     activarLoading();
@@ -318,13 +335,13 @@ document.addEventListener("DOMContentLoaded", () => {
         correo,
         campos.password.value.trim(),
         tel,
-        campos.nombre.value.trim(),
+        campos.nombre
+.value.trim(),
         "Honduras",
         null
       );
 
       mostrarSnackbar("Cuenta creada con éxito");
-
       setTimeout(() => window.location.href = "login.html", 1200);
 
     } catch (err) {
