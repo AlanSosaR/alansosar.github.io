@@ -1,46 +1,36 @@
 // ============================================================
-// AUTH-UI.JS — CONTROL DE MENÚ SEGÚN SESIÓN
+// AUTH-UI.JS — CONTROL DE MENÚ SEGÚN SESIÓN (VERSIÓN FINAL)
 // ============================================================
 
-console.log("👤 auth-ui.js cargado — versión estable");
+console.log("👤 auth-ui.js cargado — versión FINAL");
 
 // Esperar DOM
 document.addEventListener("DOMContentLoaded", () => {
-  const sb = window.supabaseClient;        // Cliente global
-  const auth = window.supabaseAuth;        // Funciones auth
-  const getCurrentUser = auth?.getCurrentUser || (async () => null);
-  const logoutUser = auth?.logoutUser || (async () => true);
+
+  const sb = window.supabaseClient;
 
   const $id = (id) => document.getElementById(id);
 
   // ------------------------------------------------------------
-  // 🔴 1. MODO INVITADO (mostrar login, ocultar menú usuario)
+  // 🔴 MODO INVITADO
   // ------------------------------------------------------------
   function showLoggedOut() {
-    const loginDesktop = $id("login-desktop");
-    const profileDesktop = $id("profile-desktop");
+    if ($id("login-desktop")) $id("login-desktop").style.display = "inline-block";
+    if ($id("profile-desktop")) $id("profile-desktop").style.display = "none";
 
-    if (loginDesktop) loginDesktop.style.display = "inline-block";
-    if (profileDesktop) profileDesktop.style.display = "none";
+    if ($id("drawer-links-default")) $id("drawer-links-default").style.display = "flex";
+    if ($id("drawer-links-logged")) $id("drawer-links-logged").style.display = "none";
 
-    // Móvil
-    if ($id("drawer-links-default"))
-      $id("drawer-links-default").style.display = "flex";
-
-    if ($id("drawer-links-logged"))
-      $id("drawer-links-logged").style.display = "none";
-
-    console.log("🔴 Menú en modo invitado");
+    console.log("🔴 Menú: invitado");
   }
 
   // ------------------------------------------------------------
-  // 🟢 2. MODO LOGUEADO (mostrar menú usuario)
+  // 🟢 MODO LOGUEADO
   // ------------------------------------------------------------
   function showLoggedIn(user) {
     const name = user.name || "Usuario";
     const photo = user.photo_url || "imagenes/avatar-default.svg";
 
-    // Escritorio
     if ($id("login-desktop")) $id("login-desktop").style.display = "none";
 
     if ($id("profile-desktop")) {
@@ -49,61 +39,69 @@ document.addEventListener("DOMContentLoaded", () => {
       $id("hello-desktop").textContent = `Hola, ${name}`;
     }
 
-    // Móvil
-    if ($id("drawer-links-default"))
-      $id("drawer-links-default").style.display = "none";
+    if ($id("drawer-links-default")) $id("drawer-links-default").style.display = "none";
+    if ($id("drawer-links-logged")) $id("drawer-links-logged").style.display = "flex";
 
-    if ($id("drawer-links-logged"))
-      $id("drawer-links-logged").style.display = "flex";
+    if ($id("profile-photo-mobile")) $id("profile-photo-mobile").src = photo;
+    if ($id("hello-mobile")) $id("hello-mobile").textContent = `Hola, ${name}`;
 
-    if ($id("profile-photo-mobile"))
-      $id("profile-photo-mobile").src = photo;
-
-    if ($id("hello-mobile"))
-      $id("hello-mobile").textContent = `Hola, ${name}`;
-
-    console.log("🟢 Menú en modo usuario");
+    console.log("🟢 Menú: usuario logueado");
   }
 
   // ------------------------------------------------------------
-  // 🧠 3. COMPROBAR SESIÓN AL CARGAR LA PÁGINA
+  // 🧠 CARGAR SESIÓN REAL (Publishable Key)
   // ------------------------------------------------------------
-  (async () => {
-    try {
-      const authUser = await getCurrentUser();
+  async function cargarSesion() {
+    const { data } = await sb.auth.getSession();
+    const session = data?.session;
 
-      if (!authUser) {
-        showLoggedOut();
-        return;
-      }
+    if (!session) {
+      showLoggedOut();
+      return;
+    }
 
-      // Buscar usuario real en base de datos
-      const { data, error } = await sb
-        .from("users")
-        .select("*")
-        .eq("id", authUser.id)
-        .single();
+    const id = session.user.id;
 
-      if (error || !data) {
-        showLoggedOut();
-        return;
-      }
+    const { data: userData, error } = await sb
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
 
-      showLoggedIn(data);
+    if (error || !userData) {
+      showLoggedOut();
+      return;
+    }
 
-    } catch (error) {
-      console.warn("⚠ Error cargando sesión:", error);
+    showLoggedIn(userData);
+  }
+
+  // Cargar al abrir la página
+  cargarSesion();
+
+  // ------------------------------------------------------------
+  // 🔄 DETECTAR LOGIN O LOGOUT EN VIVO
+  // ------------------------------------------------------------
+  sb.auth.onAuthStateChange(async (event, session) => {
+    console.log("🔄 Cambio sesión:", event);
+
+    if (event === "SIGNED_IN") {
+      await cargarSesion();
+    }
+
+    if (event === "SIGNED_OUT") {
       showLoggedOut();
     }
-  })();
+  });
 
   // ------------------------------------------------------------
-  // 🚪 4. LOGOUT (escritorio y móvil)
+  // 🚪 LOGOUT
   // ------------------------------------------------------------
   if ($id("logout-desktop")) {
     $id("logout-desktop").addEventListener("click", async (e) => {
       e.preventDefault();
-      await logoutUser();
+      await sb.auth.signOut();
+      showLoggedOut();
       window.location.reload();
     });
   }
@@ -111,14 +109,14 @@ document.addEventListener("DOMContentLoaded", () => {
   if ($id("logout-mobile")) {
     $id("logout-mobile").addEventListener("click", async (e) => {
       e.preventDefault();
-      await logoutUser();
+      await sb.auth.signOut();
+      showLoggedOut();
       window.location.reload();
     });
   }
 
-  // ------------------------------------------------------------
-  // 🔵 5. EXPONER FUNCIONES PARA core-scripts.js
-  // ------------------------------------------------------------
+  // Exponer para seguridad
   window.__showLoggedIn = showLoggedIn;
   window.__showLoggedOut = showLoggedOut;
+
 });
