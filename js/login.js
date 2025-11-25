@@ -121,7 +121,7 @@ function validarPassword(valor) {
 }
 
 // ========================================================
-// SUBMIT LOGIN
+// SUBMIT LOGIN EMAIL
 // ========================================================
 
 loginForm.addEventListener("submit", async (e) => {
@@ -250,22 +250,21 @@ document.querySelectorAll(".toggle-pass").forEach(icon => {
 });
 
 // ========================================================
-// LOGIN CON GOOGLE (CORREGIDO Y FUNCIONAL DEFINITIVO)
+// LOGIN CON GOOGLE (REDIRECCIÓN + TRIGGER FUNCIONANDO)
 // ========================================================
 
 document.getElementById("googleLoginBtn").addEventListener("click", async () => {
   try {
-    const { data, error } = await supabase.auth.signInWithOAuth({
+    const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: "https://alansosar.github.io/index.html"  // ✔ CORRECTO
+        redirectTo: "https://alansosar.github.io/index.html"
       }
     });
 
     if (error) {
       console.error(error);
       mostrarSnackbar("Error al conectar con Google");
-      return;
     }
 
   } catch (err) {
@@ -273,6 +272,32 @@ document.getElementById("googleLoginBtn").addEventListener("click", async () => 
     mostrarSnackbar("No se pudo iniciar con Google");
   }
 });
+
+// ========================================================
+// 🔥 NECESARIO PARA QUE GOOGLE FUNCIONE
+// Detectar sesión OAuth al volver a login.html
+// ========================================================
+
+async function detectarSesionGoogle() {
+  const { data: { session } } = await supabase.auth.getSession();
+
+  // Sesión existente → usuario ya logueado → trigger ya corrió → redirigir
+  if (session) {
+    console.log("Sesión detectada (Google):", session);
+    window.location.href = "index.html";
+    return;
+  }
+
+  // Escuchar nuevo login vía OAuth
+  supabase.auth.onAuthStateChange((event, session) => {
+    if (event === "SIGNED_IN") {
+      console.log("Google OAUTH completado:", session);
+      window.location.href = "index.html";
+    }
+  });
+}
+
+detectarSesionGoogle();
 
 // ========================================================
 // BOTÓN ATRÁS
