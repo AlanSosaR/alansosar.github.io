@@ -1,7 +1,4 @@
-// ============================================================
-// 🔥 CORE-SCRIPTS.JS — VERSIÓN FINAL Y ESTABLE
-// Café Cortero — Autenticación + Sesión + Menú
-// ============================================================
+// CORE-SCRIPTS LIMPIO (SIN BOM)
 
 // ============================================================
 // 1. CONFIGURACIÓN SUPABASE
@@ -58,14 +55,14 @@ supabaseClient.auth.onAuthStateChange((event, session) => {
 });
 
 // ============================================================
-// 4. PROCESAR USUARIO Y GUARDAR EN BD
+// 4. USUARIO EN BD
 // ============================================================
 
 async function manejarUsuario(user) {
   console.log("👤 Procesando usuario:", user);
 
   const avatarDefault =
-    user.user_metadata?.avatar_url ||
+    (user.user_metadata && user.user_metadata.avatar_url) ||
     "https://alansosar.github.io/imagenes/avatar-default.svg";
 
   const now = new Date().toISOString();
@@ -73,26 +70,23 @@ async function manejarUsuario(user) {
   const { error } = await supabaseClient.from("users").upsert({
     id: user.id,
     email: user.email,
-    name: user.user_metadata?.full_name || "",
-    phone: user.user_metadata?.phone || "",
-    country: user.user_metadata?.country || "",
+    name: (user.user_metadata && user.user_metadata.full_name) || "",
+    phone: (user.user_metadata && user.user_metadata.phone) || "",
+    country: (user.user_metadata && user.user_metadata.country) || "",
     photo_url: avatarDefault,
-    rol: user.app_metadata?.provider || "email",
+    rol: (user.app_metadata && user.app_metadata.provider) || "email",
     created_at: now,
     updated_at: now
   });
 
-  if (error) {
-    console.error("❌ Error guardando usuario en tabla users:", error);
-  } else {
-    console.log("🟢 Usuario guardado/actualizado en BD (users)");
-  }
+  if (error) console.error("❌ Error guardando usuario:", error);
+  else console.log("🟢 Usuario guardado/actualizado en BD (users)");
 
-  activarModoAutenticado(user);
+  activarModoAutenticado();
 }
 
 // ============================================================
-// 5. MENÚ — SEGURO (NO ROMPE SI NO EXISTE EL MENÚ)
+// 5. MENÚ
 // ============================================================
 
 function activarModoInvitado() {
@@ -105,7 +99,7 @@ function activarModoInvitado() {
   console.log("🔴 Menú en modo invitado");
 }
 
-function activarModoAutenticado(user) {
+function activarModoAutenticado() {
   const userMenu = document.getElementById("menu-usuario");
   const loginBtn = document.getElementById("login-button");
 
@@ -122,16 +116,14 @@ function activarModoAutenticado(user) {
 verificarSesionInicial();
 
 // ============================================================
-// 7. LOGIN GOOGLE
+// 7. GOOGLE LOGIN
 // ============================================================
 
 window.loginGoogle = async () => {
   console.log("🚀 Login con Google...");
   const { error } = await supabaseClient.auth.signInWithOAuth({
     provider: "google",
-    options: {
-      redirectTo: "https://alansosar.github.io/"
-    }
+    options: { redirectTo: "https://alansosar.github.io/" }
   });
   if (error) console.error("❌ Error Google:", error);
 };
