@@ -1,18 +1,17 @@
-
 // ============================================================
-// 🔥 CORE-SCRIPTS.JS — VERSIÓN ESTABLE Y FUNCIONAL
+// 🔥 CORE-SCRIPTS.JS — VERSIÓN FINAL Y ESTABLE
 // Café Cortero — Autenticación + Sesión + Menú
 // ============================================================
 
 // ============================================================
-// 🔧 1. CONFIGURACIÓN SUPABASE (FUNCIONA EN GITHUB PAGES)
+// 🔧 1. CONFIGURACIÓN SUPABASE
 // ============================================================
 
 const SUPABASE_URL = "https://eaipcuvvddyrqkbmjmvw.supabase.co";
 const SUPABASE_ANON_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVhaXBjdXZ2ZGR5cnFrYm1qbXZ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMwOTcxMDEsImV4cCI6MjA3ODY3MzEwMX0.2qICLx3qZgeGr0oXZ8PYRxXPL1X5Vog4UoOnTQBFzNA";
 
-// FIX: GitHub Pages no admite localStorage con OAuth (Safari + Chrome)
+// FIX para GitHub Pages y Safari
 const storage = {
   getItem: (key) => sessionStorage.getItem(key),
   setItem: (key, value) => sessionStorage.setItem(key, value),
@@ -30,11 +29,11 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   }
 });
 
-console.log("🔥 Supabase conectado correctamente (sessionStorage activado)");
+console.log("🔥 Supabase conectado correctamente");
 
 
 // ============================================================
-// 🚀 2. VERIFICAR SESIÓN AL CARGAR LA PÁGINA
+// 🚀 2. VERIFICAR SESIÓN AL CARGAR
 // ============================================================
 
 async function verificarSesionInicial() {
@@ -53,46 +52,46 @@ async function verificarSesionInicial() {
     console.log("🟢 Sesión activa:", session);
     manejarUsuario(session.user);
   } else {
-    console.log("🟡 No hay sesión — modo invitado");
+    console.log("🟡 No hay sesión — Modo invitado");
     activarModoInvitado();
   }
 }
 
 
 // ============================================================
-// 🔔 3. LISTENER — DETECTA LOGIN AUTOMÁTICO DESPUÉS DE GOOGLE
+// 🔔 3. LISTENER — DETECTA LOGIN / LOGOUT
 // ============================================================
 
 supabaseClient.auth.onAuthStateChange((event, session) => {
   console.log("📌 Evento Auth:", event);
 
   if (session) {
-    console.log("🟢 Usuario logueado:", session.user);
     manejarUsuario(session.user);
   }
 
   if (event === "SIGNED_OUT") {
-    console.log("🔴 Sesión cerrada");
     activarModoInvitado();
   }
 });
 
 
 // ============================================================
-// 👤 4. PROCESAR / INSERTAR USUARIO EN BD
+// 👤 4. PROCESAR USUARIO Y GUARDAR EN BD (TABLA users)
 // ============================================================
 
 async function manejarUsuario(user) {
   console.log("👤 Procesando usuario:", user);
 
-  // GUARDA O ACTUALIZA usuario en Supabase (tabla usuarios)
-  const { error } = await supabaseClient.from("usuarios").upsert({
+  // 📌 Tabla REAL = users
+  const { error } = await supabaseClient.from("users").upsert({
     id: user.id,
     email: user.email,
-    nombre: user.user_metadata.full_name || "",
-    avatar: user.user_metadata.avatar_url || "",
-    proveedor: user.app_metadata.provider || "google",
-    actualizado: new Date()
+    name: user.user_metadata?.full_name || "",
+    phone: user.user_metadata?.phone || "",
+    country: "",
+    photo_url: user.user_metadata?.avatar_url || "",
+    rol: user.app_metadata?.provider || "google",
+    updated_at: new Date()
   });
 
   if (error) {
@@ -101,13 +100,12 @@ async function manejarUsuario(user) {
     console.log("🟢 Usuario guardado/actualizado en BD");
   }
 
-  // Activar menú autenticado
   activarModoAutenticado(user);
 }
 
 
 // ============================================================
-// 🟦 5. MENÚ — CAMBIAR ENTRE INVITADO Y AUTENTICADO
+// 🟦 5. MENÚ — INVITADO / AUTENTICADO
 // ============================================================
 
 function activarModoInvitado() {
@@ -117,7 +115,7 @@ function activarModoInvitado() {
   if (userMenu) userMenu.style.display = "none";
   if (loginBtn) loginBtn.style.display = "block";
 
-  console.log("🟡 Menú en modo invitado");
+  console.log("🟡 Modo invitado activado");
 }
 
 function activarModoAutenticado(user) {
@@ -127,23 +125,23 @@ function activarModoAutenticado(user) {
   if (userMenu) userMenu.style.display = "block";
   if (loginBtn) loginBtn.style.display = "none";
 
-  console.log("🟢 Menú autenticado activado");
+  console.log("🟢 Usuario autenticado — menú actualizado");
 }
 
 
 // ============================================================
-// 🔚 6. INICIAR VERIFICACIÓN AL CARGAR LA PÁGINA
+// 🔚 6. INICIAR
 // ============================================================
 
 verificarSesionInicial();
 
 
 // ============================================================
-// 🔵 7. FUNCIÓN PARA LOGIN CON GOOGLE (para usar en HTML)
+// 🔵 7. FUNCIÓN LOGIN CON GOOGLE
 // ============================================================
 
 window.loginGoogle = async function () {
-  console.log("🚀 Iniciando login con Google...");
+  console.log("🚀 Login con Google...");
 
   const { error } = await supabaseClient.auth.signInWithOAuth({
     provider: "google",
@@ -159,7 +157,7 @@ window.loginGoogle = async function () {
 
 
 // ============================================================
-// 🔴 8. FUNCIÓN PARA CERRAR SESIÓN
+// 🔴 8. FUNCIÓN CERRAR SESIÓN
 // ============================================================
 
 window.logout = async function () {
