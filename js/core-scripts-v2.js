@@ -4,12 +4,11 @@
 
 const { createClient } = supabase;
 
-// ✔ Datos reales — URL correcta "mjmvw"
+// ✔ URL real del proyecto
 const SUPABASE_URL = "https://eaipcuvvddyrqkbmjmvw.supabase.co";
 
-// ✔ Tu ANON key REAL (válida)
-const SUPABASE_ANON_KEY =
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVhaXBjdXZ2ZGR5cnFrYm1qbXZ3Iiwicm9zZSI6ImFub24iLCJpYXQiOjE3NjMwOTcxMDEsImV4cCI6MjA3ODY3MzEwMX0.2qICLx3qZgeGr0oXZ8PYRxXPL1X5Vog4UoOnTQBFzNA";
+// ✔ NUEVA ANON KEY (Publishable Key)
+const SUPABASE_ANON_KEY = "sb_publishable_nlFuhoF1VoPdY3kcePfSSg_Sw2hhtAF";
 
 // ✔ sessionStorage (Safari/iOS & GitHub Pages compatible)
 const storage = {
@@ -29,11 +28,10 @@ window.supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   }
 });
 
-console.log("🔥 Supabase conectado correctamente (URL mjmvw + sessionStorage)");
-
+console.log("🔥 Supabase conectado correctamente (publishable key + sessionStorage)");
 
 // ============================================================
-// ✔ Placeholders para evitar errores si auth-ui.js carga tarde
+// Placeholders para evitar errores si auth-ui.js carga tarde
 // ============================================================
 window.__showLoggedIn = window.__showLoggedIn || function(){};
 window.__showLoggedOut = window.__showLoggedOut || function(){};
