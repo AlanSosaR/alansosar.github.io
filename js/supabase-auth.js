@@ -1,16 +1,15 @@
-// ============================================================
-// SUPABASE AUTH — VERSIÓN ESTABLE
-// ============================================================
+// ===========================================
+// SUPABASE AUTH — VERSIÓN ESTABLE DEFINITIVA
+// ===========================================
 
 const sb = window.supabaseClient;
 window.supabaseAuth = {};
 
-console.log("🔥 supabase-auth.js cargado — versión FINAL");
+console.log("🔥 supabase-auth.js cargado — versión final 2025");
 
-
-// ============================================================
-// REGISTRO — 100% COMPATIBLE CON TU TABLA USERS
-// ============================================================
+// ===========================================
+// REGISTRO — COMPATIBLE CON PUBLISHABLE KEY
+// ===========================================
 window.supabaseAuth.registerUser = async function (
   email,
   password,
@@ -21,47 +20,38 @@ window.supabaseAuth.registerUser = async function (
 
   console.log("🚀 Registrando usuario…");
 
-  // 1) Crear usuario en AUTH
-  const { data: signUpData, error: signUpError } = await sb.auth.signUp({
+  // 1) Crear usuario en AUTH (NO habrá sesión)
+  const { data, error } = await sb.auth.signUp({
     email,
     password,
     options: {
-      data: {
-        full_name: fullName,
-        phone: phone,
-        country: country
-      }
+      data: { full_name: fullName, phone, country }
     }
   });
 
-  if (signUpError) {
-    console.error("❌ Error en signUp:", signUpError);
-    throw signUpError;
+  if (error) {
+    console.error("❌ Error en signUp:", error);
+    throw error;
   }
 
-  // 2) Obtener sesión real después del signup
-  const { data: sessionData } = await sb.auth.getSession();
-  const session = sessionData?.session;
+  const user = data.user;
 
-  if (!session || !session.user) {
-    console.error("❌ No se obtuvo sesión después de registrar");
-    throw new Error("No session after signup");
+  if (!user) {
+    throw new Error("No user returned from signUp");
   }
 
-  const user = session.user;
+  console.log("📨 Se envió el correo de confirmación.");
 
-  // 3) Foto por defecto (URL ABSOLUTA)
-  const photoURL = "https://alansosar.github.io/imagenes/avatar-default.svg";
-
-  // 4) Insertar usuario en tu tabla "users"
+  // 2) Insertar en tabla users (NO necesita sesión)
   const now = new Date().toISOString();
+  const photoURL = "https://alansosar.github.io/imagenes/avatar-default.svg";
 
   const { error: insertError } = await sb.from("users").insert({
     id: user.id,
     name: fullName,
-    email: email,
-    phone: phone,
-    country: country,
+    email,
+    phone,
+    country,
     photo_url: photoURL,
     rol: "usuario",
     created_at: now,
@@ -73,30 +63,23 @@ window.supabaseAuth.registerUser = async function (
     throw insertError;
   }
 
-  console.log("🟢 Usuario registrado correctamente");
-  return session;
+  console.log("🟢 Usuario guardado correctamente en users");
+
+  return true;
 };
 
-
-
-// ============================================================
-// LOGIN NORMAL
-// ============================================================
+// ===========================================
+// LOGIN
+// ===========================================
 window.supabaseAuth.loginUser = async function (email, password) {
-  const { data, error } = await sb.auth.signInWithPassword({
-    email,
-    password
-  });
-
+  const { data, error } = await sb.auth.signInWithPassword({ email, password });
   if (error) throw error;
   return data;
 };
 
-
-
-// ============================================================
+// ===========================================
 // MAGIC LINK
-// ============================================================
+// ===========================================
 window.supabaseAuth.loginMagicLink = async function (email) {
   const { data, error } = await sb.auth.signInWithOtp({
     email,
@@ -104,28 +87,22 @@ window.supabaseAuth.loginMagicLink = async function (email) {
       emailRedirectTo: "https://alansosar.github.io/login.html"
     }
   });
-
   if (error) throw error;
   return data;
 };
 
-
-
-// ============================================================
+// ===========================================
 // GET USER
-// ============================================================
+// ===========================================
 window.supabaseAuth.getCurrentUser = async function () {
   const { data } = await sb.auth.getUser();
   return data.user || null;
 };
 
-
-
-// ============================================================
+// ===========================================
 // LOGOUT
-// ============================================================
+// ===========================================
 window.supabaseAuth.logoutUser = async function () {
   const { error } = await sb.auth.signOut();
-  if (error) return false;
-  return true;
+  return !error;
 };
