@@ -115,4 +115,10 @@ document.addEventListener("DOMContentLoaded", () => {
       window.location.reload();
     });
   }
+
+  // ------------------------------------------------------------
+  // 🔵 5. EXPONER FUNCIONES PARA core-scripts.js
+  // ------------------------------------------------------------
+  window.__showLoggedIn = showLoggedIn;
+  window.__showLoggedOut = showLoggedOut;
 });
