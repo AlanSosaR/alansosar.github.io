@@ -10,7 +10,6 @@ const { createClient } = supabase;
 // ============================================================
 
 // URL correcta (la tuya REAL)
-// NOTA: tiene “jmvw”, NO “jm**mw**”
 const SUPABASE_URL = "https://eaipcuvvddyrqkbmjmvw.supabase.co";
 
 // Clave ANON correcta (la tuya real)
@@ -44,3 +43,46 @@ window.supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
 });
 
 console.log("🔥 Supabase conectado correctamente (URL correcta jmvw + sessionStorage)");
+
+
+// ============================================================
+// 🔥 FIX UNIVERSAL: DETECTAR CAMBIO DE SESIÓN EN VIVO
+// ============================================================
+// Esto asegura que el menú cambie automáticamente después de login/logout
+// sin recargar la página, tanto en escritorio como en móvil.
+// ============================================================
+
+document.addEventListener("DOMContentLoaded", () => {
+  const sb = window.supabaseClient;
+
+  sb.auth.onAuthStateChange(async (event, session) => {
+    console.log("🔄 Cambio de sesión detectado:", event);
+
+    const showLoggedOut = window.__showLoggedOut;
+    const showLoggedIn = window.__showLoggedIn;
+
+    if (!showLoggedOut || !showLoggedIn) {
+      console.warn("⚠ El auth-ui.js todavía no declaró las funciones del menú.");
+      return;
+    }
+
+    if (!session || !session.user) {
+      showLoggedOut();
+      return;
+    }
+
+    // Buscar el usuario completo en la tabla users
+    const { data, error } = await sb
+      .from("users")
+      .select("*")
+      .eq("id", session.user.id)
+      .single();
+
+    if (error || !data) {
+      showLoggedOut();
+      return;
+    }
+
+    showLoggedIn(data);
+  });
+});
