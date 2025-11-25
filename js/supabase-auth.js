@@ -1,9 +1,8 @@
 // ===========================================
-// SUPABASE AUTH — MODO GLOBAL DEFINITIVO
-// (versión que funcionaba hace 3 días, corregida SOLO en photo_url)
+// SUPABASE AUTH — MODO GLOBAL (EMAIL VERIFICADO)
 // ===========================================
 
-// usar SIEMPRE el cliente global que crea core-scripts.js
+// usar SIEMPRE el cliente global que crea core-scripts-v2.js
 const sb = window.supabaseClient;
 
 // Exponer funciones globales
@@ -11,31 +10,8 @@ window.supabaseAuth = {};
 
 console.log("🔥 supabase-auth.js cargado en modo GLOBAL");
 
-
 // ================================
-// ESPERAR SESIÓN LUEGO DE SIGNUP
-// ================================
-async function esperarSesion() {
-  return new Promise((resolve) => {
-    let intentos = 0;
-
-    const check = setInterval(async () => {
-      const { data } = await sb.auth.getSession();
-
-      if (data.session || intentos > 10) {
-        clearInterval(check);
-        resolve(data.session);
-      }
-
-      intentos++;
-    }, 300);
-  });
-}
-
-
-
-// ================================
-// REGISTRO (FUNCIONABA PERFECTO)
+// REGISTRO (SOLO AUTH, SIN INSERT EN users)
 // ================================
 window.supabaseAuth.registerUser = async function (
   email,
@@ -44,48 +20,34 @@ window.supabaseAuth.registerUser = async function (
   fullName,
   country
 ) {
+  console.log("🚀 Registrando usuario con email verificado...");
 
-  // 1) Crear usuario en AUTH
   const { data, error } = await sb.auth.signUp({
     email,
     password,
     options: {
-      data: { full_name: fullName, phone, country }
+      // A dónde va el usuario al confirmar el correo
+      emailRedirectTo: "https://alansosar.github.io/login.html",
+      data: {
+        full_name: fullName,
+        phone,
+        country
+      }
     }
   });
 
-  if (error) throw error;
+  if (error) {
+    console.error("❌ Error en signUp:", error);
+    throw error;
+  }
 
-  const user = data.user;
-
-  // 2) Esperar sesión temporal
-  await esperarSesion();
-
-  // 3) Foto por defecto (CORREGIDA para GitHub Pages)
-  const photoURL = "https://alansosar.github.io/imagenes/avatar-default.svg";
-
-  // 4) Insertar en tabla USERS (ESTO SÍ FUNCIONABA)
-  const { error: insertError } = await sb.from("users").insert({
-    id: user.id,
-    name: fullName,
-    email,
-    phone,
-    country: country || "",
-    photo_url: photoURL,
-    rol: "usuario",
-    created_at: new Date(),
-    updated_at: new Date()
-  });
-
-  if (insertError) throw insertError;
-
+  console.log("🟢 signUp OK. Falta que el usuario confirme el correo.");
+  // OJO: aquí normalmente NO hay sesión si confirm_email está activado
   return data;
 };
 
-
-
 // ================================
-// LOGIN NORMAL
+// LOGIN NORMAL (PASSWORD)
 // ================================
 window.supabaseAuth.loginUser = async function (email, password) {
   const { data, error } = await sb.auth.signInWithPassword({
@@ -93,28 +55,34 @@ window.supabaseAuth.loginUser = async function (email, password) {
     password
   });
 
-  if (error) throw error;
+  if (error) {
+    console.error("❌ Error en loginUser:", error);
+    throw error;
+  }
   return data;
 };
-
-
 
 // ================================
 // LOGIN CON MAGIC LINK (OTP)
 // ================================
-window.supabaseAuth.loginMagicLink = async function(email) {
+window.supabaseAuth.loginMagicLink = async function (email) {
+  console.log("📨 Enviando Magic Link a:", email);
+
   const { data, error } = await sb.auth.signInWithOtp({
     email,
     options: {
-      emailRedirectTo: "https://alansosar.github.io/cafecortero/login.html"
+      emailRedirectTo: "https://alansosar.github.io/login.html"
     }
   });
 
-  if (error) throw error;
+  if (error) {
+    console.error("❌ Error enviando Magic Link:", error);
+    throw error;
+  }
+
+  console.log("✅ Magic Link enviado correctamente");
   return data;
 };
-
-
 
 // ================================
 // GET USER
@@ -124,13 +92,14 @@ window.supabaseAuth.getCurrentUser = async function () {
   return data.user || null;
 };
 
-
-
 // ================================
 // LOGOUT
 // ================================
 window.supabaseAuth.logoutUser = async function () {
   const { error } = await sb.auth.signOut();
-  if (error) return false;
+  if (error) {
+    console.error("⚠️ Error cerrando sesión:", error);
+    return false;
+  }
   return true;
 };
