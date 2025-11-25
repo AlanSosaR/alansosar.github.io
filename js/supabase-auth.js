@@ -1,5 +1,6 @@
 // ===========================================
 // SUPABASE AUTH — MODO GLOBAL DEFINITIVO
+// (versión que funcionaba hace 3 días, corregida SOLO en photo_url)
 // ===========================================
 
 // usar SIEMPRE el cliente global que crea core-scripts.js
@@ -34,7 +35,7 @@ async function esperarSesion() {
 
 
 // ================================
-// REGISTRO (SIN FOTO POR AHORA)
+// REGISTRO (FUNCIONABA PERFECTO)
 // ================================
 window.supabaseAuth.registerUser = async function (
   email,
@@ -57,19 +58,19 @@ window.supabaseAuth.registerUser = async function (
 
   const user = data.user;
 
-  // 2) Esperar sesión temporal para asegurar creación
+  // 2) Esperar sesión temporal
   await esperarSesion();
 
-  // 3) Foto por defecto
-  const photoURL = "/imagenes/avatar-default.svg";
+  // 3) Foto por defecto (CORREGIDA para GitHub Pages)
+  const photoURL = "https://alansosar.github.io/imagenes/avatar-default.svg";
 
-  // 4) Insertar en tabla USERS
+  // 4) Insertar en tabla USERS (ESTO SÍ FUNCIONABA)
   const { error: insertError } = await sb.from("users").insert({
     id: user.id,
     name: fullName,
     email,
     phone,
-    country,
+    country: country || "",
     photo_url: photoURL,
     rol: "usuario",
     created_at: new Date(),
@@ -84,7 +85,7 @@ window.supabaseAuth.registerUser = async function (
 
 
 // ================================
-// LOGIN NORMAL (PASSWORD)
+// LOGIN NORMAL
 // ================================
 window.supabaseAuth.loginUser = async function (email, password) {
   const { data, error } = await sb.auth.signInWithPassword({
@@ -102,22 +103,14 @@ window.supabaseAuth.loginUser = async function (email, password) {
 // LOGIN CON MAGIC LINK (OTP)
 // ================================
 window.supabaseAuth.loginMagicLink = async function(email) {
-  console.log("📨 Enviando Magic Link a:", email);
-
   const { data, error } = await sb.auth.signInWithOtp({
     email,
     options: {
-      // ESTA ES LA URL QUE ABRIRÁ AL CONFIRMAR
       emailRedirectTo: "https://alansosar.github.io/cafecortero/login.html"
     }
   });
 
-  if (error) {
-    console.error("❌ Error enviando Magic Link:", error);
-    throw error;
-  }
-
-  console.log("✅ Magic Link enviado correctamente");
+  if (error) throw error;
   return data;
 };
 
@@ -138,9 +131,6 @@ window.supabaseAuth.getCurrentUser = async function () {
 // ================================
 window.supabaseAuth.logoutUser = async function () {
   const { error } = await sb.auth.signOut();
-  if (error) {
-    console.error("⚠️ Error cerrando sesión:", error);
-    return false;
-  }
+  if (error) return false;
   return true;
 };
