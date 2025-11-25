@@ -72,7 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const showHero = (i) => {
     heroImgs.forEach((img) => img.classList.remove("active"));
-    if (heroImgs[i]) img.classList.add("active");
+    if (heroImgs[i]) heroImgs[i].classList.add("active");  /* ✔ FIX */
   };
 
   if (heroImgs.length > 0) {
