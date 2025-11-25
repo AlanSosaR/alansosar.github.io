@@ -29,7 +29,7 @@ img,
 =============================== */
 body {
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
-                "Inter", "Roboto", sans-serif;
+               "Inter", "Roboto", sans-serif;
   background-color: #ffffff;
   margin: 0;
   padding: 0;
@@ -203,43 +203,26 @@ body {
   padding: 0 4px;
 }
 
-/* ERROR LABEL — VALOR ORIGINAL QUE ROMPÍA LA VISTA */
+/* ERROR LABEL */
 .m3-input.error .floating-label {
   top: -6px !important;
   font-size: 0.78rem !important;
   color: #d72638 !important;
 }
 
-/* FIX INTEGRADO — restaurar comportamiento correcto */
-
-/* ERROR + campo vacío → label NO sube */
-.m3-input.error input:placeholder-shown + .floating-label {
-  top: 15px !important;
-  font-size: 1rem !important;
-  color: #d72638 !important;
-  background: transparent !important;
-  padding: 0 !important;
-  z-index: 5 !important;
+/* SUCCESS LABEL */
+.m3-input.success .floating-label {
+  color: #3CB043 !important;
 }
 
-/* ERROR + con texto → label sube sin cortarse */
-.m3-input.error input:not(:placeholder-shown) + .floating-label {
-  top: -10px !important;
-  font-size: 0.78rem !important;
-  padding: 0 6px !important;
-  background: #ffffff !important;
-  color: #d72638 !important;
-  z-index: 10 !important;
-}
-
-/* PLACEHOLDER EN ERROR */
+/* PLACEHOLDER EN ERROR — CAFÉ */
 .m3-input.error input::placeholder {
   color: #512615 !important;
   opacity: .75;
 }
 
 /* ===============================
-   BARRAS DE FORTALEZA (FUNCIONALES)
+   BARRAS DE SEGURIDAD (6 BARRAS)
 =============================== */
 .strength-bars {
   display: none;
@@ -255,7 +238,6 @@ body {
   transition: 0.25s ease;
 }
 
-/* Colores premium */
 .strength-bar.level-1 { background-color: #d72638; }
 .strength-bar.level-2 { background-color: #ff6f00; }
 .strength-bar.level-3 { background-color: #f4c20d; }
@@ -269,7 +251,7 @@ body {
 .m3-error {
   font-size: 0.83rem;
   color: #d72638;
-  min-height: 18px;
+  min-height: 16px;
 }
 
 /* ===============================
@@ -285,15 +267,14 @@ body {
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
+  margin-top: 12px;
   position: relative;
   overflow: hidden;
   height: 48px;
-  margin-top: 20px;
 
   display: flex;
   align-items: center;
   justify-content: center;
-  align-self: center;
 }
 
 .m3-btn.loading .btn-text {
@@ -317,7 +298,9 @@ body {
 
 .m3-btn.loading .loader { opacity: 1; }
 
-@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes spin { 
+  to { transform: rotate(360deg); }
+}
 
 /* ===============================
    SNACKBAR
