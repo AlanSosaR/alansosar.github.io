@@ -3,7 +3,7 @@
 // ============================================================
 
 // SDK ya está cargado desde el HTML
-const { createClient } = supabase;
+const createClient = supabase.createClient;
 
 // ============================================================
 // 🚀 TUS DATOS REALES DE SUPABASE — CORRECTOS
