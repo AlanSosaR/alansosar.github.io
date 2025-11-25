@@ -185,9 +185,9 @@ document.addEventListener("DOMContentLoaded", () => {
     );
   }
 
-  /* FAB */
+  /* FAB — CORREGIDO */
   const fabMain = safe("fab-main");
-  const fabContainer = document.querySelector(".fab-container");
+  const fabContainer = safe("fab");   /* ✔ CAMBIO DEFINITIVO (antes dependía de querySelector) */
 
   if (fabMain && fabContainer) {
     fabMain.addEventListener("click", (e) => {
