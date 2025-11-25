@@ -4,14 +4,13 @@
 // ============================================================
 
 // ============================================================
-// 🔧 1. CONFIGURACIÓN SUPABASE (FIJO + TESTEADO)
+// 1. CONFIGURACIÓN SUPABASE
 // ============================================================
 
 const SUPABASE_URL = "https://eaipcuvvddyrqkbmjmvw.supabase.co";
 const SUPABASE_ANON_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVhaXBjdXZ2ZGR5cnFrYm1qbXZ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMwOTcxMDEsImV4cCI6MjA3ODY3MzEwMX0.2qICLx3qZgeGr0oXZ8PYRxXPL1X5Vog4UoOnTQBFzNA";
 
-// FIX para GitHub Pages
 const storage = {
   getItem: (key) => sessionStorage.getItem(key),
   setItem: (key, value) => sessionStorage.setItem(key, value),
@@ -31,7 +30,7 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
 console.log("🔥 Supabase listo con FIX GitHub Pages");
 
 // ============================================================
-// 🚀 2. VERIFICAR SESIÓN INICIAL
+// 2. SESIÓN INICIAL
 // ============================================================
 
 async function verificarSesionInicial() {
@@ -43,16 +42,12 @@ async function verificarSesionInicial() {
   }
 
   const session = data.session;
-
-  if (session) {
-    manejarUsuario(session.user);
-  } else {
-    activarModoInvitado();
-  }
+  if (session) manejarUsuario(session.user);
+  else activarModoInvitado();
 }
 
 // ============================================================
-// 🔔 3. LISTENER LOGIN / LOGOUT
+// 3. LISTENER AUTH
 // ============================================================
 
 supabaseClient.auth.onAuthStateChange((event, session) => {
@@ -63,7 +58,7 @@ supabaseClient.auth.onAuthStateChange((event, session) => {
 });
 
 // ============================================================
-// 👤 4. PROCESAR USUARIO Y GUARDAR EN BD (TABLA users)
+// 4. PROCESAR USUARIO Y GUARDAR EN BD
 // ============================================================
 
 async function manejarUsuario(user) {
@@ -97,15 +92,15 @@ async function manejarUsuario(user) {
 }
 
 // ============================================================
-// 🟦 5. MENÚ (CORREGIDO PARA QUE NO REVVENTE EN FORMULARIOS)
+// 5. MENÚ — SEGURO (NO ROMPE SI NO EXISTE EL MENÚ)
 // ============================================================
 
 function activarModoInvitado() {
   const userMenu = document.getElementById("menu-usuario");
   const loginBtn = document.getElementById("login-button");
 
-  userMenu?.style?.display = "none";
-  loginBtn?.style?.display = "block";
+  if (userMenu) userMenu.style.display = "none";
+  if (loginBtn) loginBtn.style.display = "block";
 
   console.log("🔴 Menú en modo invitado");
 }
@@ -114,20 +109,20 @@ function activarModoAutenticado(user) {
   const userMenu = document.getElementById("menu-usuario");
   const loginBtn = document.getElementById("login-button");
 
-  userMenu?.style?.display = "block";
-  loginBtn?.style?.display = "none";
+  if (userMenu) userMenu.style.display = "block";
+  if (loginBtn) loginBtn.style.display = "none";
 
   console.log("🟢 Usuario autenticado — menú actualizado");
 }
 
 // ============================================================
-// 🔚 6. INICIAR
+// 6. INICIAR
 // ============================================================
 
 verificarSesionInicial();
 
 // ============================================================
-// 🔵 7. LOGIN GOOGLE
+// 7. LOGIN GOOGLE
 // ============================================================
 
 window.loginGoogle = async () => {
@@ -142,7 +137,7 @@ window.loginGoogle = async () => {
 };
 
 // ============================================================
-// 🔴 8. LOGOUT
+// 8. LOGOUT
 // ============================================================
 
 window.logout = async () => {
