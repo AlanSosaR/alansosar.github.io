@@ -1,7 +1,6 @@
 // ============================================================
 // REGISTRO DE CLIENTE — Café Cortero (VERSIÓN FINAL CORREGIDA)
 // Floating Label + Error Café + Éxito Verde + Validación en vivo
-// + Barra de fortaleza de contraseña FUNCIONAL
 // ============================================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -35,48 +34,6 @@ document.addEventListener("DOMContentLoaded", () => {
     confirm: "Confirma tu contraseña",
   };
 
-
-  // ============================================================
-  // 🟩 BARRA DE FORTALEZA — COMPLETA Y FUNCIONAL
-  // ============================================================
-
-  const passwordInput = campos.password;
-  const barsContainer = document.getElementById("barsContainer");
-  const bars = barsContainer.querySelectorAll(".strength-bar");
-
-  passwordInput.addEventListener("input", () => {
-    const val = passwordInput.value.trim();
-
-    if (!val) {
-      barsContainer.style.display = "none";
-      bars.forEach(b => b.className = "strength-bar");
-      return;
-    }
-
-    barsContainer.style.display = "flex";
-
-    const score = calcularFortaleza(val);
-
-    bars.forEach((bar, index) => {
-      bar.className = "strength-bar";
-      if (index < score) bar.classList.add(`level-${score}`);
-    });
-  });
-
-  function calcularFortaleza(pass) {
-    let score = 0;
-
-    if (pass.length >= 6) score++;
-    if (pass.length >= 8) score++;
-    if (/[A-Z]/.test(pass)) score++;
-    if (/[a-z]/.test(pass)) score++;
-    if (/[0-9]/.test(pass)) score++;
-    if (/[^A-Za-z0-9]/.test(pass)) score++;
-
-    return Math.min(score, 6);
-  }
-
-
   // ============================================================
   // AUTOCORRECCIÓN DE CORREO
   // ============================================================
@@ -89,14 +46,20 @@ document.addEventListener("DOMContentLoaded", () => {
     "outllok.com": "outlook.com"
   };
 
+  // ============================================================
+  // NORMALIZAR TELÉFONO
+  // ============================================================
   function normalizarTelefono(tel) {
     if (!tel) return "";
+
     tel = tel.replace(/[\s\-()]/g, "");
+
     if (tel.startsWith("00")) tel = "+" + tel.slice(2);
+
     tel = tel.replace(/^\+/, "");
+
     return tel;
   }
-
 
   // ============================================================
   // LIMPIAR ERROR
@@ -104,11 +67,11 @@ document.addEventListener("DOMContentLoaded", () => {
   function limpiarErrorCampo(campo) {
     const input = campos[campo];
     const grupo = input.closest(".m3-input");
+
     grupo.classList.remove("error", "success");
     errores[campo].textContent = "";
     input.placeholder = " ";
   }
-
 
   // ============================================================
   // MARCAR ERROR / ÉXITO
@@ -137,11 +100,31 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // ============================================================
+  // VALIDAR CORREO
+  // ============================================================
+  function esCorreoValido(email) {
+    if (!email) return false;
+
+    const regexGeneral = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+    if (!regexGeneral.test(email)) return false;
+
+    let [usuario, dominio] = email.split("@");
+
+    dominio = dominio.toLowerCase();
+
+    if (autocorrecciones[dominio]) {
+      campos.correo.value = `${usuario}@${autocorrecciones[dominio]}`;
+    }
+
+    return true;
+  }
 
   // ============================================================
-  // VALIDACIÓN EN VIVO VERDE
+  // VERDE EN VIVO (CORRECCIÓN AUTOMÁTICA)
   // ============================================================
   function activarVerdeEnVivo(campo, validador) {
+
     campos[campo].addEventListener("input", () => {
       const input = campos[campo];
       const grupo = input.closest(".m3-input");
@@ -160,6 +143,7 @@ document.addEventListener("DOMContentLoaded", () => {
         grupo.classList.remove("success");
       }
     });
+
   }
 
   activarVerdeEnVivo("nombre", v => v.length >= 2);
@@ -168,32 +152,12 @@ document.addEventListener("DOMContentLoaded", () => {
   activarVerdeEnVivo("password", v => v.length >= 6);
   activarVerdeEnVivo("confirm", v => v === campos.password.value.trim());
 
-
-  // ============================================================
-  // VALIDAR CORREO
-  // ============================================================
-  function esCorreoValido(email) {
-    if (!email) return false;
-
-    const regexGeneral = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
-    if (!regexGeneral.test(email)) return false;
-
-    let [usuario, dominio] = email.split("@");
-    dominio = dominio.toLowerCase();
-
-    if (autocorrecciones[dominio]) {
-      campos.correo.value = `${usuario}@${autocorrecciones[dominio]}`;
-    }
-
-    return true;
-  }
-
-
   // ============================================================
   // BLUR FINAL
   // ============================================================
   campos.nombre.addEventListener("blur", () => {
-    if (!campos.nombre.value.trim()) marcar("nombre", mensajesVacios.nombre);
+    const v = campos.nombre.value.trim();
+    if (!v) marcar("nombre", mensajesVacios.nombre);
     else marcar("nombre", "", true);
   });
 
@@ -222,7 +186,6 @@ document.addEventListener("DOMContentLoaded", () => {
     else marcar("confirm", "", true);
   });
 
-
   // ============================================================
   // TOGGLE PASSWORD
   // ============================================================
@@ -234,9 +197,8 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-
   // ============================================================
-  // CHEQUEAR DUPLICADOS (EMAIL + TEL)
+  // CHEQUEAR DUPLICADOS (EMAIL + TEL NORMALIZADO)
   // ============================================================
   async function existeUsuario(correo, telefonoRaw) {
 
@@ -253,7 +215,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     return coincide || null;
   }
-
 
   // ============================================================
   // VALIDACIÓN FINAL
@@ -279,7 +240,6 @@ document.addEventListener("DOMContentLoaded", () => {
     return true;
   }
 
-
   // ============================================================
   // LOADING BUTTON
   // ============================================================
@@ -301,9 +261,8 @@ document.addEventListener("DOMContentLoaded", () => {
     btnLoader.style.display = "none";
   }
 
-
   // ============================================================
-  // ENVÍO FINAL (CAMBIO APLICADO AQUÍ)
+  // ENVÍO FINAL
   // ============================================================
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -335,12 +294,12 @@ document.addEventListener("DOMContentLoaded", () => {
         campos.password.value.trim(),
         tel,
         campos.nombre.value.trim(),
-        "Honduras"
+        "Honduras",
+        null
       );
 
-      // 💡 ***AQUÍ ESTÁ EL CAMBIO REAL***
-      mostrarSnackbar("Cuenta creada. Revisa tu correo para confirmarla.");
-      setTimeout(() => window.location.href = "login.html", 1600);
+      mostrarSnackbar("Cuenta creada con éxito");
+      setTimeout(() => window.location.href = "login.html", 1200);
 
     } catch (err) {
       console.error(err);
@@ -348,7 +307,6 @@ document.addEventListener("DOMContentLoaded", () => {
       desactivarLoading();
     }
   });
-
 
   // ============================================================
   // SNACKBAR
