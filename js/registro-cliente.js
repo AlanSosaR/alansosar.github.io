@@ -335,8 +335,7 @@ document.addEventListener("DOMContentLoaded", () => {
         campos.password.value.trim(),
         tel,
         campos.nombre.value.trim(),
-        "Honduras",
-        null
+        "Honduras"
       );
 
       mostrarSnackbar("Cuenta creada con éxito");
