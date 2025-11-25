@@ -1,10 +1,9 @@
 /* ============================================================
    MAIN.JS — Café Cortero
-   VERSIÓN OFICIAL 100% CORREGIDA CON VALIDACIÓN SAFE()
+   VERSIÓN OFICIAL 100% CORREGIDA — SIN CONTROL DE SESIÓN AQUÍ
    ============================================================ */
 
 /* ===================== FUNCIÓN SAFE ===================== */
-/* Evita errores cuando un elemento NO existe en la página */
 function safe(id) {
   return document.getElementById(id);
 }
@@ -72,7 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const showHero = (i) => {
     heroImgs.forEach((img) => img.classList.remove("active"));
-    if (heroImgs[i]) heroImgs[i].classList.add("active");  /* ✔ FIX */
+    if (heroImgs[i]) heroImgs[i].classList.add("active");
   };
 
   if (heroImgs.length > 0) {
@@ -144,29 +143,32 @@ document.addEventListener("DOMContentLoaded", () => {
           .querySelectorAll(".similar-card")
           .forEach((c) => c.classList.remove("active-card"));
 
-        card.classList.add("active-card");
+        card.addEventListener("click", () => {
+          cards.forEach((c) => c.classList.remove("active-card"));
+          card.classList.add("active-card");
 
-        const nameEl = safe("product-name");
-        const priceEl = document.querySelector(".price-part");
-        const imageEl = safe("product-image");
+          const nameEl = safe("product-name");
+          const priceEl = document.querySelector(".price-part");
+          const imageEl = safe("product-image");
 
-        if (!nameEl || !priceEl || !imageEl) return;
+          if (!nameEl || !priceEl || !imageEl) return;
 
-        nameEl.textContent = name;
-        priceEl.textContent = `L ${price}`;
+          nameEl.textContent = name;
+          priceEl.textContent = `L ${price}`;
 
-        imageEl.src = img;
-        imageEl.style.opacity = "0";
-        setTimeout(() => {
-          imageEl.style.transition = "opacity 0.4s ease";
-          imageEl.style.opacity = "1";
-        }, 80);
+          imageEl.src = img;
+          imageEl.style.opacity = "0";
+          setTimeout(() => {
+            imageEl.style.transition = "opacity 0.4s ease";
+            imageEl.style.opacity = "1";
+          }, 80);
 
-        const sec = safe("productos");
-        if (sec) {
-          const offset = sec.getBoundingClientRect().top + window.scrollY - 90;
-          window.scrollTo({ top: offset, behavior: "smooth" });
-        }
+          const sec = safe("productos");
+          if (sec) {
+            const offset = sec.getBoundingClientRect().top + window.scrollY - 90;
+            window.scrollTo({ top: offset, behavior: "smooth" });
+          }
+        });
       });
     });
   }
@@ -187,7 +189,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* FAB — CORREGIDO */
   const fabMain = safe("fab-main");
-  const fabContainer = safe("fab");   /* ✔ CAMBIO DEFINITIVO (antes dependía de querySelector) */
+  const fabContainer = safe("fab");
 
   if (fabMain && fabContainer) {
     fabMain.addEventListener("click", (e) => {
@@ -201,70 +203,3 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
-
-/* ============================================================
-   CONTROL DE SESIÓN (Google + Email) — INTEGRADO AQUÍ
-   ============================================================ */
-
-const supabaseMain = window.supabaseClient;
-
-async function cargarSesionIndex() {
-  const { data: { session } } = await supabaseMain.auth.getSession();
-
-  const loginDesktop = safe("login-desktop");
-  const profileDesktop = safe("profile-desktop");
-  const drawerDefault = safe("drawer-links-default");
-  const drawerLogged = safe("drawer-links-logged");
-
-  const helloDesktop = safe("hello-desktop");
-  const helloMobile = safe("hello-mobile");
-
-  const photDesk = safe("profile-photo-desktop");
-  const photMob = safe("profile-photo-mobile");
-
-  if (!session) {
-    if (loginDesktop) loginDesktop.style.display = "inline-block";
-    if (profileDesktop) profileDesktop.style.display = "none";
-    if (drawerDefault) drawerDefault.style.display = "block";
-    if (drawerLogged) drawerLogged.style.display = "none";
-    return;
-  }
-
-  // Usuario logueado
-  if (loginDesktop) loginDesktop.style.display = "none";
-  if (profileDesktop) profileDesktop.style.display = "flex";
-  if (drawerDefault) drawerDefault.style.display = "none";
-  if (drawerLogged) drawerLogged.style.display = "block";
-
-  const user = session.user;
-  const nombre = user.user_metadata.full_name || user.user_metadata.name || "Usuario";
-  const foto = user.user_metadata.avatar_url || "imagenes/avatar-default.svg";
-
-  if (helloDesktop) helloDesktop.textContent = `Hola, ${nombre}`;
-  if (helloMobile) helloMobile.textContent = `Hola, ${nombre}`;
-
-  if (photDesk) photDesk.src = foto;
-  if (photMob) photMob.src = foto;
-}
-
-/* Cierre de sesión */
-async function logoutCortero() {
-  await supabaseMain.auth.signOut();
-  sessionStorage.removeItem("cortero_logged");
-  window.location.href = "index.html";
-}
-
-// Eventos de logout
-const logoutDesktop = safe("logout-desktop");
-const logoutMobile = safe("logout-mobile");
-
-if (logoutDesktop) logoutDesktop.addEventListener("click", logoutCortero);
-if (logoutMobile) logoutMobile.addEventListener("click", logoutCortero);
-
-// Detectar cambios de sesión
-supabaseMain.auth.onAuthStateChange(() => {
-  cargarSesionIndex();
-});
-
-// Cargar al iniciar
-cargarSesionIndex();
