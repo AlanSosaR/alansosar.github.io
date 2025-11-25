@@ -29,7 +29,7 @@ img,
 =============================== */
 body {
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
-               "Inter", "Roboto", sans-serif;
+                "Inter", "Roboto", sans-serif;
   background-color: #ffffff;
   margin: 0;
   padding: 0;
@@ -115,7 +115,7 @@ body {
 }
 
 /* ===============================
-   CARD INTERIOR
+   CARD INTERIOR (FIX DE ESTABILIDAD)
 =============================== */
 .register-inner-card {
   background: #ffffff;
@@ -124,6 +124,18 @@ body {
   padding: 28px 25px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
   margin-top: 15px;
+
+  /* FIX: mantener altura estable */
+  min-height: 560px;     
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+#registroForm {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 /* ===============================
@@ -193,7 +205,6 @@ body {
   pointer-events: none;
 }
 
-/* LABEL ARRIBA AL ESCRIBIR O FOCUS */
 .m3-input input:not(:placeholder-shown) + .floating-label,
 .m3-input:focus-within .floating-label {
   top: -6px;
@@ -215,17 +226,11 @@ body {
   color: #3CB043 !important;
 }
 
-/* PLACEHOLDER EN ERROR — CAFÉ */
-.m3-input.error input::placeholder {
-  color: #512615 !important;
-  opacity: .75;
-}
-
 /* ===============================
-   BARRAS DE SEGURIDAD (6 BARRAS)
+   BARRAS DE FORTALEZA (FUNCIONALES)
 =============================== */
 .strength-bars {
-  display: none;
+  display: none; /* JS la activará */
   margin-top: 10px;
   gap: 6px;
 }
@@ -238,6 +243,7 @@ body {
   transition: 0.25s ease;
 }
 
+/* Colores premium */
 .strength-bar.level-1 { background-color: #d72638; }
 .strength-bar.level-2 { background-color: #ff6f00; }
 .strength-bar.level-3 { background-color: #f4c20d; }
@@ -251,11 +257,11 @@ body {
 .m3-error {
   font-size: 0.83rem;
   color: #d72638;
-  min-height: 16px;
+  min-height: 18px; /* FIX: evita mover el layout */
 }
 
 /* ===============================
-   BOTÓN + LOADER
+   BOTÓN + LOADER (FIJO)
 =============================== */
 .m3-btn {
   width: 100%;
@@ -267,14 +273,15 @@ body {
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  margin-top: 12px;
   position: relative;
   overflow: hidden;
   height: 48px;
+  margin-top: 20px;
 
   display: flex;
   align-items: center;
   justify-content: center;
+  align-self: center; /* FIX botón centrado */
 }
 
 .m3-btn.loading .btn-text {
