@@ -1,15 +1,41 @@
-// ============================================================
-// SUPABASE AUTH — VERSIÓN CORRECTA (SIN ADMIN API)
-// Registro con email verificado + guardar datos después
-// ============================================================
+// ===========================================
+// SUPABASE AUTH — MODO GLOBAL DEFINITIVO
+// ===========================================
 
+// usar SIEMPRE el cliente global que crea core-scripts.js
 const sb = window.supabaseClient;
 
+// Exponer funciones globales
 window.supabaseAuth = {};
 
-// ============================================================
-// 🚀 REGISTRAR USUARIO (signUp normal — sí funciona con anon)
-// ============================================================
+console.log("🔥 supabase-auth.js cargado en modo GLOBAL");
+
+
+// ================================
+// ESPERAR SESIÓN LUEGO DE SIGNUP
+// ================================
+async function esperarSesion() {
+  return new Promise((resolve) => {
+    let intentos = 0;
+
+    const check = setInterval(async () => {
+      const { data } = await sb.auth.getSession();
+
+      if (data.session || intentos > 10) {
+        clearInterval(check);
+        resolve(data.session);
+      }
+
+      intentos++;
+    }, 300);
+  });
+}
+
+
+
+// ================================
+// REGISTRO (SIN FOTO POR AHORA)
+// ================================
 window.supabaseAuth.registerUser = async function (
   email,
   password,
@@ -17,34 +43,49 @@ window.supabaseAuth.registerUser = async function (
   fullName,
   country
 ) {
-  console.log("🚀 Registrando usuario...");
 
+  // 1) Crear usuario en AUTH
   const { data, error } = await sb.auth.signUp({
     email,
     password,
     options: {
-      emailRedirectTo: "https://alansosar.github.io/login.html",
-      data: {
-        full_name: fullName,
-        phone,
-        country,
-        avatar_url: "https://alansosar.github.io/imagenes/avatar-default.svg"
-      }
+      data: { full_name: fullName, phone, country }
     }
   });
 
-  if (error) {
-    console.error("❌ Error en signUp:", error);
-    throw error;
-  }
+  if (error) throw error;
 
-  console.log("🟢 Usuario registrado, pendiente de confirmar correo.");
+  const user = data.user;
+
+  // 2) Esperar sesión temporal para asegurar creación
+  await esperarSesion();
+
+  // 3) Foto por defecto
+  const photoURL = "/imagenes/avatar-default.svg";
+
+  // 4) Insertar en tabla USERS
+  const { error: insertError } = await sb.from("users").insert({
+    id: user.id,
+    name: fullName,
+    email,
+    phone,
+    country,
+    photo_url: photoURL,
+    rol: "usuario",
+    created_at: new Date(),
+    updated_at: new Date()
+  });
+
+  if (insertError) throw insertError;
+
   return data;
 };
 
-// ============================================================
-// 🚪 LOGIN NORMAL
-// ============================================================
+
+
+// ================================
+// LOGIN NORMAL (PASSWORD)
+// ================================
 window.supabaseAuth.loginUser = async function (email, password) {
   const { data, error } = await sb.auth.signInWithPassword({
     email,
@@ -55,29 +96,51 @@ window.supabaseAuth.loginUser = async function (email, password) {
   return data;
 };
 
-// ============================================================
-// ✉️ MAGIC LINK
-// ============================================================
-window.supabaseAuth.loginMagicLink = async function (email) {
-  return await sb.auth.signInWithOtp({
+
+
+// ================================
+// LOGIN CON MAGIC LINK (OTP)
+// ================================
+window.supabaseAuth.loginMagicLink = async function(email) {
+  console.log("📨 Enviando Magic Link a:", email);
+
+  const { data, error } = await sb.auth.signInWithOtp({
     email,
     options: {
-      emailRedirectTo: "https://alansosar.github.io/login.html"
+      // ESTA ES LA URL QUE ABRIRÁ AL CONFIRMAR
+      emailRedirectTo: "https://alansosar.github.io/cafecortero/login.html"
     }
   });
+
+  if (error) {
+    console.error("❌ Error enviando Magic Link:", error);
+    throw error;
+  }
+
+  console.log("✅ Magic Link enviado correctamente");
+  return data;
 };
 
-// ============================================================
-// 👤 OBTENER USUARIO
-// ============================================================
+
+
+// ================================
+// GET USER
+// ================================
 window.supabaseAuth.getCurrentUser = async function () {
   const { data } = await sb.auth.getUser();
   return data.user || null;
 };
 
-// ============================================================
-// 🔴 LOGOUT
-// ============================================================
+
+
+// ================================
+// LOGOUT
+// ================================
 window.supabaseAuth.logoutUser = async function () {
-  await sb.auth.signOut();
+  const { error } = await sb.auth.signOut();
+  if (error) {
+    console.error("⚠️ Error cerrando sesión:", error);
+    return false;
+  }
+  return true;
 };
