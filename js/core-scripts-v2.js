@@ -6,20 +6,20 @@
 const { createClient } = supabase;
 
 // ============================================================
-// 🚀 TUS DATOS REALES DE SUPABASE — CORRECTOS
+// 🚀 DATOS REALES Y CORRECTOS DE SUPABASE
 // ============================================================
 
-// ❗❗ ESTA ES LA URL CORRECTA (SIN LA "v" EXTRA)
-// https://eaipcuvvddyrqkbmjmw.supabase.co
-const SUPABASE_URL = "https://eaipcuvvddyrqkbmjmw.supabase.co";
+// URL correcta (la tuya REAL)
+// NOTA: tiene “jmvw”, NO “jm**mw**”
+const SUPABASE_URL = "https://eaipcuvvddyrqkbmjmvw.supabase.co";
 
-// Clave ANON correcta
+// Clave ANON correcta (la tuya real)
 const SUPABASE_ANON_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVhaXBjdXZ2ZGR5cnFrYm1qbXZ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMwOTcxMDEsImV4cCI6MjA3ODY3MzEwMX0.2qICLx3qZgeGr0oXZ8PYRxXPL1X5Vog4UoOnTQBFzNA";
 
 
 // ============================================================
-// 🟢 FIX: sessionStorage para GitHub Pages, Safari y Móviles
+// 🟢 FIX: sessionStorage (Safari / iOS / GitHub Pages)
 // ============================================================
 
 const storage = {
@@ -30,7 +30,7 @@ const storage = {
 
 
 // ============================================================
-// 🟢 CREAR CLIENTE GLOBAL — YA LISTO PARA LOGIN / REGISTRO
+// 🟢 CREAR CLIENTE GLOBAL (SE USA EN TODO EL PROYECTO)
 // ============================================================
 
 window.supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
@@ -43,4 +43,4 @@ window.supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   }
 });
 
-console.log("🔥 Supabase conectado correctamente (URL válida + sessionStorage)");
+console.log("🔥 Supabase conectado correctamente (URL correcta jmvw + sessionStorage)");
