@@ -58,12 +58,8 @@ async function verificarSesionInicial() {
 supabaseClient.auth.onAuthStateChange((event, session) => {
   console.log("📌 Evento Auth:", event);
 
-  if (session) {
-    manejarUsuario(session.user); // aquí ya hay sesión y el correo está confirmado
-  }
-  if (event === "SIGNED_OUT") {
-    activarModoInvitado();
-  }
+  if (session) manejarUsuario(session.user);
+  if (event === "SIGNED_OUT") activarModoInvitado();
 });
 
 // ============================================================
@@ -101,15 +97,15 @@ async function manejarUsuario(user) {
 }
 
 // ============================================================
-// 🟦 5. MENÚ
+// 🟦 5. MENÚ (CORREGIDO PARA QUE NO REVVENTE EN FORMULARIOS)
 // ============================================================
 
 function activarModoInvitado() {
   const userMenu = document.getElementById("menu-usuario");
   const loginBtn = document.getElementById("login-button");
 
-  if (userMenu) userMenu.style.display = "none";
-  if (loginBtn) loginBtn.style.display = "block";
+  userMenu?.style?.display = "none";
+  loginBtn?.style?.display = "block";
 
   console.log("🔴 Menú en modo invitado");
 }
@@ -118,8 +114,8 @@ function activarModoAutenticado(user) {
   const userMenu = document.getElementById("menu-usuario");
   const loginBtn = document.getElementById("login-button");
 
-  if (userMenu) userMenu.style.display = "block";
-  if (loginBtn) loginBtn.style.display = "none";
+  userMenu?.style?.display = "block";
+  loginBtn?.style?.display = "none";
 
   console.log("🟢 Usuario autenticado — menú actualizado");
 }
