@@ -1,105 +1,77 @@
-// ===========================================
-// SUPABASE AUTH — MODO GLOBAL (EMAIL VERIFICADO)
-// ===========================================
+// ============================================================
+// SUPABASE AUTH — MODO ADMIN API (A PRUEBA DE ERRORES 500)
+// ============================================================
 
-// usar SIEMPRE el cliente global que crea core-scripts-v2.js
-const sb = window.supabaseClient;
+window.supabaseAuth = {
 
-// Exponer funciones globales
-window.supabaseAuth = {};
+  // =====================================================================
+  // 🚀 REGISTRAR USUARIO (FUNCIONA AÚN CUANDO signUp ESTÁ ROTO)
+  // =====================================================================
+  registerUser: async (email, password, phone, name, country) => {
 
-console.log("🔥 supabase-auth.js cargado en modo GLOBAL");
+    console.log("🔥 Creando usuario via Admin API...");
 
-// ================================
-// REGISTRO (SOLO AUTH, SIN INSERT EN users)
-// ================================
-window.supabaseAuth.registerUser = async function (
-  email,
-  password,
-  phone,
-  fullName,
-  country
-) {
-  console.log("🚀 Registrando usuario con email verificado...");
+    // 1) Crear usuario DIRECTAMENTE en Auth
+    const { data: userData, error: userError } =
+      await supabaseClient.auth.admin.createUser({
+        email,
+        password,
+        email_confirm: false, // NO confirmamos aquí, enviamos link después
+        user_metadata: {
+          full_name: name,
+          phone,
+          country,
+          avatar_url: "https://alansosar.github.io/imagenes/avatar-default.svg"
+        }
+      });
 
-  const { data, error } = await sb.auth.signUp({
-    email,
-    password,
-    options: {
-      // A dónde va el usuario al confirmar el correo
-      emailRedirectTo: "https://alansosar.github.io/login.html",
-      data: {
-        full_name: fullName,
+    if (userError) {
+      console.error("❌ Error creando usuario en Auth Admin:", userError);
+      throw userError;
+    }
+
+    const user = userData.user;
+
+    console.log("🟢 Usuario creado en Auth Admin:", user.id);
+
+    // 2) Crear registro en tu tabla "users"
+    const { error: dbError } = await supabaseClient
+      .from("users")
+      .insert({
+        id: user.id,
+        email,
+        name,
         phone,
-        country
-      }
+        country,
+        photo_url: "https://alansosar.github.io/imagenes/avatar-default.svg",
+        rol: "email",
+        updated_at: new Date()
+      });
+
+    if (dbError) {
+      console.error("❌ Error guardando usuario en DB:", dbError);
+      throw dbError;
     }
-  });
 
-  if (error) {
-    console.error("❌ Error en signUp:", error);
-    throw error;
-  }
+    console.log("🟢 Usuario guardado en tabla 'users'");
 
-  console.log("🟢 signUp OK. Falta que el usuario confirme el correo.");
-  // OJO: aquí normalmente NO hay sesión si confirm_email está activado
-  return data;
-};
+    // 3) Enviar email de confirmación manualmente
+    console.log("📨 Enviando correo de verificación...");
 
-// ================================
-// LOGIN NORMAL (PASSWORD)
-// ================================
-window.supabaseAuth.loginUser = async function (email, password) {
-  const { data, error } = await sb.auth.signInWithPassword({
-    email,
-    password
-  });
+    const { error: emailError } =
+      await supabaseClient.auth.admin.generateLink({
+        type: "signup",
+        email
+      });
 
-  if (error) {
-    console.error("❌ Error en loginUser:", error);
-    throw error;
-  }
-  return data;
-};
-
-// ================================
-// LOGIN CON MAGIC LINK (OTP)
-// ================================
-window.supabaseAuth.loginMagicLink = async function (email) {
-  console.log("📨 Enviando Magic Link a:", email);
-
-  const { data, error } = await sb.auth.signInWithOtp({
-    email,
-    options: {
-      emailRedirectTo: "https://alansosar.github.io/login.html"
+    if (emailError) {
+      console.error("❌ Error enviando email de verificación:", emailError);
+      throw emailError;
     }
-  });
 
-  if (error) {
-    console.error("❌ Error enviando Magic Link:", error);
-    throw error;
+    console.log("📬 Email de verificación enviado correctamente");
+
+    return user;
   }
 
-  console.log("✅ Magic Link enviado correctamente");
-  return data;
-};
-
-// ================================
-// GET USER
-// ================================
-window.supabaseAuth.getCurrentUser = async function () {
-  const { data } = await sb.auth.getUser();
-  return data.user || null;
-};
-
-// ================================
-// LOGOUT
-// ================================
-window.supabaseAuth.logoutUser = async function () {
-  const { error } = await sb.auth.signOut();
-  if (error) {
-    console.error("⚠️ Error cerrando sesión:", error);
-    return false;
-  }
-  return true;
 };
