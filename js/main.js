@@ -72,7 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const showHero = (i) => {
     heroImgs.forEach((img) => img.classList.remove("active"));
-    if (heroImgs[i]) heroImgs[i].classList.add("active");
+    if (heroImgs[i]) img.classList.add("active");
   };
 
   if (heroImgs.length > 0) {
@@ -201,3 +201,70 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+
+/* ============================================================
+   CONTROL DE SESIÓN (Google + Email) — INTEGRADO AQUÍ
+   ============================================================ */
+
+const supabaseMain = window.supabaseClient;
+
+async function cargarSesionIndex() {
+  const { data: { session } } = await supabaseMain.auth.getSession();
+
+  const loginDesktop = safe("login-desktop");
+  const profileDesktop = safe("profile-desktop");
+  const drawerDefault = safe("drawer-links-default");
+  const drawerLogged = safe("drawer-links-logged");
+
+  const helloDesktop = safe("hello-desktop");
+  const helloMobile = safe("hello-mobile");
+
+  const photDesk = safe("profile-photo-desktop");
+  const photMob = safe("profile-photo-mobile");
+
+  if (!session) {
+    if (loginDesktop) loginDesktop.style.display = "inline-block";
+    if (profileDesktop) profileDesktop.style.display = "none";
+    if (drawerDefault) drawerDefault.style.display = "block";
+    if (drawerLogged) drawerLogged.style.display = "none";
+    return;
+  }
+
+  // Usuario logueado
+  if (loginDesktop) loginDesktop.style.display = "none";
+  if (profileDesktop) profileDesktop.style.display = "flex";
+  if (drawerDefault) drawerDefault.style.display = "none";
+  if (drawerLogged) drawerLogged.style.display = "block";
+
+  const user = session.user;
+  const nombre = user.user_metadata.full_name || user.user_metadata.name || "Usuario";
+  const foto = user.user_metadata.avatar_url || "imagenes/avatar-default.svg";
+
+  if (helloDesktop) helloDesktop.textContent = `Hola, ${nombre}`;
+  if (helloMobile) helloMobile.textContent = `Hola, ${nombre}`;
+
+  if (photDesk) photDesk.src = foto;
+  if (photMob) photMob.src = foto;
+}
+
+/* Cierre de sesión */
+async function logoutCortero() {
+  await supabaseMain.auth.signOut();
+  sessionStorage.removeItem("cortero_logged");
+  window.location.href = "index.html";
+}
+
+// Eventos de logout
+const logoutDesktop = safe("logout-desktop");
+const logoutMobile = safe("logout-mobile");
+
+if (logoutDesktop) logoutDesktop.addEventListener("click", logoutCortero);
+if (logoutMobile) logoutMobile.addEventListener("click", logoutCortero);
+
+// Detectar cambios de sesión
+supabaseMain.auth.onAuthStateChange(() => {
+  cargarSesionIndex();
+});
+
+// Cargar al iniciar
+cargarSesionIndex();
