@@ -30,32 +30,44 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
 
 console.log("🔥 Supabase listo con FIX GitHub Pages");
 
-
 // ============================================================
 // 🚀 2. VERIFICAR SESIÓN INICIAL
 // ============================================================
 
 async function verificarSesionInicial() {
-  const { data } = await supabaseClient.auth.getSession();
+  const { data, error } = await supabaseClient.auth.getSession();
+  if (error) {
+    console.error("❌ Error obteniendo sesión:", error);
+    activarModoInvitado();
+    return;
+  }
+
   const session = data.session;
 
-  if (session) manejarUsuario(session.user);
-  else activarModoInvitado();
+  if (session) {
+    manejarUsuario(session.user);
+  } else {
+    activarModoInvitado();
+  }
 }
-
 
 // ============================================================
 // 🔔 3. LISTENER LOGIN / LOGOUT
 // ============================================================
 
 supabaseClient.auth.onAuthStateChange((event, session) => {
-  if (session) manejarUsuario(session.user);
-  if (event === "SIGNED_OUT") activarModoInvitado();
+  console.log("📌 Evento Auth:", event);
+
+  if (session) {
+    manejarUsuario(session.user); // aquí ya hay sesión y el correo está confirmado
+  }
+  if (event === "SIGNED_OUT") {
+    activarModoInvitado();
+  }
 });
 
-
 // ============================================================
-// 👤 4. PROCESAR USUARIO (EXACTAMENTE COMO FUNCIONABA ANTES)
+// 👤 4. PROCESAR USUARIO Y GUARDAR EN BD (TABLA users)
 // ============================================================
 
 async function manejarUsuario(user) {
@@ -65,6 +77,8 @@ async function manejarUsuario(user) {
     user.user_metadata?.avatar_url ||
     "https://alansosar.github.io/imagenes/avatar-default.svg";
 
+  const now = new Date().toISOString();
+
   const { error } = await supabaseClient.from("users").upsert({
     id: user.id,
     email: user.email,
@@ -73,18 +87,18 @@ async function manejarUsuario(user) {
     country: user.user_metadata?.country || "",
     photo_url: avatarDefault,
     rol: user.app_metadata?.provider || "email",
-    updated_at: new Date()
+    created_at: now,
+    updated_at: now
   });
 
   if (error) {
-    console.error("❌ Error guardando usuario:", error);
+    console.error("❌ Error guardando usuario en tabla users:", error);
   } else {
-    console.log("🟢 Usuario guardado/actualizado en BD");
+    console.log("🟢 Usuario guardado/actualizado en BD (users)");
   }
 
   activarModoAutenticado(user);
 }
-
 
 // ============================================================
 // 🟦 5. MENÚ
@@ -96,6 +110,8 @@ function activarModoInvitado() {
 
   if (userMenu) userMenu.style.display = "none";
   if (loginBtn) loginBtn.style.display = "block";
+
+  console.log("🔴 Menú en modo invitado");
 }
 
 function activarModoAutenticado(user) {
@@ -104,8 +120,9 @@ function activarModoAutenticado(user) {
 
   if (userMenu) userMenu.style.display = "block";
   if (loginBtn) loginBtn.style.display = "none";
-}
 
+  console.log("🟢 Usuario autenticado — menú actualizado");
+}
 
 // ============================================================
 // 🔚 6. INICIAR
@@ -113,9 +130,8 @@ function activarModoAutenticado(user) {
 
 verificarSesionInicial();
 
-
 // ============================================================
-// 🔵 7. LOGIN GOOGLE (FUNCIONA DE NUEVO)
+// 🔵 7. LOGIN GOOGLE
 // ============================================================
 
 window.loginGoogle = async () => {
@@ -128,7 +144,6 @@ window.loginGoogle = async () => {
   });
   if (error) console.error("❌ Error Google:", error);
 };
-
 
 // ============================================================
 // 🔴 8. LOGOUT
