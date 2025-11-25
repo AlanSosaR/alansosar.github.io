@@ -20,12 +20,17 @@ window.supabaseAuth.registerUser = async function (
 
   console.log("🚀 Registrando usuario…");
 
-  // 1) Crear usuario en AUTH (NO habrá sesión)
+  // 1) Crear usuario en AUTH (Publishable key → NO habrá sesión)
   const { data, error } = await sb.auth.signUp({
     email,
     password,
     options: {
-      data: { full_name: fullName, phone, country }
+      emailRedirectTo: "https://alansosar.github.io/login.html", // 🔥 FIX IMPORTANTE
+      data: {
+        full_name: fullName,
+        phone: phone,
+        country: country
+      }
     }
   });
 
@@ -42,16 +47,17 @@ window.supabaseAuth.registerUser = async function (
 
   console.log("📨 Se envió el correo de confirmación.");
 
-  // 2) Insertar en tabla users (NO necesita sesión)
+  // 2) Insertar usuario en tabla users
+  //    ✔ Publishable key SÍ permite escribir si RLS lo permite
   const now = new Date().toISOString();
   const photoURL = "https://alansosar.github.io/imagenes/avatar-default.svg";
 
   const { error: insertError } = await sb.from("users").insert({
     id: user.id,
     name: fullName,
-    email,
-    phone,
-    country,
+    email: email,
+    phone: phone,
+    country: country,
     photo_url: photoURL,
     rol: "usuario",
     created_at: now,
@@ -64,7 +70,6 @@ window.supabaseAuth.registerUser = async function (
   }
 
   console.log("🟢 Usuario guardado correctamente en users");
-
   return true;
 };
 
@@ -72,7 +77,11 @@ window.supabaseAuth.registerUser = async function (
 // LOGIN
 // ===========================================
 window.supabaseAuth.loginUser = async function (email, password) {
-  const { data, error } = await sb.auth.signInWithPassword({ email, password });
+  const { data, error } = await sb.auth.signInWithPassword({
+    email,
+    password
+  });
+
   if (error) throw error;
   return data;
 };
@@ -87,6 +96,7 @@ window.supabaseAuth.loginMagicLink = async function (email) {
       emailRedirectTo: "https://alansosar.github.io/login.html"
     }
   });
+
   if (error) throw error;
   return data;
 };
