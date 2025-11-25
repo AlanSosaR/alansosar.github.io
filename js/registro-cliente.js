@@ -303,7 +303,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   // ============================================================
-  // ENVÍO FINAL
+  // ENVÍO FINAL (CAMBIO APLICADO AQUÍ)
   // ============================================================
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -338,8 +338,9 @@ document.addEventListener("DOMContentLoaded", () => {
         "Honduras"
       );
 
-      mostrarSnackbar("Cuenta creada con éxito");
-      setTimeout(() => window.location.href = "login.html", 1200);
+      // 💡 ***AQUÍ ESTÁ EL CAMBIO REAL***
+      mostrarSnackbar("Cuenta creada. Revisa tu correo para confirmarla.");
+      setTimeout(() => window.location.href = "login.html", 1600);
 
     } catch (err) {
       console.error(err);
