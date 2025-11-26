@@ -1,6 +1,6 @@
 // ============================================================
-// REGISTRO DE CLIENTE — Café Cortero (VERSIÓN FINAL CORREGIDA)
-// Floating Label + Error Café + Éxito Verde + Validación en vivo
+// REGISTRO DE CLIENTE — Café Cortero (VERSIÓN FINAL PREMIUM)
+// Floating Label + Error Café + Éxito Verde + Snackbar con Logo
 // ============================================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -51,13 +51,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // ============================================================
   function normalizarTelefono(tel) {
     if (!tel) return "";
-
     tel = tel.replace(/[\s\-()]/g, "");
-
     if (tel.startsWith("00")) tel = "+" + tel.slice(2);
-
     tel = tel.replace(/^\+/, "");
-
     return tel;
   }
 
@@ -121,10 +117,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ============================================================
-  // VERDE EN VIVO (CORRECCIÓN AUTOMÁTICA)
+  // VERDE EN VIVO
   // ============================================================
   function activarVerdeEnVivo(campo, validador) {
-
     campos[campo].addEventListener("input", () => {
       const input = campos[campo];
       const grupo = input.closest(".m3-input");
@@ -143,7 +138,6 @@ document.addEventListener("DOMContentLoaded", () => {
         grupo.classList.remove("success");
       }
     });
-
   }
 
   activarVerdeEnVivo("nombre", v => v.length >= 2);
@@ -198,7 +192,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // ============================================================
-  // CHEQUEAR DUPLICADOS (EMAIL + TEL NORMALIZADO)
+  // CHEQUEAR DUPLICADOS
   // ============================================================
   async function existeUsuario(correo, telefonoRaw) {
 
@@ -298,8 +292,12 @@ document.addEventListener("DOMContentLoaded", () => {
         null
       );
 
-      mostrarSnackbar("Cuenta creada con éxito");
-      setTimeout(() => window.location.href = "login.html", 1200);
+      // 🔥 NUEVO MENSAJE PREMIUM
+      mostrarSnackbar(
+        "Cuenta creada con éxito. Revisa tu correo y confirma tu cuenta para comenzar tu experiencia Café Cortero."
+      );
+
+      setTimeout(() => window.location.href = "login.html", 1600);
 
     } catch (err) {
       console.error(err);
@@ -309,13 +307,16 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // ============================================================
-  // SNACKBAR
+  // SNACKBAR PREMIUM CON LOGO
   // ============================================================
   function mostrarSnackbar(msg) {
     const bar = document.getElementById("snackbar");
-    bar.textContent = msg;
+    bar.innerHTML = `
+      <img src="imagenes/logo_secundario.png" class="snack-logo">
+      <span>${msg}</span>
+    `;
     bar.classList.add("show");
-    setTimeout(() => bar.classList.remove("show"), 2600);
+    setTimeout(() => bar.classList.remove("show"), 3000);
   }
 
 });
