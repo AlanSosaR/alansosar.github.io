@@ -1,14 +1,12 @@
 // ============================================================
-// AUTH-UI.JS — CONTROL DE MENÚ SEGÚN SESIÓN (VERSIÓN FINAL)
+// AUTH-UI.JS — CONTROL DE MENÚ SEGÚN SESIÓN (VERSIÓN FINAL 2025)
 // ============================================================
 
-console.log("👤 auth-ui.js cargado — versión FINAL");
+console.log("👤 auth-ui.js cargado — versión FINAL 2025");
 
-// Esperar DOM
 document.addEventListener("DOMContentLoaded", () => {
 
   const sb = window.supabaseClient;
-
   const $id = (id) => document.getElementById(id);
 
   // ------------------------------------------------------------
@@ -49,7 +47,19 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ------------------------------------------------------------
-  // 🧠 CARGAR SESIÓN REAL (Publishable Key)
+  // 🧠 ESPERAR QUE SUPABASE CARGUE LA SESIÓN REAL
+  // ------------------------------------------------------------
+  async function esperarSesionLista() {
+    for (let i = 0; i < 20; i++) { // hasta 20 intentos (1 segundo)
+      const { data } = await sb.auth.getSession();
+      if (data?.session) return data.session;
+      await new Promise(r => setTimeout(r, 50));
+    }
+    return null;
+  }
+
+  // ------------------------------------------------------------
+  // 🧠 CARGAR SESIÓN DESDE TABLA USERS
   // ------------------------------------------------------------
   async function cargarSesion() {
     const { data } = await sb.auth.getSession();
@@ -76,16 +86,19 @@ document.addEventListener("DOMContentLoaded", () => {
     showLoggedIn(userData);
   }
 
-  // Cargar al abrir la página
-  cargarSesion();
+  // ------------------------------------------------------------
+  // 🚀 INICIO — ESPERAR SESIÓN Y MOSTRAR MENÚ
+  // ------------------------------------------------------------
+  esperarSesionLista().then(() => cargarSesion());
 
   // ------------------------------------------------------------
-  // 🔄 DETECTAR LOGIN O LOGOUT EN VIVO
+  // 🔄 CAMBIOS EN SESIÓN EN VIVO
   // ------------------------------------------------------------
   sb.auth.onAuthStateChange(async (event, session) => {
     console.log("🔄 Cambio sesión:", event);
 
     if (event === "SIGNED_IN") {
+      await esperarSesionLista();
       await cargarSesion();
     }
 
@@ -101,7 +114,6 @@ document.addEventListener("DOMContentLoaded", () => {
     $id("logout-desktop").addEventListener("click", async (e) => {
       e.preventDefault();
       await sb.auth.signOut();
-      showLoggedOut();
       window.location.reload();
     });
   }
@@ -110,12 +122,11 @@ document.addEventListener("DOMContentLoaded", () => {
     $id("logout-mobile").addEventListener("click", async (e) => {
       e.preventDefault();
       await sb.auth.signOut();
-      showLoggedOut();
       window.location.reload();
     });
   }
 
-  // Exponer para seguridad
+  // Exponer por seguridad
   window.__showLoggedIn = showLoggedIn;
   window.__showLoggedOut = showLoggedOut;
 
