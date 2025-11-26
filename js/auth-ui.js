@@ -1,32 +1,31 @@
 // ============================================================
-// AUTH-UI.JS — VERSIÓN SIMPLE Y ESTABLE
-// Controla el menú según la sesión
+// AUTH-UI.JS — FIX FINAL 2025
+// Funciona con Publishable Key + sessionStorage + GitHub Pages
 // ============================================================
 
-console.log("👤 auth-ui.js cargado — VERSIÓN SIMPLE");
+console.log("👤 auth-ui.js cargado — FIX DEFINITIVO");
 
 document.addEventListener("DOMContentLoaded", () => {
+
   const sb = window.supabaseClient;
   const $id = (id) => document.getElementById(id);
 
-  // --------------------------
-  // 🔴 Menú invitado
-  // --------------------------
+  // ---------------------------------------------
+  // 🔴 Menú Invitado
+  // ---------------------------------------------
   function showLoggedOut() {
     if ($id("login-desktop")) $id("login-desktop").style.display = "inline-block";
     if ($id("profile-desktop")) $id("profile-desktop").style.display = "none";
 
-    if ($id("drawer-links-default"))
-      $id("drawer-links-default").style.display = "flex";
-    if ($id("drawer-links-logged"))
-      $id("drawer-links-logged").style.display = "none";
+    if ($id("drawer-links-default")) $id("drawer-links-default").style.display = "flex";
+    if ($id("drawer-links-logged")) $id("drawer-links-logged").style.display = "none";
 
     console.log("🔴 Menú: invitado");
   }
 
-  // --------------------------
-  // 🟢 Menú logueado
-  // --------------------------
+  // ---------------------------------------------
+  // 🟢 Menú Logueado
+  // ---------------------------------------------
   function showLoggedIn(user) {
     const name = user.name || "Usuario";
     const photo = user.photo_url || "imagenes/avatar-default.svg";
@@ -35,49 +34,60 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if ($id("profile-desktop")) {
       $id("profile-desktop").style.display = "flex";
-      if ($id("profile-photo-desktop")) {
-        $id("profile-photo-desktop").src = photo;
-      }
-      if ($id("hello-desktop")) {
-        $id("hello-desktop").textContent = `Hola, ${name}`;
-      }
+      if ($id("profile-photo-desktop")) $id("profile-photo-desktop").src = photo;
+      if ($id("hello-desktop")) $id("hello-desktop").textContent = `Hola, ${name}`;
     }
 
-    if ($id("drawer-links-default"))
-      $id("drawer-links-default").style.display = "none";
-    if ($id("drawer-links-logged"))
-      $id("drawer-links-logged").style.display = "flex";
+    if ($id("drawer-links-default")) $id("drawer-links-default").style.display = "none";
+    if ($id("drawer-links-logged")) $id("drawer-links-logged").style.display = "flex";
 
-    if ($id("profile-photo-mobile"))
-      $id("profile-photo-mobile").src = photo;
-    if ($id("hello-mobile"))
-      $id("hello-mobile").textContent = `Hola, ${name}`;
+    if ($id("profile-photo-mobile")) $id("profile-photo-mobile").src = photo;
+    if ($id("hello-mobile")) $id("hello-mobile").textContent = `Hola, ${name}`;
 
     console.log("🟢 Menú: usuario logueado");
   }
 
-  // --------------------------
-  // 🧠 Leer sesión y pintar menú
-  // --------------------------
-  async function refreshMenuFromSession() {
-    const { data } = await sb.auth.getSession();
-    const session = data?.session;
+  // ---------------------------------------------
+  // 🧠 Intentar cargar sesión hasta 2 segundos
+  // ---------------------------------------------
+  async function esperarSesionReal() {
+    let intentos = 0;
+
+    while (intentos < 20) {     // 20 intentos → 100 ms cada uno → 2 segundos
+      const { data } = await sb.auth.getSession();
+      if (data?.session) {
+        console.log("🟢 Sesión cargada correctamente");
+        return data.session;
+      }
+
+      await new Promise(res => setTimeout(res, 100));
+      intentos++;
+    }
+
+    console.log("⚠ No se encontró sesión tras esperar.");
+    return null;
+  }
+
+  // ---------------------------------------------
+  // 🧠 Cargar usuario desde tabla users
+  // ---------------------------------------------
+  async function cargarUsuario() {
+    const session = await esperarSesionReal();
 
     if (!session) {
       showLoggedOut();
       return;
     }
 
-    const userId = session.user.id;
+    const uid = session.user.id;
 
     const { data: userData, error } = await sb
       .from("users")
       .select("*")
-      .eq("id", userId)
+      .eq("id", uid)
       .single();
 
     if (error || !userData) {
-      console.log("⚠ No se encontró usuario en tabla users:", error);
       showLoggedOut();
       return;
     }
@@ -85,17 +95,17 @@ document.addEventListener("DOMContentLoaded", () => {
     showLoggedIn(userData);
   }
 
-  // Pintar menú al cargar la página
-  refreshMenuFromSession();
+  // Ejecutar
+  cargarUsuario();
 
-  // --------------------------
-  // 🔄 Escuchar cambios de sesión
-  // --------------------------
+  // ---------------------------------------------
+  // 🔄 Si la sesión cambia (login/logout)
+  // ---------------------------------------------
   sb.auth.onAuthStateChange(async (event, session) => {
-    console.log("🔄 Cambio sesión:", event);
+    console.log("🔄 Evento:", event);
 
-    if (event === "SIGNED_IN" || event === "INITIAL_SESSION") {
-      await refreshMenuFromSession();
+    if (event === "SIGNED_IN") {
+      await cargarUsuario();
     }
 
     if (event === "SIGNED_OUT") {
@@ -103,17 +113,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // --------------------------
-  // 🚪 Logout (usa supabaseAuth.logoutUser)
-  // --------------------------
+  // ---------------------------------------------
+  // 🚪 Logout
+  // ---------------------------------------------
   if ($id("logout-desktop")) {
     $id("logout-desktop").addEventListener("click", async (e) => {
       e.preventDefault();
-      if (window.supabaseAuth?.logoutUser) {
-        await window.supabaseAuth.logoutUser();
-      } else {
-        await sb.auth.signOut();
-      }
+      await sb.auth.signOut();
+      sessionStorage.removeItem("cortero-session");
       showLoggedOut();
       window.location.href = "index.html";
     });
@@ -122,17 +129,11 @@ document.addEventListener("DOMContentLoaded", () => {
   if ($id("logout-mobile")) {
     $id("logout-mobile").addEventListener("click", async (e) => {
       e.preventDefault();
-      if (window.supabaseAuth?.logoutUser) {
-        await window.supabaseAuth.logoutUser();
-      } else {
-        await sb.auth.signOut();
-      }
+      await sb.auth.signOut();
+      sessionStorage.removeItem("cortero-session");
       showLoggedOut();
       window.location.href = "index.html";
     });
   }
 
-  // Por si algún script externo lo usa
-  window.__showLoggedIn = showLoggedIn;
-  window.__showLoggedOut = showLoggedOut;
 });
