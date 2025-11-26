@@ -15,7 +15,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600&display=swap" rel="stylesheet">
 
   <!-- CSS del formulario -->
-  <link rel="stylesheet" href="css/registro-cliente.css?v=6">
+  <link rel="stylesheet" href="css/registro-cliente.css?v=7">
 </head>
 
 <body>
@@ -46,7 +46,7 @@
           <div class="m3-field">
             <div class="m3-input">
               <span class="material-symbols-outlined">person</span>
-              <input id="nombreInput" type="text" placeholder="">
+              <input id="nombreInput" type="text" placeholder=" ">
               <label for="nombreInput" class="floating-label">Nombre completo</label>
             </div>
             <small class="m3-error" id="errorNombre"></small>
@@ -56,7 +56,7 @@
           <div class="m3-field">
             <div class="m3-input">
               <span class="material-symbols-outlined">mail</span>
-              <input id="correoInput" type="email" placeholder="">
+              <input id="correoInput" type="email" placeholder=" ">
               <label for="correoInput" class="floating-label">Correo electrónico</label>
             </div>
             <small class="m3-error" id="errorCorreo"></small>
@@ -66,7 +66,7 @@
           <div class="m3-field">
             <div class="m3-input">
               <span class="material-symbols-outlined">call</span>
-              <input id="telefonoInput" type="tel" placeholder="">
+              <input id="telefonoInput" type="tel" placeholder=" ">
               <label for="telefonoInput" class="floating-label">Teléfono</label>
             </div>
             <small class="m3-error" id="errorTelefono"></small>
@@ -76,7 +76,7 @@
           <div class="m3-field">
             <div class="m3-input">
               <span class="material-symbols-outlined">lock</span>
-              <input id="passwordInput" type="password" placeholder="">
+              <input id="passwordInput" type="password" placeholder=" ">
               <label for="passwordInput" class="floating-label">Contraseña</label>
               <span class="material-symbols-outlined toggle-pass" data-target="passwordInput">visibility</span>
             </div>
@@ -97,7 +97,7 @@
           <div class="m3-field">
             <div class="m3-input">
               <span class="material-symbols-outlined">lock</span>
-              <input id="confirmPasswordInput" type="password" placeholder="">
+              <input id="confirmPasswordInput" type="password" placeholder=" ">
               <label for="confirmPasswordInput" class="floating-label">Confirmar contraseña</label>
               <span class="material-symbols-outlined toggle-pass" data-target="confirmPasswordInput">visibility</span>
             </div>
@@ -106,8 +106,8 @@
 
           <!-- BOTÓN -->
           <button type="submit" class="m3-btn">
-            <span class="btn-text">Crear cuenta</span>
             <span class="loader"></span>
+            <span class="btn-text">Crear cuenta</span>
           </button>
 
         </form>
@@ -119,7 +119,7 @@
   </main>
 
   <!-- ====================================================== -->
-  <!-- 🚀 ORDEN CORRECTO DE SCRIPTS (LA SOLUCIÓN REAL)        -->
+  <!-- 🚀 ORDEN CORRECTO DE SCRIPTS                           -->
   <!-- ====================================================== -->
 
   <!-- 1) SDK Supabase -->
@@ -135,7 +135,7 @@
   <script src="js/auth-ui.js?v=5"></script>
 
   <!-- 5) Registro -->
-  <script src="js/registro-cliente.js?v=6"></script>
+  <script src="js/registro-cliente.js?v=7"></script>
 
 </body>
 </html>
