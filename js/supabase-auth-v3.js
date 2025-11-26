@@ -1,12 +1,12 @@
 /* ============================================================
-   SUPABASE AUTH — VERSIÓN FINAL V3 (100% ESTABLE)
+   SUPABASE AUTH — VERSIÓN FINAL REPARADA 2025
    Compatible con Publishable Key + sessionStorage
    ============================================================ */
 
 const sb = window.supabaseClient;
 window.supabaseAuth = {};
 
-console.log("🔥 supabase-auth-v3.js cargado — versión FINAL");
+console.log("🔥 supabase-auth-v3.js cargado — FIX DEFINITIVO");
 
 /* ============================================================
    1) REGISTRO (signUp + insert en tabla users)
@@ -43,7 +43,6 @@ window.supabaseAuth.registerUser = async function (
 
   console.log("📨 Se envió el correo de verificación.");
 
-  // Insert en tabla users
   const now = new Date().toISOString();
   const photoURL = "https://alansosar.github.io/imagenes/avatar-default.svg";
 
@@ -69,7 +68,7 @@ window.supabaseAuth.registerUser = async function (
 };
 
 /* ============================================================
-   2) LOGIN
+   2) LOGIN (normal)
    ============================================================ */
 window.supabaseAuth.loginUser = async function (email, password) {
   const { data, error } = await sb.auth.signInWithPassword({
@@ -82,7 +81,7 @@ window.supabaseAuth.loginUser = async function (email, password) {
 };
 
 /* ============================================================
-   3) MAGIC LINK LOGIN
+   3) LOGIN CON MAGIC LINK
    ============================================================ */
 window.supabaseAuth.loginMagicLink = async function (email) {
   const { data, error } = await sb.auth.signInWithOtp({
@@ -97,24 +96,26 @@ window.supabaseAuth.loginMagicLink = async function (email) {
 };
 
 /* ============================================================
-   4) GET CURRENT USER (LA VERSIÓN CORRECTA)
+   4) GET CURRENT USER
+   (publishable key → SOLO funciona getSession)
    ============================================================ */
 window.supabaseAuth.getCurrentUser = async function () {
-  // ✔ Publishable Key → SOLO getSession funciona correctamente
   const { data } = await sb.auth.getSession();
   return data?.session?.user || null;
 };
 
 /* ============================================================
-   5) LOGOUT (EL FIX REAL — Limpia sessionStorage)
+   5) LOGOUT — FIX FINAL
    ============================================================ */
 window.supabaseAuth.logoutUser = async function () {
   await sb.auth.signOut();
 
-  // 🔥 Importante: GitHub Pages + iOS necesitan limpiar la sesión manualmente
+  // 🔥 CLEAN REAL
   sessionStorage.removeItem("cortero-session");
+  sessionStorage.removeItem("cortero_logged");   // <-- NECESARIO PARA EL MENÚ
+  sessionStorage.removeItem("cortero_user");     // <-- NECESARIO PARA EL PERFIL
 
-  console.log("👋 Sesión cerrada correctamente");
+  console.log("👋 Sesión cerrada correctamente (FIX REAL)");
 
   return true;
 };
