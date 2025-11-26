@@ -157,7 +157,7 @@ body {
 
 .m3-input.error .floating-label {
   top: -6px !important;
-  left: 38px !important;
+  left: 40px !important; /* FIX LABEL */
   font-size: 0.78rem !important;
   color: #d72638 !important;
   background: #ffffff;
@@ -194,11 +194,11 @@ body {
 }
 
 /* ===============================
-   FLOATING LABEL (IGUAL QUE LOGIN)
+   FLOATING LABEL (FIX CENTRADO)
 =============================== */
 .floating-label {
   position: absolute;
-  left: 44px;
+  left: 40px !important; /* FIX EXACTO */
   top: 15px;
   font-size: 1rem;
   color: #8a8a8a;
@@ -209,7 +209,7 @@ body {
 .m3-input input:not(:placeholder-shown) + .floating-label,
 .m3-input:focus-within .floating-label {
   top: -6px;
-  left: 38px;
+  left: 40px !important;
   font-size: 0.78rem;
   color: #33673B;
   background: #ffffff;
@@ -232,7 +232,7 @@ body {
 }
 
 /* ===============================
-   BOTÓN + LOADER (MISMO LOGIN)
+   BOTÓN + LOADER (FIX)
 =============================== */
 .m3-btn {
   width: 100%;
@@ -261,10 +261,12 @@ body {
   border-top-color: #ffffff;
   animation: spin 0.9s linear infinite;
   opacity: 0;
+  display: none; /* FIX */
 }
 
 .m3-btn.loading .loader {
-  opacity: 1;
+  opacity: 1 !important;
+  display: inline-block !important; /* FIX */
 }
 
 @keyframes spin { 
@@ -272,10 +274,25 @@ body {
 }
 
 /* ============================================================
+   BARRAS DE SEGURIDAD — FIX
+============================================================ */
+#barsContainer {
+  display: none;
+  margin-top: 10px;
+  gap: 6px;
+  padding-left: 4px;
+}
+
+#passwordInput:focus ~ #barsContainer,
+#passwordInput:not(:placeholder-shown) ~ #barsContainer {
+  display: flex !important;
+}
+
+/* ============================================================
    SNACKBAR PREMIUM — LOGO + TEXTO ALINEADO
 ============================================================ */
 #snackbar {
-  position: fixed; /* Mejor posición global */
+  position: fixed;
   bottom: 60px;
   left: 50%;
   transform: translateX(-50%) translateY(12px);
@@ -283,14 +300,11 @@ body {
   color: #ffffff;
   padding: 12px 18px;
   border-radius: 16px;
-
   font-size: 0.92rem;
   font-weight: 400;
-
   display: flex;
   align-items: center;
   gap: 12px;
-
   opacity: 0;
   pointer-events: none;
   transition: opacity .25s ease, transform .25s ease;
@@ -299,6 +313,7 @@ body {
 #snackbar.show {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
+  pointer-events: auto; /* FIX */
 }
 
 .snack-logo {
