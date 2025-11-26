@@ -70,7 +70,7 @@ function validarPassword(valor) {
 }
 
 // ========================================================
-// LIMPIAR ERRORES
+// LIMPIAR ERRORES (ACTUALIZADO)
 // ========================================================
 
 function limpiarErroresInput(event) {
@@ -82,6 +82,8 @@ function limpiarErroresInput(event) {
   box.classList.remove("error");
   msg.textContent = "";
   msg.style.opacity = "0";
+  msg.style.height = "0px";        // <--- FIX
+  msg.style.marginTop = "0px";     // <--- FIX
 
   if (input.value.trim() !== "") {
     box.classList.add("success");
@@ -98,7 +100,7 @@ userInput.addEventListener("input", limpiarErroresInput);
 passInput.addEventListener("input", limpiarErroresInput);
 
 // ========================================================
-// MARCAR ERROR
+// MARCAR ERROR (ACTUALIZADO)
 // ========================================================
 
 function marcarError(input, placeholderText) {
@@ -114,6 +116,8 @@ function marcarError(input, placeholderText) {
 
   msg.textContent = placeholderText;
   msg.style.opacity = "1";
+  msg.style.height = "18px";       // <--- FIX
+  msg.style.marginTop = "4px";     // <--- FIX
 }
 
 // ========================================================
@@ -147,7 +151,7 @@ loginForm.addEventListener("submit", async (e) => {
   let emailToUse = userValue;
 
   try {
-    // Si inicia con teléfono, buscar el email vinculado
+    // Buscar email por teléfono
     if (tipo === "telefono") {
       const { data: rows } = await supabase
         .from("users")
@@ -163,9 +167,7 @@ loginForm.addEventListener("submit", async (e) => {
       emailToUse = rows[0].email;
     }
 
-    // --------------------------------------------------------
-    // 🔥 LOGIN REAL
-    // --------------------------------------------------------
+    // LOGIN REAL
     const { error } = await supabase.auth.signInWithPassword({
       email: emailToUse,
       password: passValue
@@ -176,28 +178,24 @@ loginForm.addEventListener("submit", async (e) => {
       return marcarError(passInput, "Credenciales incorrectas");
     }
 
-    // --------------------------------------------------------
-    // 🔥 GUARDAR PERFIL PARA EL MENÚ (NUEVO SISTEMA)
-    // --------------------------------------------------------
+    // GUARDAR PERFIL
     try {
-      const { data: perfiles, error: perfilError } = await supabase
+      const { data: perfiles } = await supabase
         .from("users")
         .select("name, photo_url")
         .eq("email", emailToUse)
         .limit(1);
 
-      if (!perfilError && perfiles && perfiles.length > 0) {
-        const perfil = perfiles[0];
-        sessionStorage.setItem("cortero_user", JSON.stringify(perfil));
+      if (perfiles && perfiles.length > 0) {
+        sessionStorage.setItem("cortero_user", JSON.stringify(perfiles[0]));
       }
     } catch (err) {
       console.warn("No se pudo guardar el perfil:", err);
     }
 
-    // Flag principal para auth-ui.js
     sessionStorage.setItem("cortero_logged", "1");
 
-    // 🔥 Forzar actualización inmediata del menú
+    // Actualizar menú inmediatamente
     if (window.__refreshMenuFromSession) {
       window.__refreshMenuFromSession();
     }
