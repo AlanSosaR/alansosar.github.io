@@ -245,12 +245,23 @@
   </div>
 <!-- Scripts -->
 
+<!-- Scripts -->
+
+<!-- 1) Supabase JS (librería externa) -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+<!-- 2) Cliente Supabase: crea window.supabaseClient  -->
 <script src="js/core-scripts-v2.js?v=1"></script>
+
+<!-- 3) Auth: login, register, logout -->
 <script src="js/supabase-auth-v3.js"></script>
-<script src="js/auth-ui.js?v=5"></script>
+
+<!-- 4) Lógica interna del sitio (carrito, sliders, etc.) -->
 <script src="js/main.js"></script>
+
+<!-- 5) Control del menú según sesión (DEBE SER EL ÚLTIMO SIEMPRE) -->
+<script src="js/auth-ui.js?v=6"></script>
+
 
 
 </body>
