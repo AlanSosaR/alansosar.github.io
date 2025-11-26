@@ -1,31 +1,31 @@
 // ============================================================
-// AUTH-UI.JS — FIX FINAL 2025
-// Soluciona: menú parpadea → se borra → vuelve a invitado
-// Maneja correctamente INITIAL_SESSION
+// AUTH-UI.JS — VERSIÓN SIMPLE Y ESTABLE
+// Controla el menú según la sesión
 // ============================================================
 
-console.log("👤 auth-ui.js cargado — FIX FINAL 2025");
+console.log("👤 auth-ui.js cargado — VERSIÓN SIMPLE");
 
 document.addEventListener("DOMContentLoaded", () => {
-
   const sb = window.supabaseClient;
   const $id = (id) => document.getElementById(id);
 
   // --------------------------
-  // 🔴 Mostrar invitado
+  // 🔴 Menú invitado
   // --------------------------
   function showLoggedOut() {
     if ($id("login-desktop")) $id("login-desktop").style.display = "inline-block";
     if ($id("profile-desktop")) $id("profile-desktop").style.display = "none";
 
-    if ($id("drawer-links-default")) $id("drawer-links-default").style.display = "flex";
-    if ($id("drawer-links-logged")) $id("drawer-links-logged").style.display = "none";
+    if ($id("drawer-links-default"))
+      $id("drawer-links-default").style.display = "flex";
+    if ($id("drawer-links-logged"))
+      $id("drawer-links-logged").style.display = "none";
 
     console.log("🔴 Menú: invitado");
   }
 
   // --------------------------
-  // 🟢 Mostrar logueado
+  // 🟢 Menú logueado
   // --------------------------
   function showLoggedIn(user) {
     const name = user.name || "Usuario";
@@ -35,23 +35,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if ($id("profile-desktop")) {
       $id("profile-desktop").style.display = "flex";
-      $id("profile-photo-desktop").src = photo;
-      $id("hello-desktop").textContent = `Hola, ${name}`;
+      if ($id("profile-photo-desktop")) {
+        $id("profile-photo-desktop").src = photo;
+      }
+      if ($id("hello-desktop")) {
+        $id("hello-desktop").textContent = `Hola, ${name}`;
+      }
     }
 
-    if ($id("drawer-links-default")) $id("drawer-links-default").style.display = "none";
-    if ($id("drawer-links-logged")) $id("drawer-links-logged").style.display = "flex";
+    if ($id("drawer-links-default"))
+      $id("drawer-links-default").style.display = "none";
+    if ($id("drawer-links-logged"))
+      $id("drawer-links-logged").style.display = "flex";
 
-    if ($id("profile-photo-mobile")) $id("profile-photo-mobile").src = photo;
-    if ($id("hello-mobile")) $id("hello-mobile").textContent = `Hola, ${name}`;
+    if ($id("profile-photo-mobile"))
+      $id("profile-photo-mobile").src = photo;
+    if ($id("hello-mobile"))
+      $id("hello-mobile").textContent = `Hola, ${name}`;
 
     console.log("🟢 Menú: usuario logueado");
   }
 
   // --------------------------
-  // 🧠 Cargar usuario real desde tabla users
+  // 🧠 Leer sesión y pintar menú
   // --------------------------
-  async function cargarUsuario() {
+  async function refreshMenuFromSession() {
     const { data } = await sb.auth.getSession();
     const session = data?.session;
 
@@ -60,15 +68,16 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    const uid = session.user.id;
+    const userId = session.user.id;
 
     const { data: userData, error } = await sb
       .from("users")
       .select("*")
-      .eq("id", uid)
+      .eq("id", userId)
       .single();
 
     if (error || !userData) {
+      console.log("⚠ No se encontró usuario en tabla users:", error);
       showLoggedOut();
       return;
     }
@@ -76,20 +85,17 @@ document.addEventListener("DOMContentLoaded", () => {
     showLoggedIn(userData);
   }
 
+  // Pintar menú al cargar la página
+  refreshMenuFromSession();
+
   // --------------------------
-  // 🚀 INICIO — manejar correctamente INITIAL_SESSION
+  // 🔄 Escuchar cambios de sesión
   // --------------------------
   sb.auth.onAuthStateChange(async (event, session) => {
     console.log("🔄 Cambio sesión:", event);
 
-    // ❗ FIX IMPORTANTE: NO BORRAR SESIÓN EN INITIAL_SESSION
-    if (event === "INITIAL_SESSION") {
-      if (session) cargarUsuario();
-      return;
-    }
-
-    if (event === "SIGNED_IN") {
-      await cargarUsuario();
+    if (event === "SIGNED_IN" || event === "INITIAL_SESSION") {
+      await refreshMenuFromSession();
     }
 
     if (event === "SIGNED_OUT") {
@@ -97,6 +103,36 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Cargar una vez al abrir
-  cargarUsuario();
+  // --------------------------
+  // 🚪 Logout (usa supabaseAuth.logoutUser)
+  // --------------------------
+  if ($id("logout-desktop")) {
+    $id("logout-desktop").addEventListener("click", async (e) => {
+      e.preventDefault();
+      if (window.supabaseAuth?.logoutUser) {
+        await window.supabaseAuth.logoutUser();
+      } else {
+        await sb.auth.signOut();
+      }
+      showLoggedOut();
+      window.location.href = "index.html";
+    });
+  }
+
+  if ($id("logout-mobile")) {
+    $id("logout-mobile").addEventListener("click", async (e) => {
+      e.preventDefault();
+      if (window.supabaseAuth?.logoutUser) {
+        await window.supabaseAuth.logoutUser();
+      } else {
+        await sb.auth.signOut();
+      }
+      showLoggedOut();
+      window.location.href = "index.html";
+    });
+  }
+
+  // Por si algún script externo lo usa
+  window.__showLoggedIn = showLoggedIn;
+  window.__showLoggedOut = showLoggedOut;
 });
