@@ -1,9 +1,5 @@
 // ============================================================
 // AUTH-UI.JS — FIX DEFINITIVO 2025 (VERSIÓN SESSIONSTORAGE)
-// El menú se basa en:
-//   - cortero_logged  (flag 0/1)
-//   - cortero_user    (name, photo_url) guardado en login
-// No dependemos de getSession() para pintar el menú.
 // ============================================================
 
 console.log("👤 auth-ui.js cargado — FIX DEFINITIVO");
@@ -87,13 +83,12 @@ document.addEventListener("DOMContentLoaded", () => {
   refreshMenuFromStorage();
 
   // --------------------------
-  // 🔄 Escuchar cambios de sesión Supabase (solo para sincronia)
+  // 🔄 Escuchar cambios de sesión
   // --------------------------
-  sb.auth.onAuthStateChange(async (event, session) => {
+  sb.auth.onAuthStateChange(async (event) => {
     console.log("🔄 Evento:", event);
 
     if (event === "SIGNED_IN") {
-      // Si Supabase dice que hay sesión pero el flag no está, lo ponemos.
       if (!sessionStorage.getItem("cortero_logged")) {
         sessionStorage.setItem("cortero_logged", "1");
       }
@@ -107,13 +102,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (event === "INITIAL_SESSION") {
-      // Simplemente repintamos según lo que haya en sessionStorage
       refreshMenuFromStorage();
     }
   });
 
   // --------------------------
-  // 🚪 Logout (escritorio y móvil)
+  // 🚪 Logout
   // --------------------------
   async function doLogout(e) {
     e.preventDefault();
@@ -127,9 +121,9 @@ document.addEventListener("DOMContentLoaded", () => {
       console.warn("Error en logout:", err);
     }
 
-    // Limpieza UI
     sessionStorage.removeItem("cortero_logged");
     sessionStorage.removeItem("cortero_user");
+
     showLoggedOut();
     window.location.href = "index.html";
   }
@@ -142,7 +136,13 @@ document.addEventListener("DOMContentLoaded", () => {
     $id("logout-mobile").addEventListener("click", doLogout);
   }
 
-  // Por si algún script externo lo quiere usar
+  // ⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇
+  // 🔥 FIX FINAL — HACER PÚBLICA LA FUNCIÓN PARA QUE LOGIN LA PUEDA LLAMAR
+  window.__refreshMenuFromSession = refreshMenuFromStorage;
+
+  // También dejamos disponibles estas funciones por compatibilidad
   window.__showLoggedIn = showLoggedIn;
   window.__showLoggedOut = showLoggedOut;
+  // ⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆
+
 });
