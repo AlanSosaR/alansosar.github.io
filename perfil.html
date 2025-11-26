@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mi Perfil | Café Cortero</title>
+
+  <!-- Tipografía global -->
+  <link rel="stylesheet" href="css/tipografia.css">
+
+  <!-- Iconos Material Symbols -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+
+  <!-- Título premium Fraunces -->
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600&display=swap" rel="stylesheet">
+
+  <!-- CSS del perfil -->
+  <link rel="stylesheet" href="css/perfil.css?v=1">
+</head>
+
+<body>
+
+  <main class="profile-container">
+
+    <section class="profile-card">
+
+      <!-- BOTÓN BACK -->
+      <button class="back-btn" onclick="window.location.href='index.html'">
+        <span class="material-symbols-outlined">chevron_left</span>
+      </button>
+
+      <!-- HEADER -->
+      <div class="profile-header">
+        <div class="logo-container" onclick="window.location.href='index.html'">
+          <img src="imagenes/logo.png" alt="Café Cortero" class="logo-img">
+        </div>
+        <h2 class="profile-title">Mi perfil</h2>
+      </div>
+
+      <!-- CARD INTERIOR -->
+      <div class="profile-inner-card outlined-card">
+
+        <!-- FOTO -->
+        <div class="foto-perfil-container">
+          <img id="fotoPerfil" src="imagenes/avatar-default.svg" alt="Foto de perfil" class="foto-perfil">
+          <input type="file" id="inputFoto" accept="image/*" style="display:none;">
+          <div class="editar-foto-indicador">
+            <span class="material-symbols-outlined">photo_camera</span>
+          </div>
+        </div>
+
+        <!-- FORMULARIO -->
+        <form id="perfilForm" novalidate>
+
+          <!-- NOMBRE -->
+          <div class="m3-field">
+            <div class="m3-input">
+              <span class="material-symbols-outlined">person</span>
+              <input id="nombreInput" type="text" placeholder=" ">
+              <label for="nombreInput" class="floating-label">Nombre completo</label>
+            </div>
+            <small class="m3-error" id="errorNombre"></small>
+          </div>
+
+          <!-- CORREO (solo lectura) -->
+          <div class="m3-field">
+            <div class="m3-input no-edit">
+              <span class="material-symbols-outlined">mail</span>
+              <input id="correoInput" type="email" placeholder=" " readonly>
+              <label for="correoInput" class="floating-label">Correo</label>
+            </div>
+            <small class="m3-error"></small>
+          </div>
+
+          <!-- TELÉFONO -->
+          <div class="m3-field">
+            <div class="m3-input">
+              <span class="material-symbols-outlined">call</span>
+              <input id="telefonoInput" type="tel" placeholder=" ">
+              <label for="telefonoInput" class="floating-label">Teléfono</label>
+            </div>
+            <small class="m3-error" id="errorTelefono"></small>
+          </div>
+
+          <!-- CAMBIAR CONTRASEÑA (se despliega al tocar) -->
+          <div class="cambiar-pass-boton" id="btnMostrarPass">
+            <span class="material-symbols-outlined">lock</span> Cambiar contraseña
+          </div>
+
+          <div id="bloquePassword" class="password-section">
+
+            <div class="m3-field">
+              <div class="m3-input">
+                <span class="material-symbols-outlined">lock</span>
+                <input id="oldPassword" type="password" placeholder=" ">
+                <label class="floating-label">Contraseña actual</label>
+                <span class="material-symbols-outlined toggle-pass" data-target="oldPassword">visibility</span>
+              </div>
+              <small class="m3-error" id="errorOldPass"></small>
+            </div>
+
+            <div class="m3-field">
+              <div class="m3-input">
+                <span class="material-symbols-outlined">lock</span>
+                <input id="newPassword" type="password" placeholder=" ">
+                <label class="floating-label">Nueva contraseña</label>
+                <span class="material-symbols-outlined toggle-pass" data-target="newPassword">visibility</span>
+              </div>
+              <small class="m3-error" id="errorNewPass"></small>
+            </div>
+
+          </div>
+
+          <!-- BOTÓN GUARDAR -->
+          <button type="submit" class="m3-btn">
+            <span class="loader"></span>
+            <span class="btn-text">Guardar cambios</span>
+          </button>
+
+        </form>
+
+        <!-- SNACKBAR PREMIUM -->
+        <div id="snackbar">
+          <img src="imagenes/logo_secundario.png" class="snack-logo">
+          <span class="snack-text"></span>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/core-scripts-v2.js?v=1"></script>
+  <script src="js/perfil.js?v=1"></script>
+
+</body>
+</html>
