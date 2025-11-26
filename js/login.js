@@ -1,6 +1,6 @@
 // ========================================================
 // LOGIN – Café Cortero ☕
-// Validación Gmail + Floating Label Real + Google Login
+// VALIDACIÓN + SESIÓN + PERFIL EN SESSIONSTORAGE
 // ========================================================
 
 const supabase = window.supabaseClient;
@@ -33,15 +33,44 @@ const autocorrecciones = {
 };
 
 // ========================================================
-// TIPO DE ENTRADA
+// FUNCIONES DE VALIDACIÓN
 // ========================================================
 
 function tipoDeEntrada(valor) {
   return /^[0-9]+$/.test(valor) ? "telefono" : "correo";
 }
 
+function validarCorreo(valor) {
+  if (!valor.includes("@")) return false;
+
+  const partes = valor.split("@");
+  const dominio = partes[1]?.toLowerCase();
+  if (!dominio) return false;
+
+  if (autocorrecciones[dominio]) {
+    userInput.value = partes[0] + "@" + autocorrecciones[dominio];
+    return true;
+  }
+
+  if (!dominio.includes(".")) return false;
+  return dominiosValidos.some(d => dominio.endsWith(d));
+}
+
+function validarTelefono(valor) {
+  const limpio = valor.replace(/[\s-+]/g, "");
+  if (!/^[0-9]+$/.test(limpio)) return false;
+  return limpio.length >= 7 && limpio.length <= 15;
+}
+
+function validarPassword(valor) {
+  if (valor.length < 6) return false;
+  if (valor.includes(" ")) return false;
+  if (["123456", "000000", "password"].includes(valor.toLowerCase())) return false;
+  return true;
+}
+
 // ========================================================
-// LIMPIAR ERRORES AL ESCRIBIR
+// LIMPIAR ERRORES
 // ========================================================
 
 function limpiarErroresInput(event) {
@@ -88,40 +117,7 @@ function marcarError(input, placeholderText) {
 }
 
 // ========================================================
-// VALIDACIONES
-// ========================================================
-
-function validarCorreo(valor) {
-  if (!valor.includes("@")) return false;
-
-  const partes = valor.split("@");
-  const dominio = partes[1]?.toLowerCase();
-  if (!dominio) return false;
-
-  if (autocorrecciones[dominio]) {
-    userInput.value = partes[0] + "@" + autocorrecciones[dominio];
-    return true;
-  }
-
-  if (!dominio.includes(".")) return false;
-  return dominiosValidos.some(d => dominio.endsWith(d));
-}
-
-function validarTelefono(valor) {
-  const limpio = valor.replace(/[\s-+]/g, "");
-  if (!/^[0-9]+$/.test(limpio)) return false;
-  return limpio.length >= 7 && limpio.length <= 15;
-}
-
-function validarPassword(valor) {
-  if (valor.length < 6) return false;
-  if (valor.includes(" ")) return false;
-  if (["123456", "000000", "password"].includes(valor.toLowerCase())) return false;
-  return true;
-}
-
-// ========================================================
-// SUBMIT LOGIN EMAIL
+// SUBMIT LOGIN
 // ========================================================
 
 loginForm.addEventListener("submit", async (e) => {
@@ -130,32 +126,19 @@ loginForm.addEventListener("submit", async (e) => {
   const userValue = userInput.value.trim();
   const passValue = passInput.value.trim();
 
-  if (!userValue) {
-    marcarError(userInput, "Ingresa tu correo o teléfono");
-    return;
-  }
+  if (!userValue) return marcarError(userInput, "Ingresa tu correo o teléfono");
 
   const tipo = tipoDeEntrada(userValue);
 
-  if (tipo === "correo" && !validarCorreo(userValue)) {
-    marcarError(userInput, "Correo no válido");
-    return;
-  }
+  if (tipo === "correo" && !validarCorreo(userValue))
+    return marcarError(userInput, "Correo no válido");
 
-  if (tipo === "telefono" && !validarTelefono(userValue)) {
-    marcarError(userInput, "Teléfono inválido");
-    return;
-  }
+  if (tipo === "telefono" && !validarTelefono(userValue))
+    return marcarError(userInput, "Teléfono inválido");
 
-  if (!passValue) {
-    marcarError(passInput, "Ingresa tu contraseña");
-    return;
-  }
-
-  if (!validarPassword(passValue)) {
-    marcarError(passInput, "Contraseña no válida");
-    return;
-  }
+  if (!passValue) return marcarError(passInput, "Ingresa tu contraseña");
+  if (!validarPassword(passValue))
+    return marcarError(passInput, "Contraseña no válida");
 
   loginBtn.classList.add("loading");
   btnText.style.opacity = "0";
@@ -164,6 +147,7 @@ loginForm.addEventListener("submit", async (e) => {
   let emailToUse = userValue;
 
   try {
+    // Si inicia con teléfono, buscar el email vinculado
     if (tipo === "telefono") {
       const { data: rows } = await supabase
         .from("users")
@@ -173,13 +157,15 @@ loginForm.addEventListener("submit", async (e) => {
 
       if (!rows || rows.length === 0) {
         desactivarLoading();
-        marcarError(userInput, "Teléfono no registrado");
-        return;
+        return marcarError(userInput, "Teléfono no registrado");
       }
 
       emailToUse = rows[0].email;
     }
 
+    // --------------------------------------------------------
+    // 🔥 LOGIN REAL
+    // --------------------------------------------------------
     const { error } = await supabase.auth.signInWithPassword({
       email: emailToUse,
       password: passValue
@@ -187,11 +173,35 @@ loginForm.addEventListener("submit", async (e) => {
 
     if (error) {
       desactivarLoading();
-      marcarError(passInput, "Credenciales incorrectas");
-      return;
+      return marcarError(passInput, "Credenciales incorrectas");
     }
 
+    // --------------------------------------------------------
+    // 🔥 GUARDAR PERFIL PARA EL MENÚ (NUEVO SISTEMA)
+    // --------------------------------------------------------
+    try {
+      const { data: perfiles, error: perfilError } = await supabase
+        .from("users")
+        .select("name, photo_url")
+        .eq("email", emailToUse)
+        .limit(1);
+
+      if (!perfilError && perfiles && perfiles.length > 0) {
+        const perfil = perfiles[0];
+        sessionStorage.setItem("cortero_user", JSON.stringify(perfil));
+      }
+    } catch (err) {
+      console.warn("No se pudo guardar el perfil:", err);
+    }
+
+    // Flag principal para auth-ui.js
     sessionStorage.setItem("cortero_logged", "1");
+
+    // 🔥 Forzar actualización inmediata del menú
+    if (window.__refreshMenuFromSession) {
+      window.__refreshMenuFromSession();
+    }
+
     mostrarSnackbar("Inicio de sesión exitoso ☕");
 
     setTimeout(() => {
@@ -248,71 +258,3 @@ document.querySelectorAll(".toggle-pass").forEach(icon => {
     }
   });
 });
-
-// ========================================================
-// LOGIN CON GOOGLE (REDIRECCIÓN + TRIGGER FUNCIONANDO)
-// ========================================================
-
-document.getElementById("googleLoginBtn").addEventListener("click", async () => {
-  try {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: "https://alansosar.github.io/index.html"
-      }
-    });
-
-    if (error) {
-      console.error(error);
-      mostrarSnackbar("Error al conectar con Google");
-    }
-
-  } catch (err) {
-    console.error(err);
-    mostrarSnackbar("No se pudo iniciar con Google");
-  }
-});
-
-// ========================================================
-// 🔥 NECESARIO PARA QUE GOOGLE FUNCIONE
-// Detectar sesión OAuth al volver a login.html
-// ========================================================
-
-async function detectarSesionGoogle() {
-  const { data: { session } } = await supabase.auth.getSession();
-
-  // Sesión existente → usuario ya logueado → trigger ya corrió → redirigir
-  if (session) {
-    console.log("Sesión detectada (Google):", session);
-    window.location.href = "index.html";
-    return;
-  }
-
-  // Escuchar nuevo login vía OAuth
-  supabase.auth.onAuthStateChange((event, session) => {
-    if (event === "SIGNED_IN") {
-      console.log("Google OAUTH completado:", session);
-      window.location.href = "index.html";
-    }
-  });
-}
-
-detectarSesionGoogle();
-
-// ========================================================
-// BOTÓN ATRÁS
-// ========================================================
-
-const backBtn = document.querySelector(".back-btn");
-if (backBtn) {
-  const params = new URLSearchParams(window.location.search);
-  const from = params.get("from");
-
-  backBtn.addEventListener("click", () => {
-    if (from === "carrito") {
-      window.location.href = "carrito.html";
-      return;
-    }
-    window.location.href = "index.html";
-  });
-}
