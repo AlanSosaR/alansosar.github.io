@@ -1,6 +1,7 @@
 // ============================================================
-// REGISTRO DE CLIENTE — Café Cortero (VERSIÓN FINAL PREMIUM)
+// REGISTRO DE CLIENTE — Café Cortero (VERSIÓN FINAL PREMIUM 2025)
 // Floating Label + Error Café + Éxito Verde + Snackbar con Logo
+// + Barra de seguridad de contraseña (6 niveles)
 // ============================================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -106,7 +107,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!regexGeneral.test(email)) return false;
 
     let [usuario, dominio] = email.split("@");
-
     dominio = dominio.toLowerCase();
 
     if (autocorrecciones[dominio]) {
@@ -115,6 +115,47 @@ document.addEventListener("DOMContentLoaded", () => {
 
     return true;
   }
+
+  // ============================================================
+  // BARRAS DE SEGURIDAD DE CONTRASEÑA
+  // ============================================================
+
+  const bars = document.querySelectorAll(".strength-bar");
+  const barsContainer = document.getElementById("barsContainer");
+
+  function nivelSeguridad(pass) {
+    let score = 0;
+
+    if (pass.length >= 6) score++;
+    if (pass.length >= 8) score++;
+    if (/[A-Z]/.test(pass)) score++;
+    if (/[0-9]/.test(pass)) score++;
+    if (/[^A-Za-z0-9]/.test(pass)) score++;
+    if (pass.length >= 12) score++;
+
+    return Math.min(score, 6);
+  }
+
+  campos.password.addEventListener("input", () => {
+    const val = campos.password.value.trim();
+
+    if (!val) {
+      barsContainer.style.display = "none";
+      bars.forEach(b => b.className = "strength-bar");
+      return;
+    }
+
+    barsContainer.style.display = "flex";
+
+    const nivel = nivelSeguridad(val);
+
+    bars.forEach((bar, i) => {
+      bar.className = "strength-bar";
+      if (i < nivel) {
+        bar.classList.add(`level-${nivel}`);
+      }
+    });
+  });
 
   // ============================================================
   // VERDE EN VIVO
@@ -192,7 +233,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // ============================================================
-  // CHEQUEAR DUPLICADOS
+  // DUPLICADOS
   // ============================================================
   async function existeUsuario(correo, telefonoRaw) {
 
@@ -245,18 +286,18 @@ document.addEventListener("DOMContentLoaded", () => {
     btn.classList.add("loading");
     btn.disabled = true;
     btnText.style.opacity = "0";
-    btnLoader.style.display = "inline-block";
+    btnLoader.style.opacity = "1";
   }
 
   function desactivarLoading() {
     btn.classList.remove("loading");
     btn.disabled = false;
     btnText.style.opacity = "1";
-    btnLoader.style.display = "none";
+    btnLoader.style.opacity = "0";
   }
 
   // ============================================================
-  // ENVÍO FINAL
+  // SUBMIT FINAL
   // ============================================================
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -292,12 +333,11 @@ document.addEventListener("DOMContentLoaded", () => {
         null
       );
 
-      // 🔥 NUEVO MENSAJE PREMIUM
       mostrarSnackbar(
-        "Cuenta creada con éxito. Revisa tu correo y confirma tu cuenta para comenzar tu experiencia Café Cortero."
+        "¡Listo! Tu cuenta ha sido creada exitosamente. Revisa tu correo y confirma tu cuenta para comenzar tu experiencia Café Cortero."
       );
 
-      setTimeout(() => window.location.href = "login.html", 1600);
+      setTimeout(() => window.location.href = "login.html", 1800);
 
     } catch (err) {
       console.error(err);
@@ -307,7 +347,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // ============================================================
-  // SNACKBAR PREMIUM CON LOGO
+  // SNACKBAR PREMIUM CON LOGO SECUNDARIO
   // ============================================================
   function mostrarSnackbar(msg) {
     const bar = document.getElementById("snackbar");
