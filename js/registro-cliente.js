@@ -119,43 +119,42 @@ document.addEventListener("DOMContentLoaded", () => {
   // ============================================================
   // BARRAS DE SEGURIDAD DE CONTRASEÑA
   // ============================================================
-
-  const bars = document.querySelectorAll(".strength-bar");
   const barsContainer = document.getElementById("barsContainer");
+  const bars = barsContainer ? barsContainer.querySelectorAll(".strength-bar") : [];
 
   function nivelSeguridad(pass) {
     let score = 0;
-
     if (pass.length >= 6) score++;
     if (pass.length >= 8) score++;
     if (/[A-Z]/.test(pass)) score++;
     if (/[0-9]/.test(pass)) score++;
     if (/[^A-Za-z0-9]/.test(pass)) score++;
     if (pass.length >= 12) score++;
-
     return Math.min(score, 6);
   }
 
-  campos.password.addEventListener("input", () => {
-    const val = campos.password.value.trim();
+  if (campos.password && barsContainer && bars.length) {
+    campos.password.addEventListener("input", () => {
+      const val = campos.password.value.trim();
 
-    if (!val) {
-      barsContainer.style.display = "none";
-      bars.forEach(b => b.className = "strength-bar");
-      return;
-    }
-
-    barsContainer.style.display = "flex";
-
-    const nivel = nivelSeguridad(val);
-
-    bars.forEach((bar, i) => {
-      bar.className = "strength-bar";
-      if (i < nivel) {
-        bar.classList.add(`level-${nivel}`);
+      if (!val) {
+        barsContainer.style.display = "none";
+        bars.forEach(b => b.className = "strength-bar");
+        return;
       }
+
+      barsContainer.style.display = "flex";
+
+      const nivel = nivelSeguridad(val);
+
+      bars.forEach((bar, i) => {
+        bar.className = "strength-bar";
+        if (i < nivel) {
+          bar.classList.add(`level-${nivel}`);
+        }
+      });
     });
-  });
+  }
 
   // ============================================================
   // VERDE EN VIVO
@@ -236,7 +235,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // DUPLICADOS
   // ============================================================
   async function existeUsuario(correo, telefonoRaw) {
-
     const telefonoNormalizado = normalizarTelefono(telefonoRaw);
 
     const { data } = await sb
@@ -276,7 +274,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ============================================================
-  // LOADING BUTTON
+  // LOADING BUTTON — LOGO + TEXTO SIEMPRE VISIBLE
   // ============================================================
   const btn = document.querySelector(".m3-btn");
   const btnText = btn.querySelector(".btn-text");
@@ -285,7 +283,8 @@ document.addEventListener("DOMContentLoaded", () => {
   function activarLoading() {
     btn.classList.add("loading");
     btn.disabled = true;
-    btnText.style.opacity = "0";
+    // NO ocultamos el texto
+    btnText.style.opacity = "1";
     btnLoader.style.opacity = "1";
   }
 
@@ -333,9 +332,8 @@ document.addEventListener("DOMContentLoaded", () => {
         null
       );
 
-      mostrarSnackbar(
-        "¡Listo! Tu cuenta ha sido creada exitosamente. Revisa tu correo y confirma tu cuenta para comenzar tu experiencia Café Cortero."
-      );
+      // Mensaje premium pero corto
+      mostrarSnackbar("Tu cuenta ha sido creada con éxito. Revisa tu correo.");
 
       setTimeout(() => window.location.href = "login.html", 1800);
 
