@@ -1,6 +1,5 @@
 // ============================================================
-// PERFIL DE USUARIO — Café Cortero (VERSIÓN PREMIUM 2025)
-// Actualización de datos, foto, validación M3 y Snackbar premium
+// PERFIL — Cargar datos reales de Supabase + edición premium
 // ============================================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -43,9 +42,6 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => snackbar.classList.remove("show"), 2600);
   }
 
-  // ============================================================
-  // ACTIVAR LOADING
-  // ============================================================
   function activarLoading() {
     saveBtn.classList.add("loading");
     saveBtn.disabled = true;
@@ -61,7 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ============================================================
-  // CARGAR DATOS DEL USUARIO
+  // CARGAR PERFIL REAL DESDE BD
   // ============================================================
   async function cargarPerfil() {
 
@@ -73,21 +69,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
     user = data.user;
 
-    // Obtener info extendida desde tabla `users`
+    // Traer info del usuario
     const { data: info } = await sb
       .from("users")
       .select("*")
       .eq("id", user.id)
       .single();
 
-    // RELLENAR CAMPOS
-    nombreInput.value = info.nombre || "";
+    if (!info) return;
+
+    // === CARGA CORRECTA DE CAMPOS ===
+    nombreInput.value = info.name || "";
     telefonoInput.value = info.phone || "";
     correoInput.value = info.email || "";
 
-    // FOTO
-    if (info.avatar_url) {
-      fotoPerfil.src = info.avatar_url;
+    // FOTO CORRECTA
+    if (info.photo_url) {
+      fotoPerfil.src = info.photo_url;
     }
   }
 
@@ -104,39 +102,41 @@ document.addEventListener("DOMContentLoaded", () => {
 
     activarLoading();
 
-    const nombreArchivo = `avatar_${user.id}_${Date.now()}.jpg`;
+    const fileName = `avatar_${user.id}_${Date.now()}.jpg`;
 
-    // SUBIR AL STORAGE
+    // Subir imagen
     const { error: storageErr } = await sb.storage
       .from("avatars")
-      .upload(nombreArchivo, file, {
+      .upload(fileName, file, {
         contentType: file.type
       });
 
     if (storageErr) {
       desactivarLoading();
-      return mostrarSnackbar("Error subiendo la foto");
+      return mostrarSnackbar("Error al subir la foto");
     }
 
     // Obtener URL pública
     const { data: urlData } = sb.storage
       .from("avatars")
-      .getPublicUrl(nombreArchivo);
+      .getPublicUrl(fileName);
 
-    // Guardar en DB
+    const imageUrl = urlData.publicUrl;
+
+    // Guardar en BD → columna correcta
     await sb
       .from("users")
-      .update({ avatar_url: urlData.publicUrl })
+      .update({ photo_url: imageUrl })
       .eq("id", user.id);
 
-    fotoPerfil.src = urlData.publicUrl;
+    fotoPerfil.src = imageUrl;
 
     desactivarLoading();
     mostrarSnackbar("Foto actualizada");
   });
 
   // ============================================================
-  // TOGGLE CONTRASEÑA
+  // CAMBIAR CONTRASEÑA
   // ============================================================
   cambiarPassBtn.addEventListener("click", () => {
     passwordSection.style.display =
@@ -158,27 +158,26 @@ document.addEventListener("DOMContentLoaded", () => {
       desactivarLoading();
       return mostrarSnackbar("Nombre inválido");
     }
-
     if (telefono.length < 8) {
       desactivarLoading();
       return mostrarSnackbar("Teléfono inválido");
     }
 
-    // GUARDAR DATOS
+    // Guardar datos
     await sb
       .from("users")
       .update({
-        nombre,
+        name: nombre,
         phone: telefono
       })
       .eq("id", user.id);
 
-    // CAMBIO DE CONTRASEÑA -----------------------------------
+    // Cambio de contraseña
     if (passwordSection.style.display === "block") {
 
       if (!passActual.value || !passNueva.value || !passConfirm.value) {
         desactivarLoading();
-        return mostrarSnackbar("Completa los campos de contraseña");
+        return mostrarSnackbar("Completa las contraseñas");
       }
 
       if (passNueva.value !== passConfirm.value) {
