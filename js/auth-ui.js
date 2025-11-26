@@ -8,10 +8,20 @@ document.addEventListener("DOMContentLoaded", () => {
   const sb = window.supabaseClient;
   const $id = (id) => document.getElementById(id);
 
-  // --------------------------
+  // ============================================================
+  // 🧩 CONTROL PARA EVITAR LOGS DUPLICADOS
+  // ============================================================
+  let printedMenuState = null;
+
+  // ============================================================
   // 🔴 Menú invitado
-  // --------------------------
+  // ============================================================
   function showLoggedOut() {
+    if (printedMenuState !== "out") {
+      console.log("🔴 Menú: invitado");
+      printedMenuState = "out";
+    }
+
     if ($id("login-desktop")) $id("login-desktop").style.display = "inline-block";
     if ($id("profile-desktop")) $id("profile-desktop").style.display = "none";
 
@@ -19,14 +29,17 @@ document.addEventListener("DOMContentLoaded", () => {
       $id("drawer-links-default").style.display = "flex";
     if ($id("drawer-links-logged"))
       $id("drawer-links-logged").style.display = "none";
-
-    console.log("🔴 Menú: invitado");
   }
 
-  // --------------------------
+  // ============================================================
   // 🟢 Menú logueado
-  // --------------------------
+  // ============================================================
   function showLoggedIn(user) {
+    if (printedMenuState !== "in") {
+      console.log("🟢 Menú: usuario logueado");
+      printedMenuState = "in";
+    }
+
     const name = user?.name || "Usuario";
     const photo = user?.photo_url || "imagenes/avatar-default.svg";
 
@@ -35,10 +48,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if ($id("profile-desktop")) {
       $id("profile-desktop").style.display = "flex";
-      if ($id("profile-photo-desktop"))
-        $id("profile-photo-desktop").src = photo;
-      if ($id("hello-desktop"))
-        $id("hello-desktop").textContent = `Hola, ${name}`;
+      if ($id("profile-photo-desktop")) $id("profile-photo-desktop").src = photo;
+      if ($id("hello-desktop")) $id("hello-desktop").textContent = `Hola, ${name}`;
     }
 
     // Móvil
@@ -51,13 +62,11 @@ document.addEventListener("DOMContentLoaded", () => {
       $id("profile-photo-mobile").src = photo;
     if ($id("hello-mobile"))
       $id("hello-mobile").textContent = `Hola, ${name}`;
-
-    console.log("🟢 Menú: usuario logueado");
   }
 
-  // --------------------------
+  // ============================================================
   // 🧠 Pintar menú desde sessionStorage
-  // --------------------------
+  // ============================================================
   function refreshMenuFromStorage() {
     const flag = sessionStorage.getItem("cortero_logged");
 
@@ -68,6 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let user = null;
     const raw = sessionStorage.getItem("cortero_user");
+
     if (raw) {
       try {
         user = JSON.parse(raw);
@@ -79,12 +89,12 @@ document.addEventListener("DOMContentLoaded", () => {
     showLoggedIn(user || {});
   }
 
-  // Pintar al cargar la página
+  // Pintar al abrir la página
   refreshMenuFromStorage();
 
-  // --------------------------
-  // 🔄 Escuchar cambios de sesión
-  // --------------------------
+  // ============================================================
+  // 🔄 Escuchar eventos de sesión Supabase
+  // ============================================================
   sb.auth.onAuthStateChange(async (event) => {
     console.log("🔄 Evento:", event);
 
@@ -106,11 +116,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // --------------------------
+  // ============================================================
   // 🚪 Logout
-  // --------------------------
+  // ============================================================
   async function doLogout(e) {
     e.preventDefault();
+
     try {
       if (window.supabaseAuth?.logoutUser) {
         await window.supabaseAuth.logoutUser();
@@ -136,13 +147,11 @@ document.addEventListener("DOMContentLoaded", () => {
     $id("logout-mobile").addEventListener("click", doLogout);
   }
 
-  // ⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇
-  // 🔥 FIX FINAL — HACER PÚBLICA LA FUNCIÓN PARA QUE LOGIN LA PUEDA LLAMAR
+  // ============================================================
+  // 🔥 Hacer la función pública para login.js
+  // ============================================================
   window.__refreshMenuFromSession = refreshMenuFromStorage;
-
-  // También dejamos disponibles estas funciones por compatibilidad
   window.__showLoggedIn = showLoggedIn;
   window.__showLoggedOut = showLoggedOut;
-  // ⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆
 
 });
