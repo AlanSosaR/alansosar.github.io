@@ -1,0 +1,398 @@
+/* ============================================================
+   ELIMINAR COMPLETAMENTE EL HIGHLIGHT AZUL EN TODA LA PÁGINA
+============================================================ */
+*,
+*::before,
+*::after {
+  -webkit-tap-highlight-color: transparent !important;
+  outline: none !important;
+}
+
+button,
+a,
+input,
+textarea,
+select,
+label,
+img,
+.material-symbols-outlined,
+.m3-input,
+.m3-btn,
+.back-btn,
+.social-icon {
+  -webkit-tap-highlight-color: transparent !important;
+  outline: none !important;
+}
+
+/* ===============================
+   BASE / TIPOGRAFÍA
+=============================== */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+               "Inter", "Roboto", sans-serif;
+  background-color: #ffffff;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  color: #2E2A27;
+}
+
+.profile-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: 30px 20px;
+}
+
+/* ===============================
+   TARJETA PRINCIPAL
+=============================== */
+.profile-card {
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  padding: 30px 40px;
+  max-width: 420px;
+  width: 100%;
+  position: relative;
+}
+
+/* BOTÓN ATRÁS */
+.back-btn {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #ffffff;
+  color: #33673B;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.14);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: .25s ease;
+}
+
+.back-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.18);
+}
+
+.back-btn .material-symbols-outlined {
+  font-size: 26px;
+  font-weight: 600;
+  color: #33673B;
+}
+
+/* ===============================
+   HEADER
+=============================== */
+.profile-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.logo-container {
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.logo-container img {
+  width: 105px;
+  transition: .3s;
+}
+
+.profile-title {
+  font-family: "Fraunces", serif;
+  font-size: 1.8rem;
+  margin: 0;
+  color: #512615;
+}
+
+/* ===============================
+   CARD INTERIOR
+=============================== */
+.profile-inner-card {
+  background: #ffffff;
+  border: 1.6px solid #512615;
+  border-radius: 16px;
+  padding: 28px 25px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* ===============================
+   FOTO DE PERFIL (estilo WhatsApp)
+=============================== */
+.foto-perfil-container {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 18px auto;
+}
+
+.foto-perfil {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #33673B;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.foto-perfil:hover {
+  opacity: 0.8;
+}
+
+.editar-foto-indicador {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  background: #33673B;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+}
+
+.editar-foto-indicador span {
+  color: #fff;
+  font-size: 20px;
+}
+
+/* ===============================
+   CAMPOS MATERIAL 3
+=============================== */
+.m3-field {
+  margin-bottom: 26px;
+}
+
+.m3-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border-radius: 12px;
+  border: 1.7px solid #D0D0D0;
+  padding: 16px 12px 6px 12px;
+  background: #ffffff;
+  transition: all 0.22s ease;
+}
+
+.m3-input:focus-within {
+  border-color: #33673B;
+  box-shadow: 0 0 0 3px rgba(51, 103, 59, 0.16);
+}
+
+/* INPUT NO EDITABLE (correo) */
+.m3-input.no-edit {
+  background: #f8f8f8;
+  pointer-events: none;
+  opacity: 0.8;
+}
+
+/* ERROR */
+.m3-input.error {
+  border-color: #d72638 !important;
+  box-shadow: 0 0 0 3px rgba(215, 38, 56, 0.18);
+}
+
+/* SUCCESS */
+.m3-input.success {
+  border-color: #3CB043 !important;
+  box-shadow: 0 0 0 3px rgba(60, 176, 67, 0.18);
+}
+
+/* ICONOS */
+.m3-input .material-symbols-outlined {
+  font-size: 22px;
+  margin-right: 8px;
+  color: #33673B;
+}
+
+/* INPUT */
+.m3-input input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  padding: 4px 0 0 0;
+  background: transparent;
+  color: #2E2A27;
+  caret-color: #512615;
+}
+
+/* ===============================
+   FLOATING LABEL
+=============================== */
+.floating-label {
+  position: absolute;
+  left: 40px;
+  top: 15px;
+  font-size: 1rem;
+  color: #8a8a8a;
+  transition: all 0.20s ease;
+  pointer-events: none;
+}
+
+.m3-input input:not(:placeholder-shown) + .floating-label,
+.m3-input:focus-within .floating-label {
+  top: -6px;
+  font-size: 0.78rem;
+  color: #33673B;
+  background: #ffffff;
+  padding: 0 4px;
+}
+
+/* ERROR LABEL */
+.m3-input.error .floating-label {
+  color: #d72638 !important;
+}
+
+/* SUCCESS LABEL */
+.m3-input.success .floating-label {
+  color: #3CB043 !important;
+}
+
+/* ===============================
+   CAMBIAR CONTRASEÑA (BOTÓN)
+=============================== */
+.cambiar-pass-boton {
+  margin-bottom: 20px;
+  color: #33673B;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cambiar-pass-boton:hover {
+  opacity: 0.85;
+}
+
+/* BLOQUE DE CONTRASEÑA OCULTO */
+.password-section {
+  display: none;
+  margin-bottom: 10px;
+}
+
+/* ===============================
+   ERROR TEXT
+=============================== */
+.m3-error {
+  font-size: 0.83rem;
+  color: #d72638;
+  min-height: 16px;
+}
+
+/* ===============================
+   BOTÓN + LOADER
+=============================== */
+.m3-btn {
+  width: 100%;
+  background-color: #33673B;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 10px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  gap: 12px;
+}
+
+.m3-btn .loader {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 3px solid rgba(255,255,255,0.3);
+  border-top-color: #ffffff;
+  animation: spin 0.9s linear infinite;
+  opacity: 0;
+  display: none;
+}
+
+.m3-btn.loading .loader {
+  opacity: 1;
+  display: inline-block;
+}
+
+@keyframes spin { 
+  to { transform: rotate(360deg); }
+}
+
+/* ===============================
+   SNACKBAR PREMIUM
+=============================== */
+#snackbar {
+  position: fixed;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%) translateY(12px);
+  background: rgba(81, 38, 21, 0.96);
+  color: #ffffff;
+  padding: 12px 18px;
+  border-radius: 16px;
+  font-size: 0.92rem;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s ease, transform .25s ease;
+}
+
+#snackbar.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+  pointer-events: auto;
+}
+
+.snack-logo {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+/* ===============================
+   RESPONSIVE
+=============================== */
+@media (max-width: 480px) {
+  .profile-card {
+    padding: 22px;
+    max-width: 360px;
+  }
+
+  .profile-inner-card {
+    padding: 20px;
+  }
+
+  .profile-title {
+    font-size: 1.5rem;
+  }
+
+  #snackbar {
+    bottom: 50px;
+    padding: 10px 16px;
+  }
+
+  .snack-logo {
+    width: 22px;
+    height: 22px;
+  }
+}
