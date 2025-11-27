@@ -1,5 +1,5 @@
 // ============================================================
-// PERFIL — Cargar datos reales de Supabase + edición premium
+// PERFIL — Datos reales + Foto + Contraseña + Fuerza de password
 // ============================================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -15,31 +15,29 @@ document.addEventListener("DOMContentLoaded", () => {
   const correoInput = document.getElementById("correoInput");
 
   const btnMostrarPass = document.getElementById("btnMostrarPass");
-  const bloquePassword = document.getElementById("bloquePassword");
+  const passwordSection = document.getElementById("bloquePassword");
 
-  const oldPasswordInput = document.getElementById("oldPassword");
-  const newPasswordInput = document.getElementById("newPassword");
+  const passActual = document.getElementById("oldPassword");
+  const passNueva = document.getElementById("newPassword");
+  const passConfirm = document.getElementById("passConfirm");
+
+  const fotoPerfil = document.getElementById("fotoPerfil");
+  const fotoInput = document.getElementById("inputFoto");
 
   const saveBtn = document.querySelector(".m3-btn");
   const btnLoader = saveBtn.querySelector(".loader");
   const btnText = saveBtn.querySelector(".btn-text");
 
-  const fotoPerfil = document.getElementById("fotoPerfil");
-  const inputFoto = document.getElementById("inputFoto");
-  const btnEditarFoto = document.getElementById("btnEditarFoto");
+  const strengthBars = document.getElementById("strengthBars").children;
 
   const snackbar = document.getElementById("snackbar");
   const snackText = document.querySelector(".snack-text");
 
-  // Barras de seguridad
-  const passwordStrengthBar = document.getElementById("passwordStrengthBar");
-  const passwordStrengthText = document.getElementById("passwordStrengthText");
-
   let user = null;
 
-  // ============================================================
+  // =============================
   // SNACKBAR
-  // ============================================================
+  // =============================
   function mostrarSnackbar(msg) {
     snackText.textContent = msg;
     snackbar.classList.add("show");
@@ -49,19 +47,17 @@ document.addEventListener("DOMContentLoaded", () => {
   function activarLoading() {
     saveBtn.classList.add("loading");
     saveBtn.disabled = true;
-    btnText.style.opacity = "0";
     btnLoader.style.display = "inline-block";
   }
 
   function desactivarLoading() {
     saveBtn.classList.remove("loading");
     saveBtn.disabled = false;
-    btnText.style.opacity = "1";
     btnLoader.style.display = "none";
   }
 
   // ============================================================
-  // CARGAR PERFIL REAL DESDE SUPABASE
+  // CARGAR PERFIL
   // ============================================================
   async function cargarPerfil() {
     const { data, error } = await sb.auth.getUser();
@@ -73,20 +69,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
     user = data.user;
 
-    // Traer info de la tabla users
-    const { data: info, error: errInfo } = await sb
+    const { data: info } = await sb
       .from("users")
       .select("*")
       .eq("id", user.id)
       .single();
 
-    if (errInfo || !info) return;
+    if (!info) return;
 
     nombreInput.value = info.name || "";
     telefonoInput.value = info.phone || "";
     correoInput.value = info.email || "";
 
-    // FOTO
     if (info.photo_url) {
       fotoPerfil.src = info.photo_url;
     }
@@ -95,113 +89,101 @@ document.addEventListener("DOMContentLoaded", () => {
   cargarPerfil();
 
   // ============================================================
-  // FOTO — CLICK → ABRIR INPUT
+  // FOTO DE PERFIL
   // ============================================================
-  fotoPerfil.addEventListener("click", () => inputFoto.click());
-  btnEditarFoto.addEventListener("click", () => inputFoto.click());
+  fotoPerfil.addEventListener("click", () => fotoInput.click());
+  document.getElementById("btnEditarFoto").addEventListener("click", () => fotoInput.click());
 
-  inputFoto.addEventListener("change", async () => {
-    const file = inputFoto.files[0];
+  fotoInput.addEventListener("change", async () => {
+    const file = fotoInput.files[0];
     if (!file) return;
 
     activarLoading();
 
     const fileName = `avatar_${user.id}_${Date.now()}.jpg`;
 
-    // Subir imagen
-    const { error: storageErr } = await sb.storage
+    // Subir a raíz del bucket (sin carpetas)
+    const { error: uploadErr } = await sb.storage
       .from("avatars")
       .upload(fileName, file, {
-        contentType: file.type
+        contentType: file.type,
+        upsert: true
       });
 
-    if (storageErr) {
+    if (uploadErr) {
       desactivarLoading();
       return mostrarSnackbar("Error al subir la foto");
     }
 
     // Obtener URL pública
-    const { data: urlData } = sb.storage
+    const { data: publicURL } = sb.storage
       .from("avatars")
       .getPublicUrl(fileName);
 
-    const imageUrl = urlData.publicUrl;
+    const newUrl = publicURL.publicUrl;
 
     // Guardar en BD
     await sb
       .from("users")
-      .update({ photo_url: imageUrl })
+      .update({ photo_url: newUrl })
       .eq("id", user.id);
 
-    fotoPerfil.src = imageUrl;
+    // Actualizar UI
+    fotoPerfil.src = newUrl;
+
+    // Notificar al sistema global (menús)
+    document.dispatchEvent(new CustomEvent("userPhotoUpdated", {
+      detail: { photo_url: newUrl }
+    }));
 
     desactivarLoading();
     mostrarSnackbar("Foto actualizada");
   });
 
   // ============================================================
-  // MOSTRAR / OCULTAR CAMBIO DE CONTRASEÑA
-  // ============================================================
-  btnMostrarPass.addEventListener("click", () => {
-    bloquePassword.style.display =
-      bloquePassword.style.display === "block" ? "none" : "block";
-  });
-
-  // ============================================================
-  // TOGGLE PASSWORD
+  // MOSTRAR / OCULTAR CONTRASEÑAS
   // ============================================================
   document.querySelectorAll(".toggle-pass").forEach(icon => {
     icon.addEventListener("click", () => {
-      const targetId = icon.dataset.target;
-      const input = document.getElementById(targetId);
-      input.type = input.type === "password" ? "text" : "password";
+      const target = document.getElementById(icon.dataset.target);
+      target.type = target.type === "password" ? "text" : "password";
     });
   });
 
   // ============================================================
-  // BARRAS DE SEGURIDAD DE LA CONTRASEÑA
+  // ABRIR/CERRAR BLOQUE DE CONTRASEÑA
   // ============================================================
+  passwordSection.style.display = "none";
 
-  function calcularSeguridad(password) {
-    let puntos = 0;
+  btnMostrarPass.addEventListener("click", () => {
+    passwordSection.style.display =
+      passwordSection.style.display === "none" ? "block" : "none";
+  });
 
-    if (password.length >= 6) puntos++;
-    if (password.length >= 10) puntos++;
-    if (/[A-Z]/.test(password)) puntos++;
-    if (/[0-9]/.test(password)) puntos++;
-    if (/[^A-Za-z0-9]/.test(password)) puntos++;
-
-    return puntos;
+  // ============================================================
+  // BARRAS DE FUERZA DE CONTRASEÑA NUEVA
+  // ============================================================
+  function evaluarFuerza(pass) {
+    let score = 0;
+    if (pass.length >= 6) score++;
+    if (pass.length >= 10) score++;
+    if (/[A-Z]/.test(pass)) score++;
+    if (/[a-z]/.test(pass)) score++;
+    if (/[0-9]/.test(pass)) score++;
+    if (/[^A-Za-z0-9]/.test(pass)) score++;
+    return score;
   }
 
-  newPasswordInput.addEventListener("input", () => {
-    const pass = newPasswordInput.value.trim();
-    const puntos = calcularSeguridad(pass);
+  passNueva.addEventListener("input", () => {
+    const score = evaluarFuerza(passNueva.value);
 
-    // Limpiar estilos
-    passwordStrengthBar.className = "strength-bar";
-    passwordStrengthText.className = "strength-text";
-
-    if (pass.length === 0) {
-      passwordStrengthText.textContent = "";
-      return;
-    }
-
-    if (puntos <= 2) {
-      passwordStrengthBar.classList.add("weak");
-      passwordStrengthText.textContent = "Contraseña débil";
-      passwordStrengthText.classList.add("weak-text");
-
-    } else if (puntos === 3 || puntos === 4) {
-      passwordStrengthBar.classList.add("medium");
-      passwordStrengthText.textContent = "Contraseña media";
-      passwordStrengthText.classList.add("medium-text");
-
-    } else if (puntos >= 5) {
-      passwordStrengthBar.classList.add("strong");
-      passwordStrengthText.textContent = "Contraseña fuerte";
-      passwordStrengthText.classList.add("strong-text");
-    }
+    Array.from(strengthBars).forEach((bar, i) => {
+      if (i < score) {
+        bar.style.background = "#33673B";
+      } else {
+        bar.style.background = "#e0e0e0";
+      }
+    });
   });
 
   // ============================================================
@@ -223,32 +205,37 @@ document.addEventListener("DOMContentLoaded", () => {
       return mostrarSnackbar("Teléfono inválido");
     }
 
-    // GUARDAR DATOS EN BD
+    // Guardar datos básicos
     await sb
       .from("users")
       .update({
         name: nombre,
-        phone: telefono,
-        updated_at: new Date()
+        phone: telefono
       })
       .eq("id", user.id);
 
-    // CAMBIAR CONTRASEÑA
-    if (bloquePassword.style.display === "block") {
-      const oldP = oldPasswordInput.value;
-      const newP = newPasswordInput.value;
+    // Cambiar contraseña si el bloque está abierto
+    if (passwordSection.style.display === "block") {
 
-      if (!oldP || !newP) {
+      if (!passActual.value || !passNueva.value || !passConfirm.value) {
         desactivarLoading();
         return mostrarSnackbar("Completa las contraseñas");
       }
 
-      if (newP.length < 6) {
+      if (passNueva.value !== passConfirm.value) {
+        desactivarLoading();
+        return mostrarSnackbar("Las contraseñas no coinciden");
+      }
+
+      if (passNueva.value.length < 6) {
         desactivarLoading();
         return mostrarSnackbar("Contraseña muy corta");
       }
 
-      const cambio = await authExt.changePassword(oldP, newP);
+      const cambio = await authExt.changePassword(
+        passActual.value,
+        passNueva.value
+      );
 
       if (!cambio.ok) {
         desactivarLoading();
