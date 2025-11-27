@@ -37,6 +37,7 @@ console.log("🔥 Supabase inicializado correctamente con ANON KEY");
 async function cargarPerfilGlobal(user) {
   if (!user) {
     localStorage.removeItem("cortero_user");
+    localStorage.removeItem("cortero_logged");
     document.dispatchEvent(new CustomEvent("userLoggedOut"));
     return;
   }
@@ -62,7 +63,7 @@ async function cargarPerfilGlobal(user) {
     photo_url: perfil.photo_url || "imagenes/avatar-default.svg",
   };
 
-  // Guardar
+  // Guardar perfil en LocalStorage
   localStorage.setItem("cortero_user", JSON.stringify(userData));
   localStorage.setItem("cortero_logged", "1");
 
@@ -73,7 +74,7 @@ async function cargarPerfilGlobal(user) {
 
 
 // ============================================================
-// DETECTAR EVENTOS DE AUTH (LOGIN / LOGOUT)
+// EVENTOS LOGIN / LOGOUT DE SUPABASE
 // ============================================================
 window.supabaseClient.auth.onAuthStateChange(async (event, session) => {
   console.log("🔄 auth event:", event);
@@ -89,7 +90,7 @@ window.supabaseClient.auth.onAuthStateChange(async (event, session) => {
 
 
 // ============================================================
-// RESTAURAR SESIÓN AL ABRIR CUALQUIER PÁGINA
+// RESTAURAR SESIÓN AL ABRIR UNA PÁGINA
 // ============================================================
 document.addEventListener("DOMContentLoaded", async () => {
   const { data } = await window.supabaseClient.auth.getSession();
