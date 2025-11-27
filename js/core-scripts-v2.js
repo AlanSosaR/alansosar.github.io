@@ -1,6 +1,6 @@
 // ============================================================
 // SUPABASE CLIENT — FIX DEFINITIVO 2025
-// Restauración real + integración con auth-ui
+// Restauración 100% real de sesión + foto persistente
 // ============================================================
 
 const { createClient } = supabase;
@@ -9,7 +9,7 @@ const SUPABASE_URL = "https://eaipcuvvddyrqkbmjmvw.supabase.co";
 const SUPABASE_ANON_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVhaXBjdXZ2ZGR5cnFrYm1qbXZ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMwOTcxMDEsImV4cCI6MjA3ODY3MzEwMX0.2qICLx3qZgeGr0oXZ8PYRxXPL1X5Vog4UoOnTQBFzNA";
 
-// sessionStorage – requerido en GitHub Pages
+// SessionStorage para GitHub Pages
 const storage = {
   getItem: (k) => sessionStorage.getItem(k),
   setItem: (k, v) => sessionStorage.setItem(k, v),
@@ -26,15 +26,41 @@ window.supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   }
 });
 
-console.log("🔥 Supabase listo (versión final)");
+console.log("🔥 Supabase listo (FIX definitivo)");
 
 
 // ============================================================
-// FUNCIÓN GLOBAL PARA LOGIN Y PERFIL
+// ⚡ FIX: Esperar a que Supabase restaure sesión (iPhone / Safari)
+// ============================================================
+window.waitForSupabaseSession = async function () {
+  return new Promise((resolve) => {
+    let tries = 0;
+
+    const timer = setInterval(async () => {
+      tries++;
+
+      const { data } = await window.supabaseClient.auth.getSession();
+
+      if (data?.session?.user) {
+        clearInterval(timer);
+        resolve(data.session.user);
+      }
+
+      if (tries > 20) { // 2 segundos máx
+        clearInterval(timer);
+        resolve(null);
+      }
+    }, 100);
+  });
+};
+
+
+// ============================================================
+// Cargar datos del usuario desde tabla users
 // ============================================================
 async function cargarPerfilGlobal(user) {
+
   if (!user) {
-    sessionStorage.removeItem("cortero_logged");
     sessionStorage.removeItem("cortero_user");
     document.dispatchEvent(new CustomEvent("userLoggedOut"));
     return;
@@ -48,44 +74,36 @@ async function cargarPerfilGlobal(user) {
     .eq("id", user.id)
     .single();
 
-  const fotoFinal =
-    perfil?.photo_url && perfil.photo_url !== "null"
+  const foto =
+    perfil?.photo_url && perfil?.photo_url !== "null"
       ? perfil.photo_url
       : "imagenes/avatar-default.svg";
 
   const userData = {
     id: perfil.id,
     name: perfil.name || "Usuario",
-    photo_url: fotoFinal,
+    photo_url: foto,
   };
 
-  // Guardar sesión interna
   sessionStorage.setItem("cortero_user", JSON.stringify(userData));
   sessionStorage.setItem("cortero_logged", "1");
 
-  // 🔥 Notificar al auth-ui
   document.dispatchEvent(new CustomEvent("userLoggedIn", { detail: userData }));
 
-  console.log("🟢 Perfil global cargado:", userData);
+  console.log("🟢 Cargado desde BD:", userData);
 }
 
 
 // ============================================================
-// LISTENER DE ESTADO DE AUTENTICACIÓN
+// Detectar login / logout
 // ============================================================
 window.supabaseClient.auth.onAuthStateChange(async (event, session) => {
 
-  console.log("🔄 Supabase auth event:", event);
+  console.log("🔄 auth event:", event);
 
-  if (event === "SIGNED_IN" && session?.user) {
+  if (session?.user) {
     await cargarPerfilGlobal(session.user);
-  }
-
-  if (event === "TOKEN_REFRESHED" && session?.user) {
-    await cargarPerfilGlobal(session.user);
-  }
-
-  if (event === "SIGNED_OUT") {
+  } else {
     sessionStorage.removeItem("cortero_logged");
     sessionStorage.removeItem("cortero_user");
     document.dispatchEvent(new CustomEvent("userLoggedOut"));
@@ -94,24 +112,16 @@ window.supabaseClient.auth.onAuthStateChange(async (event, session) => {
 
 
 // ============================================================
-// RESTAURAR SESIÓN AL ABRIR LA PÁGINA
+// Al abrir página → restaurar sesión
 // ============================================================
 document.addEventListener("DOMContentLoaded", async () => {
-  const { data } = await window.supabaseClient.auth.getSession();
 
-  if (data?.session?.user) {
-    await cargarPerfilGlobal(data.session.user);
+  // Esperar sesión real (importante)
+  const user = await window.waitForSupabaseSession();
+
+  if (user) {
+    await cargarPerfilGlobal(user);
   } else {
     document.dispatchEvent(new CustomEvent("userLoggedOut"));
   }
 });
-
-
-// ============================================================
-// FUNCIÓN GLOBAL DE LOGOUT
-// ============================================================
-window.supabaseAuth = {
-  logoutUser: async () => {
-    await window.supabaseClient.auth.signOut();
-  }
-};
