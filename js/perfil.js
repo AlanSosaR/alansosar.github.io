@@ -1,23 +1,17 @@
 // ============================================================
 // PERFIL REAL — FIX DEFINITIVO 2025
 // ============================================================
-
-// Esperar a que Supabase Client esté listo
-await new Promise(resolve => {
-  const check = () => {
-    if (window.supabaseClient) {
-      console.log("🟢 Supabase Client cargado en PERFIL.JS");
-      resolve();
-    } else {
-      setTimeout(check, 50);
-    }
-  };
-  check();
-});
-
 console.log("🔥 PERFIL.JS INICIÓ");
 
 document.addEventListener("DOMContentLoaded", async () => {
+
+  // Esperar a Supabase sin usar await fuera de funciones
+  let check = 0;
+  while (!window.supabaseClient && check < 50) {
+    await new Promise(res => setTimeout(res, 50));
+    check++;
+  }
+
   const sb = window.supabaseClient;
   let user = null;
 
@@ -96,8 +90,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const newUrl = urlData.publicUrl;
 
-    await sb
-      .from("users")
+    await sb.from("users")
       .update({ photo_url: newUrl })
       .eq("id", user.id);
 
