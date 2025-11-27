@@ -136,6 +136,7 @@ body {
   margin-bottom: 32px;
 }
 
+/* FOTO PREMIUM SIN ÍCONO */
 .foto-perfil {
   width: 100%;
   height: 100%;
@@ -143,33 +144,26 @@ body {
   object-fit: cover;
   border: none !important;
   background: #f4f4f4;
-  box-shadow: 0 4px 18px rgba(0,0,0,0.12);
+
+  /* Premium shadow clean */
+  box-shadow: 
+    0 4px 10px rgba(0,0,0,0.10),
+    0 8px 20px rgba(0,0,0,0.06);
+
+  transition: transform .25s ease, box-shadow .25s ease;
   cursor: pointer;
-  transition: .25s ease;
 }
 
 .foto-perfil:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 24px rgba(0,0,0,0.16);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 
+    0 6px 18px rgba(0,0,0,0.16),
+    0 12px 28px rgba(0,0,0,0.10);
 }
 
-/* Botón de cámara premium */
+/* ELIMINADO COMPLETAMENTE EL BOTÓN DE CÁMARA */
 .editar-foto-indicador {
-  position: absolute;
-  right: 4px;
-  bottom: 4px;
-  background: #33673B;
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  font-size: 20px;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.25);
-  border: 2px solid #ffffff;
-  cursor: pointer;
+  display: none !important;
 }
 
 /* ===============================
@@ -190,27 +184,23 @@ body {
   transition: all 0.22s ease;
 }
 
-/* NO EDITABLE */
 .m3-input.no-edit {
   background: #f2f2f2;
   pointer-events: none;
   opacity: 0.8;
 }
 
-/* FOCUS */
 .m3-input:focus-within {
   border-color: #33673B;
   box-shadow: 0 0 0 3px rgba(51, 103, 59, 0.16);
 }
 
-/* ICONOS */
 .m3-input .material-symbols-outlined {
   font-size: 22px;
   margin-right: 8px;
   color: #33673B;
 }
 
-/* INPUT */
 .m3-input input {
   flex: 1;
   border: none;
@@ -219,10 +209,9 @@ body {
   padding: 4px 0 0 0;
   background: transparent;
   color: #2E2A27;
-  caret-color: #512615;
 }
 
-/* LABEL */
+/* FLOATING LABEL */
 .floating-label {
   position: absolute;
   left: 40px;
@@ -243,7 +232,7 @@ body {
 }
 
 /* ===============================
-   CAMBIAR CONTRASEÑA — COLOR CAFÉ
+   CAMBIAR CONTRASEÑA
 =============================== */
 .cambiar-pass-boton {
   margin-bottom: 22px;
@@ -256,7 +245,7 @@ body {
 }
 
 /* ===============================
-   BARRAS DE FUERZA DE CONTRASEÑA
+   BARRAS DE FUERZA
 =============================== */
 .strength-bars {
   display: flex;
@@ -273,24 +262,8 @@ body {
   transition: background 0.25s ease;
 }
 
-/* Colores de fuerza */
-.strength-1 { background: #d72638 !important; }
-.strength-2 { background: #ff7b00 !important; }
-.strength-3 { background: #ffb700 !important; }
-.strength-4 { background: #c0d72f !important; }
-.strength-5 { background: #6ebf4a !important; }
-.strength-6 { background: #3cb043 !important; }
-
 /* ===============================
-   ANIMACIÓN DEL BLOQUE CONTRASEÑA
-=============================== */
-.password-section {
-  transition: opacity .25s ease, transform .25s ease;
-  transform: translateY(-6px);
-}
-
-/* ===============================
-   BOTÓN + LOADER
+   BOTÓN GUARDAR
 =============================== */
 .m3-btn {
   width: 100%;
