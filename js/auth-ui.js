@@ -1,20 +1,17 @@
 // ============================================================
-// AUTH-UI.JS — FIX DEFINITIVO 2025 (VERSIÓN SESSIONSTORAGE)
+// AUTH-UI.JS — FIX DEFINITIVO 2025 (VERSIÓN COMPLETA + FOTO LIVE)
 // ============================================================
 
-console.log("👤 auth-ui.js cargado — FIX DEFINITIVO");
+console.log("👤 auth-ui.js cargado — FIX DEFINITIVO v2");
 
 document.addEventListener("DOMContentLoaded", () => {
   const sb = window.supabaseClient;
   const $id = (id) => document.getElementById(id);
 
-  // ============================================================
-  // 🧩 CONTROL PARA EVITAR LOGS DUPLICADOS
-  // ============================================================
   let printedMenuState = null;
 
   // ============================================================
-  // 🔴 Menú invitado
+  // 🔴 MENÚ INVITADO
   // ============================================================
   function showLoggedOut() {
     if (printedMenuState !== "out") {
@@ -27,12 +24,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if ($id("drawer-links-default"))
       $id("drawer-links-default").style.display = "flex";
+
     if ($id("drawer-links-logged"))
       $id("drawer-links-logged").style.display = "none";
   }
 
   // ============================================================
-  // 🟢 Menú logueado
+  // 🟢 MENÚ LOGUEADO
   // ============================================================
   function showLoggedIn(user) {
     if (printedMenuState !== "in") {
@@ -45,7 +43,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Escritorio
     if ($id("login-desktop")) $id("login-desktop").style.display = "none";
-
     if ($id("profile-desktop")) {
       $id("profile-desktop").style.display = "flex";
       if ($id("profile-photo-desktop")) $id("profile-photo-desktop").src = photo;
@@ -53,19 +50,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Móvil
-    if ($id("drawer-links-default"))
-      $id("drawer-links-default").style.display = "none";
-    if ($id("drawer-links-logged"))
-      $id("drawer-links-logged").style.display = "flex";
+    if ($id("drawer-links-default")) $id("drawer-links-default").style.display = "none";
+    if ($id("drawer-links-logged")) $id("drawer-links-logged").style.display = "flex";
 
-    if ($id("profile-photo-mobile"))
-      $id("profile-photo-mobile").src = photo;
-    if ($id("hello-mobile"))
-      $id("hello-mobile").textContent = `Hola, ${name}`;
+    if ($id("profile-photo-mobile")) $id("profile-photo-mobile").src = photo;
+    if ($id("hello-mobile")) $id("hello-mobile").textContent = `Hola, ${name}`;
   }
 
   // ============================================================
-  // 🧠 Pintar menú desde sessionStorage
+  // 🧠 LEER USUARIO DESDE SESSIONSTORAGE
   // ============================================================
   function refreshMenuFromStorage() {
     const flag = sessionStorage.getItem("cortero_logged");
@@ -89,19 +82,16 @@ document.addEventListener("DOMContentLoaded", () => {
     showLoggedIn(user || {});
   }
 
-  // Pintar al abrir la página
   refreshMenuFromStorage();
 
   // ============================================================
-  // 🔄 Escuchar eventos de sesión Supabase
+  // 🔄 EVENTOS DE SESIÓN SUPABASE
   // ============================================================
   sb.auth.onAuthStateChange(async (event) => {
     console.log("🔄 Evento:", event);
 
     if (event === "SIGNED_IN") {
-      if (!sessionStorage.getItem("cortero_logged")) {
-        sessionStorage.setItem("cortero_logged", "1");
-      }
+      sessionStorage.setItem("cortero_logged", "1");
       refreshMenuFromStorage();
     }
 
@@ -117,7 +107,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // ============================================================
-  // 🚪 Logout
+  // 🚪 LOGOUT
   // ============================================================
   async function doLogout(e) {
     e.preventDefault();
@@ -134,21 +124,34 @@ document.addEventListener("DOMContentLoaded", () => {
 
     sessionStorage.removeItem("cortero_logged");
     sessionStorage.removeItem("cortero_user");
-
     showLoggedOut();
+
     window.location.href = "index.html";
   }
 
-  if ($id("logout-desktop")) {
-    $id("logout-desktop").addEventListener("click", doLogout);
-  }
-
-  if ($id("logout-mobile")) {
-    $id("logout-mobile").addEventListener("click", doLogout);
-  }
+  if ($id("logout-desktop")) $id("logout-desktop").addEventListener("click", doLogout);
+  if ($id("logout-mobile")) $id("logout-mobile").addEventListener("click", doLogout);
 
   // ============================================================
-  // 🔥 Hacer la función pública para login.js
+  // 🔥 ESCUCHAR ACTUALIZACIÓN DE FOTO DESDE PERFIL
+  // ============================================================
+  document.addEventListener("userPhotoUpdated", (e) => {
+    const newPhoto = e.detail.photo_url;
+
+    console.log("📸 Foto recibida en auth-ui:", newPhoto);
+
+    // 1. Actualizar sessionStorage
+    let user = JSON.parse(sessionStorage.getItem("cortero_user") || "{}");
+    user.photo_url = newPhoto;
+
+    sessionStorage.setItem("cortero_user", JSON.stringify(user));
+
+    // 2. Actualizar UI inmediatamente
+    showLoggedIn(user);
+  });
+
+  // ============================================================
+  // 🔥 FUNCIÓN GLOBAL
   // ============================================================
   window.__refreshMenuFromSession = refreshMenuFromStorage;
   window.__showLoggedIn = showLoggedIn;
