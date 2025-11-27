@@ -1,5 +1,5 @@
 // ============================================================
-// PERFIL — Datos reales + Foto + Contraseña + Fuerza de password
+// PERFIL — Versión FINAL 2025 (foto, datos, contraseña, sesión)
 // ============================================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -59,33 +59,28 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ============================================================
-  // CARGAR PERFIL DESDE SUPABASE
+  // CARGAR PERFIL DESDE SESSIONSTORAGE (LA CORRECCIÓN CLAVE)
   // ============================================================
-  async function cargarPerfil() {
-    const { data, error } = await sb.auth.getUser();
+  function cargarPerfil() {
+    let usr = sessionStorage.getItem("cortero_user");
 
-    if (error || !data.user) {
+    if (!usr) {
       window.location.href = "login.html";
       return;
     }
 
-    user = data.user;
+    usr = JSON.parse(usr);
 
-    const { data: info } = await sb
-      .from("users")
-      .select("*")
-      .eq("id", user.id)
-      .single();
+    // Asignar valores
+    nombreInput.value = usr.name || "";
+    telefonoInput.value = usr.phone || "";
+    correoInput.value = usr.email || "";
 
-    if (!info) return;
+    // Foto del usuario
+    fotoPerfil.src = usr.photo_url || "imagenes/avatar-default.svg";
 
-    nombreInput.value = info.name || "";
-    telefonoInput.value = info.phone || "";
-    correoInput.value = info.email || "";
-
-    if (info.photo_url) {
-      fotoPerfil.src = info.photo_url;
-    }
+    // Guardamos el ID para las actualizaciones
+    user = { id: usr.id };
   }
 
   cargarPerfil();
@@ -131,14 +126,9 @@ document.addEventListener("DOMContentLoaded", () => {
       .eq("id", user.id);
 
     // Guardar en sessionStorage
-    let usr = sessionStorage.getItem("cortero_user");
-    if (usr) {
-      try {
-        usr = JSON.parse(usr);
-        usr.photo_url = newUrl;
-        sessionStorage.setItem("cortero_user", JSON.stringify(usr));
-      } catch {}
-    }
+    let usr = JSON.parse(sessionStorage.getItem("cortero_user") || "{}");
+    usr.photo_url = newUrl;
+    sessionStorage.setItem("cortero_user", JSON.stringify(usr));
 
     // Notificar al menú global
     document.dispatchEvent(new CustomEvent("userPhotoUpdated", {
@@ -202,7 +192,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // ============================================================
-  // GUARDAR CAMBIOS (CORREGIDO COMPLETO)
+  // GUARDAR CAMBIOS — AHORA 100% COMPLETO
   // ============================================================
   saveBtn.addEventListener("click", async (e) => {
     e.preventDefault();
@@ -221,13 +211,13 @@ document.addEventListener("DOMContentLoaded", () => {
       return mostrarSnackbar("Teléfono inválido");
     }
 
-    // Guardar datos básicos + FOTO 🔥🔥
+    // Guardar datos básicos + FOTO SIEMPRE
     await sb
       .from("users")
       .update({
         name: nombre,
         phone: telefono,
-        photo_url: fotoActual      // <── ESTA ES LA CORRECCIÓN CLAVE
+        photo_url: fotoActual
       })
       .eq("id", user.id);
 
@@ -261,17 +251,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Actualizar sessionStorage
-    let usr = sessionStorage.getItem("cortero_user");
-    if (usr) {
-      try {
-        usr = JSON.parse(usr);
-        usr.name = nombre;
-        usr.phone = telefono;
-        usr.photo_url = fotoActual;
-
-        sessionStorage.setItem("cortero_user", JSON.stringify(usr));
-      } catch {}
-    }
+    let usr = JSON.parse(sessionStorage.getItem("cortero_user") || "{}");
+    usr.name = nombre;
+    usr.phone = telefono;
+    usr.photo_url = fotoActual;
+    sessionStorage.setItem("cortero_user", JSON.stringify(usr));
 
     // Notificar al menú
     document.dispatchEvent(new CustomEvent("userDataUpdated"));
