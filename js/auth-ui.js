@@ -2,9 +2,10 @@
 // AUTH-UI.JS — FIX DEFINITIVO 2025 (VERSIÓN COMPLETA + FOTO LIVE)
 // ============================================================
 
-console.log("👤 auth-ui.js cargado — FIX DEFINITIVO v2");
+console.log("👤 auth-ui.js cargado — FIX DEFINITIVO v3");
 
 document.addEventListener("DOMContentLoaded", () => {
+
   const sb = window.supabaseClient;
   const $id = (id) => document.getElementById(id);
 
@@ -22,17 +23,15 @@ document.addEventListener("DOMContentLoaded", () => {
     if ($id("login-desktop")) $id("login-desktop").style.display = "inline-block";
     if ($id("profile-desktop")) $id("profile-desktop").style.display = "none";
 
-    if ($id("drawer-links-default"))
-      $id("drawer-links-default").style.display = "flex";
-
-    if ($id("drawer-links-logged"))
-      $id("drawer-links-logged").style.display = "none";
+    if ($id("drawer-links-default")) $id("drawer-links-default").style.display = "flex";
+    if ($id("drawer-links-logged")) $id("drawer-links-logged").style.display = "none";
   }
 
   // ============================================================
   // 🟢 MENÚ LOGUEADO
   // ============================================================
   function showLoggedIn(user) {
+
     if (printedMenuState !== "in") {
       console.log("🟢 Menú: usuario logueado");
       printedMenuState = "in";
@@ -43,6 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Escritorio
     if ($id("login-desktop")) $id("login-desktop").style.display = "none";
+
     if ($id("profile-desktop")) {
       $id("profile-desktop").style.display = "flex";
       if ($id("profile-photo-desktop")) $id("profile-photo-desktop").src = photo;
@@ -61,33 +61,26 @@ document.addEventListener("DOMContentLoaded", () => {
   // 🧠 LEER USUARIO DESDE SESSIONSTORAGE
   // ============================================================
   function refreshMenuFromStorage() {
-    const flag = sessionStorage.getItem("cortero_logged");
+    const logged = sessionStorage.getItem("cortero_logged");
 
-    if (flag !== "1") {
+    if (logged !== "1") {
       showLoggedOut();
       return;
     }
 
-    let user = null;
-    const raw = sessionStorage.getItem("cortero_user");
+    let user = JSON.parse(sessionStorage.getItem("cortero_user") || "{}");
 
-    if (raw) {
-      try {
-        user = JSON.parse(raw);
-      } catch {
-        user = null;
-      }
-    }
-
-    showLoggedIn(user || {});
+    showLoggedIn(user);
   }
 
+  // Ejecutar al cargar página
   refreshMenuFromStorage();
 
   // ============================================================
   // 🔄 EVENTOS DE SESIÓN SUPABASE
   // ============================================================
   sb.auth.onAuthStateChange(async (event) => {
+
     console.log("🔄 Evento:", event);
 
     if (event === "SIGNED_IN") {
@@ -124,8 +117,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     sessionStorage.removeItem("cortero_logged");
     sessionStorage.removeItem("cortero_user");
-    showLoggedOut();
 
+    showLoggedOut();
     window.location.href = "index.html";
   }
 
@@ -133,25 +126,31 @@ document.addEventListener("DOMContentLoaded", () => {
   if ($id("logout-mobile")) $id("logout-mobile").addEventListener("click", doLogout);
 
   // ============================================================
-  // 🔥 ESCUCHAR ACTUALIZACIÓN DE FOTO DESDE PERFIL
+  // 📸 ACTUALIZACIÓN LIVE DE FOTO DESDE PERFIL
   // ============================================================
   document.addEventListener("userPhotoUpdated", (e) => {
     const newPhoto = e.detail.photo_url;
 
     console.log("📸 Foto recibida en auth-ui:", newPhoto);
 
-    // 1. Actualizar sessionStorage
     let user = JSON.parse(sessionStorage.getItem("cortero_user") || "{}");
     user.photo_url = newPhoto;
 
     sessionStorage.setItem("cortero_user", JSON.stringify(user));
 
-    // 2. Actualizar UI inmediatamente
     showLoggedIn(user);
   });
 
   // ============================================================
-  // 🔥 FUNCIÓN GLOBAL
+  // 📝 ACTUALIZACIÓN LIVE DE NOMBRE/TELÉFONO DESDE PERFIL
+  // ============================================================
+  document.addEventListener("userDataUpdated", () => {
+    let user = JSON.parse(sessionStorage.getItem("cortero_user") || "{}");
+    showLoggedIn(user);
+  });
+
+  // ============================================================
+  // 🔥 FUNCIÓN GLOBAL PARA LOGIN
   // ============================================================
   window.__refreshMenuFromSession = refreshMenuFromStorage;
   window.__showLoggedIn = showLoggedIn;
