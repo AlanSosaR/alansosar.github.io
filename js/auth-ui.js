@@ -1,8 +1,8 @@
 // ============================================================
-// AUTH-UI.JS — FIX DEFINITIVO 2025 (VERSIÓN COMPLETA + FOTO LIVE)
+// AUTH-UI.JS — FIX DEFINITIVO 2025 (MENÚ + FOTO LIVE + LOGOUT REAL)
 // ============================================================
 
-console.log("👤 auth-ui.js cargado — FIX DEFINITIVO v3");
+console.log("👤 auth-ui.js cargado — FIX DEFINITIVO 2025");
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -20,9 +20,11 @@ document.addEventListener("DOMContentLoaded", () => {
       printedMenuState = "out";
     }
 
+    // Escritorio
     if ($id("login-desktop")) $id("login-desktop").style.display = "inline-block";
     if ($id("profile-desktop")) $id("profile-desktop").style.display = "none";
 
+    // Móvil
     if ($id("drawer-links-default")) $id("drawer-links-default").style.display = "flex";
     if ($id("drawer-links-logged")) $id("drawer-links-logged").style.display = "none";
   }
@@ -69,7 +71,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     let user = JSON.parse(sessionStorage.getItem("cortero_user") || "{}");
-
     showLoggedIn(user);
   }
 
@@ -80,8 +81,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // 🔄 EVENTOS DE SESIÓN SUPABASE
   // ============================================================
   sb.auth.onAuthStateChange(async (event) => {
-
-    console.log("🔄 Evento:", event);
+    console.log("🔄 Evento de sesión:", event);
 
     if (event === "SIGNED_IN") {
       sessionStorage.setItem("cortero_logged", "1");
@@ -100,14 +100,18 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // ============================================================
-  // 🚪 LOGOUT
+  // 🚪 LOGOUT — FIX DEFINITIVO 2025 (iPhone / Safari / GH Pages)
   // ============================================================
   async function doLogout(e) {
-    e.preventDefault();
+    if (e) e.preventDefault();
+
+    console.log("🚪 Cerrando sesión…");
 
     try {
+      // Cierra sesión REAL en el módulo supabaseAuth si existe
       if (window.supabaseAuth?.logoutUser) {
-        await window.supabaseAuth.logoutUser();
+        const resp = await window.supabaseAuth.logoutUser();
+        if (!resp.ok) console.warn("Error logout:", resp.error);
       } else {
         await sb.auth.signOut();
       }
@@ -115,11 +119,21 @@ document.addEventListener("DOMContentLoaded", () => {
       console.warn("Error en logout:", err);
     }
 
+    // Limpiar datos locales
     sessionStorage.removeItem("cortero_logged");
     sessionStorage.removeItem("cortero_user");
 
-    showLoggedOut();
-    window.location.href = "index.html";
+    // Notificar a todo el sitio
+    document.dispatchEvent(new CustomEvent("userLoggedOut"));
+
+    // Cerrar drawer si está abierto
+    const drawer = document.getElementById("drawer");
+    if (drawer) drawer.classList.remove("open");
+
+    // Safari necesita replace() para recargar realmente
+    setTimeout(() => {
+      window.location.replace("index.html");
+    }, 120);
   }
 
   if ($id("logout-desktop")) $id("logout-desktop").addEventListener("click", doLogout);
@@ -130,19 +144,17 @@ document.addEventListener("DOMContentLoaded", () => {
   // ============================================================
   document.addEventListener("userPhotoUpdated", (e) => {
     const newPhoto = e.detail.photo_url;
-
-    console.log("📸 Foto recibida en auth-ui:", newPhoto);
+    console.log("📸 Foto actualizada en auth-ui:", newPhoto);
 
     let user = JSON.parse(sessionStorage.getItem("cortero_user") || "{}");
     user.photo_url = newPhoto;
 
     sessionStorage.setItem("cortero_user", JSON.stringify(user));
-
     showLoggedIn(user);
   });
 
   // ============================================================
-  // 📝 ACTUALIZACIÓN LIVE DE NOMBRE/TELÉFONO DESDE PERFIL
+  // 📝 ACTUALIZACIÓN LIVE DE NOMBRE/TELÉFONO
   // ============================================================
   document.addEventListener("userDataUpdated", () => {
     let user = JSON.parse(sessionStorage.getItem("cortero_user") || "{}");
@@ -150,7 +162,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // ============================================================
-  // 🔥 FUNCIÓN GLOBAL PARA LOGIN
+  // 🔥 FUNCIONES GLOBALES
   // ============================================================
   window.__refreshMenuFromSession = refreshMenuFromStorage;
   window.__showLoggedIn = showLoggedIn;
