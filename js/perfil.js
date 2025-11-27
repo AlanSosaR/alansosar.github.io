@@ -1,5 +1,5 @@
 // ============================================================
-// PERFIL — Datos reales + Foto + Contraseña
+// PERFIL REAL — FIX DEFINITIVO 2025
 // ============================================================
 console.log("🔥 PERFIL.JS INICIÓ");
 
@@ -23,35 +23,44 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // ============================================================
-  // CARGAR PERFIL
+  // CARGAR PERFIL → FIX CORRECTO
   // ============================================================
   async function cargarPerfil() {
-    const { data } = await sb.auth.getUser();
-    if (!data?.user) {
+
+    console.log("⏳ Leyendo sesión...");
+    const { data: sessionData } = await sb.auth.getSession();
+    user = sessionData?.session?.user;
+
+    console.log("🟢 Sesión detectada:", user);
+
+    if (!user) {
+      console.log("❌ Sin sesión. Redirigiendo...");
       window.location.href = "login.html";
       return;
     }
 
-    user = data.user;
-
+    // Cargar perfil desde la tabla
+    console.log("📡 Cargando datos de BD...");
     const { data: info } = await sb
       .from("users")
       .select("*")
       .eq("id", user.id)
       .single();
 
+    console.log("🟢 Datos obtenidos:", info);
+
     if (!info) return;
 
     nombreInput.value = info.name || "";
     telefonoInput.value = info.phone || "";
-    correoInput.value = info.email || user.email;
+    correoInput.value = info.email;               // ← CORREGIDO
     fotoPerfil.src = info.photo_url || "imagenes/avatar-default.svg";
   }
 
   await cargarPerfil();
 
   // ============================================================
-  // CAMBIO DE FOTO
+  // ACTUALIZAR FOTO
   // ============================================================
   fotoPerfil.addEventListener("click", () => fotoInput.click());
   fotoInput.addEventListener("change", async () => {
@@ -59,11 +68,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!file) return;
 
     const fileName = `avatar_${user.id}_${Date.now()}.jpg`;
+
     const { error: uploadErr } = await sb.storage
       .from("avatars")
       .upload(fileName, file, { upsert: true });
 
-    if (uploadErr) return mostrarSnackbar("Error al subir la foto");
+    if (uploadErr) return mostrarSnackbar("Error al subir foto");
 
     const { data: urlData } = sb.storage.from("avatars").getPublicUrl(fileName);
     const newUrl = urlData.publicUrl;
@@ -76,7 +86,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     let usr = JSON.parse(sessionStorage.getItem("cortero_user") || "{}");
     usr.photo_url = newUrl;
     sessionStorage.setItem("cortero_user", JSON.stringify(usr));
-    document.dispatchEvent(new CustomEvent("userPhotoUpdated", { detail: { photo_url: newUrl } }));
+
+    document.dispatchEvent(
+      new CustomEvent("userPhotoUpdated", { detail: { photo_url: newUrl } })
+    );
   });
 
   // ============================================================
@@ -88,10 +101,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     const nombre = nombreInput.value.trim();
     const telefono = telefonoInput.value.trim();
 
-    await sb.from("users").update({
-      name: nombre,
-      phone: telefono
-    }).eq("id", user.id);
+    await sb
+      .from("users")
+      .update({
+        name: nombre,
+        phone: telefono,
+      })
+      .eq("id", user.id);
 
     mostrarSnackbar("Cambios guardados");
   });
