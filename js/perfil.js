@@ -1,5 +1,6 @@
 // ============================================================
 // PERFIL — Datos reales + Foto + Contraseña + Fuerza de password
+// Con foto que solo sube al presionar "Guardar cambios"
 // ============================================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -34,6 +35,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const snackText = document.querySelector(".snack-text");
 
   let user = null;
+  let newPhotoFile = null; // ⚡ NUEVO → foto seleccionada pero NO subida
+
 
   // =============================
   // SNACKBAR
@@ -48,29 +51,30 @@ document.addEventListener("DOMContentLoaded", () => {
     saveBtn.classList.add("loading");
     saveBtn.disabled = true;
     btnLoader.style.display = "inline-block";
-    btnText.style.opacity = "1";
   }
 
   function desactivarLoading() {
     saveBtn.classList.remove("loading");
     saveBtn.disabled = false;
     btnLoader.style.display = "none";
-    btnText.style.opacity = "1";
   }
 
   // ============================================================
-  // CARGAR PERFIL DESDE SUPABASE
+  // CARGAR PERFIL DESDE SUPABASE (FIX 100% REAL)
   // ============================================================
   async function cargarPerfil() {
-    const { data, error } = await sb.auth.getUser();
 
-    if (error || !data.user) {
+    // FIX REAL para Safari / iPhone / GitHub Pages
+    const { data: sessionData } = await sb.auth.getSession();
+
+    if (!sessionData?.session?.user) {
       window.location.href = "login.html";
       return;
     }
 
-    user = data.user;
+    user = sessionData.session.user;
 
+    // Leer datos reales de la tabla users
     const { data: info } = await sb
       .from("users")
       .select("*")
@@ -81,82 +85,45 @@ document.addEventListener("DOMContentLoaded", () => {
 
     nombreInput.value = info.name || "";
     telefonoInput.value = info.phone || "";
-    correoInput.value = info.email || "";
+    correoInput.value = user.email || "";
 
-    if (info.photo_url) {
-      fotoPerfil.src = info.photo_url;
-    }
+    fotoPerfil.src = info.photo_url || "imagenes/avatar-default.svg";
+
+    // Guardar espejo en sessionStorage
+    sessionStorage.setItem("cortero_user", JSON.stringify({
+      id: user.id,
+      email: user.email,
+      name: info.name,
+      phone: info.phone,
+      photo_url: info.photo_url
+    }));
+
+    document.dispatchEvent(new CustomEvent("userDataUpdated"));
   }
 
   cargarPerfil();
 
+
   // ============================================================
-  // FOTO DE PERFIL — SUBIR A SUPABASE + GUARDAR EN BD
+  // FOTO — SOLO PREVIEW (NO SE SUBE AUTOMÁTICO)
   // ============================================================
   fotoPerfil.addEventListener("click", () => fotoInput.click());
   document.getElementById("btnEditarFoto").addEventListener("click", () => fotoInput.click());
 
-  fotoInput.addEventListener("change", async () => {
+  fotoInput.addEventListener("change", () => {
     const file = fotoInput.files[0];
     if (!file) return;
 
-    activarLoading();
+    newPhotoFile = file; // ⚡ SE GUARDA PARA SUBIRLA DESPUÉS
 
-    const fileName = `avatar_${user.id}_${Date.now()}.jpg`;
-
-    // Subir al bucket
-    const { error: uploadErr } = await sb.storage
-      .from("avatars")
-      .upload(fileName, file, {
-        contentType: file.type,
-        upsert: true
-      });
-
-    if (uploadErr) {
-      desactivarLoading();
-      return mostrarSnackbar("Error al subir la foto");
-    }
-
-    // Obtener URL pública
-    const { data: urlData } = sb.storage
-      .from("avatars")
-      .getPublicUrl(fileName);
-
-    const newUrl = urlData.publicUrl;
-
-    // Guardar en BD
-    await sb
-      .from("users")
-      .update({ photo_url: newUrl })
-      .eq("id", user.id);
-
-    // ============================================================
-    // 🟢 GUARDAR EN sessionStorage (para menú y persistencia)
-    // ============================================================
-    let usr = sessionStorage.getItem("cortero_user");
-    if (usr) {
-      try {
-        usr = JSON.parse(usr);
-        usr.photo_url = newUrl;
-        sessionStorage.setItem("cortero_user", JSON.stringify(usr));
-      } catch (err) {
-        console.warn("Error guardando foto en sessionStorage:", err);
-      }
-    }
-
-    // ============================================================
-    // 🟢 Notificar al menú global
-    // ============================================================
-    document.dispatchEvent(new CustomEvent("userPhotoUpdated", {
-      detail: { photo_url: newUrl }
-    }));
-
-    // Actualizar UI del perfil
-    fotoPerfil.src = newUrl;
-
-    desactivarLoading();
-    mostrarSnackbar("Foto actualizada");
+    // Mostrar preview
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      fotoPerfil.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
   });
+
 
   // ============================================================
   // MOSTRAR / OCULTAR CONTRASEÑAS
@@ -168,12 +135,13 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+
   // ============================================================
-  // BLOQUE DE CONTRASEÑA — ANIMACIÓN SUAVE
+  // CONTRASEÑA — EFECTO SUAVE
   // ============================================================
   passwordSection.style.display = "none";
   passwordSection.style.opacity = "0";
-  passwordSection.style.transition = "opacity .25s ease";
+  passwordSection.style.transition = "opacity .25s";
 
   btnMostrarPass.addEventListener("click", () => {
     if (passwordSection.style.display === "none") {
@@ -185,8 +153,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+
   // ============================================================
-  // BARRAS DE FUERZA DE CONTRASEÑA (MISMAS DE REGISTRO)
+  // FUERZA DE CONTRASEÑA
   // ============================================================
   function evaluarFuerza(pass) {
     let score = 0;
@@ -207,6 +176,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+
   // ============================================================
   // GUARDAR CAMBIOS
   // ============================================================
@@ -217,25 +187,51 @@ document.addEventListener("DOMContentLoaded", () => {
     const nombre = nombreInput.value.trim();
     const telefono = telefonoInput.value.trim();
 
-    if (nombre.length < 2) {
-      desactivarLoading();
-      return mostrarSnackbar("Nombre inválido");
-    }
-    if (telefono.length < 8) {
-      desactivarLoading();
-      return mostrarSnackbar("Teléfono inválido");
+    let finalPhotoUrl = null;
+
+    // ============================================================
+    // 1️⃣ SI HAY FOTO NUEVA → SUBIRLA AHORA
+    // ============================================================
+    if (newPhotoFile) {
+
+      const fileName = `avatar_${user.id}_${Date.now()}.jpg`;
+
+      const { error: uploadErr } = await sb.storage
+        .from("avatars")
+        .upload(fileName, newPhotoFile, {
+          contentType: newPhotoFile.type,
+          upsert: true
+        });
+
+      if (uploadErr) {
+        desactivarLoading();
+        return mostrarSnackbar("Error al guardar la foto");
+      }
+
+      const { data: urlData } = sb.storage
+        .from("avatars")
+        .getPublicUrl(fileName);
+
+      finalPhotoUrl = urlData.publicUrl;
     }
 
-    // Guardar datos básicos
+
+    // ============================================================
+    // 2️⃣ GUARDAR DATOS EN BD
+    // ============================================================
     await sb
       .from("users")
       .update({
         name: nombre,
-        phone: telefono
+        phone: telefono,
+        ...(finalPhotoUrl ? { photo_url: finalPhotoUrl } : {})
       })
       .eq("id", user.id);
 
-    // Cambio de contraseña
+
+    // ============================================================
+    // 3️⃣ CAMBIAR CONTRASEÑA (SI APLICA)
+    // ============================================================
     if (passwordSection.style.display === "block") {
 
       if (!passActual.value || !passNueva.value || !passConfirm.value) {
@@ -253,10 +249,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return mostrarSnackbar("Contraseña muy corta");
       }
 
-      const cambio = await authExt.changePassword(
-        passActual.value,
-        passNueva.value
-      );
+      const cambio = await authExt.changePassword(passActual.value, passNueva.value);
 
       if (!cambio.ok) {
         desactivarLoading();
@@ -264,20 +257,24 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    // Actualizar nombre/teléfono en sesión
-    let usr = sessionStorage.getItem("cortero_user");
-    if (usr) {
-      try {
-        usr = JSON.parse(usr);
-        usr.name = nombre;
-        usr.phone = telefono;
+    // ============================================================
+    // 4️⃣ SINCRONIZAR sessionStorage
+    // ============================================================
+    let usr = JSON.parse(sessionStorage.getItem("cortero_user") || "{}");
+    usr.name = nombre;
+    usr.phone = telefono;
+    if (finalPhotoUrl) usr.photo_url = finalPhotoUrl;
 
-        sessionStorage.setItem("cortero_user", JSON.stringify(usr));
-      } catch (err) {}
+    sessionStorage.setItem("cortero_user", JSON.stringify(usr));
+
+    document.dispatchEvent(new CustomEvent("userDataUpdated"));
+    if (finalPhotoUrl) {
+      document.dispatchEvent(new CustomEvent("userPhotoUpdated", {
+        detail: { photo_url: finalPhotoUrl }
+      }));
     }
 
-    // Notificar al menú
-    document.dispatchEvent(new CustomEvent("userDataUpdated"));
+    newPhotoFile = null; // reiniciar
 
     desactivarLoading();
     mostrarSnackbar("Cambios guardados");
