@@ -1,6 +1,6 @@
 // ============================================================
 // SUPABASE CLIENT — FIX DEFINITIVO 2025
-// Restauración 100% real de sesión + foto persistente
+// Restauración real + integración con auth-ui
 // ============================================================
 
 const { createClient } = supabase;
@@ -9,7 +9,7 @@ const SUPABASE_URL = "https://eaipcuvvddyrqkbmjmvw.supabase.co";
 const SUPABASE_ANON_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVhaXBjdXZ2ZGR5cnFrYm1qbXZ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMwOTcxMDEsImV4cCI6MjA3ODY3MzEwMX0.2qICLx3qZgeGr0oXZ8PYRxXPL1X5Vog4UoOnTQBFzNA";
 
-// SessionStorage para GitHub Pages
+// sessionStorage – requerido en GitHub Pages
 const storage = {
   getItem: (k) => sessionStorage.getItem(k),
   setItem: (k, v) => sessionStorage.setItem(k, v),
@@ -26,15 +26,15 @@ window.supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   }
 });
 
-console.log("🔥 Supabase listo (FIX definitivo)");
+console.log("🔥 Supabase listo (versión final)");
 
 
 // ============================================================
-// Cargar datos del usuario desde tabla users
+// FUNCIÓN GLOBAL PARA LOGIN Y PERFIL
 // ============================================================
 async function cargarPerfilGlobal(user) {
-
   if (!user) {
+    sessionStorage.removeItem("cortero_logged");
     sessionStorage.removeItem("cortero_user");
     document.dispatchEvent(new CustomEvent("userLoggedOut"));
     return;
@@ -48,38 +48,44 @@ async function cargarPerfilGlobal(user) {
     .eq("id", user.id)
     .single();
 
-  // Foto final
-  const foto = perfil?.photo_url && perfil?.photo_url !== "null"
-    ? perfil.photo_url
-    : "imagenes/avatar-default.svg";
+  const fotoFinal =
+    perfil?.photo_url && perfil.photo_url !== "null"
+      ? perfil.photo_url
+      : "imagenes/avatar-default.svg";
 
   const userData = {
     id: perfil.id,
     name: perfil.name || "Usuario",
-    photo_url: foto,
+    photo_url: fotoFinal,
   };
 
-  // Guardar globalmente
+  // Guardar sesión interna
   sessionStorage.setItem("cortero_user", JSON.stringify(userData));
   sessionStorage.setItem("cortero_logged", "1");
 
-  // Notificar a auth-ui.js
+  // 🔥 Notificar al auth-ui
   document.dispatchEvent(new CustomEvent("userLoggedIn", { detail: userData }));
 
-  console.log("🟢 Cargado desde BD:", userData);
+  console.log("🟢 Perfil global cargado:", userData);
 }
 
 
 // ============================================================
-// Detectar login / logout
+// LISTENER DE ESTADO DE AUTENTICACIÓN
 // ============================================================
 window.supabaseClient.auth.onAuthStateChange(async (event, session) => {
 
-  console.log("🔄 auth event:", event);
+  console.log("🔄 Supabase auth event:", event);
 
-  if (session?.user) {
+  if (event === "SIGNED_IN" && session?.user) {
     await cargarPerfilGlobal(session.user);
-  } else {
+  }
+
+  if (event === "TOKEN_REFRESHED" && session?.user) {
+    await cargarPerfilGlobal(session.user);
+  }
+
+  if (event === "SIGNED_OUT") {
     sessionStorage.removeItem("cortero_logged");
     sessionStorage.removeItem("cortero_user");
     document.dispatchEvent(new CustomEvent("userLoggedOut"));
@@ -88,10 +94,9 @@ window.supabaseClient.auth.onAuthStateChange(async (event, session) => {
 
 
 // ============================================================
-// Al abrir página → restaurar sesión
+// RESTAURAR SESIÓN AL ABRIR LA PÁGINA
 // ============================================================
 document.addEventListener("DOMContentLoaded", async () => {
-
   const { data } = await window.supabaseClient.auth.getSession();
 
   if (data?.session?.user) {
@@ -100,3 +105,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.dispatchEvent(new CustomEvent("userLoggedOut"));
   }
 });
+
+
+// ============================================================
+// FUNCIÓN GLOBAL DE LOGOUT
+// ============================================================
+window.supabaseAuth = {
+  logoutUser: async () => {
+    await window.supabaseClient.auth.signOut();
+  }
+};
