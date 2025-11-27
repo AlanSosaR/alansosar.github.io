@@ -133,7 +133,7 @@ body {
   width: 130px;
   height: 130px;
   margin: 0 auto;
-  margin-bottom: 30px; /* MÁS ESPACIO BAJO */
+  margin-bottom: 32px; /* MÁS ESPACIO PARA QUE RESPIRE */
 }
 
 .foto-perfil {
@@ -141,12 +141,12 @@ body {
   height: 100%;
   border-radius: 50%;
   object-fit: cover;
-  
+
   /* Estilo WhatsApp PRO */
-  border: 2px solid #e6e6e6;
+  border: none !important; /* QUITADO BORDE VERDE */
   background: #f4f4f4;
   box-shadow: 0 4px 18px rgba(0,0,0,0.12);
-  
+
   cursor: pointer;
   transition: .25s ease;
 }
@@ -162,8 +162,8 @@ body {
   right: 4px;
   bottom: 4px;
   background: #33673B;
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -171,19 +171,19 @@ body {
   color: #fff;
   font-size: 20px;
   box-shadow: 0 3px 8px rgba(0,0,0,0.25);
-  border: 2px solid #ffffff; /* borde premium */
+  border: 2px solid #ffffff;
 }
 
 /* ===============================
    CAMPOS MATERIAL 3
 =============================== */
 .m3-field {
-  margin-bottom: 26px;
+  margin-bottom: 28px;
 }
 
-/* Aumento de espacio para que “respire” después de la foto */
+/* Separa UN POCO del campo anterior */
 .m3-field:first-of-type {
-  margin-top: 10px !important;
+  margin-top: 6px !important;
 }
 
 .m3-input {
@@ -199,7 +199,7 @@ body {
 
 /* NO EDITABLE (correo) */
 .m3-input.no-edit {
-  background: #f8f8f8;
+  background: #f2f2f2;
   pointer-events: none;
   opacity: 0.8;
 }
@@ -240,6 +240,7 @@ body {
   pointer-events: none;
 }
 
+/* AL SUBIR */
 .m3-input input:not(:placeholder-shown) + .floating-label,
 .m3-input:focus-within .floating-label {
   top: -6px;
@@ -253,7 +254,7 @@ body {
    CAMBIAR CONTRASEÑA — COLOR CAFÉ
 =============================== */
 .cambiar-pass-boton {
-  margin-bottom: 20px;
+  margin-bottom: 22px;
   color: #512615 !important;
   font-weight: 600;
   cursor: pointer;
@@ -275,7 +276,7 @@ body {
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
-  margin-top: 10px;
+  margin-top: 8px;
   position: relative;
   display: flex;
   align-items: center;
