@@ -1,6 +1,20 @@
 // ============================================================
 // PERFIL REAL — FIX DEFINITIVO 2025
 // ============================================================
+
+// Esperar a que Supabase Client esté listo
+await new Promise(resolve => {
+  const check = () => {
+    if (window.supabaseClient) {
+      console.log("🟢 Supabase Client cargado en PERFIL.JS");
+      resolve();
+    } else {
+      setTimeout(check, 50);
+    }
+  };
+  check();
+});
+
 console.log("🔥 PERFIL.JS INICIÓ");
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -23,7 +37,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // ============================================================
-  // CARGAR PERFIL → FIX CORRECTO
+  // CARGAR PERFIL
   // ============================================================
   async function cargarPerfil() {
 
@@ -39,8 +53,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
 
-    // Cargar perfil desde la tabla
     console.log("📡 Cargando datos de BD...");
+
     const { data: info } = await sb
       .from("users")
       .select("*")
@@ -53,7 +67,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     nombreInput.value = info.name || "";
     telefonoInput.value = info.phone || "";
-    correoInput.value = info.email;               // ← CORREGIDO
+    correoInput.value = info.email;
     fotoPerfil.src = info.photo_url || "imagenes/avatar-default.svg";
   }
 
@@ -63,6 +77,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // ACTUALIZAR FOTO
   // ============================================================
   fotoPerfil.addEventListener("click", () => fotoInput.click());
+
   fotoInput.addEventListener("change", async () => {
     const file = fotoInput.files[0];
     if (!file) return;
@@ -75,21 +90,19 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     if (uploadErr) return mostrarSnackbar("Error al subir foto");
 
-    const { data: urlData } = sb.storage.from("avatars").getPublicUrl(fileName);
+    const { data: urlData } = sb.storage
+      .from("avatars")
+      .getPublicUrl(fileName);
+
     const newUrl = urlData.publicUrl;
 
-    await sb.from("users").update({ photo_url: newUrl }).eq("id", user.id);
+    await sb
+      .from("users")
+      .update({ photo_url: newUrl })
+      .eq("id", user.id);
 
     fotoPerfil.src = newUrl;
     mostrarSnackbar("Foto actualizada");
-
-    let usr = JSON.parse(sessionStorage.getItem("cortero_user") || "{}");
-    usr.photo_url = newUrl;
-    sessionStorage.setItem("cortero_user", JSON.stringify(usr));
-
-    document.dispatchEvent(
-      new CustomEvent("userPhotoUpdated", { detail: { photo_url: newUrl } })
-    );
   });
 
   // ============================================================
@@ -98,14 +111,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   saveBtn.addEventListener("click", async (e) => {
     e.preventDefault();
 
-    const nombre = nombreInput.value.trim();
-    const telefono = telefonoInput.value.trim();
-
     await sb
       .from("users")
       .update({
-        name: nombre,
-        phone: telefono,
+        name: nombreInput.value.trim(),
+        phone: telefonoInput.value.trim()
       })
       .eq("id", user.id);
 
