@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const fotoPerfil = document.getElementById("fotoPerfil");
   const fotoInput = document.getElementById("inputFoto");
 
-  const saveBtn = document.querySelector(".m3-btn");
+  const saveBtn = document.getElementById("saveBtn");
   const btnLoader = saveBtn.querySelector(".loader");
   const btnText = saveBtn.querySelector(".btn-text");
 
@@ -48,12 +48,14 @@ document.addEventListener("DOMContentLoaded", () => {
     saveBtn.classList.add("loading");
     saveBtn.disabled = true;
     btnLoader.style.display = "inline-block";
+    btnText.style.opacity = "1"; // EL TEXTO YA NO SE OCULTA
   }
 
   function desactivarLoading() {
     saveBtn.classList.remove("loading");
     saveBtn.disabled = false;
     btnLoader.style.display = "none";
+    btnText.style.opacity = "1";
   }
 
   // ============================================================
@@ -102,7 +104,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const fileName = `avatar_${user.id}_${Date.now()}.jpg`;
 
-    // Subir a raíz del bucket (sin carpetas)
+    // Subida directa al bucket sin carpetas
     const { error: uploadErr } = await sb.storage
       .from("avatars")
       .upload(fileName, file, {
@@ -115,12 +117,12 @@ document.addEventListener("DOMContentLoaded", () => {
       return mostrarSnackbar("Error al subir la foto");
     }
 
-    // Obtener URL pública
-    const { data: publicURL } = sb.storage
+    // URL pública
+    const { data: urlData } = sb.storage
       .from("avatars")
       .getPublicUrl(fileName);
 
-    const newUrl = publicURL.publicUrl;
+    const newUrl = urlData.publicUrl;
 
     // Guardar en BD
     await sb
@@ -128,10 +130,9 @@ document.addEventListener("DOMContentLoaded", () => {
       .update({ photo_url: newUrl })
       .eq("id", user.id);
 
-    // Actualizar UI
     fotoPerfil.src = newUrl;
 
-    // Notificar al sistema global (menús)
+    // Actualizar menú global
     document.dispatchEvent(new CustomEvent("userPhotoUpdated", {
       detail: { photo_url: newUrl }
     }));
@@ -151,13 +152,23 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // ============================================================
-  // ABRIR/CERRAR BLOQUE DE CONTRASEÑA
+  // ABRIR/CERRAR BLOQUE DE CONTRASEÑA (con animación suave)
   // ============================================================
   passwordSection.style.display = "none";
+  passwordSection.style.opacity = "0";
+  passwordSection.style.transition = "opacity .25s ease";
 
   btnMostrarPass.addEventListener("click", () => {
-    passwordSection.style.display =
-      passwordSection.style.display === "none" ? "block" : "none";
+    if (passwordSection.style.display === "none") {
+
+      passwordSection.style.display = "block";
+      setTimeout(() => passwordSection.style.opacity = "1", 10);
+
+    } else {
+
+      passwordSection.style.opacity = "0";
+      setTimeout(() => passwordSection.style.display = "none", 250);
+    }
   });
 
   // ============================================================
@@ -178,11 +189,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const score = evaluarFuerza(passNueva.value);
 
     Array.from(strengthBars).forEach((bar, i) => {
-      if (i < score) {
-        bar.style.background = "#33673B";
-      } else {
-        bar.style.background = "#e0e0e0";
-      }
+      bar.style.background = i < score ? "#33673B" : "#e0e0e0";
     });
   });
 
@@ -205,7 +212,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return mostrarSnackbar("Teléfono inválido");
     }
 
-    // Guardar datos básicos
+    // Datos básicos
     await sb
       .from("users")
       .update({
@@ -214,7 +221,7 @@ document.addEventListener("DOMContentLoaded", () => {
       })
       .eq("id", user.id);
 
-    // Cambiar contraseña si el bloque está abierto
+    // Cambio de contraseña
     if (passwordSection.style.display === "block") {
 
       if (!passActual.value || !passNueva.value || !passConfirm.value) {
