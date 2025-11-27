@@ -40,12 +40,21 @@
       <!-- CARD INTERIOR -->
       <div class="profile-inner-card">
 
-        <!-- FOTO PREMIUM (sin círculo, sin icono, sin nada) -->
+        <!-- FOTO PREMIUM -->
         <div class="foto-perfil-container">
-          <img id="fotoPerfil" src="imagenes/avatar-default.svg" alt="Foto de perfil" class="foto-perfil">
 
-          <!-- INPUT DE FOTO OCULTO -->
+          <!-- Foto -->
+          <img id="fotoPerfil" 
+               src="imagenes/avatar-default.svg" 
+               alt="Foto de perfil" 
+               class="foto-perfil">
+
+          <!-- Input oculto -->
           <input type="file" id="inputFoto" accept="image/*" style="display:none;">
+
+          <!-- Elemento invisible necesario para JS -->
+          <div id="btnEditarFoto" style="opacity:0; width:0; height:0; overflow:hidden;"></div>
+
         </div>
 
         <!-- FORMULARIO -->
@@ -68,7 +77,6 @@
               <input id="correoInput" type="email" placeholder=" " readonly>
               <label for="correoInput" class="floating-label">Correo</label>
             </div>
-            <small class="m3-error"></small>
           </div>
 
           <!-- TELÉFONO -->
@@ -156,6 +164,8 @@
   <!-- SCRIPTS -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/core-scripts-v2.js?v=1"></script>
+
+  <!-- JS DEL PERFIL (versión final) -->
   <script src="js/perfil.js?v=4"></script>
 
 </body>
