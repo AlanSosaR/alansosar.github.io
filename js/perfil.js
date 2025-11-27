@@ -1,6 +1,5 @@
 // ============================================================
-// PERFIL — FIX DEFINITIVO 2025 (Funciona 100%)
-// Espera sesión real antes de cargar el perfil
+// PERFIL — FIX DEFINITIVO 2025 (LocalStorage + Sesión Real)
 // ============================================================
 
 console.log("🔥 PERFIL.JS INICIÓ");
@@ -73,6 +72,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     telefonoInput.value = info.phone || "";
     correoInput.value = info.email || user.email;
     fotoPerfil.src = info.photo_url || "imagenes/avatar-default.svg";
+
+    // Guardar en localStorage para menú global
+    localStorage.setItem("cortero_user", JSON.stringify(info));
+    localStorage.setItem("cortero_logged", "1");
+
+    document.dispatchEvent(new CustomEvent("userDataUpdated"));
+    document.dispatchEvent(new CustomEvent("userPhotoUpdated", { detail: { photo_url: info.photo_url }}));
   }
 
   // ============================================================
@@ -101,6 +107,17 @@ document.addEventListener("DOMContentLoaded", async () => {
       .eq("id", user.id);
 
     fotoPerfil.src = urlData.publicUrl;
+
+    // Actualizar localStorage
+    let ls = JSON.parse(localStorage.getItem("cortero_user") || "{}");
+    ls.photo_url = urlData.publicUrl;
+    localStorage.setItem("cortero_user", JSON.stringify(ls));
+
+    // Notificar a auth-ui
+    document.dispatchEvent(
+      new CustomEvent("userPhotoUpdated", { detail: { photo_url: urlData.publicUrl } })
+    );
+
     alert("Foto actualizada");
   });
 
@@ -116,6 +133,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         phone: telefonoInput.value.trim(),
       })
       .eq("id", user.id);
+
+    // Actualizar localStorage
+    let ls = JSON.parse(localStorage.getItem("cortero_user") || "{}");
+    ls.name = nombreInput.value.trim();
+    ls.phone = telefonoInput.value.trim();
+    localStorage.setItem("cortero_user", JSON.stringify(ls));
+
+    document.dispatchEvent(new CustomEvent("userDataUpdated"));
 
     alert("Datos actualizados");
   });
