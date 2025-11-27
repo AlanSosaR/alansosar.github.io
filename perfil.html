@@ -15,7 +15,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600&display=swap" rel="stylesheet">
 
   <!-- CSS del perfil -->
-  <link rel="stylesheet" href="css/perfil.css?v=3">
+  <link rel="stylesheet" href="css/perfil.css?v=4">
 </head>
 
 <body>
@@ -40,17 +40,12 @@
       <!-- CARD INTERIOR -->
       <div class="profile-inner-card">
 
-        <!-- FOTO -->
+        <!-- FOTO PREMIUM (sin círculo, sin icono, sin nada) -->
         <div class="foto-perfil-container">
           <img id="fotoPerfil" src="imagenes/avatar-default.svg" alt="Foto de perfil" class="foto-perfil">
 
           <!-- INPUT DE FOTO OCULTO -->
           <input type="file" id="inputFoto" accept="image/*" style="display:none;">
-
-          <!-- ÍCONO EDITAR FOTO (CLICKEABLE) -->
-          <div id="btnEditarFoto" class="editar-foto-indicador">
-            <span class="material-symbols-outlined">photo_camera</span>
-          </div>
         </div>
 
         <!-- FORMULARIO -->
@@ -91,7 +86,7 @@
             <span class="material-symbols-outlined">lock</span> Cambiar contraseña
           </div>
 
-          <!-- BLOQUE CONTRASEÑA (OCULTO INICIALMENTE) -->
+          <!-- BLOQUE CONTRASEÑA -->
           <div id="bloquePassword" class="password-section" style="display:none; opacity:0;">
 
             <!-- CONTRASEÑA ACTUAL -->
@@ -114,7 +109,7 @@
                 <span class="material-symbols-outlined toggle-pass" data-target="newPassword">visibility</span>
               </div>
 
-              <!-- BARRAS DE FUERZA (MISMAS DEL REGISTRO) -->
+              <!-- BARRAS DE FUERZA -->
               <div class="strength-bars" id="strengthBars">
                 <div class="strength-bar"></div>
                 <div class="strength-bar"></div>
@@ -148,7 +143,7 @@
 
         </form>
 
-        <!-- SNACKBAR PREMIUM -->
+        <!-- SNACKBAR -->
         <div id="snackbar">
           <img src="imagenes/logo_secundario.png" class="snack-logo">
           <span class="snack-text"></span>
@@ -161,7 +156,7 @@
   <!-- SCRIPTS -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/core-scripts-v2.js?v=1"></script>
-  <script src="js/perfil.js?v=3"></script>
+  <script src="js/perfil.js?v=4"></script>
 
 </body>
 </html>
