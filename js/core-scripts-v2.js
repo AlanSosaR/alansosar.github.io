@@ -1,6 +1,6 @@
 // ============================================================
 // SUPABASE CLIENT — VERSIÓN FINAL ESTABLE 2025
-// Con restauración REAL de sesión + sincronización global
+// Sin delays — Con restauración REAL de sesión
 // ============================================================
 
 const { createClient } = supabase;
@@ -9,8 +9,9 @@ const SUPABASE_URL = "https://eaipcuvvddyrqkbmjmvw.supabase.co";
 const SUPABASE_ANON_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVhaXBjdXZ2ZGR5cnFrYm1qbXZ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMwOTcxMDEsImV4cCI6MjA3ODY3MzEwMX0.2qICLx3qZgeGr0oXZ8PYRxXPL1X5Vog4UoOnTQBFzNA";
 
+
 // ============================================================
-// STORAGE — sessionStorage (fix para GitHub Pages)
+// STORAGE — sessionStorage obligatorio para GitHub Pages
 // ============================================================
 
 const storage = {
@@ -19,8 +20,9 @@ const storage = {
   removeItem: (k) => sessionStorage.removeItem(k),
 };
 
+
 // ============================================================
-// CLIENTE GLOBAL SUPABASE
+// CREAR CLIENTE GLOBAL
 // ============================================================
 
 window.supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
@@ -32,11 +34,11 @@ window.supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   },
 });
 
-console.log("🔥 Supabase iniciado (sessionStorage + persistencia OK)");
+console.log("🔥 Supabase iniciado correctamente");
 
 
 // ============================================================
-// FUNCIÓN GLOBAL — LLENA FOTO + NOMBRE EN TODA LA WEB
+// FUNCIÓN — Cargar perfil del usuario desde Supabase
 // ============================================================
 
 async function cargarPerfilGlobal(user) {
@@ -48,59 +50,48 @@ async function cargarPerfilGlobal(user) {
     return;
   }
 
-  // Leer datos reales desde tabla users
   const { data: perfil } = await sb
     .from("users")
-    .select("*")
+    .select("id, name, photo_url")
     .eq("id", user.id)
     .single();
 
-  let foto = perfil?.photo_url;
-  if (!foto || foto === "null" || foto.trim() === "") {
-    foto = "imagenes/avatar-default.svg";
-  }
+  const foto = perfil?.photo_url && perfil.photo_url !== "null"
+    ? perfil.photo_url
+    : "imagenes/avatar-default.svg";
 
-  const finalUser = {
-    id: user.id,
-    name: perfil?.name || "Usuario",
-    photo_url: foto,
+  const u = {
+    id: perfil.id,
+    name: perfil.name || "Usuario",
+    photo_url: foto
   };
 
-  // Guardar para toda la web
-  sessionStorage.setItem("cortero_user", JSON.stringify(finalUser));
+  sessionStorage.setItem("cortero_user", JSON.stringify(u));
 
-  // Notificar a todos los menús
-  document.dispatchEvent(
-    new CustomEvent("userLoggedIn", { detail: finalUser })
-  );
+  document.dispatchEvent(new CustomEvent("userLoggedIn", { detail: u }));
 
-  console.log("🟢 Perfil global cargado:", finalUser);
+  console.log("🟢 Usuario cargado global:", u);
 }
 
 
 // ============================================================
-// FIX DEFINITIVO — ESPERAR RESTAURACIÓN DE SESIÓN
+// ESPERAR SIEMPRE CAMBIOS DE SESIÓN DE SUPABASE
 // ============================================================
 
-window.supabaseClient.auth.onAuthStateChange(async (event, session) => {
+window.supabaseClient.auth.onAuthStateChange(async (_, session) => {
   if (session?.user) {
-    console.log("📌 Evento authStateChange:", event);
     await cargarPerfilGlobal(session.user);
   } else {
-    console.log("📌 Usuario desconectado");
     document.dispatchEvent(new CustomEvent("userLoggedOut"));
   }
 });
 
 
 // ============================================================
-// AL CARGAR LA PÁGINA — revisar sesión y cargar perfil si existe
+// AL CARGAR LA PÁGINA — consultar sesión sin retrasos
 // ============================================================
 
 document.addEventListener("DOMContentLoaded", async () => {
-  // Hay que esperar 200–300ms → Supabase tarda en restaurar sesión
-  await new Promise((resolve) => setTimeout(resolve, 250));
-
   const { data } = await window.supabaseClient.auth.getSession();
 
   if (data?.session?.user) {
@@ -112,31 +103,28 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
 // ============================================================
-// SINCRONIZAR FOTO GLOBAL — al cambiar desde perfil.js
+// SINCRONIZAR FOTO GLOBAL DESDE PERFIL
 // ============================================================
 
 document.addEventListener("userPhotoUpdated", (e) => {
-  const nuevaFoto = e.detail.photo_url;
+  const newPhoto = e.detail.photo_url;
 
-  // Guardar en sessionStorage
   let usr = JSON.parse(sessionStorage.getItem("cortero_user") || "{}");
-  usr.photo_url = nuevaFoto;
+  usr.photo_url = newPhoto;
   sessionStorage.setItem("cortero_user", JSON.stringify(usr));
 
-  // Actualizar menú escritorio
   const desk = document.getElementById("profile-photo-desktop");
-  if (desk) desk.src = nuevaFoto;
+  if (desk) desk.src = newPhoto;
 
-  // Actualizar menú móvil
   const mob = document.getElementById("profile-photo-mobile");
-  if (mob) mob.src = nuevaFoto;
+  if (mob) mob.src = newPhoto;
 
-  console.log("🟣 Foto sincronizada globalmente:", nuevaFoto);
+  console.log("🟣 Foto global actualizada:", newPhoto);
 });
 
 
 // ============================================================
-// PLACEHOLDERS (evita errores si aún no existen en index / menú)
+// PLACEHOLDERS
 // ============================================================
 
 window.__showLoggedIn = window.__showLoggedIn || function () {};
