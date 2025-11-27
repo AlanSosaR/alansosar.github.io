@@ -12,6 +12,7 @@ const SUPABASE_URL = "https://eaipcuvvddyrqkbmjmvw.supabase.co";
 const SUPABASE_ANON_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVhaXBjdXZ2ZGR5cnFrYm1qbXZ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMwOTcxMDEsImV4cCI6MjA3ODY3MzEwMX0.2qICLx3qZgeGr0oXZ8PYRxXPL1X5Vog4UoOnTQBFzNA";
 
+
 // ============================================================
 // ALMACENAMIENTO — sessionStorage (FIX para GitHub Pages)
 // ============================================================
@@ -21,6 +22,7 @@ const storage = {
   setItem: (key, val) => sessionStorage.setItem(key, val),
   removeItem: (key) => sessionStorage.removeItem(key)
 };
+
 
 // ============================================================
 // CLIENTE GLOBAL SUPABASE
@@ -32,8 +34,8 @@ window.supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     storageKey: "cortero-session",
     persistSession: true,
     autoRefreshToken: true,
-    detectSessionInUrl: true
-  }
+    detectSessionInUrl: true,
+  },
 });
 
 console.log("🔥 Supabase conectado correctamente (sessionStorage + persistencia activada)");
@@ -41,7 +43,6 @@ console.log("🔥 Supabase conectado correctamente (sessionStorage + persistenci
 
 // ============================================================
 // 🔥 FUNCIÓN GLOBAL: CARGAR DATOS DEL USUARIO EN TODA LA WEB
-// Ejecuta cada vez que se carga una página
 // ============================================================
 
 window.cargarUsuarioGlobal = async function () {
@@ -50,38 +51,58 @@ window.cargarUsuarioGlobal = async function () {
   const { data, error } = await sb.auth.getUser();
 
   if (error || !data.user) {
-    // Nadie logueado → Menús mostrar modo invitado
     document.dispatchEvent(new CustomEvent("userLoggedOut"));
     return;
   }
 
   const user = data.user;
 
-  // Leer datos reales desde tabla "users"
+  // Leer datos reales de la tabla "users"
   const { data: perfil } = await sb
     .from("users")
-    .select("name, photo_url")
+    .select("*")
     .eq("id", user.id)
     .single();
 
-  // Si hay datos → enviarlos a toda la web
-  document.dispatchEvent(new CustomEvent("userLoggedIn", {
-    detail: {
-      id: user.id,
-      name: perfil?.name || "Usuario",
-      photo_url: perfil?.photo_url || "imagenes/avatar-default.svg"
-    }
-  }));
+  // ============================
+  // ⚠️ FIX: NO BORRAR FOTO
+  // ============================
+  let fotoFinal = perfil?.photo_url;
+
+  if (!fotoFinal || fotoFinal.trim() === "" || fotoFinal === "null") {
+    fotoFinal = "imagenes/avatar-default.svg";
+  }
+
+  const userData = {
+    id: user.id,
+    name: perfil?.name || "Usuario",
+    photo_url: fotoFinal,
+  };
+
+  // Guardar espejo local
+  sessionStorage.setItem("cortero_user", JSON.stringify(userData));
+
+  // Notificar globalmente
+  document.dispatchEvent(
+    new CustomEvent("userLoggedIn", {
+      detail: userData,
+    })
+  );
 };
 
 
 // ============================================================
-// 🔥 EVENTO global que escucha cambios de FOTO en perfil.js
-// Al dispararse, actualiza los menús instantáneamente
+// 🔥 EVENTO: CUANDO SE ACTUALIZA LA FOTO EN PERFIL
+// SE SINCRONIZA EN TODO EL SITIO
 // ============================================================
 
 document.addEventListener("userPhotoUpdated", (e) => {
   const url = e.detail.photo_url;
+
+  // Actualizar almacenamiento
+  let usr = JSON.parse(sessionStorage.getItem("cortero_user") || "{}");
+  usr.photo_url = url;
+  sessionStorage.setItem("cortero_user", JSON.stringify(usr));
 
   // Escritorio
   const desktop = document.getElementById("profile-photo-desktop");
@@ -105,7 +126,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 // ============================================================
-// PLACEHOLDERS (para evitar errores si aún no están definidos)
+// PLACEHOLDERS (evitar errores si funciones aún no existen)
 // ============================================================
 
 window.__showLoggedIn = window.__showLoggedIn || function () {};
