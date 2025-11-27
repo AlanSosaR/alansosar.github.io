@@ -15,7 +15,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600&display=swap" rel="stylesheet">
 
   <!-- CSS del perfil -->
-  <link rel="stylesheet" href="css/perfil.css?v=2">
+  <link rel="stylesheet" href="css/perfil.css?v=3">
 </head>
 
 <body>
@@ -91,8 +91,8 @@
             <span class="material-symbols-outlined">lock</span> Cambiar contraseña
           </div>
 
-          <!-- BLOQUE CONTRASEÑA (OCULTO) -->
-          <div id="bloquePassword" class="password-section">
+          <!-- BLOQUE CONTRASEÑA (OCULTO INICIALMENTE) -->
+          <div id="bloquePassword" class="password-section" style="display:none; opacity:0;">
 
             <!-- CONTRASEÑA ACTUAL -->
             <div class="m3-field">
@@ -141,7 +141,7 @@
           </div>
 
           <!-- BOTÓN GUARDAR -->
-          <button type="submit" class="m3-btn">
+          <button type="submit" class="m3-btn" id="saveBtn">
             <span class="loader"></span>
             <span class="btn-text">Guardar cambios</span>
           </button>
@@ -161,7 +161,7 @@
   <!-- SCRIPTS -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/core-scripts-v2.js?v=1"></script>
-  <script src="js/perfil.js?v=2"></script>
+  <script src="js/perfil.js?v=3"></script>
 
 </body>
 </html>
