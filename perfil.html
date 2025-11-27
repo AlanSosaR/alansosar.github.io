@@ -15,7 +15,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600&display=swap" rel="stylesheet">
 
   <!-- CSS del perfil -->
-  <link rel="stylesheet" href="css/perfil.css?v=1">
+  <link rel="stylesheet" href="css/perfil.css?v=2">
 </head>
 
 <body>
@@ -24,7 +24,7 @@
 
     <section class="profile-card">
 
-      <!-- BOTÓN BACK -->
+      <!-- BOTÓN ATRÁS -->
       <button class="back-btn" onclick="window.location.href='index.html'">
         <span class="material-symbols-outlined">chevron_left</span>
       </button>
@@ -38,13 +38,17 @@
       </div>
 
       <!-- CARD INTERIOR -->
-      <div class="profile-inner-card outlined-card">
+      <div class="profile-inner-card">
 
         <!-- FOTO -->
         <div class="foto-perfil-container">
           <img id="fotoPerfil" src="imagenes/avatar-default.svg" alt="Foto de perfil" class="foto-perfil">
+
+          <!-- INPUT DE FOTO OCULTO -->
           <input type="file" id="inputFoto" accept="image/*" style="display:none;">
-          <div class="editar-foto-indicador">
+
+          <!-- ÍCONO EDITAR FOTO (CLICKEABLE) -->
+          <div id="btnEditarFoto" class="editar-foto-indicador">
             <span class="material-symbols-outlined">photo_camera</span>
           </div>
         </div>
@@ -62,7 +66,7 @@
             <small class="m3-error" id="errorNombre"></small>
           </div>
 
-          <!-- CORREO (solo lectura) -->
+          <!-- CORREO (SOLO LECTURA) -->
           <div class="m3-field">
             <div class="m3-input no-edit">
               <span class="material-symbols-outlined">mail</span>
@@ -82,11 +86,12 @@
             <small class="m3-error" id="errorTelefono"></small>
           </div>
 
-          <!-- CAMBIAR CONTRASEÑA (se despliega al tocar) -->
+          <!-- CAMBIAR CONTRASEÑA -->
           <div class="cambiar-pass-boton" id="btnMostrarPass">
             <span class="material-symbols-outlined">lock</span> Cambiar contraseña
           </div>
 
+          <!-- BLOQUE CONTRASEÑA (OCULTO) -->
           <div id="bloquePassword" class="password-section">
 
             <div class="m3-field">
@@ -132,7 +137,7 @@
   <!-- SCRIPTS -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/core-scripts-v2.js?v=1"></script>
-  <script src="js/perfil.js?v=1"></script>
+  <script src="js/perfil.js?v=2"></script>
 
 </body>
 </html>
