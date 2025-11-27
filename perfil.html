@@ -94,6 +94,7 @@
           <!-- BLOQUE CONTRASEÑA (OCULTO) -->
           <div id="bloquePassword" class="password-section">
 
+            <!-- CONTRASEÑA ACTUAL -->
             <div class="m3-field">
               <div class="m3-input">
                 <span class="material-symbols-outlined">lock</span>
@@ -104,14 +105,37 @@
               <small class="m3-error" id="errorOldPass"></small>
             </div>
 
+            <!-- NUEVA CONTRASEÑA -->
             <div class="m3-field">
-              <div class="m3-input">
+              <div class="m3-input" id="newPassContainer">
                 <span class="material-symbols-outlined">lock</span>
                 <input id="newPassword" type="password" placeholder=" ">
                 <label class="floating-label">Nueva contraseña</label>
                 <span class="material-symbols-outlined toggle-pass" data-target="newPassword">visibility</span>
               </div>
+
+              <!-- BARRAS DE FUERZA (MISMAS DEL REGISTRO) -->
+              <div class="strength-bars" id="strengthBars">
+                <div class="strength-bar"></div>
+                <div class="strength-bar"></div>
+                <div class="strength-bar"></div>
+                <div class="strength-bar"></div>
+                <div class="strength-bar"></div>
+                <div class="strength-bar"></div>
+              </div>
+
               <small class="m3-error" id="errorNewPass"></small>
+            </div>
+
+            <!-- CONFIRMAR CONTRASEÑA -->
+            <div class="m3-field">
+              <div class="m3-input">
+                <span class="material-symbols-outlined">lock</span>
+                <input id="passConfirm" type="password" placeholder=" ">
+                <label class="floating-label">Confirmar contraseña</label>
+                <span class="material-symbols-outlined toggle-pass" data-target="passConfirm">visibility</span>
+              </div>
+              <small class="m3-error" id="errorConfirmPass"></small>
             </div>
 
           </div>
