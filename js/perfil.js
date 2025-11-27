@@ -1,6 +1,7 @@
 // ============================================================
 // PERFIL — Datos reales + Foto + Contraseña
 // ============================================================
+console.log("🔥 PERFIL.JS INICIÓ");
 
 document.addEventListener("DOMContentLoaded", async () => {
   const sb = window.supabaseClient;
