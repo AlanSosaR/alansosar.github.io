@@ -1,5 +1,5 @@
 // ============================================================
-// PERFIL — Versión FINAL 2025 (foto, datos, contraseña, sesión)
+// PERFIL — Versión ESTABLE 2025 (LECTURA DIRECTA DE SUPABASE)
 // ============================================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -7,9 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const sb = window.supabaseClient;
   const authExt = window.supabaseAuth;
 
-  // =============================
-  // ELEMENTOS DEL DOM
-  // =============================
+  // ELEMENTOS
   const nombreInput = document.getElementById("nombreInput");
   const telefonoInput = document.getElementById("telefonoInput");
   const correoInput = document.getElementById("correoInput");
@@ -28,16 +26,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnLoader = saveBtn.querySelector(".loader");
   const btnText = saveBtn.querySelector(".btn-text");
 
-  const strengthBars = document.getElementById("strengthBars").children;
+  const strengthBars = document.getElementById("strengthBars")?.children || [];
 
   const snackbar = document.getElementById("snackbar");
   const snackText = document.querySelector(".snack-text");
 
-  let user = null;
+  let userAuth = null;  // Supabase auth user
+  let userDB = null;    // Tabla users
 
-  // =============================
+  // ------------------------------------------------------------
   // SNACKBAR
-  // =============================
+  // ------------------------------------------------------------
   function mostrarSnackbar(msg) {
     snackText.textContent = msg;
     snackbar.classList.add("show");
@@ -56,36 +55,54 @@ document.addEventListener("DOMContentLoaded", () => {
     btnLoader.style.display = "none";
   }
 
-  // ============================================================
-  // CARGAR PERFIL DESDE SESSIONSTORAGE (CORRECCIÓN)
-  // ============================================================
-  function cargarPerfil() {
-    let usr = sessionStorage.getItem("cortero_user");
+  // ------------------------------------------------------------
+  // CARGAR DATOS REALES DESDE SUPABASE
+  // ------------------------------------------------------------
+  async function cargarPerfil() {
+    // 1. Obtener usuario autenticado
+    const { data: authData, error: authErr } = await sb.auth.getUser();
 
-    if (!usr) {
+    if (authErr || !authData?.user) {
       window.location.href = "login.html";
       return;
     }
 
-    usr = JSON.parse(usr);
+    userAuth = authData.user;
+    correoInput.value = userAuth.email; // correo de auth
 
-    // Guardar el usuario completo
-    user = usr;
+    // 2. Obtener registro de la tabla users
+    const { data: info } = await sb
+      .from("users")
+      .select("*")
+      .eq("id", userAuth.id)
+      .single();
 
-    // Mostrar datos
-    nombreInput.value = usr.name || "";
-    telefonoInput.value = usr.phone || "";
-    correoInput.value = usr.email || "";   // ← CORREGIDO
+    userDB = info;
 
-    // Foto
-    fotoPerfil.src = usr.photo_url || "imagenes/avatar-default.svg";
+    nombreInput.value = info?.name || "";
+    telefonoInput.value = info?.phone || "";
+    fotoPerfil.src = info?.photo_url || "imagenes/avatar-default.svg";
+
+    // 3. Guardar todo en sessionStorage para menú global
+    sessionStorage.setItem(
+      "cortero_user",
+      JSON.stringify({
+        id: userAuth.id,
+        email: userAuth.email,
+        name: info?.name,
+        phone: info?.phone,
+        photo_url: info?.photo_url
+      })
+    );
+
+    document.dispatchEvent(new CustomEvent("userDataUpdated"));
   }
 
   cargarPerfil();
 
-  // ============================================================
-  // FOTO DE PERFIL — SUBIR A STORAGE + GUARDAR EN BD
-  // ============================================================
+  // ------------------------------------------------------------
+  // SUBIR FOTO DE PERFIL
+  // ------------------------------------------------------------
   fotoPerfil.addEventListener("click", () => fotoInput.click());
   document.getElementById("btnEditarFoto").addEventListener("click", () => fotoInput.click());
 
@@ -95,7 +112,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     activarLoading();
 
-    const fileName = `avatar_${user.id}_${Date.now()}.jpg`;
+    const fileName = `avatar_${userAuth.id}_${Date.now()}.jpg`;
 
     const { error: uploadErr } = await sb.storage
       .from("avatars")
@@ -116,76 +133,66 @@ document.addEventListener("DOMContentLoaded", () => {
     const newUrl = urlData.publicUrl;
 
     // Actualizar tabla
-    await sb
-      .from("users")
+    await sb.from("users")
       .update({ photo_url: newUrl })
-      .eq("id", user.id);
+      .eq("id", userAuth.id);
 
-    // Actualizar local
-    user.photo_url = newUrl;
-    sessionStorage.setItem("cortero_user", JSON.stringify(user));
+    fotoPerfil.src = newUrl;
 
-    // Notificar menú
+    // Guardar sesión
+    let usr = JSON.parse(sessionStorage.getItem("cortero_user") || "{}");
+    usr.photo_url = newUrl;
+    sessionStorage.setItem("cortero_user", JSON.stringify(usr));
+
+    // Notificar al menú
     document.dispatchEvent(new CustomEvent("userPhotoUpdated", {
       detail: { photo_url: newUrl }
     }));
-
-    fotoPerfil.src = newUrl;
 
     desactivarLoading();
     mostrarSnackbar("Foto actualizada");
   });
 
-  // ============================================================
-  // MOSTRAR / OCULTAR CONTRASEÑAS
-  // ============================================================
+  // ------------------------------------------------------------
+  // MOSTRAR / OCULTAR CONTRASEÑA
+  // ------------------------------------------------------------
   document.querySelectorAll(".toggle-pass").forEach(icon => {
     icon.addEventListener("click", () => {
-      const target = document.getElementById(icon.dataset.target);
-      target.type = target.type === "password" ? "text" : "password";
+      const input = document.getElementById(icon.dataset.target);
+      input.type = input.type === "password" ? "text" : "password";
     });
   });
-
-  // ============================================================
-  // BLOQUE DE CONTRASEÑA — ANIMACIÓN SUAVE
-  // ============================================================
-  passwordSection.style.display = "none";
-  passwordSection.style.opacity = "0";
 
   btnMostrarPass.addEventListener("click", () => {
-    if (passwordSection.style.display === "none") {
-      passwordSection.style.display = "block";
-      setTimeout(() => passwordSection.style.opacity = "1", 10);
-    } else {
-      passwordSection.style.opacity = "0";
-      setTimeout(() => passwordSection.style.display = "none", 250);
-    }
+    const visible = passwordSection.style.display !== "none";
+    passwordSection.style.display = visible ? "none" : "block";
+    passwordSection.style.opacity = visible ? "0" : "1";
   });
 
-  // ============================================================
-  // BARRAS DE FUERZA — IGUAL QUE REGISTRO
-  // ============================================================
+  // ------------------------------------------------------------
+  // BARRAS DE FUERZA
+  // ------------------------------------------------------------
   function evaluarFuerza(pass) {
-    let score = 0;
-    if (pass.length >= 6) score++;
-    if (pass.length >= 10) score++;
-    if (/[A-Z]/.test(pass)) score++;
-    if (/[a-z]/.test(pass)) score++;
-    if (/[0-9]/.test(pass)) score++;
-    if (/[^A-Za-z0-9]/.test(pass)) score++;
-    return score;
+    let s = 0;
+    if (pass.length >= 6) s++;
+    if (pass.length >= 10) s++;
+    if (/[A-Z]/.test(pass)) s++;
+    if (/[a-z]/.test(pass)) s++;
+    if (/[0-9]/.test(pass)) s++;
+    if (/[^A-Za-z0-9]/.test(pass)) s++;
+    return s;
   }
 
-  passNueva.addEventListener("input", () => {
-    const score = evaluarFuerza(passNueva.value);
-    Array.from(strengthBars).forEach((bar, i) => {
-      bar.style.background = i < score ? "#33673B" : "#e0e0e0";
-    });
+  passNueva?.addEventListener("input", () => {
+    const level = evaluarFuerza(passNueva.value);
+    Array.from(strengthBars).forEach((bar, i) =>
+      bar.style.background = i < level ? "#33673B" : "#e0e0e0"
+    );
   });
 
-  // ============================================================
-  // GUARDAR CAMBIOS (FUNCIONAL AL 100%)
-  // ============================================================
+  // ------------------------------------------------------------
+  // GUARDAR CAMBIOS
+  // ------------------------------------------------------------
   saveBtn.addEventListener("click", async (e) => {
     e.preventDefault();
     activarLoading();
@@ -204,7 +211,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return mostrarSnackbar("Teléfono inválido");
     }
 
-    // Actualizar datos
+    // Actualizar tabla
     await sb
       .from("users")
       .update({
@@ -212,11 +219,10 @@ document.addEventListener("DOMContentLoaded", () => {
         phone: telefono,
         photo_url: fotoActual
       })
-      .eq("id", user.id);
+      .eq("id", userAuth.id);
 
-    // ===== CONTRASEÑA =====
+    // Cambiar contraseña
     if (passwordSection.style.display === "block") {
-
       if (!passActual.value || !passNueva.value || !passConfirm.value) {
         desactivarLoading();
         return mostrarSnackbar("Completa las contraseñas");
@@ -229,28 +235,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (passNueva.value.length < 6) {
         desactivarLoading();
-        return mostrarSnackbar("Contraseña muy corta");
+        return mostrarSnackbar("Contraseña demasiado corta");
       }
 
-      const cambio = await authExt.changePassword(
-        passActual.value,
-        passNueva.value
-      );
+      const resp = await authExt.changePassword(passActual.value, passNueva.value);
 
-      if (!cambio.ok) {
+      if (!resp.ok) {
         desactivarLoading();
         return mostrarSnackbar("Contraseña actual incorrecta");
       }
     }
 
-    // SessionStorage actualizado
-    user.name = nombre;
-    user.phone = telefono;
-    user.photo_url = fotoActual;
+    // Actualizar sesión
+    sessionStorage.setItem(
+      "cortero_user",
+      JSON.stringify({
+        id: userAuth.id,
+        email: userAuth.email,
+        name: nombre,
+        phone: telefono,
+        photo_url: fotoActual
+      })
+    );
 
-    sessionStorage.setItem("cortero_user", JSON.stringify(user));
-
-    // Notificar menú
     document.dispatchEvent(new CustomEvent("userDataUpdated"));
 
     desactivarLoading();
