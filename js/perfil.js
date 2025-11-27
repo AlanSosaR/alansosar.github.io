@@ -91,7 +91,7 @@ document.addEventListener("DOMContentLoaded", () => {
   cargarPerfil();
 
   // ============================================================
-  // FOTO DE PERFIL — SUBIR A SUPABASE + GUARDAR EN BD
+  // FOTO DE PERFIL — SUBIR A STORAGE + GUARDAR EN BD
   // ============================================================
   fotoPerfil.addEventListener("click", () => fotoInput.click());
   document.getElementById("btnEditarFoto").addEventListener("click", () => fotoInput.click());
@@ -124,34 +124,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const newUrl = urlData.publicUrl;
 
-    // Guardar en BD
+    // Guardar en tabla users
     await sb
       .from("users")
       .update({ photo_url: newUrl })
       .eq("id", user.id);
 
-    // ============================================================
-    // 🟢 GUARDAR EN sessionStorage (para menú y persistencia)
-    // ============================================================
+    // Guardar en sessionStorage
     let usr = sessionStorage.getItem("cortero_user");
     if (usr) {
       try {
         usr = JSON.parse(usr);
         usr.photo_url = newUrl;
         sessionStorage.setItem("cortero_user", JSON.stringify(usr));
-      } catch (err) {
-        console.warn("Error guardando foto en sessionStorage:", err);
-      }
+      } catch {}
     }
 
-    // ============================================================
-    // 🟢 Notificar al menú global
-    // ============================================================
+    // Notificar al menú global
     document.dispatchEvent(new CustomEvent("userPhotoUpdated", {
       detail: { photo_url: newUrl }
     }));
 
-    // Actualizar UI del perfil
+    // Actualizar UI inmediata
     fotoPerfil.src = newUrl;
 
     desactivarLoading();
@@ -186,7 +180,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // ============================================================
-  // BARRAS DE FUERZA DE CONTRASEÑA (MISMAS DE REGISTRO)
+  // BARRAS DE FUERZA DE CONTRASEÑA
   // ============================================================
   function evaluarFuerza(pass) {
     let score = 0;
@@ -208,7 +202,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // ============================================================
-  // GUARDAR CAMBIOS
+  // GUARDAR CAMBIOS (CORREGIDO COMPLETO)
   // ============================================================
   saveBtn.addEventListener("click", async (e) => {
     e.preventDefault();
@@ -216,6 +210,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const nombre = nombreInput.value.trim();
     const telefono = telefonoInput.value.trim();
+    const fotoActual = fotoPerfil.src;
 
     if (nombre.length < 2) {
       desactivarLoading();
@@ -226,12 +221,13 @@ document.addEventListener("DOMContentLoaded", () => {
       return mostrarSnackbar("Teléfono inválido");
     }
 
-    // Guardar datos básicos
+    // Guardar datos básicos + FOTO 🔥🔥
     await sb
       .from("users")
       .update({
         name: nombre,
-        phone: telefono
+        phone: telefono,
+        photo_url: fotoActual      // <── ESTA ES LA CORRECCIÓN CLAVE
       })
       .eq("id", user.id);
 
@@ -264,16 +260,17 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    // Actualizar nombre/teléfono en sesión
+    // Actualizar sessionStorage
     let usr = sessionStorage.getItem("cortero_user");
     if (usr) {
       try {
         usr = JSON.parse(usr);
         usr.name = nombre;
         usr.phone = telefono;
+        usr.photo_url = fotoActual;
 
         sessionStorage.setItem("cortero_user", JSON.stringify(usr));
-      } catch (err) {}
+      } catch {}
     }
 
     // Notificar al menú
