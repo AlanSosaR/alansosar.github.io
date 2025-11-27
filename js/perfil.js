@@ -1,53 +1,65 @@
 // ============================================================
-// PERFIL REAL — FIX DEFINITIVO 2025
+// PERFIL.JS — FINAL 2025 (Compatible con core-scripts-v3 + localStorage)
 // ============================================================
+
 console.log("🔥 PERFIL.JS INICIÓ");
 
 document.addEventListener("DOMContentLoaded", async () => {
 
-  // Esperar a Supabase sin usar await fuera de funciones
-  let check = 0;
-  while (!window.supabaseClient && check < 50) {
-    await new Promise(res => setTimeout(res, 50));
-    check++;
+  // Esperar a que Supabase exista
+  let t = 0;
+  while (!window.supabaseClient && t < 50) {
+    await new Promise(r => setTimeout(r, 50));
+    t++;
   }
 
   const sb = window.supabaseClient;
-  let user = null;
 
-  const nombreInput = document.getElementById("nombreInput");
+  // ============================================================
+  // OBTENER SESIÓN REAL DESDE SUPABASE (localStorage)
+  // ============================================================
+  async function obtenerSesionReal() {
+    let intentos = 0;
+    while (intentos < 50) {
+      const { data } = await sb.auth.getSession();
+      if (data?.session?.user) return data.session.user;
+      intentos++;
+      await new Promise(r => setTimeout(r, 50));
+    }
+    return null;
+  }
+
+  const user = await obtenerSesionReal();
+
+  if (!user) {
+    console.log("❌ No hay sesión → login.html");
+    window.location.href = "login.html";
+    return;
+  }
+
+  console.log("🟢 Sesión detectada:", user);
+
+  // ELEMENTOS
+  const nombreInput   = document.getElementById("nombreInput");
   const telefonoInput = document.getElementById("telefonoInput");
-  const correoInput = document.getElementById("correoInput");
-  const fotoPerfil = document.getElementById("fotoPerfil");
-  const fotoInput = document.getElementById("inputFoto");
-  const saveBtn = document.getElementById("saveBtn");
-  const snackbar = document.getElementById("snackbar");
-  const snackText = document.querySelector(".snack-text");
+  const correoInput   = document.getElementById("correoInput");
+  const fotoPerfil    = document.getElementById("fotoPerfil");
+  const fotoInput     = document.getElementById("inputFoto");
+  const saveBtn       = document.getElementById("saveBtn");
+  const snackbar      = document.getElementById("snackbar");
+  const snackText     = document.querySelector(".snack-text");
 
-  function mostrarSnackbar(msg) {
+  function snackbarMsg(msg) {
     snackText.textContent = msg;
     snackbar.classList.add("show");
     setTimeout(() => snackbar.classList.remove("show"), 2600);
   }
 
   // ============================================================
-  // CARGAR PERFIL
+  // CARGAR PERFIL DESDE LA TABLA USERS
   // ============================================================
   async function cargarPerfil() {
-
-    console.log("⏳ Leyendo sesión...");
-    const { data: sessionData } = await sb.auth.getSession();
-    user = sessionData?.session?.user;
-
-    console.log("🟢 Sesión detectada:", user);
-
-    if (!user) {
-      console.log("❌ Sin sesión. Redirigiendo...");
-      window.location.href = "login.html";
-      return;
-    }
-
-    console.log("📡 Cargando datos de BD...");
+    console.log("📡 Cargando datos desde users…");
 
     const { data: info } = await sb
       .from("users")
@@ -55,20 +67,20 @@ document.addEventListener("DOMContentLoaded", async () => {
       .eq("id", user.id)
       .single();
 
-    console.log("🟢 Datos obtenidos:", info);
+    console.log("🟢 Datos recibidos:", info);
 
     if (!info) return;
 
-    nombreInput.value = info.name || "";
+    nombreInput.value   = info.name || "";
     telefonoInput.value = info.phone || "";
-    correoInput.value = info.email;
-    fotoPerfil.src = info.photo_url || "imagenes/avatar-default.svg";
+    correoInput.value   = info.email || user.email;
+    fotoPerfil.src      = info.photo_url || "imagenes/avatar-default.svg";
   }
 
   await cargarPerfil();
 
   // ============================================================
-  // ACTUALIZAR FOTO
+  // SUBIR FOTO
   // ============================================================
   fotoPerfil.addEventListener("click", () => fotoInput.click());
 
@@ -78,11 +90,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const fileName = `avatar_${user.id}_${Date.now()}.jpg`;
 
-    const { error: uploadErr } = await sb.storage
+    const { error: upErr } = await sb
+      .storage
       .from("avatars")
       .upload(fileName, file, { upsert: true });
 
-    if (uploadErr) return mostrarSnackbar("Error al subir foto");
+    if (upErr) return snackbarMsg("Error al subir foto");
 
     const { data: urlData } = sb.storage
       .from("avatars")
@@ -90,16 +103,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const newUrl = urlData.publicUrl;
 
-    await sb.from("users")
+    await sb
+      .from("users")
       .update({ photo_url: newUrl })
       .eq("id", user.id);
 
     fotoPerfil.src = newUrl;
-    mostrarSnackbar("Foto actualizada");
+    snackbarMsg("Foto actualizada");
   });
 
   // ============================================================
-  // GUARDAR DATOS
+  // GUARDAR NOMBRE + TELÉFONO
   // ============================================================
   saveBtn.addEventListener("click", async (e) => {
     e.preventDefault();
@@ -112,6 +126,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       })
       .eq("id", user.id);
 
-    mostrarSnackbar("Cambios guardados");
+    snackbarMsg("Cambios guardados");
   });
 });
