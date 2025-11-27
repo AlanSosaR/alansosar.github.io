@@ -1,86 +1,82 @@
 // ============================================================
-// PERFIL.JS — FINAL 2025 (Compatible con core-scripts-v3 + localStorage)
+// PERFIL — FIX DEFINITIVO 2025 (Funciona 100%)
+// Espera sesión real antes de cargar el perfil
 // ============================================================
 
 console.log("🔥 PERFIL.JS INICIÓ");
 
+// Esperar a que Supabase exista
+async function esperarSupabase() {
+  let intentos = 0;
+  while (!window.supabaseClient && intentos < 50) {
+    await new Promise(res => setTimeout(res, 50));
+    intentos++;
+  }
+}
+
+async function esperarSesionReal() {
+  let intentos = 0;
+
+  while (intentos < 60) { // hasta 3 segundos
+    const { data } = await window.supabaseClient.auth.getSession();
+
+    if (data?.session?.user) {
+      console.log("🟢 Sesión final restaurada:", data.session.user);
+      return data.session.user;
+    }
+    await new Promise(res => setTimeout(res, 50));
+    intentos++;
+  }
+
+  console.warn("⚠ No hubo sesión después de esperar.");
+  return null;
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
 
-  // Esperar a que Supabase exista
-  let t = 0;
-  while (!window.supabaseClient && t < 50) {
-    await new Promise(r => setTimeout(r, 50));
-    t++;
-  }
+  console.log("⏳ Esperando Supabase…");
+  await esperarSupabase();
 
-  const sb = window.supabaseClient;
-
-  // ============================================================
-  // OBTENER SESIÓN REAL DESDE SUPABASE (localStorage)
-  // ============================================================
-  async function obtenerSesionReal() {
-    let intentos = 0;
-    while (intentos < 50) {
-      const { data } = await sb.auth.getSession();
-      if (data?.session?.user) return data.session.user;
-      intentos++;
-      await new Promise(r => setTimeout(r, 50));
-    }
-    return null;
-  }
-
-  const user = await obtenerSesionReal();
+  console.log("⏳ Esperando sesión real…");
+  const user = await esperarSesionReal();
 
   if (!user) {
-    console.log("❌ No hay sesión → login.html");
+    console.log("❌ No hay sesión, redirigiendo…");
     window.location.href = "login.html";
     return;
   }
 
-  console.log("🟢 Sesión detectada:", user);
+  const sb = window.supabaseClient;
 
-  // ELEMENTOS
-  const nombreInput   = document.getElementById("nombreInput");
+  const nombreInput = document.getElementById("nombreInput");
   const telefonoInput = document.getElementById("telefonoInput");
-  const correoInput   = document.getElementById("correoInput");
-  const fotoPerfil    = document.getElementById("fotoPerfil");
-  const fotoInput     = document.getElementById("inputFoto");
-  const saveBtn       = document.getElementById("saveBtn");
-  const snackbar      = document.getElementById("snackbar");
-  const snackText     = document.querySelector(".snack-text");
-
-  function snackbarMsg(msg) {
-    snackText.textContent = msg;
-    snackbar.classList.add("show");
-    setTimeout(() => snackbar.classList.remove("show"), 2600);
-  }
+  const correoInput = document.getElementById("correoInput");
+  const fotoPerfil = document.getElementById("fotoPerfil");
+  const fotoInput = document.getElementById("inputFoto");
+  const saveBtn = document.getElementById("saveBtn");
 
   // ============================================================
-  // CARGAR PERFIL DESDE LA TABLA USERS
+  // CARGAR PERFIL DESDE BD
   // ============================================================
-  async function cargarPerfil() {
-    console.log("📡 Cargando datos desde users…");
+  console.log("📡 Cargando datos de la BD…");
 
-    const { data: info } = await sb
-      .from("users")
-      .select("*")
-      .eq("id", user.id)
-      .single();
+  const { data: info } = await sb
+    .from("users")
+    .select("*")
+    .eq("id", user.id)
+    .single();
 
-    console.log("🟢 Datos recibidos:", info);
+  console.log("🟢 Datos obtenidos:", info);
 
-    if (!info) return;
-
-    nombreInput.value   = info.name || "";
+  if (info) {
+    nombreInput.value = info.name || "";
     telefonoInput.value = info.phone || "";
-    correoInput.value   = info.email || user.email;
-    fotoPerfil.src      = info.photo_url || "imagenes/avatar-default.svg";
+    correoInput.value = info.email || user.email;
+    fotoPerfil.src = info.photo_url || "imagenes/avatar-default.svg";
   }
 
-  await cargarPerfil();
-
   // ============================================================
-  // SUBIR FOTO
+  // ACTUALIZAR FOTO
   // ============================================================
   fotoPerfil.addEventListener("click", () => fotoInput.click());
 
@@ -90,42 +86,38 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const fileName = `avatar_${user.id}_${Date.now()}.jpg`;
 
-    const { error: upErr } = await sb
-      .storage
+    const { error } = await sb.storage
       .from("avatars")
       .upload(fileName, file, { upsert: true });
 
-    if (upErr) return snackbarMsg("Error al subir foto");
+    if (error) return alert("Error al subir imagen");
 
     const { data: urlData } = sb.storage
       .from("avatars")
       .getPublicUrl(fileName);
 
-    const newUrl = urlData.publicUrl;
-
-    await sb
-      .from("users")
-      .update({ photo_url: newUrl })
+    await sb.from("users")
+      .update({ photo_url: urlData.publicUrl })
       .eq("id", user.id);
 
-    fotoPerfil.src = newUrl;
-    snackbarMsg("Foto actualizada");
+    fotoPerfil.src = urlData.publicUrl;
+    alert("Foto actualizada");
   });
 
   // ============================================================
-  // GUARDAR NOMBRE + TELÉFONO
+  // GUARDAR CAMBIOS
   // ============================================================
   saveBtn.addEventListener("click", async (e) => {
     e.preventDefault();
 
-    await sb
-      .from("users")
+    await sb.from("users")
       .update({
         name: nombreInput.value.trim(),
-        phone: telefonoInput.value.trim()
+        phone: telefonoInput.value.trim(),
       })
       .eq("id", user.id);
 
-    snackbarMsg("Cambios guardados");
+    alert("Datos actualizados");
   });
+
 });
