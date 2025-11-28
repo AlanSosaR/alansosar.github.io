@@ -1,6 +1,6 @@
 // ========================================================
-// LOGIN – Café Cortero ☕
-// VALIDACIÓN + SESIÓN + PERFIL EN SESSIONSTORAGE
+// LOGIN – Café Cortero ☕ (VERSIÓN FINAL LOCALSTORAGE)
+// VALIDACIÓN + SESIÓN + PERFIL EN LOCALSTORAGE
 // ========================================================
 
 const supabase = window.supabaseClient;
@@ -33,7 +33,7 @@ const autocorrecciones = {
 };
 
 // ========================================================
-// FUNCIONES DE VALIDACIÓN
+// VALIDACIONES
 // ========================================================
 
 function tipoDeEntrada(valor) {
@@ -70,7 +70,7 @@ function validarPassword(valor) {
 }
 
 // ========================================================
-// LIMPIAR ERRORES (ACTUALIZADO)
+// LIMPIAR ERRORES
 // ========================================================
 
 function limpiarErroresInput(event) {
@@ -82,8 +82,8 @@ function limpiarErroresInput(event) {
   box.classList.remove("error");
   msg.textContent = "";
   msg.style.opacity = "0";
-  msg.style.height = "0px";        // <--- FIX
-  msg.style.marginTop = "0px";     // <--- FIX
+  msg.style.height = "0px";
+  msg.style.marginTop = "0px";
 
   if (input.value.trim() !== "") {
     box.classList.add("success");
@@ -100,7 +100,7 @@ userInput.addEventListener("input", limpiarErroresInput);
 passInput.addEventListener("input", limpiarErroresInput);
 
 // ========================================================
-// MARCAR ERROR (ACTUALIZADO)
+// MARCAR ERROR
 // ========================================================
 
 function marcarError(input, placeholderText) {
@@ -116,12 +116,12 @@ function marcarError(input, placeholderText) {
 
   msg.textContent = placeholderText;
   msg.style.opacity = "1";
-  msg.style.height = "18px";       // <--- FIX
-  msg.style.marginTop = "4px";     // <--- FIX
+  msg.style.height = "18px";
+  msg.style.marginTop = "4px";
 }
 
 // ========================================================
-// SUBMIT LOGIN
+// SUBMIT LOGIN (LOCALSTORAGE VERSION)
 // ========================================================
 
 loginForm.addEventListener("submit", async (e) => {
@@ -151,7 +151,7 @@ loginForm.addEventListener("submit", async (e) => {
   let emailToUse = userValue;
 
   try {
-    // Buscar email por teléfono
+    // Buscar email si el usuario usa teléfono
     if (tipo === "telefono") {
       const { data: rows } = await supabase
         .from("users")
@@ -168,7 +168,7 @@ loginForm.addEventListener("submit", async (e) => {
     }
 
     // LOGIN REAL
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email: emailToUse,
       password: passValue
     });
@@ -178,27 +178,22 @@ loginForm.addEventListener("submit", async (e) => {
       return marcarError(passInput, "Credenciales incorrectas");
     }
 
-    // GUARDAR PERFIL
+    // GUARDAR PERFIL EN LOCALSTORAGE
     try {
       const { data: perfiles } = await supabase
         .from("users")
-        .select("name, photo_url")
+        .select("id, name, email, phone, photo_url")
         .eq("email", emailToUse)
         .limit(1);
 
       if (perfiles && perfiles.length > 0) {
-        sessionStorage.setItem("cortero_user", JSON.stringify(perfiles[0]));
+        localStorage.setItem("cortero_user", JSON.stringify(perfiles[0]));
       }
     } catch (err) {
       console.warn("No se pudo guardar el perfil:", err);
     }
 
-    sessionStorage.setItem("cortero_logged", "1");
-
-    // Actualizar menú inmediatamente
-    if (window.__refreshMenuFromSession) {
-      window.__refreshMenuFromSession();
-    }
+    localStorage.setItem("cortero_logged", "1");
 
     mostrarSnackbar("Inicio de sesión exitoso ☕");
 
