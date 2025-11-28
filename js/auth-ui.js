@@ -1,6 +1,6 @@
 // ============================================================
-// AUTH-UI.JS — Versión FINAL 2025 (compatible con localStorage)
-// Seguro en páginas SIN menú (login / registro)
+// AUTH-UI.JS — Versión FINAL 2025 (logout real + localStorage)
+// Compatible con páginas con y sin menú
 // ============================================================
 
 console.log("👤 auth-ui.js cargado — versión FINAL");
@@ -73,7 +73,6 @@ document.addEventListener("DOMContentLoaded", () => {
     showLoggedIn(user);
   }
 
-  // Ejecutar al cargar
   refreshMenuFromStorage();
 
   // ============================================================
@@ -82,23 +81,39 @@ document.addEventListener("DOMContentLoaded", () => {
   sb.auth.onAuthStateChange(async (event) => {
     console.log("📌 Auth event:", event);
 
-    if (event === "SIGNED_IN") refreshMenuFromStorage();
-    if (event === "SIGNED_OUT") showLoggedOut();
+    if (event === "SIGNED_IN") {
+      refreshMenuFromStorage();
+    }
+
+    if (event === "SIGNED_OUT") {
+      showLoggedOut();
+    }
   });
 
   // ============================================================
-  // LOGOUT REAL
+  // LOGOUT REAL — FIX DEFINITIVO 2025
   // ============================================================
   async function doLogout(e) {
     if (e) e.preventDefault();
 
-    try { await sb.auth.signOut(); } catch {}
+    console.log("🚪 Cerrando sesión…");
 
+    // 1. Cerrar sesión real en Supabase
+    try {
+      await sb.auth.signOut();
+    } catch (err) {
+      console.warn("⚠ Error Supabase signOut:", err);
+    }
+
+    // 2. Borrar TODA la info local
     localStorage.removeItem("cortero_logged");
     localStorage.removeItem("cortero_user");
+    localStorage.removeItem("cortero-session");  // token Supabase almacenado
 
+    // 3. Actualizar visualmente
     showLoggedOut();
 
+    // 4. Redirigir (evita volver atrás a una sesión fantasma)
     window.location.replace("index.html");
   }
 
@@ -109,25 +124,29 @@ document.addEventListener("DOMContentLoaded", () => {
   if (logoutMobile) logoutMobile.addEventListener("click", doLogout);
 
   // ============================================================
-  // FOTO DE PERFIL ACTUALIZADA
+  // EVENTOS: FOTO ACTUALIZADA
   // ============================================================
   document.addEventListener("userPhotoUpdated", (e) => {
-    const newPhoto = e.detail.photo_url;
+    const raw = localStorage.getItem("cortero_user");
+    if (!raw) return;
 
-    let user = JSON.parse(localStorage.getItem("cortero_user") || "{}");
-    user.photo_url = newPhoto;
+    const u = JSON.parse(raw);
+    u.photo_url = e.detail.photo_url;
 
-    localStorage.setItem("cortero_user", JSON.stringify(user));
+    localStorage.setItem("cortero_user", JSON.stringify(u));
 
-    showLoggedIn(user);
+    showLoggedIn(u);
   });
 
   // ============================================================
-  // NOMBRE / TELÉFONO ACTUALIZADOS
+  // EVENTOS: NOMBRE / TELÉFONO ACTUALIZADOS
   // ============================================================
   document.addEventListener("userDataUpdated", () => {
-    const user = JSON.parse(localStorage.getItem("cortero_user") || "{}");
-    showLoggedIn(user);
+    const raw = localStorage.getItem("cortero_user");
+    if (!raw) return;
+
+    const u = JSON.parse(raw);
+    showLoggedIn(u);
   });
 
 });
