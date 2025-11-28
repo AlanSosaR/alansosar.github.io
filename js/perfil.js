@@ -1,96 +1,114 @@
 // ============================================================
-// PERFIL — FIX DEFINITIVO 2025 (LocalStorage + Sesión Real)
+// PERFIL — VERSIÓN FINAL 2025 (LocalStorage + Sesión Real)
 // ============================================================
 
 console.log("🔥 PERFIL.JS INICIÓ");
 
-// Esperar a que Supabase exista
+// ============================================================
+// LEER PERFIL DESDE LOCALSTORAGE (INMEDIATO)
+// ============================================================
+function cargarDesdeLocalStorage() {
+  const raw = localStorage.getItem("cortero_user");
+  if (!raw) return null;
+
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+
+function pintarPerfil(data) {
+  if (!data) return;
+
+  document.getElementById("nombreInput").value = data.name || "";
+  document.getElementById("correoInput").value = data.email || "";
+  document.getElementById("telefonoInput").value = data.phone || "";
+  document.getElementById("fotoPerfil").src = data.photo_url || "imagenes/avatar-default.svg";
+
+  console.log("🟢 Perfil pintado desde localStorage:", data);
+}
+
+// ============================================================
+// ESPERAR SUPABASE + SESIÓN REAL
+// ============================================================
 async function esperarSupabase() {
-  let intentos = 0;
-  while (!window.supabaseClient && intentos < 50) {
+  let x = 0;
+  while (!window.supabaseClient && x < 50) {
     await new Promise(res => setTimeout(res, 50));
-    intentos++;
+    x++;
   }
 }
 
 async function esperarSesionReal() {
-  let intentos = 0;
-
-  while (intentos < 60) { // hasta 3 segundos
+  let x = 0;
+  while (x < 60) {
     const { data } = await window.supabaseClient.auth.getSession();
+    if (data?.session?.user) return data.session.user;
 
-    if (data?.session?.user) {
-      console.log("🟢 Sesión final restaurada:", data.session.user);
-      return data.session.user;
-    }
     await new Promise(res => setTimeout(res, 50));
-    intentos++;
+    x++;
   }
-
-  console.warn("⚠ No hubo sesión después de esperar.");
   return null;
 }
 
+// ============================================================
+// MAIN
+// ============================================================
 document.addEventListener("DOMContentLoaded", async () => {
 
+  // 1) PINTAR DATOS INMEDIATAMENTE DESDE LOCALSTORAGE
+  const localUser = cargarDesdeLocalStorage();
+  pintarPerfil(localUser);
+
+  // 2) ESPERAR SUPABASE
   console.log("⏳ Esperando Supabase…");
   await esperarSupabase();
 
+  // 3) ESPERAR SESIÓN REAL
   console.log("⏳ Esperando sesión real…");
-  const user = await esperarSesionReal();
+  const supaUser = await esperarSesionReal();
 
-  if (!user) {
-    console.log("❌ No hay sesión, redirigiendo…");
+  if (!supaUser) {
+    console.log("❌ No hay sesión real, redirigiendo…");
     window.location.href = "login.html";
     return;
   }
 
   const sb = window.supabaseClient;
 
-  const nombreInput = document.getElementById("nombreInput");
-  const telefonoInput = document.getElementById("telefonoInput");
-  const correoInput = document.getElementById("correoInput");
-  const fotoPerfil = document.getElementById("fotoPerfil");
-  const fotoInput = document.getElementById("inputFoto");
-  const saveBtn = document.getElementById("saveBtn");
-
-  // ============================================================
-  // CARGAR PERFIL DESDE BD
-  // ============================================================
+  // 4) CARGAR DATOS COMPLETOS DESDE BD
   console.log("📡 Cargando datos de la BD…");
-
-  const { data: info } = await sb
+  const { data: info, error } = await sb
     .from("users")
     .select("*")
-    .eq("id", user.id)
+    .eq("id", supaUser.id)
     .single();
 
-  console.log("🟢 Datos obtenidos:", info);
-
-  if (info) {
-    nombreInput.value = info.name || "";
-    telefonoInput.value = info.phone || "";
-    correoInput.value = info.email || user.email;
-    fotoPerfil.src = info.photo_url || "imagenes/avatar-default.svg";
-
-    // Guardar en localStorage para menú global
-    localStorage.setItem("cortero_user", JSON.stringify(info));
-    localStorage.setItem("cortero_logged", "1");
-
-    document.dispatchEvent(new CustomEvent("userDataUpdated"));
-    document.dispatchEvent(new CustomEvent("userPhotoUpdated", { detail: { photo_url: info.photo_url }}));
+  if (error) {
+    console.error("❌ Error obteniendo perfil:", error);
+    return;
   }
 
+  // 5) PINTAR PERFIL + GUARDAR
+  pintarPerfil(info);
+  localStorage.setItem("cortero_user", JSON.stringify(info));
+  localStorage.setItem("cortero_logged", "1");
+
   // ============================================================
-  // ACTUALIZAR FOTO
+  // FOTO
   // ============================================================
-  fotoPerfil.addEventListener("click", () => fotoInput.click());
+  const fotoPerfil = document.getElementById("fotoPerfil");
+  const fotoInput = document.getElementById("inputFoto");
+  const btnEditarFoto = document.getElementById("btnEditarFoto");
+
+  btnEditarFoto.addEventListener("click", () => fotoInput.click());
 
   fotoInput.addEventListener("change", async () => {
     const file = fotoInput.files[0];
     if (!file) return;
 
-    const fileName = `avatar_${user.id}_${Date.now()}.jpg`;
+    const fileName = `avatar_${supaUser.id}_${Date.now()}.jpg`;
 
     const { error } = await sb.storage
       .from("avatars")
@@ -104,44 +122,40 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     await sb.from("users")
       .update({ photo_url: urlData.publicUrl })
-      .eq("id", user.id);
+      .eq("id", supaUser.id);
 
     fotoPerfil.src = urlData.publicUrl;
 
-    // Actualizar localStorage
-    let ls = JSON.parse(localStorage.getItem("cortero_user") || "{}");
-    ls.photo_url = urlData.publicUrl;
-    localStorage.setItem("cortero_user", JSON.stringify(ls));
+    // actualizar local
+    const u = cargarDesdeLocalStorage();
+    u.photo_url = urlData.publicUrl;
+    localStorage.setItem("cortero_user", JSON.stringify(u));
 
-    // Notificar a auth-ui
-    document.dispatchEvent(
-      new CustomEvent("userPhotoUpdated", { detail: { photo_url: urlData.publicUrl } })
-    );
-
-    alert("Foto actualizada");
+    document.dispatchEvent(new CustomEvent("userPhotoUpdated", { detail: { photo_url: urlData.publicUrl }}));
   });
 
   // ============================================================
-  // GUARDAR CAMBIOS
+  // GUARDAR DATOS BÁSICOS
   // ============================================================
+  const saveBtn = document.getElementById("saveBtn");
+
   saveBtn.addEventListener("click", async (e) => {
     e.preventDefault();
 
-    await sb.from("users")
-      .update({
-        name: nombreInput.value.trim(),
-        phone: telefonoInput.value.trim(),
-      })
-      .eq("id", user.id);
+    const newName = document.getElementById("nombreInput").value.trim();
+    const newPhone = document.getElementById("telefonoInput").value.trim();
 
-    // Actualizar localStorage
-    let ls = JSON.parse(localStorage.getItem("cortero_user") || "{}");
-    ls.name = nombreInput.value.trim();
-    ls.phone = telefonoInput.value.trim();
-    localStorage.setItem("cortero_user", JSON.stringify(ls));
+    await sb.from("users")
+      .update({ name: newName, phone: newPhone })
+      .eq("id", supaUser.id);
+
+    // actualizar local
+    const u = cargarDesdeLocalStorage();
+    u.name = newName;
+    u.phone = newPhone;
+    localStorage.setItem("cortero_user", JSON.stringify(u));
 
     document.dispatchEvent(new CustomEvent("userDataUpdated"));
-
     alert("Datos actualizados");
   });
 
