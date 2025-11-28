@@ -5,17 +5,14 @@
 console.log("🔥 PERFIL.JS INICIÓ");
 
 // ============================================================
-// LEER PERFIL DESDE LOCALSTORAGE (INMEDIATO)
+// LEER PERFIL DESDE LOCALSTORAGE
 // ============================================================
 function cargarDesdeLocalStorage() {
   const raw = localStorage.getItem("cortero_user");
   if (!raw) return null;
 
-  try {
-    return JSON.parse(raw);
-  } catch {
-    return null;
-  }
+  try { return JSON.parse(raw); }
+  catch { return null; }
 }
 
 function pintarPerfil(data) {
@@ -45,7 +42,6 @@ async function esperarSesionReal() {
   while (x < 60) {
     const { data } = await window.supabaseClient.auth.getSession();
     if (data?.session?.user) return data.session.user;
-
     await new Promise(res => setTimeout(res, 50));
     x++;
   }
@@ -57,106 +53,140 @@ async function esperarSesionReal() {
 // ============================================================
 document.addEventListener("DOMContentLoaded", async () => {
 
-  // 1) PINTAR DATOS INMEDIATAMENTE DESDE LOCALSTORAGE
+  // 1) Mostrar datos RAPIDAMENTE desde localStorage
   const localUser = cargarDesdeLocalStorage();
   pintarPerfil(localUser);
 
-  // 2) ESPERAR SUPABASE
-  console.log("⏳ Esperando Supabase…");
+  // 2) Esperar Supabase
   await esperarSupabase();
 
-  // 3) ESPERAR SESIÓN REAL
-  console.log("⏳ Esperando sesión real…");
+  // 3) Esperar sesión real
   const supaUser = await esperarSesionReal();
 
   if (!supaUser) {
-    console.log("❌ No hay sesión real, redirigiendo…");
     window.location.href = "login.html";
     return;
   }
 
   const sb = window.supabaseClient;
 
-  // 4) CARGAR DATOS COMPLETOS DESDE BD
-  console.log("📡 Cargando datos de la BD…");
-  const { data: info, error } = await sb
+  // 4) Cargar desde la BD
+  const { data: info } = await sb
     .from("users")
     .select("*")
     .eq("id", supaUser.id)
     .single();
 
-  if (error) {
-    console.error("❌ Error obteniendo perfil:", error);
-    return;
+  if (info) {
+    pintarPerfil(info);
+    localStorage.setItem("cortero_user", JSON.stringify(info));
+    localStorage.setItem("cortero_logged", "1");
   }
 
-  // 5) PINTAR PERFIL + GUARDAR
-  pintarPerfil(info);
-  localStorage.setItem("cortero_user", JSON.stringify(info));
-  localStorage.setItem("cortero_logged", "1");
-
   // ============================================================
-  // FOTO
+  // FOTO — NO SUBIR HASTA GUARDAR
   // ============================================================
   const fotoPerfil = document.getElementById("fotoPerfil");
   const fotoInput = document.getElementById("inputFoto");
   const btnEditarFoto = document.getElementById("btnEditarFoto");
 
+  let nuevaFotoFile = null; // <<< FOTO TEMPORAL
+
   btnEditarFoto.addEventListener("click", () => fotoInput.click());
 
-  fotoInput.addEventListener("change", async () => {
+  fotoInput.addEventListener("change", () => {
     const file = fotoInput.files[0];
     if (!file) return;
 
-    const fileName = `avatar_${supaUser.id}_${Date.now()}.jpg`;
+    nuevaFotoFile = file;
 
-    const { error } = await sb.storage
-      .from("avatars")
-      .upload(fileName, file, { upsert: true });
+    // Vista previa inmediata
+    const reader = new FileReader();
+    reader.onload = () => fotoPerfil.src = reader.result;
+    reader.readAsDataURL(file);
 
-    if (error) return alert("Error al subir imagen");
-
-    const { data: urlData } = sb.storage
-      .from("avatars")
-      .getPublicUrl(fileName);
-
-    await sb.from("users")
-      .update({ photo_url: urlData.publicUrl })
-      .eq("id", supaUser.id);
-
-    fotoPerfil.src = urlData.publicUrl;
-
-    // actualizar local
-    const u = cargarDesdeLocalStorage();
-    u.photo_url = urlData.publicUrl;
-    localStorage.setItem("cortero_user", JSON.stringify(u));
-
-    document.dispatchEvent(new CustomEvent("userPhotoUpdated", { detail: { photo_url: urlData.publicUrl }}));
+    console.log("📸 Foto seleccionada, lista para subir al guardar.");
   });
 
   // ============================================================
-  // GUARDAR DATOS BÁSICOS
+  // CAMBIAR CONTRASEÑA (Activar bloque)
+// ============================================================
+  const btnMostrarPass = document.getElementById("btnMostrarPass");
+  const bloquePassword = document.getElementById("bloquePassword");
+
+  btnMostrarPass.addEventListener("click", () => {
+    bloquePassword.style.display = "block";
+    setTimeout(() => bloquePassword.style.opacity = "1", 50);
+  });
+
+  // ============================================================
+  // GUARDAR DATOS
   // ============================================================
   const saveBtn = document.getElementById("saveBtn");
+  const loader = saveBtn.querySelector(".loader");
+  const btnText = saveBtn.querySelector(".btn-text");
 
   saveBtn.addEventListener("click", async (e) => {
     e.preventDefault();
 
+    // Activar loader
+    saveBtn.classList.add("loading");
+    btnText.style.opacity = "0";
+    loader.style.display = "inline-block";
+
+    let fotoURLFinal = info.photo_url;
+
+    // SUBIR FOTO SOLO SI EL USUARIO LA CAMBIÓ
+    if (nuevaFotoFile) {
+      const fileName = `avatar_${supaUser.id}_${Date.now()}.jpg`;
+
+      const { error: upErr } = await sb.storage
+        .from("avatars")
+        .upload(fileName, nuevaFotoFile, { upsert: true });
+
+      if (!upErr) {
+        const { data: urlData } = sb.storage
+          .from("avatars")
+          .getPublicUrl(fileName);
+
+        fotoURLFinal = urlData.publicUrl;
+      }
+    }
+
+    // DATOS ACTUALIZADOS
     const newName = document.getElementById("nombreInput").value.trim();
     const newPhone = document.getElementById("telefonoInput").value.trim();
 
     await sb.from("users")
-      .update({ name: newName, phone: newPhone })
+      .update({
+        name: newName,
+        phone: newPhone,
+        photo_url: fotoURLFinal
+      })
       .eq("id", supaUser.id);
 
-    // actualizar local
-    const u = cargarDesdeLocalStorage();
-    u.name = newName;
-    u.phone = newPhone;
-    localStorage.setItem("cortero_user", JSON.stringify(u));
+    // Actualizar LocalStorage
+    const updated = {
+      ...info,
+      name: newName,
+      phone: newPhone,
+      photo_url: fotoURLFinal
+    };
 
+    localStorage.setItem("cortero_user", JSON.stringify(updated));
+
+    // Notificar al menú
     document.dispatchEvent(new CustomEvent("userDataUpdated"));
-    alert("Datos actualizados");
+    document.dispatchEvent(new CustomEvent("userPhotoUpdated", {
+      detail: { photo_url: fotoURLFinal }
+    }));
+
+    // Desactivar loader
+    saveBtn.classList.remove("loading");
+    btnText.style.opacity = "1";
+    loader.style.display = "none";
+
+    alert("Cambios guardados con éxito");
   });
 
 });
