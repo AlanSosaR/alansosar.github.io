@@ -151,7 +151,7 @@ loginForm.addEventListener("submit", async (e) => {
   let emailToUse = userValue;
 
   try {
-    // Buscar email si el usuario usa teléfono
+    // Si el usuario escribe un teléfono, obtener el email real
     if (tipo === "telefono") {
       const { data: rows } = await supabase
         .from("users")
@@ -176,6 +176,11 @@ loginForm.addEventListener("submit", async (e) => {
     if (error) {
       desactivarLoading();
       return marcarError(passInput, "Credenciales incorrectas");
+    }
+
+    // ⚡ GUARDAR SESIÓN REAL PARA PERFIL.JS
+    if (data?.session) {
+      localStorage.setItem("cortero-session", JSON.stringify(data.session));
     }
 
     // GUARDAR PERFIL EN LOCALSTORAGE
