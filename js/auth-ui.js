@@ -1,42 +1,55 @@
 // ============================================================
-// AUTH-UI.JS — Versión estable 2025 con localStorage
+// AUTH-UI.JS — Versión FINAL 2025 (compatible con localStorage)
+// Seguro en páginas SIN menú (login / registro)
 // ============================================================
 
-console.log("👤 auth-ui.js cargado — versión estable");
+console.log("👤 auth-ui.js cargado — versión FINAL");
+
+// Helper seguro
+function safe(id) {
+  return document.getElementById(id) || null;
+}
 
 document.addEventListener("DOMContentLoaded", () => {
 
   const sb = window.supabaseClient;
-  const $id = (id) => document.getElementById(id);
 
   // ============================================================
   // ESTADOS DEL MENÚ
   // ============================================================
   function showLoggedOut() {
-    if ($id("login-desktop")) $id("login-desktop").style.display = "inline-block";
-    if ($id("profile-desktop")) $id("profile-desktop").style.display = "none";
+    const a = safe("login-desktop");
+    const b = safe("profile-desktop");
+    const c = safe("drawer-links-default");
+    const d = safe("drawer-links-logged");
 
-    if ($id("drawer-links-default")) $id("drawer-links-default").style.display = "flex";
-    if ($id("drawer-links-logged")) $id("drawer-links-logged").style.display = "none";
+    if (a) a.style.display = "inline-block";
+    if (b) b.style.display = "none";
+    if (c) c.style.display = "flex";
+    if (d) d.style.display = "none";
   }
 
   function showLoggedIn(user) {
     const name = user?.name || "Usuario";
     const photo = user?.photo_url || "imagenes/avatar-default.svg";
 
-    // Desktop
-    if ($id("login-desktop")) $id("login-desktop").style.display = "none";
-    if ($id("profile-desktop")) {
-      $id("profile-desktop").style.display = "flex";
-      if ($id("profile-photo-desktop")) $id("profile-photo-desktop").src = photo;
-      if ($id("hello-desktop")) $id("hello-desktop").textContent = `Hola, ${name}`;
-    }
+    const a = safe("login-desktop");
+    const b = safe("profile-desktop");
+    const c = safe("profile-photo-desktop");
+    const d = safe("hello-desktop");
+    const e = safe("drawer-links-default");
+    const f = safe("drawer-links-logged");
+    const g = safe("profile-photo-mobile");
+    const h = safe("hello-mobile");
 
-    // Mobile Drawer
-    if ($id("drawer-links-default")) $id("drawer-links-default").style.display = "none";
-    if ($id("drawer-links-logged")) $id("drawer-links-logged").style.display = "flex";
-    if ($id("profile-photo-mobile")) $id("profile-photo-mobile").src = photo;
-    if ($id("hello-mobile")) $id("hello-mobile").textContent = `Hola, ${name}`;
+    if (a) a.style.display = "none";
+    if (b) b.style.display = "flex";
+    if (c) c.src = photo;
+    if (d) d.textContent = `Hola, ${name}`;
+    if (e) e.style.display = "none";
+    if (f) f.style.display = "flex";
+    if (g) g.src = photo;
+    if (h) h.textContent = `Hola, ${name}`;
   }
 
   // ============================================================
@@ -50,17 +63,17 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    const userRaw = localStorage.getItem("cortero_user");
-
-    if (!userRaw) {
+    const raw = localStorage.getItem("cortero_user");
+    if (!raw) {
       showLoggedOut();
       return;
     }
 
-    const user = JSON.parse(userRaw);
+    const user = JSON.parse(raw);
     showLoggedIn(user);
   }
 
+  // Ejecutar al cargar
   refreshMenuFromStorage();
 
   // ============================================================
@@ -69,28 +82,18 @@ document.addEventListener("DOMContentLoaded", () => {
   sb.auth.onAuthStateChange(async (event) => {
     console.log("📌 Auth event:", event);
 
-    if (event === "SIGNED_IN") {
-      refreshMenuFromStorage();
-    }
-
-    if (event === "SIGNED_OUT") {
-      showLoggedOut();
-    }
+    if (event === "SIGNED_IN") refreshMenuFromStorage();
+    if (event === "SIGNED_OUT") showLoggedOut();
   });
 
   // ============================================================
   // LOGOUT REAL
   // ============================================================
   async function doLogout(e) {
-    e.preventDefault();
+    if (e) e.preventDefault();
 
-    try {
-      await sb.auth.signOut();
-    } catch (err) {
-      console.warn("Error al cerrar sesión:", err);
-    }
+    try { await sb.auth.signOut(); } catch {}
 
-    // Borrar todo
     localStorage.removeItem("cortero_logged");
     localStorage.removeItem("cortero_user");
 
@@ -99,11 +102,11 @@ document.addEventListener("DOMContentLoaded", () => {
     window.location.replace("index.html");
   }
 
-  if ($id("logout-desktop"))
-    $id("logout-desktop").addEventListener("click", doLogout);
+  const logoutDesktop = safe("logout-desktop");
+  const logoutMobile = safe("logout-mobile");
 
-  if ($id("logout-mobile"))
-    $id("logout-mobile").addEventListener("click", doLogout);
+  if (logoutDesktop) logoutDesktop.addEventListener("click", doLogout);
+  if (logoutMobile) logoutMobile.addEventListener("click", doLogout);
 
   // ============================================================
   // FOTO DE PERFIL ACTUALIZADA
@@ -120,7 +123,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // ============================================================
-  // DATOS ACTUALIZADOS (NOMBRE / TELÉFONO)
+  // NOMBRE / TELÉFONO ACTUALIZADOS
   // ============================================================
   document.addEventListener("userDataUpdated", () => {
     const user = JSON.parse(localStorage.getItem("cortero_user") || "{}");
