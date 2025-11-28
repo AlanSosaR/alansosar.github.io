@@ -1,15 +1,47 @@
 /* ============================================================
-   SUPABASE AUTH — VERSIÓN FINAL REPARADA 2025
-   Compatible con Publishable Key + sessionStorage
+   SUPABASE AUTH — VERSIÓN FINAL 2025
+   Persistencia REAL con localStorage
    ============================================================ */
+
+console.log("🔥 supabase-auth-v4.js cargado — FIX REAL LOCALSTORAGE");
 
 const sb = window.supabaseClient;
 window.supabaseAuth = {};
 
-console.log("🔥 supabase-auth-v3.js cargado — FIX DEFINITIVO");
+/* ============================================================
+   1) GUARDAR SESIÓN Y PERFIL
+   ============================================================ */
+async function guardarSesionYPerfil(session) {
+  if (!session || !session.user) return;
+
+  // 1. guardar token
+  localStorage.setItem("cortero-session", JSON.stringify(session));
+
+  // 2. cargar perfil desde BD
+  const { data: perfil } = await sb
+    .from("users")
+    .select("id, name, phone, email, photo_url")
+    .eq("id", session.user.id)
+    .single();
+
+  // 3. guardar perfil global
+  const userData = {
+    id: perfil?.id || session.user.id,
+    name: perfil?.name || "",
+    phone: perfil?.phone || "",
+    email: perfil?.email || session.user.email,
+    photo_url: perfil?.photo_url || "imagenes/avatar-default.svg"
+  };
+
+  localStorage.setItem("cortero_user", JSON.stringify(userData));
+  localStorage.setItem("cortero_logged", "1");
+
+  console.log("🟢 Sesión + perfil guardados:", userData);
+}
+
 
 /* ============================================================
-   1) REGISTRO (signUp + insert en tabla users)
+   2) REGISTRO
    ============================================================ */
 window.supabaseAuth.registerUser = async function (
   email,
@@ -18,57 +50,19 @@ window.supabaseAuth.registerUser = async function (
   fullName,
   country = "Honduras"
 ) {
-  console.log("🚀 Registrando usuario…");
-
   const { data, error } = await sb.auth.signUp({
     email,
     password,
-    options: {
-      emailRedirectTo: "https://alansosar.github.io/login.html",
-      data: {
-        full_name: fullName,
-        phone,
-        country
-      }
-    }
+    options: { data: { full_name: fullName, phone, country } }
   });
 
-  if (error) {
-    console.error("❌ Error en signUp:", error);
-    throw error;
-  }
-
-  const user = data.user;
-  if (!user) throw new Error("No user returned from signUp");
-
-  console.log("📨 Se envió el correo de verificación.");
-
-  const now = new Date().toISOString();
-  const photoURL = "https://alansosar.github.io/imagenes/avatar-default.svg";
-
-  const { error: insertError } = await sb.from("users").insert({
-    id: user.id,
-    name: fullName,
-    email,
-    phone,
-    country,
-    photo_url: photoURL,
-    rol: "usuario",
-    created_at: now,
-    updated_at: now
-  });
-
-  if (insertError) {
-    console.error("❌ Error al insertar en users:", insertError);
-    throw insertError;
-  }
-
-  console.log("🟢 Usuario creado en tabla users ✔");
-  return true;
+  if (error) throw error;
+  return data;
 };
 
+
 /* ============================================================
-   2) LOGIN (normal)
+   3) LOGIN
    ============================================================ */
 window.supabaseAuth.loginUser = async function (email, password) {
   const { data, error } = await sb.auth.signInWithPassword({
@@ -77,45 +71,55 @@ window.supabaseAuth.loginUser = async function (email, password) {
   });
 
   if (error) throw error;
+
+  await guardarSesionYPerfil(data.session);
+
   return data;
 };
 
+
 /* ============================================================
-   3) LOGIN CON MAGIC LINK
+   4) Magic link
    ============================================================ */
 window.supabaseAuth.loginMagicLink = async function (email) {
-  const { data, error } = await sb.auth.signInWithOtp({
-    email,
-    options: {
-      emailRedirectTo: "https://alansosar.github.io/login.html",
-    }
-  });
-
+  const { data, error } = await sb.auth.signInWithOtp({ email });
   if (error) throw error;
   return data;
 };
 
-/* ============================================================
-   4) GET CURRENT USER
-   (publishable key → SOLO funciona getSession)
-   ============================================================ */
-window.supabaseAuth.getCurrentUser = async function () {
-  const { data } = await sb.auth.getSession();
-  return data?.session?.user || null;
-};
 
 /* ============================================================
-   5) LOGOUT — FIX FINAL
+   5) Obtener usuario actual (desde localStorage)
+   ============================================================ */
+window.supabaseAuth.getCurrentUser = async function () {
+  const raw = localStorage.getItem("cortero_user");
+  if (!raw) return null;
+  return JSON.parse(raw);
+};
+
+
+/* ============================================================
+   6) LOGOUT REAL
    ============================================================ */
 window.supabaseAuth.logoutUser = async function () {
   await sb.auth.signOut();
 
-  // 🔥 CLEAN REAL
-  sessionStorage.removeItem("cortero-session");
-  sessionStorage.removeItem("cortero_logged");   // <-- NECESARIO PARA EL MENÚ
-  sessionStorage.removeItem("cortero_user");     // <-- NECESARIO PARA EL PERFIL
+  localStorage.removeItem("cortero-session");
+  localStorage.removeItem("cortero_user");
+  localStorage.removeItem("cortero_logged");
 
-  console.log("👋 Sesión cerrada correctamente (FIX REAL)");
-
-  return true;
+  console.log("👋 Sesión eliminada (localStorage)");
 };
+
+
+/* ============================================================
+   7) RESTAURAR SESIÓN AL ABRIR PÁGINA
+   ============================================================ */
+document.addEventListener("DOMContentLoaded", async () => {
+  const { data } = await sb.auth.getSession();
+
+  if (data?.session?.user) {
+    console.log("♻ Restaurando sesión Supabase…");
+    await guardarSesionYPerfil(data.session);
+  }
+});
