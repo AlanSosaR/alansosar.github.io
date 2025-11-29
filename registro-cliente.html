@@ -125,21 +125,20 @@
   <!-- ====================================================== -->
   <!-- 🚀 ORDEN CORRECTO DE SCRIPTS                           -->
   <!-- ====================================================== -->
+<!-- 1) SDK Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <!-- 1) SDK Supabase -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- 2) Cliente global (crea window.supabaseClient) -->
+<script src="js/supabase-client.js?v=1"></script>
 
-  <!-- 2) Cliente global -->
-  <script src="js/core-scripts-v2.js?v=1"></script>
+<!-- 3) Autenticación extendida (login, register, restore session) -->
+<script src="js/supabase-auth-v4.js?v=1"></script>
 
-  <!-- 3) Autenticación extendida -->
-  <script src="js/supabase-auth-v4.js?v=1"></script>
+<!-- 4) Control visual del menú (aunque aquí no se use) -->
+<script src="js/auth-ui.js?v=7"></script>
 
-  <!-- 4) UI de autenticación -->
-  <script src="js/auth-ui.js?v=5"></script>
-
-  <!-- 5) Registro -->
-  <script src="js/registro-cliente.js?v=7"></script>
+<!-- 5) Registro de cliente (pantalla actual) -->
+<script src="js/registro-cliente.js?v=7"></script>
 
 </body>
 </html>
