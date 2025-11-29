@@ -14,17 +14,14 @@ window.supabaseAuth = {};
 async function guardarSesionYPerfil(session) {
   if (!session || !session.user) return;
 
-  // 1. guardar token
   localStorage.setItem("cortero-session", JSON.stringify(session));
 
-  // 2. cargar perfil desde BD
   const { data: perfil } = await sb
     .from("users")
     .select("id, name, phone, email, photo_url")
     .eq("id", session.user.id)
     .single();
 
-  // 3. guardar perfil global
   const userData = {
     id: perfil?.id || session.user.id,
     name: perfil?.name || "",
@@ -39,7 +36,6 @@ async function guardarSesionYPerfil(session) {
   console.log("🟢 Sesión + perfil guardados:", userData);
 }
 
-
 /* ============================================================
    2) REGISTRO
    ============================================================ */
@@ -47,19 +43,23 @@ window.supabaseAuth.registerUser = async function (
   email,
   password,
   phone,
-  fullName,
-  country = "Honduras"
+  fullName
 ) {
   const { data, error } = await sb.auth.signUp({
     email,
     password,
-    options: { data: { full_name: fullName, phone, country } }
+    options: {
+      data: {
+        full_name: fullName,
+        phone,
+        country: ""            // ← ← VACÍO como pediste
+      }
+    }
   });
 
   if (error) throw error;
   return data;
 };
-
 
 /* ============================================================
    3) LOGIN
@@ -77,7 +77,6 @@ window.supabaseAuth.loginUser = async function (email, password) {
   return data;
 };
 
-
 /* ============================================================
    4) Magic link
    ============================================================ */
@@ -87,7 +86,6 @@ window.supabaseAuth.loginMagicLink = async function (email) {
   return data;
 };
 
-
 /* ============================================================
    5) Obtener usuario actual (desde localStorage)
    ============================================================ */
@@ -96,7 +94,6 @@ window.supabaseAuth.getCurrentUser = async function () {
   if (!raw) return null;
   return JSON.parse(raw);
 };
-
 
 /* ============================================================
    6) LOGOUT REAL
@@ -110,7 +107,6 @@ window.supabaseAuth.logoutUser = async function () {
 
   console.log("👋 Sesión eliminada (localStorage)");
 };
-
 
 /* ============================================================
    7) RESTAURAR SESIÓN AL ABRIR PÁGINA
