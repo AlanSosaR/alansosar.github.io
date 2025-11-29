@@ -169,20 +169,20 @@
       </div>
     </section>
   </main>
-
+<!-- 0. Supabase (librería externa) -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<!-- 1. Crear cliente -->
-<script src="js/core-scripts-v2.js?v=4"></script>
+<!-- 1. Cliente Supabase (crea window.supabaseClient) -->
+<script src="js/supabase-client.js?v=1"></script>
 
-<!-- 2. Funciones de auth -->
+<!-- 2. Funciones de autenticación: login, registro, logout real -->
 <script src="js/supabase-auth-v4.js?v=1"></script>
 
-<!-- 3. Menú y UI -->
-<script src="js/auth-ui.js?v=4"></script>
+<!-- 3. Control visual del menú, foto, estado logueado, logout -->
+<script src="js/auth-ui.js?v=7"></script>
 
-<!-- 4. Perfil (último SIEMPRE) -->
-<script src="js/perfil.js?v=4"></script>
+<!-- 4. Perfil (solo en perfil.html) -->
+<script src="js/perfil.js?v=5"></script>
 
 </body>
 </html>
