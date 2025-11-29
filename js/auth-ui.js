@@ -1,32 +1,18 @@
 // ============================================================
-// AUTH-UI.JS — Versión FINAL V7 (2025)
-// Menú escritorio + menú móvil + logout + foto + safe mode
+// AUTH-UI — Versión FINAL 2025
+// Controla SOLO la interfaz del menú (no la sesión)
 // ============================================================
 
-console.log("👤 auth-ui.js cargado — versión FINAL V7");
+console.log("👤 auth-ui.js cargado — versión FINAL 2025");
 
-// ------------------------------
-// Helper seguro
-// ------------------------------
+// Helper
 function safe(id) {
   return document.getElementById(id) || null;
 }
 
-// ------------------------------
-// Esperar a que Supabase cargue
-// ------------------------------
-async function esperarSupabaseUI() {
-  let i = 0;
-  while (!window.supabaseClient && i < 100) {
-    await new Promise(res => setTimeout(res, 30));
-    i++;
-  }
-  return window.supabaseClient;
-}
-
-// ------------------------------
-// MENÚ: ESTADOS
-// ------------------------------
+/* ============================================================
+   MOSTRAR ESTADOS
+============================================================ */
 function showLoggedOut() {
   const loginDesktop = safe("login-desktop");
   const profileDesktop = safe("profile-desktop");
@@ -45,89 +31,35 @@ function showLoggedIn(user) {
   const photo = user?.photo_url || "imagenes/avatar-default.svg";
 
   // Escritorio
-  const loginDesktop = safe("login-desktop");
-  const profileDesktop = safe("profile-desktop");
-  const photoDesk = safe("profile-photo-desktop");
-  const helloDesk = safe("hello-desktop");
+  if (safe("login-desktop")) safe("login-desktop").style.display = "none";
+  if (safe("profile-desktop")) safe("profile-desktop").style.display = "flex";
 
-  if (loginDesktop) loginDesktop.style.display = "none";
-  if (profileDesktop) profileDesktop.style.display = "flex";
-  if (photoDesk) photoDesk.src = photo;
-  if (helloDesk) helloDesk.textContent = `Hola, ${name}`;
+  if (safe("profile-photo-desktop")) safe("profile-photo-desktop").src = photo;
+  if (safe("hello-desktop")) safe("hello-desktop").textContent = `Hola, ${name}`;
 
   // Móvil
-  const drawerDefault = safe("drawer-links-default");
-  const drawerLogged = safe("drawer-links-logged");
-  const photoMob = safe("profile-photo-mobile");
-  const helloMob = safe("hello-mobile");
+  if (safe("drawer-links-default")) safe("drawer-links-default").style.display = "none";
+  if (safe("drawer-links-logged")) safe("drawer-links-logged").style.display = "flex";
 
-  if (drawerDefault) drawerDefault.style.display = "none";
-  if (drawerLogged) drawerLogged.style.display = "flex";
-  if (photoMob) photoMob.src = photo;
-  if (helloMob) helloMob.textContent = `Hola, ${name}`;
+  if (safe("profile-photo-mobile")) safe("profile-photo-mobile").src = photo;
+  if (safe("hello-mobile")) safe("hello-mobile").textContent = `Hola, ${name}`;
 }
 
-// ------------------------------
-// MENÚ SEGÚN LOCALSTORAGE
-// ------------------------------
-function refreshMenuFromStorage() {
-  const logged = localStorage.getItem("cortero_logged");
-  const rawUser = localStorage.getItem("cortero_user");
-
-  if (logged !== "1" || !rawUser) return showLoggedOut();
-
-  try {
-    const user = JSON.parse(rawUser);
-    showLoggedIn(user);
-  } catch {
-    showLoggedOut();
-  }
-}
-
-// ------------------------------
-// TOGGLE MENÚ PERFIL ESCRITORIO
-// ------------------------------
-function activarToggleMenuEscritorio() {
-  const profileWrapper = safe("profile-desktop");
-  const profileMenu = safe("profile-menu");
-
-  if (!profileWrapper || !profileMenu) return;
-
-  profileWrapper.addEventListener("click", (e) => {
-    e.stopPropagation();
-    profileMenu.classList.toggle("open");
-  });
-
-  // Click afuera → cerrar
-  document.addEventListener("click", (e) => {
-    if (!profileWrapper.contains(e.target)) {
-      profileMenu.classList.remove("open");
-    }
-  });
-}
-
-// ------------------------------
-// LOGOUT REAL 100% FIJO
-// ------------------------------
-async function activarLogout(sb) {
+/* ============================================================
+   ACTIVAR LOGOUT
+============================================================ */
+function activarLogout() {
   async function doLogout(e) {
     if (e) e.preventDefault();
 
-    console.log("🚪 Cerrando sesión…");
+    console.log("🚪 Logout desde UI…");
 
-    try {
-      await sb.auth.signOut();
-    } catch (err) {
-      console.warn("Error al cerrar sesión:", err);
+    // Solo llama a la función central
+    if (window.supabaseAuth?.logoutUser) {
+      await window.supabaseAuth.logoutUser();
     }
 
-    // Limpiar todo
-    localStorage.removeItem("cortero_logged");
-    localStorage.removeItem("cortero_user");
-    localStorage.removeItem("cortero-session");
-
     showLoggedOut();
-
     window.location.replace("index.html");
   }
 
@@ -138,37 +70,63 @@ async function activarLogout(sb) {
   if (logoutMobile) logoutMobile.addEventListener("click", doLogout);
 }
 
-// ------------------------------
-// EVENTOS GLOBALS: foto + datos
-// ------------------------------
-function activarEventosGlobales() {
-  document.addEventListener("userPhotoUpdated", (e) => {
-    const raw = localStorage.getItem("cortero_user");
-    if (!raw) return;
+/* ============================================================
+   MENÚ DESPLEGABLE — ESCRITORIO
+============================================================ */
+function activarToggleMenuEscritorio() {
+  const wrapper = safe("profile-desktop");
+  const menu = safe("profile-menu");
 
-    const data = JSON.parse(raw);
-    data.photo_url = e.detail.photo_url;
+  if (!wrapper || !menu) return;
 
-    localStorage.setItem("cortero_user", JSON.stringify(data));
-    refreshMenuFromStorage();
+  wrapper.addEventListener("click", (e) => {
+    e.stopPropagation();
+    menu.classList.toggle("open");
   });
 
-  document.addEventListener("userDataUpdated", () => {
-    refreshMenuFromStorage();
+  document.addEventListener("click", (e) => {
+    if (!wrapper.contains(e.target)) {
+      menu.classList.remove("open");
+    }
   });
 }
 
-// ------------------------------
-// INIT
-// ------------------------------
-document.addEventListener("DOMContentLoaded", async () => {
-  const sb = await esperarSupabaseUI();
+/* ============================================================
+   EVENTOS GLOBALES EMITIDOS POR SUPABASE-CLIENT.JS
+============================================================ */
+document.addEventListener("userLoggedIn", (e) => {
+  console.log("🎉 userLoggedIn recibido en UI");
+  showLoggedIn(e.detail);
+});
 
-  refreshMenuFromStorage();
-  activarEventosGlobales();
-  activarLogout(sb);
+document.addEventListener("userLoggedOut", () => {
+  console.log("👋 userLoggedOut recibido en UI");
+  showLoggedOut();
+});
+
+/* ============================================================
+   EVENTOS DESDE PERFIL
+============================================================ */
+document.addEventListener("userPhotoUpdated", (e) => {
+  const newPhoto = e.detail.photo_url;
+  if (safe("profile-photo-desktop")) safe("profile-photo-desktop").src = newPhoto;
+  if (safe("profile-photo-mobile")) safe("profile-photo-mobile").src = newPhoto;
+});
+
+document.addEventListener("userDataUpdated", () => {
+  const raw = localStorage.getItem("cortero_user");
+  if (raw) showLoggedIn(JSON.parse(raw));
+});
+
+/* ============================================================
+   INIT UI
+============================================================ */
+document.addEventListener("DOMContentLoaded", () => {
+  activarLogout();
   activarToggleMenuEscritorio();
 
-  // Listener Supabase (fallback)
-  sb.auth.onAuthStateChange(() => refreshMenuFromStorage());
+  // Sincroniza el estado inicial
+  const raw = localStorage.getItem("cortero_user");
+  if (raw) showLoggedIn(JSON.parse(raw));
+  else showLoggedOut();
 });
