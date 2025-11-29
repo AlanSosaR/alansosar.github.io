@@ -125,17 +125,15 @@
 <!-- 1) Supabase SDK -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<!-- 2) Cliente Supabase (crea window.supabaseClient) -->
-<script src="js/supabase-client.js?v=1"></script>
-
-<!-- 3) Auth: funciones reales de login/registro -->
-<script src="js/supabase-auth-v4.js?v=1"></script>
-
-<!-- 4) Lógica UI del login (tu archivo login.js) -->
-<script src="js/login.js?v=7"></script>
-
-<!-- 5) Control de menú (aunque login no usa menú, previene errores) -->
-<script src="js/auth-ui.js?v=7"></script>
+<script>
+  const v = Date.now();
+  document.write(`
+    <script src="js/supabase-client.js?v=${v}"><\/script>
+    <script src="js/supabase-auth-v4.js?v=${v}"><\/script>
+    <script src="js/login.js?v=${v}"><\/script>
+    <script src="js/auth-ui.js?v=${v}"><\/script>
+  `);
+</script>
 
 </body>
 </html>
