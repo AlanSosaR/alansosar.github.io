@@ -1,17 +1,16 @@
 // ============================================================
-// PERFIL — VERSIÓN FINAL 2025 (LocalStorage + Sesión Real)
+// PERFIL — VERSIÓN FINAL 2025 (Foto vista previa, subida al guardar,
+// contraseña funcional, loader OK, sincronización con menú)
 // ============================================================
 
 console.log("🔥 PERFIL.JS INICIÓ");
 
 // ============================================================
-// HELPERS LOCALSTORAGE
+// LOCALSTORAGE HELPERS
 // ============================================================
 function leerUsuarioLS() {
-  const raw = localStorage.getItem("cortero_user");
-  if (!raw) return null;
   try {
-    return JSON.parse(raw);
+    return JSON.parse(localStorage.getItem("cortero_user")) || null;
   } catch {
     return null;
   }
@@ -22,30 +21,26 @@ function guardarUsuarioLS(data) {
   localStorage.setItem("cortero_logged", "1");
 }
 
-// Pintar datos en el formulario
+// Pintar datos al cargar
 function pintarPerfil(data) {
   if (!data) return;
 
-  const nombreInput = document.getElementById("nombreInput");
-  const correoInput = document.getElementById("correoInput");
-  const telefonoInput = document.getElementById("telefonoInput");
-  const fotoPerfil = document.getElementById("fotoPerfil");
-
-  nombreInput.value = data.name || "";
-  correoInput.value = data.email || "";
-  telefonoInput.value = data.phone || "";
-  fotoPerfil.src = data.photo_url || "imagenes/avatar-default.svg";
+  document.getElementById("nombreInput").value = data.name || "";
+  document.getElementById("correoInput").value = data.email || "";
+  document.getElementById("telefonoInput").value = data.phone || "";
+  document.getElementById("fotoPerfil").src =
+    data.photo_url || "imagenes/avatar-default.svg";
 
   console.log("🟢 Perfil pintado:", data);
 }
 
 // ============================================================
-// ESPERAR SUPABASE + SESIÓN
+// ESPERAR SUPABASE Y SESIÓN REAL
 // ============================================================
 async function esperarSupabase() {
   let i = 0;
   while (!window.supabaseClient && i < 100) {
-    await new Promise(res => setTimeout(res, 50));
+    await new Promise((res) => setTimeout(res, 40));
     i++;
   }
 }
@@ -55,7 +50,8 @@ async function esperarSesionReal() {
   while (i < 100) {
     const { data } = await window.supabaseClient.auth.getSession();
     if (data?.session?.user) return data.session.user;
-    await new Promise(res => setTimeout(res, 50));
+
+    await new Promise((res) => setTimeout(res, 40));
     i++;
   }
   return null;
@@ -65,24 +61,21 @@ async function esperarSesionReal() {
 // MAIN
 // ============================================================
 document.addEventListener("DOMContentLoaded", async () => {
-  // 1) Pintar lo que haya en localStorage de inmediato
+  // Mostrar inmediatamente desde localStorage
   pintarPerfil(leerUsuarioLS());
 
-  // 2) Referencias de DOM
-  const fotoContainer = document.querySelector(".foto-perfil-container");
-  const fotoPerfil = document.getElementById("fotoPerfil");
+  // DOM
   const fotoInput = document.getElementById("inputFoto");
+  const fotoPerfil = document.getElementById("fotoPerfil");
   const btnEditarFoto = document.getElementById("btnEditarFoto");
-  const saveBtn = document.getElementById("saveBtn");
-  const btnLoader = saveBtn.querySelector(".loader");
-  const btnText = saveBtn.querySelector(".btn-text");
 
-  const nombreInput = document.getElementById("nombreInput");
-  const correoInput = document.getElementById("correoInput");
-  const telefonoInput = document.getElementById("telefonoInput");
+  const saveBtn = document.getElementById("saveBtn");
+  const loader = saveBtn.querySelector(".loader");
+  const btnText = saveBtn.querySelector(".btn-text");
 
   const btnMostrarPass = document.getElementById("btnMostrarPass");
   const bloquePassword = document.getElementById("bloquePassword");
+
   const oldPassword = document.getElementById("oldPassword");
   const newPassword = document.getElementById("newPassword");
   const passConfirm = document.getElementById("passConfirm");
@@ -91,61 +84,49 @@ document.addEventListener("DOMContentLoaded", async () => {
   const errorNewPass = document.getElementById("errorNewPass");
   const errorConfirmPass = document.getElementById("errorConfirmPass");
 
-  // asegurar overlay correcto
-  if (fotoContainer) fotoContainer.style.position = "relative";
-
-  // Helpers del botón
+  // Loader helpers
   function startLoading() {
-    saveBtn.classList.add("loading");
+    loader.style.display = "inline-block";
     btnText.style.opacity = "0";
-    btnLoader.style.display = "inline-block";
   }
-
   function stopLoading() {
-    saveBtn.classList.remove("loading");
+    loader.style.display = "none";
     btnText.style.opacity = "1";
-    btnLoader.style.display = "none";
   }
 
-  // 3) Esperar Supabase
-  console.log("⏳ Esperando Supabase…");
+  // Esperar supabase
+  console.log("⏳ Esperando Supabase...");
   await esperarSupabase();
   const sb = window.supabaseClient;
 
-  // 4) Esperar sesión real
-  console.log("⏳ Esperando sesión real…");
-  const user = await esperarSesionReal();
-  if (!user) {
-    console.log("❌ No hay sesión, redirigiendo a login…");
-    window.location.href = "login.html";
-    return;
-  }
+  // Esperar sesión real
+  console.log("⏳ Restaurando sesión...");
+  const sessionUser = await esperarSesionReal();
+  if (!sessionUser) return (window.location.href = "login.html");
 
-  // 5) Cargar datos frescos de BD
-  console.log("📡 Cargando datos desde BD…");
-  const { data: info, error } = await sb
+  // Cargar datos frescos desde BD
+  console.log("📡 Cargando BD…");
+  const { data: info } = await sb
     .from("users")
     .select("*")
-    .eq("id", user.id)
+    .eq("id", sessionUser.id)
     .single();
 
-  let usuarioActual = info || leerUsuarioLS() || {
-    id: user.id,
-    name: "",
-    email: user.email,
-    phone: "",
-    photo_url: "imagenes/avatar-default.svg"
-  };
-
-  if (error) {
-    console.warn("⚠ Error al obtener perfil, uso LS:", error);
-  }
+  let usuarioActual =
+    info ||
+    leerUsuarioLS() || {
+      id: sessionUser.id,
+      email: sessionUser.email,
+      name: "",
+      phone: "",
+      photo_url: "imagenes/avatar-default.svg",
+    };
 
   pintarPerfil(usuarioActual);
   guardarUsuarioLS(usuarioActual);
 
   // ============================================================
-  // FOTO: seleccionar archivo (solo vista previa)
+  // FOTO – SOLO VISTA PREVIA (se sube al guardar)
   // ============================================================
   let nuevaFotoArchivo = null;
 
@@ -154,127 +135,115 @@ document.addEventListener("DOMContentLoaded", async () => {
   fotoInput.addEventListener("change", (e) => {
     const file = e.target.files[0];
     if (!file) return;
+
     nuevaFotoArchivo = file;
-    fotoPerfil.src = URL.createObjectURL(file); // vista previa inmediata
+    fotoPerfil.src = URL.createObjectURL(file); // vista previa
   });
 
   // ============================================================
-  // CAMBIAR CONTRASEÑA: toggle bloque
+  // CONTRASEÑA – Mostrar / ocultar bloque
   // ============================================================
   btnMostrarPass.addEventListener("click", () => {
-    if (bloquePassword.style.display === "none" || bloquePassword.style.display === "") {
-      bloquePassword.style.display = "block";
-      setTimeout(() => bloquePassword.style.opacity = "1", 20);
-    } else {
+    if (bloquePassword.style.display === "block") {
       bloquePassword.style.opacity = "0";
       setTimeout(() => (bloquePassword.style.display = "none"), 250);
+    } else {
+      bloquePassword.style.display = "block";
+      setTimeout(() => (bloquePassword.style.opacity = "1"), 20);
     }
   });
 
-  function limpiarErroresPass() {
+  function limpiarErrores() {
     errorOldPass.textContent = "";
     errorNewPass.textContent = "";
     errorConfirmPass.textContent = "";
   }
 
   // ============================================================
-  // GUARDAR CAMBIOS (nombre, teléfono, foto, contraseña)
-// ============================================================
+  // GUARDAR CAMBIOS — FOTO + DATOS + CONTRASEÑA
+  // ============================================================
   saveBtn.addEventListener("click", async (e) => {
     e.preventDefault();
     startLoading();
-    limpiarErroresPass();
+    limpiarErrores();
 
     try {
-      let photoURL = usuarioActual.photo_url;
+      let nuevaFotoURL = usuarioActual.photo_url;
 
-      // 1) Subir foto si el usuario eligió una nueva
+      // 1) Subir foto si se eligió una nueva
       if (nuevaFotoArchivo) {
-        const fileName = `avatar_${user.id}_${Date.now()}.jpg`;
+        const fileName = `avatar_${usuarioActual.id}_${Date.now()}.jpg`;
 
         const { error: uploadErr } = await sb.storage
           .from("avatars")
           .upload(fileName, nuevaFotoArchivo, { upsert: true });
 
-        if (uploadErr) {
-          console.error(uploadErr);
-          alert("Error al subir la foto");
-        } else {
+        if (!uploadErr) {
           const { data: urlData } =
             sb.storage.from("avatars").getPublicUrl(fileName);
-          photoURL = urlData.publicUrl;
+          nuevaFotoURL = urlData.publicUrl;
         }
       }
 
-      // 2) Actualizar datos básicos en BD
-      const nuevoNombre = nombreInput.value.trim();
-      const nuevoTelefono = telefonoInput.value.trim();
+      // 2) Guardar nombre + teléfono + foto
+      const nuevoNombre = document.getElementById("nombreInput").value.trim();
+      const nuevoTelefono = document
+        .getElementById("telefonoInput")
+        .value.trim();
 
-      await sb.from("users")
+      await sb
+        .from("users")
         .update({
           name: nuevoNombre,
           phone: nuevoTelefono,
-          photo_url: photoURL
+          photo_url: nuevaFotoURL,
         })
-        .eq("id", user.id);
+        .eq("id", usuarioActual.id);
 
-      // 3) Cambiar contraseña si el bloque está visible y hay datos
+      // 3) Contraseña si el bloque está visible
       if (bloquePassword.style.display === "block") {
-        const oldVal = oldPassword.value.trim();
-        const newVal = newPassword.value.trim();
-        const confVal = passConfirm.value.trim();
+        const n1 = newPassword.value.trim();
+        const n2 = passConfirm.value.trim();
 
-        if (newVal || confVal || oldVal) {
-          if (!newVal || newVal.length < 6) {
-            errorNewPass.textContent = "Mínimo 6 caracteres";
-            throw new Error("Password inválida");
-          }
-          if (newVal !== confVal) {
-            errorConfirmPass.textContent = "Las contraseñas no coinciden";
-            throw new Error("Confirmación inválida");
-          }
+        if (n1 || n2) {
+          if (n1.length < 6)
+            throw (errorNewPass.textContent = "Mínimo 6 caracteres");
+          if (n1 !== n2)
+            throw (errorConfirmPass.textContent = "Las contraseñas no coinciden");
 
-          // Supabase no necesita la contraseña vieja para updateUser,
-          // solo requiere que haya sesión válida.
           const { error: passErr } = await sb.auth.updateUser({
-            password: newVal
+            password: n1,
           });
 
-          if (passErr) {
-            console.error(passErr);
-            errorNewPass.textContent = "No se pudo actualizar la contraseña";
-            throw passErr;
-          }
-
-          // limpiar inputs de contraseña
-          oldPassword.value = "";
-          newPassword.value = "";
-          passConfirm.value = "";
+          if (passErr)
+            throw (errorNewPass.textContent =
+              "No se pudo actualizar la contraseña");
         }
       }
 
-      // 4) Actualizar objeto local y guardar en LS
+      // 4) Actualizar versión local
       usuarioActual = {
         ...usuarioActual,
         name: nuevoNombre,
         phone: nuevoTelefono,
-        photo_url: photoURL
+        photo_url: nuevaFotoURL,
       };
+
       guardarUsuarioLS(usuarioActual);
 
-      // 5) Notificar al menú global
+      // 5) Notificar menú
       document.dispatchEvent(
-        new CustomEvent("userPhotoUpdated", { detail: { photo_url: photoURL } })
+        new CustomEvent("userPhotoUpdated", {
+          detail: { photo_url: nuevaFotoURL },
+        })
       );
       document.dispatchEvent(new CustomEvent("userDataUpdated"));
 
       alert("Datos actualizados correctamente");
-
     } catch (err) {
-      console.error("❌ Error al guardar perfil:", err);
-    } finally {
-      stopLoading();
+      console.error("❌ Error guardando:", err);
     }
-  });
 
+    stopLoading();
+  });
 });
