@@ -65,6 +65,17 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  /* ============================================================
+     FIX: Cerrar drawer al cambiar tamaño de pantalla
+     (evita que se quede pegado en modo móvil del navegador)
+     ============================================================ */
+  window.addEventListener("resize", () => {
+    const drawer = safe("drawer");
+    if (drawer && drawer.classList.contains("open")) {
+      drawer.classList.remove("open");
+    }
+  });
+
   /* Hero carousel */
   const heroImgs = document.querySelectorAll(".hero-carousel img");
   let heroIndex = 0;
