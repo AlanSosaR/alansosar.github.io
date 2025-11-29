@@ -1,13 +1,13 @@
 // ============================================================
-// PERFIL — VERSIÓN FINAL 2025
-// Usa únicamente el JSON ya cargado al iniciar sesión
+// PERFIL — USA DIRECTAMENTE EL JSON DEL LOGIN
+// Sin esperas innecesarias, sin loops, sin bugs
 // ============================================================
 
 console.log("🔥 perfil.js cargado");
 
-// ============================================================
-// LEER / GUARDAR LOCALSTORAGE
-// ============================================================
+// ------------------------------------------------------------
+// LEER DATA REAL DEL LOGIN
+// ------------------------------------------------------------
 function leerUsuarioLS() {
   try {
     return JSON.parse(localStorage.getItem("cortero_user")) || null;
@@ -21,9 +21,9 @@ function guardarUsuarioLS(data) {
   localStorage.setItem("cortero_logged", "1");
 }
 
-// ============================================================
+// ------------------------------------------------------------
 // PINTAR PERFIL
-// ============================================================
+// ------------------------------------------------------------
 function pintarPerfil(data) {
   if (!data) return;
 
@@ -33,30 +33,27 @@ function pintarPerfil(data) {
   document.getElementById("fotoPerfil").src =
     data.photo_url || "imagenes/avatar-default.svg";
 
-  console.log("🟢 Perfil pintado:", data);
+  console.log("🟢 Perfil pintado con datos del LS:", data);
 }
 
-// ============================================================
+// ------------------------------------------------------------
 // MAIN
-// ============================================================
+// ------------------------------------------------------------
 document.addEventListener("DOMContentLoaded", async () => {
-  
-  // ============================================================
-  // 1️⃣ LEER EL JSON QUE YA TRAJO LOGIN
-  // ============================================================
-  const usuarioActual = leerUsuarioLS();
+  const usuario = leerUsuarioLS();
 
-  if (!usuarioActual) {
-    console.log("❌ No hay usuario en LS → ir al login");
+  // Si no hay sesión → login
+  if (!usuario) {
     return (window.location.href = "login.html");
   }
 
-  // Pintar directo sin esperar nada
-  pintarPerfil(usuarioActual);
+  // Pintar inmediatamente
+  pintarPerfil(usuario);
 
-  // ============================================================
-  // Obtener elementos
-  // ============================================================
+  // --------------------------------------------------------
+  // OBTENER ELEMENTOS
+  // --------------------------------------------------------
+  const sb = window.supabaseClient;
   const fotoInput = document.getElementById("inputFoto");
   const fotoPerfil = document.getElementById("fotoPerfil");
   const btnEditarFoto = document.getElementById("btnEditarFoto");
@@ -74,7 +71,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   const errorNewPass = document.getElementById("errorNewPass");
   const errorConfirmPass = document.getElementById("errorConfirmPass");
 
-  // Loader helpers
   function startLoading() {
     loader.style.display = "inline-block";
     btnText.style.opacity = "0";
@@ -84,12 +80,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     btnText.style.opacity = "1";
   }
 
-  // Usar cliente global ya inicializado
-  const sb = window.supabaseClient;
-
-  // ============================================================
+  // --------------------------------------------------------
   // FOTO — VISTA PREVIA
-  // ============================================================
+  // --------------------------------------------------------
   let nuevaFotoArchivo = null;
 
   btnEditarFoto.addEventListener("click", () => fotoInput.click());
@@ -97,14 +90,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   fotoInput.addEventListener("change", (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
     nuevaFotoArchivo = file;
     fotoPerfil.src = URL.createObjectURL(file);
   });
 
-  // ============================================================
-  // CONTRASEÑA — Mostrar/Ocultar
-  // ============================================================
+  // --------------------------------------------------------
+  // CONTRASEÑA — MOSTRAR/OCULTAR
+  // --------------------------------------------------------
   btnMostrarPass.addEventListener("click", () => {
     if (bloquePassword.style.display === "block") {
       bloquePassword.style.opacity = "0";
@@ -115,27 +107,21 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
-  function limpiarErrores() {
-    errorNewPass.textContent = "";
-    errorConfirmPass.textContent = "";
-  }
-
-  // ============================================================
+  // --------------------------------------------------------
   // GUARDAR CAMBIOS
-  // ============================================================
+  // --------------------------------------------------------
   saveBtn.addEventListener("click", async (e) => {
     e.preventDefault();
     startLoading();
-    limpiarErrores();
+
+    let nuevaFotoURL = usuario.photo_url;
 
     try {
-      let nuevaFotoURL = usuarioActual.photo_url;
-
-      // ------------------------------------------------------------
-      // 1) SUBIR FOTO
-      // ------------------------------------------------------------
+      // ----------------------------
+      // 1) Subir foto si hay nueva
+      // ----------------------------
       if (nuevaFotoArchivo) {
-        const fileName = `avatar_${usuarioActual.id}_${Date.now()}.jpg`;
+        const fileName = `avatar_${usuario.id}_${Date.now()}.jpg`;
 
         const { error: uploadErr } = await sb.storage
           .from("avatars")
@@ -150,13 +136,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
       }
 
-      // ------------------------------------------------------------
-      // 2) GUARDAR NOMBRE + TEL + FOTO EN BD
-      // ------------------------------------------------------------
+      // ----------------------------
+      // 2) Guardar datos en BD
+      // ----------------------------
       const nuevoNombre = document.getElementById("nombreInput").value.trim();
-      const nuevoTelefono = document
-        .getElementById("telefonoInput")
-        .value.trim();
+      const nuevoTelefono = document.getElementById("telefonoInput").value.trim();
 
       await sb
         .from("users")
@@ -165,34 +149,32 @@ document.addEventListener("DOMContentLoaded", async () => {
           phone: nuevoTelefono,
           photo_url: nuevaFotoURL,
         })
-        .eq("id", usuarioActual.id);
+        .eq("id", usuario.id);
 
-      // ------------------------------------------------------------
-      // 3) CONTRASEÑA
-      // ------------------------------------------------------------
+      // ----------------------------
+      // 3) Cambiar contraseña
+      // ----------------------------
       if (bloquePassword.style.display === "block") {
         const n1 = newPassword.value.trim();
         const n2 = passConfirm.value.trim();
 
-        if (n1 || n2) {
-          if (n1.length < 6) {
-            errorNewPass.textContent = "Mínimo 6 caracteres";
-            throw "Error contraseña";
-          }
-          if (n1 !== n2) {
-            errorConfirmPass.textContent = "No coinciden";
-            throw "Error contraseña";
-          }
-
-          await sb.auth.updateUser({ password: n1 });
+        if (n1.length < 6) {
+          errorNewPass.textContent = "Mínimo 6 caracteres";
+          throw "Error contraseña";
         }
+        if (n1 !== n2) {
+          errorConfirmPass.textContent = "Las contraseñas no coinciden";
+          throw "Error contraseña";
+        }
+
+        await sb.auth.updateUser({ password: n1 });
       }
 
-      // ------------------------------------------------------------
-      // 4) ACTUALIZAR LOCAL
-      // ------------------------------------------------------------
+      // ----------------------------
+      // 4) Actualizar LS
+      // ----------------------------
       const actualizado = {
-        ...usuarioActual,
+        ...usuario,
         name: nuevoNombre,
         phone: nuevoTelefono,
         photo_url: nuevaFotoURL,
@@ -200,14 +182,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       guardarUsuarioLS(actualizado);
 
-      document.dispatchEvent(
-        new CustomEvent("userPhotoUpdated", {
-          detail: { photo_url: nuevaFotoURL },
-        })
-      );
-
-      alert("Datos actualizados correctamente");
-
+      alert("Datos guardados correctamente");
     } catch (err) {
       console.error("❌ Error guardando:", err);
     }
