@@ -1,12 +1,12 @@
 // ============================================================
 // PERFIL — VERSIÓN FINAL 2025
-// Foto vista previa + subida real + contraseña + sincronización
+// Usa únicamente el JSON ya cargado al iniciar sesión
 // ============================================================
 
 console.log("🔥 perfil.js cargado");
 
 // ============================================================
-// HELPERS LOCALSTORAGE
+// LEER / GUARDAR LOCALSTORAGE
 // ============================================================
 function leerUsuarioLS() {
   try {
@@ -21,7 +21,9 @@ function guardarUsuarioLS(data) {
   localStorage.setItem("cortero_logged", "1");
 }
 
-// Pintar los datos en los inputs
+// ============================================================
+// PINTAR PERFIL
+// ============================================================
 function pintarPerfil(data) {
   if (!data) return;
 
@@ -35,36 +37,26 @@ function pintarPerfil(data) {
 }
 
 // ============================================================
-// ESPERAR SUPABASE + SESIÓN REAL
-// ============================================================
-async function esperarSupabase() {
-  let i = 0;
-  while (!window.supabaseClient && i < 100) {
-    await new Promise((res) => setTimeout(res, 40));
-    i++;
-  }
-}
-
-async function esperarSesionReal() {
-  let i = 0;
-  while (i < 100) {
-    const { data } = await window.supabaseClient.auth.getSession();
-    if (data?.session?.user) return data.session.user;
-
-    await new Promise((res) => setTimeout(res, 40));
-    i++;
-  }
-  return null;
-}
-
-// ============================================================
 // MAIN
 // ============================================================
 document.addEventListener("DOMContentLoaded", async () => {
-  // Pintar con datos del LS mientras llega la BD
-  pintarPerfil(leerUsuarioLS());
+  
+  // ============================================================
+  // 1️⃣ LEER EL JSON QUE YA TRAJO LOGIN
+  // ============================================================
+  const usuarioActual = leerUsuarioLS();
 
+  if (!usuarioActual) {
+    console.log("❌ No hay usuario en LS → ir al login");
+    return (window.location.href = "login.html");
+  }
+
+  // Pintar directo sin esperar nada
+  pintarPerfil(usuarioActual);
+
+  // ============================================================
   // Obtener elementos
+  // ============================================================
   const fotoInput = document.getElementById("inputFoto");
   const fotoPerfil = document.getElementById("fotoPerfil");
   const btnEditarFoto = document.getElementById("btnEditarFoto");
@@ -79,7 +71,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   const newPassword = document.getElementById("newPassword");
   const passConfirm = document.getElementById("passConfirm");
 
-  const errorOldPass = document.getElementById("errorOldPass");
   const errorNewPass = document.getElementById("errorNewPass");
   const errorConfirmPass = document.getElementById("errorConfirmPass");
 
@@ -93,34 +84,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     btnText.style.opacity = "1";
   }
 
-  console.log("⏳ Esperando Supabase…");
-  await esperarSupabase();
+  // Usar cliente global ya inicializado
   const sb = window.supabaseClient;
-
-  console.log("⏳ Restaurando sesión…");
-  const sessionUser = await esperarSesionReal();
-  if (!sessionUser) return (window.location.href = "login.html");
-
-  // Cargar BD
-  console.log("📡 Cargando datos desde la BD…");
-  const { data: info } = await sb
-    .from("users")
-    .select("*")
-    .eq("id", sessionUser.id)
-    .single();
-
-  let usuarioActual =
-    info ||
-    leerUsuarioLS() || {
-      id: sessionUser.id,
-      email: sessionUser.email,
-      name: "",
-      phone: "",
-      photo_url: "imagenes/avatar-default.svg",
-    };
-
-  pintarPerfil(usuarioActual);
-  guardarUsuarioLS(usuarioActual);
 
   // ============================================================
   // FOTO — VISTA PREVIA
@@ -132,12 +97,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   fotoInput.addEventListener("change", (e) => {
     const file = e.target.files[0];
     if (!file) return;
+
     nuevaFotoArchivo = file;
     fotoPerfil.src = URL.createObjectURL(file);
   });
 
   // ============================================================
-  // CONTRASEÑA — Mostrar/Ocultar bloque
+  // CONTRASEÑA — Mostrar/Ocultar
   // ============================================================
   btnMostrarPass.addEventListener("click", () => {
     if (bloquePassword.style.display === "block") {
@@ -150,13 +116,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   function limpiarErrores() {
-    errorOldPass.textContent = "";
     errorNewPass.textContent = "";
     errorConfirmPass.textContent = "";
   }
 
   // ============================================================
-  // GUARDAR CAMBIOS (FOTO + DATOS + CONTRASEÑA)
+  // GUARDAR CAMBIOS
   // ============================================================
   saveBtn.addEventListener("click", async (e) => {
     e.preventDefault();
@@ -167,7 +132,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       let nuevaFotoURL = usuarioActual.photo_url;
 
       // ------------------------------------------------------------
-      // 1) SUBIR FOTO (CORREGIDO: SE USA await correctamente)
+      // 1) SUBIR FOTO
       // ------------------------------------------------------------
       if (nuevaFotoArchivo) {
         const fileName = `avatar_${usuarioActual.id}_${Date.now()}.jpg`;
@@ -186,7 +151,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
 
       // ------------------------------------------------------------
-      // 2) GUARDAR NOMBRE + TEL + FOTO
+      // 2) GUARDAR NOMBRE + TEL + FOTO EN BD
       // ------------------------------------------------------------
       const nuevoNombre = document.getElementById("nombreInput").value.trim();
       const nuevoTelefono = document
@@ -215,41 +180,34 @@ document.addEventListener("DOMContentLoaded", async () => {
             throw "Error contraseña";
           }
           if (n1 !== n2) {
-            errorConfirmPass.textContent = "Las contraseñas no coinciden";
+            errorConfirmPass.textContent = "No coinciden";
             throw "Error contraseña";
           }
 
-          const { error: passErr } = await sb.auth.updateUser({
-            password: n1,
-          });
-
-          if (passErr) {
-            errorNewPass.textContent = "No se pudo actualizar la contraseña";
-            throw "Error contraseña";
-          }
+          await sb.auth.updateUser({ password: n1 });
         }
       }
 
       // ------------------------------------------------------------
-      // 4) ACTUALIZAR LOCAL + NOTIFICAR MENÚ
+      // 4) ACTUALIZAR LOCAL
       // ------------------------------------------------------------
-      usuarioActual = {
+      const actualizado = {
         ...usuarioActual,
         name: nuevoNombre,
         phone: nuevoTelefono,
         photo_url: nuevaFotoURL,
       };
 
-      guardarUsuarioLS(usuarioActual);
+      guardarUsuarioLS(actualizado);
 
       document.dispatchEvent(
         new CustomEvent("userPhotoUpdated", {
           detail: { photo_url: nuevaFotoURL },
         })
       );
-      document.dispatchEvent(new CustomEvent("userDataUpdated"));
 
       alert("Datos actualizados correctamente");
+
     } catch (err) {
       console.error("❌ Error guardando:", err);
     }
