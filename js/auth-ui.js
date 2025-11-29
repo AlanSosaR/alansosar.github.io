@@ -1,9 +1,9 @@
 // ============================================================
-// AUTH-UI — Versión FINAL 2025
-// Controla SOLO la interfaz del menú (no la sesión)
+// AUTH-UI — Versión FINAL V7 (2025)
+// Controla SOLO la interfaz del menú (no sesión, no backend)
 // ============================================================
 
-console.log("👤 auth-ui.js cargado — versión FINAL 2025");
+console.log("👤 auth-ui.js cargado — versión FINAL V7");
 
 // Helper
 function safe(id) {
@@ -11,7 +11,7 @@ function safe(id) {
 }
 
 /* ============================================================
-   MOSTRAR ESTADOS
+   ESTADOS DE MENÚ
 ============================================================ */
 function showLoggedOut() {
   const loginDesktop = safe("login-desktop");
@@ -46,15 +46,14 @@ function showLoggedIn(user) {
 }
 
 /* ============================================================
-   ACTIVAR LOGOUT
+   LOGOUT
 ============================================================ */
 function activarLogout() {
   async function doLogout(e) {
     if (e) e.preventDefault();
 
-    console.log("🚪 Logout desde UI…");
+    console.log("🚪 Logout desde auth-ui…");
 
-    // Solo llama a la función central
     if (window.supabaseAuth?.logoutUser) {
       await window.supabaseAuth.logoutUser();
     }
@@ -92,15 +91,15 @@ function activarToggleMenuEscritorio() {
 }
 
 /* ============================================================
-   EVENTOS GLOBALES EMITIDOS POR SUPABASE-CLIENT.JS
+   EVENTOS DISPARADOS POR SUPABASE-CLIENT-CORE
 ============================================================ */
 document.addEventListener("userLoggedIn", (e) => {
-  console.log("🎉 userLoggedIn recibido en UI");
+  console.log("🎉 userLoggedIn recibido");
   showLoggedIn(e.detail);
 });
 
 document.addEventListener("userLoggedOut", () => {
-  console.log("👋 userLoggedOut recibido en UI");
+  console.log("👋 userLoggedOut recibido");
   showLoggedOut();
 });
 
@@ -119,13 +118,13 @@ document.addEventListener("userDataUpdated", () => {
 });
 
 /* ============================================================
-   INIT UI
+   INIT
 ============================================================ */
 document.addEventListener("DOMContentLoaded", () => {
   activarLogout();
   activarToggleMenuEscritorio();
 
-  // Sincroniza el estado inicial
+  // Estado inicial según localStorage
   const raw = localStorage.getItem("cortero_user");
   if (raw) showLoggedIn(JSON.parse(raw));
   else showLoggedOut();
