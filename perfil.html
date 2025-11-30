@@ -52,7 +52,7 @@
           <!-- Input oculto -->
           <input type="file" id="inputFoto" accept="image/*" style="display:none;">
 
-          <!-- Div invisible clickeable (corregido) -->
+          <!-- Div invisible clickeable -->
           <div id="btnEditarFoto"
                style="
                  position:absolute;
@@ -120,7 +120,7 @@
 
             <!-- NUEVA CONTRASEÑA -->
             <div class="m3-field">
-              <div class="m3-input" id="newPassContainer">
+              <div class="m3-input">
                 <span class="material-symbols-outlined">lock</span>
                 <input id="newPassword" type="password" placeholder=" ">
                 <label class="floating-label">Nueva contraseña</label>
@@ -152,8 +152,8 @@
 
           </div>
 
-          <!-- BOTÓN GUARDAR -->
-          <button type="submit" class="m3-btn" id="saveBtn">
+          <!-- BOTÓN GUARDAR (FIX CRÍTICO) -->
+          <button type="button" class="m3-btn" id="saveBtn">
             <span class="loader"></span>
             <span class="btn-text">Guardar cambios</span>
           </button>
@@ -169,6 +169,7 @@
       </div>
     </section>
   </main>
+
 <!-- Supabase SDK -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
