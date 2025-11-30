@@ -126,29 +126,15 @@
 <!-- Supabase SDK -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<!-- Scripts ordenados y sin document.write -->
-<script src="js/supabase-client-core.js?v=1"></script>
-<script src="js/supabase-auth-v4.js?v=1"></script>
-<script src="js/auth-ui.js?v=1"></script>
-<script src="js/login.js?v=1"></script>
-
+<!-- Carga anti-cache -->
 <script>
-  // Forzar a que recargue sin cache, igual que perfil-v2
-  const cacheBuster = Date.now();
-
-  const scripts = [
-    "js/supabase-client-core.js",
-    "js/supabase-auth-v4.js",
-    "js/auth-ui.js",
-    "js/login.js"
-  ];
-
-  scripts.forEach(src => {
-    const s = document.createElement("script");
-    s.src = `${src}?v=${cacheBuster}`;
-    s.defer = true;
-    document.body.appendChild(s);
-  });
+  const v = Date.now();
+  document.write(`
+    <script src="js/supabase-client-core.js?v=${v}"><\/script>
+    <script src="js/supabase-auth-v4.js?v=${v}"><\/script>
+    <script src="js/login.js?v=${v}"><\/script>
+    <script src="js/auth-ui.js?v=${v}"><\/script>
+  `);
 </script>
 
 </body>
