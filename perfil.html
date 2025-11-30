@@ -120,7 +120,7 @@
 
             <!-- NUEVA CONTRASEÑA -->
             <div class="m3-field">
-              <div class="m3-input">
+              <div class="m3-input" id="newPassContainer">
                 <span class="material-symbols-outlined">lock</span>
                 <input id="newPassword" type="password" placeholder=" ">
                 <label class="floating-label">Nueva contraseña</label>
@@ -152,8 +152,8 @@
 
           </div>
 
-          <!-- BOTÓN GUARDAR (FIX CRÍTICO) -->
-          <button type="button" class="m3-btn" id="saveBtn">
+          <!-- BOTÓN GUARDAR -->
+          <button type="submit" class="m3-btn" id="saveBtn">
             <span class="loader"></span>
             <span class="btn-text">Guardar cambios</span>
           </button>
@@ -170,18 +170,19 @@
     </section>
   </main>
 
-<!-- Supabase SDK -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Supabase SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<script>
-  const v = Date.now();
-  document.write(
-    '<script src="js/supabase-client-core.js?v=' + v + '"><\/script>' +
-    '<script src="js/supabase-auth-v4.js?v=' + v + '"><\/script>' +
-    '<script src="js/auth-ui.js?v=' + v + '"><\/script>' +
-    '<script src="js/perfil.js?v=' + v + '"><\/script>'
-  );
-</script>
+  <!-- Carga de scripts con anti-cache -->
+  <script>
+    const v = Date.now();
+    document.write(
+      '<script src="js/supabase-client-core.js?v=' + v + '"><\/script>' +
+      '<script src="js/supabase-auth-v4.js?v=' + v + '"><\/script>' +
+      '<script src="js/auth-ui.js?v=' + v + '"><\/script>' +
+      '<script src="js/perfil.js?v=' + v + '"><\/script>'
+    );
+  </script>
 
 </body>
 </html>
