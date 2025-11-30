@@ -40,127 +40,72 @@
       <!-- CARD INTERIOR -->
       <div class="profile-inner-card">
 
-        <!-- FOTO PREMIUM -->
+        <!-- FOTO -->
         <div class="foto-perfil-container">
-
-          <!-- Foto -->
-          <img id="fotoPerfil" 
-               src="imagenes/avatar-default.svg" 
-               alt="Foto de perfil" 
-               class="foto-perfil">
-
-          <!-- Input oculto -->
+          <img id="fotoPerfil" src="imagenes/avatar-default.svg" class="foto-perfil">
           <input type="file" id="inputFoto" accept="image/*" style="display:none;">
-
-          <!-- Div invisible clickeable -->
-          <div id="btnEditarFoto"
-               style="
-                 position:absolute;
-                 top:0;
-                 left:0;
-                 width:100%;
-                 height:100%;
-                 cursor:pointer;
-                 opacity:0;
-               ">
+          <div id="btnEditarFoto" 
+               style="position:absolute;top:0;left:0;width:100%;height:100%;cursor:pointer;opacity:0;">
           </div>
-
         </div>
 
         <!-- FORMULARIO -->
         <form id="perfilForm" novalidate>
 
-          <!-- NOMBRE -->
           <div class="m3-field">
             <div class="m3-input">
               <span class="material-symbols-outlined">person</span>
               <input id="nombreInput" type="text" placeholder=" ">
-              <label for="nombreInput" class="floating-label">Nombre completo</label>
+              <label class="floating-label">Nombre completo</label>
             </div>
-            <small class="m3-error" id="errorNombre"></small>
           </div>
 
-          <!-- CORREO -->
           <div class="m3-field">
             <div class="m3-input no-edit">
               <span class="material-symbols-outlined">mail</span>
               <input id="correoInput" type="email" placeholder=" " readonly>
-              <label for="correoInput" class="floating-label">Correo</label>
+              <label class="floating-label">Correo</label>
             </div>
           </div>
 
-          <!-- TELÉFONO -->
           <div class="m3-field">
             <div class="m3-input">
               <span class="material-symbols-outlined">call</span>
               <input id="telefonoInput" type="tel" placeholder=" ">
-              <label for="telefonoInput" class="floating-label">Teléfono</label>
+              <label class="floating-label">Teléfono</label>
             </div>
-            <small class="m3-error" id="errorTelefono"></small>
           </div>
 
-          <!-- CAMBIAR CONTRASEÑA -->
           <div class="cambiar-pass-boton" id="btnMostrarPass">
             <span class="material-symbols-outlined">lock</span> Cambiar contraseña
           </div>
 
-          <!-- BLOQUE CONTRASEÑA -->
-          <div id="bloquePassword" class="password-section" style="display:none; opacity:0;">
-
-            <!-- CONTRASEÑA ACTUAL -->
+          <div id="bloquePassword" class="password-section" style="display:none;opacity:0;">
             <div class="m3-field">
               <div class="m3-input">
                 <span class="material-symbols-outlined">lock</span>
-                <input id="oldPassword" type="password" placeholder=" ">
-                <label class="floating-label">Contraseña actual</label>
-                <span class="material-symbols-outlined toggle-pass" data-target="oldPassword">visibility</span>
-              </div>
-              <small class="m3-error" id="errorOldPass"></small>
-            </div>
-
-            <!-- NUEVA CONTRASEÑA -->
-            <div class="m3-field">
-              <div class="m3-input" id="newPassContainer">
-                <span class="material-symbols-outlined">lock</span>
                 <input id="newPassword" type="password" placeholder=" ">
                 <label class="floating-label">Nueva contraseña</label>
-                <span class="material-symbols-outlined toggle-pass" data-target="newPassword">visibility</span>
               </div>
-
-              <div class="strength-bars" id="strengthBars">
-                <div class="strength-bar"></div>
-                <div class="strength-bar"></div>
-                <div class="strength-bar"></div>
-                <div class="strength-bar"></div>
-                <div class="strength-bar"></div>
-                <div class="strength-bar"></div>
-              </div>
-
-              <small class="m3-error" id="errorNewPass"></small>
             </div>
 
-            <!-- CONFIRMAR -->
             <div class="m3-field">
               <div class="m3-input">
                 <span class="material-symbols-outlined">lock</span>
                 <input id="passConfirm" type="password" placeholder=" ">
                 <label class="floating-label">Confirmar contraseña</label>
-                <span class="material-symbols-outlined toggle-pass" data-target="passConfirm">visibility</span>
               </div>
-              <small class="m3-error" id="errorConfirmPass"></small>
             </div>
-
           </div>
 
-          <!-- BOTÓN GUARDAR -->
-          <button type="button" class="m3-btn" id="saveBtn">
+          <!-- ⚠️ BOTÓN ARREGLADO -->
+          <button type="submit" class="m3-btn" id="saveBtn">
             <span class="loader"></span>
             <span class="btn-text">Guardar cambios</span>
           </button>
 
         </form>
 
-        <!-- SNACKBAR -->
         <div id="snackbar">
           <img src="imagenes/logo_secundario.png" class="snack-logo">
           <span class="snack-text"></span>
@@ -173,7 +118,7 @@
   <!-- Supabase SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <!-- Carga de scripts con anti-cache -->
+  <!-- Scripts con anti-cache -->
   <script>
     const v = Date.now();
     document.write(
