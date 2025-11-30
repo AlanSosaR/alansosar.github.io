@@ -2,7 +2,7 @@
 // PERFIL — VERSIÓN FINAL 2025 (FUNCIONA CON TU HTML ACTUAL)
 // ============================================================
 
-console.log("🔥 perfil.js ");
+console.log("🔥 perfil.js con solucion del boton de datos ");
 
 // ------------------------------------------------------------
 // LOCAL STORAGE
