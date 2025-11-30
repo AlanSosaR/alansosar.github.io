@@ -1,5 +1,5 @@
 /* ============================================================
-   ELIMINAR COMPLETAMENTE EL HIGHLIGHT AZUL EN TODA LA PÁGINA
+   ELIMINAR HIGHLIGHT AZUL GLOBAL
 ============================================================ */
 *,
 *::before,
@@ -8,52 +8,42 @@
   outline: none !important;
 }
 
-button,
-a,
-input,
-textarea,
-select,
-label,
-img,
-.material-symbols-outlined,
-.m3-input,
-.m3-btn,
-.back-btn,
-.social-icon {
+/* Elementos táctiles */
+button, a, input, textarea, select, label, img,
+.material-symbols-outlined, .m3-input, .m3-btn,
+.back-btn, .social-icon {
   -webkit-tap-highlight-color: transparent !important;
   outline: none !important;
 }
 
-/* ===============================
-   BASE / TIPOGRAFÍA
-=============================== */
+/* ============================================================
+   BASE
+============================================================ */
 body {
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
                "Inter", "Roboto", sans-serif;
-  background-color: #ffffff;
+  background: #ffffff;
   margin: 0;
   padding: 0;
-  min-height: 100vh;
   color: #2E2A27;
 }
 
 .profile-container {
   display: flex;
   justify-content: center;
-  width: 100%;
   padding: 30px 20px;
 }
 
-/* ===============================
-   TARJETA PRINCIPAL
-=============================== */
+/* ============================================================
+   TARJETA
+============================================================ */
 .profile-card {
   background: #ffffff;
   border-radius: 20px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
   padding: 30px 40px;
   max-width: 420px;
   width: 100%;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
   position: relative;
 }
 
@@ -81,94 +71,66 @@ body {
   box-shadow: 0 6px 20px rgba(0,0,0,0.18);
 }
 
-.back-btn .material-symbols-outlined {
-  font-size: 26px;
-  font-weight: 600;
-  color: #33673B;
-}
-
-/* ===============================
+/* ============================================================
    HEADER
-=============================== */
+============================================================ */
 .profile-header {
   text-align: center;
   margin-bottom: 20px;
 }
 
-.logo-container {
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  margin-bottom: 12px;
-}
-
 .logo-container img {
   width: 105px;
-  transition: .3s;
 }
 
-.profile-title {
-  font-family: "Fraunces", serif;
-  font-size: 1.8rem;
-  margin: 0;
-  color: #512615;
-}
-
-/* ===============================
+/* ============================================================
    CARD INTERIOR
-=============================== */
+============================================================ */
 .profile-inner-card {
   background: #ffffff;
   border: 1.6px solid #512615;
   border-radius: 16px;
   padding: 28px 25px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
 }
 
-/* ===============================
-   FOTO DE PERFIL — SUPER PREMIUM
-=============================== */
+/* ============================================================
+   FOTO DE PERFIL
+============================================================ */
 .foto-perfil-container {
-  position: relative;
   width: 130px;
   height: 130px;
-  margin: 0 auto;
-  margin-bottom: 32px;
+  margin: 0 auto 32px;
+  position: relative;
 }
 
-/* FOTO PREMIUM SIN ÍCONO */
 .foto-perfil {
   width: 100%;
   height: 100%;
   border-radius: 50%;
   object-fit: cover;
-  border: none !important;
   background: #f4f4f4;
-
-  /* Premium shadow clean */
-  box-shadow: 
+  box-shadow:
     0 4px 10px rgba(0,0,0,0.10),
     0 8px 20px rgba(0,0,0,0.06);
+  transition: .25s ease;
+  cursor: default !important; /* ← CORREGIDO */
+}
 
-  transition: transform .25s ease, box-shadow .25s ease;
+#btnEditarFoto {
+  margin-top: 10px;
+  background: #33673B;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-size: 0.82rem;
+  border: none;
   cursor: pointer;
 }
 
-.foto-perfil:hover {
-  transform: translateY(-3px) scale(1.02);
-  box-shadow: 
-    0 6px 18px rgba(0,0,0,0.16),
-    0 12px 28px rgba(0,0,0,0.10);
-}
-
-/* ELIMINADO COMPLETAMENTE EL BOTÓN DE CÁMARA */
-.editar-foto-indicador {
-  display: none !important;
-}
-
-/* ===============================
-   CAMPOS MATERIAL 3
-=============================== */
+/* ============================================================
+   INPUTS MATERIAL 3
+============================================================ */
 .m3-field {
   margin-bottom: 28px;
 }
@@ -179,111 +141,64 @@ body {
   align-items: center;
   border-radius: 12px;
   border: 1.7px solid #D0D0D0;
-  padding: 16px 12px 6px 12px;
+  padding: 16px 12px 6px;
   background: #ffffff;
-  transition: all 0.22s ease;
+  transition: all .22s ease;
 }
 
 .m3-input.no-edit {
   background: #f2f2f2;
+  opacity: .8;
   pointer-events: none;
-  opacity: 0.8;
-}
-
-.m3-input:focus-within {
-  border-color: #33673B;
-  box-shadow: 0 0 0 3px rgba(51, 103, 59, 0.16);
-}
-
-.m3-input .material-symbols-outlined {
-  font-size: 22px;
-  margin-right: 8px;
-  color: #33673B;
 }
 
 .m3-input input {
   flex: 1;
   border: none;
-  outline: none;
-  font-size: 1rem;
-  padding: 4px 0 0 0;
   background: transparent;
-  color: #2E2A27;
+  font-size: 1rem;
 }
 
-/* FLOATING LABEL */
+/* LABEL mejorado */
 .floating-label {
   position: absolute;
   left: 40px;
-  top: 15px;
+  top: 17px;
   font-size: 1rem;
   color: #8a8a8a;
-  transition: all 0.20s ease;
+  transition: all .20s ease;
   pointer-events: none;
 }
 
 .m3-input input:not(:placeholder-shown) + .floating-label,
 .m3-input:focus-within .floating-label {
   top: -6px;
-  font-size: 0.78rem;
+  font-size: .78rem;
   color: #33673B;
   background: #ffffff;
   padding: 0 4px;
 }
 
-/* ===============================
-   CAMBIAR CONTRASEÑA
-=============================== */
-.cambiar-pass-boton {
-  margin-bottom: 22px;
-  color: #512615 !important;
-  font-weight: 600;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-/* ===============================
-   BARRAS DE FUERZA
-=============================== */
-.strength-bars {
-  display: flex;
-  gap: 4px;
-  margin-top: 8px;
-  margin-bottom: 6px;
-}
-
-.strength-bar {
-  width: 16.6%;
-  height: 6px;
-  background: #e2e2e2;
-  border-radius: 4px;
-  transition: background 0.25s ease;
-}
-
-/* ===============================
-   BOTÓN GUARDAR
-=============================== */
+/* ============================================================
+   BOTÓN GUARDAR (CORREGIDO)
+============================================================ */
 .m3-btn {
   width: 100%;
-  background-color: #33673B;
-  color: #ffffff;
+  background: #33673B;
+  color: #fff;
   border: none;
   border-radius: 12px;
   padding: 12px 16px;
+  height: 48px;
   font-size: 1rem;
-  font-weight: 500;
   cursor: pointer;
-  margin-top: 8px;
-  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 48px;
   gap: 12px;
 }
 
+/* Loader ahora SÍ funciona */
 .m3-btn .loader {
   width: 22px;
   height: 22px;
@@ -291,77 +206,34 @@ body {
   border: 3px solid rgba(255,255,255,0.3);
   border-top-color: #ffffff;
   animation: spin 0.9s linear infinite;
-  opacity: 0;
   display: none;
 }
 
+/* Se activa directamente con JS: display:inline-block */
 .m3-btn.loading .loader {
-  opacity: 1;
-  display: inline-block;
+  display: inline-block !important;
 }
 
-@keyframes spin { 
-  to { transform: rotate(360deg); }
-}
-
-/* ===============================
-   SNACKBAR PREMIUM
-=============================== */
+/* ============================================================
+   SNACKBAR
+============================================================ */
 #snackbar {
   position: fixed;
   bottom: 60px;
   left: 50%;
   transform: translateX(-50%) translateY(12px);
-  background: rgba(81, 38, 21, 0.96);
-  color: #ffffff;
+  background: rgba(81,38,21,0.96);
+  color: white;
   padding: 12px 18px;
   border-radius: 16px;
-  font-size: 0.92rem;
+  opacity: 0;
+  transition: .25s ease;
   display: flex;
   align-items: center;
   gap: 12px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity .25s ease, transform .25s ease;
 }
 
 #snackbar.show {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
-  pointer-events: auto;
-}
-
-.snack-logo {
-  width: 26px;
-  height: 26px;
-  object-fit: contain;
-  border-radius: 4px;
-}
-
-/* ===============================
-   RESPONSIVE
-=============================== */
-@media (max-width: 480px) {
-  .profile-card {
-    padding: 22px;
-    max-width: 360px;
-  }
-
-  .profile-inner-card {
-    padding: 20px;
-  }
-
-  .profile-title {
-    font-size: 1.5rem;
-  }
-
-  #snackbar {
-    bottom: 50px;
-    padding: 10px 16px;
-  }
-
-  .snack-logo {
-    width: 22px;
-    height: 22px;
-  }
 }
