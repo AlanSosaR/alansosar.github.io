@@ -16,10 +16,12 @@
   <main class="profile-container">
     <section class="profile-card">
 
+      <!-- BOTÓN ATRÁS -->
       <button class="back-btn" onclick="window.location.href='index.html'">
         <span class="material-symbols-outlined">chevron_left</span>
       </button>
 
+      <!-- HEADER -->
       <div class="profile-header">
         <div class="logo-container" onclick="window.location.href='index.html'">
           <img src="imagenes/logo.png" alt="Café Cortero" class="logo-img">
@@ -27,17 +29,19 @@
         <h2 class="profile-title">Mi perfil</h2>
       </div>
 
+      <!-- CARD INTERIOR -->
       <div class="profile-inner-card">
 
-        <!-- FOTO — SIN OVERLAY INVISIBLE -->
+        <!-- FOTO — LA IMAGEN ES EL BOTÓN -->
         <div class="foto-perfil-container">
-          <img id="fotoPerfil" src="imagenes/avatar-default.svg" class="foto-perfil">
+          <img id="fotoPerfil" src="imagenes/avatar-default.svg" class="foto-perfil" style="cursor:pointer;">
           <input type="file" id="inputFoto" accept="image/*" style="display:none;">
         </div>
 
         <!-- FORMULARIO -->
         <form id="perfilForm" novalidate>
 
+          <!-- NOMBRE -->
           <div class="m3-field">
             <div class="m3-input">
               <span class="material-symbols-outlined">person</span>
@@ -46,6 +50,7 @@
             </div>
           </div>
 
+          <!-- CORREO -->
           <div class="m3-field">
             <div class="m3-input no-edit">
               <span class="material-symbols-outlined">mail</span>
@@ -54,6 +59,7 @@
             </div>
           </div>
 
+          <!-- TELÉFONO -->
           <div class="m3-field">
             <div class="m3-input">
               <span class="material-symbols-outlined">call</span>
@@ -62,11 +68,15 @@
             </div>
           </div>
 
+          <!-- BOTÓN MOSTRAR CAMBIO DE CONTRASEÑA -->
           <div class="cambiar-pass-boton" id="btnMostrarPass">
             <span class="material-symbols-outlined">lock</span> Cambiar contraseña
           </div>
 
+          <!-- SECCIÓN CONTRASEÑA (ESCONDIDA POR DEFECTO) -->
           <div id="bloquePassword" class="password-section" style="display:none;opacity:0;">
+
+            <!-- CONTRASEÑA NUEVA -->
             <div class="m3-field">
               <div class="m3-input">
                 <span class="material-symbols-outlined">lock</span>
@@ -75,6 +85,7 @@
               </div>
             </div>
 
+            <!-- CONFIRMAR CONTRASEÑA -->
             <div class="m3-field">
               <div class="m3-input">
                 <span class="material-symbols-outlined">lock</span>
@@ -84,7 +95,7 @@
             </div>
           </div>
 
-          <!-- BOTÓN FINAL -->
+          <!-- BOTÓN GUARDAR -->
           <button type="submit" class="m3-btn" id="saveBtn">
             <span class="loader"></span>
             <span class="btn-text">Guardar cambios</span>
@@ -92,6 +103,7 @@
 
         </form>
 
+        <!-- SNACKBAR -->
         <div id="snackbar">
           <img src="imagenes/logo_secundario.png" class="snack-logo">
           <span class="snack-text"></span>
@@ -101,8 +113,10 @@
     </section>
   </main>
 
+  <!-- Supabase SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+  <!-- Scripts con anti-cache -->
   <script>
     const v = Date.now();
     document.write(
