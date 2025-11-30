@@ -248,18 +248,19 @@
 <!-- Supabase SDK -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<!-- Carga anti-cache -->
+<!-- Scripts del proyecto (orden correcto) -->
+<script src="js/supabase-client-core.js?v={{v}}"></script>
+<script src="js/supabase-auth-v4.js?v={{v}}"></script>
+<script src="js/main.js?v={{v}}"></script>
+<script src="js/auth-ui.js?v={{v}}"></script>
+
 <script>
-  const v = Date.now();
-  document.write(`
-    <script src="js/supabase-client-core.js?v=${v}"><\/script>
-    <script src="js/supabase-auth-v4.js?v=${v}"><\/script>
-    <script src="js/main.js?v=${v}"><\/script>
-    <script src="js/auth-ui.js?v=${v}"><\/script>
-  `);
+  // Reemplaza dinámicamente {{v}} al cargar
+  const version = Date.now();
+  document.querySelectorAll("script[src*='{{v}}']").forEach(tag => {
+    tag.src = tag.src.replace("{{v}}", version);
+  });
 </script>
-
-
 
 </body>
 </html>
