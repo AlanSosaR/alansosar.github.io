@@ -1,8 +1,8 @@
 // ============================================================
-// PERFIL — VERSIÓN FINAL 2025 SIN OVERLAY — FUNCIONANDO
+// PERFIL — VERSIÓN FINAL 2025 (CON CAMBIO DE CONTRASEÑA OPCIONAL)
 // ============================================================
 
-console.log("🔥 perfil.js cargado — versión sin overlay");
+console.log("🔥 perfil.js FINAL — contraseña opcional");
 
 // ------------------------------------------------------------
 // LOCAL STORAGE
@@ -55,10 +55,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   const btnMostrarPass = document.getElementById("btnMostrarPass");
   const bloquePassword = document.getElementById("bloquePassword");
 
+  const currentPass   = document.getElementById("currentPassword");
   const newPassword   = document.getElementById("newPassword");
   const passConfirm   = document.getElementById("passConfirm");
-  const errorNewPass  = document.getElementById("errorNewPass");
-  const errorConfirmPass = document.getElementById("errorConfirmPass");
 
   let nuevaFoto = null;
 
@@ -80,7 +79,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   btnMostrarPass.addEventListener("click", () => {
     if (bloquePassword.style.display === "block") {
       bloquePassword.style.opacity = "0";
-      setTimeout(() => (bloquePassword.style.display = "none"), 240);
+      setTimeout(() => (bloquePassword.style.display = "none"), 200);
     } else {
       bloquePassword.style.display = "block";
       setTimeout(() => (bloquePassword.style.opacity = "1"), 20);
@@ -88,7 +87,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   // ============================================================
-  // BOTÓN LOADER
+  // LOADER DEL BOTÓN
   // ============================================================
   function startLoading() {
     loader.style.display = "inline-block";
@@ -103,7 +102,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // ============================================================
-  // SUBMIT FINAL
+  // SUBMIT FINAL (FUNCIONA SIEMPRE)
   // ============================================================
   perfilForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -115,26 +114,22 @@ document.addEventListener("DOMContentLoaded", async () => {
       let nuevaFotoURL = user.photo_url;
 
       // --------------------------------------------------------
-      // SUBIR FOTO SI HAY
+      // SUBIR FOTO
       // --------------------------------------------------------
       if (nuevaFoto) {
         const fileName = `avatar_${user.id}_${Date.now()}.jpg`;
-
         const { error: uploadErr } = await sb.storage
           .from("avatars")
           .upload(fileName, nuevaFoto, { upsert: true });
 
         if (uploadErr) throw uploadErr;
 
-        const { data } = await sb.storage
-          .from("avatars")
-          .getPublicUrl(fileName);
-
+        const { data } = await sb.storage.from("avatars").getPublicUrl(fileName);
         nuevaFotoURL = data.publicUrl;
       }
 
       // --------------------------------------------------------
-      // ACTUALIZAR DATOS BASICOS
+      // ACTUALIZAR NOMBRE / TELÉFONO / FOTO
       // --------------------------------------------------------
       const nuevoNombre   = document.getElementById("nombreInput").value.trim();
       const nuevoTelefono = document.getElementById("telefonoInput").value.trim();
@@ -150,23 +145,28 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       if (updateErr) throw updateErr;
 
-      // --------------------------------------------------------
-      // CAMBIO DE CONTRASEÑA
-      // --------------------------------------------------------
-      if (bloquePassword.style.display === "block") {
-        const n1 = newPassword.value.trim();
-        const n2 = passConfirm.value.trim();
+      // ============================================================
+      // CAMBIAR CONTRASEÑA SOLO SI EL USUARIO ACTIVÓ EL BLOQUE
+      // ============================================================
+      const quiereCambiarPass =
+        bloquePassword.style.display === "block" &&
+        (newPassword.value.trim() !== "" || passConfirm.value.trim() !== "");
 
-        if (n1 || n2) {
-          if (n1.length < 6)
-            throw new Error("Contraseña mínima de 6 caracteres");
+      if (quiereCambiarPass) {
 
-          if (n1 !== n2)
-            throw new Error("Las contraseñas no coinciden");
-
-          const { error: passErr } = await sb.auth.updateUser({ password: n1 });
-          if (passErr) throw passErr;
+        if (newPassword.value.trim().length < 6) {
+          throw new Error("La nueva contraseña debe tener mínimo 6 caracteres");
         }
+
+        if (newPassword.value.trim() !== passConfirm.value.trim()) {
+          throw new Error("Las contraseñas no coinciden");
+        }
+
+        const { error: passErr } = await sb.auth.updateUser({
+          password: newPassword.value.trim(),
+        });
+
+        if (passErr) throw passErr;
       }
 
       // --------------------------------------------------------
@@ -181,16 +181,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       saveUserLS(actualizado);
 
-      // NOTIFICAR A TODO EL SISTEMA
-      document.dispatchEvent(new CustomEvent("userProfileManuallyUpdated", { detail: actualizado }));
-      document.dispatchEvent(new CustomEvent("userPhotoUpdated", { detail: { photo_url: nuevaFotoURL }}));
-      document.dispatchEvent(new CustomEvent("userDataUpdated"));
-
-      alert("Datos actualizados correctamente");
+      alert("Cambios guardados correctamente");
 
     } catch (err) {
       console.error("❌ Error guardando perfil:", err);
-      alert("Error al guardar los cambios");
+      alert(err.message || "Error al guardar los cambios");
     }
 
     stopLoading();
