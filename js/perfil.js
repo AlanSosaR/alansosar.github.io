@@ -1,8 +1,8 @@
 // ============================================================
-// PERFIL — VERSIÓN FINAL 2025 SIN OVERLAY — FUNCIONANDO
+// PERFIL — VERSIÓN FINAL COMPATIBLE CON TU HTML
 // ============================================================
 
-console.log("🔥 perfil.js cargado — versión sin overlay");
+console.log("🔥 perfil.js cargado — versión final");
 
 // ------------------------------------------------------------
 // LOCAL STORAGE
@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const btnMostrarPass  = document.getElementById("btnMostrarPass");
   const bloquePassword  = document.getElementById("bloquePassword");
 
-  const oldPassword     = document.getElementById("oldPassword");
+  const currentPassword = document.getElementById("currentPassword");
   const newPassword     = document.getElementById("newPassword");
   const passConfirm     = document.getElementById("passConfirm");
 
@@ -64,52 +64,46 @@ document.addEventListener("DOMContentLoaded", async () => {
   // ============================================================
   // FOTO — LA IMAGEN ES EL BOTÓN
   // ============================================================
-  if (fotoPerfil && fotoInput) {
-    fotoPerfil.addEventListener("click", () => fotoInput.click());
+  fotoPerfil.addEventListener("click", () => fotoInput.click());
 
-    fotoInput.addEventListener("change", (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      nuevaFoto = file;
-      fotoPerfil.src = URL.createObjectURL(file);
-    });
-  }
+  fotoInput.addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    nuevaFoto = file;
+    fotoPerfil.src = URL.createObjectURL(file);
+  });
 
   // ============================================================
-  // TOGGLE CONTRASEÑA
+  // MOSTRAR / OCULTAR CAMBIO DE CONTRASEÑA
   // ============================================================
-  if (btnMostrarPass && bloquePassword) {
-    btnMostrarPass.addEventListener("click", () => {
-      if (bloquePassword.style.display === "block") {
-        bloquePassword.style.opacity = "0";
-        setTimeout(() => (bloquePassword.style.display = "none"), 240);
-      } else {
-        bloquePassword.style.display = "block";
-        setTimeout(() => (bloquePassword.style.opacity = "1"), 20);
-      }
-    });
-  }
+  btnMostrarPass.addEventListener("click", () => {
+    if (bloquePassword.style.display === "block") {
+      bloquePassword.style.opacity = "0";
+      setTimeout(() => (bloquePassword.style.display = "none"), 240);
+    } else {
+      bloquePassword.style.display = "block";
+      setTimeout(() => (bloquePassword.style.opacity = "1"), 20);
+    }
+  });
 
   // ============================================================
-  // BOTÓN LOADER
+  // LOADING BTN
   // ============================================================
   function startLoading() {
-    if (loader)  loader.style.display = "inline-block";
-    if (btnText) btnText.style.opacity = "0";
+    loader.style.display = "inline-block";
+    btnText.style.opacity = "0";
     saveBtn.disabled = true;
   }
 
   function stopLoading() {
-    if (loader)  loader.style.display = "none";
-    if (btnText) btnText.style.opacity = "1";
+    loader.style.display = "none";
+    btnText.style.opacity = "1";
     saveBtn.disabled = false;
   }
 
   // ============================================================
-  // SUBMIT FINAL
+  // SUBMIT (BOTÓN GUARDAR)
   // ============================================================
-  if (!perfilForm) return;
-
   perfilForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     startLoading();
@@ -139,7 +133,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
 
       // --------------------------------------------------------
-      // 2) ACTUALIZAR DATOS BÁSICOS (SIEMPRE)
+      // 2) ACTUALIZAR DATOS NORMALES (SIEMPRE)
       // --------------------------------------------------------
       const nuevoNombre   = document.getElementById("nombreInput").value.trim();
       const nuevoTelefono = document.getElementById("telefonoInput").value.trim();
@@ -156,24 +150,24 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (updateErr) throw updateErr;
 
       // --------------------------------------------------------
-      // 3) CAMBIO DE CONTRASEÑA (SOLO SI EL BLOQUE ESTÁ ABIERTO
-      //    Y EL USUARIO ESCRIBIÓ ALGO)
+      // 3) CAMBIO DE CONTRASEÑA (ONLY IF ACTIVE)
       // --------------------------------------------------------
-      if (bloquePassword && bloquePassword.style.display === "block") {
-        const n1 = newPassword.value.trim();
-        const n2 = passConfirm.value.trim();
-        const old = oldPassword.value.trim();
+      if (bloquePassword.style.display === "block") {
+        
+        const old = currentPassword.value.trim();
+        const n1  = newPassword.value.trim();
+        const n2  = passConfirm.value.trim();
 
-        if (n1 || n2 || old) {
-          // Validaciones mínimas
+        if (old || n1 || n2) {
+
           if (!old) {
-            alert("Escribe tu contraseña actual para cambiarla.");
-            throw new Error("Falta contraseña actual");
+            alert("Debes escribir tu contraseña actual.");
+            throw new Error("No old password");
           }
 
           if (n1.length < 6) {
-            alert("La nueva contraseña debe tener al menos 6 caracteres.");
-            throw new Error("Contraseña nueva muy corta");
+            alert("La nueva contraseña debe tener mínimo 6 caracteres.");
+            throw new Error("Short password");
           }
 
           if (n1 !== n2) {
@@ -181,8 +175,10 @@ document.addEventListener("DOMContentLoaded", async () => {
             throw new Error("No coinciden");
           }
 
-          // Supabase no usa 'old', pero lo pedimos por UX
-          const { error: passErr } = await sb.auth.updateUser({ password: n1 });
+          const { error: passErr } = await sb.auth.updateUser({
+            password: n1,
+          });
+
           if (passErr) throw passErr;
         }
       }
@@ -199,20 +195,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       saveUserLS(actualizado);
 
-      // NOTIFICAR A TODO EL SISTEMA
-      document.dispatchEvent(
-        new CustomEvent("userProfileManuallyUpdated", { detail: actualizado })
-      );
-      document.dispatchEvent(
-        new CustomEvent("userPhotoUpdated", { detail: { photo_url: nuevaFotoURL }})
-      );
-      document.dispatchEvent(new CustomEvent("userDataUpdated"));
-
       alert("Datos actualizados correctamente");
 
     } catch (err) {
       console.error("❌ Error guardando perfil:", err);
-      alert("Error al guardar los cambios");
+      alert("Error guardando los cambios");
     }
 
     stopLoading();
