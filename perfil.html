@@ -122,19 +122,14 @@
     </section>
   </main>
 
-  <!-- Supabase SDK -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- Supabase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <!-- Scripts con anti-cache -->
-  <script>
-    const v = Date.now();
-    document.write(
-      '<script src="js/supabase-client-core.js?v=' + v + '"><\/script>' +
-      '<script src="js/supabase-auth-v4.js?v=' + v + '"><\/script>' +
-      '<script src="js/auth-ui.js?v=' + v + '"><\/script>' +
-      '<script src="js/perfil-v10.js?v=' + v + '"><\/script>'
-    );
-  </script>
+<!-- Scripts normales SIN anti-cache -->
+<script src="js/supabase-client-core.js"></script>
+<script src="js/supabase-auth-v4.js"></script>
+<script src="js/auth-ui.js"></script>
+<script src="js/perfil-v10.js"></script>
 
 </body>
 </html>
