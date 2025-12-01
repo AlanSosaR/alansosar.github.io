@@ -126,16 +126,11 @@
 <!-- Supabase SDK -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<!-- Carga anti-cache -->
-<script>
-  const v = Date.now();
-  document.write(`
-    <script src="js/supabase-client-core.js?v=${v}"><\/script>
-    <script src="js/supabase-auth-v4.js?v=${v}"><\/script>
-    <script src="js/login.js?v=${v}"><\/script>
-    <script src="js/auth-ui.js?v=${v}"><\/script>
-  `);
-</script>
+<!-- Scripts normales -->
+<script src="js/supabase-client-core.js"></script>
+<script src="js/supabase-auth-v4.js"></script>
+<script src="js/login.js"></script>
+<script src="js/auth-ui.js"></script>
 
 </body>
 </html>
