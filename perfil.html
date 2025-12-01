@@ -5,9 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Mi Perfil | Café Cortero</title>
 
+  <!-- Tipografía global -->
   <link rel="stylesheet" href="css/tipografia.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600&display=swap" rel="stylesheet">
+
+  <!-- CSS del perfil -->
   <link rel="stylesheet" href="css/perfil.css?v=4">
 </head>
 
@@ -76,7 +79,16 @@
           <!-- SECCIÓN CONTRASEÑA (ESCONDIDA POR DEFECTO) -->
           <div id="bloquePassword" class="password-section" style="display:none;opacity:0;">
 
-            <!-- CONTRASEÑA NUEVA -->
+            <!-- CONTRASEÑA ACTUAL -->
+            <div class="m3-field">
+              <div class="m3-input">
+                <span class="material-symbols-outlined">lock</span>
+                <input id="oldPassword" type="password" placeholder=" ">
+                <label class="floating-label">Contraseña actual</label>
+              </div>
+            </div>
+
+            <!-- NUEVA CONTRASEÑA -->
             <div class="m3-field">
               <div class="m3-input">
                 <span class="material-symbols-outlined">lock</span>
