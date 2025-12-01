@@ -1,8 +1,8 @@
 // ============================================================
-// PERFIL — VERSIÓN FINAL COMPATIBLE CON TU HTML
+// PERFIL — VERSIÓN FINAL COMPATIBLE CON TU HTML + SNACKBAR
 // ============================================================
 
-console.log("🔥 perfil.js cargado — versión final");
+console.log("🔥 perfil.js Alan");
 
 // ------------------------------------------------------------
 // LOCAL STORAGE
@@ -21,6 +21,18 @@ function saveUserLS(data) {
 }
 
 // ------------------------------------------------------------
+// SNACKBAR
+// ------------------------------------------------------------
+function showSnack(texto) {
+  const bar = document.getElementById("snackbar");
+  const span = bar.querySelector(".snack-text");
+  span.textContent = texto;
+
+  bar.classList.add("show");
+  setTimeout(() => bar.classList.remove("show"), 2600);
+}
+
+// ------------------------------------------------------------
 // PINTAR PERFIL
 // ------------------------------------------------------------
 function paintProfile(user) {
@@ -31,8 +43,6 @@ function paintProfile(user) {
   document.getElementById("telefonoInput").value = user.phone || "";
   document.getElementById("fotoPerfil").src      =
     user.photo_url || "imagenes/avatar-default.svg";
-
-  console.log("🟢 Perfil pintado:", user);
 }
 
 // ------------------------------------------------------------
@@ -55,7 +65,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const btnMostrarPass  = document.getElementById("btnMostrarPass");
   const bloquePassword  = document.getElementById("bloquePassword");
 
-  const currentPassword = document.getElementById("currentPassword");
+  const oldPassword     = document.getElementById("oldPassword");
   const newPassword     = document.getElementById("newPassword");
   const passConfirm     = document.getElementById("passConfirm");
 
@@ -150,28 +160,28 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (updateErr) throw updateErr;
 
       // --------------------------------------------------------
-      // 3) CAMBIO DE CONTRASEÑA (ONLY IF ACTIVE)
+      // 3) CAMBIO DE CONTRASEÑA (SOLO SI EL BLOQUE ESTÁ ABIERTO)
       // --------------------------------------------------------
       if (bloquePassword.style.display === "block") {
         
-        const old = currentPassword.value.trim();
+        const old = oldPassword.value.trim();
         const n1  = newPassword.value.trim();
         const n2  = passConfirm.value.trim();
 
         if (old || n1 || n2) {
 
           if (!old) {
-            alert("Debes escribir tu contraseña actual.");
+            showSnack("Escribe tu contraseña actual.");
             throw new Error("No old password");
           }
 
           if (n1.length < 6) {
-            alert("La nueva contraseña debe tener mínimo 6 caracteres.");
+            showSnack("La nueva contraseña debe tener mínimo 6 caracteres.");
             throw new Error("Short password");
           }
 
           if (n1 !== n2) {
-            alert("Las contraseñas nuevas no coinciden.");
+            showSnack("Las contraseñas nuevas no coinciden.");
             throw new Error("No coinciden");
           }
 
@@ -195,11 +205,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       saveUserLS(actualizado);
 
-      alert("Datos actualizados correctamente");
+      showSnack("Cambios guardados correctamente ✔️");
 
     } catch (err) {
       console.error("❌ Error guardando perfil:", err);
-      alert("Error guardando los cambios");
+      showSnack("Error guardando cambios");
     }
 
     stopLoading();
