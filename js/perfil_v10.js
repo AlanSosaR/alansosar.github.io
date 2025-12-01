@@ -2,7 +2,7 @@
 // PERFIL — VERSIÓN FINAL COMPATIBLE CON TU HTML + SNACKBAR
 // ============================================================
 
-console.log("🔥 perfil.js Alan");
+console.log("🔥 perfil.js version 10");
 
 // ------------------------------------------------------------
 // LOCAL STORAGE
