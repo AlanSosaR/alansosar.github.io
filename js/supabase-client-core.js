@@ -82,7 +82,7 @@ window.supabase = {
 async function cargarPerfilGlobal(user) {
   if (!user) return;
 
-  const { data, error } = await window.supabase
+  const { data, error } = await window.sb
     .from("users")
     .select("*")
     .eq("id", user.id)
