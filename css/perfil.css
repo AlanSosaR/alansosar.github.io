@@ -145,7 +145,6 @@ body {
   border: none !important;
   background: #f4f4f4;
 
-  /* Premium shadow clean */
   box-shadow: 
     0 4px 10px rgba(0,0,0,0.10),
     0 8px 20px rgba(0,0,0,0.06);
@@ -159,11 +158,6 @@ body {
   box-shadow: 
     0 6px 18px rgba(0,0,0,0.16),
     0 12px 28px rgba(0,0,0,0.10);
-}
-
-/* ELIMINADO COMPLETAMENTE EL BOTÓN DE CÁMARA */
-.editar-foto-indicador {
-  display: none !important;
 }
 
 /* ===============================
@@ -244,22 +238,18 @@ body {
   gap: 6px;
 }
 
-/* ===============================
-   BARRAS DE FUERZA
-=============================== */
-.strength-bars {
-  display: flex;
-  gap: 4px;
-  margin-top: 8px;
-  margin-bottom: 6px;
+/* ============================================================
+   🔥 PARCHE CRÍTICO: EVITAR OVERLAY INVISIBLE BLOQUEANDO CLICS
+============================================================ */
+.password-section {
+  pointer-events: none;
+  position: relative;
+  z-index: -1;
 }
 
-.strength-bar {
-  width: 16.6%;
-  height: 6px;
-  background: #e2e2e2;
-  border-radius: 4px;
-  transition: background 0.25s ease;
+.password-section[style*="display: block"] {
+  pointer-events: auto;
+  z-index: 10;
 }
 
 /* ===============================
