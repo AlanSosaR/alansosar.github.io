@@ -1,8 +1,8 @@
 // ============================================================
-// PERFIL — VERSIÓN FINAL COMPATIBLE CON TU HTML + SNACKBAR
+// PERFIL — VERSIÓN FINAL CLICK DIRECTO EN BOTÓN GUARDAR
 // ============================================================
 
-console.log("🔥 perfil.js corrgido el bug");
+console.log("🔥 perfil.js version 12 — click directo en Guardar");
 
 // ------------------------------------------------------------
 // LOCAL STORAGE
@@ -57,7 +57,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const fotoInput       = document.getElementById("inputFoto");
   const fotoPerfil      = document.getElementById("fotoPerfil");
-  const perfilForm      = document.getElementById("perfilForm");
   const saveBtn         = document.getElementById("saveBtn");
   const loader          = saveBtn.querySelector(".loader");
   const btnText         = saveBtn.querySelector(".btn-text");
@@ -112,10 +111,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // ============================================================
-  // SUBMIT (BOTÓN GUARDAR)
+  // CLICK EN BOTÓN GUARDAR
   // ============================================================
-  perfilForm.addEventListener("submit", async (e) => {
+  saveBtn.addEventListener("click", async (e) => {
     e.preventDefault();
+    console.log("🟢 click en Guardar cambios");
     startLoading();
 
     const sb = window.supabaseClient;
@@ -143,7 +143,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
 
       // --------------------------------------------------------
-      // 2) ACTUALIZAR DATOS NORMALES (SIEMPRE)
+      // 2) ACTUALIZAR DATOS NORMALES
       // --------------------------------------------------------
       const nuevoNombre   = document.getElementById("nombreInput").value.trim();
       const nuevoTelefono = document.getElementById("telefonoInput").value.trim();
@@ -160,7 +160,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (updateErr) throw updateErr;
 
       // --------------------------------------------------------
-      // 3) CAMBIO DE CONTRASEÑA (SOLO SI EL BLOQUE ESTÁ VISIBLE)
+      // 3) CAMBIO DE CONTRASEÑA (SI BLOQUE VISIBLE)
       // --------------------------------------------------------
       if (window.getComputedStyle(bloquePassword).display !== "none") {
 
