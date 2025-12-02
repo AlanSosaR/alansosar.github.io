@@ -1,7 +1,7 @@
 /* ============================================================
    SUPABASE AUTH — VERSIÓN FINAL 2025
-   Registro: primero inserta en tabla users, luego crea Auth.
-   Login, logout y datos 100% compatibles con perfil
+   Registro: primero Auth → luego inserción en tabla users.
+   Login, logout y datos 100% compatibles con perfil.
 ============================================================ */
 
 console.log("🔥 supabase-auth.js cargado — versión FINAL 2025");
@@ -12,19 +12,46 @@ const sb = window.supabaseClient;
 window.supabaseAuth = {};
 
 /* ============================================================
-   1) REGISTRO — NUEVO FLUJO:
-      ✔ Inserta en tabla users primero
-      ✔ Luego crea Auth
-      ✔ Luego envía correo de verificación
+   1) REGISTRO — FLUJO CORREGIDO:
+      ✔ Primero crear usuario en Auth (UID real)
+      ✔ Luego insertar en tabla users con ese UID
+      ✔ Envío automático de correo de verificación
 ============================================================ */
 window.supabaseAuth.registerUser = async function (email, password, phone, fullName) {
 
-  console.log("🟡 Paso 1: Insertando fila en tabla users…");
+  console.log("🟡 Paso 1: Creando usuario en Auth…");
 
-  // 1) INSERTAR EN TABLA USERS — como pediste
+  const { data: authData, error: authError } = await sb.auth.signUp({
+    email,
+    password,
+    options: {
+      emailRedirectTo: window.location.origin + "/login.html",
+      data: {
+        full_name: fullName || "",
+        phone: phone || ""
+      }
+    }
+  });
+
+  if (authError) {
+    console.error("❌ Error creando usuario en Auth:", authError);
+    throw authError;
+  }
+
+  // UID REAL DEL USUARIO
+  const authUid = authData?.user?.id;
+  if (!authUid) {
+    console.error("❌ No se pudo obtener el UID del usuario.");
+    throw new Error("No UID.");
+  }
+
+  console.log("🟢 UID creado:", authUid);
+  console.log("🟡 Paso 2: Insertando en tabla users…");
+
   const { data: insertedUser, error: insertError } = await sb
     .from("users")
     .insert({
+      id: authUid,               // <— importante: vincula Auth con tabla users
       email: email,
       phone: phone,
       name: fullName,
@@ -37,36 +64,18 @@ window.supabaseAuth.registerUser = async function (email, password, phone, fullN
 
   if (insertError) {
     console.error("❌ Error insertando en tabla users:", insertError);
+
+    // Eliminamos el usuario de AUTH si falla el INSERT
+    try {
+      await sb.auth.admin.deleteUser(authUid);
+    } catch (e) {
+      console.warn("⚠ No se pudo eliminar el usuario creado en Auth:", e);
+    }
+
     throw insertError;
   }
 
-  console.log("✅ Usuario insertado en tabla users:", insertedUser);
-
-  // 2) CREAR USUARIO EN AUTH
-  console.log("🟡 Paso 2: Creando usuario en Auth…");
-
-  const { data: authData, error: authError } = await sb.auth.signUp({
-    email,
-    password,
-    options: {
-      emailRedirectTo: window.location.origin + "/login.html",
-      data: {
-        full_name: fullName || "",
-        phone: phone || "",
-        user_table_id: insertedUser.id    // <— vínculo entre tabla users y auth
-      }
-    }
-  });
-
-  if (authError) {
-    console.error("❌ Error creando usuario en Auth:", authError);
-
-    // Si falla Auth devolvemos el INSERT para que no queden usuarios huérfanos
-    await sb.from("users").delete().eq("id", insertedUser.id);
-
-    throw authError;
-  }
-
+  console.log("✅ Usuario insertado correctamente:", insertedUser);
   console.log("📩 Correo de verificación enviado a:", email);
 
   return {
