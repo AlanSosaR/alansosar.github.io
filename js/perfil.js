@@ -1,8 +1,8 @@
 // ============================================================
-// PERFIL — VERSIÓN FINAL CLICK DIRECTO EN BOTÓN GUARDAR
+// PERFIL — VERSIÓN 13 CON LOGS DETALLADOS
 // ============================================================
 
-console.log("🔥 perfil.js version 12 — click directo en Guardar");
+console.log("🔥 perfil.js version 13 — debug completo");
 
 // ------------------------------------------------------------
 // LOCAL STORAGE
@@ -25,8 +25,12 @@ function saveUserLS(data) {
 // ------------------------------------------------------------
 function showSnack(texto) {
   const bar = document.getElementById("snackbar");
+  if (!bar) {
+    console.warn("⚠️ No se encontró el snackbar en el DOM");
+    return;
+  }
   const span = bar.querySelector(".snack-text");
-  span.textContent = texto;
+  if (span) span.textContent = texto;
 
   bar.classList.add("show");
   setTimeout(() => bar.classList.remove("show"), 2600);
@@ -51,7 +55,11 @@ function paintProfile(user) {
 document.addEventListener("DOMContentLoaded", async () => {
 
   const user = getUserLS();
-  if (!user) return (window.location.href = "login.html");
+  if (!user) {
+    console.warn("⚠️ No hay usuario en LS, redirigiendo a login");
+    window.location.href = "login.html";
+    return;
+  }
 
   paintProfile(user);
 
@@ -80,16 +88,20 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!file) return;
     nuevaFoto = file;
     fotoPerfil.src = URL.createObjectURL(file);
+    console.log("📸 Nueva foto seleccionada");
   });
 
   // ============================================================
   // MOSTRAR / OCULTAR CAMBIO DE CONTRASEÑA
   // ============================================================
   btnMostrarPass.addEventListener("click", () => {
-    if (window.getComputedStyle(bloquePassword).display !== "none") {
+    const visible = window.getComputedStyle(bloquePassword).display !== "none";
+    if (visible) {
+      console.log("🔒 Ocultando bloque de contraseña");
       bloquePassword.style.opacity = "0";
       setTimeout(() => (bloquePassword.style.display = "none"), 240);
     } else {
+      console.log("🔓 Mostrando bloque de contraseña");
       bloquePassword.style.display = "block";
       setTimeout(() => (bloquePassword.style.opacity = "1"), 20);
     }
@@ -99,14 +111,20 @@ document.addEventListener("DOMContentLoaded", async () => {
   // LOADING BTN
   // ============================================================
   function startLoading() {
-    loader.style.display = "inline-block";
-    btnText.style.opacity = "0";
+    if (loader) {
+      loader.style.display = "inline-block";
+      loader.style.opacity = "1";
+    }
+    if (btnText) btnText.style.opacity = "0";
     saveBtn.disabled = true;
   }
 
   function stopLoading() {
-    loader.style.display = "none";
-    btnText.style.opacity = "1";
+    if (loader) {
+      loader.style.display = "none";
+      loader.style.opacity = "0";
+    }
+    if (btnText) btnText.style.opacity = "1";
     saveBtn.disabled = false;
   }
 
@@ -116,9 +134,17 @@ document.addEventListener("DOMContentLoaded", async () => {
   saveBtn.addEventListener("click", async (e) => {
     e.preventDefault();
     console.log("🟢 click en Guardar cambios");
+    showSnack("Guardando cambios...");
     startLoading();
 
     const sb = window.supabaseClient;
+
+    if (!sb) {
+      console.error("❌ window.supabaseClient es undefined");
+      showSnack("Error: Supabase no está inicializado");
+      stopLoading();
+      return;
+    }
 
     try {
       let nuevaFotoURL = user.photo_url;
@@ -127,19 +153,31 @@ document.addEventListener("DOMContentLoaded", async () => {
       // 1) SUBIR FOTO SI HAY
       // --------------------------------------------------------
       if (nuevaFoto) {
+        console.log("📤 Subiendo nueva foto al bucket avatars...");
         const fileName = `avatar_${user.id}_${Date.now()}.jpg`;
 
         const { error: uploadErr } = await sb.storage
           .from("avatars")
           .upload(fileName, nuevaFoto, { upsert: true });
 
-        if (uploadErr) throw uploadErr;
+        if (uploadErr) {
+          console.error("❌ Error subiendo foto:", uploadErr);
+          showSnack("Error al subir la foto de perfil");
+          throw uploadErr;
+        }
 
-        const { data } = await sb.storage
+        const { data: publicData, error: publicErr } = sb.storage
           .from("avatars")
           .getPublicUrl(fileName);
 
-        nuevaFotoURL = data.publicUrl;
+        if (publicErr) {
+          console.error("❌ Error obteniendo URL pública:", publicErr);
+          showSnack("Error al obtener la foto de perfil");
+          throw publicErr;
+        }
+
+        nuevaFotoURL = publicData.publicUrl;
+        console.log("✅ Foto subida. URL pública:", nuevaFotoURL);
       }
 
       // --------------------------------------------------------
@@ -148,21 +186,37 @@ document.addEventListener("DOMContentLoaded", async () => {
       const nuevoNombre   = document.getElementById("nombreInput").value.trim();
       const nuevoTelefono = document.getElementById("telefonoInput").value.trim();
 
-      const { error: updateErr } = await sb
+      console.log("✏️ Actualizando datos en tabla users...", {
+        id: user.id,
+        name: nuevoNombre,
+        phone: nuevoTelefono,
+        photo_url: nuevaFotoURL,
+      });
+
+      const { data: updateData, error: updateErr } = await sb
         .from("users")
         .update({
           name: nuevoNombre,
           phone: nuevoTelefono,
           photo_url: nuevaFotoURL,
         })
-        .eq("id", user.id);
+        .eq("id", user.id)
+        .select()
+        .single();
 
-      if (updateErr) throw updateErr;
+      if (updateErr) {
+        console.error("❌ Error en UPDATE de users:", updateErr);
+        showSnack("Error al guardar tus datos");
+        throw updateErr;
+      }
+
+      console.log("✅ Datos actualizados en Supabase:", updateData);
 
       // --------------------------------------------------------
       // 3) CAMBIO DE CONTRASEÑA (SI BLOQUE VISIBLE)
       // --------------------------------------------------------
       if (window.getComputedStyle(bloquePassword).display !== "none") {
+        console.log("🔐 Procesando cambio de contraseña...");
 
         const old = oldPassword.value.trim();
         const n1  = newPassword.value.trim();
@@ -189,7 +243,13 @@ document.addEventListener("DOMContentLoaded", async () => {
             password: n1,
           });
 
-          if (passErr) throw passErr;
+          if (passErr) {
+            console.error("❌ Error cambiando contraseña:", passErr);
+            showSnack("Error al cambiar la contraseña");
+            throw passErr;
+          }
+
+          console.log("✅ Contraseña actualizada correctamente");
         }
       }
 
@@ -204,11 +264,13 @@ document.addEventListener("DOMContentLoaded", async () => {
       };
 
       saveUserLS(actualizado);
+      console.log("💾 LocalStorage actualizado:", actualizado);
 
       showSnack("Cambios guardados correctamente ✔️");
 
     } catch (err) {
-      console.error("❌ Error guardando perfil:", err);
+      console.error("❌ Error guardando perfil (catch):", err);
+      // Si ya se mostró un mensaje más específico antes, este es genérico
       showSnack("Error guardando cambios");
     }
 
