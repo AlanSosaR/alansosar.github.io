@@ -1,8 +1,8 @@
 /* ============================================================
    SUPABASE AUTH — VERSIÓN FINAL 2025
-   Funciones puras: login, registro, logout, obtener usuario
-   Compatible con supabase-client-core.js
-   ============================================================ */
+   Registro: primero inserta en tabla users, luego crea Auth.
+   Login, logout y datos 100% compatibles con perfil
+============================================================ */
 
 console.log("🔥 supabase-auth.js cargado — versión FINAL 2025");
 
@@ -12,13 +12,40 @@ const sb = window.supabaseClient;
 window.supabaseAuth = {};
 
 /* ============================================================
-   1) REGISTRO DE USUARIO (con email de verificación)
-   ============================================================ */
+   1) REGISTRO — NUEVO FLUJO:
+      ✔ Inserta en tabla users primero
+      ✔ Luego crea Auth
+      ✔ Luego envía correo de verificación
+============================================================ */
 window.supabaseAuth.registerUser = async function (email, password, phone, fullName) {
 
-  console.log("🚀 Registrando usuario en Auth…");
+  console.log("🟡 Paso 1: Insertando fila en tabla users…");
 
-  const { data, error } = await sb.auth.signUp({
+  // 1) INSERTAR EN TABLA USERS — como pediste
+  const { data: insertedUser, error: insertError } = await sb
+    .from("users")
+    .insert({
+      email: email,
+      phone: phone,
+      name: fullName,
+      country: "Honduras",
+      photo_url: null,
+      created_at: new Date().toISOString()
+    })
+    .select("*")
+    .single();
+
+  if (insertError) {
+    console.error("❌ Error insertando en tabla users:", insertError);
+    throw insertError;
+  }
+
+  console.log("✅ Usuario insertado en tabla users:", insertedUser);
+
+  // 2) CREAR USUARIO EN AUTH
+  console.log("🟡 Paso 2: Creando usuario en Auth…");
+
+  const { data: authData, error: authError } = await sb.auth.signUp({
     email,
     password,
     options: {
@@ -26,23 +53,31 @@ window.supabaseAuth.registerUser = async function (email, password, phone, fullN
       data: {
         full_name: fullName || "",
         phone: phone || "",
-        country: "Honduras"
+        user_table_id: insertedUser.id    // <— vínculo entre tabla users y auth
       }
     }
   });
 
-  if (error) {
-    console.error("❌ Error al registrar:", error);
-    throw error;
+  if (authError) {
+    console.error("❌ Error creando usuario en Auth:", authError);
+
+    // Si falla Auth devolvemos el INSERT para que no queden usuarios huérfanos
+    await sb.from("users").delete().eq("id", insertedUser.id);
+
+    throw authError;
   }
 
-  console.log("📩 Email de confirmación enviado a:", email);
-  return data;
+  console.log("📩 Correo de verificación enviado a:", email);
+
+  return {
+    user_table: insertedUser,
+    auth: authData
+  };
 };
 
 /* ============================================================
    2) LOGIN — Iniciar sesión normal
-   ============================================================ */
+============================================================ */
 window.supabaseAuth.loginUser = async function (email, password) {
   const { data, error } = await sb.auth.signInWithPassword({
     email,
@@ -54,12 +89,12 @@ window.supabaseAuth.loginUser = async function (email, password) {
     throw error;
   }
 
-  return data; // supabase-client-core manejará el perfil
+  return data;
 };
 
 /* ============================================================
    3) LOGIN — Magic Link
-   ============================================================ */
+============================================================ */
 window.supabaseAuth.loginMagicLink = async function (email) {
   const { data, error } = await sb.auth.signInWithOtp({
     email,
@@ -73,8 +108,8 @@ window.supabaseAuth.loginMagicLink = async function (email) {
 };
 
 /* ============================================================
-   4) Obtener usuario desde LocalStorage (versión segura)
-   ============================================================ */
+   4) Obtener usuario desde LocalStorage
+============================================================ */
 window.supabaseAuth.getCurrentUser = function () {
   try {
     const raw = localStorage.getItem("cortero_user");
@@ -86,8 +121,8 @@ window.supabaseAuth.getCurrentUser = function () {
 };
 
 /* ============================================================
-   5) LOGOUT REAL
-   ============================================================ */
+   5) LOGOUT
+============================================================ */
 window.supabaseAuth.logoutUser = async function () {
   try {
     await sb.auth.signOut();
@@ -95,7 +130,6 @@ window.supabaseAuth.logoutUser = async function () {
     console.warn("⚠ Error en logout:", e);
   }
 
-  // Limpiar storage
   localStorage.removeItem("cortero_user");
   localStorage.removeItem("cortero_logged");
 
