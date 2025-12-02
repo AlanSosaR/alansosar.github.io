@@ -1,8 +1,8 @@
 // ============================================================
-// PERFIL — VERSIÓN FINAL ESTABLE
+// PERFIL — VERSIÓN FINAL ESTABLE CORREGIDA
 // ============================================================
 
-console.log("🔥 perfil.js — versión FINAL estable");
+console.log("🔥 perfil.js — correcion");
 
 // ------------------------------------------------------------
 // LOCAL STORAGE
@@ -33,15 +33,16 @@ function showSnack(texto) {
 }
 
 // ------------------------------------------------------------
-// PINTAR PERFIL
+// PINTAR PERFIL (CORREGIDO)
 // ------------------------------------------------------------
 function paintProfile(user) {
   if (!user) return;
 
-  nombreInput.value   = user.name  || "";
-  correoInput.value   = user.email || "";
-  telefonoInput.value = user.phone || "";
-  fotoPerfil.src      = user.photo_url || "imagenes/avatar-default.svg";
+  document.getElementById("nombreInput").value   = user.name  || "";
+  document.getElementById("correoInput").value   = user.email || "";
+  document.getElementById("telefonoInput").value = user.phone || "";
+  document.getElementById("fotoPerfil").src      =
+    user.photo_url || "imagenes/avatar-default.svg";
 }
 
 // ------------------------------------------------------------
@@ -55,10 +56,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   paintProfile(user);
 
   const sb = window.supabaseClient;
-  if (!sb) {
-    console.error("❌ Supabase no inicializado");
-    return;
-  }
 
   // ELEMENTOS
   const fotoInput      = document.getElementById("inputFoto");
@@ -76,9 +73,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   let nuevaFoto = null;
 
-  // ============================================================
-  // FOTO — LA IMAGEN ES EL BOTÓN
-  // ============================================================
+  // FOTO
   fotoPerfil.onclick = () => fotoInput.click();
 
   fotoInput.onchange = (e) => {
@@ -88,18 +83,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     fotoPerfil.src = URL.createObjectURL(file);
   };
 
-  // ============================================================
-  // MOSTRAR / OCULTAR CAMBIO DE CONTRASEÑA
-  // ============================================================
+  // MOSTRAR OCULTAR PASS
   btnMostrarPass.onclick = () => {
     const visible = bloquePassword.style.display === "block";
     bloquePassword.style.display = visible ? "none" : "block";
     bloquePassword.style.opacity = visible ? "0" : "1";
   };
 
-  // ============================================================
-  // LOADING BTN
-  // ============================================================
+  // LOADING
   function startLoading() {
     loader.style.display = "inline-block";
     btnText.style.opacity = "0";
@@ -112,9 +103,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     saveBtn.disabled = false;
   }
 
-  // ============================================================
-  // CLICK EN GUARDAR
-  // ============================================================
+  // GUARDAR
   saveBtn.addEventListener("click", async (e) => {
     e.preventDefault();
     startLoading();
@@ -122,26 +111,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     try {
       let nuevaFotoURL = user.photo_url;
 
-      // --------------------------------------------------------
-      // 1) SUBIR FOTO (si hay)
-      // --------------------------------------------------------
+      // SUBIR FOTO (SI HAY)
       if (nuevaFoto) {
         const fileName = `avatar_${user.id}_${Date.now()}.jpg`;
 
-        const { data, error } = await sb.storage
+        const { error } = await sb.storage
           .from("avatars")
-          .upload(fileName, nuevaFoto, {
-            cacheControl: "3600",
-            upsert: true,
-          });
+          .upload(fileName, nuevaFoto, { upsert: true });
 
-        if (error) {
-          console.error(error);
-          showSnack("Error subiendo foto");
-          throw error;
-        }
+        if (error) throw error;
 
-        // URL pública
         const { data: publicURL } = sb.storage
           .from("avatars")
           .getPublicUrl(fileName);
@@ -149,11 +128,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         nuevaFotoURL = publicURL.publicUrl;
       }
 
-      // --------------------------------------------------------
-      // 2) ACTUALIZAR DATOS NORMALES
-      // --------------------------------------------------------
-      const nuevoNombre   = nombreInput.value.trim();
-      const nuevoTelefono = telefonoInput.value.trim();
+      // DATOS NORMALES
+      const nuevoNombre   = document.getElementById("nombreInput").value.trim();
+      const nuevoTelefono = document.getElementById("telefonoInput").value.trim();
 
       const { data: updated, error: updateErr } = await sb
         .from("users")
@@ -168,9 +145,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       if (updateErr) throw updateErr;
 
-      // --------------------------------------------------------
-      // 3) CAMBIO DE CONTRASEÑA
-      // --------------------------------------------------------
+      // CAMBIO CONTRASEÑA
       if (bloquePassword.style.display === "block") {
         const old = oldPassword.value.trim();
         const n1  = newPassword.value.trim();
@@ -189,9 +164,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
       }
 
-      // --------------------------------------------------------
-      // 4) LOCAL STORAGE
-      // --------------------------------------------------------
+      // LOCAL STORAGE
       saveUserLS({
         ...user,
         name: nuevoNombre,
