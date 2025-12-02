@@ -1,280 +1,190 @@
 // ============================================================
-// PERFIL — VERSIÓN ULTRA SIMPLE Y ESTABLE
+// PERFIL — HOTFIX con sondeo, logs y timeout anti-colgado
 // ============================================================
+console.log("🛠 perfil.js — HOTFIX depuración/timeout");
 
-console.log("🔥 perfil.js — versión REAL estable");
-
-// ------------------------------------------------------------
-// LOCAL STORAGE
-// ------------------------------------------------------------
 function getUserLS() {
-  try {
-    return JSON.parse(localStorage.getItem("cortero_user")) || null;
-  } catch {
-    return null;
-  }
+  try { return JSON.parse(localStorage.getItem("cortero_user")) || null; }
+  catch { return null; }
 }
-
 function saveUserLS(data) {
   localStorage.setItem("cortero_user", JSON.stringify(data));
   localStorage.setItem("cortero_logged", "1");
 }
-
-// ------------------------------------------------------------
-// SNACKBAR
-// ------------------------------------------------------------
-function showSnack(texto) {
+function showSnack(msg) {
   const bar = document.getElementById("snackbar");
-  if (!bar) {
-    console.warn("⚠️ No se encontró #snackbar");
-    return;
-  }
+  if (!bar) return;
   const span = bar.querySelector(".snack-text");
-  if (span) span.textContent = texto;
-
+  if (span) span.textContent = msg;
   bar.classList.add("show");
-  setTimeout(() => bar.classList.remove("show"), 2600);
+  setTimeout(() => bar.classList.remove("show"), 3000);
 }
-
-// ------------------------------------------------------------
-// PINTAR PERFIL
-// ------------------------------------------------------------
 function paintProfile(user) {
   if (!user) return;
-
-  const nombreInput   = document.getElementById("nombreInput");
-  const correoInput   = document.getElementById("correoInput");
-  const telefonoInput = document.getElementById("telefonoInput");
-  const fotoPerfil    = document.getElementById("fotoPerfil");
-
-  if (nombreInput)   nombreInput.value   = user.name  || "";
-  if (correoInput)   correoInput.value   = user.email || "";
-  if (telefonoInput) telefonoInput.value = user.phone || "";
-  if (fotoPerfil)    fotoPerfil.src      = user.photo_url || "imagenes/avatar-default.svg";
+  const n = document.getElementById("nombreInput");
+  const c = document.getElementById("correoInput");
+  const t = document.getElementById("telefonoInput");
+  const f = document.getElementById("fotoPerfil");
+  if (n) n.value = user.name || "";
+  if (c) c.value = user.email || "";
+  if (t) t.value = user.phone || "";
+  if (f) f.src = user.photo_url || "imagenes/avatar-default.svg";
 }
 
-// ============================================================
-// INICIALIZAR TODO (sin DOMContentLoaded, ya que el script va
-// AL FINAL del body)
-// ============================================================
+// Utilidad: timeout para promesas (evita loader infinito)
+function withTimeout(promise, ms = 12000, label = "operación") {
+  return Promise.race([
+    promise,
+    new Promise((_, rej) =>
+      setTimeout(() => rej(new Error(`⏳ Timeout (${label}) después de ${ms}ms`)), ms)
+    ),
+  ]);
+}
 
 (function initPerfil() {
   console.log("⚙️ Iniciando pantalla de perfil…");
-
   const user = getUserLS();
-  if (!user) {
-    console.warn("⚠️ No hay usuario en LS, redirigiendo a login");
-    window.location.href = "login.html";
-    return;
-  }
-
+  if (!user) { window.location.href = "login.html"; return; }
   paintProfile(user);
 
   const sb = window.supabaseClient;
-  if (!sb) {
-    console.error("❌ window.supabaseClient es undefined");
-    showSnack("Error inicializando Supabase");
-    return;
-  }
+  if (!sb) { console.error("❌ Supabase no inicializado"); showSnack("Error Supabase"); return; }
 
-  // === ELEMENTOS DEL DOM ===
   const fotoInput      = document.getElementById("inputFoto");
   const fotoPerfil     = document.getElementById("fotoPerfil");
   const saveBtn        = document.getElementById("saveBtn");
   const loader         = saveBtn ? saveBtn.querySelector(".loader") : null;
   const btnText        = saveBtn ? saveBtn.querySelector(".btn-text") : null;
-
   const btnMostrarPass = document.getElementById("btnMostrarPass");
   const bloquePassword = document.getElementById("bloquePassword");
-
   const oldPassword    = document.getElementById("oldPassword");
   const newPassword    = document.getElementById("newPassword");
   const passConfirm    = document.getElementById("passConfirm");
 
-  if (!saveBtn) {
-    console.error("❌ No se encontró el botón #saveBtn");
-    return;
-  }
-
-  console.log("✅ saveBtn encontrado:", saveBtn);
+  if (!saveBtn) { console.error("❌ Falta #saveBtn"); return; }
 
   let nuevaFoto = null;
 
-  // ----------------------------------------------------------
-  // FOTO — LA IMAGEN ES EL BOTÓN
-  // ----------------------------------------------------------
   if (fotoPerfil && fotoInput) {
     fotoPerfil.onclick = () => fotoInput.click();
-
     fotoInput.onchange = (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      nuevaFoto = file;
-      fotoPerfil.src = URL.createObjectURL(file);
+      const file = e.target.files[0]; if (!file) return;
+      nuevaFoto = file; fotoPerfil.src = URL.createObjectURL(file);
       console.log("📸 Nueva foto seleccionada");
     };
   }
 
-  // ----------------------------------------------------------
-  // MOSTRAR / OCULTAR CAMBIO DE CONTRASEÑA
-  // ----------------------------------------------------------
   if (btnMostrarPass && bloquePassword) {
     btnMostrarPass.onclick = () => {
-      const visible = window.getComputedStyle(bloquePassword).display !== "none";
-      if (visible) {
-        bloquePassword.style.opacity = "0";
-        setTimeout(() => (bloquePassword.style.display = "none"), 200);
-      } else {
-        bloquePassword.style.display = "block";
-        setTimeout(() => (bloquePassword.style.opacity = "1"), 20);
-      }
+      const visible = getComputedStyle(bloquePassword).display !== "none";
+      bloquePassword.style.display = visible ? "none" : "block";
+      bloquePassword.style.opacity = visible ? "0" : "1";
     };
   }
 
-  // ----------------------------------------------------------
-  // LOADING
-  // ----------------------------------------------------------
-  function startLoading() {
-    if (loader) {
-      loader.style.display = "inline-block";
-      loader.style.opacity = "1";
+  function startLoading(){ if (loader){loader.style.display="inline-block";loader.style.opacity="1";} if (btnText) btnText.style.opacity="0"; saveBtn.disabled=true; }
+  function stopLoading(){ if (loader){loader.style.display="none";loader.style.opacity="0";} if (btnText) btnText.style.opacity="1"; saveBtn.disabled=false; }
+
+  // --- Sonda rápida: ¿existe tu fila en users?
+  async function probeRow() {
+    console.time("⏱ probe SELECT");
+    const { data, error } = await withTimeout(
+      sb.from("users").select("id").eq("id", user.id).maybeSingle(),
+      12000, "SELECT de sondeo"
+    );
+    console.timeEnd("⏱ probe SELECT");
+    if (error) {
+      console.error("❌ Probe SELECT error:", error);
+      showSnack(`Error SELECT: ${error.message || error}`);
+      throw error;
     }
-    if (btnText) btnText.style.opacity = "0";
-    saveBtn.disabled = true;
+    if (!data) {
+      const msg = "No existe tu fila en users (id != auth.uid()).";
+      console.warn(msg);
+      showSnack(msg);
+      throw new Error(msg);
+    }
+    console.log("✅ Probe OK. id:", data.id);
+    return true;
   }
 
-  function stopLoading() {
-    if (loader) {
-      loader.style.display = "none";
-      loader.style.opacity = "0";
-    }
-    if (btnText) btnText.style.opacity = "1";
-    saveBtn.disabled = false;
+  async function subirFotoSiAplica() {
+    if (!nuevaFoto) return user.photo_url || null;
+    const fileName = `avatar_${user.id}_${Date.now()}.jpg`;
+    console.time("⏱ upload avatar");
+    const { error: uploadErr } = await withTimeout(
+      sb.storage.from("avatars").upload(fileName, nuevaFoto, { upsert: true }),
+      12000, "UPLOAD avatar"
+    );
+    console.timeEnd("⏱ upload avatar");
+    if (uploadErr) { console.error(uploadErr); showSnack("Error subiendo foto"); throw uploadErr; }
+    const { data: pub } = sb.storage.from("avatars").getPublicUrl(fileName);
+    return pub?.publicUrl || null;
   }
 
-  // ----------------------------------------------------------
-  // CLICK EN GUARDAR
-  // ----------------------------------------------------------
+  async function actualizarDatos(nuevaFotoURL) {
+    const nombre   = (document.getElementById("nombreInput")   || {}).value?.trim?.() || "";
+    const telefono = (document.getElementById("telefonoInput") || {}).value?.trim?.() || "";
+
+    console.time("⏱ UPDATE users");
+    const { data, error } = await withTimeout(
+      sb.from("users")
+        .update({ name: nombre, phone: telefono, photo_url: nuevaFotoURL })
+        .eq("id", user.id)
+        .select("id,name,phone,photo_url")
+        .single(),
+      12000, "UPDATE users"
+    );
+    console.timeEnd("⏱ UPDATE users");
+
+    if (error) { console.error("❌ UPDATE error:", error); showSnack(`Error UPDATE: ${error.message||error}`); throw error; }
+    console.log("✅ UPDATE OK:", data);
+    return { nombre, telefono, foto: data.photo_url || nuevaFotoURL || null };
+  }
+
+  async function cambiarPasswordSiVisible() {
+    if (!bloquePassword || getComputedStyle(bloquePassword).display === "none") return;
+    const old = oldPassword?.value?.trim?.() || "";
+    const n1  = newPassword?.value?.trim?.() || "";
+    const n2  = passConfirm?.value?.trim?.() || "";
+    if (!old && !n1 && !n2) return;
+
+    if (!old) throw new Error("Debes escribir tu contraseña actual");
+    if (n1.length < 6) throw new Error("Contraseña mínima 6 caracteres");
+    if (n1 !== n2) throw new Error("Las contraseñas no coinciden");
+
+    console.time("⏱ UPDATE password");
+    const { error } = await withTimeout(
+      sb.auth.updateUser({ password: n1 }),
+      12000, "UPDATE password"
+    );
+    console.timeEnd("⏱ UPDATE password");
+    if (error) { console.error("❌ Password error:", error); showSnack(`Error password: ${error.message||error}`); throw error; }
+    console.log("✅ Password actualizada");
+  }
+
   saveBtn.addEventListener("click", async (e) => {
     e.preventDefault();
-    console.log("🟢 CLICK en Guardar cambios");
     startLoading();
-
     try {
-      let nuevaFotoURL = user.photo_url || null;
+      showSnack("Guardando…");
+      await probeRow();
 
-      // 1) SUBIR FOTO (solo si el usuario escogió una nueva)
-      if (nuevaFoto) {
-        console.log("📤 Subiendo nueva foto al bucket avatars…");
-        const fileName = `avatar_${user.id}_${Date.now()}.jpg`;
+      const fotoURL = await subirFotoSiAplica();
+      const res     = await actualizarDatos(fotoURL);
+      await cambiarPasswordSiVisible();
 
-        const { error: uploadErr } = await sb.storage
-          .from("avatars")
-          .upload(fileName, nuevaFoto, { upsert: true });
-
-        if (uploadErr) {
-          console.error("❌ Error subiendo foto:", uploadErr);
-          showSnack("Error al subir la foto de perfil");
-          throw uploadErr;
-        }
-
-        const { data: publicData, error: publicErr } = sb.storage
-          .from("avatars")
-          .getPublicUrl(fileName);
-
-        if (publicErr) {
-          console.error("❌ Error obteniendo URL pública:", publicErr);
-          showSnack("Error al obtener la foto de perfil");
-          throw publicErr;
-        }
-
-        nuevaFotoURL = publicData.publicUrl;
-        console.log("✅ Foto subida. URL pública:", nuevaFotoURL);
-      }
-
-      // 2) ACTUALIZAR DATOS NORMALES
-      const nombreInput   = document.getElementById("nombreInput");
-      const telefonoInput = document.getElementById("telefonoInput");
-
-      const nuevoNombre   = nombreInput   ? nombreInput.value.trim()   : "";
-      const nuevoTelefono = telefonoInput ? telefonoInput.value.trim() : "";
-
-      console.log("✏️ Actualizando datos en tabla users…");
-
-      const { data: updated, error: updateErr } = await sb
-        .from("users")
-        .update({
-          name: nuevoNombre,
-          phone: nuevoTelefono,
-          photo_url: nuevaFotoURL,
-        })
-        .eq("id", user.id)
-        .select()
-        .single();
-
-      if (updateErr) {
-        console.error("❌ Error en UPDATE de users:", updateErr);
-        showSnack("Error al guardar tus datos");
-        throw updateErr;
-      }
-
-      console.log("✅ Datos actualizados en Supabase:", updated);
-
-      // 3) CAMBIO DE CONTRASEÑA (solo si el bloque está visible)
-      if (bloquePassword && window.getComputedStyle(bloquePassword).display !== "none") {
-        console.log("🔐 Procesando cambio de contraseña…");
-
-        const old = oldPassword ? oldPassword.value.trim() : "";
-        const n1  = newPassword ? newPassword.value.trim() : "";
-        const n2  = passConfirm ? passConfirm.value.trim() : "";
-
-        if (old || n1 || n2) {
-          if (!old) {
-            showSnack("Escribe tu contraseña actual.");
-            throw new Error("No old password");
-          }
-
-          if (n1.length < 6) {
-            showSnack("La nueva contraseña debe tener mínimo 6 caracteres.");
-            throw new Error("Short password");
-          }
-
-          if (n1 !== n2) {
-            showSnack("Las contraseñas nuevas no coinciden.");
-            throw new Error("No coinciden");
-          }
-
-          const { error: passErr } = await sb.auth.updateUser({ password: n1 });
-
-          if (passErr) {
-            console.error("❌ Error cambiando contraseña:", passErr);
-            showSnack("Error al cambiar la contraseña");
-            throw passErr;
-          }
-
-          console.log("✅ Contraseña actualizada correctamente");
-        }
-      }
-
-      // 4) ACTUALIZAR LOCAL STORAGE
-      const actualizado = {
-        ...user,
-        name: nuevoNombre,
-        phone: nuevoTelefono,
-        photo_url: nuevaFotoURL,
-      };
-
-      saveUserLS(actualizado);
-      console.log("💾 LocalStorage actualizado:", actualizado);
-
-      showSnack("Cambios guardados correctamente ✔️");
+      // Actualizar LS
+      saveUserLS({ ...getUserLS(), name: res.nombre, phone: res.telefono, photo_url: res.foto });
+      showSnack("Cambios guardados ✔️");
     } catch (err) {
-      console.error("❌ Error guardando perfil:", err);
-      showSnack("Error guardando cambios");
+      console.error("❌ Guardado falló:", err);
+      // El snackbar ya mostró un mensaje específico; reforzamos uno genérico:
+      showSnack("No se pudo guardar");
+    } finally {
+      stopLoading();
     }
-
-    stopLoading();
   });
 
-  console.log("✅ Handler de click en Guardar conectado.");
+  console.log("✅ Handler de Guardar listo");
 })();
