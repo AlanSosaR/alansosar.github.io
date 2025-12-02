@@ -2,7 +2,7 @@
 // PERFIL — VERSIÓN FINAL COMPATIBLE CON TU HTML + SNACKBAR
 // ============================================================
 
-console.log("🔥 perfil.js version 10");
+console.log("🔥 perfil.js corrgido el bug");
 
 // ------------------------------------------------------------
 // LOCAL STORAGE
@@ -87,7 +87,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // MOSTRAR / OCULTAR CAMBIO DE CONTRASEÑA
   // ============================================================
   btnMostrarPass.addEventListener("click", () => {
-    if (bloquePassword.style.display === "block") {
+    if (window.getComputedStyle(bloquePassword).display !== "none") {
       bloquePassword.style.opacity = "0";
       setTimeout(() => (bloquePassword.style.display = "none"), 240);
     } else {
@@ -160,10 +160,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (updateErr) throw updateErr;
 
       // --------------------------------------------------------
-      // 3) CAMBIO DE CONTRASEÑA (SOLO SI EL BLOQUE ESTÁ ABIERTO)
+      // 3) CAMBIO DE CONTRASEÑA (SOLO SI EL BLOQUE ESTÁ VISIBLE)
       // --------------------------------------------------------
-      if (bloquePassword.style.display === "block") {
-        
+      if (window.getComputedStyle(bloquePassword).display !== "none") {
+
         const old = oldPassword.value.trim();
         const n1  = newPassword.value.trim();
         const n2  = passConfirm.value.trim();
