@@ -1,8 +1,8 @@
 // ============================================================
-// SUPABASE CLIENT — VERSIÓN FINAL 2025 (CORREGIDO, ESTABLE)
+// SUPABASE CLIENT — VERSIÓN FINAL ESTABLE 2025
 // ============================================================
 
-console.log("🔥 SUPABASE CLIENT — Versión FINAL estable 2025");
+console.log("🔥 SUPABASE CLIENT — Estable 2025 cargado");
 
 // SDK desde HTML
 const { createClient } = supabase;
@@ -19,8 +19,8 @@ const storage = {
   removeItem: (k) => { try { localStorage.removeItem(k); } catch {} }
 };
 
-// 🔥 Crear cliente REAL y ÚNICO
-window.supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+// ✔ Cliente principal REAL
+window.supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: {
     persistSession: true,
     autoRefreshToken: true,
@@ -29,9 +29,16 @@ window.supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   }
 });
 
-// ------------------------------------------------------------
+// ✔ Proxy solo para queries .from() (sin tocar .auth)
+window.supabase = {
+  from(table) {
+    return window.supabaseClient.from(table);
+  }
+};
+
+// ============================================================
 // Cargar perfil del usuario
-// ------------------------------------------------------------
+// ============================================================
 async function cargarPerfilGlobal(user) {
   if (!user) return;
 
@@ -54,20 +61,20 @@ async function cargarPerfilGlobal(user) {
   document.dispatchEvent(new CustomEvent("userLoggedIn", { detail: data }));
 }
 
-// ------------------------------------------------------------
+// ============================================================
 // Logout total
-// ------------------------------------------------------------
+// ============================================================
 async function logoutTotal() {
-  await window.supabase.auth.signOut();
+  await window.supabaseClient.auth.signOut();
   localStorage.clear();
   document.dispatchEvent(new CustomEvent("userLoggedOut"));
 }
 window.corteroLogout = logoutTotal;
 
-// ------------------------------------------------------------
-// Eventos de auth
-// ------------------------------------------------------------
-window.supabase.auth.onAuthStateChange(async (event, session) => {
+// ============================================================
+// Eventos AUTH
+// ============================================================
+window.supabaseClient.auth.onAuthStateChange(async (event, session) => {
   console.log("🔄 Evento Auth:", event);
 
   if (session?.user) {
@@ -79,11 +86,11 @@ window.supabase.auth.onAuthStateChange(async (event, session) => {
   }
 });
 
-// ------------------------------------------------------------
-// Restaurar sesión al cargar página
-// ------------------------------------------------------------
+// ============================================================
+// Restaurar sesión
+// ============================================================
 document.addEventListener("DOMContentLoaded", async () => {
-  const { data } = await window.supabase.auth.getSession();
+  const { data } = await window.supabaseClient.auth.getSession();
 
   if (data?.session?.user) {
     cargarPerfilGlobal(data.session.user);
