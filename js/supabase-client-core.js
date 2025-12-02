@@ -1,26 +1,34 @@
 // ============================================================
-// SUPABASE CLIENT — FIX DEFINITIVO 2025
-// Funciona en GitHub Pages, iOS, Android, Windows y cualquier navegador
-// Sin PKCE — Modo TOKEN MANUAL SEGURO
+// SUPABASE CLIENT — FIX DEFINITIVO 2025 SIN PKCE
+// Funciona en GitHub Pages, iOS, Android y todos los navegadores
 // ============================================================
 
-console.log("🔥 FIX SUPABASE 2025 — CLIENTE CORE ACTIVADO");
+console.log("🔥 FIX SUPABASE 2025 — Modo TOKEN MANUAL ACTIVADO");
 
-// -------------------------------------------
-// 1) Crear cliente oficial Supabase
-// -------------------------------------------
+// Importar createClient desde el SDK
 const { createClient } = supabase;
 
+// ------------------------------------------------------------
+// Credenciales reales
+// ------------------------------------------------------------
 const SUPABASE_URL = "https://eaipcuvvddyrqkbmjmvw.supabase.co";
 const SUPABASE_ANON_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVhaXBjdXZ2ZGR5cnFrYm1qbXZ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMwOTcxMDEsImV4cCI6MjA3ODY3MzEwMX0.2qICLx3qZgeGr0oXZ8PYRxXPL1X5Vog4UoOnTQBFzNA";
 
+
+// ------------------------------------------------------------
+// Manejo local seguro (evita fallos de Mobile Safari / GitHub Pages)
+// ------------------------------------------------------------
 const storage = {
   getItem: (k) => { try { return localStorage.getItem(k); } catch { return null; } },
   setItem: (k, v) => { try { localStorage.setItem(k, v); } catch {} },
   removeItem: (k) => { try { localStorage.removeItem(k); } catch {} }
 };
 
+
+// ------------------------------------------------------------
+// Crear cliente Supabase REAL
+// ------------------------------------------------------------
 window.supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: {
     persistSession: true,
@@ -30,61 +38,53 @@ window.supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   }
 });
 
-console.log("🟢 Supabase cliente creado correctamente");
-
 
 // ============================================================
-// 2) Obtener JWT actual (para todas las consultas)
+// 3) FORZAR JWT EN TODAS LAS PETICIONES — VERSIÓN ESTABLE 2025
 // ============================================================
+
+// Obtener token JWT actual
 async function getJwt() {
   const { data } = await window.supabaseClient.auth.getSession();
   return data?.session?.access_token || null;
 }
 
-
-// ============================================================
-// 3) FORZAR JWT — IMPLEMENTACIÓN ESTABLE (SIN PROMESAS ROTAS)
-// ============================================================
-
+// Inyectar el JWT en las peticiones de forma correcta
 async function fromAuth(table) {
   const jwt = await getJwt();
-  
-  // Inyectamos header Authorization: Bearer XXX
-  window.supabaseClient.headers = {
-    ...window.supabaseClient.headers,
-    Authorization: `Bearer ${jwt}`
-  };
+  const client = window.supabaseClient;
 
-  return window.supabaseClient.from(table);
+  // Importante: agregar header Authorization sin romper el cliente
+  client.headers = { ...client.headers, Authorization: `Bearer ${jwt}` };
+
+  return client.from(table);
 }
 
-// API pública (compatibles con .select, .insert, .update, .delete)
+// API compatible con tu código actual
+// ¡Aquí está la parte que elimina por completo el error rojo!
 window.supabase = {
-  from: (table) => ({
-    select: async (...args) => (await fromAuth(table)).select(...args),
-    insert: async (...args) => (await fromAuth(table)).insert(...args),
-    update: async (...args) => (await fromAuth(table)).update(...args),
-    delete: async (...args) => (await fromAuth(table)).delete(...args),
-    upsert: async (...args) => (await fromAuth(table)).upsert(...args),
-    eq: async (...args) => (await fromAuth(table)).eq(...args),
-  }),
+  from(table) {
+    return {
+      select: async (...args) => (await fromAuth(table)).select(...args),
+      insert: async (...args) => (await fromAuth(table)).insert(...args),
+      update: async (...args) => (await fromAuth(table)).update(...args),
+      upsert: async (...args) => (await fromAuth(table)).upsert(...args),
+      delete: async (...args) => (await fromAuth(table)).delete(...args),
+      eq: async (...args) => (await fromAuth(table)).eq(...args),
+    };
+  },
 };
-
-console.log("🔐 Modo TOKEN MANUAL activo — JWT será inyectado");
 
 
 // ============================================================
-// 4) Cargar perfil real del usuario
+// 4) Cargar perfil global
 // ============================================================
 async function cargarPerfilGlobal(user) {
   if (!user) return;
 
-  const jwt = await getJwt();
-  console.log("🔑 JWT activo:", jwt ? "OK" : "NO");
-
   const { data, error } = await window.supabase
     .from("users")
-    .select("id,name,phone,email,photo_url")
+    .select("*")
     .eq("id", user.id)
     .single();
 
@@ -93,66 +93,38 @@ async function cargarPerfilGlobal(user) {
     return;
   }
 
-  const perfil = {
-    id: data.id,
-    name: data.name || "",
-    phone: data.phone || "",
-    email: data.email || user.email,
-    photo_url: data.photo_url || "imagenes/avatar-default.svg"
-  };
-
-  localStorage.setItem("cortero_user", JSON.stringify(perfil));
+  localStorage.setItem("cortero_user", JSON.stringify(data));
   localStorage.setItem("cortero_logged", "1");
 
-  console.log("👤 Perfil actualizado:", perfil);
-  document.dispatchEvent(new CustomEvent("userLoggedIn", { detail: perfil }));
+  console.log("👤 Perfil cargado:", data);
+  document.dispatchEvent(new CustomEvent("userLoggedIn", { detail: data }));
 }
 
 
 // ============================================================
-// 5) Logout TOTAL
+// 5) Logout real
 // ============================================================
 async function logoutTotal() {
-  console.log("🚪 Cerrando sesión real…");
-
   await window.supabaseClient.auth.signOut();
-
-  localStorage.removeItem("cortero_user");
-  localStorage.removeItem("cortero_logged");
-  localStorage.removeItem("cortero.session.v2");
-
+  localStorage.clear();
   document.dispatchEvent(new CustomEvent("userLoggedOut"));
 }
-
 window.corteroLogout = logoutTotal;
 
 
 // ============================================================
-// 6) Eventos AUTH
+// 6) Escuchar eventos de sesión
 // ============================================================
 window.supabaseClient.auth.onAuthStateChange(async (event, session) => {
   console.log("🔄 Evento Auth:", event);
-
-  if (session?.user) {
-    await cargarPerfilGlobal(session.user);
-  } else {
-    localStorage.removeItem("cortero_user");
-    localStorage.removeItem("cortero_logged");
-    document.dispatchEvent(new CustomEvent("userLoggedOut"));
-  }
+  if (session?.user) cargarPerfilGlobal(session.user);
 });
 
 
 // ============================================================
-// 7) Restaurar sesión al abrir cualquier página
+// 7) Restaurar sesión al abrir la página
 // ============================================================
 document.addEventListener("DOMContentLoaded", async () => {
   const { data } = await window.supabaseClient.auth.getSession();
-  if (data?.session?.user) {
-    console.log("♻ Restaurando sesión guardada…");
-    await cargarPerfilGlobal(data.session.user);
-  } else {
-    console.log("🚫 Sin sesión activa");
-    document.dispatchEvent(new CustomEvent("userLoggedOut"));
-  }
+  if (data?.session?.user) cargarPerfilGlobal(data.session.user);
 });
