@@ -6,7 +6,7 @@
 
 document.addEventListener("DOMContentLoaded", () => {
 
-  // ⚠ CORRECCIÓN CRÍTICA: ESTE ES EL CLIENTE REAL
+  // ⚠ CLIENTE SUPABASE REAL
   const sb = window.supabase;
   const registerUser = window.supabaseAuth.registerUser;
 
@@ -273,6 +273,26 @@ document.addEventListener("DOMContentLoaded", () => {
       mostrarSnackbar("Error creando la cuenta");
       desactivarLoading();
     }
+  });
+
+  // ============================================================
+  // TOGGLE PASSWORD (MOSTRAR / OCULTAR)
+  // ============================================================
+  document.querySelectorAll(".toggle-pass").forEach(icon => {
+    icon.addEventListener("click", () => {
+      const targetId = icon.dataset.target;
+      const input = document.getElementById(targetId);
+
+      if (!input) {
+        console.warn("⚠ No se encontró el input para toggle:", targetId);
+        return;
+      }
+
+      const mostrando = input.type === "text";
+      input.type = mostrando ? "password" : "text";
+
+      icon.textContent = mostrando ? "visibility" : "visibility_off";
+    });
   });
 
   // ============================================================
