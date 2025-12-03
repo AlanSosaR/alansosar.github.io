@@ -2,11 +2,12 @@
 // REGISTRO DE CLIENTE — Café Cortero (VERSIÓN FINAL PREMIUM 2025)
 // Floating Label + Error Café + Éxito Verde + Snackbar con Logo
 // + Barra de seguridad de contraseña (6 niveles)
+// + Imagen por defecto y correo de validación activo
 // ============================================================
 
 document.addEventListener("DOMContentLoaded", () => {
 
-  // ⚠ CLIENTE SUPABASE REAL
+  // CLIENTE SUPABASE REAL
   const sb = window.supabase;
   const registerUser = window.supabaseAuth.registerUser;
 
@@ -261,7 +262,7 @@ document.addEventListener("DOMContentLoaded", () => {
         tel,
         campos.nombre.value.trim(),
         "Honduras",
-        null
+        "/imagenes/avatar-default.svg" // ✅ Enviamos imagen desde aquí
       );
 
       mostrarSnackbar("Tu cuenta ha sido creada. Revisa tu correo ✉️");
