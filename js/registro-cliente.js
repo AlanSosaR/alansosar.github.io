@@ -6,7 +6,8 @@
 
 document.addEventListener("DOMContentLoaded", () => {
 
-  const sb = window.supabaseClient.supabase;
+  // ⚠ CORRECCIÓN CRÍTICA: ESTE ES EL CLIENTE REAL
+  const sb = window.supabase;
   const registerUser = window.supabaseAuth.registerUser;
 
   const form = document.getElementById("registroForm");
@@ -36,7 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   // ============================================================
-  // AUTOCORRECCIÓN DE CORREO
+  // AUTOCORRECCIONES
   // ============================================================
   const autocorrecciones = {
     "gmal.com": "gmail.com",
@@ -56,18 +57,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (tel.startsWith("00")) tel = "+" + tel.slice(2);
     tel = tel.replace(/^\+/, "");
     return tel;
-  }
-
-  // ============================================================
-  // LIMPIAR ERROR
-  // ============================================================
-  function limpiarErrorCampo(campo) {
-    const input = campos[campo];
-    const grupo = input.closest(".m3-input");
-
-    grupo.classList.remove("error", "success");
-    errores[campo].textContent = "";
-    input.placeholder = " ";
   }
 
   // ============================================================
@@ -102,7 +91,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // ============================================================
   function esCorreoValido(email) {
     if (!email) return false;
-
     const regexGeneral = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
     if (!regexGeneral.test(email)) return false;
 
@@ -117,7 +105,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ============================================================
-  // BARRAS DE SEGURIDAD
+  // BARRA DE SEGURIDAD
   // ============================================================
   const barsContainer = document.getElementById("barsContainer");
   const bars = barsContainer ? barsContainer.querySelectorAll(".strength-bar") : [];
@@ -133,7 +121,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return Math.min(score, 6);
   }
 
-  if (campos.password && barsContainer && bars.length) {
+  if (campos.password && barsContainer) {
     campos.password.addEventListener("input", () => {
       const val = campos.password.value.trim();
 
@@ -149,9 +137,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       bars.forEach((bar, i) => {
         bar.className = "strength-bar";
-        if (i < nivel) {
-          bar.classList.add(`level-${nivel}`);
-        }
+        if (i < nivel) bar.classList.add(`level-${nivel}`);
       });
     });
   }
@@ -172,11 +158,8 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      if (validador(input.value.trim())) {
-        grupo.classList.add("success");
-      } else {
-        grupo.classList.remove("success");
-      }
+      if (validador(input.value.trim())) grupo.classList.add("success");
+      else grupo.classList.remove("success");
     });
   }
 
@@ -187,14 +170,12 @@ document.addEventListener("DOMContentLoaded", () => {
   activarVerdeEnVivo("confirm", v => v === campos.password.value.trim());
 
   // ============================================================
-  // DUPLICADOS (users)
+  // DUPLICADOS
   // ============================================================
   async function existeUsuario(correo, telefonoRaw) {
     const telefonoNormalizado = normalizarTelefono(telefonoRaw);
 
-    const { data } = await sb
-      .from("users")
-      .select("email, phone");
+    const { data } = await sb.from("users").select("email, phone");
 
     return data?.find(row =>
       row.email === correo ||
@@ -206,7 +187,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // VALIDACIÓN FINAL
   // ============================================================
   function validarEnCadena() {
-
     if (!campos.nombre.value.trim())
       return marcar("nombre", mensajesVacios.nombre), false;
 
@@ -248,7 +228,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ============================================================
-  // SUBMIT FINAL
+  // SUBMIT (REGISTRO REAL + TRIGGER)
   // ============================================================
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
