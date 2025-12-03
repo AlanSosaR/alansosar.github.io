@@ -1,10 +1,12 @@
 /* ============================================================
    SUPABASE AUTH — VERSIÓN FINAL 2025
-   Registro: primero INSERT en tabla users → luego Auth.
-   Login, logout y datos 100% compatibles con perfil.
+   ✔ Registro: primero Auth (signUp) → trigger llena tabla users
+   ✔ Envía correo de verificación
+   ✔ Envía foto por defecto y metadatos (name, phone, country, rol)
+   ✔ Login / logout compatibles con perfil y menú
 ============================================================ */
 
-console.log("🔥 supabase-auth.js cargado — versión INSERT-FIRST FINAL 2025");
+console.log("🔥 supabase-auth.js cargado — versión AUTH-FIRST FINAL 2025");
 
 const sb = window.supabaseClient;
 
@@ -12,72 +14,56 @@ const sb = window.supabaseClient;
 window.supabaseAuth = {};
 
 /* ============================================================
-   1) REGISTRO — NUEVO FLUJO:
-      ✔ Primero insertar en tabla users (anon)
-      ✔ Luego crear usuario en Auth (manda correo)
+   1) REGISTRO — NUEVO FLUJO CORRECTO:
+      ✔ Crea usuario en Auth (manda correo)
+      ✔ Trigger se encarga de insertar en tabla users
 ============================================================ */
-window.supabaseAuth.registerUser = async function (email, password, phone, fullName) {
+window.supabaseAuth.registerUser = async function (
+  email,
+  password,
+  phone,
+  fullName,
+  country = "Honduras",
+  photoUrl = "/imagenes/avatar-default.svg"
+) {
+  console.log("🟡 REGISTRO: creando usuario en Supabase Auth…");
 
-  console.log("🟡 Paso 1: Insertando fila en tabla users (anon)…");
-
-  // Insertar PRIMERO en la BD (users)
-  const { data: insertedUser, error: insertError } = await sb
-    .from("users")
-    .insert({
-      email,
-      phone,
-      name: fullName,
-      country: "Honduras",
-      photo_url: null,
-      created_at: new Date().toISOString()
-    })
-    .select("*")
-    .single();
-
-  if (insertError) {
-    console.error("❌ Error insertando en tabla users:", insertError);
-    throw insertError;
-  }
-
-  console.log("✅ Usuario creado en BD:", insertedUser);
-
-  /* ======================================================
-     PASO 2 — Crear el usuario en AUTH (manda correo)
-  ====================================================== */
-  console.log("🟡 Paso 2: Creando usuario en Auth…");
-
-  const { data: authData, error: authError } = await sb.auth.signUp({
+  const { data, error } = await sb.auth.signUp({
     email,
     password,
     options: {
+      // URL a donde redirige cuando el usuario confirma el correo
       emailRedirectTo: window.location.origin + "/login.html",
+      // Metadatos que leerá el trigger en auth.users.raw_user_meta_data
       data: {
-        full_name: fullName,
+        name: fullName,
         phone: phone,
-        user_table_id: insertedUser.id // relación opcional
+        country: country,
+        photo_url: photoUrl,
+        rol: "cliente"
       }
     }
   });
 
-  if (authError) {
-    console.error("❌ Error creando usuario en Auth:", authError);
-
-    // 🔥 IMPORTANTE: eliminar el registro creado en tabla users
-    await sb.from("users").delete().eq("id", insertedUser.id);
-
-    throw authError;
+  if (error) {
+    console.error("❌ Error creando usuario en Auth:", error);
+    throw error;
   }
 
-  console.log("📩 Correo de verificación enviado a:", email);
+  if (data?.user) {
+    console.log("✅ Usuario creado en Auth:", data.user.id);
+    console.log("📨 Supabase enviará correo de verificación (si el correo existe de verdad).");
+  } else {
+    console.warn("⚠ signUp no devolvió user, revisar configuración de Auth.");
+  }
 
-  return {
-    user_table: insertedUser,
-    auth: authData
-  };
+  // IMPORTANTE:
+  // El trigger handle_new_auth_user() creará la fila en public.users
+  return data;
 };
 
 /* ============================================================
-   2) LOGIN — Iniciar sesión normal
+   2) LOGIN — Iniciar sesión normal (email + password)
 ============================================================ */
 window.supabaseAuth.loginUser = async function (email, password) {
   const { data, error } = await sb.auth.signInWithPassword({
@@ -94,7 +80,7 @@ window.supabaseAuth.loginUser = async function (email, password) {
 };
 
 /* ============================================================
-   3) LOGIN — Magic Link
+   3) LOGIN — Magic Link (OTP por correo)
 ============================================================ */
 window.supabaseAuth.loginMagicLink = async function (email) {
   const { data, error } = await sb.auth.signInWithOtp({
@@ -104,12 +90,16 @@ window.supabaseAuth.loginMagicLink = async function (email) {
     }
   });
 
-  if (error) throw error;
+  if (error) {
+    console.error("❌ Error login Magic Link:", error);
+    throw error;
+  }
+
   return data;
 };
 
 /* ============================================================
-   4) Obtener usuario desde LocalStorage
+   4) Obtener usuario desde LocalStorage (perfil cacheado)
 ============================================================ */
 window.supabaseAuth.getCurrentUser = function () {
   try {
