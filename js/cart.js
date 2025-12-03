@@ -1,25 +1,30 @@
 /* ============================================================
-   CARRITO — Café Cortero (Versión Final 2025)
-   Con sesión obligatoria antes de proceder al pago
-   ============================================================ */
+   Carrito — Café Cortero
+   Versión Final Premium 2025
+   Con aviso suave (snackbar) si no está logueado
+============================================================ */
 
 const CART_KEY = 'cafecortero_cart';
 
-/* === Obtener carrito === */
+/* -------------------------------------------
+   Obtener y guardar carrito
+------------------------------------------- */
 function getCart() {
   return JSON.parse(localStorage.getItem(CART_KEY)) || [];
 }
 
-/* === Guardar carrito === */
 function saveCart(cart) {
   localStorage.setItem(CART_KEY, JSON.stringify(cart));
 }
 
-/* === Render principal === */
+/* -------------------------------------------
+   Render del carrito
+------------------------------------------- */
 function renderCart() {
   const cart = getCart();
   const container = document.getElementById('cart-container');
   const totalBox = document.getElementById('total-box');
+
   container.innerHTML = '';
 
   if (cart.length === 0) {
@@ -78,14 +83,16 @@ function renderCart() {
   saveCart(cart);
 
   totalBox.innerHTML = `
-    Total de tu selección:
+    Total de tu selección: 
     <span class="moneda">L</span> ${total.toFixed(2)}
   `;
 
   actualizarTextoBoton();
 }
 
-/* === Texto dinámico del botón === */
+/* -------------------------------------------
+   Actualizar texto del botón
+------------------------------------------- */
 function actualizarTextoBoton() {
   const procederBtn = document.getElementById('proceder-btn');
   const cart = getCart();
@@ -102,10 +109,9 @@ function actualizarTextoBoton() {
   procederBtn.textContent = `Proceder al pago (${totalCafes} ${palabra})`;
 }
 
-/* ============================================================
-   CONTROLES DE CANTIDAD, SUMA Y ELIMINACIÓN
-   ============================================================ */
-
+/* -------------------------------------------
+   Eventos en items
+------------------------------------------- */
 document.getElementById('cart-container').addEventListener('click', e => {
   const btn = e.target.closest('button');
   if (!btn) return;
@@ -128,14 +134,13 @@ document.getElementById('cart-container').addEventListener('click', e => {
 });
 
 /* ============================================================
-   FLUJO OFICIAL: PROCESAR PEDIDO → LOGIN O DATOS CLIENTE
-   ============================================================ */
-
+   Proceder al pago — con Snackbar Material 3 si no está logueado
+============================================================ */
 document.getElementById('proceder-btn').addEventListener('click', () => {
   const cart = getCart();
   const aviso = document.getElementById('aviso-vacio');
 
-  /* 1️⃣ Si está vacío → aviso */
+  /* 1️⃣ Carrito vacío */
   if (cart.length === 0) {
     aviso.textContent = "Aún no has agregado cafés a tu selección.";
     aviso.classList.add('show');
@@ -143,27 +148,29 @@ document.getElementById('proceder-btn').addEventListener('click', () => {
     return;
   }
 
-  /* 2️⃣ Verificar si hay usuario logueado */
+  /* 2️⃣ Verificar sesión */
   const userRaw = localStorage.getItem("cortero_user");
   let user = null;
 
-  try {
-    user = JSON.parse(userRaw);
-  } catch {
-    user = null;
-  }
+  try { user = JSON.parse(userRaw); }
+  catch { user = null; }
 
-  /* 3️⃣ No hay sesión → login */
+  /* 3️⃣ Usuario NO logueado → mostrar snackbar y redirigir */
   if (!user) {
-    console.warn("⚠ Usuario no logueado → Redirigiendo a login.html");
-    window.location.href = "login.html";
+    const snack = document.getElementById("snackbar-login");
+    snack.classList.add("show");
+
+    setTimeout(() => {
+      snack.classList.remove("show");
+      window.location.href = "login.html";
+    }, 2200);
+
     return;
   }
 
-  /* 4️⃣ Sesión válida → continuar a datos de entrega */
-  console.log("✔ Usuario logueado → Redirigiendo a datos_cliente.html");
+  /* 4️⃣ Usuario logueado → continuar */
   window.location.href = "datos_cliente.html";
 });
 
-/* === Inicializar === */
+/* Init */
 renderCart();
