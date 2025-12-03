@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tu selección de café | Café Cortero</title>
 
-  <!-- Tipografía (Poppins + futura integración con SF Pro Display) -->
+  <!-- Tipografía -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
   <!-- Iconos -->
@@ -20,12 +20,37 @@
       outline: none;
       -webkit-tap-highlight-color: transparent;
     }
+
+    /* ============================================================
+       SNACKBAR LOGIN — Material 3 Premium
+       ============================================================ */
+    #snackbar-login {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #333;
+      color: #fff;
+      padding: 14px 22px;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .35s ease, transform .35s ease;
+      z-index: 99999;
+    }
+
+    #snackbar-login.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(-8px);
+      pointer-events: auto;
+    }
   </style>
 </head>
 
 <body>
 
-  <!-- === HEADER FIJO — ESTILO INDEX (Material 3 Expressive) === -->
+  <!-- === HEADER FIJO — ESTILO INDEX === -->
   <header class="header-fixed">
     <a href="index.html" class="header-logo-link">
       <img src="imagenes/logo.png" alt="Café Cortero" class="header-logo">
@@ -37,30 +62,37 @@
 
   <!-- === CONTENIDO PRINCIPAL === -->
   <main>
+    
     <!-- Contenedor donde se insertan dinámicamente las tarjetas outline del carrito -->
     <div id="cart-container"></div>
 
     <!-- Total -->
-<div id="total-box" class="total-box">
-  Total de tu selección: <span class="currency">L</span> 0.00
-</div>
+    <div id="total-box" class="total-box">
+      Total de tu selección: <span class="currency">L</span> 0.00
+    </div>
 
     <!-- Acciones -->
     <div class="actions">
       <button class="btn volver" onclick="window.location.href='index.html'">Volver</button>
+
       <button id="proceder-btn" class="btn proceder">
-  Proceder al pago (0 cafés)
+        Proceder al pago (0 cafés)
       </button>
     </div>
   </main>
 
 
-  <!-- === SNACKBAR (MD3 Expressive Light) === -->
+  <!-- === SNACKBAR (Carrito vacío) === -->
   <div id="aviso-vacio" class="snackbar-md3"></div>
+
+  <!-- === SNACKBAR LOGIN (nuevo) === -->
+  <div id="snackbar-login">
+    Necesitas iniciar sesión para continuar con tu pedido.
+  </div>
 
 
   <!-- === SCRIPT DEL CARRITO === -->
-  <script src="js/cart.js?v=9"></script>
+  <script src="js/cart.js?v=10"></script>
 
 </body>
 </html>
