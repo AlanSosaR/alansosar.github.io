@@ -1,14 +1,21 @@
+/* ============================================================
+   CARRITO — Café Cortero (Versión Final 2025)
+   Con sesión obligatoria antes de proceder al pago
+   ============================================================ */
+
 const CART_KEY = 'cafecortero_cart';
 
+/* === Obtener carrito === */
 function getCart() {
   return JSON.parse(localStorage.getItem(CART_KEY)) || [];
 }
 
+/* === Guardar carrito === */
 function saveCart(cart) {
   localStorage.setItem(CART_KEY, JSON.stringify(cart));
 }
 
-/* === Render === */
+/* === Render principal === */
 function renderCart() {
   const cart = getCart();
   const container = document.getElementById('cart-container');
@@ -23,12 +30,12 @@ function renderCart() {
       </div>
     `;
 
-    totalBox.style.display = "none";   // 🔥 OCULTAR TOTAL CUANDO ESTÁ VACÍO
-    actualizarTextoBoton(); 
+    totalBox.style.display = "none";
+    actualizarTextoBoton();
     return;
   }
 
-  totalBox.style.display = "block"; // 🔥 MOSTRAR TOTAL CUANDO HAY ITEMS
+  totalBox.style.display = "block";
 
   let total = 0;
 
@@ -70,16 +77,15 @@ function renderCart() {
 
   saveCart(cart);
 
-  // 🔥 LETRA L EN VERDE
   totalBox.innerHTML = `
-    Total de tu selección: 
+    Total de tu selección:
     <span class="moneda">L</span> ${total.toFixed(2)}
   `;
 
   actualizarTextoBoton();
 }
 
-/* === TEXTO PREMIUM DEL BOTÓN === */
+/* === Texto dinámico del botón === */
 function actualizarTextoBoton() {
   const procederBtn = document.getElementById('proceder-btn');
   const cart = getCart();
@@ -93,11 +99,13 @@ function actualizarTextoBoton() {
   }
 
   const palabra = totalCafes === 1 ? "café" : "cafés";
-
   procederBtn.textContent = `Proceder al pago (${totalCafes} ${palabra})`;
 }
 
-/* === Controles === */
+/* ============================================================
+   CONTROLES DE CANTIDAD, SUMA Y ELIMINACIÓN
+   ============================================================ */
+
 document.getElementById('cart-container').addEventListener('click', e => {
   const btn = e.target.closest('button');
   if (!btn) return;
@@ -107,21 +115,27 @@ document.getElementById('cart-container').addEventListener('click', e => {
   const cart = getCart();
 
   if (action === 'plus') cart[index].qty++;
+
   if (action === 'minus') {
     cart[index].qty--;
     if (cart[index].qty <= 0) cart.splice(index, 1);
   }
+
   if (action === 'del') cart.splice(index, 1);
 
   saveCart(cart);
   renderCart();
 });
 
-/* === Proceder === */
+/* ============================================================
+   FLUJO OFICIAL: PROCESAR PEDIDO → LOGIN O DATOS CLIENTE
+   ============================================================ */
+
 document.getElementById('proceder-btn').addEventListener('click', () => {
   const cart = getCart();
   const aviso = document.getElementById('aviso-vacio');
 
+  /* 1️⃣ Si está vacío → aviso */
   if (cart.length === 0) {
     aviso.textContent = "Aún no has agregado cafés a tu selección.";
     aviso.classList.add('show');
@@ -129,8 +143,27 @@ document.getElementById('proceder-btn').addEventListener('click', () => {
     return;
   }
 
+  /* 2️⃣ Verificar si hay usuario logueado */
+  const userRaw = localStorage.getItem("cortero_user");
+  let user = null;
+
+  try {
+    user = JSON.parse(userRaw);
+  } catch {
+    user = null;
+  }
+
+  /* 3️⃣ No hay sesión → login */
+  if (!user) {
+    console.warn("⚠ Usuario no logueado → Redirigiendo a login.html");
+    window.location.href = "login.html";
+    return;
+  }
+
+  /* 4️⃣ Sesión válida → continuar a datos de entrega */
+  console.log("✔ Usuario logueado → Redirigiendo a datos_cliente.html");
   window.location.href = "datos_cliente.html";
 });
 
-/* Init */
+/* === Inicializar === */
 renderCart();
