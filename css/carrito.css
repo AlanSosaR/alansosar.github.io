@@ -71,10 +71,8 @@ main {
   padding: 1.2rem;
   border-radius: 18px;
   background: #ffffff;
-
   border: 1.8px solid rgba(0,0,0,0.08);
   box-shadow: 0 4px 12px rgba(0,0,0,0.04);
-
   margin-bottom: 1.2rem;
   align-items: center;
 }
@@ -85,25 +83,24 @@ main {
 
 .item-img-box {
   background: #ffffff;
-  border: 1.4px solid rgba(0, 0, 0, 0.06);  /* borde premium suave */
-  border-radius: 18px;                     /* borde elegante */
-  padding: 8px;                            /* espacio interno premium */
+  border: 1.4px solid rgba(0, 0, 0, 0.06);
+  border-radius: 18px;
+  padding: 8px;
 
-  width: 95px;      /* tamaño correcto que NO se desborda */
-  height: 95px;     /* mantiene proporción y evita gigantismo */
+  width: 95px;
+  height: 95px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  box-shadow: 0 2px 6px rgba(0,0,0,0.03); /* sombra premium muy leve */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.03);
 }
 
-/* Imagen dentro del contenedor */
 .item-img-box img {
   width: 100%;
   height: 100%;
-  object-fit: contain;   /* NO SE DEFORMA — NO SE SALE */
+  object-fit: contain;
   border-radius: 12px;
 }
 
@@ -134,23 +131,21 @@ main {
 }
 
 /* ============================================
-/* ============================================
-   CONTROLES: + / – / 🗑 (alineados en una sola línea)
+   CONTROLES: + / – / 🗑
    ============================================ */
 .controls-row,
 .qty-controls {
   display: flex;
   align-items: center;
   gap: 0.7rem;
-  flex-direction: row !important; /* Fuerza línea horizontal */
+  flex-direction: row !important;
 }
 
-/* Botones circulares */
 .qty-btn,
 .del-btn {
   width: 34px;
   height: 34px;
-  min-width: 34px;  /* <-- evita que se achiquen */
+  min-width: 34px;
   min-height: 34px;
 
   border-radius: 50%;
@@ -167,7 +162,6 @@ main {
   transition: transform 0.12s ease, background 0.2s;
 }
 
-/* Iconos */
 .qty-btn.minus i {
   color: var(--marron);
 }
@@ -180,7 +174,6 @@ main {
   color: #d72638;
 }
 
-/* Cantidad (1, 2, 3…) */
 .qty-number {
   font-size: 1rem;
   font-weight: 600;
@@ -196,19 +189,17 @@ main {
   font-size: 1.35rem;
   font-weight: 600;
   margin-top: 2rem;
-  color: #512615; /* café */
+  color: #512615;
 }
 
-/* Cambiar SOLO la L */
 .total-box .moneda {
-  color: #33673B; /* Verde premium */
+  color: #33673B;
   font-weight: 700;
 }
 
-/* Ajuste para teléfono */
 @media (max-width: 480px) {
   .total-box {
-    font-size: 1.15rem; /* más pequeño */
+    font-size: 1.15rem;
   }
 }
 
@@ -237,7 +228,7 @@ main {
 .btn.proceder { background: var(--verde); }
 
 /* ============================================
-   SNACKBAR
+   SNACKBAR — Carrito vacío (ya existente)
    ============================================ */
 .snackbar-md3 {
   position: fixed;
@@ -263,4 +254,36 @@ main {
 .snackbar-md3.show {
   opacity: 1;
   transform: translateY(0) translateX(-50%);
+}
+
+/* ============================================
+   SNACKBAR LOGIN (nuevo)
+   ============================================ */
+#snackbar-login {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+
+  background: #333;
+  color: #fff;
+  padding: 14px 22px;
+
+  border-radius: 14px;
+  opacity: 0;
+  pointer-events: none;
+
+  font-size: 0.92rem;
+  font-weight: 500;
+
+  box-shadow: 0 8px 28px rgba(0,0,0,0.25);
+
+  transition: opacity .35s ease, transform .35s ease;
+  z-index: 99999;
+}
+
+#snackbar-login.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-6px);
+  pointer-events: auto;
 }
