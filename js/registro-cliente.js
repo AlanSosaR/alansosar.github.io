@@ -6,7 +6,7 @@
 
 document.addEventListener("DOMContentLoaded", () => {
 
-  const sb = window.supabaseClient;
+  const sb = window.supabaseClient.supabase;
   const registerUser = window.supabaseAuth.registerUser;
 
   const form = document.getElementById("registroForm");
@@ -117,7 +117,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ============================================================
-  // BARRAS DE SEGURIDAD DE CONTRASEÑA
+  // BARRAS DE SEGURIDAD
   // ============================================================
   const barsContainer = document.getElementById("barsContainer");
   const bars = barsContainer ? barsContainer.querySelectorAll(".strength-bar") : [];
@@ -187,52 +187,7 @@ document.addEventListener("DOMContentLoaded", () => {
   activarVerdeEnVivo("confirm", v => v === campos.password.value.trim());
 
   // ============================================================
-  // BLUR FINAL
-  // ============================================================
-  campos.nombre.addEventListener("blur", () => {
-    const v = campos.nombre.value.trim();
-    if (!v) marcar("nombre", mensajesVacios.nombre);
-    else marcar("nombre", "", true);
-  });
-
-  campos.correo.addEventListener("blur", () => {
-    const v = campos.correo.value.trim();
-    if (!v) return marcar("correo", mensajesVacios.correo);
-    if (!esCorreoValido(v)) return marcar("correo", "Correo no válido");
-    marcar("correo", "", true);
-  });
-
-  campos.telefono.addEventListener("blur", () => {
-    if (campos.telefono.value.trim().length < 8)
-      marcar("telefono", mensajesVacios.telefono);
-    else marcar("telefono", "", true);
-  });
-
-  campos.password.addEventListener("blur", () => {
-    if (campos.password.value.trim().length < 6)
-      marcar("password", mensajesVacios.password);
-    else marcar("password", "", true);
-  });
-
-  campos.confirm.addEventListener("blur", () => {
-    if (campos.confirm.value !== campos.password.value)
-      marcar("confirm", "Las contraseñas no coinciden");
-    else marcar("confirm", "", true);
-  });
-
-  // ============================================================
-  // TOGGLE PASSWORD
-  // ============================================================
-  document.querySelectorAll(".toggle-pass").forEach(icon => {
-    icon.addEventListener("click", () => {
-      const input = document.getElementById(icon.dataset.target);
-      input.type = input.type === "password" ? "text" : "password";
-      icon.textContent = input.type === "password" ? "visibility" : "visibility_off";
-    });
-  });
-
-  // ============================================================
-  // DUPLICADOS
+  // DUPLICADOS (users)
   // ============================================================
   async function existeUsuario(correo, telefonoRaw) {
     const telefonoNormalizado = normalizarTelefono(telefonoRaw);
@@ -241,12 +196,10 @@ document.addEventListener("DOMContentLoaded", () => {
       .from("users")
       .select("email, phone");
 
-    const coincide = data?.find(row =>
+    return data?.find(row =>
       row.email === correo ||
       normalizarTelefono(row.phone) === telefonoNormalizado
-    );
-
-    return coincide || null;
+    ) || null;
   }
 
   // ============================================================
@@ -274,7 +227,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ============================================================
-  // LOADING BUTTON — LOGO + TEXTO SIEMPRE VISIBLE
+  // LOADING
   // ============================================================
   const btn = document.querySelector(".m3-btn");
   const btnText = btn.querySelector(".btn-text");
@@ -283,7 +236,6 @@ document.addEventListener("DOMContentLoaded", () => {
   function activarLoading() {
     btn.classList.add("loading");
     btn.disabled = true;
-    // NO ocultamos el texto
     btnText.style.opacity = "1";
     btnLoader.style.opacity = "1";
   }
@@ -314,7 +266,7 @@ document.addEventListener("DOMContentLoaded", () => {
       desactivarLoading();
 
       if (existe.email === correo)
-        marcar("correo", "El correo ya existe");
+        marcar("correo", "El correo ya está registrado");
 
       if (normalizarTelefono(existe.phone) === normalizarTelefono(tel))
         marcar("telefono", "El teléfono ya existe");
@@ -332,8 +284,7 @@ document.addEventListener("DOMContentLoaded", () => {
         null
       );
 
-      // Mensaje premium pero corto
-      mostrarSnackbar("Tu cuenta ha sido creada con éxito. Revisa tu correo.");
+      mostrarSnackbar("Tu cuenta ha sido creada. Revisa tu correo ✉️");
 
       setTimeout(() => window.location.href = "login.html", 1800);
 
@@ -345,7 +296,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // ============================================================
-  // SNACKBAR PREMIUM CON LOGO SECUNDARIO
+  // SNACKBAR
   // ============================================================
   function mostrarSnackbar(msg) {
     const bar = document.getElementById("snackbar");
