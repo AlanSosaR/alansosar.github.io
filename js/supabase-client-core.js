@@ -1,26 +1,25 @@
 // ============================================================
-// SUPABASE CLIENT — VERSIÓN FINAL 2025
-// Sin PKCE, sin errores rojos, sin SDK duplicado
-// Funciona en GitHub Pages, iOS, Android, Windows y todo navegador
+// SUPABASE CLIENT — VERSIÓN FINAL ESTABLE 2025
+// Funciona con trigger, login, registro y menú dinámico
+// Sin errores rojos, sin PKCE, sin SDK duplicado
 // ============================================================
 
 console.log("🔥 SUPABASE CLIENT — Versión FINAL estable 2025");
 
 // ------------------------------------------------------------
-// 1) SDK ya cargado desde el HTML
-//    (NO se vuelve a cargar aquí para evitar doble SDK)
+// 1) SDK de Supabase ya cargado desde index.html
 // ------------------------------------------------------------
 const { createClient } = supabase;
 
 // ------------------------------------------------------------
-// 2) Credenciales reales
+// 2) Credenciales REALES del proyecto
 // ------------------------------------------------------------
 const SUPABASE_URL = "https://eaipcuvvddyrqkbmjmvw.supabase.co";
 const SUPABASE_ANON_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVhaXBjdXZ2ZGR5cnFrYm1qbXZ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMwOTcxMDEsImV4cCI6MjA3ODY3MzEwMX0.2qICLx3qZgeGr0oXZ8PYRxXPL1X5Vog4UoOnTQBFzNA";
 
 // ------------------------------------------------------------
-// 3) Almacenamiento local seguro
+// 3) Persistencia segura en localStorage
 // ------------------------------------------------------------
 const storage = {
   getItem: (k) => { try { return localStorage.getItem(k); } catch { return null; } },
@@ -29,7 +28,7 @@ const storage = {
 };
 
 // ------------------------------------------------------------
-// 4) Crear cliente Supabase REAL
+// 4) CREAR CLIENTE SUPABASE (REAL, DEFINITIVO)
 // ------------------------------------------------------------
 window.supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: {
@@ -41,8 +40,7 @@ window.supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
 });
 
 // ------------------------------------------------------------
-// 5) Proxy seguro que usa SIEMPRE supabaseClient
-//    sin romper métodos (.eq, .select, .update)
+// 5) Proxy simple: supabase.from(…)
 // ------------------------------------------------------------
 window.supabase = {
   from(table) {
@@ -51,10 +49,12 @@ window.supabase = {
 };
 
 // ------------------------------------------------------------
-// 6) Cargar perfil global
+// 6) CARGAR PERFIL GLOBAL DESDE TABLA "users"
 // ------------------------------------------------------------
 async function cargarPerfilGlobal(user) {
   if (!user) return;
+
+  console.log("📥 Cargando perfil para ID:", user.id);
 
   const { data, error } = await window.supabase
     .from("users")
@@ -63,22 +63,22 @@ async function cargarPerfilGlobal(user) {
     .single();
 
   if (error) {
-    console.error("❌ Error cargando perfil:", error);
+    console.error("❌ Error cargando perfil de BD:", error);
     return;
   }
 
-  // Guardar datos localmente
+  // Guardar perfil en localStorage
   localStorage.setItem("cortero_user", JSON.stringify(data));
   localStorage.setItem("cortero_logged", "1");
 
-  console.log("👤 Perfil cargado:", data);
+  console.log("👤 Perfil completo cargado:", data);
 
-  // Avisar al resto del sistema
+  // Avisar a todo el sistema (menú, avatar, saludos, etc.)
   document.dispatchEvent(new CustomEvent("userLoggedIn", { detail: data }));
 }
 
 // ------------------------------------------------------------
-// 7) Logout real
+// 7) LOGOUT REAL (Auth + limpieza local)
 // ------------------------------------------------------------
 async function logoutTotal() {
   await window.supabaseClient.auth.signOut();
@@ -88,14 +88,16 @@ async function logoutTotal() {
 window.corteroLogout = logoutTotal;
 
 // ------------------------------------------------------------
-// 8) Escuchar eventos de login/logout
+// 8) EVENTOS DE AUTH (login, logout, confirmación de correo)
 // ------------------------------------------------------------
 window.supabaseClient.auth.onAuthStateChange(async (event, session) => {
-  console.log("🔄 Evento Auth:", event);
+  console.log("🔄 Evento de Auth:", event);
 
   if (session?.user) {
+    // Usuario autenticado, cargar info desde BD
     cargarPerfilGlobal(session.user);
   } else {
+    // No hay sesión
     localStorage.removeItem("cortero_user");
     localStorage.removeItem("cortero_logged");
     document.dispatchEvent(new CustomEvent("userLoggedOut"));
@@ -103,12 +105,13 @@ window.supabaseClient.auth.onAuthStateChange(async (event, session) => {
 });
 
 // ------------------------------------------------------------
-// 9) Restauración de sesión al cargar la página
+// 9) RESTAURAR SESIÓN AUTOMÁTICA AL CARGAR LA PÁGINa
 // ------------------------------------------------------------
 document.addEventListener("DOMContentLoaded", async () => {
   const { data } = await window.supabaseClient.auth.getSession();
 
   if (data?.session?.user) {
+    console.log("🔁 Sesión restaurada automáticamente");
     cargarPerfilGlobal(data.session.user);
   } else {
     console.log("🚫 No hay sesión activa");
