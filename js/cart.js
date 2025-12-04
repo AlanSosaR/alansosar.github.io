@@ -25,6 +25,8 @@ function renderCart() {
   const cartContainer = document.getElementById("cart-container");
   const colResumen    = document.querySelector(".col-resumen");
   const countSpan     = document.getElementById("count-items");
+  const savedSection  = document.getElementById("saved-section");
+  const savedCard     = document.querySelector("#saved-section .saved-card");
 
   cartContainer.innerHTML = "";
   colResumen.innerHTML    = "";
@@ -33,9 +35,6 @@ function renderCart() {
   const total = cart.reduce((a,b) => a + b.qty, 0);
   countSpan.textContent = `(${total} ${total === 1 ? "café" : "cafés"})`;
 
-  /* referencia tarjeta saved */
-  const savedCard = document.querySelector("#saved-section .saved-card");
-
   /* ============================================================
        CARRITO VACÍO
   ============================================================ */
@@ -43,6 +42,9 @@ function renderCart() {
 
     /* activar modo centrado */
     savedCard.classList.add("centered");
+
+    /* ⭐⭐ activar modo vacío en el contenedor (LO QUE FALTABA) */
+    savedSection.classList.add("empty-mode");
 
     cartContainer.innerHTML = `
       <div class="empty">
@@ -57,6 +59,9 @@ function renderCart() {
 
   /* carrito con productos → quitar centrado */
   savedCard.classList.remove("centered");
+
+  /* ⭐⭐ desactivar modo vacío cuando hay productos */
+  savedSection.classList.remove("empty-mode");
 
   /* ============================================================
        PINTAR PRODUCTOS
@@ -138,15 +143,18 @@ function renderCart() {
 ============================================================ */
 function renderSaved() {
 
-  const saved     = getSaved();
-  const container = document.getElementById("saved-list");
-  const savedCard = document.querySelector("#saved-section .saved-card");
+  const saved       = getSaved();
+  const container   = document.getElementById("saved-list");
+  const savedCard   = document.querySelector("#saved-section .saved-card");
+  const savedSection = document.getElementById("saved-section");
 
   container.innerHTML = "";
 
   /* vacío */
   if (saved.length === 0) {
+
     savedCard.classList.add("centered");
+    savedSection.classList.add("empty-mode"); // ⭐ asegura estilo correcto
 
     container.classList.add("empty-saved");
     container.innerHTML = `
@@ -156,11 +164,11 @@ function renderSaved() {
     return;
   }
 
-  /* con productos → quitar centrado */
+  /* con productos */
   savedCard.classList.remove("centered");
+  savedSection.classList.remove("empty-mode");
   container.classList.remove("empty-saved");
 
-  /* render items */
   saved.forEach((item, index) => {
     const div = document.createElement("div");
     div.className = "saved-item";
@@ -184,7 +192,7 @@ function renderSaved() {
 }
 
 /* ============================================================
-   EVENTOS (carrito + guardados)
+   EVENTOS
 ============================================================ */
 document.addEventListener("click", e => {
 
@@ -194,9 +202,7 @@ document.addEventListener("click", e => {
   const action = btn.dataset.action;
   const index  = parseInt(btn.dataset.index);
 
-  /* -----------------------------
-       ACCIONES DEL CARRITO
-  ------------------------------*/
+  /* ACCIONES DEL CARRITO */
   if (["plus","minus","del","save"].includes(action)) {
 
     let cart = getCart();
@@ -234,9 +240,7 @@ document.addEventListener("click", e => {
     renderCart();
   }
 
-  /* -----------------------------
-       ACCIONES EN GUARDADOS
-  ------------------------------*/
+  /* ACCIONES EN GUARDADOS */
   if (action === "return") {
     const saved = getSaved();
     const cart  = getCart();
