@@ -1,6 +1,6 @@
 /* ============================================================
-   DETALLES DE ENTREGA — ESTILO IGUAL A LOGIN / REGISTRO / PERFIL
-   VERSIÓN FINAL — FEB 2025
+   DETALLES DE ENTREGA — CORREGIDO AL 100%
+   Igual a LOGIN / REGISTRO / PERFIL (FEB 2025)
 ============================================================ */
 
 :root {
@@ -10,8 +10,8 @@
   --gris-fondo: #f7f7f7;
   --blanco: #ffffff;
 
-  --border-cafe: rgba(81, 38, 21, 0.75); /* MÁS MARCADO */
-  --input-border: rgba(0, 0, 0, 0.22);
+  --border-cafe: rgba(81, 38, 21, 0.75);
+  --input-border: rgba(0,0,0,0.22);
   --input-focus: #33673B;
 }
 
@@ -32,28 +32,19 @@ body {
   height: 72px;
   background: var(--blanco);
   padding: 0 1.2rem;
-
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   border-bottom: 1.4px solid rgba(0,0,0,0.06);
   z-index: 999;
 }
 
 .header-logo {
   height: 52px;
-  object-fit: contain;
-}
-
-.form-title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--marron);
 }
 
 /* ============================================================
-   CONTENEDOR Y TARJETA PRINCIPAL
+   TARJETA PRINCIPAL (EXTERIOR) — SIN BORDE!
 ============================================================ */
 
 .profile-container {
@@ -65,125 +56,126 @@ body {
 .profile-card {
   background: var(--blanco);
   border-radius: 26px;
-
-  padding: 6rem 1.8rem 3rem;  /* 🔥 flecha con más espacio */
+  padding: 6rem 1.8rem 3rem;
   box-shadow: 0 12px 28px rgba(0,0,0,0.06);
-  border: 1.8px solid var(--border-cafe);
-
   position: relative;
+  border: none !important; /* 🔥 CORRECCIÓN */
 }
 
 /* ============================================================
-   BOTÓN ATRÁS
+   BOTÓN ATRÁS — IGUAL A PERFIL
 ============================================================ */
 
 .back-btn {
   position: absolute;
-  top: 24px;
-  left: 24px;
+  top: 22px;
+  left: 22px;
 
-  width: 54px;
-  height: 54px;
+  width: 48px;
+  height: 48px;
 
   border-radius: 50%;
-  background: var(--blanco);
-  border: 1.6px solid rgba(0,0,0,0.12);
+  background: #ffffff;
+  border: none;
+
+  box-shadow: 0 5px 16px rgba(0,0,0,0.15);
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  font-size: 1.9rem;
-  color: var(--marron);
   cursor: pointer;
-
-  transition: transform .15s ease, background .2s ease;
+  transition: .25s ease;
 }
 
-.back-btn:active {
-  transform: scale(0.94);
+.back-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 7px 20px rgba(0,0,0,0.20);
+}
+
+.back-btn .material-symbols-outlined {
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--marron);
 }
 
 /* ============================================================
-   TARJETA INTERIOR
+   TARJETA INTERIOR — CON BORDE CAFÉ
 ============================================================ */
 
 .profile-inner-card {
-  background: var(--blanco);
+  background: #ffffff;
   border-radius: 22px;
-  padding: 2.8rem 2rem;
-
-  border: 1.8px solid var(--border-cafe); /* 🔥 borde café real */
+  padding: 3rem 2rem;
+  border: 1.8px solid var(--border-cafe);
   box-shadow: 0 4px 14px rgba(0,0,0,0.05);
 }
 
 /* ============================================================
-   INPUTS M3 – IGUAL A LOGIN, REGISTRO, PERFIL
+   INPUTS MATERIAL 3 — IDÉNTICOS A PERFIL
 ============================================================ */
 
-.m3-field { margin-bottom: 1.9rem; }
+.m3-field {
+  margin-bottom: 2rem;
+}
 
 .m3-input {
   position: relative;
   display: flex;
   align-items: center;
   gap: .75rem;
-
   padding: 1rem;
   border-radius: 14px;
   background: #ffffff;
-
   border: 1.7px solid var(--input-border);
   transition: border-color .2s ease;
 }
 
-/* Iconos verdes */
 .m3-input span.material-symbols-outlined {
   font-size: 1.45rem;
   color: var(--verde);
 }
 
-/* Elementos */
+/* Inputs */
 .m3-input input,
-.m3-input select,
-.m3-input textarea {
+.m3-input textarea,
+.m3-input select {
   width: 100%;
   border: none;
   outline: none;
   background: transparent;
-
   font-size: 1rem;
   color: var(--marron);
   padding: .35rem 0;
 }
 
-/* Label flotante EXACTO a perfil/login */
+/* ============================================================
+   FLOATING LABEL — COPIADO DE PERFIL AL 100%
+============================================================ */
+
 .floating-label {
   position: absolute;
   left: 3rem;
   top: 50%;
   transform: translateY(-50%);
-
   font-size: 1rem;
   color: rgba(0,0,0,0.45);
-
-  background: transparent;
   padding: 0 4px;
-
-  pointer-events: none;
   transition: all .22s ease;
+  pointer-events: none;
 }
 
 /* Cuándo flota */
 .m3-input input:not(:placeholder-shown) + .floating-label,
 .m3-input textarea:not(:placeholder-shown) + .floating-label,
-.m3-input select.filled + .floating-label,
+.m3-input select:not([value=""]) + .floating-label,
 .m3-input:focus-within .floating-label {
-  top: -8px;
+  top: -10px;
   left: 2.85rem;
+  font-size: .78rem;
   background: #ffffff;
-  font-size: .75rem;
   color: var(--verde);
+  padding: 0 5px;
 }
 
 /* Focus */
@@ -191,7 +183,7 @@ body {
   border-color: var(--input-focus);
 }
 
-/* Textarea estilo perfil */
+/* Textarea */
 .textarea-field {
   align-items: flex-start !important;
   padding-top: 1.4rem !important;
@@ -203,46 +195,26 @@ body {
 }
 
 /* ============================================================
-   SELECT — MARCAR COMO LLENO
-============================================================ */
-.m3-select:not([value=""]) {
-  color: var(--marron);
-}
-
-.m3-select:not([value=""]) ~ .floating-label {
-  top: -8px;
-  font-size: .75rem;
-  left: 2.85rem;
-  background: #fff;
-  color: var(--verde);
-}
-
-/* ============================================================
-   BOTÓN PRINCIPAL
+   BOTÓN
 ============================================================ */
 
 .m3-btn {
   width: 100%;
   background: var(--verde);
-  color: white;
-
-  border: none;
+  color: #fff;
   border-radius: 14px;
-
   padding: 1.05rem;
   font-size: 1.05rem;
   font-weight: 600;
-
   display: flex;
   align-items: center;
   justify-content: center;
   gap: .7rem;
-
+  border: none;
   cursor: pointer;
-  transition: transform .15s ease;
 }
 
-.m3-btn:active { transform: scale(0.97); }
+.m3-btn:active { transform: scale(.97); }
 
 .m3-btn .loader {
   width: 18px;
@@ -257,20 +229,4 @@ body {
 .m3-btn.loading .loader { display: inline-block; }
 .m3-btn.loading .btn-text { opacity: .55; }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-/* ============================================================
-   RESPONSIVE
-============================================================ */
-@media (min-width: 768px) {
-  .profile-card { padding: 6.5rem 2.3rem 3.2rem; }
-  .profile-inner-card { padding: 3.2rem 2.8rem; }
-
-  .m3-btn {
-    width: 380px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-}
+@keyframes spin { to { transform: rotate(360deg); } }
