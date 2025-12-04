@@ -102,7 +102,7 @@ function renderCart() {
   });
 
   /* ============================================================
-       RESUMEN DEL PEDIDO (Estilo Café Cortero + Google Store)
+       RESUMEN DEL PEDIDO — ESTILO GOOGLE + CAFÉ CORTERO
   ============================================================ */
   const subtotal = cart.reduce((acc, item) => acc + (item.qty * item.price), 0);
 
@@ -126,6 +126,8 @@ function renderCart() {
       </div>
 
       <button id="proceder-btn" class="m3-btn">Proceder al pago</button>
+
+      <p id="login-warning" class="login-warning hidden"></p>
     </div>
   `;
 
@@ -190,7 +192,7 @@ function renderSaved() {
 /* ============================================================
    EVENTOS
 ============================================================ */
-document.addEventListener("click", e => {
+document.addEventListener("click", async e => {
 
   const btn = e.target.closest("button");
   if (!btn) return;
@@ -263,6 +265,30 @@ document.addEventListener("click", e => {
 
     saveSaved(saved);
     renderSaved();
+  }
+
+  /* ============================================================
+       BOTÓN: PROCEDER AL PAGO
+  ============================================================ */
+  if (btn.id === "proceder-btn") {
+
+    const msg = document.getElementById("login-warning");
+
+    // Ocultar mensaje cada vez que se presiona
+    msg.classList.add("hidden");
+
+    // Validar sesión Supabase
+    const { data: { session } } = await supabase.auth.getSession();
+    const loggedIn = session ? true : false;
+
+    if (!loggedIn) {
+      msg.textContent = "Necesitas iniciar sesión para continuar con tu pedido.";
+      msg.classList.remove("hidden");
+      return;
+    }
+
+    // Si está logeado → continuar
+    window.location.href = "checkout.html";
   }
 });
 
