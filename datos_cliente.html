@@ -1,15 +1,168 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Detalles de entrega | Café Cortero</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/datos_cliente.css?v=6">
+
+  <!-- Tipografía estilo Apple -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    :root {
+      --marron: #512615;
+      --verde: #33673B;
+      --blanco: #ffffff;
+      --gris: #f5f5f5;
+      --input-border: rgba(0, 0, 0, 0.12);
+    }
+
+    body {
+      margin: 0;
+      background: var(--gris);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+        "Helvetica Neue", Helvetica, Arial, sans-serif;
+      color: var(--marron);
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* ===== HEADER (igual al index) ===== */
+    header {
+      position: sticky;
+      top: 0;
+      background: var(--blanco);
+      padding: 0.8rem 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+      z-index: 100;
+    }
+
+    header img {
+      height: 58px;
+    }
+
+    .form-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--marron);
+      margin-right: 1rem;
+    }
+
+    /* ===== TARJETA PRINCIPAL ===== */
+    .form-card {
+      background: var(--blanco);
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 2rem;
+      border-radius: 22px;
+      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.10);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      position: relative;
+    }
+
+    /* Flecha dentro de la tarjeta */
+    .back-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: var(--blanco);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.2rem;
+      color: var(--marron);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+      transition: transform .15s ease;
+    }
+
+    .back-btn:active {
+      transform: scale(0.96);
+    }
+
+    /* ===== FORMULARIO ===== */
+    .form-group {
+      margin-bottom: 1.6rem;
+    }
+
+    label {
+      font-weight: 600;
+      display: block;
+      margin-bottom: 0.4rem;
+      font-size: 1rem;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 0.9rem 1rem;
+      border-radius: 14px;
+      border: 1.5px solid var(--input-border);
+      font-size: 1rem;
+      background: var(--blanco);
+      font-family: inherit;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--verde);
+      outline: none;
+    }
+
+    textarea {
+      resize: none;
+    }
+
+    /* ===== BOTÓN PRINCIPAL ===== */
+    .btn-primary {
+      width: 100%;
+      padding: 1rem;
+      background: var(--verde);
+      color: var(--blanco);
+      border: none;
+      border-radius: 14px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      transition: background .2s ease;
+    }
+
+    .btn-primary:active {
+      transform: scale(.98);
+    }
+
+    .btn-icon {
+      display: none;
+    }
+
+    .btn-loading .btn-icon {
+      display: inline-block;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
 </head>
+
 <body>
 
-  <!-- 🔹 ENCABEZADO -->
+  <!-- ===== HEADER ===== -->
   <header>
     <a href="index.html">
       <img src="imagenes/logo%20mejorado%20trasmparente.png" alt="Café Cortero - Inicio">
@@ -17,73 +170,88 @@
     <span class="form-title">Detalles de entrega</span>
   </header>
 
-  <!-- 🔹 CONTENIDO -->
-  <main>
-    <form id="cliente-form" class="form-box">
+  <!-- ===== TARJETA ===== -->
+  <div class="form-card">
+
+    <!-- Flecha -->
+    <div class="back-btn" onclick="window.location.href='carrito.html'">
+      <i class="fa-solid fa-arrow-left"></i>
+    </div>
+
+    <!-- ===== FORMULARIO ===== -->
+    <form id="cliente-form">
+
       <div class="form-group">
         <label for="nombre">Nombre completo *</label>
         <input type="text" id="nombre" required>
       </div>
 
       <div class="form-group">
-        <label for="correo">Correo electrónico <span style="font-weight:400;">(opcional)</span></label>
-        <input type="email" id="correo" placeholder="ej: tucorreo@gmail.com">
+        <label for="correo">Correo electrónico *</label>
+        <input type="email" id="correo" required readonly>
       </div>
 
       <div class="form-group">
         <label for="telefono">Teléfono *</label>
-        <input type="tel" id="telefono" placeholder="ej: 9632-2522" required>
+        <input type="tel" id="telefono" required>
+      </div>
+
+      <div class="form-group">
+        <label for="ciudad">Ciudad *</label>
+        <input type="text" id="ciudad" placeholder="Ej: Danlí" required>
       </div>
 
       <div class="form-group">
         <label for="zona">Departamento *</label>
         <select id="zona" required>
           <option value="">Seleccionar...</option>
-          <option value="Atlántida">Atlántida</option>
-          <option value="Choluteca">Choluteca</option>
-          <option value="Colón">Colón</option>
-          <option value="Comayagua">Comayagua</option>
-          <option value="Copán">Copán</option>
-          <option value="Cortés">Cortés</option>
           <option value="El Paraíso">El Paraíso</option>
           <option value="Francisco Morazán">Francisco Morazán</option>
-          <option value="Gracias a Dios">Gracias a Dios</option>
-          <option value="Intibucá">Intibucá</option>
-          <option value="Islas de la Bahía">Islas de la Bahía</option>
-          <option value="La Paz">La Paz</option>
-          <option value="Lempira">Lempira</option>
-          <option value="Ocotepeque">Ocotepeque</option>
-          <option value="Olancho">Olancho</option>
-          <option value="Santa Bárbara">Santa Bárbara</option>
-          <option value="Valle">Valle</option>
+          <option value="Choluteca">Choluteca</option>
+          <option value="Comayagua">Comayagua</option>
+          <option value="Cortés">Cortés</option>
           <option value="Yoro">Yoro</option>
+          <option value="Santa Bárbara">Santa Bárbara</option>
+          <option value="Olancho">Olancho</option>
+          <option value="La Paz">La Paz</option>
         </select>
       </div>
 
       <div class="form-group">
         <label for="direccion">Dirección de entrega *</label>
-        <textarea id="direccion" rows="3" placeholder="Ej: Aldea San Ramón, Valle de Jamastrán" required></textarea>
+        <textarea id="direccion" rows="3"
+          placeholder="Ej: Colonia Las Flores, Danlí, El Paraíso"
+          required></textarea>
       </div>
 
       <div class="form-group">
         <label for="nota">Nota adicional</label>
-        <textarea id="nota" rows="2" placeholder="Ej: Entregar por la mañana (opcional)"></textarea>
+        <textarea id="nota" rows="2" placeholder="Ej: Entregar por la mañana"></textarea>
       </div>
 
-      <!-- 🔹 BOTONES -->
-      <div class="actions">
-        <button type="button" class="btn btn-secondary" onclick="window.location.href='carrito.html'">Regresar al carrito</button>
-        <button type="submit" class="btn btn-primary">Proceder con el pedido</button>
-      </div>
+      <button type="submit" id="btn-submit" class="btn-primary">
+        <i class="fa-solid fa-circle-notch btn-icon"></i>
+        Proceder con el pedido
+      </button>
+
     </form>
-  </main>
+
+  </div>
 
   <script>
-    // Redirige al recibo cuando se envía el formulario
-    document.getElementById('cliente-form').addEventListener('submit', function(e) {
+    /* Simulación del loader */
+    document.getElementById('cliente-form').addEventListener('submit', function (e) {
       e.preventDefault();
-      window.location.href = 'recibo.html';
+
+      const btn = document.getElementById("btn-submit");
+      btn.classList.add("btn-loading");
+
+      setTimeout(() => {
+        window.location.href = "recibo.html";
+      }, 1200);
     });
   </script>
+
 </body>
+
 </html>
