@@ -1,5 +1,5 @@
 /* ============================================================
-   Carrito — Versión Google Store 2025 (JS limpio, sin HTML)
+   Carrito — Versión Google Store 2025 (JS limpio y final)
 ============================================================ */
 
 const CART_KEY  = "cafecortero_cart";
@@ -25,7 +25,7 @@ function showSnackbar(message) {
 }
 
 /* ============================================================
-   Login — Igual que perfil.html
+   LOGIN — IGUAL QUE perfil.html
 ============================================================ */
 async function checkLoginStatus() {
   try {
@@ -52,20 +52,18 @@ async function checkLoginStatus() {
    RENDER DEL CARRITO
 ============================================================ */
 function renderCart() {
-  
   const cart          = getCart();
   const cartContainer = document.getElementById("cart-container");
   const colResumen    = document.getElementById("resumen-container");
   const countSpan     = document.getElementById("count-items");
+  const templateItem  = document.getElementById("template-cart-item");
 
   cartContainer.innerHTML = "";
   colResumen.innerHTML    = "";
 
-  /* contador */
   const total = cart.reduce((a,b) => a + b.qty, 0);
   countSpan.textContent = `(${total} ${total === 1 ? "café" : "cafés"})`;
 
-  /* Carrito vacío */
   if (cart.length === 0) {
     cartContainer.innerHTML = `
       <div class="empty">
@@ -77,48 +75,22 @@ function renderCart() {
     return;
   }
 
-  /* Pintar productos (HTML ya existe en archivo carrito.html) */
   cart.forEach((item, index) => {
-    const row = document.createElement("div");
-    row.className = "item";
+    const clone = templateItem.content.cloneNode(true);
 
-    row.innerHTML = `
-      <div class="item-img-box"><img src="${item.img}" /></div>
+    clone.querySelector(".item-image").src = item.img;
+    clone.querySelector(".item-name").textContent  = item.name;
+    clone.querySelector(".item-price").textContent = `L ${item.price} / unidad`;
+    clone.querySelector(".qty-number").textContent = item.qty;
 
-      <div class="item-info">
-        <div class="item-name">${item.name}</div>
-        <div class="item-price">L ${item.price} / unidad</div>
+    clone.querySelectorAll("button").forEach(btn => {
+      btn.dataset.index = index;
+    });
 
-        <div class="qty-controls">
-
-          <!-- botones ya definidos por CSS -->
-          <button class="qty-btn minus" data-action="minus" data-index="${index}">
-            <i class="fa-solid fa-minus"></i>
-          </button>
-
-          <span class="qty-number">${item.qty}</span>
-
-          <button class="qty-btn plus" data-action="plus" data-index="${index}">
-            <i class="fa-solid fa-plus"></i>
-          </button>
-
-          <button class="del-btn" data-action="del" data-index="${index}">
-            <i class="fa-solid fa-trash"></i>
-          </button>
-
-          <button class="save-later-btn" data-action="save" data-index="${index}">
-            Guardar para más tarde
-          </button>
-
-        </div>
-      </div>
-    `;
-
-    cartContainer.appendChild(row);
+    cartContainer.appendChild(clone);
   });
 
-  /* Resumen */
-  const subtotal = cart.reduce((acc, item) => acc + (item.qty * item.price), 0);
+  const subtotal = cart.reduce((acc, i) => acc + (i.qty * i.price), 0);
 
   colResumen.innerHTML = `
     <div class="resumen-box">
@@ -131,7 +103,7 @@ function renderCart() {
 
       <div class="resumen-row">
         <span>Envío</span>
-        <span>L 0.00</span>
+        <span<L 0.00</span>
       </div>
 
       <div class="resumen-row resumen-total">
@@ -151,8 +123,9 @@ function renderCart() {
    RENDER GUARDADOS
 ============================================================ */
 function renderSaved() {
-  const saved     = getSaved();
-  const container = document.getElementById("saved-list");
+  const saved        = getSaved();
+  const container    = document.getElementById("saved-list");
+  const templateSave = document.getElementById("template-saved-item");
 
   container.innerHTML = "";
 
@@ -165,41 +138,31 @@ function renderSaved() {
   }
 
   saved.forEach((item, index) => {
-    const card = document.createElement("div");
-    card.className = "saved-item";
+    const clone = templateSave.content.cloneNode(true);
 
-    card.innerHTML = `
-      <div class="saved-img-box"><img src="${item.img}" /></div>
+    clone.querySelector(".saved-image").src = item.img;
+    clone.querySelector(".saved-name").textContent  = item.name;
+    clone.querySelector(".saved-price").textContent = `L ${item.price}`;
 
-      <div class="saved-info">
-        <div class="saved-name">${item.name}</div>
-        <div class="saved-price">L ${item.price}</div>
-      </div>
+    clone.querySelectorAll("button").forEach(btn => {
+      btn.dataset.index = index;
+    });
 
-      <div class="saved-buttons">
-        <button class="saved-btn return" data-action="return" data-index="${index}">Mover al carrito</button>
-        <button class="saved-btn delete" data-action="delete-saved" data-index="${index}">Eliminar</button>
-      </div>
-    `;
-
-    container.appendChild(card);
+    container.appendChild(clone);
   });
 }
 
 /* ============================================================
-   EVENTOS
+   EVENTOS DEL CARRITO
 ============================================================ */
 document.addEventListener("click", async e => {
-
   const btn = e.target.closest("button");
   if (!btn) return;
 
   const action = btn.dataset.action;
   const index  = parseInt(btn.dataset.index);
 
-  /* Control de cantidades */
   if (["plus","minus","del","save"].includes(action)) {
-
     let cart = getCart();
 
     if (action === "plus") cart[index].qty++;
@@ -213,10 +176,8 @@ document.addEventListener("click", async e => {
       const saved = getSaved();
       saved.push(cart[index]);
       saveSaved(saved);
-
       cart.splice(index, 1);
       saveCart(cart);
-
       renderCart();
       return;
     }
@@ -225,14 +186,11 @@ document.addEventListener("click", async e => {
     renderCart();
   }
 
-  /* Guardados */
   if (action === "return") {
     const saved = getSaved();
     const cart  = getCart();
-
     cart.push(saved[index]);
     saved.splice(index, 1);
-
     saveCart(cart);
     saveSaved(saved);
     renderCart();
@@ -241,19 +199,48 @@ document.addEventListener("click", async e => {
   if (action === "delete-saved") {
     const saved = getSaved();
     saved.splice(index, 1);
-
     saveSaved(saved);
     renderSaved();
   }
 
-  /* Proceder al pago */
   if (btn.id === "proceder-btn") {
     const user = await checkLoginStatus();
     if (!user) return;
-
     window.location.href = "checkout.html";
   }
 });
 
-/* INIT */
+/* ============================================================
+   🔥 BLOQUE NUEVO — MENÚ DEL AVATAR (MISMO QUE INDEX)
+============================================================ */
+
+const avatarBtn = document.getElementById("header-avatar-button");
+const avatarImg = document.getElementById("header-profile-photo");
+
+if (avatarBtn) {
+  avatarBtn.addEventListener("click", async () => {
+
+    const { data } = await supabase.auth.getUser();
+
+    if (!data?.user) {
+      window.location.href = "login.html?redirect=carrito";
+      return;
+    }
+
+    // Escritorio
+    if (window.innerWidth > 768) {
+      if (typeof openUserMenu === "function") {
+        openUserMenu();
+      }
+      return;
+    }
+
+    // Móvil
+    if (typeof openMobileUserMenu === "function") {
+      openMobileUserMenu();
+    }
+  });
+}
+
+/* Inicialización */
 renderCart();
