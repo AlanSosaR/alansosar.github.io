@@ -19,7 +19,7 @@
 </head>
 
 <body>
-  <!-- === HEADER FIJO — CON LOGO, IGUAL QUE ANTES === -->
+  <!-- === HEADER FIJO — CON LOGO, MISMO ESTILO DEL SITIO === -->
   <header class="header-fixed">
     <a href="index.html" class="header-logo-link">
       <img src="imagenes/logo.png" alt="Café Cortero" class="header-logo" />
@@ -30,6 +30,7 @@
 
   <!-- === CONTENIDO PRINCIPAL === -->
   <main>
+
     <!-- Contenedor donde se insertan dinámicamente las tarjetas outline del carrito -->
     <div id="cart-container"></div>
 
@@ -40,12 +41,13 @@
 
     <!-- Acciones -->
     <div class="actions">
-      <!-- 🔙 Botón redondo con flecha (reemplazo del botón "Volver") -->
+
+      <!-- 🔙 Botón redondo con flecha -->
       <button class="back-btn-circle" onclick="window.location.href='index.html'">
         <span class="material-symbols-outlined">chevron_left</span>
       </button>
 
-      <!-- ✅ Botón M3 con loader para proceder -->
+      <!-- Botón proceder con loader -->
       <button id="proceder-btn" class="m3-btn">
         <span class="loader"></span>
         <span class="btn-text">Proceder al pago</span>
