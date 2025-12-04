@@ -1,6 +1,6 @@
 /* ============================================================
    DETALLES DE ENTREGA — ESTILO IGUAL A PERFIL (2025)
-   Reutiliza M3 inputs + doble tarjeta premium.
+   Reutiliza inputs M3 + doble tarjeta premium.
 ============================================================ */
 
 :root {
@@ -16,15 +16,47 @@
   --input-border-focus: #33673B;
 }
 
-/* Fondo general */
 body {
   background: var(--gris-fondo);
   -webkit-tap-highlight-color: transparent;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
 }
 
 /* ============================================================
-   TARJETA PRINCIPAL (IGUAL A PERFIL)
+   HEADER
 ============================================================ */
+
+.header-fixed {
+  position: sticky;
+  top: 0;
+  height: 72px;
+  background: var(--blanco);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 1.2rem;
+  border-bottom: 1.4px solid rgba(0,0,0,0.06);
+  z-index: 900;
+}
+
+.header-logo {
+  height: 52px;
+  object-fit: contain;
+}
+
+.form-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--marron);
+}
+
+/* ============================================================
+   TARJETA PRINCIPAL (EXTERIOR)
+============================================================ */
+
 .profile-container {
   max-width: 1000px;
   margin: 2rem auto;
@@ -35,12 +67,13 @@ body {
   position: relative;
   background: var(--blanco);
   border-radius: 26px;
-  padding: 2.5rem 1.5rem;
+  padding: 3rem 1.5rem;        /* MÁS ESPACIO PARA LA FLECHA */
+  padding-top: 3.5rem;         /* EXTRA IGUAL QUE PERFIL */
   border: 1.8px solid var(--borde-card);
   box-shadow: 0 12px 28px var(--sombra-card);
 }
 
-/* Flecha atrás */
+/* Botón atrás */
 .back-btn {
   position: absolute;
   top: 18px;
@@ -50,14 +83,14 @@ body {
   height: 48px;
 
   border-radius: 50%;
-  background: #ffffff;
+  background: var(--blanco);
   border: 1.4px solid rgba(0,0,0,0.12);
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  font-size: 1.6rem;
+  font-size: 1.7rem;
   color: var(--marron);
 
   cursor: pointer;
@@ -66,53 +99,50 @@ body {
 
 .back-btn:active {
   transform: scale(0.95);
-  background: rgba(0,0,0,0.06);
 }
 
 /* ============================================================
-   TARJETA INTERIOR (IGUAL A PERFIL)
+   TARJETA INTERIOR — AHORA CON BORDE CAFÉ (IGUAL A PERFIL)
 ============================================================ */
+
 .profile-inner-card {
   background: #ffffff;
-  border-radius: 20px;
-  padding: 2.3rem 1.7rem;
+  border-radius: 22px;
+  padding: 2.5rem 1.7rem;
 
-  border: 1.6px solid rgba(0,0,0,0.05);
-  box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+  border: 1.8px solid var(--borde-card);   /* BORDE CORREGIDO */
+  box-shadow: 0 4px 14px rgba(0,0,0,0.06);
 }
 
 /* ============================================================
-   CAMPOS MATERIAL 3 (MISMO SISTEMA QUE PERFIL)
+   INPUTS MATERIAL 3
 ============================================================ */
+
 .m3-field {
   margin-bottom: 1.8rem;
-  width: 100%;
 }
 
-/* Contenedor del input */
 .m3-input {
   position: relative;
   display: flex;
   align-items: center;
   gap: 0.65rem;
 
-  padding: 0.9rem 1rem;
-
+  padding: 1rem;
   border-radius: 14px;
   border: 1.6px solid var(--input-border);
-
   background: #ffffff;
-  transition: border-color .2s ease, background .2s ease;
+
+  transition: border-color .2s ease;
 }
 
-/* Íconos Material */
+/* Íconos verdes */
 .m3-input span.material-symbols-outlined {
-  font-size: 1.35rem;
-  color: var(--marron);
-  opacity: 0.8;
+  font-size: 1.45rem;
+  color: var(--verde);
 }
 
-/* Input y textarea */
+/* Inputs */
 .m3-input input,
 .m3-input select,
 .m3-input textarea {
@@ -120,14 +150,12 @@ body {
   border: none;
   background: transparent;
   font-size: 1rem;
-  font-family: inherit;
-  padding: 0.3rem 0;
+  padding: 0.35rem 0;
   color: var(--marron);
   outline: none;
-  resize: none;
 }
 
-/* LABEL FLOTANTE (MISMO QUE PERFIL) */
+/* Label flotante */
 .floating-label {
   position: absolute;
   top: 50%;
@@ -137,61 +165,49 @@ body {
   font-size: 1rem;
   color: rgba(0,0,0,0.45);
 
-  pointer-events: none;
+  background: transparent;
+  padding: 0 4px;
+
   transition: all .22s ease;
+  pointer-events: none;
 }
 
-/* EFECTO FLOTAR CUANDO HAY TEXTO O FOCUS */
+/* Flotar cuando hay texto */
+.m3-input input:not(:placeholder-shown) + .floating-label,
+.m3-input textarea:not(:placeholder-shown) + .floating-label,
+.m3-input select.filled + .floating-label {
+  top: -9px;
+  font-size: 0.75rem;
+  background: #ffffff;
+  color: var(--verde);
+}
+
+/* Focus */
 .m3-input:focus-within {
   border-color: var(--input-border-focus);
 }
 
-.m3-input input:not(:placeholder-shown) + .floating-label,
-.m3-input textarea:not(:placeholder-shown) + .floating-label,
-.m3-input select:not([value=""]) + .floating-label {
-  top: -6px;
-  left: 2.65rem;
-  font-size: 0.75rem;
-  background: #ffffff;
-  padding: 0 0.3rem;
-  color: var(--verde);
+/* Textarea */
+.textarea-wrapper {
+  align-items: flex-start !important;
+  padding-top: 1.3rem !important;
 }
 
-/* Select cuando tiene valor */
-.m3-input select[value] + .floating-label {
-  top: -6px;
-  font-size: 0.75rem;
-}
-
-/* Inputs readonly */
-.no-edit input {
-  background: rgba(0,0,0,0.04) !important;
-  cursor: not-allowed;
-}
-
-/* ============================================================
-   TEXTAREA ESPECIAL
-============================================================ */
-.textarea-field {
-  align-items: flex-start;
-  padding-top: 1.3rem;
-  padding-bottom: 1.3rem;
-}
-
-.textarea-field .floating-label {
+.textarea-wrapper .floating-label {
   top: 18px;
   transform: none;
 }
 
-/* Cuando el textarea tiene texto */
-.textarea-field textarea:not(:placeholder-shown) + .floating-label {
-  top: -8px;
-  font-size: 0.75rem;
+/* Readonly */
+.no-edit input {
+  background: rgba(0,0,0,0.06);
+  cursor: not-allowed;
 }
 
 /* ============================================================
-   BOTÓN PRINCIPAL (MISMO QUE PERFIL)
+   BOTÓN PRINCIPAL
 ============================================================ */
+
 .m3-btn {
   margin-top: 1rem;
   width: 100%;
@@ -200,7 +216,7 @@ body {
   background: var(--verde);
   color: #ffffff;
 
-  font-size: 1.05rem;
+  font-size: 1.06rem;
   font-weight: 600;
 
   border-radius: 14px;
@@ -209,28 +225,25 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
+  gap: .7rem;
 
   cursor: pointer;
-  transition: transform .15s ease, opacity .2s ease;
+  transition: transform .15s ease;
 }
 
-/* Efecto táctil */
 .m3-btn:active {
   transform: scale(0.97);
 }
 
 /* Loader */
 .m3-btn .loader {
-  display: none;
   width: 18px;
   height: 18px;
-
-  border: 2.5px solid rgba(255,255,255,0.45);
+  border: 2.3px solid rgba(255,255,255,0.45);
   border-top-color: #ffffff;
   border-radius: 50%;
-
   animation: spin .9s linear infinite;
+  display: none;
 }
 
 .m3-btn.loading .loader {
@@ -238,10 +251,9 @@ body {
 }
 
 .m3-btn.loading .btn-text {
-  opacity: 0.6;
+  opacity: 0.55;
 }
 
-/* Animación loader */
 @keyframes spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
@@ -250,13 +262,14 @@ body {
 /* ============================================================
    RESPONSIVE
 ============================================================ */
+
 @media (min-width: 768px) {
   .profile-card {
-    padding: 3rem 2.5rem;
+    padding: 4rem 2.5rem;
   }
 
   .profile-inner-card {
-    padding: 2.8rem 2.5rem;
+    padding: 3rem 2.4rem;
   }
 
   .m3-btn {
