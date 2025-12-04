@@ -1,71 +1,48 @@
 /* ============================================================
    Carrito — Versión Google Store 2025
-   Café Cortero
 ============================================================ */
 
-const CART_KEY = "cafecortero_cart";
+const CART_KEY  = "cafecortero_cart";
 const SAVED_KEY = "cafecortero_saved";
 
-/* ============================================================
-   Helpers
-============================================================ */
-function getCart() {
-  return JSON.parse(localStorage.getItem(CART_KEY)) || [];
-}
+/* Helpers */
+const getCart  = () => JSON.parse(localStorage.getItem(CART_KEY))  || [];
+const saveCart = cart => localStorage.setItem(CART_KEY, JSON.stringify(cart));
 
-function saveCart(cart) {
-  localStorage.setItem(CART_KEY, JSON.stringify(cart));
-}
+const getSaved  = () => JSON.parse(localStorage.getItem(SAVED_KEY)) || [];
+const saveSaved = list => localStorage.setItem(SAVED_KEY, JSON.stringify(list));
 
-function getSaved() {
-  return JSON.parse(localStorage.getItem(SAVED_KEY)) || [];
-}
-
-function saveSaved(list) {
-  localStorage.setItem(SAVED_KEY, JSON.stringify(list));
-}
+/* Loader */
+const showPageLoader = () => document.getElementById("page-loader")?.classList.remove("hidden");
+const hidePageLoader = () => document.getElementById("page-loader")?.classList.add("hidden");
 
 /* ============================================================
-   Loader
-============================================================ */
-function showPageLoader() {
-  const loader = document.getElementById("page-loader");
-  if (loader) loader.classList.remove("hidden");
-}
-function hidePageLoader() {
-  const loader = document.getElementById("page-loader");
-  if (loader) loader.classList.add("hidden");
-}
-
-/* ============================================================
-   RENDER PRINCIPAL DEL CARRITO
+   RENDER DEL CARRITO
 ============================================================ */
 function renderCart() {
-  const cart = getCart();
 
-  const cartContainer = document.getElementById("cart-container");  // ← SOLO productos
+  const cart          = getCart();
+  const cartContainer = document.getElementById("cart-container");
   const colResumen    = document.querySelector(".col-resumen");
   const countSpan     = document.getElementById("count-items");
 
-  if (!cartContainer || !colResumen || !countSpan) return;
-
-  /* ❗ NO BORRAR col-productos, solo los productos */
   cartContainer.innerHTML = "";
   colResumen.innerHTML    = "";
 
-  /* Contador */
-  const totalArticulos = cart.reduce((acc, item) => acc + item.qty, 0);
-  const palabra = totalArticulos === 1 ? "café" : "cafés";
-  countSpan.textContent = `(${totalArticulos} ${palabra})`;
+  /* contador */
+  const total = cart.reduce((a,b) => a + b.qty, 0);
+  countSpan.textContent = `(${total} ${total === 1 ? "café" : "cafés"})`;
 
+  /* referencia tarjeta saved */
   const savedCard = document.querySelector("#saved-section .saved-card");
 
   /* ============================================================
-       CARRITO VACÍO → GOOGLE STYLE
+       CARRITO VACÍO
   ============================================================ */
   if (cart.length === 0) {
 
-    if (savedCard) savedCard.classList.add("centered");
+    /* activar modo centrado */
+    savedCard.classList.add("centered");
 
     cartContainer.innerHTML = `
       <div class="empty">
@@ -78,26 +55,23 @@ function renderCart() {
     return;
   }
 
-  /* Carrito con productos → posición normal */
-  if (savedCard) savedCard.classList.remove("centered");
+  /* carrito con productos → quitar centrado */
+  savedCard.classList.remove("centered");
 
   /* ============================================================
-       RENDER PRODUCTOS
+       PINTAR PRODUCTOS
   ============================================================ */
   cart.forEach((item, index) => {
-    const priceNum = parseFloat(item.price) || 0;
 
     const div = document.createElement("div");
     div.className = "item";
 
     div.innerHTML = `
-      <div class="item-img-box">
-        <img src="${item.img}">
-      </div>
+      <div class="item-img-box"><img src="${item.img}"></div>
 
       <div class="item-info">
         <div class="item-name">${item.name}</div>
-        <div class="item-price">L ${priceNum.toFixed(2)} / unidad</div>
+        <div class="item-price">L ${item.price} / unidad</div>
 
         <div class="qty-controls">
 
@@ -112,8 +86,8 @@ function renderCart() {
           </button>
 
           <button class="save-later-btn" data-action="save" data-index="${index}">
-              <span class="save-later-text">Guardar para más tarde</span>
-              <span class="save-later-loader"></span>
+            <span class="save-later-text">Guardar para más tarde</span>
+            <span class="save-later-loader"></span>
           </button>
 
           <button class="del-btn" data-action="del" data-index="${index}">
@@ -128,12 +102,9 @@ function renderCart() {
   });
 
   /* ============================================================
-       RESUMEN DEL PEDIDO
+       RESUMEN
   ============================================================ */
-  const subtotal = cart.reduce(
-    (acc, item) => acc + (parseFloat(item.price) * item.qty || 0),
-    0
-  );
+  const subtotal = cart.reduce((acc, item) => acc + (item.qty * item.price), 0);
 
   colResumen.innerHTML = `
     <div class="resumen-box">
@@ -154,9 +125,7 @@ function renderCart() {
         <span>L ${subtotal.toFixed(2)}</span>
       </div>
 
-      <button id="proceder-btn" class="m3-btn">
-        Proceder al pago
-      </button>
+      <button id="proceder-btn" class="m3-btn">Proceder al pago</button>
     </div>
   `;
 
@@ -165,16 +134,20 @@ function renderCart() {
 }
 
 /* ============================================================
-   RENDER GUARDADO PARA MÁS TARDE
+   GUARDADO PARA MÁS TARDE
 ============================================================ */
 function renderSaved() {
-  const saved = getSaved();
+
+  const saved     = getSaved();
   const container = document.getElementById("saved-list");
-  if (!container) return;
+  const savedCard = document.querySelector("#saved-section .saved-card");
 
   container.innerHTML = "";
 
+  /* vacío */
   if (saved.length === 0) {
+    savedCard.classList.add("centered");
+
     container.classList.add("empty-saved");
     container.innerHTML = `
       <p class="saved-empty-title">No hay cafés guardados todavía</p>
@@ -183,16 +156,17 @@ function renderSaved() {
     return;
   }
 
+  /* con productos → quitar centrado */
+  savedCard.classList.remove("centered");
   container.classList.remove("empty-saved");
 
+  /* render items */
   saved.forEach((item, index) => {
     const div = document.createElement("div");
     div.className = "saved-item";
 
     div.innerHTML = `
-      <div class="saved-img-box">
-        <img src="${item.img}">
-      </div>
+      <div class="saved-img-box"><img src="${item.img}"></div>
 
       <div class="saved-info">
         <div class="saved-name">${item.name}</div>
@@ -200,12 +174,8 @@ function renderSaved() {
       </div>
 
       <div class="saved-buttons">
-        <button class="saved-btn return" data-action="return" data-index="${index}">
-          Mover al carrito
-        </button>
-        <button class="saved-btn delete" data-action="delete-saved" data-index="${index}">
-          Eliminar
-        </button>
+        <button class="saved-btn return" data-action="return" data-index="${index}">Mover al carrito</button>
+        <button class="saved-btn delete" data-action="delete-saved" data-index="${index}">Eliminar</button>
       </div>
     `;
 
@@ -214,7 +184,7 @@ function renderSaved() {
 }
 
 /* ============================================================
-   EVENTOS (Carrito + Guardados)
+   EVENTOS (carrito + guardados)
 ============================================================ */
 document.addEventListener("click", e => {
 
@@ -224,22 +194,24 @@ document.addEventListener("click", e => {
   const action = btn.dataset.action;
   const index  = parseInt(btn.dataset.index);
 
-  /* Acciones del carrito */
-  if (["plus", "minus", "del", "save"].includes(action)) {
+  /* -----------------------------
+       ACCIONES DEL CARRITO
+  ------------------------------*/
+  if (["plus","minus","del","save"].includes(action)) {
 
     let cart = getCart();
 
     if (action === "plus") cart[index].qty++;
-
     if (action === "minus") {
       cart[index].qty--;
       if (cart[index].qty <= 0) cart.splice(index, 1);
     }
-
     if (action === "del") cart.splice(index, 1);
 
     if (action === "save") {
+
       const saved = getSaved();
+
       btn.classList.add("loading");
       showPageLoader();
 
@@ -253,7 +225,7 @@ document.addEventListener("click", e => {
         btn.classList.remove("loading");
         hidePageLoader();
         renderCart();
-      }, 900);
+      }, 700);
 
       return;
     }
@@ -262,13 +234,15 @@ document.addEventListener("click", e => {
     renderCart();
   }
 
-  /* Acciones en guardados */
+  /* -----------------------------
+       ACCIONES EN GUARDADOS
+  ------------------------------*/
   if (action === "return") {
     const saved = getSaved();
     const cart  = getCart();
 
     cart.push(saved[index]);
-    saved.splice(index, 1);
+    saved.splice(index,1);
 
     saveCart(cart);
     saveSaved(saved);
@@ -277,34 +251,10 @@ document.addEventListener("click", e => {
 
   if (action === "delete-saved") {
     const saved = getSaved();
-    saved.splice(index, 1);
+    saved.splice(index,1);
     saveSaved(saved);
     renderSaved();
   }
-});
-
-/* ============================================================
-   Proceder al pago
-============================================================ */
-document.addEventListener("click", e => {
-  if (!e.target.closest("#proceder-btn")) return;
-
-  const cart = getCart();
-  if (cart.length === 0) return;
-
-  const logged = localStorage.getItem("cortero_logged") === "1";
-
-  if (!logged) {
-    const snack = document.getElementById("snackbar-login");
-    snack.classList.add("show");
-    setTimeout(() => {
-      snack.classList.remove("show");
-      window.location.href = "login.html";
-    }, 2000);
-    return;
-  }
-
-  window.location.href = "datos_cliente.html";
 });
 
 /* INIT */
