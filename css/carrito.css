@@ -192,7 +192,7 @@ header img {
 .save-later-btn:active { transform: scale(0.97); }
 
 /* ============================================================
-   RESUMEN — CAJA BASE (Aplicaremos mejoras después)
+   RESUMEN — CAJA BASE
 ============================================================ */
 .resumen-box {
   background: var(--blanco);
@@ -200,6 +200,57 @@ header img {
   padding: 2rem 1.8rem;
   border: 1.4px solid rgba(0,0,0,0.06);
   box-shadow: 0 6px 16px rgba(0,0,0,0.05);
+}
+
+/* ============================================================
+   RESUMEN DEL PEDIDO — ESTILO GOOGLE + CAFÉ CORTERO
+============================================================ */
+.resumen-box h2 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin-bottom: 1.2rem;
+  color: var(--marron);
+}
+
+.resumen-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.85rem;
+  font-size: 1rem;
+  color: var(--marron);
+}
+
+.resumen-total {
+  font-weight: 700;
+  font-size: 1.15rem;
+  margin-top: 0.8rem;
+  padding-top: 0.6rem;
+  border-top: 1.4px solid rgba(0,0,0,0.08);
+}
+
+/* Botón estilo Café Cortero */
+#proceder-btn {
+  width: 100%;
+  margin-top: 1.6rem;
+  padding: 0.95rem 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  background: var(--verde);
+  color: var(--blanco);
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: 0.25s ease;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+#proceder-btn:hover {
+  background: #27512e;
+}
+
+#proceder-btn:active {
+  transform: scale(0.97);
 }
 
 /* ============================================================
