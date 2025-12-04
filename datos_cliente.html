@@ -83,12 +83,14 @@
             </div>
           </div>
 
-          <!-- DEPARTAMENTO (SELECT M3 REAL) -->
+          <!-- DEPARTAMENTO (SELECT M3 CORREGIDO) -->
           <div class="m3-field">
             <div class="m3-input">
               <span class="material-symbols-outlined">map</span>
-              <select id="zona" class="m3-select" placeholder=" " required>
-                <option value="">Seleccionar…</option>
+
+              <!-- SELECT CORREGIDO PARA FLOATING LABEL -->
+              <select id="zona" class="m3-select" required>
+                <option value="" disabled selected></option>
                 <option value="El Paraíso">El Paraíso</option>
                 <option value="Francisco Morazán">Francisco Morazán</option>
                 <option value="Choluteca">Choluteca</option>
@@ -98,11 +100,12 @@
                 <option value="Olancho">Olancho</option>
                 <option value="Yoro">Yoro</option>
               </select>
+
               <label class="floating-label">Departamento *</label>
             </div>
           </div>
 
-          <!-- DIRECCIÓN (TEXTAREA M3 REAL) -->
+          <!-- DIRECCIÓN (TEXTAREA M3) -->
           <div class="m3-field">
             <div class="m3-input textarea-field">
               <span class="material-symbols-outlined">home</span>
