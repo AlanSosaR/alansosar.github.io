@@ -26,7 +26,7 @@ function saveSaved(list) {
 }
 
 /* ============================================================
-   LOADER CENTRAL — GUARDAR PARA MÁS TARDE
+   Loader central
 ============================================================ */
 function showPageLoader() {
   document.getElementById("page-loader").classList.remove("hidden");
@@ -56,9 +56,15 @@ function renderCart() {
   countSpan.textContent = `(${totalArticulos} ${palabra})`;
 
   /* ----------------------------
-     CARRITO VACÍO
+     BLOQUE GUARDADO PARA MÁS TARDE
   ---------------------------- */
+  const savedSection = document.getElementById("saved-section");
+  const savedCard = savedSection.querySelector(".saved-card");
+
+  /* 🟢 MODO B (carrito vacío) → centrado */
   if (cart.length === 0) {
+    savedCard.classList.add("centered");
+
     colProductos.innerHTML = `
       <div class="empty">
         Tu selección está vacía.<br>
@@ -66,9 +72,13 @@ function renderCart() {
       </div>
     `;
     colResumen.innerHTML = "";
+
     renderSaved();
     return;
   }
+
+  /* 🟢 MODO A (carrito con productos) → alineado con tarjetas */
+  savedCard.classList.remove("centered");
 
   /* ----------------------------
      RENDER PRODUCTOS
@@ -86,7 +96,6 @@ function renderCart() {
 
       <div class="item-info">
         <div class="item-name">${item.name}</div>
-
         <div class="item-price">L ${priceNum.toFixed(2)} / unidad</div>
 
         <div class="qty-controls">
@@ -101,7 +110,6 @@ function renderCart() {
             <i class="fa-solid fa-plus"></i>
           </button>
 
-          <!-- NUEVO BOTÓN M3 -->
           <button class="save-later-btn" data-action="save" data-index="${index}">
               <span class="save-later-text">Guardar para más tarde</span>
               <span class="save-later-loader"></span>
@@ -126,7 +134,6 @@ function renderCart() {
 
   colResumen.innerHTML = `
     <div class="resumen-box">
-
       <h2>Resumen del pedido</h2>
 
       <div class="resumen-row">
@@ -148,7 +155,6 @@ function renderCart() {
         <span class="loader"></span>
         <span class="btn-text">Proceder al pago</span>
       </button>
-
     </div>
   `;
 
@@ -205,7 +211,7 @@ function renderSaved() {
 }
 
 /* ============================================================
-   EVENTOS: + / – / BORRAR / GUARDAR / RESTAURAR
+   EVENTOS
 ============================================================ */
 document.addEventListener("click", e => {
   const btn = e.target.closest("button");
@@ -214,10 +220,8 @@ document.addEventListener("click", e => {
   const action = btn.dataset.action;
   const index = parseInt(btn.dataset.index);
 
-  /* ---------------------------------------
-     ACCIONES DEL CARRITO
-  --------------------------------------- */
-  if (action === "plus" || action === "minus" || action === "del" || action === "save") {
+  /* --- acciones del carrito --- */
+  if (["plus", "minus", "del", "save"].includes(action)) {
     let cart = getCart();
 
     if (action === "plus") cart[index].qty++;
@@ -229,14 +233,10 @@ document.addEventListener("click", e => {
 
     if (action === "del") cart.splice(index, 1);
 
-    /* ---------------------------------------
-       GUARDAR PARA MÁS TARDE (CON LOADER)
-    --------------------------------------- */
+    /* GUARDAR PARA MÁS TARDE */
     if (action === "save") {
       const saved = getSaved();
-
-      const btnLoader = btn;
-      btnLoader.classList.add("loading");
+      btn.classList.add("loading");
 
       showPageLoader();
 
@@ -247,7 +247,7 @@ document.addEventListener("click", e => {
         cart.splice(index, 1);
         saveCart(cart);
 
-        btnLoader.classList.remove("loading");
+        btn.classList.remove("loading");
         hidePageLoader();
         renderCart();
       }, 900);
@@ -259,9 +259,7 @@ document.addEventListener("click", e => {
     renderCart();
   }
 
-  /* ---------------------------------------
-     ACCIONES EN LISTA GUARDADA
-  --------------------------------------- */
+  /* --- acciones en guardados --- */
   if (action === "return") {
     const saved = getSaved();
     const cart = getCart();
@@ -304,12 +302,10 @@ document.addEventListener("click", e => {
       snack.classList.remove("show");
       window.location.href = "login.html";
     }, 2000);
-
     return;
   }
 
   btn.classList.add("loading");
-
   setTimeout(() => {
     window.location.href = "datos_cliente.html";
   }, 800);
