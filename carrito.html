@@ -109,15 +109,17 @@
 
   <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- Supabase Core -->
+<script src="js/supabase-client-core.js"></script>
 
-  <!-- Cliente global de supabase (OBLIGATORIO) -->
-  <script src="js/supabase-client-core.js"></script>
+<!-- Manejo REAL de login, logout, sesión -->
+<script src="js/supabase-auth-v4.js"></script>
 
-  <!-- UI de sesión para avatar/menu (OPCIONAL pero recomendado) -->
-  <script src="js/auth-ui.js"></script>
+<!-- Avatar + menú según estado de sesión -->
+<script src="js/auth-ui.js"></script>
 
-  <!-- Lógica del carrito -->
-  <script src="js/cart.js?v=24"></script>
+<!-- Lógica del carrito -->
+<script src="js/cart.js?v=24"></script>
 
 </body>
 </html>
