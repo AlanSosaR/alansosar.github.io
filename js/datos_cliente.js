@@ -1,9 +1,9 @@
 /* ============================================================
    DETALLES DE ENTREGA — VERSIÓN FINAL 2025
-   Compatible con HTML v10 y CSS M3
+   Compatible con HTML v10 y CSS M3 — Validación estilo PERFIL
 ============================================================ */
 
-console.log("📦 datos_cliente.js — versión 10 cargado");
+console.log("📦 datos_cliente.js — versión FINAL cargado");
 
 const sb = window.supabaseClient;
 
@@ -24,7 +24,22 @@ let userId = null;
 let loadedAddressId = null;
 
 /* ============================================================
-   1) LEER USUARIO DESDE CACHE
+   UTILIDADES DE VALIDACIÓN (IGUAL A PERFIL)
+============================================================ */
+function marcarError(input) {
+  const box = input.closest(".m3-input");
+  box.classList.remove("success");
+  box.classList.add("error");
+}
+
+function marcarSuccess(input) {
+  const box = input.closest(".m3-input");
+  box.classList.remove("error");
+  box.classList.add("success");
+}
+
+/* ============================================================
+   LEER USUARIO DESDE CACHE
 ============================================================ */
 function getUserCache() {
   try {
@@ -36,14 +51,14 @@ function getUserCache() {
 }
 
 /* ============================================================
-   2) ACTIVAR LABEL FLOTANTE
+   ACTIVAR LABEL FLOTANTE
 ============================================================ */
 function activarLabel(input) {
   input.dispatchEvent(new Event("input", { bubbles: true }));
 }
 
 /* ============================================================
-   3) MOSTRAR DATOS INSTANTÁNEOS
+   MOSTRAR DATOS INSTANTÁNEOS
 ============================================================ */
 function pintarDatosInstantaneos() {
   if (!userCache) return;
@@ -58,7 +73,7 @@ function pintarDatosInstantaneos() {
 }
 
 /* ============================================================
-   4) CARGAR DATOS REALES DESDE SUPABASE
+   CARGAR DATOS REALES DESDE SUPABASE
 ============================================================ */
 async function cargarDatosRealtime() {
   const { data: userRow, error } = await sb
@@ -80,7 +95,6 @@ async function cargarDatosRealtime() {
   activarLabel(correoInput);
   activarLabel(telefonoInput);
 
-  // actualizar cache
   localStorage.setItem("cortero_user", JSON.stringify(userRow));
   localStorage.setItem("cortero_logged", "1");
 
@@ -88,7 +102,7 @@ async function cargarDatosRealtime() {
 }
 
 /* ============================================================
-   5) CARGAR DIRECCIÓN ACTUAL
+   CARGAR DIRECCIÓN ACTUAL
 ============================================================ */
 async function cargarDireccion() {
   const { data, error } = await sb
@@ -112,28 +126,48 @@ async function cargarDireccion() {
   activarLabel(direccionInput);
   activarLabel(notaInput);
 
-  // select → floating label
-  if (zonaSelect.value.trim() !== "") {
-    zonaSelect.classList.add("filled");
-  }
+  // activar floating label en el select
+  if (zonaSelect.value.trim() !== "") zonaSelect.classList.add("filled");
 }
 
 /* ============================================================
-   6) VALIDAR FORMULARIO
+   VALIDACIÓN COMPLETA (SIN ALERTAS)
 ============================================================ */
-function validarFormulario() {
-  return (
-    nombreInput.value.trim() &&
-    correoInput.value.trim() &&
-    telefonoInput.value.trim() &&
-    ciudadInput.value.trim() &&
-    zonaSelect.value.trim() &&
-    direccionInput.value.trim()
-  );
+function validarCampos() {
+  let valido = true;
+
+  if (!nombreInput.value.trim()) { marcarError(nombreInput); valido = false; }
+  else marcarSuccess(nombreInput);
+
+  // correo readonly → siempre success
+  marcarSuccess(correoInput);
+
+  if (!telefonoInput.value.trim()) { marcarError(telefonoInput); valido = false; }
+  else marcarSuccess(telefonoInput);
+
+  if (!ciudadInput.value.trim()) { marcarError(ciudadInput); valido = false; }
+  else marcarSuccess(ciudadInput);
+
+  if (!zonaSelect.value.trim()) {
+    zonaSelect.closest(".m3-input").classList.add("error");
+    zonaSelect.closest(".m3-input").classList.remove("success");
+    valido = false;
+  } else {
+    zonaSelect.closest(".m3-input").classList.remove("error");
+    zonaSelect.closest(".m3-input").classList.add("success");
+  }
+
+  if (!direccionInput.value.trim()) { marcarError(direccionInput); valido = false; }
+  else marcarSuccess(direccionInput);
+
+  // Nota opcional → siempre success
+  marcarSuccess(notaInput);
+
+  return valido;
 }
 
 /* ============================================================
-   7) ACTUALIZAR DATOS BÁSICOS DEL USUARIO
+   ACTUALIZAR DATOS BÁSICOS DEL USUARIO
 ============================================================ */
 async function updateUserBasicInfo() {
   const payload = {
@@ -151,7 +185,6 @@ async function updateUserBasicInfo() {
     return false;
   }
 
-  // actualizar cache
   const updated = { ...userCache, ...payload };
   localStorage.setItem("cortero_user", JSON.stringify(updated));
   userCache = updated;
@@ -160,7 +193,7 @@ async function updateUserBasicInfo() {
 }
 
 /* ============================================================
-   8) GUARDAR DIRECCIÓN EN SUPABASE
+   GUARDAR DIRECCIÓN EN SUPABASE
 ============================================================ */
 async function guardarDireccion() {
   const payload = {
@@ -194,7 +227,6 @@ async function guardarDireccion() {
 
   if (result.error) {
     console.error("❌ Error guardando dirección:", result.error);
-    alert("No se pudo guardar tu dirección.");
     btnSubmit.classList.remove("loading");
     return false;
   }
@@ -203,27 +235,30 @@ async function guardarDireccion() {
 }
 
 /* ============================================================
-   9) SUBMIT FINAL
+   SUBMIT FINAL — VALIDACIÓN + LOADER CORRECTO
 ============================================================ */
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  if (!validarFormulario()) {
-    alert("Por favor completa todos los campos.");
-    return;
-  }
+  const valido = validarCampos();
 
+  // ❌ NO MOSTRAR LOADER SI HAY ERRORES
+  if (!valido) return;
+
+  // ✔ SOLO AQUÍ SE MUESTRA EL LOADER
   btnSubmit.classList.add("loading");
 
   const okUser = await updateUserBasicInfo();
   if (!okUser) {
-    alert("Error actualizando tu información.");
     btnSubmit.classList.remove("loading");
     return;
   }
 
   const okAddress = await guardarDireccion();
-  if (!okAddress) return;
+  if (!okAddress) {
+    btnSubmit.classList.remove("loading");
+    return;
+  }
 
   setTimeout(() => {
     window.location.href = "recibo.html";
@@ -231,7 +266,7 @@ form.addEventListener("submit", async (e) => {
 });
 
 /* ============================================================
-   10) INIT
+   INIT
 ============================================================ */
 async function init() {
   userCache = getUserCache();
@@ -246,7 +281,6 @@ async function init() {
   pintarDatosInstantaneos();
   cargarDatosRealtime();
 
-  // select → activar floating label cuando cambia
   zonaSelect.addEventListener("change", () => {
     if (zonaSelect.value.trim() !== "") zonaSelect.classList.add("filled");
     else zonaSelect.classList.remove("filled");
