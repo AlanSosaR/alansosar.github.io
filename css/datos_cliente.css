@@ -1,89 +1,47 @@
 /* ============================================================
-   DATOS CLIENTE — MATERIAL 3 + APPLE STYLE + CORTERO 2025
-   Versión final y consistente con PERFIL + CARRITO
+   DETALLES DE ENTREGA — ESTILO IGUAL A PERFIL (2025)
+   Reutiliza M3 inputs + doble tarjeta premium.
 ============================================================ */
 
 :root {
   --marron: #512615;
   --verde: #33673B;
-  --fondo: #fafafa;
+  --gris-fondo: #f7f7f7;
   --blanco: #ffffff;
-  --borde-suave: rgba(0, 0, 0, 0.10);
-  --borde-tarjeta: rgba(81, 38, 21, 0.22); /* igual que el perfil */
-  --sombra-tarjeta: rgba(0, 0, 0, 0.06);
+
+  --borde-card: rgba(81, 38, 21, 0.22);
+  --sombra-card: rgba(0, 0, 0, 0.07);
+
+  --input-border: rgba(0, 0, 0, 0.18);
+  --input-border-focus: #33673B;
 }
 
-/* RESET */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
+/* Fondo general */
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
-    "Poppins", sans-serif;
-
-  background: var(--fondo);
+  background: var(--gris-fondo);
   -webkit-tap-highlight-color: transparent;
-  color: var(--marron);
 }
 
 /* ============================================================
-   HEADER (MISMO TAMAÑO Y DISEÑO QUE EL CARRITO)
+   TARJETA PRINCIPAL (IGUAL A PERFIL)
 ============================================================ */
-header {
-  position: sticky;
-  top: 0;
-  z-index: 900;
-  height: 72px;
-
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  padding: 0 1.3rem;
-  background: rgba(255,255,255,0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(0,0,0,0.05);
+.profile-container {
+  max-width: 1000px;
+  margin: 2rem auto;
+  padding: 0 1rem;
 }
 
-header img {
-  height: 52px;
-}
-
-.form-title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--marron);
-  margin-right: 0.6rem;
-}
-
-/* ============================================================
-   TARJETA PRINCIPAL (IGUAL AL PERFIL)
-============================================================ */
-main {
-  max-width: 1100px;
-  margin: 1.6rem auto;
-  padding: 0 1.2rem 3rem;
-}
-
-.form-box {
-  background: var(--blanco);
-  padding: 2rem 1.6rem;
-  border-radius: 26px;
-
-  border: 1.8px solid var(--borde-tarjeta);
-  box-shadow: 0 12px 26px var(--sombra-tarjeta);
-
+.profile-card {
   position: relative;
+  background: var(--blanco);
+  border-radius: 26px;
+  padding: 2.5rem 1.5rem;
+  border: 1.8px solid var(--borde-card);
+  box-shadow: 0 12px 28px var(--sombra-card);
 }
 
-/* ============================================================
-   FLECHA REGRESAR (MISMA DE PERFIL)
-============================================================ */
-.back-arrow {
+/* Flecha atrás */
+.back-btn {
   position: absolute;
   top: 18px;
   left: 18px;
@@ -93,129 +51,215 @@ main {
 
   border-radius: 50%;
   background: #ffffff;
-  border: 1.4px solid rgba(0,0,0,0.10);
+  border: 1.4px solid rgba(0,0,0,0.12);
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  font-size: 1.2rem;
+  font-size: 1.6rem;
   color: var(--marron);
 
   cursor: pointer;
-  transition: background 0.18s ease, transform 0.15s ease;
+  transition: background 0.2s ease, transform 0.15s ease;
 }
 
-.back-arrow:active {
-  transform: scale(0.96);
-  background: rgba(0,0,0,0.05);
+.back-btn:active {
+  transform: scale(0.95);
+  background: rgba(0,0,0,0.06);
 }
 
 /* ============================================================
-   FORMULARIO
+   TARJETA INTERIOR (IGUAL A PERFIL)
 ============================================================ */
-.form-group {
-  margin-bottom: 1.55rem;
+.profile-inner-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 2.3rem 1.7rem;
+
+  border: 1.6px solid rgba(0,0,0,0.05);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.05);
 }
 
-label {
-  display: block;
-  margin-bottom: 0.45rem;
-
-  font-size: 0.97rem;
-  font-weight: 600;
-  color: var(--marron);
-}
-
-input,
-textarea,
-select {
+/* ============================================================
+   CAMPOS MATERIAL 3 (MISMO SISTEMA QUE PERFIL)
+============================================================ */
+.m3-field {
+  margin-bottom: 1.8rem;
   width: 100%;
-  padding: 1rem 1rem;
+}
 
-  border: 1.6px solid var(--borde-suave);
-  border-radius: 16px;
+/* Contenedor del input */
+.m3-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
 
+  padding: 0.9rem 1rem;
+
+  border-radius: 14px;
+  border: 1.6px solid var(--input-border);
+
+  background: #ffffff;
+  transition: border-color .2s ease, background .2s ease;
+}
+
+/* Íconos Material */
+.m3-input span.material-symbols-outlined {
+  font-size: 1.35rem;
+  color: var(--marron);
+  opacity: 0.8;
+}
+
+/* Input y textarea */
+.m3-input input,
+.m3-input select,
+.m3-input textarea {
+  width: 100%;
+  border: none;
+  background: transparent;
   font-size: 1rem;
   font-family: inherit;
+  padding: 0.3rem 0;
   color: var(--marron);
-
-  transition: border 0.25s ease, background 0.25s ease;
-  background: #ffffff;
-}
-
-/* Focus estilo premium */
-input:focus,
-textarea:focus,
-select:focus {
-  border-color: var(--verde);
   outline: none;
+  resize: none;
+}
+
+/* LABEL FLOTANTE (MISMO QUE PERFIL) */
+.floating-label {
+  position: absolute;
+  top: 50%;
+  left: 2.8rem;
+
+  transform: translateY(-50%);
+  font-size: 1rem;
+  color: rgba(0,0,0,0.45);
+
+  pointer-events: none;
+  transition: all .22s ease;
+}
+
+/* EFECTO FLOTAR CUANDO HAY TEXTO O FOCUS */
+.m3-input:focus-within {
+  border-color: var(--input-border-focus);
+}
+
+.m3-input input:not(:placeholder-shown) + .floating-label,
+.m3-input textarea:not(:placeholder-shown) + .floating-label,
+.m3-input select:not([value=""]) + .floating-label {
+  top: -6px;
+  left: 2.65rem;
+  font-size: 0.75rem;
   background: #ffffff;
+  padding: 0 0.3rem;
+  color: var(--verde);
 }
 
-/* Placeholder elegante */
-input::placeholder,
-textarea::placeholder {
-  color: rgba(0,0,0,0.35);
+/* Select cuando tiene valor */
+.m3-input select[value] + .floating-label {
+  top: -6px;
+  font-size: 0.75rem;
 }
 
-/* Correo bloqueado */
-input[readonly] {
-  background: rgba(0,0,0,0.05);
+/* Inputs readonly */
+.no-edit input {
+  background: rgba(0,0,0,0.04) !important;
   cursor: not-allowed;
 }
 
 /* ============================================================
-   BOTÓN PRINCIPAL — APPLE + MATERIAL 3 EXPRESSIVE
+   TEXTAREA ESPECIAL
 ============================================================ */
-.btn-primary {
-  width: 100%;
-  padding: 1.1rem;
-  margin-top: 1.3rem;
+.textarea-field {
+  align-items: flex-start;
+  padding-top: 1.3rem;
+  padding-bottom: 1.3rem;
+}
 
-  border-radius: 16px;
-  border: none;
+.textarea-field .floating-label {
+  top: 18px;
+  transform: none;
+}
+
+/* Cuando el textarea tiene texto */
+.textarea-field textarea:not(:placeholder-shown) + .floating-label {
+  top: -8px;
+  font-size: 0.75rem;
+}
+
+/* ============================================================
+   BOTÓN PRINCIPAL (MISMO QUE PERFIL)
+============================================================ */
+.m3-btn {
+  margin-top: 1rem;
+  width: 100%;
+  padding: 1.05rem;
 
   background: var(--verde);
   color: #ffffff;
 
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   font-weight: 600;
+
+  border-radius: 14px;
+  border: none;
 
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.75rem;
+  gap: 1rem;
 
   cursor: pointer;
-  transition: transform 0.15s ease, background 0.25s ease;
+  transition: transform .15s ease, opacity .2s ease;
 }
 
-/* Animación al presionar */
-.btn-primary:active {
+/* Efecto táctil */
+.m3-btn:active {
   transform: scale(0.97);
 }
 
 /* Loader */
-.btn-primary i {
-  font-size: 1.2rem;
+.m3-btn .loader {
+  display: none;
+  width: 18px;
+  height: 18px;
+
+  border: 2.5px solid rgba(255,255,255,0.45);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+
+  animation: spin .9s linear infinite;
 }
 
-.btn-loading {
-  pointer-events: none;
-  opacity: 0.9;
+.m3-btn.loading .loader {
+  display: inline-block;
+}
+
+.m3-btn.loading .btn-text {
+  opacity: 0.6;
+}
+
+/* Animación loader */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 /* ============================================================
    RESPONSIVE
 ============================================================ */
 @media (min-width: 768px) {
-  .form-box {
-    padding: 2.6rem 2.4rem;
-    border-radius: 26px;
+  .profile-card {
+    padding: 3rem 2.5rem;
   }
 
-  .btn-primary {
+  .profile-inner-card {
+    padding: 2.8rem 2.5rem;
+  }
+
+  .m3-btn {
     width: 380px;
     margin-left: auto;
     margin-right: auto;
