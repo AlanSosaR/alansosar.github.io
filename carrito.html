@@ -57,22 +57,22 @@
 
     <div class="grid-carrito">
 
-      <!-- =============================
-           COLUMNA IZQUIERDA (PRODUCTOS)
-      ============================== -->
+      <!-- =====================================================
+           COLUMNA IZQUIERDA (PRODUCTOS + GUARDADOS)
+      ====================================================== -->
       <div class="col-productos">
 
-          <!-- Productos -->
+          <!-- PRODUCTOS DEL CARRITO -->
           <div id="cart-container"></div>
 
-          <!-- Guardado para más tarde — AHORA DENTRO DE ESTA MISMA COLUMNA -->
+          <!-- =====================================================
+                 GUARDADO PARA MÁS TARDE — TARJETA GOOGLE
+          ====================================================== -->
           <section id="saved-section" class="saved-wrapper">
 
               <div class="saved-card">
 
                   <h3 class="saved-card-title">Guardado para más tarde</h3>
-
-                  <div class="saved-divider"></div>
 
                   <div id="saved-list" class="saved-list empty-saved">
                       <p class="saved-empty-title">No hay cafés guardados todavía</p>
@@ -85,9 +85,9 @@
 
       </div>
 
-      <!-- =============================
-           COLUMNA DERECHA (RESUMEN)
-      ============================== -->
+      <!-- =====================================================
+           COLUMNA DERECHA — RESUMEN DEL PEDIDO
+      ====================================================== -->
       <div class="col-resumen" id="resumen-container"></div>
 
     </div>
@@ -111,6 +111,7 @@
   <div id="page-loader" class="page-loader hidden">
       <div class="loader-circle"></div>
   </div>
+
 
   <!-- =====================================================
        SCRIPT DEL CARRITO
