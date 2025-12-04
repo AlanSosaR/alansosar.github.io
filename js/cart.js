@@ -16,6 +16,17 @@ const saveSaved = list => localStorage.setItem(SAVED_KEY, JSON.stringify(list));
 const showPageLoader = () => document.getElementById("page-loader")?.classList.remove("hidden");
 const hidePageLoader = () => document.getElementById("page-loader")?.classList.add("hidden");
 
+/* Snackbar */
+function showSnackbar(message) {
+  const bar = document.getElementById("snackbar-login");
+  bar.textContent = message;
+  bar.classList.add("show");
+
+  setTimeout(() => {
+    bar.classList.remove("show");
+  }, 3000);
+}
+
 /* ============================================================
    RENDER DEL CARRITO
 ============================================================ */
@@ -102,7 +113,7 @@ function renderCart() {
   });
 
   /* ============================================================
-       RESUMEN DEL PEDIDO — ESTILO GOOGLE + CAFÉ CORTERO
+       RESUMEN DEL PEDIDO
   ============================================================ */
   const subtotal = cart.reduce((acc, item) => acc + (item.qty * item.price), 0);
 
@@ -126,8 +137,6 @@ function renderCart() {
       </div>
 
       <button id="proceder-btn" class="m3-btn">Proceder al pago</button>
-
-      <p id="login-warning" class="login-warning hidden"></p>
     </div>
   `;
 
@@ -268,26 +277,20 @@ document.addEventListener("click", async e => {
   }
 
   /* ============================================================
-       BOTÓN: PROCEDER AL PAGO
+       BOTÓN: PROCEDER AL PAGO  → CON SNACKBAR
   ============================================================ */
   if (btn.id === "proceder-btn") {
 
-    const msg = document.getElementById("login-warning");
-
-    // Ocultar mensaje cada vez que se presiona
-    msg.classList.add("hidden");
-
-    // Validar sesión Supabase
+    // Obtener sesión de Supabase
     const { data: { session } } = await supabase.auth.getSession();
     const loggedIn = session ? true : false;
 
     if (!loggedIn) {
-      msg.textContent = "Necesitas iniciar sesión para continuar con tu pedido.";
-      msg.classList.remove("hidden");
+      showSnackbar("Necesitas iniciar sesión para continuar con tu pedido.");
       return;
     }
 
-    // Si está logeado → continuar
+    // Si está logueado → pasar a checkout
     window.location.href = "checkout.html";
   }
 });
