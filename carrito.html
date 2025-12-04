@@ -15,12 +15,12 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined">
 
   <!-- CSS -->
-  <link rel="stylesheet" href="css/carrito.css?v=25">
+  <link rel="stylesheet" href="css/carrito.css?v=26">
 </head>
 <body>
 
 <!-- =====================================================
-     HEADER (IGUAL QUE INDEX, PARA QUE CARGUE EL AVATAR)
+     HEADER (IGUAL QUE INDEX, PARA QUE auth-ui.js CARGUE EL AVATAR)
 ====================================================== -->
 <header>
     <a href="index.html" class="header-logo-link">
@@ -31,31 +31,37 @@
         Tu selección de café <span id="count-items">(0 cafés)</span>
     </span>
 
-    <div id="header-profile-container">
-        <a href="perfil.html" id="header-profile-link">
-            <img id="header-profile-photo" src="imagenes/avatar-default.svg" alt="Tu perfil">
-        </a>
+    <!-- Botón del avatar EXACTO al index -->
+    <button id="btn-header-user" class="header-avatar-button">
+        <img id="avatar-user" src="imagenes/avatar-default.svg" alt="Usuario" class="header-avatar">
+    </button>
+
+    <!-- Menú usuario (igual al index, solo oculto por CSS) -->
+    <div id="user-menu" class="user-menu hidden">
+        <a href="mispedidos.html">📦 Mis pedidos</a>
+        <a href="historial.html">🧾 Historial</a>
+        <a href="perfil.html">👤 Mi perfil</a>
+        <button id="logout-btn">🚪 Cerrar sesión</button>
     </div>
 </header>
 
 
 <!-- =====================================================
-     SEGUIR COMPRANDO
+        SEGUIR COMPRANDO
 ====================================================== -->
 <div id="seguir-wrapper" class="seguir-comprando seguir-left">
     <button class="icon-back" onclick="window.location.href='index.html'">
         <span class="material-symbols-outlined">chevron_left</span>
     </button>
-
     <a href="index.html" class="seguir-link">Seguir comprando</a>
 </div>
 
 
 <!-- =====================================================
-     PLANTILLAS (TEMPLATES)
+     TEMPLATES DE PRODUCTOS (CARRITO & GUARDADOS)
 ====================================================== -->
 
-<!-- 🔥 Producto dentro del carrito -->
+<!-- Item del carrito -->
 <template id="template-cart-item">
     <div class="item">
 
@@ -67,8 +73,8 @@
             <div class="item-name"></div>
             <div class="item-price"></div>
 
+            <!-- FILA 1: Controles -->
             <div class="qty-controls">
-
                 <button class="qty-btn minus" data-action="minus">
                     <i class="fa-solid fa-minus"></i>
                 </button>
@@ -79,22 +85,22 @@
                     <i class="fa-solid fa-plus"></i>
                 </button>
 
-                <!-- 🔥 Botón Guardar para más tarde (ahora vive en HTML) -->
-                <button class="save-later-btn" data-action="save">
-                    <span class="save-text">Guardar para más tarde</span>
-                </button>
-
                 <button class="del-btn" data-action="del">
                     <i class="fa-solid fa-trash"></i>
                 </button>
-
             </div>
+
+            <!-- FILA 2: Guardado -->
+            <button class="save-later-btn" data-action="save">
+                Guardar para más tarde
+            </button>
+
         </div>
     </div>
 </template>
 
 
-<!-- 🔥 Producto guardado para más tarde -->
+<!-- Item de guardado -->
 <template id="template-saved-item">
     <div class="saved-item">
 
@@ -116,7 +122,6 @@
 </template>
 
 
-
 <!-- =====================================================
      CONTENIDO PRINCIPAL
 ====================================================== -->
@@ -127,7 +132,6 @@
         <div class="col-productos">
             <div id="cart-container"></div>
 
-            <!-- Guardados -->
             <section id="saved-section" class="saved-wrapper">
                 <div class="saved-card">
                     <h3 class="saved-card-title">Guardado para más tarde</h3>
@@ -153,7 +157,6 @@
     </div>
 </main>
 
-
 <!-- Loader -->
 <div id="page-loader" class="page-loader hidden">
     <div class="loader-circle"></div>
@@ -170,7 +173,7 @@
 <script src="js/auth-ui.js"></script>
 
 <!-- Lógica del carrito -->
-<script src="js/cart.js?v=2500"></script>
+<script src="js/cart.js?v=2600"></script>
 
 </body>
 </html>
