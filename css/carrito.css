@@ -205,15 +205,21 @@ header img {
 }
 
 /* ============================================================
-   GUARDADO PARA MÁS TARDE (GOOGLE STYLE)
+   GUARDADO PARA MÁS TARDE — GOOGLE STYLE (OPCIÓN A)
 ============================================================ */
 
+/* Separación correcta */
 #saved-section {
   width: 100%;
-  margin-top: 1.8rem; /* ← CORREGIDO */
+  margin-top: 2rem;
 }
 
-/* Contenedor principal */
+/* Cuando el carrito está vacío */
+#saved-section.empty-mode {
+  margin-top: 2.8rem !important;
+}
+
+/* Tarjeta principal */
 .saved-card {
   background: var(--blanco);
   padding: 2rem 1.8rem;
@@ -227,10 +233,11 @@ header img {
   transition: .25s ease;
 }
 
-/* Cuando carrito está vacío → centrado */
+/* Centrada cuando no hay productos */
 .saved-card.centered {
   max-width: 600px;
   margin: 0 auto;
+  margin-top: 1.4rem !important;
 }
 
 /* Título */
@@ -284,7 +291,7 @@ header img {
 }
 
 /* ============================================================
-   BOTONES DE LA LISTA GUARDADA — NUEVO
+   BOTONES DE GUARDADOS — ESTILO MATERIAL 3
 ============================================================ */
 .saved-buttons {
   display: flex;
@@ -304,7 +311,7 @@ header img {
   transition: .2s ease;
 }
 
-.saved-btn.return:hover { background: #274d2c; }
+.saved-btn.return:hover { background: #27512e; }
 
 .saved-btn.delete {
   padding: 0.45rem 0.95rem;
