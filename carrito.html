@@ -39,7 +39,7 @@
 
 
   <!-- =====================================================
-        SEGUIR COMPRANDO — ALINEADO IZQUIERDA COMO GOOGLE
+        SEGUIR COMPRANDO
   ====================================================== -->
   <div id="seguir-wrapper" class="seguir-comprando seguir-left">
       <button class="icon-back" onclick="window.location.href='index.html'">
@@ -62,25 +62,18 @@
       ====================================================== -->
       <div class="col-productos">
 
-          <!-- PRODUCTOS DEL CARRITO -->
           <div id="cart-container"></div>
 
-          <!-- =====================================================
-                 GUARDADO PARA MÁS TARDE — TARJETA GOOGLE
-          ====================================================== -->
+          <!-- GUARDADO PARA MÁS TARDE -->
           <section id="saved-section" class="saved-wrapper">
-
               <div class="saved-card">
-
                   <h3 class="saved-card-title">Guardado para más tarde</h3>
 
                   <div id="saved-list" class="saved-list empty-saved">
                       <p class="saved-empty-title">No hay cafés guardados todavía</p>
                       <p class="saved-empty-sub">Añade a esta lista tus cafés que no estás comprando hoy</p>
                   </div>
-
               </div>
-
           </section>
 
       </div>
@@ -88,34 +81,27 @@
       <!-- =====================================================
            COLUMNA DERECHA — RESUMEN DEL PEDIDO
       ====================================================== -->
-      <div class="col-resumen" id="resumen-container"></div>
+      <div class="col-resumen" id="resumen-container">
+
+        <!-- ⭐ Aquí aparecerá la tarjeta del resumen generada por JS -->
+
+        <!-- ⭐ SNACKBAR colocado debajo del resumen, pero fijo en pantalla -->
+        <div id="snackbar-login" class="snackbar hidden">
+          Necesitas iniciar sesión para continuar con tu pedido.
+        </div>
+
+      </div>
 
     </div>
 
   </main>
 
-
-  <!-- =====================================================
-       SNACKBARS
-  ====================================================== -->
-  <div id="aviso-vacio" class="snackbar-md3"></div>
-
-  <div id="snackbar-login">
-    Necesitas iniciar sesión para continuar con tu pedido.
-  </div>
-
-
-  <!-- =====================================================
-       LOADER CENTRAL
-  ====================================================== -->
+  <!-- Loader -->
   <div id="page-loader" class="page-loader hidden">
       <div class="loader-circle"></div>
   </div>
 
-
-  <!-- =====================================================
-       SCRIPT DEL CARRITO
-  ====================================================== -->
+  <!-- Script -->
   <script src="js/cart.js?v=24"></script>
 
 </body>
