@@ -1,11 +1,87 @@
-          GUARDADO PARA MÁS TARDE — TARJETA GOOGLE STORE
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tu selección de café | Café Cortero</title>
+
+  <!-- Tipografía -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Iconos -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- Material Symbols -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/carrito.css?v=22">
+</head>
+
+<body>
+
+  <!-- =====================================================
+       HEADER — MISMO ESTILO DEL INDEX
+  ====================================================== -->
+  <header>
+
+      <a href="index.html" class="header-logo-link">
+        <img src="imagenes/logo.png" alt="Café Cortero" class="header-logo">
+      </a>
+
+      <span class="cart-title">
+        Tu selección de café <span id="count-items">(0 cafés)</span>
+      </span>
+
+      <a href="perfil.html" class="header-avatar-link">
+        <img src="imagenes/avatar-default.svg" id="avatar-user" class="header-avatar">
+      </a>
+
+  </header>
+
+
+  <!-- =====================================================
+        SEGUIR COMPRANDO — ICONO + TEXTO
+  ====================================================== -->
+  <div class="seguir-comprando">
+
+      <button class="icon-back" onclick="window.location.href='index.html'">
+          <span class="material-symbols-outlined">chevron_left</span>
+      </button>
+
+      <a href="index.html" class="seguir-link">Seguir comprando</a>
+
+  </div>
+
+
+  <!-- =====================================================
+        GRID PRINCIPAL — PRODUCTOS + RESUMEN
+  ====================================================== -->
+  <main>
+
+    <div class="grid-carrito">
+
+      <!-- Lista de productos -->
+      <div class="col-productos" id="cart-container"></div>
+
+      <!-- Resumen del pedido -->
+      <div class="col-resumen" id="resumen-container"></div>
+
+    </div>
+
+
+    <!-- =====================================================
+          GUARDADO PARA MÁS TARDE — TARJETA GOOGLE STYLE
     ====================================================== -->
     <section id="saved-section" class="saved-wrapper">
 
         <div class="saved-card">
-            
-            <!-- TITULO DENTRO DE LA TARJETA (como Google Store) -->
+
+            <!-- TÍTULO DENTRO DE LA TARJETA -->
             <h3 class="saved-card-title">Guardado para más tarde</h3>
+
+            <!-- LÍNEA DIVISORA VERDE ESTILO GOOGLE -->
+            <div class="saved-divider"></div>
 
             <!-- Lista o mensaje vacío -->
             <div id="saved-list" class="saved-list empty-saved">
@@ -41,7 +117,7 @@
   <!-- =====================================================
        SCRIPT DEL CARRITO
   ====================================================== -->
-  <script src="js/cart.js?v=21"></script>
+  <script src="js/cart.js?v=22"></script>
 
 </body>
 </html>
