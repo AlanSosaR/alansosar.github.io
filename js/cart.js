@@ -43,24 +43,26 @@ function hidePageLoader() {
 function renderCart() {
   const cart = getCart();
 
-  const cartContainer = document.getElementById("cart-container");
+  const cartContainer = document.getElementById("cart-container");  // ← SOLO productos
   const colResumen    = document.querySelector(".col-resumen");
   const countSpan     = document.getElementById("count-items");
-  const savedCard     = document.querySelector("#saved-section .saved-card");
 
   if (!cartContainer || !colResumen || !countSpan) return;
 
+  /* ❗ NO BORRAR col-productos, solo los productos */
   cartContainer.innerHTML = "";
-  colResumen.innerHTML = "";
+  colResumen.innerHTML    = "";
 
   /* Contador */
   const totalArticulos = cart.reduce((acc, item) => acc + item.qty, 0);
   const palabra = totalArticulos === 1 ? "café" : "cafés";
   countSpan.textContent = `(${totalArticulos} ${palabra})`;
 
+  const savedCard = document.querySelector("#saved-section .saved-card");
+
   /* ============================================================
-       CARRITO VACÍO — Google Style
-  ============================================================= */
+       CARRITO VACÍO → GOOGLE STYLE
+  ============================================================ */
   if (cart.length === 0) {
 
     if (savedCard) savedCard.classList.add("centered");
@@ -76,14 +78,13 @@ function renderCart() {
     return;
   }
 
-  /* Carrito con productos → MODO A */
+  /* Carrito con productos → posición normal */
   if (savedCard) savedCard.classList.remove("centered");
 
   /* ============================================================
        RENDER PRODUCTOS
-  ============================================================= */
+  ============================================================ */
   cart.forEach((item, index) => {
-
     const priceNum = parseFloat(item.price) || 0;
 
     const div = document.createElement("div");
@@ -95,7 +96,6 @@ function renderCart() {
       </div>
 
       <div class="item-info">
-
         <div class="item-name">${item.name}</div>
         <div class="item-price">L ${priceNum.toFixed(2)} / unidad</div>
 
@@ -112,8 +112,8 @@ function renderCart() {
           </button>
 
           <button class="save-later-btn" data-action="save" data-index="${index}">
-            <span class="save-later-text">Guardar para más tarde</span>
-            <span class="save-later-loader"></span>
+              <span class="save-later-text">Guardar para más tarde</span>
+              <span class="save-later-loader"></span>
           </button>
 
           <button class="del-btn" data-action="del" data-index="${index}">
@@ -127,12 +127,13 @@ function renderCart() {
     cartContainer.appendChild(div);
   });
 
-
   /* ============================================================
        RESUMEN DEL PEDIDO
-  ============================================================= */
-  const subtotal = cart.reduce((acc, item) =>
-    acc + (parseFloat(item.price) * item.qty || 0), 0);
+  ============================================================ */
+  const subtotal = cart.reduce(
+    (acc, item) => acc + (parseFloat(item.price) * item.qty || 0),
+    0
+  );
 
   colResumen.innerHTML = `
     <div class="resumen-box">
@@ -213,7 +214,7 @@ function renderSaved() {
 }
 
 /* ============================================================
-   EVENTOS DEL CARRITO
+   EVENTOS (Carrito + Guardados)
 ============================================================ */
 document.addEventListener("click", e => {
 
@@ -223,6 +224,7 @@ document.addEventListener("click", e => {
   const action = btn.dataset.action;
   const index  = parseInt(btn.dataset.index);
 
+  /* Acciones del carrito */
   if (["plus", "minus", "del", "save"].includes(action)) {
 
     let cart = getCart();
@@ -234,9 +236,7 @@ document.addEventListener("click", e => {
       if (cart[index].qty <= 0) cart.splice(index, 1);
     }
 
-    if (action === "del") {
-      cart.splice(index, 1);
-    }
+    if (action === "del") cart.splice(index, 1);
 
     if (action === "save") {
       const saved = getSaved();
@@ -246,8 +246,10 @@ document.addEventListener("click", e => {
       setTimeout(() => {
         saved.push(cart[index]);
         saveSaved(saved);
+
         cart.splice(index, 1);
         saveCart(cart);
+
         btn.classList.remove("loading");
         hidePageLoader();
         renderCart();
@@ -260,7 +262,7 @@ document.addEventListener("click", e => {
     renderCart();
   }
 
-  /* Acciones guardados */
+  /* Acciones en guardados */
   if (action === "return") {
     const saved = getSaved();
     const cart  = getCart();
