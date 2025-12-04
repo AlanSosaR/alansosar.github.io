@@ -103,9 +103,7 @@ header img {
 }
 
 @media (max-width: 760px) {
-  .grid-carrito {
-    grid-template-columns: 1fr;
-  }
+  .grid-carrito { grid-template-columns: 1fr; }
   .col-resumen { order: 2; }
   .col-productos { order: 1; }
 }
@@ -194,7 +192,7 @@ header img {
 .save-later-btn:active { transform: scale(0.97); }
 
 /* ============================================================
-   RESUMEN
+   RESUMEN — CAJA BASE (Aplicaremos mejoras después)
 ============================================================ */
 .resumen-box {
   background: var(--blanco);
@@ -205,21 +203,17 @@ header img {
 }
 
 /* ============================================================
-   GUARDADO PARA MÁS TARDE — GOOGLE STYLE (OPCIÓN A)
+   GUARDADO PARA MÁS TARDE — GOOGLE STYLE
 ============================================================ */
-
-/* Separación correcta */
 #saved-section {
   width: 100%;
   margin-top: 2rem;
 }
 
-/* Cuando el carrito está vacío */
 #saved-section.empty-mode {
   margin-top: 2.8rem !important;
 }
 
-/* Tarjeta principal */
 .saved-card {
   background: var(--blanco);
   padding: 2rem 1.8rem;
@@ -233,14 +227,12 @@ header img {
   transition: .25s ease;
 }
 
-/* Centrada cuando no hay productos */
 .saved-card.centered {
   max-width: 600px;
   margin: 0 auto;
   margin-top: 1.4rem !important;
 }
 
-/* Título */
 .saved-card-title {
   font-size: 1.32rem;
   font-weight: 600;
@@ -257,20 +249,17 @@ header img {
   margin-top: 0.6rem;
 }
 
-/* Lista vacía */
 .empty-saved {
   text-align: center;
   padding: 2rem 0;
 }
 
-/* Lista */
 #saved-list {
   width: 100%;
   max-width: 100%;
   overflow: hidden;
 }
 
-/* Ítem guardado */
 .saved-item {
   display: flex;
   align-items: center;
@@ -283,16 +272,13 @@ header img {
   box-shadow: 0 3px 8px rgba(0,0,0,0.04);
 }
 
-/* Imagen */
 .saved-img-box img {
   width: 80px;
   height: 80px;
   object-fit: contain;
 }
 
-/* ============================================================
-   BOTONES DE GUARDADOS — ESTILO MATERIAL 3
-============================================================ */
+/* BOTONES MATERIAL 3 */
 .saved-buttons {
   display: flex;
   align-items: center;
