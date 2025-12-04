@@ -26,7 +26,7 @@ function saveSaved(list) {
 }
 
 /* ============================================================
-   MOSTRAR LOADER CENTRAL — GUARDAR PARA MÁS TARDE
+   LOADER CENTRAL — GUARDAR PARA MÁS TARDE
 ============================================================ */
 function showPageLoader() {
   document.getElementById("page-loader").classList.remove("hidden");
@@ -40,7 +40,6 @@ function hidePageLoader() {
 ============================================================ */
 function renderCart() {
   const cart = getCart();
-  const saved = getSaved();
 
   const colProductos = document.querySelector(".col-productos");
   const colResumen = document.querySelector(".col-resumen");
@@ -50,11 +49,10 @@ function renderCart() {
   colResumen.innerHTML = "";
 
   /* ----------------------------
-     CONTADOR DEL HEADER
+     CONTADOR HEADER
   ---------------------------- */
   const totalArticulos = cart.reduce((acc, item) => acc + item.qty, 0);
   const palabra = totalArticulos === 1 ? "café" : "cafés";
-
   countSpan.textContent = `(${totalArticulos} ${palabra})`;
 
   /* ----------------------------
@@ -68,7 +66,7 @@ function renderCart() {
       </div>
     `;
     colResumen.innerHTML = "";
-    renderSaved(); 
+    renderSaved();
     return;
   }
 
@@ -92,6 +90,7 @@ function renderCart() {
         <div class="item-price">L ${priceNum.toFixed(2)} / unidad</div>
 
         <div class="qty-controls">
+
           <button class="qty-btn minus" data-action="minus" data-index="${index}">
             <i class="fa-solid fa-minus"></i>
           </button>
@@ -102,13 +101,16 @@ function renderCart() {
             <i class="fa-solid fa-plus"></i>
           </button>
 
-          <button class="save-btn" data-action="save" data-index="${index}">
-            Guardar para más tarde
+          <!-- NUEVO BOTÓN M3 -->
+          <button class="save-later-btn" data-action="save" data-index="${index}">
+              <span class="save-later-text">Guardar para más tarde</span>
+              <span class="save-later-loader"></span>
           </button>
 
           <button class="del-btn" data-action="del" data-index="${index}">
             <i class="fa-solid fa-trash"></i>
           </button>
+
         </div>
       </div>
     `;
@@ -117,11 +119,10 @@ function renderCart() {
   });
 
   /* ----------------------------
-     RESUMEN DEL PEDIDO
+     RESUMEN
   ---------------------------- */
   const subtotal = cart.reduce((acc, item) => acc + (parseFloat(item.price) * item.qty), 0);
   const envio = 0;
-  const total = subtotal + envio;
 
   colResumen.innerHTML = `
     <div class="resumen-box">
@@ -140,7 +141,7 @@ function renderCart() {
 
       <div class="resumen-row resumen-total">
         <span>Total estimado</span>
-        <span>L ${total.toFixed(2)}</span>
+        <span>L ${(subtotal + envio).toFixed(2)}</span>
       </div>
 
       <button id="proceder-btn" class="m3-btn">
@@ -156,7 +157,7 @@ function renderCart() {
 }
 
 /* ============================================================
-   RENDER — GUARDADO PARA MÁS TARDE
+   RENDER GUARDADO PARA MÁS TARDE
 ============================================================ */
 function renderSaved() {
   const saved = getSaved();
@@ -204,7 +205,7 @@ function renderSaved() {
 }
 
 /* ============================================================
-   EVENTOS: + / – / BORRAR / GUARDAR PARA MÁS TARDE / RESTAURAR
+   EVENTOS: + / – / BORRAR / GUARDAR / RESTAURAR
 ============================================================ */
 document.addEventListener("click", e => {
   const btn = e.target.closest("button");
@@ -213,28 +214,30 @@ document.addEventListener("click", e => {
   const action = btn.dataset.action;
   const index = parseInt(btn.dataset.index);
 
-  /* ----------------------------
+  /* ---------------------------------------
      ACCIONES DEL CARRITO
-  ---------------------------- */
+  --------------------------------------- */
   if (action === "plus" || action === "minus" || action === "del" || action === "save") {
     let cart = getCart();
 
-    if (action === "plus") {
-      cart[index].qty++;
-    }
+    if (action === "plus") cart[index].qty++;
 
     if (action === "minus") {
       cart[index].qty--;
       if (cart[index].qty <= 0) cart.splice(index, 1);
     }
 
-    if (action === "del") {
-      cart.splice(index, 1);
-    }
+    if (action === "del") cart.splice(index, 1);
 
-    /* GUARDAR PARA MÁS TARDE */
+    /* ---------------------------------------
+       GUARDAR PARA MÁS TARDE (CON LOADER)
+    --------------------------------------- */
     if (action === "save") {
       const saved = getSaved();
+
+      const btnLoader = btn;
+      btnLoader.classList.add("loading");
+
       showPageLoader();
 
       setTimeout(() => {
@@ -244,9 +247,10 @@ document.addEventListener("click", e => {
         cart.splice(index, 1);
         saveCart(cart);
 
+        btnLoader.classList.remove("loading");
         hidePageLoader();
         renderCart();
-      }, 700);
+      }, 900);
 
       return;
     }
@@ -255,9 +259,9 @@ document.addEventListener("click", e => {
     renderCart();
   }
 
-  /* ----------------------------
+  /* ---------------------------------------
      ACCIONES EN LISTA GUARDADA
-  ---------------------------- */
+  --------------------------------------- */
   if (action === "return") {
     const saved = getSaved();
     const cart = getCart();
@@ -267,7 +271,6 @@ document.addEventListener("click", e => {
 
     saveCart(cart);
     saveSaved(saved);
-
     renderCart();
   }
 
@@ -313,6 +316,6 @@ document.addEventListener("click", e => {
 });
 
 /* ============================================================
-   INICIALIZAR
+   INIT
 ============================================================ */
 renderCart();
