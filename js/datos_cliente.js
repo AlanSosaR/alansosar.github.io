@@ -1,9 +1,9 @@
 /* ============================================================
    DETALLES DE ENTREGA — VERSIÓN FINAL 2025
-   Igual que perfil: cache → supabase → actualizar user + dirección
+   Compatible con Material 3 + HTML + CSS actual.
 ============================================================ */
 
-console.log("📦 datos_cliente.js — versión final cargada");
+console.log("📦 datos_cliente.js — versión final 2025 cargado");
 
 // ----------------------------
 // ACCESO SUPABASE
@@ -11,7 +11,7 @@ console.log("📦 datos_cliente.js — versión final cargada");
 const sb = window.supabaseClient;
 
 // ----------------------------
-// CAMPOS DEL FORMULARIO
+// CAMPOS
 // ----------------------------
 const nombreInput = document.getElementById("nombre");
 const correoInput = document.getElementById("correo");
@@ -24,34 +24,31 @@ const notaInput = document.getElementById("nota");
 const form = document.getElementById("cliente-form");
 const btnSubmit = document.getElementById("btn-submit");
 
-// Usuario
 let userCache = null;
 let userId = null;
 let loadedAddressId = null;
 
 /* ============================================================
-   LEER USUARIO DESDE CACHE (OFICIAL)
+   1) LEER USUARIO DESDE CACHE OFICIAL
 ============================================================ */
 function getUserCache() {
   try {
-    const logged = localStorage.getItem("cortero_logged");
-    if (logged !== "1") return null;
-
-    return JSON.parse(localStorage.getItem("cortero_user")) || null;
+    if (localStorage.getItem("cortero_logged") !== "1") return null;
+    return JSON.parse(localStorage.getItem("cortero_user"));
   } catch {
     return null;
   }
 }
 
 /* ============================================================
-   LABEL FLOTANTE (TRIGGER)
+   2) ACTIVAR LABEL FLOTANTE
 ============================================================ */
 function activarLabel(input) {
   input.dispatchEvent(new Event("input", { bubbles: true }));
 }
 
 /* ============================================================
-   PINTAR DATOS INSTANTANEOS (SIN PARPADEO)
+   3) PINTAR DATOS INSTANTANEOS
 ============================================================ */
 function pintarDatosInstantaneos() {
   if (!userCache) return;
@@ -66,7 +63,7 @@ function pintarDatosInstantaneos() {
 }
 
 /* ============================================================
-   CARGAR DATOS REALES DESDE SUPABASE
+   4) CARGAR DATOS REALES DESDE SUPABASE
 ============================================================ */
 async function cargarDatosRealtime() {
   const { data: userRow, error } = await sb
@@ -80,7 +77,6 @@ async function cargarDatosRealtime() {
     return;
   }
 
-  // Actualizar inputs
   nombreInput.value = userRow.name || "";
   correoInput.value = userRow.email || "";
   telefonoInput.value = userRow.phone || "";
@@ -89,16 +85,15 @@ async function cargarDatosRealtime() {
   activarLabel(correoInput);
   activarLabel(telefonoInput);
 
-  // Actualizar cache
+  // actualizar cache
   localStorage.setItem("cortero_user", JSON.stringify(userRow));
   localStorage.setItem("cortero_logged", "1");
 
-  // Cargar dirección
   await cargarDireccion();
 }
 
 /* ============================================================
-   CARGAR DIRECCIÓN EXISTENTE
+   5) CARGAR DIRECCIÓN
 ============================================================ */
 async function cargarDireccion() {
   const { data, error } = await sb
@@ -108,10 +103,7 @@ async function cargarDireccion() {
     .eq("is_default", true)
     .maybeSingle();
 
-  if (error) {
-    console.error("❌ Error obteniendo dirección:", error);
-  }
-
+  if (error) console.error("❌ Error cargando dirección:", error);
   if (!data) return;
 
   loadedAddressId = data.id;
@@ -121,14 +113,19 @@ async function cargarDireccion() {
   direccionInput.value = data.street || "";
   notaInput.value = data.postal_code || "";
 
+  // activar labels
   activarLabel(ciudadInput);
-  activarLabel(zonaSelect);
   activarLabel(direccionInput);
   activarLabel(notaInput);
+
+  // select → aplicar .filled
+  if (zonaSelect.value.trim() !== "") {
+    zonaSelect.classList.add("filled");
+  }
 }
 
 /* ============================================================
-   VALIDAR FORMULARIO
+   6) VALIDAR FORMULARIO
 ============================================================ */
 function validarFormulario() {
   if (!nombreInput.value.trim()) return false;
@@ -141,7 +138,7 @@ function validarFormulario() {
 }
 
 /* ============================================================
-   ACTUALIZAR DATOS BÁSICOS DEL USUARIO EN "users"
+   7) ACTUALIZAR USUARIO EN USERS
 ============================================================ */
 async function updateUserBasicInfo() {
   const payload = {
@@ -159,13 +156,12 @@ async function updateUserBasicInfo() {
     return false;
   }
 
-  // Actualizar cache
+  // actualizar cache
   const updatedUser = {
     ...userCache,
     name: payload.name,
     phone: payload.phone
   };
-
   localStorage.setItem("cortero_user", JSON.stringify(updatedUser));
   userCache = updatedUser;
 
@@ -173,7 +169,7 @@ async function updateUserBasicInfo() {
 }
 
 /* ============================================================
-   GUARDAR DIRECCIÓN EN SUPABASE
+   8) GUARDAR DIRECCIÓN
 ============================================================ */
 async function guardarDireccion() {
   const payload = {
@@ -216,7 +212,7 @@ async function guardarDireccion() {
 }
 
 /* ============================================================
-   SUBMIT FINAL
+   9) SUBMIT
 ============================================================ */
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -228,26 +224,23 @@ form.addEventListener("submit", async (e) => {
 
   btnSubmit.classList.add("loading");
 
-  // 1️⃣ Guardar datos del usuario
   const okUser = await updateUserBasicInfo();
   if (!okUser) {
-    alert("Error actualizando datos del usuario.");
+    alert("Error actualizando usuario.");
     btnSubmit.classList.remove("loading");
     return;
   }
 
-  // 2️⃣ Guardar dirección
   const okAddress = await guardarDireccion();
   if (!okAddress) return;
 
-  // 3️⃣ Redirigir
   setTimeout(() => {
     window.location.href = "recibo.html";
   }, 700);
 });
 
 /* ============================================================
-   INICIO
+   10) INICIO
 ============================================================ */
 async function init() {
   userCache = getUserCache();
@@ -260,10 +253,7 @@ async function init() {
 
   userId = userCache.id;
 
-  // Pintado instantáneo
   pintarDatosInstantaneos();
-
-  // Cargar datos reales después
   cargarDatosRealtime();
 }
 
