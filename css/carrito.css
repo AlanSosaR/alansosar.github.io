@@ -26,17 +26,13 @@ header {
   position: sticky;
   top: 0;
   z-index: 1000;
-
   background: rgba(255,255,255,0.85);
   backdrop-filter: blur(10px);
-
   height: 72px;
   padding: 0 1.2rem;
-
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   border-bottom: 1.5px solid rgba(0,0,0,0.05);
 }
 
@@ -66,13 +62,9 @@ header img {
   max-width: 1100px;
   margin: 1.9rem auto 1.5rem;
   padding: 0 1.3rem;
-
   display: flex;
   align-items: center;
   gap: 0.55rem;
-
-  font-size: 1rem;
-  font-weight: 500;
 }
 
 .icon-back {
@@ -82,11 +74,9 @@ header img {
   background: var(--blanco);
   border: 1.4px solid rgba(0,0,0,0.08);
   box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   cursor: pointer;
   transition: 0.2s ease;
 }
@@ -115,7 +105,6 @@ header img {
   display: grid;
   grid-template-columns: 1fr 360px;
   gap: 2rem;
-
   max-width: 1100px;
   margin: 0 auto;
   padding: 0 1.3rem 3.3rem;
@@ -136,12 +125,10 @@ header img {
   display: flex;
   gap: 1.3rem;
   padding: 1.3rem;
-
   border-radius: 18px;
   background: var(--blanco);
   border: 1.8px solid rgba(0,0,0,0.08);
   box-shadow: 0 4px 12px rgba(0,0,0,0.04);
-
   margin-bottom: 1.3rem;
   align-items: center;
 }
@@ -153,11 +140,9 @@ header img {
   border: 1.4px solid rgba(0,0,0,0.06);
   border-radius: 18px;
   padding: 8px;
-
   display: flex;
   justify-content: center;
   align-items: center;
-
   box-shadow: 0 2px 6px rgba(0,0,0,0.03);
 }
 
@@ -204,6 +189,54 @@ header img {
 .qty-btn.plus i { color: var(--verde); }
 .qty-btn.minus i { color: var(--marron); }
 .del-btn i { color: #d72638; }
+
+/* ============================================================
+   BOTÓN: GUARDAR PARA MÁS TARDE — MATERIAL 3 EXPRESSIVE
+============================================================ */
+.save-later-btn {
+  padding: 0.55rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  background: var(--blanco);
+  color: var(--marron);
+  border: 1.5px solid rgba(0,0,0,0.12);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: 0.18s ease;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.save-later-btn:hover {
+  background: #f7f3f1;
+  border-color: rgba(0,0,0,0.18);
+}
+
+.save-later-btn:active {
+  background: #e9e3df;
+  transform: scale(0.97);
+}
+
+.save-later-btn.loading .save-later-text {
+  opacity: 0;
+}
+
+.save-later-loader {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2.5px solid rgba(0,0,0,0.15);
+  border-top-color: var(--marron);
+  animation: spin 0.8s linear infinite;
+  display: none;
+}
+
+.save-later-btn.loading .save-later-loader {
+  display: block;
+}
 
 /* ============================================================
    RESUMEN DEL PEDIDO
@@ -269,6 +302,10 @@ header img {
   cursor: pointer;
 }
 
+.m3-btn.loading .loader {
+  display: block;
+}
+
 .m3-btn .loader {
   width: 18px;
   height: 18px;
@@ -279,11 +316,8 @@ header img {
   display: none;
 }
 
-.m3-btn.loading .loader { display: block; }
-.m3-btn.loading .btn-text { opacity: 0.45; }
-
 /* ============================================================
-   GUARDADO PARA MÁS TARDE
+   SECCIÓN GUARDADO PARA MÁS TARDE — GOOGLE STYLE
 ============================================================ */
 .saved-wrapper {
   max-width: 1100px;
@@ -294,8 +328,17 @@ header img {
 .saved-title {
   font-size: 1.35rem;
   font-weight: 600;
-  color: var(--marron);
   margin-bottom: 1rem;
+}
+
+/* CONTENEDOR COMO GOOGLE STORE */
+.saved-container-card {
+  background: var(--blanco);
+  padding: 2rem 1.6rem;
+  border-radius: 18px;
+  border: 1.5px solid rgba(0,0,0,0.05);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  margin-top: 0.5rem;
 }
 
 .saved-list {
@@ -306,13 +349,22 @@ header img {
 
 .empty-saved {
   text-align: center;
-  padding: 2.5rem 1rem;
-  border-radius: 16px;
-  background: var(--blanco);
-  border: 1.5px solid rgba(0,0,0,0.05);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
+.saved-empty-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.saved-empty-sub {
+  font-size: 0.92rem;
+  color: #6b5a53;
+}
+
+/* ============================================================
+   TARJETA DE PRODUCTO GUARDADO
+============================================================ */
 .saved-item {
   display: flex;
   gap: 1.1rem;
@@ -327,9 +379,9 @@ header img {
 .saved-img-box {
   width: 85px;
   height: 85px;
+  border-radius: 16px;
   padding: 7px;
   background: var(--blanco);
-  border-radius: 16px;
   border: 1.3px solid rgba(0,0,0,0.06);
 }
 
@@ -340,7 +392,6 @@ header img {
 }
 
 .saved-info { flex: 1; }
-.saved-name { font-weight: 600; }
 .saved-price { font-size: 0.9rem; color: #6b5a53; }
 
 .saved-buttons {
@@ -406,7 +457,7 @@ header img {
 }
 
 /* ============================================================
-   LOADER CENTRAL — GOOGLE STORE
+   LOADER CENTRAL
 ============================================================ */
 .page-loader {
   position: fixed;
@@ -442,7 +493,7 @@ header img {
 }
 
 /* ============================================================
-   MÓVIL — GOOGLE STORE
+   MÓVIL
 ============================================================ */
 @media (max-width: 760px) {
 
@@ -455,6 +506,13 @@ header img {
 
   .saved-img-box { width: 75px; height: 75px; }
 
-  .saved-buttons { flex-direction: column; gap: 0.5rem; }
-  .saved-btn { width: 100%; text-align: center; }
+  .saved-buttons {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .saved-btn {
+    width: 100%;
+    text-align: center;
+  }
 }
