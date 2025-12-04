@@ -221,15 +221,41 @@ header img {
 .del-btn i { color: #d72638; }
 
 /* ============================================================
-   RESUMEN DEL PEDIDO
+   RESUMEN DEL PEDIDO — GOOGLE STORE
 ============================================================ */
 .resumen-box {
   background: var(--blanco);
   border-radius: 16px;
-  padding: 1.6rem 1.6rem;
+  padding: 1.7rem 1.5rem;
 
   border: 1.6px solid rgba(0,0,0,0.08);
   box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+
+  margin-top: 1.5rem;
+}
+
+.resumen-box h2 {
+  font-size: 1.32rem;
+  margin-bottom: 1.1rem;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+}
+
+.resumen-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.45rem 0;
+  font-size: 1rem;
+  color: #444;
+}
+
+.resumen-total {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.6rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--marron);
 }
 
 /* ============================================================
@@ -238,16 +264,10 @@ header img {
 .empty {
   text-align: center;
   width: 100%;
-  padding: 3.2rem 0;
+  padding: 4rem 1rem;
   color: var(--marron);
   font-size: 1.1rem;
   line-height: 1.6;
-}
-
-@media (min-height: 700px) {
-  .empty {
-    padding: 5rem 0;
-  }
 }
 
 /* ============================================================
@@ -271,6 +291,7 @@ header img {
   font-size: 1.05rem;
   font-weight: 600;
   cursor: pointer;
+  height: 52px;
 }
 
 /* Loader */
@@ -288,6 +309,23 @@ header img {
 .m3-btn.loading .btn-text { opacity: 0.45; }
 
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* ============================================================
+   GUARDADO PARA MÁS TARDE
+============================================================ */
+.saved-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 2.3rem;
+  color: var(--marron);
+}
+
+.saved-empty {
+  margin-top: 0.7rem;
+  font-size: 0.97rem;
+  line-height: 1.45;
+  color: var(--marron);
+}
 
 /* ============================================================
    SNACKBARS
@@ -332,4 +370,88 @@ header img {
 #snackbar-login.show {
   opacity: 1;
   transform: translate(-50%, -6px);
+}
+
+/* ============================================================
+   VERSIÓN MÓVIL — IGUAL A GOOGLE STORE
+============================================================ */
+@media (max-width: 760px) {
+
+  /* --- Header centrado mejorado --- */
+  .cart-title {
+    font-size: 1.05rem;
+    text-align: center;
+    flex: 1;
+  }
+
+  /* --- Separación de seguir comprando --- */
+  .seguir-comprando {
+    margin-top: 1.4rem;
+    margin-bottom: 1.2rem;
+    padding: 0 1.1rem;
+  }
+
+  /* --- Productos en móvil --- */
+  .item {
+    padding: 1.15rem;
+    border-radius: 18px;
+    margin-bottom: 1.1rem;
+    gap: 1rem;
+  }
+
+  .item-img-box {
+    width: 82px;
+    height: 82px;
+    padding: 7px;
+  }
+
+  .item-name {
+    font-size: 0.97rem;
+  }
+
+  .item-price {
+    font-size: 0.87rem;
+  }
+
+  /* --- Resumen estilo Google --- */
+  .resumen-box {
+    padding: 1.5rem 1.3rem;
+    border-radius: 16px;
+    margin-top: 1.4rem;
+  }
+
+  .resumen-box h2 {
+    font-size: 1.23rem;
+    margin-bottom: 1rem;
+  }
+
+  .resumen-row {
+    font-size: 0.98rem;
+  }
+
+  .resumen-total {
+    font-size: 1.22rem;
+  }
+
+  /* Botón proceder */
+  .m3-btn {
+    font-size: 1.05rem;
+    height: 52px;
+  }
+
+  /* Guardado para más tarde */
+  .saved-title {
+    margin-top: 2rem;
+    font-size: 1.2rem;
+  }
+
+  .saved-empty {
+    margin-top: 0.7rem;
+    font-size: 0.95rem;
+  }
+
+  /* Carrito vacío */
+  .empty {
+    padding: 4rem 1rem;
+  }
 }
