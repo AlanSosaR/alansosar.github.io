@@ -134,7 +134,7 @@ document.getElementById('cart-container').addEventListener('click', e => {
 });
 
 /* ============================================================
-   Proceder al pago — con Snackbar Material 3 si no está logueado
+   Proceder al pago — con Snackbar Material 3
 ============================================================ */
 document.getElementById('proceder-btn').addEventListener('click', () => {
   const cart = getCart();
@@ -148,15 +148,20 @@ document.getElementById('proceder-btn').addEventListener('click', () => {
     return;
   }
 
-  /* 2️⃣ Verificar sesión */
-  const userRaw = localStorage.getItem("cortero_user");
+  /* 2️⃣ Validación correcta del login */
+  const logged = localStorage.getItem("cortero_logged");
   let user = null;
 
-  try { user = JSON.parse(userRaw); }
-  catch { user = null; }
+  try {
+    user = JSON.parse(localStorage.getItem("cortero_user"));
+  } catch {
+    user = null;
+  }
 
-  /* 3️⃣ Usuario NO logueado → mostrar snackbar y redirigir */
-  if (!user) {
+  const noSesion = (logged !== "1" || !user);
+
+  /* 3️⃣ Usuario NO logueado */
+  if (noSesion) {
     const snack = document.getElementById("snackbar-login");
     snack.classList.add("show");
 
