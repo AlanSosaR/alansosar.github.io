@@ -20,7 +20,7 @@ body {
 }
 
 /* ============================================================
-   HEADER — IGUAL QUE INDEX
+   HEADER
 ============================================================ */
 header {
   position: sticky;
@@ -55,7 +55,7 @@ header img {
 }
 
 /* ============================================================
-   SEGUIR COMPRANDO — GOOGLE STORE
+   SEGUIR COMPRANDO
 ============================================================ */
 .seguir-comprando {
   max-width: 1100px;
@@ -171,7 +171,7 @@ header img {
 .del-btn i { color: #d72638; }
 
 /* ============================================================
-   BOTÓN GUARDAR PARA MÁS TARDE — MATERIAL 3 EXPRESSIVE
+   BOTÓN GUARDAR PARA MÁS TARDE
 ============================================================ */
 .save-later-btn {
   padding: 0.55rem 1.15rem;
@@ -189,14 +189,8 @@ header img {
   box-shadow: 0 2px 6px rgba(0,0,0,0.06);
 }
 
-.save-later-btn:hover {
-  background: #f5f1ee;
-}
-
-.save-later-btn:active {
-  background: #ebe6e2;
-  transform: scale(0.97);
-}
+.save-later-btn:hover { background: #f5f1ee; }
+.save-later-btn:active { background: #ebe6e2; transform: scale(0.97); }
 
 .save-later-loader {
   width: 16px;
@@ -208,27 +202,81 @@ header img {
   display: none;
 }
 
-.save-later-btn.loading .save-later-loader {
-  display: block;
-}
-
-.save-later-btn.loading .save-later-text {
-  opacity: 0;
-}
+.save-later-btn.loading .save-later-loader { display: block; }
+.save-later-btn.loading .save-later-text { opacity: 0; }
 
 /* ============================================================
-   RESUMEN DEL PEDIDO
+   RESUMEN DEL PEDIDO — GOOGLE STYLE REAL
 ============================================================ */
 .resumen-box {
   background: var(--blanco);
-  border-radius: 16px;
-  padding: 1.7rem 1.5rem;
-  border: 1.6px solid rgba(0,0,0,0.08);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  border-radius: 20px;
+  padding: 2rem 1.8rem;
+  border: 1.4px solid rgba(0,0,0,0.06);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.05);
 }
 
+/* Título alineado a la izquierda */
+.resumen-box h2 {
+  font-size: 1.32rem;
+  font-weight: 600;
+  margin-bottom: 1.2rem;
+  color: var(--marron);
+}
+
+/* Filas — texto izquierda / precio derecha */
+.resumen-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1rem;
+  padding: 0.45rem 0;
+  color: #444;
+}
+
+/* Total estimado estilo Google */
+.resumen-total {
+  font-size: 1.32rem;
+  font-weight: 700;
+  margin-top: 0.8rem;
+  color: var(--marron);
+}
+
+/* BOTÓN — estilo Material 3 Expressive */
+.m3-btn {
+  background: var(--verde);
+  color: white;
+  width: 100%;
+  margin-top: 1.8rem;
+  padding: 1rem;
+  border-radius: 14px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 52px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.m3-btn:hover { filter: brightness(1.08); }
+.m3-btn:active { transform: scale(0.97); }
+
+.m3-btn .loader {
+  width: 18px;
+  height: 18px;
+  border: 2.4px solid rgba(255,255,255,0.45);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+  display: none;
+}
+
+.m3-btn.loading .loader { display: block; }
+
 /* ============================================================
-   SECCIÓN GUARDADO PARA MÁS TARDE — GOOGLE STORE REAL
+   GUARDADO PARA MÁS TARDE — GOOGLE STORE
 ============================================================ */
 .saved-wrapper {
   max-width: 1100px;
@@ -236,20 +284,36 @@ header img {
   padding: 0 1.3rem;
 }
 
-/* TARJETA PRINCIPAL */
-.saved-container-card {
+/* TARJETA */
+.saved-card {
   background: var(--blanco);
-  padding: 2.2rem 1.7rem;
-  border-radius: 22px;
-  border: 1.6px solid rgba(0,0,0,0.06);
+  padding: 2rem 1.8rem;
+  border-radius: 20px;
+  border: 1.4px solid rgba(0,0,0,0.06);
   box-shadow: 0 6px 16px rgba(0,0,0,0.05);
   margin-top: 1.8rem;
 }
 
-.saved-title {
-  font-size: 1.38rem;
+/* TÍTULO + SEPARADOR CAFÉ */
+.saved-card-title {
+  font-size: 1.32rem;
   font-weight: 600;
-  margin-bottom: 1.6rem;
+  color: var(--marron);
+  margin-bottom: 1.2rem;
+  position: relative;
+  padding-bottom: 0.8rem;
+  text-align: left;
+}
+
+.saved-card-title::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: var(--marron);
+  opacity: 0.18;
+  border-radius: 4px;
+  margin-top: 0.6rem;
 }
 
 /* LISTA */
@@ -259,43 +323,42 @@ header img {
   gap: 1.2rem;
 }
 
-/* ESTADO VACÍO */
+/* VACÍO — ALINEADO IZQUIERDA */
 .empty-saved {
-  text-align: center;
-  padding: 2rem 0;
+  padding: 1.7rem 0;
+  text-align: left !important;
 }
 
 .saved-empty-title {
   font-size: 1.05rem;
   font-weight: 600;
+  margin-bottom: 0.25rem;
 }
 
 .saved-empty-sub {
-  font-size: 0.93rem;
+  font-size: 0.92rem;
   color: #6b5a53;
-  margin-top: 0.3rem;
+  max-width: 320px;
 }
 
-/* ============================================================
-   TARJETAS DE PRODUCTOS GUARDADOS
-============================================================ */
+/* PRODUCTO GUARDADO */
 .saved-item {
   display: flex;
   gap: 1.15rem;
-  padding: 1.3rem;
-  border-radius: 18px;
+  padding: 1.25rem;
+  border-radius: 16px;
   background: var(--blanco);
-  border: 1.7px solid rgba(0,0,0,0.07);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  border: 1.4px solid rgba(0,0,0,0.07);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
 .saved-img-box {
-  width: 86px;
-  height: 86px;
+  width: 82px;
+  height: 82px;
   padding: 7px;
-  border-radius: 18px;
+  border-radius: 16px;
   background: white;
-  border: 1.3px solid rgba(0,0,0,0.06);
+  border: 1.2px solid rgba(0,0,0,0.06);
 }
 
 .saved-img-box img {
@@ -305,17 +368,6 @@ header img {
 }
 
 .saved-info { flex: 1; }
-
-.saved-name {
-  font-size: 1rem;
-  font-weight: 600;
-}
-
-.saved-price {
-  font-size: 0.9rem;
-  color: #6b5a53;
-  margin-top: 0.3rem;
-}
 
 .saved-buttons {
   display: flex;
@@ -344,6 +396,20 @@ header img {
 }
 
 /* ============================================================
-   SNACKBARS + LOADER + MÓVIL
-   (Sin cambios)
+   ANIMACIONES
 ============================================================ */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================================
+   MÓVIL
+============================================================ */
+@media (max-width: 760px) {
+  .resumen-box {
+    padding: 1.6rem 1.3rem;
+  }
+  .saved-card {
+    padding: 1.6rem 1.3rem;
+  }
+}
