@@ -103,7 +103,7 @@ function renderCart() {
 
       <div class="resumen-row">
         <span>Envío</span>
-        <span<L 0.00</span>
+        <span>L 0.00</span>
       </div>
 
       <div class="resumen-row resumen-total">
@@ -211,11 +211,11 @@ document.addEventListener("click", async e => {
 });
 
 /* ============================================================
-   🔥 BLOQUE NUEVO — MENÚ DEL AVATAR (MISMO QUE INDEX)
+   🔥 MENÚ DEL AVATAR — COMPATIBLE CON TU HTML REAL
 ============================================================ */
 
-const avatarBtn = document.getElementById("header-avatar-button");
-const avatarImg = document.getElementById("header-profile-photo");
+const avatarBtn = document.getElementById("btn-header-user");  // ✔ este sí existe
+const userMenu  = document.getElementById("user-menu");
 
 if (avatarBtn) {
   avatarBtn.addEventListener("click", async () => {
@@ -227,20 +227,20 @@ if (avatarBtn) {
       return;
     }
 
-    // Escritorio
+    // Abrir menú en escritorio
     if (window.innerWidth > 768) {
-      if (typeof openUserMenu === "function") {
-        openUserMenu();
-      }
+      userMenu.classList.toggle("hidden");
       return;
     }
 
-    // Móvil
+    // Abrir menú móvil desde auth-ui
     if (typeof openMobileUserMenu === "function") {
       openMobileUserMenu();
     }
   });
 }
 
-/* Inicialización */
+/* ============================================================
+   INIT
+============================================================ */
 renderCart();
