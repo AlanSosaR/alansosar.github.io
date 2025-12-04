@@ -15,7 +15,7 @@
   <!-- Tipografía Apple + ajustes globales del proyecto -->
   <link rel="stylesheet" href="css/tipografia.css">
 
-  <!-- Estilos base Material 3 Expressive (perfil.css incluye tarjetas, inputs, labels, botones) -->
+  <!-- Estilos base Material 3 Expressive -->
   <link rel="stylesheet" href="css/perfil.css?v=5">
 
   <!-- Estilos exclusivos de esta página -->
@@ -36,17 +36,12 @@
   <main class="profile-container">
     <section class="profile-card">
 
-      <!-- BOTÓN ATRÁS (IGUAL QUE PERFIL, ADENTRO DE LA TARJETA) -->
+      <!-- BOTÓN ATRÁS (MISMO DISEÑO QUE PERFIL) -->
       <button class="back-btn" onclick="window.location.href='carrito.html'">
         <span class="material-symbols-outlined">chevron_left</span>
       </button>
 
-      <!-- TITULO (SIN LOGO, SOLO TEXTO) -->
-      <div class="profile-header">
-        <h2 class="profile-title">Detalles de entrega</h2>
-      </div>
-
-      <!-- TARJETA INTERNA (MISMO DISEÑO QUE PERFIL) -->
+      <!-- TARJETA INTERNA SIN TÍTULO (porque el título ya está en el header) -->
       <div class="profile-inner-card">
 
         <!-- FORMULARIO -->
@@ -83,7 +78,7 @@
           <div class="m3-field">
             <div class="m3-input">
               <span class="material-symbols-outlined">location_city</span>
-              <input id="ciudad" type="text" placeholder="Ej: Danlí" required>
+              <input id="ciudad" type="text" placeholder=" " required>
               <label class="floating-label">Ciudad *</label>
             </div>
           </div>
