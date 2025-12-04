@@ -1,12 +1,12 @@
 /* ============================================================
    DETALLES DE ENTREGA — VERSIÓN FINAL 2025
-   Misma lógica que perfil: caché → supabase → pintar labels
+   Igual que perfil: cache → supabase → actualizar user + dirección
 ============================================================ */
 
 console.log("📦 datos_cliente.js — versión final cargada");
 
 // ----------------------------
-// ACCESO SUPERBASE
+// ACCESO SUPABASE
 // ----------------------------
 const sb = window.supabaseClient;
 
@@ -30,7 +30,7 @@ let userId = null;
 let loadedAddressId = null;
 
 /* ============================================================
-   1) LEER USUARIO DESDE CACHÉ (OFICIAL: cortero_user)
+   LEER USUARIO DESDE CACHE (OFICIAL)
 ============================================================ */
 function getUserCache() {
   try {
@@ -44,14 +44,14 @@ function getUserCache() {
 }
 
 /* ============================================================
-   ACTIVAR LABEL FLOTANTE (trigger input)
+   LABEL FLOTANTE (TRIGGER)
 ============================================================ */
 function activarLabel(input) {
   input.dispatchEvent(new Event("input", { bubbles: true }));
 }
 
 /* ============================================================
-   2) PINTAR DATOS INSTANTÁNEAMENTE (sin parpadeo)
+   PINTAR DATOS INSTANTANEOS (SIN PARPADEO)
 ============================================================ */
 function pintarDatosInstantaneos() {
   if (!userCache) return;
@@ -66,7 +66,7 @@ function pintarDatosInstantaneos() {
 }
 
 /* ============================================================
-   3) TRAER DATOS REALES DESDE SUPABASE
+   CARGAR DATOS REALES DESDE SUPABASE
 ============================================================ */
 async function cargarDatosRealtime() {
   const { data: userRow, error } = await sb
@@ -80,7 +80,7 @@ async function cargarDatosRealtime() {
     return;
   }
 
-  // Actualizar UI
+  // Actualizar inputs
   nombreInput.value = userRow.name || "";
   correoInput.value = userRow.email || "";
   telefonoInput.value = userRow.phone || "";
@@ -89,7 +89,7 @@ async function cargarDatosRealtime() {
   activarLabel(correoInput);
   activarLabel(telefonoInput);
 
-  // Actualizar caché oficial
+  // Actualizar cache
   localStorage.setItem("cortero_user", JSON.stringify(userRow));
   localStorage.setItem("cortero_logged", "1");
 
@@ -98,7 +98,7 @@ async function cargarDatosRealtime() {
 }
 
 /* ============================================================
-   4) CARGAR DIRECCIÓN EXISTENTE
+   CARGAR DIRECCIÓN EXISTENTE
 ============================================================ */
 async function cargarDireccion() {
   const { data, error } = await sb
@@ -128,7 +128,7 @@ async function cargarDireccion() {
 }
 
 /* ============================================================
-   5) VALIDAR FORMULARIO
+   VALIDAR FORMULARIO
 ============================================================ */
 function validarFormulario() {
   if (!nombreInput.value.trim()) return false;
@@ -141,7 +141,39 @@ function validarFormulario() {
 }
 
 /* ============================================================
-   6) GUARDAR DIRECCIÓN EN SUPABASE
+   ACTUALIZAR DATOS BÁSICOS DEL USUARIO EN "users"
+============================================================ */
+async function updateUserBasicInfo() {
+  const payload = {
+    name: nombreInput.value.trim(),
+    phone: telefonoInput.value.trim()
+  };
+
+  const { error } = await sb
+    .from("users")
+    .update(payload)
+    .eq("id", userId);
+
+  if (error) {
+    console.error("❌ Error actualizando usuario:", error);
+    return false;
+  }
+
+  // Actualizar cache
+  const updatedUser = {
+    ...userCache,
+    name: payload.name,
+    phone: payload.phone
+  };
+
+  localStorage.setItem("cortero_user", JSON.stringify(updatedUser));
+  userCache = updatedUser;
+
+  return true;
+}
+
+/* ============================================================
+   GUARDAR DIRECCIÓN EN SUPABASE
 ============================================================ */
 async function guardarDireccion() {
   const payload = {
@@ -174,9 +206,9 @@ async function guardarDireccion() {
   }
 
   if (result.error) {
-    console.error("❌ Error guardando:", result.error);
+    console.error("❌ Error guardando dirección:", result.error);
     alert("No se pudo guardar tu dirección.");
-    btnSubmit.classList.remove("btn-loading");
+    btnSubmit.classList.remove("loading");
     return false;
   }
 
@@ -184,7 +216,7 @@ async function guardarDireccion() {
 }
 
 /* ============================================================
-   7) SUBMIT
+   SUBMIT FINAL
 ============================================================ */
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -194,24 +226,34 @@ form.addEventListener("submit", async (e) => {
     return;
   }
 
-  btnSubmit.classList.add("btn-loading");
+  btnSubmit.classList.add("loading");
 
-  const ok = await guardarDireccion();
-  if (!ok) return;
+  // 1️⃣ Guardar datos del usuario
+  const okUser = await updateUserBasicInfo();
+  if (!okUser) {
+    alert("Error actualizando datos del usuario.");
+    btnSubmit.classList.remove("loading");
+    return;
+  }
 
+  // 2️⃣ Guardar dirección
+  const okAddress = await guardarDireccion();
+  if (!okAddress) return;
+
+  // 3️⃣ Redirigir
   setTimeout(() => {
     window.location.href = "recibo.html";
   }, 700);
 });
 
 /* ============================================================
-   8) INICIO
+   INICIO
 ============================================================ */
 async function init() {
   userCache = getUserCache();
 
   if (!userCache) {
-    console.warn("⚠ No hay usuario en memoria → login.html");
+    console.warn("⚠ No hay usuario → login");
     window.location.href = "login.html";
     return;
   }
