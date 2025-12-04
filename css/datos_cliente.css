@@ -1,5 +1,6 @@
 /* ============================================================
-   DETALLES DE ENTREGA — VERSIÓN CORREGIDA (FEB 2025)
+   DETALLES DE ENTREGA — ESTILO IGUAL A LOGIN / REGISTRO / PERFIL
+   VERSIÓN FINAL — FEB 2025
 ============================================================ */
 
 :root {
@@ -9,18 +10,16 @@
   --gris-fondo: #f7f7f7;
   --blanco: #ffffff;
 
-  --borde-card: rgba(81, 38, 21, 0.35); /* MÁS VISIBLE */
-  --sombra-card: rgba(0, 0, 0, 0.07);
-
-  --input-border: rgba(0, 0, 0, 0.18);
-  --input-border-focus: #33673B;
+  --border-cafe: rgba(81, 38, 21, 0.75); /* MÁS MARCADO */
+  --input-border: rgba(0, 0, 0, 0.22);
+  --input-focus: #33673B;
 }
 
 body {
-  background: var(--gris-fondo);
-  -webkit-tap-highlight-color: transparent;
   margin: 0;
+  background: var(--gris-fondo);
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* ============================================================
@@ -32,14 +31,14 @@ body {
   top: 0;
   height: 72px;
   background: var(--blanco);
+  padding: 0 1.2rem;
 
   display: flex;
   align-items: center;
   justify-content: space-between;
 
-  padding: 0 1.2rem;
   border-bottom: 1.4px solid rgba(0,0,0,0.06);
-  z-index: 900;
+  z-index: 999;
 }
 
 .header-logo {
@@ -47,34 +46,44 @@ body {
   object-fit: contain;
 }
 
+.form-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--marron);
+}
+
 /* ============================================================
-   TARJETA PRINCIPAL
+   CONTENEDOR Y TARJETA PRINCIPAL
 ============================================================ */
 
 .profile-container {
-  max-width: 1000px;
-  margin: 2rem auto;
+  max-width: 900px;
+  margin: 2.5rem auto;
   padding: 0 1rem;
 }
 
 .profile-card {
-  position: relative;
   background: var(--blanco);
   border-radius: 26px;
 
-  padding: 5rem 1.7rem 3rem; /* MÁS ESPACIO PARA LA FLECHA */
-  border: 1.8px solid var(--borde-card);
-  box-shadow: 0 12px 28px var(--sombra-card);
+  padding: 6rem 1.8rem 3rem;  /* 🔥 flecha con más espacio */
+  box-shadow: 0 12px 28px rgba(0,0,0,0.06);
+  border: 1.8px solid var(--border-cafe);
+
+  position: relative;
 }
 
-/* Botón atrás */
+/* ============================================================
+   BOTÓN ATRÁS
+============================================================ */
+
 .back-btn {
   position: absolute;
-  top: 20px;
-  left: 20px;
+  top: 24px;
+  left: 24px;
 
-  width: 52px;
-  height: 52px;
+  width: 54px;
+  height: 54px;
 
   border-radius: 50%;
   background: var(--blanco);
@@ -84,49 +93,47 @@ body {
   align-items: center;
   justify-content: center;
 
-  font-size: 1.7rem;
+  font-size: 1.9rem;
   color: var(--marron);
-
   cursor: pointer;
-  transition: background 0.15s ease, transform 0.12s ease;
+
+  transition: transform .15s ease, background .2s ease;
 }
 
 .back-btn:active {
-  transform: scale(0.96);
+  transform: scale(0.94);
 }
 
 /* ============================================================
-   TARJETA INTERNA
+   TARJETA INTERIOR
 ============================================================ */
 
 .profile-inner-card {
-  background: #ffffff;
+  background: var(--blanco);
   border-radius: 22px;
-  padding: 2.8rem 1.8rem;
+  padding: 2.8rem 2rem;
 
-  border: 1.8px solid var(--borde-card); /* BORDE MÁS MARCADO */
+  border: 1.8px solid var(--border-cafe); /* 🔥 borde café real */
   box-shadow: 0 4px 14px rgba(0,0,0,0.05);
 }
 
 /* ============================================================
-   INPUTS MATERIAL 3
+   INPUTS M3 – IGUAL A LOGIN, REGISTRO, PERFIL
 ============================================================ */
 
-.m3-field {
-  margin-bottom: 1.8rem;
-}
+.m3-field { margin-bottom: 1.9rem; }
 
 .m3-input {
   position: relative;
   display: flex;
   align-items: center;
-  gap: 0.65rem;
+  gap: .75rem;
 
   padding: 1rem;
   border-radius: 14px;
-  border: 1.6px solid var(--input-border);
   background: #ffffff;
 
+  border: 1.7px solid var(--input-border);
   transition: border-color .2s ease;
 }
 
@@ -136,61 +143,78 @@ body {
   color: var(--verde);
 }
 
-/* Inputs */
+/* Elementos */
 .m3-input input,
 .m3-input select,
 .m3-input textarea {
   width: 100%;
   border: none;
-  background: transparent;
-  font-size: 1rem;
-  padding: 0.35rem 0;
-  color: var(--marron);
   outline: none;
+  background: transparent;
+
+  font-size: 1rem;
+  color: var(--marron);
+  padding: .35rem 0;
 }
 
-/* Label flotante */
+/* Label flotante EXACTO a perfil/login */
 .floating-label {
   position: absolute;
+  left: 3rem;
   top: 50%;
-  left: 2.8rem;
-
   transform: translateY(-50%);
+
   font-size: 1rem;
   color: rgba(0,0,0,0.45);
 
-  padding: 0 4px;
   background: transparent;
+  padding: 0 4px;
 
-  transition: all .22s ease;
   pointer-events: none;
+  transition: all .22s ease;
 }
 
-/* Flotar */
+/* Cuándo flota */
 .m3-input input:not(:placeholder-shown) + .floating-label,
 .m3-input textarea:not(:placeholder-shown) + .floating-label,
-.m3-input select.filled + .floating-label {
-  top: -9px;
-  left: 2.65rem;
-  font-size: 0.75rem;
-  color: var(--verde);
+.m3-input select.filled + .floating-label,
+.m3-input:focus-within .floating-label {
+  top: -8px;
+  left: 2.85rem;
   background: #ffffff;
+  font-size: .75rem;
+  color: var(--verde);
 }
 
 /* Focus */
 .m3-input:focus-within {
-  border-color: var(--input-border-focus);
+  border-color: var(--input-focus);
 }
 
-/* Textarea */
-.textarea-wrapper {
+/* Textarea estilo perfil */
+.textarea-field {
   align-items: flex-start !important;
-  padding-top: 1.3rem !important;
+  padding-top: 1.4rem !important;
 }
 
-.textarea-wrapper .floating-label {
+.textarea-field .floating-label {
   top: 18px;
   transform: none;
+}
+
+/* ============================================================
+   SELECT — MARCAR COMO LLENO
+============================================================ */
+.m3-select:not([value=""]) {
+  color: var(--marron);
+}
+
+.m3-select:not([value=""]) ~ .floating-label {
+  top: -8px;
+  font-size: .75rem;
+  left: 2.85rem;
+  background: #fff;
+  color: var(--verde);
 }
 
 /* ============================================================
@@ -198,51 +222,55 @@ body {
 ============================================================ */
 
 .m3-btn {
-  margin-top: 1rem;
   width: 100%;
-  padding: 1.05rem;
-
   background: var(--verde);
-  color: #ffffff;
+  color: white;
 
-  font-size: 1.06rem;
-  font-weight: 600;
-
-  border-radius: 14px;
   border: none;
+  border-radius: 14px;
+
+  padding: 1.05rem;
+  font-size: 1.05rem;
+  font-weight: 600;
 
   display: flex;
   align-items: center;
   justify-content: center;
   gap: .7rem;
 
+  cursor: pointer;
   transition: transform .15s ease;
 }
 
-.m3-btn:active {
-  transform: scale(0.97);
-}
+.m3-btn:active { transform: scale(0.97); }
 
-/* Loader */
 .m3-btn .loader {
   width: 18px;
   height: 18px;
-  border: 2.3px solid rgba(255,255,255,0.45);
-  border-top-color: #ffffff;
+  border: 2.4px solid rgba(255,255,255,0.45);
+  border-top-color: white;
   border-radius: 50%;
   animation: spin .9s linear infinite;
   display: none;
 }
 
-.m3-btn.loading .loader {
-  display: inline-block;
-}
-
-.m3-btn.loading .btn-text {
-  opacity: 0.55;
-}
+.m3-btn.loading .loader { display: inline-block; }
+.m3-btn.loading .btn-text { opacity: .55; }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+}
+
+/* ============================================================
+   RESPONSIVE
+============================================================ */
+@media (min-width: 768px) {
+  .profile-card { padding: 6.5rem 2.3rem 3.2rem; }
+  .profile-inner-card { padding: 3.2rem 2.8rem; }
+
+  .m3-btn {
+    width: 380px;
+    margin-left: auto;
+    margin-right: auto;
+  }
 }
