@@ -6,16 +6,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Detalles de entrega | Café Cortero</title>
 
-  <!-- Tipografía estilo Apple -->
+  <!-- Iconos -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
+  <!-- Tipografía tipo Apple -->
   <style>
     :root {
       --marron: #512615;
       --verde: #33673B;
       --blanco: #ffffff;
       --gris: #f5f5f5;
-      --input-border: rgba(0, 0, 0, 0.12);
     }
 
     body {
@@ -24,24 +24,24 @@
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
         "Helvetica Neue", Helvetica, Arial, sans-serif;
       color: var(--marron);
-      -webkit-tap-highlight-color: transparent;
     }
 
-    /* ===== HEADER (igual al index) ===== */
+    /* ===== HEADER IGUAL AL DE CARRITO ===== */
     header {
       position: sticky;
       top: 0;
       background: var(--blanco);
-      padding: 0.8rem 1.2rem;
+      height: 72px;
+      padding: 0 1.2rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-      z-index: 100;
+      border-bottom: 1.5px solid rgba(0, 0, 0, 0.05);
+      z-index: 1000;
     }
 
     header img {
-      height: 58px;
+      height: 52px;
     }
 
     .form-title {
@@ -51,63 +51,59 @@
       margin-right: 1rem;
     }
 
-    /* ===== TARJETA PRINCIPAL ===== */
-    .form-card {
-      background: var(--blanco);
+    /* ===== TARJETA INTERNA (IGUAL QUE PERFIL) ===== */
+    .outer-card {
       max-width: 900px;
       margin: 2rem auto;
       padding: 2rem;
-      border-radius: 22px;
-      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.10);
-      border: 1px solid rgba(0, 0, 0, 0.06);
+      background: var(--blanco);
+      border-radius: 26px;
+      border: 1.8px solid rgba(81, 38, 21, 0.22); /* borde café igual a perfil */
+      box-shadow: 0 12px 26px rgba(0, 0, 0, 0.06);
       position: relative;
     }
 
-    /* Flecha dentro de la tarjeta */
+    /* Flecha */
     .back-btn {
       position: absolute;
-      top: 20px;
-      left: 20px;
-      width: 46px;
-      height: 46px;
-      border-radius: 50%;
+      top: 18px;
+      left: 18px;
+      width: 48px;
+      height: 48px;
       background: var(--blanco);
-      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: 50%;
+      border: 1.4px solid rgba(0, 0, 0, 0.08);
       display: flex;
       align-items: center;
       justify-content: center;
-      cursor: pointer;
       font-size: 1.2rem;
-      color: var(--marron);
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-      transition: transform .15s ease;
+      cursor: pointer;
     }
 
     .back-btn:active {
-      transform: scale(0.96);
+      transform: scale(0.95);
     }
 
-    /* ===== FORMULARIO ===== */
+    /* FORMULARIO */
     .form-group {
       margin-bottom: 1.6rem;
     }
 
     label {
       font-weight: 600;
-      display: block;
       margin-bottom: 0.4rem;
-      font-size: 1rem;
+      display: block;
     }
 
     input,
     select,
     textarea {
       width: 100%;
-      padding: 0.9rem 1rem;
-      border-radius: 14px;
-      border: 1.5px solid var(--input-border);
+      padding: 1rem;
+      border-radius: 16px;
       font-size: 1rem;
-      background: var(--blanco);
+      border: 1.5px solid rgba(0, 0, 0, 0.14);
+      background: #fff;
       font-family: inherit;
     }
 
@@ -122,26 +118,22 @@
       resize: none;
     }
 
-    /* ===== BOTÓN PRINCIPAL ===== */
-    .btn-primary {
+    /* BOTÓN */
+    #btn-submit {
       width: 100%;
-      padding: 1rem;
+      padding: 1.1rem;
+      margin-top: 1rem;
+      border-radius: 16px;
+      border: none;
       background: var(--verde);
       color: var(--blanco);
-      border: none;
-      border-radius: 14px;
       font-size: 1.1rem;
       font-weight: 600;
-      cursor: pointer;
       display: flex;
-      align-items: center;
       justify-content: center;
       gap: 0.6rem;
-      transition: background .2s ease;
-    }
-
-    .btn-primary:active {
-      transform: scale(.98);
+      align-items: center;
+      cursor: pointer;
     }
 
     .btn-icon {
@@ -154,26 +146,27 @@
     }
 
     @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
     }
   </style>
+
 </head>
 
 <body>
 
-  <!-- ===== HEADER ===== -->
+  <!-- ===== HEADER IGUAL AL DE CARRITO ===== -->
   <header>
     <a href="index.html">
-      <img src="imagenes/logo%20mejorado%20trasmparente.png" alt="Café Cortero - Inicio">
+      <img src="imagenes/logo_mejorado_trasmparente.png" alt="Café Cortero">
     </a>
     <span class="form-title">Detalles de entrega</span>
   </header>
 
-  <!-- ===== TARJETA ===== -->
-  <div class="form-card">
+  <!-- ===== TARJETA PRINCIPAL ===== -->
+  <div class="outer-card">
 
-    <!-- Flecha -->
+    <!-- Botón de regreso -->
     <div class="back-btn" onclick="window.location.href='carrito.html'">
       <i class="fa-solid fa-arrow-left"></i>
     </div>
@@ -208,12 +201,11 @@
           <option value="El Paraíso">El Paraíso</option>
           <option value="Francisco Morazán">Francisco Morazán</option>
           <option value="Choluteca">Choluteca</option>
-          <option value="Comayagua">Comayagua</option>
           <option value="Cortés">Cortés</option>
-          <option value="Yoro">Yoro</option>
-          <option value="Santa Bárbara">Santa Bárbara</option>
-          <option value="Olancho">Olancho</option>
+          <option value="Comayagua">Comayagua</option>
           <option value="La Paz">La Paz</option>
+          <option value="Olancho">Olancho</option>
+          <option value="Yoro">Yoro</option>
         </select>
       </div>
 
@@ -229,18 +221,17 @@
         <textarea id="nota" rows="2" placeholder="Ej: Entregar por la mañana"></textarea>
       </div>
 
-      <button type="submit" id="btn-submit" class="btn-primary">
+      <button type="submit" id="btn-submit">
         <i class="fa-solid fa-circle-notch btn-icon"></i>
         Proceder con el pedido
       </button>
 
     </form>
-
   </div>
 
+  <!-- ===== JS: Loader + Validación ===== -->
   <script>
-    /* Simulación del loader */
-    document.getElementById('cliente-form').addEventListener('submit', function (e) {
+    document.getElementById("cliente-form").addEventListener("submit", function (e) {
       e.preventDefault();
 
       const btn = document.getElementById("btn-submit");
@@ -248,10 +239,9 @@
 
       setTimeout(() => {
         window.location.href = "recibo.html";
-      }, 1200);
+      }, 900);
     });
   </script>
 
 </body>
-
 </html>
