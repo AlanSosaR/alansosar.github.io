@@ -1,135 +1,178 @@
-// =============================
-// FORMULARIO DE DATOS DEL CLIENTE
-// Café Cortero ☕
-// =============================
+/* ============================================================
+   DATOS DEL CLIENTE — VERSIÓN FINAL 2025
+   Autocompleta datos, carga dirección, valida y guarda.
+   Dependencias: supabase-client.js y core-scripts.js
+============================================================ */
 
+console.log("📦 datos_cliente.js cargado correctamente.");
+
+const sb = window.supabaseClient; // conexión que ya existe
+
+// Campos del formulario
+const nombreInput = document.getElementById("nombre");
+const correoInput = document.getElementById("correo");
+const telefonoInput = document.getElementById("telefono");
+const ciudadInput = document.getElementById("ciudad");
+const zonaSelect = document.getElementById("zona");
+const direccionInput = document.getElementById("direccion");
+const notaInput = document.getElementById("nota");
 const form = document.getElementById("cliente-form");
-const CLIENTE_KEY = "cliente_info";
+const btnSubmit = document.getElementById("btn-submit");
 
-// Detectar si viene desde el recibo (para editar)
-function isFromRecibo() {
-  const params = new URLSearchParams(window.location.search);
-  return params.get("from") === "recibo";
-}
+let currentUserId = null;
+let loadedAddressId = null;
 
-// Limpiar formulario (cuando venimos del carrito)
-function clearForm() {
-  form.reset();
-  document.querySelectorAll(".error-msg").forEach(el => el.remove());
-}
+/* ============================================================
+   1) CARGAR USUARIO ACTIVO
+============================================================ */
+async function cargarUsuario() {
+  const { data: sessionData } = await sb.auth.getSession();
 
-// Cargar datos guardados (solo si venimos desde el recibo)
-function loadClientData() {
-  const cliente = JSON.parse(localStorage.getItem(CLIENTE_KEY));
-  if (cliente) {
-    document.getElementById("nombre").value = cliente.nombre || "";
-    document.getElementById("correo").value = cliente.correo || "";
-    document.getElementById("telefono").value = cliente.telefono || "";
-    document.getElementById("zona").value = cliente.zona || "";
-    document.getElementById("direccion").value = cliente.direccion || "";
-    document.getElementById("nota").value = cliente.nota || "";
-  }
-}
-
-// Mostrar notificación tipo “toast”
-function mostrarToast(mensaje, tipo = "ok") {
-  const toast = document.createElement("div");
-  toast.className = `toast ${tipo}`;
-  toast.textContent = mensaje;
-  document.body.appendChild(toast);
-
-  setTimeout(() => toast.classList.add("visible"), 100);
-  setTimeout(() => {
-    toast.classList.remove("visible");
-    setTimeout(() => toast.remove(), 400);
-  }, 2500);
-}
-
-// Mostrar mensaje de error debajo del campo
-function mostrarError(idCampo, mensaje) {
-  const campo = document.getElementById(idCampo);
-  const grupo = campo.closest(".form-group");
-
-  // eliminar error previo si existe
-  const anterior = grupo.querySelector(".error-msg");
-  if (anterior) anterior.remove();
-
-  const error = document.createElement("small");
-  error.className = "error-msg";
-  error.textContent = mensaje;
-  grupo.appendChild(error);
-  campo.classList.add("input-error");
-}
-
-// Quitar error cuando el usuario escribe
-function limpiarError(campo) {
-  campo.classList.remove("input-error");
-  const grupo = campo.closest(".form-group");
-  const error = grupo.querySelector(".error-msg");
-  if (error) error.remove();
-}
-
-// Validar todos los campos requeridos
-function validarCampos() {
-  let valido = true;
-
-  const nombre = document.getElementById("nombre");
-  const correo = document.getElementById("correo");
-  const zona = document.getElementById("zona");
-  const direccion = document.getElementById("direccion");
-
-  if (!nombre.value.trim()) {
-    mostrarError("nombre", "El nombre es obligatorio");
-    valido = false;
-  }
-  if (!correo.value.trim()) {
-    mostrarError("correo", "El correo es obligatorio");
-    valido = false;
-  }
-  if (!zona.value.trim()) {
-    mostrarError("zona", "Selecciona una zona o ciudad");
-    valido = false;
-  }
-  if (!direccion.value.trim()) {
-    mostrarError("direccion", "La dirección es obligatoria");
-    valido = false;
+  if (!sessionData || !sessionData.session) {
+    console.warn("⚠ No hay sesión. Esto debería venir validado desde el carrito.");
+    window.location.href = "login.html";
+    return;
   }
 
-  return valido;
+  const user = sessionData.session.user;
+  currentUserId = user.id;
+
+  console.log("👤 Usuario autenticado:", currentUserId);
+
+  // Traer datos desde tabla users
+  const { data: userRow, error } = await sb
+    .from("users")
+    .select("*")
+    .eq("id", currentUserId)
+    .single();
+
+  if (error) {
+    console.error("❌ Error cargando datos del usuario:", error);
+    return;
+  }
+
+  nombreInput.value = userRow.name || "";
+  correoInput.value = userRow.email || "";
+  telefonoInput.value = userRow.phone || "";
+
+  // Cargar dirección si existe
+  cargarDireccionUsuario();
 }
 
-// Cargar o limpiar al iniciar
-window.addEventListener("DOMContentLoaded", () => {
-  if (isFromRecibo()) loadClientData();
-  else clearForm();
+/* ============================================================
+   2) CARGAR DIRECCIÓN ANTERIOR
+============================================================ */
+async function cargarDireccionUsuario() {
+  const { data, error } = await sb
+    .from("addresses")
+    .select("*")
+    .eq("user_id", currentUserId)
+    .eq("is_default", true)
+    .maybeSingle();
 
-  // Quitar errores al escribir
-  form.querySelectorAll("input, select, textarea").forEach(input => {
-    input.addEventListener("input", () => limpiarError(input));
-  });
-});
+  if (error) {
+    console.error("❌ Error cargando dirección:", error);
+    return;
+  }
 
-// Guardar datos
-form.addEventListener("submit", (e) => {
-  e.preventDefault();
-  document.querySelectorAll(".error-msg").forEach(el => el.remove());
+  if (!data) {
+    console.log("ℹ No había dirección previa.");
+    return;
+  }
 
-  if (!validarCampos()) return;
+  loadedAddressId = data.id;
 
-  const cliente = {
-    nombre: document.getElementById("nombre").value.trim(),
-    correo: document.getElementById("correo").value.trim(),
-    telefono: document.getElementById("telefono").value.trim(),
-    zona: document.getElementById("zona").value.trim(),
-    direccion: document.getElementById("direccion").value.trim(),
-    nota: document.getElementById("nota").value.trim(),
+  ciudadInput.value = data.city || "";
+  zonaSelect.value = data.state || "";
+  direccionInput.value = data.street || "";
+  notaInput.value = data.postal_code || "";
+}
+
+/* ============================================================
+   3) VALIDAR FORMULARIO
+============================================================ */
+function validarFormulario() {
+  if (!nombreInput.value.trim()) return false;
+  if (!correoInput.value.trim()) return false;
+  if (!telefonoInput.value.trim()) return false;
+  if (!ciudadInput.value.trim()) return false;
+  if (!zonaSelect.value.trim()) return false;
+  if (!direccionInput.value.trim()) return false;
+
+  return true;
+}
+
+/* ============================================================
+   4) GUARDAR / ACTUALIZAR DIRECCIÓN EN SUPABASE
+============================================================ */
+async function guardarDireccion() {
+  const payload = {
+    user_id: currentUserId,
+    full_name: nombreInput.value.trim(),
+    phone: telefonoInput.value.trim(),
+    country: "Honduras",
+    state: zonaSelect.value.trim(),
+    city: ciudadInput.value.trim(),
+    street: direccionInput.value.trim(),
+    postal_code: notaInput.value.trim(),
+    is_default: true,
   };
 
-  localStorage.setItem(CLIENTE_KEY, JSON.stringify(cliente));
+  let result;
 
-  mostrarToast("✅ Datos guardados correctamente", "ok");
+  if (loadedAddressId) {
+    console.log("✏ Actualizando dirección existente…");
+
+    result = await sb
+      .from("addresses")
+      .update(payload)
+      .eq("id", loadedAddressId)
+      .select()
+      .single();
+  } else {
+    console.log("➕ Insertando nueva dirección…");
+
+    result = await sb
+      .from("addresses")
+      .insert(payload)
+      .select()
+      .single();
+  }
+
+  if (result.error) {
+    console.error("❌ Error guardando dirección:", result.error);
+    alert("Ocurrió un error guardando tu dirección.");
+    btnSubmit.classList.remove("btn-loading");
+    return false;
+  }
+
+  return true;
+}
+
+/* ============================================================
+   5) SUBMIT FINAL
+============================================================ */
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  if (!validarFormulario()) {
+    alert("Por favor completa todos los campos obligatorios.");
+    return;
+  }
+
+  btnSubmit.classList.add("btn-loading");
+
+  const ok = await guardarDireccion();
+  if (!ok) return;
+
+  console.log("🎉 Dirección guardada correctamente.");
 
   setTimeout(() => {
     window.location.href = "recibo.html";
-  }, 1000);
+  }, 800);
 });
+
+/* ============================================================
+   INICIO
+============================================================ */
+cargarUsuario();
