@@ -15,7 +15,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
 
   <!-- CSS -->
-  <link rel="stylesheet" href="css/carrito.css?v=23">
+  <link rel="stylesheet" href="css/carrito.css?v=24">
 </head>
 
 <body>
@@ -39,9 +39,9 @@
 
 
   <!-- =====================================================
-        SEGUIR COMPRANDO — GOOGLE STYLE
+        SEGUIR COMPRANDO — ALINEADO IZQUIERDA COMO GOOGLE
   ====================================================== -->
-  <div id="seguir-wrapper" class="seguir-comprando">
+  <div id="seguir-wrapper" class="seguir-comprando seguir-left">
       <button class="icon-back" onclick="window.location.href='index.html'">
           <span class="material-symbols-outlined">chevron_left</span>
       </button>
@@ -56,33 +56,41 @@
   <main>
 
     <div class="grid-carrito">
-      <div class="col-productos" id="cart-container"></div>
+
+      <!-- =============================
+           COLUMNA IZQUIERDA (PRODUCTOS)
+      ============================== -->
+      <div class="col-productos">
+
+          <!-- Productos -->
+          <div id="cart-container"></div>
+
+          <!-- Guardado para más tarde — AHORA DENTRO DE ESTA MISMA COLUMNA -->
+          <section id="saved-section" class="saved-wrapper">
+
+              <div class="saved-card">
+
+                  <h3 class="saved-card-title">Guardado para más tarde</h3>
+
+                  <div class="saved-divider"></div>
+
+                  <div id="saved-list" class="saved-list empty-saved">
+                      <p class="saved-empty-title">No hay cafés guardados todavía</p>
+                      <p class="saved-empty-sub">Añade a esta lista tus cafés que no estás comprando hoy</p>
+                  </div>
+
+              </div>
+
+          </section>
+
+      </div>
+
+      <!-- =============================
+           COLUMNA DERECHA (RESUMEN)
+      ============================== -->
       <div class="col-resumen" id="resumen-container"></div>
+
     </div>
-
-
-    <!-- =====================================================
-          GUARDADO PARA MÁS TARDE — GOOGLE STORE STYLE
-    ====================================================== -->
-    <section id="saved-section" class="saved-wrapper">
-
-        <div class="saved-card">
-
-            <!-- TÍTULO -->
-            <h3 class="saved-card-title">Guardado para más tarde</h3>
-
-            <!-- LÍNEA DIVISORA -->
-            <div class="saved-divider"></div>
-
-            <!-- LISTA / VACÍO -->
-            <div id="saved-list" class="saved-list saved-empty-wrapper empty-saved">
-                <p class="saved-empty-title">No hay cafés guardados todavía</p>
-                <p class="saved-empty-sub">Añade a esta lista tus cafés que no estás comprando hoy</p>
-            </div>
-
-        </div>
-
-    </section>
 
   </main>
 
@@ -107,7 +115,7 @@
   <!-- =====================================================
        SCRIPT DEL CARRITO
   ====================================================== -->
-  <script src="js/cart.js?v=23"></script>
+  <script src="js/cart.js?v=24"></script>
 
 </body>
 </html>
