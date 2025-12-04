@@ -1,13 +1,31 @@
 /* ============================================================
-   DETALLES DE ENTREGA — VERSIÓN FINAL 2025
-   Compatible con HTML v10 y CSS M3 — Validación estilo PERFIL
+   DETALLES DE ENTREGA — VERSIÓN FINAL 2025 (v11)
+   Corrección antibucle + loader + validaciones en cadena
 ============================================================ */
 
-console.log("📦 datos_cliente.js — versión FINAL cargado");
+console.log("📦 datos_cliente.js — versión 11 cargado");
 
-const sb = window.supabaseClient;
+// ===================================================================
+// 0) ESPERAR A QUE SUPABASE ESTÉ LISTO (Anti-bucle)
+// ===================================================================
+function esperarSupabase() {
+  return new Promise(resolve => {
+    if (window.supabaseClient) resolve();
+    else {
+      console.warn("⏳ Esperando Supabase...");
+      const interval = setInterval(() => {
+        if (window.supabaseClient) {
+          clearInterval(interval);
+          resolve();
+        }
+      }, 80);
+    }
+  });
+}
 
-// ----------- CAMPOS -----------
+let sb;
+
+/* ----------- CAMPOS ----------- */
 const nombreInput = document.getElementById("nombre");
 const correoInput = document.getElementById("correo");
 const telefonoInput = document.getElementById("telefono");
@@ -24,22 +42,7 @@ let userId = null;
 let loadedAddressId = null;
 
 /* ============================================================
-   UTILIDADES DE VALIDACIÓN (IGUAL A PERFIL)
-============================================================ */
-function marcarError(input) {
-  const box = input.closest(".m3-input");
-  box.classList.remove("success");
-  box.classList.add("error");
-}
-
-function marcarSuccess(input) {
-  const box = input.closest(".m3-input");
-  box.classList.remove("error");
-  box.classList.add("success");
-}
-
-/* ============================================================
-   LEER USUARIO DESDE CACHE
+   1) LEER USUARIO DESDE CACHE
 ============================================================ */
 function getUserCache() {
   try {
@@ -51,14 +54,14 @@ function getUserCache() {
 }
 
 /* ============================================================
-   ACTIVAR LABEL FLOTANTE
+   2) ACTIVAR LABEL
 ============================================================ */
 function activarLabel(input) {
   input.dispatchEvent(new Event("input", { bubbles: true }));
 }
 
 /* ============================================================
-   MOSTRAR DATOS INSTANTÁNEOS
+   3) PINTAR DATOS INSTANTÁNEOS
 ============================================================ */
 function pintarDatosInstantaneos() {
   if (!userCache) return;
@@ -73,7 +76,7 @@ function pintarDatosInstantaneos() {
 }
 
 /* ============================================================
-   CARGAR DATOS REALES DESDE SUPABASE
+   4) CARGAR DATOS REALES SUPABASE
 ============================================================ */
 async function cargarDatosRealtime() {
   const { data: userRow, error } = await sb
@@ -102,7 +105,7 @@ async function cargarDatosRealtime() {
 }
 
 /* ============================================================
-   CARGAR DIRECCIÓN ACTUAL
+   5) CARGAR DIRECCIÓN
 ============================================================ */
 async function cargarDireccion() {
   const { data, error } = await sb
@@ -126,48 +129,24 @@ async function cargarDireccion() {
   activarLabel(direccionInput);
   activarLabel(notaInput);
 
-  // activar floating label en el select
   if (zonaSelect.value.trim() !== "") zonaSelect.classList.add("filled");
 }
 
 /* ============================================================
-   VALIDACIÓN COMPLETA (SIN ALERTAS)
+   6) VALIDACIÓN EN CADENA (igual Perfil)
 ============================================================ */
-function validarCampos() {
-  let valido = true;
-
-  if (!nombreInput.value.trim()) { marcarError(nombreInput); valido = false; }
-  else marcarSuccess(nombreInput);
-
-  // correo readonly → siempre success
-  marcarSuccess(correoInput);
-
-  if (!telefonoInput.value.trim()) { marcarError(telefonoInput); valido = false; }
-  else marcarSuccess(telefonoInput);
-
-  if (!ciudadInput.value.trim()) { marcarError(ciudadInput); valido = false; }
-  else marcarSuccess(ciudadInput);
-
-  if (!zonaSelect.value.trim()) {
-    zonaSelect.closest(".m3-input").classList.add("error");
-    zonaSelect.closest(".m3-input").classList.remove("success");
-    valido = false;
-  } else {
-    zonaSelect.closest(".m3-input").classList.remove("error");
-    zonaSelect.closest(".m3-input").classList.add("success");
-  }
-
-  if (!direccionInput.value.trim()) { marcarError(direccionInput); valido = false; }
-  else marcarSuccess(direccionInput);
-
-  // Nota opcional → siempre success
-  marcarSuccess(notaInput);
-
-  return valido;
+function validarFormularioCadena() {
+  if (!nombreInput.value.trim()) return "El nombre es obligatorio.";
+  if (!correoInput.value.trim()) return "El correo es obligatorio.";
+  if (!telefonoInput.value.trim()) return "El teléfono es obligatorio.";
+  if (!ciudadInput.value.trim()) return "La ciudad es obligatoria.";
+  if (!zonaSelect.value.trim()) return "Selecciona un departamento.";
+  if (!direccionInput.value.trim()) return "La dirección es obligatoria.";
+  return null;
 }
 
 /* ============================================================
-   ACTUALIZAR DATOS BÁSICOS DEL USUARIO
+   7) UPDATE USER
 ============================================================ */
 async function updateUserBasicInfo() {
   const payload = {
@@ -193,7 +172,7 @@ async function updateUserBasicInfo() {
 }
 
 /* ============================================================
-   GUARDAR DIRECCIÓN EN SUPABASE
+   8) GUARDAR DIRECCIÓN
 ============================================================ */
 async function guardarDireccion() {
   const payload = {
@@ -227,6 +206,7 @@ async function guardarDireccion() {
 
   if (result.error) {
     console.error("❌ Error guardando dirección:", result.error);
+    alert("No se pudo guardar tu dirección.");
     btnSubmit.classList.remove("loading");
     return false;
   }
@@ -235,40 +215,41 @@ async function guardarDireccion() {
 }
 
 /* ============================================================
-   SUBMIT FINAL — VALIDACIÓN + LOADER CORRECTO
+   9) SUBMIT FINAL
 ============================================================ */
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const valido = validarCampos();
+  const errorMensaje = validarFormularioCadena();
+  if (errorMensaje) {
+    alert(errorMensaje);
+    return;
+  }
 
-  // ❌ NO MOSTRAR LOADER SI HAY ERRORES
-  if (!valido) return;
-
-  // ✔ SOLO AQUÍ SE MUESTRA EL LOADER
   btnSubmit.classList.add("loading");
 
   const okUser = await updateUserBasicInfo();
   if (!okUser) {
+    alert("Error actualizando tu información.");
     btnSubmit.classList.remove("loading");
     return;
   }
 
   const okAddress = await guardarDireccion();
-  if (!okAddress) {
-    btnSubmit.classList.remove("loading");
-    return;
-  }
+  if (!okAddress) return;
 
   setTimeout(() => {
     window.location.href = "recibo.html";
-  }, 700);
+  }, 600);
 });
 
 /* ============================================================
-   INIT
+   10) INIT (protección antibucle incluida)
 ============================================================ */
 async function init() {
+  await esperarSupabase();
+  sb = window.supabaseClient;
+
   userCache = getUserCache();
 
   if (!userCache) {
@@ -281,10 +262,11 @@ async function init() {
   pintarDatosInstantaneos();
   cargarDatosRealtime();
 
-  zonaSelect.addEventListener("change", () => {
-    if (zonaSelect.value.trim() !== "") zonaSelect.classList.add("filled");
-    else zonaSelect.classList.remove("filled");
-  });
+  zonaSelect.addEventListener("change", () =>
+    zonaSelect.value.trim()
+      ? zonaSelect.classList.add("filled")
+      : zonaSelect.classList.remove("filled")
+  );
 }
 
 init();
