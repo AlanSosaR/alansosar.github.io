@@ -83,9 +83,9 @@
       ====================================================== -->
       <div class="col-resumen" id="resumen-container">
 
-        <!-- ⭐ Aquí aparecerá la tarjeta del resumen generada por JS -->
+        <!-- Aquí se inserta dinámicamente el resumen por JS -->
 
-        <!-- ⭐ SNACKBAR colocado debajo del resumen, pero fijo en pantalla -->
+        <!-- SNACKBAR -->
         <div id="snackbar-login" class="snackbar hidden">
           Necesitas iniciar sesión para continuar con tu pedido.
         </div>
@@ -96,12 +96,27 @@
 
   </main>
 
-  <!-- Loader -->
+  <!-- ===========================
+        LOADER
+  ============================ -->
   <div id="page-loader" class="page-loader hidden">
       <div class="loader-circle"></div>
   </div>
 
-  <!-- Script -->
+  <!-- ===========================
+        SCRIPTS NECESARIOS
+  ============================ -->
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Cliente global de supabase (OBLIGATORIO) -->
+  <script src="js/supabase-client-core.js"></script>
+
+  <!-- UI de sesión para avatar/menu (OPCIONAL pero recomendado) -->
+  <script src="js/auth-ui.js"></script>
+
+  <!-- Lógica del carrito -->
   <script src="js/cart.js?v=24"></script>
 
 </body>
