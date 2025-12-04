@@ -20,7 +20,7 @@ body {
 }
 
 /* ============================================================
-   HEADER — ESTILO UNIFICADO CON INDEX Y DETALLES DE ENTREGA
+   HEADER — MISMO ESTILO GLOBAL DEL SITIO
 ============================================================ */
 header {
   position: sticky;
@@ -46,34 +46,36 @@ header {
 .cart-title {
   font-size: 1.15rem;
   font-weight: 600;
-  color: var(--marron);
   letter-spacing: -0.3px;
+  color: var(--marron);
 }
 
-/* BOTÓN VOLVER */
-.back-btn {
-  width: 44px;
-  height: 44px;
+/* ============================================================
+   BOTÓN REDONDO VOLVER (NUEVO)
+============================================================ */
+.back-btn-circle {
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   border: none;
+
   background: var(--blanco);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.15);
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  box-shadow: 0 4px 14px rgba(0,0,0,0.15);
   cursor: pointer;
-
-  transition: .22s ease;
+  transition: transform .25s ease;
 }
 
-.back-btn:hover {
+.back-btn-circle:hover {
   transform: translateY(-2px);
 }
 
-.back-btn .material-symbols-outlined {
-  font-size: 26px;
+.back-btn-circle .material-symbols-outlined {
+  font-size: 27px;
   color: var(--verde);
   font-weight: 600;
 }
@@ -90,8 +92,8 @@ main {
 .empty {
   font-size: 1rem;
   color: var(--marron);
-  line-height: 1.6;
   text-align: center;
+  line-height: 1.6;
   padding: 2rem 0;
 }
 
@@ -102,9 +104,9 @@ main {
   display: flex;
   gap: 1.3rem;
   padding: 1.2rem;
-  border-radius: 18px;
 
-  background: #ffffff;
+  border-radius: 18px;
+  background: var(--blanco);
   border: 1.8px solid rgba(0,0,0,0.08);
   box-shadow: 0 4px 12px rgba(0,0,0,0.04);
 
@@ -112,19 +114,19 @@ main {
   align-items: center;
 }
 
-/* IMG BOX CONTROLADA */
+/* IMG BOX */
 .item-img-box {
-  background: #ffffff;
+  background: var(--blanco);
   border: 1.4px solid rgba(0,0,0,0.06);
   border-radius: 18px;
-  padding: 8px;
 
   width: 95px;
   height: 95px;
+  padding: 8px;
 
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
 
   box-shadow: 0 2px 6px rgba(0,0,0,0.03);
 }
@@ -151,7 +153,6 @@ main {
 
 .item-name {
   font-weight: 600;
-  font-size: 1rem;
   margin-bottom: 0.25rem;
 }
 
@@ -162,7 +163,7 @@ main {
 }
 
 /* ============================================================
-   CONTROLES + / – / ELIMINAR
+   CONTROLES + / – / 🗑
 ============================================================ */
 .qty-controls {
   display: flex;
@@ -175,16 +176,15 @@ main {
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  background: #ffffff;
+
+  background: var(--blanco);
   border: 1.5px solid rgba(0,0,0,0.12);
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  font-size: 0.9rem;
   cursor: pointer;
-
   transition: transform .15s ease, background .2s;
 }
 
@@ -210,7 +210,7 @@ main {
   color: var(--marron);
 }
 
-.total-box .currency {
+.total-box .moneda {
   color: var(--verde);
   font-weight: 700;
 }
@@ -227,25 +227,12 @@ main {
 .actions {
   display: flex;
   justify-content: center;
-  gap: 1rem;
+  gap: 1.2rem;
   margin-top: 2.3rem;
 }
 
-/* BOTÓN VOLVER */
-.btn.volver {
-  background: var(--marron);
-  color: white;
-  font-weight: 600;
-  padding: 0.95rem 2rem;
-  border-radius: 999px;
-  border: none;
-  display: flex;
-  align-items: center;
-  gap: .45rem;
-}
-
 /* ============================================================
-   BOTÓN PROCEDER — AHORA MATERIAL 3 CON LOADER
+   BOTÓN PROCEDER — MATERIAL 3 CON LOADER
 ============================================================ */
 .m3-btn {
   background: var(--verde);
@@ -261,7 +248,7 @@ main {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: .7rem;
+  gap: 0.7rem;
 
   cursor: pointer;
   transition: .2s ease;
@@ -269,22 +256,35 @@ main {
   max-width: 260px;
 }
 
-.m3-btn:active { transform: scale(.97); }
+.m3-btn:active {
+  transform: scale(.97);
+}
 
 .m3-btn .loader {
   width: 18px;
   height: 18px;
+
   border: 2.4px solid rgba(255,255,255,0.45);
   border-top-color: white;
   border-radius: 50%;
   animation: spin .9s linear infinite;
+
   display: none;
 }
 
-.m3-btn.loading .loader { display: inline-block; }
-.m3-btn.loading .btn-text { opacity: .45; }
+.m3-btn.loading .loader {
+  display: inline-block;
+}
 
-@keyframes spin { to { transform: rotate(360deg); } }
+.m3-btn.loading .btn-text {
+  opacity: .45;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 
 /* ============================================================
    SNACKBAR — Carrito vacío
