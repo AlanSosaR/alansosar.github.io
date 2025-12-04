@@ -26,13 +26,12 @@ function saveSaved(list) {
 }
 
 /* ============================================================
-   Loader central
+   Loader
 ============================================================ */
 function showPageLoader() {
   const loader = document.getElementById("page-loader");
   if (loader) loader.classList.remove("hidden");
 }
-
 function hidePageLoader() {
   const loader = document.getElementById("page-loader");
   if (loader) loader.classList.add("hidden");
@@ -44,50 +43,47 @@ function hidePageLoader() {
 function renderCart() {
   const cart = getCart();
 
-  const colProductos = document.querySelector(".col-productos");
-  const colResumen   = document.querySelector(".col-resumen");
-  const countSpan    = document.getElementById("count-items");
+  const cartContainer = document.getElementById("cart-container");  // ← SOLO productos
+  const colResumen    = document.querySelector(".col-resumen");
+  const countSpan     = document.getElementById("count-items");
 
-  if (!colProductos || !colResumen || !countSpan) return;
+  if (!cartContainer || !colResumen || !countSpan) return;
 
-  colProductos.innerHTML = "";
-  colResumen.innerHTML   = "";
+  /* ❗ NO BORRAR col-productos, solo los productos */
+  cartContainer.innerHTML = "";
+  colResumen.innerHTML    = "";
 
-  /* ----------------------------
-     CONTADOR HEADER
-  ---------------------------- */
+  /* Contador */
   const totalArticulos = cart.reduce((acc, item) => acc + item.qty, 0);
   const palabra = totalArticulos === 1 ? "café" : "cafés";
   countSpan.textContent = `(${totalArticulos} ${palabra})`;
 
-  /* ----------------------------
-     BLOQUE GUARDADO PARA MÁS TARDE (si existe)
-  ---------------------------- */
-  const savedSection = document.getElementById("saved-section");
-  const savedCard    = savedSection ? savedSection.querySelector(".saved-card") : null;
+  const savedCard = document.querySelector("#saved-section .saved-card");
 
-  /* 🟢 MODO B: carrito vacío → centrado como Google */
+  /* ============================================================
+       CARRITO VACÍO → GOOGLE STYLE
+  ============================================================ */
   if (cart.length === 0) {
+
     if (savedCard) savedCard.classList.add("centered");
 
-    colProductos.innerHTML = `
+    cartContainer.innerHTML = `
       <div class="empty">
         Tu selección está vacía.<br>
         <small>Agrega tu café favorito para continuar.</small>
       </div>
     `;
-    colResumen.innerHTML = "";
 
     renderSaved();
     return;
   }
 
-  /* 🟢 MODO A: carrito con productos → bloque alineado a las tarjetas */
+  /* Carrito con productos → posición normal */
   if (savedCard) savedCard.classList.remove("centered");
 
-  /* ----------------------------
-     RENDER PRODUCTOS
-  ---------------------------- */
+  /* ============================================================
+       RENDER PRODUCTOS
+  ============================================================ */
   cart.forEach((item, index) => {
     const priceNum = parseFloat(item.price) || 0;
 
@@ -128,17 +124,16 @@ function renderCart() {
       </div>
     `;
 
-    colProductos.appendChild(div);
+    cartContainer.appendChild(div);
   });
 
-  /* ----------------------------
-     RESUMEN
-  ---------------------------- */
+  /* ============================================================
+       RESUMEN DEL PEDIDO
+  ============================================================ */
   const subtotal = cart.reduce(
     (acc, item) => acc + (parseFloat(item.price) * item.qty || 0),
     0
   );
-  const envio = 0;
 
   colResumen.innerHTML = `
     <div class="resumen-box">
@@ -151,17 +146,16 @@ function renderCart() {
 
       <div class="resumen-row">
         <span>Envío</span>
-        <span>L ${envio.toFixed(2)}</span>
+        <span>L 0.00</span>
       </div>
 
       <div class="resumen-row resumen-total">
         <span>Total estimado</span>
-        <span>L ${(subtotal + envio).toFixed(2)}</span>
+        <span>L ${subtotal.toFixed(2)}</span>
       </div>
 
       <button id="proceder-btn" class="m3-btn">
-        <span class="loader"></span>
-        <span class="btn-text">Proceder al pago</span>
+        Proceder al pago
       </button>
     </div>
   `;
@@ -220,17 +214,19 @@ function renderSaved() {
 }
 
 /* ============================================================
-   EVENTOS
+   EVENTOS (Carrito + Guardados)
 ============================================================ */
 document.addEventListener("click", e => {
+
   const btn = e.target.closest("button");
   if (!btn) return;
 
   const action = btn.dataset.action;
   const index  = parseInt(btn.dataset.index);
 
-  /* --- acciones del carrito --- */
+  /* Acciones del carrito */
   if (["plus", "minus", "del", "save"].includes(action)) {
+
     let cart = getCart();
 
     if (action === "plus") cart[index].qty++;
@@ -240,9 +236,7 @@ document.addEventListener("click", e => {
       if (cart[index].qty <= 0) cart.splice(index, 1);
     }
 
-    if (action === "del") {
-      cart.splice(index, 1);
-    }
+    if (action === "del") cart.splice(index, 1);
 
     if (action === "save") {
       const saved = getSaved();
@@ -268,7 +262,7 @@ document.addEventListener("click", e => {
     renderCart();
   }
 
-  /* --- acciones en guardados --- */
+  /* Acciones en guardados */
   if (action === "return") {
     const saved = getSaved();
     const cart  = getCart();
@@ -290,40 +284,28 @@ document.addEventListener("click", e => {
 });
 
 /* ============================================================
-   PROCEDER AL PAGO
+   Proceder al pago
 ============================================================ */
 document.addEventListener("click", e => {
   if (!e.target.closest("#proceder-btn")) return;
 
-  const btn  = document.getElementById("proceder-btn");
   const cart = getCart();
+  if (cart.length === 0) return;
 
-  if (!btn || cart.length === 0) return;
-
-  const user   = JSON.parse(localStorage.getItem("cortero_user"));
   const logged = localStorage.getItem("cortero_logged") === "1";
 
-  if (!user || !logged) {
+  if (!logged) {
     const snack = document.getElementById("snackbar-login");
-    if (snack) {
-      snack.classList.add("show");
-      setTimeout(() => {
-        snack.classList.remove("show");
-        window.location.href = "login.html";
-      }, 2000);
-    } else {
+    snack.classList.add("show");
+    setTimeout(() => {
+      snack.classList.remove("show");
       window.location.href = "login.html";
-    }
+    }, 2000);
     return;
   }
 
-  btn.classList.add("loading");
-  setTimeout(() => {
-    window.location.href = "datos_cliente.html";
-  }, 800);
+  window.location.href = "datos_cliente.html";
 });
 
-/* ============================================================
-   INIT
-============================================================ */
+/* INIT */
 renderCart();
