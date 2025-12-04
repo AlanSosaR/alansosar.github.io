@@ -19,9 +19,9 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* ============================================
-   HEADER – MISMO ESTILO DEL INDEX
-   ============================================ */
+/* ============================================================
+   HEADER — ESTILO UNIFICADO CON INDEX Y DETALLES DE ENTREGA
+============================================================ */
 header {
   position: sticky;
   top: 0;
@@ -31,59 +31,91 @@ header {
   -webkit-backdrop-filter: blur(10px);
   height: 72px;
   padding: 0 1.2rem;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
+
   border-bottom: 1.5px solid rgba(0,0,0,0.05);
 }
 
-header img {
+.header-logo {
   height: 52px;
 }
 
 .cart-title {
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   font-weight: 600;
   color: var(--marron);
+  letter-spacing: -0.3px;
 }
 
-/* ============================================
+/* BOTÓN VOLVER */
+.back-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: var(--blanco);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+  cursor: pointer;
+
+  transition: .22s ease;
+}
+
+.back-btn:hover {
+  transform: translateY(-2px);
+}
+
+.back-btn .material-symbols-outlined {
+  font-size: 26px;
+  color: var(--verde);
+  font-weight: 600;
+}
+
+/* ============================================================
    CONTENIDO GENERAL
-   ============================================ */
+============================================================ */
 main {
   max-width: 1100px;
-  margin: 1.5rem auto;
-  padding: 0 1rem 3.5rem;
+  margin: 1.7rem auto;
+  padding: 0 1rem 4rem;
 }
 
 .empty {
   font-size: 1rem;
   color: var(--marron);
   line-height: 1.6;
+  text-align: center;
+  padding: 2rem 0;
 }
 
-/* ============================================
-   TARJETA OUTLINED / MATERIAL 3
-   ============================================ */
+/* ============================================================
+   TARJETA OUTLINED (Material 3)
+============================================================ */
 .item {
   display: flex;
   gap: 1.3rem;
   padding: 1.2rem;
   border-radius: 18px;
+
   background: #ffffff;
   border: 1.8px solid rgba(0,0,0,0.08);
   box-shadow: 0 4px 12px rgba(0,0,0,0.04);
-  margin-bottom: 1.2rem;
+
+  margin-bottom: 1.3rem;
   align-items: center;
 }
 
-/* ==========================================================
-   TARJETA PREMIUM CONTROLADA PARA LA IMAGEN (VERSIÓN FINAL)
-   ========================================================== */
-
+/* IMG BOX CONTROLADA */
 .item-img-box {
   background: #ffffff;
-  border: 1.4px solid rgba(0, 0, 0, 0.06);
+  border: 1.4px solid rgba(0,0,0,0.06);
   border-radius: 18px;
   padding: 8px;
 
@@ -104,7 +136,6 @@ main {
   border-radius: 12px;
 }
 
-/* Tamaños en pantallas grandes */
 @media (min-width: 768px) {
   .item-img-box {
     width: 110px;
@@ -113,7 +144,7 @@ main {
   }
 }
 
-/* Info */
+/* INFO */
 .item-info {
   flex: 1;
 }
@@ -130,24 +161,19 @@ main {
   margin-bottom: 0.6rem;
 }
 
-/* ============================================
-   CONTROLES: + / – / 🗑
-   ============================================ */
-.controls-row,
+/* ============================================================
+   CONTROLES + / – / ELIMINAR
+============================================================ */
 .qty-controls {
   display: flex;
   align-items: center;
   gap: 0.7rem;
-  flex-direction: row !important;
 }
 
 .qty-btn,
 .del-btn {
   width: 34px;
   height: 34px;
-  min-width: 34px;
-  min-height: 34px;
-
   border-radius: 50%;
   background: #ffffff;
   border: 1.5px solid rgba(0,0,0,0.12);
@@ -159,41 +185,33 @@ main {
   font-size: 0.9rem;
   cursor: pointer;
 
-  transition: transform 0.12s ease, background 0.2s;
+  transition: transform .15s ease, background .2s;
 }
 
-.qty-btn.minus i {
-  color: var(--marron);
-}
-
-.qty-btn.plus i {
-  color: var(--verde);
-}
-
-.del-btn i {
-  color: #d72638;
-}
+.qty-btn.minus i { color: var(--marron); }
+.qty-btn.plus i { color: var(--verde); }
+.del-btn i { color: #d72638; }
 
 .qty-number {
   font-size: 1rem;
   font-weight: 600;
+  min-width: 20px;
   text-align: center;
 }
 
-/* ===========================
-   TOTAL — Estilo Premium
-   =========================== */
-
+/* ============================================================
+   TOTAL
+============================================================ */
 .total-box {
   text-align: right;
   font-size: 1.35rem;
   font-weight: 600;
   margin-top: 2rem;
-  color: #512615;
+  color: var(--marron);
 }
 
-.total-box .moneda {
-  color: #33673B;
+.total-box .currency {
+  color: var(--verde);
   font-weight: 700;
 }
 
@@ -203,33 +221,74 @@ main {
   }
 }
 
-/* ============================================
-   BOTONES FINALES
-   ============================================ */
+/* ============================================================
+   BOTONES INFERIORES
+============================================================ */
 .actions {
   display: flex;
   justify-content: center;
   gap: 1rem;
-  margin-top: 2rem;
+  margin-top: 2.3rem;
 }
 
-.btn {
+/* BOTÓN VOLVER */
+.btn.volver {
+  background: var(--marron);
+  color: white;
+  font-weight: 600;
   padding: 0.95rem 2rem;
   border-radius: 999px;
   border: none;
-  color: #fff;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 1rem;
-  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: .45rem;
 }
 
-.btn.volver { background: var(--marron); }
-.btn.proceder { background: var(--verde); }
+/* ============================================================
+   BOTÓN PROCEDER — AHORA MATERIAL 3 CON LOADER
+============================================================ */
+.m3-btn {
+  background: var(--verde);
+  color: #fff;
 
-/* ============================================
-   SNACKBAR — Carrito vacío (ya existente)
-   ============================================ */
+  padding: 1rem 2rem;
+  border-radius: 14px;
+  border: none;
+
+  font-size: 1.05rem;
+  font-weight: 600;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .7rem;
+
+  cursor: pointer;
+  transition: .2s ease;
+  width: 100%;
+  max-width: 260px;
+}
+
+.m3-btn:active { transform: scale(.97); }
+
+.m3-btn .loader {
+  width: 18px;
+  height: 18px;
+  border: 2.4px solid rgba(255,255,255,0.45);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin .9s linear infinite;
+  display: none;
+}
+
+.m3-btn.loading .loader { display: inline-block; }
+.m3-btn.loading .btn-text { opacity: .45; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ============================================================
+   SNACKBAR — Carrito vacío
+============================================================ */
 .snackbar-md3 {
   position: fixed;
   bottom: 85px;
@@ -239,11 +298,13 @@ main {
 
   background: rgba(255,255,255,0.9);
   backdrop-filter: blur(10px);
+
   padding: 18px 28px;
   border-radius: 28px;
   border: 1px solid rgba(0,0,0,0.15);
 
   box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+
   font-size: 0.95rem;
   font-weight: 500;
 
@@ -256,9 +317,9 @@ main {
   transform: translateY(0) translateX(-50%);
 }
 
-/* ============================================
-   SNACKBAR LOGIN (nuevo)
-   ============================================ */
+/* ============================================================
+   SNACKBAR LOGIN
+============================================================ */
 #snackbar-login {
   position: fixed;
   bottom: 28px;
@@ -267,9 +328,10 @@ main {
 
   background: #333;
   color: #fff;
-  padding: 14px 22px;
 
+  padding: 14px 22px;
   border-radius: 14px;
+
   opacity: 0;
   pointer-events: none;
 
@@ -277,8 +339,8 @@ main {
   font-weight: 500;
 
   box-shadow: 0 8px 28px rgba(0,0,0,0.25);
-
   transition: opacity .35s ease, transform .35s ease;
+
   z-index: 99999;
 }
 
