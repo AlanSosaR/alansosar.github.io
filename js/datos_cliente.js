@@ -1,18 +1,13 @@
 /* ============================================================
    DETALLES DE ENTREGA — VERSIÓN FINAL 2025
-   Compatible con Material 3 + HTML + CSS actual.
+   Compatible con HTML v10 y CSS M3
 ============================================================ */
 
-console.log("📦 datos_cliente.js — versión final 2025 cargado");
+console.log("📦 datos_cliente.js — versión 10 cargado");
 
-// ----------------------------
-// ACCESO SUPABASE
-// ----------------------------
 const sb = window.supabaseClient;
 
-// ----------------------------
-// CAMPOS
-// ----------------------------
+// ----------- CAMPOS -----------
 const nombreInput = document.getElementById("nombre");
 const correoInput = document.getElementById("correo");
 const telefonoInput = document.getElementById("telefono");
@@ -29,7 +24,7 @@ let userId = null;
 let loadedAddressId = null;
 
 /* ============================================================
-   1) LEER USUARIO DESDE CACHE OFICIAL
+   1) LEER USUARIO DESDE CACHE
 ============================================================ */
 function getUserCache() {
   try {
@@ -48,7 +43,7 @@ function activarLabel(input) {
 }
 
 /* ============================================================
-   3) PINTAR DATOS INSTANTANEOS
+   3) MOSTRAR DATOS INSTANTÁNEOS
 ============================================================ */
 function pintarDatosInstantaneos() {
   if (!userCache) return;
@@ -93,7 +88,7 @@ async function cargarDatosRealtime() {
 }
 
 /* ============================================================
-   5) CARGAR DIRECCIÓN
+   5) CARGAR DIRECCIÓN ACTUAL
 ============================================================ */
 async function cargarDireccion() {
   const { data, error } = await sb
@@ -103,7 +98,7 @@ async function cargarDireccion() {
     .eq("is_default", true)
     .maybeSingle();
 
-  if (error) console.error("❌ Error cargando dirección:", error);
+  if (error) console.error("❌ Error dirección:", error);
   if (!data) return;
 
   loadedAddressId = data.id;
@@ -113,12 +108,11 @@ async function cargarDireccion() {
   direccionInput.value = data.street || "";
   notaInput.value = data.postal_code || "";
 
-  // activar labels
   activarLabel(ciudadInput);
   activarLabel(direccionInput);
   activarLabel(notaInput);
 
-  // select → aplicar .filled
+  // select → floating label
   if (zonaSelect.value.trim() !== "") {
     zonaSelect.classList.add("filled");
   }
@@ -128,22 +122,23 @@ async function cargarDireccion() {
    6) VALIDAR FORMULARIO
 ============================================================ */
 function validarFormulario() {
-  if (!nombreInput.value.trim()) return false;
-  if (!correoInput.value.trim()) return false;
-  if (!telefonoInput.value.trim()) return false;
-  if (!ciudadInput.value.trim()) return false;
-  if (!zonaSelect.value.trim()) return false;
-  if (!direccionInput.value.trim()) return false;
-  return true;
+  return (
+    nombreInput.value.trim() &&
+    correoInput.value.trim() &&
+    telefonoInput.value.trim() &&
+    ciudadInput.value.trim() &&
+    zonaSelect.value.trim() &&
+    direccionInput.value.trim()
+  );
 }
 
 /* ============================================================
-   7) ACTUALIZAR USUARIO EN USERS
+   7) ACTUALIZAR DATOS BÁSICOS DEL USUARIO
 ============================================================ */
 async function updateUserBasicInfo() {
   const payload = {
     name: nombreInput.value.trim(),
-    phone: telefonoInput.value.trim()
+    phone: telefonoInput.value.trim(),
   };
 
   const { error } = await sb
@@ -157,19 +152,15 @@ async function updateUserBasicInfo() {
   }
 
   // actualizar cache
-  const updatedUser = {
-    ...userCache,
-    name: payload.name,
-    phone: payload.phone
-  };
-  localStorage.setItem("cortero_user", JSON.stringify(updatedUser));
-  userCache = updatedUser;
+  const updated = { ...userCache, ...payload };
+  localStorage.setItem("cortero_user", JSON.stringify(updated));
+  userCache = updated;
 
   return true;
 }
 
 /* ============================================================
-   8) GUARDAR DIRECCIÓN
+   8) GUARDAR DIRECCIÓN EN SUPABASE
 ============================================================ */
 async function guardarDireccion() {
   const payload = {
@@ -212,7 +203,7 @@ async function guardarDireccion() {
 }
 
 /* ============================================================
-   9) SUBMIT
+   9) SUBMIT FINAL
 ============================================================ */
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -226,7 +217,7 @@ form.addEventListener("submit", async (e) => {
 
   const okUser = await updateUserBasicInfo();
   if (!okUser) {
-    alert("Error actualizando usuario.");
+    alert("Error actualizando tu información.");
     btnSubmit.classList.remove("loading");
     return;
   }
@@ -240,13 +231,12 @@ form.addEventListener("submit", async (e) => {
 });
 
 /* ============================================================
-   10) INICIO
+   10) INIT
 ============================================================ */
 async function init() {
   userCache = getUserCache();
 
   if (!userCache) {
-    console.warn("⚠ No hay usuario → login");
     window.location.href = "login.html";
     return;
   }
@@ -255,6 +245,12 @@ async function init() {
 
   pintarDatosInstantaneos();
   cargarDatosRealtime();
+
+  // select → activar floating label cuando cambia
+  zonaSelect.addEventListener("change", () => {
+    if (zonaSelect.value.trim() !== "") zonaSelect.classList.add("filled");
+    else zonaSelect.classList.remove("filled");
+  });
 }
 
 init();
