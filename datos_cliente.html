@@ -6,242 +6,139 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Detalles de entrega | Café Cortero</title>
 
-  <!-- Iconos -->
+  <!-- Iconos globales -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-  <!-- Tipografía tipo Apple -->
-  <style>
-    :root {
-      --marron: #512615;
-      --verde: #33673B;
-      --blanco: #ffffff;
-      --gris: #f5f5f5;
-    }
+  <!-- Material Symbols (igual que Perfil, Login, Registro) -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
 
-    body {
-      margin: 0;
-      background: var(--gris);
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
-        "Helvetica Neue", Helvetica, Arial, sans-serif;
-      color: var(--marron);
-    }
+  <!-- Tipografía Apple + ajustes globales del proyecto -->
+  <link rel="stylesheet" href="css/tipografia.css">
 
-    /* ===== HEADER IGUAL AL DE CARRITO ===== */
-    header {
-      position: sticky;
-      top: 0;
-      background: var(--blanco);
-      height: 72px;
-      padding: 0 1.2rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1.5px solid rgba(0, 0, 0, 0.05);
-      z-index: 1000;
-    }
+  <!-- Estilos base Material 3 Expressive (perfil.css incluye tarjetas, inputs, labels, botones) -->
+  <link rel="stylesheet" href="css/perfil.css?v=5">
 
-    header img {
-      height: 52px;
-    }
-
-    .form-title {
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: var(--marron);
-      margin-right: 1rem;
-    }
-
-    /* ===== TARJETA INTERNA (IGUAL QUE PERFIL) ===== */
-    .outer-card {
-      max-width: 900px;
-      margin: 2rem auto;
-      padding: 2rem;
-      background: var(--blanco);
-      border-radius: 26px;
-      border: 1.8px solid rgba(81, 38, 21, 0.22); /* borde café igual a perfil */
-      box-shadow: 0 12px 26px rgba(0, 0, 0, 0.06);
-      position: relative;
-    }
-
-    /* Flecha */
-    .back-btn {
-      position: absolute;
-      top: 18px;
-      left: 18px;
-      width: 48px;
-      height: 48px;
-      background: var(--blanco);
-      border-radius: 50%;
-      border: 1.4px solid rgba(0, 0, 0, 0.08);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.2rem;
-      cursor: pointer;
-    }
-
-    .back-btn:active {
-      transform: scale(0.95);
-    }
-
-    /* FORMULARIO */
-    .form-group {
-      margin-bottom: 1.6rem;
-    }
-
-    label {
-      font-weight: 600;
-      margin-bottom: 0.4rem;
-      display: block;
-    }
-
-    input,
-    select,
-    textarea {
-      width: 100%;
-      padding: 1rem;
-      border-radius: 16px;
-      font-size: 1rem;
-      border: 1.5px solid rgba(0, 0, 0, 0.14);
-      background: #fff;
-      font-family: inherit;
-    }
-
-    input:focus,
-    select:focus,
-    textarea:focus {
-      border-color: var(--verde);
-      outline: none;
-    }
-
-    textarea {
-      resize: none;
-    }
-
-    /* BOTÓN */
-    #btn-submit {
-      width: 100%;
-      padding: 1.1rem;
-      margin-top: 1rem;
-      border-radius: 16px;
-      border: none;
-      background: var(--verde);
-      color: var(--blanco);
-      font-size: 1.1rem;
-      font-weight: 600;
-      display: flex;
-      justify-content: center;
-      gap: 0.6rem;
-      align-items: center;
-      cursor: pointer;
-    }
-
-    .btn-icon {
-      display: none;
-    }
-
-    .btn-loading .btn-icon {
-      display: inline-block;
-      animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-  </style>
-
+  <!-- Estilos exclusivos de esta página -->
+  <link rel="stylesheet" href="css/datos_cliente.css?v=3">
 </head>
 
 <body>
 
-  <!-- ===== HEADER IGUAL AL DE CARRITO ===== -->
-  <header>
+  <!-- ===== HEADER IGUAL AL DEL CARRITO ===== -->
+  <header class="header-fixed">
     <a href="index.html">
-      <img src="imagenes/logo_mejorado_trasmparente.png" alt="Café Cortero">
+      <img src="imagenes/logo.png" alt="Café Cortero" class="header-logo">
     </a>
     <span class="form-title">Detalles de entrega</span>
   </header>
 
-  <!-- ===== TARJETA PRINCIPAL ===== -->
-  <div class="outer-card">
+  <!-- ===== TARJETA EXTERNA (MISMA DE PERFIL) ===== -->
+  <main class="profile-container">
+    <section class="profile-card">
 
-    <!-- Botón de regreso -->
-    <div class="back-btn" onclick="window.location.href='carrito.html'">
-      <i class="fa-solid fa-arrow-left"></i>
-    </div>
-
-    <!-- ===== FORMULARIO ===== -->
-    <form id="cliente-form">
-
-      <div class="form-group">
-        <label for="nombre">Nombre completo *</label>
-        <input type="text" id="nombre" required>
-      </div>
-
-      <div class="form-group">
-        <label for="correo">Correo electrónico *</label>
-        <input type="email" id="correo" required readonly>
-      </div>
-
-      <div class="form-group">
-        <label for="telefono">Teléfono *</label>
-        <input type="tel" id="telefono" required>
-      </div>
-
-      <div class="form-group">
-        <label for="ciudad">Ciudad *</label>
-        <input type="text" id="ciudad" placeholder="Ej: Danlí" required>
-      </div>
-
-      <div class="form-group">
-        <label for="zona">Departamento *</label>
-        <select id="zona" required>
-          <option value="">Seleccionar...</option>
-          <option value="El Paraíso">El Paraíso</option>
-          <option value="Francisco Morazán">Francisco Morazán</option>
-          <option value="Choluteca">Choluteca</option>
-          <option value="Cortés">Cortés</option>
-          <option value="Comayagua">Comayagua</option>
-          <option value="La Paz">La Paz</option>
-          <option value="Olancho">Olancho</option>
-          <option value="Yoro">Yoro</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label for="direccion">Dirección de entrega *</label>
-        <textarea id="direccion" rows="3"
-          placeholder="Ej: Colonia Las Flores, Danlí, El Paraíso"
-          required></textarea>
-      </div>
-
-      <div class="form-group">
-        <label for="nota">Nota adicional</label>
-        <textarea id="nota" rows="2" placeholder="Ej: Entregar por la mañana"></textarea>
-      </div>
-
-      <button type="submit" id="btn-submit">
-        <i class="fa-solid fa-circle-notch btn-icon"></i>
-        Proceder con el pedido
+      <!-- BOTÓN ATRÁS (IGUAL QUE PERFIL, ADENTRO DE LA TARJETA) -->
+      <button class="back-btn" onclick="window.location.href='carrito.html'">
+        <span class="material-symbols-outlined">chevron_left</span>
       </button>
 
-    </form>
-  </div>
+      <!-- TITULO (SIN LOGO, SOLO TEXTO) -->
+      <div class="profile-header">
+        <h2 class="profile-title">Detalles de entrega</h2>
+      </div>
 
-  <!-- ===== JS: Loader + Validación ===== -->
-  <script>
-    document.getElementById("cliente-form").addEventListener("submit", function (e) {
-      e.preventDefault();
+      <!-- TARJETA INTERNA (MISMO DISEÑO QUE PERFIL) -->
+      <div class="profile-inner-card">
 
-      const btn = document.getElementById("btn-submit");
-      btn.classList.add("btn-loading");
+        <!-- FORMULARIO -->
+        <form id="cliente-form" novalidate>
 
-      setTimeout(() => {
-        window.location.href = "recibo.html";
-      }, 900);
-    });
-  </script>
+          <!-- NOMBRE -->
+          <div class="m3-field">
+            <div class="m3-input">
+              <span class="material-symbols-outlined">person</span>
+              <input id="nombre" type="text" placeholder=" " required>
+              <label class="floating-label">Nombre completo *</label>
+            </div>
+          </div>
+
+          <!-- CORREO READONLY -->
+          <div class="m3-field">
+            <div class="m3-input no-edit">
+              <span class="material-symbols-outlined">mail</span>
+              <input id="correo" type="email" placeholder=" " readonly required>
+              <label class="floating-label">Correo electrónico *</label>
+            </div>
+          </div>
+
+          <!-- TELÉFONO -->
+          <div class="m3-field">
+            <div class="m3-input">
+              <span class="material-symbols-outlined">call</span>
+              <input id="telefono" type="tel" placeholder=" " required>
+              <label class="floating-label">Teléfono *</label>
+            </div>
+          </div>
+
+          <!-- CIUDAD -->
+          <div class="m3-field">
+            <div class="m3-input">
+              <span class="material-symbols-outlined">location_city</span>
+              <input id="ciudad" type="text" placeholder="Ej: Danlí" required>
+              <label class="floating-label">Ciudad *</label>
+            </div>
+          </div>
+
+          <!-- DEPARTAMENTO -->
+          <div class="m3-field">
+            <div class="m3-input select-wrapper">
+              <span class="material-symbols-outlined">map</span>
+              <select id="zona" required>
+                <option value="">Seleccionar…</option>
+                <option value="El Paraíso">El Paraíso</option>
+                <option value="Francisco Morazán">Francisco Morazán</option>
+                <option value="Choluteca">Choluteca</option>
+                <option value="Cortés">Cortés</option>
+                <option value="Comayagua">Comayagua</option>
+                <option value="La Paz">La Paz</option>
+                <option value="Olancho">Olancho</option>
+                <option value="Yoro">Yoro</option>
+              </select>
+              <label class="floating-label">Departamento *</label>
+            </div>
+          </div>
+
+          <!-- DIRECCIÓN -->
+          <div class="m3-field">
+            <div class="m3-input textarea-wrapper">
+              <span class="material-symbols-outlined">home</span>
+              <textarea id="direccion" rows="3" placeholder=" " required></textarea>
+              <label class="floating-label">Dirección de entrega *</label>
+            </div>
+          </div>
+
+          <!-- NOTA ADICIONAL -->
+          <div class="m3-field">
+            <div class="m3-input textarea-wrapper">
+              <span class="material-symbols-outlined">note</span>
+              <textarea id="nota" rows="2" placeholder=" "></textarea>
+              <label class="floating-label">Nota adicional</label>
+            </div>
+          </div>
+
+          <!-- BOTÓN PRINCIPAL -->
+          <button type="submit" id="btn-submit" class="m3-btn">
+            <span class="loader"></span>
+            <span class="btn-text">Proceder con el pedido</span>
+          </button>
+
+        </form>
+
+      </div>
+    </section>
+  </main>
+
+  <!-- JS de datos del cliente -->
+  <script src="js/datos_cliente.js?v=6"></script>
 
 </body>
 </html>
