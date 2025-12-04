@@ -55,14 +55,15 @@ header img {
 }
 
 /* ============================================================
-   SEGUIR COMPRANDO — CENTRADO GOOGLE
+   SEGUIR COMPRANDO — ALINEADO A LA IZQUIERDA (GOOGLE)
 ============================================================ */
 .seguir-comprando {
   max-width: 1100px;
   margin: 1.9rem auto 1.5rem;
   padding: 0 1.3rem;
+
   display: flex;
-  justify-content: center;
+  justify-content: flex-start; /* ← IMPORTANTE */
   align-items: center;
   gap: 0.55rem;
 }
@@ -193,7 +194,6 @@ header img {
 .save-later-btn:hover { background: #f5f1ee; }
 .save-later-btn:active { background: #ebe6e2; transform: scale(0.97); }
 
-/* loader */
 .save-later-loader {
   width: 16px;
   height: 16px;
@@ -222,7 +222,6 @@ header img {
   font-size: 1.32rem;
   font-weight: 600;
   margin-bottom: 1.2rem;
-  text-align: left;
 }
 
 .resumen-row {
@@ -263,38 +262,23 @@ header img {
 .m3-btn:hover { filter: brightness(1.08); }
 .m3-btn:active { transform: scale(0.97); }
 
-.m3-btn .loader {
-  width: 18px;
-  height: 18px;
-  border: 2.4px solid rgba(255,255,255,0.45);
-  border-top-color: white;
-  border-radius: 50%;
-  animation: spin 0.9s linear infinite;
-  display: none;
-}
-
-.m3-btn.loading .loader { display: block; }
-
 /* ============================================================
    GUARDADO PARA MÁS TARDE — GOOGLE STORE REAL
 ============================================================ */
+
+/* El contenedor sigue el ancho de la columna de productos */
 .saved-wrapper {
-  max-width: 1100px;
-  margin: 3rem auto;
-  padding: 0 1.3rem;
+  margin-top: 2rem;
 }
 
-/* TARJETA */
+/* TARJETA MISMO ANCHO QUE PRODUCTOS */
 .saved-card {
   background: var(--blanco);
   padding: 2rem 1.8rem;
   border-radius: 20px;
   border: 1.4px solid rgba(0,0,0,0.06);
   box-shadow: 0 6px 16px rgba(0,0,0,0.05);
-  margin-top: 1.8rem;
-  max-width: 760px;         /* MISMO ANCHO QUE GOOGLE */
-  margin-left: auto;
-  margin-right: auto;
+  width: 100%;     /* ← IMPORTANTE */
 }
 
 /* TÍTULO + LÍNEA VERDE GRUESA */
@@ -307,8 +291,8 @@ header img {
 .saved-card-title::after {
   content: "";
   width: 100%;
-  height: 4px;               /* LÍNEA GRUESA */
-  background: var(--verde);  /* VERDE CORPORATIVO */
+  height: 4px;
+  background: var(--verde); /* ← VERDE FUERTE */
   border-radius: 4px;
   display: block;
   margin-top: 0.6rem;
@@ -321,19 +305,19 @@ header img {
   gap: 1.2rem;
 }
 
-/* VACÍO — CENTRADO GOOGLE */
+/* VACÍO — CENTRADO */
 .empty-saved {
-  text-align: center !important;
+  text-align: center;
   padding: 2rem 0;
 }
 
 .saved-empty-title {
-  font-size: 1.05rem;
+  font-size: 1.1rem;
   font-weight: 600;
 }
 
 .saved-empty-sub {
-  font-size: 0.92rem;
+  font-size: 0.95rem;
   color: #6b5a53;
   margin-top: 0.25rem;
 }
@@ -356,12 +340,6 @@ header img {
   border-radius: 16px;
   background: white;
   border: 1.2px solid rgba(0,0,0,0.06);
-}
-
-.saved-img-box img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
 }
 
 .saved-info { flex: 1; }
@@ -403,10 +381,16 @@ header img {
    MÓVIL
 ============================================================ */
 @media (max-width: 760px) {
-  .saved-card {
-    padding: 1.6rem 1.3rem;
-    max-width: 100%;
+
+  .seguir-comprando {
+    justify-content: flex-start;
   }
 
-  .resumen-box { padding: 1.6rem 1.3rem; }
+  .saved-card {
+    padding: 1.6rem 1.3rem;
+  }
+
+  .resumen-box {
+    padding: 1.6rem 1.3rem;
+  }
 }
