@@ -76,12 +76,10 @@ header img {
   font-weight: 500;
 }
 
-/* Botón redondo */
 .icon-back {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-
   background: var(--blanco);
   border: 1.4px solid rgba(0,0,0,0.08);
   box-shadow: 0 3px 10px rgba(0,0,0,0.08);
@@ -124,7 +122,6 @@ header img {
   padding: 0 1.3rem 3.3rem;
 }
 
-/* Móvil */
 @media (max-width: 760px) {
   .grid-carrito {
     grid-template-columns: 1fr;
@@ -227,10 +224,8 @@ header img {
   background: var(--blanco);
   border-radius: 16px;
   padding: 1.7rem 1.5rem;
-
   border: 1.6px solid rgba(0,0,0,0.08);
   box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-
   margin-top: 1.5rem;
 }
 
@@ -259,7 +254,7 @@ header img {
 }
 
 /* ============================================================
-   CARRITO VACÍO — CENTRADO PC + MÓVIL
+   CARRITO VACÍO
 ============================================================ */
 .empty {
   text-align: center;
@@ -278,7 +273,6 @@ header img {
   color: white;
   width: 100%;
   margin-top: 1.4rem;
-
   padding: 1rem;
   border-radius: 14px;
   border: none;
@@ -286,7 +280,6 @@ header img {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.7rem;
 
   font-size: 1.05rem;
   font-weight: 600;
@@ -294,7 +287,6 @@ header img {
   height: 52px;
 }
 
-/* Loader */
 .m3-btn .loader {
   width: 18px;
   height: 18px;
@@ -311,20 +303,122 @@ header img {
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* ============================================================
-   GUARDADO PARA MÁS TARDE
+   GUARDADO PARA MÁS TARDE — GOOGLE STORE
 ============================================================ */
+.saved-wrapper {
+  max-width: 1100px;
+  margin: 2.5rem auto 3rem;
+  padding: 0 1.3rem;
+}
+
 .saved-title {
-  font-size: 1.25rem;
+  font-size: 1.35rem;
   font-weight: 600;
-  margin-top: 2.3rem;
+  color: var(--marron);
+  margin-bottom: 1rem;
+  letter-spacing: -0.2px;
+}
+
+.saved-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.empty-saved {
+  text-align: center;
+  padding: 2.5rem 1rem;
+  border-radius: 16px;
+  background: var(--blanco);
+  border: 1.5px solid rgba(0,0,0,0.05);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.saved-empty-title {
+  font-size: 1.05rem;
+  font-weight: 600;
   color: var(--marron);
 }
 
-.saved-empty {
-  margin-top: 0.7rem;
-  font-size: 0.97rem;
-  line-height: 1.45;
-  color: var(--marron);
+.saved-empty-sub {
+  margin-top: 0.4rem;
+  font-size: 0.92rem;
+  color: #6b5a53;
+}
+
+/* TARJETA GUARDADA */
+.saved-item {
+  display: flex;
+  gap: 1.1rem;
+
+  padding: 1.2rem;
+  background: var(--blanco);
+  border-radius: 18px;
+  border: 1.8px solid rgba(0,0,0,0.08);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+
+  align-items: center;
+}
+
+.saved-img-box {
+  width: 85px;
+  height: 85px;
+  border-radius: 16px;
+  background: var(--blanco);
+  padding: 7px;
+  border: 1.3px solid rgba(0,0,0,0.06);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.saved-img-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 12px;
+}
+
+.saved-info {
+  flex: 1;
+}
+
+.saved-name {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+}
+
+.saved-price {
+  font-size: 0.9rem;
+  color: #6b5a53;
+  margin-bottom: 0.6rem;
+}
+
+.saved-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.saved-btn {
+  padding: 0.55rem 1rem;
+  background: var(--blanco);
+  border: 1.5px solid rgba(0,0,0,0.12);
+  border-radius: 12px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.saved-btn.return {
+  color: var(--verde);
+  border-color: var(--verde);
+  font-weight: 600;
+}
+
+.saved-btn.delete {
+  color: #d72638;
+  border-color: rgba(215,38,56,0.35);
 }
 
 /* ============================================================
@@ -373,25 +467,22 @@ header img {
 }
 
 /* ============================================================
-   VERSIÓN MÓVIL — IGUAL A GOOGLE STORE
+   MÓVIL — GOOGLE STORE
 ============================================================ */
 @media (max-width: 760px) {
 
-  /* --- Header centrado mejorado --- */
   .cart-title {
     font-size: 1.05rem;
     text-align: center;
     flex: 1;
   }
 
-  /* --- Separación de seguir comprando --- */
   .seguir-comprando {
     margin-top: 1.4rem;
     margin-bottom: 1.2rem;
     padding: 0 1.1rem;
   }
 
-  /* --- Productos en móvil --- */
   .item {
     padding: 1.15rem;
     border-radius: 18px;
@@ -413,7 +504,6 @@ header img {
     font-size: 0.87rem;
   }
 
-  /* --- Resumen estilo Google --- */
   .resumen-box {
     padding: 1.5rem 1.3rem;
     border-radius: 16px;
@@ -433,24 +523,43 @@ header img {
     font-size: 1.22rem;
   }
 
-  /* Botón proceder */
   .m3-btn {
     font-size: 1.05rem;
     height: 52px;
   }
 
-  /* Guardado para más tarde */
-  .saved-title {
+  .saved-wrapper {
     margin-top: 2rem;
-    font-size: 1.2rem;
   }
 
-  .saved-empty {
-    margin-top: 0.7rem;
+  .saved-item {
+    padding: 1rem;
+  }
+
+  .saved-img-box {
+    width: 75px;
+    height: 75px;
+  }
+
+  .saved-name {
     font-size: 0.95rem;
   }
 
-  /* Carrito vacío */
+  .saved-price {
+    font-size: 0.85rem;
+  }
+
+  .saved-buttons {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .saved-btn {
+    width: 100%;
+    text-align: center;
+  }
+
   .empty {
     padding: 4rem 1rem;
   }
