@@ -41,6 +41,15 @@ body {
 
 .header-logo {
   height: 52px;
+  object-fit: contain;
+}
+
+.form-title {
+  font-family: "Fraunces", serif;
+  font-size: 1.55rem;
+  font-weight: 600;
+  color: var(--marron);
+  letter-spacing: .3px;
 }
 
 /* ============================================================
@@ -59,7 +68,7 @@ body {
   padding: 6rem 1.8rem 3rem;
   box-shadow: 0 12px 28px rgba(0,0,0,0.06);
   position: relative;
-  border: none !important; /* 🔥 CORRECCIÓN */
+  border: none !important;
 }
 
 /* ============================================================
@@ -70,20 +79,15 @@ body {
   position: absolute;
   top: 22px;
   left: 22px;
-
   width: 48px;
   height: 48px;
-
   border-radius: 50%;
   background: #ffffff;
   border: none;
-
   box-shadow: 0 5px 16px rgba(0,0,0,0.15);
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   cursor: pointer;
   transition: .25s ease;
 }
@@ -112,7 +116,7 @@ body {
 }
 
 /* ============================================================
-   INPUTS MATERIAL 3 — IDÉNTICOS A PERFIL
+   INPUTS MATERIAL 3 — EXACTO A PERFIL
 ============================================================ */
 
 .m3-field {
