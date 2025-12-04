@@ -100,14 +100,30 @@ header img { height: 52px; }
   padding: 0 1.3rem 3.3rem;  
 }
 
+/* ============================================================
+   ORDEN CORRECTO EN MÓVIL
+   1) Productos
+   2) Resumen
+   3) Guardado para más tarde
+============================================================ */
 @media (max-width: 760px) {  
   .grid-carrito {  
-    display: flex;  
-    flex-direction: column;  
+    display: flex !important;  
+    flex-direction: column !important;  
+    gap: 1.5rem !important;  
   }  
-  .col-productos { order: 1; }  
-  .col-resumen { order: 2; }  
-  #saved-section { order: 3 !important; }  
+
+  .col-productos {  
+    order: 1 !important;  
+  }  
+
+  .col-resumen {  
+    order: 2 !important;  
+  }  
+
+  #saved-section {  
+    order: 3 !important;  
+  }  
 }
 
 /* ============================================================  
