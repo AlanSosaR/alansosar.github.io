@@ -29,10 +29,13 @@ function saveSaved(list) {
    Loader central
 ============================================================ */
 function showPageLoader() {
-  document.getElementById("page-loader").classList.remove("hidden");
+  const loader = document.getElementById("page-loader");
+  if (loader) loader.classList.remove("hidden");
 }
+
 function hidePageLoader() {
-  document.getElementById("page-loader").classList.add("hidden");
+  const loader = document.getElementById("page-loader");
+  if (loader) loader.classList.add("hidden");
 }
 
 /* ============================================================
@@ -42,11 +45,13 @@ function renderCart() {
   const cart = getCart();
 
   const colProductos = document.querySelector(".col-productos");
-  const colResumen = document.querySelector(".col-resumen");
-  const countSpan = document.getElementById("count-items");
+  const colResumen   = document.querySelector(".col-resumen");
+  const countSpan    = document.getElementById("count-items");
+
+  if (!colProductos || !colResumen || !countSpan) return;
 
   colProductos.innerHTML = "";
-  colResumen.innerHTML = "";
+  colResumen.innerHTML   = "";
 
   /* ----------------------------
      CONTADOR HEADER
@@ -56,14 +61,14 @@ function renderCart() {
   countSpan.textContent = `(${totalArticulos} ${palabra})`;
 
   /* ----------------------------
-     BLOQUE GUARDADO PARA MÁS TARDE
+     BLOQUE GUARDADO PARA MÁS TARDE (si existe)
   ---------------------------- */
   const savedSection = document.getElementById("saved-section");
-  const savedCard = savedSection.querySelector(".saved-card");
+  const savedCard    = savedSection ? savedSection.querySelector(".saved-card") : null;
 
-  /* 🟢 MODO B (carrito vacío) → centrado */
+  /* 🟢 MODO B: carrito vacío → centrado como Google */
   if (cart.length === 0) {
-    savedCard.classList.add("centered");
+    if (savedCard) savedCard.classList.add("centered");
 
     colProductos.innerHTML = `
       <div class="empty">
@@ -77,8 +82,8 @@ function renderCart() {
     return;
   }
 
-  /* 🟢 MODO A (carrito con productos) → alineado con tarjetas */
-  savedCard.classList.remove("centered");
+  /* 🟢 MODO A: carrito con productos → bloque alineado a las tarjetas */
+  if (savedCard) savedCard.classList.remove("centered");
 
   /* ----------------------------
      RENDER PRODUCTOS
@@ -129,7 +134,10 @@ function renderCart() {
   /* ----------------------------
      RESUMEN
   ---------------------------- */
-  const subtotal = cart.reduce((acc, item) => acc + (parseFloat(item.price) * item.qty), 0);
+  const subtotal = cart.reduce(
+    (acc, item) => acc + (parseFloat(item.price) * item.qty || 0),
+    0
+  );
   const envio = 0;
 
   colResumen.innerHTML = `
@@ -168,6 +176,7 @@ function renderCart() {
 function renderSaved() {
   const saved = getSaved();
   const container = document.getElementById("saved-list");
+  if (!container) return;
 
   container.innerHTML = "";
 
@@ -218,7 +227,7 @@ document.addEventListener("click", e => {
   if (!btn) return;
 
   const action = btn.dataset.action;
-  const index = parseInt(btn.dataset.index);
+  const index  = parseInt(btn.dataset.index);
 
   /* --- acciones del carrito --- */
   if (["plus", "minus", "del", "save"].includes(action)) {
@@ -231,13 +240,13 @@ document.addEventListener("click", e => {
       if (cart[index].qty <= 0) cart.splice(index, 1);
     }
 
-    if (action === "del") cart.splice(index, 1);
+    if (action === "del") {
+      cart.splice(index, 1);
+    }
 
-    /* GUARDAR PARA MÁS TARDE */
     if (action === "save") {
       const saved = getSaved();
       btn.classList.add("loading");
-
       showPageLoader();
 
       setTimeout(() => {
@@ -262,7 +271,7 @@ document.addEventListener("click", e => {
   /* --- acciones en guardados --- */
   if (action === "return") {
     const saved = getSaved();
-    const cart = getCart();
+    const cart  = getCart();
 
     cart.push(saved[index]);
     saved.splice(index, 1);
@@ -286,22 +295,25 @@ document.addEventListener("click", e => {
 document.addEventListener("click", e => {
   if (!e.target.closest("#proceder-btn")) return;
 
-  const btn = document.getElementById("proceder-btn");
+  const btn  = document.getElementById("proceder-btn");
   const cart = getCart();
 
-  const user = JSON.parse(localStorage.getItem("cortero_user"));
-  const logged = localStorage.getItem("cortero_logged") === "1";
+  if (!btn || cart.length === 0) return;
 
-  if (cart.length === 0) return;
+  const user   = JSON.parse(localStorage.getItem("cortero_user"));
+  const logged = localStorage.getItem("cortero_logged") === "1";
 
   if (!user || !logged) {
     const snack = document.getElementById("snackbar-login");
-    snack.classList.add("show");
-
-    setTimeout(() => {
-      snack.classList.remove("show");
+    if (snack) {
+      snack.classList.add("show");
+      setTimeout(() => {
+        snack.classList.remove("show");
+        window.location.href = "login.html";
+      }, 2000);
+    } else {
       window.location.href = "login.html";
-    }, 2000);
+    }
     return;
   }
 
