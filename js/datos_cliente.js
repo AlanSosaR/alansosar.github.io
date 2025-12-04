@@ -30,11 +30,14 @@ let userId = null;
 let loadedAddressId = null;
 
 /* ============================================================
-   1) LEER USUARIO DESDE CACHÉ (MISMA LÓGICA DE PERFIL)
+   1) LEER USUARIO DESDE CACHÉ (OFICIAL: cortero_user)
 ============================================================ */
 function getUserCache() {
   try {
-    return JSON.parse(localStorage.getItem("cc_user_profile")) || null;
+    const logged = localStorage.getItem("cortero_logged");
+    if (logged !== "1") return null;
+
+    return JSON.parse(localStorage.getItem("cortero_user")) || null;
   } catch {
     return null;
   }
@@ -57,7 +60,6 @@ function pintarDatosInstantaneos() {
   correoInput.value = userCache.email || "";
   telefonoInput.value = userCache.phone || "";
 
-  // Activar labels flotantes
   activarLabel(nombreInput);
   activarLabel(correoInput);
   activarLabel(telefonoInput);
@@ -87,8 +89,9 @@ async function cargarDatosRealtime() {
   activarLabel(correoInput);
   activarLabel(telefonoInput);
 
-  // Actualizar caché
-  localStorage.setItem("cc_user_profile", JSON.stringify(userRow));
+  // Actualizar caché oficial
+  localStorage.setItem("cortero_user", JSON.stringify(userRow));
+  localStorage.setItem("cortero_logged", "1");
 
   // Cargar dirección
   await cargarDireccion();
@@ -118,7 +121,6 @@ async function cargarDireccion() {
   direccionInput.value = data.street || "";
   notaInput.value = data.postal_code || "";
 
-  // Activar labels flotantes
   activarLabel(ciudadInput);
   activarLabel(zonaSelect);
   activarLabel(direccionInput);
@@ -219,7 +221,7 @@ async function init() {
   // Pintado instantáneo
   pintarDatosInstantaneos();
 
-  // Cargar datos reales
+  // Cargar datos reales después
   cargarDatosRealtime();
 }
 
