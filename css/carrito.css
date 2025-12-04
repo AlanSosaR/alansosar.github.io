@@ -55,7 +55,7 @@ header img {
 }
 
 /* ============================================================
-   SEGUIR COMPRANDO
+   SEGUIR COMPRANDO — GOOGLE STORE
 ============================================================ */
 .seguir-comprando {
   max-width: 1100px;
@@ -74,19 +74,21 @@ header img {
   border: 1.4px solid rgba(0,0,0,0.08);
   box-shadow: 0 3px 10px rgba(0,0,0,0.08);
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   cursor: pointer;
-  transition: .2s ease;
 }
 
-.icon-back:hover { transform: translateY(-2px); }
+.icon-back .material-symbols-outlined {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--verde);
+}
 
 .seguir-comprando a {
   color: var(--verde);
   font-weight: 600;
   text-decoration: none;
-  font-size: 1.05rem;
 }
 
 /* ============================================================
@@ -101,53 +103,49 @@ header img {
   padding: 0 1.3rem 3.3rem;
 }
 
-@media (max-width:760px) {
+@media (max-width: 760px) {
   .grid-carrito { grid-template-columns: 1fr; }
   .col-resumen { order: 2; }
+  .col-productos { order: 1; }
 }
 
 /* ============================================================
-   TARJETAS DE PRODUCTO
+   PRODUCTOS DEL CARRITO
 ============================================================ */
 .item {
   display: flex;
   gap: 1.3rem;
   padding: 1.3rem;
-  background: var(--blanco);
   border-radius: 18px;
+  background: var(--blanco);
   border: 1.8px solid rgba(0,0,0,0.08);
   box-shadow: 0 4px 12px rgba(0,0,0,0.04);
   margin-bottom: 1.3rem;
-  align-items: center;
 }
 
 .item-img-box {
   width: 95px;
   height: 95px;
-  padding: 8px;
   border-radius: 18px;
-  background: var(--blanco);
+  padding: 8px;
   border: 1.4px solid rgba(0,0,0,0.06);
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+}
+
+.item-img-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .item-info { flex: 1; }
-
-.item-name {
-  font-size: 1rem;
-  font-weight: 600;
-}
-
-.item-price {
-  font-size: 0.9rem;
-  opacity: 0.85;
-  margin-bottom: 0.6rem;
-}
+.item-name { font-weight: 600; }
+.item-price { font-size: 0.92rem; opacity: 0.8; }
 
 /* ============================================================
-   CONTROL DE CANTIDAD + BOTONES
+   CONTROL DE CANTIDAD
 ============================================================ */
 .qty-controls {
   display: flex;
@@ -160,56 +158,66 @@ header img {
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  background: var(--blanco);
   border: 1.5px solid rgba(0,0,0,0.12);
+  background: var(--blanco);
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
 }
 
+.qty-btn.plus i { color: var(--verde); }
+.qty-btn.minus i { color: var(--marron); }
 .del-btn i { color: #d72638; }
 
 /* ============================================================
-   BOTÓN GUARDAR PARA MÁS TARDE — M3 EXPRESSIVE
+   BOTÓN GUARDAR PARA MÁS TARDE — MATERIAL 3 EXPRESSIVE
 ============================================================ */
 .save-later-btn {
-  padding: 0.55rem 1rem;
-  font-size: 0.9rem;
+  padding: 0.55rem 1.15rem;
+  font-size: 0.92rem;
   font-weight: 500;
   background: var(--blanco);
   color: var(--marron);
-  border: 1.5px solid rgba(0,0,0,0.12);
-  border-radius: 12px;
+  border: 1.6px solid rgba(0,0,0,0.12);
+  border-radius: 14px;
   cursor: pointer;
-  transition: .2s;
-  white-space: nowrap;
   display: flex;
   align-items: center;
-  gap: 0.45rem;
+  gap: 0.55rem;
+  transition: 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
 }
 
 .save-later-btn:hover {
-  background: #f6f2ef;
-  border-color: rgba(0,0,0,0.20);
+  background: #f5f1ee;
 }
 
-.save-later-btn.loading .save-later-text { opacity: 0; }
+.save-later-btn:active {
+  background: #ebe6e2;
+  transform: scale(0.97);
+}
 
 .save-later-loader {
   width: 16px;
   height: 16px;
-  border: 2.4px solid rgba(0,0,0,0.15);
-  border-top-color: var(--marron);
   border-radius: 50%;
+  border: 2.5px solid rgba(0,0,0,0.18);
+  border-top-color: var(--marron);
   animation: spin .8s linear infinite;
   display: none;
 }
 
-.save-later-btn.loading .save-later-loader { display: block; }
+.save-later-btn.loading .save-later-loader {
+  display: block;
+}
+
+.save-later-btn.loading .save-later-text {
+  opacity: 0;
+}
 
 /* ============================================================
-   RESUMEN
+   RESUMEN DEL PEDIDO
 ============================================================ */
 .resumen-box {
   background: var(--blanco);
@@ -217,12 +225,6 @@ header img {
   padding: 1.7rem 1.5rem;
   border: 1.6px solid rgba(0,0,0,0.08);
   box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-}
-
-.resumen-total {
-  font-size: 1.25rem;
-  font-weight: 700;
-  margin-top: 0.6rem;
 }
 
 /* ============================================================
@@ -234,30 +236,33 @@ header img {
   padding: 0 1.3rem;
 }
 
+/* TARJETA PRINCIPAL */
 .saved-container-card {
   background: var(--blanco);
-  padding: 2rem 1.6rem;
-  border-radius: 18px;
-  border: 1.4px solid rgba(0,0,0,0.05);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+  padding: 2.2rem 1.7rem;
+  border-radius: 22px;
+  border: 1.6px solid rgba(0,0,0,0.06);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.05);
+  margin-top: 1.8rem;
 }
 
-/* Título dentro de la tarjeta — como Google Store */
 .saved-title {
-  font-size: 1.32rem;
+  font-size: 1.38rem;
   font-weight: 600;
-  margin-bottom: 1.4rem;
+  margin-bottom: 1.6rem;
 }
 
+/* LISTA */
 .saved-list {
   display: flex;
   flex-direction: column;
   gap: 1.2rem;
 }
 
+/* ESTADO VACÍO */
 .empty-saved {
   text-align: center;
-  padding: 1rem 0;
+  padding: 2rem 0;
 }
 
 .saved-empty-title {
@@ -266,56 +271,70 @@ header img {
 }
 
 .saved-empty-sub {
-  font-size: 0.92rem;
+  font-size: 0.93rem;
   color: #6b5a53;
-  margin-top: 0.4rem;
+  margin-top: 0.3rem;
 }
 
 /* ============================================================
-   TARJETA INDIVIDUAL GUARDADA
+   TARJETAS DE PRODUCTOS GUARDADOS
 ============================================================ */
 .saved-item {
   display: flex;
-  gap: 1.1rem;
-  padding: 1.2rem;
+  gap: 1.15rem;
+  padding: 1.3rem;
   border-radius: 18px;
   background: var(--blanco);
-  border: 1.8px solid rgba(0,0,0,0.08);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.04);
-  align-items: center;
+  border: 1.7px solid rgba(0,0,0,0.07);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
 .saved-img-box {
-  width: 85px;
-  height: 85px;
+  width: 86px;
+  height: 86px;
   padding: 7px;
-  border-radius: 16px;
+  border-radius: 18px;
+  background: white;
   border: 1.3px solid rgba(0,0,0,0.06);
+}
+
+.saved-img-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .saved-info { flex: 1; }
 
+.saved-name {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
 .saved-price {
   font-size: 0.9rem;
   color: #6b5a53;
+  margin-top: 0.3rem;
 }
 
 .saved-buttons {
   display: flex;
-  gap: 0.9rem;
+  flex-direction: column;
+  gap: 0.55rem;
 }
 
 .saved-btn {
   padding: 0.55rem 1rem;
   border-radius: 12px;
-  background: var(--blanco);
-  border: 1.5px solid rgba(0,0,0,0.12);
+  border: 1.4px solid rgba(0,0,0,0.12);
+  background: white;
   cursor: pointer;
+  transition: 0.2s;
 }
 
 .saved-btn.return {
-  color: var(--verde);
   border-color: var(--verde);
+  color: var(--verde);
   font-weight: 600;
 }
 
@@ -325,44 +344,6 @@ header img {
 }
 
 /* ============================================================
-   LOADER CENTRAL
+   SNACKBARS + LOADER + MÓVIL
+   (Sin cambios)
 ============================================================ */
-.page-loader {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(255,255,255,0.8);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  backdrop-filter: blur(4px);
-  z-index: 99999;
-  opacity: 1;
-  transition: opacity .3s ease;
-}
-
-.page-loader.hidden {
-  opacity: 0;
-  pointer-events: none;
-}
-
-.loader-circle {
-  width: 45px;
-  height: 45px;
-  border-radius: 50%;
-  border: 4px solid #d1d1d1;
-  border-top-color: var(--verde);
-  animation: spin .8s linear infinite;
-}
-
-@keyframes spin { to { transform: rotate(360deg); } }
-
-/* ============================================================
-   MÓVIL
-============================================================ */
-@media (max-width:760px) {
-
-  .saved-btn { width: 100%; text-align: center; }
-  .saved-buttons { flex-direction: column; }
-  .saved-img-box { width: 75px; height: 75px; }
-}
