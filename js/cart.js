@@ -134,33 +134,49 @@ document.getElementById('cart-container').addEventListener('click', e => {
 });
 
 /* ============================================================
-   Proceder al pago — con Snackbar Material 3
+   Proceder al pago — lógica final
 ============================================================ */
 document.getElementById('proceder-btn').addEventListener('click', () => {
   const cart = getCart();
   const aviso = document.getElementById('aviso-vacio');
 
-  /* 1️⃣ Carrito vacío */
+  /* 1️⃣ Leer sesión */
+  let user = null;
+  let logged = false;
+
+  try {
+    user = JSON.parse(localStorage.getItem("cortero_user"));
+    logged = (localStorage.getItem("cortero_logged") === "1");
+  } catch {
+    user = null;
+    logged = false;
+  }
+
+  const noSesion = (!logged || !user);
+
+  /* 2️⃣ Carrito vacío */
   if (cart.length === 0) {
+
+    /* 🚫 Si NO está logueado → login */
+    if (noSesion) {
+      const snack = document.getElementById("snackbar-login");
+      snack.classList.add("show");
+
+      setTimeout(() => {
+        snack.classList.remove("show");
+        window.location.href = "login.html";
+      }, 2200);
+      return;
+    }
+
+    /* ✔ Logueado → mensaje normal */
     aviso.textContent = "Aún no has agregado cafés a tu selección.";
     aviso.classList.add('show');
     setTimeout(() => aviso.classList.remove('show'), 2500);
     return;
   }
 
-  /* 2️⃣ Validación correcta del login */
-  const logged = localStorage.getItem("cortero_logged");
-  let user = null;
-
-  try {
-    user = JSON.parse(localStorage.getItem("cortero_user"));
-  } catch {
-    user = null;
-  }
-
-  const noSesion = (logged !== "1" || !user);
-
-  /* 3️⃣ Usuario NO logueado */
+  /* 3️⃣ Hay cafés pero NO está logueado */
   if (noSesion) {
     const snack = document.getElementById("snackbar-login");
     snack.classList.add("show");
@@ -173,7 +189,7 @@ document.getElementById('proceder-btn').addEventListener('click', () => {
     return;
   }
 
-  /* 4️⃣ Usuario logueado → continuar */
+  /* 4️⃣ Todo válido → ir a datos del cliente */
   window.location.href = "datos_cliente.html";
 });
 
