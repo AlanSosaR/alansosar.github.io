@@ -1,157 +1,69 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tu selección de café | Café Cortero</title>
 
   <!-- Tipografía -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
 
-  <!-- Iconos -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <!-- Iconos FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <!-- Material Symbols (flecha) -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
 
   <!-- CSS del carrito -->
-  <link rel="stylesheet" href="css/carrito.css">
-
-  <style>
-    /* Eliminar highlight azul en móviles */
-    a, a:focus, a:active, a:visited, button {
-      outline: none;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    /* ================================
-       SNACKBAR LOGIN — Material 3
-    ================================= */
-    #snackbar-login {
-      position: fixed;
-      bottom: 24px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #333;
-      color: #fff;
-      padding: 14px 22px;
-      border-radius: 12px;
-      font-size: 0.95rem;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity .35s ease, transform .35s ease;
-      z-index: 99999;
-    }
-
-    #snackbar-login.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(-8px);
-      pointer-events: auto;
-    }
-
-    /* ================================
-       BOTÓN MATERIAL 3 CON LOADER
-    ================================= */
-    .m3-btn {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: .7rem;
-
-      width: 100%;
-      padding: 1.05rem;
-
-      background: #33673B;
-      color: white;
-      font-weight: 600;
-      font-size: 1.05rem;
-
-      border: none;
-      border-radius: 14px;
-      cursor: pointer;
-
-      -webkit-tap-highlight-color: transparent;
-      transition: .22s ease;
-    }
-
-    .m3-btn:active {
-      transform: scale(.97);
-    }
-
-    .m3-btn .loader {
-      width: 18px;
-      height: 18px;
-      border: 2.4px solid rgba(255,255,255,0.45);
-      border-top-color: white;
-      border-radius: 50%;
-      animation: spin .9s linear infinite;
-      display: none;
-    }
-
-    .m3-btn.loading .loader {
-      display: inline-block;
-    }
-
-    .m3-btn.loading .btn-text {
-      opacity: .45;
-    }
-
-    @keyframes spin { to { transform: rotate(360deg); } }
-  </style>
+  <link rel="stylesheet" href="css/carrito.css?v=10" />
 </head>
 
 <body>
-
-  <!-- === HEADER === -->
+  <!-- === HEADER FIJO — CON LOGO, MISMO ESTILO DEL SITIO === -->
   <header class="header-fixed">
-    <button class="back-btn" onclick="window.location.href='index.html'">
-      <span class="material-symbols-outlined">chevron_left</span>
-    </button>
+    <a href="index.html" class="header-logo-link">
+      <img src="imagenes/logo.png" alt="Café Cortero" class="header-logo" />
+    </a>
 
     <span class="cart-title">Tu selección de café</span>
-
-    <div style="width:40px;"></div> <!-- alineación -->
   </header>
-
 
   <!-- === CONTENIDO PRINCIPAL === -->
   <main>
 
-    <!-- Contenedor donde se insertan dinámicamente las tarjetas outline -->
+    <!-- Contenedor donde se insertan dinámicamente las tarjetas outline del carrito -->
     <div id="cart-container"></div>
 
     <!-- Total -->
     <div id="total-box" class="total-box">
-      Total de tu selección: <span class="currency">L</span> 0.00
+      Total de tu selección: <span class="moneda">L</span> 0.00
     </div>
 
     <!-- Acciones -->
     <div class="actions">
 
-      <!-- BOTÓN VOLVER (flecha estándar) -->
-      <button class="btn volver" onclick="window.location.href='index.html'">
-        <span class="material-symbols-outlined">arrow_back</span>
-        Volver
+      <!-- 🔙 Botón redondo con flecha -->
+      <button class="back-btn-circle" onclick="window.location.href='index.html'">
+        <span class="material-symbols-outlined">chevron_left</span>
       </button>
 
-      <!-- BOTÓN PROCEDER M3 CON LOADER -->
-      <button id="proceder-btn" class="m3-btn proceder">
+      <!-- Botón proceder con loader -->
+      <button id="proceder-btn" class="m3-btn">
         <span class="loader"></span>
-        <span class="btn-text">Proceder al pago (0 cafés)</span>
+        <span class="btn-text">Proceder al pago</span>
       </button>
-
     </div>
   </main>
-
 
   <!-- === SNACKBAR (Carrito vacío) === -->
   <div id="aviso-vacio" class="snackbar-md3"></div>
 
   <!-- === SNACKBAR LOGIN === -->
-  <div id="snackbar-login">Necesitas iniciar sesión para continuar con tu pedido.</div>
-
+  <div id="snackbar-login">
+    Necesitas iniciar sesión para continuar con tu pedido.
+  </div>
 
   <!-- === SCRIPT DEL CARRITO === -->
-  <script src="js/cart.js?v=11"></script>
-
+  <script src="js/cart.js?v=10"></script>
 </body>
 </html>
