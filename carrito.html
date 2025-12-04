@@ -14,67 +14,79 @@
   <!-- Material Symbols -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
 
-  <!-- CSS del carrito -->
-  <link rel="stylesheet" href="css/carrito.css">
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/carrito.css?v=12">
 </head>
 
 <body>
 
   <!-- =====================================================
-       HEADER ESTILO GOOGLE STORE
+       HEADER ESTILO INDEX + GOOGLE STORE
   ====================================================== -->
-  <header class="header-fixed">
+  <header>
+      <!-- Logo -->
+      <a href="index.html">
+        <img src="imagenes/logo.png" alt="Café Cortero">
+      </a>
 
-    <!-- Logo -->
-    <a href="index.html" class="header-logo-link">
-      <img src="imagenes/logo.png" alt="Café Cortero" class="header-logo">
-    </a>
+      <!-- Título dinámico -->
+      <span class="cart-title">
+        Tu selección de café <span id="count-items">(0 cafés)</span>
+      </span>
 
-    <!-- Título dinámico -->
-    <span class="cart-title">
-      Tu selección de café <span id="count-items">(0 cafés)</span>
-    </span>
-
-    <!-- Avatar usuario -->
-    <a href="perfil.html" class="header-avatar-link">
-      <img src="imagenes/avatar-default.svg" class="header-avatar" id="avatar-user">
-    </a>
-
+      <!-- Avatar usuario -->
+      <a href="perfil.html" class="h-avatar-box">
+        <img src="imagenes/avatar-default.svg" id="avatar-user">
+      </a>
   </header>
 
+
   <!-- =====================================================
-       SEGUIR COMPRANDO
+        SEGUIR COMPRANDO – ICONO REDONDO + TEXTO
   ====================================================== -->
-  <div class="seguir-comprando-box">
-    <a href="index.html" class="seguir-link">
-      <span class="material-symbols-outlined">chevron_left</span>
-      Seguir comprando
-    </a>
+  <div class="seguir-comprando">
+      <button class="icon-back" onclick="window.location.href='index.html'">
+          <span class="material-symbols-outlined">chevron_left</span>
+      </button>
+
+      <a href="index.html">Seguir comprando</a>
   </div>
 
+
   <!-- =====================================================
-       GRID PRINCIPAL: PRODUCTOS + RESUMEN
+        GRID PRINCIPAL – PRODUCTOS + RESUMEN
   ====================================================== -->
-  <main class="cart-grid">
+  <main>
 
-    <!-- === Columna de productos === -->
-    <div class="col-productos"></div>
+    <div class="grid-carrito">
 
-    <!-- === Columna del resumen === -->
-    <div class="col-resumen"></div>
+      <!-- === Columna de productos === -->
+      <div class="col-productos" id="cart-container"></div>
+
+      <!-- === Columna de resumen === -->
+      <div class="col-resumen" id="resumen-container">
+          <!-- JS insertará el resumen aquí -->
+      </div>
+
+    </div>
 
   </main>
 
-  <!-- === SNACKBAR (Carrito vacío) === -->
+
+  <!-- =====================================================
+       SNACKBARS
+  ====================================================== -->
   <div id="aviso-vacio" class="snackbar-md3"></div>
 
-  <!-- === SNACKBAR LOGIN === -->
   <div id="snackbar-login">
     Necesitas iniciar sesión para continuar con tu pedido.
   </div>
 
-  <!-- === SCRIPT DEL CARRITO === -->
-  <script src="js/cart.js?v=11"></script>
+
+  <!-- =====================================================
+       SCRIPT DEL CARRITO
+  ====================================================== -->
+  <script src="js/cart.js?v=12"></script>
 
 </body>
 </html>
