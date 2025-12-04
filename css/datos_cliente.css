@@ -1,6 +1,6 @@
 /* ============================================================
-   DETALLES DE ENTREGA — CORREGIDO AL 100%
-   Igual a LOGIN / REGISTRO / PERFIL (FEB 2025)
+   DETALLES DE ENTREGA — VERSIÓN FINAL PERFECTA
+   Alineado EXACTAMENTE como PERFIL (FEB 2025)
 ============================================================ */
 
 :root {
@@ -23,7 +23,7 @@ body {
 }
 
 /* ============================================================
-   HEADER
+   HEADER — MISMO ESTILO QUE CARRITO
 ============================================================ */
 
 .header-fixed {
@@ -32,28 +32,28 @@ body {
   height: 72px;
   background: var(--blanco);
   padding: 0 1.2rem;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
+
   border-bottom: 1.4px solid rgba(0,0,0,0.06);
   z-index: 999;
 }
 
 .header-logo {
   height: 52px;
-  object-fit: contain;
 }
 
 .form-title {
-  font-family: "Fraunces", serif;
-  font-size: 1.55rem;
-  font-weight: 600;
+  font-size: 1.28rem;
+  font-weight: 500;     /* MISMO GROSOR QUE CARRITO */
   color: var(--marron);
-  letter-spacing: .3px;
+  letter-spacing: -0.25px;
 }
 
 /* ============================================================
-   TARJETA PRINCIPAL (EXTERIOR) — SIN BORDE!
+   TARJETA EXTERIOR — SIN BORDE
 ============================================================ */
 
 .profile-container {
@@ -72,22 +72,26 @@ body {
 }
 
 /* ============================================================
-   BOTÓN ATRÁS — IGUAL A PERFIL
+   BOTÓN ATRÁS — MISMO ESTILO QUE PERFIL PERO VERDE
 ============================================================ */
 
 .back-btn {
   position: absolute;
   top: 22px;
   left: 22px;
+
   width: 48px;
   height: 48px;
   border-radius: 50%;
   background: #ffffff;
   border: none;
+
   box-shadow: 0 5px 16px rgba(0,0,0,0.15);
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   cursor: pointer;
   transition: .25s ease;
 }
@@ -97,14 +101,15 @@ body {
   box-shadow: 0 7px 20px rgba(0,0,0,0.20);
 }
 
+/* flecha VERDE corregida */
 .back-btn .material-symbols-outlined {
   font-size: 26px;
   font-weight: 600;
-  color: var(--marron);
+  color: var(--verde) !important;
 }
 
 /* ============================================================
-   TARJETA INTERIOR — CON BORDE CAFÉ
+   TARJETA INTERIOR — IGUAL A PERFIL
 ============================================================ */
 
 .profile-inner-card {
@@ -116,7 +121,7 @@ body {
 }
 
 /* ============================================================
-   INPUTS MATERIAL 3 — EXACTO A PERFIL
+   INPUTS MATERIAL 3 — ESTILO PERFIL
 ============================================================ */
 
 .m3-field {
@@ -128,9 +133,11 @@ body {
   display: flex;
   align-items: center;
   gap: .75rem;
+
   padding: 1rem;
   border-radius: 14px;
   background: #ffffff;
+
   border: 1.7px solid var(--input-border);
   transition: border-color .2s ease;
 }
@@ -140,7 +147,6 @@ body {
   color: var(--verde);
 }
 
-/* Inputs */
 .m3-input input,
 .m3-input textarea,
 .m3-input select {
@@ -154,7 +160,7 @@ body {
 }
 
 /* ============================================================
-   FLOATING LABEL — COPIADO DE PERFIL AL 100%
+   FLOATING LABEL — IGUAL A PERFIL **AL PÍXEL**
 ============================================================ */
 
 .floating-label {
@@ -169,25 +175,23 @@ body {
   pointer-events: none;
 }
 
-/* Cuándo flota */
+/* MISMA ALTURA Y POSICIÓN QUE PERFIL */
 .m3-input input:not(:placeholder-shown) + .floating-label,
 .m3-input textarea:not(:placeholder-shown) + .floating-label,
-.m3-input select:not([value=""]) + .floating-label,
+.m3-input select.filled + .floating-label,
 .m3-input:focus-within .floating-label {
-  top: -10px;
-  left: 2.85rem;
-  font-size: .78rem;
+  top: -6px;               /* MISMO QUE PERFIL */
+  left: 2.85rem;           /* MISMO QUE PERFIL */
+  font-size: .78rem;       /* MISMO QUE PERFIL */
   background: #ffffff;
   color: var(--verde);
   padding: 0 5px;
 }
 
-/* Focus */
-.m3-input:focus-within {
-  border-color: var(--input-focus);
-}
+/* ============================================================
+   TEXTAREA
+============================================================ */
 
-/* Textarea */
 .textarea-field {
   align-items: flex-start !important;
   padding-top: 1.4rem !important;
@@ -210,11 +214,13 @@ body {
   padding: 1.05rem;
   font-size: 1.05rem;
   font-weight: 600;
+  border: none;
+
   display: flex;
   align-items: center;
   justify-content: center;
   gap: .7rem;
-  border: none;
+
   cursor: pointer;
 }
 
