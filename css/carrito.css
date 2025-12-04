@@ -1,213 +1,17 @@
-:root {
-  --marron: #512615;
-  --verde: #33673B;
-  --blanco: #ffffff;
-  --fondo: #fafafa;
-}
-
-/* RESET */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: "Poppins", sans-serif;
-  background: var(--fondo);
-  color: var(--marron);
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* ============================================================
-   HEADER
-============================================================ */
-header {
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  background: rgba(255,255,255,0.85);
-  backdrop-filter: blur(10px);
-  height: 72px;
-  padding: 0 1.2rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1.5px solid rgba(0,0,0,0.05);
-}
-
-header img {
-  height: 52px;
-}
-
-.header-avatar-link img {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  border: 1.5px solid rgba(0,0,0,0.1);
-  object-fit: cover;
-}
-
-.cart-title {
-  font-size: 1.15rem;
-  font-weight: 600;
-}
-
-/* ============================================================
-   SEGUIR COMPRANDO — IZQUIERDA (GOOGLE)
-============================================================ */
-.seguir-comprando {
-  max-width: 1100px;
-  margin: 1.9rem auto 1.5rem;
-  padding: 0 1.3rem;
-
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  gap: 0.55rem;
-}
-
-.icon-back {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: var(--blanco);
-  border: 1.4px solid rgba(0,0,0,0.08);
-  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
-.icon-back .material-symbols-outlined {
-  font-size: 22px;
-  color: var(--verde);
-}
-
-.seguir-comprando a {
-  color: var(--verde);
-  font-weight: 600;
-  text-decoration: none;
-}
-
-/* ============================================================
-   GRID PRINCIPAL
-============================================================ */
-.grid-carrito {
-  display: grid;
-  grid-template-columns: 1fr 360px;
-  gap: 2rem;
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 0 1.3rem 3.3rem;
-}
-
-@media (max-width: 760px) {
-  .grid-carrito { grid-template-columns: 1fr; }
-  .col-resumen { order: 2; }
-  .col-productos { order: 1; }
-}
-
-/* ============================================================
-   PRODUCTOS DEL CARRITO
-============================================================ */
-.item {
-  display: flex;
-  gap: 1.3rem;
-  padding: 1.3rem;
-  border-radius: 18px;
-  background: var(--blanco);
-  border: 1.8px solid rgba(0,0,0,0.08);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
-  margin-bottom: 1.3rem;
-}
-
-.item-img-box {
-  width: 95px;
-  height: 95px;
-  border-radius: 18px;
-  padding: 8px;
-  border: 1.4px solid rgba(0,0,0,0.06);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.item-img-box img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.item-info { flex: 1; }
-.item-name { font-weight: 600; }
-.item-price { font-size: 0.92rem; opacity: 0.8; }
-
-/* ============================================================
-   CONTROL DE CANTIDAD
-============================================================ */
-.qty-controls {
-  display: flex;
-  align-items: center;
-  gap: 0.7rem;
-}
-
-.qty-btn,
-.del-btn {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  border: 1.5px solid rgba(0,0,0,0.12);
-  background: var(--blanco);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-}
-
-.qty-btn.plus i { color: var(--verde); }
-.qty-btn.minus i { color: var(--marron); }
-.del-btn i { color: #d72638; }
-
-/* ============================================================
-   GUARDAR PARA MÁS TARDE
-============================================================ */
-.save-later-btn {
-  padding: 0.55rem 1.15rem;
-  font-size: 0.92rem;
-  font-weight: 500;
-  background: var(--blanco);
-  color: var(--marron);
-  border: 1.6px solid rgba(0,0,0,0.12);
-  border-radius: 14px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 0.55rem;
-  transition: 0.2s ease;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
-}
-
-.save-later-btn:hover { background: #f5f1ee; }
-.save-later-btn:active { background: #ebe6e2; transform: scale(0.97); }
-
-/* ============================================================
-   RESUMEN DEL PEDIDO — GOOGLE
-============================================================ */
-.resumen-box {
-  background: var(--blanco);
-  border-radius: 20px;
-  padding: 2rem 1.8rem;
-  border: 1.4px solid rgba(0,0,0,0.06);
-  box-shadow: 0 6px 16px rgba(0,0,0,0.05);
-}
-
 /* ============================================================
    GUARDADO PARA MÁS TARDE — GOOGLE (2 modos)
 ============================================================ */
 
-/* MODO A — Al lado de productos (ancho completo) */
+/* Contenedor general en la columna izquierda */
+.saved-wrapper {
+  margin-top: 2rem;
+  width: 100%;
+}
+
+/* ============================================================
+   MODO A — Carrito con productos
+   La tarjeta sigue el ancho de la columna
+============================================================ */
 .saved-card {
   background: var(--blanco);
   padding: 2rem 1.8rem;
@@ -218,13 +22,34 @@ header img {
   transition: all .25s ease;
 }
 
-/* MODO B — Centrado cuando el carrito está vacío */
+/* ============================================================
+   MODO B — Carrito vacío
+   CENTRADO como Google Store
+============================================================ */
 .saved-card.centered {
-  max-width: 600px;
-  margin: 0 auto;
+  max-width: 600px;       /* ancho elegante */
+  margin-left: auto;  
+  margin-right: auto;
+  margin-top: 1.5rem;
 }
 
-/* Línea verde gruesa */
+/* Alineación del contenedor cuando está vacío */
+.col-productos.empty-mode {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Mensaje vacío centrado */
+#cart-container.empty-cart-message {
+  text-align: center;
+  padding: 2rem 0;
+  width: 100%;
+}
+
+/* ============================================================
+   TÍTULO Y LÍNEA VERDE GRUESA
+============================================================ */
 .saved-card-title {
   font-size: 1.32rem;
   font-weight: 600;
@@ -241,8 +66,75 @@ header img {
   margin-top: 0.6rem;
 }
 
-/* VACÍO */
+/* LISTA Y ESTADOS */
+.saved-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
 .empty-saved {
   text-align: center;
   padding: 2rem 0;
+}
+
+.saved-empty-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.saved-empty-sub {
+  font-size: 0.95rem;
+  color: #6b5a53;
+  margin-top: 0.25rem;
+}
+
+/* ============================================================
+   PRODUCTOS GUARDADOS
+============================================================ */
+.saved-item {
+  display: flex;
+  gap: 1.15rem;
+  padding: 1.25rem;
+  border-radius: 16px;
+  background: var(--blanco);
+  border: 1.4px solid rgba(0,0,0,0.07);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.saved-img-box {
+  width: 82px;
+  height: 82px;
+  padding: 7px;
+  border-radius: 16px;
+  background: white;
+  border: 1.2px solid rgba(0,0,0,0.06);
+}
+
+.saved-info { flex: 1; }
+
+.saved-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.saved-btn {
+  padding: 0.55rem 1rem;
+  border-radius: 12px;
+  border: 1.4px solid rgba(0,0,0,0.12);
+  background: white;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.saved-btn.return {
+  color: var(--verde);
+  border-color: var(--verde);
+  font-weight: 600;
+}
+
+.saved-btn.delete {
+  color: #d72638;
+  border-color: rgba(215,38,56,0.35);
 }
