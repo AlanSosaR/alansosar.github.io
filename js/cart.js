@@ -24,7 +24,31 @@ function showSnackbar(message) {
 
   setTimeout(() => {
     bar.classList.remove("show");
-  }, 3000);
+  }, 2500);
+}
+
+/* ============================================================
+   🔐 MÉTODO CORRECTO PARA VERIFICAR LOGIN (MISMO DE perfil.html)
+============================================================ */
+async function checkLoginStatus() {
+  try {
+    const { data, error } = await supabase.auth.getUser();
+
+    if (error || !data?.user) {
+      showSnackbar("Necesitas iniciar sesión para continuar con tu pedido.");
+      setTimeout(() => {
+        window.location.href = "login.html?redirect=carrito";
+      }, 1200);
+      return null;
+    }
+
+    return data.user;
+
+  } catch (err) {
+    console.error("Error verificando login:", err);
+    window.location.href = "login.html?redirect=carrito";
+    return null;
+  }
 }
 
 /* ============================================================
@@ -42,13 +66,9 @@ function renderCart() {
   cartContainer.innerHTML = "";
   colResumen.innerHTML    = "";
 
-  /* contador */
   const total = cart.reduce((a,b) => a + b.qty, 0);
   countSpan.textContent = `(${total} ${total === 1 ? "café" : "cafés"})`;
 
-  /* ============================================================
-       CARRITO VACÍO
-  ============================================================ */
   if (cart.length === 0) {
 
     savedCard.classList.add("centered");
@@ -65,13 +85,9 @@ function renderCart() {
     return;
   }
 
-  /* carrito con productos */
   savedCard.classList.remove("centered");
   savedSection.classList.remove("empty-mode");
 
-  /* ============================================================
-       PINTAR PRODUCTOS DEL CARRITO
-  ============================================================ */
   cart.forEach((item, index) => {
 
     const div = document.createElement("div");
@@ -98,7 +114,6 @@ function renderCart() {
 
           <button class="save-later-btn" data-action="save" data-index="${index}">
             <span class="save-later-text">Guardar para más tarde</span>
-            <span class="save-later-loader"></span>
           </button>
 
           <button class="del-btn" data-action="del" data-index="${index}">
@@ -112,9 +127,6 @@ function renderCart() {
     cartContainer.appendChild(div);
   });
 
-  /* ============================================================
-       RESUMEN DEL PEDIDO
-  ============================================================ */
   const subtotal = cart.reduce((acc, item) => acc + (item.qty * item.price), 0);
 
   colResumen.innerHTML = `
@@ -156,7 +168,6 @@ function renderSaved() {
 
   container.innerHTML = "";
 
-  /* LISTA VACÍA */
   if (saved.length === 0) {
 
     savedCard.classList.add("centered");
@@ -170,7 +181,6 @@ function renderSaved() {
     return;
   }
 
-  /* LISTA CON PRODUCTOS */
   savedCard.classList.remove("centered");
   savedSection.classList.remove("empty-mode");
   container.classList.remove("empty-saved");
@@ -209,9 +219,6 @@ document.addEventListener("click", async e => {
   const action = btn.dataset.action;
   const index  = parseInt(btn.dataset.index);
 
-  /* ------------------------
-       ACCIONES DEL CARRITO
-  -------------------------*/
   if (["plus","minus","del","save"].includes(action)) {
 
     let cart = getCart();
@@ -251,9 +258,6 @@ document.addEventListener("click", async e => {
     renderCart();
   }
 
-  /* ------------------------
-       ACCIONES GUARDADOS
-  -------------------------*/
   if (action === "return") {
 
     const saved = getSaved();
@@ -277,20 +281,13 @@ document.addEventListener("click", async e => {
   }
 
   /* ============================================================
-       BOTÓN: PROCEDER AL PAGO  → CON SNACKBAR
+       BOTÓN: PROCEDER AL PAGO  → AHORA FUNCIONA CORRECTAMENTE
   ============================================================ */
   if (btn.id === "proceder-btn") {
 
-    // Obtener sesión de Supabase
-    const { data: { session } } = await supabase.auth.getSession();
-    const loggedIn = session ? true : false;
+    const user = await checkLoginStatus();
+    if (!user) return; // ya mostró snackbar y redirigió
 
-    if (!loggedIn) {
-      showSnackbar("Necesitas iniciar sesión para continuar con tu pedido.");
-      return;
-    }
-
-    // Si está logueado → pasar a checkout
     window.location.href = "checkout.html";
   }
 });
