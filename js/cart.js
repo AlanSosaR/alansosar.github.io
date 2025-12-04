@@ -1,7 +1,7 @@
 /* ============================================================
    Carrito — Café Cortero
    Versión Final Premium 2025
-   Con aviso suave (snackbar) si no está logueado
+   Con aviso suave (snackbar) si no está logueado + LOADER M3
 ============================================================ */
 
 const CART_KEY = 'cafecortero_cart';
@@ -24,6 +24,7 @@ function renderCart() {
   const cart = getCart();
   const container = document.getElementById('cart-container');
   const totalBox = document.getElementById('total-box');
+  const procederBtn = document.getElementById('proceder-btn');
 
   container.innerHTML = '';
 
@@ -36,7 +37,7 @@ function renderCart() {
     `;
 
     totalBox.style.display = "none";
-    actualizarTextoBoton();
+    procederBtn.querySelector(".btn-text").textContent = "Proceder al pago";
     return;
   }
 
@@ -87,30 +88,15 @@ function renderCart() {
     <span class="moneda">L</span> ${total.toFixed(2)}
   `;
 
-  actualizarTextoBoton();
-}
-
-/* -------------------------------------------
-   Actualizar texto del botón
-------------------------------------------- */
-function actualizarTextoBoton() {
-  const procederBtn = document.getElementById('proceder-btn');
-  const cart = getCart();
-
-  let totalCafes = 0;
-  cart.forEach(item => totalCafes += item.qty);
-
-  if (totalCafes === 0) {
-    procederBtn.textContent = "Proceder al pago";
-    return;
-  }
-
+  // actualizar botón
+  const totalCafes = cart.reduce((acc, item) => acc + item.qty, 0);
   const palabra = totalCafes === 1 ? "café" : "cafés";
-  procederBtn.textContent = `Proceder al pago (${totalCafes} ${palabra})`;
+  document.querySelector("#proceder-btn .btn-text").textContent =
+    `Proceder al pago (${totalCafes} ${palabra})`;
 }
 
 /* -------------------------------------------
-   Eventos en items
+   Eventos de los items
 ------------------------------------------- */
 document.getElementById('cart-container').addEventListener('click', e => {
   const btn = e.target.closest('button');
@@ -134,13 +120,17 @@ document.getElementById('cart-container').addEventListener('click', e => {
 });
 
 /* ============================================================
-   Proceder al pago — lógica final
+   Proceder al pago — con LOADER y validaciones
 ============================================================ */
 document.getElementById('proceder-btn').addEventListener('click', () => {
+  const btn = document.getElementById('proceder-btn');
+  const loader = btn.querySelector('.loader');
+  const text = btn.querySelector('.btn-text');
+
   const cart = getCart();
   const aviso = document.getElementById('aviso-vacio');
 
-  /* 1️⃣ Leer sesión */
+  /* LEER SESIÓN */
   let user = null;
   let logged = false;
 
@@ -154,11 +144,13 @@ document.getElementById('proceder-btn').addEventListener('click', () => {
 
   const noSesion = (!logged || !user);
 
-  /* 2️⃣ Carrito vacío */
+  /* ===============================
+     1️⃣ Carrito vacío
+  =============================== */
   if (cart.length === 0) {
 
-    /* 🚫 Si NO está logueado → login */
     if (noSesion) {
+      // Mostrar snackbar y enviar a login
       const snack = document.getElementById("snackbar-login");
       snack.classList.add("show");
 
@@ -166,17 +158,20 @@ document.getElementById('proceder-btn').addEventListener('click', () => {
         snack.classList.remove("show");
         window.location.href = "login.html";
       }, 2200);
+
       return;
     }
 
-    /* ✔ Logueado → mensaje normal */
+    // Si está logueado, solo aviso
     aviso.textContent = "Aún no has agregado cafés a tu selección.";
     aviso.classList.add('show');
     setTimeout(() => aviso.classList.remove('show'), 2500);
     return;
   }
 
-  /* 3️⃣ Hay cafés pero NO está logueado */
+  /* ===============================
+     2️⃣ Tiene cafés pero NO sesión
+  =============================== */
   if (noSesion) {
     const snack = document.getElementById("snackbar-login");
     snack.classList.add("show");
@@ -189,8 +184,14 @@ document.getElementById('proceder-btn').addEventListener('click', () => {
     return;
   }
 
-  /* 4️⃣ Todo válido → ir a datos del cliente */
-  window.location.href = "datos_cliente.html";
+  /* ===============================
+     3️⃣ Todo OK → mostrar loader
+  =============================== */
+  btn.classList.add("loading");
+
+  setTimeout(() => {
+    window.location.href = "datos_cliente.html";
+  }, 800);
 });
 
 /* Init */
