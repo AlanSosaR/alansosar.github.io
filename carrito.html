@@ -8,118 +8,169 @@
   <!-- Tipografía -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
-  <!-- Iconos -->
+  <!-- FontAwesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-  <!-- Material Symbols -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+  <!-- Material Icons -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined">
 
   <!-- CSS -->
-  <link rel="stylesheet" href="css/carrito.css?v=24">
+  <link rel="stylesheet" href="css/carrito.css?v=25">
 </head>
-
 <body>
 
-  <!-- =====================================================
-       HEADER
-  ====================================================== -->
-  <header>
-      <a href="index.html" class="header-logo-link">
+<!-- =====================================================
+     HEADER (IGUAL QUE INDEX, PARA QUE CARGUE EL AVATAR)
+====================================================== -->
+<header>
+    <a href="index.html" class="header-logo-link">
         <img src="imagenes/logo.png" alt="Café Cortero" class="header-logo">
-      </a>
+    </a>
 
-      <span class="cart-title">
+    <span class="cart-title">
         Tu selección de café <span id="count-items">(0 cafés)</span>
-      </span>
+    </span>
 
-      <a href="perfil.html" class="header-avatar-link">
-        <img src="imagenes/avatar-default.svg" id="avatar-user" class="header-avatar">
-      </a>
-  </header>
-
-
-  <!-- =====================================================
-        SEGUIR COMPRANDO
-  ====================================================== -->
-  <div id="seguir-wrapper" class="seguir-comprando seguir-left">
-      <button class="icon-back" onclick="window.location.href='index.html'">
-          <span class="material-symbols-outlined">chevron_left</span>
-      </button>
-
-      <a href="index.html" class="seguir-link">Seguir comprando</a>
-  </div>
+    <div id="header-profile-container">
+        <a href="perfil.html" id="header-profile-link">
+            <img id="header-profile-photo" src="imagenes/avatar-default.svg" alt="Tu perfil">
+        </a>
+    </div>
+</header>
 
 
-  <!-- =====================================================
-        GRID PRINCIPAL — PRODUCTOS + RESUMEN
-  ====================================================== -->
-  <main>
+<!-- =====================================================
+     SEGUIR COMPRANDO
+====================================================== -->
+<div id="seguir-wrapper" class="seguir-comprando seguir-left">
+    <button class="icon-back" onclick="window.location.href='index.html'">
+        <span class="material-symbols-outlined">chevron_left</span>
+    </button>
 
-    <div class="grid-carrito">
+    <a href="index.html" class="seguir-link">Seguir comprando</a>
+</div>
 
-      <!-- =====================================================
-           COLUMNA IZQUIERDA (PRODUCTOS + GUARDADOS)
-      ====================================================== -->
-      <div class="col-productos">
 
-          <div id="cart-container"></div>
+<!-- =====================================================
+     PLANTILLAS (TEMPLATES)
+====================================================== -->
 
-          <!-- GUARDADO PARA MÁS TARDE -->
-          <section id="saved-section" class="saved-wrapper">
-              <div class="saved-card">
-                  <h3 class="saved-card-title">Guardado para más tarde</h3>
+<!-- 🔥 Producto dentro del carrito -->
+<template id="template-cart-item">
+    <div class="item">
 
-                  <div id="saved-list" class="saved-list empty-saved">
-                      <p class="saved-empty-title">No hay cafés guardados todavía</p>
-                      <p class="saved-empty-sub">Añade a esta lista tus cafés que no estás comprando hoy</p>
-                  </div>
-              </div>
-          </section>
-
-      </div>
-
-      <!-- =====================================================
-           COLUMNA DERECHA — RESUMEN DEL PEDIDO
-      ====================================================== -->
-      <div class="col-resumen" id="resumen-container">
-
-        <!-- Aquí se inserta dinámicamente el resumen por JS -->
-
-        <!-- SNACKBAR -->
-        <div id="snackbar-login" class="snackbar hidden">
-          Necesitas iniciar sesión para continuar con tu pedido.
+        <div class="item-img-box">
+            <img class="item-image" src="">
         </div>
 
-      </div>
+        <div class="item-info">
+            <div class="item-name"></div>
+            <div class="item-price"></div>
+
+            <div class="qty-controls">
+
+                <button class="qty-btn minus" data-action="minus">
+                    <i class="fa-solid fa-minus"></i>
+                </button>
+
+                <span class="qty-number"></span>
+
+                <button class="qty-btn plus" data-action="plus">
+                    <i class="fa-solid fa-plus"></i>
+                </button>
+
+                <!-- 🔥 Botón Guardar para más tarde (ahora vive en HTML) -->
+                <button class="save-later-btn" data-action="save">
+                    <span class="save-text">Guardar para más tarde</span>
+                </button>
+
+                <button class="del-btn" data-action="del">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+
+            </div>
+        </div>
+    </div>
+</template>
+
+
+<!-- 🔥 Producto guardado para más tarde -->
+<template id="template-saved-item">
+    <div class="saved-item">
+
+        <div class="saved-img-box">
+            <img class="saved-image">
+        </div>
+
+        <div class="saved-info">
+            <div class="saved-name"></div>
+            <div class="saved-price"></div>
+        </div>
+
+        <div class="saved-buttons">
+            <button class="saved-btn return" data-action="return">Mover al carrito</button>
+            <button class="saved-btn delete" data-action="delete-saved">Eliminar</button>
+        </div>
 
     </div>
+</template>
 
-  </main>
 
-  <!-- ===========================
-        LOADER
-  ============================ -->
-  <div id="page-loader" class="page-loader hidden">
-      <div class="loader-circle"></div>
-  </div>
 
-  <!-- ===========================
-        SCRIPTS NECESARIOS
-  ============================ -->
+<!-- =====================================================
+     CONTENIDO PRINCIPAL
+====================================================== -->
+<main>
+    <div class="grid-carrito">
 
-  <!-- Supabase -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<!-- Supabase Core -->
+        <!-- IZQUIERDA -->
+        <div class="col-productos">
+            <div id="cart-container"></div>
+
+            <!-- Guardados -->
+            <section id="saved-section" class="saved-wrapper">
+                <div class="saved-card">
+                    <h3 class="saved-card-title">Guardado para más tarde</h3>
+
+                    <div id="saved-list" class="saved-list empty-saved">
+                        <p class="saved-empty-title">No hay cafés guardados todavía</p>
+                        <p class="saved-empty-sub">Añade a esta lista tus cafés que no estás comprando hoy</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- DERECHA -->
+        <div class="col-resumen" id="resumen-container">
+
+            <!-- Snackbar -->
+            <div id="snackbar-login" class="snackbar hidden">
+                Necesitas iniciar sesión para continuar con tu pedido.
+            </div>
+
+        </div>
+
+    </div>
+</main>
+
+
+<!-- Loader -->
+<div id="page-loader" class="page-loader hidden">
+    <div class="loader-circle"></div>
+</div>
+
+
+<!-- =====================================================
+     SCRIPTS
+====================================================== -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script src="js/supabase-client-core.js"></script>
-
-<!-- Manejo REAL de login, logout, sesión -->
 <script src="js/supabase-auth.js"></script>
-
-<!-- Avatar + menú según estado de sesión -->
 <script src="js/auth-ui.js"></script>
 
 <!-- Lógica del carrito -->
-<script src="js/cart.js?v=2400"></script>
+<script src="js/cart.js?v=2500"></script>
 
 </body>
 </html>
