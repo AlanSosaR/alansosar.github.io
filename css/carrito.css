@@ -55,14 +55,12 @@ header img {
 }
 
 /* ============================================================
-   SEGUIR COMPRANDO
+   SEGUIR COMPRANDO — CENTRADO GOOGLE
 ============================================================ */
 .seguir-comprando {
   max-width: 1100px;
   margin: 1.9rem auto 1.5rem;
   padding: 0 1.3rem;
-
-  /* CENTRADO COMO GOOGLE */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -195,6 +193,7 @@ header img {
 .save-later-btn:hover { background: #f5f1ee; }
 .save-later-btn:active { background: #ebe6e2; transform: scale(0.97); }
 
+/* loader */
 .save-later-loader {
   width: 16px;
   height: 16px;
@@ -209,7 +208,7 @@ header img {
 .save-later-btn.loading .save-later-text { opacity: 0; }
 
 /* ============================================================
-   RESUMEN DEL PEDIDO — ESTILO GOOGLE STORE
+   RESUMEN DEL PEDIDO — GOOGLE
 ============================================================ */
 .resumen-box {
   background: var(--blanco);
@@ -223,15 +222,14 @@ header img {
   font-size: 1.32rem;
   font-weight: 600;
   margin-bottom: 1.2rem;
-  color: var(--marron);
   text-align: left;
 }
 
 .resumen-row {
   display: flex;
   justify-content: space-between;
-  font-size: 1rem;
   padding: 0.45rem 0;
+  font-size: 1rem;
   color: #444;
 }
 
@@ -239,7 +237,6 @@ header img {
   font-size: 1.32rem;
   font-weight: 700;
   margin-top: 0.8rem;
-  color: var(--marron);
 }
 
 /* ============================================================
@@ -260,7 +257,7 @@ header img {
   font-size: 1.05rem;
   font-weight: 600;
   cursor: pointer;
-  transition: 0.2s;
+  transition: 0.2s ease;
 }
 
 .m3-btn:hover { filter: brightness(1.08); }
@@ -295,24 +292,23 @@ header img {
   border: 1.4px solid rgba(0,0,0,0.06);
   box-shadow: 0 6px 16px rgba(0,0,0,0.05);
   margin-top: 1.8rem;
+  max-width: 760px;         /* MISMO ANCHO QUE GOOGLE */
+  margin-left: auto;
+  margin-right: auto;
 }
 
-/* TÍTULO + SEPARADOR VERDE */
+/* TÍTULO + LÍNEA VERDE GRUESA */
 .saved-card-title {
   font-size: 1.32rem;
   font-weight: 600;
-  margin-bottom: 1rem;
-  position: relative;
   padding-bottom: 0.8rem;
-  color: var(--marron);
 }
 
 .saved-card-title::after {
   content: "";
   width: 100%;
-  height: 2px;
-  background: var(--verde);
-  opacity: 0.25;
+  height: 4px;               /* LÍNEA GRUESA */
+  background: var(--verde);  /* VERDE CORPORATIVO */
   border-radius: 4px;
   display: block;
   margin-top: 0.6rem;
@@ -325,10 +321,10 @@ header img {
   gap: 1.2rem;
 }
 
-/* VACÍO — CENTRADO */
+/* VACÍO — CENTRADO GOOGLE */
 .empty-saved {
-  padding: 2rem 0;
   text-align: center !important;
+  padding: 2rem 0;
 }
 
 .saved-empty-title {
@@ -397,7 +393,7 @@ header img {
 }
 
 /* ============================================================
-   SPIN ANIMATION
+   SPIN
 ============================================================ */
 @keyframes spin {
   to { transform: rotate(360deg); }
@@ -407,6 +403,10 @@ header img {
    MÓVIL
 ============================================================ */
 @media (max-width: 760px) {
+  .saved-card {
+    padding: 1.6rem 1.3rem;
+    max-width: 100%;
+  }
+
   .resumen-box { padding: 1.6rem 1.3rem; }
-  .saved-card { padding: 1.6rem 1.3rem; }
 }
