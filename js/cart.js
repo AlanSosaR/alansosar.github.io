@@ -40,10 +40,7 @@ function renderCart() {
   ============================================================ */
   if (cart.length === 0) {
 
-    /* activar modo centrado */
     savedCard.classList.add("centered");
-
-    /* ⭐⭐ activar modo vacío en el contenedor (LO QUE FALTABA) */
     savedSection.classList.add("empty-mode");
 
     cartContainer.innerHTML = `
@@ -57,14 +54,12 @@ function renderCart() {
     return;
   }
 
-  /* carrito con productos → quitar centrado */
+  /* carrito con productos */
   savedCard.classList.remove("centered");
-
-  /* ⭐⭐ desactivar modo vacío cuando hay productos */
   savedSection.classList.remove("empty-mode");
 
   /* ============================================================
-       PINTAR PRODUCTOS
+       PINTAR PRODUCTOS DEL CARRITO
   ============================================================ */
   cart.forEach((item, index) => {
 
@@ -107,7 +102,7 @@ function renderCart() {
   });
 
   /* ============================================================
-       RESUMEN
+       RESUMEN DEL PEDIDO (Estilo Café Cortero + Google Store)
   ============================================================ */
   const subtotal = cart.reduce((acc, item) => acc + (item.qty * item.price), 0);
 
@@ -139,22 +134,22 @@ function renderCart() {
 }
 
 /* ============================================================
-   GUARDADO PARA MÁS TARDE
+   RENDER — GUARDADO PARA MÁS TARDE
 ============================================================ */
 function renderSaved() {
 
-  const saved       = getSaved();
-  const container   = document.getElementById("saved-list");
-  const savedCard   = document.querySelector("#saved-section .saved-card");
+  const saved        = getSaved();
+  const container    = document.getElementById("saved-list");
+  const savedCard    = document.querySelector("#saved-section .saved-card");
   const savedSection = document.getElementById("saved-section");
 
   container.innerHTML = "";
 
-  /* vacío */
+  /* LISTA VACÍA */
   if (saved.length === 0) {
 
     savedCard.classList.add("centered");
-    savedSection.classList.add("empty-mode"); // ⭐ asegura estilo correcto
+    savedSection.classList.add("empty-mode");
 
     container.classList.add("empty-saved");
     container.innerHTML = `
@@ -164,12 +159,13 @@ function renderSaved() {
     return;
   }
 
-  /* con productos */
+  /* LISTA CON PRODUCTOS */
   savedCard.classList.remove("centered");
   savedSection.classList.remove("empty-mode");
   container.classList.remove("empty-saved");
 
   saved.forEach((item, index) => {
+
     const div = document.createElement("div");
     div.className = "saved-item";
 
@@ -202,7 +198,9 @@ document.addEventListener("click", e => {
   const action = btn.dataset.action;
   const index  = parseInt(btn.dataset.index);
 
-  /* ACCIONES DEL CARRITO */
+  /* ------------------------
+       ACCIONES DEL CARRITO
+  -------------------------*/
   if (["plus","minus","del","save"].includes(action)) {
 
     let cart = getCart();
@@ -222,6 +220,7 @@ document.addEventListener("click", e => {
       showPageLoader();
 
       setTimeout(() => {
+
         saved.push(cart[index]);
         saveSaved(saved);
 
@@ -230,6 +229,7 @@ document.addEventListener("click", e => {
 
         btn.classList.remove("loading");
         hidePageLoader();
+
         renderCart();
       }, 700);
 
@@ -240,13 +240,16 @@ document.addEventListener("click", e => {
     renderCart();
   }
 
-  /* ACCIONES EN GUARDADOS */
+  /* ------------------------
+       ACCIONES GUARDADOS
+  -------------------------*/
   if (action === "return") {
+
     const saved = getSaved();
     const cart  = getCart();
 
     cart.push(saved[index]);
-    saved.splice(index,1);
+    saved.splice(index, 1);
 
     saveCart(cart);
     saveSaved(saved);
@@ -254,8 +257,10 @@ document.addEventListener("click", e => {
   }
 
   if (action === "delete-saved") {
+
     const saved = getSaved();
-    saved.splice(index,1);
+    saved.splice(index, 1);
+
     saveSaved(saved);
     renderSaved();
   }
