@@ -20,7 +20,7 @@ body {
 }
 
 /* ============================================================
-   HEADER — ESTILO GOOGLE STORE
+   HEADER — RESTAURADO COMO EN TU SITIO ORIGINAL
 ============================================================ */
 .header-new {
   position: sticky;
@@ -40,8 +40,10 @@ body {
   justify-content: space-between;
 }
 
-.h-logo-box img {
-  height: 50px;
+.header-logo {
+  height: 52px;      /* ✔ tamaño original restaurado */
+  width: auto;
+  object-fit: contain;
 }
 
 .h-title {
@@ -53,7 +55,7 @@ body {
 
 #count-items {
   font-weight: 500;
-  opacity: 0.8;
+  opacity: .8;
   margin-left: 6px;
 }
 
@@ -65,7 +67,7 @@ body {
   object-fit: cover;
 }
 
-/* MÓVIL → título alineado a la derecha */
+/* Móvil → título pegado a la derecha */
 @media(max-width: 600px) {
   .h-title {
     text-align: right;
@@ -113,7 +115,7 @@ body {
   padding: 0 1rem 3rem;
 }
 
-/* MÓVIL → Una columna */
+/* Móvil → una columna */
 @media(max-width: 760px) {
   .grid-carrito {
     grid-template-columns: 1fr;
@@ -129,7 +131,7 @@ body {
 }
 
 /* ============================================================
-   TARJETAS DE PRODUCTOS (ya estaban bien)
+   TARJETAS DE PRODUCTOS (perfectas como estaban)
 ============================================================ */
 .item {
   display: flex;
@@ -289,7 +291,9 @@ body {
 .m3-btn.loading .loader { display: block; }
 .m3-btn.loading .btn-text { opacity: .45; }
 
-@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
 
 /* ============================================================
    SNACKBARS
