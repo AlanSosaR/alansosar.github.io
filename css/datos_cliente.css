@@ -1,6 +1,7 @@
 /* ============================================================
    DATOS CLIENTE — MATERIAL 3 + APPLE STYLE + CORTERO 2025
-   ============================================================ */
+   Versión final y consistente con PERFIL + CARRITO
+============================================================ */
 
 :root {
   --marron: #512615;
@@ -8,8 +9,8 @@
   --fondo: #fafafa;
   --blanco: #ffffff;
   --borde-suave: rgba(0, 0, 0, 0.10);
-  --borde-tarjeta: rgba(81, 38, 21, 0.15);
-  --sombra-tarjeta: rgba(0, 0, 0, 0.05);
+  --borde-tarjeta: rgba(81, 38, 21, 0.22); /* igual que el perfil */
+  --sombra-tarjeta: rgba(0, 0, 0, 0.06);
 }
 
 /* RESET */
@@ -20,14 +21,16 @@
 }
 
 body {
-  font-family: "SF Pro Display", "Poppins", sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+    "Poppins", sans-serif;
+
   background: var(--fondo);
   -webkit-tap-highlight-color: transparent;
   color: var(--marron);
 }
 
 /* ============================================================
-   HEADER FIJO
+   HEADER (MISMO TAMAÑO Y DISEÑO QUE EL CARRITO)
 ============================================================ */
 header {
   position: sticky;
@@ -51,71 +54,75 @@ header img {
 }
 
 .form-title {
-  font-size: 1.2rem;
+  font-size: 1.25rem;
   font-weight: 600;
   color: var(--marron);
+  margin-right: 0.6rem;
 }
 
 /* ============================================================
-   TARJETA PRINCIPAL
+   TARJETA PRINCIPAL (IGUAL AL PERFIL)
 ============================================================ */
 main {
   max-width: 1100px;
-  margin: 1.5rem auto;
-  padding: 0 1rem 3rem;
+  margin: 1.6rem auto;
+  padding: 0 1.2rem 3rem;
 }
 
 .form-box {
   background: var(--blanco);
   padding: 2rem 1.6rem;
-  border-radius: 22px;
+  border-radius: 26px;
 
   border: 1.8px solid var(--borde-tarjeta);
-  box-shadow: 0 6px 14px var(--sombra-tarjeta);
+  box-shadow: 0 12px 26px var(--sombra-tarjeta);
+
   position: relative;
 }
 
 /* ============================================================
-   FLECHA REGRESAR (MISMA QUE PERFIL)
+   FLECHA REGRESAR (MISMA DE PERFIL)
 ============================================================ */
 .back-arrow {
   position: absolute;
-  top: 16px;
-  left: 16px;
+  top: 18px;
+  left: 18px;
 
-  width: 46px;
-  height: 46px;
+  width: 48px;
+  height: 48px;
 
   border-radius: 50%;
   background: #ffffff;
-  border: 1.4px solid rgba(0,0,0,0.1);
+  border: 1.4px solid rgba(0,0,0,0.10);
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   color: var(--marron);
 
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: background 0.18s ease, transform 0.15s ease;
 }
 
 .back-arrow:active {
-  background: rgba(0,0,0,0.06);
+  transform: scale(0.96);
+  background: rgba(0,0,0,0.05);
 }
 
 /* ============================================================
    FORMULARIO
 ============================================================ */
 .form-group {
-  margin-bottom: 1.4rem;
+  margin-bottom: 1.55rem;
 }
 
 label {
   display: block;
   margin-bottom: 0.45rem;
-  font-size: 0.95rem;
+
+  font-size: 0.97rem;
   font-weight: 600;
   color: var(--marron);
 }
@@ -124,19 +131,20 @@ input,
 textarea,
 select {
   width: 100%;
-  padding: 0.95rem 1rem;
+  padding: 1rem 1rem;
 
   border: 1.6px solid var(--borde-suave);
-  border-radius: 14px;
+  border-radius: 16px;
 
   font-size: 1rem;
   font-family: inherit;
   color: var(--marron);
 
   transition: border 0.25s ease, background 0.25s ease;
+  background: #ffffff;
 }
 
-/* Focus premium */
+/* Focus estilo premium */
 input:focus,
 textarea:focus,
 select:focus {
@@ -145,61 +153,57 @@ select:focus {
   background: #ffffff;
 }
 
-/* Placeholder suave */
+/* Placeholder elegante */
 input::placeholder,
 textarea::placeholder {
   color: rgba(0,0,0,0.35);
 }
 
-/* Correo readonly */
+/* Correo bloqueado */
 input[readonly] {
-  background: rgba(0,0,0,0.03);
+  background: rgba(0,0,0,0.05);
   cursor: not-allowed;
 }
 
 /* ============================================================
-   BOTÓN PRINCIPAL
+   BOTÓN PRINCIPAL — APPLE + MATERIAL 3 EXPRESSIVE
 ============================================================ */
-.actions {
-  display: flex;
-  justify-content: center;
-  margin-top: 2rem;
-}
-
 .btn-primary {
   width: 100%;
-  padding: 1rem 1.5rem;
-  background: var(--verde);
+  padding: 1.1rem;
+  margin-top: 1.3rem;
 
-  color: #ffffff;
+  border-radius: 16px;
   border: none;
 
-  border-radius: 50px;
+  background: var(--verde);
+  color: #ffffff;
+
+  font-size: 1.1rem;
   font-weight: 600;
-  font-size: 1.05rem;
 
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.9rem;
+  gap: 0.75rem;
 
   cursor: pointer;
   transition: transform 0.15s ease, background 0.25s ease;
 }
 
+/* Animación al presionar */
 .btn-primary:active {
   transform: scale(0.97);
 }
 
-/* Icono cargando */
+/* Loader */
 .btn-primary i {
   font-size: 1.2rem;
 }
 
-/* Estado loading */
 .btn-loading {
   pointer-events: none;
-  opacity: 0.85;
+  opacity: 0.9;
 }
 
 /* ============================================================
@@ -207,11 +211,13 @@ input[readonly] {
 ============================================================ */
 @media (min-width: 768px) {
   .form-box {
-    padding: 2.5rem 2.2rem;
-    border-radius: 24px;
+    padding: 2.6rem 2.4rem;
+    border-radius: 26px;
   }
 
   .btn-primary {
     width: 380px;
+    margin-left: auto;
+    margin-right: auto;
   }
 }
