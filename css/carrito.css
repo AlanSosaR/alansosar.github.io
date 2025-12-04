@@ -146,7 +146,7 @@ header img {
 .item-price { font-size: 0.92rem; opacity: 0.8; }
 
 /* ============================================================
-   CONTROLES CANTIDAD
+   CONTROLES DE CANTIDAD
 ============================================================ */
 .qty-controls {
   display: flex;
@@ -190,13 +190,8 @@ header img {
   box-shadow: 0 2px 6px rgba(0,0,0,0.06);
 }
 
-.save-later-btn:hover {
-  background: #f3efeb;
-}
-
-.save-later-btn:active {
-  transform: scale(0.97);
-}
+.save-later-btn:hover { background: #f3efeb; }
+.save-later-btn:active { transform: scale(0.97); }
 
 /* ============================================================
    RESUMEN
@@ -210,10 +205,10 @@ header img {
 }
 
 /* ============================================================
-   GUARDADO PARA MÁS TARDE — GOOGLE (OPCIÓN A)
+   GUARDADO PARA MÁS TARDE (GOOGLE STYLE) — OPCIÓN A
 ============================================================ */
 
-/* MODO A — ancho completo al estar debajo de productos */
+/* Modo A: ancho completo */
 .saved-card {
   background: var(--blanco);
   padding: 2rem 1.8rem;
@@ -221,10 +216,10 @@ header img {
   border: 1.4px solid rgba(0,0,0,0.06);
   box-shadow: 0 6px 16px rgba(0,0,0,0.05);
   width: 100%;
-  transition: all .25s ease;
+  transition: .25s ease;
 }
 
-/* MODO B — carrito vacío → centrado */
+/* Modo B: centrado cuando el carrito está vacío */
 .saved-card.centered {
   max-width: 600px;
   margin: 0 auto;
@@ -251,4 +246,44 @@ header img {
 .empty-saved {
   text-align: center;
   padding: 2rem 0;
+}
+
+/* ============================================================
+   FIX: EVITAR QUE EL BLOQUE SE DEFORME
+============================================================ */
+#saved-section {
+  width: 100%;
+}
+
+.saved-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+}
+
+/* El contenedor interno nunca debe salirse */
+#saved-list {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+/* Ítems guardados */
+.saved-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--blanco);
+  border: 1.4px solid rgba(0,0,0,0.06);
+  border-radius: 14px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.04);
+}
+
+/* Imagen dentro del guardado */
+.saved-img-box img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
 }
