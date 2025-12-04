@@ -1,69 +1,198 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tu selección de café | Café Cortero</title>
+/* ============================================================
+   Carrito — Café Cortero
+   Versión Final Premium 2025
+   Con aviso suave (snackbar) si no está logueado + LOADER M3
+============================================================ */
 
-  <!-- Tipografía -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
+const CART_KEY = 'cafecortero_cart';
 
-  <!-- Iconos FontAwesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+/* -------------------------------------------
+   Obtener y guardar carrito
+------------------------------------------- */
+function getCart() {
+  return JSON.parse(localStorage.getItem(CART_KEY)) || [];
+}
 
-  <!-- Material Symbols (flecha) -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+function saveCart(cart) {
+  localStorage.setItem(CART_KEY, JSON.stringify(cart));
+}
 
-  <!-- CSS del carrito -->
-  <link rel="stylesheet" href="css/carrito.css?v=10" />
-</head>
+/* -------------------------------------------
+   Render del carrito
+------------------------------------------- */
+function renderCart() {
+  const cart = getCart();
+  const container = document.getElementById('cart-container');
+  const totalBox = document.getElementById('total-box');
+  const procederBtn = document.getElementById('proceder-btn');
 
-<body>
-  <!-- === HEADER FIJO — CON LOGO, MISMO ESTILO DEL SITIO === -->
-  <header class="header-fixed">
-    <a href="index.html" class="header-logo-link">
-      <img src="imagenes/logo.png" alt="Café Cortero" class="header-logo" />
-    </a>
+  container.innerHTML = '';
 
-    <span class="cart-title">Tu selección de café</span>
-  </header>
+  if (cart.length === 0) {
+    container.innerHTML = `
+      <div class="empty">
+        Tu selección está vacía.<br>
+        <small>Agrega tu café favorito para continuar.</small>
+      </div>
+    `;
 
-  <!-- === CONTENIDO PRINCIPAL === -->
-  <main>
+    totalBox.style.display = "none";
+    procederBtn.querySelector(".btn-text").textContent = "Proceder al pago";
+    return;
+  }
 
-    <!-- Contenedor donde se insertan dinámicamente las tarjetas outline del carrito -->
-    <div id="cart-container"></div>
+  totalBox.style.display = "block";
 
-    <!-- Total -->
-    <div id="total-box" class="total-box">
-      Total de tu selección: <span class="moneda">L</span> 0.00
-    </div>
+  let total = 0;
 
-    <!-- Acciones -->
-    <div class="actions">
+  cart.forEach((item, index) => {
+    const priceNum = parseFloat(item.price) || 0;
+    const subtotal = priceNum * item.qty;
+    total += subtotal;
 
-      <!-- 🔙 Botón redondo con flecha -->
-      <button class="back-btn-circle" onclick="window.location.href='index.html'">
-        <span class="material-symbols-outlined">chevron_left</span>
-      </button>
+    const div = document.createElement('div');
+    div.className = 'item';
+    div.innerHTML = `
+      <div class="item-img-box">
+        <img src="${item.img}">
+      </div>
 
-      <!-- Botón proceder con loader -->
-      <button id="proceder-btn" class="m3-btn">
-        <span class="loader"></span>
-        <span class="btn-text">Proceder al pago</span>
-      </button>
-    </div>
-  </main>
+      <div class="item-info">
+        <div class="item-name">${item.name}</div>
+        <div class="item-price">L ${priceNum.toFixed(2)} / unidad</div>
 
-  <!-- === SNACKBAR (Carrito vacío) === -->
-  <div id="aviso-vacio" class="snackbar-md3"></div>
+        <div class="qty-controls">
+          <button class="qty-btn minus" data-action="minus" data-index="${index}">
+            <i class="fa-solid fa-minus"></i>
+          </button>
 
-  <!-- === SNACKBAR LOGIN === -->
-  <div id="snackbar-login">
-    Necesitas iniciar sesión para continuar con tu pedido.
-  </div>
+          <span class="qty-number">${item.qty}</span>
 
-  <!-- === SCRIPT DEL CARRITO === -->
-  <script src="js/cart.js?v=10"></script>
-</body>
-</html>
+          <button class="qty-btn plus" data-action="plus" data-index="${index}">
+            <i class="fa-solid fa-plus"></i>
+          </button>
+
+          <button class="del-btn" data-action="del" data-index="${index}">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
+      </div>
+    `;
+    container.appendChild(div);
+  });
+
+  saveCart(cart);
+
+  totalBox.innerHTML = `
+    Total de tu selección: 
+    <span class="moneda">L</span> ${total.toFixed(2)}
+  `;
+
+  // actualizar botón
+  const totalCafes = cart.reduce((acc, item) => acc + item.qty, 0);
+  const palabra = totalCafes === 1 ? "café" : "cafés";
+  document.querySelector("#proceder-btn .btn-text").textContent =
+    `Proceder al pago (${totalCafes} ${palabra})`;
+}
+
+/* -------------------------------------------
+   Eventos de los items
+------------------------------------------- */
+document.getElementById('cart-container').addEventListener('click', e => {
+  const btn = e.target.closest('button');
+  if (!btn) return;
+
+  const action = btn.dataset.action;
+  const index = parseInt(btn.dataset.index);
+  const cart = getCart();
+
+  if (action === 'plus') cart[index].qty++;
+
+  if (action === 'minus') {
+    cart[index].qty--;
+    if (cart[index].qty <= 0) cart.splice(index, 1);
+  }
+
+  if (action === 'del') cart.splice(index, 1);
+
+  saveCart(cart);
+  renderCart();
+});
+
+/* ============================================================
+   Proceder al pago — con LOADER y validaciones
+============================================================ */
+document.getElementById('proceder-btn').addEventListener('click', () => {
+  const btn = document.getElementById('proceder-btn');
+  const loader = btn.querySelector('.loader');
+  const text = btn.querySelector('.btn-text');
+
+  const cart = getCart();
+  const aviso = document.getElementById('aviso-vacio');
+
+  /* LEER SESIÓN */
+  let user = null;
+  let logged = false;
+
+  try {
+    user = JSON.parse(localStorage.getItem("cortero_user"));
+    logged = (localStorage.getItem("cortero_logged") === "1");
+  } catch {
+    user = null;
+    logged = false;
+  }
+
+  const noSesion = (!logged || !user);
+
+  /* ===============================
+     1️⃣ Carrito vacío
+  =============================== */
+  if (cart.length === 0) {
+
+    if (noSesion) {
+      // Mostrar snackbar y enviar a login
+      const snack = document.getElementById("snackbar-login");
+      snack.classList.add("show");
+
+      setTimeout(() => {
+        snack.classList.remove("show");
+        window.location.href = "login.html";
+      }, 2200);
+
+      return;
+    }
+
+    // Si está logueado, solo aviso
+    aviso.textContent = "Aún no has agregado cafés a tu selección.";
+    aviso.classList.add('show');
+    setTimeout(() => aviso.classList.remove('show'), 2500);
+    return;
+  }
+
+  /* ===============================
+     2️⃣ Tiene cafés pero NO sesión
+  =============================== */
+  if (noSesion) {
+    const snack = document.getElementById("snackbar-login");
+    snack.classList.add("show");
+
+    setTimeout(() => {
+      snack.classList.remove("show");
+      window.location.href = "login.html";
+    }, 2200);
+
+    return;
+  }
+
+  /* ===============================
+     3️⃣ Todo OK → mostrar loader
+  =============================== */
+  btn.classList.add("loading");
+
+  setTimeout(() => {
+    window.location.href = "datos_cliente.html";
+  }, 800);
+});
+
+/* Init */
+renderCart();
