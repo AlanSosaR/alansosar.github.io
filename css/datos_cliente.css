@@ -1,6 +1,6 @@
 /* ============================================================
-   DETALLES DE ENTREGA — VERSIÓN FINAL PERFECTA
-   Alineado EXACTAMENTE como PERFIL (FEB 2025)
+   DETALLES DE ENTREGA — VERSIÓN FINAL PERFECTA (FEB 2025)
+   Alineado EXACTO a PERFIL y REGISTRO
 ============================================================ */
 
 :root {
@@ -47,7 +47,7 @@ body {
 
 .form-title {
   font-size: 1.28rem;
-  font-weight: 500;     /* MISMO GROSOR QUE CARRITO */
+  font-weight: 500;
   color: var(--marron);
   letter-spacing: -0.25px;
 }
@@ -72,7 +72,7 @@ body {
 }
 
 /* ============================================================
-   BOTÓN ATRÁS — MISMO ESTILO QUE PERFIL PERO VERDE
+   BOTÓN ATRÁS — ESTILO PERFIL PERO VERDE
 ============================================================ */
 
 .back-btn {
@@ -101,7 +101,6 @@ body {
   box-shadow: 0 7px 20px rgba(0,0,0,0.20);
 }
 
-/* flecha VERDE corregida */
 .back-btn .material-symbols-outlined {
   font-size: 26px;
   font-weight: 600;
@@ -121,7 +120,7 @@ body {
 }
 
 /* ============================================================
-   INPUTS MATERIAL 3 — ESTILO PERFIL
+   CAMPOS MATERIAL 3
 ============================================================ */
 
 .m3-field {
@@ -160,7 +159,23 @@ body {
 }
 
 /* ============================================================
-   FLOATING LABEL — IGUAL A PERFIL **AL PÍXEL**
+   SELECT — FIX COMPLETO (ALINEACIÓN Y FLOTACIÓN)
+============================================================ */
+
+.m3-input select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding-right: 32px;
+  color: rgba(0,0,0,0.45); /* placeholder gris */
+}
+
+.m3-input select.filled {
+  color: var(--marron);
+}
+
+/* ============================================================
+   FLOATING LABEL — EXACTO A PERFIL
 ============================================================ */
 
 .floating-label {
@@ -175,21 +190,21 @@ body {
   pointer-events: none;
 }
 
-/* MISMA ALTURA Y POSICIÓN QUE PERFIL */
+/* CUANDO SUBE — MISMA ALTURA QUE PERFIL */
 .m3-input input:not(:placeholder-shown) + .floating-label,
 .m3-input textarea:not(:placeholder-shown) + .floating-label,
 .m3-input select.filled + .floating-label,
 .m3-input:focus-within .floating-label {
-  top: -6px;               /* MISMO QUE PERFIL */
-  left: 2.85rem;           /* MISMO QUE PERFIL */
-  font-size: .78rem;       /* MISMO QUE PERFIL */
+  top: -6px;
+  left: 2.85rem;
+  font-size: .78rem;
   background: #ffffff;
   color: var(--verde);
   padding: 0 5px;
 }
 
 /* ============================================================
-   TEXTAREA
+   TEXTAREA — ALINEACIÓN VERTICAL
 ============================================================ */
 
 .textarea-field {
@@ -203,7 +218,7 @@ body {
 }
 
 /* ============================================================
-   BOTÓN
+   BOTÓN FINAL
 ============================================================ */
 
 .m3-btn {
