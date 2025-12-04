@@ -1,14 +1,14 @@
 /* ============================================================
    DATOS DEL CLIENTE — VERSIÓN FINAL 2025
-   Autocompleta datos, carga dirección, valida y guarda.
-   Dependencias: supabase-client.js y core-scripts.js
+   Igual lógica que perfil.js: carga instantánea desde caché,
+   luego refresca desde Supabase y guarda dirección.
 ============================================================ */
 
 console.log("📦 datos_cliente.js cargado correctamente.");
 
-const sb = window.supabaseClient; // conexión que ya existe
+const sb = window.supabaseClient;
 
-// Campos del formulario
+// Inputs
 const nombreInput = document.getElementById("nombre");
 const correoInput = document.getElementById("correo");
 const telefonoInput = document.getElementById("telefono");
@@ -19,27 +19,35 @@ const notaInput = document.getElementById("nota");
 const form = document.getElementById("cliente-form");
 const btnSubmit = document.getElementById("btn-submit");
 
+let currentUser = null;
 let currentUserId = null;
 let loadedAddressId = null;
 
 /* ============================================================
-   1) CARGAR USUARIO ACTIVO
+   1) LEER DATOS GUARDADOS POR LOGIN (instantáneo, como perfil)
 ============================================================ */
-async function cargarUsuario() {
-  const { data: sessionData } = await sb.auth.getSession();
-
-  if (!sessionData || !sessionData.session) {
-    console.warn("⚠ No hay sesión. Esto debería venir validado desde el carrito.");
-    window.location.href = "login.html";
-    return;
+function getUserProfileFromCache() {
+  try {
+    const json = localStorage.getItem("cc_user_profile");
+    if (!json) return null;
+    return JSON.parse(json);
+  } catch {
+    return null;
   }
+}
 
-  const user = sessionData.session.user;
-  currentUserId = user.id;
+function pintarDatosInstantaneos() {
+  if (!currentUser) return;
 
-  console.log("👤 Usuario autenticado:", currentUserId);
+  nombreInput.value = currentUser.name || "";
+  correoInput.value = currentUser.email || "";
+  telefonoInput.value = currentUser.phone || "";
+}
 
-  // Traer datos desde tabla users
+/* ============================================================
+   2) CARGAR DATOS REALES DESDE SUPABASE
+============================================================ */
+async function cargarDatosDesdeSupabase() {
   const { data: userRow, error } = await sb
     .from("users")
     .select("*")
@@ -47,22 +55,26 @@ async function cargarUsuario() {
     .single();
 
   if (error) {
-    console.error("❌ Error cargando datos del usuario:", error);
+    console.error("❌ Error cargando usuario desde Supabase:", error);
     return;
   }
 
+  // Actualizar inputs
   nombreInput.value = userRow.name || "";
   correoInput.value = userRow.email || "";
   telefonoInput.value = userRow.phone || "";
 
-  // Cargar dirección si existe
-  cargarDireccionUsuario();
+  // Guardar nueva versión en caché
+  localStorage.setItem("cc_user_profile", JSON.stringify(userRow));
+
+  // Cargar dirección
+  await cargarDireccion();
 }
 
 /* ============================================================
-   2) CARGAR DIRECCIÓN ANTERIOR
+   3) CARGAR DIRECCIÓN DEL USUARIO
 ============================================================ */
-async function cargarDireccionUsuario() {
+async function cargarDireccion() {
   const { data, error } = await sb
     .from("addresses")
     .select("*")
@@ -76,7 +88,7 @@ async function cargarDireccionUsuario() {
   }
 
   if (!data) {
-    console.log("ℹ No había dirección previa.");
+    console.log("ℹ No existe dirección previa.");
     return;
   }
 
@@ -89,7 +101,7 @@ async function cargarDireccionUsuario() {
 }
 
 /* ============================================================
-   3) VALIDAR FORMULARIO
+   4) VALIDACIÓN
 ============================================================ */
 function validarFormulario() {
   if (!nombreInput.value.trim()) return false;
@@ -103,7 +115,7 @@ function validarFormulario() {
 }
 
 /* ============================================================
-   4) GUARDAR / ACTUALIZAR DIRECCIÓN EN SUPABASE
+   5) GUARDAR DIRECCIÓN
 ============================================================ */
 async function guardarDireccion() {
   const payload = {
@@ -121,8 +133,7 @@ async function guardarDireccion() {
   let result;
 
   if (loadedAddressId) {
-    console.log("✏ Actualizando dirección existente…");
-
+    console.log("✏ Actualizando dirección...");
     result = await sb
       .from("addresses")
       .update(payload)
@@ -130,8 +141,7 @@ async function guardarDireccion() {
       .select()
       .single();
   } else {
-    console.log("➕ Insertando nueva dirección…");
-
+    console.log("➕ Insertando nueva dirección...");
     result = await sb
       .from("addresses")
       .insert(payload)
@@ -141,7 +151,7 @@ async function guardarDireccion() {
 
   if (result.error) {
     console.error("❌ Error guardando dirección:", result.error);
-    alert("Ocurrió un error guardando tu dirección.");
+    alert("Ocurrió un error al guardar tu dirección.");
     btnSubmit.classList.remove("btn-loading");
     return false;
   }
@@ -150,7 +160,7 @@ async function guardarDireccion() {
 }
 
 /* ============================================================
-   5) SUBMIT FINAL
+   6) SUBMIT
 ============================================================ */
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -165,8 +175,6 @@ form.addEventListener("submit", async (e) => {
   const ok = await guardarDireccion();
   if (!ok) return;
 
-  console.log("🎉 Dirección guardada correctamente.");
-
   setTimeout(() => {
     window.location.href = "recibo.html";
   }, 800);
@@ -175,4 +183,23 @@ form.addEventListener("submit", async (e) => {
 /* ============================================================
    INICIO
 ============================================================ */
-cargarUsuario();
+async function init() {
+  // Obtener usuario del login (misma lógica de perfil)
+  currentUser = getUserProfileFromCache();
+
+  if (!currentUser) {
+    console.warn("⚠ No hay usuario cacheado. Redirigiendo.");
+    window.location.href = "login.html";
+    return;
+  }
+
+  currentUserId = currentUser.id;
+
+  // Pintado inmediato
+  pintarDatosInstantaneos();
+
+  // Luego refresca desde Supabase
+  cargarDatosDesdeSupabase();
+}
+
+init();
