@@ -1,5 +1,5 @@
 /* ============================================================
-   Carrito — Versión Google Store 2025
+   Carrito — Versión Google Store 2025 (JS limpio, sin HTML)
 ============================================================ */
 
 const CART_KEY  = "cafecortero_cart";
@@ -21,14 +21,11 @@ function showSnackbar(message) {
   const bar = document.getElementById("snackbar-login");
   bar.textContent = message;
   bar.classList.add("show");
-
-  setTimeout(() => {
-    bar.classList.remove("show");
-  }, 2500);
+  setTimeout(() => bar.classList.remove("show"), 2500);
 }
 
 /* ============================================================
-   🔐 MÉTODO CORRECTO PARA VERIFICAR LOGIN (MISMO DE perfil.html)
+   Login — Igual que perfil.html
 ============================================================ */
 async function checkLoginStatus() {
   try {
@@ -55,46 +52,38 @@ async function checkLoginStatus() {
    RENDER DEL CARRITO
 ============================================================ */
 function renderCart() {
-
+  
   const cart          = getCart();
   const cartContainer = document.getElementById("cart-container");
-  const colResumen    = document.querySelector(".col-resumen");
+  const colResumen    = document.getElementById("resumen-container");
   const countSpan     = document.getElementById("count-items");
-  const savedSection  = document.getElementById("saved-section");
-  const savedCard     = document.querySelector("#saved-section .saved-card");
 
   cartContainer.innerHTML = "";
   colResumen.innerHTML    = "";
 
+  /* contador */
   const total = cart.reduce((a,b) => a + b.qty, 0);
   countSpan.textContent = `(${total} ${total === 1 ? "café" : "cafés"})`;
 
+  /* Carrito vacío */
   if (cart.length === 0) {
-
-    savedCard.classList.add("centered");
-    savedSection.classList.add("empty-mode");
-
     cartContainer.innerHTML = `
       <div class="empty">
         Tu selección está vacía.<br>
         <small>Agrega tu café favorito para continuar.</small>
       </div>
     `;
-
     renderSaved();
     return;
   }
 
-  savedCard.classList.remove("centered");
-  savedSection.classList.remove("empty-mode");
-
+  /* Pintar productos (HTML ya existe en archivo carrito.html) */
   cart.forEach((item, index) => {
+    const row = document.createElement("div");
+    row.className = "item";
 
-    const div = document.createElement("div");
-    div.className = "item";
-
-    div.innerHTML = `
-      <div class="item-img-box"><img src="${item.img}"></div>
+    row.innerHTML = `
+      <div class="item-img-box"><img src="${item.img}" /></div>
 
       <div class="item-info">
         <div class="item-name">${item.name}</div>
@@ -102,6 +91,7 @@ function renderCart() {
 
         <div class="qty-controls">
 
+          <!-- botones ya definidos por CSS -->
           <button class="qty-btn minus" data-action="minus" data-index="${index}">
             <i class="fa-solid fa-minus"></i>
           </button>
@@ -112,21 +102,22 @@ function renderCart() {
             <i class="fa-solid fa-plus"></i>
           </button>
 
-          <button class="save-later-btn" data-action="save" data-index="${index}">
-            <span class="save-later-text">Guardar para más tarde</span>
-          </button>
-
           <button class="del-btn" data-action="del" data-index="${index}">
             <i class="fa-solid fa-trash"></i>
+          </button>
+
+          <button class="save-later-btn" data-action="save" data-index="${index}">
+            Guardar para más tarde
           </button>
 
         </div>
       </div>
     `;
 
-    cartContainer.appendChild(div);
+    cartContainer.appendChild(row);
   });
 
+  /* Resumen */
   const subtotal = cart.reduce((acc, item) => acc + (item.qty * item.price), 0);
 
   colResumen.innerHTML = `
@@ -148,7 +139,7 @@ function renderCart() {
         <span>L ${subtotal.toFixed(2)}</span>
       </div>
 
-      <button id="proceder-btn" class="m3-btn">Proceder al pago</button>
+      <button id="proceder-btn">Proceder al pago</button>
     </div>
   `;
 
@@ -157,23 +148,15 @@ function renderCart() {
 }
 
 /* ============================================================
-   RENDER — GUARDADO PARA MÁS TARDE
+   RENDER GUARDADOS
 ============================================================ */
 function renderSaved() {
-
-  const saved        = getSaved();
-  const container    = document.getElementById("saved-list");
-  const savedCard    = document.querySelector("#saved-section .saved-card");
-  const savedSection = document.getElementById("saved-section");
+  const saved     = getSaved();
+  const container = document.getElementById("saved-list");
 
   container.innerHTML = "";
 
   if (saved.length === 0) {
-
-    savedCard.classList.add("centered");
-    savedSection.classList.add("empty-mode");
-
-    container.classList.add("empty-saved");
     container.innerHTML = `
       <p class="saved-empty-title">No hay cafés guardados todavía</p>
       <p class="saved-empty-sub">Añade a esta lista tus cafés que no estás comprando hoy</p>
@@ -181,17 +164,12 @@ function renderSaved() {
     return;
   }
 
-  savedCard.classList.remove("centered");
-  savedSection.classList.remove("empty-mode");
-  container.classList.remove("empty-saved");
-
   saved.forEach((item, index) => {
+    const card = document.createElement("div");
+    card.className = "saved-item";
 
-    const div = document.createElement("div");
-    div.className = "saved-item";
-
-    div.innerHTML = `
-      <div class="saved-img-box"><img src="${item.img}"></div>
+    card.innerHTML = `
+      <div class="saved-img-box"><img src="${item.img}" /></div>
 
       <div class="saved-info">
         <div class="saved-name">${item.name}</div>
@@ -204,7 +182,7 @@ function renderSaved() {
       </div>
     `;
 
-    container.appendChild(div);
+    container.appendChild(card);
   });
 }
 
@@ -219,6 +197,7 @@ document.addEventListener("click", async e => {
   const action = btn.dataset.action;
   const index  = parseInt(btn.dataset.index);
 
+  /* Control de cantidades */
   if (["plus","minus","del","save"].includes(action)) {
 
     let cart = getCart();
@@ -231,26 +210,14 @@ document.addEventListener("click", async e => {
     if (action === "del") cart.splice(index, 1);
 
     if (action === "save") {
-
       const saved = getSaved();
+      saved.push(cart[index]);
+      saveSaved(saved);
 
-      btn.classList.add("loading");
-      showPageLoader();
+      cart.splice(index, 1);
+      saveCart(cart);
 
-      setTimeout(() => {
-
-        saved.push(cart[index]);
-        saveSaved(saved);
-
-        cart.splice(index, 1);
-        saveCart(cart);
-
-        btn.classList.remove("loading");
-        hidePageLoader();
-
-        renderCart();
-      }, 700);
-
+      renderCart();
       return;
     }
 
@@ -258,8 +225,8 @@ document.addEventListener("click", async e => {
     renderCart();
   }
 
+  /* Guardados */
   if (action === "return") {
-
     const saved = getSaved();
     const cart  = getCart();
 
@@ -272,7 +239,6 @@ document.addEventListener("click", async e => {
   }
 
   if (action === "delete-saved") {
-
     const saved = getSaved();
     saved.splice(index, 1);
 
@@ -280,13 +246,10 @@ document.addEventListener("click", async e => {
     renderSaved();
   }
 
-  /* ============================================================
-       BOTÓN: PROCEDER AL PAGO  → AHORA FUNCIONA CORRECTAMENTE
-  ============================================================ */
+  /* Proceder al pago */
   if (btn.id === "proceder-btn") {
-
     const user = await checkLoginStatus();
-    if (!user) return; // ya mostró snackbar y redirigió
+    if (!user) return;
 
     window.location.href = "checkout.html";
   }
