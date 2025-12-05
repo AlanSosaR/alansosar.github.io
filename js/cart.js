@@ -1,12 +1,12 @@
-/* ============================================================  
+/* ============================================================
    Carrito — Café Cortero 2025  
-   Compatible con template + resumen lateral + login + avatar  
-============================================================ */  
+   Integrado con Supabase + Avatar del Index  
+============================================================ */
 
 const CART_KEY = "cafecortero_cart";
 
-/* -----------------------------------------------------------  
-   Helpers para el carrito  
+/* -----------------------------------------------------------
+   Helpers del carrito
 ----------------------------------------------------------- */
 function getCart() {
   return JSON.parse(localStorage.getItem(CART_KEY)) || [];
@@ -16,8 +16,8 @@ function saveCart(cart) {
   localStorage.setItem(CART_KEY, JSON.stringify(cart));
 }
 
-/* -----------------------------------------------------------  
-   RENDER DEL CARRITO (USA EL TEMPLATE)  
+/* -----------------------------------------------------------
+   RENDER DEL CARRITO + ESTADO VACÍO
 ----------------------------------------------------------- */
 function renderCart() {
   const cart = getCart();
@@ -28,19 +28,22 @@ function renderCart() {
   const countItems = document.getElementById("count-items");
   const resumenBox = document.querySelector(".resumen-box");
   const main = document.querySelector("main");
+  const topBack = document.getElementById("top-back-btn");
 
   container.innerHTML = "";
 
   /* Contar cafés */
-  let totalCafes = 0;
-  cart.forEach(p => totalCafes += p.qty);
+  let totalCafes = cart.reduce((sum, p) => sum + p.qty, 0);
   countItems.textContent = `${totalCafes} ${totalCafes === 1 ? "café" : "cafés"}`;
 
-  /* ========= CARRITO VACÍO — ESTILO GOOGLE ========= */
+  /* ========= ESTADO VACÍO ========= */
   if (cart.length === 0) {
 
-    // Activar clase del estado vacío
+    // Activar estilo vacío
     main.classList.add("carrito-vacio-activo");
+
+    // Quitar flecha de arriba
+    if (topBack) topBack.style.display = "none";
 
     container.innerHTML = `
       <div class="empty-container">
@@ -53,9 +56,7 @@ function renderCart() {
       </div>
     `;
 
-    // Ocultar resumen
     resumenBox.style.display = "none";
-
     subtotalLabel.textContent = "L 0.00";
     totalLabel.textContent = "L 0.00";
 
@@ -64,6 +65,10 @@ function renderCart() {
 
   /* ========= HAY PRODUCTOS ========= */
   main.classList.remove("carrito-vacio-activo");
+
+  // Mostrar flecha solo si hay productos
+  if (topBack) topBack.style.display = "flex";
+
   resumenBox.style.display = "block";
 
   const template = document.getElementById("template-cart-item");
@@ -91,8 +96,8 @@ function renderCart() {
   saveCart(cart);
 }
 
-/* -----------------------------------------------------------  
-   CONTROL: +, –, 🗑  
+/* -----------------------------------------------------------
+   CONTROL BOTONES + / – / 🗑
 ----------------------------------------------------------- */
 document.getElementById("cart-container").addEventListener("click", e => {
   const btn = e.target.closest("button");
@@ -113,20 +118,18 @@ document.getElementById("cart-container").addEventListener("click", e => {
   renderCart();
 });
 
-/* -----------------------------------------------------------  
-   VALIDAR LOGIN PARA PROCEDER AL PAGO  
+/* -----------------------------------------------------------
+   VALIDAR LOGIN PARA PROCEDER AL PAGO (Supabase)
 ----------------------------------------------------------- */
-document.getElementById("proceder-btn").addEventListener("click", () => {
+document.getElementById("proceder-btn").addEventListener("click", async () => {
   const cart = getCart();
   if (cart.length === 0) return;
 
-  let user = null;
-  try { user = JSON.parse(localStorage.getItem("cortero_user")); }
-  catch { user = null; }
+  const { data: { session } } = await supabase.auth.getSession();
 
-  if (!user) {
+  if (!session) {
     const snack = document.getElementById("snackbar-login");
-    snack.textContent = "Necesitas iniciar sesión para continuar con tu pedido.";
+    snack.textContent = "Necesitas iniciar sesión para continuar.";
     snack.classList.add("show");
 
     setTimeout(() => {
@@ -140,39 +143,65 @@ document.getElementById("proceder-btn").addEventListener("click", () => {
   window.location.href = "datos_cliente.html";
 });
 
-/* -----------------------------------------------------------  
-   AVATAR DINÁMICO + MENÚ  
+/* -----------------------------------------------------------
+   AVATAR: MISMO COMPORTAMIENTO QUE EN INDEX
 ----------------------------------------------------------- */
-const avatarBtn = document.getElementById("btn-header-user");
-const avatarImg = document.getElementById("avatar-user");
-const userMenu = document.getElementById("user-menu");
+document.addEventListener("DOMContentLoaded", async () => {
 
-(function loadAvatar() {
-  let user = null;
-  try { user = JSON.parse(localStorage.getItem("cortero_user")); }
-  catch { user = null; }
+  const avatarBtn = document.getElementById("btn-header-user");
+  const avatarImg = document.getElementById("avatar-user");
+  const userMenu = document.getElementById("user-menu");
+  const logoutBtn = document.getElementById("logout-btn");
 
-  avatarImg.src = user?.foto || "imagenes/avatar-default.svg";
-})();
+  const { data: { session } } = await supabase.auth.getSession();
 
-avatarBtn.addEventListener("click", () => {
-  let user = null;
-  try { user = JSON.parse(localStorage.getItem("cortero_user")); }
-  catch { user = null; }
+  // No logueado → avatar default + enviar a login
+  if (!session) {
+      avatarImg.src = "imagenes/avatar-default.svg";
 
-  if (!user) {
-    window.location.href = "login.html?redirect=carrito";
-    return;
+      avatarBtn.onclick = () => {
+          window.location.href = "login.html?redirect=carrito";
+      };
+
+      return;
   }
 
-  if (window.innerWidth > 768) {
-    userMenu.classList.toggle("hidden");
-  } else if (typeof openMobileUserMenu === "function") {
-    openMobileUserMenu();
-  }
+  // Logueado
+  const user = session.user;
+
+  // Obtener foto
+  const { data: perfil } = await supabase
+      .from("usuarios")
+      .select("foto")
+      .eq("id", user.id)
+      .single();
+
+  avatarImg.src = perfil?.foto || "imagenes/avatar-default.svg";
+
+  // Abrir menú (solo escritorio)
+  avatarBtn.onclick = () => {
+      if (window.innerWidth > 768) {
+          userMenu.classList.toggle("hidden");
+      } else if (typeof openMobileUserMenu === "function") {
+          openMobileUserMenu();
+      }
+  };
+
+  // Cerrar menú clic afuera
+  document.addEventListener("click", (e) => {
+      if (!avatarBtn.contains(e.target) && !userMenu.contains(e.target)) {
+          userMenu.classList.add("hidden");
+      }
+  });
+
+  // Cerrar sesión
+  logoutBtn.onclick = async () => {
+      await supabase.auth.signOut();
+      window.location.href = "index.html";
+  };
 });
 
-/* -----------------------------------------------------------  
-   INIT  
+/* -----------------------------------------------------------
+   INIT
 ----------------------------------------------------------- */
 renderCart();
