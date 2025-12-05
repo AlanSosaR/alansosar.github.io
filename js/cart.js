@@ -1,184 +1,176 @@
 /* ============================================================
-   Carrito — Versión limpia 2025 (sin Guardar para más tarde)
+   Carrito — Café Cortero
+   Versión Final Premium 2025
+   Con aviso suave (snackbar) si no está logueado
 ============================================================ */
 
-const CART_KEY = "cafecortero_cart";
+const CART_KEY = 'cafecortero_cart';
 
-/* Helpers */
-const getCart  = () => JSON.parse(localStorage.getItem(CART_KEY)) || [];
-const saveCart = cart => localStorage.setItem(CART_KEY, JSON.stringify(cart));
-
-/* Loader */
-const showPageLoader = () => document.getElementById("page-loader")?.classList.remove("hidden");
-const hidePageLoader = () => document.getElementById("page-loader")?.classList.add("hidden");
-
-/* Snackbar */
-function showSnackbar(message) {
-  const bar = document.getElementById("snackbar-login");
-  bar.textContent = message;
-  bar.classList.add("show");
-  setTimeout(() => bar.classList.remove("show"), 2500);
+/* -------------------------------------------
+   Obtener y guardar carrito
+------------------------------------------- */
+function getCart() {
+  return JSON.parse(localStorage.getItem(CART_KEY)) || [];
 }
 
-/* ============================================================
-   LOGIN — IGUAL QUE perfil.html
-============================================================ */
-async function checkLoginStatus() {
-  try {
-    const { data, error } = await supabase.auth.getUser();
-
-    if (error || !data?.user) {
-      showSnackbar("Necesitas iniciar sesión para continuar con tu pedido.");
-      setTimeout(() => {
-        window.location.href = "login.html?redirect=carrito";
-      }, 1200);
-      return null;
-    }
-
-    return data.user;
-
-  } catch (err) {
-    console.error("Error verificando login:", err);
-    window.location.href = "login.html?redirect=carrito";
-    return null;
-  }
+function saveCart(cart) {
+  localStorage.setItem(CART_KEY, JSON.stringify(cart));
 }
 
-/* ============================================================
-   RENDER DEL CARRITO (YA SIN GUARDADOS)
-============================================================ */
+/* -------------------------------------------
+   Render del carrito
+------------------------------------------- */
 function renderCart() {
-  const cart          = getCart();
-  const cartContainer = document.getElementById("cart-container");
-  const colResumen    = document.getElementById("resumen-container");
-  const countSpan     = document.getElementById("count-items");
-  const templateItem  = document.getElementById("template-cart-item");
+  const cart = getCart();
+  const container = document.getElementById('cart-container');
+  const totalBox = document.getElementById('total-box');
 
-  cartContainer.innerHTML = "";
-  colResumen.innerHTML    = "";
+  container.innerHTML = '';
 
-  const total = cart.reduce((a, b) => a + b.qty, 0);
-  countSpan.textContent = `(${total} ${total === 1 ? "café" : "cafés"})`;
-
-  /* Carrito vacío */
   if (cart.length === 0) {
-    cartContainer.innerHTML = `
+    container.innerHTML = `
       <div class="empty">
         Tu selección está vacía.<br>
         <small>Agrega tu café favorito para continuar.</small>
       </div>
     `;
+
+    totalBox.style.display = "none";
+    actualizarTextoBoton();
     return;
   }
 
-  /* Render items */
+  totalBox.style.display = "block";
+
+  let total = 0;
+
   cart.forEach((item, index) => {
-    const clone = templateItem.content.cloneNode(true);
+    const priceNum = parseFloat(item.price) || 0;
+    const subtotal = priceNum * item.qty;
+    total += subtotal;
 
-    clone.querySelector(".item-image").src = item.img;
-    clone.querySelector(".item-name").textContent  = item.name;
-    clone.querySelector(".item-price").textContent = \`L ${item.price} / unidad\`;
-    clone.querySelector(".qty-number").textContent = item.qty;
+    const div = document.createElement('div');
+    div.className = 'item';
+    div.innerHTML = `
+      <div class="item-img-box">
+        <img src="${item.img}">
+      </div>
 
-    clone.querySelectorAll("button").forEach(btn => {
-      btn.dataset.index = index;
-    });
+      <div class="item-info">
+        <div class="item-name">${item.name}</div>
+        <div class="item-price">L ${priceNum.toFixed(2)} / unidad</div>
 
-    cartContainer.appendChild(clone);
+        <div class="qty-controls">
+          <button class="qty-btn minus" data-action="minus" data-index="${index}">
+            <i class="fa-solid fa-minus"></i>
+          </button>
+
+          <span class="qty-number">${item.qty}</span>
+
+          <button class="qty-btn plus" data-action="plus" data-index="${index}">
+            <i class="fa-solid fa-plus"></i>
+          </button>
+
+          <button class="del-btn" data-action="del" data-index="${index}">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
+      </div>
+    `;
+    container.appendChild(div);
   });
 
-  const subtotal = cart.reduce((acc, i) => acc + (i.qty * i.price), 0);
+  saveCart(cart);
 
-  /* Resumen derecho */
-  colResumen.innerHTML = `
-    <div class="resumen-box">
-      <h2>Resumen del pedido</h2>
-
-      <div class="resumen-row">
-        <span>Total parcial</span>
-        <span>L ${subtotal.toFixed(2)}</span>
-      </div>
-
-      <div class="resumen-row">
-        <span>Envío</span>
-        <span>L 0.00</span>
-      </div>
-
-      <div class="resumen-row resumen-total">
-        <span>Total estimado</span>
-        <span>L ${subtotal.toFixed(2)}</span>
-      </div>
-
-      <button id="proceder-btn">Proceder al pago</button>
-    </div>
+  totalBox.innerHTML = `
+    Total de tu selección: 
+    <span class="moneda">L</span> ${total.toFixed(2)}
   `;
 
-  saveCart(cart);
+  actualizarTextoBoton();
 }
 
-/* ============================================================
-   EVENTOS DEL CARRITO — SOLO plus / minus / del
-============================================================ */
-document.addEventListener("click", async e => {
-  const btn = e.target.closest("button");
+/* -------------------------------------------
+   Actualizar texto del botón
+------------------------------------------- */
+function actualizarTextoBoton() {
+  const procederBtn = document.getElementById('proceder-btn');
+  const cart = getCart();
+
+  let totalCafes = 0;
+  cart.forEach(item => totalCafes += item.qty);
+
+  if (totalCafes === 0) {
+    procederBtn.textContent = "Proceder al pago";
+    return;
+  }
+
+  const palabra = totalCafes === 1 ? "café" : "cafés";
+  procederBtn.textContent = `Proceder al pago (${totalCafes} ${palabra})`;
+}
+
+/* -------------------------------------------
+   Eventos en items
+------------------------------------------- */
+document.getElementById('cart-container').addEventListener('click', e => {
+  const btn = e.target.closest('button');
   if (!btn) return;
 
   const action = btn.dataset.action;
-  const index  = parseInt(btn.dataset.index);
+  const index = parseInt(btn.dataset.index);
+  const cart = getCart();
 
-  if (["plus", "minus", "del"].includes(action)) {
-    let cart = getCart();
+  if (action === 'plus') cart[index].qty++;
 
-    if (action === "plus") cart[index].qty++;
-
-    if (action === "minus") {
-      cart[index].qty--;
-      if (cart[index].qty <= 0) cart.splice(index, 1);
-    }
-
-    if (action === "del") {
-      cart.splice(index, 1);
-    }
-
-    saveCart(cart);
-    renderCart();
+  if (action === 'minus') {
+    cart[index].qty--;
+    if (cart[index].qty <= 0) cart.splice(index, 1);
   }
 
-  /* Proceder al pago */
-  if (btn.id === "proceder-btn") {
-    const user = await checkLoginStatus();
-    if (!user) return;
-    window.location.href = "checkout.html";
-  }
+  if (action === 'del') cart.splice(index, 1);
+
+  saveCart(cart);
+  renderCart();
 });
 
 /* ============================================================
-   🔥 MENÚ DEL AVATAR — IGUAL AL INDEX
+   Proceder al pago — con Snackbar Material 3 si no está logueado
 ============================================================ */
-const avatarBtn = document.getElementById("btn-header-user");
-const userMenu  = document.getElementById("user-menu");
+document.getElementById('proceder-btn').addEventListener('click', () => {
+  const cart = getCart();
+  const aviso = document.getElementById('aviso-vacio');
 
-if (avatarBtn) {
-  avatarBtn.addEventListener("click", async () => {
-    const { data } = await supabase.auth.getUser();
+  /* 1️⃣ Carrito vacío */
+  if (cart.length === 0) {
+    aviso.textContent = "Aún no has agregado cafés a tu selección.";
+    aviso.classList.add('show');
+    setTimeout(() => aviso.classList.remove('show'), 2500);
+    return;
+  }
 
-    if (!data?.user) {
-      window.location.href = "login.html?redirect=carrito";
-      return;
-    }
+  /* 2️⃣ Verificar sesión */
+  const userRaw = localStorage.getItem("cortero_user");
+  let user = null;
 
-    if (window.innerWidth > 768) {
-      userMenu.classList.toggle("hidden");
-      return;
-    }
+  try { user = JSON.parse(userRaw); }
+  catch { user = null; }
 
-    if (typeof openMobileUserMenu === "function") {
-      openMobileUserMenu();
-    }
-  });
-}
+  /* 3️⃣ Usuario NO logueado → mostrar snackbar y redirigir */
+  if (!user) {
+    const snack = document.getElementById("snackbar-login");
+    snack.classList.add("show");
 
-/* ============================================================
-   INIT
-============================================================ */
+    setTimeout(() => {
+      snack.classList.remove("show");
+      window.location.href = "login.html";
+    }, 2200);
+
+    return;
+  }
+
+  /* 4️⃣ Usuario logueado → continuar */
+  window.location.href = "datos_cliente.html";
+});
+
+/* Init */
 renderCart();
