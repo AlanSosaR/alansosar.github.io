@@ -300,6 +300,58 @@ header {
 }
 
 /* =====================================================
+   EMPTY STATE (INTEGRADO)
+===================================================== */
+
+.empty-container {
+  text-align: center;
+  margin-top: 2.5rem;
+  opacity: 0;
+  transform: translateY(14px);
+  animation: emptyFadeIn .45s ease forwards;
+}
+
+@keyframes emptyFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.empty-title {
+  font-size: 1.55rem;
+  font-weight: 600;
+  color: var(--marron);
+  margin-bottom: .3rem;
+}
+
+.empty-sub {
+  font-size: 1rem;
+  color: rgba(0,0,0,0.55);
+  margin-bottom: 1.5rem;
+}
+
+.empty-btn {
+  padding: 12px 26px;
+  border-radius: 30px;
+  border: 2px solid var(--verde);
+  background: white;
+  color: var(--verde);
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all .25s ease;
+}
+
+.empty-btn:hover {
+  background: var(--verde);
+  color: white;
+}
+
+/* =====================================================
    SNACKBAR
 ===================================================== */
 #snackbar-login {
