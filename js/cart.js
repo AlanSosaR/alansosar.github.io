@@ -1,12 +1,12 @@
-/* ============================================================
-   Carrito — Café Cortero 2025
-   Compatible con template + resumen lateral + login + avatar
-============================================================ */
+/* ============================================================  
+   Carrito — Café Cortero 2025  
+   Compatible con template + resumen lateral + login + avatar  
+============================================================ */  
 
 const CART_KEY = "cafecortero_cart";
 
-/* -----------------------------------------------------------
-   Helpers para el carrito
+/* -----------------------------------------------------------  
+   Helpers para el carrito  
 ----------------------------------------------------------- */
 function getCart() {
   return JSON.parse(localStorage.getItem(CART_KEY)) || [];
@@ -16,8 +16,8 @@ function saveCart(cart) {
   localStorage.setItem(CART_KEY, JSON.stringify(cart));
 }
 
-/* -----------------------------------------------------------
-   RENDER DEL CARRITO (USA EL TEMPLATE)
+/* -----------------------------------------------------------  
+   RENDER DEL CARRITO (USA EL TEMPLATE)  
 ----------------------------------------------------------- */
 function renderCart() {
   const cart = getCart();
@@ -26,6 +26,7 @@ function renderCart() {
   const subtotalLabel = document.getElementById("subtotal-label");
   const totalLabel = document.getElementById("total-label");
   const countItems = document.getElementById("count-items");
+  const resumenBox = document.querySelector(".resumen-box");
 
   container.innerHTML = "";
 
@@ -34,18 +35,27 @@ function renderCart() {
   cart.forEach(p => totalCafes += p.qty);
   countItems.textContent = `${totalCafes} ${totalCafes === 1 ? "café" : "cafés"}`;
 
-  /* Vacío */
+  /* Carrito vacío */
   if (cart.length === 0) {
+
     container.innerHTML = `
       <div class="empty">
         Tu selección está vacía.<br>
         <small>Agrega tu café favorito para continuar.</small>
       </div>
     `;
+
+    // 🔥 OCULTAR TARJETA DE RESUMEN COMPLETA
+    resumenBox.style.display = "none";
+
     subtotalLabel.textContent = "L 0.00";
     totalLabel.textContent = "L 0.00";
+
     return;
   }
+
+  // 🔥 SI HAY PRODUCTOS → MOSTRAR TARJETA DE RESUMEN
+  resumenBox.style.display = "block";
 
   /* Render con template */
   const template = document.getElementById("template-cart-item");
@@ -66,7 +76,6 @@ function renderCart() {
     });
 
     subtotal += item.qty * item.price;
-
     container.appendChild(clone);
   });
 
@@ -77,8 +86,8 @@ function renderCart() {
   saveCart(cart);
 }
 
-/* -----------------------------------------------------------
-   CONTROL DE BOTONES: +, –, 🗑
+/* -----------------------------------------------------------  
+   CONTROL DE BOTONES: +, –, 🗑  
 ----------------------------------------------------------- */
 document.getElementById("cart-container").addEventListener("click", e => {
   const btn = e.target.closest("button");
@@ -101,8 +110,8 @@ document.getElementById("cart-container").addEventListener("click", e => {
   renderCart();
 });
 
-/* -----------------------------------------------------------
-   VALIDAR LOGIN PARA PROCEDER AL PAGO
+/* -----------------------------------------------------------  
+   VALIDAR LOGIN PARA PROCEDER AL PAGO  
 ----------------------------------------------------------- */
 document.getElementById("proceder-btn").addEventListener("click", () => {
   const cart = getCart();
@@ -113,23 +122,26 @@ document.getElementById("proceder-btn").addEventListener("click", () => {
   try { user = JSON.parse(localStorage.getItem("cortero_user")); }
   catch { user = null; }
 
+  /* Usuario NO logueado */
   if (!user) {
     const snack = document.getElementById("snackbar-login");
+    snack.textContent = "Necesitas iniciar sesión para continuar con tu pedido.";
     snack.classList.add("show");
 
     setTimeout(() => {
       snack.classList.remove("show");
       window.location.href = "login.html?redirect=carrito";
-    }, 1400);
+    }, 1500);
 
     return;
   }
 
+  /* Usuario logueado → continuar */
   window.location.href = "datos_cliente.html";
 });
 
-/* -----------------------------------------------------------
-   AVATAR DINÁMICO + MENÚ
+/* -----------------------------------------------------------  
+   AVATAR DINÁMICO + MENÚ  
 ----------------------------------------------------------- */
 const avatarBtn = document.getElementById("btn-header-user");
 const avatarImg = document.getElementById("avatar-user");
@@ -159,19 +171,19 @@ avatarBtn.addEventListener("click", () => {
     return;
   }
 
-  /* escritorio */
+  // escritorio
   if (window.innerWidth > 768) {
     userMenu.classList.toggle("hidden");
     return;
   }
 
-  /* móvil */
+  // móvil
   if (typeof openMobileUserMenu === "function") {
     openMobileUserMenu();
   }
 });
 
-/* -----------------------------------------------------------
-   INIT
+/* -----------------------------------------------------------  
+   INIT  
 ----------------------------------------------------------- */
 renderCart();
