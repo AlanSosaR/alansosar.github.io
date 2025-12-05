@@ -1,16 +1,12 @@
 /* ============================================================
-   Carrito — Versión Google Store 2025 (JS limpio y final)
+   Carrito — Versión limpia 2025 (sin Guardar para más tarde)
 ============================================================ */
 
-const CART_KEY  = "cafecortero_cart";
-const SAVED_KEY = "cafecortero_saved";
+const CART_KEY = "cafecortero_cart";
 
 /* Helpers */
-const getCart  = () => JSON.parse(localStorage.getItem(CART_KEY))  || [];
+const getCart  = () => JSON.parse(localStorage.getItem(CART_KEY)) || [];
 const saveCart = cart => localStorage.setItem(CART_KEY, JSON.stringify(cart));
-
-const getSaved  = () => JSON.parse(localStorage.getItem(SAVED_KEY)) || [];
-const saveSaved = list => localStorage.setItem(SAVED_KEY, JSON.stringify(list));
 
 /* Loader */
 const showPageLoader = () => document.getElementById("page-loader")?.classList.remove("hidden");
@@ -49,7 +45,7 @@ async function checkLoginStatus() {
 }
 
 /* ============================================================
-   RENDER DEL CARRITO
+   RENDER DEL CARRITO (YA SIN GUARDADOS)
 ============================================================ */
 function renderCart() {
   const cart          = getCart();
@@ -61,9 +57,10 @@ function renderCart() {
   cartContainer.innerHTML = "";
   colResumen.innerHTML    = "";
 
-  const total = cart.reduce((a,b) => a + b.qty, 0);
+  const total = cart.reduce((a, b) => a + b.qty, 0);
   countSpan.textContent = `(${total} ${total === 1 ? "café" : "cafés"})`;
 
+  /* Carrito vacío */
   if (cart.length === 0) {
     cartContainer.innerHTML = `
       <div class="empty">
@@ -71,16 +68,16 @@ function renderCart() {
         <small>Agrega tu café favorito para continuar.</small>
       </div>
     `;
-    renderSaved();
     return;
   }
 
+  /* Render items */
   cart.forEach((item, index) => {
     const clone = templateItem.content.cloneNode(true);
 
     clone.querySelector(".item-image").src = item.img;
     clone.querySelector(".item-name").textContent  = item.name;
-    clone.querySelector(".item-price").textContent = `L ${item.price} / unidad`;
+    clone.querySelector(".item-price").textContent = \`L ${item.price} / unidad\`;
     clone.querySelector(".qty-number").textContent = item.qty;
 
     clone.querySelectorAll("button").forEach(btn => {
@@ -92,6 +89,7 @@ function renderCart() {
 
   const subtotal = cart.reduce((acc, i) => acc + (i.qty * i.price), 0);
 
+  /* Resumen derecho */
   colResumen.innerHTML = `
     <div class="resumen-box">
       <h2>Resumen del pedido</h2>
@@ -116,44 +114,10 @@ function renderCart() {
   `;
 
   saveCart(cart);
-  renderSaved();
 }
 
 /* ============================================================
-   RENDER GUARDADOS
-============================================================ */
-function renderSaved() {
-  const saved        = getSaved();
-  const container    = document.getElementById("saved-list");
-  const templateSave = document.getElementById("template-saved-item");
-
-  container.innerHTML = "";
-
-  if (saved.length === 0) {
-    container.innerHTML = `
-      <p class="saved-empty-title">No hay cafés guardados todavía</p>
-      <p class="saved-empty-sub">Añade a esta lista tus cafés que no estás comprando hoy</p>
-    `;
-    return;
-  }
-
-  saved.forEach((item, index) => {
-    const clone = templateSave.content.cloneNode(true);
-
-    clone.querySelector(".saved-image").src = item.img;
-    clone.querySelector(".saved-name").textContent  = item.name;
-    clone.querySelector(".saved-price").textContent = `L ${item.price}`;
-
-    clone.querySelectorAll("button").forEach(btn => {
-      btn.dataset.index = index;
-    });
-
-    container.appendChild(clone);
-  });
-}
-
-/* ============================================================
-   EVENTOS DEL CARRITO
+   EVENTOS DEL CARRITO — SOLO plus / minus / del
 ============================================================ */
 document.addEventListener("click", async e => {
   const btn = e.target.closest("button");
@@ -162,47 +126,25 @@ document.addEventListener("click", async e => {
   const action = btn.dataset.action;
   const index  = parseInt(btn.dataset.index);
 
-  if (["plus","minus","del","save"].includes(action)) {
+  if (["plus", "minus", "del"].includes(action)) {
     let cart = getCart();
 
     if (action === "plus") cart[index].qty++;
+
     if (action === "minus") {
       cart[index].qty--;
       if (cart[index].qty <= 0) cart.splice(index, 1);
     }
-    if (action === "del") cart.splice(index, 1);
 
-    if (action === "save") {
-      const saved = getSaved();
-      saved.push(cart[index]);
-      saveSaved(saved);
+    if (action === "del") {
       cart.splice(index, 1);
-      saveCart(cart);
-      renderCart();
-      return;
     }
 
     saveCart(cart);
     renderCart();
   }
 
-  if (action === "return") {
-    const saved = getSaved();
-    const cart  = getCart();
-    cart.push(saved[index]);
-    saved.splice(index, 1);
-    saveCart(cart);
-    saveSaved(saved);
-    renderCart();
-  }
-
-  if (action === "delete-saved") {
-    const saved = getSaved();
-    saved.splice(index, 1);
-    saveSaved(saved);
-    renderSaved();
-  }
-
+  /* Proceder al pago */
   if (btn.id === "proceder-btn") {
     const user = await checkLoginStatus();
     if (!user) return;
@@ -211,15 +153,13 @@ document.addEventListener("click", async e => {
 });
 
 /* ============================================================
-   🔥 MENÚ DEL AVATAR — COMPATIBLE CON TU HTML REAL
+   🔥 MENÚ DEL AVATAR — IGUAL AL INDEX
 ============================================================ */
-
-const avatarBtn = document.getElementById("btn-header-user");  // ✔ este sí existe
+const avatarBtn = document.getElementById("btn-header-user");
 const userMenu  = document.getElementById("user-menu");
 
 if (avatarBtn) {
   avatarBtn.addEventListener("click", async () => {
-
     const { data } = await supabase.auth.getUser();
 
     if (!data?.user) {
@@ -227,13 +167,11 @@ if (avatarBtn) {
       return;
     }
 
-    // Abrir menú en escritorio
     if (window.innerWidth > 768) {
       userMenu.classList.toggle("hidden");
       return;
     }
 
-    // Abrir menú móvil desde auth-ui
     if (typeof openMobileUserMenu === "function") {
       openMobileUserMenu();
     }
