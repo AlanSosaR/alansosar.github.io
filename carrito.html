@@ -16,6 +16,15 @@
 
   <!-- CSS -->
   <link rel="stylesheet" href="css/carrito.css?v=26">
+
+  <style>
+      /* Evita que el logo se desborde en el header */
+      .header-logo {
+          max-height: 48px;
+          width: auto;
+          object-fit: contain;
+      }
+  </style>
 </head>
 <body>
 
@@ -58,7 +67,7 @@
 
 
 <!-- =====================================================
-     TEMPLATES DE PRODUCTOS (CARRITO & GUARDADOS)
+     TEMPLATE DE PRODUCTOS (SIN GUARDAR PARA MÁS TARDE)
 ====================================================== -->
 
 <!-- Item del carrito -->
@@ -90,40 +99,13 @@
                 </button>
             </div>
 
-            <!-- FILA 2: Guardado -->
-            <button class="save-later-btn" data-action="save">
-                Guardar para más tarde
-            </button>
-
         </div>
-    </div>
-</template>
-
-
-<!-- Item de guardado -->
-<template id="template-saved-item">
-    <div class="saved-item">
-
-        <div class="saved-img-box">
-            <img class="saved-image">
-        </div>
-
-        <div class="saved-info">
-            <div class="saved-name"></div>
-            <div class="saved-price"></div>
-        </div>
-
-        <div class="saved-buttons">
-            <button class="saved-btn return" data-action="return">Mover al carrito</button>
-            <button class="saved-btn delete" data-action="delete-saved">Eliminar</button>
-        </div>
-
     </div>
 </template>
 
 
 <!-- =====================================================
-     CONTENIDO PRINCIPAL
+     CONTENIDO PRINCIPAL (SIN GUARDADOS)
 ====================================================== -->
 <main>
     <div class="grid-carrito">
@@ -131,17 +113,6 @@
         <!-- IZQUIERDA -->
         <div class="col-productos">
             <div id="cart-container"></div>
-
-            <section id="saved-section" class="saved-wrapper">
-                <div class="saved-card">
-                    <h3 class="saved-card-title">Guardado para más tarde</h3>
-
-                    <div id="saved-list" class="saved-list empty-saved">
-                        <p class="saved-empty-title">No hay cafés guardados todavía</p>
-                        <p class="saved-empty-sub">Añade a esta lista tus cafés que no estás comprando hoy</p>
-                    </div>
-                </div>
-            </section>
         </div>
 
         <!-- DERECHA -->
