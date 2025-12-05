@@ -1,14 +1,13 @@
 /* ============================================================
-   Carrito — Café Cortero
-   Versión Final Premium 2025
-   Login + Avatar dinámico + Menú
+   Carrito — Café Cortero 2025
+   Compatible con template + resumen lateral + login + avatar
 ============================================================ */
 
-const CART_KEY = 'cafecortero_cart';
+const CART_KEY = "cafecortero_cart";
 
-/* -------------------------------------------
-   Obtener y guardar carrito
-------------------------------------------- */
+/* -----------------------------------------------------------
+   Helpers para el carrito
+----------------------------------------------------------- */
 function getCart() {
   return JSON.parse(localStorage.getItem(CART_KEY)) || [];
 }
@@ -17,21 +16,25 @@ function saveCart(cart) {
   localStorage.setItem(CART_KEY, JSON.stringify(cart));
 }
 
-/* -------------------------------------------
-   Render del carrito
-------------------------------------------- */
+/* -----------------------------------------------------------
+   RENDER DEL CARRITO (USA EL TEMPLATE)
+----------------------------------------------------------- */
 function renderCart() {
   const cart = getCart();
-  const container = document.getElementById('cart-container');
-  const totalBox = document.getElementById('total-box');
+
+  const container = document.getElementById("cart-container");
+  const subtotalLabel = document.getElementById("subtotal-label");
+  const totalLabel = document.getElementById("total-label");
   const countItems = document.getElementById("count-items");
 
-  container.innerHTML = '';
+  container.innerHTML = "";
 
+  /* Contar cafés */
   let totalCafes = 0;
-  cart.forEach(i => totalCafes += i.qty);
-  countItems.textContent = `${totalCafes} ${totalCafes === 1 ? 'café' : 'cafés'}`;
+  cart.forEach(p => totalCafes += p.qty);
+  countItems.textContent = `${totalCafes} ${totalCafes === 1 ? "café" : "cafés"}`;
 
+  /* Vacío */
   if (cart.length === 0) {
     container.innerHTML = `
       <div class="empty">
@@ -39,124 +42,75 @@ function renderCart() {
         <small>Agrega tu café favorito para continuar.</small>
       </div>
     `;
-    totalBox.style.display = "none";
-    actualizarTextoBoton();
+    subtotalLabel.textContent = "L 0.00";
+    totalLabel.textContent = "L 0.00";
     return;
   }
 
-  totalBox.style.display = "block";
+  /* Render con template */
+  const template = document.getElementById("template-cart-item");
 
-  let total = 0;
+  let subtotal = 0;
 
   cart.forEach((item, index) => {
-    const priceNum = parseFloat(item.price) || 0;
-    const subtotal = priceNum * item.qty;
-    total += subtotal;
+    const clone = template.content.cloneNode(true);
 
-    const div = document.createElement('div');
-    div.className = 'item';
-    div.innerHTML = `
-      <div class="item-img-box">
-        <img src="${item.img}">
-      </div>
+    clone.querySelector(".item-image").src = item.img;
+    clone.querySelector(".item-name").textContent = item.name;
+    clone.querySelector(".item-price").textContent = `L ${item.price} / unidad`;
+    clone.querySelector(".qty-number").textContent = item.qty;
 
-      <div class="item-info">
-        <div class="item-name">${item.name}</div>
-        <div class="item-price">L ${priceNum.toFixed(2)} / unidad</div>
+    /* Conectar botones */
+    clone.querySelectorAll("button").forEach(btn => {
+      btn.dataset.index = index;
+    });
 
-        <div class="qty-controls">
-          <button class="qty-btn minus" data-action="minus" data-index="${index}">
-            <i class="fa-solid fa-minus"></i>
-          </button>
+    subtotal += item.qty * item.price;
 
-          <span class="qty-number">${item.qty}</span>
-
-          <button class="qty-btn plus" data-action="plus" data-index="${index}">
-            <i class="fa-solid fa-plus"></i>
-          </button>
-
-          <button class="del-btn" data-action="del" data-index="${index}">
-            <i class="fa-solid fa-trash"></i>
-          </button>
-        </div>
-      </div>
-    `;
-    container.appendChild(div);
+    container.appendChild(clone);
   });
 
+  /* Actualizar totales */
+  subtotalLabel.textContent = `L ${subtotal.toFixed(2)}`;
+  totalLabel.textContent = `L ${subtotal.toFixed(2)}`;
+
   saveCart(cart);
-
-  totalBox.innerHTML = `
-    Total de tu selección: 
-    <span class="moneda">L</span> ${total.toFixed(2)}
-  `;
-
-  actualizarTextoBoton();
 }
 
-/* -------------------------------------------
-   Actualizar texto del botón
-------------------------------------------- */
-function actualizarTextoBoton() {
-  const procederBtn = document.getElementById('proceder-btn');
-  const cart = getCart();
-
-  let totalCafes = 0;
-  cart.forEach(item => totalCafes += item.qty);
-
-  if (totalCafes === 0) {
-    procederBtn.textContent = "Proceder al pago";
-    return;
-  }
-
-  const palabra = totalCafes === 1 ? "café" : "cafés";
-  procederBtn.textContent = `Proceder al pago (${totalCafes} ${palabra})`;
-}
-
-/* -------------------------------------------
-   Eventos en items
-------------------------------------------- */
-document.getElementById('cart-container').addEventListener('click', e => {
-  const btn = e.target.closest('button');
+/* -----------------------------------------------------------
+   CONTROL DE BOTONES: +, –, 🗑
+----------------------------------------------------------- */
+document.getElementById("cart-container").addEventListener("click", e => {
+  const btn = e.target.closest("button");
   if (!btn) return;
 
   const action = btn.dataset.action;
   const index = parseInt(btn.dataset.index);
   const cart = getCart();
 
-  if (action === 'plus') cart[index].qty++;
+  if (action === "plus") cart[index].qty++;
 
-  if (action === 'minus') {
+  if (action === "minus") {
     cart[index].qty--;
     if (cart[index].qty <= 0) cart.splice(index, 1);
   }
 
-  if (action === 'del') cart.splice(index, 1);
+  if (action === "del") cart.splice(index, 1);
 
   saveCart(cart);
   renderCart();
 });
 
-/* ============================================================
-   Proceder al pago — Validación Login
-============================================================ */
-document.getElementById('proceder-btn').addEventListener('click', () => {
+/* -----------------------------------------------------------
+   VALIDAR LOGIN PARA PROCEDER AL PAGO
+----------------------------------------------------------- */
+document.getElementById("proceder-btn").addEventListener("click", () => {
   const cart = getCart();
 
-  /* Carrito vacío */
-  if (cart.length === 0) {
-    const aviso = document.getElementById('aviso-vacio');
-    aviso.textContent = "Aún no has agregado cafés a tu selección.";
-    aviso.classList.add('show');
-    setTimeout(() => aviso.classList.remove('show'), 2500);
-    return;
-  }
+  if (cart.length === 0) return;
 
-  /* Validar login */
-  const userRaw = localStorage.getItem("cortero_user");
   let user = null;
-
-  try { user = JSON.parse(userRaw); } 
+  try { user = JSON.parse(localStorage.getItem("cortero_user")); }
   catch { user = null; }
 
   if (!user) {
@@ -166,24 +120,22 @@ document.getElementById('proceder-btn').addEventListener('click', () => {
     setTimeout(() => {
       snack.classList.remove("show");
       window.location.href = "login.html?redirect=carrito";
-    }, 1600);
+    }, 1400);
 
     return;
   }
 
-  /* Usuario logueado → continuar */
   window.location.href = "datos_cliente.html";
 });
 
-/* ============================================================
-   AVATAR + MENÚ DINÁMICO
-============================================================ */
-
+/* -----------------------------------------------------------
+   AVATAR DINÁMICO + MENÚ
+----------------------------------------------------------- */
 const avatarBtn = document.getElementById("btn-header-user");
 const avatarImg = document.getElementById("avatar-user");
-const userMenu  = document.getElementById("user-menu");
+const userMenu = document.getElementById("user-menu");
 
-/* Cargar avatar al iniciar */
+/* Cargar avatar */
 (function loadAvatar() {
   let user = null;
   try { user = JSON.parse(localStorage.getItem("cortero_user")); }
@@ -202,23 +154,24 @@ avatarBtn.addEventListener("click", () => {
   try { user = JSON.parse(localStorage.getItem("cortero_user")); }
   catch { user = null; }
 
-  /* NO logueado → enviar a login */
   if (!user) {
     window.location.href = "login.html?redirect=carrito";
     return;
   }
 
-  /* En PC: abrir menú */
+  /* escritorio */
   if (window.innerWidth > 768) {
     userMenu.classList.toggle("hidden");
     return;
   }
 
-  /* En móvil: usar menú de auth-ui.js */
+  /* móvil */
   if (typeof openMobileUserMenu === "function") {
     openMobileUserMenu();
   }
 });
 
-/* Init */
+/* -----------------------------------------------------------
+   INIT
+----------------------------------------------------------- */
 renderCart();
