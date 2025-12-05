@@ -27,6 +27,7 @@ function renderCart() {
   const totalLabel = document.getElementById("total-label");
   const countItems = document.getElementById("count-items");
   const resumenBox = document.querySelector(".resumen-box");
+  const main = document.querySelector("main");
 
   container.innerHTML = "";
 
@@ -35,17 +36,24 @@ function renderCart() {
   cart.forEach(p => totalCafes += p.qty);
   countItems.textContent = `${totalCafes} ${totalCafes === 1 ? "café" : "cafés"}`;
 
-  /* Carrito vacío */
+  /* ========= CARRITO VACÍO — ESTILO GOOGLE ========= */
   if (cart.length === 0) {
 
+    // Activar clase del estado vacío
+    main.classList.add("carrito-vacio-activo");
+
     container.innerHTML = `
-      <div class="empty">
-        Tu selección está vacía.<br>
-        <small>Agrega tu café favorito para continuar.</small>
+      <div class="empty-container">
+          <div class="empty-title">Tu selección está vacía</div>
+          <div class="empty-sub">Agrega tu café favorito para continuar.</div>
+
+          <button class="empty-btn" onclick="window.location.href='index.html'">
+              Seguir comprando
+          </button>
       </div>
     `;
 
-    // 🔥 OCULTAR TARJETA DE RESUMEN COMPLETA
+    // Ocultar resumen
     resumenBox.style.display = "none";
 
     subtotalLabel.textContent = "L 0.00";
@@ -54,12 +62,11 @@ function renderCart() {
     return;
   }
 
-  // 🔥 SI HAY PRODUCTOS → MOSTRAR TARJETA DE RESUMEN
+  /* ========= HAY PRODUCTOS ========= */
+  main.classList.remove("carrito-vacio-activo");
   resumenBox.style.display = "block";
 
-  /* Render con template */
   const template = document.getElementById("template-cart-item");
-
   let subtotal = 0;
 
   cart.forEach((item, index) => {
@@ -70,7 +77,6 @@ function renderCart() {
     clone.querySelector(".item-price").textContent = `L ${item.price} / unidad`;
     clone.querySelector(".qty-number").textContent = item.qty;
 
-    /* Conectar botones */
     clone.querySelectorAll("button").forEach(btn => {
       btn.dataset.index = index;
     });
@@ -79,7 +85,6 @@ function renderCart() {
     container.appendChild(clone);
   });
 
-  /* Actualizar totales */
   subtotalLabel.textContent = `L ${subtotal.toFixed(2)}`;
   totalLabel.textContent = `L ${subtotal.toFixed(2)}`;
 
@@ -87,7 +92,7 @@ function renderCart() {
 }
 
 /* -----------------------------------------------------------  
-   CONTROL DE BOTONES: +, –, 🗑  
+   CONTROL: +, –, 🗑  
 ----------------------------------------------------------- */
 document.getElementById("cart-container").addEventListener("click", e => {
   const btn = e.target.closest("button");
@@ -98,12 +103,10 @@ document.getElementById("cart-container").addEventListener("click", e => {
   const cart = getCart();
 
   if (action === "plus") cart[index].qty++;
-
   if (action === "minus") {
     cart[index].qty--;
     if (cart[index].qty <= 0) cart.splice(index, 1);
   }
-
   if (action === "del") cart.splice(index, 1);
 
   saveCart(cart);
@@ -115,14 +118,12 @@ document.getElementById("cart-container").addEventListener("click", e => {
 ----------------------------------------------------------- */
 document.getElementById("proceder-btn").addEventListener("click", () => {
   const cart = getCart();
-
   if (cart.length === 0) return;
 
   let user = null;
   try { user = JSON.parse(localStorage.getItem("cortero_user")); }
   catch { user = null; }
 
-  /* Usuario NO logueado */
   if (!user) {
     const snack = document.getElementById("snackbar-login");
     snack.textContent = "Necesitas iniciar sesión para continuar con tu pedido.";
@@ -136,7 +137,6 @@ document.getElementById("proceder-btn").addEventListener("click", () => {
     return;
   }
 
-  /* Usuario logueado → continuar */
   window.location.href = "datos_cliente.html";
 });
 
@@ -147,20 +147,14 @@ const avatarBtn = document.getElementById("btn-header-user");
 const avatarImg = document.getElementById("avatar-user");
 const userMenu = document.getElementById("user-menu");
 
-/* Cargar avatar */
 (function loadAvatar() {
   let user = null;
   try { user = JSON.parse(localStorage.getItem("cortero_user")); }
   catch { user = null; }
 
-  if (user?.foto) {
-    avatarImg.src = user.foto;
-  } else {
-    avatarImg.src = "imagenes/avatar-default.svg";
-  }
+  avatarImg.src = user?.foto || "imagenes/avatar-default.svg";
 })();
 
-/* Click en avatar */
 avatarBtn.addEventListener("click", () => {
   let user = null;
   try { user = JSON.parse(localStorage.getItem("cortero_user")); }
@@ -171,14 +165,9 @@ avatarBtn.addEventListener("click", () => {
     return;
   }
 
-  // escritorio
   if (window.innerWidth > 768) {
     userMenu.classList.toggle("hidden");
-    return;
-  }
-
-  // móvil
-  if (typeof openMobileUserMenu === "function") {
+  } else if (typeof openMobileUserMenu === "function") {
     openMobileUserMenu();
   }
 });
