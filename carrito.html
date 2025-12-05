@@ -5,60 +5,150 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tu selección de café | Café Cortero</title>
 
-  <!-- Tipografía (Poppins + futura integración con SF Pro Display) -->
+  <!-- Tipografía -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
   <!-- Iconos -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <!-- CSS del carrito -->
-  <link rel="stylesheet" href="css/carrito.css">
-
-  <style>
-    /* Eliminar highlight azul en móviles */
-    a, a:focus, a:active, a:visited, button {
-      outline: none;
-      -webkit-tap-highlight-color: transparent;
-    }
-  </style>
+  <link rel="stylesheet" href="css/carrito.css?v=30">
 </head>
 
 <body>
 
-  <!-- === HEADER FIJO — ESTILO INDEX (Material 3 Expressive) === -->
-  <header class="header-fixed">
+<!-- =====================================================
+     HEADER IGUAL AL INDEX
+====================================================== -->
+<header class="header-fixed">
     <a href="index.html" class="header-logo-link">
-      <img src="imagenes/logo.png" alt="Café Cortero" class="header-logo">
+        <img src="imagenes/logo.png" alt="Café Cortero" class="header-logo">
     </a>
 
-    <span class="cart-title">Tu selección de café</span>
-  </header>
+    <span class="cart-title">
+        Tu selección de café (<span id="count-items">0 cafés</span>)
+    </span>
 
+    <!-- Avatar del usuario -->
+    <button id="btn-header-user" class="header-avatar-button">
+        <img id="avatar-user" src="imagenes/avatar-default.svg" alt="Usuario" class="header-avatar">
+    </button>
 
-  <!-- === CONTENIDO PRINCIPAL === -->
-  <main>
-    <!-- Contenedor donde se insertan dinámicamente las tarjetas outline del carrito -->
-    <div id="cart-container"></div>
-
-    <!-- Total -->
-    <div class="total-box" id="total-box">
-      Total: L 0.00
+    <!-- Menú flotante -->
+    <div id="user-menu" class="user-menu hidden">
+        <a href="mispedidos.html">📦 Mis pedidos</a>
+        <a href="historial.html">🧾 Historial</a>
+        <a href="perfil.html">👤 Mi perfil</a>
+        <button id="logout-btn">🚪 Cerrar sesión</button>
     </div>
+</header>
 
-    <!-- Acciones -->
-    <div class="actions">
-      <button class="btn volver" onclick="window.location.href='index.html'">Volver</button>
-      <button id="proceder-btn" class="btn proceder">Proceder con el pedido</button>
+
+<!-- =====================================================
+     SEGUIR COMPRANDO (IZQUIERDA)
+====================================================== -->
+<div class="seguir-comprando">
+    <button class="icon-back" onclick="window.location.href='index.html'">
+        <i class="fa-solid fa-chevron-left"></i>
+    </button>
+    <a href="index.html" class="seguir-link">Seguir comprando</a>
+</div>
+
+
+<!-- =====================================================
+     TEMPLATE DEL ITEM (SIN GUARDAR PARA MÁS TARDE)
+====================================================== -->
+<template id="template-cart-item">
+    <div class="item">
+
+        <div class="item-img-box">
+            <img class="item-image" src="">
+        </div>
+
+        <div class="item-info">
+            <div class="item-name"></div>
+            <div class="item-price"></div>
+
+            <div class="qty-controls">
+                <button class="qty-btn minus" data-action="minus">
+                    <i class="fa-solid fa-minus"></i>
+                </button>
+
+                <span class="qty-number"></span>
+
+                <button class="qty-btn plus" data-action="plus">
+                    <i class="fa-solid fa-plus"></i>
+                </button>
+
+                <button class="del-btn" data-action="del">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+            </div>
+        </div>
     </div>
-  </main>
+</template>
 
 
-  <!-- === SNACKBAR (MD3 Expressive Light) === -->
-  <div id="aviso-vacio" class="snackbar-md3"></div>
+<!-- =====================================================
+     CONTENIDO PRINCIPAL — PRODUCTOS + RESUMEN
+====================================================== -->
+<main>
+    <div class="grid-carrito">
+
+        <!-- IZQUIERDA: productos -->
+        <div class="col-productos">
+            <div id="cart-container"></div>
+        </div>
+
+        <!-- DERECHA: resumen -->
+        <div class="col-resumen" id="resumen-container">
+
+            <div class="resumen-box">
+                <h2>Resumen del pedido</h2>
+
+                <div class="resumen-row">
+                    <span>Total parcial</span>
+                    <span id="subtotal-label">L 0.00</span>
+                </div>
+
+                <div class="resumen-row">
+                    <span>Envío</span>
+                    <span>L 0.00</span>
+                </div>
+
+                <div class="resumen-row resumen-total">
+                    <span>Total estimado</span>
+                    <span id="total-label">L 0.00</span>
+                </div>
+
+                <button id="proceder-btn" class="btn proceder">
+                    Proceder al pago
+                </button>
+            </div>
+
+            <div id="snackbar-login" class="snackbar hidden">
+                Necesitas iniciar sesión para continuar con tu pedido.
+            </div>
+
+        </div>
+    </div>
+</main>
 
 
-  <!-- === SCRIPT DEL CARRITO === -->
-  <script src="js/cart.js?v=9"></script>
+<!-- Loader -->
+<div id="page-loader" class="page-loader hidden">
+    <div class="loader-circle"></div>
+</div>
+
+
+<!-- =====================================================
+     SCRIPTS
+====================================================== -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-client-core.js"></script>
+script src="js/supabase-auth.js"></script>
+<script src="js/auth-ui.js"></script>
+<script src="js/cart.js?v=2601"></script>
 
 </body>
 </html>
