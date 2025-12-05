@@ -19,9 +19,9 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* ============================================
-   HEADER – MISMO ESTILO DEL INDEX
-   ============================================ */
+/* =====================================================
+   HEADER — IGUAL AL INDEX
+===================================================== */
 header {
   position: sticky;
   top: 0;
@@ -31,14 +31,17 @@ header {
   -webkit-backdrop-filter: blur(10px);
   height: 72px;
   padding: 0 1.2rem;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
+
   border-bottom: 1.5px solid rgba(0,0,0,0.05);
 }
 
-header img {
+.header-logo {
   height: 52px;
+  object-fit: contain;
 }
 
 .cart-title {
@@ -47,73 +50,155 @@ header img {
   color: var(--marron);
 }
 
-/* ============================================
-   CONTENIDO GENERAL
-   ============================================ */
-main {
-  max-width: 1100px;
-  margin: 1.5rem auto;
-  padding: 0 1rem 3.5rem;
+/* Avatar */
+.header-avatar-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
 }
 
-.empty {
-  font-size: 1rem;
-  color: var(--marron);
-  line-height: 1.6;
+.header-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1.6px solid rgba(0,0,0,0.15);
+  object-fit: cover;
 }
 
-/* ============================================
-   TARJETA OUTLINED / MATERIAL 3
-   ============================================ */
-.item {
+/* Menú usuario */
+.user-menu {
+  position: absolute;
+  top: 75px;
+  right: 1rem;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+  padding: 1rem;
   display: flex;
-  gap: 1.3rem;
-  padding: 1.2rem;
-  border-radius: 18px;
-  background: #ffffff;
-  border: 1.8px solid rgba(0,0,0,0.08);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
-  margin-bottom: 1.2rem;
-  align-items: center;
+  flex-direction: column;
+  gap: .7rem;
 }
 
-/* ==========================================================
-   TARJETA PREMIUM CONTROLADA PARA LA IMAGEN (VERSIÓN FINAL)
-   ========================================================== */
+.user-menu a,
+.user-menu button {
+  text-decoration: none;
+  color: var(--marron);
+  font-weight: 500;
+  border: none;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
 
-.item-img-box {
-  background: #ffffff;
-  border: 1.4px solid rgba(0, 0, 0, 0.06);
-  border-radius: 18px;
-  padding: 8px;
+.hidden {
+  display: none !important;
+}
 
-  width: 95px;
-  height: 95px;
+/* =====================================================
+   SEGUIR COMPRANDO
+===================================================== */
+.seguir-comprando {
+  max-width: 1100px;
+  margin: 1.7rem auto 1rem;
+  padding: 0 1rem;
+
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.icon-back {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--blanco);
+  border: 1.4px solid rgba(0,0,0,0.08);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
 
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
+}
 
-  box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+.icon-back i {
+  font-size: 20px;
+  color: var(--verde);
+}
+
+.seguir-link {
+  font-weight: 600;
+  color: var(--verde);
+  text-decoration: none;
+}
+
+/* =====================================================
+   GRID PRINCIPAL
+===================================================== */
+.grid-carrito {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 1rem 3rem;
+
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: 2rem;
+}
+
+@media (max-width: 760px) {
+  .grid-carrito {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+/* =====================================================
+   ITEM DEL CARRITO
+===================================================== */
+.item {
+  display: flex;
+  gap: 1.3rem;
+  padding: 1.2rem;
+
+  background: #fff;
+  border: 1.8px solid rgba(0,0,0,0.08);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+
+  border-radius: 18px;
+  margin-bottom: 1.2rem;
+  align-items: center;
+}
+
+/* Imagen */
+.item-img-box {
+  width: 95px;
+  height: 95px;
+
+  border-radius: 18px;
+  border: 1.4px solid rgba(0,0,0,0.06);
+  padding: 8px;
+
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .item-img-box img {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  border-radius: 12px;
 }
 
-/* Tamaños en pantallas grandes */
 @media (min-width: 768px) {
   .item-img-box {
     width: 110px;
     height: 110px;
-    padding: 10px;
   }
 }
 
-/* Info */
+/* Textos */
 .item-info {
   flex: 1;
 }
@@ -130,44 +215,37 @@ main {
   margin-bottom: 0.6rem;
 }
 
-/* ============================================
-   CONTROLES: + / – / 🗑
-   ============================================ */
-.controls-row,
+/* Controles */
 .qty-controls {
   display: flex;
   align-items: center;
   gap: 0.7rem;
-  flex-direction: row !important;
 }
 
 .qty-btn,
 .del-btn {
   width: 34px;
   height: 34px;
+  border-radius: 50%;
   min-width: 34px;
   min-height: 34px;
 
-  border-radius: 50%;
-  background: #ffffff;
+  background: #fff;
   border: 1.5px solid rgba(0,0,0,0.12);
-
   display: flex;
   align-items: center;
   justify-content: center;
 
-  font-size: 0.9rem;
   cursor: pointer;
-
-  transition: transform 0.12s ease, background 0.2s;
-}
-
-.qty-btn.minus i {
-  color: var(--marron);
+  transition: 0.15s ease;
 }
 
 .qty-btn.plus i {
   color: var(--verde);
+}
+
+.qty-btn.minus i {
+  color: var(--marron);
 }
 
 .del-btn i {
@@ -177,88 +255,53 @@ main {
 .qty-number {
   font-size: 1rem;
   font-weight: 600;
-  text-align: center;
 }
 
-/* ===========================
-   TOTAL — Estilo Premium
-   =========================== */
-
-.total-box {
-  text-align: right;
-  font-size: 1.35rem;
-  font-weight: 600;
-  margin-top: 2rem;
-  color: #512615;
+/* =====================================================
+   RESUMEN DEL PEDIDO
+===================================================== */
+.resumen-box {
+  background: #fff;
+  padding: 1.8rem;
+  border-radius: 20px;
+  border: 1.6px solid rgba(0,0,0,0.06);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.05);
 }
 
-.total-box .moneda {
-  color: #33673B;
+.resumen-box h2 {
+  font-size: 1.28rem;
   font-weight: 700;
+  margin-bottom: 1.2rem;
 }
 
-@media (max-width: 480px) {
-  .total-box {
-    font-size: 1.15rem;
-  }
-}
-
-/* ============================================
-   BOTONES FINALES
-   ============================================ */
-.actions {
+.resumen-row {
   display: flex;
-  justify-content: center;
-  gap: 1rem;
-  margin-top: 2rem;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
 }
 
-.btn {
-  padding: 0.95rem 2rem;
-  border-radius: 999px;
-  border: none;
+.resumen-total {
+  font-weight: 700;
+  border-top: 1.4px solid rgba(0,0,0,0.08);
+  padding-top: .7rem;
+}
+
+.btn.proceder {
+  width: 100%;
+  margin-top: 1.2rem;
+  padding: 0.95rem;
+  background: var(--verde);
   color: #fff;
+  border-radius: 14px;
+  border: none;
   cursor: pointer;
   font-weight: 600;
   font-size: 1rem;
-  transition: all 0.2s ease;
 }
 
-.btn.volver { background: var(--marron); }
-.btn.proceder { background: var(--verde); }
-
-/* ============================================
-   SNACKBAR — Carrito vacío (ya existente)
-   ============================================ */
-.snackbar-md3 {
-  position: fixed;
-  bottom: 85px;
-  left: 50%;
-  transform: translateX(-50%) translateY(20px);
-  opacity: 0;
-
-  background: rgba(255,255,255,0.9);
-  backdrop-filter: blur(10px);
-  padding: 18px 28px;
-  border-radius: 28px;
-  border: 1px solid rgba(0,0,0,0.15);
-
-  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-  font-size: 0.95rem;
-  font-weight: 500;
-
-  transition: opacity .4s ease, transform .4s ease;
-  z-index: 999;
-}
-
-.snackbar-md3.show {
-  opacity: 1;
-  transform: translateY(0) translateX(-50%);
-}
-
-/* ============================================
-   SNACKBAR LOGIN (nuevo)
-   ============================================ */
+/* =====================================================
+   SNACKBAR
+===================================================== */
 #snackbar-login {
   position: fixed;
   bottom: 28px;
@@ -267,18 +310,16 @@ main {
 
   background: #333;
   color: #fff;
-  padding: 14px 22px;
 
+  padding: 14px 22px;
   border-radius: 14px;
+
   opacity: 0;
   pointer-events: none;
 
   font-size: 0.92rem;
-  font-weight: 500;
-
   box-shadow: 0 8px 28px rgba(0,0,0,0.25);
-
-  transition: opacity .35s ease, transform .35s ease;
+  transition: 0.35s ease;
   z-index: 99999;
 }
 
