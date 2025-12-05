@@ -16,20 +16,11 @@
 
   <!-- CSS -->
   <link rel="stylesheet" href="css/carrito.css?v=26">
-
-  <style>
-      /* Evita que el logo se desborde en el header */
-      .header-logo {
-          max-height: 48px;
-          width: auto;
-          object-fit: contain;
-      }
-  </style>
 </head>
 <body>
 
 <!-- =====================================================
-     HEADER (IGUAL QUE INDEX, PARA QUE auth-ui.js CARGUE EL AVATAR)
+     HEADER (IGUAL QUE INDEX)
 ====================================================== -->
 <header>
     <a href="index.html" class="header-logo-link">
@@ -40,12 +31,12 @@
         Tu selección de café <span id="count-items">(0 cafés)</span>
     </span>
 
-    <!-- Botón del avatar EXACTO al index -->
+    <!-- Botón del avatar -->
     <button id="btn-header-user" class="header-avatar-button">
         <img id="avatar-user" src="imagenes/avatar-default.svg" alt="Usuario" class="header-avatar">
     </button>
 
-    <!-- Menú usuario (igual al index, solo oculto por CSS) -->
+    <!-- Menú usuario -->
     <div id="user-menu" class="user-menu hidden">
         <a href="mispedidos.html">📦 Mis pedidos</a>
         <a href="historial.html">🧾 Historial</a>
@@ -67,10 +58,8 @@
 
 
 <!-- =====================================================
-     TEMPLATE DE PRODUCTOS (SIN GUARDAR PARA MÁS TARDE)
+     TEMPLATE DEL CARRITO (YA SIN GUARDAR PARA MÁS TARDE)
 ====================================================== -->
-
-<!-- Item del carrito -->
 <template id="template-cart-item">
     <div class="item">
 
@@ -82,7 +71,7 @@
             <div class="item-name"></div>
             <div class="item-price"></div>
 
-            <!-- FILA 1: Controles -->
+            <!-- Controles -->
             <div class="qty-controls">
                 <button class="qty-btn minus" data-action="minus">
                     <i class="fa-solid fa-minus"></i>
@@ -105,7 +94,7 @@
 
 
 <!-- =====================================================
-     CONTENIDO PRINCIPAL (SIN GUARDADOS)
+     CONTENIDO PRINCIPAL (SIN TARJETA DE GUARDADOS)
 ====================================================== -->
 <main>
     <div class="grid-carrito">
