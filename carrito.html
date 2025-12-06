@@ -45,10 +45,10 @@
 
 
 <!-- =====================================================
-     SEGUIR COMPRANDO (IZQUIERDA)
+     SEGUIR COMPRANDO (CORREGIDO CON ID)
 ====================================================== -->
-<div class="seguir-comprando">
-    <button class="icon-back" onclick="window.location.href='index.html'">
+<div id="seguir-comprando-box" class="seguir-comprando">
+    <button id="top-back-btn" class="icon-back" onclick="window.location.href='index.html'">
         <i class="fa-solid fa-chevron-left"></i>
     </button>
     <a href="index.html" class="seguir-link">Seguir comprando</a>
@@ -56,7 +56,7 @@
 
 
 <!-- =====================================================
-     TEMPLATE DEL ITEM (SIN GUARDAR PARA MÁS TARDE)
+     TEMPLATE DEL ITEM
 ====================================================== -->
 <template id="template-cart-item">
     <div class="item">
@@ -90,7 +90,7 @@
 
 
 <!-- =====================================================
-     CONTENIDO PRINCIPAL — PRODUCTOS + RESUMEN
+     CONTENIDO PRINCIPAL
 ====================================================== -->
 <main>
     <div class="grid-carrito">
