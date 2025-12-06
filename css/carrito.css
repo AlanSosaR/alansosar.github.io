@@ -20,7 +20,7 @@ body {
 }
 
 /* =====================================================
-   HEADER — IGUAL AL INDEX
+   HEADER — IGUAL AL INDEX (ADAPTADO)
 ===================================================== */
 header {
   position: sticky;
@@ -50,7 +50,7 @@ header {
   color: var(--marron);
 }
 
-/* Avatar */
+/* Avatar botón */
 .header-avatar-button {
   background: none;
   border: none;
@@ -58,30 +58,54 @@ header {
   padding: 0;
 }
 
+/* Avatar con efecto elevado (igual vibe que index) */
 .header-avatar {
   width: 42px;
   height: 42px;
   border-radius: 50%;
   border: 1.6px solid rgba(0,0,0,0.15);
   object-fit: cover;
+
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transform: translateY(0);
+  transition:
+    transform .18s ease,
+    box-shadow .18s ease,
+    border-color .18s ease;
 }
 
-/* Menú usuario */
-.user-menu {
+.header-avatar-button:hover .header-avatar {
+  transform: translateY(-1.5px);
+  box-shadow: 0 7px 20px rgba(0,0,0,0.16);
+  border-color: rgba(0,0,0,0.25);
+}
+
+/* =====================================================
+   MENÚ AVATAR ESCRITORIO (ESTILO INDEX)
+===================================================== */
+.profile-wrapper-cart {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.profile-menu-cart {
   position: absolute;
-  top: 75px;
-  right: 1rem;
+  top: 72px;             /* justo debajo del header */
+  right: 0;
   background: #fff;
-  border-radius: 14px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
-  padding: 1rem;
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.14);
+  padding: 0.9rem 1.1rem;
+  min-width: 220px;
   display: flex;
   flex-direction: column;
-  gap: .7rem;
+  gap: 0.45rem;
+  z-index: 1200;
 }
 
-.user-menu a,
-.user-menu button {
+.profile-menu-cart a,
+.profile-menu-cart button {
   text-decoration: none;
   color: var(--marron);
   font-weight: 500;
@@ -89,10 +113,134 @@ header {
   background: none;
   text-align: left;
   cursor: pointer;
+  font-size: 0.9rem;
 }
 
+.profile-menu-cart a:hover,
+.profile-menu-cart button:hover {
+  color: var(--verde);
+}
+
+.profile-hello-cart {
+  font-weight: 600;
+  margin-bottom: 0.15rem;
+  font-size: 0.92rem;
+}
+
+.profile-menu-cart hr {
+  border: none;
+  border-top: 1px solid rgba(0,0,0,0.06);
+  margin: 0.35rem 0 0.2rem;
+}
+
+.logout-cart {
+  color: #b3261e;
+  font-weight: 500;
+}
+
+.logout-cart.full {
+  width: 100%;
+  text-align: left;
+}
+
+/* Clase genérica ocultar */
 .hidden {
   display: none !important;
+}
+
+/* =====================================================
+   MENÚ MÓVIL VINCULADO A LA FOTO
+===================================================== */
+.mobile-user-menu {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  display: flex;
+  justify-content: flex-end;
+  z-index: 1400;
+}
+
+.mobile-user-menu.hidden {
+  display: none;
+}
+
+.mobile-user-panel {
+  width: 78%;
+  max-width: 320px;
+  background: #fff;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 1.2rem 1.4rem;
+}
+
+.mobile-user-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.mobile-close-btn {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+}
+
+.drawer-logo-cart img {
+  height: 42px;
+}
+
+.drawer-profile-block-cart {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin-bottom: 1rem;
+}
+
+.drawer-profile-photo-cart {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1.6px solid rgba(0,0,0,0.12);
+}
+
+.drawer-hello-cart {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.drawer-links-cart {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  margin-top: 0.3rem;
+}
+
+.drawer-links-cart a,
+.drawer-links-cart button {
+  border: none;
+  background: none;
+  text-align: left;
+  font-size: 0.95rem;
+  color: var(--marron);
+  text-decoration: none;
+  padding: 0.3rem 0;
+  cursor: pointer;
+}
+
+.drawer-links-cart a:hover,
+.drawer-links-cart button:hover {
+  color: var(--verde);
+}
+
+/* Ocultar panel móvil en escritorio */
+@media (min-width: 769px) {
+  .mobile-user-menu {
+    display: none !important;
+  }
 }
 
 /* =====================================================
@@ -280,7 +428,7 @@ header {
   margin-bottom: 0.75rem;
 }
 
-/* 🔹 Línea superior del total ahora en verde */
+/* Línea superior del total en verde */
 .resumen-total {
   font-weight: 700;
   border-top: 1.4px solid var(--verde);
