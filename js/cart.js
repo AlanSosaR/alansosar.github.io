@@ -16,13 +16,18 @@ function saveCart(cart) {
   localStorage.setItem(CART_KEY, JSON.stringify(cart));
 }
 
-// mismo helper que en perfil.js para leer el usuario
+// Mismo helper que en perfil.js para leer el usuario
 function getUserLS() {
   try {
     return JSON.parse(localStorage.getItem("cortero_user")) || null;
   } catch {
     return null;
   }
+}
+
+// Obtener cliente de Supabase de forma segura
+function getSupabaseClient() {
+  return window.supabaseClient || window.supabase || null;
 }
 
 /* -----------------------------------------------------------
@@ -153,16 +158,23 @@ if (procederBtn) {
     const cart = getCart();
     if (cart.length === 0) return;
 
+    const sb = getSupabaseClient();
+    if (!sb) {
+      console.error("Supabase client no disponible en carrito (proceder)");
+      window.location.href = "login.html?redirect=carrito";
+      return;
+    }
+
     let session = null;
 
     try {
-      const { data, error } = await supabase.auth.getSession();
+      const { data, error } = await sb.auth.getSession();
       if (error) {
         console.error("Error obteniendo sesión:", error);
       }
-      session = data?.session || null;
+      session = data && (data.session || null);
     } catch (err) {
-      console.error("Excepción en getSession:", err);
+      console.error("Excepción en getSession (proceder):", err);
     }
 
     // Si NO hay sesión → mostrar snackbar y mandar a login
@@ -179,7 +191,6 @@ if (procederBtn) {
           window.location.href = "login.html?redirect=carrito";
         }, 1500);
       } else {
-        // fallback
         window.location.href = "login.html?redirect=carrito";
       }
       return;
@@ -200,17 +211,22 @@ document.addEventListener("DOMContentLoaded", async () => {
   const userMenu  = document.getElementById("user-menu");
   const logoutBtn = document.getElementById("logout-btn");
 
-  const userLS = getUserLS();   // ← mismo JSON que usa perfil.js
+  const userLS = getUserLS();   // JSON que guarda perfil.js
+  const sb     = getSupabaseClient();
   let session  = null;
 
-  try {
-    const { data, error } = await supabase.auth.getSession();
-    if (error) {
-      console.error("Error obteniendo sesión (avatar):", error);
+  if (!sb) {
+    console.error("Supabase client no disponible en carrito (avatar)");
+  } else {
+    try {
+      const { data, error } = await sb.auth.getSession();
+      if (error) {
+        console.error("Error obteniendo sesión (avatar):", error);
+      }
+      session = data && (data.session || null);
+    } catch (err) {
+      console.error("Excepción en getSession (avatar):", err);
     }
-    session = data?.session || null;
-  } catch (err) {
-    console.error("Excepción en getSession (avatar):", err);
   }
 
   // Consideramos "no logueado" si no hay sesión o no hay userLS
@@ -231,25 +247,27 @@ document.addEventListener("DOMContentLoaded", async () => {
     avatarImg.src = userLS.photo_url || "imagenes/avatar-default.svg";
   }
 
-  // (Opcional) refrescar foto desde la tabla "users" como en perfil.js
-  try {
-    const { data: perfil, error } = await supabase
-        .from("users")
-        .select("photo_url")
-        .eq("id", userLS.id)
-        .single();
+  // Refrescar foto desde la tabla "users" como en perfil.js
+  if (sb) {
+    try {
+      const { data: perfil, error } = await sb
+          .from("users")
+          .select("photo_url")
+          .eq("id", userLS.id)
+          .single();
 
-    if (!error && perfil?.photo_url) {
-      if (avatarImg) avatarImg.src = perfil.photo_url;
+      if (!error && perfil?.photo_url) {
+        if (avatarImg) avatarImg.src = perfil.photo_url;
 
-      // actualizar también el localStorage para que todo quede en sync
-      localStorage.setItem(
-        "cortero_user",
-        JSON.stringify({ ...userLS, photo_url: perfil.photo_url })
-      );
+        // actualizar también el localStorage
+        localStorage.setItem(
+          "cortero_user",
+          JSON.stringify({ ...userLS, photo_url: perfil.photo_url })
+        );
+      }
+    } catch (err) {
+      console.error("Error obteniendo perfil para avatar:", err);
     }
-  } catch (err) {
-    console.error("Error obteniendo perfil para avatar:", err);
   }
 
   // Abrir menú (solo escritorio)
@@ -274,7 +292,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Cerrar sesión
   if (logoutBtn) {
     logoutBtn.onclick = async () => {
-        await supabase.auth.signOut();
+        if (sb) await sb.auth.signOut();
         window.location.href = "index.html";
     };
   }
