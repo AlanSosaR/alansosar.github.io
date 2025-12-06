@@ -29,7 +29,8 @@ function renderCart() {
   const resumenBox = document.querySelector(".resumen-box");
   const main = document.querySelector("main");
   const topBack = document.getElementById("top-back-btn");
-  const topBackText = document.getElementById("top-back-text"); // 👈 nuevo
+  const topBackText = document.getElementById("top-back-text");
+  const headerTitle = document.getElementById("cart-title"); // 👈 texto del centro del header
 
   container.innerHTML = "";
 
@@ -41,11 +42,12 @@ function renderCart() {
   if (cart.length === 0) {
 
     // Activar estilo vacío
-    main.classList.add("carrito-vacio-activo");
+    if (main) main.classList.add("carrito-vacio-activo");
 
-    // Quitar flecha de arriba y texto "Seguir comprando"
+    // Quitar flecha de arriba, texto "Seguir comprando" y título del header
     if (topBack) topBack.style.display = "none";
     if (topBackText) topBackText.style.display = "none";
+    if (headerTitle) headerTitle.style.display = "none";
 
     container.innerHTML = `
       <div class="empty-container">
@@ -58,21 +60,22 @@ function renderCart() {
       </div>
     `;
 
-    resumenBox.style.display = "none";
-    subtotalLabel.textContent = "L 0.00";
-    totalLabel.textContent = "L 0.00";
+    if (resumenBox) resumenBox.style.display = "none";
+    if (subtotalLabel) subtotalLabel.textContent = "L 0.00";
+    if (totalLabel) totalLabel.textContent = "L 0.00";
 
     return;
   }
 
   /* ========= HAY PRODUCTOS ========= */
-  main.classList.remove("carrito-vacio-activo");
+  if (main) main.classList.remove("carrito-vacio-activo");
 
-  // Mostrar flecha solo si hay productos
+  // Mostrar flecha, texto "Seguir comprando" y título del header
   if (topBack) topBack.style.display = "flex";
   if (topBackText) topBackText.style.display = "inline-block";
+  if (headerTitle) headerTitle.style.display = "inline-block";
 
-  resumenBox.style.display = "block";
+  if (resumenBox) resumenBox.style.display = "block";
 
   const template = document.getElementById("template-cart-item");
   let subtotal = 0;
@@ -93,8 +96,8 @@ function renderCart() {
     container.appendChild(clone);
   });
 
-  subtotalLabel.textContent = `L ${subtotal.toFixed(2)}`;
-  totalLabel.textContent = `L ${subtotal.toFixed(2)}`;
+  if (subtotalLabel) subtotalLabel.textContent = `L ${subtotal.toFixed(2)}`;
+  if (totalLabel) totalLabel.textContent = `L ${subtotal.toFixed(2)}`;
 
   saveCart(cart);
 }
