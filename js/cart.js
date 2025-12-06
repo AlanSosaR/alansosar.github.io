@@ -30,13 +30,17 @@ function renderCart() {
   const main = document.querySelector("main");
   const topBack = document.getElementById("top-back-btn");
   const topBackText = document.getElementById("top-back-text");
-  const headerTitle = document.getElementById("cart-title"); // 👈 texto del centro del header
+  const headerTitle = document.getElementById("cart-title"); // texto del centro del header
+
+  if (!container) return;
 
   container.innerHTML = "";
 
   /* Contar cafés */
-  let totalCafes = cart.reduce((sum, p) => sum + p.qty, 0);
-  countItems.textContent = `${totalCafes} ${totalCafes === 1 ? "café" : "cafés"}`;
+  const totalCafes = cart.reduce((sum, p) => sum + p.qty, 0);
+  if (countItems) {
+    countItems.textContent = `${totalCafes} ${totalCafes === 1 ? "café" : "cafés"}`;
+  }
 
   /* ========= ESTADO VACÍO ========= */
   if (cart.length === 0) {
@@ -78,6 +82,8 @@ function renderCart() {
   if (resumenBox) resumenBox.style.display = "block";
 
   const template = document.getElementById("template-cart-item");
+  if (!template) return;
+
   let subtotal = 0;
 
   cart.forEach((item, index) => {
@@ -105,13 +111,15 @@ function renderCart() {
 /* -----------------------------------------------------------
    CONTROL BOTONES + / – / 🗑
 ----------------------------------------------------------- */
-document.getElementById("cart-container").addEventListener("click", e => {
+document.getElementById("cart-container")?.addEventListener("click", e => {
   const btn = e.target.closest("button");
   if (!btn) return;
 
   const action = btn.dataset.action;
   const index = parseInt(btn.dataset.index);
   const cart = getCart();
+
+  if (isNaN(index) || !cart[index]) return;
 
   if (action === "plus") cart[index].qty++;
   if (action === "minus") {
@@ -125,32 +133,7 @@ document.getElementById("cart-container").addEventListener("click", e => {
 });
 
 /* -----------------------------------------------------------
-   VALIDAR LOGIN PARA PROCEDER AL PAGO (Supabase)
------------------------------------------------------------ */
-document.getElementById("proceder-btn").addEventListener("click", async () => {
-  const cart = getCart();
-  if (cart.length === 0) return;
-
-  const { data: { session } } = await supabase.auth.getSession();
-
-  if (!session) {
-    const snack = document.getElementById("snackbar-login");
-    snack.textContent = "Necesitas iniciar sesión para continuar.";
-    snack.classList.add("show");
-
-    setTimeout(() => {
-      snack.classList.remove("show");
-      window.location.href = "login.html?redirect=carrito";
-    }, 1500);
-
-    return;
-  }
-
-  window.location.href = "datos_cliente.html";
-});
-
-/* -----------------------------------------------------------
-   AVATAR: MISMO COMPORTAMIENTO QUE EN INDEX
+   AVATAR + BOTÓN PROCEDER (DOM CARGADO)
 ----------------------------------------------------------- */
 document.addEventListener("DOMContentLoaded", async () => {
 
@@ -158,56 +141,92 @@ document.addEventListener("DOMContentLoaded", async () => {
   const avatarImg = document.getElementById("avatar-user");
   const userMenu = document.getElementById("user-menu");
   const logoutBtn = document.getElementById("logout-btn");
+  const procederBtn = document.getElementById("proceder-btn");
 
+  /* --------- AVATAR / SESIÓN --------- */
   const { data: { session } } = await supabase.auth.getSession();
 
   // No logueado → avatar default + enviar a login
   if (!session) {
-      avatarImg.src = "imagenes/avatar-default.svg";
+      if (avatarImg) avatarImg.src = "imagenes/avatar-default.svg";
 
-      avatarBtn.onclick = () => {
-          window.location.href = "login.html?redirect=carrito";
-      };
+      if (avatarBtn) {
+        avatarBtn.onclick = () => {
+            window.location.href = "login.html?redirect=carrito";
+        };
+      }
+  } else {
+      // Logueado
+      const user = session.user;
 
-      return;
+      // Obtener foto
+      const { data: perfil } = await supabase
+          .from("usuarios")
+          .select("foto")
+          .eq("id", user.id)
+          .single();
+
+      if (avatarImg) {
+        avatarImg.src = perfil?.foto || "imagenes/avatar-default.svg";
+      }
+
+      // Abrir menú (solo escritorio)
+      if (avatarBtn) {
+        avatarBtn.onclick = () => {
+            if (window.innerWidth > 768) {
+                userMenu?.classList.toggle("hidden");
+            } else if (typeof openMobileUserMenu === "function") {
+                openMobileUserMenu();
+            }
+        };
+      }
+
+      // Cerrar sesión
+      if (logoutBtn) {
+        logoutBtn.onclick = async () => {
+            await supabase.auth.signOut();
+            window.location.href = "index.html";
+        };
+      }
+
+      // Cerrar menú clic afuera
+      document.addEventListener("click", (e) => {
+          if (!avatarBtn || !userMenu) return;
+          if (!avatarBtn.contains(e.target) && !userMenu.contains(e.target)) {
+              userMenu.classList.add("hidden");
+          }
+      });
   }
 
-  // Logueado
-  const user = session.user;
+  /* --------- BOTÓN PROCEDER AL PAGO --------- */
+  if (procederBtn) {
+    procederBtn.addEventListener("click", async () => {
+      const cart = getCart();
+      if (cart.length === 0) return;
 
-  // Obtener foto
-  const { data: perfil } = await supabase
-      .from("usuarios")
-      .select("foto")
-      .eq("id", user.id)
-      .single();
+      const { data: { session } } = await supabase.auth.getSession();
 
-  avatarImg.src = perfil?.foto || "imagenes/avatar-default.svg";
+      if (!session) {
+        const snack = document.getElementById("snackbar-login");
+        if (snack) {
+          snack.textContent = "Necesitas iniciar sesión para continuar.";
+          snack.classList.add("show");
 
-  // Abrir menú (solo escritorio)
-  avatarBtn.onclick = () => {
-      if (window.innerWidth > 768) {
-          userMenu.classList.toggle("hidden");
-      } else if (typeof openMobileUserMenu === "function") {
-          openMobileUserMenu();
+          setTimeout(() => {
+            snack.classList.remove("show");
+            window.location.href = "login.html?redirect=carrito";
+          }, 1500);
+        } else {
+          // fallback por si no existe el snackbar
+          window.location.href = "login.html?redirect=carrito";
+        }
+        return;
       }
-  };
 
-  // Cerrar menú clic afuera
-  document.addEventListener("click", (e) => {
-      if (!avatarBtn.contains(e.target) && !userMenu.contains(e.target)) {
-          userMenu.classList.add("hidden");
-      }
-  });
+      window.location.href = "datos_cliente.html";
+    });
+  }
 
-  // Cerrar sesión
-  logoutBtn.onclick = async () => {
-      await supabase.auth.signOut();
-      window.location.href = "index.html";
-  };
+  /* --------- Render inicial del carrito --------- */
+  renderCart();
 });
-
-/* -----------------------------------------------------------
-   INIT
------------------------------------------------------------ */
-renderCart();
