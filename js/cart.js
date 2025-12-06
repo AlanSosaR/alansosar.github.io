@@ -16,13 +16,22 @@ function saveCart(cart) {
   localStorage.setItem(CART_KEY, JSON.stringify(cart));
 }
 
+// mismo helper que en perfil.js para leer el usuario
+function getUserLS() {
+  try {
+    return JSON.parse(localStorage.getItem("cortero_user")) || null;
+  } catch {
+    return null;
+  }
+}
+
 /* -----------------------------------------------------------
    RENDER DEL CARRITO + ESTADO VACÍO
 ----------------------------------------------------------- */
 function renderCart() {
   const cart = getCart();
 
-  const container    = document.getElementById("cart-container");
+  const container     = document.getElementById("cart-container");
   const subtotalLabel = document.getElementById("subtotal-label");
   const totalLabel    = document.getElementById("total-label");
   const countItems    = document.getElementById("count-items");
@@ -170,7 +179,7 @@ if (procederBtn) {
           window.location.href = "login.html?redirect=carrito";
         }, 1500);
       } else {
-        // fallback por si el snackbar no existe
+        // fallback
         window.location.href = "login.html?redirect=carrito";
       }
       return;
@@ -182,7 +191,7 @@ if (procederBtn) {
 }
 
 /* -----------------------------------------------------------
-   AVATAR: MISMO COMPORTAMIENTO QUE EN INDEX
+   AVATAR: MISMO JSON QUE PERFIL (cortero_user) + Supabase
 ----------------------------------------------------------- */
 document.addEventListener("DOMContentLoaded", async () => {
 
@@ -191,7 +200,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   const userMenu  = document.getElementById("user-menu");
   const logoutBtn = document.getElementById("logout-btn");
 
-  let session = null;
+  const userLS = getUserLS();   // ← mismo JSON que usa perfil.js
+  let session  = null;
 
   try {
     const { data, error } = await supabase.auth.getSession();
@@ -203,8 +213,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     console.error("Excepción en getSession (avatar):", err);
   }
 
-  // No logueado → avatar default + enviar a login
-  if (!session) {
+  // Consideramos "no logueado" si no hay sesión o no hay userLS
+  if (!session || !userLS) {
       if (avatarImg) avatarImg.src = "imagenes/avatar-default.svg";
 
       if (avatarBtn) {
@@ -216,23 +226,30 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
   }
 
-  // Logueado
-  const user = session.user;
+  // Logueado: usamos el JSON guardado (photo_url)
+  if (avatarImg) {
+    avatarImg.src = userLS.photo_url || "imagenes/avatar-default.svg";
+  }
 
-  // Obtener foto
+  // (Opcional) refrescar foto desde la tabla "users" como en perfil.js
   try {
-    const { data: perfil } = await supabase
-        .from("usuarios")
-        .select("foto")
-        .eq("id", user.id)
+    const { data: perfil, error } = await supabase
+        .from("users")
+        .select("photo_url")
+        .eq("id", userLS.id)
         .single();
 
-    if (avatarImg) {
-      avatarImg.src = perfil?.foto || "imagenes/avatar-default.svg";
+    if (!error && perfil?.photo_url) {
+      if (avatarImg) avatarImg.src = perfil.photo_url;
+
+      // actualizar también el localStorage para que todo quede en sync
+      localStorage.setItem(
+        "cortero_user",
+        JSON.stringify({ ...userLS, photo_url: perfil.photo_url })
+      );
     }
   } catch (err) {
-    console.error("Error obteniendo perfil:", err);
-    if (avatarImg) avatarImg.src = "imagenes/avatar-default.svg";
+    console.error("Error obteniendo perfil para avatar:", err);
   }
 
   // Abrir menú (solo escritorio)
