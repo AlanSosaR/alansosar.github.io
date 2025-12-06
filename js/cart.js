@@ -29,6 +29,7 @@ function renderCart() {
   const resumenBox = document.querySelector(".resumen-box");
   const main = document.querySelector("main");
   const topBack = document.getElementById("top-back-btn");
+  const topBackText = document.getElementById("top-back-text"); // 👈 nuevo
 
   container.innerHTML = "";
 
@@ -42,8 +43,9 @@ function renderCart() {
     // Activar estilo vacío
     main.classList.add("carrito-vacio-activo");
 
-    // Quitar flecha de arriba
+    // Quitar flecha de arriba y texto "Seguir comprando"
     if (topBack) topBack.style.display = "none";
+    if (topBackText) topBackText.style.display = "none";
 
     container.innerHTML = `
       <div class="empty-container">
@@ -68,6 +70,7 @@ function renderCart() {
 
   // Mostrar flecha solo si hay productos
   if (topBack) topBack.style.display = "flex";
+  if (topBackText) topBackText.style.display = "inline-block";
 
   resumenBox.style.display = "block";
 
