@@ -25,7 +25,7 @@
         <img src="imagenes/logo.png" alt="Café Cortero" class="header-logo">
     </a>
 
-    <!-- ⭐ ID agregado para poder ocultar el texto del centro -->
+    <!-- ⭐ ID para ocultar el texto del centro -->
     <span id="cart-title" class="cart-title">
         Tu selección de café (<span id="count-items">0 cafés</span>)
     </span>
@@ -46,14 +46,13 @@
 
 
 <!-- =====================================================
-     SEGUIR COMPRANDO (CORREGIDO CON ID)
+     SEGUIR COMPRANDO
 ====================================================== -->
 <div id="seguir-comprando-box" class="seguir-comprando">
     <button id="top-back-btn" class="icon-back" onclick="window.location.href='index.html'">
         <i class="fa-solid fa-chevron-left"></i>
     </button>
 
-    <!-- ⭐ ID agregado para poder ocultarlo desde JS -->
     <a id="top-back-text" href="index.html" class="seguir-link">Seguir comprando</a>
 </div>
 
@@ -110,7 +109,7 @@
                 <h2>Resumen del pedido</h2>
 
                 <div class="resumen-row">
-                    <span>Total parcial</span>
+                    <span>Subtotal</span>
                     <span id="subtotal-label">L 0.00</span>
                 </div>
 
@@ -120,7 +119,7 @@
                 </div>
 
                 <div class="resumen-row resumen-total">
-                    <span>Total estimado</span>
+                    <span>Total a pagar</span>
                     <span id="total-label">L 0.00</span>
                 </div>
 
