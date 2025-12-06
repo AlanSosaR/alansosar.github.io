@@ -380,3 +380,36 @@ header {
   transform: translateX(-50%) translateY(-6px);
   pointer-events: auto;
 }
+
+/* ============================================================
+   Centrado TOTAL del carrito vacío en pantallas grandes (PC)
+============================================================ */
+@media (min-width: 768px) {
+
+  /* El <main> es quien tiene la clase .carrito-vacio-activo */
+  main.carrito-vacio-activo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 72px); /* 72px = altura del header */
+  }
+
+  main.carrito-vacio-activo .grid-carrito {
+    width: 100%;
+    max-width: 700px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  main.carrito-vacio-activo #cart-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+
+  main.carrito-vacio-activo .empty-container {
+    text-align: center;
+    margin-top: 0 !important;
+  }
+}
