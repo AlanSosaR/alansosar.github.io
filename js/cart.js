@@ -22,15 +22,15 @@ function saveCart(cart) {
 function renderCart() {
   const cart = getCart();
 
-  const container = document.getElementById("cart-container");
+  const container     = document.getElementById("cart-container");
   const subtotalLabel = document.getElementById("subtotal-label");
-  const totalLabel = document.getElementById("total-label");
-  const countItems = document.getElementById("count-items");
-  const resumenBox = document.querySelector(".resumen-box");
-  const main = document.querySelector("main");
-  const topBack = document.getElementById("top-back-btn");
-  const topBackText = document.getElementById("top-back-text");
-  const headerTitle = document.getElementById("cart-title"); // texto del centro del header
+  const totalLabel    = document.getElementById("total-label");
+  const countItems    = document.getElementById("count-items");
+  const resumenBox    = document.querySelector(".resumen-box");
+  const main          = document.querySelector("main");
+  const topBack       = document.getElementById("top-back-btn");
+  const topBackText   = document.getElementById("top-back-text");
+  const headerTitle   = document.getElementById("cart-title");
 
   if (!container) return;
 
@@ -44,38 +44,35 @@ function renderCart() {
 
   /* ========= ESTADO VACÍO ========= */
   if (cart.length === 0) {
-
-    // Activar estilo vacío
     if (main) main.classList.add("carrito-vacio-activo");
 
-    // Quitar flecha de arriba, texto "Seguir comprando" y título del header
-    if (topBack) topBack.style.display = "none";
+    // Ocultar navegación y título
+    if (topBack)     topBack.style.display = "none";
     if (topBackText) topBackText.style.display = "none";
     if (headerTitle) headerTitle.style.display = "none";
 
     container.innerHTML = `
       <div class="empty-container">
-          <div class="empty-title">Tu selección está vacía</div>
-          <div class="empty-sub">Agrega tu café favorito para continuar.</div>
+        <div class="empty-title">Tu selección está vacía</div>
+        <div class="empty-sub">Agrega tu café favorito para continuar.</div>
 
-          <button class="empty-btn" onclick="window.location.href='index.html'">
-              Seguir comprando
-          </button>
+        <button class="empty-btn" onclick="window.location.href='index.html'">
+          Seguir comprando
+        </button>
       </div>
     `;
 
-    if (resumenBox) resumenBox.style.display = "none";
-    if (subtotalLabel) subtotalLabel.textContent = "L 0.00";
-    if (totalLabel) totalLabel.textContent = "L 0.00";
+    if (resumenBox)      resumenBox.style.display = "none";
+    if (subtotalLabel)   subtotalLabel.textContent = "L 0.00";
+    if (totalLabel)      totalLabel.textContent    = "L 0.00";
 
     return;
   }
 
   /* ========= HAY PRODUCTOS ========= */
-  if (main) main.classList.remove("carrito-vacio-activo");
+  if (main) main.classList.remove("carrito-vacio-activo);
 
-  // Mostrar flecha, texto "Seguir comprando" y título del header
-  if (topBack) topBack.style.display = "flex";
+  if (topBack)     topBack.style.display = "flex";
   if (topBackText) topBackText.style.display = "inline-block";
   if (headerTitle) headerTitle.style.display = "inline-block";
 
@@ -89,8 +86,8 @@ function renderCart() {
   cart.forEach((item, index) => {
     const clone = template.content.cloneNode(true);
 
-    clone.querySelector(".item-image").src = item.img;
-    clone.querySelector(".item-name").textContent = item.name;
+    clone.querySelector(".item-image").src         = item.img;
+    clone.querySelector(".item-name").textContent  = item.name;
     clone.querySelector(".item-price").textContent = `L ${item.price} / unidad`;
     clone.querySelector(".qty-number").textContent = item.qty;
 
@@ -103,7 +100,7 @@ function renderCart() {
   });
 
   if (subtotalLabel) subtotalLabel.textContent = `L ${subtotal.toFixed(2)}`;
-  if (totalLabel) totalLabel.textContent = `L ${subtotal.toFixed(2)}`;
+  if (totalLabel)    totalLabel.textContent    = `L ${subtotal.toFixed(2)}`;
 
   saveCart(cart);
 }
@@ -111,99 +108,40 @@ function renderCart() {
 /* -----------------------------------------------------------
    CONTROL BOTONES + / – / 🗑
 ----------------------------------------------------------- */
-document.getElementById("cart-container")?.addEventListener("click", e => {
-  const btn = e.target.closest("button");
-  if (!btn) return;
+const cartContainer = document.getElementById("cart-container");
+if (cartContainer) {
+  cartContainer.addEventListener("click", e => {
+    const btn = e.target.closest("button");
+    if (!btn) return;
 
-  const action = btn.dataset.action;
-  const index = parseInt(btn.dataset.index);
-  const cart = getCart();
+    const action = btn.dataset.action;
+    const index  = parseInt(btn.dataset.index, 10);
+    const cart   = getCart();
 
-  if (isNaN(index) || !cart[index]) return;
+    if (isNaN(index) || !cart[index]) return;
 
-  if (action === "plus") cart[index].qty++;
-  if (action === "minus") {
-    cart[index].qty--;
-    if (cart[index].qty <= 0) cart.splice(index, 1);
-  }
-  if (action === "del") cart.splice(index, 1);
+    if (action === "plus")  cart[index].qty++;
+    if (action === "minus") {
+      cart[index].qty--;
+      if (cart[index].qty <= 0) cart.splice(index, 1);
+    }
+    if (action === "del")   cart.splice(index, 1);
 
-  saveCart(cart);
-  renderCart();
-});
+    saveCart(cart);
+    renderCart();
+  });
+}
 
 /* -----------------------------------------------------------
-   AVATAR + BOTÓN PROCEDER (DOM CARGADO)
+   BOTÓN PROCEDER AL PAGO
 ----------------------------------------------------------- */
-document.addEventListener("DOMContentLoaded", async () => {
+const procederBtn = document.getElementById("proceder-btn");
+if (procederBtn) {
+  procederBtn.addEventListener("click", async () => {
+    const cart = getCart();
+    if (cart.length === 0) return;
 
-  const avatarBtn = document.getElementById("btn-header-user");
-  const avatarImg = document.getElementById("avatar-user");
-  const userMenu = document.getElementById("user-menu");
-  const logoutBtn = document.getElementById("logout-btn");
-  const procederBtn = document.getElementById("proceder-btn");
-
-  /* --------- AVATAR / SESIÓN --------- */
-  const { data: { session } } = await supabase.auth.getSession();
-
-  // No logueado → avatar default + enviar a login
-  if (!session) {
-      if (avatarImg) avatarImg.src = "imagenes/avatar-default.svg";
-
-      if (avatarBtn) {
-        avatarBtn.onclick = () => {
-            window.location.href = "login.html?redirect=carrito";
-        };
-      }
-  } else {
-      // Logueado
-      const user = session.user;
-
-      // Obtener foto
-      const { data: perfil } = await supabase
-          .from("usuarios")
-          .select("foto")
-          .eq("id", user.id)
-          .single();
-
-      if (avatarImg) {
-        avatarImg.src = perfil?.foto || "imagenes/avatar-default.svg";
-      }
-
-      // Abrir menú (solo escritorio)
-      if (avatarBtn) {
-        avatarBtn.onclick = () => {
-            if (window.innerWidth > 768) {
-                userMenu?.classList.toggle("hidden");
-            } else if (typeof openMobileUserMenu === "function") {
-                openMobileUserMenu();
-            }
-        };
-      }
-
-      // Cerrar sesión
-      if (logoutBtn) {
-        logoutBtn.onclick = async () => {
-            await supabase.auth.signOut();
-            window.location.href = "index.html";
-        };
-      }
-
-      // Cerrar menú clic afuera
-      document.addEventListener("click", (e) => {
-          if (!avatarBtn || !userMenu) return;
-          if (!avatarBtn.contains(e.target) && !userMenu.contains(e.target)) {
-              userMenu.classList.add("hidden");
-          }
-      });
-  }
-
-  /* --------- BOTÓN PROCEDER AL PAGO --------- */
-  if (procederBtn) {
-    procederBtn.addEventListener("click", async () => {
-      const cart = getCart();
-      if (cart.length === 0) return;
-
+    try {
       const { data: { session } } = await supabase.auth.getSession();
 
       if (!session) {
@@ -211,22 +149,93 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (snack) {
           snack.textContent = "Necesitas iniciar sesión para continuar.";
           snack.classList.add("show");
-
           setTimeout(() => {
             snack.classList.remove("show");
             window.location.href = "login.html?redirect=carrito";
           }, 1500);
         } else {
-          // fallback por si no existe el snackbar
           window.location.href = "login.html?redirect=carrito";
         }
         return;
       }
 
       window.location.href = "datos_cliente.html";
-    });
-  }
+    } catch (err) {
+      console.error("Error comprobando sesión:", err);
+      // fallback seguro
+      window.location.href = "login.html?redirect=carrito";
+    }
+  });
+}
 
-  /* --------- Render inicial del carrito --------- */
-  renderCart();
+/* -----------------------------------------------------------
+   AVATAR: MISMO COMPORTAMIENTO QUE EN INDEX
+----------------------------------------------------------- */
+document.addEventListener("DOMContentLoaded", () => {
+  initAvatar();
 });
+
+async function initAvatar() {
+  const avatarBtn = document.getElementById("btn-header-user");
+  const avatarImg = document.getElementById("avatar-user");
+  const userMenu  = document.getElementById("user-menu");
+  const logoutBtn = document.getElementById("logout-btn");
+
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+
+    if (!session) {
+      if (avatarImg) avatarImg.src = "imagenes/avatar-default.svg";
+      if (avatarBtn) {
+        avatarBtn.onclick = () => {
+          window.location.href = "login.html?redirect=carrito";
+        };
+      }
+      return;
+    }
+
+    // Logueado
+    const user = session.user;
+
+    const { data: perfil } = await supabase
+      .from("usuarios")
+      .select("foto")
+      .eq("id", user.id)
+      .single();
+
+    if (avatarImg) {
+      avatarImg.src = perfil?.foto || "imagenes/avatar-default.svg";
+    }
+
+    if (avatarBtn) {
+      avatarBtn.onclick = () => {
+        if (window.innerWidth > 768) {
+          userMenu && userMenu.classList.toggle("hidden");
+        } else if (typeof openMobileUserMenu === "function") {
+          openMobileUserMenu();
+        }
+      };
+    }
+
+    if (logoutBtn) {
+      logoutBtn.onclick = async () => {
+        await supabase.auth.signOut();
+        window.location.href = "index.html";
+      };
+    }
+
+    document.addEventListener("click", (e) => {
+      if (!avatarBtn || !userMenu) return;
+      if (!avatarBtn.contains(e.target) && !userMenu.contains(e.target)) {
+        userMenu.classList.add("hidden");
+      }
+    });
+  } catch (err) {
+    console.error("Error inicializando avatar:", err);
+  }
+}
+
+/* -----------------------------------------------------------
+   INIT: pintar carrito al cargar
+----------------------------------------------------------- */
+renderCart();
