@@ -280,9 +280,10 @@ header {
   margin-bottom: 0.75rem;
 }
 
+/* 🔹 Línea superior del total ahora en verde */
 .resumen-total {
   font-weight: 700;
-  border-top: 1.4px solid rgba(0,0,0,0.08);
+  border-top: 1.4px solid var(--verde);
   padding-top: .7rem;
 }
 
