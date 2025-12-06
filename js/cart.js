@@ -22,15 +22,15 @@ function saveCart(cart) {
 function renderCart() {
   const cart = getCart();
 
-  const container = document.getElementById("cart-container");
+  const container    = document.getElementById("cart-container");
   const subtotalLabel = document.getElementById("subtotal-label");
-  const totalLabel = document.getElementById("total-label");
-  const countItems = document.getElementById("count-items");
-  const resumenBox = document.querySelector(".resumen-box");
-  const main = document.querySelector("main");
-  const topBack = document.getElementById("top-back-btn");
-  const topBackText = document.getElementById("top-back-text");
-  const headerTitle = document.getElementById("cart-title"); // texto del centro del header
+  const totalLabel    = document.getElementById("total-label");
+  const countItems    = document.getElementById("count-items");
+  const resumenBox    = document.querySelector(".resumen-box");
+  const main          = document.querySelector("main");
+  const topBack       = document.getElementById("top-back-btn");
+  const topBackText   = document.getElementById("top-back-text");
+  const headerTitle   = document.getElementById("cart-title"); // texto del centro del header
 
   if (!container) return;
 
@@ -49,7 +49,7 @@ function renderCart() {
     if (main) main.classList.add("carrito-vacio-activo");
 
     // Quitar flecha de arriba, texto "Seguir comprando" y título del header
-    if (topBack) topBack.style.display = "none";
+    if (topBack)     topBack.style.display = "none";
     if (topBackText) topBackText.style.display = "none";
     if (headerTitle) headerTitle.style.display = "none";
 
@@ -64,9 +64,9 @@ function renderCart() {
       </div>
     `;
 
-    if (resumenBox) resumenBox.style.display = "none";
+    if (resumenBox)   resumenBox.style.display = "none";
     if (subtotalLabel) subtotalLabel.textContent = "L 0.00";
-    if (totalLabel) totalLabel.textContent = "L 0.00";
+    if (totalLabel)    totalLabel.textContent    = "L 0.00";
 
     return;
   }
@@ -75,7 +75,7 @@ function renderCart() {
   if (main) main.classList.remove("carrito-vacio-activo");
 
   // Mostrar flecha, texto "Seguir comprando" y título del header
-  if (topBack) topBack.style.display = "flex";
+  if (topBack)     topBack.style.display = "flex";
   if (topBackText) topBackText.style.display = "inline-block";
   if (headerTitle) headerTitle.style.display = "inline-block";
 
@@ -89,8 +89,8 @@ function renderCart() {
   cart.forEach((item, index) => {
     const clone = template.content.cloneNode(true);
 
-    clone.querySelector(".item-image").src = item.img;
-    clone.querySelector(".item-name").textContent = item.name;
+    clone.querySelector(".item-image").src         = item.img;
+    clone.querySelector(".item-name").textContent  = item.name;
     clone.querySelector(".item-price").textContent = `L ${item.price} / unidad`;
     clone.querySelector(".qty-number").textContent = item.qty;
 
@@ -103,7 +103,7 @@ function renderCart() {
   });
 
   if (subtotalLabel) subtotalLabel.textContent = `L ${subtotal.toFixed(2)}`;
-  if (totalLabel) totalLabel.textContent = `L ${subtotal.toFixed(2)}`;
+  if (totalLabel)    totalLabel.textContent    = `L ${subtotal.toFixed(2)}`;
 
   saveCart(cart);
 }
@@ -144,13 +144,23 @@ if (procederBtn) {
     const cart = getCart();
     if (cart.length === 0) return;
 
-    const { data: { session } } = await supabase.auth.getSession();
+    let session = null;
 
+    try {
+      const { data, error } = await supabase.auth.getSession();
+      if (error) {
+        console.error("Error obteniendo sesión:", error);
+      }
+      session = data?.session || null;
+    } catch (err) {
+      console.error("Excepción en getSession:", err);
+    }
+
+    // Si NO hay sesión → mostrar snackbar y mandar a login
     if (!session) {
       const snack = document.getElementById("snackbar-login");
       if (snack) {
         snack.textContent = "Necesitas iniciar sesión para continuar.";
-        // 🔹 Quitar hidden para que se vea
         snack.classList.remove("hidden");
         snack.classList.add("show");
 
@@ -160,13 +170,13 @@ if (procederBtn) {
           window.location.href = "login.html?redirect=carrito";
         }, 1500);
       } else {
-        // Si por alguna razón no existe el snackbar, al menos redirigimos
+        // fallback por si el snackbar no existe
         window.location.href = "login.html?redirect=carrito";
       }
-
       return;
     }
 
+    // Si SÍ hay sesión → ir a datos del cliente
     window.location.href = "datos_cliente.html";
   });
 }
@@ -178,10 +188,20 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const avatarBtn = document.getElementById("btn-header-user");
   const avatarImg = document.getElementById("avatar-user");
-  const userMenu = document.getElementById("user-menu");
+  const userMenu  = document.getElementById("user-menu");
   const logoutBtn = document.getElementById("logout-btn");
 
-  const { data: { session } } = await supabase.auth.getSession();
+  let session = null;
+
+  try {
+    const { data, error } = await supabase.auth.getSession();
+    if (error) {
+      console.error("Error obteniendo sesión (avatar):", error);
+    }
+    session = data?.session || null;
+  } catch (err) {
+    console.error("Excepción en getSession (avatar):", err);
+  }
 
   // No logueado → avatar default + enviar a login
   if (!session) {
@@ -200,14 +220,19 @@ document.addEventListener("DOMContentLoaded", async () => {
   const user = session.user;
 
   // Obtener foto
-  const { data: perfil } = await supabase
-      .from("usuarios")
-      .select("foto")
-      .eq("id", user.id)
-      .single();
+  try {
+    const { data: perfil } = await supabase
+        .from("usuarios")
+        .select("foto")
+        .eq("id", user.id)
+        .single();
 
-  if (avatarImg) {
-    avatarImg.src = perfil?.foto || "imagenes/avatar-default.svg";
+    if (avatarImg) {
+      avatarImg.src = perfil?.foto || "imagenes/avatar-default.svg";
+    }
+  } catch (err) {
+    console.error("Error obteniendo perfil:", err);
+    if (avatarImg) avatarImg.src = "imagenes/avatar-default.svg";
   }
 
   // Abrir menú (solo escritorio)
