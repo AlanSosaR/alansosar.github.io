@@ -382,34 +382,34 @@ header {
 }
 
 /* ============================================================
-   Centrado TOTAL del carrito vacío en pantallas grandes (PC)
+   Carrito vacío en PC — centrado horizontal y más arriba
 ============================================================ */
 @media (min-width: 768px) {
 
-  /* El <main> es quien tiene la clase .carrito-vacio-activo */
+  /* Main con estado vacío: ocupamos la altura pero sin centrar verticalmente */
   main.carrito-vacio-activo {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    display: block;
     min-height: calc(100vh - 72px); /* 72px = altura del header */
   }
 
+  /* El grid se vuelve un contenedor simple y centrado */
   main.carrito-vacio-activo .grid-carrito {
-    width: 100%;
     max-width: 700px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    margin: 0 auto;
+    display: block;
   }
 
+  /* El contenedor del carrito centra el bloque vacío */
   main.carrito-vacio-activo #cart-container {
     display: flex;
     justify-content: center;
     width: 100%;
   }
 
+  /* El mensaje vacío queda centrado y un poco por debajo del header */
   main.carrito-vacio-activo .empty-container {
     text-align: center;
-    margin-top: 0 !important;
+    margin-top: 4.5rem; /* ajusta este valor si quieres subirlo/bajarlo */
+    transform: none;
   }
 }
