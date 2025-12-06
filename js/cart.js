@@ -202,14 +202,23 @@ if (procederBtn) {
 }
 
 /* -----------------------------------------------------------
-   AVATAR: MISMO JSON QUE PERFIL (cortero_user) + Supabase
+   AVATAR + MENÚ ESCRITORIO / MÓVIL
 ----------------------------------------------------------- */
 document.addEventListener("DOMContentLoaded", async () => {
 
-  const avatarBtn = document.getElementById("btn-header-user");
-  const avatarImg = document.getElementById("avatar-user");
-  const userMenu  = document.getElementById("user-menu");
-  const logoutBtn = document.getElementById("logout-btn");
+  const avatarBtn    = document.getElementById("btn-header-user");
+  const avatarImg    = document.getElementById("avatar-user");
+  const userMenu     = document.getElementById("user-menu");
+  const logoutBtn    = document.getElementById("logout-btn");
+
+  // elementos del panel móvil
+  const mobileMenu   = document.getElementById("mobile-user-menu");
+  const mobileClose  = document.getElementById("mobile-user-close");
+  const avatarMobile = document.getElementById("avatar-user-mobile");
+  const logoutMobile = document.getElementById("logout-mobile");
+
+  const helloDesktop = document.getElementById("hello-desktop-cart");
+  const helloMobile  = document.getElementById("hello-mobile-cart");
 
   const userLS = getUserLS();   // JSON que guarda perfil.js
   const sb     = getSupabaseClient();
@@ -229,25 +238,31 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  // Consideramos "no logueado" si no hay sesión o no hay userLS
+  // --------- NO LOGUEADO ----------
   if (!session || !userLS) {
-      if (avatarImg) avatarImg.src = "imagenes/avatar-default.svg";
+      if (avatarImg)    avatarImg.src    = "imagenes/avatar-default.svg";
+      if (avatarMobile) avatarMobile.src = "imagenes/avatar-default.svg";
 
       if (avatarBtn) {
         avatarBtn.onclick = () => {
-            window.location.href = "login.html?redirect=carrito";
+          window.location.href = "login.html?redirect=carrito";
         };
       }
 
       return;
   }
 
-  // Logueado: usamos el JSON guardado (photo_url)
-  if (avatarImg) {
-    avatarImg.src = userLS.photo_url || "imagenes/avatar-default.svg";
-  }
+  // --------- LOGUEADO ----------
+  const displayName = userLS.name || userLS.email || "Usuario";
 
-  // Refrescar foto desde la tabla "users" como en perfil.js
+  if (helloDesktop) helloDesktop.textContent = `Hola, ${displayName}`;
+  if (helloMobile)  helloMobile.textContent  = `Hola, ${displayName}`;
+
+  // Foto desde localStorage
+  if (avatarImg)    avatarImg.src    = userLS.photo_url || "imagenes/avatar-default.svg";
+  if (avatarMobile) avatarMobile.src = userLS.photo_url || "imagenes/avatar-default.svg";
+
+  // Refrescar foto desde la tabla "users"
   if (sb) {
     try {
       const { data: perfil, error } = await sb
@@ -257,9 +272,9 @@ document.addEventListener("DOMContentLoaded", async () => {
           .single();
 
       if (!error && perfil?.photo_url) {
-        if (avatarImg) avatarImg.src = perfil.photo_url;
+        if (avatarImg)    avatarImg.src    = perfil.photo_url;
+        if (avatarMobile) avatarMobile.src = perfil.photo_url;
 
-        // actualizar también el localStorage
         localStorage.setItem(
           "cortero_user",
           JSON.stringify({ ...userLS, photo_url: perfil.photo_url })
@@ -270,32 +285,53 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  // Abrir menú (solo escritorio)
+  // Abrir: escritorio → menú flotante, móvil → panel lateral
   if (avatarBtn) {
     avatarBtn.onclick = () => {
-        if (window.innerWidth > 768) {
-            userMenu?.classList.toggle("hidden");
-        } else if (typeof openMobileUserMenu === "function") {
-            openMobileUserMenu();
-        }
+      if (window.innerWidth > 768) {
+        // escritorio
+        userMenu?.classList.toggle("hidden");
+      } else {
+        // móvil
+        if (mobileMenu) mobileMenu.classList.remove("hidden");
+      }
     };
   }
 
-  // Cerrar menú clic afuera
-  document.addEventListener("click", (e) => {
-      if (!avatarBtn || !userMenu) return;
-      if (!avatarBtn.contains(e.target) && !userMenu.contains(e.target)) {
-          userMenu.classList.add("hidden");
-      }
-  });
+  // Cerrar panel móvil
+  if (mobileClose && mobileMenu) {
+    mobileClose.onclick = () => {
+      mobileMenu.classList.add("hidden");
+    };
+  }
 
-  // Cerrar sesión
+  // Cerrar sesión (escritorio)
   if (logoutBtn) {
     logoutBtn.onclick = async () => {
-        if (sb) await sb.auth.signOut();
-        window.location.href = "index.html";
+      if (sb) await sb.auth.signOut();
+      window.location.href = "index.html";
     };
   }
+
+  // Cerrar sesión (móvil)
+  if (logoutMobile) {
+    logoutMobile.onclick = async () => {
+      if (sb) await sb.auth.signOut();
+      if (mobileMenu) mobileMenu.classList.add("hidden");
+      window.location.href = "index.html";
+    };
+  }
+
+  // Cerrar menú escritorio al hacer clic fuera
+  document.addEventListener("click", (e) => {
+    if (!userMenu || !avatarBtn) return;
+    if (window.innerWidth <= 768) return; // solo aplica en escritorio
+    if (!userMenu.classList.contains("hidden") &&
+        !avatarBtn.contains(e.target) &&
+        !userMenu.contains(e.target)) {
+      userMenu.classList.add("hidden");
+    }
+  });
 });
 
 /* -----------------------------------------------------------
