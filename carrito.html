@@ -8,11 +8,154 @@
   <!-- Tipografía -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
-  <!-- Iconos -->
+  <!-- Iconos Font Awesome (para botones del carrito) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- Material Symbols (Material 3) -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@300;400;500&display=swap">
 
   <!-- CSS del carrito -->
   <link rel="stylesheet" href="css/carrito.css?v=30">
+
+  <!-- Estilos del menú flotante Material 3 -->
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings:
+        "FILL" 0,
+        "wght" 400,
+        "GRAD" 0,
+        "opsz" 24;
+      font-size: 24px;
+      line-height: 1;
+    }
+
+    /* SCRIM (fondo oscurecido) */
+    .user-scrim {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease-out;
+      z-index: 998;
+    }
+    .user-scrim.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* DRAWER flotante tipo Google Store (Material 3 Expressive) */
+    .user-drawer {
+      position: fixed;
+      top: 80px; /* debajo del header fijo */
+      right: 16px;
+      width: min(360px, calc(100% - 24px));
+      background: #16181a;
+      color: #ffffff;
+      border-radius: 24px;
+      box-shadow:
+        0 18px 40px rgba(0, 0, 0, 0.75),
+        0 0 0 1px rgba(255, 255, 255, 0.04);
+      overflow: hidden;
+      transform: translateX(120%);
+      opacity: 0;
+      transition:
+        transform 0.25s cubic-bezier(0.2, 0, 0, 1),
+        opacity 0.2s ease-out;
+      z-index: 999;
+    }
+    .user-drawer.open {
+      transform: translateX(0);
+      opacity: 1;
+    }
+
+    @media (max-width: 600px) {
+      .user-drawer {
+        left: 12px;
+        right: 12px;
+        width: auto;
+      }
+    }
+
+    .user-drawer-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 18px 12px;
+    }
+    .user-drawer-avatar {
+      width: 52px;
+      height: 52px;
+      border-radius: 18px;
+      overflow: hidden;
+      flex-shrink: 0;
+      background: #555;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .user-drawer-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .user-drawer-name {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 600;
+    }
+    .user-drawer-email {
+      margin: 2px 0 0;
+      font-size: 13px;
+      opacity: 0.7;
+    }
+
+    .user-drawer-divider {
+      border: none;
+      margin: 4px 0 8px;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .user-drawer-nav {
+      display: flex;
+      flex-direction: column;
+      padding: 4px 0 8px;
+    }
+    .user-drawer-item {
+      width: 100%;
+      border: none;
+      background: none;
+      padding: 10px 18px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 15px;
+      color: #ffffff;
+      text-decoration: none;
+      cursor: pointer;
+      text-align: left;
+    }
+    .user-drawer-item:hover {
+      background: rgba(255, 255, 255, 0.06);
+    }
+    .user-drawer-item-icon {
+      width: 24px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .user-drawer-item.logout {
+      color: #ff4b4b;
+      font-weight: 500;
+      margin-top: 4px;
+    }
+    .user-drawer-item.logout .material-symbols-outlined {
+      color: #ff4b4b;
+    }
+  </style>
 </head>
 
 <body>
@@ -31,56 +174,73 @@
     Tu selección de café (<span id="count-items">0 cafés</span>)
   </span>
 
-  <!-- Avatar + menú escritorio -->
+  <!-- Avatar (abre menú flotante en PC y móvil) -->
   <div class="profile-wrapper-cart">
-    <button id="btn-header-user" class="header-avatar-button">
+    <button id="btn-header-user" class="header-avatar-button" aria-label="Abrir menú de usuario">
       <img id="avatar-user" src="imagenes/avatar-default.svg" alt="Usuario" class="header-avatar profile-photo-round">
     </button>
-
-    <!-- Menú escritorio (estilo index) -->
-    <div id="user-menu" class="profile-menu-cart hidden">
-      <p class="profile-hello-cart" id="hello-desktop-cart">Hola, Usuario</p>
-      <a href="mispedidos.html">Mis pedidos</a>
-      <a href="historial.html">Historial</a>
-      <a href="perfil.html">Mi perfil</a>
-      <hr>
-      <button id="logout-btn" class="logout-cart">Cerrar sesión</button>
-    </div>
   </div>
 </header>
 
 <!-- =====================================================
-     MENÚ MÓVIL VINCULADO A LA FOTO
+     MENÚ FLOTANTE MATERIAL 3 (PC + MÓVIL)
 ====================================================== -->
-<div id="mobile-user-menu" class="mobile-user-menu hidden">
-  <div class="mobile-user-panel">
-    <div class="mobile-user-header">
-      <button id="mobile-user-close" class="mobile-close-btn">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-      <a href="index.html" class="drawer-logo-cart">
-        <img src="imagenes/logo.png" alt="Café Cortero">
-      </a>
+
+<div id="user-scrim" class="user-scrim"></div>
+
+<aside id="user-drawer" class="user-drawer" aria-hidden="true">
+  <div class="user-drawer-header">
+    <div class="user-drawer-avatar">
+      <!-- reutilizamos el mismo avatar para que tu JS pueda cambiarlo -->
+      <img id="avatar-user-drawer" src="imagenes/avatar-default.svg" alt="Usuario">
     </div>
-
-    <div class="drawer-profile-block-cart">
-      <img id="avatar-user-mobile" src="imagenes/avatar-default.svg" class="drawer-profile-photo-cart" alt="Usuario">
-      <p class="drawer-hello-cart" id="hello-mobile-cart">Hola, Usuario</p>
+    <div>
+      <!-- reutilizamos id para que tu JS pueda poner el nombre -->
+      <p class="user-drawer-name" id="hello-desktop-cart">Hola, Usuario</p>
+      <p class="user-drawer-email" id="email-drawer-cart">alansosa225@gmail.com</p>
     </div>
-
-    <nav class="drawer-links-cart">
-      <a href="mispedidos.html">Mis pedidos</a>
-      <a href="historial.html">Historial</a>
-      <a href="perfil.html">Mi perfil</a>
-
-      <a href="index.html#productos">Productos</a>
-      <a href="index.html#nosotros">Nosotros</a>
-      <a href="index.html#contacto">Contacto</a>
-
-      <button id="logout-mobile" class="logout-cart full">Cerrar sesión</button>
-    </nav>
   </div>
-</div>
+
+  <hr class="user-drawer-divider">
+
+  <nav class="user-drawer-nav">
+    <a href="mispedidos.html" class="user-drawer-item">
+      <span class="user-drawer-item-icon material-symbols-outlined">shopping_bag</span>
+      <span>Mis pedidos</span>
+    </a>
+
+    <a href="historial.html" class="user-drawer-item">
+      <span class="user-drawer-item-icon material-symbols-outlined">history</span>
+      <span>Historial de compras</span>
+    </a>
+
+    <a href="index.html#productos" class="user-drawer-item">
+      <span class="user-drawer-item-icon material-symbols-outlined">local_cafe</span>
+      <span>Variedades de café</span>
+    </a>
+
+    <a href="index.html#nosotros" class="user-drawer-item">
+      <span class="user-drawer-item-icon material-symbols-outlined">groups</span>
+      <span>Quiénes somos</span>
+    </a>
+
+    <a href="index.html#contacto" class="user-drawer-item">
+      <span class="user-drawer-item-icon material-symbols-outlined">mail</span>
+      <span>Contáctanos</span>
+    </a>
+
+    <hr class="user-drawer-divider">
+
+    <button id="logout-btn" class="user-drawer-item logout">
+      <span class="user-drawer-item-icon material-symbols-outlined">logout</span>
+      <span>Cerrar sesión</span>
+    </button>
+  </nav>
+</aside>
+
+<!-- =====================================================
+     (EL MENÚ MÓVIL ANTERIOR SE ELIMINÓ, YA NO HACE FALTA)
+====================================================== -->
 
 
 <!-- =====================================================
@@ -182,7 +342,48 @@
 
 
 <!-- =====================================================
-     SCRIPTS
+     JS DEL MENÚ FLOTANTE
+====================================================== -->
+<script>
+  const btnHeaderUser = document.getElementById('btn-header-user');
+  const userDrawer    = document.getElementById('user-drawer');
+  const userScrim     = document.getElementById('user-scrim');
+  const avatarHeader  = document.getElementById('avatar-user');
+  const avatarDrawer  = document.getElementById('avatar-user-drawer');
+
+  // Copiar imagen del avatar al drawer (por si tu JS cambia el src)
+  if (avatarHeader && avatarDrawer) {
+    avatarDrawer.src = avatarHeader.src;
+  }
+
+  function openUserDrawer() {
+    userDrawer.classList.add('open');
+    userScrim.classList.add('open');
+    userDrawer.setAttribute('aria-hidden', 'false');
+  }
+
+  function closeUserDrawer() {
+    userDrawer.classList.remove('open');
+    userScrim.classList.remove('open');
+    userDrawer.setAttribute('aria-hidden', 'true');
+  }
+
+  if (btnHeaderUser) {
+    btnHeaderUser.addEventListener('click', () => {
+      const isOpen = userDrawer.classList.contains('open');
+      isOpen ? closeUserDrawer() : openUserDrawer();
+    });
+  }
+
+  userScrim.addEventListener('click', closeUserDrawer);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeUserDrawer();
+  });
+</script>
+
+<!-- =====================================================
+     SCRIPTS EXISTENTES
 ====================================================== -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase-client-core.js"></script>
