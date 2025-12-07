@@ -85,9 +85,10 @@ body {
 .contact-link {
   margin-right: 1.5rem;
 }
+
 /* ============================================================
    MENÚ PREMIUM LOGUEADO – DESKTOP
-   ============================================================ */
+============================================================ */
 
 /* Foto perfil redonda – ESTILO PERFIL (sin borde) */
 .profile-photo-round {
@@ -121,7 +122,7 @@ body {
   cursor: pointer;
 }
 
-/* Submenú flotante */
+/* Submenú flotante (versión antigua, se mantiene para compatibilidad) */
 .profile-menu {
   position: absolute;
   top: 58px;
@@ -173,8 +174,171 @@ body {
 }
 
 /* ============================================================
-   MENÚ PREMIUM LOGUEADO – MÓVIL (DRAWER)
-   ============================================================ */
+   MENÚ FLOTANTE MATERIAL 3 (PC + MÓVIL) — ESTILO CARRITO
+============================================================ */
+
+/* SCRIM (fondo oscurecido) */
+.user-scrim {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease-out;
+  z-index: 2980;
+}
+.user-scrim.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Drawer flotante oscuro */
+.user-drawer {
+  position: fixed;
+  top: 80px; /* debajo del header */
+  right: 16px;
+  width: min(360px, calc(100% - 24px));
+  background: #16181a;
+  color: #ffffff;
+  border-radius: 24px;
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.75),
+    0 0 0 1px rgba(255, 255, 255, 0.04);
+  overflow: hidden;
+  transform: translateX(120%);
+  opacity: 0;
+  transition:
+    transform 0.25s cubic-bezier(0.2, 0, 0, 1),
+    opacity 0.2s ease-out;
+  z-index: 2990;
+}
+
+.user-drawer.open {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+/* En móviles ocupa casi todo el ancho */
+@media (max-width: 600px) {
+  .user-drawer {
+    left: 12px;
+    right: 12px;
+    width: auto;
+  }
+}
+
+/* Bloque de perfil clicable (lleva a perfil.html) */
+.user-drawer-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 18px 12px;
+}
+
+.user-drawer-profile-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 18px 12px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.user-drawer-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 18px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #555;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-drawer-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.user-drawer-name {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.user-drawer-email {
+  margin: 2px 0 0;
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+/* Flecha a la derecha del bloque de perfil */
+.user-drawer-arrow {
+  margin-left: auto;
+  font-size: 22px;
+}
+
+/* Navegación */
+.user-drawer-nav {
+  display: flex;
+  flex-direction: column;
+  padding: 4px 0 8px;
+}
+
+.user-drawer-item {
+  width: 100%;
+  border: none;
+  background: none;
+  padding: 10px 18px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 15px;
+  color: #ffffff;
+  text-decoration: none;
+  cursor: pointer;
+  text-align: left;
+}
+
+.user-drawer-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.user-drawer-item-icon {
+  width: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Cerrar sesión */
+.user-drawer-item.logout {
+  color: #ff4b4b;
+  font-weight: 500;
+  margin-top: 4px;
+}
+.user-drawer-item.logout .material-symbols-outlined {
+  color: #ff4b4b;
+}
+
+/* Fuerza que TODAS las líneas dentro del menú flotante sean VERDE */
+.user-drawer hr,
+.user-drawer-divider,
+.user-drawer .user-drawer-divider {
+  border: none !important;
+  height: 1.6px !important;
+  background: var(--verde) !important;
+  margin: 6px 0 10px !important;
+  opacity: 1 !important;
+}
+
+/* ============================================================
+   MENÚ PREMIUM LOGUEADO – MÓVIL (DRAWER CLÁSICO INDEX)
+   (se mantiene por compatibilidad con el HTML actual)
+============================================================ */
 
 .drawer-profile-block {
   display: flex;
@@ -241,6 +405,7 @@ body {
   justify-content: center;
   cursor: pointer;
 }
+
 /* Ajuste del carrito SOLO en móvil */
 @media (max-width: 767px) {
   .cart-btn {
@@ -258,16 +423,8 @@ body {
     font-size: 0.65rem;
   }
 }
-/* --- EFECTO DEL CARRITO --- */
 
 /* 🔥 Hover solo en PC */
-@media (min-width: 768px) {
-  .cart-btn:hover {
-    transform: scale(1.05);
-  }
-}
-
-
 @media (min-width: 768px) {
   .cart-btn:hover {
     transform: scale(1.05);
@@ -299,10 +456,7 @@ body {
     font-size: 0.70rem !important;
   }
 }
-/* ⛔ Sin animación en móvil */
-@media (max-width: 767px) {
-   ...
-}
+
 /* 🚫 Sin animación en móvil */
 @media (max-width: 767px) {
   .cart-btn {
@@ -333,8 +487,6 @@ body {
 }
 
 /* Animación rebote carrito */
-
-/* Animación premium SOLO en el número rojo */
 @keyframes badgeBounce {
   0%   { transform: scale(1); }
   40%  { transform: scale(1.18); }
@@ -342,14 +494,13 @@ body {
   100% { transform: scale(1); }
 }
 
-/* Aplica animación solo al badge, no al botón */
 .cart-count.animate {
   animation: badgeBounce 0.38s ease-out;
 }
 
 /* ============================================================
    ================  DRAWER MÓVIL PREMIUM (Amazón)  ================
-   ============================================================ */
+============================================================ */
 
 .drawer {
   position: fixed;
@@ -374,7 +525,7 @@ body {
 .drawer-header {
   display: flex;
   align-items: center;
-  justify-content: flex-start;    /* Logo alineado a la izquierda */
+  justify-content: flex-start;
   padding: 1.2rem 1.4rem;
   border-bottom: 1px solid rgba(0,0,0,0.06);
 }
@@ -397,8 +548,8 @@ body {
   color: var(--marron);
   font-weight: 500;
   font-size: 1.05rem;
-  padding: 0.65rem 0;   /* ← Espaciado Apple: compacto, limpio */
-  letter-spacing: -0.2px; /* ← Micro ajuste Apple */
+  padding: 0.65rem 0;
+  letter-spacing: -0.2px;
   transition: color 0.25s ease;
 }
 
@@ -406,7 +557,7 @@ body {
   color: var(--verde);
 }
 
-/* ====================== PERFIL LOGUEADO ====================== */
+/* ====================== PERFIL LOGUEADO (drawer clásico) ====================== */
 .drawer-profile-block {
   display: flex;
   flex-direction: column;
@@ -431,7 +582,6 @@ body {
   margin-bottom: 1.4rem;
 }
 
-/* Enlaces del menú logueado */
 #drawer-links-logged a {
   border-radius: 12px;
 }
@@ -446,7 +596,7 @@ body {
   .header-content {
     display: flex;
     align-items: center;
-    justify-content: space-between; /* logo izq, nav en medio, carrito der */
+    justify-content: space-between;
   }
 
   .nav-links {
@@ -454,7 +604,7 @@ body {
     align-items: center;
     gap: 2rem;
     margin-left: auto;
-    margin-right: 2rem; /* espacio entre "Contacto" y el carrito */
+    margin-right: 2rem;
   }
 
   .cart-btn {
@@ -483,7 +633,6 @@ body {
   color: var(--verde);
 }
 
-/* Texto hero optimizado en móviles (solicitado) */
 @media (max-width: 900px) {
   .hero-text h1 {
     font-size: 2rem;
@@ -501,26 +650,24 @@ body {
   margin-top: 0.5rem;
 }
 
-/* === HERO CARD (Outlined / Tarjeta delineada mejorada) === */
+/* === HERO CARD === */
 .hero-card {
   background: var(--blanco);
   max-width: 1100px;
   margin: 0 auto;
-  border-radius: 12px; /* 🔹 Bordes ligeramente suaves para elegancia */
+  border-radius: 12px;
   border: 1px solid rgba(0, 0, 0, 0.06);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08); /* 🔹 Elevación base */
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
   overflow: hidden;
   position: relative;
   transition: all 0.3s ease;
 }
 
-/* Efecto hover sutil (solo visible en escritorio) */
 .hero-card:hover {
   transform: translateY(-6px);
-  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.12); /* 🔹 Más profundidad */
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.12);
 }
 
-/* 🔹 En móviles: sombra más suave sin movimiento */
 @media (max-width: 900px) {
   .hero-card {
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
@@ -532,7 +679,7 @@ body {
 .hero-carousel {
   position: relative;
   width: 100%;
-  height: 560px; /* escritorio */
+  height: 560px;
   overflow: hidden;
 }
 
@@ -542,7 +689,7 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;    /* la imagen rellena sin deformarse */
+  object-fit: cover;
   opacity: 0;
   transition: opacity 1.5s ease-in-out;
 }
@@ -553,13 +700,13 @@ body {
 
 @media (max-width: 1200px) and (min-width: 901px) {
   .hero-carousel {
-    height: 420px; /* tablet */
+    height: 420px;
   }
 }
 
 @media (max-width: 900px) {
   .hero-carousel {
-    height: 360px; /* móvil */
+    height: 360px;
   }
 }
 
@@ -576,9 +723,10 @@ body {
   padding: 2rem;
   align-items: center;
   text-align: left;
-  margin-bottom: 2.5rem; /* 🟢 espacio extra entre el producto y el carrusel */
+  margin-bottom: 2.5rem;
 }
-/* === SELECTOR DE CANTIDAD (Material 3 – Premium, minimalista) === */
+
+/* Selector de cantidad */
 .quantity-container {
   margin-top: 1.4rem;
   display: flex;
@@ -590,7 +738,7 @@ body {
   width: 38px;
   height: 38px;
   border-radius: 50%;
-  background: #fff; /* botón blanco premium */
+  background: #fff;
   border: 1.6px solid rgba(0,0,0,0.10);
   display: flex;
   align-items: center;
@@ -601,19 +749,16 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* — Icono menos (café) */
 .minus-btn {
   color: var(--marron);
   font-weight: 600;
 }
 
-/* — Icono más (verde) */
 .plus-btn {
   color: var(--verde);
   font-weight: 600;
 }
 
-/* Hover solo en escritorio */
 @media (min-width: 901px) {
   .qty-btn:hover {
     transform: translateY(-3px);
@@ -621,7 +766,6 @@ body {
   }
 }
 
-/* Número */
 .qty-number {
   font-size: 1.6rem;
   font-weight: 600;
@@ -630,8 +774,6 @@ body {
   text-align: center;
   display: inline-block;
 }
-
-/* Mantengo intactos los estilos del carrusel de productos y FAB (no tocados). */
 
 .product-label small {
   font-weight: 600;
@@ -687,7 +829,6 @@ body {
   transform: translateY(-2px);
 }
 
-/* Corrige imagen y fondo */
 .product-img-wrap {
   display: flex;
   align-items: center;
@@ -695,10 +836,6 @@ body {
   background: radial-gradient(circle at center, #f5f5f5 0%, #fff 100%);
   border-radius: 18px;
   padding: 1rem;
-}
-
-/* === FIX: hacer la imagen realmente redondeada === */
-.product-img-wrap {
   border-radius: 18px !important;
   overflow: hidden !important;
 }
@@ -711,8 +848,8 @@ body {
   border-radius: 18px !important;
   display: block;
 }
+
 /* === CARRUSEL DE PRODUCTOS === */
-/* (ESTOS estilos se mantienen exactamente como estaban para no romperlo) */
 .related {
   max-width: 1100px;
   margin: 0 auto 4rem;
@@ -720,7 +857,7 @@ body {
 }
 
 .similar-list {
-  margin-top: 2.5rem; /* 🟢 baja solo las tarjetas, no el título */
+  margin-top: 2.5rem;
 }
 
 .similar-title {
@@ -750,11 +887,11 @@ body {
 }
 
 .similar-card {
-  flex: 0 0 190px;                  /* 🔹 un poco más ancha */
+  flex: 0 0 190px;
   background: #fff;
-  border-radius: 18px;              /* 🔹 igual que las tarjetas del sitio */
+  border-radius: 18px;
   box-shadow: var(--sombra);
-  padding: 1.5rem 1rem;             /* 🔹 más espacio interno */
+  padding: 1.5rem 1rem;
   scroll-snap-align: start;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
@@ -764,15 +901,6 @@ body {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-.similar-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
-.similar-card:hover {
-  transform: translateY(-3px);
-}
-
 .similar-card img {
   width: 100%;
   height: 190px;
@@ -780,7 +908,7 @@ body {
   border-radius: 12px;
   margin-bottom: 0.6rem;
 }
-/* === Tarjeta seleccionada — evita que se corte arriba === */
+
 .similar-card.active-card {
   transform: translateY(-6px);
   box-shadow: 0 6px 18px rgba(51, 103, 59, 0.25);
@@ -788,7 +916,6 @@ body {
   z-index: 5 !important;
 }
 
-/* Más respiro arriba y abajo del carrusel */
 .similar-list {
   padding-top: 14px !important;
   padding-bottom: 14px !important;
@@ -814,7 +941,6 @@ body {
   cursor: pointer;
 }
 
-/* Flechas SOLO escritorio (sin cambios) */
 .carousel-prev, .carousel-next {
   position: absolute;
   top: 50%;
@@ -845,7 +971,6 @@ body {
 }
 
 /* === SOBRE NOSOTROS === */
-/* Usamos las alturas que pediste: escritorio 560, tablet 420, móvil 360 */
 .about {
   max-width: 1100px;
   margin: 4rem auto;
@@ -856,10 +981,7 @@ body {
   padding: 0 1rem;
 }
 
-/* ============================================================
-   =======  TIPOGRAFÍA PREMIUM ESTILO APPLE PARA ABOUT  =======
-   ============================================================ */
-
+/* Tipografía about */
 .about-text,
 .about-text p,
 .about-text h2,
@@ -868,28 +990,24 @@ body {
 .about-text * {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
                Helvetica, Arial, sans-serif !important;
-  font-weight: 350; /* Estilo Apple: delgado pero legible */
+  font-weight: 350;
   line-height: 1.45;
-  letter-spacing: -0.015em; /* microajuste Apple */
-  color: #512615; /* mantienes tu marrón premium */
+  letter-spacing: -0.015em;
+  color: #512615;
 }
 
-/* Título estilo Apple */
 .about-text h2 {
-  font-weight: 600;      /* Apple usa 600 para títulos */
+  font-weight: 600;
   font-size: 2.1rem;
   margin-bottom: 1rem;
   letter-spacing: -0.02em;
 }
 
-/* Párrafos estilo Apple: suaves y limpios */
 .about-text p {
   font-size: 1.28rem;
   font-weight: 350;
   margin-bottom: 1.4rem;
 }
-
-/* Pills se mantienen igual */
 
 .about-pills {
   display: flex;
@@ -906,10 +1024,9 @@ body {
   box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
 
-/* === SOBRE NOSOTROS — Imagen SUPER premium (desktop/tablet) === */
 .about-img img {
   width: 100%;
-  height: 820px;             /* escritorio súper premium */
+  height: 820px;
   object-fit: cover;
   border-radius: 22px;
   box-shadow: 0 25px 60px rgba(0,0,0,0.15);
@@ -921,16 +1038,13 @@ body {
   box-shadow: 0 30px 70px rgba(0,0,0,0.20);
 }
 
-/* === Tablet (1200px → 901px) === */
 @media (max-width: 1200px) and (min-width: 901px) {
   .about-img img {
-    height: 620px;           /* tablet premium */
+    height: 620px;
   }
 }
 
-/* === Móvil (<= 900px) — estilo compacto bonito === */
 @media (max-width: 900px) {
-
   .about {
     grid-template-columns: 1fr;
     text-align: center;
@@ -938,16 +1052,14 @@ body {
   }
 
   .about-img img {
-    height: 460px;           /* tamaño compacto bonito */
+    height: 460px;
     border-radius: 18px;
     box-shadow: 0 18px 40px rgba(0,0,0,0.10);
-    object-fit: cover;       /* mantiene calidad */
+    object-fit: cover;
   }
 }
 
-/* === AJUSTE CONTACTO Y FOOTER === */
-
-/* Centrar completamente el bloque de "Contáctanos" */
+/* === CONTACTO Y FOOTER === */
 .contacto {
   text-align: center !important;
   margin: 4rem auto !important;
@@ -972,8 +1084,6 @@ body {
   max-width: 700px !important;
 }
 
-
-/* === FOOTER CON LOGO AJUSTADO AL TAMAÑO DEL TEXTO === */
 footer {
   background: var(--blanco);
   border-top: 1px solid rgba(0,0,0,0.05);
@@ -983,7 +1093,7 @@ footer {
 
 footer p {
   margin: 0;
-  font-size: 0.95rem; /* tamaño base del texto */
+  font-size: 0.95rem;
   color: var(--marron);
   display: inline-flex;
   align-items: center;
@@ -993,18 +1103,16 @@ footer p {
   white-space: nowrap;
 }
 
-/* === LOGO INLINE AJUSTADO (VERSIÓN PREMIUM) === */
 .footer-logo-inline {
   width: 40px !important;
   height: 40px !important;
   object-fit: contain;
   display: inline-block;
   vertical-align: middle;
-  transform: translateY(1px); /* alineación fina */
+  transform: translateY(1px);
   opacity: 0.95;
 }
 
-/* Tamaño especial para pantallas muy pequeñas */
 @media (max-width: 500px) {
   .footer-logo-inline {
     width: 36px !important;
@@ -1013,9 +1121,7 @@ footer p {
   }
 }
 
-
 /* === FAB === */
-/* NO TOCAR: mantengo el FAB igual que antes */
 .fab-container {
   position: fixed;
   bottom: 24px;
@@ -1048,15 +1154,16 @@ footer p {
   align-items: center;
   gap: 16px;
 }
-/* === COLORES OFICIALES PARA ÍCONOS DEL FAB === */
+
 .fab-options i.fa-whatsapp {
-  color: #25D366 !important;  /* Verde WhatsApp */
+  color: #25D366 !important;
 }
 
 .fab-options i.fa-facebook-f,
 .fab-options i.fa-facebook {
-  color: #1877F2 !important;  /* Azul Facebook */
+  color: #1877F2 !important;
 }
+
 .fab-options a {
   background: #fff;
   color: var(--marron);
@@ -1079,19 +1186,19 @@ footer p {
   pointer-events: auto;
   transform: translateY(0);
 }
-/* === FIX: quitar subrayado en los enlaces del FAB === */
+
 .fab-options a,
 .fab-options a i {
   text-decoration: none !important;
 }
 
-/* Eliminar pseudo-elementos que generan puntos */
 .fab-options a::after,
 .fab-options a::before {
   display: none !important;
   content: none !important;
 }
-/* === RESPONSIVE === */
+
+/* === RESPONSIVE HEADER Y PRODUCTO === */
 @media (max-width: 900px) {
   .menu-toggle {
     display: block;
@@ -1114,11 +1221,11 @@ footer p {
 
   .product-main {
     grid-template-columns: 1fr;
-    margin: 2rem 0.5rem; /* ajuste móvil solicitado para la tarjeta producto */
+    margin: 2rem 0.5rem;
   }
 }
 
-/* === BOTÓN SPLIT (ajustado y visualmente más balanceado) === */
+/* Botón split de precio + carrito */
 .product-split {
   display: inline-flex;
   align-items: center;
@@ -1134,14 +1241,12 @@ footer p {
   margin-bottom: 1.2rem;
 }
 
-/* Lado del precio (fijo, no clickeable) */
 .product-split .price-part {
   padding: 0.7rem 1.6rem;
   pointer-events: none;
   user-select: none;
 }
 
-/* Lado del carrito (clickeable) */
 .product-split .icon-part {
   background: rgba(255, 255, 255, 0.18);
   padding: 0.7rem 1.3rem;
@@ -1153,37 +1258,32 @@ footer p {
   transition: transform 0.12s ease, background 0.2s ease, box-shadow 0.12s ease;
 }
 
-/* 🔹 Efecto hover (ligeramente más claro) */
 .product-split .icon-part:hover {
   background: rgba(255, 255, 255, 0.3);
 }
 
-/* 🔹 Al presionar (efecto hacia abajo más físico) */
 .product-split .icon-part:active {
   transform: translateY(2px);
   box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.35);
 }
 
-/* Ícono del carrito */
 .product-split .icon-part i {
   font-size: 1rem;
   color: #fff;
 }
 
-/* 🔹 En pantallas pequeñas: ocupa el ancho justo y centrado */
 @media (max-width: 600px) {
   .product-split {
     transform: scale(1.02);
   }
 }
 
-
-/* ----- Submenú de perfil (escritorio) ----- */
+/* Submenú de perfil (escritorio) forzado */
 .profile-menu.open {
   display: flex !important;
 }
 
-/* ----- Hero Carousel ----- */
+/* Hero Carousel duplicado para animación */
 .hero-carousel img {
   opacity: 0;
   position: absolute;
@@ -1199,7 +1299,7 @@ footer p {
   opacity: 1;
 }
 
-/* ----- Carrito – animación badge ----- */
+/* Carrito – animación badge */
 .cart-count.animate {
   animation: pulseCart 0.5s ease;
 }
@@ -1223,10 +1323,11 @@ footer p {
   100% { transform: rotate(0deg); }
 }
 
-/* ----- Similar cards – activo ----- */
+/* Similar cards – activo */
 .similar-card.active-card {
   border: 2px solid var(--verde);
   box-shadow: 0 4px 12px rgba(0,0,0,0.12);
   transform: scale(1.02);
   transition: 0.25s ease;
 }
+```0
