@@ -56,10 +56,10 @@ document.addEventListener("DOMContentLoaded", () => {
      ============================================================ */
 
   const menuToggle    = safe("menu-toggle");      // botón hamburguesa (móvil)
-  const legacyDrawer  = safe("drawer");          // drawer viejo (por si aún existe)
-  const userDrawer    = safe("user-drawer");      // menú flotante nuevo
-  const userScrim     = safe("user-scrim");       // fondo oscuro
-  const btnHeaderUser = safe("btn-header-user");  // avatar del header (PC/móvil)
+  const legacyDrawer  = safe("drawer");          // drawer blanco clásico (backup)
+  const userDrawer    = safe("user-drawer");     // menú flotante nuevo oscuro
+  const userScrim     = safe("user-scrim");      // fondo oscuro
+  const btnHeaderUser = safe("btn-header-user"); // avatar del header
 
   function toggleUserDrawer(forceOpen) {
     if (!userDrawer || !userScrim) return;
@@ -77,15 +77,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Click en avatar → abre/cierra menú flotante
+  // Avatar → menú flotante oscuro (PC y móvil)
   if (btnHeaderUser && userDrawer && userScrim) {
     btnHeaderUser.addEventListener("click", () => {
       toggleUserDrawer();
     });
   }
 
-  // En móvil: el botón hamburguesa usa el NUEVO menú si existe,
-  // y si no, sigue usando el drawer viejo.
+  // 🔹 Hamburguesa → abre el NUEVO menú flotante
+  //    (si por alguna razón no existe user-drawer, cae al drawer blanco)
   if (menuToggle) {
     menuToggle.addEventListener("click", () => {
       if (userDrawer && userScrim) {
@@ -101,7 +101,7 @@ document.addEventListener("DOMContentLoaded", () => {
     userScrim.addEventListener("click", () => toggleUserDrawer(false));
   }
 
-  // Cerrar con Escape
+  // Cerrar con Escape ambos menús
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
       toggleUserDrawer(false);
@@ -111,7 +111,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Cerrar drawer viejo al hacer clic en sus links (si todavía lo usas)
+  // Cerrar drawer blanco al hacer clic en sus links (por si aún se usa)
   if (legacyDrawer) {
     document.querySelectorAll(".drawer-links a").forEach((link) => {
       link.addEventListener("click", () => legacyDrawer.classList.remove("open"));
@@ -161,8 +161,8 @@ document.addEventListener("DOMContentLoaded", () => {
   /* ===================== SELECTOR DE CANTIDAD ===================== */
 
   const qtyNumber = safe("qty-number");
-  const qtyMinus = safe("qty-minus");
-  const qtyPlus = safe("qty-plus");
+  const qtyMinus  = safe("qty-minus");
+  const qtyPlus   = safe("qty-plus");
 
   if (qtyMinus && qtyNumber)
     qtyMinus.addEventListener("click", () => {
@@ -182,16 +182,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (btnMain && qtyNumber) {
     btnMain.addEventListener("click", () => {
-      const nameEl = safe("product-name");
-      const imgEl = safe("product-image");
+      const nameEl  = safe("product-name");
+      const imgEl   = safe("product-image");
       const priceEl = document.querySelector(".price-part");
 
       if (!nameEl || !imgEl || !priceEl) return;
 
-      const qty = parseInt(qtyNumber.textContent) || 1;
-      const name = nameEl.textContent.trim();
+      const qty   = parseInt(qtyNumber.textContent) || 1;
+      const name  = nameEl.textContent.trim();
       const price = parseFloat(priceEl.textContent.replace(/[^\d.-]/g, ""));
-      const img = imgEl.src;
+      const img   = imgEl.src;
 
       addToCart({ name, price, img, qty });
       qtyNumber.textContent = "1";
@@ -204,21 +204,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (cards.length > 0) {
     cards.forEach((card) => {
-      const name = card.dataset.name;
+      const name  = card.dataset.name;
       const price = parseFloat(card.dataset.price.replace(/[^\d.-]/g, ""));
-      const img = card.dataset.img;
+      const img   = card.dataset.img;
 
       card.addEventListener("click", () => {
         cards.forEach((c) => c.classList.remove("active-card"));
         card.classList.add("active-card");
 
-        const nameEl = safe("product-name");
+        const nameEl  = safe("product-name");
         const priceEl = document.querySelector(".price-part");
         const imageEl = safe("product-image");
 
         if (!nameEl || !priceEl || !imageEl) return;
 
-        nameEl.textContent = name;
+        nameEl.textContent  = name;
         priceEl.textContent = `L ${price}`;
 
         imageEl.src = img;
@@ -241,8 +241,8 @@ document.addEventListener("DOMContentLoaded", () => {
   /* ===================== CARRUSEL HORIZONTAL ===================== */
 
   const carousel = document.querySelector(".similar-list");
-  const prevBtn = document.querySelector(".carousel-prev");
-  const nextBtn = document.querySelector(".carousel-next");
+  const prevBtn  = document.querySelector(".carousel-prev");
+  const nextBtn  = document.querySelector(".carousel-next");
 
   if (carousel && prevBtn && nextBtn) {
     prevBtn.addEventListener("click", () =>
@@ -255,7 +255,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* ===================== FAB ===================== */
 
-  const fabMain = safe("fab-main");
+  const fabMain      = safe("fab-main");
   const fabContainer = safe("fab");
 
   if (fabMain && fabContainer) {
