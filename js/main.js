@@ -1,7 +1,7 @@
 /* ============================================================
    MAIN.JS — Café Cortero
-   VERSIÓN OFICIAL 100% CORREGIDA — SIN CONTROL DE SESIÓN AQUÍ
-   ============================================================ */
+   VERSIÓN OFICIAL 100% CORREGIDA
+============================================================ */
 
 /* ===================== FUNCIÓN SAFE ===================== */
 function safe(id) {
@@ -51,32 +51,87 @@ function addToCart(product) {
 
 document.addEventListener("DOMContentLoaded", () => {
 
-  /* Drawer móvil */
-  const menuToggle = safe("menu-toggle");
-  const drawer = safe("drawer");
+  /* ============================================================
+     NUEVO MENÚ FLOTANTE (ESTILO CARRITO) + COMPATIBLE
+     ============================================================ */
 
-  if (menuToggle && drawer) {
-    menuToggle.addEventListener("click", () => {
-      drawer.classList.toggle("open");
+  const menuToggle    = safe("menu-toggle");      // botón hamburguesa (móvil)
+  const legacyDrawer  = safe("drawer");          // drawer viejo (por si aún existe)
+  const userDrawer    = safe("user-drawer");      // menú flotante nuevo
+  const userScrim     = safe("user-scrim");       // fondo oscuro
+  const btnHeaderUser = safe("btn-header-user");  // avatar del header (PC/móvil)
+
+  function toggleUserDrawer(forceOpen) {
+    if (!userDrawer || !userScrim) return;
+
+    const isOpen = userDrawer.classList.contains("open");
+    const shouldOpen =
+      typeof forceOpen === "boolean" ? forceOpen : !isOpen;
+
+    if (shouldOpen) {
+      userDrawer.classList.add("open");
+      userScrim.classList.add("open");
+    } else {
+      userDrawer.classList.remove("open");
+      userScrim.classList.remove("open");
+    }
+  }
+
+  // Click en avatar → abre/cierra menú flotante
+  if (btnHeaderUser && userDrawer && userScrim) {
+    btnHeaderUser.addEventListener("click", () => {
+      toggleUserDrawer();
     });
+  }
 
+  // En móvil: el botón hamburguesa usa el NUEVO menú si existe,
+  // y si no, sigue usando el drawer viejo.
+  if (menuToggle) {
+    menuToggle.addEventListener("click", () => {
+      if (userDrawer && userScrim) {
+        toggleUserDrawer();
+      } else if (legacyDrawer) {
+        legacyDrawer.classList.toggle("open");
+      }
+    });
+  }
+
+  // Cerrar menú flotante al tocar el scrim
+  if (userScrim && userDrawer) {
+    userScrim.addEventListener("click", () => toggleUserDrawer(false));
+  }
+
+  // Cerrar con Escape
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      toggleUserDrawer(false);
+      if (legacyDrawer && legacyDrawer.classList.contains("open")) {
+        legacyDrawer.classList.remove("open");
+      }
+    }
+  });
+
+  // Cerrar drawer viejo al hacer clic en sus links (si todavía lo usas)
+  if (legacyDrawer) {
     document.querySelectorAll(".drawer-links a").forEach((link) => {
-      link.addEventListener("click", () => drawer.classList.remove("open"));
+      link.addEventListener("click", () => legacyDrawer.classList.remove("open"));
     });
   }
 
   /* ============================================================
-     FIX: Cerrar drawer al cambiar tamaño de pantalla
-     (evita que se quede pegado en modo móvil del navegador)
+     FIX: Cerrar menús al cambiar tamaño de pantalla
      ============================================================ */
   window.addEventListener("resize", () => {
-    const drawer = safe("drawer");
-    if (drawer && drawer.classList.contains("open")) {
-      drawer.classList.remove("open");
+    if (legacyDrawer && legacyDrawer.classList.contains("open")) {
+      legacyDrawer.classList.remove("open");
+    }
+    if (userDrawer && userDrawer.classList.contains("open")) {
+      toggleUserDrawer(false);
     }
   });
 
-  /* Hero carousel */
+  /* ===================== HERO CAROUSEL ===================== */
+
   const heroImgs = document.querySelectorAll(".hero-carousel img");
   let heroIndex = 0;
 
@@ -93,7 +148,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 8000);
   }
 
-  /* Carrito */
+  /* ===================== CARRITO (BOTÓN HEADER) ===================== */
+
   const cartBtn = safe("cart-btn");
   if (cartBtn) {
     cartBtn.addEventListener("click", () => {
@@ -102,7 +158,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   updateCartCount();
 
-  /* Selector de cantidad */
+  /* ===================== SELECTOR DE CANTIDAD ===================== */
+
   const qtyNumber = safe("qty-number");
   const qtyMinus = safe("qty-minus");
   const qtyPlus = safe("qty-plus");
@@ -119,7 +176,8 @@ document.addEventListener("DOMContentLoaded", () => {
       qtyNumber.textContent = n + 1;
     });
 
-  /* Producto principal */
+  /* ===================== PRODUCTO PRINCIPAL ===================== */
+
   const btnMain = safe("product-add");
 
   if (btnMain && qtyNumber) {
@@ -140,7 +198,8 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  /* Carrusel productos similares */
+  /* ===================== CARROUSEL PRODUCTOS SIMILARES ===================== */
+
   const cards = document.querySelectorAll(".similar-card");
 
   if (cards.length > 0) {
@@ -150,41 +209,37 @@ document.addEventListener("DOMContentLoaded", () => {
       const img = card.dataset.img;
 
       card.addEventListener("click", () => {
-        document
-          .querySelectorAll(".similar-card")
-          .forEach((c) => c.classList.remove("active-card"));
+        cards.forEach((c) => c.classList.remove("active-card"));
+        card.classList.add("active-card");
 
-        card.addEventListener("click", () => {
-          cards.forEach((c) => c.classList.remove("active-card"));
-          card.classList.add("active-card");
+        const nameEl = safe("product-name");
+        const priceEl = document.querySelector(".price-part");
+        const imageEl = safe("product-image");
 
-          const nameEl = safe("product-name");
-          const priceEl = document.querySelector(".price-part");
-          const imageEl = safe("product-image");
+        if (!nameEl || !priceEl || !imageEl) return;
 
-          if (!nameEl || !priceEl || !imageEl) return;
+        nameEl.textContent = name;
+        priceEl.textContent = `L ${price}`;
 
-          nameEl.textContent = name;
-          priceEl.textContent = `L ${price}`;
+        imageEl.src = img;
+        imageEl.style.opacity = "0";
+        setTimeout(() => {
+          imageEl.style.transition = "opacity 0.4s ease";
+          imageEl.style.opacity = "1";
+        }, 80);
 
-          imageEl.src = img;
-          imageEl.style.opacity = "0";
-          setTimeout(() => {
-            imageEl.style.transition = "opacity 0.4s ease";
-            imageEl.style.opacity = "1";
-          }, 80);
-
-          const sec = safe("productos");
-          if (sec) {
-            const offset = sec.getBoundingClientRect().top + window.scrollY - 90;
-            window.scrollTo({ top: offset, behavior: "smooth" });
-          }
-        });
+        const sec = safe("productos");
+        if (sec) {
+          const offset =
+            sec.getBoundingClientRect().top + window.scrollY - 90;
+          window.scrollTo({ top: offset, behavior: "smooth" });
+        }
       });
     });
   }
 
-  /* Carrusel horizontal */
+  /* ===================== CARRUSEL HORIZONTAL ===================== */
+
   const carousel = document.querySelector(".similar-list");
   const prevBtn = document.querySelector(".carousel-prev");
   const nextBtn = document.querySelector(".carousel-next");
@@ -198,7 +253,8 @@ document.addEventListener("DOMContentLoaded", () => {
     );
   }
 
-  /* FAB — CORREGIDO */
+  /* ===================== FAB ===================== */
+
   const fabMain = safe("fab-main");
   const fabContainer = safe("fab");
 
