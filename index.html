@@ -19,7 +19,7 @@
   <header class="header">
     <div class="header-content">
 
-      <!-- Menú móvil -->
+      <!-- Menú móvil (abre el drawer) -->
       <button class="menu-toggle" id="menu-toggle">
         <i class="fa-solid fa-bars"></i>
       </button>
@@ -35,18 +35,65 @@
         <a href="#nosotros">Nosotros</a>
         <a href="#contacto" class="contact-link">Contacto</a>
 
+        <!-- Link login por defecto -->
         <a href="login.html" class="login-link" id="login-desktop">Iniciar sesión</a>
 
-        <!-- Perfil -->
+        <!-- Perfil (se muestra cuando hay sesión, manejado por main.js) -->
         <div class="profile-wrapper" id="profile-desktop" style="display:none;">
+          <!-- Avatar que abre el menú -->
           <img id="profile-photo-desktop" src="imagenes/avatar-default.svg" class="profile-photo-round">
+
+          <!-- Menú de usuario versión “carrito” pero reutilizando IDs -->
           <div class="profile-menu" id="profile-menu">
-            <p class="profile-hello" id="hello-desktop">Hola, Usuario</p>
-            <a href="mispedidos.html">Mis pedidos</a>
-            <a href="historial.html">Historial</a>
-            <a href="perfil.html">Mi perfil</a>
-            <hr>
-            <a href="#" id="logout-desktop" class="logout">Cerrar sesión</a>
+            <!-- Bloque superior: perfil (lleva a perfil.html) -->
+            <a href="perfil.html" class="user-drawer-header user-drawer-profile-link">
+              <div class="user-drawer-avatar">
+                <!-- usamos la misma foto; main.js cambia src de profile-photo-desktop -->
+                <img src="imagenes/avatar-default.svg" alt="Usuario">
+              </div>
+              <div class="user-drawer-profile-texts">
+                <p class="user-drawer-name" id="hello-desktop">Hola, Usuario</p>
+                <!-- email opcional, si luego lo rellenas por JS -->
+                <p class="user-drawer-email" id="email-desktop">correo@ejemplo.com</p>
+              </div>
+              <span class="material-symbols-rounded user-drawer-arrow">chevron_right</span>
+            </a>
+
+            <hr class="user-drawer-divider">
+
+            <!-- Opciones con los mismos textos que el carrito -->
+            <a href="mispedidos.html" class="user-drawer-item">
+              <span class="material-symbols-rounded user-drawer-item-icon">shopping_bag</span>
+              <span>Mis pedidos</span>
+            </a>
+
+            <a href="historial.html" class="user-drawer-item">
+              <span class="material-symbols-rounded user-drawer-item-icon">history</span>
+              <span>Historial de compras</span>
+            </a>
+
+            <a href="#productos" class="user-drawer-item">
+              <span class="material-symbols-rounded user-drawer-item-icon">local_cafe</span>
+              <span>Variedades de café</span>
+            </a>
+
+            <a href="#nosotros" class="user-drawer-item">
+              <span class="material-symbols-rounded user-drawer-item-icon">groups</span>
+              <span>Quiénes somos</span>
+            </a>
+
+            <a href="#contacto" class="user-drawer-item">
+              <span class="material-symbols-rounded user-drawer-item-icon">mail</span>
+              <span>Contáctanos</span>
+            </a>
+
+            <hr class="user-drawer-divider">
+
+            <!-- Cerrar sesión (mantenemos id para la lógica existente) -->
+            <a href="#" id="logout-desktop" class="user-drawer-item logout">
+              <span class="material-symbols-rounded user-drawer-item-icon">logout</span>
+              <span>Cerrar sesión</span>
+            </a>
           </div>
         </div>
       </nav>
@@ -60,7 +107,7 @@
     </div>
   </header>
 
-  <!-- Drawer móvil -->
+  <!-- Drawer móvil (se abre con el botón #menu-toggle) -->
   <div class="drawer" id="drawer">
     <div class="drawer-header">
       <a href="index.html" class="drawer-logo">
@@ -68,7 +115,7 @@
       </a>
     </div>
 
-    <!-- Drawer sin login -->
+    <!-- Drawer sin login (igual que antes, pero puedes agregar iconos si quieres) -->
     <nav class="drawer-links" id="drawer-links-default">
       <a href="#productos">Productos</a>
       <a href="#nosotros">Nosotros</a>
@@ -76,22 +123,55 @@
       <a href="login.html" class="drawer-login">Iniciar sesión</a>
     </nav>
 
-    <!-- Drawer con login -->
+    <!-- Drawer con login (idéntico en opciones al menú del carrito) -->
     <nav class="drawer-links" id="drawer-links-logged" style="display:none;">
-      <div class="drawer-profile-block">
-        <img id="profile-photo-mobile" src="imagenes/avatar-default.svg" class="drawer-profile-photo">
-        <p class="drawer-hello" id="hello-mobile">Hola, Usuario</p>
-      </div>
+      <!-- Bloque de perfil -->
+      <a href="perfil.html" class="drawer-profile-block drawer-profile-link">
+        <div class="drawer-profile-photo-wrap">
+          <img id="profile-photo-mobile" src="imagenes/avatar-default.svg" class="drawer-profile-photo">
+        </div>
+        <div class="drawer-profile-texts">
+          <p class="drawer-hello" id="hello-mobile">Hola, Usuario</p>
+          <p class="drawer-email" id="email-mobile">correo@ejemplo.com</p>
+        </div>
+        <span class="material-symbols-rounded drawer-arrow">chevron_right</span>
+      </a>
 
-      <a href="mispedidos.html">Mis pedidos</a>
-      <a href="historial.html">Historial</a>
-      <a href="perfil.html">Mi perfil</a>
+      <hr class="user-drawer-divider">
 
-      <a href="#productos">Productos</a>
-      <a href="#nosotros">Nosotros</a>
-      <a href="#contacto">Contacto</a>
+      <!-- Opciones de navegación -->
+      <a href="mispedidos.html" class="drawer-item">
+        <span class="material-symbols-rounded drawer-item-icon">shopping_bag</span>
+        <span>Mis pedidos</span>
+      </a>
 
-      <a href="#" id="logout-mobile" class="logout">Cerrar sesión</a>
+      <a href="historial.html" class="drawer-item">
+        <span class="material-symbols-rounded drawer-item-icon">history</span>
+        <span>Historial de compras</span>
+      </a>
+
+      <a href="#productos" class="drawer-item">
+        <span class="material-symbols-rounded drawer-item-icon">local_cafe</span>
+        <span>Variedades de café</span>
+      </a>
+
+      <a href="#nosotros" class="drawer-item">
+        <span class="material-symbols-rounded drawer-item-icon">groups</span>
+        <span>Quiénes somos</span>
+      </a>
+
+      <a href="#contacto" class="drawer-item">
+        <span class="material-symbols-rounded drawer-item-icon">mail</span>
+        <span>Contáctanos</span>
+      </a>
+
+      <hr class="user-drawer-divider">
+
+      <!-- Cerrar sesión móvil (mantengo id logout-mobile para tu JS) -->
+      <a href="#" id="logout-mobile" class="drawer-item logout">
+        <span class="material-symbols-rounded drawer-item-icon">logout</span>
+        <span>Cerrar sesión</span>
+      </a>
     </nav>
   </div>
 
@@ -243,16 +323,15 @@
       </a>
     </div>
   </div>
-<!-- Scripts -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<!-- Scripts normales SIN anti-cache -->
-<script src="js/supabase-client-core.js"></script>
-<script src="js/supabase-auth.js"></script>
-<script src="js/main.js"></script>
-<script src="js/auth-ui.js"></script>
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-
+  <!-- Scripts normales SIN anti-cache -->
+  <script src="js/supabase-client-core.js"></script>
+  <script src="js/supabase-auth.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/auth-ui.js"></script>
 
 </body>
 </html>
