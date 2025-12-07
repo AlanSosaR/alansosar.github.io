@@ -217,7 +217,7 @@ header {
   border: none;
   margin: 4px 0 8px;
   height: 1px;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(--verde);
 }
 
 .user-drawer-nav {
