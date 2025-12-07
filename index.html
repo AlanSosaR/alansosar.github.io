@@ -6,8 +6,11 @@
   <title>Café Cortero | La esencia de Honduras en cada sorbo</title>
 
   <!-- Fuentes e iconos -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Playfair+Display:wght@600&family=Material+Symbols+Rounded" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- Material Symbols (para iconos del menú) -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@300;400;500&display=swap">
 
   <!-- CSS principal -->
   <link rel="stylesheet" href="css/main.css?v=11">
@@ -15,91 +18,42 @@
 
 <body>
 
-  <!-- Header -->
+  <!-- =====================================================
+       HEADER
+  ====================================================== -->
   <header class="header">
     <div class="header-content">
 
-      <!-- Menú móvil (abre el drawer) -->
-      <button class="menu-toggle" id="menu-toggle">
+      <!-- Menú móvil: solo ícono hamburguesa, abre el menú flotante -->
+      <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menú">
         <i class="fa-solid fa-bars"></i>
       </button>
 
-      <!-- Logo -->
+      <!-- Logo escritorio -->
       <a href="index.html" class="logo desktop-only">
         <img src="imagenes/logo.png" alt="Café Cortero">
       </a>
 
-      <!-- Menú escritorio -->
+      <!-- Links de navegación escritorio -->
       <nav class="nav-links desktop-only">
         <a href="#productos">Productos</a>
         <a href="#nosotros">Nosotros</a>
         <a href="#contacto" class="contact-link">Contacto</a>
 
-        <!-- Link login por defecto -->
+        <!-- Link login por defecto (se oculta cuando hay sesión) -->
         <a href="login.html" class="login-link" id="login-desktop">Iniciar sesión</a>
 
-        <!-- Perfil (se muestra cuando hay sesión, manejado por main.js) -->
+        <!-- Perfil (se muestra cuando hay sesión, lo maneja auth-ui.js / supabase) -->
         <div class="profile-wrapper" id="profile-desktop" style="display:none;">
-          <!-- Avatar que abre el menú -->
-          <img id="profile-photo-desktop" src="imagenes/avatar-default.svg" class="profile-photo-round">
-
-          <!-- Menú de usuario versión “carrito” pero reutilizando IDs -->
-          <div class="profile-menu" id="profile-menu">
-            <!-- Bloque superior: perfil (lleva a perfil.html) -->
-            <a href="perfil.html" class="user-drawer-header user-drawer-profile-link">
-              <div class="user-drawer-avatar">
-                <!-- usamos la misma foto; main.js cambia src de profile-photo-desktop -->
-                <img src="imagenes/avatar-default.svg" alt="Usuario">
-              </div>
-              <div class="user-drawer-profile-texts">
-                <p class="user-drawer-name" id="hello-desktop">Hola, Usuario</p>
-                <!-- email opcional, si luego lo rellenas por JS -->
-                <p class="user-drawer-email" id="email-desktop">correo@ejemplo.com</p>
-              </div>
-              <span class="material-symbols-rounded user-drawer-arrow">chevron_right</span>
-            </a>
-
-            <hr class="user-drawer-divider">
-
-            <!-- Opciones con los mismos textos que el carrito -->
-            <a href="mispedidos.html" class="user-drawer-item">
-              <span class="material-symbols-rounded user-drawer-item-icon">shopping_bag</span>
-              <span>Mis pedidos</span>
-            </a>
-
-            <a href="historial.html" class="user-drawer-item">
-              <span class="material-symbols-rounded user-drawer-item-icon">history</span>
-              <span>Historial de compras</span>
-            </a>
-
-            <a href="#productos" class="user-drawer-item">
-              <span class="material-symbols-rounded user-drawer-item-icon">local_cafe</span>
-              <span>Variedades de café</span>
-            </a>
-
-            <a href="#nosotros" class="user-drawer-item">
-              <span class="material-symbols-rounded user-drawer-item-icon">groups</span>
-              <span>Quiénes somos</span>
-            </a>
-
-            <a href="#contacto" class="user-drawer-item">
-              <span class="material-symbols-rounded user-drawer-item-icon">mail</span>
-              <span>Contáctanos</span>
-            </a>
-
-            <hr class="user-drawer-divider">
-
-            <!-- Cerrar sesión (mantenemos id para la lógica existente) -->
-            <a href="#" id="logout-desktop" class="user-drawer-item logout">
-              <span class="material-symbols-rounded user-drawer-item-icon">logout</span>
-              <span>Cerrar sesión</span>
-            </a>
-          </div>
+          <!-- Avatar que abre el menú flotante -->
+          <button id="btn-header-user" class="header-avatar-button" aria-label="Abrir menú de usuario">
+            <img id="profile-photo-desktop" src="imagenes/avatar-default.svg" class="profile-photo-round" alt="Usuario">
+          </button>
         </div>
       </nav>
 
       <!-- Carrito -->
-      <button class="cart-btn" id="cart-btn">
+      <button class="cart-btn" id="cart-btn" aria-label="Ver carrito">
         <i class="fa-solid fa-cart-shopping"></i>
         <span class="cart-count" id="cart-count">0</span>
       </button>
@@ -107,74 +61,114 @@
     </div>
   </header>
 
-  <!-- Drawer móvil (se abre con el botón #menu-toggle) -->
-  <div class="drawer" id="drawer">
-    <div class="drawer-header">
-      <a href="index.html" class="drawer-logo">
-        <img src="imagenes/logo.png" alt="Café Cortero">
+  <!-- =====================================================
+       MENÚ FLOTANTE ESTILO CARRITO (PC + MÓVIL)
+       - Se debe abrir desde:
+         • #btn-header-user (avatar escritorio, cuando hay sesión)
+         • #menu-toggle (móvil, con y sin sesión)
+  ====================================================== -->
+
+  <!-- Scrim oscurecido -->
+  <div id="user-scrim" class="user-scrim"></div>
+
+  <!-- Drawer flotante -->
+  <aside id="user-drawer" class="user-drawer" aria-hidden="true">
+
+    <!-- ========= VISTA LOGUEADO (usa los mismos textos que carrito) ========= -->
+    <!-- auth-ui.js debería mostrar este bloque cuando hay sesión, ocultando el de "sin login" -->
+    <div id="drawer-links-logged" style="display:none;">
+
+      <!-- Bloque de perfil clicable que lleva a perfil.html -->
+      <a href="perfil.html" class="user-drawer-header user-drawer-profile-link">
+        <div class="user-drawer-avatar">
+          <!-- Avatar del menú; luego puedes sincronizarlo por JS con profile-photo-desktop -->
+          <img id="avatar-user-drawer" src="imagenes/avatar-default.svg" alt="Usuario">
+        </div>
+
+        <div class="user-drawer-profile-texts">
+          <!-- Reutilizo ids clásicos para que auth-ui.js pueda poner el nombre/email -->
+          <p class="user-drawer-name" id="hello-desktop">Hola, Usuario</p>
+          <p class="user-drawer-email" id="email-desktop">correo@ejemplo.com</p>
+        </div>
+
+        <!-- Flecha estilo Google Store -->
+        <span class="material-symbols-outlined user-drawer-arrow">chevron_right</span>
       </a>
+
+      <hr class="user-drawer-divider">
+
+      <nav class="user-drawer-nav">
+        <a href="mispedidos.html" class="user-drawer-item">
+          <span class="user-drawer-item-icon material-symbols-outlined">shopping_bag</span>
+          <span>Mis pedidos</span>
+        </a>
+
+        <a href="historial.html" class="user-drawer-item">
+          <span class="user-drawer-item-icon material-symbols-outlined">history</span>
+          <span>Historial de compras</span>
+        </a>
+
+        <a href="#productos" class="user-drawer-item">
+          <span class="user-drawer-item-icon material-symbols-outlined">local_cafe</span>
+          <span>Variedades de café</span>
+        </a>
+
+        <a href="#nosotros" class="user-drawer-item">
+          <span class="user-drawer-item-icon material-symbols-outlined">groups</span>
+          <span>Quiénes somos</span>
+        </a>
+
+        <a href="#contacto" class="user-drawer-item">
+          <span class="user-drawer-item-icon material-symbols-outlined">mail</span>
+          <span>Contáctanos</span>
+        </a>
+
+        <hr class="user-drawer-divider">
+
+        <!-- Cerrar sesión (puedes usar este id en tu JS) -->
+        <button id="logout-mobile" class="user-drawer-item logout" type="button">
+          <span class="user-drawer-item-icon material-symbols-outlined">logout</span>
+          <span>Cerrar sesión</span>
+        </button>
+      </nav>
     </div>
 
-    <!-- Drawer sin login (igual que antes, pero puedes agregar iconos si quieres) -->
-    <nav class="drawer-links" id="drawer-links-default">
-      <a href="#productos">Productos</a>
-      <a href="#nosotros">Nosotros</a>
-      <a href="#contacto">Contacto</a>
-      <a href="login.html" class="drawer-login">Iniciar sesión</a>
-    </nav>
+    <!-- ========= VISTA SIN LOGUEAR (nuevo diseño pedido) ========= -->
+    <!-- Por defecto, muestra este bloque. auth-ui.js puede ocultarlo cuando haya sesión -->
+    <div id="drawer-links-default">
+      <!-- Aquí no hay avatar; solo opciones de navegación + Iniciar sesión -->
 
-    <!-- Drawer con login (idéntico en opciones al menú del carrito) -->
-    <nav class="drawer-links" id="drawer-links-logged" style="display:none;">
-      <!-- Bloque de perfil -->
-      <a href="perfil.html" class="drawer-profile-block drawer-profile-link">
-        <div class="drawer-profile-photo-wrap">
-          <img id="profile-photo-mobile" src="imagenes/avatar-default.svg" class="drawer-profile-photo">
-        </div>
-        <div class="drawer-profile-texts">
-          <p class="drawer-hello" id="hello-mobile">Hola, Usuario</p>
-          <p class="drawer-email" id="email-mobile">correo@ejemplo.com</p>
-        </div>
-        <span class="material-symbols-rounded drawer-arrow">chevron_right</span>
-      </a>
+      <nav class="user-drawer-nav">
+        <a href="#productos" class="user-drawer-item">
+          <span class="user-drawer-item-icon material-symbols-outlined">local_cafe</span>
+          <span>Variedades de café</span>
+        </a>
 
-      <hr class="user-drawer-divider">
+        <a href="#nosotros" class="user-drawer-item">
+          <span class="user-drawer-item-icon material-symbols-outlined">groups</span>
+          <span>Quiénes somos</span>
+        </a>
 
-      <!-- Opciones de navegación -->
-      <a href="mispedidos.html" class="drawer-item">
-        <span class="material-symbols-rounded drawer-item-icon">shopping_bag</span>
-        <span>Mis pedidos</span>
-      </a>
+        <a href="#contacto" class="user-drawer-item">
+          <span class="user-drawer-item-icon material-symbols-outlined">mail</span>
+          <span>Contáctanos</span>
+        </a>
 
-      <a href="historial.html" class="drawer-item">
-        <span class="material-symbols-rounded drawer-item-icon">history</span>
-        <span>Historial de compras</span>
-      </a>
+        <hr class="user-drawer-divider">
 
-      <a href="#productos" class="drawer-item">
-        <span class="material-symbols-rounded drawer-item-icon">local_cafe</span>
-        <span>Variedades de café</span>
-      </a>
+        <a href="login.html" class="user-drawer-item">
+          <!-- Icono login que me pediste -->
+          <span class="user-drawer-item-icon material-symbols-outlined">login</span>
+          <span>Iniciar sesión</span>
+        </a>
+      </nav>
+    </div>
 
-      <a href="#nosotros" class="drawer-item">
-        <span class="material-symbols-rounded drawer-item-icon">groups</span>
-        <span>Quiénes somos</span>
-      </a>
+  </aside>
 
-      <a href="#contacto" class="drawer-item">
-        <span class="material-symbols-rounded drawer-item-icon">mail</span>
-        <span>Contáctanos</span>
-      </a>
-
-      <hr class="user-drawer-divider">
-
-      <!-- Cerrar sesión móvil (mantengo id logout-mobile para tu JS) -->
-      <a href="#" id="logout-mobile" class="drawer-item logout">
-        <span class="material-symbols-rounded drawer-item-icon">logout</span>
-        <span>Cerrar sesión</span>
-      </a>
-    </nav>
-  </div>
-
+  <!-- =====================================================
+       CONTENIDO PRINCIPAL (TODO IGUAL QUE YA TENÍAS)
+  ====================================================== -->
   <main>
 
     <!-- Hero -->
