@@ -213,11 +213,12 @@ header {
   font-size: 22px;
 }
 
+/* Forzar línea separadora verde en el menú flotante */
 .user-drawer-divider {
-  border: none;
-  margin: 4px 0 8px;
-  height: 1px;
-  background: rgba(--verde);
+  height: 1.4px !important;
+  margin: 6px 0 10px !important;
+  background: var(--verde) !important; /* Verde fuerte del sitio */
+  opacity: 1 !important; /* Asegura que se vea */
 }
 
 .user-drawer-nav {
