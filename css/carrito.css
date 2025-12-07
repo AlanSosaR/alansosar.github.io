@@ -213,12 +213,13 @@ header {
   font-size: 22px;
 }
 
-/* Forzar línea separadora verde en el menú flotante */
+/* Forzar línea separadora VERDE en el menú flotante */
 .user-drawer-divider {
-  height: 1.4px !important;
+  border: none !important;                /* quita el borde gris del hr */
+  height: 1.6px !important;
   margin: 6px 0 10px !important;
-  background: var(--verde) !important; /* Verde fuerte del sitio */
-  opacity: 1 !important; /* Asegura que se vea */
+  background: var(--verde) !important;    /* mismo verde que el resumen */
+  opacity: 1 !important;                  /* asegúrate de que se vea */
 }
 
 .user-drawer-nav {
