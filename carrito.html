@@ -49,17 +49,21 @@
 <div id="user-scrim" class="user-scrim"></div>
 
 <aside id="user-drawer" class="user-drawer" aria-hidden="true">
-  <div class="user-drawer-header">
+
+  <!-- Bloque de perfil clicable que lleva a perfil.html -->
+  <a href="perfil.html" class="user-drawer-header user-drawer-profile-link">
     <div class="user-drawer-avatar">
-      <!-- reutilizamos el mismo avatar para que tu JS pueda cambiarlo -->
       <img id="avatar-user-drawer" src="imagenes/avatar-default.svg" alt="Usuario">
     </div>
-    <div>
-      <!-- reutilizamos id para que tu JS pueda poner el nombre -->
+
+    <div class="user-drawer-profile-texts">
       <p class="user-drawer-name" id="hello-desktop-cart">Hola, Usuario</p>
       <p class="user-drawer-email" id="email-drawer-cart">alansosa225@gmail.com</p>
     </div>
-  </div>
+
+    <!-- Flecha estilo Google Store -->
+    <span class="material-symbols-outlined user-drawer-arrow">chevron_right</span>
+  </a>
 
   <hr class="user-drawer-divider">
 
@@ -102,143 +106,98 @@
      SEGUIR COMPRANDO
 ====================================================== -->
 <div id="seguir-comprando-box" class="seguir-comprando">
-    <button id="top-back-btn" class="icon-back" onclick="window.location.href='index.html'">
-        <i class="fa-solid fa-chevron-left"></i>
-    </button>
+  <button id="top-back-btn" class="icon-back" onclick="window.location.href='index.html'">
+    <i class="fa-solid fa-chevron-left"></i>
+  </button>
 
-    <a id="top-back-text" href="index.html" class="seguir-link">Seguir comprando</a>
+  <a id="top-back-text" href="index.html" class="seguir-link">Seguir comprando</a>
 </div>
-
 
 <!-- =====================================================
      TEMPLATE DEL ITEM
 ====================================================== -->
 <template id="template-cart-item">
-    <div class="item">
+  <div class="item">
 
-        <div class="item-img-box">
-            <img class="item-image" src="">
-        </div>
-
-        <div class="item-info">
-            <div class="item-name"></div>
-            <div class="item-price"></div>
-
-            <div class="qty-controls">
-                <button class="qty-btn minus" data-action="minus">
-                    <i class="fa-solid fa-minus"></i>
-                </button>
-
-                <span class="qty-number"></span>
-
-                <button class="qty-btn plus" data-action="plus">
-                    <i class="fa-solid fa-plus"></i>
-                </button>
-
-                <button class="del-btn" data-action="del">
-                    <i class="fa-solid fa-trash"></i>
-                </button>
-            </div>
-        </div>
+    <div class="item-img-box">
+      <img class="item-image" src="">
     </div>
-</template>
 
+    <div class="item-info">
+      <div class="item-name"></div>
+      <div class="item-price"></div>
+
+      <div class="qty-controls">
+        <button class="qty-btn minus" data-action="minus">
+          <i class="fa-solid fa-minus"></i>
+        </button>
+
+        <span class="qty-number"></span>
+
+        <button class="qty-btn plus" data-action="plus">
+          <i class="fa-solid fa-plus"></i>
+        </button>
+
+        <button class="del-btn" data-action="del">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</template>
 
 <!-- =====================================================
      CONTENIDO PRINCIPAL
 ====================================================== -->
 <main>
-    <div class="grid-carrito">
+  <div class="grid-carrito">
 
-        <!-- IZQUIERDA: productos -->
-        <div class="col-productos">
-            <div id="cart-container"></div>
-        </div>
-
-        <!-- DERECHA: resumen -->
-        <div class="col-resumen" id="resumen-container">
-
-            <div class="resumen-box">
-                <h2>Resumen del pedido</h2>
-
-                <div class="resumen-row">
-                    <span>Subtotal</span>
-                    <span id="subtotal-label">L 0.00</span>
-                </div>
-
-                <div class="resumen-row">
-                    <span>Envío</span>
-                    <span>L 0.00</span>
-                </div>
-
-                <div class="resumen-row resumen-total">
-                    <span>Total a pagar</span>
-                    <span id="total-label">L 0.00</span>
-                </div>
-
-                <button id="proceder-btn" class="btn proceder">
-                    Proceder al pago
-                </button>
-            </div>
-
-            <div id="snackbar-login" class="snackbar hidden">
-                Necesitas iniciar sesión para continuar con tu pedido.
-            </div>
-
-        </div>
+    <!-- IZQUIERDA: productos -->
+    <div class="col-productos">
+      <div id="cart-container"></div>
     </div>
-</main>
 
+    <!-- DERECHA: resumen -->
+    <div class="col-resumen" id="resumen-container">
+
+      <div class="resumen-box">
+        <h2>Resumen del pedido</h2>
+
+        <div class="resumen-row">
+          <span>Subtotal</span>
+          <span id="subtotal-label">L 0.00</span>
+        </div>
+
+        <div class="resumen-row">
+          <span>Envío</span>
+          <span>L 0.00</span>
+        </div>
+
+        <div class="resumen-row resumen-total">
+          <span>Total a pagar</span>
+          <span id="total-label">L 0.00</span>
+        </div>
+
+        <button id="proceder-btn" class="btn proceder">
+          Proceder al pago
+        </button>
+      </div>
+
+      <div id="snackbar-login" class="snackbar hidden">
+        Necesitas iniciar sesión para continuar con tu pedido.
+      </div>
+
+    </div>
+  </div>
+</main>
 
 <!-- Loader -->
 <div id="page-loader" class="page-loader hidden">
-    <div class="loader-circle"></div>
+  <div class="loader-circle"></div>
 </div>
 
-
 <!-- =====================================================
-     JS DEL MENÚ FLOTANTE
-====================================================== -->
-<script>
-  const btnHeaderUser = document.getElementById('btn-header-user');
-  const userDrawer    = document.getElementById('user-drawer');
-  const userScrim     = document.getElementById('user-scrim');
-  const avatarHeader  = document.getElementById('avatar-user');
-  const avatarDrawer  = document.getElementById('avatar-user-drawer');
-
-  // Copiar imagen del avatar al drawer (por si tu JS cambia el src)
-  if (avatarHeader && avatarDrawer) {
-    avatarDrawer.src = avatarHeader.src;
-  }
-
-  function openUserDrawer() {
-    userDrawer.classList.add('open');
-    userScrim.classList.add('open');
-    userDrawer.setAttribute('aria-hidden', 'false');
-  }
-
-  function closeUserDrawer() {
-    userDrawer.classList.remove('open');
-    userScrim.classList.remove('open');
-    userDrawer.setAttribute('aria-hidden', 'true');
-  }
-
-  if (btnHeaderUser) {
-    btnHeaderUser.addEventListener('click', () => {
-      const isOpen = userDrawer.classList.contains('open');
-      isOpen ? closeUserDrawer() : openUserDrawer();
-    });
-  }
-
-  userScrim.addEventListener('click', closeUserDrawer);
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeUserDrawer();
-  });
-</script>
-
-<!-- =====================================================
-     SCRIPTS EXISTENTES
+     SCRIPTS EXISTENTES (solo referencias, sin JS inline nuevo)
 ====================================================== -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase-client-core.js"></script>
