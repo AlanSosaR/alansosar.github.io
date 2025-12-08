@@ -1,6 +1,6 @@
 /* ============================================================
    MAIN.JS — Café Cortero
-   VERSIÓN OFICIAL 100% CORREGIDA — SIN CONTROL DE SESIÓN AQUÍ
+   VERSIÓN OFICIAL 100% CORREGIDA — MENÚ MATERIAL 3 ÚNICO
    ============================================================ */
 
 /* ===================== FUNCIÓN SAFE ===================== */
@@ -51,77 +51,78 @@ function addToCart(product) {
 
 document.addEventListener("DOMContentLoaded", () => {
 
-  /* Drawer móvil (menú principal tipo Amazon) */
-  const menuToggle = safe("menu-toggle");
-  const drawer = safe("drawer");
-
-  if (menuToggle && drawer) {
-    menuToggle.addEventListener("click", () => {
-      drawer.classList.toggle("open");
-    });
-
-    document.querySelectorAll(".drawer-links a").forEach((link) => {
-      link.addEventListener("click", () => drawer.classList.remove("open"));
-    });
-  }
-
   /* ============================================================
-     NUEVO MENÚ FLOTANTE DE USUARIO — MATERIAL 3
-     (avatar escritorio + scrim + user-drawer)
+     MENÚ MATERIAL 3 ÚNICO (PC + MÓVIL)
+     - Se abre con:
+       • Avatar (#btn-header-user) en escritorio
+       • Hamburguesa (#menu-toggle) en móvil
      ============================================================ */
-  // ⚠️ Aquí cambiamos a clases, no IDs
-  const userDrawer = document.querySelector(".user-drawer");
-  const userScrim  = document.querySelector(".user-scrim");
-  const avatarBtn  = document.querySelector(".header-avatar-button"); // botón que envuelve el avatar
+
+  const userDrawer = safe("user-drawer");
+  const userScrim  = safe("user-scrim");
+  const avatarBtn  = safe("btn-header-user");
+  const menuToggle = safe("menu-toggle");
+
+  function openUserDrawer() {
+    if (userDrawer) userDrawer.classList.add("open");
+    if (userScrim)  userScrim.classList.add("open");
+  }
 
   function closeUserDrawer() {
     if (userDrawer) userDrawer.classList.remove("open");
     if (userScrim)  userScrim.classList.remove("open");
   }
 
-  if (userDrawer && userScrim && avatarBtn) {
-    // Abrir / cerrar al pulsar el avatar
-    avatarBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      const isOpen = userDrawer.classList.toggle("open");
-      if (isOpen) {
-        userScrim.classList.add("open");
-      } else {
-        userScrim.classList.remove("open");
-      }
-    });
+  if (userDrawer && userScrim) {
+    // Avatar escritorio
+    if (avatarBtn) {
+      avatarBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (userDrawer.classList.contains("open")) {
+          closeUserDrawer();
+        } else {
+          openUserDrawer();
+        }
+      });
+    }
+
+    // Hamburguesa móvil
+    if (menuToggle) {
+      menuToggle.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (userDrawer.classList.contains("open")) {
+          closeUserDrawer();
+        } else {
+          openUserDrawer();
+        }
+      });
+    }
 
     // Cerrar al tocar el scrim
     userScrim.addEventListener("click", () => {
       closeUserDrawer();
     });
 
-    // Cerrar al hacer click fuera del menú y fuera del avatar
+    // Cerrar al hacer click fuera del menú
     document.addEventListener("click", (e) => {
-      if (
-        !userDrawer.contains(e.target) &&
-        !avatarBtn.contains(e.target)
-      ) {
+      const clickInsideDrawer = userDrawer.contains(e.target);
+      const clickOnAvatar = avatarBtn && (e.target === avatarBtn || avatarBtn.contains(e.target));
+      const clickOnMenuToggle = menuToggle && (e.target === menuToggle || menuToggle.contains(e.target));
+
+      if (!clickInsideDrawer && !clickOnAvatar && !clickOnMenuToggle) {
         closeUserDrawer();
       }
     });
 
-    // Cerrar también al cambiar tamaño de ventana
+    // Cerrar al cambiar tamaño de ventana (por si rotas o pasas a desktop)
     window.addEventListener("resize", () => {
       closeUserDrawer();
     });
   }
 
   /* ============================================================
-     FIX: Cerrar drawer al cambiar tamaño de pantalla
-     (evita que se quede pegado en modo móvil del navegador)
+     RESTO DE LA LÓGICA (SIN CAMBIOS)
      ============================================================ */
-  window.addEventListener("resize", () => {
-    const drawer = safe("drawer");
-    if (drawer && drawer.classList.contains("open")) {
-      drawer.classList.remove("open");
-    }
-  });
 
   /* Hero carousel */
   const heroImgs = document.querySelectorAll(".hero-carousel img");
