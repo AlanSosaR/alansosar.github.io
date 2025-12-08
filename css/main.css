@@ -280,14 +280,10 @@ body {
   }
 }
 
-/* ============================================================
-   MENÚ FLOTANTE MATERIAL 3 — NUEVO (PC + MÓVIL)
-   Basado en carrito pero adaptado:
-   - Fondo blanco
-   - Líneas verdes
-   - Iconos verdes
-   - Letras café
-============================================================ */
+/* =====================================================
+   MENÚ FLOTANTE MATERIAL 3 — ÍCONOS
+   (MISMO DISEÑO QUE CARRITO)
+===================================================== */
 
 /* Íconos Material */
 .material-symbols-outlined {
@@ -300,7 +296,7 @@ body {
   line-height: 1;
 }
 
-/* SCRIM (fondo oscurecido) */
+/* SCRIM (Fondo oscurecido) */
 .user-scrim {
   position: fixed;
   inset: 0;
@@ -315,28 +311,26 @@ body {
   pointer-events: auto;
 }
 
-/* DRAWER flotante tipo Google Store (Material 3 Expressive)
-   – mismo comportamiento que carrito, pero con colores del index */
+/* DRAWER flotante — EXACTO AL DE CARRITO */
 .user-drawer {
   position: fixed;
-  top: 80px; /* debajo del header fijo */
+  top: 80px; /* debajo del header */
   right: 16px;
   width: min(360px, calc(100% - 24px));
-
-  background: var(--blanco);
-  color: var(--marron);
-
+  background: #16181a;      /* mismo fondo oscuro */
+  color: #ffffff;
   border-radius: 24px;
   box-shadow:
-    0 18px 40px rgba(0, 0, 0, 0.18),
-    0 0 0 1px rgba(0, 0, 0, 0.03);
-
+    0 18px 40px rgba(0, 0, 0, 0.75),
+    0 0 0 1px rgba(255, 255, 255, 0.04);
   overflow: hidden;
+
   transform: translateX(120%);
   opacity: 0;
   transition:
     transform 0.25s cubic-bezier(0.2, 0, 0, 1),
     opacity 0.2s ease-out;
+
   z-index: 999;
 }
 .user-drawer.open {
@@ -353,7 +347,7 @@ body {
   }
 }
 
-/* Encabezado con perfil (logueado) */
+/* ENCABEZADO DEL MENÚ (perfil logueado) */
 .user-drawer-header {
   display: flex;
   align-items: center;
@@ -361,7 +355,7 @@ body {
   padding: 16px 18px 12px;
 }
 
-/* Bloque de perfil clicable */
+/* Enlace clicable que envuelve avatar + textos + flecha */
 .user-drawer-profile-link {
   text-decoration: none;
   color: inherit;
@@ -371,56 +365,54 @@ body {
   align-items: center;
 }
 
+/* Efecto hover igual al carrito */
 .user-drawer-profile-link:hover {
-  background: rgba(51, 103, 59, 0.06); /* verde muy suave */
+  background: rgba(255, 255, 255, 0.06);
 }
 
+/* Avatar */
 .user-drawer-avatar {
   width: 52px;
   height: 52px;
   border-radius: 18px;
   overflow: hidden;
   flex-shrink: 0;
-  background: #f2f2f2;
+  background: #555;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-
 .user-drawer-avatar img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
+/* Textos del perfil */
 .user-drawer-profile-texts {
   flex: 1;
   display: flex;
   flex-direction: column;
 }
-
 .user-drawer-name {
   margin: 0;
   font-size: 15px;
   font-weight: 600;
-  color: var(--marron);
 }
-
 .user-drawer-email {
   margin: 2px 0 0;
   font-size: 13px;
   opacity: 0.7;
-  color: var(--marron);
 }
 
-/* Flecha hacia perfil – VERDE */
+/* Flecha a la derecha */
 .user-drawer-arrow {
   margin-left: auto;
-  color: var(--verde);
+  color: rgba(255, 255, 255, 0.6);
   font-size: 22px;
 }
 
-/* Separadores en verde */
+/* SEPARADORES — Verde fuerte (igual carrito) */
 .user-drawer-divider {
   border: none !important;
   height: 1.6px !important;
@@ -429,7 +421,7 @@ body {
   opacity: 1 !important;
 }
 
-/* Lista de items del menú */
+/* ITEMS DEL MENÚ (logueado y sin loguear) */
 .user-drawer-nav {
   display: flex;
   flex-direction: column;
@@ -447,36 +439,31 @@ body {
   gap: 16px;
 
   font-size: 15px;
-  color: var(--marron);
-
+  color: #ffffff;           /* textos en blanco */
   text-decoration: none;
   cursor: pointer;
   text-align: left;
 
-  transition: background 0.2s ease, color 0.2s ease;
+  transition: background 0.2s ease;
 }
-
 .user-drawer-item:hover {
-  background: rgba(51, 103, 59, 0.06); /* fondo verde muy suave */
+  background: rgba(255, 255, 255, 0.06);
 }
 
-/* Icono de cada item: en verde */
 .user-drawer-item-icon {
   width: 24px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  color: var(--verde);
 }
 
-/* Cerrar sesión en rojo */
+/* Cerrar sesión en rojo (igual carrito) */
 .user-drawer-item.logout {
   color: #ff4b4b;
   font-weight: 500;
   margin-top: 4px;
 }
-
 .user-drawer-item.logout .material-symbols-outlined {
   color: #ff4b4b;
 }
@@ -736,6 +723,7 @@ body {
 }
 
 /* === CARRUSEL DE PRODUCTOS === */
+/* (ESTOS estilos se mantienen exactamente como estaban para no romperlo) */
 .related {
   max-width: 1100px;
   margin: 0 auto 4rem;
@@ -773,11 +761,11 @@ body {
 }
 
 .similar-card {
-  flex: 0 0 190px;
+  flex: 0 0 190px;                  /* 🔹 un poco más ancha */
   background: #fff;
-  border-radius: 18px;
+  border-radius: 18px;              /* 🔹 igual que las tarjetas del sitio */
   box-shadow: var(--sombra);
-  padding: 1.5rem 1rem;
+  padding: 1.5rem 1rem;             /* 🔹 más espacio interno */
   scroll-snap-align: start;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
@@ -795,7 +783,7 @@ body {
   margin-bottom: 0.6rem;
 }
 
-/* Tarjeta seleccionada */
+/* === Tarjeta seleccionada — evita que se corte arriba === */
 .similar-card.active-card {
   transform: translateY(-6px);
   box-shadow: 0 6px 18px rgba(51, 103, 59, 0.25);
@@ -829,7 +817,7 @@ body {
   cursor: pointer;
 }
 
-/* Flechas SOLO escritorio */
+/* Flechas SOLO escritorio (sin cambios) */
 .carousel-prev, .carousel-next {
   position: absolute;
   top: 50%;
@@ -860,6 +848,7 @@ body {
 }
 
 /* === SOBRE NOSOTROS === */
+/* Usamos las alturas que pediste: escritorio 560, tablet 420, móvil 360 */
 .about {
   max-width: 1100px;
   margin: 4rem auto;
@@ -870,7 +859,10 @@ body {
   padding: 0 1rem;
 }
 
-/* Tipografía estilo Apple en About */
+/* ============================================================
+   =======  TIPOGRAFÍA PREMIUM ESTILO APPLE PARA ABOUT  =======
+   ============================================================ */
+
 .about-text,
 .about-text p,
 .about-text h2,
@@ -879,24 +871,28 @@ body {
 .about-text * {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
                Helvetica, Arial, sans-serif !important;
-  font-weight: 350;
+  font-weight: 350; /* Estilo Apple: delgado pero legible */
   line-height: 1.45;
-  letter-spacing: -0.015em;
-  color: #512615;
+  letter-spacing: -0.015em; /* microajuste Apple */
+  color: #512615; /* mantienes tu marrón premium */
 }
 
+/* Título estilo Apple */
 .about-text h2 {
-  font-weight: 600;
+  font-weight: 600;      /* Apple usa 600 para títulos */
   font-size: 2.1rem;
   margin-bottom: 1rem;
   letter-spacing: -0.02em;
 }
 
+/* Párrafos estilo Apple: suaves y limpios */
 .about-text p {
   font-size: 1.28rem;
   font-weight: 350;
   margin-bottom: 1.4rem;
 }
+
+/* Pills se mantienen igual */
 
 .about-pills {
   display: flex;
@@ -913,10 +909,10 @@ body {
   box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
 
-/* Imagen About */
+/* === SOBRE NOSOTROS — Imagen SUPER premium (desktop/tablet) === */
 .about-img img {
   width: 100%;
-  height: 820px;
+  height: 820px;             /* escritorio súper premium */
   object-fit: cover;
   border-radius: 22px;
   box-shadow: 0 25px 60px rgba(0,0,0,0.15);
@@ -928,14 +924,14 @@ body {
   box-shadow: 0 30px 70px rgba(0,0,0,0.20);
 }
 
-/* Tablet */
+/* === Tablet (1200px → 901px) === */
 @media (max-width: 1200px) and (min-width: 901px) {
   .about-img img {
-    height: 620px;
+    height: 620px;           /* tablet premium */
   }
 }
 
-/* Móvil */
+/* === Móvil (<= 900px) — estilo compacto bonito === */
 @media (max-width: 900px) {
 
   .about {
@@ -945,14 +941,16 @@ body {
   }
 
   .about-img img {
-    height: 460px;
+    height: 460px;           /* tamaño compacto bonito */
     border-radius: 18px;
     box-shadow: 0 18px 40px rgba(0,0,0,0.10);
-    object-fit: cover;
+    object-fit: cover;       /* mantiene calidad */
   }
 }
 
-/* === CONTACTO === */
+/* === AJUSTE CONTACTO Y FOOTER === */
+
+/* Centrar completamente el bloque de "Contáctanos" */
 .contacto {
   text-align: center !important;
   margin: 4rem auto !important;
@@ -977,7 +975,8 @@ body {
   max-width: 700px !important;
 }
 
-/* === FOOTER === */
+
+/* === FOOTER CON LOGO AJUSTADO AL TAMAÑO DEL TEXTO === */
 footer {
   background: var(--blanco);
   border-top: 1px solid rgba(0,0,0,0.05);
@@ -987,7 +986,7 @@ footer {
 
 footer p {
   margin: 0;
-  font-size: 0.95rem;
+  font-size: 0.95rem; /* tamaño base del texto */
   color: var(--marron);
   display: inline-flex;
   align-items: center;
@@ -997,17 +996,18 @@ footer p {
   white-space: nowrap;
 }
 
-/* Logo inline en footer */
+/* === LOGO INLINE AJUSTADO (VERSIÓN PREMIUM) === */
 .footer-logo-inline {
   width: 40px !important;
   height: 40px !important;
   object-fit: contain;
   display: inline-block;
   vertical-align: middle;
-  transform: translateY(1px);
+  transform: translateY(1px); /* alineación fina */
   opacity: 0.95;
 }
 
+/* Tamaño especial para pantallas muy pequeñas */
 @media (max-width: 500px) {
   .footer-logo-inline {
     width: 36px !important;
@@ -1016,7 +1016,9 @@ footer p {
   }
 }
 
+
 /* === FAB === */
+/* NO TOCAR: mantengo el FAB igual que antes */
 .fab-container {
   position: fixed;
   bottom: 24px;
@@ -1050,14 +1052,14 @@ footer p {
   gap: 16px;
 }
 
-/* Colores oficiales íconos FAB */
+/* === COLORES OFICIALES PARA ÍCONOS DEL FAB === */
 .fab-options i.fa-whatsapp {
-  color: #25D366 !important;
+  color: #25D366 !important;  /* Verde WhatsApp */
 }
 
 .fab-options i.fa-facebook-f,
 .fab-options i.fa-facebook {
-  color: #1877F2 !important;
+  color: #1877F2 !important;  /* Azul Facebook */
 }
 
 .fab-options a {
@@ -1083,27 +1085,28 @@ footer p {
   transform: translateY(0);
 }
 
-/* Quitar subrayado y puntos en enlaces FAB */
+/* === FIX: quitar subrayado en los enlaces del FAB === */
 .fab-options a,
 .fab-options a i {
   text-decoration: none !important;
 }
 
+/* Eliminar pseudo-elementos que generan puntos */
 .fab-options a::after,
 .fab-options a::before {
   display: none !important;
   content: none !important;
 }
 
-/* Responsive para producto en móvil */
+/* === RESPONSIVE === */
 @media (max-width: 900px) {
   .product-main {
     grid-template-columns: 1fr;
-    margin: 2rem 0.5rem;
+    margin: 2rem 0.5rem; /* ajuste móvil solicitado para la tarjeta producto */
   }
 }
 
-/* Botón split del producto */
+/* === BOTÓN SPLIT (ajustado y visualmente más balanceado) === */
 .product-split {
   display: inline-flex;
   align-items: center;
@@ -1119,14 +1122,14 @@ footer p {
   margin-bottom: 1.2rem;
 }
 
-/* Lado precio */
+/* Lado del precio (fijo, no clickeable) */
 .product-split .price-part {
   padding: 0.7rem 1.6rem;
   pointer-events: none;
   user-select: none;
 }
 
-/* Lado carrito */
+/* Lado del carrito (clickeable) */
 .product-split .icon-part {
   background: rgba(255, 255, 255, 0.18);
   padding: 0.7rem 1.3rem;
@@ -1138,27 +1141,32 @@ footer p {
   transition: transform 0.12s ease, background 0.2s ease, box-shadow 0.12s ease;
 }
 
+/* 🔹 Efecto hover (ligeramente más claro) */
 .product-split .icon-part:hover {
   background: rgba(255, 255, 255, 0.3);
 }
 
+/* 🔹 Al presionar (efecto hacia abajo más físico) */
 .product-split .icon-part:active {
   transform: translateY(2px);
   box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.35);
 }
 
+/* Ícono del carrito */
 .product-split .icon-part i {
   font-size: 1rem;
   color: #fff;
 }
 
+/* 🔹 En pantallas pequeñas: ocupa el ancho justo y centrado */
 @media (max-width: 600px) {
   .product-split {
     transform: scale(1.02);
   }
 }
 
-/* Hero carousel animación (refuerzo) */
+
+/* ----- Hero Carousel (refuerzo) ----- */
 .hero-carousel img {
   opacity: 0;
   position: absolute;
@@ -1174,7 +1182,7 @@ footer p {
   opacity: 1;
 }
 
-/* Carrito – vibración visual del ícono (si se usa #cart-btn.animate) */
+/* ----- Carrito – animación badge (refuerzo) ----- */
 .cart-count.animate {
   animation: pulseCart 0.5s ease;
 }
@@ -1185,6 +1193,7 @@ footer p {
   100% { transform: scale(1); }
 }
 
+/* Carrito – vibración visual del ícono */
 #cart-btn.animate {
   animation: cartShake 0.6s ease;
 }
@@ -1197,7 +1206,7 @@ footer p {
   100% { transform: rotate(0deg); }
 }
 
-/* Similar card activa (refuerzo) */
+/* ----- Similar cards – activo (refuerzo) ----- */
 .similar-card.active-card {
   border: 2px solid var(--verde);
   box-shadow: 0 4px 12px rgba(0,0,0,0.12);
