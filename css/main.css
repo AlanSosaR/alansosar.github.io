@@ -311,13 +311,16 @@ body {
   pointer-events: auto;
 }
 
-/* DRAWER flotante — EXACTO AL DE CARRITO */
+/* DRAWER flotante — AJUSTADO PARA QUE QUEDE IGUAL QUE EN CARRITO */
 .user-drawer {
   position: fixed;
-  top: 80px; /* debajo del header */
+  top: 88px;              /* un poco más abajo del header */
+  left: 16px;
   right: 16px;
-  width: min(360px, calc(100% - 24px));
-  background: #16181a;      /* mismo fondo oscuro */
+  max-width: 380px;       /* ancho máximo similar al carrito */
+  margin: 0 auto;
+
+  background: #16181a;    /* mismo fondo oscuro */
   color: #ffffff;
   border-radius: 24px;
   box-shadow:
@@ -325,7 +328,7 @@ body {
     0 0 0 1px rgba(255, 255, 255, 0.04);
   overflow: hidden;
 
-  transform: translateX(120%);
+  transform: translateY(-10px) translateX(0);
   opacity: 0;
   transition:
     transform 0.25s cubic-bezier(0.2, 0, 0, 1),
@@ -334,7 +337,7 @@ body {
   z-index: 999;
 }
 .user-drawer.open {
-  transform: translateX(0);
+  transform: translateY(0) translateX(0);
   opacity: 1;
 }
 
@@ -343,7 +346,7 @@ body {
   .user-drawer {
     left: 12px;
     right: 12px;
-    width: auto;
+    max-width: none;
   }
 }
 
@@ -351,8 +354,8 @@ body {
 .user-drawer-header {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 16px 18px 12px;
+  gap: 14px;
+  padding: 18px 20px 14px;
 }
 
 /* Enlace clicable que envuelve avatar + textos + flecha */
@@ -416,7 +419,7 @@ body {
 .user-drawer-divider {
   border: none !important;
   height: 1.6px !important;
-  margin: 6px 0 10px !important;
+  margin: 8px 0 12px !important;   /* sin márgenes laterales, ocupa todo el ancho interno */
   background: var(--verde) !important;
   opacity: 1 !important;
 }
@@ -425,18 +428,18 @@ body {
 .user-drawer-nav {
   display: flex;
   flex-direction: column;
-  padding: 4px 0 8px;
+  padding: 4px 0 10px;
 }
 
 .user-drawer-item {
   width: 100%;
   border: none;
   background: none;
-  padding: 10px 18px;
+  padding: 12px 20px;
 
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 18px;
 
   font-size: 15px;
   color: #ffffff;           /* textos en blanco */
@@ -545,7 +548,7 @@ body {
   overflow: hidden;
 }
 
-.hero-carousel img {
+hero-carousel img {
   position: absolute;
   top: 0;
   left: 0;
