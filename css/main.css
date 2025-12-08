@@ -85,6 +85,7 @@ body {
 .contact-link {
   margin-right: 1.5rem;
 }
+
 /* ============================================================
    MENÚ PREMIUM LOGUEADO – DESKTOP
    ============================================================ */
@@ -267,7 +268,6 @@ body {
   }
 }
 
-
 @media (min-width: 768px) {
   .cart-btn:hover {
     transform: scale(1.05);
@@ -299,10 +299,7 @@ body {
     font-size: 0.70rem !important;
   }
 }
-/* ⛔ Sin animación en móvil */
-@media (max-width: 767px) {
-   ...
-}
+
 /* 🚫 Sin animación en móvil */
 @media (max-width: 767px) {
   .cart-btn {
@@ -426,6 +423,11 @@ body {
 
 .drawer-hello {
   font-size: 1.12rem;
+  font-weight: 600;
+  color: var(--marron);
+  margin-bottom: 1.4rem;
+}
+
 /* =====================================================
    MENÚ FLOTANTE MATERIAL 3 — ÍCONOS
 ===================================================== */
@@ -1054,6 +1056,7 @@ body {
   text-align: left;
   margin-bottom: 2.5rem; /* 🟢 espacio extra entre el producto y el carrusel */
 }
+
 /* === SELECTOR DE CANTIDAD (Material 3 – Premium, minimalista) === */
 .quantity-container {
   margin-top: 1.4rem;
@@ -1187,6 +1190,7 @@ body {
   border-radius: 18px !important;
   display: block;
 }
+
 /* === CARRUSEL DE PRODUCTOS === */
 /* (ESTOS estilos se mantienen exactamente como estaban para no romperlo) */
 .related {
@@ -1256,6 +1260,7 @@ body {
   border-radius: 12px;
   margin-bottom: 0.6rem;
 }
+
 /* === Tarjeta seleccionada — evita que se corte arriba === */
 .similar-card.active-card {
   transform: translateY(-6px);
@@ -1524,6 +1529,7 @@ footer p {
   align-items: center;
   gap: 16px;
 }
+
 /* === COLORES OFICIALES PARA ÍCONOS DEL FAB === */
 .fab-options i.fa-whatsapp {
   color: #25D366 !important;  /* Verde WhatsApp */
@@ -1533,6 +1539,7 @@ footer p {
 .fab-options i.fa-facebook {
   color: #1877F2 !important;  /* Azul Facebook */
 }
+
 .fab-options a {
   background: #fff;
   color: var(--marron);
@@ -1555,6 +1562,7 @@ footer p {
   pointer-events: auto;
   transform: translateY(0);
 }
+
 /* === FIX: quitar subrayado en los enlaces del FAB === */
 .fab-options a,
 .fab-options a i {
@@ -1567,6 +1575,7 @@ footer p {
   display: none !important;
   content: none !important;
 }
+
 /* === RESPONSIVE === */
 @media (max-width: 900px) {
   .menu-toggle {
