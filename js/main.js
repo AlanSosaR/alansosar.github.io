@@ -1,7 +1,7 @@
 /* ============================================================
    MAIN.JS — Café Cortero
-   VERSIÓN OFICIAL 100% CORREGIDA
-============================================================ */
+   VERSIÓN OFICIAL 100% CORREGIDA — SIN CONTROL DE SESIÓN AQUÍ
+   ============================================================ */
 
 /* ===================== FUNCIÓN SAFE ===================== */
 function safe(id) {
@@ -51,87 +51,32 @@ function addToCart(product) {
 
 document.addEventListener("DOMContentLoaded", () => {
 
-  /* ============================================================
-     NUEVO MENÚ FLOTANTE (ESTILO CARRITO) + COMPATIBLE
-     ============================================================ */
+  /* Drawer móvil */
+  const menuToggle = safe("menu-toggle");
+  const drawer = safe("drawer");
 
-  const menuToggle    = safe("menu-toggle");      // botón hamburguesa (móvil)
-  const legacyDrawer  = safe("drawer");          // drawer blanco clásico (backup)
-  const userDrawer    = safe("user-drawer");     // menú flotante nuevo oscuro
-  const userScrim     = safe("user-scrim");      // fondo oscuro
-  const btnHeaderUser = safe("btn-header-user"); // avatar del header
-
-  function toggleUserDrawer(forceOpen) {
-    if (!userDrawer || !userScrim) return;
-
-    const isOpen = userDrawer.classList.contains("open");
-    const shouldOpen =
-      typeof forceOpen === "boolean" ? forceOpen : !isOpen;
-
-    if (shouldOpen) {
-      userDrawer.classList.add("open");
-      userScrim.classList.add("open");
-    } else {
-      userDrawer.classList.remove("open");
-      userScrim.classList.remove("open");
-    }
-  }
-
-  // Avatar → menú flotante oscuro (PC y móvil)
-  if (btnHeaderUser && userDrawer && userScrim) {
-    btnHeaderUser.addEventListener("click", () => {
-      toggleUserDrawer();
-    });
-  }
-
-  // 🔹 Hamburguesa → abre el NUEVO menú flotante
-  //    (si por alguna razón no existe user-drawer, cae al drawer blanco)
-  if (menuToggle) {
+  if (menuToggle && drawer) {
     menuToggle.addEventListener("click", () => {
-      if (userDrawer && userScrim) {
-        toggleUserDrawer();
-      } else if (legacyDrawer) {
-        legacyDrawer.classList.toggle("open");
-      }
+      drawer.classList.toggle("open");
     });
-  }
 
-  // Cerrar menú flotante al tocar el scrim
-  if (userScrim && userDrawer) {
-    userScrim.addEventListener("click", () => toggleUserDrawer(false));
-  }
-
-  // Cerrar con Escape ambos menús
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") {
-      toggleUserDrawer(false);
-      if (legacyDrawer && legacyDrawer.classList.contains("open")) {
-        legacyDrawer.classList.remove("open");
-      }
-    }
-  });
-
-  // Cerrar drawer blanco al hacer clic en sus links (por si aún se usa)
-  if (legacyDrawer) {
     document.querySelectorAll(".drawer-links a").forEach((link) => {
-      link.addEventListener("click", () => legacyDrawer.classList.remove("open"));
+      link.addEventListener("click", () => drawer.classList.remove("open"));
     });
   }
 
   /* ============================================================
-     FIX: Cerrar menús al cambiar tamaño de pantalla
+     FIX: Cerrar drawer al cambiar tamaño de pantalla
+     (evita que se quede pegado en modo móvil del navegador)
      ============================================================ */
   window.addEventListener("resize", () => {
-    if (legacyDrawer && legacyDrawer.classList.contains("open")) {
-      legacyDrawer.classList.remove("open");
-    }
-    if (userDrawer && userDrawer.classList.contains("open")) {
-      toggleUserDrawer(false);
+    const drawer = safe("drawer");
+    if (drawer && drawer.classList.contains("open")) {
+      drawer.classList.remove("open");
     }
   });
 
-  /* ===================== HERO CAROUSEL ===================== */
-
+  /* Hero carousel */
   const heroImgs = document.querySelectorAll(".hero-carousel img");
   let heroIndex = 0;
 
@@ -148,8 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 8000);
   }
 
-  /* ===================== CARRITO (BOTÓN HEADER) ===================== */
-
+  /* Carrito */
   const cartBtn = safe("cart-btn");
   if (cartBtn) {
     cartBtn.addEventListener("click", () => {
@@ -158,11 +102,10 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   updateCartCount();
 
-  /* ===================== SELECTOR DE CANTIDAD ===================== */
-
+  /* Selector de cantidad */
   const qtyNumber = safe("qty-number");
-  const qtyMinus  = safe("qty-minus");
-  const qtyPlus   = safe("qty-plus");
+  const qtyMinus = safe("qty-minus");
+  const qtyPlus = safe("qty-plus");
 
   if (qtyMinus && qtyNumber)
     qtyMinus.addEventListener("click", () => {
@@ -176,73 +119,75 @@ document.addEventListener("DOMContentLoaded", () => {
       qtyNumber.textContent = n + 1;
     });
 
-  /* ===================== PRODUCTO PRINCIPAL ===================== */
-
+  /* Producto principal */
   const btnMain = safe("product-add");
 
   if (btnMain && qtyNumber) {
     btnMain.addEventListener("click", () => {
-      const nameEl  = safe("product-name");
-      const imgEl   = safe("product-image");
+      const nameEl = safe("product-name");
+      const imgEl = safe("product-image");
       const priceEl = document.querySelector(".price-part");
 
       if (!nameEl || !imgEl || !priceEl) return;
 
-      const qty   = parseInt(qtyNumber.textContent) || 1;
-      const name  = nameEl.textContent.trim();
+      const qty = parseInt(qtyNumber.textContent) || 1;
+      const name = nameEl.textContent.trim();
       const price = parseFloat(priceEl.textContent.replace(/[^\d.-]/g, ""));
-      const img   = imgEl.src;
+      const img = imgEl.src;
 
       addToCart({ name, price, img, qty });
       qtyNumber.textContent = "1";
     });
   }
 
-  /* ===================== CARROUSEL PRODUCTOS SIMILARES ===================== */
-
+  /* Carrusel productos similares */
   const cards = document.querySelectorAll(".similar-card");
 
   if (cards.length > 0) {
     cards.forEach((card) => {
-      const name  = card.dataset.name;
+      const name = card.dataset.name;
       const price = parseFloat(card.dataset.price.replace(/[^\d.-]/g, ""));
-      const img   = card.dataset.img;
+      const img = card.dataset.img;
 
       card.addEventListener("click", () => {
-        cards.forEach((c) => c.classList.remove("active-card"));
-        card.classList.add("active-card");
+        document
+          .querySelectorAll(".similar-card")
+          .forEach((c) => c.classList.remove("active-card"));
 
-        const nameEl  = safe("product-name");
-        const priceEl = document.querySelector(".price-part");
-        const imageEl = safe("product-image");
+        card.addEventListener("click", () => {
+          cards.forEach((c) => c.classList.remove("active-card"));
+          card.classList.add("active-card");
 
-        if (!nameEl || !priceEl || !imageEl) return;
+          const nameEl = safe("product-name");
+          const priceEl = document.querySelector(".price-part");
+          const imageEl = safe("product-image");
 
-        nameEl.textContent  = name;
-        priceEl.textContent = `L ${price}`;
+          if (!nameEl || !priceEl || !imageEl) return;
 
-        imageEl.src = img;
-        imageEl.style.opacity = "0";
-        setTimeout(() => {
-          imageEl.style.transition = "opacity 0.4s ease";
-          imageEl.style.opacity = "1";
-        }, 80);
+          nameEl.textContent = name;
+          priceEl.textContent = `L ${price}`;
 
-        const sec = safe("productos");
-        if (sec) {
-          const offset =
-            sec.getBoundingClientRect().top + window.scrollY - 90;
-          window.scrollTo({ top: offset, behavior: "smooth" });
-        }
+          imageEl.src = img;
+          imageEl.style.opacity = "0";
+          setTimeout(() => {
+            imageEl.style.transition = "opacity 0.4s ease";
+            imageEl.style.opacity = "1";
+          }, 80);
+
+          const sec = safe("productos");
+          if (sec) {
+            const offset = sec.getBoundingClientRect().top + window.scrollY - 90;
+            window.scrollTo({ top: offset, behavior: "smooth" });
+          }
+        });
       });
     });
   }
 
-  /* ===================== CARRUSEL HORIZONTAL ===================== */
-
+  /* Carrusel horizontal */
   const carousel = document.querySelector(".similar-list");
-  const prevBtn  = document.querySelector(".carousel-prev");
-  const nextBtn  = document.querySelector(".carousel-next");
+  const prevBtn = document.querySelector(".carousel-prev");
+  const nextBtn = document.querySelector(".carousel-next");
 
   if (carousel && prevBtn && nextBtn) {
     prevBtn.addEventListener("click", () =>
@@ -253,9 +198,8 @@ document.addEventListener("DOMContentLoaded", () => {
     );
   }
 
-  /* ===================== FAB ===================== */
-
-  const fabMain      = safe("fab-main");
+  /* FAB — CORREGIDO */
+  const fabMain = safe("fab-main");
   const fabContainer = safe("fab");
 
   if (fabMain && fabContainer) {
