@@ -51,7 +51,7 @@ function addToCart(product) {
 
 document.addEventListener("DOMContentLoaded", () => {
 
-  /* Drawer móvil */
+  /* Drawer móvil (menú principal tipo Amazon) */
   const menuToggle = safe("menu-toggle");
   const drawer = safe("drawer");
 
@@ -62,6 +62,49 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.querySelectorAll(".drawer-links a").forEach((link) => {
       link.addEventListener("click", () => drawer.classList.remove("open"));
+    });
+  }
+
+  /* ============================================================
+     NUEVO MENÚ FLOTANTE DE USUARIO — MATERIAL 3
+     (avatar escritorio + scrim + user-drawer)
+     ============================================================ */
+  const userDrawer = safe("user-drawer");
+  const userScrim  = safe("user-scrim");
+  const avatarBtn  = safe("header-avatar-button"); // botón que envuelve el avatar
+
+  function closeUserDrawer() {
+    if (userDrawer) userDrawer.classList.remove("open");
+    if (userScrim)  userScrim.classList.remove("open");
+  }
+
+  if (userDrawer && userScrim && avatarBtn) {
+    // Abrir / cerrar al pulsar el avatar
+    avatarBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const isOpen = userDrawer.classList.toggle("open");
+      if (isOpen) {
+        userScrim.classList.add("open");
+      } else {
+        userScrim.classList.remove("open");
+      }
+    });
+
+    // Cerrar al tocar el scrim
+    userScrim.addEventListener("click", () => {
+      closeUserDrawer();
+    });
+
+    // Cerrar al hacer click fuera del menú
+    document.addEventListener("click", (e) => {
+      if (!userDrawer.contains(e.target) && e.target !== avatarBtn) {
+        closeUserDrawer();
+      }
+    });
+
+    // Opcional: cerrar también al cambiar tamaño de ventana
+    window.addEventListener("resize", () => {
+      closeUserDrawer();
     });
   }
 
