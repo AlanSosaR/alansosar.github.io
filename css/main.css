@@ -426,27 +426,478 @@ body {
 
 .drawer-hello {
   font-size: 1.12rem;
+/* =====================================================
+   MENÚ FLOTANTE MATERIAL 3 — ÍCONOS
+===================================================== */
+.material-symbols-outlined {
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
+  font-size: 24px;
+  line-height: 1;
+}
+
+/* =====================================================
+   SCRIM (Fondo oscurecido)
+===================================================== */
+.user-scrim {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease-out;
+  z-index: 998;
+}
+.user-scrim.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* =====================================================
+   DRAWER flotante — Material 3 Expressive
+   (igual que carrito)
+===================================================== */
+.user-drawer {
+  position: fixed;
+  top: 80px; /* debajo del header */
+  right: 16px;
+  width: min(360px, calc(100% - 24px));
+  background: #16181a;
+  color: #ffffff;
+  border-radius: 24px;
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.75),
+    0 0 0 1px rgba(255, 255, 255, 0.04);
+  overflow: hidden;
+
+  transform: translateX(120%);
+  opacity: 0;
+  transition:
+    transform 0.25s cubic-bezier(0.2, 0, 0, 1),
+    opacity 0.2s ease-out;
+
+  z-index: 999;
+}
+.user-drawer.open {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+/* Versión responsive (móvil ocupa casi todo el ancho) */
+@media (max-width: 600px) {
+  .user-drawer {
+    left: 12px;
+    right: 12px;
+    width: auto;
+  }
+}
+
+/* =====================================================
+   ENCABEZADO DEL MENÚ (perfil logueado)
+===================================================== */
+.user-drawer-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 18px 12px;
+}
+
+.user-drawer-profile-link {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  display: flex;
+  width: 100%;
+  align-items: center;
+}
+
+.user-drawer-profile-link:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.user-drawer-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 18px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #555;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-drawer-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.user-drawer-profile-texts {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.user-drawer-name {
+  margin: 0;
+  font-size: 15px;
   font-weight: 600;
+}
+
+.user-drawer-email {
+  margin: 2px 0 0;
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+.user-drawer-arrow {
+  margin-left: auto;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 22px;
+}
+
+/* =====================================================
+   SEPARADORES — Verde fuerte
+===================================================== */
+.user-drawer-divider {
+  border: none !important;
+  height: 1.6px !important;
+  margin: 6px 0 10px !important;
+  background: var(--verde) !important;
+  opacity: 1 !important;
+}
+
+/* =====================================================
+   ITEMS DEL MENÚ (logueado y sin loguear)
+===================================================== */
+.user-drawer-nav {
+  display: flex;
+  flex-direction: column;
+  padding: 4px 0 8px;
+}
+
+.user-drawer-item {
+  width: 100%;
+  border: none;
+  background: none;
+  padding: 10px 18px;
+
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  font-size: 15px;
+  color: #ffffff;
+
+  text-decoration: none;
+  cursor: pointer;
+  text-align: left;
+
+  transition: background 0.2s ease;
+}
+
+.user-drawer-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.user-drawer-item-icon {
+  width: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Cerrar sesión */
+.user-drawer-item.logout {
+  color: #ff4b4b;
+  font-weight: 500;
+  margin-top: 4px;
+}
+
+.user-drawer-item.logout .material-symbols-outlined {
+  color: #ff4b4b;
+}
+
+/* ============================================================
+   HEADER + MENÚ PRINCIPAL (PC + MÓVIL) — INDEX
+============================================================ */
+
+.header {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background: var(--blanco);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  z-index: 1000;
+}
+
+.header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0.8rem 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+
+/* Logo */
+.logo img {
+  height: 60px;
+  display: block;
+}
+
+/* Desktop: solo se muestra el logo cuando >= 901px */
+.logo.desktop-only {
+  display: none;
+}
+@media (min-width: 901px) {
+  .logo.desktop-only {
+    display: block;
+  }
+}
+
+/* Botón hamburguesa (móvil) */
+.menu-toggle {
+  background: none;
+  border: none;
   color: var(--marron);
-  margin-bottom: 1.4rem;
+  font-size: 1.6rem;
+  display: none;
+  cursor: pointer;
 }
 
-/* Enlaces del menú logueado */
-#drawer-links-logged a {
-  border-radius: 12px;
+/* Navegación escritorio */
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
 }
 
-#drawer-links-logged a.logout {
-  color: #b30000 !important;
+.nav-links a {
+  text-decoration: none;
+  color: var(--marron);
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.nav-links a:hover {
+  color: var(--verde);
+}
+
+.contact-link {
+  margin-right: 1.5rem;
+}
+
+/* ============================================================
+   PERFIL ESCRITORIO (MENÚ LOGUEADO)
+============================================================ */
+
+/* Foto perfil redonda */
+.profile-photo-round {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+  border: none !important;
+  outline: none !important;
+  box-shadow:
+    0 4px 12px rgba(0,0,0,0.12),
+    0 2px 6px rgba(0,0,0,0.08);
+  transition: transform 0.2s ease;
+}
+
+.profile-photo-round:hover {
+  transform: scale(1.05);
+}
+
+/* Contenedor del perfil */
+.profile-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+/* Botón envolvente del avatar (para poder hacer click) */
+.header-avatar-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Submenú flotante antiguo (si aún se usa en alguna página) */
+.profile-menu {
+  position: absolute;
+  top: 58px;
+  right: 0;
+  width: 220px;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 1rem 0.8rem;
+  box-shadow: 0 10px 26px rgba(0,0,0,0.15);
+  display: none;
+  flex-direction: column;
+  animation: fadeDown 0.22s ease-out;
+  z-index: 3000;
+}
+
+.profile-menu a {
+  padding: 0.55rem 0.4rem;
+  font-size: 0.95rem;
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--marron);
+  transition: background 0.2s ease;
+}
+
+.profile-menu a:hover {
+  background: rgba(51, 103, 59, 0.12);
+}
+
+.profile-menu .logout {
+  color: #b30000;
   font-weight: 600;
 }
 
-/* === AJUSTE: menú alineado al carrito en escritorio === */
+.profile-hello {
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 0 0.4rem 0.5rem;
+  color: var(--marron);
+}
+
+@keyframes fadeDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.profile-wrapper.active .profile-menu {
+  display: flex;
+}
+
+.profile-menu.open {
+  display: flex !important;
+}
+
+/* ============================================================
+   BOTÓN CARRITO EN EL HEADER
+============================================================ */
+
+.cart-btn {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(51, 103, 59, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.cart-btn i {
+  color: var(--verde);
+  font-size: 1.3rem;
+}
+
+.cart-count {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: #d72638;
+  color: #fff;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  font-size: 0.7rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Hover solo en PC */
+@media (min-width: 768px) {
+  .cart-btn:hover {
+    transform: scale(1.05);
+  }
+}
+
+/* Ajuste del carrito SOLO en móvil */
+@media (max-width: 767px) {
+  .cart-btn {
+    width: 40px;
+    height: 40px;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .cart-count {
+    top: -4px;
+    right: -4px;
+    width: 16px;
+    height: 16px;
+    font-size: 0.65rem;
+  }
+}
+
+/* Fix: carrito siempre dentro de la barra en móvil */
+@media (max-width: 768px) {
+  .cart-btn {
+    position: absolute !important;
+    top: 10px !important;
+    right: 16px !important;
+    width: 44px !important;
+    height: 44px !important;
+    transform: none !important;
+    transition: none !important;
+    z-index: 2000;
+  }
+
+  .cart-count {
+    position: absolute !important;
+    top: -6px !important;
+    right: -2px !important;
+    width: 18px !important;
+    height: 18px !important;
+    font-size: 0.70rem !important;
+  }
+}
+
+/* Rebote badge del carrito */
+@keyframes badgeBounce {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.18); }
+  60%  { transform: scale(0.92); }
+  100% { transform: scale(1); }
+}
+
+.cart-count.animate {
+  animation: badgeBounce 0.38s ease-out;
+}
+
+/* ============================================================
+   AJUSTE HEADER Y NAV EN ESCRITORIO
+============================================================ */
+
 @media (min-width: 901px) {
   .header-content {
     display: flex;
     align-items: center;
-    justify-content: space-between; /* logo izq, nav en medio, carrito der */
+    justify-content: space-between;
   }
 
   .nav-links {
@@ -454,11 +905,36 @@ body {
     align-items: center;
     gap: 2rem;
     margin-left: auto;
-    margin-right: 2rem; /* espacio entre "Contacto" y el carrito */
+    margin-right: 2rem;
   }
 
   .cart-btn {
     flex-shrink: 0;
+  }
+}
+
+/* ============================================================
+   RESPONSIVE HEADER – MÓVIL
+============================================================ */
+
+@media (max-width: 900px) {
+  .menu-toggle {
+    display: block;
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .cart-btn {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .nav-links {
+    display: none;
   }
 }
 
