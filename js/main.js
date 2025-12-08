@@ -69,9 +69,10 @@ document.addEventListener("DOMContentLoaded", () => {
      NUEVO MENÚ FLOTANTE DE USUARIO — MATERIAL 3
      (avatar escritorio + scrim + user-drawer)
      ============================================================ */
-  const userDrawer = safe("user-drawer");
-  const userScrim  = safe("user-scrim");
-  const avatarBtn  = safe("header-avatar-button"); // botón que envuelve el avatar
+  // ⚠️ Aquí cambiamos a clases, no IDs
+  const userDrawer = document.querySelector(".user-drawer");
+  const userScrim  = document.querySelector(".user-scrim");
+  const avatarBtn  = document.querySelector(".header-avatar-button"); // botón que envuelve el avatar
 
   function closeUserDrawer() {
     if (userDrawer) userDrawer.classList.remove("open");
@@ -95,14 +96,17 @@ document.addEventListener("DOMContentLoaded", () => {
       closeUserDrawer();
     });
 
-    // Cerrar al hacer click fuera del menú
+    // Cerrar al hacer click fuera del menú y fuera del avatar
     document.addEventListener("click", (e) => {
-      if (!userDrawer.contains(e.target) && e.target !== avatarBtn) {
+      if (
+        !userDrawer.contains(e.target) &&
+        !avatarBtn.contains(e.target)
+      ) {
         closeUserDrawer();
       }
     });
 
-    // Opcional: cerrar también al cambiar tamaño de ventana
+    // Cerrar también al cambiar tamaño de ventana
     window.addEventListener("resize", () => {
       closeUserDrawer();
     });
