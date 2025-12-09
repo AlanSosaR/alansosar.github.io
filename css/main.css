@@ -20,9 +20,11 @@ body {
 
 /* ============================================================
    HEADER UNIFICADO COMO EL DEL CARRITO (PC + MÓVIL)
+   (.header para páginas antiguas, .header-fixed para el header nuevo)
 ============================================================ */
 
-.header {
+.header,
+.header-fixed {
   position: fixed;
   top: 0;
   width: 100%;
@@ -32,6 +34,7 @@ body {
   z-index: 1000;
 }
 
+/* Contenedor interno (para el header viejo que usa .header-content) */
 .header-content {
   max-width: 1200px;
   height: 72px;
@@ -42,21 +45,45 @@ body {
   justify-content: space-between;
 }
 
-/* ================= LOGO ================= */
+/* Layout del header nuevo (header-fixed del carrito) */
+.header-fixed {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.2rem;
+}
 
+/* ================= LOGOS ================= */
+
+/* Logo antiguo (.logo img) */
 .logo img {
   height: 60px;
   display: block;
 }
 
-/* En móvil ocultamos el logo para que no quede detrás del menú */
+/* Logo del header nuevo */
+.header-logo-link {
+  display: flex;
+  align-items: center;
+}
+
+.header-logo {
+  height: 60px;
+  display: block;
+}
+
+/* Ocultamos logos en móvil para que no se queden detrás del menú */
 @media (max-width: 900px) {
   .logo {
     display: none;
   }
+
+  .header-logo-link {
+    display: none;
+  }
 }
 
-/* Desktop logo extra (si lo usas) */
+/* Desktop logo extra (si lo usas con .desktop-only) */
 .logo.desktop-only {
   display: none;
 }
@@ -114,8 +141,10 @@ body {
 
 /* ============================================================
    BOTÓN CARRITO — TAMAÑO CORRECTO EN PC Y MÓVIL
+   (aplica tanto a .cart-btn como al #cart-btn del header nuevo)
 ============================================================ */
 
+#cart-btn,
 .cart-btn {
   position: relative;
   width: 52px;    /* círculo más grande */
@@ -129,11 +158,14 @@ body {
   cursor: pointer;
 }
 
+#cart-btn i,
 .cart-btn i {
   color: var(--verde);
   font-size: 1.7rem;  /* icono más grande */
 }
 
+#cart-btn .cart-count,
+.cart-btn .cart-count,
 .cart-count {
   position: absolute;
   top: -6px;
@@ -151,6 +183,7 @@ body {
 
 /* Colocación del carrito en móvil, SIN cambiar tamaño */
 @media (max-width: 900px) {
+  #cart-btn,
   .cart-btn {
     position: absolute;
     right: 16px;
