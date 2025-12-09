@@ -12,7 +12,6 @@ body {
     "SF Pro Display", "SF Pro Text",
     "Helvetica Neue", Helvetica, Arial,
     sans-serif;
-
   background: var(--blanco);
   color: var(--marron);
   scroll-behavior: smooth;
@@ -20,36 +19,44 @@ body {
 }
 
 /* ============================================================
-   HEADER + NAVEGACIÓN PRINCIPAL (PC + MÓVIL)
+   HEADER UNIFICADO COMO EL DEL CARRITO (PC + MÓVIL)
 ============================================================ */
 
 .header {
   position: fixed;
   top: 0;
   width: 100%;
-  height: 72px; /* ALTURA AJUSTADA COMO EL CARRITO */
+  height: 72px; /* MISMA ALTURA QUE EL CARRITO */
   background: var(--blanco);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.03);
   z-index: 1000;
 }
 
 .header-content {
   max-width: 1200px;
+  height: 72px;
   margin: 0 auto;
   padding: 0 1.2rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 72px; /* ALTURA AJUSTADA COMO EL CARRITO */
 }
 
-/* Logo */
+/* ================= LOGO ================= */
+
 .logo img {
   height: 60px;
   display: block;
 }
 
-/* Desktop: solo se muestra el logo cuando >= 901px */
+/* En móvil ocultamos el logo para que no quede detrás del menú */
+@media (max-width: 900px) {
+  .logo {
+    display: none;
+  }
+}
+
+/* Desktop logo extra (si lo usas) */
 .logo.desktop-only {
   display: none;
 }
@@ -59,17 +66,30 @@ body {
   }
 }
 
-/* Botón hamburguesa (móvil) */
+/* ================= MENÚ HAMBURGUESA (MÓVIL) ================= */
+
 .menu-toggle {
   background: none;
   border: none;
   color: var(--marron);
-  font-size: 1.6rem;
+  font-size: 1.8rem;
   display: none;
   cursor: pointer;
 }
 
-/* Navegación escritorio */
+@media (max-width: 900px) {
+  .menu-toggle {
+    display: block;
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2000;
+  }
+}
+
+/* ================= NAV ESCRITORIO ================= */
+
 .nav-links {
   display: flex;
   align-items: center;
@@ -80,68 +100,26 @@ body {
   text-decoration: none;
   color: var(--marron);
   font-weight: 500;
-  transition: color 0.3s ease;
 }
 
 .nav-links a:hover {
   color: var(--verde);
 }
 
-.contact-link {
-  margin-right: 1.5rem;
+@media (max-width: 900px) {
+  .nav-links {
+    display: none;
+  }
 }
 
 /* ============================================================
-   AVATAR / PERFIL EN HEADER
-============================================================ */
-
-/* Foto perfil redonda */
-.profile-photo-round {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  object-fit: cover;
-  cursor: pointer;
-  border: none !important;
-  outline: none !important;
-  box-shadow:
-    0 4px 12px rgba(0,0,0,0.12),
-    0 2px 6px rgba(0,0,0,0.08);
-  transition: transform 0.2s ease;
-}
-
-.profile-photo-round:hover {
-  transform: scale(1.05);
-}
-
-/* Contenedor del perfil */
-.profile-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-}
-
-/* Botón envolvente del avatar (para poder hacer click) */
-.header-avatar-button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  border-radius: 999px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* ============================================================
-   BOTÓN CARRITO EN EL HEADER
+   BOTÓN CARRITO — TAMAÑO CORRECTO EN PC Y MÓVIL
 ============================================================ */
 
 .cart-btn {
   position: relative;
-  width: 44px;
-  height: 44px;
+  width: 52px;    /* círculo más grande */
+  height: 52px;
   border-radius: 50%;
   border: none;
   background: rgba(51, 103, 59, 0.15);
@@ -153,7 +131,7 @@ body {
 
 .cart-btn i {
   color: var(--verde);
-  font-size: 1.3rem;
+  font-size: 1.7rem;  /* icono más grande */
 }
 
 .cart-count {
@@ -165,58 +143,19 @@ body {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  font-size: 0.7rem;
-  font-weight: 600;
+  font-size: .7rem;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* Hover solo en PC */
-@media (min-width: 768px) {
-  .cart-btn:hover {
-    transform: scale(1.05);
-  }
-}
-
-/* Ajuste del carrito SOLO en móvil */
-@media (max-width: 767px) {
+/* Colocación del carrito en móvil, SIN cambiar tamaño */
+@media (max-width: 900px) {
   .cart-btn {
-    width: 52px;  /* mismo tamaño que en escritorio */
-    height: 52px;
-    transform: none !important;
-    transition: none !important;
-  }
-
-  .cart-count {
-    top: -4px;
-    right: -4px;
-    width: 18px;
-    height: 18px;
-    font-size: 0.7rem;
-  }
-}
-
-/* Fix: carrito siempre dentro de la barra en móvil */
-@media (max-width: 768px) {
-  .cart-btn {
-    position: absolute !important;
-    top: 50% !important;
-    right: 16px !important;
-    transform: translateY(-50%) !important;
-    width: 44px !important;
-    height: 44px !important;
-    transition: none !important;
-    z-index: 2000;
-  }
-
-  .cart-count {
-    position: absolute !important;
-    top: -6px !important;
-    right: -2px !important;
-    width: 18px !important;
-    height: 18px !important;
-    font-size: 0.70rem !important;
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
   }
 }
 
@@ -230,61 +169,6 @@ body {
 
 .cart-count.animate {
   animation: badgeBounce 0.38s ease-out;
-}
-
-/* ============================================================
-   AJUSTE HEADER Y NAV EN ESCRITORIO
-============================================================ */
-
-@media (min-width: 901px) {
-  .header-content {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .nav-links {
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-    margin-left: auto;
-    margin-right: 2rem;
-  }
-
-  .cart-btn {
-    flex-shrink: 0;
-  }
-}
-
-/* ============================================================
-   RESPONSIVE HEADER – MÓVIL
-============================================================ */
-
-@media (max-width: 900px) {
-  /* 🔥 Ocultamos el logo en móvil para que no quede detrás del menú */
-  .logo {
-    display: none;
-  }
-
-  .menu-toggle {
-    display: block;
-    position: absolute;
-    left: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 2000; /* que quede por encima de todo */
-  }
-
-  .cart-btn {
-    position: absolute;
-    right: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-  }
-
-  .nav-links {
-    display: none;
-  }
 }
 
 /* =====================================================
@@ -412,302 +296,63 @@ body {
   font-size: 13px;
   opacity: 0.7;
 }
-:root {
-  --marron: #512615;
-  --verde: #33673B;
-  --blanco: #ffffff;
-  --gris: #f5f5f5;
-  --sombra: 0 6px 20px rgba(0, 0, 0, 0.08);
+
+.user-drawer-arrow {
+  margin-left: auto;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 22px;
 }
 
-body {
-  font-family:
-    -apple-system, BlinkMacSystemFont,
-    "SF Pro Display", "SF Pro Text",
-    "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
-  background: var(--blanco);
-  color: var(--marron);
-  scroll-behavior: smooth;
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* ============================================================
-   HEADER UNIFICADO COMO EL DEL CARRITO (PC + MÓVIL)
-============================================================ */
-
-.header {
-  position: fixed;
-  top: 0;
-  width: 100%;
-  height: 72px; /* MISMA ALTURA QUE EL CARRITO */
-  background: var(--blanco);
-  box-shadow: 0 2px 10px rgba(0,0,0,0.03);
-  z-index: 1000;
-}
-
-.header-content {
-  max-width: 1200px;
-  height: 72px;
-  margin: 0 auto;
-  padding: 0 1.2rem;
-  display: flex;
-  align-items: center; /* CENTRADO PERFECTO */
-  justify-content: space-between;
-}
-
-/* ================= LOGO ================= */
-
-.logo img {
-  height: 60px;
-  display: block;
-}
-
-/* 🔥 ARREGLO: en móvil el logo SE REDUCE para evitar romper el header */
-@media (max-width: 900px) {
-  .logo img {
-    height: 42px !important;
-  }
-}
-
-/* Desktop logo visible */
-.logo.desktop-only {
-  display: none;
-}
-@media (min-width: 901px) {
-  .logo.desktop-only {
-    display: block;
-  }
-}
-
-/* ================= MENÚ HAMBURGUESA (MÓVIL) ================= */
-
-.menu-toggle {
-  background: none;
-  border: none;
-  color: var(--marron);
-  font-size: 1.8rem;
-  display: none;
-  cursor: pointer;
-}
-
-/* 🔥 CENTRADO PERFECTO EN MÓVIL */
-@media (max-width: 900px) {
-  .menu-toggle {
-    display: block;
-    position: absolute;
-    left: 16px;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 2000;
-  }
-}
-
-/* ================= NAV ESCRITORIO ================= */
-
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 2rem;
-}
-
-.nav-links a {
-  text-decoration: none;
-  color: var(--marron);
-  font-weight: 500;
-}
-
-.nav-links a:hover {
-  color: var(--verde);
-}
-
-@media (max-width: 900px) {
-  .nav-links {
-    display: none;
-  }
-}
-
-/* ============================================================
-   BOTÓN CARRITO — CENTRADO COMO EN EL HEADER DEL CARRITO
-============================================================ */
-
-.cart-btn {
-  position: relative;
-  width: 52px;   /* antes 44px */
-  height: 52px;  /* antes 44px */
-  border-radius: 50%;
-  border: none;
-  background: rgba(51, 103, 59, 0.15);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
-.cart-btn i {
-  color: var(--verde);
-  font-size: 1.6rem; /* antes 1.3rem */
-}
-
-.cart-count {
-  position: absolute;
-  top: -6px;
-  right: -6px;
-  background: #d72638;
-  color: #fff;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  font-size: .7rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* 🔥 FIJAR CARRITO PERFECTAMENTE EN MÓVIL (YA NO SE DEFORMA) */
-@media (max-width: 900px) {
-  .cart-btn {
-    position: absolute !important;
-    right: 16px !important;
-    top: 50% !important;
-    transform: translateY(-50%) !important;
-    width: 44px !important;
-    height: 44px !important;
-  }
-  .cart-count {
-    right: -2px !important;
-    top: -6px !important;
-  }
-}
-
-/* ============================================================
-   MENÚ FLOTANTE MATERIAL 3
-============================================================ */
-
-/* Íconos Material */
-.material-symbols-outlined {
-  font-variation-settings:
-    "FILL" 0,
-    "wght" 400,
-    "GRAD" 0,
-    "opsz" 24;
-}
-
-/* Fondo oscuro */
-.user-scrim {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.45);
-  opacity: 0;
-  pointer-events: none;
-  transition: .2s ease;
-  z-index: 998;
-}
-.user-scrim.open {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-/* Menú */
-.user-drawer {
-  position: fixed;
-  top: 88px;
-  right: 16px;
-  width: min(380px, calc(100% - 24px));
-  background: #16181a;
-  border-radius: 24px;
-  color: #fff;
-  transform: translateX(120%);
-  opacity: 0;
-  transition: .25s cubic-bezier(.2,0,0,1);
-  z-index: 999;
-}
-.user-drawer.open {
-  transform: translateX(0);
-  opacity: 1;
-}
-
-/* Móvil full width */
-@media (max-width: 600px) {
-  .user-drawer {
-    left: 12px;
-    right: 12px;
-    width: auto;
-  }
-}
-
-.user-drawer-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 16px 18px 12px;
-}
-
-/* Avatar */
-.user-drawer-avatar {
-  width: 52px;
-  height: 52px;
-  border-radius: 18px;
-  overflow: hidden;
-}
-.user-drawer-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.user-drawer-profile-link {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  color: inherit;
-  text-decoration: none;
-}
-.user-drawer-profile-link:hover {
-  background: rgba(255,255,255,.06);
-}
-
-.user-drawer-name {
-  font-size: 15px;
-  font-weight: 600;
-}
-
-.user-drawer-email {
-  font-size: 13px;
-  opacity: .7;
-}
-
+/* Línea separadora VERDE en el menú flotante */
 .user-drawer-divider {
-  height: 1.6px;
-  background: var(--verde);
-  margin: 6px 0 10px;
+  border: none !important;
+  height: 1.6px !important;
+  margin: 6px 0 10px !important;
+  background: var(--verde) !important;
+  opacity: 1 !important;
 }
 
+/* Items del menú */
 .user-drawer-nav {
   display: flex;
   flex-direction: column;
+  padding: 4px 0 8px;
 }
-
 .user-drawer-item {
+  width: 100%;
+  border: none;
+  background: none;
   padding: 10px 18px;
   display: flex;
   align-items: center;
   gap: 16px;
+  font-size: 15px;
+  color: #ffffff;
   text-decoration: none;
-  color: #fff;
+  cursor: pointer;
+  text-align: left;
 }
 .user-drawer-item:hover {
-  background: rgba(255,255,255,.06);
+  background: rgba(255, 255, 255, 0.06);
 }
+.user-drawer-item-icon {
+  width: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Cerrar sesión */
 .user-drawer-item.logout {
+  color: #ff4b4b;
+  font-weight: 500;
+  margin-top: 4px;
+}
+.user-drawer-item.logout .material-symbols-outlined {
   color: #ff4b4b;
 }
 
-/* ============================================================
-   (TODO LO DEMÁS DE TU CSS QUEDA IGUAL — SIN CAMBIOS)
-============================================================ */
-
-/* ... AQUÍ SIGUE TODO EL RESTO DE TU CSS SIN MODIFICACIONES ... */
 /* ============================================================
    HERO
 ============================================================ */
@@ -732,7 +377,7 @@ body {
   color: var(--verde);
 }
 
-/* Texto hero optimizado en móviles (solicitado) */
+/* Texto hero optimizado en móviles */
 @media (max-width: 900px) {
   .hero-text h1 {
     font-size: 2rem;
@@ -769,7 +414,7 @@ body {
   box-shadow: 0 18px 36px rgba(0, 0, 0, 0.12);
 }
 
-/* 🔹 En móviles: sombra más suave sin movimiento */
+/* En móviles: sombra más suave sin movimiento */
 @media (max-width: 900px) {
   .hero-card {
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
@@ -785,7 +430,7 @@ body {
   overflow: hidden;
 }
 
-hero-carousel img {
+.hero-carousel img {
   position: absolute;
   top: 0;
   left: 0;
@@ -1388,7 +1033,7 @@ footer p {
   opacity: 1;
 }
 
-/* Badge carrito refuerzo */
+/* Badge carrito refuerzo extra */
 .cart-count.animate {
   animation: pulseCart 0.5s ease;
 }
