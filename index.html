@@ -11,13 +11,14 @@
 
   <!-- CSS principal -->
   <link rel="stylesheet" href="css/main.css?v=11">
-  <link rel="stylesheet" href="css/carrito.css?v=30"> <!-- Para asegurar estilos del menú -->
+  <!-- Header + menú flotante iguales al carrito -->
+  <link rel="stylesheet" href="css/carrito.css?v=30">
 </head>
 
 <body>
 
 <!-- =====================================================
-     HEADER INDEX — MISMA ESTRUCTURA QUE CARRITO
+     HEADER — IGUAL QUE CARRITO
 ====================================================== -->
 <header class="header-fixed">
 
@@ -33,14 +34,14 @@
 
   <!-- MENÚ ESCRITORIO -->
   <nav class="nav-links desktop-only">
-    <a href="#productos">Variedades</a>
-    <a href="#nosotros">Nosotros</a>
-    <a href="#contacto">Contacto</a>
+    <a href="#productos">Variedades de café</a>
+    <a href="#nosotros">Quiénes somos</a>
+    <a href="#contacto">Contáctanos</a>
 
     <!-- Login Desktop -->
     <a href="login.html" id="login-desktop" class="login-link">Iniciar sesión</a>
 
-    <!-- Avatar Desktop (Solo si hay sesión) -->
+    <!-- Avatar Desktop (solo si hay sesión) -->
     <div class="profile-wrapper" id="profile-desktop" style="display:none;">
       <button id="btn-header-user" class="header-avatar-button" aria-label="Abrir menú de usuario">
         <img id="avatar-user" src="imagenes/avatar-default.svg" class="header-avatar profile-photo-round" alt="Usuario">
@@ -58,8 +59,6 @@
 
 </header>
 
-
-
 <!-- =====================================================
      MENÚ FLOTANTE MATERIAL 3 — IGUAL AL DEL CARRITO
 ====================================================== -->
@@ -73,7 +72,7 @@
   <!-- ========= LOGUEADO ========= -->
   <div id="drawer-links-logged" style="display:none;">
 
-    <!-- ======== CABECERA PERFIL (oficial memoria) ======== -->
+    <!-- CABECERA PERFIL -->
     <a href="perfil.html" class="user-drawer-header user-drawer-profile-link">
       <div class="user-drawer-avatar">
         <img id="avatar-user-drawer" src="imagenes/avatar-default.svg" alt="Usuario">
@@ -81,7 +80,7 @@
 
       <div class="user-drawer-profile-texts">
         <p class="user-drawer-name" id="hello-desktop-cart">Hola, Usuario</p>
-        <p class="user-drawer-email" id="email-drawer-cart">alansosa225@gmail.com</p>
+        <p class="user-drawer-email" id="email-drawer-cart">correo@ejemplo.com</p>
       </div>
 
       <span class="material-symbols-outlined user-drawer-arrow">chevron_right</span>
@@ -89,7 +88,7 @@
 
     <hr class="user-drawer-divider">
 
-    <!-- ======== NAVEGACIÓN LOGUEADO (oficial) ======== -->
+    <!-- NAVEGACIÓN LOGUEADO -->
     <nav class="user-drawer-nav">
       <a href="mispedidos.html" class="user-drawer-item">
         <span class="user-drawer-item-icon material-symbols-outlined">shopping_bag</span>
@@ -118,7 +117,7 @@
 
       <hr class="user-drawer-divider">
 
-      <!-- ======== CERRAR SESIÓN ======== -->
+      <!-- CERRAR SESIÓN -->
       <button id="logout-btn" class="user-drawer-item logout">
         <span class="user-drawer-item-icon material-symbols-outlined">logout</span>
         <span>Cerrar sesión</span>
@@ -132,17 +131,17 @@
 
       <a href="#productos" class="user-drawer-item">
         <span class="material-symbols-outlined user-drawer-item-icon">local_cafe</span>
-        <span>Variedades</span>
+        <span>Variedades de café</span>
       </a>
 
       <a href="#nosotros" class="user-drawer-item">
         <span class="material-symbols-outlined user-drawer-item-icon">groups</span>
-        <span>Nosotros</span>
+        <span>Quiénes somos</span>
       </a>
 
       <a href="#contacto" class="user-drawer-item">
         <span class="material-symbols-outlined user-drawer-item-icon">mail</span>
-        <span>Contacto</span>
+        <span>Contáctanos</span>
       </a>
 
       <hr class="user-drawer-divider">
@@ -157,14 +156,9 @@
 
 </aside>
 
-
-
-
-
 <!-- =====================================================
      CONTENIDO DEL INDEX
 ====================================================== -->
-
 <main>
 
   <!-- HERO -->
@@ -185,8 +179,7 @@
     </div>
   </section>
 
-
-  <!-- PRODUCTO -->
+  <!-- PRODUCTO PRINCIPAL -->
   <section id="productos" class="product-main">
     <div class="product-text">
 
@@ -219,8 +212,6 @@
     </div>
   </section>
 
-
-
   <!-- CARRUSEL -->
   <section class="related">
     <h3 class="similar-title">También te puede interesar</h3>
@@ -240,15 +231,46 @@
     </div>
   </section>
 
+  <!-- POPULAR DEL CARRUSEL (JS INLINE) -->
+  <script>
+    (function () {
+      const productos = [
+        { img: 'imagenes/bolsa_1.png', nombre: 'Café Cortero 250g', precio: 'L 180' },
+        { img: 'imagenes/bolsa_2.png', nombre: 'Café Cortero 500g', precio: 'L 320' },
+        { img: 'imagenes/bolsa_1.png', nombre: 'Café Cortero 1lb', precio: 'L 550' },
+        { img: 'imagenes/bolsa_2.png', nombre: 'Café Regalo', precio: 'L 260' },
+        { img: 'imagenes/bolsa_1.png', nombre: 'Café Premium', precio: 'L 480' },
+        { img: 'imagenes/bolsa_2.png', nombre: 'Café Tradicional', precio: 'L 150' }
+      ];
+
+      const contenedor = document.getElementById('lista-similares');
+      if (contenedor) {
+        contenedor.innerHTML = productos.map(p => `
+          <div class="similar-card"
+            data-name="${p.nombre}"
+            data-price="${p.precio}"
+            data-img="${p.img}">
+            <img src="${p.img}" alt="${p.nombre}">
+            <h4>${p.nombre}</h4>
+            <div class="price-sm">${p.precio}</div>
+          </div>
+        `).join('');
+      }
+    })();
+  </script>
 
   <!-- NOSOTROS -->
   <section id="nosotros" class="about">
     <div class="about-text">
       <small>Nuestra historia</small>
       <h2>Sobre Café Cortero</h2>
-      <p>Café elaborado con tradición familiar…</p>
-      <p>Grano seleccionado, tostado con cuidado…</p>
-
+      <p>
+        Café Cortero es un proyecto familiar que produce café de calidad,
+        amigable con el medio ambiente y con el sabor auténtico de Honduras.
+      </p>
+      <p>
+        Cada grano es cultivado con respeto, cosechado a mano y tostado con dedicación.
+      </p>
       <div class="about-pills">
         <span class="about-pill">Proyecto familiar</span>
         <span class="about-pill">Origen hondureño</span>
@@ -261,25 +283,25 @@
     </div>
   </section>
 
-
   <!-- CONTACTO -->
   <section id="contacto" class="contacto">
     <h2>Contáctanos</h2>
-    <p>WhatsApp, Facebook y más…</p>
+    <p>
+      Queremos compartir contigo la pasión por el café hondureño.<br>
+      Escríbenos por <strong class="verde">WhatsApp</strong> o síguenos en
+      <strong class="verde">Facebook</strong> desde el botón de mensaje en pantalla.
+    </p>
   </section>
 
 </main>
 
-
-
 <!-- FOOTER -->
 <footer>
   <p>
-    <img src="imagenes/logo_secundario.png" class="footer-logo-inline">
+    <img src="imagenes/logo_secundario.png" class="footer-logo-inline" alt="Café Cortero">
     2025 Café Cortero. Todos los derechos reservados.
   </p>
 </footer>
-
 
 <!-- FAB -->
 <div class="fab-container" id="fab">
@@ -288,11 +310,14 @@
   </button>
 
   <div class="fab-options">
-    <a href="https://wa.me/50494546047" target="_blank"><i class="fa-brands fa-whatsapp"></i></a>
-    <a href="https://facebook.com" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
+    <a href="https://wa.me/50494546047?text=Hola" target="_blank" rel="noopener">
+      <i class="fa-brands fa-whatsapp"></i>
+    </a>
+    <a href="https://www.facebook.com/share/1FsrT4DYrU/" target="_blank" rel="noopener">
+      <i class="fa-brands fa-facebook-f"></i>
+    </a>
   </div>
 </div>
-
 
 <!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
