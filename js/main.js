@@ -223,6 +223,18 @@ document.addEventListener("DOMContentLoaded", () => {
       closeUserDrawer();
     });
 
+    // 🔹 NUEVO: cerrar el drawer al tocar cualquier opción del menú o el bloque de perfil
+    if (userDrawer) {
+      const interactiveEls = userDrawer.querySelectorAll(
+        ".user-drawer-item, .user-drawer-profile-link"
+      );
+      interactiveEls.forEach((el) => {
+        el.addEventListener("click", () => {
+          closeUserDrawer();
+        });
+      });
+    }
+
     // Logout
     if (logoutBtn) {
       logoutBtn.onclick = async () => {
@@ -380,3 +392,4 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+```0
