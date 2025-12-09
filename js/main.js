@@ -87,6 +87,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const helloDesktop     = safe("hello-desktop-cart");
     const emailDrawer      = safe("email-drawer-cart");
 
+    const drawerLogged     = safe("drawer-links-logged");
+    const drawerDefault    = safe("drawer-links-default");
+
     const userLS = getUserLS();
     const sb     = getSupabaseClient();
 
@@ -115,33 +118,109 @@ document.addEventListener("DOMContentLoaded", () => {
       userScrim.classList.remove("open");
     }
 
+    function showLoggedView() {
+      if (drawerLogged)  drawerLogged.style.display  = "block";
+      if (drawerDefault) drawerDefault.style.display = "none";
+    }
+
+    function showDefaultView() {
+      if (drawerLogged)  drawerLogged.style.display  = "none";
+      if (drawerDefault) drawerDefault.style.display = "block";
+    }
+
+    let drawerCloseHandlersAttached = false;
+
+    function attachCommonCloseHandlers() {
+      if (drawerCloseHandlersAttached) return;
+      drawerCloseHandlersAttached = true;
+
+      // Cerrar al tocar el scrim
+      if (userScrim) {
+        userScrim.onclick = () => {
+          closeUserDrawer();
+        };
+      }
+
+      // Cerrar con Escape
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeUserDrawer();
+      });
+
+      // Cerrar con click fuera
+      document.addEventListener("click", (e) => {
+        if (!userDrawer) return;
+        const clickInsideDrawer  = userDrawer.contains(e.target);
+        const clickOnAvatar      = avatarBtn && (e.target === avatarBtn || avatarBtn.contains(e.target));
+        const clickOnMenuToggle  = menuToggle && (e.target === menuToggle || menuToggle.contains(e.target));
+
+        if (!clickInsideDrawer && !clickOnAvatar && !clickOnMenuToggle) {
+          closeUserDrawer();
+        }
+      });
+
+      // Cerrar al cambiar tamaño de ventana
+      window.addEventListener("resize", () => {
+        closeUserDrawer();
+      });
+    }
+
+    function attachInteractiveCloseOnClick() {
+      if (!userDrawer) return;
+      const interactiveEls = userDrawer.querySelectorAll(
+        ".user-drawer-item, .user-drawer-profile-link"
+      );
+      interactiveEls.forEach((el) => {
+        el.addEventListener("click", () => {
+          closeUserDrawer();
+        });
+      });
+    }
+
     /* --------- NO LOGUEADO ---------- */
     if (!session || !userLS) {
+      // Vista por defecto: menú "invitado"
+      showDefaultView();
+
+      // Avatares por defecto (aunque el bloque logueado esté oculto)
       if (avatarImg)       avatarImg.src       = "imagenes/avatar-default.svg";
       if (avatarDrawerImg) avatarDrawerImg.src = "imagenes/avatar-default.svg";
 
       if (helloDesktop) helloDesktop.textContent = "Hola, invitado";
       if (emailDrawer)  emailDrawer.textContent  = "Inicia sesión para continuar";
 
-      // Avatar (PC) → ir a login
+      // Avatar (PC) → si existe, abre/cierra el drawer invitado
       if (avatarBtn) {
-        avatarBtn.onclick = () => {
-          window.location.href = "login.html";
+        avatarBtn.onclick = (e) => {
+          e.stopPropagation();
+          const isOpen = userDrawer && userDrawer.classList.contains("open");
+          if (isOpen) closeUserDrawer();
+          else openUserDrawer();
         };
       }
 
-      // Hamburguesa (móvil) → ir a login
+      // Hamburguesa (móvil) → abre/cierra el drawer invitado (NO redirige a login)
       if (menuToggle) {
-        menuToggle.onclick = () => {
-          window.location.href = "login.html";
+        menuToggle.onclick = (e) => {
+          e.stopPropagation();
+          const isOpen = userDrawer && userDrawer.classList.contains("open");
+          if (isOpen) closeUserDrawer();
+          else openUserDrawer();
         };
       }
 
+      // Handlers de cierre para el menú invitado
+      attachCommonCloseHandlers();
+      attachInteractiveCloseOnClick();
+
+      // Empezar con el menú cerrado
       closeUserDrawer();
       return;
     }
 
     /* --------- LOGUEADO ---------- */
+
+    // Vista logueado
+    showLoggedView();
 
     const displayName = userLS.name || userLS.email || "Usuario";
 
@@ -174,7 +253,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    // Avatar (PC) → abre/cierra drawer
+    // Avatar (PC) → abre/cierra drawer logueado
     if (avatarBtn) {
       avatarBtn.onclick = (e) => {
         e.stopPropagation();
@@ -184,7 +263,7 @@ document.addEventListener("DOMContentLoaded", () => {
       };
     }
 
-    // Hamburguesa (móvil) → abre/cierra drawer
+    // Hamburguesa (móvil) → abre/cierra drawer logueado
     if (menuToggle) {
       menuToggle.onclick = (e) => {
         e.stopPropagation();
@@ -194,46 +273,9 @@ document.addEventListener("DOMContentLoaded", () => {
       };
     }
 
-    // Cerrar al tocar el scrim
-    if (userScrim) {
-      userScrim.onclick = () => {
-        closeUserDrawer();
-      };
-    }
-
-    // Cerrar con Escape
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") closeUserDrawer();
-    });
-
-    // Cerrar con click fuera
-    document.addEventListener("click", (e) => {
-      if (!userDrawer) return;
-      const clickInsideDrawer = userDrawer.contains(e.target);
-      const clickOnAvatar = avatarBtn && (e.target === avatarBtn || avatarBtn.contains(e.target));
-      const clickOnMenuToggle = menuToggle && (e.target === menuToggle || menuToggle.contains(e.target));
-
-      if (!clickInsideDrawer && !clickOnAvatar && !clickOnMenuToggle) {
-        closeUserDrawer();
-      }
-    });
-
-    // Cerrar al cambiar tamaño de ventana
-    window.addEventListener("resize", () => {
-      closeUserDrawer();
-    });
-
-    // 🔹 NUEVO: cerrar el drawer al tocar cualquier opción del menú o el bloque de perfil
-    if (userDrawer) {
-      const interactiveEls = userDrawer.querySelectorAll(
-        ".user-drawer-item, .user-drawer-profile-link"
-      );
-      interactiveEls.forEach((el) => {
-        el.addEventListener("click", () => {
-          closeUserDrawer();
-        });
-      });
-    }
+    // Handlers de cierre para menú logueado
+    attachCommonCloseHandlers();
+    attachInteractiveCloseOnClick();
 
     // Logout
     if (logoutBtn) {
@@ -392,4 +434,3 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
-```0
