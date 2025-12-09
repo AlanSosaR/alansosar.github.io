@@ -1,40 +1,33 @@
 :root {
   --marron: #512615;
   --verde: #33673B;
-  --blanco: #ffffff;
+  --blanco: #fff;
   --gris: #f5f5f5;
   --sombra: 0 6px 20px rgba(0, 0, 0, 0.08);
 }
 
 body {
-  font-family:
-    -apple-system, BlinkMacSystemFont,
-    "SF Pro Display", "SF Pro Text",
-    "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+    "Helvetica Neue", Helvetica, Arial, sans-serif;
   background: var(--blanco);
   color: var(--marron);
   scroll-behavior: smooth;
   -webkit-tap-highlight-color: transparent;
 }
 
-/* ============================================================
-   HEADER UNIFICADO COMO EL DEL CARRITO (PC + MÓVIL)
-   (.header para páginas antiguas, .header-fixed para el header nuevo)
-============================================================ */
+/* ================= HEADER ================= */
 
 .header,
 .header-fixed {
   position: fixed;
   top: 0;
   width: 100%;
-  height: 72px; /* MISMA ALTURA QUE EL CARRITO */
+  height: 72px;
   background: var(--blanco);
-  box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
   z-index: 1000;
 }
 
-/* Contenedor interno (para el header viejo que usa .header-content) */
 .header-content {
   max-width: 1200px;
   height: 72px;
@@ -45,23 +38,16 @@ body {
   justify-content: space-between;
 }
 
-/* Layout del header nuevo (header-fixed del carrito) */
+/* Layout header nuevo */
+
 .header-fixed {
   display: flex;
   align-items: center;
-  justify-content: flex-start;   /* antes: space-between */
+  justify-content: flex-start;
+  gap: 0.75rem;
   padding: 0 1.2rem;
 }
 
-/* ================= LOGOS ================= */
-
-/* Logo antiguo (.logo img) */
-.logo img {
-  height: 60px;
-  display: block;
-}
-
-/* Logo del header nuevo */
 .header-logo-link {
   display: flex;
   align-items: center;
@@ -72,7 +58,13 @@ body {
   display: block;
 }
 
-/* Ocultamos logos en móvil para que no se queden detrás del menú */
+.logo img {
+  height: 60px;
+  display: block;
+}
+
+/* Ocultar logos en móvil (para que no queden detrás del menú) */
+
 @media (max-width: 900px) {
   header .logo,
   header .header-logo-link {
@@ -80,17 +72,7 @@ body {
   }
 }
 
-/* Desktop logo extra (si lo usas con .desktop-only) */
-.logo.desktop-only {
-  display: none;
-}
-@media (min-width: 901px) {
-  .logo.desktop-only {
-    display: block;
-  }
-}
-
-/* ================= MENÚ HAMBURGUESA (MÓVIL) ================= */
+/* Menú hamburguesa */
 
 .menu-toggle {
   background: none;
@@ -99,6 +81,7 @@ body {
   font-size: 1.8rem;
   display: none;
   cursor: pointer;
+  z-index: 2000;
 }
 
 @media (max-width: 900px) {
@@ -108,16 +91,16 @@ body {
     left: 16px;
     top: 50%;
     transform: translateY(-50%);
-    z-index: 2000;
   }
 }
 
-/* ================= NAV ESCRITORIO ================= */
+/* NAV escritorio */
 
 .nav-links {
   display: flex;
   align-items: center;
   gap: 2rem;
+  flex: 0 1 auto;
 }
 
 .nav-links a {
@@ -136,32 +119,30 @@ body {
   }
 }
 
-/* Alineación en escritorio: menú a la derecha */
+/* Alinear a la derecha en desktop */
+
 @media (min-width: 901px) {
   .header-logo-link {
-    margin-right: 2rem;
+    margin-right: 1rem;
   }
 
   .nav-links {
-    margin-left: auto; /* empuja el bloque nav hacia la derecha */
+    margin-left: auto; /* empuja el nav a la derecha */
   }
 
   .profile-wrapper-cart {
-    margin-left: 1.5rem;
+    margin-left: 1rem;
     display: flex;
     align-items: center;
   }
 }
 
-/* ============================================================
-   BOTÓN CARRITO — TAMAÑO CORRECTO EN PC Y MÓVIL
-   (aplica tanto a .cart-btn como al #cart-btn del header nuevo)
-============================================================ */
+/* ================= CARRITO EN HEADER ================= */
 
 #cart-btn,
 .cart-btn {
   position: relative;
-  width: 52px;    /* círculo más grande */
+  width: 52px;
   height: 52px;
   border-radius: 50%;
   border: none;
@@ -170,13 +151,13 @@ body {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  z-index: 1500;  /* siempre visible encima */
+  z-index: 1500;
 }
 
 #cart-btn i,
 .cart-btn i {
   color: var(--verde);
-  font-size: 1.7rem;  /* icono más grande */
+  font-size: 1.7rem;
 }
 
 #cart-btn .cart-count,
@@ -190,29 +171,42 @@ body {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  font-size: .7rem;
+  font-size: 0.7rem;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* Colocación del carrito en móvil, SIN cambiar tamaño */
+/* En móvil: posiciona el contenedor, no el botón */
+
 @media (max-width: 900px) {
-  #cart-btn,
-  .cart-btn {
+  .profile-wrapper-cart {
     position: absolute;
     right: 16px;
     top: 50%;
     transform: translateY(-50%);
+    z-index: 2000;
+  }
+
+  #cart-btn,
+  .cart-btn {
+    position: static; /* deja que lo coloque el contenedor */
   }
 }
 
-/* Rebote badge del carrito */
 @keyframes badgeBounce {
-  0%   { transform: scale(1); }
-  40%  { transform: scale(1.18); }
-  60%  { transform: scale(0.92); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.18);
+  }
+  60% {
+    transform: scale(0.92);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 .cart-count.animate {
@@ -220,100 +214,103 @@ body {
 }
 
 /* =====================================================
-   MENÚ FLOTANTE MATERIAL 3 — ÍCONOS (IGUAL CARRITO)
+   MENÚ FLOTANTE MATERIAL 3 — TARJETA COMPLETA
+   Igual al diseño de carrito.html
 ===================================================== */
 
 /* Íconos Material */
 .material-symbols-outlined {
-  font-variation-settings:
-    "FILL" 0,
-    "wght" 400,
-    "GRAD" 0,
-    "opsz" 24;
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
   font-size: 24px;
   line-height: 1;
 }
 
 /* SCRIM (fondo oscurecido) */
+
 .user-scrim {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.45);
+  background: rgba(0, 0, 0, 0.55);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.2s ease-out;
   z-index: 998;
 }
+
 .user-scrim.open {
   opacity: 1;
   pointer-events: auto;
 }
 
-/* Menú flotante a la derecha, bajo el header */
+/* TARJETA NEGRA flotante */
+
 .user-drawer {
   position: fixed;
-  top: 88px; /* un poco más abajo del header para que no se vea pegado */
+  top: 88px; /* justo debajo del header */
+  left: 16px;
   right: 16px;
-  width: min(380px, calc(100% - 24px)); /* mismo ancho que el del carrito */
+  max-width: 680px; /* similar a carrito */
+  margin: 0 auto;
   background: #16181a;
   color: #ffffff;
   border-radius: 24px;
   box-shadow:
-    0 18px 40px rgba(0, 0, 0, 0.75),
+    0 24px 60px rgba(0, 0, 0, 0.85),
     0 0 0 1px rgba(255, 255, 255, 0.04);
   overflow: hidden;
 
-  /* cerrado: fuera de la pantalla hacia la derecha */
-  transform: translateX(120%);
+  transform: translateY(18px);
   opacity: 0;
+  pointer-events: none;
   transition:
     transform 0.25s cubic-bezier(0.2, 0, 0, 1),
     opacity 0.2s ease-out;
-
   z-index: 999;
 }
 
 .user-drawer.open {
-  transform: translateX(0);
+  transform: translateY(0);
   opacity: 1;
+  pointer-events: auto;
 }
 
-/* Móvil: ocupa casi todo el ancho (igual que antes) */
+/* En móvil ocupa casi todo el ancho */
+
 @media (max-width: 600px) {
   .user-drawer {
     left: 12px;
     right: 12px;
-    width: auto;
+    max-width: none;
   }
 }
 
-/* Encabezado del menú (perfil) */
+/* CABECERA PERFIL (foto + nombre + email + flecha) */
+
 .user-drawer-header {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 16px 18px 12px;
+  gap: 14px;
+  padding: 18px 22px 14px;
 }
 
-/* Bloque de perfil clicable + flecha */
 .user-drawer-profile-link {
+  display: flex;
+  align-items: center;
+  width: 100%;
   text-decoration: none;
   color: inherit;
   cursor: pointer;
-  display: flex;
-  width: 100%;
-  align-items: center;
 }
 
-/* Hover */
 .user-drawer-profile-link:hover {
   background: rgba(255, 255, 255, 0.06);
 }
 
 /* Avatar */
+
 .user-drawer-avatar {
-  width: 52px;
-  height: 52px;
+  width: 56px;
+  height: 56px;
   border-radius: 18px;
   overflow: hidden;
   flex-shrink: 0;
@@ -322,6 +319,7 @@ body {
   align-items: center;
   justify-content: center;
 }
+
 .user-drawer-avatar img {
   width: 100%;
   height: 100%;
@@ -329,81 +327,103 @@ body {
 }
 
 /* Textos del perfil */
+
 .user-drawer-profile-texts {
   flex: 1;
   display: flex;
   flex-direction: column;
+  justify-content: center;
 }
+
 .user-drawer-name {
   margin: 0;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
 }
+
 .user-drawer-email {
-  margin: 2px 0 0;
+  margin: 3px 0 0;
   font-size: 13px;
-  opacity: 0.7;
+  opacity: 0.75;
 }
 
 .user-drawer-arrow {
   margin-left: auto;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.7);
   font-size: 22px;
 }
 
-/* Línea separadora VERDE en el menú flotante */
+/* Línea separadora VERDE */
+
 .user-drawer-divider {
   border: none !important;
   height: 1.6px !important;
-  margin: 6px 0 10px !important;
+  margin: 10px 0 !important;
   background: var(--verde) !important;
   opacity: 1 !important;
 }
 
-/* Items del menú */
+/* LISTA DE ITEMS */
+
 .user-drawer-nav {
   display: flex;
   flex-direction: column;
-  padding: 4px 0 8px;
+  padding: 4px 0 10px;
 }
+
+/* Cada fila: icono a la IZQUIERDA, texto a la derecha */
+
 .user-drawer-item {
   width: 100%;
   border: none;
   background: none;
-  padding: 10px 18px;
+  padding: 12px 22px;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 18px;
   font-size: 15px;
   color: #ffffff;
   text-decoration: none;
   cursor: pointer;
   text-align: left;
+  justify-content: flex-start;
 }
+
 .user-drawer-item:hover {
   background: rgba(255, 255, 255, 0.06);
 }
+
+/* Icono: fija el ancho y siempre primero */
+
 .user-drawer-item-icon {
   width: 24px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  margin-left: 0;
+  order: 0;
 }
 
-/* Cerrar sesión */
+/* Texto del item siempre después del icono */
+
+.user-drawer-item span:not(.user-drawer-item-icon) {
+  order: 1;
+}
+
+/* CERRAR SESIÓN (rojo) */
+
 .user-drawer-item.logout {
   color: #ff4b4b;
   font-weight: 500;
   margin-top: 4px;
 }
+
 .user-drawer-item.logout .material-symbols-outlined {
   color: #ff4b4b;
 }
 
-/* ============================================================
-   HERO
-============================================================ */
+/* ================= HERO / PRODUCTO / RESTO ================= */
 
 .hero {
   padding-top: 7rem;
@@ -425,7 +445,6 @@ body {
   color: var(--verde);
 }
 
-/* Texto hero optimizado en móviles */
 @media (max-width: 900px) {
   .hero-text h1 {
     font-size: 2rem;
@@ -443,7 +462,8 @@ body {
   margin-top: 0.5rem;
 }
 
-/* === HERO CARD (Outlined / Tarjeta delineada mejorada) === */
+/* HERO CARD */
+
 .hero-card {
   background: var(--blanco);
   max-width: 1100px;
@@ -456,13 +476,11 @@ body {
   transition: all 0.3s ease;
 }
 
-/* Efecto hover sutil (solo visible en escritorio) */
 .hero-card:hover {
   transform: translateY(-6px);
   box-shadow: 0 18px 36px rgba(0, 0, 0, 0.12);
 }
 
-/* En móviles: sombra más suave sin movimiento */
 @media (max-width: 900px) {
   .hero-card {
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
@@ -470,11 +488,12 @@ body {
   }
 }
 
-/* === HERO CARRUSEL === */
+/* HERO CARRUSEL */
+
 .hero-carousel {
   position: relative;
   width: 100%;
-  height: 560px; /* escritorio */
+  height: 560px;
   overflow: hidden;
 }
 
@@ -495,17 +514,18 @@ body {
 
 @media (max-width: 1200px) and (min-width: 901px) {
   .hero-carousel {
-    height: 420px; /* tablet */
+    height: 420px;
   }
 }
 
 @media (max-width: 900px) {
   .hero-carousel {
-    height: 360px; /* móvil */
+    height: 360px;
   }
 }
 
-/* === PRODUCTO PRINCIPAL === */
+/* PRODUCTO PRINCIPAL */
+
 .product-main {
   max-width: 1100px;
   margin: 3rem auto;
@@ -521,7 +541,6 @@ body {
   margin-bottom: 2.5rem;
 }
 
-/* === SELECTOR DE CANTIDAD (Material 3 – Premium, minimalista) === */
 .quantity-container {
   margin-top: 1.4rem;
   display: flex;
@@ -534,7 +553,7 @@ body {
   height: 38px;
   border-radius: 50%;
   background: #fff;
-  border: 1.6px solid rgba(0,0,0,0.10);
+  border: 1.6px solid rgba(0, 0, 0, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -544,27 +563,23 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* — Icono menos (café) */
 .minus-btn {
   color: var(--marron);
   font-weight: 600;
 }
 
-/* — Icono más (verde) */
 .plus-btn {
   color: var(--verde);
   font-weight: 600;
 }
 
-/* Hover solo en escritorio */
 @media (min-width: 901px) {
   .qty-btn:hover {
     transform: translateY(-3px);
-    box-shadow: 0 6px 16px rgba(0,0,0,0.10);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
   }
 }
 
-/* Número */
 .qty-number {
   font-size: 1.6rem;
   font-weight: 600;
@@ -628,7 +643,6 @@ body {
   transform: translateY(-2px);
 }
 
-/* Corrige imagen y fondo */
 .product-img-wrap {
   display: flex;
   align-items: center;
@@ -636,11 +650,7 @@ body {
   background: radial-gradient(circle at center, #f5f5f5 0%, #fff 100%);
   border-radius: 18px;
   padding: 1rem;
-}
-
-.product-img-wrap {
-  border-radius: 18px !important;
-  overflow: hidden !important;
+  overflow: hidden;
 }
 
 .product-img-wrap img {
@@ -648,19 +658,25 @@ body {
   max-width: 320px;
   height: auto;
   object-fit: contain;
-  border-radius: 18px !important;
+  border-radius: 18px;
   display: block;
 }
 
-/* === CARRUSEL DE PRODUCTOS === */
+/* Responsive producto */
+
+@media (max-width: 900px) {
+  .product-main {
+    grid-template-columns: 1fr;
+    margin: 2rem 0.5rem;
+  }
+}
+
+/* CARRUSEL PRODUCTOS SIMILARES */
+
 .related {
   max-width: 1100px;
   margin: 0 auto 4rem;
   padding: 0 1rem;
-}
-
-.similar-list {
-  margin-top: 2.5rem;
 }
 
 .similar-title {
@@ -681,7 +697,7 @@ body {
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
-  padding-bottom: 0.5rem;
+  padding: 14px 0;
   scroll-behavior: smooth;
 }
 
@@ -719,11 +735,6 @@ body {
   z-index: 5 !important;
 }
 
-.similar-list {
-  padding-top: 14px !important;
-  padding-bottom: 14px !important;
-}
-
 .similar-card h4 {
   font-size: 0.9rem;
   color: var(--marron);
@@ -744,8 +755,8 @@ body {
   cursor: pointer;
 }
 
-/* Flechas SOLO escritorio */
-.carousel-prev, .carousel-next {
+.carousel-prev,
+.carousel-next {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
@@ -763,18 +774,28 @@ body {
   z-index: 10;
 }
 
-.carousel-prev:hover, .carousel-next:hover {
+.carousel-prev:hover,
+.carousel-next:hover {
   background: rgba(81, 38, 21, 0.85);
 }
 
-.carousel-prev { left: 16px; }
-.carousel-next { right: 16px; }
-
-@media (min-width: 901px) {
-  .carousel-prev, .carousel-next { display: flex; }
+.carousel-prev {
+  left: 16px;
 }
 
-/* === SOBRE NOSOTROS === */
+.carousel-next {
+  right: 16px;
+}
+
+@media (min-width: 901px) {
+  .carousel-prev,
+  .carousel-next {
+    display: flex;
+  }
+}
+
+/* SOBRE NOSOTROS */
+
 .about {
   max-width: 1100px;
   margin: 4rem auto;
@@ -785,7 +806,6 @@ body {
   padding: 0 1rem;
 }
 
-/* Tipografía estilo Apple */
 .about-text,
 .about-text p,
 .about-text h2,
@@ -793,7 +813,7 @@ body {
 .about-text span,
 .about-text * {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-               Helvetica, Arial, sans-serif !important;
+    Helvetica, Arial, sans-serif !important;
   font-weight: 350;
   line-height: 1.45;
   letter-spacing: -0.015em;
@@ -825,22 +845,21 @@ body {
   padding: 0.3rem 0.9rem;
   border-radius: 999px;
   font-size: 0.85rem;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
-/* Imagen about */
 .about-img img {
   width: 100%;
   height: 820px;
   object-fit: cover;
   border-radius: 22px;
-  box-shadow: 0 25px 60px rgba(0,0,0,0.15);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
   transition: transform 0.45s ease, box-shadow 0.45s ease;
 }
 
 .about-img img:hover {
   transform: translateY(-12px);
-  box-shadow: 0 30px 70px rgba(0,0,0,0.20);
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.2);
 }
 
 @media (max-width: 1200px) and (min-width: 901px) {
@@ -859,12 +878,13 @@ body {
   .about-img img {
     height: 460px;
     border-radius: 18px;
-    box-shadow: 0 18px 40px rgba(0,0,0,0.10);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.1);
     object-fit: cover;
   }
 }
 
-/* Contacto */
+/* CONTACTO */
+
 .contacto {
   text-align: center !important;
   margin: 4rem auto !important;
@@ -889,10 +909,11 @@ body {
   max-width: 700px !important;
 }
 
-/* Footer */
+/* FOOTER */
+
 footer {
   background: var(--blanco);
-  border-top: 1px solid rgba(0,0,0,0.05);
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
   text-align: center;
   padding: 1rem;
 }
@@ -928,6 +949,7 @@ footer p {
 }
 
 /* FAB */
+
 .fab-container {
   position: fixed;
   bottom: 24px;
@@ -950,7 +972,7 @@ footer p {
   align-items: center;
   justify-content: center;
   font-size: 2rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
   cursor: pointer;
 }
 
@@ -962,12 +984,12 @@ footer p {
 }
 
 .fab-options i.fa-whatsapp {
-  color: #25D366 !important;
+  color: #25d366 !important;
 }
 
 .fab-options i.fa-facebook-f,
 .fab-options i.fa-facebook {
-  color: #1877F2 !important;
+  color: #1877f2 !important;
 }
 
 .fab-options a {
@@ -980,7 +1002,7 @@ footer p {
   align-items: center;
   justify-content: center;
   font-size: 1.6rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   opacity: 0;
   pointer-events: none;
   transform: translateY(10px);
@@ -1004,15 +1026,8 @@ footer p {
   content: none !important;
 }
 
-/* Responsive producto */
-@media (max-width: 900px) {
-  .product-main {
-    grid-template-columns: 1fr;
-    margin: 2rem 0.5rem;
-  }
-}
+/* Split button */
 
-/* Botón split */
 .product-split {
   display: inline-flex;
   align-items: center;
@@ -1042,7 +1057,10 @@ footer p {
   justify-content: center;
   cursor: pointer;
   border-left: 1px solid rgba(255, 255, 255, 0.25);
-  transition: transform 0.12s ease, background 0.2s ease, box-shadow 0.12s ease;
+  transition:
+    transform 0.12s ease,
+    background 0.2s ease,
+    box-shadow 0.12s ease;
 }
 
 .product-split .icon-part:hover {
@@ -1065,7 +1083,8 @@ footer p {
   }
 }
 
-/* Hero carousel refuerzo */
+/* Hero refuerzo (por si acaso) */
+
 .hero-carousel img {
   opacity: 0;
   position: absolute;
@@ -1081,15 +1100,22 @@ footer p {
   opacity: 1;
 }
 
-/* Badge carrito refuerzo extra */
+/* Animaciones carrito extra */
+
 .cart-count.animate {
   animation: pulseCart 0.5s ease;
 }
 
 @keyframes pulseCart {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.28); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.28);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 #cart-btn.animate {
@@ -1097,16 +1123,26 @@ footer p {
 }
 
 @keyframes cartShake {
-  0% { transform: rotate(0deg); }
-  25% { transform: rotate(-12deg); }
-  50% { transform: rotate(12deg); }
-  75% { transform: rotate(-8deg); }
-  100% { transform: rotate(0deg); }
+  0% {
+    transform: rotate(0);
+  }
+  25% {
+    transform: rotate(-12deg);
+  }
+  50% {
+    transform: rotate(12deg);
+  }
+  75% {
+    transform: rotate(-8deg);
+  }
+  100% {
+    transform: rotate(0);
+  }
 }
 
 .similar-card.active-card {
   border: 2px solid var(--verde);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
   transform: scale(1.02);
   transition: 0.25s ease;
 }
