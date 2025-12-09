@@ -296,7 +296,7 @@ body {
   line-height: 1;
 }
 
-/* SCRIM (Fondo oscurecido) */
+/* SCRIM (fondo oscurecido) */
 .user-scrim {
   position: fixed;
   inset: 0;
@@ -311,54 +311,48 @@ body {
   pointer-events: auto;
 }
 
-/* DRAWER flotante — AJUSTADO PARA QUE QUEDE IGUAL QUE EN CARRITO */
+/* DRAWER flotante tipo Google Store (Material 3 Expressive) */
 .user-drawer {
   position: fixed;
-  top: 88px;              /* un poco más abajo del header */
-  left: 16px;
+  top: 80px; /* debajo del header fijo */
   right: 16px;
-  max-width: 380px;       /* ancho máximo similar al carrito */
-  margin: 0 auto;
-
-  background: #16181a;    /* mismo fondo oscuro */
+  width: min(360px, calc(100% - 24px));
+  background: #16181a;
   color: #ffffff;
   border-radius: 24px;
   box-shadow:
     0 18px 40px rgba(0, 0, 0, 0.75),
     0 0 0 1px rgba(255, 255, 255, 0.04);
   overflow: hidden;
-
-  transform: translateY(-10px) translateX(0);
+  transform: translateX(120%);
   opacity: 0;
   transition:
     transform 0.25s cubic-bezier(0.2, 0, 0, 1),
     opacity 0.2s ease-out;
-
   z-index: 999;
 }
 .user-drawer.open {
-  transform: translateY(0) translateX(0);
+  transform: translateX(0);
   opacity: 1;
 }
 
-/* Versión responsive (móvil ocupa casi todo el ancho) */
 @media (max-width: 600px) {
   .user-drawer {
     left: 12px;
     right: 12px;
-    max-width: none;
+    width: auto;
   }
 }
 
-/* ENCABEZADO DEL MENÚ (perfil logueado) */
+/* Encabezado del menú (perfil) */
 .user-drawer-header {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 18px 20px 14px;
+  gap: 12px;
+  padding: 16px 18px 12px;
 }
 
-/* Enlace clicable que envuelve avatar + textos + flecha */
+/* Bloque de perfil clicable + flecha */
 .user-drawer-profile-link {
   text-decoration: none;
   color: inherit;
@@ -368,7 +362,7 @@ body {
   align-items: center;
 }
 
-/* Efecto hover igual al carrito */
+/* Hover */
 .user-drawer-profile-link:hover {
   background: rgba(255, 255, 255, 0.06);
 }
@@ -415,44 +409,38 @@ body {
   font-size: 22px;
 }
 
-/* SEPARADORES — Verde fuerte (igual carrito) */
+/* Forzar línea separadora VERDE en el menú flotante */
 .user-drawer-divider {
   border: none !important;
   height: 1.6px !important;
-  margin: 8px 0 12px !important;   /* sin márgenes laterales, ocupa todo el ancho interno */
+  margin: 6px 0 10px !important;
   background: var(--verde) !important;
   opacity: 1 !important;
 }
 
-/* ITEMS DEL MENÚ (logueado y sin loguear) */
+/* Items del menú */
 .user-drawer-nav {
   display: flex;
   flex-direction: column;
-  padding: 4px 0 10px;
+  padding: 4px 0 8px;
 }
-
 .user-drawer-item {
   width: 100%;
   border: none;
   background: none;
-  padding: 12px 20px;
-
+  padding: 10px 18px;
   display: flex;
   align-items: center;
-  gap: 18px;
-
+  gap: 16px;
   font-size: 15px;
-  color: #ffffff;           /* textos en blanco */
+  color: #ffffff;
   text-decoration: none;
   cursor: pointer;
   text-align: left;
-
-  transition: background 0.2s ease;
 }
 .user-drawer-item:hover {
   background: rgba(255, 255, 255, 0.06);
 }
-
 .user-drawer-item-icon {
   width: 24px;
   display: inline-flex;
@@ -461,7 +449,7 @@ body {
   flex-shrink: 0;
 }
 
-/* Cerrar sesión en rojo (igual carrito) */
+/* Cerrar sesión */
 .user-drawer-item.logout {
   color: #ff4b4b;
   font-weight: 500;
