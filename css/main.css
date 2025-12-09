@@ -182,8 +182,8 @@ body {
 /* Ajuste del carrito SOLO en móvil */
 @media (max-width: 767px) {
   .cart-btn {
-    width: 40px;
-    height: 40px;
+    width: 52px;  /* mismo tamaño que en escritorio */
+    height: 52px;
     transform: none !important;
     transition: none !important;
   }
@@ -191,9 +191,9 @@ body {
   .cart-count {
     top: -4px;
     right: -4px;
-    width: 16px;
-    height: 16px;
-    font-size: 0.65rem;
+    width: 18px;
+    height: 18px;
+    font-size: 0.7rem;
   }
 }
 
@@ -261,12 +261,18 @@ body {
 ============================================================ */
 
 @media (max-width: 900px) {
+  /* 🔥 Ocultamos el logo en móvil para que no quede detrás del menú */
+  .logo {
+    display: none;
+  }
+
   .menu-toggle {
     display: block;
     position: absolute;
     left: 1rem;
     top: 50%;
     transform: translateY(-50%);
+    z-index: 2000; /* que quede por encima de todo */
   }
 
   .cart-btn {
@@ -527,8 +533,8 @@ body {
 
 .cart-btn {
   position: relative;
-  width: 44px;
-  height: 44px;
+  width: 52px;   /* antes 44px */
+  height: 52px;  /* antes 44px */
   border-radius: 50%;
   border: none;
   background: rgba(51, 103, 59, 0.15);
@@ -540,7 +546,7 @@ body {
 
 .cart-btn i {
   color: var(--verde);
-  font-size: 1.3rem;
+  font-size: 1.6rem; /* antes 1.3rem */
 }
 
 .cart-count {
