@@ -63,13 +63,14 @@
      MENÚ FLOTANTE MATERIAL 3 — IGUAL AL DEL CARRITO
 ====================================================== -->
 
+<!-- SCRIM (fondo oscurecido para el menú flotante) -->
 <div id="user-scrim" class="user-scrim"></div>
 
+<!-- MENÚ FLOTANTE MATERIAL 3 — UNIFICADO (LOGUEADO + MISMO DISEÑO DEL CARRITO) -->
 <aside id="user-drawer" class="user-drawer" aria-hidden="true">
 
-  <!-- ========= PERFIL (LOGUEADO) ========= -->
-  <div id="drawer-links-logged" style="display:none;">
-
+  <!-- ========= CABECERA (solo visible si está logueado) ========= -->
+  <div id="drawer-logged" style="display:none;">
     <a href="perfil.html" class="user-drawer-header user-drawer-profile-link">
       <div class="user-drawer-avatar">
         <img id="avatar-user-drawer" src="imagenes/avatar-default.svg" alt="Usuario">
@@ -86,44 +87,42 @@
     <hr class="user-drawer-divider">
 
     <nav class="user-drawer-nav">
-
       <a href="mispedidos.html" class="user-drawer-item">
-        <span class="material-symbols-outlined user-drawer-item-icon">shopping_bag</span>
+        <span class="user-drawer-item-icon material-symbols-outlined">shopping_bag</span>
         <span>Mis pedidos</span>
       </a>
 
       <a href="historial.html" class="user-drawer-item">
-        <span class="material-symbols-outlined user-drawer-item-icon">history</span>
-        <span>Historial</span>
+        <span class="user-drawer-item-icon material-symbols-outlined">history</span>
+        <span>Historial de compras</span>
       </a>
 
       <a href="#productos" class="user-drawer-item">
-        <span class="material-symbols-outlined user-drawer-item-icon">local_cafe</span>
-        <span>Variedades</span>
+        <span class="user-drawer-item-icon material-symbols-outlined">local_cafe</span>
+        <span>Variedades de café</span>
       </a>
 
       <a href="#nosotros" class="user-drawer-item">
-        <span class="material-symbols-outlined user-drawer-item-icon">groups</span>
-        <span>Nosotros</span>
+        <span class="user-drawer-item-icon material-symbols-outlined">groups</span>
+        <span>Quiénes somos</span>
       </a>
 
       <a href="#contacto" class="user-drawer-item">
-        <span class="material-symbols-outlined user-drawer-item-icon">mail</span>
-        <span>Contacto</span>
+        <span class="user-drawer-item-icon material-symbols-outlined">mail</span>
+        <span>Contáctanos</span>
       </a>
 
       <hr class="user-drawer-divider">
 
       <button id="logout-btn" class="user-drawer-item logout">
-        <span class="material-symbols-outlined user-drawer-item-icon">logout</span>
+        <span class="user-drawer-item-icon material-symbols-outlined">logout</span>
         <span>Cerrar sesión</span>
       </button>
-
     </nav>
   </div>
 
   <!-- ========= NO LOGUEADO ========= -->
-  <div id="drawer-links-default">
+  <div id="drawer-default">
     <nav class="user-drawer-nav">
 
       <a href="#productos" class="user-drawer-item">
