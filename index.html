@@ -21,7 +21,7 @@
   <header class="header">
     <div class="header-content">
 
-      <!-- Botón hamburguesa (abre el menú flotante en móvil / sin login) -->
+      <!-- Botón hamburguesa (móvil) -->
       <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menú">
         <i class="fa-solid fa-bars"></i>
       </button>
@@ -31,18 +31,18 @@
         <img src="imagenes/logo.png" alt="Café Cortero">
       </a>
 
-      <!-- MENÚ ESCRITORIO (enlaces principales) -->
+      <!-- MENÚ ESCRITORIO (enlaces principales + login/avatar) -->
       <nav class="nav-links desktop-only">
         <a href="#productos">Variedades de café</a>
         <a href="#nosotros">Quiénes somos</a>
         <a href="#contacto" class="contact-link">Contáctanos</a>
 
-        <!-- Enlace de login en desktop cuando NO hay sesión (auth-ui.js lo controla) -->
+        <!-- Link login en desktop cuando NO hay sesión -->
         <a href="login.html" class="login-link" id="login-desktop">
           Iniciar sesión
         </a>
 
-        <!-- Perfil escritorio cuando SÍ hay sesión (auth-ui.js lo muestra) -->
+        <!-- Avatar escritorio cuando SÍ hay sesión (lo muestra auth-ui.js) -->
         <div class="profile-wrapper" id="profile-desktop" style="display:none;">
           <button
             id="btn-header-user"
@@ -69,12 +69,8 @@
 
   <!-- =====================================================
        MENÚ FLOTANTE MATERIAL 3 (PC + MÓVIL)
-       • Se abre con:
-         – Avatar (#btn-header-user) en escritorio (logueado)
-         – Hamburguesa (#menu-toggle) en móvil / sin sesión
-       • Dos vistas:
-         – #drawer-links-logged   → usuario logueado
-         – #drawer-links-default → usuario sin loguear
+       - Mismo HTML que el del carrito (memoria) para LOGUEADO
+       - Vista extra para NO logueado
   ====================================================== -->
 
   <!-- Fondo oscurecido -->
@@ -83,21 +79,17 @@
   <!-- Drawer flotante -->
   <aside id="user-drawer" class="user-drawer" aria-hidden="true">
 
-    <!-- ========= VISTA LOGUEADO ========= -->
+    <!-- ========= VISTA LOGUEADO (MENÚ EN MEMORIA / CARRITO) ========= -->
     <div id="drawer-links-logged" style="display:none;">
 
-      <!-- Bloque de perfil clicable que lleva a perfil.html -->
       <a href="perfil.html" class="user-drawer-header user-drawer-profile-link">
         <div class="user-drawer-avatar">
           <img id="avatar-user-drawer" src="imagenes/avatar-default.svg" alt="Usuario">
         </div>
-
         <div class="user-drawer-profile-texts">
           <p class="user-drawer-name" id="hello-desktop-cart">Hola, Usuario</p>
-          <p class="user-drawer-email" id="email-drawer-cart">correo@ejemplo.com</p>
+          <p class="user-drawer-email" id="email-drawer-cart">alansosa225@gmail.com</p>
         </div>
-
-        <!-- Flecha estilo Google Store -->
         <span class="material-symbols-outlined user-drawer-arrow">chevron_right</span>
       </a>
 
@@ -108,30 +100,25 @@
           <span class="user-drawer-item-icon material-symbols-outlined">shopping_bag</span>
           <span>Mis pedidos</span>
         </a>
-
         <a href="historial.html" class="user-drawer-item">
           <span class="user-drawer-item-icon material-symbols-outlined">history</span>
           <span>Historial de compras</span>
         </a>
-
-        <a href="#productos" class="user-drawer-item">
+        <a href="index.html#productos" class="user-drawer-item">
           <span class="user-drawer-item-icon material-symbols-outlined">local_cafe</span>
           <span>Variedades de café</span>
         </a>
-
-        <a href="#nosotros" class="user-drawer-item">
+        <a href="index.html#nosotros" class="user-drawer-item">
           <span class="user-drawer-item-icon material-symbols-outlined">groups</span>
           <span>Quiénes somos</span>
         </a>
-
-        <a href="#contacto" class="user-drawer-item">
+        <a href="index.html#contacto" class="user-drawer-item">
           <span class="user-drawer-item-icon material-symbols-outlined">mail</span>
           <span>Contáctanos</span>
         </a>
 
         <hr class="user-drawer-divider">
 
-        <!-- Cerrar sesión -->
         <button id="logout-btn" class="user-drawer-item logout" type="button">
           <span class="user-drawer-item-icon material-symbols-outlined">logout</span>
           <span>Cerrar sesión</span>
@@ -139,19 +126,17 @@
       </nav>
     </div>
 
-    <!-- ========= VISTA SIN LOGUEAR ========= -->
+    <!-- ========= VISTA SIN LOGUEAR (HAMBURGUESA MÓVIL) ========= -->
     <div id="drawer-links-default">
       <nav class="user-drawer-nav">
         <a href="#productos" class="user-drawer-item">
           <span class="user-drawer-item-icon material-symbols-outlined">local_cafe</span>
           <span>Variedades de café</span>
         </a>
-
         <a href="#nosotros" class="user-drawer-item">
           <span class="user-drawer-item-icon material-symbols-outlined">groups</span>
           <span>Quiénes somos</span>
         </a>
-
         <a href="#contacto" class="user-drawer-item">
           <span class="user-drawer-item-icon material-symbols-outlined">mail</span>
           <span>Contáctanos</span>
@@ -177,7 +162,7 @@
     <section class="hero">
       <div class="hero-text">
         <h1><span class="verde">La esencia de Honduras en cada sorbo.</span></h1>
-        <p>Café hondureño de altura, tueste medio y esencia familiar.</p>
+      <p>Café hondureño de altura, tueste medio y esencia familiar.</p>
       </div>
 
       <div class="hero-card">
