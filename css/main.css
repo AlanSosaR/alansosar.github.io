@@ -49,7 +49,7 @@ body {
 .header-fixed {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;   /* antes: space-between */
   padding: 0 1.2rem;
 }
 
@@ -74,12 +74,9 @@ body {
 
 /* Ocultamos logos en móvil para que no se queden detrás del menú */
 @media (max-width: 900px) {
-  .logo {
-    display: none;
-  }
-
-  .header-logo-link {
-    display: none;
+  header .logo,
+  header .header-logo-link {
+    display: none !important;
   }
 }
 
@@ -139,6 +136,23 @@ body {
   }
 }
 
+/* Alineación en escritorio: menú a la derecha */
+@media (min-width: 901px) {
+  .header-logo-link {
+    margin-right: 2rem;
+  }
+
+  .nav-links {
+    margin-left: auto; /* empuja el bloque nav hacia la derecha */
+  }
+
+  .profile-wrapper-cart {
+    margin-left: 1.5rem;
+    display: flex;
+    align-items: center;
+  }
+}
+
 /* ============================================================
    BOTÓN CARRITO — TAMAÑO CORRECTO EN PC Y MÓVIL
    (aplica tanto a .cart-btn como al #cart-btn del header nuevo)
@@ -156,6 +170,7 @@ body {
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  z-index: 1500;  /* siempre visible encima */
 }
 
 #cart-btn i,
