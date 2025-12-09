@@ -47,64 +47,168 @@ function addToCart(product) {
   animateCartBadge();
 }
 
+/* ===================== HELPERS MENÚ (MEMORIA) ===================== */
+
+function getUserLS() {
+  try {
+    return JSON.parse(localStorage.getItem("cortero_user")) || null;
+  } catch {
+    return null;
+  }
+}
+
+function getSupabaseClient() {
+  return window.supabaseClient || window.supabase || null;
+}
+
 /* ===================== EVENTO PRINCIPAL ===================== */
 
 document.addEventListener("DOMContentLoaded", () => {
 
   /* ============================================================
-     MENÚ MATERIAL 3 ÚNICO (PC + MÓVIL)
-     - Se abre con:
-       • Avatar (#btn-header-user) en escritorio
-       • Hamburguesa (#menu-toggle) en móvil
-     ============================================================ */
+     MENÚ MATERIAL 3 (PC + MÓVIL)
+     Versión unificada que ya teníamos en memoria
+     - Usa Supabase para sesión
+     - Foto + nombre + correo
+     - Logout
+     - Avatar (PC) y hamburguesa (móvil) abren/cerran el drawer
+  ============================================================ */
 
-  const userDrawer = safe("user-drawer");
-  const userScrim  = safe("user-scrim");
-  const avatarBtn  = safe("btn-header-user");
-  const menuToggle = safe("menu-toggle");
+  (async () => {
+    const avatarBtn        = safe("btn-header-user");
+    const avatarImg        = safe("avatar-user");
+    const avatarDrawerImg  = safe("avatar-user-drawer");
 
-  function openUserDrawer() {
-    if (userDrawer) userDrawer.classList.add("open");
-    if (userScrim)  userScrim.classList.add("open");
-  }
+    const userDrawer       = safe("user-drawer");
+    const userScrim        = safe("user-scrim");
+    const logoutBtn        = safe("logout-btn");
+    const menuToggle       = safe("menu-toggle");
 
-  function closeUserDrawer() {
-    if (userDrawer) userDrawer.classList.remove("open");
-    if (userScrim)  userScrim.classList.remove("open");
-  }
+    const helloDesktop     = safe("hello-desktop-cart");
+    const emailDrawer      = safe("email-drawer-cart");
 
-  if (userDrawer && userScrim) {
-    // Avatar escritorio
-    if (avatarBtn) {
-      avatarBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        if (userDrawer.classList.contains("open")) {
-          closeUserDrawer();
-        } else {
-          openUserDrawer();
+    const userLS = getUserLS();
+    const sb     = getSupabaseClient();
+
+    let session = null;
+
+    if (sb) {
+      try {
+        const { data, error } = await sb.auth.getSession();
+        if (!error) {
+          session = data.session;
         }
-      });
+      } catch (err) {
+        console.error("Error obteniendo sesión (menu):", err);
+      }
     }
 
-    // Hamburguesa móvil
-    if (menuToggle) {
-      menuToggle.addEventListener("click", (e) => {
-        e.stopPropagation();
-        if (userDrawer.classList.contains("open")) {
-          closeUserDrawer();
-        } else {
-          openUserDrawer();
+    function openUserDrawer() {
+      if (!userDrawer || !userScrim) return;
+      userDrawer.classList.add("open");
+      userScrim.classList.add("open");
+    }
+
+    function closeUserDrawer() {
+      if (!userDrawer || !userScrim) return;
+      userDrawer.classList.remove("open");
+      userScrim.classList.remove("open");
+    }
+
+    /* --------- NO LOGUEADO ---------- */
+    if (!session || !userLS) {
+      if (avatarImg)       avatarImg.src       = "imagenes/avatar-default.svg";
+      if (avatarDrawerImg) avatarDrawerImg.src = "imagenes/avatar-default.svg";
+
+      if (helloDesktop) helloDesktop.textContent = "Hola, invitado";
+      if (emailDrawer)  emailDrawer.textContent  = "Inicia sesión para continuar";
+
+      // Avatar (PC) → ir a login
+      if (avatarBtn) {
+        avatarBtn.onclick = () => {
+          window.location.href = "login.html";
+        };
+      }
+
+      // Hamburguesa (móvil) → ir a login
+      if (menuToggle) {
+        menuToggle.onclick = () => {
+          window.location.href = "login.html";
+        };
+      }
+
+      closeUserDrawer();
+      return;
+    }
+
+    /* --------- LOGUEADO ---------- */
+
+    const displayName = userLS.name || userLS.email || "Usuario";
+
+    if (helloDesktop) helloDesktop.textContent = `Hola, ${displayName}`;
+    if (emailDrawer)  emailDrawer.textContent  = userLS.email || "";
+
+    const photo = userLS.photo_url || "imagenes/avatar-default.svg";
+    if (avatarImg)       avatarImg.src       = photo;
+    if (avatarDrawerImg) avatarDrawerImg.src = photo;
+
+    if (sb) {
+      try {
+        const { data: perfil, error } = await sb
+          .from("users")
+          .select("photo_url")
+          .eq("id", userLS.id)
+          .single();
+
+        if (!error && perfil?.photo_url) {
+          if (avatarImg)       avatarImg.src       = perfil.photo_url;
+          if (avatarDrawerImg) avatarDrawerImg.src = perfil.photo_url;
+
+          localStorage.setItem(
+            "cortero_user",
+            JSON.stringify({ ...userLS, photo_url: perfil.photo_url })
+          );
         }
-      });
+      } catch (err) {
+        console.error("Error obteniendo perfil para avatar:", err);
+      }
+    }
+
+    // Avatar (PC) → abre/cierra drawer
+    if (avatarBtn) {
+      avatarBtn.onclick = (e) => {
+        e.stopPropagation();
+        const isOpen = userDrawer && userDrawer.classList.contains("open");
+        if (isOpen) closeUserDrawer();
+        else openUserDrawer();
+      };
+    }
+
+    // Hamburguesa (móvil) → abre/cierra drawer
+    if (menuToggle) {
+      menuToggle.onclick = (e) => {
+        e.stopPropagation();
+        const isOpen = userDrawer && userDrawer.classList.contains("open");
+        if (isOpen) closeUserDrawer();
+        else openUserDrawer();
+      };
     }
 
     // Cerrar al tocar el scrim
-    userScrim.addEventListener("click", () => {
-      closeUserDrawer();
+    if (userScrim) {
+      userScrim.onclick = () => {
+        closeUserDrawer();
+      };
+    }
+
+    // Cerrar con Escape
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeUserDrawer();
     });
 
-    // Cerrar al hacer click fuera del menú
+    // Cerrar con click fuera
     document.addEventListener("click", (e) => {
+      if (!userDrawer) return;
       const clickInsideDrawer = userDrawer.contains(e.target);
       const clickOnAvatar = avatarBtn && (e.target === avatarBtn || avatarBtn.contains(e.target));
       const clickOnMenuToggle = menuToggle && (e.target === menuToggle || menuToggle.contains(e.target));
@@ -114,11 +218,25 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    // Cerrar al cambiar tamaño de ventana (por si rotas o pasas a desktop)
+    // Cerrar al cambiar tamaño de ventana
     window.addEventListener("resize", () => {
       closeUserDrawer();
     });
-  }
+
+    // Logout
+    if (logoutBtn) {
+      logoutBtn.onclick = async () => {
+        try {
+          if (sb) await sb.auth.signOut();
+        } catch (err) {
+          console.error("Error al cerrar sesión:", err);
+        }
+        localStorage.removeItem("cortero_user");
+        closeUserDrawer();
+        window.location.href = "index.html";
+      };
+    }
+  })();
 
   /* ============================================================
      RESTO DE LA LÓGICA (SIN CAMBIOS)
