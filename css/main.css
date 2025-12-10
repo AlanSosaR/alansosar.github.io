@@ -468,17 +468,6 @@ body {
   align-items: center;
   gap: 18px;
   font-size: 15px;
-  color: #ffffff;
-  text-decoration: none;
-  cursor: pointer;
-  text-align: left;
-  justify-content: flex-start;
-}
-
-.user-drawer-item:hover {
-  background: rgba(255, 255, 255, 0.06);
-}
-
 :root {
   --marron: #512615;
   --verde: #33673B;
@@ -493,6 +482,308 @@ body {
   color: var(--marron);
   scroll-behavior: smooth;
   -webkit-tap-highlight-color: transparent;
+}
+
+/* ============================================
+   HEADER — ARREGLADO COMPLETAMENTE
+============================================ */
+
+.header, .header-fixed {
+  position: fixed;
+  top: 0; width: 100%; height: 72px;
+  background: var(--blanco);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  padding: 0 1.2rem;
+}
+
+.header-logo-link {
+  display: flex;
+  align-items: center;
+}
+
+.header-logo { height: 60px; }
+
+@media (max-width: 900px) {
+  .header-logo-link { display: none !important; }
+}
+
+/* NAV escritorio */
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin-left: auto;
+  text-align: right;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: var(--marron);
+  font-weight: 500;
+}
+
+.nav-links a:hover { color: var(--verde); }
+
+@media (max-width: 900px) { .nav-links { display: none; } }
+
+/* Hamburguesa */
+
+.menu-toggle {
+  background: none;
+  border: none;
+  color: var(--marron);
+  font-size: 1.8rem;
+  cursor: pointer;
+  display: none;
+}
+
+@media (max-width: 900px) { .menu-toggle { display: block; } }
+
+/* ============================================
+   CARRITO — CENTRADO, ALINEADO, CORREGIDO
+============================================ */
+
+.profile-wrapper-cart {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 1rem;
+}
+
+#cart-btn {
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(51,103,59,0.15);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  position: relative;
+}
+
+#cart-btn i {
+  font-size: 1.7rem;
+  color: var(--verde);
+}
+
+.cart-count {
+  position: absolute;
+  top: -4px; right: -4px;
+  width: 18px; height: 18px;
+  background: #d72638; color: #fff;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.7rem;
+}
+
+@media (max-width: 900px) {
+  .header-fixed { justify-content: space-between; }
+}
+
+/* Avatar */
+
+.header-avatar-button {
+  width: 40px; height: 40px;
+  border-radius: 50%; overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.header-avatar-button img {
+  width: 100%; height: 100%; object-fit: cover;
+}
+
+/* LOGIN VERDE */
+
+.header-login-btn,
+.header-login-btn span,
+.header-login-btn i {
+  color: var(--verde) !important;
+  font-weight: 600 !important;
+}
+
+/* ============================================
+   MENÚ FLOTANTE MATERIAL 3 — SIN DUPLICADOS
+============================================ */
+
+.material-symbols-outlined {
+  font-variation-settings: "FILL" 0,"wght" 400,"GRAD" 0,"opsz" 24;
+  font-size: 24px;
+}
+
+/* SCRIM */
+
+.user-scrim {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.55);
+  opacity: 0; pointer-events: none;
+  transition: .2s ease-out;
+  z-index: 2800;
+}
+
+.user-scrim.open {
+  opacity: 1; pointer-events: auto;
+}
+
+/* TARJETA */
+
+.user-drawer {
+  position: fixed;
+  top: 88px; left:16px; right:16px;
+  background: #16181a; color: #fff;
+  max-width: 680px; margin: 0 auto;
+  border-radius: 24px;
+  box-shadow: 0 24px 60px rgba(0,0,0,.85),0 0 0 1px rgba(255,255,255,.04);
+  overflow: hidden;
+  transform: translateY(18px);
+  opacity: 0; pointer-events: none;
+  transition: .25s cubic-bezier(0.2,0,0,1);
+  z-index: 3000;
+}
+
+.user-drawer.open {
+  transform: translateY(0);
+  opacity: 1; pointer-events: auto;
+}
+
+/* PERFIL DEL MENÚ */
+
+.user-drawer-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 22px 14px;
+  cursor: pointer;
+}
+
+.user-drawer-header:hover {
+  background: rgba(255,255,255,0.06);
+}
+
+.user-drawer-avatar {
+  width: 56px; height: 56px;
+  border-radius: 18px;
+  overflow: hidden;
+  display: flex;
+  align-items: center; justify-content: center;
+}
+
+.user-drawer-avatar img {
+  width: 100%; height: 100%; object-fit: cover;
+}
+
+/* Textos */
+
+.user-drawer-profile-texts {
+  flex: 1;
+  display: flex; flex-direction: column;
+}
+
+.user-drawer-name {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.user-drawer-email {
+  font-size: 13px;
+  opacity: .75;
+  margin: 2px 0 0;
+}
+
+/* Flecha */
+
+.user-drawer-arrow {
+  margin-left: auto;
+  font-size: 22px;
+  color: rgba(255,255,255,0.7);
+}
+
+/* Divider */
+
+.user-drawer-divider {
+  height: 1.6px;
+  background: var(--verde);
+  margin: 10px 0;
+}
+
+/* ============================================
+   LISTA DE ITEMS — EN FILA PERFECTA
+============================================ */
+
+.user-drawer-nav {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-drawer-item {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  gap: 18px;
+  padding: 12px 22px;
+  cursor: pointer;
+  color: #fff;
+  text-decoration: none;
+}
+
+.user-drawer-item:hover {
+  background: rgba(255,255,255,0.06);
+}
+
+/* Icono */
+
+.user-drawer-item-icon {
+  width: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Cerrar sesión rojo */
+
+.user-drawer-item.logout {
+  color: #ff4b4b !important;
+  font-weight: 600 !important;
+}
+
+.user-drawer-item.logout .material-symbols-outlined {
+  color: #ff4b4b !important;
+}
+
+/* Login verde */
+
+#drawer-links-default .user-drawer-item:last-child,
+#drawer-links-default .user-drawer-item:last-child span,
+#drawer-links-default .user-drawer-item:last-child .material-symbols-outlined {
+  color: var(--verde) !important;
+  font-weight: 600 !important;
+}
+
+/* ============================================
+   ANIMACIONES CARRITO
+============================================ */
+
+.cart-count.animate { animation: pulseCart .5s ease; }
+
+@keyframes pulseCart {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.28); }
+  100% { transform: scale(1); }
+}
+
+#cart-btn.animate { animation: cartShake .6s ease; }
+
+@keyframes cartShake {
+  0% { transform: rotate(0); }
+  25% { transform: rotate(-12deg); }
+  50% { transform: rotate(12deg); }
+  75% { transform: rotate(-8deg); }
+  100% { transform: rotate(0); }
 }
 
 /* ============================================
