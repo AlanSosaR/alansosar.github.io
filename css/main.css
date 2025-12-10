@@ -108,6 +108,18 @@ body {
 #cart-btn {
   margin-right: 8px !important; /* separa del borde derecho */
 }
+
+/* PC — separa el carrito del texto Iniciar sesión */
+@media (min-width: 901px) {
+
+  .profile-wrapper-cart {
+    margin-left: 24px !important;  /* aire entre el texto y el carrito */
+  }
+
+  #cart-btn {
+    margin-left: 12px !important;  /* aire adicional */
+  }
+}
 /* Menú hamburguesa */
 
 .menu-toggle {
