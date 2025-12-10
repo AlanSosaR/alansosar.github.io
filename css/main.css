@@ -300,33 +300,300 @@ body {
 .user-drawer-nav {
   display: flex;
   flex-direction: column;
+/* ============================================
+   HEADER FINAL — CORREGIDO (PC + MÓVIL)
+============================================ */
+
+.header-fixed {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 72px;
+  background: var(--blanco);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  z-index: 3000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  box-sizing: border-box;
+  overflow: visible !important;
+}
+
+/* LOGO */
+.header-logo-link {
+  display: flex;
+  align-items: center;
+}
+.header-logo {
+  height: 56px;
+}
+
+/* ================= NAV ESCRITORIO ================= */
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin-left: auto;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: var(--marron);
+  font-weight: 500;
+}
+.nav-links a:hover {
+  color: var(--verde);
+}
+
+/* Mostrar solo en PC */
+.desktop-only { display: flex; }
+
+/* Mostrar solo en móvil */
+.mobile-only { display: none; }
+
+/* En móvil ocultamos nav-links */
+@media (max-width: 900px) {
+  .desktop-only { display: none; }
+  .mobile-only { display: block; }
+}
+
+/* ================= MENÚ HAMBURGUESA MÓVIL ================= */
+
+.menu-toggle {
+  background: none;
+  border: none;
+  color: var(--marron);
+  font-size: 1.9rem;
+  cursor: pointer;
+  display: none;
+  z-index: 2000;
+}
+
+@media (max-width: 900px) {
+  .menu-toggle {
+    display: block;
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+}
+
+/* ================= AVATAR HEADER ================= */
+
+.header-avatar-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.header-avatar-button img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ================= CARRITO ================= */
+
+.profile-wrapper-cart {
+  display: flex;
+  align-items: center;
+}
+
+#cart-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(51,103,59,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+  overflow: visible !important;
+}
+
+#cart-btn i {
+  font-size: 1.6rem;
+  color: var(--verde);
+}
+
+/* Badge rojo */
+.cart-count {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: #d72638;
+  color: #fff;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  font-size: 0.7rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5000;
+}
+
+/* Espaciado extra en PC */
+@media (min-width: 901px) {
+  .profile-wrapper-cart {
+    margin-left: 24px !important;
+  }
+  .header-avatar-button {
+    margin-left: 22px;
+  }
+}
+
+/* ============================================
+   MENÚ FLOTANTE MATERIAL 3 — FINAL
+============================================ */
+
+.material-symbols-outlined {
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+  font-size: 24px;
+}
+
+/* SCRIM */
+.user-scrim {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease-out;
+  z-index: 2800;
+}
+.user-scrim.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* TARJETA NEGRA FLOTANTE */
+.user-drawer {
+  position: fixed;
+  top: 88px;
+  left: 16px;
+  right: 16px;
+  max-width: 680px;
+  margin: 0 auto;
+  background: #16181a;
+  color: #ffffff;
+  border-radius: 24px;
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.85),
+    0 0 0 1px rgba(255, 255, 255, 0.04);
+  overflow: hidden;
+  transform: translateY(18px);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    transform 0.25s cubic-bezier(0.2, 0, 0, 1),
+    opacity 0.2s ease-out;
+  z-index: 3000 !important;
+}
+
+.user-drawer.open {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Ajuste en móvil */
+@media (max-width: 600px) {
+  .user-drawer {
+    left: 12px;
+    right: 12px;
+  }
+}
+
+/* CABECERA DEL PERFIL */
+.user-drawer-header,
+.user-drawer-profile-link {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 22px 14px;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+.user-drawer-header:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.user-drawer-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #555;
+  flex-shrink: 0;
+}
+.user-drawer-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.user-drawer-profile-texts {
+  flex: 1;
+}
+.user-drawer-name {
+  font-size: 16px;
+  font-weight: 600;
+}
+.user-drawer-email {
+  font-size: 13px;
+  opacity: 0.75;
+}
+.user-drawer-arrow {
+  margin-left: auto;
+  font-size: 22px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.user-drawer-divider {
+  height: 1.6px;
+  background: var(--verde);
+  margin: 10px 0;
+}
+
+/* ITEMS */
+.user-drawer-nav {
+  display: flex;
+  flex-direction: column;
   padding-bottom: 10px;
 }
 
 .user-drawer-item {
   padding: 12px 22px;
   display: flex;
-  flex-direction: row;
   align-items: center;
   gap: 18px;
-  text-decoration: none;
   color: #fff;
   cursor: pointer;
 }
-
 .user-drawer-item:hover {
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255,255,255,0.06);
 }
 
 .user-drawer-item-icon {
   width: 24px;
   height: 24px;
-  display: inline-flex;
-  align-items: center;
+  display: flex;
   justify-content: center;
 }
 
-/* CERRAR SESIÓN ROJO */
+/* Cerrar sesión en rojo */
 .user-drawer-item.logout {
   color: #ff4b4b !important;
   font-weight: 600 !important;
@@ -335,10 +602,27 @@ body {
   color: #ff4b4b !important;
 }
 
-/* INICIAR SESIÓN VERDE */
-#drawer-links-default .user-drawer-item:last-child {
-  color: var(--verde) !important;
-  font-weight: 600 !important;
+/* ============================================
+   POSICIÓN PERFECTA DEL MENÚ (PC + MÓVIL)
+============================================ */
+
+/* PC → pegado al avatar */
+@media (min-width: 901px) {
+  .user-drawer {
+    top: 78px !important;
+    left: auto !important;
+    right: 48px !important;
+    margin: 0;
+  }
+}
+
+/* Móvil → pegado a la hamburguesa */
+@media (max-width: 900px) {
+  .user-drawer {
+    top: 78px !important;
+    left: 16px !important;
+    right: 16px !important;
+  }
 }
 /* ================= HERO ================= */
 
