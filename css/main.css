@@ -1445,22 +1445,20 @@ footer p {
   opacity: 1;
 }
 
-/* ================= ANIMACIONES EXTRA ================= */
+/* ============================================
+   ANIMACIÓN SUAVE DEL BADGE DEL CARRITO
+============================================ */
 
 .cart-count.animate {
-  animation: pulseCart 0.5s ease;
+  animation: cartSoftBounce 0.35s ease-out;
+  transform-origin: center;
 }
 
-@keyframes pulseCart {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.28);
-  }
-  100% {
-    transform: scale(1);
-  }
+@keyframes cartSoftBounce {
+  0%   { transform: scale(1); }
+  35%  { transform: scale(1.25); }
+  70%  { transform: scale(0.90); }
+  100% { transform: scale(1); }
 }
 
 #cart-btn.animate {
@@ -1468,21 +1466,11 @@ footer p {
 }
 
 @keyframes cartShake {
-  0% {
-    transform: rotate(0);
-  }
-  25% {
-    transform: rotate(-12deg);
-  }
-  50% {
-    transform: rotate(12deg);
-  }
-  75% {
-    transform: rotate(-8deg);
-  }
-  100% {
-    transform: rotate(0);
-  }
+  0% { transform: rotate(0); }
+  25% { transform: rotate(-12deg); }
+  50% { transform: rotate(12deg); }
+  75% { transform: rotate(-8deg); }
+  100% { transform: rotate(0); }
 }
 
 .similar-card.active-card {
