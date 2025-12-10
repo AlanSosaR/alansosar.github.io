@@ -469,42 +469,311 @@ body {
   gap: 18px;
   font-size: 15px;
   color: #ffffff;
-  text-decoration: none;
-  cursor: pointer;
-  text-align: left;
-  justify-content: flex-start;
+/* ============================================
+   VARIABLES
+============================================ */
+:root {
+  --marron: #512615;
+  --verde: #33673B;
+  --blanco: #fff;
+  --gris: #f5f5f5;
+  --sombra: 0 6px 20px rgba(0, 0, 0, 0.08);
 }
 
-.user-drawer-item:hover {
-  background: rgba(255, 255, 255, 0.06);
+/* ============================================
+   BODY
+============================================ */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background: var(--blanco);
+  color: var(--marron);
+  scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
 }
 
-/* Icono: ancho fijo y siempre primero */
-.user-drawer-item-icon {
-  width: 24px;
-  display: inline-flex;
+/* ============================================
+   HEADER (OPCIÓN B) — CORREGIDO
+============================================ */
+
+.header-fixed {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 72px;
+  background: var(--blanco);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  display: flex;
   align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+  padding: 0 1rem;
+  justify-content: space-between;
+  z-index: 2000 !important;
 }
 
-/* CERRAR SESIÓN (rojo) */
-.user-drawer-item.logout {
-  color: #ff4b4b;
+/* Logo */
+.header-logo-link {
+  display: flex;
+  align-items: center;
+}
+.header-logo {
+  height: 60px;
+}
+
+@media (max-width: 900px) {
+  .header-logo-link {
+    display: none !important;
+  }
+}
+
+/* Hamburguesa */
+.menu-toggle {
+  background: none;
+  border: none;
+  color: var(--marron);
+  font-size: 1.8rem;
+  cursor: pointer;
+}
+
+/* NAV DESKTOP */
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+.nav-links a {
+  text-decoration: none;
+  color: var(--marron);
   font-weight: 500;
 }
+.nav-links a:hover {
+  color: var(--verde);
+}
 
+@media (max-width: 900px) {
+  .nav-links {
+    display: none;
+  }
+}
+
+/* ============================================
+   CARRITO — OPCIÓN 2 — ALINEADO CORRECTO
+============================================ */
+
+.profile-wrapper-cart {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  padding-right: 12px;   /* Opción 2 */
+}
+
+#cart-btn {
+  position: relative;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(51, 103, 59, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+#cart-btn i {
+  font-size: 1.7rem;
+  color: var(--verde);
+}
+
+.cart-count {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 18px;
+  height: 18px;
+  background: #d72638;
+  color: #fff;
+  border-radius: 50%;
+  font-size: 0.7rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Avatar header */
+.header-avatar-button {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+}
+.header-avatar-button img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+/* ============================================
+   MENÚ FLOTANTE MATERIAL 3 — FINAL
+============================================ */
+
+/* ICONOS MATERIAL */
+.material-symbols-outlined {
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+  font-size: 24px;
+  line-height: 1;
+}
+
+/* SCRIM */
+.user-scrim {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease-out;
+  z-index: 2800;
+}
+.user-scrim.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* TARJETA DEL MENÚ (MISMO ESTILO DEL CARRITO) */
+.user-drawer {
+  position: fixed;
+  top: 88px;
+  left: 16px;
+  right: 16px;
+  max-width: 680px;
+  margin: 0 auto;
+  background: #16181a;
+  color: #fff;
+  border-radius: 24px;
+  box-shadow:
+    0 24px 60px rgba(0,0,0,0.85),
+    0 0 0 1px rgba(255,255,255,0.04);
+  overflow: hidden;
+  transform: translateY(16px);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform .25s cubic-bezier(0.2,0,0,1), opacity .2s ease-out;
+  z-index: 3000 !important;
+}
+.user-drawer.open {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+@media (max-width: 600px) {
+  .user-drawer {
+    left: 12px;
+    right: 12px;
+  }
+}
+
+/* CABECERA PERFIL */
+.user-drawer-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 22px 14px;
+  text-decoration: none;
+  color: inherit;
+}
+.user-drawer-header:hover {
+  background: rgba(255,255,255,0.06);
+}
+
+/* AVATAR */
+.user-drawer-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 18px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.user-drawer-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* TEXTOS PERFIL */
+.user-drawer-profile-texts {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.user-drawer-name {
+  font-size: 16px;
+  font-weight: 600;
+}
+.user-drawer-email {
+  font-size: 13px;
+  opacity: .75;
+}
+
+/* FLECHA */
+.user-drawer-arrow {
+  margin-left: auto;
+  font-size: 22px;
+  color: rgba(255,255,255,0.7);
+}
+
+/* DIVIDER */
+.user-drawer-divider {
+  height: 1.6px;
+  background: var(--verde);
+  margin: 10px 0;
+}
+
+/* ITEMS */
+.user-drawer-nav {
+  display: flex;
+  flex-direction: column;
+}
+.user-drawer-item {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 12px 22px;
+  text-decoration: none;
+  color: #fff;
+}
+.user-drawer-item:hover {
+  background: rgba(255,255,255,0.06);
+}
+
+/* Icono */
+.user-drawer-item-icon {
+  width: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Cerrar sesión */
+.user-drawer-item.logout {
+  color: #ff4b4b;
+  font-weight: 600;
+}
 .user-drawer-item.logout .material-symbols-outlined {
   color: #ff4b4b;
 }
 
-/* ——— INICIAR SESIÓN EN VERDE (solo menú no logueado) ——— */
-
-#drawer-links-default .user-drawer-item:last-child,
+/* INICIAR SESIÓN VERDE */
 #drawer-links-default .user-drawer-item:last-child span,
 #drawer-links-default .user-drawer-item:last-child .material-symbols-outlined {
-    color: var(--verde) !important;
-    font-weight: 600 !important;
+  color: var(--verde) !important;
+  font-weight: 600 !important;
 }
 
 /* ================= HERO / PRODUCTO / RESTO ================= */
