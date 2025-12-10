@@ -128,21 +128,24 @@ body {
   }
 }
 
-/* ================= CARRITO HEADER — FIX ================= */
+/* ================= CARRITO HEADER — ARREGLADO ================= */
 
 .profile-wrapper-cart {
-  position: absolute;
-  right: 12px !important;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 2500 !important;
   display: flex;
   align-items: center;
+  gap: 0.5rem;
+  /* que herede la posición del header-content, sin absolute */
+  position: static;
+  top: auto;
+  right: auto;
+  transform: none;
+  z-index: 2500;
 }
 
+/* Botón carrito dentro del header */
 #cart-btn,
 .cart-btn {
-  position: relative !important;
+  position: relative;
   width: 52px;
   height: 52px;
   border-radius: 50%;
@@ -152,14 +155,15 @@ body {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  z-index: 2600 !important;
 }
 
-#cart-btn i {
+#cart-btn i,
+.cart-btn i {
   color: var(--verde);
   font-size: 1.7rem;
 }
 
+/* Badge del carrito */
 .cart-count {
   position: absolute;
   top: -4px;
@@ -173,6 +177,18 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/* Ajuste para móvil: que el carrito se quede a la derecha del header */
+@media (max-width: 900px) {
+  .header-content {
+    justify-content: space-between;
+  }
+
+  .profile-wrapper-cart {
+    margin-left: auto;
+    margin-right: 0;
+  }
 }
 
 /* ================= AVATAR HEADER — FIX ================= */
