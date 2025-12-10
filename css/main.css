@@ -15,7 +15,7 @@ body {
 }
 
 /* ============================================
-   HEADER FINAL — SIN CONFLICTOS Y SIN DUPLICADOS
+   HEADER FINAL — ORGANIZADO Y SIN CONFLICTOS
 ============================================ */
 
 .header-fixed {
@@ -28,9 +28,23 @@ body {
   z-index: 3000;
   display: flex;
   align-items: center;
-  justify-content: space-between; /*  MENU — CARRITO */
-  padding: 0 16px;
+  justify-content: space-between; /* hamburguesa / logo — carrito */
+  padding: 0 16px; /* móvil */
   box-sizing: border-box;
+}
+
+/* PC — da aire al menú y al carrito */
+@media (min-width: 901px) {
+  .header-fixed {
+    padding: 0 40px !important; /* ← Esto evita que los textos se peguen */
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 2rem;        /* separa las letras en PC */
+    margin-left: auto;
+  }
 }
 
 /* Mostrar/ocultar según tamaño */
@@ -42,7 +56,10 @@ body {
   .desktop-only { display: none; }
 }
 
-/* Carrito SIEMPRE visible */
+/* ============================================
+   CARRITO — COMPLETAMENTE VISIBLE SIEMPRE
+============================================ */
+
 .profile-wrapper-cart {
   display: flex;
   align-items: center;
@@ -53,7 +70,36 @@ body {
 #cart-btn {
   width: 48px;
   height: 48px;
-  z-index: 4000;
+  border-radius: 50%;
+  background: rgba(51,103,59,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 4000; /* evita que se esconda */
+}
+
+/* Icono dentro del carrito */
+#cart-btn i {
+  font-size: 1.6rem;
+  color: var(--verde);
+}
+
+/* Badge rojo — ya NO se corta */
+.cart-count {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: #d72638;
+  color: #fff;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  font-size: 0.7rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5000;
 }
 /* Menú hamburguesa */
 
