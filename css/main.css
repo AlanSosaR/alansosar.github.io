@@ -29,20 +29,21 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between; /* hamburguesa / logo — carrito */
-  padding: 0 16px; /* móvil */
+  padding: 0 24px !important;     /* ← FIX: da aire al carrito en móvil */
   box-sizing: border-box;
+  overflow: visible !important;   /* ← FIX: evita que se corte */
 }
 
-/* PC — da aire al menú y al carrito */
+/* PC — más aire a ambos lados */
 @media (min-width: 901px) {
   .header-fixed {
-    padding: 0 40px !important; /* ← Esto evita que los textos se peguen */
+    padding: 0 48px !important; /* ← más espacio en pantallas grandes */
   }
 
   .nav-links {
     display: flex;
     align-items: center;
-    gap: 2rem;        /* separa las letras en PC */
+    gap: 2rem;        /* separa textos del menú desktop */
     margin-left: auto;
   }
 }
@@ -76,7 +77,9 @@ body {
   align-items: center;
   justify-content: center;
   position: relative;
-  z-index: 4000; /* evita que se esconda */
+  margin-right: 0;              /* se controla con padding del header */
+  z-index: 4000;
+  overflow: visible !important; /* ← evita cortes del badge */
 }
 
 /* Icono dentro del carrito */
@@ -85,7 +88,7 @@ body {
   color: var(--verde);
 }
 
-/* Badge rojo — ya NO se corta */
+/* Badge rojo — ya NO se corta nunca */
 .cart-count {
   position: absolute;
   top: -4px;
@@ -100,6 +103,10 @@ body {
   align-items: center;
   justify-content: center;
   z-index: 5000;
+}
+
+#cart-btn {
+  margin-right: 8px !important; /* separa del borde derecho */
 }
 /* Menú hamburguesa */
 
