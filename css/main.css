@@ -156,44 +156,41 @@ body {
   border: none !important;
 }
 
-/* =====================================================
-   CARRITO — ESTILO PREMIUM IGUAL AL AVATAR
-===================================================== */
+/* ============================================
+   CARRITO — MISMO ESTILO QUE EL AVATAR
+============================================ */
 
 .profile-wrapper-cart {
-  display: flex !important;
+  display: flex;
   align-items: center;
-  justify-content: center;
-  position: relative;
-  z-index: 4000; /* siempre encima del contenido y del drawer */
 }
 
-/* Botón carrito con estilo premium (idéntico avatar) */
+/* Botón carrito con estilo premium */
 #cart-btn {
-  width: 40px;
-  height: 40px;
+  width: 40px;           /* Igual que avatar */
+  height: 40px;          /* Igual que avatar */
   border-radius: 50%;
-  background: #ffffff;
+  background: #ffffff;   /* Fondo limpio como el avatar */
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
   position: relative;
+  cursor: pointer;
 
-  /* misma sombra elegante del avatar */
-  box-shadow:
+  /* MISMA SOMBRA DEL AVATAR */
+  box-shadow: 
     0 4px 10px rgba(0, 0, 0, 0.12),
     0 1px 3px rgba(0, 0, 0, 0.08);
 
   transition: transform 0.18s ease, box-shadow 0.18s ease;
-  overflow: visible !important; /* para no cortar el badge */
+  overflow: visible !important; /* Para no cortar el badge */
 }
 
-/* Hover en PC */
+/* Hover igual que avatar (solo en PC) */
 @media (min-width: 901px) {
   #cart-btn:hover {
     transform: translateY(-2px);
-    box-shadow:
+    box-shadow: 
       0 6px 14px rgba(0, 0, 0, 0.20),
       0 2px 6px rgba(0, 0, 0, 0.12);
   }
@@ -201,12 +198,12 @@ body {
 
 /* Ícono del carrito */
 #cart-btn i {
-  font-size: 1.35rem;
+  font-size: 1.4rem;
   color: var(--verde);
   display: block;
 }
 
-/* Badge rojo del carrito */
+/* Badge rojo */
 .cart-count {
   position: absolute;
   top: -4px;
@@ -220,22 +217,10 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-
   z-index: 9999;
 }
 
-/* Animación del badge */
-.cart-count.animate {
-  animation: pulseCart 0.35s ease;
-}
-
-@keyframes pulseCart {
-  0%   { transform: scale(1); }
-  40%  { transform: scale(1.35); }
-  100% { transform: scale(1); }
-}
-
-/* SEPARACIÓN EN PC → lo deja balanceado con el avatar */
+/* PC → separar del avatar */
 @media (min-width: 901px) {
   .profile-wrapper-cart {
     margin-left: 24px !important;
@@ -249,25 +234,24 @@ body {
 ===================================================== */
 
 /* =====================================================
-   ICONOS MATERIAL — tamaño correcto
+   ICONOS MATERIAL
 ===================================================== */
 .material-symbols-outlined {
   font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
-  font-size: 24px;
-  line-height: 1;
+  font-size: 22px;
 }
 
 /* =====================================================
-   SCRIM — fondo oscurecido
+   SCRIM — FONDO OSCURO
 ===================================================== */
 .user-scrim {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.45);
+  background: rgba(0,0,0,0.55);
   opacity: 0;
   pointer-events: none;
-  transition: opacity .22s ease-out;
-  z-index: 998;
+  transition: opacity 0.22s ease-out;
+  z-index: 2800;
 }
 .user-scrim.open {
   opacity: 1;
@@ -275,144 +259,146 @@ body {
 }
 
 /* =====================================================
-   DRAWER — CORREGIDO SIN LÍNEA NEGRA
-   (Funciona igual a carrito en PC y móvil)
+   DRAWER — ESTILO CARRITO
 ===================================================== */
-
 .user-drawer {
   position: fixed;
-  top: 0;                     /* 🔥 ANTES 80px – ahora toca el header */
-  left: 0;
-  width: 88%;
+  top: 80px;
   max-width: 360px;
-  height: 100vh;
-
+  width: calc(100% - 32px);
   background: #16181a;
   color: #ffffff;
+  border-radius: 24px;
 
-  border-radius: 0 24px 24px 0;   /* 🔥 Sin borde arriba */
-  overflow: hidden;
+  box-shadow:
+    0 18px 40px rgba(0,0,0,0.75),
+    0 0 0 1px rgba(255,255,255,0.04);
 
-  transform: translateX(-100%);
   opacity: 0;
   pointer-events: none;
+  overflow: hidden;
 
   transition:
-    transform 0.28s cubic-bezier(0.20,0,0,1),
-    opacity .22s ease-out;
-
-  z-index: 4000;               /* 🔥 Sobre el header */
-  box-shadow:
-    0 20px 26px rgba(0,0,0,0.45);  /* 🔥 Solo sombra abajo */
+    transform 0.25s cubic-bezier(0.20,0,0,1),
+    opacity 0.22s ease-out;
+  z-index: 4000;
 }
 
-/* PC → abre a la derecha */
+/* PC → entra por la derecha */
 @media (min-width: 901px) {
   .user-drawer {
+    right: 48px;
     left: auto;
-    right: 0;
-    transform: translateX(100%);
-    border-radius: 24px 0 0 24px; /* 🔥 Ajuste PC (solo lado izquierdo redondeado) */
+    transform: translateX(120%);
+  }
+  .user-drawer.open {
+    transform: translateX(0);
+    opacity: 1;
+    pointer-events: auto;
   }
 }
 
-/* ESTADO ABIERTO */
-.user-drawer.open {
-  transform: translateX(0);
-  opacity: 1;
-  pointer-events: auto;
-}
-
-/* SCRIM */
-.user-scrim {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.34);
-  backdrop-filter: blur(2px);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity .25s ease;
-  z-index: 3500;
-}
-
-.user-scrim.open {
-  opacity: 1;
-  pointer-events: auto;
+/* Móvil → entra por la izquierda */
+@media (max-width: 900px) {
+  .user-drawer {
+    left: 16px;
+    right: 16px;
+    transform: translateX(-120%);
+  }
+  .user-drawer.open {
+    transform: translateX(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
 }
 
 /* =====================================================
-   VISIBILIDAD SEGÚN SESIÓN
+   VISIBILIDAD DE ELEMENTOS
 ===================================================== */
-.logged { display: none !important; }
+.logged { display: block !important; }
 .no-user { display: none !important; }
 
-/* El JS activa estos */
-.user-drawer.show-logged .logged {
-  display: flex !important;
+.user-drawer.no-user .logged {
+  display: none !important;
 }
-.user-drawer.show-guest .no-user {
+.user-drawer.no-user .no-user {
   display: flex !important;
 }
 
 /* =====================================================
-   HEADER DEL PERFIL — IGUAL AL CARRITO (VERSION PERFECTA)
+   HEADER PERFIL — AVATAR FLOTANTE REDONDO
 ===================================================== */
 .user-drawer-header {
   display: flex;
   align-items: center;
-  gap: 10px;                   /* 🔥 más compacto */
-  padding: 14px 18px;          /* 🔥 sin padding inferior extra */
-  cursor: pointer;
+  gap: 14px;
+  padding: 16px 18px 12px;
   text-decoration: none;
   color: inherit;
 }
 
-.user-drawer-avatar {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  overflow: hidden;
+.user-drawer-header:hover {
+  background: rgba(255,255,255,0.06);
+}
 
+/* === AVATAR FLOTANTE EXACTO AL DEL HEADER === */
+.user-drawer-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%; /* ← CÍRCULO PERFECTO */
+  overflow: hidden;
   background: #ffffff;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
+  /* SOMBRA PREMIUM EXACTA AL HEADER */
   box-shadow:
-    0 6px 14px rgba(0,0,0,0.18),
-    0 2px 4px rgba(0,0,0,0.12);
+    0 6px 14px rgba(0, 0, 0, 0.18),
+    0 2px 4px rgba(0, 0, 0, 0.12);
 
-  transition: .18s ease;
+  transition: transform 0.20s ease, box-shadow 0.20s ease;
 }
 
+/* PC → hover animado */
+@media (min-width: 901px) {
+  .user-drawer-avatar:hover {
+    transform: translateY(-3px);
+    box-shadow:
+      0 10px 24px rgba(0, 0, 0, 0.22),
+      0 4px 10px rgba(0, 0, 0, 0.16);
+  }
+}
+
+/* Imagen rellenando todo */
 .user-drawer-avatar img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+
+  display: block;
+  border: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
-/* Nombre + correo */
+/* TEXTOS DEL PERFIL */
 .user-drawer-info {
   display: flex;
   flex-direction: column;
-  justify-content: center;     /* 🔥 centra verticalmente y elimina separación */
-  line-height: 1.1;            /* 🔥 compactado */
 }
 
 .user-drawer-name {
   font-size: 15px;
   font-weight: 600;
-  margin: 0;
 }
 
 .user-drawer-email {
   font-size: 13px;
-  opacity: .7;
-  margin: 2px 0 0;             /* 🔥 apenas separación */
+  opacity: 0.7;
 }
 
-/* Flecha */
 .user-drawer-arrow {
   margin-left: auto;
   font-size: 22px;
@@ -420,51 +406,47 @@ body {
 }
 
 /* =====================================================
-   LÍNEA DIVISORA — MISMA DEL CARRITO
+   DIVIDER VERDE
 ===================================================== */
 .user-drawer-divider {
-  height: 1.4px;
+  height: 1.6px;
   background: var(--verde);
-  margin: 8px 0 12px;
-  opacity: .85;
+  opacity: 1;
+  margin: 6px 0 10px;
   border: none;
 }
 
 /* =====================================================
-   ITEMS DEL MENÚ — IGUAL AL CARRITO COMPLETAMENTE
+   ITEMS DEL MENÚ
 ===================================================== */
 .user-drawer-nav {
   display: flex;
   flex-direction: column;
-  padding-bottom: 6px;
 }
+
 .user-drawer-item {
-  width: 100%;
-  padding: 11px 18px;
+  padding: 10px 18px;
   display: flex;
   align-items: center;
   gap: 16px;
-
-  background: none;
-  border: none;
-
   color: #ffffff;
   font-size: 15px;
   cursor: pointer;
-  text-decoration: none;
+  background: transparent !important;
 }
+
 .user-drawer-item:hover {
   background: rgba(255,255,255,0.06);
 }
 
 .user-drawer-item-icon {
   width: 24px;
-  display: flex;
-  justify-content: center;
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
 }
 
-/* Logout — igual carrito */
+/* Logout rojo */
 .user-drawer-item.logout {
   color: #ff4b4b !important;
   font-weight: 600;
@@ -473,7 +455,7 @@ body {
   color: #ff4b4b !important;
 }
 
-/* Login — estilo verde */
+/* Login verde */
 .user-drawer-item.login {
   color: var(--verde) !important;
   font-weight: 600;
