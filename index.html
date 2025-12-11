@@ -10,13 +10,13 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <!-- CSS principal -->
-  <link rel="stylesheet" href="css/main.css?v=11">
+  <link rel="stylesheet" href="css/main.css?v=12">
 </head>
 
 <body>
 
 <!-- =====================================================
-     HEADER — IGUAL QUE CARRITO
+     HEADER — FINAL CORREGIDO (PC + Móvil)
 ====================================================== -->
 <header class="header-fixed">
 
@@ -30,37 +30,38 @@
     <img src="imagenes/logo.png" alt="Café Cortero" class="header-logo">
   </a>
 
-  <!-- MENÚ ESCRITORIO -->
+  <!-- MENÚ ESCRITORIO (no móvil) -->
   <nav class="nav-links desktop-only">
-
     <a href="#productos">Variedades de café</a>
     <a href="#nosotros">Quiénes somos</a>
     <a href="#contacto">Contáctanos</a>
-
-    <!-- Login Desktop (solo invitado) -->
-    <a href="login.html" id="login-desktop" class="login-link no-user">Iniciar sesión</a>
-
-    <!-- Avatar Desktop (solo logueado) -->
-    <div class="profile-wrapper logged" id="profile-desktop" style="display:none;">
-      <button id="btn-header-user" class="header-avatar-button" aria-label="Abrir menú de usuario">
-        <img id="avatar-user" src="imagenes/avatar-default.svg" class="header-avatar profile-photo-round" alt="Usuario">
-      </button>
-    </div>
-
   </nav>
 
-  <!-- Carrito -->
-  <div class="profile-wrapper-cart">
+  <!-- BLOQUE DE ACCIONES PC (Login, Avatar, Carrito) -->
+  <div class="header-actions desktop-only">
+
+    <!-- Solo invitado -->
+    <a href="login.html" id="login-desktop" class="login-link no-user">
+      Iniciar sesión
+    </a>
+
+    <!-- Solo logueado -->
+    <button id="btn-header-user" class="header-avatar-button logged" style="display:none;">
+      <img id="avatar-user" src="imagenes/avatar-default.svg" class="header-avatar profile-photo-round" alt="Usuario">
+    </button>
+
+    <!-- Carrito -->
     <button id="cart-btn" class="header-avatar-button" aria-label="Ver carrito">
       <i class="fa-solid fa-cart-shopping"></i>
       <span id="cart-count" class="cart-count">0</span>
     </button>
+
   </div>
 
 </header>
 
 <!-- =====================================================
-     MENÚ FLOTANTE MATERIAL 3 — FINAL CORREGIDO
+     MENÚ FLOTANTE MATERIAL 3 (Drawer)
 ====================================================== -->
 
 <!-- SCRIM -->
@@ -69,32 +70,27 @@
 <!-- DRAWER -->
 <aside id="user-drawer" class="user-drawer" aria-hidden="true">
 
-  <!-- BLOQUE PERFIL (solo logueado) -->
+  <!-- PERFIL (solo logueado) -->
   <a href="perfil.html" class="user-drawer-header logged user-drawer-profile-link">
 
-    <!-- FOTO REDONDA FLOTANTE -->
     <div class="user-drawer-avatar">
       <img id="avatar-user-drawer" src="imagenes/avatar-default.svg" alt="Usuario">
     </div>
 
-    <!-- NOMBRE + CORREO -->
     <div class="user-drawer-info">
       <p class="user-drawer-name" id="drawer-name">Hola, Usuario</p>
       <p class="user-drawer-email" id="drawer-email">correo@ejemplo.com</p>
     </div>
 
-    <!-- FLECHA -->
     <span class="material-symbols-outlined user-drawer-arrow">chevron_right</span>
-
   </a>
 
-  <!-- DIVIDER (solo logueado) -->
   <hr class="user-drawer-divider logged">
 
-  <!-- MENÚ PRINCIPAL -->
+  <!-- NAVEGACIÓN PRINCIPAL -->
   <nav class="user-drawer-nav">
 
-    <!-- Logueado -->
+    <!-- Opciones solo logueado -->
     <a href="mispedidos.html" class="user-drawer-item logged">
       <span class="material-symbols-outlined user-drawer-item-icon">shopping_bag</span>
       Mis pedidos
@@ -105,34 +101,33 @@
       Historial de compras
     </a>
 
-    <!-- Siempre visible -->
-    <a href="index.html#productos" class="user-drawer-item">
+    <!-- Opciones públicas -->
+    <a href="#productos" class="user-drawer-item">
       <span class="material-symbols-outlined user-drawer-item-icon">local_cafe</span>
       Variedades de café
     </a>
 
-    <a href="index.html#nosotros" class="user-drawer-item">
+    <a href="#nosotros" class="user-drawer-item">
       <span class="material-symbols-outlined user-drawer-item-icon">groups</span>
       Quiénes somos
     </a>
 
-    <a href="index.html#contacto" class="user-drawer-item">
+    <a href="#contacto" class="user-drawer-item">
       <span class="material-symbols-outlined user-drawer-item-icon">mail</span>
       Contáctanos
     </a>
 
   </nav>
 
-  <!-- SEPARADOR -->
   <hr class="user-drawer-divider">
 
-  <!-- CERRAR SESIÓN (solo logueado) -->
+  <!-- Logout (solo logueado) -->
   <button id="logout-btn" class="user-drawer-item logout logged">
     <span class="material-symbols-outlined user-drawer-item-icon">logout</span>
     Cerrar sesión
   </button>
 
-  <!-- INICIAR SESIÓN (solo invitado) -->
+  <!-- Iniciar sesión (solo invitado) -->
   <a href="login.html" class="user-drawer-item login no-user">
     <span class="material-symbols-outlined user-drawer-item-icon">login</span>
     Iniciar sesión
@@ -197,22 +192,14 @@
     </div>
   </section>
 
-  <!-- CARRUSEL DE SIMILARES -->
+  <!-- SIMILARES -->
   <section class="related">
     <h3 class="similar-title">También te puede interesar</h3>
 
     <div class="carousel-container">
-
-      <button class="carousel-prev desktop-only">
-        <i class="fa-solid fa-chevron-left"></i>
-      </button>
-
+      <button class="carousel-prev desktop-only"><i class="fa-solid fa-chevron-left"></i></button>
       <div class="similar-list" id="lista-similares"></div>
-
-      <button class="carousel-next desktop-only">
-        <i class="fa-solid fa-chevron-right"></i>
-      </button>
-
+      <button class="carousel-next desktop-only"><i class="fa-solid fa-chevron-right"></i></button>
     </div>
   </section>
 
@@ -226,10 +213,8 @@
         { img: 'imagenes/bolsa_1.png', nombre: 'Café Premium', precio: 'L 480' },
         { img: 'imagenes/bolsa_2.png', nombre: 'Café Tradicional', precio: 'L 150' }
       ];
-
-      const contenedor = document.getElementById('lista-similares');
-      if (contenedor) {
-        contenedor.innerHTML = productos.map(p => `
+      const cont = document.getElementById('lista-similares');
+      if (cont) cont.innerHTML = productos.map(p => `
           <div class="similar-card"
             data-name="${p.nombre}"
             data-price="${p.precio}"
@@ -238,8 +223,7 @@
             <h4>${p.nombre}</h4>
             <div class="price-sm">${p.precio}</div>
           </div>
-        `).join('');
-      }
+      `).join('');
     })();
   </script>
 
@@ -271,9 +255,8 @@
   <section id="contacto" class="contacto">
     <h2>Contáctanos</h2>
     <p>
-      Queremos compartir contigo la pasión por el café hondureño.<br>
       Escríbenos por <strong class="verde">WhatsApp</strong> o síguenos en
-      <strong class="verde">Facebook</strong> desde el botón de mensaje en pantalla.
+      <strong class="verde">Facebook</strong>.
     </p>
   </section>
 
@@ -289,17 +272,11 @@
 
 <!-- FAB -->
 <div class="fab-container" id="fab">
-  <button class="fab-main" id="fab-main">
-    <i class="fa-solid fa-comments"></i>
-  </button>
+  <button class="fab-main" id="fab-main"><i class="fa-solid fa-comments"></i></button>
 
   <div class="fab-options">
-    <a href="https://wa.me/50494546047?text=Hola" target="_blank" rel="noopener">
-      <i class="fa-brands fa-whatsapp"></i>
-    </a>
-    <a href="https://www.facebook.com/share/1FsrT4DYrU/" target="_blank" rel="noopener">
-      <i class="fa-brands fa-facebook-f"></i>
-    </a>
+    <a href="https://wa.me/50494546047" target="_blank"><i class="fa-brands fa-whatsapp"></i></a>
+    <a href="https://www.facebook.com/share/1FsrT4DYrU/" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
   </div>
 </div>
 
@@ -307,7 +284,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase-client-core.js"></script>
 <script src="js/supabase-auth.js"></script>
-<script src="js/main.js"></script>
+<script src="js/main.js?v=12"></script>
 <script src="js/auth-ui.js"></script>
 
 </body>
