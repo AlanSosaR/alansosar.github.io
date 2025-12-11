@@ -156,41 +156,44 @@ body {
   border: none !important;
 }
 
-/* ============================================
-   CARRITO — MISMO ESTILO QUE EL AVATAR
-============================================ */
+/* =====================================================
+   CARRITO — ESTILO PREMIUM IGUAL AL AVATAR
+===================================================== */
 
 .profile-wrapper-cart {
-  display: flex;
-  align-items: center;
-}
-
-/* Botón carrito con estilo premium */
-#cart-btn {
-  width: 40px;           /* Igual que avatar */
-  height: 40px;          /* Igual que avatar */
-  border-radius: 50%;
-  background: #ffffff;   /* Fondo limpio como el avatar */
-  display: flex;
+  display: flex !important;
   align-items: center;
   justify-content: center;
   position: relative;
-  cursor: pointer;
+  z-index: 4000; /* siempre encima del contenido y del drawer */
+}
 
-  /* MISMA SOMBRA DEL AVATAR */
-  box-shadow: 
+/* Botón carrito con estilo premium (idéntico avatar) */
+#cart-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+
+  /* misma sombra elegante del avatar */
+  box-shadow:
     0 4px 10px rgba(0, 0, 0, 0.12),
     0 1px 3px rgba(0, 0, 0, 0.08);
 
   transition: transform 0.18s ease, box-shadow 0.18s ease;
-  overflow: visible !important; /* Para no cortar el badge */
+  overflow: visible !important; /* para no cortar el badge */
 }
 
-/* Hover igual que avatar (solo en PC) */
+/* Hover en PC */
 @media (min-width: 901px) {
   #cart-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 
+    box-shadow:
       0 6px 14px rgba(0, 0, 0, 0.20),
       0 2px 6px rgba(0, 0, 0, 0.12);
   }
@@ -198,12 +201,12 @@ body {
 
 /* Ícono del carrito */
 #cart-btn i {
-  font-size: 1.4rem;
+  font-size: 1.35rem;
   color: var(--verde);
   display: block;
 }
 
-/* Badge rojo */
+/* Badge rojo del carrito */
 .cart-count {
   position: absolute;
   top: -4px;
@@ -217,10 +220,22 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+
   z-index: 9999;
 }
 
-/* PC → separar del avatar */
+/* Animación del badge */
+.cart-count.animate {
+  animation: pulseCart 0.35s ease;
+}
+
+@keyframes pulseCart {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.35); }
+  100% { transform: scale(1); }
+}
+
+/* SEPARACIÓN EN PC → lo deja balanceado con el avatar */
 @media (min-width: 901px) {
   .profile-wrapper-cart {
     margin-left: 24px !important;
