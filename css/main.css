@@ -228,13 +228,13 @@ body {
 }
 
 /* ============================================
-   MENÚ FLOTANTE MATERIAL 3 — TARJETA NEGRA
+   MENÚ FLOTANTE MATERIAL 3 — VERSION FINAL CARBON COPY
 ============================================ */
 
-/* Config iconos Material */
+/* Iconos Material */
 .material-symbols-outlined {
   font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
-  font-size: 24px;
+  font-size: 22px;
 }
 
 /* SCRIM */
@@ -244,7 +244,7 @@ body {
   background: rgba(0,0,0,0.55);
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.2s ease-out;
+  transition: opacity 0.22s ease-out;
   z-index: 2800;
 }
 .user-scrim.open {
@@ -252,65 +252,64 @@ body {
   pointer-events: auto;
 }
 
-/* TARJETA NEGRA */
+/* TARJETA — EXACTAMENTE COMO LA DEL CARRITO */
 .user-drawer {
   position: fixed;
-  top: 88px;
-  left: 16px;
-  right: 16px;
-  max-width: 680px;
-  margin: 0 auto;
-  background: #16181a;
+
+  max-width: 420px;   /* tamaño real en la captura */
+
+  right: 48px;        /* pegado al avatar */
+  top: 82px;
+
+  background: #1a1c1e;
   color: #ffffff;
-  border-radius: 24px;
-  box-shadow:
-    0 24px 60px rgba(0, 0, 0, 0.85),
-    0 0 0 1px rgba(255,255,255,0.04);
+  border-radius: 28px;     /* esquinas más suaves */
   overflow: hidden;
-  transform: translateY(18px);
+
+  box-shadow:
+    0 32px 80px rgba(0,0,0,0.65),
+    0 0 0 1px rgba(255,255,255,0.06);
+
+  transform: translateY(14px);
   opacity: 0;
   pointer-events: none;
   transition:
-    transform 0.25s cubic-bezier(0.2, 0, 0, 1),
+    transform 0.25s cubic-bezier(0.20,0,0,1),
     opacity 0.2s ease-out;
-  z-index: 3000 !important;
+
+  z-index: 4000 !important;
 }
+
 .user-drawer.open {
   transform: translateY(0);
   opacity: 1;
   pointer-events: auto;
 }
 
-/* Móvil */
-@media (max-width: 600px) {
-  .user-drawer {
-    left: 12px;
-    right: 12px;
-  }
-}
-
-/* CABECERA PERFIL */
+/* ============================================
+   CABECERA (Avatar + nombre)
+============================================ */
 .user-drawer-header,
 .user-drawer-profile-link {
   display: flex;
-  flex-direction: row;
   align-items: center;
   gap: 14px;
-  padding: 18px 22px 14px;
+
+  padding: 16px 22px 12px;
   text-decoration: none;
   color: inherit;
-  cursor: pointer;
-}
-.user-drawer-header:hover {
-  background: rgba(255,255,255,0.06);
 }
 
+.user-drawer-header:hover {
+  background: rgba(255,255,255,0.05);
+}
+
+/* Avatar */
 .user-drawer-avatar {
-  width: 56px;
-  height: 56px;
-  border-radius: 18px;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
   overflow: hidden;
-  flex-shrink: 0;
 }
 .user-drawer-avatar img {
   width: 100%;
@@ -318,82 +317,115 @@ body {
   object-fit: cover;
 }
 
-.user-drawer-profile-texts {
-  flex: 1;
-}
+/* Textos */
 .user-drawer-name {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
 }
 .user-drawer-email {
   font-size: 13px;
   opacity: 0.75;
 }
+
+/* Flecha */
 .user-drawer-arrow {
   margin-left: auto;
-  font-size: 22px;
-  color: rgba(255,255,255,0.7);
+  font-size: 20px;
+  opacity: 0.75;
 }
 
+/* Divider estilo carrito */
 .user-drawer-divider {
-  height: 1.6px;
-  background: var(--verde);
-  margin: 10px 0;
+  height: 1px;
+  background: rgba(51,103,59,0.32);
+  margin: 10px 0 6px;
 }
 
-/* ITEMS */
+/* ============================================
+   ITEMS DEL MENÚ
+============================================ */
 .user-drawer-nav {
   display: flex;
   flex-direction: column;
-  padding-bottom: 10px;
 }
+
 .user-drawer-item {
   padding: 12px 22px;
   display: flex;
   align-items: center;
-  gap: 18px;
-  color: #fff;
+  gap: 16px;
+
+  color: #ffffff;
+  font-size: 15px;
   cursor: pointer;
 }
+
 .user-drawer-item:hover {
-  background: rgba(255,255,255,0.06);
-}
-.user-drawer-item-icon {
-  width: 24px;
-  height: 24px;
-  display: flex;
-  justify-content: center;
+  background: rgba(255,255,255,0.05);
 }
 
-/* Cerrar sesión rojo */
+/* Iconos */
+.user-drawer-item-icon {
+  width: 24px;
+  text-align: center;
+}
+
+/* ============================================
+   CERRAR SESIÓN ROJO
+============================================ */
 .user-drawer-item.logout {
   color: #ff4b4b !important;
-  font-weight: 600 !important;
+  font-weight: 600;
+  padding-bottom: 18px; /* como el carrito */
 }
 .user-drawer-item.logout .material-symbols-outlined {
   color: #ff4b4b !important;
 }
 
 /* ============================================
-   POSICIÓN PC/MÓVIL DEL MENÚ FLOTANTE
+   MENÚ SIN USUARIO (LOGIN VERDE)
+============================================ */
+.user-drawer.no-user .user-drawer-avatar,
+.user-drawer.no-user .user-drawer-email {
+  display: none !important;
+}
+
+.user-drawer.no-user .user-drawer-header {
+  padding: 14px 22px !important;
+}
+
+.user-drawer.no-user .user-drawer-name {
+  font-size: 17px;
+  font-weight: 600;
+}
+
+/* Botón login verde */
+.user-drawer-item.login {
+  color: var(--verde) !important;
+  font-weight: 600;
+}
+.user-drawer-item.login .material-symbols-outlined {
+  color: var(--verde) !important;
+}
+
+/* ============================================
+   RESPONSIVE EXACTO
 ============================================ */
 
-/* PC → pegado al avatar */
+/* PC */
 @media (min-width: 901px) {
   .user-drawer {
-    top: 78px !important;
-    left: auto !important;
     right: 48px !important;
-    margin: 0;
+    left: auto !important;
   }
 }
 
-/* MÓVIL → pegado a hamburguesa */
+/* Móvil */
 @media (max-width: 900px) {
   .user-drawer {
-    top: 78px !important;
     left: 16px !important;
     right: 16px !important;
+    max-width: none !important;
   }
 }
 
