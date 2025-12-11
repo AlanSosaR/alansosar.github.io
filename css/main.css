@@ -353,7 +353,38 @@ body {
 .user-drawer.show-guest .no-user {
   display: flex !important;
 }
+/* =====================================================
+   ESTADOS DE SESIÓN — HEADER (PC) Y DRAWER
+===================================================== */
 
+/* Drawer → ocultar partes según sesión */
+.guest-mode .logged {
+  display: none !important;
+}
+.logged-mode .no-user {
+  display: none !important;
+}
+
+/* HEADER — Avatar visible SOLO si hay sesión */
+#profile-desktop {
+  display: none;
+}
+.logged-mode #profile-desktop {
+  display: flex !important;
+}
+
+/* HEADER — Botón “Iniciar sesión” SOLO si NO hay sesión */
+#login-desktop {
+  display: none;
+}
+.guest-mode #login-desktop {
+  display: block !important;
+}
+
+/* HEADER — Carrito SIEMPRE visible */
+.profile-wrapper-cart {
+  display: flex !important;
+}
 /* =====================================================
    HEADER DEL PERFIL — IGUAL AL CARRITO (VERSION PERFECTA)
 ===================================================== */
