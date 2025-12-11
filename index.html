@@ -11,7 +11,6 @@
 
   <!-- CSS principal -->
   <link rel="stylesheet" href="css/main.css?v=11">
-  
 </head>
 
 <body>
@@ -38,10 +37,10 @@
     <a href="#contacto">Contáctanos</a>
 
     <!-- Login Desktop -->
-    <a href="login.html" id="login-desktop" class="login-link">Iniciar sesión</a>
+    <a href="login.html" id="login-desktop" class="login-link no-user">Iniciar sesión</a>
 
     <!-- Avatar Desktop (solo si hay sesión) -->
-    <div class="profile-wrapper" id="profile-desktop" style="display:none;">
+    <div class="profile-wrapper logged" id="profile-desktop" style="display:none;">
       <button id="btn-header-user" class="header-avatar-button" aria-label="Abrir menú de usuario">
         <img id="avatar-user" src="imagenes/avatar-default.svg" class="header-avatar profile-photo-round" alt="Usuario">
       </button>
@@ -59,7 +58,7 @@
 </header>
 
 <!-- =====================================================
-     MENÚ FLOTANTE MATERIAL 3 — NUEVO BLOQUE FINAL
+     MENÚ FLOTANTE MATERIAL 3 — CORREGIDO
 ====================================================== -->
 
 <!-- SCRIM -->
@@ -68,27 +67,32 @@
 <!-- MENÚ FLOTANTE -->
 <aside id="user-drawer" class="user-drawer" aria-hidden="true">
 
-  <!-- HEADER PERFIL (solo visible con usuario) -->
-  <a href="perfil.html" class="user-drawer-header drawer-section logged">
+  <!-- HEADER PERFIL (solo visible logueado) -->
+  <a href="perfil.html" class="user-drawer-header logged user-drawer-profile-link">
+
+    <!-- FOTO -->
     <div class="user-drawer-avatar">
       <img id="avatar-user-drawer" src="imagenes/avatar-default.svg" alt="Usuario">
     </div>
 
-    <div class="user-drawer-profile-texts">
+    <!-- INFO (nombre + correo) -->
+    <div class="user-drawer-info">
       <p class="user-drawer-name" id="drawer-name">Hola, Usuario</p>
       <p class="user-drawer-email" id="drawer-email">correo@ejemplo.com</p>
     </div>
 
+    <!-- FLECHA -->
     <span class="material-symbols-outlined user-drawer-arrow">chevron_right</span>
+
   </a>
 
-  <!-- DIVIDER TOP -->
+  <!-- SEPARADOR -->
   <hr class="user-drawer-divider logged">
 
   <!-- NAVEGACIÓN PRINCIPAL -->
   <nav class="user-drawer-nav">
 
-    <!-- ITEMS SOLO LOGUEADO -->
+    <!-- SOLO LOGUEADO -->
     <a href="mispedidos.html" class="user-drawer-item logged">
       <span class="material-symbols-outlined user-drawer-item-icon">shopping_bag</span>
       Mis pedidos
@@ -99,7 +103,7 @@
       Historial de compras
     </a>
 
-    <!-- ITEMS SIEMPRE VISIBLES -->
+    <!-- SIEMPRE VISIBLE -->
     <a href="index.html#productos" class="user-drawer-item">
       <span class="material-symbols-outlined user-drawer-item-icon">local_cafe</span>
       Variedades de café
@@ -117,16 +121,16 @@
 
   </nav>
 
-  <!-- DIVIDER BOTTOM -->
+  <!-- SEPARADOR -->
   <hr class="user-drawer-divider">
 
-  <!-- CERRAR SESIÓN (logueado) -->
+  <!-- LOGOUT -->
   <button id="logout-btn" class="user-drawer-item logout logged">
     <span class="material-symbols-outlined user-drawer-item-icon">logout</span>
     Cerrar sesión
   </button>
 
-  <!-- INICIAR SESIÓN (no logueado) -->
+  <!-- LOGIN (invitado) -->
   <a href="login.html" class="user-drawer-item login no-user">
     <span class="material-symbols-outlined user-drawer-item-icon">login</span>
     Iniciar sesión
