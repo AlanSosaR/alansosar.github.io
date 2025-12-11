@@ -112,11 +112,11 @@ body {
 }
 
 /* ============================================
-   AVATAR DEL HEADER
+   AVATAR DEL HEADER — SIN BORDE + FLOTANTE
 ============================================ */
 .header-avatar-button {
-  width: 40px;
-  height: 40px;
+  width: 48px;                /* un poco más grande para mejor calidad */
+  height: 48px;
   border-radius: 50%;
   overflow: hidden;
   display: flex;
@@ -124,30 +124,37 @@ body {
   justify-content: center;
   cursor: pointer;
 
-  background: #fff; /* Fondo limpio */
-  box-shadow: 
-    0 4px 10px rgba(0, 0, 0, 0.12),
-    0 1px 3px rgba(0, 0, 0, 0.08); /* Sombra elegante */
-  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  background: #ffffff;        /* Fondo blanco puro */
+  border: none !important;    /* ← Quita cualquier borde */
+  outline: none !important;
+
+  box-shadow:
+    0 6px 14px rgba(0, 0, 0, 0.18),
+    0 2px 4px rgba(0, 0, 0, 0.12);  /* ← sombra flotante real */
+
+  transition: transform 0.20s ease, box-shadow 0.20s ease;
 }
 
-/* Efecto al tocar / hover en PC */
+/* Hover en PC — más levantado */
 .header-avatar-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 
-    0 6px 14px rgba(0, 0, 0, 0.20),
-    0 2px 6px rgba(0, 0, 0, 0.12);
+  transform: translateY(-3px);
+  box-shadow:
+    0 10px 24px rgba(0, 0, 0, 0.22),
+    0 4px 10px rgba(0, 0, 0, 0.16);
 }
 
+/* Foto completamente rellena */
 .header-avatar-button img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: cover;          /* ← RELLENA completamente el círculo */
+  border: none !important;
+  outline: none !important;
   display: block;
 }
 
 /* ============================================
-   CARRITO — CÍRCULO LIMPIO
+   CARRITO — CÍRCULO LIMPIO + SIN HALO
 ============================================ */
 .profile-wrapper-cart {
   display: flex;
@@ -158,14 +165,17 @@ body {
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: rgba(51,103,59,0.12); /* Más suave y sin bordes visibles */
+  background: rgba(51,103,59,0.12); /* Verde suave sin anillo */
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   cursor: pointer;
-  overflow: visible !important;
-  box-shadow: 0 0 0 0 transparent; /* ← Elimina cualquier halo o borde */
+
+  /* Limpieza total */
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 #cart-btn i {
