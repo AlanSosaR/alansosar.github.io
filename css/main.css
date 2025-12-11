@@ -79,8 +79,9 @@ body {
 }
 
 /* ============================================
-   MENÚ HAMBURGUESA (solo móvil)
+   MENÚ HAMBURGUESA (solo móvil) — FINAL
 ============================================ */
+
 .menu-toggle {
   background: none;
   border: none;
@@ -88,7 +89,7 @@ body {
   font-size: 1.9rem;
   cursor: pointer;
   display: none;
-  z-index: 4000 !important; /* ← FIX */
+  z-index: 6000 !important;
 }
 
 @media (max-width: 900px) {
@@ -98,6 +99,15 @@ body {
     left: 18px;
     top: 50%;
     transform: translateY(-50%);
+  }
+}
+
+/* ============================================
+   OCULTAR LOGO EN MÓVIL — FIX DEFINITIVO
+============================================ */
+@media (max-width: 900px) {
+  .header-logo {
+    display: none !important;
   }
 }
 
