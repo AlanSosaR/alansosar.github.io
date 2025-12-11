@@ -1,6 +1,5 @@
 /* ============================================================
-   MAIN.JS — Café Cortero 2025
-   VERSIÓN FINAL TOTAL (Menú M3 + Carrito + Hero + Perfil PC/móvil)
+   MAIN.JS — Café Cortero 2025 (VERSIÓN FINAL)
 ============================================================ */
 
 /* ========================= SAFE ========================= */
@@ -69,7 +68,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const drawer          = safe("user-drawer");
   const scrim           = safe("user-scrim");
-  const menuToggle      = safe("menu-toggle");  // ← SIEMPRE activo en móvil
+  const menuToggle      = safe("menu-toggle");
 
   const avatarBtn       = safe("btn-header-user");
   const avatarImg       = safe("avatar-user");
@@ -83,13 +82,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   const drawerName      = safe("drawer-name");
   const drawerEmail     = safe("drawer-email");
 
-  const sb     = getSupabaseClient();
-  const userLS = getUserLS();
-  let session  = null;
+  const sb              = getSupabaseClient();
+  const userLS          = getUserLS();
+  let session           = null;
 
 
   /* ============================================================
-     Cargar sesión desde Supabase
+     Cargar sesión Supabase
   ============================================================ */
   if (sb) {
     try {
@@ -118,32 +117,28 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (scrim) scrim.onclick = closeDrawer;
 
 
+
   /* ============================================================
      INVITADO
   ============================================================ */
   function showGuest() {
 
-    drawer.classList.remove("show-logged");
-    drawer.classList.add("show-guest");
+    drawer.classList.add("guest-mode");
+    drawer.classList.remove("logged-mode");
 
-    // Datos del drawer
-    if (drawerName)  drawerName.textContent  = "Hola, invitado";
-    if (drawerEmail) drawerEmail.textContent = "Inicia sesión para continuar";
+    // Drawer data
+    drawerName.textContent  = "Hola, invitado";
+    drawerEmail.textContent = "Inicia sesión para continuar";
+    drawerAvatarImg.src     = "imagenes/avatar-default.svg";
 
-    if (avatarImg)       avatarImg.src       = "imagenes/avatar-default.svg";
-    if (drawerAvatarImg) drawerAvatarImg.src = "imagenes/avatar-default.svg";
-
-    // PC
+    // Header Desktop
     if (loginDesktop)   loginDesktop.style.display = "block";
     if (profileDesktop) profileDesktop.style.display = "none";
 
-    // Avatar PC → solo manda al login
-    if (avatarBtn) {
-      avatarBtn.style.display = "flex";
-      avatarBtn.onclick = () => window.location.href = "login.html";
-    }
+    // Avatar oculto en invitado
+    if (avatarBtn) avatarBtn.style.display = "none";
 
-    // MÓVIL → Hamburguesa abre el menú SIEMPRE
+    // Hamburguesa abre menú
     if (menuToggle) {
       menuToggle.onclick = (e) => {
         e.stopPropagation();
@@ -153,38 +148,40 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
 
+
   /* ============================================================
      LOGUEADO
   ============================================================ */
   async function showLogged(user) {
 
-    drawer.classList.remove("show-guest");
-    drawer.classList.add("show-logged");
+    drawer.classList.remove("guest-mode");
+    drawer.classList.add("logged-mode");
 
     const name  = user.name  || "Usuario";
     const email = user.email || "";
     const photo = user.photo_url || "imagenes/avatar-default.svg";
 
-    if (drawerName)  drawerName.textContent  = `Hola, ${name}`;
-    if (drawerEmail) drawerEmail.textContent = email;
+    // Drawer data
+    drawerName.textContent  = `Hola, ${name}`;
+    drawerEmail.textContent = email;
+    drawerAvatarImg.src     = photo;
 
-    if (avatarImg)       avatarImg.src       = photo;
-    if (drawerAvatarImg) drawerAvatarImg.src = photo;
-
-    // PC topbar
+    // Header desktop → avatar visible, login oculto
     if (loginDesktop)   loginDesktop.style.display = "none";
     if (profileDesktop) profileDesktop.style.display = "flex";
 
-    // PC → avatar abre drawer
+    // Avatar en PC abre el drawer
     if (avatarBtn) {
       avatarBtn.style.display = "flex";
+      avatarImg.src = photo;
+
       avatarBtn.onclick = (e) => {
         e.stopPropagation();
         drawer.classList.contains("open") ? closeDrawer() : openDrawer();
       };
     }
 
-    // MÓVIL → hamburguesa abre drawer siempre
+    // Hamburguesa en móvil abre/cierra drawer
     if (menuToggle) {
       menuToggle.onclick = (e) => {
         e.stopPropagation();
@@ -192,7 +189,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       };
     }
 
-    // Refrescar foto desde BD
+    // Actualizar foto desde Supabase en tiempo real
     if (sb && user.id) {
       try {
         const { data: perfil } = await sb
@@ -227,6 +224,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
 
+
   /* ============================================================
      LOGOUT
   ============================================================ */
@@ -238,6 +236,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       window.location.reload();
     };
   }
+
 
 
   /* ============================================================
@@ -260,6 +259,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
 
+
   /* ============================================================
      CARRITO
   ============================================================ */
@@ -270,6 +270,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   updateCartCount();
+
 
 
   /* ============================================================
@@ -290,6 +291,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     qtyPlus.onclick = () => {
       qtyNumber.textContent = parseInt(qtyNumber.textContent) + 1;
     };
+
 
 
   /* ============================================================
@@ -316,6 +318,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       qtyNumber.textContent = "1";
     };
   }
+
 
 
   /* ============================================================
@@ -350,6 +353,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
 
+
   /* ============================================================
      CARRUSEL FLECHAS
   ============================================================ */
@@ -362,6 +366,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     prevBtn.onclick = () => carousel.scrollBy({ left: -220, behavior: "smooth" });
     nextBtn.onclick = () => carousel.scrollBy({ left: 220,  behavior: "smooth" });
   }
+
 
 
   /* ============================================================
@@ -383,4 +388,4 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-}); // END DOMContentLoaded
+}); // ← END DOMContentLoaded
