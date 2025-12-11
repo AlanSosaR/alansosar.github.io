@@ -227,8 +227,9 @@ body {
   }
 }
 
+
 /* ============================================
-   MENÚ FLOTANTE MATERIAL 3 — VERSION FINAL CARBON COPY
+   MENÚ FLOTANTE MATERIAL 3 — VERSION FINAL !!!
 ============================================ */
 
 /* Iconos Material */
@@ -252,19 +253,18 @@ body {
   pointer-events: auto;
 }
 
-/* TARJETA — EXACTAMENTE COMO LA DEL CARRITO */
+/* TARJETA */
 .user-drawer {
   position: fixed;
+  max-width: 420px;
 
-  max-width: 420px;   /* tamaño real en la captura */
-
-  right: 48px;        /* pegado al avatar */
+  right: 48px;
   top: 82px;
 
   background: #1a1c1e;
   color: #ffffff;
-  border-radius: 28px;     /* esquinas más suaves */
-  overflow: hidden;
+  border-radius: 28px;
+  overflow: visible !important; /* ← CORREGIDO */
 
   box-shadow:
     0 32px 80px rgba(0,0,0,0.65),
@@ -273,6 +273,7 @@ body {
   transform: translateY(14px);
   opacity: 0;
   pointer-events: none;
+
   transition:
     transform 0.25s cubic-bezier(0.20,0,0,1),
     opacity 0.2s ease-out;
@@ -289,12 +290,10 @@ body {
 /* ============================================
    CABECERA (Avatar + nombre)
 ============================================ */
-.user-drawer-header,
-.user-drawer-profile-link {
+.user-drawer-header {
   display: flex;
   align-items: center;
   gap: 14px;
-
   padding: 16px 22px 12px;
   text-decoration: none;
   color: inherit;
@@ -334,15 +333,15 @@ body {
   opacity: 0.75;
 }
 
-/* Divider estilo carrito */
+/* Divider — COLOR VERDE CORREGIDO */
 .user-drawer-divider {
   height: 1px;
-  background: rgba(51,103,59,0.32);
+  background: rgba(51,103,59,0.32); 
   margin: 10px 0 6px;
 }
 
 /* ============================================
-   ITEMS DEL MENÚ
+   ITEMS
 ============================================ */
 .user-drawer-nav {
   display: flex;
@@ -358,6 +357,9 @@ body {
   color: #ffffff;
   font-size: 15px;
   cursor: pointer;
+
+  background: transparent !important; /* ← evita fondo blanco */
+  border: none;
 }
 
 .user-drawer-item:hover {
@@ -367,23 +369,25 @@ body {
 /* Iconos */
 .user-drawer-item-icon {
   width: 24px;
+  min-width: 24px;
   text-align: center;
 }
 
 /* ============================================
-   CERRAR SESIÓN ROJO
+   CERRAR SESIÓN — YA SIN FONDO BLANCO
 ============================================ */
 .user-drawer-item.logout {
   color: #ff4b4b !important;
   font-weight: 600;
-  padding-bottom: 18px; /* como el carrito */
+  padding-bottom: 18px;
+  background: transparent !important;  /* ← FIX */
 }
 .user-drawer-item.logout .material-symbols-outlined {
   color: #ff4b4b !important;
 }
 
 /* ============================================
-   MENÚ SIN USUARIO (LOGIN VERDE)
+   MENÚ SIN USUARIO
 ============================================ */
 .user-drawer.no-user .user-drawer-avatar,
 .user-drawer.no-user .user-drawer-email {
@@ -399,17 +403,18 @@ body {
   font-weight: 600;
 }
 
-/* Botón login verde */
+/* Iniciar sesión VERDE */
 .user-drawer-item.login {
   color: var(--verde) !important;
   font-weight: 600;
+  background: transparent !important;
 }
 .user-drawer-item.login .material-symbols-outlined {
   color: var(--verde) !important;
 }
 
 /* ============================================
-   RESPONSIVE EXACTO
+   RESPONSIVE
 ============================================ */
 
 /* PC */
@@ -425,6 +430,7 @@ body {
   .user-drawer {
     left: 16px !important;
     right: 16px !important;
+    width: calc(100% - 32px) !important;
     max-width: none !important;
   }
 }
