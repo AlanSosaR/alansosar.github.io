@@ -229,7 +229,8 @@ body {
 
 
 /* =====================================================
-   MENÚ FLOTANTE MATERIAL 3 — FINAL (PC derecha / MÓVIL izquierda)
+   MENÚ FLOTANTE MATERIAL 3 — EXACTO AL CARRITO
+   + PC derecha / MÓVIL izquierda + visibilidad correcta
 ===================================================== */
 
 /* Iconos Material */
@@ -254,39 +255,40 @@ body {
 }
 
 /* =====================================================
-   DRAWER — ANIMACIÓN CAMBIANTE DEPENDIENDO DEL DISPOSITIVO
+   DRAWER — MISMO ESTILO QUE CARRITO
 ===================================================== */
 .user-drawer {
   position: fixed;
-  top: 82px;
-  max-width: 420px;
 
-  background: #1a1c1e;
+  /* MISMO TAMAÑO Y ESPACIADO QUE EL CARRITO */
+  top: 80px;
+  max-width: 360px;
+  width: calc(100% - 32px);
+
+  background: #16181a;      /* mismo fondo exacto */
   color: #ffffff;
-  border-radius: 28px;
-  overflow: visible !important;
+  border-radius: 24px;      /* mismo borde exacto */
 
   box-shadow:
-    0 32px 80px rgba(0,0,0,0.65),
-    0 0 0 1px rgba(255,255,255,0.06);
+    0 18px 40px rgba(0,0,0,0.75),
+    0 0 0 1px rgba(255,255,255,0.04);
 
   opacity: 0;
   pointer-events: none;
+  overflow: hidden;
 
   transition:
     transform 0.25s cubic-bezier(0.20,0,0,1),
     opacity 0.22s ease-out;
 
-  z-index: 4000 !important;
+  z-index: 4000;
 }
 
-/* PC — entra por la DERECHA (igual que carrito) */
+/* PC — entra por la derecha */
 @media (min-width: 901px) {
   .user-drawer {
     right: 48px;
     left: auto;
-
-    /* OCULTO hacia la derecha */
     transform: translateX(120%);
   }
   .user-drawer.open {
@@ -296,14 +298,11 @@ body {
   }
 }
 
-/* MÓVIL — entra por la IZQUIERDA (hamburguesa) */
+/* Móvil — entra por izquierda */
 @media (max-width: 900px) {
   .user-drawer {
     left: 16px;
     right: 16px;
-    width: calc(100% - 32px);
-
-    /* OCULTO hacia la izquierda */
     transform: translateX(-120%);
   }
   .user-drawer.open {
@@ -314,21 +313,38 @@ body {
 }
 
 /* =====================================================
-   CABECERA (Avatar + nombre)
+   VISIBILIDAD DE ELEMENTOS
+===================================================== */
+
+/* Elementos solo para logueados */
+.logged { display: block !important; }
+
+/* Elementos solo para no-logueados */
+.no-user { display: none !important; }
+
+/* Cuando NO hay sesión → se ocultan los .logged y se muestran .no-user */
+.user-drawer.no-user .logged {
+  display: none !important;
+}
+.user-drawer.no-user .no-user {
+  display: flex !important;
+}
+
+/* =====================================================
+   HEADER PERFIL (idéntico al carrito)
 ===================================================== */
 .user-drawer-header {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 16px 22px 12px;
+  gap: 12px;
+  padding: 16px 18px 12px;
   text-decoration: none;
   color: inherit;
 }
 .user-drawer-header:hover {
-  background: rgba(255,255,255,0.05);
+  background: rgba(255,255,255,0.06);
 }
 
-/* Avatar */
 .user-drawer-avatar {
   width: 52px;
   height: 52px;
@@ -342,32 +358,34 @@ body {
   object-fit: cover;
 }
 
-/* Textos */
 .user-drawer-name {
   font-size: 15px;
   font-weight: 600;
 }
 .user-drawer-email {
   font-size: 13px;
-  opacity: 0.75;
+  opacity: 0.7;
 }
 
-/* Flecha */
 .user-drawer-arrow {
   margin-left: auto;
-  font-size: 20px;
-  opacity: 0.75;
-}
-
-/* Divider (verde) */
-.user-drawer-divider {
-  height: 1px;
-  background: rgba(51,103,59,0.32);
-  margin: 10px 0 6px;
+  color: rgba(255,255,255,0.6);
+  font-size: 22px;
 }
 
 /* =====================================================
-   ITEMS
+   DIVIDER — VERDE CORRECTO
+===================================================== */
+.user-drawer-divider {
+  height: 1.6px;
+  background: var(--verde);  /* EXACTAMENTE COMO CARRITO */
+  opacity: 1;
+  margin: 6px 0 10px;
+  border: none;
+}
+
+/* =====================================================
+   ITEMS — MISMA SEPARACIÓN DEL CARRITO
 ===================================================== */
 .user-drawer-nav {
   display: flex;
@@ -375,38 +393,38 @@ body {
 }
 
 .user-drawer-item {
-  padding: 12px 22px;
+  padding: 10px 18px;
   display: flex;
   align-items: center;
   gap: 16px;
+
   color: #ffffff;
   font-size: 15px;
   cursor: pointer;
-  background: transparent !important;
   border: none;
+  background: transparent !important;
 }
 .user-drawer-item:hover {
-  background: rgba(255,255,255,0.05);
+  background: rgba(255,255,255,0.06);
 }
 
-/* Iconos */
 .user-drawer-item-icon {
   width: 24px;
-  min-width: 24px;
-  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* Cerrar sesión */
+/* Cerrar sesión igual al carrito */
 .user-drawer-item.logout {
   color: #ff4b4b !important;
   font-weight: 600;
-  padding-bottom: 18px;
 }
 .user-drawer-item.logout .material-symbols-outlined {
   color: #ff4b4b !important;
 }
 
-/* Iniciar sesión (sin usuario) */
+/* Iniciar sesión — solo visible sin usuario */
 .user-drawer-item.login {
   color: var(--verde) !important;
   font-weight: 600;
