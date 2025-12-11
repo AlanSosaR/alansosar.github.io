@@ -1,6 +1,6 @@
 /* ============================================================
-   MAIN.JS — Café Cortero
-   VERSIÓN FINAL UNIFICADA (Menú M3 + Carrito + Hero + Lógica PC/móvil)
+   MAIN.JS — Café Cortero 2025
+   VERSIÓN FINAL UNIFICADA (Menú M3 + Carrito + Hero + Perfil PC/móvil)
 ============================================================ */
 
 /* ========================= SAFE ========================= */
@@ -60,12 +60,12 @@ function getSupabaseClient() {
 }
 
 /* ============================================================
-   SISTEMA DE MENÚ MATERIAL 3 — PC + MÓVIL
+   SISTEMA COMPLETO DE MENÚ + PERFIL (PC + MÓVIL)
 ============================================================ */
 
 document.addEventListener("DOMContentLoaded", async () => {
 
-  /* ---------- REFERENCIAS DOM ---------- */
+  /* ---------- REFERENCIAS ---------- */
 
   const drawer          = safe("user-drawer");
   const scrim           = safe("user-scrim");
@@ -80,26 +80,28 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const logoutBtn       = safe("logout-btn");
 
-  const drawerName  = safe("drawer-name");
-  const drawerEmail = safe("drawer-email");
+  const drawerName      = safe("drawer-name");
+  const drawerEmail     = safe("drawer-email");
 
-  /* ---------- SESIÓN ---------- */
+  const sb     = getSupabaseClient();
+  const userLS = getUserLS();
+  let session  = null;
 
-  const sb = getSupabaseClient();
-  const ls = getUserLS();
-  let session = null;
 
+  /* ---------- SESIÓN SUPABASE ---------- */
   if (sb) {
     try {
       const { data } = await sb.auth.getSession();
       session = data?.session || null;
-    } catch (e) {
-      console.error("Error sesión:", e);
+    } catch (err) {
+      console.error("❌ Error obteniendo sesión:", err);
     }
   }
 
-  /* ---------- ABRIR / CERRAR DRAWER ---------- */
 
+  /* ============================================================
+     ABRIR / CERRAR DRAWER
+  ============================================================ */
   function openDrawer() {
     drawer.classList.add("open");
     scrim.classList.add("open");
@@ -110,121 +112,126 @@ document.addEventListener("DOMContentLoaded", async () => {
     scrim.classList.remove("open");
   }
 
-  scrim.onclick = closeDrawer;
+  if (scrim) scrim.onclick = closeDrawer;
 
-  document.addEventListener("click", (e) => {
-    if (!drawer.contains(e.target) &&
-        !avatarBtn?.contains(e.target) &&
-        !menuToggle?.contains(e.target)) {
-      closeDrawer();
-    }
-  });
 
   /* ============================================================
-     LÓGICA: INVITADO
+     INVITADO
   ============================================================ */
   function showGuest() {
 
-    drawer.classList.add("no-user");
+    drawer.classList.remove("show-logged");
+    drawer.classList.add("show-guest");
 
-    // Ocultar sección perfil y botones privados
-    document.querySelectorAll(".logged")
-      .forEach(e => e.style.display = "none");
+    if (drawerName)  drawerName.textContent  = "Hola, invitado";
+    if (drawerEmail) drawerEmail.textContent = "Inicia sesión para continuar";
 
-    // Mostrar opciones públicas
-    document.querySelectorAll(".no-user")
-      .forEach(e => e.style.display = "flex");
+    if (avatarImg)       avatarImg.src       = "imagenes/avatar-default.svg";
+    if (drawerAvatarImg) drawerAvatarImg.src = "imagenes/avatar-default.svg";
 
-    // Drawer no muestra nombre/correo
-    if (drawerName) drawerName.textContent = "";
-    if (drawerEmail) drawerEmail.textContent = "";
-
-    // PC → mostrar “Iniciar sesión"
-    if (loginDesktop) loginDesktop.style.display = "block";
+    if (loginDesktop)   loginDesktop.style.display = "block";
     if (profileDesktop) profileDesktop.style.display = "none";
 
-    // PC → avatar NO aparece
-    if (avatarBtn) avatarBtn.style.display = "none";
+    if (avatarBtn) {
+      avatarBtn.onclick = () => window.location.href = "login.html";
+    }
   }
 
+
   /* ============================================================
-     LÓGICA: LOGUEADO
+     LOGUEADO
   ============================================================ */
-  function showLogged(user) {
+  async function showLogged(user) {
 
-    drawer.classList.remove("no-user");
-
-    // Mostrar elementos privados
-    document.querySelectorAll(".logged")
-      .forEach(e => e.style.display = "flex");
-
-    // Ocultar opciones de invitado
-    document.querySelectorAll(".no-user")
-      .forEach(e => e.style.display = "none");
+    drawer.classList.remove("show-guest");
+    drawer.classList.add("show-logged");
 
     const name  = user.name || "Usuario";
     const email = user.email || "";
     const photo = user.photo_url || "imagenes/avatar-default.svg";
 
-    // Info perfil drawer
-    if (drawerName) drawerName.textContent = `Hola, ${name}`;
+    if (drawerName)  drawerName.textContent  = `Hola, ${name}`;
     if (drawerEmail) drawerEmail.textContent = email;
 
-    // Foto PC + Drawer
-    if (avatarImg)       avatarImg.src = photo;
+    if (avatarImg)       avatarImg.src       = photo;
     if (drawerAvatarImg) drawerAvatarImg.src = photo;
 
-    // PC → mostrar avatar
     if (loginDesktop)   loginDesktop.style.display = "none";
     if (profileDesktop) profileDesktop.style.display = "flex";
 
-    if (avatarBtn) avatarBtn.style.display = "block";
+
+    /* ========== REFRESCAR FOTO DESDE BD (igual que carrito.js) ========== */
+    if (sb && user.id) {
+      try {
+        const { data: perfil } = await sb
+          .from("users")
+          .select("photo_url")
+          .eq("id", user.id)
+          .single();
+
+        if (perfil?.photo_url) {
+          avatarImg.src       = perfil.photo_url;
+          drawerAvatarImg.src = perfil.photo_url;
+
+          // actualizar localStorage
+          localStorage.setItem(
+            "cortero_user",
+            JSON.stringify({ ...user, photo_url: perfil.photo_url })
+          );
+        }
+      } catch (err) {
+        console.error("❌ Error obteniendo foto:", err);
+      }
+    }
+
+
+    /* ========== ABRIR/CERRAR DRAWER ========== */
+    if (avatarBtn) {
+      avatarBtn.onclick = (e) => {
+        e.stopPropagation();
+        drawer.classList.contains("open") ? closeDrawer() : openDrawer();
+      };
+    }
+
+    if (menuToggle) {
+      menuToggle.onclick = (e) => {
+        e.stopPropagation();
+        drawer.classList.contains("open") ? closeDrawer() : openDrawer();
+      };
+    }
   }
 
+
   /* ============================================================
-     DEFINIR ESTADO SEGÚN SESIÓN
+     APLICAR ESTADO FINAL
   ============================================================ */
-  if (session && ls) {
-    showLogged(ls);
+  if (session && userLS) {
+    await showLogged(userLS);
   } else {
     showGuest();
   }
 
+
   /* ============================================================
-     EVENTOS: ABRIR DRAWER
+     LOGOUT
   ============================================================ */
-
-  if (avatarBtn) {
-    avatarBtn.onclick = (e) => {
-      e.stopPropagation();
-      drawer.classList.contains("open") ? closeDrawer() : openDrawer();
-    };
-  }
-
-  if (menuToggle) {
-    menuToggle.onclick = (e) => {
-      e.stopPropagation();
-      drawer.classList.contains("open") ? closeDrawer() : openDrawer();
-    };
-  }
-
-  /* ---------- LOGOUT ---------- */
   if (logoutBtn) {
     logoutBtn.onclick = async () => {
       try {
         if (sb) await sb.auth.signOut();
-      } catch (e) {}
-
+      } catch (err) {
+        console.error("Error logout:", err);
+      }
       localStorage.removeItem("cortero_user");
       closeDrawer();
-      location.reload();
+      window.location.reload();
     };
   }
+
 
   /* ============================================================
      HERO CAROUSEL
   ============================================================ */
-
   const heroImgs = document.querySelectorAll(".hero-carousel img");
   let heroIndex = 0;
 
@@ -241,8 +248,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     }, 8000);
   }
 
+
   /* ============================================================
-     BOTÓN CARRITO
+     CARRITO
   ============================================================ */
 
   const cartBtn = safe("cart-btn");
@@ -251,6 +259,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   updateCartCount();
+
 
   /* ============================================================
      SELECTOR CANTIDAD
@@ -271,8 +280,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       qtyNumber.textContent = parseInt(qtyNumber.textContent) + 1;
     };
 
+
   /* ============================================================
-     AGREGAR AL CARRITO — PRODUCTO PRINCIPAL
+     AGREGAR AL CARRITO (PRODUCTO PRINCIPAL)
   ============================================================ */
 
   const btnMain = safe("product-add");
@@ -296,6 +306,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     };
   }
 
+
   /* ============================================================
      CARRUSEL SIMILARES
   ============================================================ */
@@ -305,6 +316,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (cards.length > 0) {
     cards.forEach(card => {
       card.onclick = () => {
+
         cards.forEach(c => c.classList.remove("active-card"));
         card.classList.add("active-card");
 
@@ -312,24 +324,20 @@ document.addEventListener("DOMContentLoaded", async () => {
         const price = parseFloat(card.dataset.price.replace(/[^\d.-]/g, ""));
         const img   = card.dataset.img;
 
-        const nameEl  = safe("product-name");
-        const priceEl = document.querySelector(".price-part");
-        const imgEl   = safe("product-image");
+        safe("product-name").textContent = name;
+        document.querySelector(".price-part").textContent = `L ${price}`;
+        const imgEl = safe("product-image");
 
-        if (!nameEl || !priceEl || !imgEl) return;
-
-        nameEl.textContent = name;
-        priceEl.textContent = `L ${price}`;
         imgEl.src = img;
-
         imgEl.style.opacity = "0";
         setTimeout(() => {
           imgEl.style.transition = "opacity .4s ease";
           imgEl.style.opacity = "1";
-        }, 80);
+        }, 60);
       };
     });
   }
+
 
   /* ============================================================
      CARRUSEL FLECHAS
@@ -341,8 +349,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   if (carousel && prevBtn && nextBtn) {
     prevBtn.onclick = () => carousel.scrollBy({ left: -220, behavior: "smooth" });
-    nextBtn.onclick = () => carousel.scrollBy({ left: 220, behavior: "smooth" });
+    nextBtn.onclick = () => carousel.scrollBy({ left: 220,  behavior: "smooth" });
   }
+
 
   /* ============================================================
      FAB WHATSAPP
@@ -351,7 +360,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const fabMain = safe("fab-main");
   const fabContainer = safe("fab");
 
-  if (fabMain && fabContainer) {
+  if (fabMain) {
     fabMain.onclick = (e) => {
       e.stopPropagation();
       fabContainer.classList.toggle("active");
@@ -363,4 +372,4 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-});
+});  // DOMContentLoaded END
