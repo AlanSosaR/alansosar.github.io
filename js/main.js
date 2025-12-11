@@ -1,6 +1,6 @@
 /* ============================================================
    MAIN.JS — Café Cortero 2025
-   VERSIÓN FINAL UNIFICADA (Menú M3 + Carrito + Hero + Perfil PC/móvil)
+   VERSIÓN FINAL TOTAL (Menú M3 + Carrito + Hero + Perfil PC/móvil)
 ============================================================ */
 
 /* ========================= SAFE ========================= */
@@ -69,7 +69,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const drawer          = safe("user-drawer");
   const scrim           = safe("user-scrim");
-  const menuToggle      = safe("menu-toggle");
+  const menuToggle      = safe("menu-toggle");  // ← SIEMPRE activo en móvil
 
   const avatarBtn       = safe("btn-header-user");
   const avatarImg       = safe("avatar-user");
@@ -88,7 +88,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   let session  = null;
 
 
-  /* ---------- SESIÓN SUPABASE ---------- */
+  /* ============================================================
+     Cargar sesión desde Supabase
+  ============================================================ */
   if (sb) {
     try {
       const { data } = await sb.auth.getSession();
@@ -102,6 +104,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   /* ============================================================
      ABRIR / CERRAR DRAWER
   ============================================================ */
+
   function openDrawer() {
     drawer.classList.add("open");
     scrim.classList.add("open");
@@ -123,17 +126,29 @@ document.addEventListener("DOMContentLoaded", async () => {
     drawer.classList.remove("show-logged");
     drawer.classList.add("show-guest");
 
+    // Datos del drawer
     if (drawerName)  drawerName.textContent  = "Hola, invitado";
     if (drawerEmail) drawerEmail.textContent = "Inicia sesión para continuar";
 
     if (avatarImg)       avatarImg.src       = "imagenes/avatar-default.svg";
     if (drawerAvatarImg) drawerAvatarImg.src = "imagenes/avatar-default.svg";
 
+    // PC
     if (loginDesktop)   loginDesktop.style.display = "block";
     if (profileDesktop) profileDesktop.style.display = "none";
 
+    // Avatar PC → solo manda al login
     if (avatarBtn) {
+      avatarBtn.style.display = "flex";
       avatarBtn.onclick = () => window.location.href = "login.html";
+    }
+
+    // MÓVIL → Hamburguesa abre el menú SIEMPRE
+    if (menuToggle) {
+      menuToggle.onclick = (e) => {
+        e.stopPropagation();
+        openDrawer();
+      };
     }
   }
 
@@ -146,7 +161,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     drawer.classList.remove("show-guest");
     drawer.classList.add("show-logged");
 
-    const name  = user.name || "Usuario";
+    const name  = user.name  || "Usuario";
     const email = user.email || "";
     const photo = user.photo_url || "imagenes/avatar-default.svg";
 
@@ -156,11 +171,28 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (avatarImg)       avatarImg.src       = photo;
     if (drawerAvatarImg) drawerAvatarImg.src = photo;
 
+    // PC topbar
     if (loginDesktop)   loginDesktop.style.display = "none";
     if (profileDesktop) profileDesktop.style.display = "flex";
 
+    // PC → avatar abre drawer
+    if (avatarBtn) {
+      avatarBtn.style.display = "flex";
+      avatarBtn.onclick = (e) => {
+        e.stopPropagation();
+        drawer.classList.contains("open") ? closeDrawer() : openDrawer();
+      };
+    }
 
-    /* ========== REFRESCAR FOTO DESDE BD (igual que carrito.js) ========== */
+    // MÓVIL → hamburguesa abre drawer siempre
+    if (menuToggle) {
+      menuToggle.onclick = (e) => {
+        e.stopPropagation();
+        drawer.classList.contains("open") ? closeDrawer() : openDrawer();
+      };
+    }
+
+    // Refrescar foto desde BD
     if (sb && user.id) {
       try {
         const { data: perfil } = await sb
@@ -173,7 +205,6 @@ document.addEventListener("DOMContentLoaded", async () => {
           avatarImg.src       = perfil.photo_url;
           drawerAvatarImg.src = perfil.photo_url;
 
-          // actualizar localStorage
           localStorage.setItem(
             "cortero_user",
             JSON.stringify({ ...user, photo_url: perfil.photo_url })
@@ -182,22 +213,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       } catch (err) {
         console.error("❌ Error obteniendo foto:", err);
       }
-    }
-
-
-    /* ========== ABRIR/CERRAR DRAWER ========== */
-    if (avatarBtn) {
-      avatarBtn.onclick = (e) => {
-        e.stopPropagation();
-        drawer.classList.contains("open") ? closeDrawer() : openDrawer();
-      };
-    }
-
-    if (menuToggle) {
-      menuToggle.onclick = (e) => {
-        e.stopPropagation();
-        drawer.classList.contains("open") ? closeDrawer() : openDrawer();
-      };
     }
   }
 
@@ -217,11 +232,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   ============================================================ */
   if (logoutBtn) {
     logoutBtn.onclick = async () => {
-      try {
-        if (sb) await sb.auth.signOut();
-      } catch (err) {
-        console.error("Error logout:", err);
-      }
+      try { if (sb) await sb.auth.signOut(); } catch {}
       localStorage.removeItem("cortero_user");
       closeDrawer();
       window.location.reload();
@@ -282,7 +293,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
   /* ============================================================
-     AGREGAR AL CARRITO (PRODUCTO PRINCIPAL)
+     AGREGAR AL CARRITO
   ============================================================ */
 
   const btnMain = safe("product-add");
@@ -372,4 +383,4 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-});  // DOMContentLoaded END
+}); // END DOMContentLoaded
