@@ -154,33 +154,50 @@ body {
 }
 
 /* ============================================
-   CARRITO — CÍRCULO LIMPIO + SIN HALO
+   CARRITO — MISMO ESTILO QUE EL AVATAR
 ============================================ */
+
 .profile-wrapper-cart {
   display: flex;
   align-items: center;
 }
 
+/* Botón carrito con estilo premium */
 #cart-btn {
-  width: 48px;
-  height: 48px;
+  width: 40px;           /* Igual que avatar */
+  height: 40px;          /* Igual que avatar */
   border-radius: 50%;
-  background: rgba(51,103,59,0.12); /* Verde suave sin anillo */
+  background: #ffffff;   /* Fondo limpio como el avatar */
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   cursor: pointer;
 
-  /* Limpieza total */
-  border: none !important;
-  outline: none !important;
-  box-shadow: none !important;
+  /* MISMA SOMBRA DEL AVATAR */
+  box-shadow: 
+    0 4px 10px rgba(0, 0, 0, 0.12),
+    0 1px 3px rgba(0, 0, 0, 0.08);
+
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  overflow: visible !important; /* Para no cortar el badge */
 }
 
+/* Hover igual que avatar (solo en PC) */
+@media (min-width: 901px) {
+  #cart-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+      0 6px 14px rgba(0, 0, 0, 0.20),
+      0 2px 6px rgba(0, 0, 0, 0.12);
+  }
+}
+
+/* Ícono del carrito */
 #cart-btn i {
-  font-size: 1.6rem;
+  font-size: 1.4rem;
   color: var(--verde);
+  display: block;
 }
 
 /* Badge rojo */
@@ -197,16 +214,13 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 5000;
+  z-index: 9999;
 }
 
-/* PC → separarse del avatar */
+/* PC → separar del avatar */
 @media (min-width: 901px) {
   .profile-wrapper-cart {
     margin-left: 24px !important;
-  }
-  .header-avatar-button {
-    margin-left: 22px;
   }
 }
 
