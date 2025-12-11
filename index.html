@@ -32,19 +32,21 @@
 
   <!-- MENÚ ESCRITORIO -->
   <nav class="nav-links desktop-only">
+
     <a href="#productos">Variedades de café</a>
     <a href="#nosotros">Quiénes somos</a>
     <a href="#contacto">Contáctanos</a>
 
-    <!-- Login Desktop -->
+    <!-- Login Desktop (solo invitado) -->
     <a href="login.html" id="login-desktop" class="login-link no-user">Iniciar sesión</a>
 
-    <!-- Avatar Desktop (solo si hay sesión) -->
+    <!-- Avatar Desktop (solo logueado) -->
     <div class="profile-wrapper logged" id="profile-desktop" style="display:none;">
       <button id="btn-header-user" class="header-avatar-button" aria-label="Abrir menú de usuario">
         <img id="avatar-user" src="imagenes/avatar-default.svg" class="header-avatar profile-photo-round" alt="Usuario">
       </button>
     </div>
+
   </nav>
 
   <!-- Carrito -->
@@ -58,24 +60,24 @@
 </header>
 
 <!-- =====================================================
-     MENÚ FLOTANTE MATERIAL 3 — CORREGIDO
+     MENÚ FLOTANTE MATERIAL 3 — FINAL CORREGIDO
 ====================================================== -->
 
 <!-- SCRIM -->
 <div id="user-scrim" class="user-scrim"></div>
 
-<!-- MENÚ FLOTANTE -->
+<!-- DRAWER -->
 <aside id="user-drawer" class="user-drawer" aria-hidden="true">
 
-  <!-- HEADER PERFIL (solo visible logueado) -->
+  <!-- BLOQUE PERFIL (solo logueado) -->
   <a href="perfil.html" class="user-drawer-header logged user-drawer-profile-link">
 
-    <!-- FOTO -->
+    <!-- FOTO REDONDA FLOTANTE -->
     <div class="user-drawer-avatar">
       <img id="avatar-user-drawer" src="imagenes/avatar-default.svg" alt="Usuario">
     </div>
 
-    <!-- INFO (nombre + correo) -->
+    <!-- NOMBRE + CORREO -->
     <div class="user-drawer-info">
       <p class="user-drawer-name" id="drawer-name">Hola, Usuario</p>
       <p class="user-drawer-email" id="drawer-email">correo@ejemplo.com</p>
@@ -86,13 +88,13 @@
 
   </a>
 
-  <!-- SEPARADOR -->
+  <!-- DIVIDER (solo logueado) -->
   <hr class="user-drawer-divider logged">
 
-  <!-- NAVEGACIÓN PRINCIPAL -->
+  <!-- MENÚ PRINCIPAL -->
   <nav class="user-drawer-nav">
 
-    <!-- SOLO LOGUEADO -->
+    <!-- Logueado -->
     <a href="mispedidos.html" class="user-drawer-item logged">
       <span class="material-symbols-outlined user-drawer-item-icon">shopping_bag</span>
       Mis pedidos
@@ -103,7 +105,7 @@
       Historial de compras
     </a>
 
-    <!-- SIEMPRE VISIBLE -->
+    <!-- Siempre visible -->
     <a href="index.html#productos" class="user-drawer-item">
       <span class="material-symbols-outlined user-drawer-item-icon">local_cafe</span>
       Variedades de café
@@ -124,13 +126,13 @@
   <!-- SEPARADOR -->
   <hr class="user-drawer-divider">
 
-  <!-- LOGOUT -->
+  <!-- CERRAR SESIÓN (solo logueado) -->
   <button id="logout-btn" class="user-drawer-item logout logged">
     <span class="material-symbols-outlined user-drawer-item-icon">logout</span>
     Cerrar sesión
   </button>
 
-  <!-- LOGIN (invitado) -->
+  <!-- INICIAR SESIÓN (solo invitado) -->
   <a href="login.html" class="user-drawer-item login no-user">
     <span class="material-symbols-outlined user-drawer-item-icon">login</span>
     Iniciar sesión
@@ -187,6 +189,7 @@
         <span class="qty-number" id="qty-number">1</span>
         <button class="qty-btn plus-btn" id="qty-plus">+</button>
       </div>
+
     </div>
 
     <div class="product-img-wrap">
@@ -194,7 +197,7 @@
     </div>
   </section>
 
-  <!-- CARRUSEL -->
+  <!-- CARRUSEL DE SIMILARES -->
   <section class="related">
     <h3 class="similar-title">También te puede interesar</h3>
 
