@@ -234,24 +234,25 @@ body {
 ===================================================== */
 
 /* =====================================================
-   ICONOS MATERIAL
+   ICONOS MATERIAL — tamaño correcto
 ===================================================== */
 .material-symbols-outlined {
   font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
-  font-size: 22px;
+  font-size: 24px;
+  line-height: 1;
 }
 
 /* =====================================================
-   SCRIM — FONDO OSCURO
+   SCRIM — fondo oscurecido
 ===================================================== */
 .user-scrim {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.55);
+  background: rgba(0,0,0,0.45);
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.22s ease-out;
-  z-index: 2800;
+  transition: opacity .22s ease-out;
+  z-index: 998;
 }
 .user-scrim.open {
   opacity: 1;
@@ -259,36 +260,40 @@ body {
 }
 
 /* =====================================================
-   DRAWER — ESTILO CARRITO
+   DRAWER — IGUAL AL DEL CARRITO (100% COMPATIBLE)
 ===================================================== */
 .user-drawer {
   position: fixed;
   top: 80px;
-  max-width: 360px;
-  width: calc(100% - 32px);
+  right: 16px;
+  width: min(360px, calc(100% - 24px));
+
   background: #16181a;
   color: #ffffff;
+
   border-radius: 24px;
+  overflow: hidden;
 
   box-shadow:
     0 18px 40px rgba(0,0,0,0.75),
     0 0 0 1px rgba(255,255,255,0.04);
 
+  transform: translateX(120%);
   opacity: 0;
   pointer-events: none;
-  overflow: hidden;
 
   transition:
     transform 0.25s cubic-bezier(0.20,0,0,1),
-    opacity 0.22s ease-out;
-  z-index: 4000;
+    opacity .22s ease-out;
+
+  z-index: 999; /* igual carrito */
 }
 
-/* PC → entra por la derecha */
+/* PC → abre a la derecha */
 @media (min-width: 901px) {
   .user-drawer {
-    right: 48px;
     left: auto;
+    right: 16px;
     transform: translateX(120%);
   }
   .user-drawer.open {
@@ -298,11 +303,11 @@ body {
   }
 }
 
-/* Móvil → entra por la izquierda */
+/* Móvil → abre desde la izquierda */
 @media (max-width: 900px) {
   .user-drawer {
-    left: 16px;
-    right: 16px;
+    left: 12px;
+    right: 12px;
     transform: translateX(-120%);
   }
   .user-drawer.open {
@@ -313,92 +318,83 @@ body {
 }
 
 /* =====================================================
-   VISIBILIDAD DE ELEMENTOS
+   VISIBILIDAD SEGÚN SESIÓN
 ===================================================== */
-.logged { display: block !important; }
+.logged { display: none !important; }
 .no-user { display: none !important; }
 
-.user-drawer.no-user .logged {
-  display: none !important;
+/* El JS activa estos */
+.user-drawer.show-logged .logged {
+  display: flex !important;
 }
-.user-drawer.no-user .no-user {
+.user-drawer.show-guest .no-user {
   display: flex !important;
 }
 
 /* =====================================================
-   HEADER PERFIL — AVATAR FLOTANTE REDONDO
+   HEADER DEL PERFIL — IGUAL AL CARRITO
 ===================================================== */
 .user-drawer-header {
   display: flex;
   align-items: center;
   gap: 14px;
   padding: 16px 18px 12px;
+  cursor: pointer;
   text-decoration: none;
   color: inherit;
 }
-
 .user-drawer-header:hover {
   background: rgba(255,255,255,0.06);
 }
 
-/* === AVATAR FLOTANTE EXACTO AL DEL HEADER === */
+/* Avatar circular premium */
 .user-drawer-avatar {
   width: 52px;
   height: 52px;
-  border-radius: 50%; /* ← CÍRCULO PERFECTO */
+  border-radius: 50%;
   overflow: hidden;
+
   background: #ffffff;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  /* SOMBRA PREMIUM EXACTA AL HEADER */
   box-shadow:
-    0 6px 14px rgba(0, 0, 0, 0.18),
-    0 2px 4px rgba(0, 0, 0, 0.12);
+    0 6px 14px rgba(0,0,0,0.18),
+    0 2px 4px rgba(0,0,0,0.12);
 
-  transition: transform 0.20s ease, box-shadow 0.20s ease;
+  transition: .18s ease;
 }
-
-/* PC → hover animado */
 @media (min-width: 901px) {
   .user-drawer-avatar:hover {
-    transform: translateY(-3px);
+    transform: translateY(-2px);
     box-shadow:
-      0 10px 24px rgba(0, 0, 0, 0.22),
-      0 4px 10px rgba(0, 0, 0, 0.16);
+      0 10px 24px rgba(0,0,0,0.22),
+      0 4px 10px rgba(0,0,0,0.16);
   }
 }
-
-/* Imagen rellenando todo */
 .user-drawer-avatar img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-
-  display: block;
-  border: none !important;
-  margin: 0 !important;
-  padding: 0 !important;
 }
 
-/* TEXTOS DEL PERFIL */
+/* Nombre + correo */
 .user-drawer-info {
   display: flex;
   flex-direction: column;
 }
-
 .user-drawer-name {
   font-size: 15px;
   font-weight: 600;
 }
-
 .user-drawer-email {
   font-size: 13px;
-  opacity: 0.7;
+  opacity: .7;
 }
 
+/* Flecha */
 .user-drawer-arrow {
   margin-left: auto;
   font-size: 22px;
@@ -406,47 +402,51 @@ body {
 }
 
 /* =====================================================
-   DIVIDER VERDE
+   LÍNEA DIVISORA — MISMA DEL CARRITO
 ===================================================== */
 .user-drawer-divider {
-  height: 1.6px;
+  height: 1.4px;
   background: var(--verde);
-  opacity: 1;
-  margin: 6px 0 10px;
+  margin: 8px 0 12px;
+  opacity: .85;
   border: none;
 }
 
 /* =====================================================
-   ITEMS DEL MENÚ
+   ITEMS DEL MENÚ — IGUAL AL CARRITO COMPLETAMENTE
 ===================================================== */
 .user-drawer-nav {
   display: flex;
   flex-direction: column;
+  padding-bottom: 6px;
 }
-
 .user-drawer-item {
-  padding: 10px 18px;
+  width: 100%;
+  padding: 11px 18px;
   display: flex;
   align-items: center;
   gap: 16px;
+
+  background: none;
+  border: none;
+
   color: #ffffff;
   font-size: 15px;
   cursor: pointer;
-  background: transparent !important;
+  text-decoration: none;
 }
-
 .user-drawer-item:hover {
   background: rgba(255,255,255,0.06);
 }
 
 .user-drawer-item-icon {
   width: 24px;
-  display: inline-flex;
-  align-items: center;
+  display: flex;
   justify-content: center;
+  align-items: center;
 }
 
-/* Logout rojo */
+/* Logout — igual carrito */
 .user-drawer-item.logout {
   color: #ff4b4b !important;
   font-weight: 600;
@@ -455,7 +455,7 @@ body {
   color: #ff4b4b !important;
 }
 
-/* Login verde */
+/* Login — estilo verde */
 .user-drawer-item.login {
   color: var(--verde) !important;
   font-weight: 600;
