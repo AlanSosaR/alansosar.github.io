@@ -241,28 +241,33 @@ body {
     margin-left: 24px !important;
   }
 }
+
+
 /* =====================================================
-   MENÚ FLOTANTE MATERIAL 3 — IGUAL AL DEL CARRITO
-   PC → derecha / Móvil → izquierda
+   MENÚ FLOTANTE MATERIAL 3 — EXACTO AL CARRITO
+   + PC derecha / MÓVIL izquierda + visibilidad correcta
 ===================================================== */
 
-/* ICONOS MATERIAL */
+/* =====================================================
+   ICONOS MATERIAL — tamaño correcto
+===================================================== */
 .material-symbols-outlined {
   font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
   font-size: 24px;
   line-height: 1;
 }
 
-/* SCRIM */
+/* =====================================================
+   SCRIM — fondo oscurecido
+===================================================== */
 .user-scrim {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.40);
-  backdrop-filter: blur(2px);
+  background: rgba(0,0,0,0.45);
   opacity: 0;
   pointer-events: none;
-  transition: opacity .25s ease;
-  z-index: 3500;
+  transition: opacity .22s ease-out;
+  z-index: 998;
 }
 .user-scrim.open {
   opacity: 1;
@@ -270,11 +275,13 @@ body {
 }
 
 /* =====================================================
-   DRAWER — MISMO ESTILO DEL CARRITO
+   DRAWER — CORREGIDO SIN LÍNEA NEGRA
+   (Funciona igual a carrito en PC y móvil)
 ===================================================== */
+
 .user-drawer {
   position: fixed;
-  top: 0;
+  top: 0;                     /* 🔥 ANTES 80px – ahora toca el header */
   left: 0;
   width: 88%;
   max-width: 360px;
@@ -283,7 +290,7 @@ body {
   background: #16181a;
   color: #ffffff;
 
-  border-radius: 0 24px 24px 0;
+  border-radius: 0 24px 24px 0;   /* 🔥 Sin borde arriba */
   overflow: hidden;
 
   transform: translateX(-100%);
@@ -291,33 +298,55 @@ body {
   pointer-events: none;
 
   transition:
-    transform .28s cubic-bezier(0.20,0,0,1),
+    transform 0.28s cubic-bezier(0.20,0,0,1),
     opacity .22s ease-out;
 
-  z-index: 4000;
-  box-shadow: 0 22px 32px rgba(0,0,0,0.45);
+  z-index: 4000;               /* 🔥 Sobre el header */
+  box-shadow:
+    0 20px 26px rgba(0,0,0,0.45);  /* 🔥 Solo sombra abajo */
 }
 
-/* PC → drawer abre a la derecha */
+/* PC → abre a la derecha */
 @media (min-width: 901px) {
   .user-drawer {
     left: auto;
     right: 0;
-    border-radius: 24px 0 0 24px;
     transform: translateX(100%);
+    border-radius: 24px 0 0 24px; /* 🔥 Ajuste PC (solo lado izquierdo redondeado) */
   }
 }
 
-/* Estado abierto */
+/* ESTADO ABIERTO */
 .user-drawer.open {
   transform: translateX(0);
   opacity: 1;
   pointer-events: auto;
 }
 
+/* SCRIM */
+.user-scrim {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.34);
+  backdrop-filter: blur(2px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s ease;
+  z-index: 3500;
+}
+
+.user-scrim.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
 /* =====================================================
-   ESTADOS (SESIONES)
+   VISIBILIDAD SEGÚN SESIÓN
 ===================================================== */
+.logged { display: none !important; }
+.no-user { display: none !important; }
+
+/* El JS activa estos */
 .user-drawer.show-logged .logged {
   display: flex !important;
 }
@@ -326,14 +355,16 @@ body {
 }
 
 /* =====================================================
-   HEADER DEL DRAWER (Avatar + nombre + email)
+   HEADER DEL PERFIL — IGUAL AL CARRITO (VERSION PERFECTA)
 ===================================================== */
 .user-drawer-header {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 16px 18px;
+  gap: 10px;                   /* 🔥 más compacto */
+  padding: 14px 18px;          /* 🔥 sin padding inferior extra */
   cursor: pointer;
+  text-decoration: none;
+  color: inherit;
 }
 
 .user-drawer-avatar {
@@ -343,6 +374,7 @@ body {
   overflow: hidden;
 
   background: #ffffff;
+
   display: flex;
   align-items: center;
   justify-content: center;
@@ -360,10 +392,12 @@ body {
   object-fit: cover;
 }
 
+/* Nombre + correo */
 .user-drawer-info {
   display: flex;
   flex-direction: column;
-  line-height: 1.1;
+  justify-content: center;     /* 🔥 centra verticalmente y elimina separación */
+  line-height: 1.1;            /* 🔥 compactado */
 }
 
 .user-drawer-name {
@@ -375,9 +409,10 @@ body {
 .user-drawer-email {
   font-size: 13px;
   opacity: .7;
-  margin-top: 2px;
+  margin: 2px 0 0;             /* 🔥 apenas separación */
 }
 
+/* Flecha */
 .user-drawer-arrow {
   margin-left: auto;
   font-size: 22px;
@@ -385,7 +420,7 @@ body {
 }
 
 /* =====================================================
-   LÍNEA VERDE
+   LÍNEA DIVISORA — MISMA DEL CARRITO
 ===================================================== */
 .user-drawer-divider {
   height: 1.4px;
@@ -396,13 +431,13 @@ body {
 }
 
 /* =====================================================
-   ITEMS DEL MENÚ
+   ITEMS DEL MENÚ — IGUAL AL CARRITO COMPLETAMENTE
 ===================================================== */
 .user-drawer-nav {
   display: flex;
   flex-direction: column;
+  padding-bottom: 6px;
 }
-
 .user-drawer-item {
   width: 100%;
   padding: 11px 18px;
@@ -410,15 +445,14 @@ body {
   align-items: center;
   gap: 16px;
 
-  color: #ffffff;
-  font-size: 15px;
-
-  text-decoration: none;
   background: none;
   border: none;
-  cursor: pointer;
-}
 
+  color: #ffffff;
+  font-size: 15px;
+  cursor: pointer;
+  text-decoration: none;
+}
 .user-drawer-item:hover {
   background: rgba(255,255,255,0.06);
 }
@@ -427,9 +461,19 @@ body {
   width: 24px;
   display: flex;
   justify-content: center;
+  align-items: center;
 }
 
-/* Login */
+/* Logout — igual carrito */
+.user-drawer-item.logout {
+  color: #ff4b4b !important;
+  font-weight: 600;
+}
+.user-drawer-item.logout .material-symbols-outlined {
+  color: #ff4b4b !important;
+}
+
+/* Login — estilo verde */
 .user-drawer-item.login {
   color: var(--verde) !important;
   font-weight: 600;
@@ -438,14 +482,6 @@ body {
   color: var(--verde) !important;
 }
 
-/* Logout */
-.user-drawer-item.logout {
-  color: #ff4b4b !important;
-  font-weight: 600;
-}
-.user-drawer-item.logout .material-symbols-outlined {
-  color: #ff4b4b !important;
-}
 
 /* ================= HERO ================= */
 
