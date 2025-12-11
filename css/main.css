@@ -260,61 +260,69 @@ body {
 }
 
 /* =====================================================
-   DRAWER — IGUAL AL DEL CARRITO (100% COMPATIBLE)
+   DRAWER — CORREGIDO SIN LÍNEA NEGRA
+   (Funciona igual a carrito en PC y móvil)
 ===================================================== */
+
 .user-drawer {
   position: fixed;
-  top: 80px;
-  right: 16px;
-  width: min(360px, calc(100% - 24px));
+  top: 0;                     /* 🔥 ANTES 80px – ahora toca el header */
+  left: 0;
+  width: 88%;
+  max-width: 360px;
+  height: 100vh;
 
   background: #16181a;
   color: #ffffff;
 
-  border-radius: 24px;
+  border-radius: 0 24px 24px 0;   /* 🔥 Sin borde arriba */
   overflow: hidden;
 
-  box-shadow:
-    0 18px 40px rgba(0,0,0,0.75),
-    0 0 0 1px rgba(255,255,255,0.04);
-
-  transform: translateX(120%);
+  transform: translateX(-100%);
   opacity: 0;
   pointer-events: none;
 
   transition:
-    transform 0.25s cubic-bezier(0.20,0,0,1),
+    transform 0.28s cubic-bezier(0.20,0,0,1),
     opacity .22s ease-out;
 
-  z-index: 999; /* igual carrito */
+  z-index: 4000;               /* 🔥 Sobre el header */
+  box-shadow:
+    0 20px 26px rgba(0,0,0,0.45);  /* 🔥 Solo sombra abajo */
 }
 
 /* PC → abre a la derecha */
 @media (min-width: 901px) {
   .user-drawer {
     left: auto;
-    right: 16px;
-    transform: translateX(120%);
-  }
-  .user-drawer.open {
-    transform: translateX(0);
-    opacity: 1;
-    pointer-events: auto;
+    right: 0;
+    transform: translateX(100%);
+    border-radius: 24px 0 0 24px; /* 🔥 Ajuste PC (solo lado izquierdo redondeado) */
   }
 }
 
-/* Móvil → abre desde la izquierda */
-@media (max-width: 900px) {
-  .user-drawer {
-    left: 12px;
-    right: 12px;
-    transform: translateX(-120%);
-  }
-  .user-drawer.open {
-    transform: translateX(0);
-    opacity: 1;
-    pointer-events: auto;
-  }
+/* ESTADO ABIERTO */
+.user-drawer.open {
+  transform: translateX(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* SCRIM */
+.user-scrim {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.34);
+  backdrop-filter: blur(2px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s ease;
+  z-index: 3500;
+}
+
+.user-scrim.open {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 /* =====================================================
