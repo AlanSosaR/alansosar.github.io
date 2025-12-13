@@ -365,24 +365,20 @@ body {
   }
 }
 
-/* ================= VISIBILIDAD ================= */
+/* ================= VISIBILIDAD — FIX DEFINITIVO ================= */
+
+/* Por defecto, mostrar todo */
 .logged,
 .no-user {
-  display: none;
+  display: block;
 }
 
-/* INVITADO */
-.user-drawer.no-user .no-user {
-  display: flex;
-}
+/* ===== INVITADO ===== */
 .user-drawer.no-user .logged {
   display: none;
 }
 
-/* LOGUEADO */
-.user-drawer.logged .logged {
-  display: flex;
-}
+/* ===== LOGUEADO ===== */
 .user-drawer.logged .no-user {
   display: none;
 }
