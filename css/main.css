@@ -54,18 +54,20 @@ body {
   height: 56px;
 }
 
-/* NAV ESCRITORIO */
+/* NAV ESCRITORIO — FIX */
 .nav-links {
   display: flex;
   align-items: center;
   gap: 2rem;
-  margin-left: auto; /* empuja el menú */
+  /* margin-left: auto; ❌ ELIMINADO */
 }
+
 .nav-links a {
   text-decoration: none;
   color: var(--marron);
   font-weight: 500;
 }
+
 .nav-links a:hover {
   color: var(--verde);
 }
