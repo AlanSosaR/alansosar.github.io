@@ -226,6 +226,15 @@ body {
     margin-left: 24px !important;
   }
 }
+/* ==============================
+   CARRITO — SIEMPRE VISIBLE
+============================== */
+#cart-btn {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
 
 
 /* =====================================================
