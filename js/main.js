@@ -4,6 +4,7 @@
    ✔ Drawer funcional móvil / desktop
    ✔ Invitado / Logueado por clases
    ❌ SIN control de sesión aquí
+   ✅ Logout conectado al core de Supabase
 ============================================================ */
 
 /* ========================= SAFE ========================= */
@@ -192,6 +193,23 @@ document.addEventListener("DOMContentLoaded", () => {
         !menuToggle.contains(e.target)
       ) {
         fabContainer.classList.remove("active");
+      }
+    });
+  }
+
+  /* ========================= LOGOUT DESDE MENÚ ========================= */
+  const logoutBtn = safe("logout-btn");
+
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      if (typeof window.corteroLogout === "function") {
+        console.log("🚪 Logout desde menú");
+        window.corteroLogout();
+      } else {
+        console.error("❌ corteroLogout no está disponible");
       }
     });
   }
