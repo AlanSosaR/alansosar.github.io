@@ -88,29 +88,34 @@ body {
   color: var(--verde);
 }
 
-/* ============================================
-   HEADER — ESTADO POR SESIÓN
-============================================ */
+/* =====================================================
+   HEADER — VISIBILIDAD SEGÚN SESIÓN (DESKTOP)
+===================================================== */
 
-/* Por defecto (INVITADO) */
+/* INVITADO */
 .header-fixed .nav-links {
   display: flex;
 }
+
+.header-fixed .login-link {
+  display: inline-block;
+}
+
 .header-fixed .header-avatar-button {
   display: none;
 }
 
 /* LOGUEADO */
-body.logged .nav-links {
-  display: none !important;
+.header-fixed.logged .nav-links {
+  display: none;
 }
 
-body.logged .login-link {
-  display: none !important;
+.header-fixed.logged .login-link {
+  display: none;
 }
 
-body.logged .header-avatar-button {
-  display: flex !important;
+.header-fixed.logged .header-avatar-button {
+  display: flex;
 }
 /* ============================================
    ACCIONES HEADER (LOGIN / AVATAR / CARRITO)
