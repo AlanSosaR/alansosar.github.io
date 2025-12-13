@@ -10,6 +10,7 @@ function safe(id) {
   return document.getElementById(id);
 }
 
+/* ========================= CIERRE DRAWER ========================= */
 function closeDrawerUI() {
   const drawer = safe("user-drawer");
   const scrim = safe("user-scrim");
@@ -18,6 +19,7 @@ function closeDrawerUI() {
     drawer.classList.remove("open");
     drawer.setAttribute("aria-hidden", "true");
   }
+
   if (scrim) {
     scrim.classList.remove("open");
   }
@@ -25,35 +27,35 @@ function closeDrawerUI() {
   document.body.style.overflow = "";
 }
 
-/* ========================= LOGUEADO ========================= */
+/* ========================= ESTADO LOGUEADO ========================= */
 function setLoggedIn(user) {
   const drawer = safe("user-drawer");
   const header = document.querySelector(".header-fixed");
   if (!drawer) return;
 
-  // Drawer
+  /* ===== Drawer ===== */
   drawer.classList.remove("no-user");
   drawer.classList.add("logged");
 
-  // Header (clave para ocultar links)
+  /* ===== Header desktop ===== */
   if (header) header.classList.add("logged");
 
-  // Header desktop
-  const avatarHeader = safe("btn-header-user");
-  if (avatarHeader) avatarHeader.style.display = "flex";
-
-  const loginDesktop = safe("login-desktop");
-  if (loginDesktop) loginDesktop.style.display = "none";
-
-  // Avatar
+  /* ===== Avatar ===== */
   const photo = user?.photo_url || "imagenes/avatar-default.svg";
-  if (safe("avatar-user")) safe("avatar-user").src = photo;
-  if (safe("avatar-user-drawer")) safe("avatar-user-drawer").src = photo;
 
-  // Textos drawer
+  if (safe("avatar-user")) {
+    safe("avatar-user").src = photo;
+  }
+
+  if (safe("avatar-user-drawer")) {
+    safe("avatar-user-drawer").src = photo;
+  }
+
+  /* ===== Textos drawer ===== */
   if (safe("drawer-name")) {
     safe("drawer-name").textContent = `Hola, ${user?.name || "Usuario"}`;
   }
+
   if (safe("drawer-email")) {
     safe("drawer-email").textContent = user?.email || "";
   }
@@ -61,25 +63,18 @@ function setLoggedIn(user) {
   closeDrawerUI();
 }
 
-/* ========================= INVITADO ========================= */
+/* ========================= ESTADO INVITADO ========================= */
 function setLoggedOut() {
   const drawer = safe("user-drawer");
   const header = document.querySelector(".header-fixed");
   if (!drawer) return;
 
-  // Drawer
+  /* ===== Drawer ===== */
   drawer.classList.remove("logged");
   drawer.classList.add("no-user");
 
-  // Header
+  /* ===== Header desktop ===== */
   if (header) header.classList.remove("logged");
-
-  // Header desktop
-  const avatarHeader = safe("btn-header-user");
-  if (avatarHeader) avatarHeader.style.display = "none";
-
-  const loginDesktop = safe("login-desktop");
-  if (loginDesktop) loginDesktop.style.display = "inline-block";
 
   closeDrawerUI();
 }
@@ -92,7 +87,7 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       setLoggedIn(JSON.parse(raw));
     } catch (e) {
-      console.warn("⚠️ Usuario inválido, limpiando estado");
+      console.warn("⚠️ Usuario inválido, limpiando sesión");
       localStorage.removeItem("cortero_user");
       setLoggedOut();
     }
