@@ -344,17 +344,15 @@ body {
   }
 }
 
-/* =====================================================
-   VISIBILIDAD DE ELEMENTOS
-===================================================== */
-.logged { display: block !important; }
-.no-user { display: none !important; }
-
-.user-drawer.no-user .logged {
-  display: none !important;
+/* =========================
+   ESTADO NEUTRO (JS CONTROLA)
+========================= */
+.logged {
+  display: none;
 }
-.user-drawer.no-user .no-user {
-  display: flex !important;
+
+.no-user {
+  display: block;
 }
 
 /* =====================================================
