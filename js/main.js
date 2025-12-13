@@ -1,7 +1,7 @@
 /* ============================================================
    MAIN.JS — Café Cortero 2025
    UI + CARRITO + INTERACCIONES
-   ✔ Drawer funcional
+   ✔ Drawer funcional móvil / desktop
    ✔ Invitado / Logueado por clases
    ❌ SIN control de sesión aquí
 ============================================================ */
@@ -64,28 +64,29 @@ document.addEventListener("DOMContentLoaded", () => {
   const scrim      = safe("user-scrim");
   const menuToggle = safe("menu-toggle");
 
-  /* 🔥 ESTADO BASE (CRÍTICO PARA INVITADO) */
+  /* Estado base (INVITADO por defecto) */
   if (drawer) {
     drawer.classList.remove("logged");
     drawer.classList.add("no-user");
+    drawer.classList.remove("open");
     drawer.setAttribute("aria-hidden", "true");
   }
 
   function openDrawer() {
-    if (!drawer) return;
+    if (!drawer || !scrim) return;
     drawer.classList.add("open");
     drawer.setAttribute("aria-hidden", "false");
-    scrim?.classList.add("open");
+    scrim.classList.add("open");
   }
 
   function closeDrawer() {
-    if (!drawer) return;
+    if (!drawer || !scrim) return;
     drawer.classList.remove("open");
     drawer.setAttribute("aria-hidden", "true");
-    scrim?.classList.remove("open");
+    scrim.classList.remove("open");
   }
 
-  /* Toggle hamburguesa */
+  /* Botón hamburguesa */
   if (menuToggle && drawer) {
     menuToggle.addEventListener("click", (e) => {
       e.preventDefault();
@@ -97,6 +98,13 @@ document.addEventListener("DOMContentLoaded", () => {
   /* Click en scrim cierra */
   if (scrim) {
     scrim.addEventListener("click", closeDrawer);
+  }
+
+  /* Evita cierres al tocar dentro del drawer */
+  if (drawer) {
+    drawer.addEventListener("click", (e) => {
+      e.stopPropagation();
+    });
   }
 
   /* Cierra drawer al cambiar tamaño */
@@ -178,7 +186,11 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     document.addEventListener("click", (e) => {
-      if (!fabContainer.contains(e.target)) {
+      if (
+        !fabContainer.contains(e.target) &&
+        !drawer.contains(e.target) &&
+        !menuToggle.contains(e.target)
+      ) {
         fabContainer.classList.remove("active");
       }
     });
