@@ -117,3 +117,25 @@ document.addEventListener("DOMContentLoaded", async () => {
     console.log("🚫 No hay sesión activa");
   }
 });
+
+// ------------------------------------------------------------
+// 10) CONECTAR SESIÓN CON HEADER (PC)
+// ------------------------------------------------------------
+
+// Usuario logueado
+document.addEventListener("userLoggedIn", () => {
+  const header = document.querySelector(".header-fixed");
+  if (header) {
+    header.classList.add("logged");
+    header.classList.remove("no-user");
+  }
+});
+
+// Usuario invitado / logout
+document.addEventListener("userLoggedOut", () => {
+  const header = document.querySelector(".header-fixed");
+  if (header) {
+    header.classList.remove("logged");
+    header.classList.add("no-user");
+  }
+});
