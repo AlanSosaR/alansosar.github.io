@@ -1,7 +1,9 @@
 /* ============================================================
    MAIN.JS — Café Cortero 2025
    UI + CARRITO + INTERACCIONES
-   ❌ SIN CONTROL DE SESIÓN AQUÍ
+   ✔ Drawer funcional
+   ✔ Invitado / Logueado por clases
+   ❌ SIN control de sesión aquí
 ============================================================ */
 
 /* ========================= SAFE ========================= */
@@ -14,8 +16,11 @@ function safe(id) {
 const CART_KEY = "cafecortero_cart";
 
 function getCart() {
-  try { return JSON.parse(localStorage.getItem(CART_KEY)) || []; }
-  catch { return []; }
+  try {
+    return JSON.parse(localStorage.getItem(CART_KEY)) || [];
+  } catch {
+    return [];
+  }
 }
 
 function saveCart(cart) {
@@ -59,31 +64,42 @@ document.addEventListener("DOMContentLoaded", () => {
   const scrim      = safe("user-scrim");
   const menuToggle = safe("menu-toggle");
 
+  /* 🔥 ESTADO BASE (CRÍTICO PARA INVITADO) */
+  if (drawer) {
+    drawer.classList.remove("logged");
+    drawer.classList.add("no-user");
+    drawer.setAttribute("aria-hidden", "true");
+  }
+
   function openDrawer() {
-    drawer?.classList.add("open");
+    if (!drawer) return;
+    drawer.classList.add("open");
+    drawer.setAttribute("aria-hidden", "false");
     scrim?.classList.add("open");
   }
 
   function closeDrawer() {
-    drawer?.classList.remove("open");
+    if (!drawer) return;
+    drawer.classList.remove("open");
+    drawer.setAttribute("aria-hidden", "true");
     scrim?.classList.remove("open");
   }
 
-  // Toggle hamburguesa (ABRE y CIERRA)
-if (menuToggle) {
-  menuToggle.addEventListener("click", (e) => {
-    e.stopPropagation();
-    if (!drawer) return;
-    drawer.classList.contains("open") ? closeDrawer() : openDrawer();
-  });
-}
+  /* Toggle hamburguesa */
+  if (menuToggle && drawer) {
+    menuToggle.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      drawer.classList.contains("open") ? closeDrawer() : openDrawer();
+    });
+  }
 
-  // Click en scrim cierra
+  /* Click en scrim cierra */
   if (scrim) {
     scrim.addEventListener("click", closeDrawer);
   }
 
-  // Cerrar drawer al cambiar tamaño (fix responsive)
+  /* Cierra drawer al cambiar tamaño */
   window.addEventListener("resize", () => {
     if (drawer?.classList.contains("open")) {
       closeDrawer();
