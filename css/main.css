@@ -89,6 +89,30 @@ body {
 }
 
 /* ============================================
+   HEADER — ESTADO POR SESIÓN
+============================================ */
+
+/* Por defecto (INVITADO) */
+.header-fixed .nav-links {
+  display: flex;
+}
+.header-fixed .header-avatar-button {
+  display: none;
+}
+
+/* LOGUEADO */
+body.logged .nav-links {
+  display: none !important;
+}
+
+body.logged .login-link {
+  display: none !important;
+}
+
+body.logged .header-avatar-button {
+  display: flex !important;
+}
+/* ============================================
    ACCIONES HEADER (LOGIN / AVATAR / CARRITO)
 ============================================ */
 .header-actions {
