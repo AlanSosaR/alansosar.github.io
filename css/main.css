@@ -69,6 +69,18 @@ body {
 .nav-links a:hover {
   color: var(--verde);
 }
+/* =========================================
+   HEADER — OCULTAR LINKS EN MÓVIL
+========================================= */
+
+/* Móvil y tablet */
+@media (max-width: 900px) {
+  .nav-links,
+  .header-nav,
+  .menu-links {
+    display: none !important;
+  }
+}
 /* ============================================
    LOGIN DESKTOP — MISMO ESTILO QUE NAV LINKS
 ============================================ */
