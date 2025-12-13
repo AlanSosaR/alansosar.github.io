@@ -344,17 +344,24 @@ body {
   }
 }
 
-/* MÓVIL */
+/* MÓVIL — FIX DEFINITIVO */
 @media (max-width: 900px) {
   .user-drawer {
     left: 16px;
     right: 16px;
     transform: translateX(-120%);
+    position: fixed;          /* 🔑 CLAVE */
+    z-index: 99999;           /* 🔑 CLAVE */
   }
+
   .user-drawer.open {
     transform: translateX(0);
     opacity: 1;
     pointer-events: auto;
+  }
+
+  .user-scrim {
+    z-index: 99998;           /* debajo del drawer */
   }
 }
 
