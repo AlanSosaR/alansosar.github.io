@@ -1,77 +1,107 @@
 // ============================================================
 // AUTH-UI — Café Cortero (2025)
-// Controla SOLO la UI según sesión
-// Compatible con tu HTML actual
+// Controla SOLO la UI según sesión (NO backend)
 // ============================================================
 
-console.log("👤 auth-ui.js activo (versión actual)");
+console.log("👤 auth-ui.js activo — versión FINAL ESTABLE");
 
+/* ========================= HELPERS ========================= */
+function safe(id) {
+  return document.getElementById(id);
+}
+
+function closeDrawerUI() {
+  const drawer = safe("user-drawer");
+  const scrim = safe("user-scrim");
+
+  if (drawer) {
+    drawer.classList.remove("open");
+    drawer.setAttribute("aria-hidden", "true");
+  }
+  if (scrim) {
+    scrim.classList.remove("open");
+  }
+
+  document.body.style.overflow = "";
+}
+
+/* ========================= LOGUEADO ========================= */
 function setLoggedIn(user) {
-  const drawer = document.getElementById("user-drawer");
+  const drawer = safe("user-drawer");
+  const header = document.querySelector(".header-fixed");
   if (!drawer) return;
 
+  // Drawer
   drawer.classList.remove("no-user");
   drawer.classList.add("logged");
 
-  // Avatar header (PC)
-  const avatarHeader = document.getElementById("btn-header-user");
+  // Header (clave para ocultar links)
+  if (header) header.classList.add("logged");
+
+  // Header desktop
+  const avatarHeader = safe("btn-header-user");
   if (avatarHeader) avatarHeader.style.display = "flex";
 
-  // Login desktop
-  const loginDesktop = document.getElementById("login-desktop");
+  const loginDesktop = safe("login-desktop");
   if (loginDesktop) loginDesktop.style.display = "none";
 
-  // Avatar imágenes
+  // Avatar
   const photo = user?.photo_url || "imagenes/avatar-default.svg";
-  const avatarImg = document.getElementById("avatar-user");
-  const avatarDrawer = document.getElementById("avatar-user-drawer");
+  if (safe("avatar-user")) safe("avatar-user").src = photo;
+  if (safe("avatar-user-drawer")) safe("avatar-user-drawer").src = photo;
 
-  if (avatarImg) avatarImg.src = photo;
-  if (avatarDrawer) avatarDrawer.src = photo;
+  // Textos drawer
+  if (safe("drawer-name")) {
+    safe("drawer-name").textContent = `Hola, ${user?.name || "Usuario"}`;
+  }
+  if (safe("drawer-email")) {
+    safe("drawer-email").textContent = user?.email || "";
+  }
 
-  // Textos
-  if (document.getElementById("drawer-name")) {
-    document.getElementById("drawer-name").textContent =
-      `Hola, ${user?.name || "Usuario"}`;
-  }
-  if (document.getElementById("drawer-email")) {
-    document.getElementById("drawer-email").textContent =
-      user?.email || "";
-  }
+  closeDrawerUI();
 }
 
+/* ========================= INVITADO ========================= */
 function setLoggedOut() {
-  const drawer = document.getElementById("user-drawer");
+  const drawer = safe("user-drawer");
+  const header = document.querySelector(".header-fixed");
   if (!drawer) return;
 
+  // Drawer
   drawer.classList.remove("logged");
   drawer.classList.add("no-user");
 
-  // Ocultar avatar header
-  const avatarHeader = document.getElementById("btn-header-user");
+  // Header
+  if (header) header.classList.remove("logged");
+
+  // Header desktop
+  const avatarHeader = safe("btn-header-user");
   if (avatarHeader) avatarHeader.style.display = "none";
 
-  // Mostrar login desktop
-  const loginDesktop = document.getElementById("login-desktop");
+  const loginDesktop = safe("login-desktop");
   if (loginDesktop) loginDesktop.style.display = "inline-block";
+
+  closeDrawerUI();
 }
 
-/* ============================================================
-   INIT
-============================================================ */
+/* ========================= INIT ========================= */
 document.addEventListener("DOMContentLoaded", () => {
   const raw = localStorage.getItem("cortero_user");
 
   if (raw) {
-    setLoggedIn(JSON.parse(raw));
+    try {
+      setLoggedIn(JSON.parse(raw));
+    } catch (e) {
+      console.warn("⚠️ Usuario inválido, limpiando estado");
+      localStorage.removeItem("cortero_user");
+      setLoggedOut();
+    }
   } else {
     setLoggedOut();
   }
 });
 
-/* ============================================================
-   EVENTOS DESDE SUPABASE
-============================================================ */
+/* ========================= EVENTOS GLOBALES ========================= */
 document.addEventListener("userLoggedIn", (e) => {
   setLoggedIn(e.detail);
 });
