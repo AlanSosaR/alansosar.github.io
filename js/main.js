@@ -70,12 +70,13 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Toggle hamburguesa (ABRE y CIERRA)
-  if (menuToggle) {
-    menuToggle.addEventListener("click", (e) => {
-      e.stopPropagation();
-      drawer.classList.contains("open") ? closeDrawer() : openDrawer();
-    });
-  }
+if (menuToggle) {
+  menuToggle.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (!drawer) return;
+    drawer.classList.contains("open") ? closeDrawer() : openDrawer();
+  });
+}
 
   // Click en scrim cierra
   if (scrim) {
