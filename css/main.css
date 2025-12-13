@@ -69,6 +69,24 @@ body {
 .nav-links a:hover {
   color: var(--verde);
 }
+/* ============================================
+   LOGIN DESKTOP — MISMO ESTILO QUE NAV LINKS
+============================================ */
+.login-link {
+  text-decoration: none;
+  color: var(--marron);
+  font-weight: 500;
+  font-size: 1rem;
+  line-height: 1;
+  white-space: nowrap;
+  padding: 0;     /* elimina estilo de botón */
+  margin: 0;
+  background: none;
+}
+
+.login-link:hover {
+  color: var(--verde);
+}
 
 /* ============================================
    ACCIONES HEADER (LOGIN / AVATAR / CARRITO)
