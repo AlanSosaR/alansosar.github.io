@@ -69,13 +69,36 @@ body {
   color: var(--verde);
 }
 
-/* VISIBILIDAD PC / MÓVIL */
-.desktop-only { display: flex; }
-.mobile-only { display: none; }
+/* ============================================
+   ACCIONES HEADER (LOGIN / AVATAR / CARRITO)
+============================================ */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
 
+/* VISIBILIDAD PC / MÓVIL */
+.desktop-only { 
+  display: flex; 
+}
+.mobile-only { 
+  display: none; 
+}
+
+/* MÓVIL */
 @media (max-width: 900px) {
-  .desktop-only { display: none; }
-  .mobile-only { display: block; }
+  .desktop-only { 
+    display: none; 
+  }
+  .mobile-only { 
+    display: block; 
+  }
+
+  /* Empuja el carrito a la derecha */
+  .header-actions {
+    margin-left: auto;
+  }
 }
 
 /* ============================================
