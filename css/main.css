@@ -478,6 +478,17 @@ body {
   font-weight: 600;
 }
 
+/* ================= FIX VISIBILIDAD ITEMS ================= */
+
+/* Items públicos SIEMPRE visibles */
+.user-drawer-item:not(.logged):not(.no-user) {
+  display: flex;
+}
+
+/* Seguridad extra (evita menú vacío) */
+.user-drawer-nav .user-drawer-item {
+  display: flex;
+}
 /* ================= HERO ================= */
 
 .hero {
