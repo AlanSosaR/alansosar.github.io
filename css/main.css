@@ -92,7 +92,7 @@ body {
    HEADER — VISIBILIDAD SEGÚN SESIÓN (DESKTOP)
 ===================================================== */
 
-/* INVITADO */
+/* ===== INVITADO ===== */
 .header-fixed .nav-links {
   display: flex;
 }
@@ -105,7 +105,7 @@ body {
   display: none;
 }
 
-/* LOGUEADO */
+/* ===== LOGUEADO ===== */
 .header-fixed.logged .nav-links {
   display: none;
 }
@@ -116,6 +116,34 @@ body {
 
 .header-fixed.logged .header-avatar-button {
   display: flex;
+}
+
+/* =====================================================
+   HEADER — FIX DE ALINEACIÓN DEFINITIVO
+===================================================== */
+
+.header-fixed {
+  display: flex;
+  align-items: center;
+}
+
+/* Logo no se mueve nunca */
+.header-logo-link {
+  flex-shrink: 0;
+}
+
+/* Navegación desktop */
+.nav-links {
+  display: flex;
+  gap: 2rem;
+}
+
+/* Acciones siempre a la derecha */
+.header-actions {
+  margin-left: auto;        /* 🔑 CLAVE ABSOLUTA */
+  display: flex;
+  align-items: center;
+  gap: 14px;
 }
 /* ============================================
    ACCIONES HEADER (LOGIN / AVATAR / CARRITO)
