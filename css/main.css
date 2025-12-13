@@ -19,10 +19,9 @@ body {
 }
 
 /* =====================================================
-   HEADER — LIMPIO, ESTABLE Y DEFINITIVO
+   HEADER — DEFINITIVO, SIN DESORDEN
 ===================================================== */
 
-/* ===================== BASE ===================== */
 .header-fixed {
   position: fixed;
   top: 0;
@@ -34,17 +33,7 @@ body {
 
   display: flex;
   align-items: center;
-  justify-content: space-between; /* 🔑 móvil: extremos */
   padding: 0 24px;
-  box-sizing: border-box;
-}
-
-/* PC más aire */
-@media (min-width: 901px) {
-  .header-fixed {
-    justify-content: flex-start; /* desktop controla con auto */
-    padding: 0 48px;
-  }
 }
 
 /* ===================== LOGO ===================== */
@@ -58,21 +47,12 @@ body {
   height: 56px;
 }
 
-/* ===================== HAMBURGUESA ===================== */
-.menu-toggle {
-  background: none;
-  border: none;
-  font-size: 1.8rem;
-  cursor: pointer;
-}
-
 /* ===================== NAV DESKTOP ===================== */
 .nav-links {
   display: flex;
   align-items: center;
   gap: 2rem;
   margin-left: 32px;
-  flex-shrink: 0;
 }
 
 .nav-links a {
@@ -87,26 +67,24 @@ body {
 
 /* ===================== ACCIONES DERECHA ===================== */
 .header-actions {
-  margin-left: auto;          /* 🔑 ancla derecha en PC */
+  margin-left: auto; /* 🔑 ÚNICO ELEMENTO QUE EMPUJA */
   display: flex;
   align-items: center;
   gap: 16px;
-  flex-shrink: 0;
 }
 
-/* ===================== LOGIN LINK ===================== */
+/* ===================== LOGIN ===================== */
 .login-link {
   text-decoration: none;
   color: var(--marron);
   font-weight: 500;
-  white-space: nowrap;
 }
 
 .login-link:hover {
   color: var(--verde);
 }
 
-/* ===================== AVATAR ===================== */
+/* ===================== AVATAR (PC SOLO) ===================== */
 .header-avatar-button {
   display: none;
   background: none;
@@ -120,21 +98,20 @@ body {
   border-radius: 50%;
 }
 
-/* ===================== VISIBILIDAD POR SESIÓN ===================== */
-/* Invitado */
-.header-fixed .nav-links {
+/* ===================== ESTADO INVITADO ===================== */
+.header-fixed:not(.logged) .nav-links {
   display: flex;
 }
 
-.header-fixed .login-link {
+.header-fixed:not(.logged) .login-link {
   display: inline-block;
 }
 
-.header-fixed .header-avatar-button {
+.header-fixed:not(.logged) .header-avatar-button {
   display: none;
 }
 
-/* Logueado (PC) */
+/* ===================== ESTADO LOGUEADO (PC) ===================== */
 .header-fixed.logged .nav-links {
   display: none;
 }
@@ -147,38 +124,24 @@ body {
   display: flex;
 }
 
-/* ===================== UTILIDADES ===================== */
-.desktop-only {
-  display: flex;
-}
-
-.mobile-only {
-  display: none;
-}
-
 /* ===================== MÓVIL ===================== */
 @media (max-width: 900px) {
 
-  /* Estructura móvil: extremos */
   .header-fixed {
     justify-content: space-between;
   }
 
-  /* Oculta nav y avatar */
-  .nav-links,
+  /* ❌ Nunca mostrar avatar en móvil */
   .header-avatar-button {
     display: none !important;
   }
 
-  .desktop-only {
+  /* ❌ Nunca mostrar nav en móvil */
+  .nav-links {
     display: none !important;
   }
 
-  .mobile-only {
-    display: flex !important;
-  }
-
-  /* En móvil, header-actions no empuja */
+  /* Acciones no empujan */
   .header-actions {
     margin-left: 0;
   }
