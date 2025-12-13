@@ -371,14 +371,29 @@ body {
 }
 
 /* =========================
-   ESTADO NEUTRO (JS CONTROLA)
+   VISIBILIDAD CONTROLADA POR DRAWER
 ========================= */
-.logged {
+
+/* Por defecto ocultar ambos */
+.logged,
+.no-user {
   display: none;
 }
 
-.no-user {
-  display: block;
+/* Cuando el drawer está en modo invitado */
+.user-drawer.no-user .no-user {
+  display: flex;
+}
+.user-drawer.no-user .logged {
+  display: none;
+}
+
+/* Cuando el drawer está en modo logueado */
+.user-drawer.logged .logged {
+  display: flex;
+}
+.user-drawer.logged .no-user {
+  display: none;
 }
 
 /* =====================================================
