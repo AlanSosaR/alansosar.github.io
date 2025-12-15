@@ -37,8 +37,11 @@ function setLoggedIn(user) {
   drawer.classList.remove("no-user");
   drawer.classList.add("logged");
 
-  /* ===== Header desktop ===== */
-  if (header) header.classList.add("logged");
+  /* ===== Header ===== */
+  if (header) {
+    header.classList.remove("no-user"); // 🔑 FIX
+    header.classList.add("logged");
+  }
 
   /* ===== Avatar ===== */
   const photo = user?.photo_url || "imagenes/avatar-default.svg";
@@ -73,8 +76,11 @@ function setLoggedOut() {
   drawer.classList.remove("logged");
   drawer.classList.add("no-user");
 
-  /* ===== Header desktop ===== */
-  if (header) header.classList.remove("logged");
+  /* ===== Header ===== */
+  if (header) {
+    header.classList.remove("logged");
+    header.classList.add("no-user"); // 🔑 FIX
+  }
 
   closeDrawerUI();
 }
