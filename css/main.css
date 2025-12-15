@@ -945,22 +945,34 @@ body {
   color: var(--marron);
 }
 
+/* CONTENEDOR VISIBLE DEL CARRUSEL */
+.carousel-container {
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* LISTA DESLIZABLE */
 .similar-list {
   display: flex;
-  gap: 1rem;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
+  gap: 1rem; /* 16px */
   padding: 14px 0;
-  scrollbar-width: none;
-}
-.similar-list::-webkit-scrollbar { display: none; }
 
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+
+  /* 5 tarjetas exactas */
+  width: calc((190px * 5) + (1rem * 4));
+}
+
+/* TARJETA */
 .similar-card {
   flex: 0 0 190px;
   background: #fff;
   border-radius: 18px;
   box-shadow: var(--sombra);
   padding: 1.5rem 1rem;
+
   scroll-snap-align: start;
   transition: transform 0.25s, box-shadow 0.25s;
 }
@@ -981,7 +993,6 @@ body {
   box-shadow: 0 6px 18px rgba(51,103,59,0.25);
   border: 1px solid var(--verde);
 }
-
 /* ================= SOBRE NOSOTROS ================= */
 
 .about {
