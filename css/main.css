@@ -4,17 +4,21 @@
 :root {
   --marron: #512615;
   --verde: #33673B;
-  --blanco: #fff;
-  --gris: #f5f5f5;
-  --sombra: 0 6px 20px rgba(0, 0, 0, 0.08);
+  --blanco: #ffffff;
+  --fondo: #fafafa;
+}
+
+/* RESET */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", 
-               "Helvetica Neue", Helvetica, Arial, sans-serif;
-  background: var(--blanco);
+  font-family: "Poppins", sans-serif;
+  background: var(--fondo);
   color: var(--marron);
-  scroll-behavior: smooth;
   -webkit-tap-highlight-color: transparent;
 }
 
