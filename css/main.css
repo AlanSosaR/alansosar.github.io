@@ -906,7 +906,10 @@ body {
   box-shadow:
     0 2px 6px rgba(0,0,0,0.08);
 }
-
+.carousel-prev-circle,
+.carousel-next-circle {
+  z-index: 5;
+}
 /* =====================
    PUNTOS CENTRADOS
 ===================== */
@@ -975,8 +978,8 @@ body {
   scroll-behavior: smooth;
   scroll-snap-type: x mandatory;
 
-  /* 5 tarjetas exactas */
-  width: calc((190px * 5) + (1rem * 4));
+  width: 100%;              /* 🔑 fluido */
+  overflow: hidden;         /* 🔑 recorta solo las cards */
 }
 
 /* TARJETA */
