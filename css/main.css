@@ -807,6 +807,7 @@ body {
 /* El contenedor del carrusel */
 .carousel-container {
   position: relative;
+  overflow: visible; /* 🔑 permite que las flechas sobresalgan */
 }
 
 /* =====================
@@ -869,14 +870,14 @@ body {
     opacity .18s ease;
 }
 
-/* INICIO REAL */
+/* INICIO REAL — FUERA DEL CARRUSEL */
 .carousel-prev-circle {
-  left: 0;
+  left: -32px; /* 🔑 separación tipo Google */
 }
 
-/* FINAL REAL */
+/* FINAL REAL — FUERA DEL CARRUSEL */
 .carousel-next-circle {
-  right: 0;
+  right: -32px; /* 🔑 separación tipo Google */
 }
 
 /* =====================
