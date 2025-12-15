@@ -986,7 +986,24 @@ footer p {
   pointer-events: auto;
   transform: translateY(0);
 }
+/* ================= FAB — COLORES DE ICONOS ================= */
 
+/* WhatsApp */
+.fab-options a .fa-whatsapp {
+  color: #25D366;
+  font-size: 1.7rem;
+}
+
+/* Facebook */
+.fab-options a .fa-facebook-f {
+  color: #1877F2;
+  font-size: 1.6rem;
+}
+
+/* Hover (opcional, elegante) */
+.fab-options a:hover {
+  transform: scale(1.08);
+}
 /* ================= ANIMACIONES DEL CARRITO ================= */
 
 .cart-count.animate {
