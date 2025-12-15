@@ -192,15 +192,36 @@
   </section>
 
   <!-- SIMILARES -->
-  <section class="related">
-    <h3 class="similar-title">También te puede interesar</h3>
+<section class="related">
+  <h3 class="similar-title">También te puede interesar</h3>
 
-    <div class="carousel-container">
-      <button class="carousel-prev desktop-only"><i class="fa-solid fa-chevron-left"></i></button>
-      <div class="similar-list" id="lista-similares"></div>
-      <button class="carousel-next desktop-only"><i class="fa-solid fa-chevron-right"></i></button>
+  <!-- Carrusel -->
+  <div class="carousel-container">
+    <div class="similar-list" id="lista-similares"></div>
+  </div>
+
+  <!-- Navegación inferior (SOLO PC) -->
+  <div class="carousel-nav desktop-only">
+
+    <!-- Flecha izquierda -->
+    <button class="carousel-prev-circle" aria-label="Anterior">
+      <i class="fa-solid fa-chevron-left"></i>
+    </button>
+
+    <!-- Puntos -->
+    <div class="carousel-dots">
+      <span class="dot active"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
     </div>
-  </section>
+
+    <!-- Flecha derecha -->
+    <button class="carousel-next-circle" aria-label="Siguiente">
+      <i class="fa-solid fa-chevron-right"></i>
+    </button>
+
+  </div>
+</section>
 
   <!-- NOSOTROS -->
   <section id="nosotros" class="about">
