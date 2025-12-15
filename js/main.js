@@ -54,6 +54,32 @@ function addToCart(product) {
   animateCartBadge();
 }
 
+/* ========================= SIMILARES ========================= */
+function loadSimilarProducts() {
+  const productos = [
+    { img: 'imagenes/bolsa_1.png', nombre: 'Café Cortero 250g', precio: 'L 180' },
+    { img: 'imagenes/bolsa_2.png', nombre: 'Café Cortero 500g', precio: 'L 320' },
+    { img: 'imagenes/bolsa_1.png', nombre: 'Café Cortero 1lb',  precio: 'L 550' },
+    { img: 'imagenes/bolsa_2.png', nombre: 'Café Regalo',        precio: 'L 260' },
+    { img: 'imagenes/bolsa_1.png', nombre: 'Café Premium',       precio: 'L 480' },
+    { img: 'imagenes/bolsa_2.png', nombre: 'Café Tradicional',   precio: 'L 150' }
+  ];
+
+  const cont = document.getElementById("lista-similares");
+  if (!cont) return;
+
+  cont.innerHTML = productos.map(p => `
+    <div class="similar-card"
+         data-name="${p.nombre}"
+         data-price="${p.precio}"
+         data-img="${p.img}">
+      <img src="${p.img}" alt="${p.nombre}">
+      <h4>${p.nombre}</h4>
+      <div class="price-sm">${p.precio}</div>
+    </div>
+  `).join("");
+}
+
 /* ============================================================
    EVENTO PRINCIPAL
 ============================================================ */
@@ -95,16 +121,17 @@ document.addEventListener("DOMContentLoaded", () => {
       drawer.classList.contains("open") ? closeDrawer() : openDrawer();
     });
   }
-/* ========================= AVATAR ABRE / CIERRA DRAWER ========================= */
-const avatarBtn = safe("btn-header-user");
 
-if (avatarBtn && drawer) {
-  avatarBtn.addEventListener("click", (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    drawer.classList.contains("open") ? closeDrawer() : openDrawer();
-  });
-}
+  /* Avatar abre / cierra drawer */
+  const avatarBtn = safe("btn-header-user");
+  if (avatarBtn && drawer) {
+    avatarBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      drawer.classList.contains("open") ? closeDrawer() : openDrawer();
+    });
+  }
+
   /* Click en scrim cierra */
   if (scrim) {
     scrim.addEventListener("click", closeDrawer);
@@ -222,5 +249,8 @@ if (avatarBtn && drawer) {
       }
     });
   }
+
+  /* ========================= SIMILARES INIT ========================= */
+  loadSimilarProducts();
 
 });
