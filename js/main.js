@@ -65,7 +65,7 @@ function loadSimilarProducts() {
     { img: 'imagenes/bolsa_2.png', nombre: 'Café Tradicional',   precio: 'L 150' }
   ];
 
-  const cont = document.getElementById("lista-similares");
+  const cont = safe("lista-similares");
   if (!cont) return;
 
   cont.innerHTML = productos.map(p => `
@@ -79,29 +79,7 @@ function loadSimilarProducts() {
     </div>
   `).join("");
 }
-/* =========================
-   SIMILARES — VISIBILIDAD PC / MÓVIL
-========================= */
-const similarNav = document.getElementById("similar-nav");
 
-function updateSimilarNavVisibility() {
-  if (!similarNav) return;
-
-  // PC
-  if (window.matchMedia("(min-width: 901px)").matches) {
-    similarNav.style.display = "flex";
-  } 
-  // Móvil
-  else {
-    similarNav.style.display = "none";
-  }
-}
-
-// Ejecutar al cargar
-updateSimilarNavVisibility();
-
-// Ejecutar al redimensionar
-window.addEventListener("resize", updateSimilarNavVisibility);
 /* ============================================================
    EVENTO PRINCIPAL
 ============================================================ */
@@ -113,7 +91,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const scrim      = safe("user-scrim");
   const menuToggle = safe("menu-toggle");
 
-  /* Estado base (INVITADO por defecto) */
   if (drawer) {
     drawer.classList.remove("logged");
     drawer.classList.add("no-user");
@@ -135,7 +112,6 @@ document.addEventListener("DOMContentLoaded", () => {
     scrim.classList.remove("open");
   }
 
-  /* Botón hamburguesa */
   if (menuToggle && drawer) {
     menuToggle.addEventListener("click", (e) => {
       e.preventDefault();
@@ -144,7 +120,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  /* Avatar abre / cierra drawer */
   const avatarBtn = safe("btn-header-user");
   if (avatarBtn && drawer) {
     avatarBtn.addEventListener("click", (e) => {
@@ -154,23 +129,16 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  /* Click en scrim cierra */
   if (scrim) {
     scrim.addEventListener("click", closeDrawer);
   }
 
-  /* Evita cierres al tocar dentro del drawer */
   if (drawer) {
-    drawer.addEventListener("click", (e) => {
-      e.stopPropagation();
-    });
+    drawer.addEventListener("click", (e) => e.stopPropagation());
   }
 
-  /* Cierra drawer al cambiar tamaño */
   window.addEventListener("resize", () => {
-    if (drawer?.classList.contains("open")) {
-      closeDrawer();
-    }
+    if (drawer?.classList.contains("open")) closeDrawer();
   });
 
   /* ========================= HERO CAROUSEL ========================= */
@@ -215,13 +183,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* ========================= AGREGAR AL CARRITO ========================= */
   const btnMain = safe("product-add");
-
   if (btnMain && qtyNumber) {
     btnMain.addEventListener("click", () => {
       const nameEl  = safe("product-name");
       const imgEl   = safe("product-image");
       const priceEl = document.querySelector(".price-part");
-
       if (!nameEl || !imgEl || !priceEl) return;
 
       const qty   = parseInt(qtyNumber.textContent) || 1;
@@ -257,22 +223,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* ========================= LOGOUT DESDE MENÚ ========================= */
   const logoutBtn = safe("logout-btn");
-
   if (logoutBtn) {
     logoutBtn.addEventListener("click", (e) => {
       e.preventDefault();
       e.stopPropagation();
-
       if (typeof window.corteroLogout === "function") {
-        console.log("🚪 Logout desde menú");
         window.corteroLogout();
-      } else {
-        console.error("❌ corteroLogout no está disponible");
       }
     });
   }
 
   /* ========================= SIMILARES INIT ========================= */
   loadSimilarProducts();
+
+  /* =========================
+     SIMILARES — VISIBILIDAD PC / MÓVIL
+  ========================= */
+  const similarNav = safe("similar-nav");
+
+  function updateSimilarNavVisibility() {
+    if (!similarNav) return;
+    similarNav.style.display =
+      window.matchMedia("(min-width: 901px)").matches ? "flex" : "none";
+  }
+
+  updateSimilarNavVisibility();
+  window.addEventListener("resize", updateSimilarNavVisibility);
 
 });
