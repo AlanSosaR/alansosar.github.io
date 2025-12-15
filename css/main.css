@@ -982,7 +982,7 @@ body {
   scroll-snap-type: x mandatory;
 
   width: 100%;
-  overflow-x: auto;       /* 🔑 MÓVIL: scroll con dedo */
+  overflow-x: auto;       /* 📱 móvil: swipe */
   overflow-y: visible;
 
   scrollbar-width: none;
@@ -1023,13 +1023,25 @@ body {
   border: 1px solid var(--verde);
 }
 
-/* =====================
-   PC — 4 TARJETAS VISIBLES
-===================== */
+/* =====================================================
+   NAVEGACIÓN — SOLO PC
+===================================================== */
+
+/* ❌ Ocultar flechas y dots en móvil */
+.carousel-nav {
+  display: none;
+}
+
+/* 🖥 PC */
 @media (min-width: 901px) {
+
+  .carousel-nav {
+    display: flex;        /* ✔ flechas visibles */
+  }
+
   .similar-list {
     width: calc((190px * 4) + (1rem * 3));
-    overflow-x: hidden;   /* 🔑 PC: solo flechas */
+    overflow-x: hidden;  /* ✔ solo flechas */
   }
 }
 /* ================= SOBRE NOSOTROS ================= */
