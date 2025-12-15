@@ -19,7 +19,7 @@ body {
 }
 
 /* =====================================================
-   HEADER — DEFINITIVO, SIN DESORDEN
+   HEADER — CORE LIMPIO Y ESTABLE
 ===================================================== */
 
 .header-fixed {
@@ -52,7 +52,7 @@ body {
   display: flex;
   align-items: center;
   gap: 2rem;
-  margin-left: 32px;
+  margin-left: 48px;
 }
 
 .nav-links a {
@@ -67,7 +67,7 @@ body {
 
 /* ===================== ACCIONES DERECHA ===================== */
 .header-actions {
-  margin-left: auto; /* 🔑 ÚNICO ELEMENTO QUE EMPUJA */
+  margin-left: auto;
   display: flex;
   align-items: center;
   gap: 16px;
@@ -84,7 +84,7 @@ body {
   color: var(--verde);
 }
 
-/* ===================== AVATAR (PC SOLO) ===================== */
+/* ===================== AVATAR ===================== */
 .header-avatar-button {
   display: none;
   background: none;
@@ -98,11 +98,11 @@ body {
   border-radius: 50%;
 }
 
-/* ===================== ESTADO INVITADO ===================== */
-.header-fixed:not(.logged) .nav-links {
-  display: flex;
-}
+/* =====================================================
+   ESTADOS (SOLO PC)
+===================================================== */
 
+/* Invitado */
 .header-fixed:not(.logged) .login-link {
   display: inline-block;
 }
@@ -111,11 +111,7 @@ body {
   display: none;
 }
 
-/* ===================== ESTADO LOGUEADO (PC) ===================== */
-.header-fixed.logged .nav-links {
-  display: none;
-}
-
+/* Logueado */
 .header-fixed.logged .login-link {
   display: none;
 }
@@ -124,29 +120,27 @@ body {
   display: flex;
 }
 
-/* ===================== MÓVIL ===================== */
-@media (max-width: 900px) {
+/* =====================================================
+   MÓVIL (MANDA SOBRE TODO)
+===================================================== */
 
+@media (max-width: 900px) {
   .header-fixed {
     justify-content: space-between;
+    padding: 0 16px;
   }
 
-  /* ❌ Nunca mostrar avatar en móvil */
+  /* En móvil NUNCA */
+  .nav-links,
+  .login-link,
   .header-avatar-button {
     display: none !important;
   }
 
-  /* ❌ Nunca mostrar nav en móvil */
-  .nav-links {
-    display: none !important;
-  }
-
-  /* Acciones no empujan */
   .header-actions {
     margin-left: 0;
   }
 }
-
 /* ============================================
    MENÚ HAMBURGUESA (solo móvil) — FINAL
 ============================================ */
