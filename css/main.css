@@ -837,6 +837,7 @@ body {
 
 /* =====================
    FLECHAS CIRCULARES
+   Estilo Google / Material
 ===================== */
 .carousel-prev-circle,
 .carousel-next-circle {
@@ -844,8 +845,9 @@ body {
   top: 50%;
   transform: translateY(-50%);
 
-  width: 44px;
-  height: 44px;
+  /* 🔑 MÁS GRANDES (Google-like) */
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
 
   background: #fff;
@@ -856,10 +858,10 @@ body {
   align-items: center;
   justify-content: center;
 
-  /* Elevación Material 3 */
+  /* Elevación Material */
   box-shadow:
-    0 4px 10px rgba(0,0,0,0.12),
-    0 1px 3px rgba(0,0,0,0.08);
+    0 6px 16px rgba(0,0,0,0.18),
+    0 2px 6px rgba(0,0,0,0.12);
 
   transition:
     transform .18s ease,
@@ -867,30 +869,41 @@ body {
     opacity .18s ease;
 }
 
-/* 🔑 INICIO REAL DEL CARRUSEL */
+/* INICIO REAL */
 .carousel-prev-circle {
   left: 0;
 }
 
-/* 🔑 FINAL REAL DEL CARRUSEL */
+/* FINAL REAL */
 .carousel-next-circle {
   right: 0;
 }
 
-/* Iconos */
+/* =====================
+   ICONO
+===================== */
 .carousel-prev-circle i,
 .carousel-next-circle i {
-  font-size: 1.1rem;
+  font-size: 1.35rem; /* 🔑 icono más visible */
   color: var(--verde);
 }
 
-/* Hover */
+/* Hover (PC) */
 .carousel-prev-circle:hover,
 .carousel-next-circle:hover {
-  transform: translateY(-50%) translateY(-2px);
+  transform: translateY(-50%) scale(1.05);
   box-shadow:
-    0 6px 14px rgba(0,0,0,0.18),
-    0 2px 6px rgba(0,0,0,0.12);
+    0 10px 22px rgba(0,0,0,0.22),
+    0 4px 10px rgba(0,0,0,0.14);
+}
+
+/* Flecha desactivada */
+.carousel-prev-circle:disabled,
+.carousel-next-circle:disabled {
+  opacity: 0.35;
+  cursor: default;
+  box-shadow:
+    0 2px 6px rgba(0,0,0,0.08);
 }
 
 /* =====================
