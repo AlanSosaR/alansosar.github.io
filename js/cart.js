@@ -72,7 +72,7 @@ function renderCart() {
           <div class="empty-title">Tu selección está vacía</div>
           <div class="empty-sub">Agrega tu café favorito para continuar.</div>
 
-          <button class="empty-btn" onclick="window.location.href='index.html'">
+          <button class="empty-btn" onclick="window.location.href='index.html#productos'">
               Seguir comprando
           </button>
       </div>
