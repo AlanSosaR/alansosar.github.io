@@ -195,39 +195,39 @@
 <section class="related">
   <h3 class="similar-title">También te puede interesar</h3>
 
-  <!-- Carrusel -->
-  <div class="carousel-container">
-    <div class="similar-list" id="lista-similares"></div>
-  </div>
-
-  <!-- Navegación inferior (SOLO PC) -->
-  <div class="carousel-nav desktop-only" id="similar-nav">
+  <!-- Carrusel + flechas -->
+  <div class="carousel-container with-arrows">
 
     <!-- Flecha izquierda -->
     <button
       id="similar-prev"
-      class="carousel-prev-circle"
+      class="carousel-prev-circle inside"
       aria-label="Anterior"
     >
       <i class="fa-solid fa-chevron-left"></i>
     </button>
 
-    <!-- Puntos -->
-    <div class="carousel-dots" id="similar-dots">
-      <span class="dot active"></span>
-      <span class="dot"></span>
-      <span class="dot"></span>
-    </div>
+    <!-- Carrusel -->
+    <div class="similar-list" id="lista-similares"></div>
 
     <!-- Flecha derecha -->
     <button
       id="similar-next"
-      class="carousel-next-circle"
+      class="carousel-next-circle inside"
       aria-label="Siguiente"
     >
       <i class="fa-solid fa-chevron-right"></i>
     </button>
 
+  </div>
+
+  <!-- Dots (SIEMPRE ABAJO) -->
+  <div class="carousel-nav desktop-only" id="similar-nav">
+    <div class="carousel-dots" id="similar-dots">
+      <span class="dot active"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+    </div>
   </div>
 </section>
 
