@@ -95,7 +95,16 @@ document.addEventListener("DOMContentLoaded", () => {
       drawer.classList.contains("open") ? closeDrawer() : openDrawer();
     });
   }
+/* ========================= AVATAR ABRE / CIERRA DRAWER ========================= */
+const avatarBtn = safe("btn-header-user");
 
+if (avatarBtn && drawer) {
+  avatarBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    drawer.classList.contains("open") ? closeDrawer() : openDrawer();
+  });
+}
   /* Click en scrim cierra */
   if (scrim) {
     scrim.addEventListener("click", closeDrawer);
