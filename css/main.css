@@ -23,6 +23,7 @@ body {
 }
 
 /* =====================================================
+/* =====================================================
    HEADER — CORE LIMPIO Y ESTABLE
 ===================================================== */
 
@@ -39,21 +40,37 @@ body {
   align-items: center;
   padding: 0 24px;
 }
-/* NAV A LA DERECHA */
-.header-nav {
-display: flex;
-align-items: center;
-gap: 24px;
 
-margin-left: auto; /* 🔑 ESTA ES LA CLAVE */
-}
+/* =====================================================
+   HEADER — NAV + LOGIN PEGADOS A LA DERECHA (PC)
+===================================================== */
+@media (min-width: 901px) {
 
-/* LINKS */
-.header-nav a {
-text-decoration: none;
-color: var(--marron);
-font-weight: 500;
-font-size: 0.95rem;
+  /* Empuja TODO lo de la derecha */
+  .header-actions {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+
+  /* Nav desktop */
+  .nav-links.desktop-only {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .nav-links.desktop-only a {
+    text-decoration: none;
+    color: var(--marron);
+    font-weight: 500;
+    font-size: 0.95rem;
+  }
+
+  .login-link {
+    white-space: nowrap;
+  }
 }
 /* ===================== LOGO ===================== */
 .header-logo-link {
