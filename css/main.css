@@ -969,7 +969,10 @@ body {
   overflow: hidden;
 }
 
-/* LISTA DESLIZABLE */
+/* =====================================================
+   CARRUSEL SIMILARES — LISTA DESLIZABLE
+===================================================== */
+
 .similar-list {
   display: flex;
   gap: 1rem; /* 16px */
@@ -978,11 +981,14 @@ body {
   scroll-behavior: smooth;
   scroll-snap-type: x mandatory;
 
-  width: 100%;              /* 🔑 fluido */
-  overflow: hidden;         /* 🔑 recorta solo las cards */
+  width: 100%;
+  overflow-x: hidden;   /* 🔑 recorta solo el carrusel */
+  overflow-y: visible; /* 🔑 no corta las tarjetas */
 }
 
-/* TARJETA */
+/* =====================
+   TARJETA
+===================== */
 .similar-card {
   flex: 0 0 190px;
   background: #fff;
@@ -991,7 +997,7 @@ body {
   padding: 1.5rem 1rem;
 
   scroll-snap-align: start;
-  transition: transform 0.25s, box-shadow 0.25s;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .similar-card:hover {
@@ -1005,10 +1011,20 @@ body {
   border-radius: 12px;
 }
 
+/* Tarjeta activa */
 .similar-card.active-card {
   transform: translateY(-6px);
   box-shadow: 0 6px 18px rgba(51,103,59,0.25);
   border: 1px solid var(--verde);
+}
+
+/* =====================
+   PC — 4 TARJETAS VISIBLES
+===================== */
+@media (min-width: 901px) {
+  .similar-list {
+    width: calc((190px * 4) + (1rem * 3));
+  }
 }
 /* ================= SOBRE NOSOTROS ================= */
 
