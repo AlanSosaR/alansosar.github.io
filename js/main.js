@@ -132,10 +132,6 @@ document.addEventListener("DOMContentLoaded", () => {
   if (scrim) scrim.addEventListener("click", closeDrawer);
   if (drawer) drawer.addEventListener("click", e => e.stopPropagation());
 
-  window.addEventListener("resize", () => {
-    if (drawer?.classList.contains("open")) closeDrawer();
-  });
-
   /* ========================= HERO CAROUSEL ========================= */
   const heroImgs = document.querySelectorAll(".hero-carousel img");
   let heroIndex = 0;
@@ -158,135 +154,91 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   updateCartCount();
 
-  /* ========================= SELECTOR CANTIDAD ========================= */
-  const qtyNumber = safe("qty-number");
-  const qtyMinus  = safe("qty-minus");
-  const qtyPlus   = safe("qty-plus");
-
-  if (qtyMinus && qtyNumber) {
-    qtyMinus.addEventListener("click", () => {
-      const n = parseInt(qtyNumber.textContent);
-      if (n > 1) qtyNumber.textContent = n - 1;
-    });
-  }
-
-  if (qtyPlus && qtyNumber) {
-    qtyPlus.addEventListener("click", () => {
-      qtyNumber.textContent = parseInt(qtyNumber.textContent) + 1;
-    });
-  }
-
-  /* ========================= AGREGAR AL CARRITO ========================= */
-  const btnMain = safe("product-add");
-  if (btnMain && qtyNumber) {
-    btnMain.addEventListener("click", () => {
-      const nameEl  = safe("product-name");
-      const imgEl   = safe("product-image");
-      const priceEl = document.querySelector(".price-part");
-      if (!nameEl || !imgEl || !priceEl) return;
-
-      const qty   = parseInt(qtyNumber.textContent) || 1;
-      const name  = nameEl.textContent.trim();
-      const price = parseFloat(priceEl.textContent.replace(/[^\d.-]/g, ""));
-      const img   = imgEl.src;
-
-      addToCart({ name, price, img, qty });
-      qtyNumber.textContent = "1";
-    });
-  }
-
-  /* ========================= FAB WHATSAPP ========================= */
-  const fabMain = safe("fab-main");
-  const fabContainer = safe("fab");
-
-  if (fabMain && fabContainer) {
-    fabMain.addEventListener("click", (e) => {
-      e.stopPropagation();
-      fabContainer.classList.toggle("active");
-    });
-
-    document.addEventListener("click", (e) => {
-      if (
-        !fabContainer.contains(e.target) &&
-        !drawer.contains(e.target) &&
-        !menuToggle.contains(e.target)
-      ) {
-        fabContainer.classList.remove("active");
-      }
-    });
-  }
-
-  /* ========================= LOGOUT DESDE MENÚ ========================= */
-  const logoutBtn = safe("logout-btn");
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      if (typeof window.corteroLogout === "function") {
-        window.corteroLogout();
-      }
-    });
-  }
-
   /* ========================= SIMILARES INIT ========================= */
   loadSimilarProducts();
   bindSimilarCardEvents();
-
-  /* ========================= SIMILARES — FLECHAS ========================= */
-  const similarList = safe("lista-similares");
-  const prevBtn = safe("similar-prev");
-  const nextBtn = safe("similar-next");
-
-  if (similarList && prevBtn && nextBtn) {
-    const CARD_WIDTH = 220;
-
-    prevBtn.addEventListener("click", () => {
-      similarList.scrollBy({ left: -CARD_WIDTH, behavior: "smooth" });
-    });
-
-    nextBtn.addEventListener("click", () => {
-      similarList.scrollBy({ left: CARD_WIDTH, behavior: "smooth" });
-    });
-  }
+  initSimilarCarousel();
 
 });
 
 /* =========================
    SIMILARES — SELECCIÓN DE TARJETA
-   Producto principal + scroll suave
 ========================= */
-const productSection = document.querySelector(".product-main");
-
 function bindSimilarCardEvents() {
   const cards = document.querySelectorAll(".similar-card");
+  const productSection = document.querySelector(".product-main");
 
   cards.forEach(card => {
     card.addEventListener("click", () => {
-
       cards.forEach(c => c.classList.remove("active-card"));
       card.classList.add("active-card");
 
-      const name  = card.dataset.name;
-      const price = card.dataset.price;
-      const img   = card.dataset.img;
+      safe("product-name").textContent = card.dataset.name;
+      safe("product-image").src = card.dataset.img;
+      document.querySelector(".price-part").textContent = card.dataset.price;
+      safe("qty-number").textContent = "1";
 
-      const nameEl  = safe("product-name");
-      const imgEl   = safe("product-image");
-      const priceEl = document.querySelector(".price-part");
+      productSection?.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+      });
+    });
+  });
+}
 
-      if (nameEl)  nameEl.textContent = name;
-      if (imgEl)   imgEl.src = img;
-      if (priceEl) priceEl.textContent = price;
+/* =========================
+   SIMILARES — CARRUSEL + DOTS (FLECHAS + DOTS CLICABLES)
+========================= */
+function initSimilarCarousel() {
+  const list = safe("lista-similares");
+  const prev = safe("similar-prev");
+  const next = safe("similar-next");
+  const dots = document.querySelectorAll(".carousel-dots .dot");
 
-      const qtyNumber = safe("qty-number");
-      if (qtyNumber) qtyNumber.textContent = "1";
+  if (!list || !prev || !next || dots.length === 0) return;
 
-      if (productSection) {
-        productSection.scrollIntoView({
-          behavior: "smooth",
-          block: "center"
-        });
-      }
+  const card = list.querySelector(".similar-card");
+  if (!card) return;
+
+  const style = getComputedStyle(list);
+  const gap = parseInt(style.gap || style.columnGap || 16);
+  const CARD_WIDTH = card.offsetWidth + gap;
+
+  let index = 0;
+  const maxIndex = dots.length - 1;
+
+  function updateDots() {
+    dots.forEach((d, i) => d.classList.toggle("active", i === index));
+  }
+
+  function scrollToIndex() {
+    list.scrollTo({
+      left: CARD_WIDTH * index,
+      behavior: "smooth"
+    });
+    updateDots();
+  }
+
+  /* Flechas */
+  prev.addEventListener("click", () => {
+    if (index > 0) {
+      index--;
+      scrollToIndex();
+    }
+  });
+
+  next.addEventListener("click", () => {
+    if (index < maxIndex) {
+      index++;
+      scrollToIndex();
+    }
+  });
+
+  /* Dots clicables */
+  dots.forEach((dot, i) => {
+    dot.addEventListener("click", () => {
+      index = i;
+      scrollToIndex();
     });
   });
 }
