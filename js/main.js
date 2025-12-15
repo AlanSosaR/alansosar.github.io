@@ -79,7 +79,29 @@ function loadSimilarProducts() {
     </div>
   `).join("");
 }
+/* =========================
+   SIMILARES — VISIBILIDAD PC / MÓVIL
+========================= */
+const similarNav = document.getElementById("similar-nav");
 
+function updateSimilarNavVisibility() {
+  if (!similarNav) return;
+
+  // PC
+  if (window.matchMedia("(min-width: 901px)").matches) {
+    similarNav.style.display = "flex";
+  } 
+  // Móvil
+  else {
+    similarNav.style.display = "none";
+  }
+}
+
+// Ejecutar al cargar
+updateSimilarNavVisibility();
+
+// Ejecutar al redimensionar
+window.addEventListener("resize", updateSimilarNavVisibility);
 /* ============================================================
    EVENTO PRINCIPAL
 ============================================================ */
