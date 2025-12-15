@@ -102,6 +102,45 @@ font-size: 0.95rem;
 .login-link:hover {
   color: var(--verde);
 }
+/* ================= VISIBILIDAD HEADER (PC) ================= */
+
+/* USUARIO LOGUEADO */
+.header-fixed.logged .nav-links.desktop-only {
+  display: none;
+}
+
+.header-fixed.logged #login-desktop {
+  display: none;
+}
+
+.header-fixed.logged #btn-header-user {
+  display: flex;
+}
+
+/* INVITADO */
+.header-fixed.no-user #btn-header-user {
+  display: none;
+}
+
+.header-fixed.no-user #login-desktop {
+  display: inline-flex;
+}
+
+.header-fixed.no-user .nav-links.desktop-only {
+  display: flex;
+}
+
+/* ================= DRAWER ================= */
+
+/* Invitado */
+.user-drawer.no-user .logged {
+  display: none;
+}
+
+/* Logueado */
+.user-drawer.logged .no-user {
+  display: none;
+}
 /* -------- Avatar + wrapper -------- */
 .profile-wrapper-cart {
   position: relative;
@@ -139,27 +178,6 @@ font-size: 0.95rem;
 
 .hidden {
   display: none !important;
-}
-/* =====================================================
-   ESTADOS (SOLO PC)
-===================================================== */
-
-/* Invitado */
-.header-fixed:not(.logged) .login-link {
-  display: inline-block;
-}
-
-.header-fixed:not(.logged) .header-avatar-button {
-  display: none;
-}
-
-/* Logueado */
-.header-fixed.logged .login-link {
-  display: none;
-}
-
-.header-fixed.logged .header-avatar-button {
-  display: flex;
 }
 
 /* =====================================================
