@@ -83,21 +83,44 @@ body {
 .login-link:hover {
   color: var(--verde);
 }
+/* -------- Avatar + wrapper -------- */
+.profile-wrapper-cart {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
 
-/* ===================== AVATAR ===================== */
 .header-avatar-button {
-  display: none;
   background: none;
   border: none;
   cursor: pointer;
+  padding: 0;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.header-avatar-button img {
-  width: 36px;
-  height: 36px;
+/* mismo efecto de “elevación” que index */
+.header-avatar {
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
+  border: 1.6px solid rgba(0,0,0,0.15);
+  object-fit: cover;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.18);
+  transition: transform .16s ease, box-shadow .16s ease;
 }
 
+.header-avatar-button:active .header-avatar,
+.header-avatar-button:hover .header-avatar {
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+}
+
+.hidden {
+  display: none !important;
+}
 /* =====================================================
    ESTADOS (SOLO PC)
 ===================================================== */
@@ -299,9 +322,8 @@ body {
   pointer-events: auto !important;
 }
 
-
 /* =====================================================
-   MENÚ FLOTANTE MATERIAL 3 — VERSIÓN FINAL CORREGIDA
+   MENÚ FLOTANTE MATERIAL 3 (PC + MÓVIL)
 ===================================================== */
 
 .material-symbols-outlined {
@@ -328,142 +350,115 @@ body {
   opacity: 1;
   pointer-events: auto;
 }
-/* ================= DRAWER ================= */
+
+/* DRAWER flotante tipo Google Store (Material 3 Expressive) */
 .user-drawer {
   position: fixed;
-  top: 80px;
-  max-width: 360px;
-  width: calc(100% - 32px);
+  top: 80px; /* debajo del header fijo */
+  right: 16px;
+  width: min(360px, calc(100% - 24px));
   background: #16181a;
   color: #ffffff;
   border-radius: 24px;
   box-shadow:
-    0 18px 40px rgba(0,0,0,0.75),
-    0 0 0 1px rgba(255,255,255,0.04);
-  opacity: 0;
-  pointer-events: none;
+    0 18px 40px rgba(0, 0, 0, 0.75),
+    0 0 0 1px rgba(255, 255, 255, 0.04);
   overflow: hidden;
+  transform: translateX(120%);
+  opacity: 0;
   transition:
-    transform 0.25s cubic-bezier(0.20,0,0,1),
-    opacity 0.22s ease-out;
-  z-index: 4000;
+    transform 0.25s cubic-bezier(0.2, 0, 0, 1),
+    opacity 0.2s ease-out;
+  z-index: 999;
+}
+.user-drawer.open {
+  transform: translateX(0);
+  opacity: 1;
 }
 
-/* PC */
-@media (min-width: 901px) {
+@media (max-width: 600px) {
   .user-drawer {
-    right: 48px;
-    transform: translateX(120%);
-  }
-  .user-drawer.open {
-    transform: translateX(0);
-    opacity: 1;
-    pointer-events: auto;
+    left: 12px;
+    right: 12px;
+    width: auto;
   }
 }
 
-/* MÓVIL — FIX DEFINITIVO */
-@media (max-width: 900px) {
-  .user-drawer {
-    left: 16px;
-    right: 16px;
-    transform: translateX(-120%);
-    position: fixed;          /* 🔑 CLAVE */
-    z-index: 99999;           /* 🔑 CLAVE */
-  }
-
-  .user-drawer.open {
-    transform: translateX(0);
-    opacity: 1;
-    pointer-events: auto;
-  }
-
-  .user-scrim {
-    z-index: 99998;           /* debajo del drawer */
-  }
-}
-
-/* ================= VISIBILIDAD — FIX DEFINITIVO ================= */
-
-/* Por defecto, mostrar todo */
-.logged,
-.no-user {
-  display: block;
-}
-
-/* ===== INVITADO ===== */
-.user-drawer.no-user .logged {
-  display: none;
-}
-
-/* ===== LOGUEADO ===== */
-.user-drawer.logged .no-user {
-  display: none;
-}
-
-/* ================= HEADER PERFIL ================= */
 .user-drawer-header {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 16px 18px;
-  text-decoration: none;
-  color: inherit;
+  gap: 12px;
+  padding: 16px 18px 12px;
 }
-
-.user-drawer-header:hover {
-  background: rgba(255,255,255,0.06);
-}
-
 .user-drawer-avatar {
   width: 52px;
   height: 52px;
-  border-radius: 50%;
+  border-radius: 18px;
   overflow: hidden;
-  background: #ffffff;
-  box-shadow:
-    0 6px 14px rgba(0,0,0,0.18),
-    0 2px 4px rgba(0,0,0,0.12);
+  flex-shrink: 0;
+  background: #555;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-
 .user-drawer-avatar img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
-
-.user-drawer-info {
-  display: flex;
-  flex-direction: column;
-}
-
 .user-drawer-name {
+  margin: 0;
   font-size: 15px;
   font-weight: 600;
 }
-
 .user-drawer-email {
+  margin: 2px 0 0;
   font-size: 13px;
   opacity: 0.7;
 }
 
-/* ================= DIVIDER ================= */
-.user-drawer-divider {
-  height: 1.6px;
-  background: var(--verde);
-  margin: 6px 0 10px;
-  border: none;
+/* Bloque de perfil clicable + flecha (nuevo) */
+.user-drawer-profile-link {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
 }
 
-/* ================= ITEMS ================= */
-.user-drawer-nav {
+.user-drawer-profile-link:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.user-drawer-profile-texts {
+  flex: 1;
   display: flex;
   flex-direction: column;
 }
 
+.user-drawer-arrow {
+  margin-left: auto;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 22px;
+}
+
+/* Forzar línea separadora VERDE en el menú flotante */
+.user-drawer-divider {
+  border: none !important;                /* quita el borde gris del hr */
+  height: 1.6px !important;
+  margin: 6px 0 10px !important;
+  background: var(--verde) !important;    /* mismo verde que el resumen */
+  opacity: 1 !important;                  /* asegúrate de que se vea */
+}
+
+.user-drawer-nav {
+  display: flex;
+  flex-direction: column;
+  padding: 4px 0 8px;
+}
 .user-drawer-item {
   width: 100%;
-  padding: 12px 18px;
+  border: none;
+  background: none;
+  padding: 10px 18px;
   display: flex;
   align-items: center;
   gap: 16px;
@@ -471,46 +466,26 @@ body {
   color: #ffffff;
   text-decoration: none;
   cursor: pointer;
+  text-align: left;
 }
-
 .user-drawer-item:hover {
-  background: rgba(255,255,255,0.06);
+  background: rgba(255, 255, 255, 0.06);
 }
-
 .user-drawer-item-icon {
   width: 24px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
-
-/* =========================================
-   LOGOUT — MISMO ESTILO QUE ITEMS
-========================================= */
 
 .user-drawer-item.logout {
-  background: transparent;
-  border: none;
   color: #ff4b4b;
-  font-weight: 500;              /* igual que los demás */
-  padding: 12px 16px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
-  border-radius: 12px;
-  cursor: pointer;
-  text-align: left;
+  font-weight: 500;
+  margin-top: 4px;
 }
-
-/* Icono logout en rojo */
 .user-drawer-item.logout .material-symbols-outlined {
   color: #ff4b4b;
-}
-
-/* Hover coherente */
-.user-drawer-item.logout:hover {
-  background: rgba(255, 75, 75, 0.12);
 }
 
 /* LOGIN */
