@@ -801,20 +801,34 @@ body {
 }
 /* =====================================================
    CARRUSEL SIMILARES — NAVEGACIÓN INFERIOR (PC)
-   Flechas + puntos estilo Material 3 Expressive
+   Flechas alineadas al inicio y fin REAL del carrusel
 ===================================================== */
 
-/* Contenedor navegación inferior */
-.carousel-nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  max-width: 360px;
-  margin: 20px auto 0;
+/* El contenedor del carrusel */
+.carousel-container {
+  position: relative;
 }
 
-/* Ocultar en móvil */
+/* =====================
+   BLOQUE DE NAVEGACIÓN
+   (MISMO ANCHO QUE EL CARRUSEL)
+===================== */
+.carousel-nav {
+  position: relative;
+  margin: 22px auto 0;
+
+  /* 🔑 MISMO ANCHO QUE .similar-list */
+  max-width: 1100px;
+  width: 100%;
+
+  height: 44px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Solo PC */
 @media (max-width: 900px) {
   .carousel-nav {
     display: none;
@@ -826,11 +840,15 @@ body {
 ===================== */
 .carousel-prev-circle,
 .carousel-next-circle {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+
   width: 44px;
   height: 44px;
   border-radius: 50%;
 
-  background: #ffffff;
+  background: #fff;
   border: none;
   cursor: pointer;
 
@@ -840,33 +858,43 @@ body {
 
   /* Elevación Material 3 */
   box-shadow:
-    0 4px 10px rgba(0, 0, 0, 0.12),
-    0 1px 3px rgba(0, 0, 0, 0.08);
+    0 4px 10px rgba(0,0,0,0.12),
+    0 1px 3px rgba(0,0,0,0.08);
 
   transition:
-    transform 0.18s ease,
-    box-shadow 0.18s ease,
-    opacity 0.18s ease;
+    transform .18s ease,
+    box-shadow .18s ease,
+    opacity .18s ease;
 }
 
-/* Icono flecha */
+/* 🔑 INICIO REAL DEL CARRUSEL */
+.carousel-prev-circle {
+  left: 0;
+}
+
+/* 🔑 FINAL REAL DEL CARRUSEL */
+.carousel-next-circle {
+  right: 0;
+}
+
+/* Iconos */
 .carousel-prev-circle i,
 .carousel-next-circle i {
   font-size: 1.1rem;
   color: var(--verde);
 }
 
-/* Hover solo PC */
+/* Hover */
 .carousel-prev-circle:hover,
 .carousel-next-circle:hover {
-  transform: translateY(-2px);
+  transform: translateY(-50%) translateY(-2px);
   box-shadow:
-    0 6px 14px rgba(0, 0, 0, 0.18),
-    0 2px 6px rgba(0, 0, 0, 0.12);
+    0 6px 14px rgba(0,0,0,0.18),
+    0 2px 6px rgba(0,0,0,0.12);
 }
 
 /* =====================
-   PUNTOS CENTRALES
+   PUNTOS CENTRADOS
 ===================== */
 .carousel-dots {
   display: flex;
@@ -881,8 +909,8 @@ body {
   border-radius: 50%;
   background: #cfcfcf;
   transition:
-    transform 0.2s ease,
-    background-color 0.2s ease;
+    transform .2s ease,
+    background-color .2s ease;
 }
 
 /* Punto activo */
@@ -892,15 +920,15 @@ body {
 }
 
 /* =====================
-   ESTADOS DESHABILITADOS
+   DESHABILITADO
 ===================== */
 .carousel-prev-circle:disabled,
 .carousel-next-circle:disabled {
   opacity: 0.35;
   cursor: default;
-  transform: none;
+  transform: translateY(-50%);
   box-shadow:
-    0 2px 6px rgba(0, 0, 0, 0.08);
+    0 2px 6px rgba(0,0,0,0.08);
 }
 /* ================= CARRUSEL SIMILARES ================= */
 
