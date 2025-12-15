@@ -129,13 +129,8 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  if (scrim) {
-    scrim.addEventListener("click", closeDrawer);
-  }
-
-  if (drawer) {
-    drawer.addEventListener("click", (e) => e.stopPropagation());
-  }
+  if (scrim) scrim.addEventListener("click", closeDrawer);
+  if (drawer) drawer.addEventListener("click", e => e.stopPropagation());
 
   window.addEventListener("resize", () => {
     if (drawer?.classList.contains("open")) closeDrawer();
@@ -235,19 +230,63 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* ========================= SIMILARES INIT ========================= */
   loadSimilarProducts();
+  bindSimilarCardEvents();
 
-  /* =========================
-     SIMILARES — VISIBILIDAD PC / MÓVIL
-  ========================= */
-  const similarNav = safe("similar-nav");
+  /* ========================= SIMILARES — FLECHAS ========================= */
+  const similarList = safe("lista-similares");
+  const prevBtn = safe("similar-prev");
+  const nextBtn = safe("similar-next");
 
-  function updateSimilarNavVisibility() {
-    if (!similarNav) return;
-    similarNav.style.display =
-      window.matchMedia("(min-width: 901px)").matches ? "flex" : "none";
+  if (similarList && prevBtn && nextBtn) {
+    const CARD_WIDTH = 220;
+
+    prevBtn.addEventListener("click", () => {
+      similarList.scrollBy({ left: -CARD_WIDTH, behavior: "smooth" });
+    });
+
+    nextBtn.addEventListener("click", () => {
+      similarList.scrollBy({ left: CARD_WIDTH, behavior: "smooth" });
+    });
   }
 
-  updateSimilarNavVisibility();
-  window.addEventListener("resize", updateSimilarNavVisibility);
-
 });
+
+/* =========================
+   SIMILARES — SELECCIÓN DE TARJETA
+   Producto principal + scroll suave
+========================= */
+const productSection = document.querySelector(".product-main");
+
+function bindSimilarCardEvents() {
+  const cards = document.querySelectorAll(".similar-card");
+
+  cards.forEach(card => {
+    card.addEventListener("click", () => {
+
+      cards.forEach(c => c.classList.remove("active-card"));
+      card.classList.add("active-card");
+
+      const name  = card.dataset.name;
+      const price = card.dataset.price;
+      const img   = card.dataset.img;
+
+      const nameEl  = safe("product-name");
+      const imgEl   = safe("product-image");
+      const priceEl = document.querySelector(".price-part");
+
+      if (nameEl)  nameEl.textContent = name;
+      if (imgEl)   imgEl.src = img;
+      if (priceEl) priceEl.textContent = price;
+
+      const qtyNumber = safe("qty-number");
+      if (qtyNumber) qtyNumber.textContent = "1";
+
+      if (productSection) {
+        productSection.scrollIntoView({
+          behavior: "smooth",
+          block: "center"
+        });
+      }
+    });
+  });
+}
