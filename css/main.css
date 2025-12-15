@@ -982,8 +982,14 @@ body {
   scroll-snap-type: x mandatory;
 
   width: 100%;
-  overflow-x: hidden;   /* 🔑 recorta solo el carrusel */
-  overflow-y: visible; /* 🔑 no corta las tarjetas */
+  overflow-x: auto;       /* 🔑 MÓVIL: scroll con dedo */
+  overflow-y: visible;
+
+  scrollbar-width: none;
+}
+
+.similar-list::-webkit-scrollbar {
+  display: none;
 }
 
 /* =====================
@@ -1011,7 +1017,6 @@ body {
   border-radius: 12px;
 }
 
-/* Tarjeta activa */
 .similar-card.active-card {
   transform: translateY(-6px);
   box-shadow: 0 6px 18px rgba(51,103,59,0.25);
@@ -1024,6 +1029,7 @@ body {
 @media (min-width: 901px) {
   .similar-list {
     width: calc((190px * 4) + (1rem * 3));
+    overflow-x: hidden;   /* 🔑 PC: solo flechas */
   }
 }
 /* ================= SOBRE NOSOTROS ================= */
