@@ -4,139 +4,275 @@
 :root {
   --marron: #512615;
   --verde: #33673B;
-  --blanco: #ffffff;
+  --blanco: #fff;
   --gris: #f5f5f5;
   --sombra: 0 6px 20px rgba(0, 0, 0, 0.08);
 }
 
-/* ============================================
-   BASE
-============================================ */
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", 
                "Helvetica Neue", Helvetica, Arial, sans-serif;
   background: var(--blanco);
   color: var(--marron);
+  scroll-behavior: smooth;
   -webkit-tap-highlight-color: transparent;
 }
 
 /* =====================================================
-   HEADER — IGUAL AL CARRITO (VIDRIO, SIN LÍNEA)
+   HEADER — DEFINITIVO, SIN DESORDEN
 ===================================================== */
+
 .header-fixed {
   position: fixed;
   top: 0;
   width: 100%;
   height: 72px;
-  padding: 0 24px;
+  background: var(--blanco);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+  z-index: 3000;
 
   display: flex;
   align-items: center;
-
-  background: rgba(255,255,255,0.88);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-
-  box-shadow: 0 2px 10px rgba(0,0,0,0.03);
-  border-bottom: none;
-
-  z-index: 3000;
+  padding: 0 24px;
 }
 
-/* LOGO */
+/* ===================== LOGO ===================== */
 .header-logo-link {
   display: flex;
   align-items: center;
+  flex-shrink: 0;
 }
+
 .header-logo {
   height: 56px;
 }
 
-/* NAV PC */
+/* ===================== NAV DESKTOP ===================== */
 .nav-links {
   display: flex;
+  align-items: center;
   gap: 2rem;
   margin-left: 32px;
 }
+
 .nav-links a {
   text-decoration: none;
   color: var(--marron);
   font-weight: 500;
 }
+
 .nav-links a:hover {
   color: var(--verde);
 }
 
-/* ACCIONES */
+/* ===================== ACCIONES DERECHA ===================== */
 .header-actions {
-  margin-left: auto;
+  margin-left: auto; /* 🔑 ÚNICO ELEMENTO QUE EMPUJA */
   display: flex;
   align-items: center;
   gap: 16px;
 }
 
-/* LOGIN */
+/* ===================== LOGIN ===================== */
 .login-link {
   text-decoration: none;
   color: var(--marron);
   font-weight: 500;
 }
+
 .login-link:hover {
   color: var(--verde);
 }
 
-/* AVATAR PC */
+/* ===================== AVATAR (PC SOLO) ===================== */
 .header-avatar-button {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  padding: 0;
-  border: none;
-  cursor: pointer;
   display: none;
   background: none;
+  border: none;
+  cursor: pointer;
 }
+
 .header-avatar-button img {
-  width: 42px;
-  height: 42px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
+}
+
+/* ===================== ESTADO INVITADO ===================== */
+.header-fixed:not(.logged) .nav-links {
+  display: flex;
+}
+
+.header-fixed:not(.logged) .login-link {
+  display: inline-block;
+}
+
+.header-fixed:not(.logged) .header-avatar-button {
+  display: none;
+}
+
+/* ===================== ESTADO LOGUEADO (PC) ===================== */
+.header-fixed.logged .nav-links {
+  display: none;
+}
+
+.header-fixed.logged .login-link {
+  display: none;
+}
+
+.header-fixed.logged .header-avatar-button {
+  display: flex;
+}
+
+/* ===================== MÓVIL ===================== */
+@media (max-width: 900px) {
+
+  .header-fixed {
+    justify-content: space-between;
+  }
+
+  /* ❌ Nunca mostrar avatar en móvil */
+  .header-avatar-button {
+    display: none !important;
+  }
+
+  /* ❌ Nunca mostrar nav en móvil */
+  .nav-links {
+    display: none !important;
+  }
+
+  /* Acciones no empujan */
+  .header-actions {
+    margin-left: 0;
+  }
+}
+
+/* ============================================
+   MENÚ HAMBURGUESA (solo móvil) — FINAL
+============================================ */
+
+.menu-toggle {
+  background: none;
+  border: none;
+  color: var(--marron);
+  font-size: 1.9rem;
+  cursor: pointer;
+  display: none;
+  z-index: 6000 !important;
+}
+
+@media (max-width: 900px) {
+  .menu-toggle {
+    display: block;
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+}
+
+/* ============================================
+   OCULTAR LOGO EN MÓVIL — FIX DEFINITIVO
+============================================ */
+@media (max-width: 900px) {
+  .header-logo {
+    display: none !important;
+  }
+}
+
+/* ============================================
+   AVATAR DEL HEADER — FLOTANTE PERFECTO
+============================================ */
+.header-avatar-button {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  background: #ffffff;
+  border: none !important;
+  outline: none !important;
+
+  /* Sombra flotante */
+  box-shadow:
+    0 6px 14px rgba(0, 0, 0, 0.18),
+    0 2px 4px rgba(0, 0, 0, 0.12);
+
+  transition: transform 0.20s ease, box-shadow 0.20s ease;
+}
+
+/* Hover PC */
+.header-avatar-button:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 10px 24px rgba(0, 0, 0, 0.22),
+    0 4px 10px rgba(0, 0, 0, 0.16);
+}
+
+/* IMAGEN — RELLENO COMPLETO SIN ESPACIOS */
+.header-avatar-button img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  border: 1.6px solid rgba(0,0,0,0.15);
-  box-shadow: 0 3px 10px rgba(0,0,0,0.18);
-  transition: transform .16s ease, box-shadow .16s ease;
-}
-.header-avatar-button:hover img {
-  transform: translateY(-1px) scale(1.02);
-  box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+  display: block;
+
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
 }
 
-/* ESTADOS (alineados con auth-ui.js) */
-.header-fixed.no-user .login-link { display: inline-block; }
-.header-fixed.no-user .header-avatar-button { display: none; }
+/* ============================================
+   CARRITO — MISMO ESTILO QUE EL AVATAR
+============================================ */
 
-.header-fixed.logged .login-link { display: none; }
-.header-fixed.logged .nav-links { display: none; }
-.header-fixed.logged .header-avatar-button { display: flex; }
+.profile-wrapper-cart {
+  display: flex;
+  align-items: center;
+}
 
-/* CARRITO */
+/* Botón carrito con estilo premium */
 #cart-btn {
-  width: 40px;
-  height: 40px;
+  width: 40px;           /* Igual que avatar */
+  height: 40px;          /* Igual que avatar */
   border-radius: 50%;
-  background: #fff;
+  background: #ffffff;   /* Fondo limpio como el avatar */
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   cursor: pointer;
-  box-shadow:
-    0 4px 10px rgba(0,0,0,0.12),
-    0 1px 3px rgba(0,0,0,0.08);
+
+  /* MISMA SOMBRA DEL AVATAR */
+  box-shadow: 
+    0 4px 10px rgba(0, 0, 0, 0.12),
+    0 1px 3px rgba(0, 0, 0, 0.08);
+
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  overflow: visible !important; /* Para no cortar el badge */
 }
+
+/* Hover igual que avatar (solo en PC) */
+@media (min-width: 901px) {
+  #cart-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+      0 6px 14px rgba(0, 0, 0, 0.20),
+      0 2px 6px rgba(0, 0, 0, 0.12);
+  }
+}
+
+/* Ícono del carrito */
 #cart-btn i {
   font-size: 1.4rem;
   color: var(--verde);
+  display: block;
 }
+
+/* Badge rojo */
 .cart-count {
   position: absolute;
   top: -4px;
@@ -146,77 +282,255 @@ body {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  font-size: .7rem;
+  font-size: 0.7rem;
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 9999;
 }
 
-/* =====================================================
-   MÓVIL
-===================================================== */
-@media (max-width: 900px) {
-  .nav-links,
-  .header-avatar-button,
-  .header-logo {
-    display: none !important;
-  }
-  .header-fixed {
-    justify-content: space-between;
+/* PC → separar del avatar */
+@media (min-width: 901px) {
+  .profile-wrapper-cart {
+    margin-left: 24px !important;
   }
 }
+/* ==============================
+   CARRITO — SIEMPRE VISIBLE
+============================== */
+#cart-btn {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
 
 /* =====================================================
-   MENÚ FLOTANTE — COPIA EXACTA DEL CARRITO
+   MENÚ FLOTANTE MATERIAL 3 — VERSIÓN FINAL CORREGIDA
 ===================================================== */
 
-/* SCRIM */
+.material-symbols-outlined {
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+  font-size: 22px;
+}
+
+/* ================= SCRIM ================= */
 .user-scrim {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.45);
+  background: rgba(0,0,0,0.55);
   opacity: 0;
   pointer-events: none;
-  transition: opacity .2s ease;
-  z-index: 9998;
+  transition: opacity 0.22s ease-out;
+  z-index: 2800;
 }
 .user-scrim.open {
   opacity: 1;
   pointer-events: auto;
 }
 
-/* DRAWER */
+/* ================= DRAWER ================= */
 .user-drawer {
   position: fixed;
   top: 80px;
-  right: 16px;
-  width: min(360px, calc(100% - 24px));
+  max-width: 360px;
+  width: calc(100% - 32px);
   background: #16181a;
-  color: #fff;
+  color: #ffffff;
   border-radius: 24px;
   box-shadow:
-    0 18px 40px rgba(0,0,0,.75),
-    0 0 0 1px rgba(255,255,255,.04);
-  overflow: hidden;
-  transform: translateX(120%);
+    0 18px 40px rgba(0,0,0,0.75),
+    0 0 0 1px rgba(255,255,255,0.04);
   opacity: 0;
   pointer-events: none;
-  transition: transform .25s cubic-bezier(.2,0,0,1), opacity .2s ease;
-  z-index: 9999;
-}
-.user-drawer.open {
-  transform: translateX(0);
-  opacity: 1;
-  pointer-events: auto;
+  overflow: hidden;
+  transition:
+    transform 0.25s cubic-bezier(0.20,0,0,1),
+    opacity 0.22s ease-out;
+  z-index: 4000;
 }
 
-/* MÓVIL */
-@media (max-width: 600px) {
+/* PC */
+@media (min-width: 901px) {
   .user-drawer {
-    left: 12px;
-    right: 12px;
-    width: auto;
+    right: 48px;
+    transform: translateX(120%);
   }
+  .user-drawer.open {
+    transform: translateX(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+/* MÓVIL — FIX DEFINITIVO */
+@media (max-width: 900px) {
+  .user-drawer {
+    left: 16px;
+    right: 16px;
+    transform: translateX(-120%);
+    position: fixed;          /* 🔑 CLAVE */
+    z-index: 99999;           /* 🔑 CLAVE */
+  }
+
+  .user-drawer.open {
+    transform: translateX(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .user-scrim {
+    z-index: 99998;           /* debajo del drawer */
+  }
+}
+
+/* ================= VISIBILIDAD — FIX DEFINITIVO ================= */
+
+/* Por defecto, mostrar todo */
+.logged,
+.no-user {
+  display: block;
+}
+
+/* ===== INVITADO ===== */
+.user-drawer.no-user .logged {
+  display: none;
+}
+
+/* ===== LOGUEADO ===== */
+.user-drawer.logged .no-user {
+  display: none;
+}
+
+/* ================= HEADER PERFIL ================= */
+.user-drawer-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.user-drawer-header:hover {
+  background: rgba(255,255,255,0.06);
+}
+
+.user-drawer-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #ffffff;
+  box-shadow:
+    0 6px 14px rgba(0,0,0,0.18),
+    0 2px 4px rgba(0,0,0,0.12);
+}
+
+.user-drawer-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.user-drawer-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-drawer-name {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.user-drawer-email {
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+/* ================= DIVIDER ================= */
+.user-drawer-divider {
+  height: 1.6px;
+  background: var(--verde);
+  margin: 6px 0 10px;
+  border: none;
+}
+
+/* ================= ITEMS ================= */
+.user-drawer-nav {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-drawer-item {
+  width: 100%;
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 15px;
+  color: #ffffff;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.user-drawer-item:hover {
+  background: rgba(255,255,255,0.06);
+}
+
+.user-drawer-item-icon {
+  width: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* =========================================
+   LOGOUT — MISMO ESTILO QUE ITEMS
+========================================= */
+
+.user-drawer-item.logout {
+  background: transparent;
+  border: none;
+  color: #ff4b4b;
+  font-weight: 500;              /* igual que los demás */
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  border-radius: 12px;
+  cursor: pointer;
+  text-align: left;
+}
+
+/* Icono logout en rojo */
+.user-drawer-item.logout .material-symbols-outlined {
+  color: #ff4b4b;
+}
+
+/* Hover coherente */
+.user-drawer-item.logout:hover {
+  background: rgba(255, 75, 75, 0.12);
+}
+
+/* LOGIN */
+.user-drawer-item.login {
+  color: var(--verde) !important;
+  font-weight: 600;
+}
+
+/* ================= FIX VISIBILIDAD ITEMS ================= */
+
+/* Items públicos SIEMPRE visibles */
+.user-drawer-item:not(.logged):not(.no-user) {
+  display: flex;
+}
+
+/* Seguridad extra (evita menú vacío) */
+.user-drawer-nav .user-drawer-item {
+  display: flex;
 }
 /* ================= HERO ================= */
 
