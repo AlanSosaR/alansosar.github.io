@@ -91,67 +91,40 @@ document.addEventListener("DOMContentLoaded", () => {
   const scrim      = safe("user-scrim");
   const menuToggle = safe("menu-toggle");
 
-  if (drawer) {
-    drawer.classList.remove("logged");
-    drawer.classList.add("no-user");
-    drawer.classList.remove("open");
-    drawer.setAttribute("aria-hidden", "true");
-  }
-
   function openDrawer() {
-    if (!drawer || !scrim) return;
-    drawer.classList.add("open");
-    drawer.setAttribute("aria-hidden", "false");
-    scrim.classList.add("open");
+    drawer?.classList.add("open");
+    scrim?.classList.add("open");
   }
 
   function closeDrawer() {
-    if (!drawer || !scrim) return;
-    drawer.classList.remove("open");
-    drawer.setAttribute("aria-hidden", "true");
-    scrim.classList.remove("open");
+    drawer?.classList.remove("open");
+    scrim?.classList.remove("open");
   }
 
-  if (menuToggle && drawer) {
-    menuToggle.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      drawer.classList.contains("open") ? closeDrawer() : openDrawer();
-    });
-  }
+  menuToggle?.addEventListener("click", e => {
+    e.preventDefault();
+    drawer?.classList.contains("open") ? closeDrawer() : openDrawer();
+  });
 
-  const avatarBtn = safe("btn-header-user");
-  if (avatarBtn && drawer) {
-    avatarBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      drawer.classList.contains("open") ? closeDrawer() : openDrawer();
-    });
-  }
-
-  if (scrim) scrim.addEventListener("click", closeDrawer);
-  if (drawer) drawer.addEventListener("click", e => e.stopPropagation());
+  scrim?.addEventListener("click", closeDrawer);
 
   /* ========================= HERO CAROUSEL ========================= */
   const heroImgs = document.querySelectorAll(".hero-carousel img");
   let heroIndex = 0;
 
-  if (heroImgs.length > 0) {
+  if (heroImgs.length) {
     heroImgs[0].classList.add("active");
     setInterval(() => {
-      heroImgs.forEach(img => img.classList.remove("active"));
+      heroImgs.forEach(i => i.classList.remove("active"));
       heroIndex = (heroIndex + 1) % heroImgs.length;
       heroImgs[heroIndex].classList.add("active");
     }, 8000);
   }
 
   /* ========================= CARRITO ========================= */
-  const cartBtn = safe("cart-btn");
-  if (cartBtn) {
-    cartBtn.addEventListener("click", () => {
-      window.location.href = "carrito.html";
-    });
-  }
+  safe("cart-btn")?.addEventListener("click", () => {
+    window.location.href = "carrito.html";
+  });
   updateCartCount();
 
   /* ========================= SIMILARES INIT ========================= */
@@ -187,7 +160,8 @@ function bindSimilarCardEvents() {
 }
 
 /* =========================
-   SIMILARES — CARRUSEL + DOTS (FLECHAS + DOTS CLICABLES)
+   SIMILARES — CARRUSEL + DOTS
+   Flechas + dots sincronizados
 ========================= */
 function initSimilarCarousel() {
   const list = safe("lista-similares");
@@ -195,50 +169,50 @@ function initSimilarCarousel() {
   const next = safe("similar-next");
   const dots = document.querySelectorAll(".carousel-dots .dot");
 
-  if (!list || !prev || !next || dots.length === 0) return;
+  if (!list || !prev || !next || !dots.length) return;
 
   const card = list.querySelector(".similar-card");
   if (!card) return;
 
-  const style = getComputedStyle(list);
-  const gap = parseInt(style.gap || style.columnGap || 16);
+  const gap = parseInt(getComputedStyle(list).gap || 16);
   const CARD_WIDTH = card.offsetWidth + gap;
 
   let index = 0;
   const maxIndex = dots.length - 1;
 
-  function updateDots() {
-    dots.forEach((d, i) => d.classList.toggle("active", i === index));
-  }
-
-  function scrollToIndex() {
+  function updateUI() {
     list.scrollTo({
       left: CARD_WIDTH * index,
       behavior: "smooth"
     });
-    updateDots();
+
+    dots.forEach((d, i) => d.classList.toggle("active", i === index));
+
+    prev.disabled = index === 0;
+    next.disabled = index === maxIndex;
   }
 
-  /* Flechas */
   prev.addEventListener("click", () => {
     if (index > 0) {
       index--;
-      scrollToIndex();
+      updateUI();
     }
   });
 
   next.addEventListener("click", () => {
     if (index < maxIndex) {
       index++;
-      scrollToIndex();
+      updateUI();
     }
   });
 
-  /* Dots clicables */
   dots.forEach((dot, i) => {
     dot.addEventListener("click", () => {
       index = i;
-      scrollToIndex();
+      updateUI();
     });
   });
+
+  /* Estado inicial */
+  updateUI();
 }
