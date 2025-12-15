@@ -966,7 +966,7 @@ body {
 .carousel-container {
   display: flex;
   justify-content: center;
-  overflow: hidden;
+  overflow: visible; /* 🔑 CAMBIO CLAVE */
 }
 
 /* =====================================================
