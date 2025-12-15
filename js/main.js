@@ -128,6 +128,28 @@ document.addEventListener("DOMContentLoaded", () => {
   updateCartCount();
 
   /* =========================
+     FAB — WHATSAPP / FACEBOOK
+     (RESTORED)
+  ========================= */
+  const fabContainer = safe("fab");
+  const fabMain = safe("fab-main");
+
+  if (fabContainer && fabMain) {
+
+    fabMain.addEventListener("click", (e) => {
+      e.stopPropagation();
+      fabContainer.classList.toggle("active");
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!fabContainer.contains(e.target)) {
+        fabContainer.classList.remove("active");
+      }
+    });
+
+  }
+
+  /* =========================
      SELECTOR CANTIDAD (RESTORED)
   ========================= */
   const qtyNumber = safe("qty-number");
@@ -252,4 +274,4 @@ function initSimilarCarousel() {
 
   /* Estado inicial */
   updateUI();
-}
+                }
