@@ -39,7 +39,22 @@ body {
   align-items: center;
   padding: 0 24px;
 }
+/* NAV A LA DERECHA */
+.header-nav {
+display: flex;
+align-items: center;
+gap: 24px;
 
+margin-left: auto; /* 🔑 ESTA ES LA CLAVE */
+}
+
+/* LINKS */
+.header-nav a {
+text-decoration: none;
+color: var(--marron);
+font-weight: 500;
+font-size: 0.95rem;
+}
 /* ===================== LOGO ===================== */
 .header-logo-link {
   display: flex;
