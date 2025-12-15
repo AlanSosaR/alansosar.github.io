@@ -129,11 +129,25 @@ font-size: 0.95rem;
 .header-fixed.no-user .nav-links.desktop-only {
   display: flex;
 }
-/* ================= HEADER INVITADO — NAV A LA DERECHA ================= */
+/* ================= HEADER INVITADO — NAV + LOGIN A LA DERECHA ================= */
 
-/* En invitado, el nav se pega a la derecha junto al login */
+/* Empuja el nav hacia el bloque de acciones */
 .header-fixed.no-user .nav-links.desktop-only {
   margin-left: auto;
+  margin-right: 16px; /* separación controlada del login */
+}
+
+/* Asegura alineación horizontal perfecta */
+.header-fixed.no-user .header-actions {
+  display: flex;
+  align-items: center;
+}
+
+/* Agrupa nav + login visualmente */
+.header-fixed.no-user .desktop-only {
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
 
 /* ================= DRAWER ================= */
