@@ -127,6 +127,43 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   updateCartCount();
 
+  /* =========================
+     SELECTOR CANTIDAD (RESTORED)
+  ========================= */
+  const qtyNumber = safe("qty-number");
+  const qtyMinus  = safe("qty-minus");
+  const qtyPlus   = safe("qty-plus");
+
+  qtyMinus?.addEventListener("click", () => {
+    const n = parseInt(qtyNumber.textContent);
+    if (n > 1) qtyNumber.textContent = n - 1;
+  });
+
+  qtyPlus?.addEventListener("click", () => {
+    qtyNumber.textContent = parseInt(qtyNumber.textContent) + 1;
+  });
+
+  /* =========================
+     AGREGAR AL CARRITO (RESTORED)
+  ========================= */
+  const btnAdd = safe("product-add");
+
+  btnAdd?.addEventListener("click", () => {
+    const nameEl  = safe("product-name");
+    const imgEl   = safe("product-image");
+    const priceEl = document.querySelector(".price-part");
+
+    if (!nameEl || !imgEl || !priceEl) return;
+
+    const qty   = parseInt(qtyNumber.textContent) || 1;
+    const name  = nameEl.textContent.trim();
+    const price = parseFloat(priceEl.textContent.replace(/[^\d.-]/g, ""));
+    const img   = imgEl.src;
+
+    addToCart({ name, price, img, qty });
+    qtyNumber.textContent = "1";
+  });
+
   /* ========================= SIMILARES INIT ========================= */
   loadSimilarProducts();
   bindSimilarCardEvents();
