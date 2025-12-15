@@ -799,7 +799,109 @@ body {
   max-width: 320px;
   object-fit: contain;
 }
+/* =====================================================
+   CARRUSEL SIMILARES — NAVEGACIÓN INFERIOR (PC)
+   Flechas + puntos estilo Material 3 Expressive
+===================================================== */
 
+/* Contenedor navegación inferior */
+.carousel-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  max-width: 360px;
+  margin: 20px auto 0;
+}
+
+/* Ocultar en móvil */
+@media (max-width: 900px) {
+  .carousel-nav {
+    display: none;
+  }
+}
+
+/* =====================
+   FLECHAS CIRCULARES
+===================== */
+.carousel-prev-circle,
+.carousel-next-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+
+  background: #ffffff;
+  border: none;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* Elevación Material 3 */
+  box-shadow:
+    0 4px 10px rgba(0, 0, 0, 0.12),
+    0 1px 3px rgba(0, 0, 0, 0.08);
+
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    opacity 0.18s ease;
+}
+
+/* Icono flecha */
+.carousel-prev-circle i,
+.carousel-next-circle i {
+  font-size: 1.1rem;
+  color: var(--verde);
+}
+
+/* Hover solo PC */
+.carousel-prev-circle:hover,
+.carousel-next-circle:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 6px 14px rgba(0, 0, 0, 0.18),
+    0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+/* =====================
+   PUNTOS CENTRALES
+===================== */
+.carousel-dots {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Punto normal */
+.carousel-dots .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #cfcfcf;
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease;
+}
+
+/* Punto activo */
+.carousel-dots .dot.active {
+  background: var(--verde);
+  transform: scale(1.35);
+}
+
+/* =====================
+   ESTADOS DESHABILITADOS
+===================== */
+.carousel-prev-circle:disabled,
+.carousel-next-circle:disabled {
+  opacity: 0.35;
+  cursor: default;
+  transform: none;
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.08);
+}
 /* ================= CARRUSEL SIMILARES ================= */
 
 .related {
