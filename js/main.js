@@ -94,11 +94,13 @@ document.addEventListener("DOMContentLoaded", () => {
   function openDrawer() {
     drawer?.classList.add("open");
     scrim?.classList.add("open");
+    document.body.style.overflow = "hidden";
   }
 
   function closeDrawer() {
     drawer?.classList.remove("open");
     scrim?.classList.remove("open");
+    document.body.style.overflow = "";
   }
 
   menuToggle?.addEventListener("click", e => {
@@ -107,17 +109,27 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   scrim?.addEventListener("click", closeDrawer);
-/* =========================
-   AVATAR DESKTOP — ABRE DRAWER (DELEGADO)
-========================= */
-document.addEventListener("click", (e) => {
-  const avatarBtn = e.target.closest("#btn-header-user");
-  if (!avatarBtn) return;
 
-  e.preventDefault();
-  e.stopPropagation();
-  openDrawer();
-});
+  /* =========================
+     AVATAR DESKTOP — ABRE DRAWER (DELEGADO)
+  ========================= */
+  document.addEventListener("click", (e) => {
+    const avatarBtn = e.target.closest("#btn-header-user");
+    if (!avatarBtn) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+    openDrawer();
+  });
+
+  /* =========================
+     LOGOUT — CIERRA DRAWER EN MÓVIL
+  ========================= */
+  const logoutBtn = safe("logout-btn");
+  logoutBtn?.addEventListener("click", () => {
+    closeDrawer();
+    // ⚠️ auth-ui.js se encarga del signOut real
+  });
 
   /* ========================= HERO CAROUSEL ========================= */
   const heroImgs = document.querySelectorAll(".hero-carousel img");
@@ -138,10 +150,7 @@ document.addEventListener("click", (e) => {
   });
   updateCartCount();
 
-  /* =========================
-     FAB — WHATSAPP / FACEBOOK
-     (RESTORED)
-  ========================= */
+  /* ========================= FAB ========================= */
   const fabContainer = safe("fab");
   const fabMain = safe("fab-main");
 
@@ -160,9 +169,7 @@ document.addEventListener("click", (e) => {
 
   }
 
-  /* =========================
-     SELECTOR CANTIDAD (RESTORED)
-  ========================= */
+  /* ========================= SELECTOR CANTIDAD ========================= */
   const qtyNumber = safe("qty-number");
   const qtyMinus  = safe("qty-minus");
   const qtyPlus   = safe("qty-plus");
@@ -176,9 +183,7 @@ document.addEventListener("click", (e) => {
     qtyNumber.textContent = parseInt(qtyNumber.textContent) + 1;
   });
 
-  /* =========================
-     AGREGAR AL CARRITO (RESTORED)
-  ========================= */
+  /* ========================= AGREGAR AL CARRITO ========================= */
   const btnAdd = safe("product-add");
 
   btnAdd?.addEventListener("click", () => {
@@ -231,7 +236,6 @@ function bindSimilarCardEvents() {
 
 /* =========================
    SIMILARES — CARRUSEL + DOTS
-   Flechas + dots sincronizados
 ========================= */
 function initSimilarCarousel() {
   const list = safe("lista-similares");
@@ -283,6 +287,5 @@ function initSimilarCarousel() {
     });
   });
 
-  /* Estado inicial */
   updateUI();
-                }
+}
