@@ -1,51 +1,22 @@
+/* =====================================================
+   BASE
+===================================================== */
 body {
-  font-family: 'Poppins', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Poppins",
+               "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
   background: #f9f6f2;
   color: #4b2c19;
   margin: 0;
   padding: 0;
 }
 
-/* ===== Encabezado ===== */
-.recibo-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  background: rgba(255,255,255,.92);
-  backdrop-filter: blur(6px);
-  display: flex;
-  align-items: center;
-  justify-content: space-between; /* 🔥 separa logo y texto */
-  padding: .6rem 1.4rem;
-  box-shadow: 0 2px 12px rgba(0,0,0,.05);
-  z-index: 50;
-  border-radius: 0;
-}
-
-.recibo-header a {
-  display: flex;
-  align-items: center;
-}
-
-.recibo-header img {
-  height: 58px;
-  display: block;
-}
-
-.recibo-title {
-  font-weight: 600;
-  font-size: 1.15rem;
-  color: #4b2c19;
-  text-align: right; /* 🔥 fuerza alineación a la derecha */
-  flex: 1;
-}
-
-/* ===== Animación fade-in ===== */
+/* =====================================================
+   ANIMACIÓN
+===================================================== */
 .fade-in {
   opacity: 0;
   transform: translateY(10px);
-  animation: fadeIn 0.7s ease-in-out forwards;
+  animation: fadeIn 0.6s ease forwards;
 }
 @keyframes fadeIn {
   to {
@@ -54,96 +25,190 @@ body {
   }
 }
 
-/* ===== Contenido ===== */
+/* =====================================================
+   CONTENEDOR (HEADER GLOBAL YA FIJO)
+===================================================== */
 .recibo-container {
   display: flex;
   justify-content: center;
-  padding: 7rem 20px 30px; /* espacio para header fijo */
+  padding: 7.5rem 16px 32px; /* espacio para header global */
 }
 
-/* ===== Tarjeta ===== */
+/* =====================================================
+   TARJETA
+===================================================== */
 .recibo-card {
   background: #fff;
-  border-radius: 18px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-  padding: 25px 20px;
-  max-width: 600px;
+  border-radius: 22px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  padding: 26px 22px;
+  max-width: 620px;
   width: 100%;
+  position: relative;
 }
 
+/* Flecha volver */
+.card-back {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+}
+.card-back button {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  color: #4b2c19;
+  cursor: pointer;
+}
+
+/* =====================================================
+   TITULOS
+===================================================== */
 .recibo-card h2 {
   color: #4b2c19;
-  font-size: 1.3rem;
-  margin-bottom: 5px;
+  font-size: 1.35rem;
+  margin-bottom: 4px;
+  text-align: center;
 }
 
 .fecha {
   color: #777;
   font-size: 0.9rem;
+  text-align: center;
+  margin-bottom: 10px;
 }
 
 h3 {
   color: #046d46;
   border-left: 4px solid #046d46;
-  padding-left: 8px;
-  margin-top: 20px;
+  padding-left: 10px;
+  margin-top: 22px;
+  font-size: 1.05rem;
 }
 
+/* =====================================================
+   DATOS CLIENTE
+===================================================== */
 .cliente-info p {
-  margin: 5px 0;
-  color: #333;
-}
-
-ul#listaProductos {
-  list-style: none;
-  padding: 0;
-}
-
-ul#listaProductos li {
-  background: #f5f3ef;
-  border-radius: 10px;
-  padding: 8px 12px;
   margin: 6px 0;
+  color: #333;
   font-size: 0.95rem;
 }
 
+/* =====================================================
+   SELECCIÓN DE CAFÉS (BARRAS)
+===================================================== */
+.cafes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.cafe-item {
+  background: #4b2c19; /* café */
+  color: #fff;
+  border-radius: 14px;
+  padding: 14px 16px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cafe-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.cafe-nombre {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.cafe-cantidad {
+  font-size: 0.8rem;
+  opacity: 0.85;
+}
+
+.cafe-precio {
+  color: #9be2b0; /* verde */
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+/* =====================================================
+   TOTAL
+===================================================== */
 .recibo-total {
   font-weight: 600;
   color: #4b2c19;
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   text-align: right;
+  margin-top: 12px;
 }
 
-/* ===== Métodos de pago ===== */
+/* =====================================================
+   MÉTODO DE PAGO
+===================================================== */
 .pagos p {
-  margin: 6px 0;
+  margin: 8px 0;
   color: #333;
   font-size: 0.95rem;
-}
-.pagos a {
-  color: #007bff;
-  text-decoration: none;
-}
-.pagos a:hover {
-  text-decoration: underline;
+  line-height: 1.5;
 }
 
-/* ===== Botones ===== */
+/* =====================================================
+   COMPROBANTE
+===================================================== */
+.comprobante-box {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.preview {
+  margin-top: 8px;
+  text-align: center;
+}
+.preview img {
+  max-width: 100%;
+  border-radius: 14px;
+  box-shadow: 0 6px 16px rgba(0,0,0,.15);
+}
+.preview p {
+  margin-top: 6px;
+  font-size: 0.85rem;
+  color: #046d46;
+}
+
+.hidden {
+  display: none;
+}
+
+/* =====================================================
+   BOTONES
+===================================================== */
 .recibo-botones {
   display: flex;
-  justify-content: space-between;
-  margin-top: 25px;
+  margin-top: 26px;
 }
 
 .btn-primary,
 .btn-secondary {
   border: none;
-  border-radius: 10px;
-  padding: 10px 16px;
+  border-radius: 14px;
+  padding: 12px 18px;
   font-size: 0.95rem;
   cursor: pointer;
   font-weight: 500;
   transition: 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
 }
 
 .btn-primary {
@@ -153,6 +218,7 @@ ul#listaProductos li {
 .btn-primary:hover {
   background-color: #035c3b;
 }
+
 .btn-secondary {
   background-color: #4b2c19;
   color: #fff;
@@ -161,28 +227,26 @@ ul#listaProductos li {
   background-color: #3a2113;
 }
 
-/* ===== Responsive ===== */
-@media (max-width: 600px) {
-  .recibo-header {
-    flex-direction: row;
-    justify-content: space-between;
-    padding: .6rem 1rem;
-  }
+/* Loader icon */
+#loaderEnviar {
+  font-size: 1rem;
+}
 
-  .recibo-title {
-    font-size: 1rem;
-  }
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+@media (max-width: 600px) {
 
   .recibo-container {
-    padding: 6.5rem 15px;
+    padding: 7rem 14px 28px;
   }
 
-  .recibo-botones {
-    flex-direction: column;
-    gap: 10px;
+  .recibo-card {
+    padding: 24px 18px;
   }
 
-  .btn-primary, .btn-secondary {
-    width: 100%;
+  .recibo-card h2 {
+    font-size: 1.2rem;
   }
+
 }
