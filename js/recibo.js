@@ -1,70 +1,167 @@
-// --- paso 1: generar número solo si no existe
+console.log("🧾 recibo.js cargado");
+
+/* =========================
+   HELPERS
+========================= */
+function safe(id) {
+  return document.getElementById(id);
+}
+
+/* =========================
+   PASO 1: NÚMERO DE PEDIDO
+========================= */
 let numeroPedido = localStorage.getItem("numeroPedidoActivo");
 
 if (!numeroPedido) {
   let consecutivo = localStorage.getItem("ultimoPedido");
   consecutivo = consecutivo ? parseInt(consecutivo) + 1 : 1;
+
   localStorage.setItem("ultimoPedido", consecutivo);
   numeroPedido = consecutivo;
   localStorage.setItem("numeroPedidoActivo", numeroPedido);
 }
 
-// --- paso 2: mostrar número y fecha actual
-document.getElementById("numeroPedido").textContent = numeroPedido;
-document.getElementById("fechaPedido").textContent = new Date().toLocaleString("es-HN", {
+/* =========================
+   PASO 2: MOSTRAR NÚMERO Y FECHA
+========================= */
+safe("numeroPedido").textContent = numeroPedido;
+safe("fechaPedido").textContent = new Date().toLocaleString("es-HN", {
   dateStyle: "short",
   timeStyle: "medium",
   hour12: true
 });
 
-// --- paso 3: cargar datos del cliente
+/* =========================
+   PASO 3: DATOS DEL CLIENTE
+========================= */
 const cliente = JSON.parse(localStorage.getItem("cliente_info")) || {};
-document.getElementById("nombreCliente").textContent = cliente.nombre || "";
-document.getElementById("correoCliente").textContent = cliente.correo || "";
-document.getElementById("telefonoCliente").textContent = cliente.telefono || "";
-document.getElementById("zonaCliente").textContent = cliente.zona || "";
-document.getElementById("direccionCliente").textContent = cliente.direccion || "";
-document.getElementById("notaCliente").textContent = cliente.nota || "";
 
-// --- paso 4: cargar carrito con precio correcto
+safe("nombreCliente").textContent    = cliente.nombre || "";
+safe("correoCliente").textContent    = cliente.correo || "";
+safe("telefonoCliente").textContent  = cliente.telefono || "";
+safe("zonaCliente").textContent      = cliente.zona || "";
+safe("direccionCliente").textContent = cliente.direccion || "";
+safe("notaCliente").textContent      = cliente.nota || "";
+
+/* =========================
+   PASO 4: SELECCIÓN DE CAFÉS
+========================= */
 const carrito = JSON.parse(localStorage.getItem("cafecortero_cart")) || [];
-const lista = document.getElementById("listaProductos");
+const lista = safe("listaProductos");
 let total = 0;
 
+lista.innerHTML = "";
+
 carrito.forEach(item => {
-  // limpiar "L" u otros caracteres
-  const precioNum = parseFloat(item.price.toString().replace(/[^\d.-]/g, '')) || 0;
-  const li = document.createElement("li");
-  li.textContent = `${item.name} x${item.qty} = L ${(precioNum * item.qty).toFixed(2)}`;
-  lista.appendChild(li);
-  total += precioNum * item.qty;
+  const precioNum = parseFloat(
+    item.price.toString().replace(/[^\d.-]/g, "")
+  ) || 0;
+
+  const subtotal = precioNum * item.qty;
+  total += subtotal;
+
+  const div = document.createElement("div");
+  div.className = "cafe-item";
+
+  div.innerHTML = `
+    <div class="cafe-info">
+      <span class="cafe-nombre">${item.name}</span>
+      <span class="cafe-cantidad">x${item.qty}</span>
+    </div>
+    <span class="cafe-precio">L ${subtotal.toFixed(2)}</span>
+  `;
+
+  lista.appendChild(div);
 });
 
-document.getElementById("totalPedido").textContent = total.toFixed(2);
+safe("totalPedido").textContent = total.toFixed(2);
 
-// --- paso 5: editar datos
-document.getElementById("btnEditar").addEventListener("click", () => {
-  window.location.href = "datos_cliente.html";
+/* =========================
+   PASO 5: FLECHA VOLVER
+========================= */
+safe("btnVolver")?.addEventListener("click", () => {
+  history.back();
 });
 
-// --- paso 6: enviar pedido y redirigir a mis pedidos
-document.getElementById("btnEnviar").addEventListener("click", () => {
+/* =========================
+   PASO 6: COMPROBANTE DE PAGO
+========================= */
+let comprobanteSeleccionado = null;
+
+const inputComprobante = safe("inputComprobante");
+const previewBox = safe("previewComprobante");
+const imgPreview = safe("imgComprobante");
+const btnEnviar = safe("btnEnviar");
+
+safe("btnSubirComprobante")?.addEventListener("click", () => {
+  inputComprobante.click();
+});
+
+inputComprobante?.addEventListener("change", () => {
+  const file = inputComprobante.files[0];
+  if (!file) return;
+
+  comprobanteSeleccionado = file;
+
+  imgPreview.src = URL.createObjectURL(file);
+  previewBox.classList.remove("hidden");
+
+  // 🔑 ya se puede enviar
+  btnEnviar.disabled = false;
+});
+
+/* =========================
+   PASO 7: ENVIAR PEDIDO (BD REAL)
+========================= */
+btnEnviar?.addEventListener("click", async () => {
+
+  if (!comprobanteSeleccionado) {
+    alert("⚠️ Debes subir el comprobante de pago antes de enviar el pedido.");
+    return;
+  }
+
+  safe("loaderEnviar")?.classList.remove("hidden");
+  btnEnviar.disabled = true;
+
   const pedido = {
-    numeroPedido,
-    cliente,
-    productos: carrito,
-    total,
-    fecha: new Date().toLocaleString("es-HN", { hour12: true }),
+    numero_pedido: numeroPedido,
+    cliente_nombre: cliente.nombre || "",
+    cliente_correo: cliente.correo || "",
+    cliente_telefono: cliente.telefono || "",
+    cliente_zona: cliente.zona || "",
+    cliente_direccion: cliente.direccion || "",
+    cliente_nota: cliente.nota || "",
+    productos: carrito,                  // jsonb
+    total: total,
+    estado: "Pendiente de revisión",
+    metodo_pago: "Depósito bancario",
+    comprobante_nombre: comprobanteSeleccionado.name,
+    comprobante_tipo: comprobanteSeleccionado.type
+    // ⚠️ luego aquí va comprobante_url (Storage)
   };
 
-  let pedidos = JSON.parse(localStorage.getItem("misPedidos")) || [];
-  pedidos.push(pedido);
-  localStorage.setItem("misPedidos", JSON.stringify(pedidos));
+  const { error } = await window.supabaseClient
+    .from("pedidos")
+    .insert([pedido]);
 
-  // limpiar temporales
+  if (error) {
+    console.error("❌ Error al guardar pedido:", error);
+    alert("Ocurrió un error al enviar el pedido. Intenta nuevamente.");
+    btnEnviar.disabled = false;
+    safe("loaderEnviar")?.classList.add("hidden");
+    return;
+  }
+
+  /* =========================
+     LIMPIEZA FINAL
+  ========================= */
   localStorage.removeItem("numeroPedidoActivo");
   localStorage.removeItem("cafecortero_cart");
 
-  alert(`✅ Pedido #${numeroPedido} enviado con éxito`);
-  window.location.href = "mis-pedidos.html"; // <-- redirección final
+  alert(
+    `✅ Pedido #${numeroPedido} enviado con éxito.\n` +
+    `El comprobante será revisado por un administrador.`
+  );
+
+  window.location.href = "mis-pedidos.html";
 });
