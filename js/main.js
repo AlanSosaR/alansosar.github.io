@@ -107,6 +107,16 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   scrim?.addEventListener("click", closeDrawer);
+   /* =========================
+   AVATAR DESKTOP — ABRE DRAWER
+========================= */
+const avatarBtn = safe("avatar-btn");
+
+avatarBtn?.addEventListener("click", (e) => {
+  e.preventDefault();
+  e.stopPropagation(); // evita cierres raros
+  openDrawer();
+});
 
   /* ========================= HERO CAROUSEL ========================= */
   const heroImgs = document.querySelectorAll(".hero-carousel img");
