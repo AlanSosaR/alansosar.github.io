@@ -252,7 +252,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (!session || !userLS) {
     if (avatarImg)        avatarImg.src        = "imagenes/avatar-default.svg";
     if (avatarDrawerImg)  avatarDrawerImg.src  = "imagenes/avatar-default.svg";
-    if (helloDesktop)     helloDesktop.textContent = "Hola, invitado";
+    if (helloDesktop)     helloDesktop.textContent = "invitado";
     if (emailDrawer)      emailDrawer.textContent  = "Inicia sesión para continuar";
 
     if (avatarBtn) {
@@ -269,7 +269,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // --------- LOGUEADO ----------
   const displayName = userLS.name || userLS.email || "Usuario";
 
-  if (helloDesktop) helloDesktop.textContent = `Hola, ${displayName}`;
+  if (helloDesktop) helloDesktop.textContent = `${displayName}`;
   if (emailDrawer)  emailDrawer.textContent  = userLS.email || "";
 
   // Foto desde localStorage
