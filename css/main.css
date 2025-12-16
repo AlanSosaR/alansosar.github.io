@@ -1040,7 +1040,7 @@ body {
   }
 
   .similar-list {
-    width: calc((190px * 4) + (1rem * 3));
+    width: calc((190px * 5) + (1rem * 3));
     overflow-x: hidden;  /* ✔ solo flechas */
   }
 }
