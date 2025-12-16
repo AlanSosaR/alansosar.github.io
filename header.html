@@ -1,0 +1,118 @@
+<!-- =====================================================
+     HEADER — DEFINITIVO, ESTABLE
+====================================================== -->
+<header class="header-fixed no-user" id="main-header">
+
+  <!-- Hamburguesa (solo móvil) -->
+  <button class="menu-toggle mobile-only" id="menu-toggle" aria-label="Abrir menú">
+    <i class="fa-solid fa-bars"></i>
+  </button>
+
+  <!-- Logo -->
+  <a href="index.html" class="header-logo-link">
+    <img src="imagenes/logo.png" alt="Café Cortero" class="header-logo">
+  </a>
+
+  <!-- NAV DESKTOP -->
+  <nav class="nav-links desktop-only">
+    <a href="#productos">Variedades de café</a>
+    <a href="#nosotros">Quiénes somos</a>
+    <a href="#contacto">Contáctanos</a>
+  </nav>
+
+  <!-- ACCIONES DERECHA -->
+  <div class="header-actions">
+
+    <!-- LOGIN / AVATAR (SOLO DESKTOP) -->
+    <div class="desktop-only header-user">
+
+      <!-- Invitado -->
+      <a href="login.html" id="login-desktop" class="login-link">
+        Iniciar sesión
+      </a>
+
+      <!-- Logueado -->
+      <button id="btn-header-user" class="header-avatar-button" aria-label="Perfil">
+        <img id="avatar-user" src="imagenes/avatar-default.svg" alt="Usuario">
+      </button>
+
+    </div>
+
+    <!-- CARRITO (SIEMPRE VISIBLE) -->
+    <button id="cart-btn" class="cart-button" aria-label="Ver carrito">
+      <i class="fa-solid fa-cart-shopping"></i>
+      <span id="cart-count" class="cart-count">0</span>
+    </button>
+
+  </div>
+</header>
+
+<!-- =====================================================
+     SCRIM + DRAWER MATERIAL 3
+====================================================== -->
+
+<div id="user-scrim" class="user-scrim"></div>
+
+<aside id="user-drawer" class="user-drawer no-user" aria-hidden="true">
+
+  <!-- PERFIL (LOGUEADO) -->
+  <a href="perfil.html" class="user-drawer-header logged user-drawer-profile-link">
+    <div class="user-drawer-avatar">
+      <img id="avatar-user-drawer" src="imagenes/avatar-default.svg" alt="Usuario">
+    </div>
+
+    <div class="user-drawer-info">
+      <p class="user-drawer-name" id="drawer-name">Usuario</p>
+      <p class="user-drawer-email" id="drawer-email">correo@ejemplo.com</p>
+    </div>
+
+    <span class="material-symbols-outlined user-drawer-arrow">chevron_right</span>
+  </a>
+
+  <hr class="user-drawer-divider logged">
+
+  <!-- NAVEGACIÓN -->
+  <nav class="user-drawer-nav">
+
+    <a href="mispedidos.html" class="user-drawer-item logged">
+      <span class="material-symbols-outlined user-drawer-item-icon">shopping_bag</span>
+      Mis pedidos
+    </a>
+
+    <a href="historial.html" class="user-drawer-item logged">
+      <span class="material-symbols-outlined user-drawer-item-icon">history</span>
+      Historial de compras
+    </a>
+
+    <a href="#productos" class="user-drawer-item">
+      <span class="material-symbols-outlined user-drawer-item-icon">local_cafe</span>
+      Variedades de café
+    </a>
+
+    <a href="#nosotros" class="user-drawer-item">
+      <span class="material-symbols-outlined user-drawer-item-icon">groups</span>
+      Quiénes somos
+    </a>
+
+    <a href="#contacto" class="user-drawer-item">
+      <span class="material-symbols-outlined user-drawer-item-icon">mail</span>
+      Contáctanos
+    </a>
+
+  </nav>
+
+  <hr class="user-drawer-divider">
+
+  <!-- LOGOUT -->
+  <button id="logout-btn" class="user-drawer-item logout logged">
+    <span class="material-symbols-outlined user-drawer-item-icon">logout</span>
+    Cerrar sesión
+  </button>
+
+  <!-- LOGIN (INVITADO) -->
+  <a href="login.html" class="user-drawer-item login no-user">
+    <span class="material-symbols-outlined user-drawer-item-icon">login</span>
+    Iniciar sesión
+  </a>
+
+</aside>
