@@ -46,16 +46,9 @@ body {
 ===================================================== */
 @media (min-width: 901px) {
 
-  /* Empuja TODO lo de la derecha */
-  .header-actions {
-    margin-left: auto;
-    display: flex;
-    align-items: center;
-    gap: 24px;
-  }
-
-  /* Nav desktop */
+  /* NAV DESKTOP */
   .nav-links.desktop-only {
+    margin-left: auto; /* 🔑 ESTA ES LA CLAVE */
     display: flex;
     align-items: center;
     gap: 20px;
@@ -66,6 +59,13 @@ body {
     color: var(--marron);
     font-weight: 500;
     font-size: 0.95rem;
+  }
+
+  /* ACCIONES DERECHA */
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 24px;
   }
 
   .login-link {
