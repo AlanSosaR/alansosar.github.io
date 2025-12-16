@@ -56,7 +56,7 @@ function setLoggedIn(user) {
 
   /* ===== Textos drawer ===== */
   if (safe("drawer-name")) {
-    safe("drawer-name").textContent = `Hola, ${user?.name || "Usuario"}`;
+    safe("drawer-name").textContent = `${user?.name || "Usuario"}`;
   }
 
   if (safe("drawer-email")) {
