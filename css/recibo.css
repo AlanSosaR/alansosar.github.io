@@ -1,11 +1,23 @@
 /* =====================================================
+   ROOT — VARIABLES GLOBALES
+===================================================== */
+:root {
+  --marron: #4b2c19;
+  --verde: #046d46;
+  --verde-claro: #9be2b0;
+  --fondo: #f9f6f2;
+  --blanco: #ffffff;
+  --gris-texto: #777;
+}
+
+/* =====================================================
    BASE
 ===================================================== */
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Poppins",
                "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
-  background: #f9f6f2;
-  color: #4b2c19;
+  background: var(--fondo);
+  color: var(--marron);
   margin: 0;
   padding: 0;
 }
@@ -31,14 +43,14 @@ body {
 .recibo-container {
   display: flex;
   justify-content: center;
-  padding: 7.5rem 16px 32px; /* espacio para header global */
+  padding: 7.5rem 16px 32px;
 }
 
 /* =====================================================
    TARJETA
 ===================================================== */
 .recibo-card {
-  background: #fff;
+  background: var(--blanco);
   border-radius: 22px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
   padding: 26px 22px;
@@ -57,7 +69,7 @@ body {
   background: none;
   border: none;
   font-size: 1.2rem;
-  color: #4b2c19;
+  color: var(--marron);
   cursor: pointer;
 }
 
@@ -65,22 +77,22 @@ body {
    TITULOS
 ===================================================== */
 .recibo-card h2 {
-  color: #4b2c19;
+  color: var(--marron);
   font-size: 1.35rem;
   margin-bottom: 4px;
   text-align: center;
 }
 
 .fecha {
-  color: #777;
+  color: var(--gris-texto);
   font-size: 0.9rem;
   text-align: center;
   margin-bottom: 10px;
 }
 
 h3 {
-  color: #046d46;
-  border-left: 4px solid #046d46;
+  color: var(--verde);
+  border-left: 4px solid var(--verde);
   padding-left: 10px;
   margin-top: 22px;
   font-size: 1.05rem;
@@ -106,11 +118,10 @@ h3 {
 }
 
 .cafe-item {
-  background: #4b2c19; /* café */
+  background: var(--marron);
   color: #fff;
   border-radius: 14px;
   padding: 14px 16px;
-
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -132,7 +143,7 @@ h3 {
 }
 
 .cafe-precio {
-  color: #9be2b0; /* verde */
+  color: var(--verde-claro);
   font-weight: 600;
   font-size: 0.95rem;
 }
@@ -142,7 +153,7 @@ h3 {
 ===================================================== */
 .recibo-total {
   font-weight: 600;
-  color: #4b2c19;
+  color: var(--marron);
   font-size: 1.15rem;
   text-align: right;
   margin-top: 12px;
@@ -180,7 +191,7 @@ h3 {
 .preview p {
   margin-top: 6px;
   font-size: 0.85rem;
-  color: #046d46;
+  color: var(--verde);
 }
 
 .hidden {
@@ -212,7 +223,7 @@ h3 {
 }
 
 .btn-primary {
-  background-color: #046d46;
+  background-color: var(--verde);
   color: #fff;
 }
 .btn-primary:hover {
@@ -220,7 +231,7 @@ h3 {
 }
 
 .btn-secondary {
-  background-color: #4b2c19;
+  background-color: var(--marron);
   color: #fff;
 }
 .btn-secondary:hover {
@@ -236,7 +247,6 @@ h3 {
    RESPONSIVE
 ===================================================== */
 @media (max-width: 600px) {
-
   .recibo-container {
     padding: 7rem 14px 28px;
   }
@@ -248,5 +258,4 @@ h3 {
   .recibo-card h2 {
     font-size: 1.2rem;
   }
-
 }
