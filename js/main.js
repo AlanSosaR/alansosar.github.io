@@ -107,14 +107,15 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   scrim?.addEventListener("click", closeDrawer);
-   /* =========================
-   AVATAR DESKTOP — ABRE DRAWER
+/* =========================
+   AVATAR DESKTOP — ABRE DRAWER (DELEGADO)
 ========================= */
-const avatarBtn = safe("avatar-btn");
+document.addEventListener("click", (e) => {
+  const avatarBtn = e.target.closest("#btn-header-user");
+  if (!avatarBtn) return;
 
-avatarBtn?.addEventListener("click", (e) => {
   e.preventDefault();
-  e.stopPropagation(); // evita cierres raros
+  e.stopPropagation();
   openDrawer();
 });
 
