@@ -1,5 +1,11 @@
 console.log("🧾 recibo.js cargado");
 
+/* =========================================================
+   MODO DE PÁGINA (HEADER GLOBAL)
+   🔑 ESTO ES LO QUE FALTABA
+========================================================= */
+window.PAGE_MODE = "recibo";
+
 /* =========================
    HELPERS
 ========================= */
@@ -32,16 +38,56 @@ safe("fechaPedido").textContent = new Date().toLocaleString("es-HN", {
 });
 
 /* =========================
-   PASO 3: DATOS DEL CLIENTE
+   PASO 3: DATOS DEL CLIENTE (BD REAL)
 ========================= */
-const cliente = JSON.parse(localStorage.getItem("cliente_info")) || {};
+async function cargarDatosCliente() {
 
-safe("nombreCliente").textContent    = cliente.nombre || "";
-safe("correoCliente").textContent    = cliente.correo || "";
-safe("telefonoCliente").textContent  = cliente.telefono || "";
-safe("zonaCliente").textContent      = cliente.zona || "";
-safe("direccionCliente").textContent = cliente.direccion || "";
-safe("notaCliente").textContent      = cliente.nota || "";
+  const sb = window.supabaseClient;
+  let cliente = {};
+
+  try {
+    // 1️⃣ Obtener sesión activa
+    const { data: sessionData } = await sb.auth.getSession();
+    const user = sessionData?.session?.user;
+
+    if (user) {
+      // 2️⃣ Traer perfil desde BD
+      const { data, error } = await sb
+        .from("users")
+        .select("name, email, phone, zona, direccion")
+        .eq("id", user.id)
+        .single();
+
+      if (!error && data) {
+        cliente = {
+          nombre: data.name,
+          correo: data.email,
+          telefono: data.phone,
+          zona: data.zona,
+          direccion: data.direccion,
+          nota: ""
+        };
+      }
+    }
+  } catch (err) {
+    console.warn("⚠️ No se pudo cargar cliente desde BD:", err);
+  }
+
+  // 3️⃣ Respaldo local si no hubo BD
+  if (!cliente.nombre) {
+    cliente = JSON.parse(localStorage.getItem("cliente_info")) || {};
+  }
+
+  // 4️⃣ Pintar en UI
+  safe("nombreCliente").textContent    = cliente.nombre || "";
+  safe("correoCliente").textContent    = cliente.correo || "";
+  safe("telefonoCliente").textContent  = cliente.telefono || "";
+  safe("zonaCliente").textContent      = cliente.zona || "";
+  safe("direccionCliente").textContent = cliente.direccion || "";
+  safe("notaCliente").textContent      = cliente.nota || "";
+
+  return cliente;
+}
 
 /* =========================
    PASO 4: SELECCIÓN DE CAFÉS
@@ -105,8 +151,6 @@ inputComprobante?.addEventListener("change", () => {
 
   imgPreview.src = URL.createObjectURL(file);
   previewBox.classList.remove("hidden");
-
-  // 🔑 ya se puede enviar
   btnEnviar.disabled = false;
 });
 
@@ -123,6 +167,8 @@ btnEnviar?.addEventListener("click", async () => {
   safe("loaderEnviar")?.classList.remove("hidden");
   btnEnviar.disabled = true;
 
+  const cliente = await cargarDatosCliente();
+
   const pedido = {
     numero_pedido: numeroPedido,
     cliente_nombre: cliente.nombre || "",
@@ -131,13 +177,12 @@ btnEnviar?.addEventListener("click", async () => {
     cliente_zona: cliente.zona || "",
     cliente_direccion: cliente.direccion || "",
     cliente_nota: cliente.nota || "",
-    productos: carrito,                  // jsonb
+    productos: carrito,
     total: total,
     estado: "Pendiente de revisión",
     metodo_pago: "Depósito bancario",
     comprobante_nombre: comprobanteSeleccionado.name,
     comprobante_tipo: comprobanteSeleccionado.type
-    // ⚠️ luego aquí va comprobante_url (Storage)
   };
 
   const { error } = await window.supabaseClient
@@ -165,3 +210,8 @@ btnEnviar?.addEventListener("click", async () => {
 
   window.location.href = "mis-pedidos.html";
 });
+
+/* =========================
+   INIT
+========================= */
+cargarDatosCliente();
