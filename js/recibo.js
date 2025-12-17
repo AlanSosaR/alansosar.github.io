@@ -1,8 +1,7 @@
-console.log("🧾 recibo.js cargado");
+console.log("🧾 recibo.js — versión FINAL alineada a datos_cliente.js");
 
 /* =========================================================
    MODO DE PÁGINA (HEADER GLOBAL)
-   🔑 ESTO ES LO QUE FALTABA
 ========================================================= */
 window.PAGE_MODE = "recibo";
 
@@ -13,9 +12,38 @@ function safe(id) {
   return document.getElementById(id);
 }
 
-/* =========================
-   PASO 1: NÚMERO DE PEDIDO
-========================= */
+/* =========================================================
+   ESPERAR SUPABASE (ANTI-BUCLE)
+========================================================= */
+function esperarSupabase() {
+  return new Promise(resolve => {
+    if (window.supabaseClient) resolve();
+    else {
+      const i = setInterval(() => {
+        if (window.supabaseClient) {
+          clearInterval(i);
+          resolve();
+        }
+      }, 80);
+    }
+  });
+}
+
+/* =========================================================
+   CACHE USUARIO
+========================================================= */
+function getUserCache() {
+  try {
+    if (localStorage.getItem("cortero_logged") !== "1") return null;
+    return JSON.parse(localStorage.getItem("cortero_user"));
+  } catch {
+    return null;
+  }
+}
+
+/* =========================================================
+   NÚMERO DE PEDIDO
+========================================================= */
 let numeroPedido = localStorage.getItem("numeroPedidoActivo");
 
 if (!numeroPedido) {
@@ -27,9 +55,6 @@ if (!numeroPedido) {
   localStorage.setItem("numeroPedidoActivo", numeroPedido);
 }
 
-/* =========================
-   PASO 2: MOSTRAR NÚMERO Y FECHA
-========================= */
 safe("numeroPedido").textContent = numeroPedido;
 safe("fechaPedido").textContent = new Date().toLocaleString("es-HN", {
   dateStyle: "short",
@@ -37,61 +62,73 @@ safe("fechaPedido").textContent = new Date().toLocaleString("es-HN", {
   hour12: true
 });
 
-/* =========================
-   PASO 3: DATOS DEL CLIENTE (BD REAL)
-========================= */
+/* =========================================================
+   DATOS DEL CLIENTE — MISMA LÓGICA QUE datos_cliente.js
+========================================================= */
 async function cargarDatosCliente() {
-
   const sb = window.supabaseClient;
-  let cliente = {};
+
+  let cliente = {
+    nombre: "",
+    correo: "",
+    telefono: "",
+    zona: "",
+    direccion: "",
+    nota: ""
+  };
+
+  const userCache = getUserCache();
+  if (!userCache) {
+    window.location.href = "login.html";
+    return cliente;
+  }
 
   try {
-    // 1️⃣ Obtener sesión activa
-    const { data: sessionData } = await sb.auth.getSession();
-    const user = sessionData?.session?.user;
+    // 1️⃣ USUARIO REAL
+    const { data: userRow, error: userError } = await sb
+      .from("users")
+      .select("id, name, email, phone")
+      .eq("id", userCache.id)
+      .single();
 
-    if (user) {
-      // 2️⃣ Traer perfil desde BD
-      const { data, error } = await sb
-        .from("users")
-        .select("name, email, phone, zona, direccion")
-        .eq("id", user.id)
-        .single();
-
-      if (!error && data) {
-        cliente = {
-          nombre: data.name,
-          correo: data.email,
-          telefono: data.phone,
-          zona: data.zona,
-          direccion: data.direccion,
-          nota: ""
-        };
-      }
+    if (!userError && userRow) {
+      cliente.nombre   = userRow.name || "";
+      cliente.correo   = userRow.email || "";
+      cliente.telefono = userRow.phone || "";
     }
+
+    // 2️⃣ DIRECCIÓN REAL (addresses)
+    const { data: addressRow } = await sb
+      .from("addresses")
+      .select("state, city, street, postal_code")
+      .eq("user_id", userCache.id)
+      .eq("is_default", true)
+      .maybeSingle();
+
+    if (addressRow) {
+      cliente.zona       = addressRow.state || "";
+      cliente.direccion  = addressRow.street || "";
+      cliente.nota       = addressRow.postal_code || "";
+    }
+
   } catch (err) {
-    console.warn("⚠️ No se pudo cargar cliente desde BD:", err);
+    console.warn("⚠️ Error cargando cliente:", err);
   }
 
-  // 3️⃣ Respaldo local si no hubo BD
-  if (!cliente.nombre) {
-    cliente = JSON.parse(localStorage.getItem("cliente_info")) || {};
-  }
-
-  // 4️⃣ Pintar en UI
-  safe("nombreCliente").textContent    = cliente.nombre || "";
-  safe("correoCliente").textContent    = cliente.correo || "";
-  safe("telefonoCliente").textContent  = cliente.telefono || "";
-  safe("zonaCliente").textContent      = cliente.zona || "";
-  safe("direccionCliente").textContent = cliente.direccion || "";
-  safe("notaCliente").textContent      = cliente.nota || "";
+  // 3️⃣ PINTAR EN UI
+  safe("nombreCliente").textContent    = cliente.nombre;
+  safe("correoCliente").textContent    = cliente.correo;
+  safe("telefonoCliente").textContent  = cliente.telefono;
+  safe("zonaCliente").textContent      = cliente.zona;
+  safe("direccionCliente").textContent = cliente.direccion;
+  safe("notaCliente").textContent      = cliente.nota;
 
   return cliente;
 }
 
-/* =========================
-   PASO 4: SELECCIÓN DE CAFÉS
-========================= */
+/* =========================================================
+   CAFÉS DEL CARRITO
+========================================================= */
 const carrito = JSON.parse(localStorage.getItem("cafecortero_cart")) || [];
 const lista = safe("listaProductos");
 let total = 0;
@@ -108,7 +145,6 @@ carrito.forEach(item => {
 
   const div = document.createElement("div");
   div.className = "cafe-item";
-
   div.innerHTML = `
     <div class="cafe-info">
       <span class="cafe-nombre">${item.name}</span>
@@ -116,22 +152,19 @@ carrito.forEach(item => {
     </div>
     <span class="cafe-precio">L ${subtotal.toFixed(2)}</span>
   `;
-
   lista.appendChild(div);
 });
 
 safe("totalPedido").textContent = total.toFixed(2);
 
-/* =========================
-   PASO 5: FLECHA VOLVER
-========================= */
-safe("btnVolver")?.addEventListener("click", () => {
-  history.back();
-});
+/* =========================================================
+   VOLVER
+========================================================= */
+safe("btnVolver")?.addEventListener("click", () => history.back());
 
-/* =========================
-   PASO 6: COMPROBANTE DE PAGO
-========================= */
+/* =========================================================
+   COMPROBANTE
+========================================================= */
 let comprobanteSeleccionado = null;
 
 const inputComprobante = safe("inputComprobante");
@@ -148,37 +181,35 @@ inputComprobante?.addEventListener("change", () => {
   if (!file) return;
 
   comprobanteSeleccionado = file;
-
   imgPreview.src = URL.createObjectURL(file);
   previewBox.classList.remove("hidden");
   btnEnviar.disabled = false;
 });
 
-/* =========================
-   PASO 7: ENVIAR PEDIDO (BD REAL)
-========================= */
+/* =========================================================
+   ENVIAR PEDIDO
+========================================================= */
 btnEnviar?.addEventListener("click", async () => {
-
   if (!comprobanteSeleccionado) {
-    alert("⚠️ Debes subir el comprobante de pago antes de enviar el pedido.");
+    alert("Debes subir el comprobante.");
     return;
   }
 
-  safe("loaderEnviar")?.classList.remove("hidden");
   btnEnviar.disabled = true;
+  safe("loaderEnviar")?.classList.remove("hidden");
 
   const cliente = await cargarDatosCliente();
 
   const pedido = {
     numero_pedido: numeroPedido,
-    cliente_nombre: cliente.nombre || "",
-    cliente_correo: cliente.correo || "",
-    cliente_telefono: cliente.telefono || "",
-    cliente_zona: cliente.zona || "",
-    cliente_direccion: cliente.direccion || "",
-    cliente_nota: cliente.nota || "",
+    cliente_nombre: cliente.nombre,
+    cliente_correo: cliente.correo,
+    cliente_telefono: cliente.telefono,
+    cliente_zona: cliente.zona,
+    cliente_direccion: cliente.direccion,
+    cliente_nota: cliente.nota,
     productos: carrito,
-    total: total,
+    total,
     estado: "Pendiente de revisión",
     metodo_pago: "Depósito bancario",
     comprobante_nombre: comprobanteSeleccionado.name,
@@ -190,28 +221,23 @@ btnEnviar?.addEventListener("click", async () => {
     .insert([pedido]);
 
   if (error) {
-    console.error("❌ Error al guardar pedido:", error);
-    alert("Ocurrió un error al enviar el pedido. Intenta nuevamente.");
+    console.error(error);
+    alert("Error al enviar pedido");
     btnEnviar.disabled = false;
-    safe("loaderEnviar")?.classList.add("hidden");
     return;
   }
 
-  /* =========================
-     LIMPIEZA FINAL
-  ========================= */
   localStorage.removeItem("numeroPedidoActivo");
   localStorage.removeItem("cafecortero_cart");
 
-  alert(
-    `✅ Pedido #${numeroPedido} enviado con éxito.\n` +
-    `El comprobante será revisado por un administrador.`
-  );
-
+  alert(`Pedido #${numeroPedido} enviado correctamente`);
   window.location.href = "mis-pedidos.html";
 });
 
-/* =========================
+/* =========================================================
    INIT
-========================= */
-cargarDatosCliente();
+========================================================= */
+(async function init() {
+  await esperarSupabase();
+  cargarDatosCliente();
+})();
