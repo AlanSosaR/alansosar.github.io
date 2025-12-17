@@ -9,7 +9,7 @@ console.log("🔥 SUPABASE CLIENT — Versión FINAL estable 2025");
 // ------------------------------------------------------------
 // 1) SDK de Supabase ya cargado desde index.html
 // ------------------------------------------------------------
-const { createClient } = supabase;
+const { createClient } = window.supabase;
 
 // ------------------------------------------------------------
 // 2) Credenciales REALES del proyecto
@@ -40,23 +40,14 @@ window.supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
 });
 
 // ------------------------------------------------------------
-// 5) Proxy simple: supabase.from(…)
-// ------------------------------------------------------------
-window.supabase = {
-  from(table) {
-    return window.supabaseClient.from(table);
-  }
-};
-
-// ------------------------------------------------------------
-// 6) CARGAR PERFIL GLOBAL DESDE TABLA "users"
+// 5) CARGAR PERFIL GLOBAL DESDE TABLA "users"
 // ------------------------------------------------------------
 async function cargarPerfilGlobal(user) {
   if (!user) return;
 
   console.log("📥 Cargando perfil para ID:", user.id);
 
-  const { data, error } = await window.supabase
+  const { data, error } = await window.supabaseClient
     .from("users")
     .select("*")
     .eq("id", user.id)
@@ -78,7 +69,7 @@ async function cargarPerfilGlobal(user) {
 }
 
 // ------------------------------------------------------------
-// 7) LOGOUT REAL (Auth + limpieza local)
+// 6) LOGOUT REAL (Auth + limpieza local)
 // ------------------------------------------------------------
 async function logoutTotal() {
   await window.supabaseClient.auth.signOut();
@@ -88,16 +79,14 @@ async function logoutTotal() {
 window.corteroLogout = logoutTotal;
 
 // ------------------------------------------------------------
-// 8) EVENTOS DE AUTH (login, logout, confirmación de correo)
+// 7) EVENTOS DE AUTH (login, logout, confirmación de correo)
 // ------------------------------------------------------------
 window.supabaseClient.auth.onAuthStateChange(async (event, session) => {
   console.log("🔄 Evento de Auth:", event);
 
   if (session?.user) {
-    // Usuario autenticado, cargar info desde BD
     cargarPerfilGlobal(session.user);
   } else {
-    // No hay sesión
     localStorage.removeItem("cortero_user");
     localStorage.removeItem("cortero_logged");
     document.dispatchEvent(new CustomEvent("userLoggedOut"));
@@ -105,7 +94,7 @@ window.supabaseClient.auth.onAuthStateChange(async (event, session) => {
 });
 
 // ------------------------------------------------------------
-// 9) RESTAURAR SESIÓN AUTOMÁTICA AL CARGAR LA PÁGINa
+// 8) RESTAURAR SESIÓN AUTOMÁTICA AL CARGAR LA PÁGINA
 // ------------------------------------------------------------
 document.addEventListener("DOMContentLoaded", async () => {
   const { data } = await window.supabaseClient.auth.getSession();
@@ -119,7 +108,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 // ------------------------------------------------------------
-// 10) CONECTAR SESIÓN CON HEADER (PC)
+// 9) CONECTAR SESIÓN CON HEADER (PC)
 // ------------------------------------------------------------
 
 // Usuario logueado
