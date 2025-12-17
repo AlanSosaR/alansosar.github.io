@@ -3,8 +3,6 @@
 // VALIDACIÓN + SESIÓN + PERFIL EN LOCALSTORAGE
 // ========================================================
 
-const sb = window.supabaseClient;
-
 /* ========================= DOM ========================= */
 
 const loginForm = document.getElementById("loginForm");
@@ -128,9 +126,9 @@ loginForm.addEventListener("submit", async (e) => {
   try {
     let emailFinal = userValue;
 
-    /* --- Teléfono → buscar email real --- */
+    /* Teléfono → buscar email */
     if (tipo === "telefono") {
-      const { data } = await sb
+      const { data } = await window.supabaseClient
         .from("users")
         .select("email")
         .eq("phone", userValue)
@@ -144,32 +142,16 @@ loginForm.addEventListener("submit", async (e) => {
       emailFinal = data.email;
     }
 
-    /* --- LOGIN REAL SUPABASE --- */
-    const { data, error } = await sb.auth.signInWithPassword({
-      email: emailFinal,
-      password: passValue
-    });
+    /* LOGIN REAL */
+    const { error } =
+      await window.supabaseClient.auth.signInWithPassword({
+        email: emailFinal,
+        password: passValue
+      });
 
     if (error) {
       desactivarLoading();
       return marcarError(passInput,"Credenciales incorrectas");
-    }
-
-    /* --- Guardar sesión real --- */
-    if (data?.session) {
-      localStorage.setItem("cortero-session", JSON.stringify(data.session));
-    }
-
-    /* --- Cargar perfil --- */
-    const { data: perfil } = await sb
-      .from("users")
-      .select("id, name, email, phone, photo_url")
-      .eq("email", emailFinal)
-      .single();
-
-    if (perfil) {
-      localStorage.setItem("cortero_user", JSON.stringify(perfil));
-      localStorage.setItem("cortero_logged", "1");
     }
 
     mostrarSnackbar("Inicio de sesión exitoso ☕");
