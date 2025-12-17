@@ -3,9 +3,9 @@
 ===================================================== */
 :root {
   --marron: #4b2c19;
+  --marron-suave: rgba(75, 44, 25, 0.7);
   --verde: #046d46;
   --verde-claro: #9be2b0;
-  --fondo: #f9f6f2;
   --blanco: #ffffff;
   --gris-texto: #777;
 }
@@ -16,7 +16,7 @@
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Poppins",
                "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
-  background: var(--fondo);
+  background: var(--blanco); /* 🔑 fondo blanco */
   color: var(--marron);
   margin: 0;
   padding: 0;
@@ -43,34 +43,52 @@ body {
 .recibo-container {
   display: flex;
   justify-content: center;
-  padding: 7.5rem 16px 32px;
+  padding: 6rem 16px 32px; /* 🔑 más cerca del header */
 }
 
 /* =====================================================
-   TARJETA
+   TARJETA BASE (SIN BORDE)
 ===================================================== */
 .recibo-card {
-  background: var(--blanco);
-  border-radius: 22px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-  padding: 26px 22px;
   max-width: 620px;
   width: 100%;
   position: relative;
 }
 
-/* Flecha volver */
+/* =====================================================
+   TARJETA INTERNA GRANDE (COMO DETALLES DE ENTREGA)
+===================================================== */
+.inner-card-full {
+  width: 100%;
+  background: var(--blanco);
+  border-radius: 26px;
+  border: 2px solid rgba(75, 44, 25, 0.35); /* 🔑 borde café */
+  padding: 28px 22px;
+  position: relative;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* =====================================================
+   FLECHA VOLVER
+===================================================== */
 .card-back {
   position: absolute;
-  top: 16px;
-  left: 16px;
+  top: 18px;
+  left: 18px;
 }
+
 .card-back button {
-  background: none;
+  background: #f4f1ee;
   border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
   font-size: 1.2rem;
   color: var(--marron);
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* =====================================================
@@ -84,47 +102,58 @@ body {
 }
 
 .fecha {
-  color: var(--gris-texto);
+  color: var(--marron-suave); /* 🔑 café suave */
   font-size: 0.9rem;
   text-align: center;
-  margin-bottom: 10px;
+  margin-bottom: 16px;
 }
 
 h3 {
-  color: var(--verde);
-  border-left: 4px solid var(--verde);
+  color: var(--verde); /* 🔑 verde */
+  border-left: 4px solid var(--marron); /* 🔑 barra café */
   padding-left: 10px;
-  margin-top: 22px;
+  margin-top: 26px;
   font-size: 1.05rem;
 }
 
 /* =====================================================
    DATOS CLIENTE
 ===================================================== */
+.cliente-info {
+  margin-top: 8px;
+}
+
 .cliente-info p {
   margin: 6px 0;
-  color: #333;
   font-size: 0.95rem;
 }
 
+.cliente-info strong {
+  color: var(--marron); /* 🔑 label fuerte */
+}
+
+.cliente-info span {
+  color: var(--marron-suave); /* 🔑 valor suave */
+}
+
 /* =====================================================
-   SELECCIÓN DE CAFÉS (BARRAS)
+   SELECCIÓN DE CAFÉS (TARJETAS BLANCAS)
 ===================================================== */
 .cafes-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-top: 10px;
+  gap: 12px;
+  margin-top: 14px;
 }
 
 .cafe-item {
-  background: var(--marron);
-  color: #fff;
-  border-radius: 14px;
+  background: var(--blanco);
+  border-radius: 16px;
   padding: 14px 16px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.08);
 }
 
 .cafe-info {
@@ -135,15 +164,16 @@ h3 {
 .cafe-nombre {
   font-weight: 600;
   font-size: 0.95rem;
+  color: var(--marron); /* 🔑 café */
 }
 
 .cafe-cantidad {
   font-size: 0.8rem;
-  opacity: 0.85;
+  color: var(--marron-suave);
 }
 
 .cafe-precio {
-  color: var(--verde-claro);
+  color: var(--verde); /* 🔑 verde */
   font-weight: 600;
   font-size: 0.95rem;
 }
@@ -156,7 +186,7 @@ h3 {
   color: var(--marron);
   font-size: 1.15rem;
   text-align: right;
-  margin-top: 12px;
+  margin-top: 16px;
 }
 
 /* =====================================================
@@ -164,16 +194,16 @@ h3 {
 ===================================================== */
 .pagos p {
   margin: 8px 0;
-  color: #333;
   font-size: 0.95rem;
   line-height: 1.5;
+  color: var(--marron-suave);
 }
 
 /* =====================================================
    COMPROBANTE
 ===================================================== */
 .comprobante-box {
-  margin-top: 12px;
+  margin-top: 14px;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -183,11 +213,13 @@ h3 {
   margin-top: 8px;
   text-align: center;
 }
+
 .preview img {
   max-width: 100%;
-  border-radius: 14px;
+  border-radius: 16px;
   box-shadow: 0 6px 16px rgba(0,0,0,.15);
 }
+
 .preview p {
   margin-top: 6px;
   font-size: 0.85rem;
@@ -248,10 +280,10 @@ h3 {
 ===================================================== */
 @media (max-width: 600px) {
   .recibo-container {
-    padding: 7rem 14px 28px;
+    padding: 5.8rem 14px 28px;
   }
 
-  .recibo-card {
+  .inner-card-full {
     padding: 24px 18px;
   }
 
