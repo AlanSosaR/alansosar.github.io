@@ -145,11 +145,7 @@ header {
 }
 /* ================= HEADER INVITADO — NAV + LOGIN A LA DERECHA ================= */
 
-/* Empuja el nav hacia el bloque de acciones */
-.header-fixed.no-user .nav-links.desktop-only {
-  margin-left: auto;
-  margin-right: 16px; /* separación controlada del login */
-}
+
 
 /* Asegura alineación horizontal perfecta */
 .header-fixed.no-user .header-actions {
