@@ -6,14 +6,13 @@
 
   <title>Detalles del pedido | Café Cortero</title>
 
-  <!-- Tipografía Apple-like -->
+  <!-- Tipografía -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
 
   <!-- Iconos -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <!-- CSS -->
-
   <link rel="stylesheet" href="css/header.css">
   <link rel="stylesheet" href="css/recibo.css">
 </head>
@@ -32,96 +31,89 @@
 
     <section class="recibo-card">
 
-      <!-- Flecha volver (reemplaza “Editar”) -->
-      <div class="card-back">
-        <button id="btnVolver" aria-label="Volver">
-          <i class="fa-solid fa-arrow-left"></i>
-        </button>
-      </div>
+      <!-- 🔑 TARJETA INTERNA GRANDE -->
+      <div class="inner-card-full">
 
-      <!-- Encabezado del pedido -->
-      <h2>Pedido N.º <span id="numeroPedido"></span></h2>
-      <p class="fecha">
-        <strong>Fecha:</strong> <span id="fechaPedido"></span>
-      </p>
-
-      <!-- =========================
-           DATOS DEL CLIENTE (SOLO LECTURA)
-      ========================= -->
-      <h3>Datos del cliente</h3>
-      <div class="cliente-info">
-        <p><strong>Nombre:</strong> <span id="nombreCliente"></span></p>
-        <p><strong>Correo:</strong> <span id="correoCliente"></span></p>
-        <p><strong>Teléfono:</strong> <span id="telefonoCliente"></span></p>
-        <p><strong>Zona:</strong> <span id="zonaCliente"></span></p>
-        <p><strong>Dirección:</strong> <span id="direccionCliente"></span></p>
-        <p><strong>Nota:</strong> <span id="notaCliente"></span></p>
-      </div>
-
-      <!-- =========================
-           SELECCIÓN DE CAFÉS
-      ========================= -->
-      <h3>Selección de cafés</h3>
-      <div id="listaProductos" class="cafes-list">
-        <!-- JS inyecta barras color café -->
-      </div>
-
-      <!-- Total -->
-      <p class="recibo-total">
-        <strong>💰 Total:</strong> L <span id="totalPedido"></span>
-      </p>
-
-      <!-- =========================
-           MÉTODO DE PAGO
-      ========================= -->
-      <h3>Método de pago</h3>
-      <div class="pagos">
-        <p>
-          💵 <strong>Depósito bancario:</strong><br>
-          Banco Atlántida — Cuenta <strong>123456789</strong><br>
-          A nombre de <strong>Café Cortero</strong>
-        </p>
-      </div>
-
-      <!-- =========================
-           COMPROBANTE DE PAGO (OBLIGATORIO)
-      ========================= -->
-      <h3>Comprobante de pago</h3>
-
-      <div class="comprobante-box">
-
-        <input
-          type="file"
-          id="inputComprobante"
-          accept="image/*"
-          hidden
-        />
-
-        <button id="btnSubirComprobante" class="btn-secondary">
-          <i class="fa-solid fa-upload"></i>
-          Subir comprobante
-        </button>
-
-        <!-- Vista previa -->
-        <div id="previewComprobante" class="preview hidden">
-          <img id="imgComprobante" alt="Comprobante de pago">
-          <p>✔ Este es el comprobante que se enviará</p>
+        <!-- Flecha volver -->
+        <div class="card-back">
+          <button id="btnVolver" aria-label="Volver">
+            <i class="fa-solid fa-arrow-left"></i>
+          </button>
         </div>
 
-      </div>
+        <!-- Encabezado del pedido -->
+        <h2>Pedido N.º <span id="numeroPedido"></span></h2>
+        <p class="fecha">
+          <strong>Fecha:</strong> <span id="fechaPedido"></span>
+        </p>
 
-      <!-- =========================
-           ENVIAR PEDIDO
-      ========================= -->
-      <div class="recibo-botones">
+        <!-- =========================
+             DATOS DEL CLIENTE
+        ========================= -->
+        <h3>Datos del cliente</h3>
+        <div class="cliente-info">
+          <p><strong>Nombre:</strong> <span id="nombreCliente"></span></p>
+          <p><strong>Correo:</strong> <span id="correoCliente"></span></p>
+          <p><strong>Teléfono:</strong> <span id="telefonoCliente"></span></p>
+          <p><strong>Zona:</strong> <span id="zonaCliente"></span></p>
+          <p><strong>Dirección:</strong> <span id="direccionCliente"></span></p>
+          <p><strong>Nota:</strong> <span id="notaCliente"></span></p>
+        </div>
 
-        <button id="btnEnviar" class="btn-primary" disabled>
-          <i class="fa-solid fa-circle-notch fa-spin hidden" id="loaderEnviar"></i>
-          <i class="fa-solid fa-paper-plane"></i>
-          Enviar pedido
-        </button>
+        <!-- =========================
+             SELECCIÓN DE CAFÉS
+        ========================= -->
+        <h3>Selección de cafés</h3>
+        <div id="listaProductos" class="cafes-list"></div>
 
-      </div>
+        <!-- Total -->
+        <p class="recibo-total">
+          <strong>💰 Total:</strong> L <span id="totalPedido"></span>
+        </p>
+
+        <!-- =========================
+             MÉTODO DE PAGO
+        ========================= -->
+        <h3>Método de pago</h3>
+        <div class="pagos">
+          <p>
+            💵 <strong>Depósito bancario:</strong><br>
+            Banco Atlántida — Cuenta <strong>123456789</strong><br>
+            A nombre de <strong>Café Cortero</strong>
+          </p>
+        </div>
+
+        <!-- =========================
+             COMPROBANTE
+        ========================= -->
+        <h3>Comprobante de pago</h3>
+
+        <div class="comprobante-box">
+          <input type="file" id="inputComprobante" accept="image/*" hidden>
+
+          <button id="btnSubirComprobante" class="btn-secondary">
+            <i class="fa-solid fa-upload"></i>
+            Subir comprobante
+          </button>
+
+          <div id="previewComprobante" class="preview hidden">
+            <img id="imgComprobante" alt="Comprobante de pago">
+            <p>✔ Este es el comprobante que se enviará</p>
+          </div>
+        </div>
+
+        <!-- =========================
+             ENVIAR PEDIDO
+        ========================= -->
+        <div class="recibo-botones">
+          <button id="btnEnviar" class="btn-primary" disabled>
+            <i class="fa-solid fa-circle-notch fa-spin hidden" id="loaderEnviar"></i>
+            <i class="fa-solid fa-paper-plane"></i>
+            Enviar pedido
+          </button>
+        </div>
+
+      </div><!-- 🔑 FIN INNER CARD -->
 
     </section>
 
@@ -130,25 +122,18 @@
   <!-- =========================
        SCRIPTS
   ========================= -->
-<!-- =========================
-     SUPABASE (BD GLOBAL)
-========================= -->
-<!-- Modo de la página -->
-<script>
-  window.PAGE_MODE = "recibo";
-</script>
+  <script>
+    window.PAGE_MODE = "recibo";
+  </script>
 
-<!-- Supabase -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/supabase-client-core.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client-core.js"></script>
 
-<!-- Header global -->
-<script src="js/layout.js"></script>
-<script src="js/header.js"></script>
-<script src="js/auth-ui.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/header.js"></script>
+  <script src="js/auth-ui.js"></script>
 
-<!-- Lógica de la página -->
-<script src="js/recibo.js"></script>
+  <script src="js/recibo.js"></script>
 
 </body>
 </html>
