@@ -133,30 +133,21 @@
 <!-- =========================
      SUPABASE (BD GLOBAL)
 ========================= -->
+<!-- Modo de la página -->
+<script>
+  window.PAGE_MODE = "recibo";
+</script>
+
+<!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase-client-core.js"></script>
 
-<!-- =========================
-     HEADER GLOBAL
-     (inyecta header.html)
-========================= -->
+<!-- Header global -->
 <script src="js/layout.js"></script>
-
-<!-- =========================
-     LÓGICA DEL HEADER
-     (drawer, avatar, hamburguesa)
-========================= -->
 <script src="js/header.js"></script>
-
-<!-- =========================
-     UI SEGÚN SESIÓN
-     (logueado / invitado)
-========================= -->
 <script src="js/auth-ui.js"></script>
 
-<!-- =========================
-     RECIBO / DETALLES DEL PEDIDO
-========================= -->
+<!-- Lógica de la página -->
 <script src="js/recibo.js"></script>
 
 </body>
