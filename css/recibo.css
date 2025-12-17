@@ -1,35 +1,47 @@
+/* ============================================================
+   RECIBO / DETALLES DEL PEDIDO — DISEÑO FINAL UNIFICADO 2025
+   MISMO LENGUAJE VISUAL QUE:
+   PERFIL · REGISTRO · DETALLES DE ENTREGA
+============================================================ */
+
 /* =====================================================
    ROOT — VARIABLES GLOBALES
 ===================================================== */
 :root {
   --marron: #4b2c19;
   --marron-suave: rgba(75, 44, 25, 0.7);
+
   --verde: #046d46;
   --verde-claro: #9be2b0;
+
   --blanco: #ffffff;
   --gris-texto: #777;
+
+  --border-cafe: rgba(75, 44, 25, 0.35);
+  --sombra: 0 8px 20px rgba(0, 0, 0, 0.08);
 }
 
 /* =====================================================
    BASE
 ===================================================== */
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Poppins",
-               "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
-  background: var(--blanco); /* 🔑 fondo blanco */
-  color: var(--marron);
   margin: 0;
   padding: 0;
+  background: var(--blanco); /* fondo blanco limpio */
+  font-family: -apple-system, BlinkMacSystemFont, "Poppins",
+               "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+  color: var(--marron);
 }
 
 /* =====================================================
-   ANIMACIÓN
+   ANIMACIÓN SUAVE
 ===================================================== */
 .fade-in {
   opacity: 0;
   transform: translateY(10px);
   animation: fadeIn 0.6s ease forwards;
 }
+
 @keyframes fadeIn {
   to {
     opacity: 1;
@@ -38,16 +50,17 @@ body {
 }
 
 /* =====================================================
-   CONTENEDOR (HEADER GLOBAL YA FIJO)
+   CONTENEDOR PRINCIPAL
+   (HEADER GLOBAL YA FIJO)
 ===================================================== */
 .recibo-container {
   display: flex;
   justify-content: center;
-  padding: 6rem 16px 32px; /* 🔑 más cerca del header */
+  padding: 6rem 16px 32px; /* más cerca del header */
 }
 
 /* =====================================================
-   TARJETA BASE (SIN BORDE)
+   WRAPPER DEL RECIBO (SIN FONDO NI BORDE)
 ===================================================== */
 .recibo-card {
   max-width: 620px;
@@ -56,20 +69,21 @@ body {
 }
 
 /* =====================================================
-   TARJETA INTERNA GRANDE (COMO DETALLES DE ENTREGA)
+   TARJETA PRINCIPAL INTERIOR
+   (MISMA QUE DETALLES DE ENTREGA)
 ===================================================== */
 .inner-card-full {
   width: 100%;
   background: var(--blanco);
   border-radius: 26px;
-  border: 2px solid rgba(75, 44, 25, 0.35); /* 🔑 borde café */
+  border: 2px solid var(--border-cafe);
   padding: 28px 22px;
+  box-shadow: var(--sombra);
   position: relative;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
 }
 
 /* =====================================================
-   FLECHA VOLVER
+   BOTÓN VOLVER — MISMO ESTILO GLOBAL
 ===================================================== */
 .card-back {
   position: absolute;
@@ -78,46 +92,48 @@ body {
 }
 
 .card-back button {
-  background: #f4f1ee;
-  border: none;
-  border-radius: 50%;
   width: 40px;
   height: 40px;
-  font-size: 1.2rem;
-  color: var(--marron);
+  border-radius: 50%;
+  background: #f4f1ee;
+  border: none;
   cursor: pointer;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
+  color: var(--marron);
+  font-size: 1.1rem;
 }
 
 /* =====================================================
-   TITULOS
+   TÍTULOS
 ===================================================== */
 .recibo-card h2 {
-  color: var(--marron);
+  text-align: center;
   font-size: 1.35rem;
   margin-bottom: 4px;
-  text-align: center;
+  color: var(--marron);
 }
 
 .fecha {
-  color: var(--marron-suave); /* 🔑 café suave */
-  font-size: 0.9rem;
   text-align: center;
+  font-size: 0.9rem;
+  color: var(--marron-suave);
   margin-bottom: 16px;
 }
 
 h3 {
-  color: var(--verde); /* 🔑 verde */
-  border-left: 4px solid var(--marron); /* 🔑 barra café */
-  padding-left: 10px;
   margin-top: 26px;
   font-size: 1.05rem;
+  color: var(--verde);
+  padding-left: 10px;
+  border-left: 4px solid var(--marron);
 }
 
 /* =====================================================
-   DATOS CLIENTE
+   DATOS DEL CLIENTE
 ===================================================== */
 .cliente-info {
   margin-top: 8px;
@@ -129,15 +145,16 @@ h3 {
 }
 
 .cliente-info strong {
-  color: var(--marron); /* 🔑 label fuerte */
+  color: var(--marron);
 }
 
 .cliente-info span {
-  color: var(--marron-suave); /* 🔑 valor suave */
+  color: var(--marron-suave);
 }
 
 /* =====================================================
-   SELECCIÓN DE CAFÉS (TARJETAS BLANCAS)
+   SELECCIÓN DE CAFÉS
+   (TARJETAS BLANCAS ELEVADAS)
 ===================================================== */
 .cafes-list {
   display: flex;
@@ -150,9 +167,11 @@ h3 {
   background: var(--blanco);
   border-radius: 16px;
   padding: 14px 16px;
+
   display: flex;
   justify-content: space-between;
   align-items: center;
+
   box-shadow: 0 6px 14px rgba(0,0,0,0.08);
 }
 
@@ -164,7 +183,7 @@ h3 {
 .cafe-nombre {
   font-weight: 600;
   font-size: 0.95rem;
-  color: var(--marron); /* 🔑 café */
+  color: var(--marron);
 }
 
 .cafe-cantidad {
@@ -173,20 +192,20 @@ h3 {
 }
 
 .cafe-precio {
-  color: var(--verde); /* 🔑 verde */
-  font-weight: 600;
   font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--verde);
 }
 
 /* =====================================================
    TOTAL
 ===================================================== */
 .recibo-total {
+  margin-top: 16px;
+  text-align: right;
+  font-size: 1.15rem;
   font-weight: 600;
   color: var(--marron);
-  font-size: 1.15rem;
-  text-align: right;
-  margin-top: 16px;
 }
 
 /* =====================================================
@@ -210,7 +229,6 @@ h3 {
 }
 
 .preview {
-  margin-top: 8px;
   text-align: center;
 }
 
@@ -234,45 +252,41 @@ h3 {
    BOTONES
 ===================================================== */
 .recibo-botones {
-  display: flex;
   margin-top: 26px;
 }
 
 .btn-primary,
 .btn-secondary {
-  border: none;
+  width: 100%;
   border-radius: 14px;
   padding: 12px 18px;
   font-size: 0.95rem;
-  cursor: pointer;
   font-weight: 500;
-  transition: 0.2s ease;
+  border: none;
+  cursor: pointer;
+
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  width: 100%;
 }
 
 .btn-primary {
-  background-color: var(--verde);
+  background: var(--verde);
   color: #fff;
 }
+
 .btn-primary:hover {
-  background-color: #035c3b;
+  background: #035c3b;
 }
 
 .btn-secondary {
-  background-color: var(--marron);
+  background: var(--marron);
   color: #fff;
 }
-.btn-secondary:hover {
-  background-color: #3a2113;
-}
 
-/* Loader icon */
-#loaderEnviar {
-  font-size: 1rem;
+.btn-secondary:hover {
+  background: #3a2113;
 }
 
 /* =====================================================
