@@ -3,7 +3,7 @@
 // VALIDACIÓN + SESIÓN + PERFIL EN LOCALSTORAGE
 // ========================================================
 
-const supabase = window.supabaseClient;
+const sb = window.supabaseClient;
 
 const loginForm = document.getElementById("loginForm");
 const userInput = document.getElementById("userInput");
