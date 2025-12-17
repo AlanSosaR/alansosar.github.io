@@ -1,35 +1,45 @@
-// =====================================================
-// HEADER.JS — Café Cortero (GLOBAL)
-// Controla SOLO el header y el drawer
-// =====================================================
+/* ============================================================
+   HEADER + MENÚ — Café Cortero 2025
+   ✔ Drawer móvil / desktop
+   ✔ Avatar
+   ✔ Hamburguesa
+   ✔ Logout REAL con Supabase
+============================================================ */
 
-console.log("🧭 header.js cargado");
-
-/* =========================
-   HELPER
-========================= */
+/* ========================= SAFE ========================= */
 function safe(id) {
   return document.getElementById(id);
 }
 
-/* =========================
-   INIT HEADER
-========================= */
-function initHeader() {
+/* ========================= SUPABASE SAFE ========================= */
+function getSupabaseClient() {
+  return window.supabaseClient || window.supabase || null;
+}
+
+/* ============================================================
+   INIT HEADER + MENÚ
+============================================================ */
+
+document.addEventListener("DOMContentLoaded", () => {
+
   const drawer     = safe("user-drawer");
   const scrim      = safe("user-scrim");
   const menuToggle = safe("menu-toggle");
   const logoutBtn  = safe("logout-btn");
+  const sb         = getSupabaseClient();
 
-  if (!drawer || !scrim) return;
-
+  /* =========================
+     ABRIR / CERRAR DRAWER
+  ========================= */
   function openDrawer() {
+    if (!drawer || !scrim) return;
     drawer.classList.add("open");
     scrim.classList.add("open");
     document.body.style.overflow = "hidden";
   }
 
   function closeDrawer() {
+    if (!drawer || !scrim) return;
     drawer.classList.remove("open");
     scrim.classList.remove("open");
     document.body.style.overflow = "";
@@ -40,7 +50,9 @@ function initHeader() {
   ========================= */
   menuToggle?.addEventListener("click", (e) => {
     e.preventDefault();
-    drawer.classList.contains("open") ? closeDrawer() : openDrawer();
+    drawer?.classList.contains("open")
+      ? closeDrawer()
+      : openDrawer();
   });
 
   /* =========================
@@ -58,15 +70,7 @@ function initHeader() {
   /* =========================
      SCRIM
   ========================= */
-  scrim.addEventListener("click", closeDrawer);
-
-  /* =========================
-     LOGOUT (CIERRA DRAWER)
-     auth-ui.js maneja la sesión
-  ========================= */
-  logoutBtn?.addEventListener("click", () => {
-    closeDrawer();
-  });
+  scrim?.addEventListener("click", closeDrawer);
 
   /* =========================
      ESC PARA CERRAR
@@ -74,21 +78,29 @@ function initHeader() {
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") closeDrawer();
   });
-}
 
-/* =========================
-   ESPERAR HEADER INYECTADO
-========================= */
-document.addEventListener("DOMContentLoaded", () => {
-  const observer = new MutationObserver(() => {
-    if (safe("user-drawer")) {
-      initHeader();
-      observer.disconnect();
+  /* =========================
+     LOGOUT REAL (SUPABASE)
+  ========================= */
+  async function logoutAndRedirect() {
+    try {
+      if (sb) {
+        await sb.auth.signOut(); // ✅ LOGOUT REAL
+      }
+    } catch (err) {
+      console.error("❌ Error al cerrar sesión:", err);
     }
-  });
 
-  observer.observe(document.body, {
-    childList: true,
-    subtree: true
-  });
+    // Limpieza local
+    localStorage.removeItem("cortero_user");
+
+    // UI
+    closeDrawer();
+
+    // Redirección
+    window.location.href = "index.html";
+  }
+
+  logoutBtn?.addEventListener("click", logoutAndRedirect);
+
 });
