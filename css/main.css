@@ -50,12 +50,7 @@ header {
 @media (min-width: 901px) {
 
   /* NAV DESKTOP */
- .nav-links.desktop-only {
-  margin-left: auto;   /* 🔥 AQUÍ */
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
+ 
   .nav-links.desktop-only a {
     text-decoration: none;
     color: var(--marron);
