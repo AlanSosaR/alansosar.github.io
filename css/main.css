@@ -38,8 +38,8 @@ header {
   padding: 0 1.2rem;
 
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  align-items: center;      /* ✅ */
+  justify-content: flex-start; /* ✅ o simplemente elimínalo */
 
   border-bottom: 1.5px solid rgba(0,0,0,0.05);
 }
@@ -50,13 +50,12 @@ header {
 @media (min-width: 901px) {
 
   /* NAV DESKTOP */
-  .nav-links.desktop-only {
-    margin-left: auto; /* 🔑 ESTA ES LA CLAVE */
-    display: flex;
-    align-items: center;
-    gap: 20px;
-  }
-
+ .nav-links.desktop-only {
+  margin-left: auto;   /* 🔥 AQUÍ */
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
   .nav-links.desktop-only a {
     text-decoration: none;
     color: var(--marron);
@@ -66,11 +65,11 @@ header {
 
   /* ACCIONES DERECHA */
   .header-actions {
-    display: flex;
-    align-items: center;
-    gap: 24px;
-  }
-
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-left: 16px; /* solo separación visual */
+}
   .login-link {
     white-space: nowrap;
   }
