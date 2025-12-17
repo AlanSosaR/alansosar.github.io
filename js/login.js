@@ -1,11 +1,9 @@
 // ========================================================
-// LOGIN – Café Cortero ☕ (VERSIÓN FINAL ESTABLE)
-// VALIDACIÓN + LOGIN REAL SUPABASE
+// LOGIN – Café Cortero ☕ (VERSIÓN FINAL LOCALSTORAGE)
+// VALIDACIÓN + SESIÓN + PERFIL EN LOCALSTORAGE
 // ========================================================
 
 const supabase = window.supabaseClient;
-
-/* ========================= DOM ========================= */
 
 const loginForm = document.getElementById("loginForm");
 const userInput = document.getElementById("userInput");
@@ -14,12 +12,15 @@ const loginBtn = document.querySelector(".m3-btn");
 const btnText = loginBtn.querySelector(".btn-text");
 const btnLoader = loginBtn.querySelector(".loader");
 
-/* ========================= DOMINIOS ========================= */
+// ========================================================
+// DOMINIOS + AUTOCORRECCIONES
+// ========================================================
 
 const dominiosValidos = [
-  "gmail.com","hotmail.com","outlook.com","yahoo.com","icloud.com",
-  "proton.me","live.com","msn.com","unah.hn","unah.edu","gmail.es",
-  "correo.hn","googlemail.com","outlook.es","hotmail.es"
+  "gmail.com", "hotmail.com", "outlook.com", "yahoo.com", "icloud.com",
+  "proton.me", "live.com", "msn.com",
+  "unah.hn", "unah.edu", "gmail.es", "correo.hn",
+  "googlemail.com", "outlook.es", "hotmail.es"
 ];
 
 const autocorrecciones = {
@@ -31,7 +32,9 @@ const autocorrecciones = {
   "outllok.com": "outlook.com"
 };
 
-/* ========================= VALIDACIONES ========================= */
+// ========================================================
+// VALIDACIONES
+// ========================================================
 
 function tipoDeEntrada(valor) {
   return /^[0-9]+$/.test(valor) ? "telefono" : "correo";
@@ -40,65 +43,86 @@ function tipoDeEntrada(valor) {
 function validarCorreo(valor) {
   if (!valor.includes("@")) return false;
 
-  const [user, dominioRaw] = valor.split("@");
-  const dominio = dominioRaw?.toLowerCase();
+  const partes = valor.split("@");
+  const dominio = partes[1]?.toLowerCase();
   if (!dominio) return false;
 
   if (autocorrecciones[dominio]) {
-    userInput.value = `${user}@${autocorrecciones[dominio]}`;
+    userInput.value = partes[0] + "@" + autocorrecciones[dominio];
     return true;
   }
 
-  return dominio.includes(".") && dominiosValidos.some(d => dominio.endsWith(d));
+  if (!dominio.includes(".")) return false;
+  return dominiosValidos.some(d => dominio.endsWith(d));
 }
 
 function validarTelefono(valor) {
   const limpio = valor.replace(/[\s-+]/g, "");
-  return /^[0-9]{7,15}$/.test(limpio);
+  if (!/^[0-9]+$/.test(limpio)) return false;
+  return limpio.length >= 7 && limpio.length <= 15;
 }
 
 function validarPassword(valor) {
-  return (
-    valor.length >= 6 &&
-    !valor.includes(" ") &&
-    !["123456","000000","password"].includes(valor.toLowerCase())
-  );
+  if (valor.length < 6) return false;
+  if (valor.includes(" ")) return false;
+  if (["123456", "000000", "password"].includes(valor.toLowerCase())) return false;
+  return true;
 }
 
-/* ========================= ERRORES UI ========================= */
+// ========================================================
+// LIMPIAR ERRORES
+// ========================================================
 
-function limpiarErroresInput(e) {
-  const input = e.target;
+function limpiarErroresInput(event) {
+  const input = event.target;
   const field = input.closest(".m3-field");
   const box = field.querySelector(".m3-input");
   const msg = field.querySelector(".field-msg");
 
-  box.classList.remove("error","success");
+  box.classList.remove("error");
   msg.textContent = "";
   msg.style.opacity = "0";
+  msg.style.height = "0px";
+  msg.style.marginTop = "0px";
 
-  if (input.value.trim()) {
+  if (input.value.trim() !== "") {
     box.classList.add("success");
     input.classList.add("has-text");
+    input.placeholder = "";
   } else {
+    box.classList.remove("success");
     input.classList.remove("has-text");
+    input.placeholder = " ";
   }
 }
 
 userInput.addEventListener("input", limpiarErroresInput);
 passInput.addEventListener("input", limpiarErroresInput);
 
-function marcarError(input, texto) {
+// ========================================================
+// MARCAR ERROR
+// ========================================================
+
+function marcarError(input, placeholderText) {
   const field = input.closest(".m3-field");
   const box = field.querySelector(".m3-input");
   const msg = field.querySelector(".field-msg");
 
   box.classList.add("error");
-  msg.textContent = texto;
+  box.classList.remove("success");
+
+  input.classList.add("has-text");
+  input.placeholder = placeholderText;
+
+  msg.textContent = placeholderText;
   msg.style.opacity = "1";
+  msg.style.height = "18px";
+  msg.style.marginTop = "4px";
 }
 
-/* ========================= LOGIN ========================= */
+// ========================================================
+// SUBMIT LOGIN (LOCALSTORAGE VERSION)
+// ========================================================
 
 loginForm.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -106,74 +130,97 @@ loginForm.addEventListener("submit", async (e) => {
   const userValue = userInput.value.trim();
   const passValue = passInput.value.trim();
 
-  if (!userValue) return marcarError(userInput,"Ingresa tu correo o teléfono");
+  if (!userValue) return marcarError(userInput, "Ingresa tu correo o teléfono");
 
   const tipo = tipoDeEntrada(userValue);
 
   if (tipo === "correo" && !validarCorreo(userValue))
-    return marcarError(userInput,"Correo no válido");
+    return marcarError(userInput, "Correo no válido");
 
   if (tipo === "telefono" && !validarTelefono(userValue))
-    return marcarError(userInput,"Teléfono inválido");
+    return marcarError(userInput, "Teléfono inválido");
 
+  if (!passValue) return marcarError(passInput, "Ingresa tu contraseña");
   if (!validarPassword(passValue))
-    return marcarError(passInput,"Contraseña no válida");
+    return marcarError(passInput, "Contraseña no válida");
 
-  activarLoading();
+  loginBtn.classList.add("loading");
+  btnText.style.opacity = "0";
+  btnLoader.style.display = "inline-block";
+
+  let emailToUse = userValue;
 
   try {
-    let emailFinal = userValue;
-
-    // Si es teléfono → buscar email real
+    // Si el usuario escribe un teléfono, obtener el email real
     if (tipo === "telefono") {
-      const { data } = await supabase
+      const { data: rows } = await supabase
         .from("users")
         .select("email")
         .eq("phone", userValue)
-        .single();
+        .limit(1);
 
-      if (!data) {
+      if (!rows || rows.length === 0) {
         desactivarLoading();
-        return marcarError(userInput,"Teléfono no registrado");
+        return marcarError(userInput, "Teléfono no registrado");
       }
 
-      emailFinal = data.email;
+      emailToUse = rows[0].email;
     }
 
     // LOGIN REAL
-    const { error } = await supabase.auth.signInWithPassword({
-      email: emailFinal,
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: emailToUse,
       password: passValue
     });
 
     if (error) {
       desactivarLoading();
-      return marcarError(passInput,"Credenciales incorrectas");
+      return marcarError(passInput, "Credenciales incorrectas");
     }
+
+    // ⚡ GUARDAR SESIÓN REAL PARA PERFIL.JS
+    if (data?.session) {
+      localStorage.setItem("cortero-session", JSON.stringify(data.session));
+    }
+
+    // GUARDAR PERFIL EN LOCALSTORAGE
+    try {
+      const { data: perfiles } = await supabase
+        .from("users")
+        .select("id, name, email, phone, photo_url")
+        .eq("email", emailToUse)
+        .limit(1);
+
+      if (perfiles && perfiles.length > 0) {
+        localStorage.setItem("cortero_user", JSON.stringify(perfiles[0]));
+      }
+    } catch (err) {
+      console.warn("No se pudo guardar el perfil:", err);
+    }
+
+    localStorage.setItem("cortero_logged", "1");
 
     mostrarSnackbar("Inicio de sesión exitoso ☕");
 
     setTimeout(() => {
-      const from = new URLSearchParams(location.search).get("from");
-      location.href = from === "carrito"
-        ? "detalles-cliente.html"
-        : "index.html";
-    }, 1200);
+      const params = new URLSearchParams(window.location.search);
+      const from = params.get("from");
+
+      window.location.href =
+        from === "carrito" ? "detalles-cliente.html" : "index.html";
+
+    }, 1300);
 
   } catch (err) {
     console.error(err);
     desactivarLoading();
-    marcarError(userInput,"Error al iniciar sesión");
+    marcarError(userInput, "Error al iniciar sesión");
   }
 });
 
-/* ========================= UI ========================= */
-
-function activarLoading() {
-  loginBtn.classList.add("loading");
-  btnText.style.opacity = "0";
-  btnLoader.style.display = "inline-block";
-}
+// ========================================================
+// DESACTIVAR LOADING
+// ========================================================
 
 function desactivarLoading() {
   loginBtn.classList.remove("loading");
@@ -181,21 +228,31 @@ function desactivarLoading() {
   btnLoader.style.display = "none";
 }
 
+// ========================================================
+// SNACKBAR
+// ========================================================
+
 function mostrarSnackbar(msg) {
   const s = document.getElementById("snackbar");
-  if (!s) return;
   s.textContent = msg;
   s.classList.add("show");
   setTimeout(() => s.classList.remove("show"), 2600);
 }
 
-/* ========================= TOGGLE PASSWORD ========================= */
+// ========================================================
+// TOGGLE PASSWORD
+// ========================================================
 
 document.querySelectorAll(".toggle-pass").forEach(icon => {
   icon.addEventListener("click", () => {
     const target = document.getElementById(icon.dataset.target);
-    const visible = target.type === "password";
-    target.type = visible ? "text" : "password";
-    icon.textContent = visible ? "visibility_off" : "visibility";
+
+    if (target.type === "password") {
+      target.type = "text";
+      icon.textContent = "visibility_off";
+    } else {
+      target.type = "password";
+      icon.textContent = "visibility";
+    }
   });
 });
