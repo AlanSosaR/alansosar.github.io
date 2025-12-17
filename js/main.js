@@ -3,13 +3,17 @@
    UI + CARRITO + INTERACCIONES
    ✔ Drawer funcional móvil / desktop
    ✔ Invitado / Logueado por clases
-   ❌ SIN control de sesión aquí
-   ✅ Logout conectado al core de Supabase
+   ✔ Logout REAL con Supabase
 ============================================================ */
 
 /* ========================= SAFE ========================= */
 function safe(id) {
   return document.getElementById(id);
+}
+
+/* ========================= SUPABASE SAFE ========================= */
+function getSupabaseClient() {
+  return window.supabaseClient || window.supabase || null;
 }
 
 /* ========================= CARRITO ========================= */
@@ -111,7 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
   scrim?.addEventListener("click", closeDrawer);
 
   /* =========================
-     AVATAR DESKTOP — ABRE DRAWER (DELEGADO)
+     AVATAR DESKTOP — ABRE DRAWER
   ========================= */
   document.addEventListener("click", (e) => {
     const avatarBtn = e.target.closest("#btn-header-user");
@@ -123,13 +127,31 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   /* =========================
-     LOGOUT — CIERRA DRAWER EN MÓVIL
+     LOGOUT — REAL (AVATAR + HAMBURGUESA)
   ========================= */
   const logoutBtn = safe("logout-btn");
-  logoutBtn?.addEventListener("click", () => {
+  const sb = getSupabaseClient();
+
+  async function logoutAndRedirect() {
+    try {
+      if (sb) {
+        await sb.auth.signOut(); // 🔥 LOGOUT REAL
+      }
+    } catch (err) {
+      console.error("❌ Error al cerrar sesión:", err);
+    }
+
+    // Limpieza local
+    localStorage.removeItem("cortero_user");
+
+    // Cerrar drawer
     closeDrawer();
-    // ⚠️ auth-ui.js se encarga del signOut real
-  });
+
+    // Redirección
+    window.location.href = "index.html";
+  }
+
+  logoutBtn?.addEventListener("click", logoutAndRedirect);
 
   /* ========================= HERO CAROUSEL ========================= */
   const heroImgs = document.querySelectorAll(".hero-carousel img");
