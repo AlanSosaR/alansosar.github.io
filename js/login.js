@@ -1,26 +1,26 @@
 // ========================================================
-// LOGIN – Café Cortero ☕ (VERSIÓN FINAL LOCALSTORAGE)
+// LOGIN – Café Cortero ☕ (VERSIÓN FINAL ESTABLE)
 // VALIDACIÓN + SESIÓN + PERFIL EN LOCALSTORAGE
 // ========================================================
 
 const sb = window.supabaseClient;
 
+/* ========================= DOM ========================= */
+
 const loginForm = document.getElementById("loginForm");
 const userInput = document.getElementById("userInput");
 const passInput = document.getElementById("passwordInput");
-const loginBtn = document.querySelector(".m3-btn");
-const btnText = loginBtn.querySelector(".btn-text");
+const loginBtn  = document.querySelector(".m3-btn");
+const btnText   = loginBtn.querySelector(".btn-text");
 const btnLoader = loginBtn.querySelector(".loader");
 
-// ========================================================
-// DOMINIOS + AUTOCORRECCIONES
-// ========================================================
+/* ========================= DOMINIOS ========================= */
 
 const dominiosValidos = [
-  "gmail.com", "hotmail.com", "outlook.com", "yahoo.com", "icloud.com",
-  "proton.me", "live.com", "msn.com",
-  "unah.hn", "unah.edu", "gmail.es", "correo.hn",
-  "googlemail.com", "outlook.es", "hotmail.es"
+  "gmail.com","hotmail.com","outlook.com","yahoo.com","icloud.com",
+  "proton.me","live.com","msn.com",
+  "unah.hn","unah.edu","gmail.es","correo.hn",
+  "googlemail.com","outlook.es","hotmail.es"
 ];
 
 const autocorrecciones = {
@@ -32,9 +32,7 @@ const autocorrecciones = {
   "outllok.com": "outlook.com"
 };
 
-// ========================================================
-// VALIDACIONES
-// ========================================================
+/* ========================= VALIDACIONES ========================= */
 
 function tipoDeEntrada(valor) {
   return /^[0-9]+$/.test(valor) ? "telefono" : "correo";
@@ -43,86 +41,65 @@ function tipoDeEntrada(valor) {
 function validarCorreo(valor) {
   if (!valor.includes("@")) return false;
 
-  const partes = valor.split("@");
-  const dominio = partes[1]?.toLowerCase();
+  const [user, dominioRaw] = valor.split("@");
+  const dominio = dominioRaw?.toLowerCase();
   if (!dominio) return false;
 
   if (autocorrecciones[dominio]) {
-    userInput.value = partes[0] + "@" + autocorrecciones[dominio];
+    userInput.value = `${user}@${autocorrecciones[dominio]}`;
     return true;
   }
 
-  if (!dominio.includes(".")) return false;
-  return dominiosValidos.some(d => dominio.endsWith(d));
+  return dominio.includes(".") && dominiosValidos.some(d => dominio.endsWith(d));
 }
 
 function validarTelefono(valor) {
   const limpio = valor.replace(/[\s-+]/g, "");
-  if (!/^[0-9]+$/.test(limpio)) return false;
-  return limpio.length >= 7 && limpio.length <= 15;
+  return /^[0-9]{7,15}$/.test(limpio);
 }
 
 function validarPassword(valor) {
-  if (valor.length < 6) return false;
-  if (valor.includes(" ")) return false;
-  if (["123456", "000000", "password"].includes(valor.toLowerCase())) return false;
-  return true;
+  return (
+    valor.length >= 6 &&
+    !valor.includes(" ") &&
+    !["123456","000000","password"].includes(valor.toLowerCase())
+  );
 }
 
-// ========================================================
-// LIMPIAR ERRORES
-// ========================================================
+/* ========================= ERRORES UI ========================= */
 
-function limpiarErroresInput(event) {
-  const input = event.target;
+function limpiarErroresInput(e) {
+  const input = e.target;
   const field = input.closest(".m3-field");
-  const box = field.querySelector(".m3-input");
-  const msg = field.querySelector(".field-msg");
+  const box   = field.querySelector(".m3-input");
+  const msg   = field.querySelector(".field-msg");
 
-  box.classList.remove("error");
+  box.classList.remove("error","success");
   msg.textContent = "";
   msg.style.opacity = "0";
-  msg.style.height = "0px";
-  msg.style.marginTop = "0px";
 
-  if (input.value.trim() !== "") {
+  if (input.value.trim()) {
     box.classList.add("success");
     input.classList.add("has-text");
-    input.placeholder = "";
   } else {
-    box.classList.remove("success");
     input.classList.remove("has-text");
-    input.placeholder = " ";
   }
 }
 
 userInput.addEventListener("input", limpiarErroresInput);
 passInput.addEventListener("input", limpiarErroresInput);
 
-// ========================================================
-// MARCAR ERROR
-// ========================================================
-
-function marcarError(input, placeholderText) {
+function marcarError(input, texto) {
   const field = input.closest(".m3-field");
-  const box = field.querySelector(".m3-input");
-  const msg = field.querySelector(".field-msg");
+  const box   = field.querySelector(".m3-input");
+  const msg   = field.querySelector(".field-msg");
 
   box.classList.add("error");
-  box.classList.remove("success");
-
-  input.classList.add("has-text");
-  input.placeholder = placeholderText;
-
-  msg.textContent = placeholderText;
+  msg.textContent = texto;
   msg.style.opacity = "1";
-  msg.style.height = "18px";
-  msg.style.marginTop = "4px";
 }
 
-// ========================================================
-// SUBMIT LOGIN (LOCALSTORAGE VERSION)
-// ========================================================
+/* ========================= LOGIN ========================= */
 
 loginForm.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -130,97 +107,94 @@ loginForm.addEventListener("submit", async (e) => {
   const userValue = userInput.value.trim();
   const passValue = passInput.value.trim();
 
-  if (!userValue) return marcarError(userInput, "Ingresa tu correo o teléfono");
+  if (!userValue) return marcarError(userInput,"Ingresa tu correo o teléfono");
 
   const tipo = tipoDeEntrada(userValue);
 
   if (tipo === "correo" && !validarCorreo(userValue))
-    return marcarError(userInput, "Correo no válido");
+    return marcarError(userInput,"Correo no válido");
 
   if (tipo === "telefono" && !validarTelefono(userValue))
-    return marcarError(userInput, "Teléfono inválido");
+    return marcarError(userInput,"Teléfono inválido");
 
-  if (!passValue) return marcarError(passInput, "Ingresa tu contraseña");
+  if (!passValue)
+    return marcarError(passInput,"Ingresa tu contraseña");
+
   if (!validarPassword(passValue))
-    return marcarError(passInput, "Contraseña no válida");
+    return marcarError(passInput,"Contraseña no válida");
 
-  loginBtn.classList.add("loading");
-  btnText.style.opacity = "0";
-  btnLoader.style.display = "inline-block";
-
-  let emailToUse = userValue;
+  activarLoading();
 
   try {
-    // Si el usuario escribe un teléfono, obtener el email real
+    let emailFinal = userValue;
+
+    /* --- Teléfono → buscar email real --- */
     if (tipo === "telefono") {
-      const { data: rows } = await supabase
+      const { data } = await sb
         .from("users")
         .select("email")
         .eq("phone", userValue)
-        .limit(1);
+        .single();
 
-      if (!rows || rows.length === 0) {
+      if (!data) {
         desactivarLoading();
-        return marcarError(userInput, "Teléfono no registrado");
+        return marcarError(userInput,"Teléfono no registrado");
       }
 
-      emailToUse = rows[0].email;
+      emailFinal = data.email;
     }
 
-    // LOGIN REAL
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: emailToUse,
+    /* --- LOGIN REAL SUPABASE --- */
+    const { data, error } = await sb.auth.signInWithPassword({
+      email: emailFinal,
       password: passValue
     });
 
     if (error) {
       desactivarLoading();
-      return marcarError(passInput, "Credenciales incorrectas");
+      return marcarError(passInput,"Credenciales incorrectas");
     }
 
-    // ⚡ GUARDAR SESIÓN REAL PARA PERFIL.JS
+    /* --- Guardar sesión real --- */
     if (data?.session) {
       localStorage.setItem("cortero-session", JSON.stringify(data.session));
     }
 
-    // GUARDAR PERFIL EN LOCALSTORAGE
-    try {
-      const { data: perfiles } = await supabase
-        .from("users")
-        .select("id, name, email, phone, photo_url")
-        .eq("email", emailToUse)
-        .limit(1);
+    /* --- Cargar perfil --- */
+    const { data: perfil } = await sb
+      .from("users")
+      .select("id, name, email, phone, photo_url")
+      .eq("email", emailFinal)
+      .single();
 
-      if (perfiles && perfiles.length > 0) {
-        localStorage.setItem("cortero_user", JSON.stringify(perfiles[0]));
-      }
-    } catch (err) {
-      console.warn("No se pudo guardar el perfil:", err);
+    if (perfil) {
+      localStorage.setItem("cortero_user", JSON.stringify(perfil));
+      localStorage.setItem("cortero_logged", "1");
     }
-
-    localStorage.setItem("cortero_logged", "1");
 
     mostrarSnackbar("Inicio de sesión exitoso ☕");
 
     setTimeout(() => {
-      const params = new URLSearchParams(window.location.search);
-      const from = params.get("from");
-
-      window.location.href =
-        from === "carrito" ? "detalles-cliente.html" : "index.html";
-
-    }, 1300);
+      const from = new URLSearchParams(location.search).get("from");
+      location.href = from === "carrito"
+        ? "detalles-cliente.html"
+        : "index.html";
+    }, 1200);
 
   } catch (err) {
-    console.error(err);
+    console.error("❌ Error login:", err);
     desactivarLoading();
-    marcarError(userInput, "Error al iniciar sesión");
+    marcarError(userInput,"Error al iniciar sesión");
   }
 });
 
-// ========================================================
-// DESACTIVAR LOADING
-// ========================================================
+/* ========================= UI ========================= */
+
+function activarLoading() {
+  loginBtn.classList.add("loading");
+  btnText.style.opacity = "0";
+  btnLoader.style.display = "inline-block";
+}
 
 function desactivarLoading() {
   loginBtn.classList.remove("loading");
@@ -228,31 +202,21 @@ function desactivarLoading() {
   btnLoader.style.display = "none";
 }
 
-// ========================================================
-// SNACKBAR
-// ========================================================
-
 function mostrarSnackbar(msg) {
   const s = document.getElementById("snackbar");
+  if (!s) return;
   s.textContent = msg;
   s.classList.add("show");
   setTimeout(() => s.classList.remove("show"), 2600);
 }
 
-// ========================================================
-// TOGGLE PASSWORD
-// ========================================================
+/* ========================= TOGGLE PASSWORD ========================= */
 
 document.querySelectorAll(".toggle-pass").forEach(icon => {
   icon.addEventListener("click", () => {
     const target = document.getElementById(icon.dataset.target);
-
-    if (target.type === "password") {
-      target.type = "text";
-      icon.textContent = "visibility_off";
-    } else {
-      target.type = "password";
-      icon.textContent = "visibility";
-    }
+    const visible = target.type === "password";
+    target.type = visible ? "text" : "password";
+    icon.textContent = visible ? "visibility_off" : "visibility";
   });
 });
