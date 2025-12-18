@@ -1,22 +1,34 @@
-/* ============================================================
-   DETALLES DE ENTREGA — VERSIÓN FINAL 2025 (v11 UI FIX)
-   ✔ Errores debajo del campo
-   ✔ Sin alert()
-   ✔ Labels rojos Material 3
-============================================================ */
+console.log("🧾 recibo.js — FINAL BD + VALIDACIONES");
 
-console.log("📦 datos_cliente.js — versión 11 UI FIX cargado");
+/* =========================================================
+   HELPERS
+========================================================= */
+function $(id) {
+  return document.getElementById(id);
+}
 
-// ===================================================================
-// 0) ESPERAR A QUE SUPABASE ESTÉ LISTO (Anti-bucle)
-// ===================================================================
+/* =========================================================
+   SNACKBAR
+========================================================= */
+function showSnack(msg) {
+  const bar = $("snackbar");
+  if (!bar) return;
+
+  bar.innerHTML = `<span>${msg}</span>`;
+  bar.classList.add("show");
+  setTimeout(() => bar.classList.remove("show"), 3200);
+}
+
+/* =========================================================
+   ESPERAR SUPABASE
+========================================================= */
 function esperarSupabase() {
   return new Promise(resolve => {
     if (window.supabaseClient) resolve();
     else {
-      const interval = setInterval(() => {
+      const i = setInterval(() => {
         if (window.supabaseClient) {
-          clearInterval(interval);
+          clearInterval(i);
           resolve();
         }
       }, 80);
@@ -24,62 +36,9 @@ function esperarSupabase() {
   });
 }
 
-/* ----------- CAMPOS ----------- */
-const nombreInput    = document.getElementById("nombre");
-const correoInput    = document.getElementById("correo");
-const telefonoInput  = document.getElementById("telefono");
-const ciudadInput    = document.getElementById("ciudad");
-const zonaSelect     = document.getElementById("zona");
-const direccionInput = document.getElementById("direccion");
-const notaInput      = document.getElementById("nota");
-
-const form      = document.getElementById("cliente-form");
-const btnSubmit = document.getElementById("btn-submit");
-
-let userCache = null;
-let userId = null;
-let loadedAddressId = null;
-
-/* ============================================================
-   UI — ERRORES MATERIAL 3
-============================================================ */
-function mostrarError(input, mensaje) {
-  const field = input.closest(".m3-field");
-  if (!field) return;
-
-  const label = field.querySelector(".floating-label");
-  const box   = field.querySelector(".m3-input");
-
-  let helper = field.querySelector(".helper-text");
-  if (!helper) {
-    helper = document.createElement("div");
-    helper.className = "helper-text";
-    field.appendChild(helper);
-  }
-
-  field.classList.add("error");
-  box.classList.add("error");
-  if (label) label.style.color = "#B3261E";
-  helper.textContent = mensaje;
-}
-
-function limpiarError(input) {
-  const field = input.closest(".m3-field");
-  if (!field) return;
-
-  const label  = field.querySelector(".floating-label");
-  const box    = field.querySelector(".m3-input");
-  const helper = field.querySelector(".helper-text");
-
-  field.classList.remove("error");
-  box.classList.remove("error");
-  if (label) label.style.color = "";
-  if (helper) helper.textContent = "";
-}
-
-/* ============================================================
-   1) LEER USUARIO DESDE CACHE
-============================================================ */
+/* =========================================================
+   CACHE USUARIO
+========================================================= */
 function getUserCache() {
   try {
     if (localStorage.getItem("cortero_logged") !== "1") return null;
@@ -89,233 +48,275 @@ function getUserCache() {
   }
 }
 
-/* ============================================================
-   2) ACTIVAR LABEL
-============================================================ */
-function activarLabel(input) {
-  input.dispatchEvent(new Event("input", { bubbles: true }));
-}
+/* =========================================================
+   MATERIAL 3 — ERRORES
+========================================================= */
+function mostrarError(input, mensaje) {
+  const field = input.closest(".pago-select-label, .pago-bloque");
+  if (!field) return;
 
-/* ============================================================
-   3) PINTAR DATOS INSTANTÁNEOS (CACHE)
-============================================================ */
-function pintarDatosInstantaneos() {
-  if (!userCache) return;
-
-  nombreInput.value   = userCache.name  || "";
-  correoInput.value   = userCache.email || "";
-  telefonoInput.value = userCache.phone || "";
-
-  activarLabel(nombreInput);
-  activarLabel(correoInput);
-  activarLabel(telefonoInput);
-}
-
-/* ============================================================
-   4) CARGAR DATOS REALES DESDE SUPABASE
-============================================================ */
-async function cargarDatosRealtime() {
-  const { data: userRow, error } =
-    await window.supabaseClient
-      .from("users")
-      .select("*")
-      .eq("id", userId)
-      .single();
-
-  if (error) return;
-
-  nombreInput.value   = userRow.name  || "";
-  correoInput.value   = userRow.email || "";
-  telefonoInput.value = userRow.phone || "";
-
-  activarLabel(nombreInput);
-  activarLabel(correoInput);
-  activarLabel(telefonoInput);
-
-  localStorage.setItem("cortero_user", JSON.stringify(userRow));
-  localStorage.setItem("cortero_logged", "1");
-
-  await cargarDireccion();
-}
-
-/* ============================================================
-   5) CARGAR DIRECCIÓN
-============================================================ */
-async function cargarDireccion() {
-  const { data } =
-    await window.supabaseClient
-      .from("addresses")
-      .select("*")
-      .eq("user_id", userId)
-      .order("created_at", { ascending: false })
-      .limit(1);
-
-  if (!data || !data.length) return;
-
-  const address = data[0];
-  loadedAddressId = address.id;
-
-  ciudadInput.value    = address.city || "";
-  zonaSelect.value     = address.state || "";
-  direccionInput.value = address.street || "";
-  notaInput.value      = address.postal_code || "";
-
-  activarLabel(ciudadInput);
-  activarLabel(direccionInput);
-  activarLabel(notaInput);
-
-  if (zonaSelect.value.trim()) zonaSelect.classList.add("filled");
-}
-
-/* ============================================================
-   6) VALIDACIÓN EN CADENA (UI)
-============================================================ */
-function validarFormularioCadena() {
-  limpiarTodosErrores();
-
-  if (!nombreInput.value.trim()) {
-    mostrarError(nombreInput, "El nombre es obligatorio");
-    return false;
+  let helper = field.querySelector(".helper-text");
+  if (!helper) {
+    helper = document.createElement("div");
+    helper.className = "helper-text";
+    field.appendChild(helper);
   }
 
-  if (!correoInput.value.trim()) {
-    mostrarError(correoInput, "El correo es obligatorio");
-    return false;
-  }
-
-  if (!telefonoInput.value.trim()) {
-    mostrarError(telefonoInput, "El teléfono es obligatorio");
-    return false;
-  }
-
-  if (!ciudadInput.value.trim()) {
-    mostrarError(ciudadInput, "La ciudad es obligatoria");
-    return false;
-  }
-
-  if (!zonaSelect.value.trim()) {
-    mostrarError(zonaSelect, "Selecciona un departamento");
-    return false;
-  }
-
-  if (!direccionInput.value.trim()) {
-    mostrarError(direccionInput, "La dirección es obligatoria");
-    return false;
-  }
-
-  return true;
+  field.classList.add("error");
+  helper.textContent = mensaje;
 }
 
-function limpiarTodosErrores() {
-  [
-    nombreInput,
-    correoInput,
-    telefonoInput,
-    ciudadInput,
-    zonaSelect,
-    direccionInput,
-    notaInput
-  ].forEach(el => el && limpiarError(el));
+function limpiarError(input) {
+  const field = input.closest(".pago-select-label, .pago-bloque");
+  if (!field) return;
+
+  field.classList.remove("error");
+  const helper = field.querySelector(".helper-text");
+  if (helper) helper.textContent = "";
 }
 
-/* ============================================================
-   7) UPDATE USER
-============================================================ */
-async function updateUserBasicInfo() {
-  const { error } =
-    await window.supabaseClient
-      .from("users")
-      .update({
-        name: nombreInput.value.trim(),
-        phone: telefonoInput.value.trim()
-      })
-      .eq("id", userId);
-
-  if (error) return false;
-
-  userCache = { ...userCache, name: nombreInput.value.trim(), phone: telefonoInput.value.trim() };
-  localStorage.setItem("cortero_user", JSON.stringify(userCache));
-
-  return true;
-}
-
-/* ============================================================
-   8) GUARDAR DIRECCIÓN
-============================================================ */
-async function guardarDireccion() {
-  const payload = {
-    user_id: userId,
-    full_name: nombreInput.value.trim(),
-    phone: telefonoInput.value.trim(),
-    country: "Honduras",
-    state: zonaSelect.value.trim(),
-    city: ciudadInput.value.trim(),
-    street: direccionInput.value.trim(),
-    postal_code: notaInput.value.trim(),
-    is_default: true,
-  };
-
-  const result = loadedAddressId
-    ? await window.supabaseClient.from("addresses").update(payload).eq("id", loadedAddressId)
-    : await window.supabaseClient.from("addresses").insert(payload);
-
-  return !result.error;
-}
-
-/* ============================================================
-   9) SUBMIT FINAL
-============================================================ */
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
-
-  if (!validarFormularioCadena()) return;
-
-  btnSubmit.classList.add("loading");
-
-  if (!await updateUserBasicInfo()) {
-    btnSubmit.classList.remove("loading");
-    return;
-  }
-
-  if (!await guardarDireccion()) {
-    btnSubmit.classList.remove("loading");
-    return;
-  }
-
-  setTimeout(() => window.location.href = "recibo.html", 600);
+/* =========================================================
+   FECHA
+========================================================= */
+$("fechaPedido").textContent = new Date().toLocaleString("es-HN", {
+  dateStyle: "short",
+  timeStyle: "medium",
+  hour12: true
 });
 
-/* ============================================================
-   10) INIT
-============================================================ */
-async function init() {
-  await esperarSupabase();
+/* =========================================================
+   DATOS CLIENTE
+========================================================= */
+async function cargarDatosCliente() {
+  const sb = window.supabaseClient;
+  const user = getUserCache();
 
-  userCache = getUserCache();
-  if (!userCache) {
+  if (!user) {
     window.location.href = "login.html";
     return;
   }
 
-  userId = userCache.id;
+  const { data: userRow } = await sb
+    .from("users")
+    .select("name,email,phone")
+    .eq("id", user.id)
+    .single();
 
-  pintarDatosInstantaneos();
-  cargarDatosRealtime();
+  if (userRow) {
+    $("nombreCliente").textContent = userRow.name || "";
+    $("correoCliente").textContent = userRow.email || "";
+    $("telefonoCliente").textContent = userRow.phone || "";
+  }
 
-  [
-    nombreInput,
-    telefonoInput,
-    ciudadInput,
-    direccionInput,
-    notaInput
-  ].forEach(el => el && el.addEventListener("input", () => limpiarError(el)));
+  const { data: addr } = await sb
+    .from("addresses")
+    .select("state,street,postal_code")
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false })
+    .limit(1);
 
-  zonaSelect.addEventListener("change", () => {
-    limpiarError(zonaSelect);
-    zonaSelect.value.trim()
-      ? zonaSelect.classList.add("filled")
-      : zonaSelect.classList.remove("filled");
-  });
+  if (addr?.length) {
+    $("zonaCliente").textContent      = addr[0].state || "";
+    $("direccionCliente").textContent = addr[0].street || "";
+    $("notaCliente").textContent      = addr[0].postal_code || "";
+  }
 }
 
-init();
+/* =========================================================
+   CARRITO
+========================================================= */
+const carrito = JSON.parse(localStorage.getItem("cafecortero_cart")) || [];
+const lista = $("listaProductos");
+let total = 0;
+
+lista.innerHTML = "";
+
+carrito.forEach(item => {
+  const price = parseFloat(item.price) || 0;
+  const subtotal = price * item.qty;
+  total += subtotal;
+
+  lista.innerHTML += `
+    <div class="cafe-item">
+      <div>
+        <span class="cafe-nombre">${item.name}</span>
+        <span class="cafe-cantidad">x${item.qty}</span>
+      </div>
+      <span class="cafe-precio">L ${subtotal.toFixed(2)}</span>
+    </div>
+  `;
+});
+
+$("totalPedido").textContent = total.toFixed(2);
+
+/* =========================================================
+   MÉTODO DE PAGO
+========================================================= */
+const metodoPago   = $("metodoPago");
+const pagoDeposito = $("pago-deposito");
+const pagoEfectivo = $("pago-efectivo");
+
+const btnEnviar  = $("btnEnviar");
+const loader     = $("loaderEnviar");
+
+const btnSubir   = $("btnSubirComprobante");
+const inputFile  = $("inputComprobante");
+const previewBox = $("previewComprobante");
+const imgPrev    = $("imgComprobante");
+
+let comprobante = null;
+
+/* ================= RESET ================= */
+function resetPago() {
+  pagoDeposito.classList.add("hidden");
+  pagoEfectivo.classList.add("hidden");
+  previewBox.classList.add("hidden");
+  comprobante = null;
+  btnEnviar.disabled = true;
+}
+
+resetPago();
+
+/* ================= CAMBIO MÉTODO ================= */
+metodoPago.addEventListener("change", () => {
+  resetPago();
+  limpiarError(metodoPago);
+
+  if (metodoPago.value === "bank_transfer") {
+    pagoDeposito.classList.remove("hidden");
+  }
+
+  if (metodoPago.value === "cash") {
+    pagoEfectivo.classList.remove("hidden");
+    btnEnviar.disabled = false;
+  }
+});
+
+/* ================= SUBIR COMPROBANTE ================= */
+btnSubir?.addEventListener("click", () => inputFile.click());
+
+inputFile?.addEventListener("change", () => {
+  const file = inputFile.files[0];
+  if (!file || !file.type.startsWith("image/")) return;
+
+  comprobante = file;
+  imgPrev.src = URL.createObjectURL(file);
+  previewBox.classList.remove("hidden");
+  btnEnviar.disabled = false;
+});
+
+/* =========================================================
+   OBTENER NÚMERO DE PEDIDO (BD REAL)
+========================================================= */
+async function obtenerNumeroPedido(sb, userId) {
+  const { count, error } = await sb
+    .from("orders")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", userId);
+
+  if (error) {
+    console.error("Error contando pedidos:", error);
+    return 1;
+  }
+
+  return (count || 0) + 1;
+}
+
+/* =========================================================
+   VALIDACIÓN FINAL
+========================================================= */
+function validarEnvio() {
+  if (!metodoPago.value) {
+    mostrarError(metodoPago, "Selecciona un método de pago");
+    return false;
+  }
+
+  if (metodoPago.value === "bank_transfer" && !comprobante) {
+    showSnack("Debes subir el comprobante de pago");
+    return false;
+  }
+
+  return true;
+}
+
+/* =========================================================
+   ENVIAR PEDIDO
+========================================================= */
+btnEnviar.addEventListener("click", async () => {
+  if (!validarEnvio()) return;
+
+  const sb = window.supabaseClient;
+  const user = getUserCache();
+  if (!user) return;
+
+  btnEnviar.disabled = true;
+  loader.classList.remove("hidden");
+
+  try {
+    const numeroPedido = await obtenerNumeroPedido(sb, user.id);
+
+    const status =
+      metodoPago.value === "cash"
+        ? "cash_on_delivery"
+        : "payment_review";
+
+    const { data: order, error } = await sb
+      .from("orders")
+      .insert({
+        user_id: user.id,
+        order_number: numeroPedido,
+        total,
+        payment_method: metodoPago.value,
+        status
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    $("numeroPedido").textContent = order.order_number;
+
+    if (metodoPago.value === "bank_transfer") {
+      const ext = comprobante.name.split(".").pop();
+      const path = `order_${order.id}/${Date.now()}.${ext}`;
+
+      await sb.storage
+        .from("payment-receipts")
+        .upload(path, comprobante);
+
+      const { data: url } =
+        sb.storage.from("payment-receipts").getPublicUrl(path);
+
+      await sb.from("payment_receipts").insert({
+        order_id: order.id,
+        user_id: user.id,
+        file_url: url.publicUrl,
+        file_path: path
+      });
+
+      showSnack("Pedido enviado. Pago en revisión.");
+    } else {
+      showSnack("Pedido confirmado. Pago en efectivo al recibir.");
+    }
+
+    localStorage.removeItem("cafecortero_cart");
+
+    setTimeout(() => {
+      window.location.href = "mis-pedidos.html";
+    }, 1400);
+
+  } catch (err) {
+    console.error("❌ Pedido:", err);
+    showSnack("No se pudo enviar el pedido");
+    btnEnviar.disabled = false;
+    loader.classList.add("hidden");
+  }
+});
+
+/* =========================================================
+   INIT
+========================================================= */
+(async function init() {
+  await esperarSupabase();
+  cargarDatosCliente();
+})();
