@@ -288,8 +288,11 @@ h3 {
   font-weight: 500;
 }
 
-/* ================= COMPROBANTE DE PAGO ================= */
+/* =====================================================
+   COMPROBANTE DE PAGO — BLOQUE FINAL
+===================================================== */
 
+/* Contenedor del bloque (si aplica) */
 .comprobante-box {
   margin-top: 16px;
   display: flex;
@@ -299,45 +302,44 @@ h3 {
 
 /* Texto informativo */
 .comprobante-info {
-  font-size: 0.9rem;
-  line-height: 1.5;
-  color: var(--marron-suave);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--marron); /* 🟤 texto café */
 }
 
-/* Resaltados dentro del texto */
+/* Resaltados importantes dentro del texto */
 .comprobante-info strong {
-  color: var(--marron);
+  color: var(--verde); /* 🟢 acciones clave */
   font-weight: 600;
 }
 
-/* Botón tipo enlace (estilo Material 3 / perfil) */
+/* Botón tipo enlace (Material 3, como "Cambiar contraseña") */
 .comprobante-link {
-  background: transparent;
-  border: none;
-  padding: 10px 0;
-
   display: inline-flex;
   align-items: center;
   gap: 8px;
 
+  margin-top: 12px;
+  padding: 0;
+
+  background: none;
+  border: none;
+
   font-size: 0.95rem;
   font-weight: 500;
-  color: var(--verde);
+  color: var(--marron); /* 🟤 texto café */
 
   cursor: pointer;
   text-align: left;
+
+  text-decoration: none; /* ❌ sin subrayado */
 }
 
-/* Hover sutil */
-.comprobante-link:hover {
-  text-decoration: underline;
-}
-
-/* Ícono del botón */
+/* Ícono Material 3 (solo icono en verde) */
 .comprobante-link .material-symbols-outlined {
   font-size: 22px;
   line-height: 1;
-  color: var(--verde);
+  color: var(--verde); /* 🟢 icono verde */
 
   font-variation-settings:
     'FILL' 0,
@@ -346,21 +348,28 @@ h3 {
     'opsz' 24;
 }
 
-/* Preview del comprobante */
-.preview {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-top: 6px;
+/* Estados interactivos (SIN subrayado) */
+.comprobante-link:hover,
+.comprobante-link:focus,
+.comprobante-link:active {
+  text-decoration: none;
+  outline: none;
 }
 
+/* 🔑 Blindaje final: texto SIEMPRE café */
+.comprobante-link,
+.comprobante-link span:not(.material-symbols-outlined),
+.comprobante-link strong {
+  color: var(--marron);
+}
+
+/* Preview del comprobante */
 .preview img {
   max-width: 100%;
   border-radius: 18px;
   box-shadow: 0 6px 18px rgba(0,0,0,.15);
 }
 
-/* Texto bajo la imagen */
 .preview p {
   font-size: 0.85rem;
   color: var(--verde);
