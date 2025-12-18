@@ -1,9 +1,4 @@
-console.log("🧾 recibo.js — versión FINAL corregida");
-
-/* =========================================================
-   MODO DE PÁGINA
-========================================================= */
-window.PAGE_MODE = "recibo";
+console.log("🧾 recibo.js — FINAL con número de pedido desde BD");
 
 /* =========================================================
    HELPERS
@@ -21,7 +16,6 @@ function showSnack(message) {
 
   bar.innerHTML = `<span>${message}</span>`;
   bar.classList.add("show");
-
   setTimeout(() => bar.classList.remove("show"), 3200);
 }
 
@@ -53,18 +47,33 @@ function getUserCache() {
 }
 
 /* =========================================================
-   NÚMERO DE PEDIDO (FRONT)
+   NÚMERO DE PEDIDO — DESDE BD (REAL)
 ========================================================= */
-let numeroPedido = localStorage.getItem("numeroPedidoActivo");
+async function obtenerSiguienteNumeroPedido(userId) {
+  const sb = window.supabaseClient;
 
-if (!numeroPedido) {
-  let consecutivo = parseInt(localStorage.getItem("ultimoPedido") || "0") + 1;
-  localStorage.setItem("ultimoPedido", consecutivo);
-  localStorage.setItem("numeroPedidoActivo", consecutivo);
-  numeroPedido = consecutivo;
+  const { data, error } = await sb
+    .from("orders")
+    .select("order_number")
+    .eq("user_id", userId)
+    .order("order_number", { ascending: false })
+    .limit(1);
+
+  if (error) {
+    console.error("❌ Error obteniendo order_number:", error);
+    return 1;
+  }
+
+  if (!data || data.length === 0) {
+    return 1; // primer pedido del usuario
+  }
+
+  return data[0].order_number + 1;
 }
 
-safe("numeroPedido").textContent = numeroPedido;
+/* =========================================================
+   FECHA
+========================================================= */
 safe("fechaPedido").textContent = new Date().toLocaleString("es-HN", {
   dateStyle: "short",
   timeStyle: "medium",
@@ -90,8 +99,8 @@ async function cargarDatosCliente() {
     .single();
 
   if (userRow) {
-    safe("nombreCliente").textContent = userRow.name || "";
-    safe("correoCliente").textContent = userRow.email || "";
+    safe("nombreCliente").textContent   = userRow.name || "";
+    safe("correoCliente").textContent   = userRow.email || "";
     safe("telefonoCliente").textContent = userRow.phone || "";
   }
 
@@ -103,9 +112,9 @@ async function cargarDatosCliente() {
     .limit(1);
 
   if (addr?.length) {
-    safe("zonaCliente").textContent = addr[0].state || "";
+    safe("zonaCliente").textContent      = addr[0].state || "";
     safe("direccionCliente").textContent = addr[0].street || "";
-    safe("notaCliente").textContent = addr[0].postal_code || "";
+    safe("notaCliente").textContent      = addr[0].postal_code || "";
   }
 }
 
@@ -152,36 +161,29 @@ const imgPreview  = safe("imgComprobante");
 
 let comprobante = null;
 
-/* ================= ESTADO INICIAL ================= */
+/* ================= RESET ================= */
 function resetMetodoPago() {
   bloqueDeposito.classList.add("hidden");
   bloqueEfectivo.classList.add("hidden");
   previewBox.classList.add("hidden");
-
   comprobante = null;
   btnEnviar.disabled = true;
 }
 
-/* ================= CAMBIO DE MÉTODO ================= */
-function actualizarMetodoPago() {
+metodoPagoSelect.addEventListener("change", () => {
   resetMetodoPago();
 
-  const metodo = metodoPagoSelect.value;
-
-  if (metodo === "bank_transfer") {
+  if (metodoPagoSelect.value === "bank_transfer") {
     bloqueDeposito.classList.remove("hidden");
-    btnEnviar.disabled = true;
   }
 
-  if (metodo === "cash") {
+  if (metodoPagoSelect.value === "cash") {
     bloqueEfectivo.classList.remove("hidden");
     btnEnviar.disabled = false;
   }
-}
+});
 
-metodoPagoSelect.addEventListener("change", actualizarMetodoPago);
-
-/* ================= SUBIR COMPROBANTE ================= */
+/* ================= COMPROBANTE ================= */
 safe("btnSubirComprobante")?.addEventListener("click", () => {
   inputFile.click();
 });
@@ -193,26 +195,25 @@ inputFile?.addEventListener("change", () => {
   comprobante = file;
   imgPreview.src = URL.createObjectURL(file);
   previewBox.classList.remove("hidden");
-
-  if (metodoPagoSelect.value === "bank_transfer") {
-    btnEnviar.disabled = false;
-  }
+  btnEnviar.disabled = false;
 });
 
 /* =========================================================
-   ENVIAR PEDIDO
+   ENVIAR PEDIDO (CON order_number REAL)
 ========================================================= */
 btnEnviar.addEventListener("click", async () => {
-  const metodo = metodoPagoSelect.value;
   const sb = window.supabaseClient;
   const user = getUserCache();
+  if (!user) return;
 
   btnEnviar.disabled = true;
   loader.classList.remove("hidden");
 
   try {
+    const orderNumber = await obtenerSiguienteNumeroPedido(user.id);
+
     const status =
-      metodo === "cash"
+      metodoPagoSelect.value === "cash"
         ? "cash_on_delivery"
         : "payment_review";
 
@@ -221,19 +222,21 @@ btnEnviar.addEventListener("click", async () => {
       .insert({
         user_id: user.id,
         total,
-        payment_method: metodo,
-        status
+        payment_method: metodoPagoSelect.value,
+        status,
+        order_number: orderNumber
       })
       .select()
       .single();
 
     if (error) throw error;
 
-    if (metodo === "bank_transfer") {
+    if (metodoPagoSelect.value === "bank_transfer") {
       const ext = comprobante.name.split(".").pop();
       const path = `order_${order.id}/${Date.now()}.${ext}`;
 
       await sb.storage.from("payment-receipts").upload(path, comprobante);
+
       const { data: urlData } =
         sb.storage.from("payment-receipts").getPublicUrl(path);
 
@@ -244,13 +247,12 @@ btnEnviar.addEventListener("click", async () => {
         file_path: path
       });
 
-      showSnack("Pedido enviado. Comprobante recibido y en revisión.");
+      showSnack(`Pedido N.º ${orderNumber} enviado (pago en revisión)`);
     } else {
-      showSnack("Pedido confirmado. Pago en efectivo al momento de la entrega.");
+      showSnack(`Pedido N.º ${orderNumber} confirmado`);
     }
 
     localStorage.removeItem("cafecortero_cart");
-    localStorage.removeItem("numeroPedidoActivo");
 
     setTimeout(() => {
       window.location.href = "mis-pedidos.html";
@@ -258,7 +260,7 @@ btnEnviar.addEventListener("click", async () => {
 
   } catch (err) {
     console.error("❌ Error pedido:", err);
-    showSnack("No se pudo enviar el pedido. Intenta nuevamente.");
+    showSnack("No se pudo enviar el pedido");
     btnEnviar.disabled = false;
     loader.classList.add("hidden");
   }
@@ -269,6 +271,16 @@ btnEnviar.addEventListener("click", async () => {
 ========================================================= */
 (async function init() {
   await esperarSupabase();
+
+  const user = getUserCache();
+  if (!user) {
+    window.location.href = "login.html";
+    return;
+  }
+
   cargarDatosCliente();
   resetMetodoPago();
+
+  const numeroPedido = await obtenerSiguienteNumeroPedido(user.id);
+  safe("numeroPedido").textContent = numeroPedido;
 })();
