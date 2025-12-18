@@ -288,12 +288,70 @@ h3 {
   font-weight: 500;
 }
 
-/* ================= COMPROBANTE ================= */
+/* ================= COMPROBANTE DE PAGO ================= */
+
 .comprobante-box {
   margin-top: 16px;
   display: flex;
   flex-direction: column;
   gap: 14px;
+}
+
+/* Texto informativo */
+.comprobante-info {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--marron-suave);
+}
+
+/* Resaltados dentro del texto */
+.comprobante-info strong {
+  color: var(--marron);
+  font-weight: 600;
+}
+
+/* Botón tipo enlace (estilo Material 3 / perfil) */
+.comprobante-link {
+  background: transparent;
+  border: none;
+  padding: 10px 0;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--verde);
+
+  cursor: pointer;
+  text-align: left;
+}
+
+/* Hover sutil */
+.comprobante-link:hover {
+  text-decoration: underline;
+}
+
+/* Ícono del botón */
+.comprobante-link .material-symbols-outlined {
+  font-size: 22px;
+  line-height: 1;
+  color: var(--verde);
+
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24;
+}
+
+/* Preview del comprobante */
+.preview {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 6px;
 }
 
 .preview img {
@@ -302,12 +360,14 @@ h3 {
   box-shadow: 0 6px 18px rgba(0,0,0,.15);
 }
 
+/* Texto bajo la imagen */
 .preview p {
-  font-size: .85rem;
+  font-size: 0.85rem;
   color: var(--verde);
   text-align: center;
 }
 
+/* Utilidad */
 .hidden {
   display: none;
 }
