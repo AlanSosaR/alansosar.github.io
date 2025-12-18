@@ -1,6 +1,5 @@
 /* ============================================================
-   RECIBO / DETALLES DEL PEDIDO — DISEÑO FINAL UNIFICADO 2025
-   PERFIL · REGISTRO · DETALLES DE ENTREGA
+   RECIBO / DETALLES DEL PEDIDO — DISEÑO UNIFICADO
 ============================================================ */
 
 /* ================= ROOT ================= */
@@ -11,8 +10,7 @@
   --blanco: #ffffff;
 
   --border-cafe: rgba(75, 44, 25, 0.35);
-  --sombra-suave: 0 8px 22px rgba(0,0,0,0.08);
-  --sombra-fuerte: 0 10px 26px rgba(0,0,0,0.12);
+  --sombra-card: 0 10px 26px rgba(0,0,0,0.10);
 }
 
 /* ================= BASE ================= */
@@ -38,41 +36,23 @@ body {
 .recibo-container {
   display: flex;
   justify-content: center;
-  padding: 5.4rem 16px 32px;
+  padding: 5.2rem 16px 32px;
 }
 
-/* ================= WRAPPER ================= */
+/* ================= TARJETA PRINCIPAL ================= */
 .recibo-card {
   max-width: 620px;
   width: 100%;
   position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 22px;
 }
 
-/* ============================================================
-   TARJETAS
-============================================================ */
-
-/* Base común */
-.inner-card {
+/* ================= INNER CARD (ÚNICA) ================= */
+.inner-card-full {
   background: #ffffff;
   border-radius: 26px;
-  padding: 26px 22px;
-  position: relative;
-}
-
-/* TARJETA 1 — flotante (SIN borde) */
-.floating-card {
-  border: none;
-  box-shadow: var(--sombra-fuerte);
-}
-
-/* TARJETA 2 — contorno café */
-.bordered-card {
   border: 2px solid var(--border-cafe);
-  box-shadow: var(--sombra-suave);
+  padding: 28px 22px;
+  box-shadow: var(--sombra-card);
 }
 
 /* ================= FLECHA FLOTANTE ================= */
@@ -81,7 +61,7 @@ body {
   top: 0;
   left: 0;
   transform: translate(-32%, -32%);
-  z-index: 5;
+  z-index: 10;
 }
 
 .card-back button {
@@ -96,7 +76,7 @@ body {
   align-items: center;
   justify-content: center;
 
-  box-shadow: 0 6px 18px rgba(0,0,0,.18);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.18);
 }
 
 .card-back i {
@@ -217,7 +197,7 @@ h3 {
 
 /* ================= RESPONSIVE ================= */
 @media (max-width: 600px) {
-  .inner-card {
-    padding: 22px 18px;
+  .inner-card-full {
+    padding: 24px 18px;
   }
 }
