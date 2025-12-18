@@ -97,23 +97,25 @@ async function cargarDatosCliente() {
       cliente.telefono = userRow.phone || "";
     }
 
-    // 2️⃣ DIRECCIÓN REAL (addresses)
-    const { data: addressRow } = await sb
-      .from("addresses")
-      .select("state, city, street, postal_code")
-      .eq("user_id", userCache.id)
-      .eq("is_default", true)
-      .maybeSingle();
+    // 2️⃣ DIRECCIÓN REAL (addresses) — ÚLTIMA REGISTRADA
+const { data: addressRows, error: addressError } = await sb
+  .from("addresses")
+  .select("id, state, city, street, postal_code")
+  .eq("user_id", userCache.id)
+  .order("created_at", { ascending: false })
+  .limit(1);
 
-    if (addressRow) {
-      cliente.zona       = addressRow.state || "";
-      cliente.direccion  = addressRow.street || "";
-      cliente.nota       = addressRow.postal_code || "";
-    }
+if (addressError) {
+  console.error("❌ Error cargando dirección:", addressError);
+}
 
-  } catch (err) {
-    console.warn("⚠️ Error cargando cliente:", err);
-  }
+if (addressRows && addressRows.length > 0) {
+  const address = addressRows[0];
+
+  cliente.zona      = address.state || "";
+  cliente.direccion = address.street || "";
+  cliente.nota      = address.postal_code || "";
+}
 
   // 3️⃣ PINTAR EN UI
   safe("nombreCliente").textContent    = cliente.nombre;
