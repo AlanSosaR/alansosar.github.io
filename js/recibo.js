@@ -56,16 +56,12 @@ async function obtenerSiguienteNumeroPedido(userId) {
     .from("orders")
     .select("order_number")
     .eq("user_id", userId)
+    .not("order_number", "is", null) // 🔑 CLAVE ABSOLUTA
     .order("order_number", { ascending: false })
     .limit(1);
 
-  if (error) {
-    console.error("❌ Error obteniendo order_number:", error);
-    return 1;
-  }
-
-  if (!data || data.length === 0) {
-    return 1; // primer pedido del usuario
+  if (error || !data || data.length === 0) {
+    return 1; // primer pedido REAL
   }
 
   return data[0].order_number + 1;
