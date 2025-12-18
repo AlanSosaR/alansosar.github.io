@@ -44,8 +44,8 @@ function mostrarError(input, mensaje) {
   const box   = field.querySelector(".m3-input");
   const label = field.querySelector(".floating-label");
 
-  // 🔑 FUERZA EL LABEL A SUBIR
-  input.dispatchEvent(new Event("input", { bubbles: true }));
+  // 🔑 CLAVE REAL: forzar estado visual Material 3
+  field.classList.add("filled");
 
   let helper = field.querySelector(".helper-text");
   if (!helper) {
@@ -65,12 +65,18 @@ function limpiarError(input) {
   const field = input.closest(".m3-field");
   if (!field) return;
 
-  const box   = field.querySelector(".m3-input");
-  const label = field.querySelector(".floating-label");
+  const box    = field.querySelector(".m3-input");
+  const label  = field.querySelector(".floating-label");
   const helper = field.querySelector(".helper-text");
 
   field.classList.remove("error");
   box.classList.remove("error");
+
+  // 🔑 SOLO baja el label si sigue vacío
+  if (!input.value.trim()) {
+    field.classList.remove("filled");
+  }
+
   if (label) label.style.color = "";
   if (helper) helper.textContent = "";
 }
