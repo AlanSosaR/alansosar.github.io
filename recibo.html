@@ -93,19 +93,27 @@
         ========================= -->
         <h3>Comprobante de pago</h3>
 
-        <div class="comprobante-box">
-          <input type="file" id="inputComprobante" accept="image/*" hidden>
+<p class="comprobante-info">
+  Para poder <strong>enviar tu pedido</strong>, debes subir el
+  <strong>comprobante de tu depósito bancario</strong>.
+  <br>
+  El pago será <strong>verificado manualmente</strong> por nuestro equipo.
+  <br>
+  Una vez revisado, <strong>recibirás una notificación</strong> y podrás
+  ver el estado actualizado de tu pedido en <strong>Mis pedidos</strong>.
+</p>
 
-          <button id="btnSubirComprobante" class="btn-secondary">
-            <i class="fa-solid fa-upload"></i>
-            Subir comprobante
-          </button>
+<button class="comprobante-link" id="btnSubirComprobante">
+  <span class="material-symbols-outlined">upload</span>
+  Subir comprobante de pago
+</button>
 
-          <div id="previewComprobante" class="preview hidden">
-            <img id="imgComprobante" alt="Comprobante de pago">
-            <p>✔ Este es el comprobante que se enviará</p>
-          </div>
-        </div>
+<input type="file" id="inputComprobante" accept="image/*" hidden>
+
+<div id="previewComprobante" class="preview hidden">
+  <img id="imgComprobante" alt="Comprobante de pago">
+  <p>✔ Este es el comprobante que se enviará con tu pedido</p>
+</div>
 
         <!-- =========================
              ENVIAR PEDIDO
