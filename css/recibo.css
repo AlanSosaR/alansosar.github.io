@@ -56,12 +56,11 @@ body {
   box-shadow: 0 12px 28px rgba(0,0,0,0.06);
 }
 
-/* ============================================================
-   FLECHA FLOTANTE
-============================================================ */
+/* ================= FLECHA VOLVER (ALINEADA A LA TARJETA) ================= */
+
 .card-back {
   position: absolute;
-  top: -22px;
+  top: 32px;        /* 🔑 dentro del padding de la tarjeta */
   left: 22px;
   z-index: 10;
 }
@@ -93,6 +92,14 @@ body {
   font-size: 26px;
   font-weight: 600;
   color: var(--verde) !important;
+}
+
+/* ================= AJUSTE TELÉFONO ================= */
+@media (max-width: 600px) {
+  .card-back {
+    top: 22px;      /* 🔑 baja un poco menos en móvil */
+    left: 18px;
+  }
 }
 
 /* ============================================================
