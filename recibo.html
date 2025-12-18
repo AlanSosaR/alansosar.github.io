@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+<html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,10 +9,10 @@
   <!-- Tipografía -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
 
-  <!-- Material Symbols (OBLIGATORIO) -->
+  <!-- Material Symbols -->
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
 
-  <!-- Font Awesome (solo para uploads / loaders) -->
+  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <!-- CSS -->
@@ -30,26 +32,22 @@
   ========================= -->
   <main class="recibo-container fade-in">
 
-    <!-- TARJETA PRINCIPAL (SIN BORDE) -->
     <section class="recibo-card">
 
-      <!-- FLECHA FLOTANTE (MISMA LÓGICA QUE DETALLES CLIENTE) -->
+      <!-- BOTÓN VOLVER -->
       <button class="card-back" onclick="window.location.href='datos_cliente.html'">
         <span class="material-symbols-outlined">chevron_left</span>
       </button>
 
-      <!-- INNER CARD CON CONTORNO (ENVUELVE TODO) -->
       <div class="inner-card-full">
 
-        <!-- Encabezado -->
+        <!-- ENCABEZADO -->
         <h2>Pedido N.º <span id="numeroPedido"></span></h2>
         <p class="fecha">
           <strong>Fecha:</strong> <span id="fechaPedido"></span>
         </p>
 
-        <!-- =========================
-             DATOS DEL CLIENTE
-        ========================= -->
+        <!-- DATOS CLIENTE -->
         <h3>Datos del cliente</h3>
         <div class="cliente-info">
           <p><strong>Nombre:</strong> <span id="nombreCliente"></span></p>
@@ -60,196 +58,103 @@
           <p><strong>Nota:</strong> <span id="notaCliente"></span></p>
         </div>
 
-        <!-- =========================
-             SELECCIÓN DE CAFÉS
-        ========================= -->
+        <!-- PRODUCTOS -->
         <h3>Selección de cafés</h3>
         <div id="listaProductos" class="cafes-list"></div>
 
-        <!-- Total -->
+        <!-- TOTAL -->
         <p class="recibo-total">
-  <span class="material-symbols-outlined total-icon">paid</span>
-  <strong>Total:</strong> L <span id="totalPedido"></span>
-</p>
+          <span class="material-symbols-outlined total-icon">paid</span>
+          <strong>Total:</strong> L <span id="totalPedido"></span>
+        </p>
 
         <!-- =========================
-     MÉTODO DE PAGO
-========================= -->
-<h3>Método de pago</h3>
-
-<div class="pagos">
-
-  <!-- SELECTOR -->
-  <label class="pago-select-label">
-    <span class="material-symbols-outlined">payments</span>
-    <select id="metodoPago">
-      <option value="deposito" selected>Depósito bancario</option>
-      <option value="efectivo">Pago en efectivo</option>
-    </select>
-  </label>
-
-  <!-- =========================
-       DEPÓSITO BANCARIO
-  ========================= -->
-  <div id="pago-deposito" class="pago-bloque">
-
-    <p>
-      <span class="material-symbols-outlined pago-icon">account_balance</span>
-      <strong class="pago-titulo">Depósito bancario:</strong><br>
-
-      <span class="pago-banco">Banco Atlántida</span> —
-      Cuenta <span class="pago-cuenta">123456789</span><br>
-
-      A nombre de <span class="pago-titular">Café Cortero</span>
-    </p>
-
-    <p class="comprobante-info">
-      Para poder <strong>enviar tu pedido</strong>, debes subir el
-      <strong>comprobante de tu depósito bancario</strong>.<br>
-      El pago será <strong>verificado manualmente</strong> por nuestro equipo.<br>
-      Una vez revisado, <strong>recibirás una notificación</strong> y podrás
-      ver el estado actualizado de tu pedido en <strong>Mis pedidos</strong>.
-    </p>
-
-    <button class="comprobante-link" id="btnSubirComprobante">
-      <span class="material-symbols-outlined">upload</span>
-      Subir comprobante de pago
-    </button>
-
-    <input type="file" id="inputComprobante" accept="image/*" hidden>
-
-    <div id="previewComprobante" class="preview hidden">
-      <img id="imgComprobante" alt="Comprobante de pago">
-      <p>✔ Este es el comprobante que se enviará con tu pedido</p>
-    </div>
-
-  </div>
-
-  <!-- =========================
-       PAGO EN EFECTIVO
-  ========================= -->
-  <div id="pago-efectivo" class="pago-bloque hidden">
-
-    <p>
-      <span class="material-symbols-outlined pago-icon">payments</span>
-      <strong class="pago-titulo">Pago en efectivo:</strong>
-    </p>
-
-    <p class="comprobante-info">
-      El pago se realizará en efectivo al momento de la entrega de tu pedido.<br>
-      Nuestro repartidor confirmará el pago directamente contigo.<br>
-      Una vez confirmado, el pedido será marcado como entregado y se actualizará
-      en <strong>Mis pedidos</strong>.
-<!-- =========================
-     MÉTODO DE PAGO
-========================= -->
-<h3>Método de pago</h3>
-
-<div class="pagos">
-
-  <!-- SELECTOR -->
-  <label class="pago-select-label">
-    <span class="material-symbols-outlined">payments</span>
-    <select id="metodoPago">
-      <option value="" selected disabled>Selecciona un método de pago</option>
-      <option value="bank_transfer">Depósito bancario</option>
-      <option value="cash">Pago en efectivo</option>
-    </select>
-  </label>
-
-  <!-- =========================
-       DEPÓSITO BANCARIO
-  ========================= -->
-  <div id="pago-deposito" class="pago-bloque hidden">
-
-    <p>
-      <span class="material-symbols-outlined pago-icon">account_balance</span>
-      <strong class="pago-titulo">Depósito bancario:</strong><br>
-      <span class="pago-banco">Banco Atlántida</span> —
-      Cuenta <span class="pago-cuenta">123456789</span><br>
-      A nombre de <span class="pago-titular">Café Cortero</span>
-    </p>
-
-    <p class="comprobante-info">
-      Para poder <strong>enviar tu pedido</strong>, debes subir el
-      <strong>comprobante de tu depósito bancario</strong>.<br>
-      El pago será <strong>verificado manualmente</strong> por nuestro equipo.<br>
-      Una vez revisado, <strong>recibirás una notificación</strong> y podrás
-      ver el estado actualizado de tu pedido en <strong>Mis pedidos</strong>.
-    </p>
-
-    <button class="comprobante-link" id="btnSubirComprobante">
-      <span class="material-symbols-outlined">upload</span>
-      Subir comprobante de pago
-    </button>
-
-    <input type="file" id="inputComprobante" accept="image/*" hidden>
-
-    <div id="previewComprobante" class="preview hidden">
-      <img id="imgComprobante" alt="Comprobante de pago">
-      <p>✔ Este es el comprobante que se enviará con tu pedido</p>
-    </div>
-
-  </div>
-
-  <!-- =========================
-       PAGO EN EFECTIVO
-  ========================= -->
-  <div id="pago-efectivo" class="pago-bloque hidden">
-
-    <p>
-      <span class="material-symbols-outlined pago-icon">payments</span>
-      <strong class="pago-titulo">Pago en efectivo:</strong>
-    </p>
-
-    <p class="comprobante-info">
-      El pago se realizará en efectivo al momento de la entrega de tu pedido.<br>
-      Nuestro repartidor confirmará el pago directamente contigo.<br>
-      Una vez confirmado, el pedido será marcado como entregado y se actualizará
-      en <strong>Mis pedidos</strong>.
-    </p>
-
-  </div>
-
-</div>
-
-        <!-- =========================
-             ENVIAR PEDIDO
+             MÉTODO DE PAGO (ÚNICO)
         ========================= -->
-      <div class="recibo-botones">
-  <button id="btnEnviar" class="btn-primary" disabled>
-    <span class="btn-text">Enviar pedido</span>
-    <i class="fa-solid fa-circle-notch fa-spin hidden" id="loaderEnviar"></i>
-  </button>
-</div>
+        <h3>Método de pago</h3>
 
-      </div><!-- FIN INNER CARD -->
+        <div class="pagos">
 
+          <!-- SELECT -->
+          <label class="pago-select-label">
+            <span class="material-symbols-outlined">payments</span>
+            <select id="metodoPago">
+              <option value="" selected disabled>Selecciona un método de pago</option>
+              <option value="bank_transfer">Depósito bancario</option>
+              <option value="cash">Pago en efectivo</option>
+            </select>
+          </label>
+
+          <!-- DEPÓSITO -->
+          <div id="pago-deposito" class="pago-bloque hidden">
+
+            <p>
+              <span class="material-symbols-outlined pago-icon">account_balance</span>
+              <strong class="pago-titulo">Depósito bancario</strong><br>
+              Banco Atlántida — Cuenta <span class="pago-cuenta">123456789</span><br>
+              A nombre de <span class="pago-titular">Café Cortero</span>
+            </p>
+
+            <p class="comprobante-info">
+              Para enviar tu pedido debes subir el comprobante del depósito.
+              El pago será verificado manualmente.
+            </p>
+
+            <button class="comprobante-link" id="btnSubirComprobante">
+              <span class="material-symbols-outlined">upload</span>
+              Subir comprobante
+            </button>
+
+            <input type="file" id="inputComprobante" accept="image/*" hidden>
+
+            <div id="previewComprobante" class="preview hidden">
+              <img id="imgComprobante" alt="Comprobante">
+              <p>✔ Comprobante listo para enviar</p>
+            </div>
+
+          </div>
+
+          <!-- EFECTIVO -->
+          <div id="pago-efectivo" class="pago-bloque hidden">
+            <p>
+              <span class="material-symbols-outlined pago-icon">payments</span>
+              <strong class="pago-titulo">Pago en efectivo</strong>
+            </p>
+
+            <p class="comprobante-info">
+              El pago se realizará en efectivo al momento de la entrega.
+              Nuestro repartidor confirmará el pago directamente contigo.
+            </p>
+          </div>
+
+        </div>
+
+        <!-- BOTÓN FINAL -->
+        <div class="recibo-botones">
+          <button id="btnEnviar" class="btn-primary" disabled>
+            <span class="btn-text">Enviar pedido</span>
+            <i class="fa-solid fa-circle-notch fa-spin hidden" id="loaderEnviar"></i>
+          </button>
+        </div>
+
+      </div>
     </section>
-
   </main>
 
   <!-- =========================
        SCRIPTS
   ========================= -->
-  <script>
-    window.PAGE_MODE = "recibo";
-  </script>
-
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-client-core.js"></script>
-
   <script src="js/layout.js"></script>
   <script src="js/header.js"></script>
   <script src="js/auth-ui.js"></script>
-
   <script src="js/recibo.js"></script>
-      <!-- =========================
-     SNACKBAR GLOBAL
-========================= -->
-<div id="snackbar" class="snackbar"></div>
-  
 
+  <!-- =========================
+       SNACKBAR GLOBAL
+  ========================= -->
+  <div id="snackbar" class="snackbar"></div>
 
 </body>
 </html>
