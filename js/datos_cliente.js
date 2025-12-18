@@ -1,11 +1,11 @@
 /* ============================================================
-   DETALLES DE ENTREGA — VERSIÓN FINAL 2025 (v11 FIX)
-   ✔ Sin redeclarar sb
-   ✔ Un solo cliente Supabase global
-   ✔ Anti-bucle estable
+   DETALLES DE ENTREGA — VERSIÓN FINAL 2025 (v11 UI FIX)
+   ✔ Errores debajo del campo
+   ✔ Sin alert()
+   ✔ Labels rojos Material 3
 ============================================================ */
 
-console.log("📦 datos_cliente.js — versión 11 FIX cargado");
+console.log("📦 datos_cliente.js — versión 11 UI FIX cargado");
 
 // ===================================================================
 // 0) ESPERAR A QUE SUPABASE ESTÉ LISTO (Anti-bucle)
@@ -14,7 +14,6 @@ function esperarSupabase() {
   return new Promise(resolve => {
     if (window.supabaseClient) resolve();
     else {
-      console.warn("⏳ Esperando Supabase...");
       const interval = setInterval(() => {
         if (window.supabaseClient) {
           clearInterval(interval);
@@ -40,6 +39,43 @@ const btnSubmit = document.getElementById("btn-submit");
 let userCache = null;
 let userId = null;
 let loadedAddressId = null;
+
+/* ============================================================
+   UI — ERRORES MATERIAL 3
+============================================================ */
+function mostrarError(input, mensaje) {
+  const field = input.closest(".m3-field");
+  if (!field) return;
+
+  const label = field.querySelector(".floating-label");
+  const box   = field.querySelector(".m3-input");
+
+  let helper = field.querySelector(".helper-text");
+  if (!helper) {
+    helper = document.createElement("div");
+    helper.className = "helper-text";
+    field.appendChild(helper);
+  }
+
+  field.classList.add("error");
+  box.classList.add("error");
+  if (label) label.style.color = "#B3261E";
+  helper.textContent = mensaje;
+}
+
+function limpiarError(input) {
+  const field = input.closest(".m3-field");
+  if (!field) return;
+
+  const label  = field.querySelector(".floating-label");
+  const box    = field.querySelector(".m3-input");
+  const helper = field.querySelector(".helper-text");
+
+  field.classList.remove("error");
+  box.classList.remove("error");
+  if (label) label.style.color = "";
+  if (helper) helper.textContent = "";
+}
 
 /* ============================================================
    1) LEER USUARIO DESDE CACHE
@@ -86,10 +122,7 @@ async function cargarDatosRealtime() {
       .eq("id", userId)
       .single();
 
-  if (error) {
-    console.error("❌ Error cargando usuario:", error);
-    return;
-  }
+  if (error) return;
 
   nombreInput.value   = userRow.name  || "";
   correoInput.value   = userRow.email || "";
@@ -109,7 +142,7 @@ async function cargarDatosRealtime() {
    5) CARGAR DIRECCIÓN
 ============================================================ */
 async function cargarDireccion() {
-  const { data, error } =
+  const { data } =
     await window.supabaseClient
       .from("addresses")
       .select("*")
@@ -117,15 +150,7 @@ async function cargarDireccion() {
       .order("created_at", { ascending: false })
       .limit(1);
 
-  if (error) {
-    console.error("❌ Error dirección:", error);
-    return;
-  }
-
-  if (!data || data.length === 0) {
-    console.warn("ℹ️ Usuario sin dirección guardada");
-    return;
-  }
+  if (!data || !data.length) return;
 
   const address = data[0];
   loadedAddressId = address.id;
@@ -139,47 +164,77 @@ async function cargarDireccion() {
   activarLabel(direccionInput);
   activarLabel(notaInput);
 
-  if (zonaSelect.value.trim()) {
-    zonaSelect.classList.add("filled");
-  }
+  if (zonaSelect.value.trim()) zonaSelect.classList.add("filled");
 }
 
 /* ============================================================
-   6) VALIDACIÓN EN CADENA
+   6) VALIDACIÓN EN CADENA (UI)
 ============================================================ */
 function validarFormularioCadena() {
-  if (!nombreInput.value.trim())    return "El nombre es obligatorio.";
-  if (!correoInput.value.trim())    return "El correo es obligatorio.";
-  if (!telefonoInput.value.trim())  return "El teléfono es obligatorio.";
-  if (!ciudadInput.value.trim())    return "La ciudad es obligatoria.";
-  if (!zonaSelect.value.trim())     return "Selecciona un departamento.";
-  if (!direccionInput.value.trim()) return "La dirección es obligatoria.";
-  return null;
+  limpiarTodosErrores();
+
+  if (!nombreInput.value.trim()) {
+    mostrarError(nombreInput, "El nombre es obligatorio");
+    return false;
+  }
+
+  if (!correoInput.value.trim()) {
+    mostrarError(correoInput, "El correo es obligatorio");
+    return false;
+  }
+
+  if (!telefonoInput.value.trim()) {
+    mostrarError(telefonoInput, "El teléfono es obligatorio");
+    return false;
+  }
+
+  if (!ciudadInput.value.trim()) {
+    mostrarError(ciudadInput, "La ciudad es obligatoria");
+    return false;
+  }
+
+  if (!zonaSelect.value.trim()) {
+    mostrarError(zonaSelect, "Selecciona un departamento");
+    return false;
+  }
+
+  if (!direccionInput.value.trim()) {
+    mostrarError(direccionInput, "La dirección es obligatoria");
+    return false;
+  }
+
+  return true;
+}
+
+function limpiarTodosErrores() {
+  [
+    nombreInput,
+    correoInput,
+    telefonoInput,
+    ciudadInput,
+    zonaSelect,
+    direccionInput,
+    notaInput
+  ].forEach(el => el && limpiarError(el));
 }
 
 /* ============================================================
    7) UPDATE USER
 ============================================================ */
 async function updateUserBasicInfo() {
-  const payload = {
-    name:  nombreInput.value.trim(),
-    phone: telefonoInput.value.trim(),
-  };
-
   const { error } =
     await window.supabaseClient
       .from("users")
-      .update(payload)
+      .update({
+        name: nombreInput.value.trim(),
+        phone: telefonoInput.value.trim()
+      })
       .eq("id", userId);
 
-  if (error) {
-    console.error("❌ Error actualizando usuario:", error);
-    return false;
-  }
+  if (error) return false;
 
-  const updated = { ...userCache, ...payload };
-  localStorage.setItem("cortero_user", JSON.stringify(updated));
-  userCache = updated;
+  userCache = { ...userCache, name: nombreInput.value.trim(), phone: telefonoInput.value.trim() };
+  localStorage.setItem("cortero_user", JSON.stringify(userCache));
 
   return true;
 }
@@ -200,33 +255,11 @@ async function guardarDireccion() {
     is_default: true,
   };
 
-  let result;
+  const result = loadedAddressId
+    ? await window.supabaseClient.from("addresses").update(payload).eq("id", loadedAddressId)
+    : await window.supabaseClient.from("addresses").insert(payload);
 
-  if (loadedAddressId) {
-    result =
-      await window.supabaseClient
-        .from("addresses")
-        .update(payload)
-        .eq("id", loadedAddressId)
-        .select()
-        .single();
-  } else {
-    result =
-      await window.supabaseClient
-        .from("addresses")
-        .insert(payload)
-        .select()
-        .single();
-  }
-
-  if (result.error) {
-    console.error("❌ Error guardando dirección:", result.error);
-    alert("No se pudo guardar tu dirección.");
-    btnSubmit.classList.remove("loading");
-    return false;
-  }
-
-  return true;
+  return !result.error;
 }
 
 /* ============================================================
@@ -235,27 +268,21 @@ async function guardarDireccion() {
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const errorMensaje = validarFormularioCadena();
-  if (errorMensaje) {
-    alert(errorMensaje);
-    return;
-  }
+  if (!validarFormularioCadena()) return;
 
   btnSubmit.classList.add("loading");
 
-  const okUser = await updateUserBasicInfo();
-  if (!okUser) {
-    alert("Error actualizando tu información.");
+  if (!await updateUserBasicInfo()) {
     btnSubmit.classList.remove("loading");
     return;
   }
 
-  const okAddress = await guardarDireccion();
-  if (!okAddress) return;
+  if (!await guardarDireccion()) {
+    btnSubmit.classList.remove("loading");
+    return;
+  }
 
-  setTimeout(() => {
-    window.location.href = "recibo.html";
-  }, 600);
+  setTimeout(() => window.location.href = "recibo.html", 600);
 });
 
 /* ============================================================
@@ -275,11 +302,20 @@ async function init() {
   pintarDatosInstantaneos();
   cargarDatosRealtime();
 
-  zonaSelect.addEventListener("change", () =>
+  [
+    nombreInput,
+    telefonoInput,
+    ciudadInput,
+    direccionInput,
+    notaInput
+  ].forEach(el => el && el.addEventListener("input", () => limpiarError(el)));
+
+  zonaSelect.addEventListener("change", () => {
+    limpiarError(zonaSelect);
     zonaSelect.value.trim()
       ? zonaSelect.classList.add("filled")
-      : zonaSelect.classList.remove("filled")
-  );
+      : zonaSelect.classList.remove("filled");
+  });
 }
 
 init();
