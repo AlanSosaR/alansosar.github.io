@@ -73,19 +73,77 @@
 </p>
 
         <!-- =========================
-             MÉTODO DE PAGO
-        ========================= -->
-        <h3>Método de pago</h3>
-        <div class="pagos">
-  <p>
-    <span class="material-symbols-outlined pago-icon">account_balance</span>
-    <strong class="pago-titulo">Depósito bancario:</strong><br>
+     MÉTODO DE PAGO
+========================= -->
+<h3>Método de pago</h3>
 
-    <span class="pago-banco">Banco Atlántida</span> —
-    Cuenta <span class="pago-cuenta">123456789</span><br>
+<div class="pagos">
 
-    A nombre de <span class="pago-titular">Café Cortero</span>
-  </p>
+  <!-- SELECTOR -->
+  <label class="pago-select-label">
+    <span class="material-symbols-outlined">payments</span>
+    <select id="metodoPago">
+      <option value="deposito" selected>Depósito bancario</option>
+      <option value="efectivo">Pago en efectivo</option>
+    </select>
+  </label>
+
+  <!-- =========================
+       DEPÓSITO BANCARIO
+  ========================= -->
+  <div id="pago-deposito" class="pago-bloque">
+
+    <p>
+      <span class="material-symbols-outlined pago-icon">account_balance</span>
+      <strong class="pago-titulo">Depósito bancario:</strong><br>
+
+      <span class="pago-banco">Banco Atlántida</span> —
+      Cuenta <span class="pago-cuenta">123456789</span><br>
+
+      A nombre de <span class="pago-titular">Café Cortero</span>
+    </p>
+
+    <p class="comprobante-info">
+      Para poder <strong>enviar tu pedido</strong>, debes subir el
+      <strong>comprobante de tu depósito bancario</strong>.<br>
+      El pago será <strong>verificado manualmente</strong> por nuestro equipo.<br>
+      Una vez revisado, <strong>recibirás una notificación</strong> y podrás
+      ver el estado actualizado de tu pedido en <strong>Mis pedidos</strong>.
+    </p>
+
+    <button class="comprobante-link" id="btnSubirComprobante">
+      <span class="material-symbols-outlined">upload</span>
+      Subir comprobante de pago
+    </button>
+
+    <input type="file" id="inputComprobante" accept="image/*" hidden>
+
+    <div id="previewComprobante" class="preview hidden">
+      <img id="imgComprobante" alt="Comprobante de pago">
+      <p>✔ Este es el comprobante que se enviará con tu pedido</p>
+    </div>
+
+  </div>
+
+  <!-- =========================
+       PAGO EN EFECTIVO
+  ========================= -->
+  <div id="pago-efectivo" class="pago-bloque hidden">
+
+    <p>
+      <span class="material-symbols-outlined pago-icon">payments</span>
+      <strong class="pago-titulo">Pago en efectivo:</strong>
+    </p>
+
+    <p class="comprobante-info">
+      El pago se realizará en efectivo al momento de la entrega de tu pedido.<br>
+      Nuestro repartidor confirmará el pago directamente contigo.<br>
+      Una vez confirmado, el pedido será marcado como entregado y se actualizará
+      en <strong>Mis pedidos</strong>.
+    </p>
+
+  </div>
+
 </div>
 
         <!-- =========================
