@@ -122,33 +122,53 @@ body {
   text-align: center;
   font-size: 1.45rem;
   margin-bottom: 6px;
+  color: var(--marron); /* 🟤 título principal */
 }
 
+/* ===== FECHA ===== */
 .fecha {
   text-align: center;
-  font-size: .95rem;
-  color: var(--marron-suave);
+  font-size: 0.95rem;
   margin-bottom: 24px;
 }
 
+/* Texto "Fecha:" */
+.fecha strong {
+  color: var(--marron); /* 🟤 */
+  font-weight: 600;
+}
+
+/* Valor dinámico de la fecha (BD) */
+.fecha span {
+  color: var(--verde); /* 🟢 */
+  font-weight: 500;
+}
+
+/* ===== SUBTÍTULOS ===== */
 h3 {
   margin-top: 24px;
   font-size: 1.1rem;
-  color: var(--verde);
+  color: var(--verde);             /* 🟢 título sección */
   padding-left: 12px;
-  border-left: 4px solid var(--marron);
+  border-left: 4px solid var(--marron); /* 🟤 barra */
 }
 
 /* ================= CLIENTE ================= */
 .cliente-info p {
   margin: 8px 0;
-  font-size: .95rem;
+  font-size: 0.95rem;
 }
+
+/* Etiquetas: Nombre, Correo, Teléfono, etc. */
 .cliente-info strong {
-  color: var(--marron);
+  color: var(--marron);   /* 🟤 café */
+  font-weight: 600;
 }
+
+/* Valores que vienen de la BD */
 .cliente-info span {
-  color: var(--marron-suave);
+  color: var(--verde);    /* 🟢 verde */
+  font-weight: 500;
 }
 
 /* ================= CAFÉS ================= */
@@ -191,10 +211,34 @@ h3 {
 }
 
 /* ================= PAGO ================= */
+/* ================= MÉTODO DE PAGO ================= */
 .pagos p {
-  font-size: .95rem;
+  font-size: 0.95rem;
   line-height: 1.6;
-  color: var(--marron-suave);
+}
+
+/* Título: Depósito bancario */
+.pagos p strong:first-child {
+  color: var(--marron);      /* 🟤 café */
+  font-weight: 600;
+}
+
+/* Nombre del banco */
+.pagos .banco {
+  color: var(--verde);       /* 🟢 verde */
+  font-weight: 500;
+}
+
+/* Número de cuenta */
+.pagos .cuenta {
+  color: var(--marron);      /* 🟤 café */
+  font-weight: 500;
+}
+
+/* A nombre de */
+.pagos .titular {
+  color: var(--marron);      /* 🟤 café */
+  font-weight: 500;
 }
 
 /* ================= COMPROBANTE ================= */
