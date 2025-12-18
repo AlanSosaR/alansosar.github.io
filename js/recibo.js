@@ -1,13 +1,13 @@
 console.log("🧾 recibo.js — versión FINAL estable");
 
 /* =========================================================
-   MODO DE PÁGINA (HEADER GLOBAL)
+   MODO DE PÁGINA
 ========================================================= */
 window.PAGE_MODE = "recibo";
 
-/* =========================
+/* =========================================================
    HELPERS
-========================= */
+========================================================= */
 function safe(id) {
   return document.getElementById(id);
 }
@@ -63,12 +63,18 @@ safe("fechaPedido").textContent = new Date().toLocaleString("es-HN", {
 });
 
 /* =========================================================
-   DATOS DEL CLIENTE — MISMA LÓGICA QUE datos_cliente.js
+   DATOS DEL CLIENTE
 ========================================================= */
 async function cargarDatosCliente() {
   const sb = window.supabaseClient;
+  const userCache = getUserCache();
 
-  let cliente = {
+  if (!userCache) {
+    window.location.href = "login.html";
+    return null;
+  }
+
+  const cliente = {
     nombre: "",
     correo: "",
     telefono: "",
@@ -77,62 +83,51 @@ async function cargarDatosCliente() {
     nota: ""
   };
 
-  const userCache = getUserCache();
-  if (!userCache) {
-    window.location.href = "login.html";
-    return cliente;
-  }
-
   try {
-    // 1️⃣ USUARIO
-    const { data: userRow, error: userError } = await sb
+    // Usuario
+    const { data: userRow } = await sb
       .from("users")
       .select("id, name, email, phone")
       .eq("id", userCache.id)
       .single();
 
-    if (!userError && userRow) {
-      cliente.nombre   = userRow.name || "";
-      cliente.correo   = userRow.email || "";
+    if (userRow) {
+      cliente.nombre = userRow.name || "";
+      cliente.correo = userRow.email || "";
       cliente.telefono = userRow.phone || "";
     }
 
-    // 2️⃣ ÚLTIMA DIRECCIÓN
-    const { data: addressRows, error: addressError } = await sb
+    // Última dirección
+    const { data: addressRows } = await sb
       .from("addresses")
-      .select("state, city, street, postal_code")
+      .select("state, street, postal_code")
       .eq("user_id", userCache.id)
       .order("created_at", { ascending: false })
       .limit(1);
 
-    if (addressError) {
-      console.error("❌ Error dirección:", addressError);
-    }
-
-    if (addressRows && addressRows.length > 0) {
-      const address = addressRows[0];
-      cliente.zona      = address.state || "";
-      cliente.direccion = address.street || "";
-      cliente.nota      = address.postal_code || "";
+    if (addressRows && addressRows.length) {
+      cliente.zona = addressRows[0].state || "";
+      cliente.direccion = addressRows[0].street || "";
+      cliente.nota = addressRows[0].postal_code || "";
     }
 
   } catch (err) {
     console.error("❌ Error cargando cliente:", err);
   }
 
-  // 3️⃣ PINTAR UI
-  safe("nombreCliente").textContent    = cliente.nombre;
-  safe("correoCliente").textContent    = cliente.correo;
-  safe("telefonoCliente").textContent  = cliente.telefono;
-  safe("zonaCliente").textContent      = cliente.zona;
+  // Pintar UI
+  safe("nombreCliente").textContent = cliente.nombre;
+  safe("correoCliente").textContent = cliente.correo;
+  safe("telefonoCliente").textContent = cliente.telefono;
+  safe("zonaCliente").textContent = cliente.zona;
   safe("direccionCliente").textContent = cliente.direccion;
-  safe("notaCliente").textContent      = cliente.nota;
+  safe("notaCliente").textContent = cliente.nota;
 
   return cliente;
 }
 
 /* =========================================================
-   CAFÉS DEL CARRITO (LOCALSTORAGE)
+   CAFÉS DEL CARRITO
 ========================================================= */
 const carrito = JSON.parse(localStorage.getItem("cafecortero_cart")) || [];
 const lista = safe("listaProductos");
@@ -142,11 +137,11 @@ if (lista) {
   lista.innerHTML = "";
 
   carrito.forEach(item => {
-    const precioNum = parseFloat(
+    const precio = parseFloat(
       item.price.toString().replace(/[^\d.-]/g, "")
     ) || 0;
 
-    const subtotal = precioNum * item.qty;
+    const subtotal = precio * item.qty;
     total += subtotal;
 
     const div = document.createElement("div");
@@ -178,6 +173,7 @@ const inputComprobante = safe("inputComprobante");
 const previewBox = safe("previewComprobante");
 const imgPreview = safe("imgComprobante");
 const btnEnviar = safe("btnEnviar");
+const loaderEnviar = safe("loaderEnviar");
 
 safe("btnSubirComprobante")?.addEventListener("click", () => {
   inputComprobante.click();
@@ -194,51 +190,75 @@ inputComprobante?.addEventListener("change", () => {
 });
 
 /* =========================================================
-   ENVIAR PEDIDO
+   ENVIAR PEDIDO (FINAL)
 ========================================================= */
 btnEnviar?.addEventListener("click", async () => {
   if (!comprobanteSeleccionado) {
-    alert("Debes subir el comprobante.");
+    alert("Debes subir el comprobante de pago.");
     return;
   }
 
   btnEnviar.disabled = true;
-  safe("loaderEnviar")?.classList.remove("hidden");
+  loaderEnviar.classList.remove("hidden");
 
-  const cliente = await cargarDatosCliente();
+  const sb = window.supabaseClient;
+  const userCache = getUserCache();
 
-  const pedido = {
-    numero_pedido: numeroPedido,
-    cliente_nombre: cliente.nombre,
-    cliente_correo: cliente.correo,
-    cliente_telefono: cliente.telefono,
-    cliente_zona: cliente.zona,
-    cliente_direccion: cliente.direccion,
-    cliente_nota: cliente.nota,
-    productos: carrito,
-    total,
-    estado: "Pendiente de revisión",
-    metodo_pago: "Depósito bancario",
-    comprobante_nombre: comprobanteSeleccionado.name,
-    comprobante_tipo: comprobanteSeleccionado.type
-  };
+  try {
+    /* 1️⃣ Crear pedido */
+    const { data: pedido, error: pedidoError } = await sb
+      .from("orders")
+      .insert([{
+        user_id: userCache.id,
+        total,
+        status: "payment_review",
+        payment_method: "bank_transfer"
+      }])
+      .select()
+      .single();
 
-  const { error } = await window.supabaseClient
-    .from("pedidos")
-    .insert([pedido]);
+    if (pedidoError) throw pedidoError;
 
-  if (error) {
-    console.error(error);
-    alert("Error al enviar pedido");
+    /* 2️⃣ Subir comprobante */
+    const ext = comprobanteSeleccionado.name.split(".").pop();
+    const filePath = `order-${pedido.id}.${ext}`;
+
+    const { error: uploadError } = await sb.storage
+      .from("payment-receipts")
+      .upload(filePath, comprobanteSeleccionado);
+
+    if (uploadError) throw uploadError;
+
+    const { data: urlData } = sb.storage
+      .from("payment-receipts")
+      .getPublicUrl(filePath);
+
+    /* 3️⃣ Guardar en payment_receipts */
+    const { error: receiptError } = await sb
+      .from("payment_receipts")
+      .insert([{
+        order_id: pedido.id,
+        user_id: userCache.id,
+        file_url: urlData.publicUrl,
+        file_path: filePath
+      }]);
+
+    if (receiptError) throw receiptError;
+
+    /* 4️⃣ Limpiar carrito */
+    localStorage.removeItem("cafecortero_cart");
+    localStorage.removeItem("numeroPedidoActivo");
+
+    alert(`Pedido #${numeroPedido} enviado correctamente`);
+    window.location.href = "mis-pedidos.html";
+
+  } catch (err) {
+    console.error("❌ Error:", err);
+    alert("Error al enviar el pedido");
+
     btnEnviar.disabled = false;
-    return;
+    loaderEnviar.classList.add("hidden");
   }
-
-  localStorage.removeItem("numeroPedidoActivo");
-  localStorage.removeItem("cafecortero_cart");
-
-  alert(`Pedido #${numeroPedido} enviado correctamente`);
-  window.location.href = "mis-pedidos.html";
 });
 
 /* =========================================================
