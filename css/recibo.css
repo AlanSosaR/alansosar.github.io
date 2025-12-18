@@ -220,22 +220,22 @@ h3 {
   font-size: 1.2rem;
   font-weight: 600;
 
-  display: flex;                 /* 🔑 clave para alineación */
+  display: flex;
   justify-content: flex-end;
   align-items: center;
   gap: 6px;
 
-  color: var(--marron);          /* 🟤 texto y precio */
+  color: var(--marron); /* 🟤 texto y precio */
 }
 
 /* Ícono Material 3 */
 .total-icon {
   font-size: 22px;
-  line-height: 1;                /* 🔑 centra vertical */
+  line-height: 1;
   display: flex;
   align-items: center;
 
-  color: var(--verde);           /* 🟢 solo el ícono */
+  color: var(--verde); /* 🟢 SOLO el icono */
 
   font-variation-settings:
     'FILL' 0,
@@ -244,9 +244,9 @@ h3 {
     'opsz' 24;
 }
 
-/* Asegura café en texto y monto */
+/* Blindaje de texto en café */
 .recibo-total strong,
-.recibo-total span {
+.recibo-total span:not(.total-icon) {
   color: var(--marron);
 }
 
