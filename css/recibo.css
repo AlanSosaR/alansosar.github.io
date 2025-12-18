@@ -56,16 +56,13 @@ body {
   box-shadow: 0 12px 28px rgba(0,0,0,0.06);
 }
 
-/* ================= FLECHA VOLVER — ANCLADA A LA TARJETA ================= */
+/* ================= FLECHA VOLVER — CORRECTA ================= */
 
 .card-back {
   position: absolute;
-  top: 20px;        /* 🔑 ahora es relativo al borde café */
-  left: 20px;
-  z-index: 10;
-}
+  top: 28px;          /* 🔑 baja la flecha dentro de la tarjeta */
+  left: 28px;
 
-.card-back button {
   width: 48px;
   height: 48px;
   border-radius: 50%;
@@ -79,26 +76,27 @@ body {
   justify-content: center;
 
   cursor: pointer;
+  z-index: 20;
+
   transition: transform .25s ease, box-shadow .25s ease;
 }
 
-.card-back button:hover {
+.card-back:hover {
   transform: translateY(-2px);
   box-shadow: 0 7px 20px rgba(0,0,0,0.20);
 }
 
-.card-back i,
 .card-back .material-symbols-outlined {
   font-size: 26px;
   font-weight: 600;
-  color: var(--verde) !important;
+  color: var(--verde);
 }
 
 /* ================= TELÉFONO ================= */
 @media (max-width: 600px) {
   .card-back {
-    top: 16px;
-    left: 16px;
+    top: 20px;
+    left: 20px;
   }
 }
 
