@@ -224,34 +224,42 @@ h3 {
 }
 
 
-/* ================= PAGO ================= */
 /* ================= MÉTODO DE PAGO ================= */
 .pagos p {
   font-size: 0.95rem;
   line-height: 1.6;
+  color: var(--marron-suave);
+}
+
+/* Icono Material */
+.pago-icon {
+  font-size: 20px;
+  vertical-align: middle;
+  margin-right: 6px;
+  color: var(--verde);
 }
 
 /* Título: Depósito bancario */
-.pagos p strong:first-child {
-  color: var(--marron);      /* 🟤 café */
+.pago-titulo {
+  color: var(--marron);   /* 🟤 café */
   font-weight: 600;
 }
 
-/* Nombre del banco */
-.pagos .banco {
-  color: var(--verde);       /* 🟢 verde */
+/* Banco Atlántida */
+.pago-banco {
+  color: var(--verde);    /* 🟢 verde */
   font-weight: 500;
 }
 
 /* Número de cuenta */
-.pagos .cuenta {
-  color: var(--marron);      /* 🟤 café */
+.pago-cuenta {
+  color: var(--marron);   /* 🟤 café */
   font-weight: 500;
 }
 
 /* A nombre de */
-.pagos .titular {
-  color: var(--marron);      /* 🟤 café */
+.pago-titular {
+  color: var(--marron);   /* 🟤 café */
   font-weight: 500;
 }
 
