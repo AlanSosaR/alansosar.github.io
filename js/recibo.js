@@ -129,14 +129,16 @@ if (lista) {
     total += subtotal;
 
     lista.innerHTML += `
-      <div class="cafe-item">
-        <div>
-          <span class="cafe-nombre">${item.name}</span>
-          <span class="cafe-cantidad">x${item.qty}</span>
-        </div>
-        <span class="cafe-precio">L ${subtotal.toFixed(2)}</span>
-      </div>
-    `;
+  <div class="cafe-item">
+    <div>
+      <span class="cafe-nombre">${item.name}</span>
+      <span class="cafe-cantidad">
+        <span class="cafe-qty">${item.qty}</span> bolsas
+      </span>
+    </div>
+    <span class="cafe-precio">L ${subtotal.toFixed(2)}</span>
+  </div>
+`;
   });
 
   safe("totalPedido").textContent = total.toFixed(2);
