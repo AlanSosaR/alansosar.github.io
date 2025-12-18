@@ -29,23 +29,29 @@
   ========================= -->
   <main class="recibo-container fade-in">
 
+    <!-- TARJETA PRINCIPAL (SIN BORDE) -->
     <section class="recibo-card">
 
-      <!-- =========================
-           TARJETA 1 — DATOS CLIENTE
-           (flotante, sin contorno)
-      ========================= -->
-      <div class="inner-card floating-card">
+      <!-- FLECHA FLOTANTE (MISMA LÓGICA QUE DETALLES CLIENTE) -->
+      <div class="card-back">
+        <button id="btnVolver" aria-label="Volver">
+          <i class="fa-solid fa-arrow-left"></i>
+        </button>
+      </div>
 
-        <!-- Flecha volver -->
-        <div class="card-back">
-          <button id="btnVolver" aria-label="Volver">
-            <i class="fa-solid fa-arrow-left"></i>
-          </button>
-        </div>
+      <!-- INNER CARD CON CONTORNO (ENVUELVE TODO) -->
+      <div class="inner-card-full">
 
+        <!-- Encabezado -->
+        <h2>Pedido N.º <span id="numeroPedido"></span></h2>
+        <p class="fecha">
+          <strong>Fecha:</strong> <span id="fechaPedido"></span>
+        </p>
+
+        <!-- =========================
+             DATOS DEL CLIENTE
+        ========================= -->
         <h3>Datos del cliente</h3>
-
         <div class="cliente-info">
           <p><strong>Nombre:</strong> <span id="nombreCliente"></span></p>
           <p><strong>Correo:</strong> <span id="correoCliente"></span></p>
@@ -55,28 +61,20 @@
           <p><strong>Nota:</strong> <span id="notaCliente"></span></p>
         </div>
 
-      </div>
-
-      <!-- =========================
-           TARJETA 2 — PEDIDO / PAGO
-           (contorno café)
-      ========================= -->
-      <div class="inner-card bordered-card">
-
-        <h2>Pedido N.º <span id="numeroPedido"></span></h2>
-        <p class="fecha">
-          <strong>Fecha:</strong> <span id="fechaPedido"></span>
-        </p>
-
-        <!-- Selección de cafés -->
+        <!-- =========================
+             SELECCIÓN DE CAFÉS
+        ========================= -->
         <h3>Selección de cafés</h3>
         <div id="listaProductos" class="cafes-list"></div>
 
+        <!-- Total -->
         <p class="recibo-total">
           <strong>💰 Total:</strong> L <span id="totalPedido"></span>
         </p>
 
-        <!-- Método de pago -->
+        <!-- =========================
+             MÉTODO DE PAGO
+        ========================= -->
         <h3>Método de pago</h3>
         <div class="pagos">
           <p>
@@ -86,7 +84,9 @@
           </p>
         </div>
 
-        <!-- Comprobante -->
+        <!-- =========================
+             COMPROBANTE
+        ========================= -->
         <h3>Comprobante de pago</h3>
 
         <div class="comprobante-box">
@@ -103,7 +103,9 @@
           </div>
         </div>
 
-        <!-- Enviar pedido -->
+        <!-- =========================
+             ENVIAR PEDIDO
+        ========================= -->
         <div class="recibo-botones">
           <button id="btnEnviar" class="btn-primary" disabled>
             <i class="fa-solid fa-circle-notch fa-spin hidden" id="loaderEnviar"></i>
@@ -112,7 +114,7 @@
           </button>
         </div>
 
-      </div>
+      </div><!-- FIN INNER CARD -->
 
     </section>
 
