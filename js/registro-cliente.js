@@ -1,10 +1,10 @@
 // ============================================================
 // REGISTRO DE CLIENTE — Café Cortero
-// Supabase Auth v2 — FINAL ESTABLE 2025
+// Supabase Auth v2 — FINAL ESTABLE 2025 (CON BARRAS)
 // ============================================================
 
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("🧾 registro-cliente.js — versión final estable");
+  console.log("🧾 registro-cliente.js — versión final con barras");
 
   const sb = window.supabaseClient;
   if (!sb) {
@@ -14,6 +14,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const form = document.getElementById("registroForm");
 
+  /* =========================================================
+     CAMPOS
+  ========================================================= */
   const campos = {
     nombre: document.getElementById("nombreInput"),
     correo: document.getElementById("correoInput"),
@@ -36,6 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function marcar(campo, mensaje = "", ok = false) {
     const input = campos[campo];
     const box = input.closest(".m3-input");
+    if (!box) return;
 
     box.classList.remove("error", "success");
 
@@ -88,6 +92,45 @@ document.addEventListener("DOMContentLoaded", () => {
   campos.confirm.addEventListener("input", () =>
     marcar("confirm", "", campos.confirm.value === campos.password.value)
   );
+
+  /* =========================================================
+     BARRA DE SEGURIDAD DE CONTRASEÑA (6 NIVELES)
+  ========================================================= */
+  const barsContainer = document.getElementById("barsContainer");
+  const bars = barsContainer
+    ? barsContainer.querySelectorAll(".strength-bar")
+    : [];
+
+  function nivelSeguridad(pass) {
+    let score = 0;
+    if (pass.length >= 6) score++;
+    if (pass.length >= 8) score++;
+    if (/[A-Z]/.test(pass)) score++;
+    if (/[0-9]/.test(pass)) score++;
+    if (/[^A-Za-z0-9]/.test(pass)) score++;
+    if (pass.length >= 12) score++;
+    return Math.min(score, 6);
+  }
+
+  if (campos.password && barsContainer) {
+    campos.password.addEventListener("input", () => {
+      const val = campos.password.value.trim();
+
+      if (!val) {
+        barsContainer.style.display = "none";
+        bars.forEach(bar => (bar.className = "strength-bar"));
+        return;
+      }
+
+      barsContainer.style.display = "flex";
+      const nivel = nivelSeguridad(val);
+
+      bars.forEach((bar, i) => {
+        bar.className = "strength-bar";
+        if (i < nivel) bar.classList.add(`level-${nivel}`);
+      });
+    });
+  }
 
   /* =========================================================
      LOADER BOTÓN
@@ -149,7 +192,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (err.message?.includes("already registered")) {
         marcar("correo", "Este correo ya existe");
-      } else {
+      }
+      else if (err.message?.includes("users_phone_unique")) {
+        marcar("telefono", "Este teléfono ya está registrado");
+      }
+      else {
         mostrarSnackbar("Error al crear la cuenta");
       }
 
@@ -158,7 +205,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   /* =========================================================
-     TOGGLE PASSWORD
+     TOGGLE PASSWORD (MOSTRAR / OCULTAR)
   ========================================================= */
   document.querySelectorAll(".toggle-pass").forEach(icon => {
     icon.addEventListener("click", () => {
