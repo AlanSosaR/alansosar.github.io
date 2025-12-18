@@ -1,4 +1,4 @@
-console.log("🧾 recibo.js — versión FINAL estable");
+console.log("🧾 recibo.js — versión FINAL corregida");
 
 /* =========================================================
    MODO DE PÁGINA
@@ -13,7 +13,7 @@ function safe(id) {
 }
 
 /* =========================================================
-   ESPERAR SUPABASE (ANTI-BUCLE)
+   ESPERAR SUPABASE
 ========================================================= */
 function esperarSupabase() {
   return new Promise(resolve => {
@@ -42,7 +42,7 @@ function getUserCache() {
 }
 
 /* =========================================================
-   NÚMERO DE PEDIDO
+   NÚMERO DE PEDIDO (FRONT)
 ========================================================= */
 let numeroPedido = localStorage.getItem("numeroPedidoActivo");
 
@@ -67,67 +67,46 @@ safe("fechaPedido").textContent = new Date().toLocaleString("es-HN", {
 ========================================================= */
 async function cargarDatosCliente() {
   const sb = window.supabaseClient;
-  const userCache = getUserCache();
+  const user = getUserCache();
 
-  if (!userCache) {
+  if (!user) {
     window.location.href = "login.html";
     return null;
   }
 
-  const cliente = {
-    nombre: "",
-    correo: "",
-    telefono: "",
-    zona: "",
-    direccion: "",
-    nota: ""
-  };
-
   try {
-    // Usuario
     const { data: userRow } = await sb
       .from("users")
-      .select("id, name, email, phone")
-      .eq("id", userCache.id)
+      .select("name,email,phone")
+      .eq("id", user.id)
       .single();
 
     if (userRow) {
-      cliente.nombre = userRow.name || "";
-      cliente.correo = userRow.email || "";
-      cliente.telefono = userRow.phone || "";
+      safe("nombreCliente").textContent = userRow.name || "";
+      safe("correoCliente").textContent = userRow.email || "";
+      safe("telefonoCliente").textContent = userRow.phone || "";
     }
 
-    // Última dirección
-    const { data: addressRows } = await sb
+    const { data: addr } = await sb
       .from("addresses")
-      .select("state, street, postal_code")
-      .eq("user_id", userCache.id)
+      .select("state,street,postal_code")
+      .eq("user_id", user.id)
       .order("created_at", { ascending: false })
       .limit(1);
 
-    if (addressRows && addressRows.length) {
-      cliente.zona = addressRows[0].state || "";
-      cliente.direccion = addressRows[0].street || "";
-      cliente.nota = addressRows[0].postal_code || "";
+    if (addr && addr.length) {
+      safe("zonaCliente").textContent = addr[0].state || "";
+      safe("direccionCliente").textContent = addr[0].street || "";
+      safe("notaCliente").textContent = addr[0].postal_code || "";
     }
 
-  } catch (err) {
-    console.error("❌ Error cargando cliente:", err);
+  } catch (e) {
+    console.error("❌ Error cliente:", e);
   }
-
-  // Pintar UI
-  safe("nombreCliente").textContent = cliente.nombre;
-  safe("correoCliente").textContent = cliente.correo;
-  safe("telefonoCliente").textContent = cliente.telefono;
-  safe("zonaCliente").textContent = cliente.zona;
-  safe("direccionCliente").textContent = cliente.direccion;
-  safe("notaCliente").textContent = cliente.nota;
-
-  return cliente;
 }
 
 /* =========================================================
-   CAFÉS DEL CARRITO
+   CARRITO
 ========================================================= */
 const carrito = JSON.parse(localStorage.getItem("cafecortero_cart")) || [];
 const lista = safe("listaProductos");
@@ -137,11 +116,8 @@ if (lista) {
   lista.innerHTML = "";
 
   carrito.forEach(item => {
-    const precio = parseFloat(
-      item.price.toString().replace(/[^\d.-]/g, "")
-    ) || 0;
-
-    const subtotal = precio * item.qty;
+    const price = parseFloat(item.price.toString().replace(/[^\d.-]/g, "")) || 0;
+    const subtotal = price * item.qty;
     total += subtotal;
 
     const div = document.createElement("div");
@@ -160,90 +136,90 @@ if (lista) {
 }
 
 /* =========================================================
-   VOLVER
-========================================================= */
-safe("btnVolver")?.addEventListener("click", () => history.back());
-
-/* =========================================================
    COMPROBANTE
 ========================================================= */
-let comprobanteSeleccionado = null;
+let comprobante = null;
 
-const inputComprobante = safe("inputComprobante");
+const inputFile = safe("inputComprobante");
 const previewBox = safe("previewComprobante");
 const imgPreview = safe("imgComprobante");
 const btnEnviar = safe("btnEnviar");
-const loaderEnviar = safe("loaderEnviar");
+const loader = safe("loaderEnviar");
 
 safe("btnSubirComprobante")?.addEventListener("click", () => {
-  inputComprobante.click();
+  inputFile.click();
 });
 
-inputComprobante?.addEventListener("change", () => {
-  const file = inputComprobante.files[0];
+inputFile?.addEventListener("change", () => {
+  const file = inputFile.files[0];
   if (!file) return;
 
-  comprobanteSeleccionado = file;
+  if (!file.type.startsWith("image/")) {
+    alert("El comprobante debe ser una imagen.");
+    return;
+  }
+
+  comprobante = file;
   imgPreview.src = URL.createObjectURL(file);
   previewBox.classList.remove("hidden");
   btnEnviar.disabled = false;
 });
 
 /* =========================================================
-   ENVIAR PEDIDO (FINAL)
+   ENVIAR PEDIDO
 ========================================================= */
 btnEnviar?.addEventListener("click", async () => {
-  if (!comprobanteSeleccionado) {
+  if (!comprobante) {
     alert("Debes subir el comprobante de pago.");
     return;
   }
 
   btnEnviar.disabled = true;
-  loaderEnviar.classList.remove("hidden");
+  loader.classList.remove("hidden");
 
   const sb = window.supabaseClient;
-  const userCache = getUserCache();
+  const user = getUserCache();
 
   try {
     /* 1️⃣ Crear pedido */
-    const { data: pedido, error: pedidoError } = await sb
+    const { data: order, error: orderErr } = await sb
       .from("orders")
-      .insert([{
-        user_id: userCache.id,
+      .insert({
+        user_id: user.id,
         total,
         status: "payment_review",
         payment_method: "bank_transfer"
-      }])
+      })
       .select()
       .single();
 
-    if (pedidoError) throw pedidoError;
+    if (orderErr) throw orderErr;
 
     /* 2️⃣ Subir comprobante */
-    const ext = comprobanteSeleccionado.name.split(".").pop();
-    const filePath = `order-${pedido.id}.${ext}`;
+    const ext = comprobante.name.split(".").pop();
+    const path = `order_${order.id}/${Date.now()}.${ext}`;
 
-    const { error: uploadError } = await sb.storage
+    const { error: uploadErr } = await sb.storage
       .from("payment-receipts")
-      .upload(filePath, comprobanteSeleccionado);
+      .upload(path, comprobante);
 
-    if (uploadError) throw uploadError;
+    if (uploadErr) throw uploadErr;
 
     const { data: urlData } = sb.storage
       .from("payment-receipts")
-      .getPublicUrl(filePath);
+      .getPublicUrl(path);
 
-    /* 3️⃣ Guardar en payment_receipts */
-    const { error: receiptError } = await sb
+    /* 3️⃣ Guardar referencia */
+    const { error: receiptErr } = await sb
       .from("payment_receipts")
-      .insert([{
-        order_id: pedido.id,
-        user_id: userCache.id,
+      .insert({
+        order_id: order.id,
+        user_id: user.id,
         file_url: urlData.publicUrl,
-        file_path: filePath
-      }]);
+        file_path: path
+      });
 
-    if (receiptError) throw receiptError;
+    if (receiptErr) throw receiptErr;
 
     /* 4️⃣ Limpiar carrito */
     localStorage.removeItem("cafecortero_cart");
@@ -253,11 +229,11 @@ btnEnviar?.addEventListener("click", async () => {
     window.location.href = "mis-pedidos.html";
 
   } catch (err) {
-    console.error("❌ Error:", err);
-    alert("Error al enviar el pedido");
+    console.error("❌ Error envío:", err);
+    alert("No se pudo enviar el pedido");
 
     btnEnviar.disabled = false;
-    loaderEnviar.classList.add("hidden");
+    loader.classList.add("hidden");
   }
 });
 
