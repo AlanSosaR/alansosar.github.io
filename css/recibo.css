@@ -108,8 +108,10 @@ body {
 .inner-card-full {
   background: #ffffff;
   border-radius: 22px;
-  border: 1.8px solid var(--border-cafe);
-  box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+
+  border: 2px solid var(--marron);   /* 🔑 CAFÉ REAL */
+  box-shadow: none;                  /* 🔑 sin competir */
+
   padding: 3rem 2rem;
 }
 
