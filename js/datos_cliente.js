@@ -114,18 +114,26 @@ async function cargarDireccion() {
       .from("addresses")
       .select("*")
       .eq("user_id", userId)
-      .eq("is_default", true)
-      .maybeSingle();
+      .order("created_at", { ascending: false })
+      .limit(1);
 
-  if (error) console.error("❌ Error dirección:", error);
-  if (!data) return;
+  if (error) {
+    console.error("❌ Error dirección:", error);
+    return;
+  }
 
-  loadedAddressId = data.id;
+  if (!data || data.length === 0) {
+    console.warn("ℹ️ Usuario sin dirección guardada");
+    return;
+  }
 
-  ciudadInput.value    = data.city || "";
-  zonaSelect.value     = data.state || "";
-  direccionInput.value = data.street || "";
-  notaInput.value      = data.postal_code || "";
+  const address = data[0];
+  loadedAddressId = address.id;
+
+  ciudadInput.value    = address.city || "";
+  zonaSelect.value     = address.state || "";
+  direccionInput.value = address.street || "";
+  notaInput.value      = address.postal_code || "";
 
   activarLabel(ciudadInput);
   activarLabel(direccionInput);
