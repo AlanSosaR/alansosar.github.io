@@ -11,7 +11,8 @@
   --blanco: #ffffff;
 
   --border-cafe: rgba(75, 44, 25, 0.35);
-  --sombra: 0 10px 26px rgba(0,0,0,0.08);
+  --sombra-suave: 0 8px 22px rgba(0,0,0,0.08);
+  --sombra-fuerte: 0 10px 26px rgba(0,0,0,0.12);
 }
 
 /* ================= BASE ================= */
@@ -37,7 +38,7 @@ body {
 .recibo-container {
   display: flex;
   justify-content: center;
-  padding: 5.4rem 16px 32px; /* 🔑 más cerca del header */
+  padding: 5.4rem 16px 32px;
 }
 
 /* ================= WRAPPER ================= */
@@ -45,16 +46,33 @@ body {
   max-width: 620px;
   width: 100%;
   position: relative;
-  padding-top: 34px; /* 🔑 espacio para flecha */
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
 }
 
-/* ================= TARJETA INTERNA ================= */
-.inner-card-full {
+/* ============================================================
+   TARJETAS
+============================================================ */
+
+/* Base común */
+.inner-card {
   background: #ffffff;
   border-radius: 26px;
+  padding: 26px 22px;
+  position: relative;
+}
+
+/* TARJETA 1 — flotante (SIN borde) */
+.floating-card {
+  border: none;
+  box-shadow: var(--sombra-fuerte);
+}
+
+/* TARJETA 2 — contorno café */
+.bordered-card {
   border: 2px solid var(--border-cafe);
-  padding: 28px 22px;
-  box-shadow: var(--sombra);
+  box-shadow: var(--sombra-suave);
 }
 
 /* ================= FLECHA FLOTANTE ================= */
@@ -70,7 +88,7 @@ body {
   width: 46px;
   height: 46px;
   border-radius: 50%;
-  background: #ffffff;              /* 🔑 blanco puro */
+  background: #ffffff;
   border: none;
   cursor: pointer;
 
@@ -83,7 +101,7 @@ body {
 
 .card-back i {
   font-size: 20px;
-  color: var(--verde);               /* 🔑 verde */
+  color: var(--verde);
 }
 
 /* ================= TITULOS ================= */
@@ -101,7 +119,7 @@ body {
 }
 
 h3 {
-  margin-top: 26px;
+  margin-top: 22px;
   font-size: 1.05rem;
   color: var(--verde);
   padding-left: 10px;
@@ -199,7 +217,7 @@ h3 {
 
 /* ================= RESPONSIVE ================= */
 @media (max-width: 600px) {
-  .inner-card-full {
-    padding: 24px 18px;
+  .inner-card {
+    padding: 22px 18px;
   }
 }
