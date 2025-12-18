@@ -31,8 +31,11 @@
 
     <section class="recibo-card">
 
-      <!-- 🔑 TARJETA INTERNA GRANDE -->
-      <div class="inner-card-full">
+      <!-- =========================
+           TARJETA 1 — DATOS CLIENTE
+           (flotante, sin contorno)
+      ========================= -->
+      <div class="inner-card floating-card">
 
         <!-- Flecha volver -->
         <div class="card-back">
@@ -41,16 +44,8 @@
           </button>
         </div>
 
-        <!-- Encabezado del pedido -->
-        <h2>Pedido N.º <span id="numeroPedido"></span></h2>
-        <p class="fecha">
-          <strong>Fecha:</strong> <span id="fechaPedido"></span>
-        </p>
-
-        <!-- =========================
-             DATOS DEL CLIENTE
-        ========================= -->
         <h3>Datos del cliente</h3>
+
         <div class="cliente-info">
           <p><strong>Nombre:</strong> <span id="nombreCliente"></span></p>
           <p><strong>Correo:</strong> <span id="correoCliente"></span></p>
@@ -60,20 +55,28 @@
           <p><strong>Nota:</strong> <span id="notaCliente"></span></p>
         </div>
 
-        <!-- =========================
-             SELECCIÓN DE CAFÉS
-        ========================= -->
+      </div>
+
+      <!-- =========================
+           TARJETA 2 — PEDIDO / PAGO
+           (contorno café)
+      ========================= -->
+      <div class="inner-card bordered-card">
+
+        <h2>Pedido N.º <span id="numeroPedido"></span></h2>
+        <p class="fecha">
+          <strong>Fecha:</strong> <span id="fechaPedido"></span>
+        </p>
+
+        <!-- Selección de cafés -->
         <h3>Selección de cafés</h3>
         <div id="listaProductos" class="cafes-list"></div>
 
-        <!-- Total -->
         <p class="recibo-total">
           <strong>💰 Total:</strong> L <span id="totalPedido"></span>
         </p>
 
-        <!-- =========================
-             MÉTODO DE PAGO
-        ========================= -->
+        <!-- Método de pago -->
         <h3>Método de pago</h3>
         <div class="pagos">
           <p>
@@ -83,9 +86,7 @@
           </p>
         </div>
 
-        <!-- =========================
-             COMPROBANTE
-        ========================= -->
+        <!-- Comprobante -->
         <h3>Comprobante de pago</h3>
 
         <div class="comprobante-box">
@@ -102,9 +103,7 @@
           </div>
         </div>
 
-        <!-- =========================
-             ENVIAR PEDIDO
-        ========================= -->
+        <!-- Enviar pedido -->
         <div class="recibo-botones">
           <button id="btnEnviar" class="btn-primary" disabled>
             <i class="fa-solid fa-circle-notch fa-spin hidden" id="loaderEnviar"></i>
@@ -113,7 +112,7 @@
           </button>
         </div>
 
-      </div><!-- 🔑 FIN INNER CARD -->
+      </div>
 
     </section>
 
