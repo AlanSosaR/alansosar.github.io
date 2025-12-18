@@ -4,12 +4,13 @@
 
 /* ================= ROOT ================= */
 :root {
-  --marron: #4b2c19;
-  --marron-suave: rgba(75, 44, 25, 0.7);
-  --verde: #046d46;
+   --marron: #512615;
+  --verde: #33673B;
   --blanco: #ffffff;
+  --fondo: #fafafa;
+  --marron-suave: rgba(75, 44, 25, 0.7);
 
-  --border-cafe: rgba(75, 44, 25, 0.35);
+  --border-cafe: rgba(81, 38, 21, 0.75);
   --sombra-card: 0 18px 44px rgba(0,0,0,0.12);
 }
 
