@@ -43,15 +43,16 @@ body {
    TARJETA PRINCIPAL (BLANCA, FLOTANTE)
 ============================================================ */
 .recibo-card {
-  max-width: 900px;           /* 🔑 MÁS GRANDE */
+  max-width: 900px;           /* 🔑 tarjeta grande, protagonista */
   width: 100%;
   position: relative;
 
   background: #ffffff;
   border-radius: 26px;
- padding: 6rem 1.8rem 3rem;
 
-box-shadow: 0 12px 28px rgba(0,0,0,0.06);
+  padding: 6rem 1.8rem 3rem;  /* 🔑 aire arriba para flecha + contenido */
+
+  box-shadow: 0 12px 28px rgba(0,0,0,0.06);
 }
 
 /* ============================================================
