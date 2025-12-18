@@ -35,42 +35,49 @@ body {
 
 /* ================= CONTENEDOR ================= */
 .recibo-container {
-  display: flex;
-  justify-content: center;
-  padding: 6rem 16px 40px; /* más aire arriba */
+  max-width: 900px;
+  margin: 2.5rem auto;   /* 🔑 esto hace flotar la tarjeta */
+  padding: 0 1rem;
+}
+@media (max-width: 600px) {
+  .recibo-container {
+    margin: 2rem auto;
+    padding: 0 .75rem;
+  }
 }
 
 /* ============================================================
    TARJETA PRINCIPAL (BLANCA, FLOTANTE)
 ============================================================ */
 .recibo-card {
-  max-width: 900px;           /* 🔑 tarjeta grande, protagonista */
+  max-width: 900px;
   width: 100%;
   position: relative;
 
   background: #ffffff;
   border-radius: 26px;
 
-  padding: 6rem 1.8rem 3rem;  /* 🔑 aire arriba para flecha + contenido */
-
+  padding: 6rem 1.8rem 3rem; /* espacio real para flecha */
   box-shadow: 0 12px 28px rgba(0,0,0,0.06);
 }
 /* ================= MOBILE — TARJETA MÁS GRANDE ================= */
 @media (max-width: 600px) {
 
+  /* 🔑 NO padding-top aquí */
   .recibo-container {
-    padding: 4.5rem 10px 32px; /* 🔑 menos aire lateral */
+    margin: 2rem auto;     /* hace flotar la tarjeta */
+    padding: 0 10px;       /* solo aire lateral */
   }
 
   .recibo-card {
     width: 100%;
-    max-width: 100%;          /* 🔑 ocupa todo el ancho */
-    padding: 28px 16px 24px;  /* 🔑 contenido más amplio */
+    max-width: 100%;
+    padding: 5rem 16px 24px; /* 🔑 mantiene espacio para flecha */
     border-radius: 24px;
   }
 
   .inner-card-full {
-    padding: 22px 16px;       /* 🔑 ajusta el borde café */
+    padding: 22px 16px;
   }
 }
 /* ================= FLECHA VOLVER — CORRECTA ================= */
