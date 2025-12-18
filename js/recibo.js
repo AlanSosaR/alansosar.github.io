@@ -1,4 +1,4 @@
-console.log("🧾 recibo.js — versión FINAL alineada a datos_cliente.js");
+console.log("🧾 recibo.js — versión FINAL estable");
 
 /* =========================================================
    MODO DE PÁGINA (HEADER GLOBAL)
@@ -84,7 +84,7 @@ async function cargarDatosCliente() {
   }
 
   try {
-    // 1️⃣ USUARIO REAL
+    // 1️⃣ USUARIO
     const { data: userRow, error: userError } = await sb
       .from("users")
       .select("id, name, email, phone")
@@ -97,27 +97,30 @@ async function cargarDatosCliente() {
       cliente.telefono = userRow.phone || "";
     }
 
-    // 2️⃣ DIRECCIÓN REAL (addresses) — ÚLTIMA REGISTRADA
-const { data: addressRows, error: addressError } = await sb
-  .from("addresses")
-  .select("id, state, city, street, postal_code")
-  .eq("user_id", userCache.id)
-  .order("created_at", { ascending: false })
-  .limit(1);
+    // 2️⃣ ÚLTIMA DIRECCIÓN
+    const { data: addressRows, error: addressError } = await sb
+      .from("addresses")
+      .select("state, city, street, postal_code")
+      .eq("user_id", userCache.id)
+      .order("created_at", { ascending: false })
+      .limit(1);
 
-if (addressError) {
-  console.error("❌ Error cargando dirección:", addressError);
-}
+    if (addressError) {
+      console.error("❌ Error dirección:", addressError);
+    }
 
-if (addressRows && addressRows.length > 0) {
-  const address = addressRows[0];
+    if (addressRows && addressRows.length > 0) {
+      const address = addressRows[0];
+      cliente.zona      = address.state || "";
+      cliente.direccion = address.street || "";
+      cliente.nota      = address.postal_code || "";
+    }
 
-  cliente.zona      = address.state || "";
-  cliente.direccion = address.street || "";
-  cliente.nota      = address.postal_code || "";
-}
+  } catch (err) {
+    console.error("❌ Error cargando cliente:", err);
+  }
 
-  // 3️⃣ PINTAR EN UI
+  // 3️⃣ PINTAR UI
   safe("nombreCliente").textContent    = cliente.nombre;
   safe("correoCliente").textContent    = cliente.correo;
   safe("telefonoCliente").textContent  = cliente.telefono;
@@ -129,35 +132,37 @@ if (addressRows && addressRows.length > 0) {
 }
 
 /* =========================================================
-   CAFÉS DEL CARRITO
+   CAFÉS DEL CARRITO (LOCALSTORAGE)
 ========================================================= */
 const carrito = JSON.parse(localStorage.getItem("cafecortero_cart")) || [];
 const lista = safe("listaProductos");
 let total = 0;
 
-lista.innerHTML = "";
+if (lista) {
+  lista.innerHTML = "";
 
-carrito.forEach(item => {
-  const precioNum = parseFloat(
-    item.price.toString().replace(/[^\d.-]/g, "")
-  ) || 0;
+  carrito.forEach(item => {
+    const precioNum = parseFloat(
+      item.price.toString().replace(/[^\d.-]/g, "")
+    ) || 0;
 
-  const subtotal = precioNum * item.qty;
-  total += subtotal;
+    const subtotal = precioNum * item.qty;
+    total += subtotal;
 
-  const div = document.createElement("div");
-  div.className = "cafe-item";
-  div.innerHTML = `
-    <div class="cafe-info">
-      <span class="cafe-nombre">${item.name}</span>
-      <span class="cafe-cantidad">x${item.qty}</span>
-    </div>
-    <span class="cafe-precio">L ${subtotal.toFixed(2)}</span>
-  `;
-  lista.appendChild(div);
-});
+    const div = document.createElement("div");
+    div.className = "cafe-item";
+    div.innerHTML = `
+      <div class="cafe-info">
+        <span class="cafe-nombre">${item.name}</span>
+        <span class="cafe-cantidad">x${item.qty}</span>
+      </div>
+      <span class="cafe-precio">L ${subtotal.toFixed(2)}</span>
+    `;
+    lista.appendChild(div);
+  });
 
-safe("totalPedido").textContent = total.toFixed(2);
+  safe("totalPedido").textContent = total.toFixed(2);
+}
 
 /* =========================================================
    VOLVER
