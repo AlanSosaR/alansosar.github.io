@@ -56,12 +56,12 @@ body {
   box-shadow: 0 12px 28px rgba(0,0,0,0.06);
 }
 
-/* ================= FLECHA VOLVER (ALINEADA A LA TARJETA) ================= */
+/* ================= FLECHA VOLVER — ANCLADA A LA TARJETA ================= */
 
 .card-back {
   position: absolute;
-  top: 32px;        /* 🔑 dentro del padding de la tarjeta */
-  left: 22px;
+  top: 20px;        /* 🔑 ahora es relativo al borde café */
+  left: 20px;
   z-index: 10;
 }
 
@@ -94,11 +94,11 @@ body {
   color: var(--verde) !important;
 }
 
-/* ================= AJUSTE TELÉFONO ================= */
+/* ================= TELÉFONO ================= */
 @media (max-width: 600px) {
   .card-back {
-    top: 22px;      /* 🔑 baja un poco menos en móvil */
-    left: 18px;
+    top: 16px;
+    left: 16px;
   }
 }
 
@@ -106,11 +106,13 @@ body {
    INNER CARD / LINEAR CARD (BORDE CAFÉ)
 ============================================================ */
 .inner-card-full {
+  position: relative;          /* 🔑 CLAVE ABSOLUTA */
+  
   background: #ffffff;
   border-radius: 22px;
 
-  border: 2px solid var(--marron);   /* 🔑 CAFÉ REAL */
-  box-shadow: none;                  /* 🔑 sin competir */
+  border: 2px solid var(--marron);   /* CAFÉ REAL */
+  box-shadow: none;                  /* sin competir */
 
   padding: 3rem 2rem;
 }
