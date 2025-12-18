@@ -1,4 +1,4 @@
-console.log("🧾 recibo.js — versión FINAL con método de pago + snackbar");
+console.log("🧾 recibo.js — versión FINAL corregida");
 
 /* =========================================================
    MODO DE PÁGINA
@@ -19,9 +19,7 @@ function showSnack(message) {
   const bar = safe("snackbar");
   if (!bar) return;
 
-  bar.innerHTML = `
-    <span>${message}</span>
-  `;
+  bar.innerHTML = `<span>${message}</span>`;
   bar.classList.add("show");
 
   setTimeout(() => bar.classList.remove("show"), 3200);
@@ -32,15 +30,13 @@ function showSnack(message) {
 ========================================================= */
 function esperarSupabase() {
   return new Promise(resolve => {
-    if (window.supabaseClient) resolve();
-    else {
-      const i = setInterval(() => {
-        if (window.supabaseClient) {
-          clearInterval(i);
-          resolve();
-        }
-      }, 80);
-    }
+    if (window.supabaseClient) return resolve();
+    const i = setInterval(() => {
+      if (window.supabaseClient) {
+        clearInterval(i);
+        resolve();
+      }
+    }, 80);
   });
 }
 
@@ -62,12 +58,10 @@ function getUserCache() {
 let numeroPedido = localStorage.getItem("numeroPedidoActivo");
 
 if (!numeroPedido) {
-  let consecutivo = localStorage.getItem("ultimoPedido");
-  consecutivo = consecutivo ? parseInt(consecutivo) + 1 : 1;
-
+  let consecutivo = parseInt(localStorage.getItem("ultimoPedido") || "0") + 1;
   localStorage.setItem("ultimoPedido", consecutivo);
+  localStorage.setItem("numeroPedidoActivo", consecutivo);
   numeroPedido = consecutivo;
-  localStorage.setItem("numeroPedidoActivo", numeroPedido);
 }
 
 safe("numeroPedido").textContent = numeroPedido;
@@ -108,7 +102,7 @@ async function cargarDatosCliente() {
     .order("created_at", { ascending: false })
     .limit(1);
 
-  if (addr && addr.length) {
+  if (addr?.length) {
     safe("zonaCliente").textContent = addr[0].state || "";
     safe("direccionCliente").textContent = addr[0].street || "";
     safe("notaCliente").textContent = addr[0].postal_code || "";
@@ -147,44 +141,47 @@ if (lista) {
    MÉTODO DE PAGO
 ========================================================= */
 const metodoPagoSelect = safe("metodoPago");
-const bloqueDeposito = safe("pago-deposito");
-const bloqueEfectivo = safe("pago-efectivo");
+const bloqueDeposito  = safe("pago-deposito");
+const bloqueEfectivo  = safe("pago-efectivo");
 
-/* =========================================================
-   COMPROBANTE
-========================================================= */
+const btnEnviar   = safe("btnEnviar");
+const loader      = safe("loaderEnviar");
+const inputFile   = safe("inputComprobante");
+const previewBox  = safe("previewComprobante");
+const imgPreview  = safe("imgComprobante");
+
 let comprobante = null;
 
-const inputFile = safe("inputComprobante");
-const previewBox = safe("previewComprobante");
-const imgPreview = safe("imgComprobante");
-const btnEnviar = safe("btnEnviar");
-const loader = safe("loaderEnviar");
+/* ================= ESTADO INICIAL ================= */
+function resetMetodoPago() {
+  bloqueDeposito.classList.add("hidden");
+  bloqueEfectivo.classList.add("hidden");
+  previewBox.classList.add("hidden");
 
-/* =========================================================
-   CAMBIO DE MÉTODO
-========================================================= */
+  comprobante = null;
+  btnEnviar.disabled = true;
+}
+
+/* ================= CAMBIO DE MÉTODO ================= */
 function actualizarMetodoPago() {
+  resetMetodoPago();
+
   const metodo = metodoPagoSelect.value;
 
   if (metodo === "bank_transfer") {
     bloqueDeposito.classList.remove("hidden");
-    bloqueEfectivo.classList.add("hidden");
-    btnEnviar.disabled = !comprobante;
+    btnEnviar.disabled = true;
   }
 
   if (metodo === "cash") {
-    bloqueDeposito.classList.add("hidden");
     bloqueEfectivo.classList.remove("hidden");
     btnEnviar.disabled = false;
   }
 }
 
-metodoPagoSelect?.addEventListener("change", actualizarMetodoPago);
+metodoPagoSelect.addEventListener("change", actualizarMetodoPago);
 
-/* =========================================================
-   SUBIR COMPROBANTE
-========================================================= */
+/* ================= SUBIR COMPROBANTE ================= */
 safe("btnSubirComprobante")?.addEventListener("click", () => {
   inputFile.click();
 });
@@ -205,7 +202,7 @@ inputFile?.addEventListener("change", () => {
 /* =========================================================
    ENVIAR PEDIDO
 ========================================================= */
-btnEnviar?.addEventListener("click", async () => {
+btnEnviar.addEventListener("click", async () => {
   const metodo = metodoPagoSelect.value;
   const sb = window.supabaseClient;
   const user = getUserCache();
@@ -237,7 +234,8 @@ btnEnviar?.addEventListener("click", async () => {
       const path = `order_${order.id}/${Date.now()}.${ext}`;
 
       await sb.storage.from("payment-receipts").upload(path, comprobante);
-      const { data: urlData } = sb.storage.from("payment-receipts").getPublicUrl(path);
+      const { data: urlData } =
+        sb.storage.from("payment-receipts").getPublicUrl(path);
 
       await sb.from("payment_receipts").insert({
         order_id: order.id,
@@ -272,5 +270,5 @@ btnEnviar?.addEventListener("click", async () => {
 (async function init() {
   await esperarSupabase();
   cargarDatosCliente();
-  actualizarMetodoPago();
+  resetMetodoPago();
 })();
