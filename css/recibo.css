@@ -219,19 +219,35 @@ h3 {
   text-align: right;
   font-size: 1.2rem;
   font-weight: 600;
+
+  display: flex;                 /* 🔑 clave para alineación */
+  justify-content: flex-end;
+  align-items: center;
+  gap: 6px;
+
+  color: var(--marron);          /* 🟤 texto y precio */
 }
+
+/* Ícono Material 3 */
 .total-icon {
   font-size: 22px;
-  vertical-align: middle;
-  margin-right: 6px;
+  line-height: 1;                /* 🔑 centra vertical */
+  display: flex;
+  align-items: center;
 
-  color: var(--verde);
+  color: var(--verde);           /* 🟢 solo el ícono */
 
   font-variation-settings:
     'FILL' 0,
     'wght' 400,
     'GRAD' 0,
     'opsz' 24;
+}
+
+/* Asegura café en texto y monto */
+.recibo-total strong,
+.recibo-total span {
+  color: var(--marron);
 }
 
 /* ================= MÉTODO DE PAGO ================= */
