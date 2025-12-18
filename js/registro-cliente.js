@@ -1,15 +1,16 @@
 // ============================================================
-// REGISTRO DE CLIENTE — Café Cortero (VERSIÓN FINAL PREMIUM 2025)
-// Floating Label + Error Café + Éxito Verde + Snackbar con Logo
-// + Barra de seguridad de contraseña (6 niveles)
-// + Imagen por defecto y correo de validación activo
+// REGISTRO DE CLIENTE — Café Cortero
+// Supabase Auth v2 — FINAL ESTABLE 2025
 // ============================================================
 
 document.addEventListener("DOMContentLoaded", () => {
+  console.log("🧾 registro-cliente.js — versión final estable");
 
-  // CLIENTE SUPABASE REAL
-  const sb = window.supabase;
-  const registerUser = window.supabaseAuth.registerUser;
+  const sb = window.supabaseClient;
+  if (!sb) {
+    console.error("❌ Supabase no inicializado");
+    return;
+  }
 
   const form = document.getElementById("registroForm");
 
@@ -29,278 +30,30 @@ document.addEventListener("DOMContentLoaded", () => {
     confirm: document.getElementById("errorConfirm"),
   };
 
-  const mensajesVacios = {
-    nombre: "Ingresa tu nombre",
-    correo: "Ingresa tu correo",
-    telefono: "Ingresa tu teléfono",
-    password: "Ingresa tu contraseña",
-    confirm: "Confirma tu contraseña",
-  };
-
-  // ============================================================
-  // AUTOCORRECCIONES
-  // ============================================================
-  const autocorrecciones = {
-    "gmal.com": "gmail.com",
-    "gmial.com": "gmail.com",
-    "hotmai.com": "hotmail.com",
-    "hotmal.com": "hotmail.com",
-    "outlok.com": "outlook.com",
-    "outllok.com": "outlook.com"
-  };
-
-  // ============================================================
-  // NORMALIZAR TELÉFONO
-  // ============================================================
-  function normalizarTelefono(tel) {
-    if (!tel) return "";
-    tel = tel.replace(/[\s\-()]/g, "");
-    if (tel.startsWith("00")) tel = "+" + tel.slice(2);
-    tel = tel.replace(/^\+/, "");
-    return tel;
-  }
-
-  // ============================================================
-  // MARCAR ERROR / ÉXITO
-  // ============================================================
-  function marcar(campo, mensaje, success = false) {
+  /* =========================================================
+     HELPERS UI
+  ========================================================= */
+  function marcar(campo, mensaje = "", ok = false) {
     const input = campos[campo];
-    const grupo = input.closest(".m3-input");
+    const box = input.closest(".m3-input");
 
-    if (success) {
-      grupo.classList.remove("error");
-      grupo.classList.add("success");
+    box.classList.remove("error", "success");
+
+    if (ok) {
+      box.classList.add("success");
       errores[campo].textContent = "";
-      input.placeholder = " ";
-      return;
-    }
-
-    grupo.classList.add("error");
-    grupo.classList.remove("success");
-
-    if (!input.value.trim()) {
-      input.placeholder = mensajesVacios[campo];
-      errores[campo].textContent = "";
-    } else {
+    } else if (mensaje) {
+      box.classList.add("error");
       errores[campo].textContent = mensaje;
-      input.placeholder = " ";
-    }
-  }
-
-  // ============================================================
-  // VALIDAR CORREO
-  // ============================================================
-  function esCorreoValido(email) {
-    if (!email) return false;
-    const regexGeneral = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
-    if (!regexGeneral.test(email)) return false;
-
-    let [usuario, dominio] = email.split("@");
-    dominio = dominio.toLowerCase();
-
-    if (autocorrecciones[dominio]) {
-      campos.correo.value = `${usuario}@${autocorrecciones[dominio]}`;
-    }
-
-    return true;
-  }
-
-  // ============================================================
-  // BARRA DE SEGURIDAD
-  // ============================================================
-  const barsContainer = document.getElementById("barsContainer");
-  const bars = barsContainer ? barsContainer.querySelectorAll(".strength-bar") : [];
-
-  function nivelSeguridad(pass) {
-    let score = 0;
-    if (pass.length >= 6) score++;
-    if (pass.length >= 8) score++;
-    if (/[A-Z]/.test(pass)) score++;
-    if (/[0-9]/.test(pass)) score++;
-    if (/[^A-Za-z0-9]/.test(pass)) score++;
-    if (pass.length >= 12) score++;
-    return Math.min(score, 6);
-  }
-
-  if (campos.password && barsContainer) {
-    campos.password.addEventListener("input", () => {
-      const val = campos.password.value.trim();
-
-      if (!val) {
-        barsContainer.style.display = "none";
-        bars.forEach(b => b.className = "strength-bar");
-        return;
-      }
-
-      barsContainer.style.display = "flex";
-
-      const nivel = nivelSeguridad(val);
-
-      bars.forEach((bar, i) => {
-        bar.className = "strength-bar";
-        if (i < nivel) bar.classList.add(`level-${nivel}`);
-      });
-    });
-  }
-
-  // ============================================================
-  // VERDE EN VIVO
-  // ============================================================
-  function activarVerdeEnVivo(campo, validador) {
-    campos[campo].addEventListener("input", () => {
-      const input = campos[campo];
-      const grupo = input.closest(".m3-input");
-
+    } else {
       errores[campo].textContent = "";
-      grupo.classList.remove("error");
-
-      if (!input.value.trim()) {
-        grupo.classList.remove("success");
-        return;
-      }
-
-      if (validador(input.value.trim())) grupo.classList.add("success");
-      else grupo.classList.remove("success");
-    });
-  }
-
-  activarVerdeEnVivo("nombre", v => v.length >= 2);
-  activarVerdeEnVivo("correo", v => esCorreoValido(v));
-  activarVerdeEnVivo("telefono", v => v.length >= 8);
-  activarVerdeEnVivo("password", v => v.length >= 6);
-  activarVerdeEnVivo("confirm", v => v === campos.password.value.trim());
-
-  // ============================================================
-  // DUPLICADOS
-  // ============================================================
-  async function existeUsuario(correo, telefonoRaw) {
-    const telefonoNormalizado = normalizarTelefono(telefonoRaw);
-
-    const { data } = await sb.from("users").select("email, phone");
-
-    return data?.find(row =>
-      row.email === correo ||
-      normalizarTelefono(row.phone) === telefonoNormalizado
-    ) || null;
-  }
-
-  // ============================================================
-  // VALIDACIÓN FINAL
-  // ============================================================
-  function validarEnCadena() {
-    if (!campos.nombre.value.trim())
-      return marcar("nombre", mensajesVacios.nombre), false;
-
-    const correo = campos.correo.value.trim();
-    if (!correo || !esCorreoValido(correo))
-      return marcar("correo", "Correo no válido"), false;
-
-    if (campos.telefono.value.trim().length < 8)
-      return marcar("telefono", mensajesVacios.telefono), false;
-
-    if (campos.password.value.trim().length < 6)
-      return marcar("password", mensajesVacios.password), false;
-
-    if (campos.password.value !== campos.confirm.value)
-      return marcar("confirm", "Las contraseñas no coinciden"), false;
-
-    return true;
-  }
-
-  // ============================================================
-  // LOADING
-  // ============================================================
-  const btn = document.querySelector(".m3-btn");
-  const btnText = btn.querySelector(".btn-text");
-  const btnLoader = btn.querySelector(".loader");
-
-  function activarLoading() {
-    btn.classList.add("loading");
-    btn.disabled = true;
-    btnText.style.opacity = "1";
-    btnLoader.style.opacity = "1";
-  }
-
-  function desactivarLoading() {
-    btn.classList.remove("loading");
-    btn.disabled = false;
-    btnText.style.opacity = "1";
-    btnLoader.style.opacity = "0";
-  }
-
-  // ============================================================
-  // SUBMIT (REGISTRO REAL + TRIGGER)
-  // ============================================================
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    if (!validarEnCadena()) return;
-
-    activarLoading();
-
-    const correo = campos.correo.value.trim();
-    const tel = campos.telefono.value.trim();
-
-    const existe = await existeUsuario(correo, tel);
-
-    if (existe) {
-      desactivarLoading();
-
-      if (existe.email === correo)
-        marcar("correo", "El correo ya está registrado");
-
-      if (normalizarTelefono(existe.phone) === normalizarTelefono(tel))
-        marcar("telefono", "El teléfono ya existe");
-
-      return;
     }
+  }
 
-    try {
-      await registerUser(
-        correo,
-        campos.password.value.trim(),
-        tel,
-        campos.nombre.value.trim(),
-        "Honduras",
-        "/imagenes/avatar-default.svg" // ✅ Enviamos imagen desde aquí
-      );
-
-      mostrarSnackbar("Tu cuenta ha sido creada. Revisa tu correo ✉️");
-
-      setTimeout(() => window.location.href = "login.html", 1800);
-
-    } catch (err) {
-      console.error(err);
-      mostrarSnackbar("Error creando la cuenta");
-      desactivarLoading();
-    }
-  });
-
-  // ============================================================
-  // TOGGLE PASSWORD (MOSTRAR / OCULTAR)
-  // ============================================================
-  document.querySelectorAll(".toggle-pass").forEach(icon => {
-    icon.addEventListener("click", () => {
-      const targetId = icon.dataset.target;
-      const input = document.getElementById(targetId);
-
-      if (!input) {
-        console.warn("⚠ No se encontró el input para toggle:", targetId);
-        return;
-      }
-
-      const mostrando = input.type === "text";
-      input.type = mostrando ? "password" : "text";
-
-      icon.textContent = mostrando ? "visibility" : "visibility_off";
-    });
-  });
-
-  // ============================================================
-  // SNACKBAR
-  // ============================================================
   function mostrarSnackbar(msg) {
     const bar = document.getElementById("snackbar");
+    if (!bar) return;
+
     bar.innerHTML = `
       <img src="imagenes/logo_secundario.png" class="snack-logo">
       <span>${msg}</span>
@@ -309,4 +62,112 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => bar.classList.remove("show"), 3000);
   }
 
+  /* =========================================================
+     VALIDACIONES EN VIVO
+  ========================================================= */
+  function emailValido(v) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+  }
+
+  campos.nombre.addEventListener("input", () =>
+    marcar("nombre", "", campos.nombre.value.trim().length >= 2)
+  );
+
+  campos.correo.addEventListener("input", () =>
+    marcar("correo", "", emailValido(campos.correo.value.trim()))
+  );
+
+  campos.telefono.addEventListener("input", () =>
+    marcar("telefono", "", campos.telefono.value.trim().length >= 8)
+  );
+
+  campos.password.addEventListener("input", () =>
+    marcar("password", "", campos.password.value.length >= 6)
+  );
+
+  campos.confirm.addEventListener("input", () =>
+    marcar("confirm", "", campos.confirm.value === campos.password.value)
+  );
+
+  /* =========================================================
+     LOADER BOTÓN
+  ========================================================= */
+  const btn = document.querySelector(".m3-btn");
+  const btnText = btn.querySelector(".btn-text");
+  const loader = btn.querySelector(".loader");
+
+  function loading(on) {
+    btn.disabled = on;
+    loader.style.opacity = on ? "1" : "0";
+    btnText.style.opacity = "1";
+  }
+
+  /* =========================================================
+     SUBMIT — REGISTRO REAL
+  ========================================================= */
+  form.addEventListener("submit", async e => {
+    e.preventDefault();
+
+    const nombre = campos.nombre.value.trim();
+    const correo = campos.correo.value.trim();
+    const tel = campos.telefono.value.trim();
+    const pass = campos.password.value;
+    const conf = campos.confirm.value;
+
+    if (!nombre) return marcar("nombre", "Ingresa tu nombre");
+    if (!emailValido(correo)) return marcar("correo", "Correo no válido");
+    if (tel.length < 8) return marcar("telefono", "Teléfono no válido");
+    if (pass.length < 6) return marcar("password", "Mínimo 6 caracteres");
+    if (pass !== conf) return marcar("confirm", "No coinciden");
+
+    loading(true);
+
+    try {
+      const { error } = await sb.auth.signUp({
+        email: correo,
+        password: pass,
+        options: {
+          data: {
+            name: nombre,
+            phone: tel,
+            country: "Honduras",
+            photo_url: "/imagenes/avatar-default.svg"
+          }
+        }
+      });
+
+      if (error) throw error;
+
+      mostrarSnackbar("Cuenta creada ✔ Revisa tu correo ✉️");
+
+      setTimeout(() => {
+        window.location.href = "login.html";
+      }, 1800);
+
+    } catch (err) {
+      console.error("❌ Registro:", err);
+
+      if (err.message?.includes("already registered")) {
+        marcar("correo", "Este correo ya existe");
+      } else {
+        mostrarSnackbar("Error al crear la cuenta");
+      }
+
+      loading(false);
+    }
+  });
+
+  /* =========================================================
+     TOGGLE PASSWORD
+  ========================================================= */
+  document.querySelectorAll(".toggle-pass").forEach(icon => {
+    icon.addEventListener("click", () => {
+      const input = document.getElementById(icon.dataset.target);
+      if (!input) return;
+
+      const show = input.type === "password";
+      input.type = show ? "text" : "password";
+      icon.textContent = show ? "visibility" : "visibility_off";
+    });
+  });
 });
