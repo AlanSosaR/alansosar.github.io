@@ -1,5 +1,5 @@
 /* ============================================================
-   RECIBO / DETALLES DEL PEDIDO — DISEÑO UNIFICADO
+   RECIBO / DETALLES DEL PEDIDO — DISEÑO FINAL UNIFICADO
 ============================================================ */
 
 /* ================= ROOT ================= */
@@ -10,7 +10,7 @@
   --blanco: #ffffff;
 
   --border-cafe: rgba(75, 44, 25, 0.35);
-  --sombra-card: 0 10px 26px rgba(0,0,0,0.10);
+  --sombra-card: 0 14px 34px rgba(0,0,0,0.10);
 }
 
 /* ================= BASE ================= */
@@ -39,35 +39,34 @@ body {
   padding: 5.2rem 16px 32px;
 }
 
-/* ================= TARJETA PRINCIPAL (SIN BORDE) ================= */
+/* ============================================================
+   TARJETA PRINCIPAL (BLANCA, FLOTANTE, SIN BORDE)
+============================================================ */
 .recibo-card {
   max-width: 620px;
   width: 100%;
   position: relative;
-  background: transparent;   /* 🔑 NO tarjeta visual */
-}
 
-/* ================= INNER CARD (ÚNICA TARJETA REAL) ================= */
-.inner-card-full {
   background: #ffffff;
-  border-radius: 26px;
-  border: 2px solid var(--border-cafe);
-  padding: 56px 22px 28px; /* 🔑 espacio arriba para la flecha */
+  border-radius: 28px;
+  padding: 32px 18px 28px;
+
   box-shadow: var(--sombra-card);
-  position: relative;
 }
 
-/* ================= FLECHA (DENTRO DE LA TARJETA) ================= */
+/* ============================================================
+   FLECHA FLOTANTE (IGUAL QUE DETALLES DE ENTREGA)
+============================================================ */
 .card-back {
   position: absolute;
-  top: 16px;
-  left: 16px;
-  z-index: 5;
+  top: -22px;
+  left: 18px;
+  z-index: 10;
 }
 
 .card-back button {
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   background: #ffffff;
   border: none;
@@ -77,7 +76,7 @@ body {
   align-items: center;
   justify-content: center;
 
-  box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.20);
 }
 
 .card-back i {
@@ -85,18 +84,30 @@ body {
   color: var(--verde);
 }
 
+/* ============================================================
+   INNER CARD / LINEAR CARD (BORDE CAFÉ)
+============================================================ */
+.inner-card-full {
+  background: #ffffff;
+  border-radius: 22px;
+  border: 2px solid var(--border-cafe);
+  padding: 26px 20px 26px;
+
+  box-shadow: none;
+}
+
 /* ================= TITULOS ================= */
 .recibo-card h2 {
   text-align: center;
   font-size: 1.35rem;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 }
 
 .fecha {
   text-align: center;
   font-size: .9rem;
   color: var(--marron-suave);
-  margin-bottom: 18px;
+  margin-bottom: 22px;
 }
 
 h3 {
@@ -112,8 +123,12 @@ h3 {
   margin: 6px 0;
   font-size: .95rem;
 }
-.cliente-info strong { color: var(--marron); }
-.cliente-info span { color: var(--marron-suave); }
+.cliente-info strong {
+  color: var(--marron);
+}
+.cliente-info span {
+  color: var(--marron-suave);
+}
 
 /* ================= CAFÉS ================= */
 .cafes-list {
@@ -132,9 +147,17 @@ h3 {
   box-shadow: 0 6px 14px rgba(0,0,0,.08);
 }
 
-.cafe-nombre { font-weight: 600; }
-.cafe-cantidad { font-size: .8rem; color: var(--marron-suave); }
-.cafe-precio { font-weight: 600; color: var(--verde); }
+.cafe-nombre {
+  font-weight: 600;
+}
+.cafe-cantidad {
+  font-size: .8rem;
+  color: var(--marron-suave);
+}
+.cafe-precio {
+  font-weight: 600;
+  color: var(--verde);
+}
 
 /* ================= TOTAL ================= */
 .recibo-total {
@@ -171,10 +194,14 @@ h3 {
   text-align: center;
 }
 
-.hidden { display: none; }
+.hidden {
+  display: none;
+}
 
 /* ================= BOTONES ================= */
-.recibo-botones { margin-top: 26px; }
+.recibo-botones {
+  margin-top: 26px;
+}
 
 .btn-primary,
 .btn-secondary {
@@ -198,7 +225,11 @@ h3 {
 
 /* ================= RESPONSIVE ================= */
 @media (max-width: 600px) {
+  .recibo-card {
+    padding: 28px 14px 24px;
+  }
+
   .inner-card-full {
-    padding: 52px 18px 24px;
+    padding: 24px 16px 24px;
   }
 }
