@@ -219,6 +219,9 @@ h3 {
   font-size: .8rem;
   color: var(--marron-suave);
 }
+.cafe-qty {
+  color: var(--verde); /* = #33673B */
+}
 .cafe-precio {
   font-weight: 600;
   color: var(--verde);
