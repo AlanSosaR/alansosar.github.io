@@ -403,51 +403,100 @@ h3 {
   margin-top: 28px;
 }
 
+/* ===============================
+   BOTONES BASE
+================================ */
 .btn-primary,
 .btn-secondary {
   width: 100%;
   border-radius: 16px;
-  padding: 14px;
+  padding: 14px 16px;
+
   font-size: 1rem;
+  font-weight: 500;
+
   border: none;
   cursor: pointer;
+
+  display: flex;                 /* 🔑 centra texto y loader */
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  transition: background 0.2s ease, opacity 0.2s ease;
 }
 
+/* ===============================
+   BOTÓN PRINCIPAL
+================================ */
 .btn-primary {
   background: var(--verde);
   color: #fff;
 }
 
+/* Hover solo si está habilitado */
+.btn-primary:not(:disabled):hover {
+  background: #2f5f38; /* verde un poco más oscuro */
+}
+
+/* Estado deshabilitado */
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ===============================
+   BOTÓN SECUNDARIO
+================================ */
 .btn-secondary {
   background: var(--marron);
   color: #fff;
 }
 
+/* ===============================
+   LOADER
+================================ */
+.btn-primary i {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+/* Oculto por defecto */
+.hidden {
+  display: none;
+}
+
 /* ================= RESPONSIVE ================= */
 @media (max-width: 600px) {
+
+  /* Contenedor principal */
   .recibo-container {
-    padding-top: 5.4rem;
+    padding-top: 3.6rem; /* 🔑 sube la tarjeta */
   }
 
+  /* Tarjeta principal */
   .recibo-card {
     max-width: 100%;
-    padding: 36px 20px 28px;
-    border-radius: 26px;
+    padding: 28px 16px 24px; /* 🔑 menos padding arriba */
+    border-radius: 24px;
   }
 
+  /* Tarjeta interna */
   .inner-card-full {
-    padding: 24px 18px 24px;
-    border-radius: 22px;
+    padding: 20px 16px;
+    border-radius: 20px;
   }
 
+  /* Botón volver — DENTRO de la tarjeta */
   .card-back {
-    top: -22px;
-    left: 18px;
+    top: 16px;      /* 🔑 ya no queda flotando a la mitad */
+    left: 16px;
   }
 }
 
+/* ================= DESKTOP ================= */
 @media (min-width: 900px) {
   .recibo-card {
-    max-width: 760px; /* 🔥 PC: más presencia */
+    max-width: 760px; /* 🔥 PC intacto */
   }
 }
