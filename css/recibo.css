@@ -70,18 +70,27 @@ box-shadow: 0 12px 28px rgba(0,0,0,0.06);
   border-radius: 50%;
   background: #ffffff;
   border: none;
-  cursor: pointer;
+
+  box-shadow: 0 5px 16px rgba(0,0,0,0.15);
 
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 5px 16px rgba(0,0,0,0.15);
+
+  cursor: pointer;
+  transition: transform .25s ease, box-shadow .25s ease;
 }
 
-.card-back i {
+.card-back button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 7px 20px rgba(0,0,0,0.20);
+}
+
+.card-back i,
+.card-back .material-symbols-outlined {
   font-size: 26px;
   font-weight: 600;
-  color: var(--verde);
+  color: var(--verde) !important;
 }
 
 /* ============================================================
