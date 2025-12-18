@@ -131,9 +131,8 @@ if (lista) {
     lista.innerHTML += `
   <div class="cafe-item">
     <div>
-      <span class="cafe-nombre">${item.name}</span>
-      <span class="cafe-cantidad">
-        <span class="cafe-qty">${item.qty}</span> bolsas
+      <span class="cafe-nombre">
+        ${item.name} (${item.qty} bolsas)
       </span>
     </div>
     <span class="cafe-precio">L ${subtotal.toFixed(2)}</span>
