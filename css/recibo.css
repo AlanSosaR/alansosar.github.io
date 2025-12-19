@@ -95,12 +95,12 @@ body {
   }
 }
 
-/* ============================================================
-   FLECHA VOLVER — POSICIÓN CORRECTA (BAJO HEADER)
-============================================================ */
+/* =====================================================
+   BOTÓN VOLVER — ESTABLE Y UNIFICADO
+===================================================== */
 .card-back {
-  position: absolute;
-  top: 16px;       /* 🔑 borde real de la tarjeta */
+  position: fixed;        /* 🔑 CLAVE */
+  top: 88px;              /* header (72px) + aire */
   left: 16px;
 
   width: 44px;
@@ -110,21 +110,28 @@ body {
   background: #ffffff;
   border: none;
 
-  box-shadow: 0 5px 16px rgba(0,0,0,0.15);
-
   display: flex;
   align-items: center;
   justify-content: center;
 
-  cursor: pointer;
-  z-index: 10;
+  box-shadow:
+    0 6px 16px rgba(0,0,0,0.18),
+    0 2px 6px rgba(0,0,0,0.12);
 
-  transition: transform .25s ease, box-shadow .25s ease;
+  cursor: pointer;
+  z-index: 900;
+
+  transition: transform .2s ease, box-shadow .2s ease;
 }
 
-.card-back:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 7px 20px rgba(0,0,0,0.20);
+/* Hover solo desktop */
+@media (min-width: 901px) {
+  .card-back:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 10px 22px rgba(0,0,0,0.22),
+      0 4px 10px rgba(0,0,0,0.14);
+  }
 }
 
 .card-back .material-symbols-outlined {
