@@ -1,5 +1,5 @@
 /* =====================================================
-   HEADER — FINAL DEFINITIVO (PC + MÓVIL)
+   HEADER — CORE LIMPIO Y ESTABLE (DEFINITIVO)
 ===================================================== */
 
 header.header-fixed {
@@ -18,7 +18,8 @@ header.header-fixed {
   -webkit-backdrop-filter: blur(10px);
 
   border-bottom: 1.5px solid rgba(0,0,0,0.05);
-  position: relative;
+
+  position: relative; /* referencia para absolutos */
 }
 
 /* =====================================================
@@ -35,7 +36,7 @@ header.header-fixed {
 }
 
 /* =====================================================
-   TÍTULO CENTRAL
+   TÍTULO CENTRAL (RECIBO / CARRITO)
 ===================================================== */
 .header-title {
   position: absolute;
@@ -53,6 +54,7 @@ header.header-fixed {
 /* =====================================================
    NAV DESKTOP
 ===================================================== */
+.header-nav,
 .nav-links {
   display: flex;
   align-items: center;
@@ -64,11 +66,16 @@ header.header-fixed {
   text-decoration: none;
   color: var(--marron);
   font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.nav-links a:hover {
+  color: var(--verde);
 }
 
 /* =====================================================
-   ACCIONES DERECHA
-===================================================== */
+   ACCIONES DERECHA (AVATAR / CARRITO)
+================================================HIJKLMNOPQRSTUVWXYZ===================================================== */
 .header-actions {
   display: flex;
   align-items: center;
@@ -77,13 +84,27 @@ header.header-fixed {
 }
 
 /* =====================================================
-   AVATAR
+   LOGIN
+===================================================== */
+.login-link {
+  text-decoration: none;
+  color: var(--marron);
+  font-weight: 500;
+}
+
+.login-link:hover {
+  color: var(--verde);
+}
+
+/* =====================================================
+   AVATAR (SOLO DESKTOP)
 ===================================================== */
 .header-avatar-button {
   width: 44px;
   height: 44px;
   border-radius: 50%;
   overflow: hidden;
+
   background: #fff;
   border: none;
   cursor: pointer;
@@ -95,6 +116,12 @@ header.header-fixed {
   box-shadow:
     0 6px 14px rgba(0,0,0,.18),
     0 2px 4px rgba(0,0,0,.12);
+
+  transition: transform .2s ease;
+}
+
+.header-avatar-button:hover {
+  transform: translateY(-2px);
 }
 
 .header-avatar-button img {
@@ -104,7 +131,7 @@ header.header-fixed {
 }
 
 /* =====================================================
-   CARRITO
+   CARRITO (DESKTOP)
 ===================================================== */
 #cart-btn {
   width: 40px;
@@ -115,6 +142,7 @@ header.header-fixed {
   cursor: pointer;
 
   position: relative;
+
   display: flex;
   align-items: center;
   justify-content: center;
@@ -122,23 +150,31 @@ header.header-fixed {
   box-shadow: 0 8px 20px rgba(0,0,0,.18);
 }
 
+#cart-btn i {
+  font-size: 1.4rem;
+  color: var(--verde);
+}
+
 .cart-count {
   position: absolute;
   top: -4px;
   right: -4px;
+
   width: 18px;
   height: 18px;
   border-radius: 50%;
+
   background: #d72638;
   color: #fff;
   font-size: .7rem;
+
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 /* =====================================================
-   HAMBURGUESA
+   HAMBURGUESA (SOLO MÓVIL)
 ===================================================== */
 .menu-toggle {
   background: none;
@@ -150,15 +186,28 @@ header.header-fixed {
 }
 
 /* =====================================================
-   VISIBILIDAD USUARIO
+   VISIBILIDAD POR ESTADO
 ===================================================== */
-.header-fixed.no-user #btn-header-user { display: none; }
-.header-fixed.logged #login-desktop { display: none; }
+.header-fixed.no-user #btn-header-user {
+  display: none;
+}
+
+.header-fixed.no-user #login-desktop {
+  display: inline-flex;
+}
+
+.header-fixed.logged #login-desktop {
+  display: none;
+}
+
+.header-fixed.logged #btn-header-user {
+  display: flex;
+}
 
 /* =====================================================
    MODO RECIBO / CARRITO
 ===================================================== */
-.header-title:not(.hidden) ~ .nav-links {
+.header-title:not(.hidden) ~ .header-nav {
   display: none !important;
 }
 
@@ -167,34 +216,48 @@ header.header-fixed {
 }
 
 /* =====================================================
-   MÓVIL
+   MOBILE — COMPORTAMIENTO DEFINITIVO
 ===================================================== */
 @media (max-width: 900px) {
 
+  header.header-fixed {
+    justify-content: flex-start;
+    padding: 0 16px;
+  }
+
+  /* Logo a la izquierda */
+  .header-logo-link {
+    position: absolute;
+    left: 16px;
+  }
+
+  /* Hamburguesa a la derecha */
   .menu-toggle {
     display: block;
     position: absolute;
-    left: 16px;
+    right: 16px;
     top: 50%;
     transform: translateY(-50%);
   }
 
-  .header-logo,
+  /* Ocultar navegación */
   .nav-links {
     display: none !important;
   }
 
-  .header-actions {
-    margin-left: auto;
+  /* Ocultar avatar y carrito en móvil */
+  .header-avatar-button,
+  #cart-btn {
+    display: none !important;
   }
 
-  .header-avatar-button {
-    margin-left: auto; /* 🔑 AVATAR A LA DERECHA */
+  .header-title {
+    font-size: 1rem;
   }
 }
 
 /* =====================================================
-   SCRIM (SIEMPRE SOBRE HEADER)
+   SCRIM
 ===================================================== */
 .user-scrim {
   position: fixed;
@@ -203,7 +266,7 @@ header.header-fixed {
   opacity: 0;
   pointer-events: none;
   transition: opacity .2s ease;
-  z-index: 2000;
+  z-index: 998;
 }
 
 .user-scrim.open {
@@ -212,29 +275,27 @@ header.header-fixed {
 }
 
 /* =====================================================
-   DRAWER (CAPA MÁXIMA)
+   DRAWER
 ===================================================== */
 .user-drawer {
   position: fixed;
-  top: 0;
-  right: 0;
+  top: 80px;
+  right: 16px;
 
-  height: 100dvh;
-  width: min(360px, 90vw);
-
+  width: min(360px, calc(100% - 24px));
   background: #16181a;
   color: #fff;
 
-  border-radius: 0 0 0 24px;
+  border-radius: 24px;
   box-shadow:
     0 18px 40px rgba(0,0,0,.75),
     0 0 0 1px rgba(255,255,255,.04);
 
-  transform: translateX(100%);
+  transform: translateX(120%);
   opacity: 0;
   transition: transform .25s cubic-bezier(.2,0,0,1), opacity .2s ease;
 
-  z-index: 2100;
+  z-index: 999;
 }
 
 .user-drawer.open {
@@ -243,13 +304,18 @@ header.header-fixed {
 }
 
 /* =====================================================
-   DRAWER VISIBILIDAD
+   DRAWER — VISIBILIDAD
 ===================================================== */
-.user-drawer.no-user .logged { display: none; }
-.user-drawer.logged .no-user { display: none; }
+.user-drawer.no-user .logged {
+  display: none;
+}
+
+.user-drawer.logged .no-user {
+  display: none;
+}
 
 /* =====================================================
-   UTILIDAD
+   UTILIDAD GLOBAL
 ===================================================== */
 .hidden {
   display: none !important;
