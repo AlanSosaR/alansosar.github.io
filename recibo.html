@@ -138,27 +138,23 @@
   <!-- SNACKBAR -->
   <div id="snackbar" class="snackbar"></div>
 
-  <!-- =========================
-     SCRIPTS
-========================= -->
-
 <!-- Supabase core -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase-client-core.js"></script>
 
-<!-- Header heredado (inyecta el HTML) -->
-<script src="js/layout.js"></script>
-
-<!-- UI de sesión (NO TOCAR) -->
-<script src="js/auth-ui.js"></script>
-
-<!-- 🔑 MODO DE PÁGINA -->
+<!-- 🔑 MODO DE PÁGINA (ANTES DE TODO) -->
 <script>
   window.PAGE_MODE = "recibo";
 </script>
 
-<!-- Comportamiento del header (menú, drawer, título, carrito) -->
+<!-- HEADER CORE (define initHeader) -->
 <script src="js/header.js"></script>
+
+<!-- AUTH UI (define initAuthUI) -->
+<script src="js/auth-ui.js"></script>
+
+<!-- LAYOUT (inyecta header y llama initHeader + initAuthUI) -->
+<script src="js/layout.js"></script>
 
 <!-- Lógica propia de la página -->
 <script src="js/recibo.js"></script>
