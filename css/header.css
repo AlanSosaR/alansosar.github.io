@@ -3,7 +3,7 @@
 ===================================================== */
 
 header.header-fixed {
-  position: sticky;
+  position: sticky;          /* 🔑 sticky correcto */
   top: 0;
   z-index: 1000;
 
@@ -19,7 +19,7 @@ header.header-fixed {
 
   border-bottom: 1.5px solid rgba(0,0,0,0.05);
 
-  position: relative; /* referencia para absolutos */
+  position: relative;        /* referencia para absolutos */
 }
 
 /* =====================================================
@@ -75,7 +75,7 @@ header.header-fixed {
 
 /* =====================================================
    ACCIONES DERECHA (AVATAR / CARRITO)
-================================================HIJKLMNOPQRSTUVWXYZ===================================================== */
+===================================================== */
 .header-actions {
   display: flex;
   align-items: center;
@@ -131,7 +131,7 @@ header.header-fixed {
 }
 
 /* =====================================================
-   CARRITO (DESKTOP)
+   CARRITO
 ===================================================== */
 #cart-btn {
   width: 40px;
@@ -225,13 +225,11 @@ header.header-fixed {
     padding: 0 16px;
   }
 
-  /* Logo a la izquierda */
   .header-logo-link {
     position: absolute;
     left: 16px;
   }
 
-  /* Hamburguesa a la derecha */
   .menu-toggle {
     display: block;
     position: absolute;
@@ -240,12 +238,10 @@ header.header-fixed {
     transform: translateY(-50%);
   }
 
-  /* Ocultar navegación */
   .nav-links {
     display: none !important;
   }
 
-  /* Ocultar avatar y carrito en móvil */
   .header-avatar-button,
   #cart-btn {
     display: none !important;
@@ -293,7 +289,9 @@ header.header-fixed {
 
   transform: translateX(120%);
   opacity: 0;
-  transition: transform .25s cubic-bezier(.2,0,0,1), opacity .2s ease;
+  transition:
+    transform .25s cubic-bezier(.2,0,0,1),
+    opacity .2s ease;
 
   z-index: 999;
 }
