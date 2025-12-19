@@ -121,22 +121,23 @@ function initHeader() {
     if (e.key === "Escape") closeDrawer();
   });
 
-  /* ========================= LOGOUT ========================= */
+  /* ========================= LOGOUT (REAL) ========================= */
   logoutBtn?.addEventListener("click", (e) => {
     e.preventDefault();
 
-    // Limpia sesión local
+    // 🔑 LIMPIEZA TOTAL DE SESIÓN
     localStorage.removeItem("cortero_user");
     localStorage.removeItem("cortero_logged");
+    localStorage.removeItem("cafecortero_cart");
 
-    // Dispara evento global (auth-ui.js escucha esto)
+    // 🔑 Evento global (auth-ui.js lo escucha)
     document.dispatchEvent(new Event("userLoggedOut"));
 
-    // Cierra menú
+    // Cierra drawer
     closeDrawer();
 
-    // Redirige al inicio
-    window.location.href = "index.html";
+    // 🔑 Redirección limpia (NO vuelve atrás)
+    window.location.replace("index.html");
   });
 
   /* ========================= CARRITO ========================= */
