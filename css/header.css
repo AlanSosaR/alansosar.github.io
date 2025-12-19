@@ -13,7 +13,7 @@ header.header-fixed {
   display: flex;
   align-items: center;
 
-  background: rgba(255,255,255,0.92);
+  background: rgba(255,255,255,0.9);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 
@@ -103,21 +103,23 @@ header.header-fixed {
   height: 48px;
   border-radius: 50%;
   overflow: hidden;
-
-  background: #fff;
-  border: none;
-  cursor: pointer;
-
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
 
+  background: #ffffff;
+  border: none !important;
+  outline: none !important;
+
+  /* Sombra flotante */
   box-shadow:
-    0 6px 14px rgba(0,0,0,.18),
-    0 2px 4px rgba(0,0,0,.12);
+    0 6px 14px rgba(0, 0, 0, 0.18),
+    0 2px 4px rgba(0, 0, 0, 0.12);
 
-  transition: transform .2s ease, box-shadow .2s ease;
+  transition: transform 0.20s ease, box-shadow 0.20s ease;
 }
+
 
 .header-avatar-button:hover {
   transform: translateY(-2px);
