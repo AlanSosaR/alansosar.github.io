@@ -1,17 +1,16 @@
 /* ============================================================
-   RECIBO / DETALLES DEL PEDIDO — DISEÑO FINAL UNIFICADO
+   RECIBO / DETALLES DEL PEDIDO — BLOQUE CORREGIDO
 ============================================================ */
 
 /* ================= ROOT ================= */
 :root {
-   --marron: #512615;
+  --marron: #512615;
   --verde: #33673B;
   --blanco: #ffffff;
   --fondo: #fafafa;
   --marron-suave: rgba(75, 44, 25, 0.7);
 
   --border-cafe: rgba(81, 38, 21, 0.75);
-  --sombra-card: 0 18px 44px rgba(0,0,0,0.12);
 }
 
 /* ================= BASE ================= */
@@ -23,76 +22,63 @@ body {
   color: var(--marron);
 }
 
-/* ================= ANIMACIÓN ================= */
-.fade-in {
-  opacity: 0;
-  transform: translateY(10px);
-  animation: fadeIn .6s ease forwards;
-}
-@keyframes fadeIn {
-  to { opacity: 1; transform: translateY(0); }
-}
-
 /* ================= CONTENEDOR ================= */
 .recibo-container {
   max-width: 900px;
-  margin: 2.5rem auto;   /* 🔑 esto hace flotar la tarjeta */
+  margin: 2.5rem auto;
   padding: 0 1rem;
 }
+
 @media (max-width: 600px) {
   .recibo-container {
     margin: 2rem auto;
-    padding: 0 .75rem;
+    padding: 0 12px;
   }
 }
 
 /* ============================================================
-   TARJETA PRINCIPAL (BLANCA, FLOTANTE)
+   TARJETA PRINCIPAL (FIJA — NO SE MUEVE)
 ============================================================ */
 .recibo-card {
-  max-width: 900px;
   width: 100%;
+  max-width: 900px;
   position: relative;
 
   background: #ffffff;
   border-radius: 26px;
 
-  padding: 6rem 1.8rem 3rem; /* espacio real para flecha */
+  /* 🔒 ESTE ESPACIO NUNCA CAMBIA */
+  padding: 6rem 1.8rem 3rem;
+
+  /* Sombra real de tarjeta flotante */
   box-shadow:
-    0 14px 36px rgba(0, 0, 0, 0.14),
-    0 6px 14px rgba(0, 0, 0, 0.10);
-
+    0 18px 44px rgba(0, 0, 0, 0.14),
+    0 6px 16px rgba(0, 0, 0, 0.10);
 }
-/* ================= MOBILE — TARJETA MÁS GRANDE ================= */
+
+/* MOBILE — SOLO AJUSTES LATERALES */
 @media (max-width: 600px) {
-
-  /* 🔑 NO padding-top aquí */
-  .recibo-container {
-    margin: 2rem auto;     /* hace flotar la tarjeta */
-    padding: 0 10px;       /* solo aire lateral */
-  }
-
   .recibo-card {
-    width: 100%;
     max-width: 100%;
-    padding: 5rem 16px 24px; /* 🔑 mantiene espacio para flecha */
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-bottom: 24px;
     border-radius: 24px;
   }
-
-  .inner-card-full {
-    padding: 22px 16px;
-  }
 }
-/* ================= FLECHA VOLVER — CORRECTA ================= */
 
+/* ============================================================
+   FLECHA VOLVER — POSICIÓN ABSOLUTA ESTABLE
+============================================================ */
 .card-back {
   position: absolute;
-  top: 28px;          /* 🔑 baja la flecha dentro de la tarjeta */
+  top: 28px;
   left: 28px;
 
   width: 48px;
   height: 48px;
   border-radius: 50%;
+
   background: #ffffff;
   border: none;
 
@@ -119,7 +105,7 @@ body {
   color: var(--verde);
 }
 
-/* ================= TELÉFONO ================= */
+/* MOBILE — SOLO PEQUEÑO AJUSTE VISUAL */
 @media (max-width: 600px) {
   .card-back {
     top: 20px;
@@ -128,20 +114,26 @@ body {
 }
 
 /* ============================================================
-   INNER CARD / LINEAR CARD (BORDE CAFÉ)
+   TARJETA INTERNA (SE MUEVE SIN AFECTAR FLECHA)
 ============================================================ */
 .inner-card-full {
-  position: relative;          /* 🔑 CLAVE ABSOLUTA */
-  
+  position: relative;
   background: #ffffff;
-  border-radius: 22px;
 
-  border: 2px solid var(--marron);   /* CAFÉ REAL */
-  box-shadow: none;                  /* sin competir */
+  border-radius: 22px;
+  border: 2px solid var(--marron);
 
   padding: 3rem 2rem;
+  margin-top: 1.4rem; /* 🔑 baja contenido, no tarjeta */
 }
 
+@media (max-width: 600px) {
+  .inner-card-full {
+    padding: 22px 16px;
+    margin-top: 1.2rem;
+    border-radius: 20px;
+  }
+}
 /* ================= TITULOS ================= */
 .recibo-card h2 {
   text-align: center;
