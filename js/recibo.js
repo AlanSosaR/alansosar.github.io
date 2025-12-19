@@ -181,66 +181,89 @@ inputFile?.addEventListener("change", () => {
    ENVIAR PEDIDO
 ========================================================= */
 btnEnviar.addEventListener("click", async () => {
-  const sb = window.supabaseClient;
-  const user = getUserCache();
-  if (!user) return;
+const sb = window.supabaseClient;
+const user = getUserCache();
+if (!user) return;
 
-  btnEnviar.disabled = true;
-  loader.classList.remove("hidden");
+btnEnviar.disabled = true;
+loader.classList.remove("hidden");
 
-  try {
-    const orderNumber = await obtenerSiguienteNumeroPedido(user.id);
+try {
+  const orderNumber = await obtenerSiguienteNumeroPedido(user.id);
 
-    const status =
-      metodoPago.value === "cash"
-        ? "cash_on_delivery"
-        : "payment_review";
+  const isCash = metodoPago.value === "cash";
+  const isBank = metodoPago.value === "bank_transfer";
 
-    const { data: order, error } = await sb
-      .from("orders")
-      .insert({
-        user_id: user.id,
-        total,
-        payment_method: metodoPago.value,
-        status,
-        order_number: orderNumber
-      })
-      .select()
-      .single();
+  const status = isCash ? "cash_on_delivery" : "payment_review";
 
-    if (error) throw error;
-
-    if (metodoPago.value === "bank_transfer") {
-      const ext = comprobante.name.split(".").pop();
-      const path = `order_${order.id}/${Date.now()}.${ext}`;
-
-      await sb.storage.from("payment-receipts").upload(path, comprobante);
-
-      const { data: urlData } =
-        sb.storage.from("payment-receipts").getPublicUrl(path);
-
-      await sb.from("payment_receipts").insert({
-        order_id: order.id,
-        user_id: user.id,
-        file_url: urlData.publicUrl,
-        file_path: path
-      });
-    }
-
-    localStorage.removeItem("cafecortero_cart");
-    showSnack(`Pedido N.º ${orderNumber} enviado`);
-
-    setTimeout(() => {
-      window.location.href = "mis-pedidos.html";
-    }, 1400);
-
-  } catch (err) {
-    console.error("❌ Error pedido:", err);
-    showSnack("No se pudo enviar el pedido");
-    btnEnviar.disabled = false;
-    loader.classList.add("hidden");
+  // 🔑 Seguridad extra
+  if (isBank && !comprobante) {
+    throw new Error("No hay comprobante de pago");
   }
-});
+
+  const { data: order, error } = await sb
+    .from("orders")
+    .insert({
+      user_id: user.id,
+      total,
+      payment_method: metodoPago.value,
+      status,
+      order_number: orderNumber
+    })
+    .select()
+    .single();
+
+  if (error) throw error;
+
+  // =========================
+  // SUBIR COMPROBANTE
+  // =========================
+  if (isBank) {
+    const ext = comprobante.name.split(".").pop();
+    const path = `order_${order.id}/${Date.now()}.${ext}`;
+
+    const { error: uploadError } = await sb
+      .storage
+      .from("payment-receipts")
+      .upload(path, comprobante);
+
+    if (uploadError) throw uploadError;
+
+    const { data: urlData } =
+      sb.storage.from("payment-receipts").getPublicUrl(path);
+
+    await sb.from("payment_receipts").insert({
+      order_id: order.id,
+      user_id: user.id,
+      file_url: urlData.publicUrl,
+      file_path: path
+    });
+  }
+
+  // =========================
+  // LIMPIEZA Y MENSAJE
+  // =========================
+  localStorage.removeItem("cafecortero_cart");
+
+  let mensaje = "";
+  if (isCash) {
+    mensaje = `Pedido N.º ${orderNumber} enviado. Pago en efectivo al entregar.`;
+  } else {
+    mensaje = `Pedido N.º ${orderNumber} enviado. Pago en revisión.`;
+  }
+
+  showSnack(mensaje);
+
+  setTimeout(() => {
+    window.location.href = "mis-pedidos.html";
+  }, 1600);
+
+} catch (err) {
+  console.error("❌ Error pedido:", err);
+  showSnack("No se pudo enviar el pedido");
+  btnEnviar.disabled = false;
+  loader.classList.add("hidden");
+}
 
 /* =========================================================
    INIT
