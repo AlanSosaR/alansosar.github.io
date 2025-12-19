@@ -1,17 +1,22 @@
 console.log("🧭 header.js activo");
 
-/* ========================= HELPERS ========================= */
+/* =========================
+   HELPERS
+========================= */
 function safe(id) {
   return document.getElementById(id);
 }
 
-/* ========================= SUPABASE ========================= */
+/* =========================
+   SUPABASE
+========================= */
 function getSupabaseClient() {
   return window.supabaseClient || null;
 }
 
-/* ========================= CARRITO ========================= */
-
+/* =========================
+   CARRITO
+========================= */
 const CART_KEY = "cafecortero_cart";
 
 function getCart() {
@@ -30,8 +35,9 @@ function updateCartCount() {
   badge.textContent = total;
 }
 
-/* ========================= DRAWER ========================= */
-
+/* =========================
+   DRAWER
+========================= */
 function openDrawer() {
   safe("user-drawer")?.classList.add("open");
   safe("user-scrim")?.classList.add("open");
@@ -44,27 +50,33 @@ function closeDrawer() {
   document.body.style.overflow = "";
 }
 
-/* ========================= INIT ========================= */
-
+/* =========================
+   INIT
+========================= */
 document.addEventListener("DOMContentLoaded", () => {
 
   const mode       = window.PAGE_MODE || "default";
-  const nav        = document.querySelector(".header-nav");
+  const nav        = document.querySelector(".nav-links");
   const cartBtn    = safe("cart-btn");
   const menuToggle = safe("menu-toggle");
   const titleEl    = safe("header-title");
   const logoutBtn  = safe("logout-btn");
   const sb         = getSupabaseClient();
 
-  /* ---------- RESET HEADER ---------- */
+  /* =========================
+     RESET HEADER (BASE LIMPIA)
+  ========================= */
   nav?.classList.remove("hidden");
   cartBtn?.classList.remove("hidden");
   menuToggle?.classList.remove("hidden");
   titleEl?.classList.add("hidden");
 
-  /* ---------- MODOS ---------- */
+  /* =========================
+     MODOS DE PÁGINA
+  ========================= */
   switch (mode) {
 
+    /* ---------- CARRITO ---------- */
     case "carrito":
       nav?.classList.add("hidden");
       if (titleEl) {
@@ -73,35 +85,45 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       break;
 
+    /* ---------- RECIBO ---------- */
     case "recibo":
-  // Ocultamos navegación y carrito
-  nav?.classList.add("hidden");
-  cartBtn?.classList.add("hidden");
+      // Header limpio tipo Google Store
+      nav?.classList.add("hidden");
+      cartBtn?.classList.add("hidden");
 
-  // 🔑 IMPORTANTE:
-  // NO ocultar el botón hamburguesa ni el avatar
-  // para que el drawer siga funcionando
+      // 🔑 NO ocultar hamburguesa ni avatar
+      // El drawer sigue funcionando
 
-  if (titleEl) {
-    titleEl.textContent = "Detalle del pedido";
-    titleEl.classList.remove("hidden");
-  }
-  break;
+      if (titleEl) {
+        titleEl.textContent = "Detalle del pedido";
+        titleEl.classList.remove("hidden");
+      }
+      break;
 
+    /* ---------- LOGIN ---------- */
     case "login":
       nav?.classList.add("hidden");
       cartBtn?.classList.add("hidden");
       menuToggle?.classList.add("hidden");
       break;
+
+    /* ---------- DEFAULT (HOME / OTRAS) ---------- */
+    default:
+      titleEl?.classList.add("hidden");
+      break;
   }
 
-  /* ---------- CARRITO ---------- */
+  /* =========================
+     CARRITO
+  ========================= */
   cartBtn?.addEventListener("click", () => {
     window.location.href = "carrito.html";
   });
   updateCartCount();
 
-  /* ---------- MENÚ / DRAWER ---------- */
+  /* =========================
+     MENÚ / DRAWER
+  ========================= */
   menuToggle?.addEventListener("click", (e) => {
     e.preventDefault();
     openDrawer();
@@ -112,12 +134,15 @@ document.addEventListener("DOMContentLoaded", () => {
   document.addEventListener("click", (e) => {
     const avatarBtn = e.target.closest("#btn-header-user");
     if (!avatarBtn) return;
+
     e.preventDefault();
     e.stopPropagation();
     openDrawer();
   });
 
-  /* ---------- LOGOUT ---------- */
+  /* =========================
+     LOGOUT
+  ========================= */
   logoutBtn?.addEventListener("click", async () => {
     try {
       await sb?.auth.signOut();
