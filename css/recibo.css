@@ -67,6 +67,7 @@ body {
    TARJETA PRINCIPAL (FIJA — NO SE MUEVE)
 ============================================================ */
 .recibo-card {
+  position: relative;
   width: 100%;
   max-width: 900px;
   position: relative;
@@ -99,8 +100,8 @@ body {
 ============================================================ */
 .card-back {
   position: absolute;
-  top: 96px; /* 72px header + 24px aire */
-  left: 24px;
+  top: 16px;       /* 🔑 borde real de la tarjeta */
+  left: 16px;
 
   width: 44px;
   height: 44px;
