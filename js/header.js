@@ -1,10 +1,7 @@
-console.log("🧭 header.js — DEFINITIVO ESTABLE");
+console.log("🧭 header.js — COMPATIBLE con auth-ui");
 
 /* ========================= HELPERS ========================= */
 const $ = (id) => document.getElementById(id);
-
-/* ========================= SUPABASE ========================= */
-const sb = window.supabaseClient || null;
 
 /* ========================= CARRITO ========================= */
 const CART_KEY = "cafecortero_cart";
@@ -16,7 +13,9 @@ function updateCartCount() {
   try {
     const cart = JSON.parse(localStorage.getItem(CART_KEY)) || [];
     badge.textContent = cart.reduce((a, i) => a + i.qty, 0);
-  } catch {}
+  } catch {
+    badge.textContent = "0";
+  }
 }
 
 /* ========================= DRAWER ========================= */
@@ -61,45 +60,23 @@ document.addEventListener("DOMContentLoaded", () => {
   const menuToggle = $("menu-toggle");
   const drawer     = $("user-drawer");
   const scrim      = $("user-scrim");
-  const logoutBtn  = $("logout-btn");
 
-  /* ========================= USUARIO ========================= */
-  const user = (() => {
-    try {
-      return JSON.parse(localStorage.getItem("cortero_user"));
-    } catch {
-      return null;
-    }
-  })();
-
-  header.classList.toggle("logged", !!user);
-  header.classList.toggle("no-user", !user);
-  drawer?.classList.toggle("logged", !!user);
-  drawer?.classList.toggle("no-user", !user);
-
-  /* ========================= AVATAR ========================= */
-  if (user) {
-    const avatarUrl = user.photo_url || "imagenes/avatar-default.svg";
-    $("avatar-user") && ($("avatar-user").src = avatarUrl);
-    $("avatar-user-drawer") && ($("avatar-user-drawer").src = avatarUrl);
-    $("drawer-name") && ($("drawer-name").textContent = user.nombre || "Usuario");
-    $("drawer-email") && ($("drawer-email").textContent = user.email || "");
-  }
-
-  /* ========================= MODO RECIBO / CARRITO ========================= */
+  /* ========================= MODO PÁGINA ========================= */
   if (MODE === "recibo" || MODE === "carrito") {
-
     if (titleEl) {
-      titleEl.textContent = MODE === "recibo"
-        ? "Detalle del pedido"
-        : "Carrito";
+      titleEl.textContent =
+        MODE === "recibo" ? "Detalle del pedido" : "Carrito";
       titleEl.classList.remove("hidden");
     }
-
     cartBtn?.classList.add("hidden");
   }
 
-  /* ========================= EVENTOS ========================= */
+  if (MODE === "login") {
+    cartBtn?.classList.add("hidden");
+    menuToggle?.classList.add("hidden");
+  }
+
+  /* ========================= EVENTOS HEADER ========================= */
 
   /* Hamburguesa (móvil) */
   menuToggle?.addEventListener("click", (e) => {
@@ -127,7 +104,7 @@ document.addEventListener("DOMContentLoaded", () => {
     closeDrawer();
   });
 
-  /* Items del menú */
+  /* Items del drawer */
   drawer?.querySelectorAll("a, button").forEach(el => {
     el.addEventListener("click", closeDrawer);
   });
@@ -143,15 +120,4 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   updateCartCount();
-
-  /* ========================= LOGOUT ========================= */
-  logoutBtn?.addEventListener("click", async () => {
-    try {
-      await sb?.auth.signOut();
-    } catch {}
-    localStorage.removeItem("cortero_user");
-    closeDrawer();
-    window.location.href = "index.html";
-  });
-
 });
