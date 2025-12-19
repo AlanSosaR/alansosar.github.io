@@ -1,20 +1,7 @@
-console.log("🧭 header.js activo (VERSIÓN FINAL ESTABLE)");
+console.log("🧭 header.js activo — FINAL FUNCIONAL");
 
 /* ========================= HELPERS ========================= */
 const safe = (id) => document.getElementById(id);
-
-/* ========================= ESPERAR HEADER ========================= */
-function waitForHeader() {
-  return new Promise(resolve => {
-    const i = setInterval(() => {
-      const header = document.getElementById("main-header");
-      if (header) {
-        clearInterval(i);
-        resolve(header);
-      }
-    }, 40);
-  });
-}
 
 /* ========================= SUPABASE ========================= */
 function getSupabaseClient() {
@@ -44,7 +31,7 @@ function updateCartCount() {
 function openDrawer() {
   const drawer = safe("user-drawer");
   const scrim  = safe("user-scrim");
-  if (!drawer || drawer.classList.contains("open")) return;
+  if (!drawer) return;
 
   drawer.classList.add("open");
   drawer.setAttribute("aria-hidden", "false");
@@ -55,7 +42,7 @@ function openDrawer() {
 function closeDrawer() {
   const drawer = safe("user-drawer");
   const scrim  = safe("user-scrim");
-  if (!drawer || !drawer.classList.contains("open")) return;
+  if (!drawer) return;
 
   drawer.classList.remove("open");
   drawer.setAttribute("aria-hidden", "true");
@@ -66,14 +53,18 @@ function closeDrawer() {
 function toggleDrawer() {
   const drawer = safe("user-drawer");
   if (!drawer) return;
-  drawer.classList.contains("open") ? closeDrawer() : openDrawer();
+
+  drawer.classList.contains("open")
+    ? closeDrawer()
+    : openDrawer();
 }
 
 /* ========================= INIT ========================= */
-document.addEventListener("DOMContentLoaded", async () => {
+document.addEventListener("DOMContentLoaded", () => {
 
-  /* 🔑 Solo actúa si existe el header nuevo */
-  const header = await waitForHeader();
+  /* 🔑 NO BLOQUEAMOS: solo verificamos que exista */
+  const header = document.querySelector(".header-fixed");
+  if (!header) return;
 
   const mode       = window.PAGE_MODE || "default";
   const nav        = header.querySelector(".nav-links");
@@ -85,7 +76,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const scrim      = safe("user-scrim");
   const logoutBtn  = safe("logout-btn");
 
-  const sb         = getSupabaseClient();
+  const sb = getSupabaseClient();
 
   /* ========================= USUARIO ========================= */
   const user = JSON.parse(localStorage.getItem("cortero_user"));
@@ -95,20 +86,18 @@ document.addEventListener("DOMContentLoaded", async () => {
   drawer?.classList.toggle("logged", !!user);
   drawer?.classList.toggle("no-user", !user);
 
-  /* ========================= AVATAR + PERFIL ========================= */
+  /* ========================= AVATAR ========================= */
   if (user) {
     const avatarHeader = safe("avatar-user");
     const avatarDrawer = safe("avatar-user-drawer");
-    const drawerName   = safe("drawer-name");
-    const drawerEmail  = safe("drawer-email");
 
     const avatarUrl = user.photo_url || "imagenes/avatar-default.svg";
 
     if (avatarHeader) avatarHeader.src = avatarUrl;
     if (avatarDrawer) avatarDrawer.src = avatarUrl;
 
-    if (drawerName)  drawerName.textContent  = user.nombre || "Usuario";
-    if (drawerEmail) drawerEmail.textContent = user.email || "";
+    safe("drawer-name") && (safe("drawer-name").textContent = user.nombre || "Usuario");
+    safe("drawer-email") && (safe("drawer-email").textContent = user.email || "");
   }
 
   /* ========================= RESET BASE ========================= */
@@ -120,39 +109,24 @@ document.addEventListener("DOMContentLoaded", async () => {
   closeDrawer();
 
   /* ========================= MODOS ========================= */
-  switch (mode) {
-    case "carrito":
-      nav?.classList.add("hidden");
-      cartBtn?.classList.add("hidden");
-      if (titleEl) {
-        titleEl.textContent = "Carrito";
-        titleEl.classList.remove("hidden");
-      }
-      break;
-
-    case "recibo":
-      nav?.classList.add("hidden");
-      cartBtn?.classList.add("hidden");
-      if (titleEl) {
-        titleEl.textContent = "Detalle del pedido";
-        titleEl.classList.remove("hidden");
-      }
-      break;
-
-    case "login":
-      nav?.classList.add("hidden");
-      cartBtn?.classList.add("hidden");
-      menuToggle?.classList.add("hidden");
-      break;
+  if (mode === "carrito" || mode === "recibo") {
+    nav?.classList.add("hidden");
+    cartBtn?.classList.add("hidden");
+    titleEl.textContent = mode === "carrito"
+      ? "Carrito"
+      : "Detalle del pedido";
+    titleEl.classList.remove("hidden");
   }
 
-  /* ========================= CARRITO ========================= */
-  cartBtn?.addEventListener("click", () => {
-    window.location.href = "carrito.html";
-  });
-  updateCartCount();
+  if (mode === "login") {
+    nav?.classList.add("hidden");
+    cartBtn?.classList.add("hidden");
+    menuToggle?.classList.add("hidden");
+  }
 
-  /* ========================= ABRIR / CERRAR ========================= */
+  /* ========================= EVENTOS ========================= */
+
+  /* Abrir / cerrar */
   menuToggle?.addEventListener("click", (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -167,31 +141,37 @@ document.addEventListener("DOMContentLoaded", async () => {
     toggleDrawer();
   });
 
-  /* ========================= CIERRES GLOBALES ========================= */
+  /* Cerrar al tocar scrim */
   scrim?.addEventListener("click", closeDrawer);
 
+  /* Cerrar al tocar fuera */
   document.addEventListener("click", (e) => {
-    const drawerEl = safe("user-drawer");
-    if (!drawerEl || !drawerEl.classList.contains("open")) return;
-    if (drawerEl.contains(e.target)) return;
+    if (!drawer || !drawer.classList.contains("open")) return;
+    if (drawer.contains(e.target)) return;
     closeDrawer();
   });
 
+  /* Cerrar al elegir item */
   drawer?.querySelectorAll("a, button").forEach(el => {
     el.addEventListener("click", closeDrawer);
   });
 
+  /* ESC */
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") closeDrawer();
   });
+
+  /* ========================= CARRITO ========================= */
+  cartBtn?.addEventListener("click", () => {
+    window.location.href = "carrito.html";
+  });
+  updateCartCount();
 
   /* ========================= LOGOUT ========================= */
   logoutBtn?.addEventListener("click", async () => {
     try {
       await sb?.auth.signOut();
-    } catch (e) {
-      console.warn("Logout error:", e);
-    }
+    } catch {}
     localStorage.removeItem("cortero_user");
     closeDrawer();
     window.location.href = "index.html";
