@@ -1,22 +1,17 @@
 console.log("🧭 header.js activo");
 
-/* =========================
-   HELPERS
-========================= */
+/* ========================= HELPERS ========================= */
 function safe(id) {
   return document.getElementById(id);
 }
 
-/* =========================
-   SUPABASE
-========================= */
+/* ========================= SUPABASE ========================= */
 function getSupabaseClient() {
   return window.supabaseClient || null;
 }
 
-/* =========================
-   CARRITO
-========================= */
+/* ========================= CARRITO ========================= */
+
 const CART_KEY = "cafecortero_cart";
 
 function getCart() {
@@ -35,9 +30,8 @@ function updateCartCount() {
   badge.textContent = total;
 }
 
-/* =========================
-   DRAWER
-========================= */
+/* ========================= DRAWER ========================= */
+
 function openDrawer() {
   safe("user-drawer")?.classList.add("open");
   safe("user-scrim")?.classList.add("open");
@@ -50,33 +44,54 @@ function closeDrawer() {
   document.body.style.overflow = "";
 }
 
-/* =========================
-   INIT
-========================= */
+/* ========================= INIT ========================= */
+
 document.addEventListener("DOMContentLoaded", () => {
 
+  const sb         = getSupabaseClient();
   const mode       = window.PAGE_MODE || "default";
+
+  const header     = safe("main-header");
   const nav        = document.querySelector(".nav-links");
   const cartBtn    = safe("cart-btn");
   const menuToggle = safe("menu-toggle");
   const titleEl    = safe("header-title");
   const logoutBtn  = safe("logout-btn");
-  const sb         = getSupabaseClient();
 
-  /* =========================
-     RESET HEADER (BASE LIMPIA)
-  ========================= */
+  /* =====================================================
+     1️⃣ ESTADO DE USUARIO (logged / no-user)  🔑 CLAVE
+  ===================================================== */
+  const user = (() => {
+    try {
+      return JSON.parse(localStorage.getItem("cortero_user"));
+    } catch {
+      return null;
+    }
+  })();
+
+  if (header) {
+    if (user) {
+      header.classList.remove("no-user");
+      header.classList.add("logged");
+    } else {
+      header.classList.remove("logged");
+      header.classList.add("no-user");
+    }
+  }
+
+  /* =====================================================
+     2️⃣ RESET VISUAL HEADER
+  ===================================================== */
   nav?.classList.remove("hidden");
   cartBtn?.classList.remove("hidden");
   menuToggle?.classList.remove("hidden");
   titleEl?.classList.add("hidden");
 
-  /* =========================
-     MODOS DE PÁGINA
-  ========================= */
+  /* =====================================================
+     3️⃣ MODOS DE PÁGINA
+  ===================================================== */
   switch (mode) {
 
-    /* ---------- CARRITO ---------- */
     case "carrito":
       nav?.classList.add("hidden");
       if (titleEl) {
@@ -85,45 +100,36 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       break;
 
-    /* ---------- RECIBO ---------- */
     case "recibo":
-      // Header limpio tipo Google Store
+      // 🔑 SOLO lo necesario
       nav?.classList.add("hidden");
       cartBtn?.classList.add("hidden");
 
-      // 🔑 NO ocultar hamburguesa ni avatar
-      // El drawer sigue funcionando
-
+      // avatar + hamburguesa siguen activos
       if (titleEl) {
         titleEl.textContent = "Detalle del pedido";
         titleEl.classList.remove("hidden");
       }
       break;
 
-    /* ---------- LOGIN ---------- */
     case "login":
       nav?.classList.add("hidden");
       cartBtn?.classList.add("hidden");
       menuToggle?.classList.add("hidden");
       break;
-
-    /* ---------- DEFAULT (HOME / OTRAS) ---------- */
-    default:
-      titleEl?.classList.add("hidden");
-      break;
   }
 
-  /* =========================
-     CARRITO
-  ========================= */
+  /* =====================================================
+     4️⃣ CARRITO
+  ===================================================== */
   cartBtn?.addEventListener("click", () => {
     window.location.href = "carrito.html";
   });
   updateCartCount();
 
-  /* =========================
-     MENÚ / DRAWER
-  ========================= */
+  /* =====================================================
+     5️⃣ MENÚ / DRAWER
+  ===================================================== */
   menuToggle?.addEventListener("click", (e) => {
     e.preventDefault();
     openDrawer();
@@ -134,15 +140,14 @@ document.addEventListener("DOMContentLoaded", () => {
   document.addEventListener("click", (e) => {
     const avatarBtn = e.target.closest("#btn-header-user");
     if (!avatarBtn) return;
-
     e.preventDefault();
     e.stopPropagation();
     openDrawer();
   });
 
-  /* =========================
-     LOGOUT
-  ========================= */
+  /* =====================================================
+     6️⃣ LOGOUT
+  ===================================================== */
   logoutBtn?.addEventListener("click", async () => {
     try {
       await sb?.auth.signOut();
@@ -151,6 +156,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     localStorage.removeItem("cortero_user");
+    localStorage.removeItem("cortero_logged");
+
     closeDrawer();
     window.location.href = "index.html";
   });
