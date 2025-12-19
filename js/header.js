@@ -1,4 +1,4 @@
-console.log("🧭 header.js — COMPATIBLE con auth-ui");
+console.log("🧭 header.js — CORE FINAL");
 
 /* ========================= HELPERS ========================= */
 const $ = (id) => document.getElementById(id);
@@ -22,36 +22,43 @@ function updateCartCount() {
 function openDrawer() {
   const drawer = $("user-drawer");
   const scrim  = $("user-scrim");
-  if (!drawer) return;
+  if (!drawer || !scrim) return;
 
   drawer.classList.add("open");
+  scrim.classList.add("open");
   drawer.setAttribute("aria-hidden", "false");
-  scrim?.classList.add("open");
   document.body.style.overflow = "hidden";
 }
 
 function closeDrawer() {
   const drawer = $("user-drawer");
   const scrim  = $("user-scrim");
-  if (!drawer) return;
+  if (!drawer || !scrim) return;
 
   drawer.classList.remove("open");
+  scrim.classList.remove("open");
   drawer.setAttribute("aria-hidden", "true");
-  scrim?.classList.remove("open");
   document.body.style.overflow = "";
 }
 
 function toggleDrawer() {
   const drawer = $("user-drawer");
   if (!drawer) return;
+
   drawer.classList.contains("open") ? closeDrawer() : openDrawer();
 }
 
-/* ========================= INIT ========================= */
-document.addEventListener("DOMContentLoaded", () => {
+/* ============================================================
+   HEADER — INIT (LLAMAR DESPUÉS DE INYECTAR HEADER)
+============================================================ */
+function initHeader() {
+  console.log("✅ initHeader ejecutado");
 
   const header = document.querySelector(".header-fixed");
-  if (!header) return;
+  if (!header) {
+    console.warn("⚠️ Header no encontrado");
+    return;
+  }
 
   const MODE = window.PAGE_MODE || "default";
 
@@ -61,7 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const drawer     = $("user-drawer");
   const scrim      = $("user-scrim");
 
-  /* ========================= MODO PÁGINA ========================= */
+  /* ========================= MODO DE PÁGINA ========================= */
   if (MODE === "recibo" || MODE === "carrito") {
     if (titleEl) {
       titleEl.textContent =
@@ -76,16 +83,16 @@ document.addEventListener("DOMContentLoaded", () => {
     menuToggle?.classList.add("hidden");
   }
 
-  /* ========================= EVENTOS HEADER ========================= */
+  /* ========================= EVENTOS ========================= */
 
-  /* Hamburguesa (móvil) */
+  // Hamburguesa (móvil)
   menuToggle?.addEventListener("click", (e) => {
     e.preventDefault();
     e.stopPropagation();
     toggleDrawer();
   });
 
-  /* Avatar (desktop) */
+  // Avatar (PC y móvil)
   document.addEventListener("click", (e) => {
     const avatarBtn = e.target.closest("#btn-header-user");
     if (!avatarBtn) return;
@@ -94,22 +101,22 @@ document.addEventListener("DOMContentLoaded", () => {
     toggleDrawer();
   });
 
-  /* Scrim */
+  // Scrim
   scrim?.addEventListener("click", closeDrawer);
 
-  /* Click fuera */
+  // Click fuera del drawer
   document.addEventListener("click", (e) => {
     if (!drawer?.classList.contains("open")) return;
     if (drawer.contains(e.target)) return;
     closeDrawer();
   });
 
-  /* Items del drawer */
+  // Click en items del drawer
   drawer?.querySelectorAll("a, button").forEach(el => {
     el.addEventListener("click", closeDrawer);
   });
 
-  /* ESC */
+  // ESC
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") closeDrawer();
   });
@@ -120,4 +127,4 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   updateCartCount();
-});
+}
