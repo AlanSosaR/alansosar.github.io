@@ -58,7 +58,10 @@ body {
   border-radius: 26px;
 
   padding: 6rem 1.8rem 3rem; /* espacio real para flecha */
-  box-shadow: 0 12px 28px rgba(0,0,0,0.06);
+  box-shadow:
+    0 14px 36px rgba(0, 0, 0, 0.14),
+    0 6px 14px rgba(0, 0, 0, 0.10);
+
 }
 /* ================= MOBILE — TARJETA MÁS GRANDE ================= */
 @media (max-width: 600px) {
