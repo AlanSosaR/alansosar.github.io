@@ -74,14 +74,19 @@ document.addEventListener("DOMContentLoaded", () => {
       break;
 
     case "recibo":
-      nav?.classList.add("hidden");
-      cartBtn?.classList.add("hidden");
-      menuToggle?.classList.add("hidden");
-      if (titleEl) {
-        titleEl.textContent = "Detalle del pedido";
-        titleEl.classList.remove("hidden");
-      }
-      break;
+  // Ocultamos navegación y carrito
+  nav?.classList.add("hidden");
+  cartBtn?.classList.add("hidden");
+
+  // 🔑 IMPORTANTE:
+  // NO ocultar el botón hamburguesa ni el avatar
+  // para que el drawer siga funcionando
+
+  if (titleEl) {
+    titleEl.textContent = "Detalle del pedido";
+    titleEl.classList.remove("hidden");
+  }
+  break;
 
     case "login":
       nav?.classList.add("hidden");
