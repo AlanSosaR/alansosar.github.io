@@ -3,7 +3,7 @@
 // Controla SOLO la UI según sesión (NO backend)
 // ============================================================
 
-console.log("👤 auth-ui.js activo — versión FINAL ESTABLE");
+console.log("👤 auth-ui.js cargado — CORE FINAL");
 
 /* ========================= HELPERS ========================= */
 function safe(id) {
@@ -13,7 +13,7 @@ function safe(id) {
 /* ========================= CIERRE DRAWER ========================= */
 function closeDrawerUI() {
   const drawer = safe("user-drawer");
-  const scrim = safe("user-scrim");
+  const scrim  = safe("user-scrim");
 
   if (drawer) {
     drawer.classList.remove("open");
@@ -39,24 +39,19 @@ function setLoggedIn(user) {
 
   /* ===== Header ===== */
   if (header) {
-    header.classList.remove("no-user"); // 🔑 FIX
+    header.classList.remove("no-user");
     header.classList.add("logged");
   }
 
   /* ===== Avatar ===== */
   const photo = user?.photo_url || "imagenes/avatar-default.svg";
 
-  if (safe("avatar-user")) {
-    safe("avatar-user").src = photo;
-  }
-
-  if (safe("avatar-user-drawer")) {
-    safe("avatar-user-drawer").src = photo;
-  }
+  safe("avatar-user")?.setAttribute("src", photo);
+  safe("avatar-user-drawer")?.setAttribute("src", photo);
 
   /* ===== Textos drawer ===== */
   if (safe("drawer-name")) {
-    safe("drawer-name").textContent = `${user?.name || "Usuario"}`;
+    safe("drawer-name").textContent = user?.name || "Usuario";
   }
 
   if (safe("drawer-email")) {
@@ -79,14 +74,18 @@ function setLoggedOut() {
   /* ===== Header ===== */
   if (header) {
     header.classList.remove("logged");
-    header.classList.add("no-user"); // 🔑 FIX
+    header.classList.add("no-user");
   }
 
   closeDrawerUI();
 }
 
-/* ========================= INIT ========================= */
-document.addEventListener("DOMContentLoaded", () => {
+/* ============================================================
+// INIT — LLAMAR DESPUÉS DE INYECTAR HEADER
+// ============================================================ */
+function initAuthUI() {
+  console.log("👤 initAuthUI ejecutado");
+
   const raw = localStorage.getItem("cortero_user");
 
   if (raw) {
@@ -100,7 +99,7 @@ document.addEventListener("DOMContentLoaded", () => {
   } else {
     setLoggedOut();
   }
-});
+}
 
 /* ========================= EVENTOS GLOBALES ========================= */
 document.addEventListener("userLoggedIn", (e) => {
