@@ -281,3 +281,9 @@ header {
 .user-drawer.logged .no-user {
   display: none;
 }
+/* =====================
+   UTILIDAD GLOBAL
+===================== */
+.hidden {
+  display: none !important;
+}
