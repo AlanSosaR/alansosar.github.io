@@ -223,19 +223,18 @@ header.header-fixed {
   font-size: 1.9rem;
   cursor: pointer;
   display: none;
-  z-index: 6000 !important;
+  z-index: 6000;
 }
 
 @media (max-width: 900px) {
   .menu-toggle {
     display: block;
     position: absolute;
-    left: 18px;
+    left: 16px;          /* 🔑 consistente con Material */
     top: 50%;
     transform: translateY(-50%);
   }
 }
-
 
 /* =====================================================
    VISIBILIDAD POR ESTADO
