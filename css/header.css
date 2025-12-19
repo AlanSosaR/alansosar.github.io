@@ -182,11 +182,23 @@ header.header-fixed {
 .menu-toggle {
   background: none;
   border: none;
-  font-size: 1.9rem;
   color: var(--marron);
+  font-size: 1.9rem;
   cursor: pointer;
   display: none;
+  z-index: 6000 !important;
 }
+
+@media (max-width: 900px) {
+  .menu-toggle {
+    display: block;
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+}
+
 
 /* =====================================================
    VISIBILIDAD POR ESTADO
