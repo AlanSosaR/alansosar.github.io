@@ -4,6 +4,7 @@
 
 header.header-fixed {
   position: sticky;
+  position: relative; /* 🔑 CLAVE ABSOLUTA */
   top: 0;
   z-index: 1000;
 
