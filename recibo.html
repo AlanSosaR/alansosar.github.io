@@ -23,10 +23,10 @@
 <body>
 
   <!-- =========================
-       HEADER GLOBAL
+       HEADER GLOBAL (HEREDADO)
   ========================= -->
   <div id="app-header"></div>
-<div class="header-center-title">Detalles del pedido</div>
+
   <!-- =========================
        CONTENIDO
   ========================= -->
@@ -41,7 +41,7 @@
 
       <div class="inner-card-full">
 
-        <!-- ENCABEZADO -->
+        <!-- ENCABEZADO TARJETA -->
         <h2>Pedido N.º <span id="numeroPedido"></span></h2>
         <p class="fecha">
           <strong>Fecha:</strong> <span id="fechaPedido"></span>
@@ -68,9 +68,7 @@
           <strong>Total:</strong> L <span id="totalPedido"></span>
         </p>
 
-        <!-- =========================
-             MÉTODO DE PAGO (ÚNICO)
-        ========================= -->
+        <!-- MÉTODO DE PAGO -->
         <h3>Método de pago</h3>
 
         <div class="pagos">
@@ -87,21 +85,18 @@
 
           <!-- DEPÓSITO -->
           <div id="pago-deposito" class="pago-bloque hidden">
-
             <p>
               <span class="material-symbols-outlined pago-icon">account_balance</span>
-              <strong class="pago-titulo">Depósito bancario</strong><br>
-              Banco Atlántida — Cuenta <span class="pago-cuenta">123456789</span><br>
-              A nombre de <span class="pago-titular">Café Cortero</span>
+              <strong>Depósito bancario</strong><br>
+              Banco Atlántida — Cuenta <span>123456789</span><br>
+              A nombre de <span>Café Cortero</span>
             </p>
 
-           <p class="comprobante-info">
-      Para poder <strong>enviar tu pedido</strong>, debes subir el
-      <strong>comprobante de tu depósito bancario</strong>.<br>
-      El pago será <strong>verificado manualmente</strong> por nuestro equipo.<br>
-      Una vez revisado, <strong>recibirás una notificación</strong> y podrás
-      ver el estado actualizado de tu pedido en <strong>Mis pedidos</strong>.
-    </p>
+            <p class="comprobante-info">
+              Para poder <strong>enviar tu pedido</strong>, debes subir el
+              <strong>comprobante de tu depósito bancario</strong>.<br>
+              El pago será <strong>verificado manualmente</strong> por nuestro equipo.
+            </p>
 
             <button class="comprobante-link" id="btnSubirComprobante">
               <span class="material-symbols-outlined">upload</span>
@@ -114,20 +109,18 @@
               <img id="imgComprobante" alt="Comprobante">
               <p>✔ Comprobante listo para enviar</p>
             </div>
-
           </div>
 
           <!-- EFECTIVO -->
           <div id="pago-efectivo" class="pago-bloque hidden">
             <p>
               <span class="material-symbols-outlined pago-icon">payments</span>
-              <strong class="pago-titulo">Pago en efectivo</strong>
+              <strong>Pago en efectivo</strong>
             </p>
 
             <p class="comprobante-info">
-  El pago se realizará <strong>en efectivo</strong> al momento de la
-  <strong>entrega</strong>.<br>
-  Nuestro repartidor <strong>confirmará el pago directamente contigo</strong>.
+              El pago se realizará <strong>en efectivo</strong> al momento de la
+              <strong>entrega</strong>.
             </p>
           </div>
 
@@ -151,13 +144,17 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-client-core.js"></script>
   <script src="js/layout.js"></script>
+
+  <!-- 🔑 MODO DE PÁGINA -->
+  <script>
+    window.PAGE_MODE = "recibo";
+  </script>
+
   <script src="js/header.js"></script>
   <script src="js/auth-ui.js"></script>
   <script src="js/recibo.js"></script>
 
-  <!-- =========================
-       SNACKBAR GLOBAL
-  ========================= -->
+  <!-- SNACKBAR -->
   <div id="snackbar" class="snackbar"></div>
 
 </body>
