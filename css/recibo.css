@@ -21,7 +21,34 @@ body {
                "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
   color: var(--marron);
 }
+/* =====================================================
+   HEADER — TÍTULO SOLO PARA RECIBO
+===================================================== */
 
+.page-recibo .header-center-title {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+
+  height: 72px;
+  display: flex;
+  align-items: center;
+
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--marron);
+
+  pointer-events: none; /* 🔑 no bloquea avatar ni menú */
+  z-index: 3001;
+}
+
+/* Mobile ajuste */
+@media (max-width: 600px) {
+  .page-recibo .header-center-title {
+    font-size: 0.95rem;
+  }
+}
 /* ================= CONTENEDOR ================= */
 .recibo-container {
   max-width: 900px;
