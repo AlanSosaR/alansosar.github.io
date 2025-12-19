@@ -5,13 +5,26 @@ function safe(id) {
   return document.getElementById(id);
 }
 
+/* ========================= ESPERAR HEADER ========================= */
+/* 🔑 CLAVE ABSOLUTA: el header se inyecta dinámicamente */
+function waitForHeader() {
+  return new Promise(resolve => {
+    const interval = setInterval(() => {
+      const header = document.getElementById("main-header");
+      if (header) {
+        clearInterval(interval);
+        resolve(header);
+      }
+    }, 50);
+  });
+}
+
 /* ========================= SUPABASE ========================= */
 function getSupabaseClient() {
   return window.supabaseClient || null;
 }
 
 /* ========================= CARRITO ========================= */
-
 const CART_KEY = "cafecortero_cart";
 
 function getCart() {
@@ -31,7 +44,6 @@ function updateCartCount() {
 }
 
 /* ========================= DRAWER ========================= */
-
 function openDrawer() {
   safe("user-drawer")?.classList.add("open");
   safe("user-scrim")?.classList.add("open");
@@ -45,35 +57,37 @@ function closeDrawer() {
 }
 
 /* ========================= INIT ========================= */
+document.addEventListener("DOMContentLoaded", async () => {
 
-document.addEventListener("DOMContentLoaded", () => {
+  /* 🔑 ESPERAMOS A QUE EXISTA EL HEADER */
+  const header = await waitForHeader();
 
   const mode       = window.PAGE_MODE || "default";
-  const nav        = document.querySelector(".nav-links"); // 🔑 CLAVE
-  const cartBtn    = safe("cart-btn");
-  const menuToggle = safe("menu-toggle");
-  const titleEl    = safe("header-title");
+  const nav        = header.querySelector(".nav-links");
+  const cartBtn    = header.querySelector("#cart-btn");
+  const menuToggle = header.querySelector("#menu-toggle");
+  const titleEl    = header.querySelector("#header-title");
   const logoutBtn  = safe("logout-btn");
-  const header     = safe("main-header");
   const sb         = getSupabaseClient();
 
-  /* ---------- ESTADO USUARIO ---------- */
+  /* ========================= ESTADO USUARIO ========================= */
   const user = JSON.parse(localStorage.getItem("cortero_user"));
+
   if (user) {
-    header?.classList.remove("no-user");
-    header?.classList.add("logged");
+    header.classList.remove("no-user");
+    header.classList.add("logged");
   } else {
-    header?.classList.remove("logged");
-    header?.classList.add("no-user");
+    header.classList.remove("logged");
+    header.classList.add("no-user");
   }
 
-  /* ---------- RESET ---------- */
+  /* ========================= RESET HEADER ========================= */
   nav?.classList.remove("hidden");
   cartBtn?.classList.remove("hidden");
   menuToggle?.classList.remove("hidden");
   titleEl?.classList.add("hidden");
 
-  /* ---------- MODOS ---------- */
+  /* ========================= MODOS ========================= */
   switch (mode) {
 
     case "carrito":
@@ -86,8 +100,8 @@ document.addEventListener("DOMContentLoaded", () => {
       break;
 
     case "recibo":
-      nav?.classList.add("hidden");     // ✅ QUITA LAS LETRAS
-      cartBtn?.classList.add("hidden"); // ✅ QUITA CARRITO
+      nav?.classList.add("hidden");       // ❌ Variedades / Nosotros / Contacto
+      cartBtn?.classList.add("hidden");   // ❌ carrito
       if (titleEl) {
         titleEl.textContent = "Detalle del pedido";
         titleEl.classList.remove("hidden");
@@ -101,13 +115,13 @@ document.addEventListener("DOMContentLoaded", () => {
       break;
   }
 
-  /* ---------- CARRITO ---------- */
+  /* ========================= CARRITO ========================= */
   cartBtn?.addEventListener("click", () => {
     window.location.href = "carrito.html";
   });
   updateCartCount();
 
-  /* ---------- DRAWER ---------- */
+  /* ========================= DRAWER ========================= */
   menuToggle?.addEventListener("click", (e) => {
     e.preventDefault();
     openDrawer();
@@ -123,7 +137,7 @@ document.addEventListener("DOMContentLoaded", () => {
     openDrawer();
   });
 
-  /* ---------- LOGOUT ---------- */
+  /* ========================= LOGOUT ========================= */
   logoutBtn?.addEventListener("click", async () => {
     try {
       await sb?.auth.signOut();
@@ -135,4 +149,5 @@ document.addEventListener("DOMContentLoaded", () => {
     closeDrawer();
     window.location.href = "index.html";
   });
+
 });
