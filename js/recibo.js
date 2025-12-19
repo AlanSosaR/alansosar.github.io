@@ -1,7 +1,7 @@
-console.log("🧾 recibo.js — FINAL estable (sin colisiones)");
+console.log("🧾 recibo.js — CORE FINAL");
 
 /* =========================================================
-   HELPERS (LOCAL, NO GLOBAL)
+   HELPERS
 ========================================================= */
 const $id = (id) => document.getElementById(id);
 
@@ -33,7 +33,7 @@ function esperarSupabase() {
 }
 
 /* =========================================================
-   CACHE USUARIO
+   USUARIO EN CACHE
 ========================================================= */
 function getUserCache() {
   try {
@@ -45,7 +45,7 @@ function getUserCache() {
 }
 
 /* =========================================================
-   NÚMERO DE PEDIDO — DESDE BD
+   NÚMERO DE PEDIDO
 ========================================================= */
 async function obtenerSiguienteNumeroPedido(userId) {
   const sb = window.supabaseClient;
@@ -65,11 +65,14 @@ async function obtenerSiguienteNumeroPedido(userId) {
 /* =========================================================
    FECHA
 ========================================================= */
-$id("fechaPedido").textContent = new Date().toLocaleString("es-HN", {
-  dateStyle: "short",
-  timeStyle: "medium",
-  hour12: true
-});
+const fechaEl = $id("fechaPedido");
+if (fechaEl) {
+  fechaEl.textContent = new Date().toLocaleString("es-HN", {
+    dateStyle: "short",
+    timeStyle: "medium",
+    hour12: true
+  });
+}
 
 /* =========================================================
    DATOS DEL CLIENTE
@@ -114,15 +117,23 @@ let total = 0;
 
 if (lista) {
   lista.innerHTML = "";
+
   carrito.forEach(item => {
-    const price = parseFloat(item.price.toString().replace(/[^\d.-]/g, "")) || 0;
+    const price = parseFloat(
+      item.price.toString().replace(/[^\d.-]/g, "")
+    ) || 0;
+
     const subtotal = price * item.qty;
     total += subtotal;
 
     lista.innerHTML += `
       <div class="cafe-item">
-        <span class="cafe-nombre">${item.name} (${item.qty} bolsas)</span>
-        <span class="cafe-precio">L ${subtotal.toFixed(2)}</span>
+        <span class="cafe-nombre">
+          ${item.name} (${item.qty} bolsas)
+        </span>
+        <span class="cafe-precio">
+          L ${subtotal.toFixed(2)}
+        </span>
       </div>
     `;
   });
@@ -145,14 +156,14 @@ const imgPreview = $id("imgComprobante");
 let comprobante = null;
 
 function resetMetodoPago() {
-  bloqueDeposito.classList.add("hidden");
-  bloqueEfectivo.classList.add("hidden");
-  previewBox.classList.add("hidden");
+  bloqueDeposito?.classList.add("hidden");
+  bloqueEfectivo?.classList.add("hidden");
+  previewBox?.classList.add("hidden");
   comprobante = null;
-  btnEnviar.disabled = true;
+  if (btnEnviar) btnEnviar.disabled = true;
 }
 
-metodoPago.addEventListener("change", () => {
+metodoPago?.addEventListener("change", () => {
   resetMetodoPago();
 
   if (metodoPago.value === "bank_transfer") {
@@ -165,7 +176,9 @@ metodoPago.addEventListener("change", () => {
   }
 });
 
-$id("btnSubirComprobante")?.addEventListener("click", () => inputFile.click());
+$id("btnSubirComprobante")?.addEventListener("click", () => {
+  inputFile?.click();
+});
 
 inputFile?.addEventListener("change", () => {
   const file = inputFile.files[0];
@@ -180,90 +193,81 @@ inputFile?.addEventListener("change", () => {
 /* =========================================================
    ENVIAR PEDIDO
 ========================================================= */
-btnEnviar.addEventListener("click", async () => {
-const sb = window.supabaseClient;
-const user = getUserCache();
-if (!user) return;
+btnEnviar?.addEventListener("click", async () => {
+  const sb = window.supabaseClient;
+  const user = getUserCache();
+  if (!user) return;
 
-btnEnviar.disabled = true;
-loader.classList.remove("hidden");
+  btnEnviar.disabled = true;
+  loader.classList.remove("hidden");
 
-try {
-  const orderNumber = await obtenerSiguienteNumeroPedido(user.id);
+  try {
+    const orderNumber = await obtenerSiguienteNumeroPedido(user.id);
 
-  const isCash = metodoPago.value === "cash";
-  const isBank = metodoPago.value === "bank_transfer";
+    const isCash = metodoPago.value === "cash";
+    const isBank = metodoPago.value === "bank_transfer";
 
-  const status = isCash ? "cash_on_delivery" : "payment_review";
+    if (isBank && !comprobante) {
+      throw new Error("No hay comprobante");
+    }
 
-  // 🔑 Seguridad extra
-  if (isBank && !comprobante) {
-    throw new Error("No hay comprobante de pago");
+    const status = isCash
+      ? "cash_on_delivery"
+      : "payment_review";
+
+    const { data: order, error } = await sb
+      .from("orders")
+      .insert({
+        user_id: user.id,
+        total,
+        payment_method: metodoPago.value,
+        status,
+        order_number: orderNumber
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    if (isBank) {
+      const ext = comprobante.name.split(".").pop();
+      const path = `order_${order.id}/${Date.now()}.${ext}`;
+
+      await sb.storage
+        .from("payment-receipts")
+        .upload(path, comprobante);
+
+      const { data: urlData } =
+        sb.storage.from("payment-receipts")
+          .getPublicUrl(path);
+
+      await sb.from("payment_receipts").insert({
+        order_id: order.id,
+        user_id: user.id,
+        file_url: urlData.publicUrl,
+        file_path: path
+      });
+    }
+
+    localStorage.removeItem("cafecortero_cart");
+
+    const mensaje = isCash
+      ? `Pedido N.º ${orderNumber} enviado. Pago en efectivo al entregar.`
+      : `Pedido N.º ${orderNumber} enviado. Pago en revisión.`;
+
+    showSnack(mensaje);
+
+    setTimeout(() => {
+      window.location.href = "mis-pedidos.html";
+    }, 1600);
+
+  } catch (err) {
+    console.error("❌ Error pedido:", err);
+    showSnack("No se pudo enviar el pedido");
+    btnEnviar.disabled = false;
+    loader.classList.add("hidden");
   }
-
-  const { data: order, error } = await sb
-    .from("orders")
-    .insert({
-      user_id: user.id,
-      total,
-      payment_method: metodoPago.value,
-      status,
-      order_number: orderNumber
-    })
-    .select()
-    .single();
-
-  if (error) throw error;
-
-  // =========================
-  // SUBIR COMPROBANTE
-  // =========================
-  if (isBank) {
-    const ext = comprobante.name.split(".").pop();
-    const path = `order_${order.id}/${Date.now()}.${ext}`;
-
-    const { error: uploadError } = await sb
-      .storage
-      .from("payment-receipts")
-      .upload(path, comprobante);
-
-    if (uploadError) throw uploadError;
-
-    const { data: urlData } =
-      sb.storage.from("payment-receipts").getPublicUrl(path);
-
-    await sb.from("payment_receipts").insert({
-      order_id: order.id,
-      user_id: user.id,
-      file_url: urlData.publicUrl,
-      file_path: path
-    });
-  }
-
-  // =========================
-  // LIMPIEZA Y MENSAJE
-  // =========================
-  localStorage.removeItem("cafecortero_cart");
-
-  let mensaje = "";
-  if (isCash) {
-    mensaje = `Pedido N.º ${orderNumber} enviado. Pago en efectivo al entregar.`;
-  } else {
-    mensaje = `Pedido N.º ${orderNumber} enviado. Pago en revisión.`;
-  }
-
-  showSnack(mensaje);
-
-  setTimeout(() => {
-    window.location.href = "mis-pedidos.html";
-  }, 1600);
-
-} catch (err) {
-  console.error("❌ Error pedido:", err);
-  showSnack("No se pudo enviar el pedido");
-  btnEnviar.disabled = false;
-  loader.classList.add("hidden");
-}
+});
 
 /* =========================================================
    INIT
@@ -277,9 +281,11 @@ try {
     return;
   }
 
-  cargarDatosCliente();
+  await cargarDatosCliente();
   resetMetodoPago();
 
-  const numeroPedido = await obtenerSiguienteNumeroPedido(user.id);
+  const numeroPedido =
+    await obtenerSiguienteNumeroPedido(user.id);
+
   $id("numeroPedido").textContent = numeroPedido;
 })();
