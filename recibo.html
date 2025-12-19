@@ -139,19 +139,29 @@
   <div id="snackbar" class="snackbar"></div>
 
   <!-- =========================
-       SCRIPTS
-  ========================= -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/supabase-client-core.js"></script>
-  <script src="js/layout.js"></script>
+     SCRIPTS
+========================= -->
 
-  <!-- 🔑 MODO DE PÁGINA -->
-  <script>
-    window.PAGE_MODE = "recibo";
-  </script>
+<!-- Supabase core -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-client-core.js"></script>
 
-  <script src="js/header.js"></script>
-  <script src="js/recibo.js"></script>
+<!-- Header heredado (inyecta el HTML) -->
+<script src="js/layout.js"></script>
+
+<!-- UI de sesión (NO TOCAR) -->
+<script src="js/auth-ui.js"></script>
+
+<!-- 🔑 MODO DE PÁGINA -->
+<script>
+  window.PAGE_MODE = "recibo";
+</script>
+
+<!-- Comportamiento del header (menú, drawer, título, carrito) -->
+<script src="js/header.js"></script>
+
+<!-- Lógica propia de la página -->
+<script src="js/recibo.js"></script>
 
 </body>
 </html>
