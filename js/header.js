@@ -67,6 +67,8 @@ function initHeader() {
   const menuToggle = $("menu-toggle");
   const drawer     = $("user-drawer");
   const scrim      = $("user-scrim");
+  const avatarBtn  = $("btn-header-user");
+  const logoutBtn  = $("logout-btn");
 
   /* ========================= MODO DE PÁGINA ========================= */
   if (MODE === "recibo" || MODE === "carrito") {
@@ -88,16 +90,12 @@ function initHeader() {
   // Hamburguesa (móvil)
   menuToggle?.addEventListener("click", (e) => {
     e.preventDefault();
-    e.stopPropagation();
     toggleDrawer();
   });
 
-  // Avatar (PC y móvil)
-  document.addEventListener("click", (e) => {
-    const avatarBtn = e.target.closest("#btn-header-user");
-    if (!avatarBtn) return;
+  // Avatar (desktop y móvil)
+  avatarBtn?.addEventListener("click", (e) => {
     e.preventDefault();
-    e.stopPropagation();
     toggleDrawer();
   });
 
@@ -108,6 +106,8 @@ function initHeader() {
   document.addEventListener("click", (e) => {
     if (!drawer?.classList.contains("open")) return;
     if (drawer.contains(e.target)) return;
+    if (avatarBtn && avatarBtn.contains(e.target)) return;
+    if (menuToggle && menuToggle.contains(e.target)) return;
     closeDrawer();
   });
 
@@ -119,6 +119,24 @@ function initHeader() {
   // ESC
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") closeDrawer();
+  });
+
+  /* ========================= LOGOUT ========================= */
+  logoutBtn?.addEventListener("click", (e) => {
+    e.preventDefault();
+
+    // Limpia sesión local
+    localStorage.removeItem("cortero_user");
+    localStorage.removeItem("cortero_logged");
+
+    // Dispara evento global (auth-ui.js escucha esto)
+    document.dispatchEvent(new Event("userLoggedOut"));
+
+    // Cierra menú
+    closeDrawer();
+
+    // Redirige al inicio
+    window.location.href = "index.html";
   });
 
   /* ========================= CARRITO ========================= */
