@@ -11,11 +11,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     // 🔑 Inyectar header
     document.body.insertAdjacentHTML("afterbegin", html);
 
-    // 🔑 INICIALIZAR HEADER (OBLIGATORIO)
+    // 🔑 Inicializar header
     if (typeof initHeader === "function") {
       initHeader();
     } else {
       console.error("❌ initHeader() no está disponible");
+    }
+
+    // 🔑 Inicializar Auth UI (OBLIGATORIO)
+    if (typeof initAuthUI === "function") {
+      initAuthUI();
+    } else {
+      console.error("❌ initAuthUI() no está disponible");
     }
 
   } catch (err) {
