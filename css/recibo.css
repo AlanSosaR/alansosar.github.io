@@ -95,15 +95,15 @@ body {
 }
 
 /* ============================================================
-   FLECHA VOLVER — ESTABLE EN DESKTOP / FIJA EN MÓVIL
+   FLECHA VOLVER — POSICIÓN CORRECTA (BAJO HEADER)
 ============================================================ */
 .card-back {
   position: absolute;
-  top: 28px;
-  left: 28px;
+  top: 96px; /* 72px header + 24px aire */
+  left: 24px;
 
-  width: 48px;
-  height: 48px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
 
   background: #ffffff;
@@ -116,7 +116,7 @@ body {
   justify-content: center;
 
   cursor: pointer;
-  z-index: 20;
+  z-index: 10;
 
   transition: transform .25s ease, box-shadow .25s ease;
 }
@@ -127,21 +127,16 @@ body {
 }
 
 .card-back .material-symbols-outlined {
-  font-size: 26px;
+  font-size: 24px;
   font-weight: 600;
   color: var(--verde);
 }
 
-/* ============================================================
-   MOBILE — FLECHA FIJA (NO SE MUEVE CON LA TARJETA)
-============================================================ */
+/* ================= MOBILE ================= */
 @media (max-width: 600px) {
   .card-back {
-    position: fixed;     /* 🔑 CLAVE ABSOLUTA */
-    top: 88px;           /* debajo del header */
+    top: 88px;  /* un poco más compacto en móvil */
     left: 16px;
-
-    z-index: 5000;       /* sobre todo */
   }
 }
 
