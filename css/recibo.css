@@ -626,3 +626,45 @@ h3 {
     max-width: 760px; /* 🔥 PC intacto */
   }
 }
+/* =====================================================
+   SNACKBAR — MENSAJES DE ESTADO
+===================================================== */
+.snackbar {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%) translateY(12px);
+
+  background: #323232;
+  color: #ffffff;
+
+  padding: 14px 20px;
+  border-radius: 14px;
+
+  font-size: 0.95rem;
+  font-weight: 500;
+
+  opacity: 0;
+  pointer-events: none;
+
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+
+  z-index: 9999; /* 🔑 MÁS ALTO QUE HEADER Y DRAWER */
+}
+
+/* Visible */
+.snackbar.show {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Mobile ajuste */
+@media (max-width: 600px) {
+  .snackbar {
+    bottom: 16px;
+    font-size: 0.9rem;
+  }
+}
