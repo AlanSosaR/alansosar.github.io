@@ -1,9 +1,10 @@
-console.log("🧭 header.js activo (versión limpia)");
+console.log("🧭 header.js activo (versión FINAL estable)");
 
 /* ========================= HELPERS ========================= */
 const safe = (id) => document.getElementById(id);
 
 /* ========================= ESPERAR HEADER ========================= */
+/* 🔑 El header se inyecta dinámicamente desde layout.js */
 function waitForHeader() {
   return new Promise(resolve => {
     const interval = setInterval(() => {
@@ -42,14 +43,24 @@ function updateCartCount() {
 
 /* ========================= DRAWER ========================= */
 function openDrawer() {
-  safe("user-drawer")?.classList.add("open");
-  safe("user-scrim")?.classList.add("open");
+  const drawer = safe("user-drawer");
+  const scrim  = safe("user-scrim");
+
+  drawer?.classList.add("open");
+  drawer?.setAttribute("aria-hidden", "false");
+  scrim?.classList.add("open");
+
   document.body.style.overflow = "hidden";
 }
 
 function closeDrawer() {
-  safe("user-drawer")?.classList.remove("open");
-  safe("user-scrim")?.classList.remove("open");
+  const drawer = safe("user-drawer");
+  const scrim  = safe("user-scrim");
+
+  drawer?.classList.remove("open");
+  drawer?.setAttribute("aria-hidden", "true");
+  scrim?.classList.remove("open");
+
   document.body.style.overflow = "";
 }
 
@@ -64,11 +75,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   const cartBtn    = header.querySelector("#cart-btn");
   const menuToggle = header.querySelector("#menu-toggle");
   const titleEl    = header.querySelector("#header-title");
-  const sb         = getSupabaseClient();
 
-  /* 🔑 Drawer elements */
-  const logoutBtn  = safe("logout-btn");
+  const drawer     = safe("user-drawer");
   const scrim      = safe("user-scrim");
+  const logoutBtn  = safe("logout-btn");
+
+  const sb         = getSupabaseClient();
 
   /* ========================= ESTADO USUARIO ========================= */
   const user = JSON.parse(localStorage.getItem("cortero_user"));
@@ -76,13 +88,32 @@ document.addEventListener("DOMContentLoaded", async () => {
   header.classList.toggle("logged", !!user);
   header.classList.toggle("no-user", !user);
 
+  drawer?.classList.toggle("logged", !!user);
+  drawer?.classList.toggle("no-user", !user);
+
+  /* ========================= AVATAR + PERFIL ========================= */
+  if (user) {
+    const avatarHeader = safe("avatar-user");
+    const avatarDrawer = safe("avatar-user-drawer");
+    const drawerName   = safe("drawer-name");
+    const drawerEmail  = safe("drawer-email");
+
+    const avatarUrl = user.avatar_url || "/imagenes/avatar-default.svg";
+
+    if (avatarHeader) avatarHeader.src = avatarUrl;
+    if (avatarDrawer) avatarDrawer.src = avatarUrl;
+
+    if (drawerName)  drawerName.textContent  = user.nombre || "Usuario";
+    if (drawerEmail) drawerEmail.textContent = user.email  || "";
+  }
+
   /* ========================= RESET BASE ========================= */
   nav?.classList.remove("hidden");
   cartBtn?.classList.remove("hidden");
   menuToggle?.classList.remove("hidden");
   titleEl?.classList.add("hidden");
 
-  closeDrawer(); // 🔑 evita drawer abierto al cambiar de página
+  closeDrawer(); // evita drawer fantasma al cambiar de página
 
   /* ========================= MODOS ========================= */
   switch (mode) {
