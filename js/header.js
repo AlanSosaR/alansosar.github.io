@@ -1,12 +1,9 @@
-console.log("🧭 header.js correcto activo");
+console.log("🧭 header.js activo (versión limpia)");
 
 /* ========================= HELPERS ========================= */
-function safe(id) {
-  return document.getElementById(id);
-}
+const safe = (id) => document.getElementById(id);
 
 /* ========================= ESPERAR HEADER ========================= */
-/* 🔑 CLAVE ABSOLUTA: el header se inyecta dinámicamente */
 function waitForHeader() {
   return new Promise(resolve => {
     const interval = setInterval(() => {
@@ -15,7 +12,7 @@ function waitForHeader() {
         clearInterval(interval);
         resolve(header);
       }
-    }, 50);
+    }, 40);
   });
 }
 
@@ -59,7 +56,7 @@ function closeDrawer() {
 /* ========================= INIT ========================= */
 document.addEventListener("DOMContentLoaded", async () => {
 
-  /* 🔑 ESPERAMOS A QUE EXISTA EL HEADER */
+  /* 🔑 ESPERAR HEADER INYECTADO */
   const header = await waitForHeader();
 
   const mode       = window.PAGE_MODE || "default";
@@ -67,25 +64,25 @@ document.addEventListener("DOMContentLoaded", async () => {
   const cartBtn    = header.querySelector("#cart-btn");
   const menuToggle = header.querySelector("#menu-toggle");
   const titleEl    = header.querySelector("#header-title");
-  const logoutBtn  = safe("logout-btn");
   const sb         = getSupabaseClient();
+
+  /* 🔑 Drawer elements */
+  const logoutBtn  = safe("logout-btn");
+  const scrim      = safe("user-scrim");
 
   /* ========================= ESTADO USUARIO ========================= */
   const user = JSON.parse(localStorage.getItem("cortero_user"));
 
-  if (user) {
-    header.classList.remove("no-user");
-    header.classList.add("logged");
-  } else {
-    header.classList.remove("logged");
-    header.classList.add("no-user");
-  }
+  header.classList.toggle("logged", !!user);
+  header.classList.toggle("no-user", !user);
 
-  /* ========================= RESET HEADER ========================= */
+  /* ========================= RESET BASE ========================= */
   nav?.classList.remove("hidden");
   cartBtn?.classList.remove("hidden");
   menuToggle?.classList.remove("hidden");
   titleEl?.classList.add("hidden");
+
+  closeDrawer(); // 🔑 evita drawer abierto al cambiar de página
 
   /* ========================= MODOS ========================= */
   switch (mode) {
@@ -100,8 +97,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       break;
 
     case "recibo":
-      nav?.classList.add("hidden");       // ❌ Variedades / Nosotros / Contacto
-      cartBtn?.classList.add("hidden");   // ❌ carrito
+      nav?.classList.add("hidden");
+      cartBtn?.classList.add("hidden");
       if (titleEl) {
         titleEl.textContent = "Detalle del pedido";
         titleEl.classList.remove("hidden");
@@ -127,7 +124,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     openDrawer();
   });
 
-  safe("user-scrim")?.addEventListener("click", closeDrawer);
+  scrim?.addEventListener("click", closeDrawer);
 
   document.addEventListener("click", (e) => {
     const avatarBtn = e.target.closest("#btn-header-user");
