@@ -2,8 +2,7 @@
 // PERFIL — VERSIÓN FINAL 2025 (UI limpia, validaciones, sin duplicados)  
 // ============================================================  
 console.log("🛠 perfil.js — versión final optimizada");  
-// 🔐 Página protegida
-window.PAGE_PROTECTED = true;  
+  
 // ----------------------  
 // Utilidades básicas  
 // ----------------------  
