@@ -1,11 +1,23 @@
-console.log("🧭 header.js — CORE FINAL CORREGIDO");
+console.log("🧭 header.js — CORE FINAL ESTABLE");
 
-/* ========================= HELPERS ========================= */
+/* =====================================================
+   GUARDIÁN GLOBAL — EVITA BUCLES
+===================================================== */
+if (window.__HEADER_CORE_LOADED__) {
+  console.warn("⚠️ header.js ya estaba cargado");
+} else {
+  window.__HEADER_CORE_LOADED__ = true;
+}
+
+/* =====================================================
+   HELPERS
+===================================================== */
 const $ = (id) => document.getElementById(id);
-
-/* ========================= CARRITO ========================= */
 const CART_KEY = "cafecortero_cart";
 
+/* =====================================================
+   CARRITO
+===================================================== */
 function updateCartCount() {
   const badge = $("cart-count");
   if (!badge) return;
@@ -18,7 +30,9 @@ function updateCartCount() {
   }
 }
 
-/* ========================= DRAWER ========================= */
+/* =====================================================
+   DRAWER
+===================================================== */
 function openDrawer() {
   const drawer = $("user-drawer");
   const scrim  = $("user-scrim");
@@ -48,7 +62,9 @@ function toggleDrawer() {
   drawer.classList.contains("open") ? closeDrawer() : openDrawer();
 }
 
-/* ========================= AUTH UI (ALINEADO A HTML) ========================= */
+/* =====================================================
+   AUTH UI — SOLO CLASES (NO REDIRECCIONES)
+===================================================== */
 function updateAuthUI(isLogged) {
   const header = document.querySelector(".header-fixed");
   const drawer = $("user-drawer");
@@ -68,44 +84,29 @@ function updateAuthUI(isLogged) {
   }
 }
 
-/* ============================================================
-   HEADER — INIT
-============================================================ */
+/* =====================================================
+   INIT HEADER — SOLO UNA VEZ
+===================================================== */
+let HEADER_INITIALIZED = false;
+
 function initHeader() {
-  console.log("✅ initHeader ejecutado");
-
-  const header = document.querySelector(".header-fixed");
-  if (!header) return;
-
-  const MODE = window.PAGE_MODE || "default";
-
-  const titleEl    = $("header-title");
-  const cartBtn    = $("cart-btn");
-  const menuToggle = $("menu-toggle");
-  const drawer     = $("user-drawer");
-  const scrim      = $("user-scrim");
-  const avatarBtn  = $("btn-header-user");
-  const logoutBtn  = $("logout-btn");
-
-  /* ========================= MODO LOGIN ========================= */
-  if (MODE === "login") {
-    cartBtn?.classList.add("hidden");
-    menuToggle?.classList.add("hidden");
-    avatarBtn?.classList.add("hidden");
+  if (HEADER_INITIALIZED) {
+    console.warn("⚠️ initHeader ya ejecutado, ignorado");
     return;
   }
+  HEADER_INITIALIZED = true;
 
-  /* ========================= TÍTULOS ========================= */
-  if (MODE === "recibo" || MODE === "carrito") {
-    if (titleEl) {
-      titleEl.textContent =
-        MODE === "recibo" ? "Detalle del pedido" : "Carrito";
-      titleEl.classList.remove("hidden");
-    }
-    cartBtn?.classList.add("hidden");
-  }
+  console.log("✅ initHeader ejecutado (UNA SOLA VEZ)");
 
-  /* ========================= EVENTOS ========================= */
+  const cartBtn    = $("cart-btn");
+  const menuToggle = $("menu-toggle");
+  const avatarBtn  = $("btn-header-user");
+  const logoutBtn  = $("logout-btn");
+  const drawer     = $("user-drawer");
+  const scrim      = $("user-scrim");
+
+  /* ================= EVENTOS LOCALES ================= */
+
   menuToggle?.addEventListener("click", (e) => {
     e.preventDefault();
     toggleDrawer();
@@ -118,23 +119,10 @@ function initHeader() {
 
   scrim?.addEventListener("click", closeDrawer);
 
-  document.addEventListener("click", (e) => {
-    if (!drawer?.classList.contains("open")) return;
-    if (drawer.contains(e.target)) return;
-    if (avatarBtn?.contains(e.target)) return;
-    if (menuToggle?.contains(e.target)) return;
-    closeDrawer();
-  });
-
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") closeDrawer();
-  });
-
   drawer?.querySelectorAll("a, button").forEach(el => {
     el.addEventListener("click", closeDrawer);
   });
 
-  /* ========================= LOGOUT ========================= */
   logoutBtn?.addEventListener("click", (e) => {
     e.preventDefault();
 
@@ -147,30 +135,51 @@ function initHeader() {
     closeDrawer();
   });
 
-  /* ========================= CARRITO ========================= */
   cartBtn?.addEventListener("click", () => {
     window.location.href = "carrito.html";
   });
 
-  /* ========================= ESTADO INICIAL ========================= */
+  /* ================= ESTADO INICIAL ================= */
+
   const isLogged = localStorage.getItem("cortero_logged") === "1";
   updateAuthUI(isLogged);
   updateCartCount();
 }
 
-/* ========================= AUTH EVENTS ========================= */
-document.addEventListener("authStateChanged", (e) => {
-  const logged =
-    typeof e.detail?.logged === "boolean"
-      ? e.detail.logged
-      : localStorage.getItem("cortero_logged") === "1";
+/* =====================================================
+   EVENTOS GLOBALES — REGISTRADOS UNA VEZ
+===================================================== */
+if (!window.__HEADER_GLOBAL_EVENTS__) {
+  window.__HEADER_GLOBAL_EVENTS__ = true;
 
-  updateAuthUI(logged);
-  updateCartCount();
-  closeDrawer();
-});
+  document.addEventListener("authStateChanged", (e) => {
+    const logged =
+      typeof e.detail?.logged === "boolean"
+        ? e.detail.logged
+        : localStorage.getItem("cortero_logged") === "1";
 
-/* ============================================================
-   ⛔ NO AUTO INIT AQUÍ
-   layout.js se encarga de llamar initHeader()
-============================================================ */
+    updateAuthUI(logged);
+    updateCartCount();
+    closeDrawer();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeDrawer();
+  });
+
+  document.addEventListener("click", (e) => {
+    const drawer = $("user-drawer");
+    if (!drawer?.classList.contains("open")) return;
+
+    if (drawer.contains(e.target)) return;
+    if ($("btn-header-user")?.contains(e.target)) return;
+    if ($("menu-toggle")?.contains(e.target)) return;
+
+    closeDrawer();
+  });
+}
+
+/* =====================================================
+   EXPORT GLOBAL
+===================================================== */
+window.initHeader = initHeader;
