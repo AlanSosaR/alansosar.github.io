@@ -5,9 +5,9 @@ console.log("🧭 header.js — CORE FINAL ESTABLE");
 ===================================================== */
 if (window.__HEADER_CORE_LOADED__) {
   console.warn("⚠️ header.js ya estaba cargado");
-} else {
-  window.__HEADER_CORE_LOADED__ = true;
+  return;
 }
+window.__HEADER_CORE_LOADED__ = true;
 
 /* =====================================================
    HELPERS
@@ -15,17 +15,16 @@ if (window.__HEADER_CORE_LOADED__) {
 const $ = (id) => document.getElementById(id);
 
 /* =====================================================
-   CARRITO (SOLO LECTURA — SIN CART_KEY)
+   CARRITO (LECTURA SOLAMENTE)
+   ❌ NO declara CART_KEY
 ===================================================== */
 function updateCartCount() {
   const badge = $("cart-count");
   if (!badge) return;
 
   try {
-    const cart = JSON.parse(
-      localStorage.getItem("cafecortero_cart")
-    ) || [];
-
+    const cart =
+      JSON.parse(localStorage.getItem("cafecortero_cart")) || [];
     badge.textContent = cart.reduce((a, i) => a + i.qty, 0);
   } catch {
     badge.textContent = "0";
@@ -61,7 +60,9 @@ function toggleDrawer() {
   const drawer = $("user-drawer");
   if (!drawer) return;
 
-  drawer.classList.contains("open") ? closeDrawer() : openDrawer();
+  drawer.classList.contains("open")
+    ? closeDrawer()
+    : openDrawer();
 }
 
 /* =====================================================
@@ -71,18 +72,20 @@ function updateAuthUI(isLogged) {
   const header = document.querySelector(".header-fixed");
   const drawer = $("user-drawer");
 
+  if (!header || !drawer) return;
+
   if (isLogged) {
-    header?.classList.remove("no-user");
-    header?.classList.add("logged");
+    header.classList.add("logged");
+    header.classList.remove("no-user");
 
-    drawer?.classList.remove("no-user");
-    drawer?.classList.add("logged");
+    drawer.classList.add("logged");
+    drawer.classList.remove("no-user");
   } else {
-    header?.classList.remove("logged");
-    header?.classList.add("no-user");
+    header.classList.add("no-user");
+    header.classList.remove("logged");
 
-    drawer?.classList.remove("logged");
-    drawer?.classList.add("no-user");
+    drawer.classList.add("no-user");
+    drawer.classList.remove("logged");
   }
 }
 
@@ -93,7 +96,7 @@ let HEADER_INITIALIZED = false;
 
 function initHeader() {
   if (HEADER_INITIALIZED) {
-    console.warn("⚠️ initHeader ya ejecutado, ignorado");
+    console.warn("⚠️ initHeader ya ejecutado");
     return;
   }
   HEADER_INITIALIZED = true;
@@ -143,7 +146,9 @@ function initHeader() {
 
   /* ================= ESTADO INICIAL ================= */
 
-  const isLogged = localStorage.getItem("cortero_logged") === "1";
+  const isLogged =
+    localStorage.getItem("cortero_logged") === "1";
+
   updateAuthUI(isLogged);
   updateCartCount();
 }
