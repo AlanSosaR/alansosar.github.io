@@ -49,7 +49,7 @@ function toggleDrawer() {
 }
 
 /* ============================================================
-   HEADER — INIT (LLAMAR DESPUÉS DE INYECTAR HEADER)
+   HEADER — INIT
 ============================================================ */
 function initHeader() {
   console.log("✅ initHeader ejecutado");
@@ -121,23 +121,18 @@ function initHeader() {
     if (e.key === "Escape") closeDrawer();
   });
 
-  /* ========================= LOGOUT (REAL) ========================= */
+  /* ========================= LOGOUT ========================= */
   logoutBtn?.addEventListener("click", (e) => {
     e.preventDefault();
 
-    // 🔑 LIMPIEZA TOTAL DE SESIÓN
+    // 🔐 SOLO cerrar sesión (NO carrito)
     localStorage.removeItem("cortero_user");
     localStorage.removeItem("cortero_logged");
-    localStorage.removeItem("cafecortero_cart");
 
-    // 🔑 Evento global (auth-ui.js lo escucha)
+    // 🔑 Evento global (auth-ui.js gestiona UI + redirección)
     document.dispatchEvent(new Event("userLoggedOut"));
 
-    // Cierra drawer
     closeDrawer();
-
-    // 🔑 Redirección limpia (NO vuelve atrás)
-    window.location.replace("index.html");
   });
 
   /* ========================= CARRITO ========================= */
@@ -147,3 +142,6 @@ function initHeader() {
 
   updateCartCount();
 }
+
+/* ========================= AUTO INIT ========================= */
+document.addEventListener("DOMContentLoaded", initHeader);
