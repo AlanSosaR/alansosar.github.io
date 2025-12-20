@@ -9,134 +9,15 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Playfair+Display:wght@600&family=Material+Symbols+Outlined" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-  <!-- CSS principal -->
+  <!-- CSS -->
   <link rel="stylesheet" href="css/main.css?v=13">
+  <link rel="stylesheet" href="css/header.css"> <!-- 🔑 HEADER GLOBAL -->
 </head>
 
 <body>
 
-<!-- =====================================================
-     HEADER — DEFINITIVO, ESTABLE
-====================================================== -->
-<header class="header-fixed no-user" id="main-header">
+<!-- 🔑 HEADER GLOBAL SE INYECTA AQUÍ (layout.js) -->
 
-  <!-- Hamburguesa (solo móvil) -->
-  <button class="menu-toggle mobile-only" id="menu-toggle" aria-label="Abrir menú">
-    <i class="fa-solid fa-bars"></i>
-  </button>
-
-  <!-- Logo -->
-  <a href="index.html" class="header-logo-link">
-    <img src="imagenes/logo.png" alt="Café Cortero" class="header-logo">
-  </a>
-
-  <!-- NAV DESKTOP -->
-  <nav class="nav-links desktop-only">
-    <a href="#productos">Variedades de café</a>
-    <a href="#nosotros">Quiénes somos</a>
-    <a href="#contacto">Contáctanos</a>
-  </nav>
-
-  <!-- ACCIONES DERECHA -->
-  <div class="header-actions">
-
-    <!-- LOGIN / AVATAR (SOLO DESKTOP) -->
-    <div class="desktop-only header-user">
-
-      <!-- Invitado -->
-      <a href="login.html" id="login-desktop" class="login-link">
-        Iniciar sesión
-      </a>
-
-      <!-- Logueado -->
-      <button id="btn-header-user" class="header-avatar-button" aria-label="Perfil">
-        <img id="avatar-user" src="imagenes/avatar-default.svg" alt="Usuario">
-      </button>
-
-    </div>
-
-    <!-- CARRITO (SIEMPRE VISIBLE) -->
-    <button id="cart-btn" class="cart-button" aria-label="Ver carrito">
-      <i class="fa-solid fa-cart-shopping"></i>
-      <span id="cart-count" class="cart-count">0</span>
-    </button>
-
-  </div>
-</header>
-
-<!-- =====================================================
-     SCRIM + DRAWER MATERIAL 3
-====================================================== -->
-
-<div id="user-scrim" class="user-scrim"></div>
-
-<aside id="user-drawer" class="user-drawer no-user" aria-hidden="true">
-
-  <!-- PERFIL (LOGUEADO) -->
-  <a href="perfil.html" class="user-drawer-header logged user-drawer-profile-link">
-    <div class="user-drawer-avatar">
-      <img id="avatar-user-drawer" src="imagenes/avatar-default.svg" alt="Usuario">
-    </div>
-
-    <div class="user-drawer-info">
-      <p class="user-drawer-name" id="drawer-name">Usuario</p>
-      <p class="user-drawer-email" id="drawer-email">correo@ejemplo.com</p>
-    </div>
-
-    <span class="material-symbols-outlined user-drawer-arrow">chevron_right</span>
-  </a>
-
-  <hr class="user-drawer-divider logged">
-
-  <!-- NAVEGACIÓN -->
-  <nav class="user-drawer-nav">
-
-    <a href="mispedidos.html" class="user-drawer-item logged">
-      <span class="material-symbols-outlined user-drawer-item-icon">shopping_bag</span>
-      Mis pedidos
-    </a>
-
-    <a href="historial.html" class="user-drawer-item logged">
-      <span class="material-symbols-outlined user-drawer-item-icon">history</span>
-      Historial de compras
-    </a>
-
-    <a href="#productos" class="user-drawer-item">
-      <span class="material-symbols-outlined user-drawer-item-icon">local_cafe</span>
-      Variedades de café
-    </a>
-
-    <a href="#nosotros" class="user-drawer-item">
-      <span class="material-symbols-outlined user-drawer-item-icon">groups</span>
-      Quiénes somos
-    </a>
-
-    <a href="#contacto" class="user-drawer-item">
-      <span class="material-symbols-outlined user-drawer-item-icon">mail</span>
-      Contáctanos
-    </a>
-
-  </nav>
-
-  <hr class="user-drawer-divider">
-
-  <!-- LOGOUT -->
-  <button id="logout-btn" class="user-drawer-item logout logged">
-    <span class="material-symbols-outlined user-drawer-item-icon">logout</span>
-    Cerrar sesión
-  </button>
-
-  <!-- LOGIN (INVITADO) -->
-  <a href="login.html" class="user-drawer-item login no-user">
-    <span class="material-symbols-outlined user-drawer-item-icon">login</span>
-    Iniciar sesión
-  </a>
-
-</aside>
-
-<!-- =====================================================
-     CONTENIDO PRINCIPAL (SIN CAMBIOS)
-====================================================== -->
 <main>
 
   <!-- HERO -->
@@ -191,45 +72,30 @@
     </div>
   </section>
 
-<!-- SIMILARES -->
-<section class="related">
-  <h3 class="similar-title">También te puede interesar</h3>
+  <!-- SIMILARES -->
+  <section class="related">
+    <h3 class="similar-title">También te puede interesar</h3>
 
-  <!-- Carrusel + flechas -->
-  <div class="carousel-container with-arrows">
+    <div class="carousel-container with-arrows">
+      <button id="similar-prev" class="carousel-prev-circle inside">
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
 
-    <!-- Flecha izquierda -->
-    <button
-      id="similar-prev"
-      class="carousel-prev-circle inside"
-      aria-label="Anterior"
-    >
-      <i class="fa-solid fa-chevron-left"></i>
-    </button>
+      <div class="similar-list" id="lista-similares"></div>
 
-    <!-- Carrusel -->
-    <div class="similar-list" id="lista-similares"></div>
-
-    <!-- Flecha derecha -->
-    <button
-      id="similar-next"
-      class="carousel-next-circle inside"
-      aria-label="Siguiente"
-    >
-      <i class="fa-solid fa-chevron-right"></i>
-    </button>
-
-  </div>
-
-  <!-- Dots (SIEMPRE ABAJO) -->
-  <div class="carousel-nav desktop-only" id="similar-nav">
-    <div class="carousel-dots" id="similar-dots">
-      <span class="dot active"></span>
-      <span class="dot"></span>
-      <span class="dot"></span>
+      <button id="similar-next" class="carousel-next-circle inside">
+        <i class="fa-solid fa-chevron-right"></i>
+      </button>
     </div>
-  </div>
-</section>
+
+    <div class="carousel-nav desktop-only">
+      <div class="carousel-dots">
+        <span class="dot active"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+      </div>
+    </div>
+  </section>
 
   <!-- NOSOTROS -->
   <section id="nosotros" class="about">
@@ -285,12 +151,18 @@
   </div>
 </div>
 
-<!-- SCRIPTS -->
+<!-- ===================== SCRIPTS ===================== -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase-client-core.js"></script>
 <script src="js/supabase-auth.js"></script>
-<script src="js/main.js?v=13"></script>
+
+<!-- 🔑 HEADER GLOBAL -->
+<script src="js/header.js"></script>
 <script src="js/auth-ui.js"></script>
+<script src="js/layout.js"></script>
+
+<!-- LÓGICA DE LA PÁGINA -->
+<script src="js/main.js?v=13"></script>
 
 </body>
 </html>
