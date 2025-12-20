@@ -1,6 +1,7 @@
 /* ============================================================
    MAIN.JS — Café Cortero 2025
    UI + CARRITO + INTERACCIONES
+   ❌ SIN HEADER
 ============================================================ */
 
 /* ========================= SAFE ========================= */
@@ -82,45 +83,6 @@ function loadSimilarProducts() {
 
 document.addEventListener("DOMContentLoaded", () => {
 
-  /* =====================================================
-     HEADER — SOLO SI NO ESTÁ MIGRADO
-  ===================================================== */
-  const HEADER_MANAGED_EXTERNALLY = typeof initHeader === "function";
-
-  if (!HEADER_MANAGED_EXTERNALLY) {
-
-    const drawer     = safe("user-drawer");
-    const scrim      = safe("user-scrim");
-    const menuToggle = safe("menu-toggle");
-
-    function openDrawer() {
-      drawer?.classList.add("open");
-      scrim?.classList.add("open");
-      document.body.style.overflow = "hidden";
-    }
-
-    function closeDrawer() {
-      drawer?.classList.remove("open");
-      scrim?.classList.remove("open");
-      document.body.style.overflow = "";
-    }
-
-    menuToggle?.addEventListener("click", e => {
-      e.preventDefault();
-      drawer?.classList.contains("open") ? closeDrawer() : openDrawer();
-    });
-
-    scrim?.addEventListener("click", closeDrawer);
-
-    document.addEventListener("click", (e) => {
-      const avatarBtn = e.target.closest("#btn-header-user");
-      if (!avatarBtn) return;
-      e.preventDefault();
-      e.stopPropagation();
-      openDrawer();
-    });
-  }
-
   /* ========================= HERO ========================= */
   const heroImgs = document.querySelectorAll(".hero-carousel img");
   let heroIndex = 0;
@@ -135,9 +97,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* ========================= CARRITO ========================= */
-  safe("cart-btn")?.addEventListener("click", () => {
-    window.location.href = "carrito.html";
-  });
   updateCartCount();
 
   /* ========================= FAB ========================= */
