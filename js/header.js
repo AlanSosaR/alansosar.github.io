@@ -129,7 +129,7 @@ function initHeader() {
     localStorage.removeItem("cortero_user");
     localStorage.removeItem("cortero_logged");
 
-    // 🔑 Evento global (auth-ui.js gestiona UI + redirección)
+    // 🔔 auth-ui se encarga de limpiar UI y redirigir
     document.dispatchEvent(new Event("userLoggedOut"));
 
     closeDrawer();
@@ -142,6 +142,13 @@ function initHeader() {
 
   updateCartCount();
 }
+
+/* ========================= AUTH STATE CHANGED ========================= */
+/* 🔔 Se dispara al iniciar o cerrar sesión */
+document.addEventListener("authStateChanged", () => {
+  updateCartCount();
+  closeDrawer();
+});
 
 /* ========================= AUTO INIT ========================= */
 document.addEventListener("DOMContentLoaded", initHeader);
