@@ -48,28 +48,23 @@ function toggleDrawer() {
   drawer.classList.contains("open") ? closeDrawer() : openDrawer();
 }
 
-/* ========================= AUTH UI ========================= */
+/* ========================= AUTH UI (ALINEADO A HTML) ========================= */
 function updateAuthUI(isLogged) {
-  const avatarBtn   = $("btn-header-user");
-  const loginLink   = $("login-link");
-  const drawerAuth  = document.querySelectorAll("[data-auth]");
+  const header = document.querySelector(".header-fixed");
+  const drawer = $("user-drawer");
 
   if (isLogged) {
-    avatarBtn?.classList.remove("hidden");
-    loginLink?.classList.add("hidden");
-    drawerAuth.forEach(el =>
-      el.dataset.auth === "private"
-        ? el.classList.remove("hidden")
-        : el.classList.add("hidden")
-    );
+    header?.classList.remove("no-user");
+    header?.classList.add("logged");
+
+    drawer?.classList.remove("no-user");
+    drawer?.classList.add("logged");
   } else {
-    avatarBtn?.classList.add("hidden");
-    loginLink?.classList.remove("hidden");
-    drawerAuth.forEach(el =>
-      el.dataset.auth === "public"
-        ? el.classList.remove("hidden")
-        : el.classList.add("hidden")
-    );
+    header?.classList.remove("logged");
+    header?.classList.add("no-user");
+
+    drawer?.classList.remove("logged");
+    drawer?.classList.add("no-user");
   }
 }
 
