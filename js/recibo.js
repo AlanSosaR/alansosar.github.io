@@ -1,6 +1,4 @@
 console.log("🧾 recibo.js — CORE FINAL");
-// 🔐 Página protegida
-window.PAGE_PROTECTED = true;
 
 /* =========================================================
    HELPERS
