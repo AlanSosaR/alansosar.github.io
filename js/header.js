@@ -1,4 +1,4 @@
-console.log("🧭 header.js — CORE FINAL");
+console.log("🧭 header.js — CORE FINAL CORREGIDO");
 
 /* ========================= HELPERS ========================= */
 const $ = (id) => document.getElementById(id);
@@ -48,6 +48,31 @@ function toggleDrawer() {
   drawer.classList.contains("open") ? closeDrawer() : openDrawer();
 }
 
+/* ========================= AUTH UI ========================= */
+function updateAuthUI(isLogged) {
+  const avatarBtn   = $("btn-header-user");
+  const loginLink   = $("login-link");
+  const drawerAuth  = document.querySelectorAll("[data-auth]");
+
+  if (isLogged) {
+    avatarBtn?.classList.remove("hidden");
+    loginLink?.classList.add("hidden");
+    drawerAuth.forEach(el => {
+      el.dataset.auth === "private"
+        ? el.classList.remove("hidden")
+        : el.classList.add("hidden");
+    });
+  } else {
+    avatarBtn?.classList.add("hidden");
+    loginLink?.classList.remove("hidden");
+    drawerAuth.forEach(el => {
+      el.dataset.auth === "public"
+        ? el.classList.remove("hidden")
+        : el.classList.add("hidden");
+    });
+  }
+}
+
 /* ============================================================
    HEADER — INIT
 ============================================================ */
@@ -55,10 +80,7 @@ function initHeader() {
   console.log("✅ initHeader ejecutado");
 
   const header = document.querySelector(".header-fixed");
-  if (!header) {
-    console.warn("⚠️ Header no encontrado");
-    return;
-  }
+  if (!header) return;
 
   const MODE = window.PAGE_MODE || "default";
 
@@ -70,7 +92,15 @@ function initHeader() {
   const avatarBtn  = $("btn-header-user");
   const logoutBtn  = $("logout-btn");
 
-  /* ========================= MODO DE PÁGINA ========================= */
+  /* ========================= MODO LOGIN ========================= */
+  if (MODE === "login") {
+    cartBtn?.classList.add("hidden");
+    menuToggle?.classList.add("hidden");
+    avatarBtn?.classList.add("hidden");
+    return; // ⛔ NO registrar drawer ni listeners
+  }
+
+  /* ========================= TÍTULOS ========================= */
   if (MODE === "recibo" || MODE === "carrito") {
     if (titleEl) {
       titleEl.textContent =
@@ -80,56 +110,44 @@ function initHeader() {
     cartBtn?.classList.add("hidden");
   }
 
-  if (MODE === "login") {
-    cartBtn?.classList.add("hidden");
-    menuToggle?.classList.add("hidden");
-  }
-
   /* ========================= EVENTOS ========================= */
-
-  // Hamburguesa (móvil)
   menuToggle?.addEventListener("click", (e) => {
     e.preventDefault();
     toggleDrawer();
   });
 
-  // Avatar (desktop y móvil)
   avatarBtn?.addEventListener("click", (e) => {
     e.preventDefault();
     toggleDrawer();
   });
 
-  // Scrim
   scrim?.addEventListener("click", closeDrawer);
 
-  // Click fuera del drawer
   document.addEventListener("click", (e) => {
     if (!drawer?.classList.contains("open")) return;
     if (drawer.contains(e.target)) return;
-    if (avatarBtn && avatarBtn.contains(e.target)) return;
-    if (menuToggle && menuToggle.contains(e.target)) return;
+    if (avatarBtn?.contains(e.target)) return;
+    if (menuToggle?.contains(e.target)) return;
     closeDrawer();
   });
 
-  // Click en items del drawer
-  drawer?.querySelectorAll("a, button").forEach(el => {
-    el.addEventListener("click", closeDrawer);
-  });
-
-  // ESC
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") closeDrawer();
+  });
+
+  drawer?.querySelectorAll("a, button").forEach(el => {
+    el.addEventListener("click", closeDrawer);
   });
 
   /* ========================= LOGOUT ========================= */
   logoutBtn?.addEventListener("click", (e) => {
     e.preventDefault();
 
-    // 🔐 SOLO cerrar sesión (NO carrito)
+    // 🔐 SOLO sesión
     localStorage.removeItem("cortero_user");
     localStorage.removeItem("cortero_logged");
 
-    // 🔔 auth-ui se encarga de limpiar UI y redirigir
+    updateAuthUI(false);
     document.dispatchEvent(new Event("userLoggedOut"));
 
     closeDrawer();
@@ -140,12 +158,15 @@ function initHeader() {
     window.location.href = "carrito.html";
   });
 
+  /* ========================= ESTADO INICIAL ========================= */
+  const isLogged = localStorage.getItem("cortero_logged") === "true";
+  updateAuthUI(isLogged);
   updateCartCount();
 }
 
-/* ========================= AUTH STATE CHANGED ========================= */
-/* 🔔 Se dispara al iniciar o cerrar sesión */
-document.addEventListener("authStateChanged", () => {
+/* ========================= AUTH EVENTS ========================= */
+document.addEventListener("authStateChanged", (e) => {
+  updateAuthUI(e.detail?.logged === true);
   updateCartCount();
   closeDrawer();
 });
