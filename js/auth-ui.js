@@ -1,19 +1,12 @@
 // ============================================================
 // AUTH-UI — Café Cortero (2025)
-// UI ONLY — SIN PROTECCIÓN DE RUTAS (ESTABLE)
+// UI ONLY — ESTABLE / SIN LOOP
 // ============================================================
 
-console.log("👤 auth-ui.js cargado — CORE ESTABLE");
+console.log("👤 auth-ui.js cargado — CORE FINAL");
 
 /* ========================= HELPERS ========================= */
 const $auth = (id) => document.getElementById(id);
-
-/* ========================= DRAWER ========================= */
-function closeDrawerUI() {
-  $auth("user-drawer")?.classList.remove("open");
-  $auth("user-scrim")?.classList.remove("open");
-  document.body.style.overflow = "";
-}
 
 /* ========================= RESET VISUAL ========================= */
 function resetAuthUI() {
@@ -25,14 +18,10 @@ function resetAuthUI() {
 
   header?.classList.remove("logged");
   header?.classList.add("no-user");
-
-  closeDrawerUI();
 }
 
 /* ========================= ESTADO LOGUEADO ========================= */
 function setLoggedIn(user) {
-  resetAuthUI();
-
   const drawer = $auth("user-drawer");
   const header = document.querySelector(".header-fixed");
   if (!drawer || !header) return;
@@ -44,6 +33,7 @@ function setLoggedIn(user) {
   header.classList.add("logged");
 
   const photo = user?.photo_url || "imagenes/avatar-default.svg";
+
   $auth("avatar-user")?.setAttribute("src", photo);
   $auth("avatar-user-drawer")?.setAttribute("src", photo);
 
@@ -53,25 +43,34 @@ function setLoggedIn(user) {
   if ($auth("drawer-email")) {
     $auth("drawer-email").textContent = user?.email || "";
   }
-
-  closeDrawerUI();
 }
 
 /* ========================= LOGOUT GLOBAL ========================= */
 function hardLogout() {
-  console.log("🚪 Logout");
+  console.log("🚪 Logout solicitado");
+
+  // 🔑 SI NO HAY SESIÓN → NO HACER NADA
+  if (localStorage.getItem("cortero_logged") !== "1") {
+    console.warn("⚠️ Logout ignorado: no hay sesión activa");
+    return;
+  }
 
   localStorage.removeItem("cortero_user");
   localStorage.removeItem("cortero_logged");
 
   resetAuthUI();
 
-  document.dispatchEvent(new CustomEvent("authStateChanged", {
-    detail: { logged: false }
-  }));
+  document.dispatchEvent(
+    new CustomEvent("authStateChanged", {
+      detail: { logged: false }
+    })
+  );
 
-  // 👉 ÚNICA redirección del sistema
-  window.location.href = "index.html";
+  // 🔑 REDIRECCIÓN SEGURA (una sola vez)
+  if (!window.__LOGOUT_REDIRECTED__) {
+    window.__LOGOUT_REDIRECTED__ = true;
+    window.location.href = "index.html";
+  }
 }
 
 /* ============================================================
@@ -85,17 +84,21 @@ function initAuthUI() {
 
   resetAuthUI();
 
-  if (logged && raw) {
-    try {
-      setLoggedIn(JSON.parse(raw));
+  if (!logged || !raw) return;
 
-      document.dispatchEvent(new CustomEvent("authStateChanged", {
+  try {
+    const user = JSON.parse(raw);
+    setLoggedIn(user);
+
+    document.dispatchEvent(
+      new CustomEvent("authStateChanged", {
         detail: { logged: true }
-      }));
-    } catch {
-      localStorage.removeItem("cortero_user");
-      localStorage.removeItem("cortero_logged");
-    }
+      })
+    );
+  } catch (err) {
+    console.error("❌ Error parseando usuario:", err);
+    localStorage.removeItem("cortero_user");
+    localStorage.removeItem("cortero_logged");
   }
 }
 
@@ -110,15 +113,20 @@ document.addEventListener("userLoggedIn", (e) => {
 
   setLoggedIn(e.detail);
 
-  document.dispatchEvent(new CustomEvent("authStateChanged", {
-    detail: { logged: true }
-  }));
+  document.dispatchEvent(
+    new CustomEvent("authStateChanged", {
+      detail: { logged: true }
+    })
+  );
 });
 
-// Logout desde cualquier parte
+// Logout global (disparado por header.js)
 document.addEventListener("userLoggedOut", hardLogout);
 
 /* ============================================================
    ⛔ NO DOMContentLoaded
-   layout.js controla el flujo
+   layout.js controla TODO el flujo
 ============================================================ */
+
+// 🔑 Export global
+window.initAuthUI = initAuthUI;
