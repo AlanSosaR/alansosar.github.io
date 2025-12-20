@@ -60,11 +60,15 @@ function hardLogout() {
   localStorage.removeItem("cortero_logged");
 
   resetAuthUI();
+
+  // 🔔 avisar a header
+  document.dispatchEvent(new Event("authStateChanged"));
+
   window.location.replace("index.html");
 }
 
 /* ============================================================
-   INIT GLOBAL — ESTABLE, SIN LOOP, SIN BLOQUEAR LOGIN
+   INIT GLOBAL — ESTABLE
 ============================================================ */
 function initAuthUI() {
   console.log("👤 initAuthUI ejecutado");
@@ -72,40 +76,30 @@ function initAuthUI() {
   const logged = localStorage.getItem("cortero_logged");
   const raw    = localStorage.getItem("cortero_user");
 
-  // 🔓 Páginas públicas (SIEMPRE accesibles)
-  const PUBLIC_PAGES = [
-    "",                 // raíz
-    "index.html",
-    "login.html",
-    "registro.html"
-  ];
-
+  const PUBLIC_PAGES = ["", "index.html", "login.html", "registro.html"];
   const currentPage = location.pathname.split("/").pop();
 
-  // 🔹 Siempre limpiar UI visual primero
+  // Siempre limpiar UI
   resetAuthUI();
 
-  // 🔹 Reactivar SOLO si la sesión es válida
+  // Reactivar si hay sesión válida
   if (logged === "1" && raw) {
     try {
       setLoggedIn(JSON.parse(raw));
+      document.dispatchEvent(new Event("authStateChanged"));
       return;
-    } catch (e) {
-      console.warn("⚠️ Usuario corrupto");
-    }
+    } catch {}
   }
 
-  // 🔐 Protección automática:
-  // Si NO es página pública y NO hay sesión → expulsar
+  // Protección automática por URL
   if (!PUBLIC_PAGES.includes(currentPage) && logged !== "1") {
-    console.warn("⛔ Página privada sin sesión");
     window.location.replace("index.html");
   }
 }
 
 /* ========================= EVENTOS GLOBALES ========================= */
 
-// Login correcto (desde login.js / Supabase)
+// Login correcto (desde login.js)
 document.addEventListener("userLoggedIn", (e) => {
   if (!e.detail) return;
 
@@ -113,6 +107,9 @@ document.addEventListener("userLoggedIn", (e) => {
   localStorage.setItem("cortero_user", JSON.stringify(e.detail));
 
   setLoggedIn(e.detail);
+
+  // 🔔 avisar al header que el estado cambió
+  document.dispatchEvent(new Event("authStateChanged"));
 });
 
 // Logout desde cualquier parte
