@@ -126,32 +126,6 @@ document.addEventListener("DOMContentLoaded", () => {
     openDrawer();
   });
 
-  /* =========================
-     LOGOUT — REAL (AVATAR + HAMBURGUESA)
-  ========================= */
-  const logoutBtn = safe("logout-btn");
-  const sb = getSupabaseClient();
-
-  async function logoutAndRedirect() {
-    try {
-      if (sb) {
-        await sb.auth.signOut(); // 🔥 LOGOUT REAL
-      }
-    } catch (err) {
-      console.error("❌ Error al cerrar sesión:", err);
-    }
-
-    // Limpieza local
-    localStorage.removeItem("cortero_user");
-
-    // Cerrar drawer
-    closeDrawer();
-
-    // Redirección
-    window.location.href = "index.html";
-  }
-
-  logoutBtn?.addEventListener("click", logoutAndRedirect);
 
   /* ========================= HERO CAROUSEL ========================= */
   const heroImgs = document.querySelectorAll(".hero-carousel img");
