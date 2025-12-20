@@ -1,122 +1,94 @@
 // ============================================================
 // AUTH-UI — Café Cortero (2025)
-// Controla SOLO la UI + protección de páginas
-// NO maneja backend
+// UI + protección (SIN backend)
 // ============================================================
 
 console.log("👤 auth-ui.js cargado — CORE FINAL");
 
 /* ========================= HELPERS ========================= */
-function safe(id) {
-  return document.getElementById(id);
-}
+const safe = (id) => document.getElementById(id);
 
-/* ========================= CIERRE DRAWER ========================= */
+/* ========================= DRAWER ========================= */
 function closeDrawerUI() {
-  const drawer = safe("user-drawer");
-  const scrim  = safe("user-scrim");
-
-  if (drawer) {
-    drawer.classList.remove("open");
-    drawer.setAttribute("aria-hidden", "true");
-  }
-
-  if (scrim) {
-    scrim.classList.remove("open");
-  }
-
+  safe("user-drawer")?.classList.remove("open");
+  safe("user-scrim")?.classList.remove("open");
   document.body.style.overflow = "";
 }
 
-/* ========================= ESTADO LOGUEADO ========================= */
+/* ========================= UI RESET (NO TOCA STORAGE) ========================= */
+function resetAuthUI() {
+  const drawer = safe("user-drawer");
+  const header = document.querySelector(".header-fixed");
+
+  drawer?.classList.remove("logged");
+  drawer?.classList.add("no-user");
+
+  header?.classList.remove("logged");
+  header?.classList.add("no-user");
+
+  closeDrawerUI();
+}
+
+/* ========================= UI LOGUEADA ========================= */
 function setLoggedIn(user) {
+  resetAuthUI();
+
   const drawer = safe("user-drawer");
   const header = document.querySelector(".header-fixed");
   if (!drawer || !header) return;
 
-  // Drawer
   drawer.classList.remove("no-user");
   drawer.classList.add("logged");
 
-  // Header
   header.classList.remove("no-user");
   header.classList.add("logged");
 
-  // Avatar
   const photo = user?.photo_url || "imagenes/avatar-default.svg";
   safe("avatar-user")?.setAttribute("src", photo);
   safe("avatar-user-drawer")?.setAttribute("src", photo);
 
-  // Textos
   safe("drawer-name")  && (safe("drawer-name").textContent  = user?.name  || "Usuario");
   safe("drawer-email") && (safe("drawer-email").textContent = user?.email || "");
 
   closeDrawerUI();
 }
 
-/* ========================= ESTADO INVITADO ========================= */
-function setLoggedOut() {
-  // 🔒 LIMPIEZA TOTAL DE SESIÓN
+/* ========================= LOGOUT REAL ========================= */
+function hardLogout() {
   localStorage.removeItem("cortero_user");
   localStorage.removeItem("cortero_logged");
 
-  const drawer = safe("user-drawer");
-  const header = document.querySelector(".header-fixed");
-
-  if (drawer) {
-    drawer.classList.remove("logged");
-    drawer.classList.add("no-user");
-  }
-
-  if (header) {
-    header.classList.remove("logged");
-    header.classList.add("no-user");
-  }
-
-  closeDrawerUI();
+  resetAuthUI();
+  window.location.replace("index.html");
 }
 
-/* ============================================================
-   INIT — CORE GLOBAL (ANTI-ESTADO VIVO)
-   SIEMPRE limpia primero, luego decide
-============================================================ */
+/* ========================= INIT GLOBAL ========================= */
 function initAuthUI() {
   console.log("👤 initAuthUI ejecutado");
 
   const logged = localStorage.getItem("cortero_logged");
   const raw    = localStorage.getItem("cortero_user");
 
-  // 🔥 PASO 1: SIEMPRE limpiar UI (clave del fix)
-  setLoggedOut();
+  // 🔹 Siempre limpiar UI primero (visual)
+  resetAuthUI();
 
-  // 🔥 PASO 2: solo si la sesión es válida, reactivar
+  // 🔹 Reactivar SOLO si hay sesión válida
   if (logged === "1" && raw) {
     try {
       setLoggedIn(JSON.parse(raw));
-    } catch (e) {
-      console.warn("⚠️ Usuario corrupto");
-    }
+      return;
+    } catch {}
   }
 
-  // 🔐 Protección de páginas privadas
-  const PUBLIC_PAGES = [
-    "",                 // raíz
-    "index.html",
-    "login.html",
-    "registro.html"
-  ];
-
-  const currentPage = location.pathname.split("/").pop();
-
-  if (!PUBLIC_PAGES.includes(currentPage) && logged !== "1") {
-    console.warn("⛔ Página protegida sin sesión → redirección forzada");
+  // 🔐 Protección páginas privadas
+  if (window.PAGE_PROTECTED && logged !== "1") {
     window.location.replace("index.html");
   }
 }
 
-/* ========================= EVENTOS GLOBALES ========================= */
+/* ========================= EVENTOS ========================= */
 
-// Login correcto (desde login.js / Supabase)
+// Login correcto
 document.addEventListener("userLoggedIn", (e) => {
   if (!e.detail) return;
 
@@ -127,12 +99,7 @@ document.addEventListener("userLoggedIn", (e) => {
 });
 
 // Logout desde cualquier parte
-document.addEventListener("userLoggedOut", () => {
-  setLoggedOut();
-
-  // 🔥 Redirección limpia (mata estados residuales)
-  window.location.replace("index.html");
-});
+document.addEventListener("userLoggedOut", hardLogout);
 
 /* ========================= AUTO INIT ========================= */
 document.addEventListener("DOMContentLoaded", initAuthUI);
