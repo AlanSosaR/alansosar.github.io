@@ -1,12 +1,28 @@
 // ============================================================
 // AUTH-UI — Café Cortero (2025)
-// UI ONLY — ESTABLE / SIN LOOP
+// UI ONLY — SIN REDIRECCIONES — ANTI LOOP FINAL
 // ============================================================
 
 console.log("👤 auth-ui.js cargado — CORE FINAL");
 
+/* ============================================================
+   GUARDIÁN GLOBAL — EVITA DOBLE CARGA
+============================================================ */
+if (window.__AUTH_UI_LOADED__) {
+  console.warn("⚠️ auth-ui.js ya estaba cargado");
+} else {
+  window.__AUTH_UI_LOADED__ = true;
+}
+
 /* ========================= HELPERS ========================= */
 const $auth = (id) => document.getElementById(id);
+
+/* ========================= DRAWER ========================= */
+function closeDrawerUI() {
+  $auth("user-drawer")?.classList.remove("open");
+  $auth("user-scrim")?.classList.remove("open");
+  document.body.style.overflow = "";
+}
 
 /* ========================= RESET VISUAL ========================= */
 function resetAuthUI() {
@@ -18,10 +34,14 @@ function resetAuthUI() {
 
   header?.classList.remove("logged");
   header?.classList.add("no-user");
+
+  closeDrawerUI();
 }
 
 /* ========================= ESTADO LOGUEADO ========================= */
 function setLoggedIn(user) {
+  resetAuthUI();
+
   const drawer = $auth("user-drawer");
   const header = document.querySelector(".header-fixed");
   if (!drawer || !header) return;
@@ -33,7 +53,6 @@ function setLoggedIn(user) {
   header.classList.add("logged");
 
   const photo = user?.photo_url || "imagenes/avatar-default.svg";
-
   $auth("avatar-user")?.setAttribute("src", photo);
   $auth("avatar-user-drawer")?.setAttribute("src", photo);
 
@@ -43,40 +62,40 @@ function setLoggedIn(user) {
   if ($auth("drawer-email")) {
     $auth("drawer-email").textContent = user?.email || "";
   }
+
+  closeDrawerUI();
 }
 
-/* ========================= LOGOUT GLOBAL ========================= */
+/* ========================= LOGOUT GLOBAL (UI ONLY) ========================= */
 function hardLogout() {
-  console.log("🚪 Logout solicitado");
+  console.log("🚪 Logout (UI ONLY)");
 
-  // 🔑 SI NO HAY SESIÓN → NO HACER NADA
-  if (localStorage.getItem("cortero_logged") !== "1") {
-    console.warn("⚠️ Logout ignorado: no hay sesión activa");
-    return;
-  }
-
+  // Limpieza de estado
   localStorage.removeItem("cortero_user");
   localStorage.removeItem("cortero_logged");
 
   resetAuthUI();
 
+  // 🔔 Notificar al sistema (header.js escucha esto)
   document.dispatchEvent(
     new CustomEvent("authStateChanged", {
       detail: { logged: false }
     })
   );
 
-  // 🔑 REDIRECCIÓN SEGURA (una sola vez)
-  if (!window.__LOGOUT_REDIRECTED__) {
-    window.__LOGOUT_REDIRECTED__ = true;
-    window.location.href = "index.html";
-  }
+  // ❌ SIN REDIRECCIÓN
 }
 
 /* ============================================================
    INIT GLOBAL — LLAMADO SOLO DESDE layout.js
 ============================================================ */
 function initAuthUI() {
+  if (window.__AUTH_UI_INIT__) {
+    console.warn("⚠️ initAuthUI ya ejecutado");
+    return;
+  }
+  window.__AUTH_UI_INIT__ = true;
+
   console.log("👤 initAuthUI ejecutado");
 
   const logged = localStorage.getItem("cortero_logged") === "1";
@@ -84,21 +103,20 @@ function initAuthUI() {
 
   resetAuthUI();
 
-  if (!logged || !raw) return;
+  if (logged && raw) {
+    try {
+      const user = JSON.parse(raw);
+      setLoggedIn(user);
 
-  try {
-    const user = JSON.parse(raw);
-    setLoggedIn(user);
-
-    document.dispatchEvent(
-      new CustomEvent("authStateChanged", {
-        detail: { logged: true }
-      })
-    );
-  } catch (err) {
-    console.error("❌ Error parseando usuario:", err);
-    localStorage.removeItem("cortero_user");
-    localStorage.removeItem("cortero_logged");
+      document.dispatchEvent(
+        new CustomEvent("authStateChanged", {
+          detail: { logged: true }
+        })
+      );
+    } catch {
+      localStorage.removeItem("cortero_user");
+      localStorage.removeItem("cortero_logged");
+    }
   }
 }
 
@@ -120,13 +138,15 @@ document.addEventListener("userLoggedIn", (e) => {
   );
 });
 
-// Logout global (disparado por header.js)
+// Logout desde cualquier parte
 document.addEventListener("userLoggedOut", hardLogout);
 
 /* ============================================================
-   ⛔ NO DOMContentLoaded
-   layout.js controla TODO el flujo
+   EXPORT GLOBAL
 ============================================================ */
-
-// 🔑 Export global
 window.initAuthUI = initAuthUI;
+
+/* ============================================================
+   ⛔ SIN DOMContentLoaded
+   layout.js controla el flujo
+============================================================ */
