@@ -175,5 +175,7 @@ document.addEventListener("authStateChanged", (e) => {
   closeDrawer();
 });
 
-/* ========================= AUTO INIT ========================= */
-document.addEventListener("DOMContentLoaded", initHeader);
+/* ============================================================
+   ⛔ NO AUTO INIT AQUÍ
+   layout.js se encarga de llamar initHeader()
+============================================================ */
