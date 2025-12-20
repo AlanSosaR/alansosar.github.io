@@ -57,19 +57,19 @@ function updateAuthUI(isLogged) {
   if (isLogged) {
     avatarBtn?.classList.remove("hidden");
     loginLink?.classList.add("hidden");
-    drawerAuth.forEach(el => {
+    drawerAuth.forEach(el =>
       el.dataset.auth === "private"
         ? el.classList.remove("hidden")
-        : el.classList.add("hidden");
-    });
+        : el.classList.add("hidden")
+    );
   } else {
     avatarBtn?.classList.add("hidden");
     loginLink?.classList.remove("hidden");
-    drawerAuth.forEach(el => {
+    drawerAuth.forEach(el =>
       el.dataset.auth === "public"
         ? el.classList.remove("hidden")
-        : el.classList.add("hidden");
-    });
+        : el.classList.add("hidden")
+    );
   }
 }
 
@@ -97,7 +97,7 @@ function initHeader() {
     cartBtn?.classList.add("hidden");
     menuToggle?.classList.add("hidden");
     avatarBtn?.classList.add("hidden");
-    return; // ⛔ NO registrar drawer ni listeners
+    return;
   }
 
   /* ========================= TÍTULOS ========================= */
@@ -143,7 +143,6 @@ function initHeader() {
   logoutBtn?.addEventListener("click", (e) => {
     e.preventDefault();
 
-    // 🔐 SOLO sesión
     localStorage.removeItem("cortero_user");
     localStorage.removeItem("cortero_logged");
 
@@ -159,14 +158,19 @@ function initHeader() {
   });
 
   /* ========================= ESTADO INICIAL ========================= */
-  const isLogged = localStorage.getItem("cortero_logged") === "true";
+  const isLogged = localStorage.getItem("cortero_logged") === "1";
   updateAuthUI(isLogged);
   updateCartCount();
 }
 
 /* ========================= AUTH EVENTS ========================= */
 document.addEventListener("authStateChanged", (e) => {
-  updateAuthUI(e.detail?.logged === true);
+  const logged =
+    typeof e.detail?.logged === "boolean"
+      ? e.detail.logged
+      : localStorage.getItem("cortero_logged") === "1";
+
+  updateAuthUI(logged);
   updateCartCount();
   closeDrawer();
 });
