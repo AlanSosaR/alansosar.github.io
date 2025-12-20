@@ -1,9 +1,9 @@
 // ============================================================
 // AUTH-UI — Café Cortero (2025)
-// UI + protección automática por URL
+// UI ONLY — SIN PROTECCIÓN DE RUTAS (ESTABLE)
 // ============================================================
 
-console.log("👤 auth-ui.js cargado — CORE FINAL");
+console.log("👤 auth-ui.js cargado — CORE ESTABLE");
 
 /* ========================= HELPERS ========================= */
 const $auth = (id) => document.getElementById(id);
@@ -47,8 +47,12 @@ function setLoggedIn(user) {
   $auth("avatar-user")?.setAttribute("src", photo);
   $auth("avatar-user-drawer")?.setAttribute("src", photo);
 
-  $auth("drawer-name")  && ($auth("drawer-name").textContent  = user?.name  || "Usuario");
-  $auth("drawer-email") && ($auth("drawer-email").textContent = user?.email || "");
+  if ($auth("drawer-name")) {
+    $auth("drawer-name").textContent = user?.name || "Usuario";
+  }
+  if ($auth("drawer-email")) {
+    $auth("drawer-email").textContent = user?.email || "";
+  }
 
   closeDrawerUI();
 }
@@ -66,7 +70,7 @@ function hardLogout() {
     detail: { logged: false }
   }));
 
-  // usar href evita estados raros
+  // 👉 ÚNICA redirección del sistema
   window.location.href = "index.html";
 }
 
@@ -79,12 +83,8 @@ function initAuthUI() {
   const logged = localStorage.getItem("cortero_logged") === "1";
   const raw    = localStorage.getItem("cortero_user");
 
-  const PUBLIC_PAGES = ["", "index.html", "login.html", "registro.html"];
-  const currentPage = location.pathname.split("/").pop() || "index.html";
-
   resetAuthUI();
 
-  // ===== SESIÓN ACTIVA =====
   if (logged && raw) {
     try {
       setLoggedIn(JSON.parse(raw));
@@ -92,25 +92,16 @@ function initAuthUI() {
       document.dispatchEvent(new CustomEvent("authStateChanged", {
         detail: { logged: true }
       }));
-      return;
     } catch {
-      localStorage.clear();
+      localStorage.removeItem("cortero_user");
+      localStorage.removeItem("cortero_logged");
     }
-  }
-
-  // ===== PROTECCIÓN =====
-  if (
-    !logged &&
-    !PUBLIC_PAGES.includes(currentPage) &&
-    currentPage !== "login.html" &&
-    currentPage !== "registro.html"
-  ) {
-    window.location.href = "index.html";
   }
 }
 
 /* ========================= EVENTOS ========================= */
 
+// Login exitoso (desde login.js)
 document.addEventListener("userLoggedIn", (e) => {
   if (!e.detail) return;
 
@@ -124,9 +115,10 @@ document.addEventListener("userLoggedIn", (e) => {
   }));
 });
 
+// Logout desde cualquier parte
 document.addEventListener("userLoggedOut", hardLogout);
 
 /* ============================================================
-   ⛔ NO DOMContentLoaded AQUÍ
-   layout.js controla el orden
+   ⛔ NO DOMContentLoaded
+   layout.js controla el flujo
 ============================================================ */
