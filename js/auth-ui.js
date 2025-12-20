@@ -3,7 +3,7 @@
 // UI + protección automática por URL
 // ============================================================
 
-console.log("👤 auth-ui.js cargado — CORE FINAL");
+console.log("👤 auth-ui.js cargado — CORE FINAL CORREGIDO");
 
 /* ========================= HELPERS ========================= */
 const safe = (id) => document.getElementById(id);
@@ -60,11 +60,12 @@ function hardLogout() {
 
   resetAuthUI();
 
-  // 🔔 notificar a todo el sistema
+  // 🔔 avisar a todo el sistema
   document.dispatchEvent(new CustomEvent("authStateChanged", {
     detail: { logged: false }
   }));
 
+  // ⛔ nunca volver a login automáticamente
   window.location.replace("index.html");
 }
 
@@ -78,11 +79,13 @@ function initAuthUI() {
   const raw    = localStorage.getItem("cortero_user");
 
   const PUBLIC_PAGES = ["", "index.html", "login.html", "registro.html"];
-  const currentPage = location.pathname.split("/").pop() || "index.html";
+  const currentPage =
+    location.pathname.split("/").pop() || "index.html";
 
+  // Siempre limpiar UI primero
   resetAuthUI();
 
-  // Sesión válida
+  /* ================= SESIÓN VÁLIDA ================= */
   if (logged && raw) {
     try {
       setLoggedIn(JSON.parse(raw));
@@ -91,18 +94,28 @@ function initAuthUI() {
         detail: { logged: true }
       }));
       return;
-    } catch {}
+    } catch {
+      // sesión corrupta → limpiar
+      localStorage.removeItem("cortero_user");
+      localStorage.removeItem("cortero_logged");
+    }
   }
 
-  // Protección de rutas
-  if (!PUBLIC_PAGES.includes(currentPage) && !logged) {
+  /* ================= PROTECCIÓN DE RUTAS ================= */
+  // ❗ NUNCA bloquear login ni registro
+  if (
+    !logged &&
+    !PUBLIC_PAGES.includes(currentPage) &&
+    currentPage !== "login.html" &&
+    currentPage !== "registro.html"
+  ) {
     window.location.replace("index.html");
   }
 }
 
 /* ========================= EVENTOS ========================= */
 
-// Login exitoso
+// Login exitoso (desde login.js)
 document.addEventListener("userLoggedIn", (e) => {
   if (!e.detail) return;
 
@@ -116,7 +129,7 @@ document.addEventListener("userLoggedIn", (e) => {
   }));
 });
 
-// Logout desde cualquier lugar
+// Logout desde cualquier parte (header, drawer, etc.)
 document.addEventListener("userLoggedOut", hardLogout);
 
 /* ========================= AUTO INIT ========================= */
