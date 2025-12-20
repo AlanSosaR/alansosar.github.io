@@ -34,20 +34,20 @@ function setLoggedIn(user) {
   const header = document.querySelector(".header-fixed");
   if (!drawer || !header) return;
 
-  /* Drawer */
+  // Drawer
   drawer.classList.remove("no-user");
   drawer.classList.add("logged");
 
-  /* Header */
+  // Header
   header.classList.remove("no-user");
   header.classList.add("logged");
 
-  /* Avatar */
+  // Avatar
   const photo = user?.photo_url || "imagenes/avatar-default.svg";
   safe("avatar-user")?.setAttribute("src", photo);
   safe("avatar-user-drawer")?.setAttribute("src", photo);
 
-  /* Textos drawer */
+  // Textos
   safe("drawer-name")  && (safe("drawer-name").textContent  = user?.name  || "Usuario");
   safe("drawer-email") && (safe("drawer-email").textContent = user?.email || "");
 
@@ -56,7 +56,7 @@ function setLoggedIn(user) {
 
 /* ========================= ESTADO INVITADO ========================= */
 function setLoggedOut() {
-  // 🔒 LIMPIEZA TOTAL
+  // 🔒 LIMPIEZA TOTAL DE SESIÓN
   localStorage.removeItem("cortero_user");
   localStorage.removeItem("cortero_logged");
 
@@ -77,8 +77,8 @@ function setLoggedOut() {
 }
 
 /* ============================================================
-   INIT — PROTECCIÓN GLOBAL DE PÁGINAS
-   SE EJECUTA EN TODAS LAS PÁGINAS
+   INIT — CORE GLOBAL (ANTI-ESTADO VIVO)
+   SIEMPRE limpia primero, luego decide
 ============================================================ */
 function initAuthUI() {
   console.log("👤 initAuthUI ejecutado");
@@ -86,20 +86,19 @@ function initAuthUI() {
   const logged = localStorage.getItem("cortero_logged");
   const raw    = localStorage.getItem("cortero_user");
 
-  /* ===== SESIÓN VÁLIDA ===== */
+  // 🔥 PASO 1: SIEMPRE limpiar UI (clave del fix)
+  setLoggedOut();
+
+  // 🔥 PASO 2: solo si la sesión es válida, reactivar
   if (logged === "1" && raw) {
     try {
       setLoggedIn(JSON.parse(raw));
-      return;
     } catch (e) {
       console.warn("⚠️ Usuario corrupto");
     }
   }
 
-  /* ===== SESIÓN INVÁLIDA ===== */
-  setLoggedOut();
-
-  // 🔥 BLOQUEO GLOBAL DE PÁGINAS PRIVADAS
+  // 🔐 Protección de páginas privadas
   const PUBLIC_PAGES = [
     "",                 // raíz
     "index.html",
@@ -109,7 +108,7 @@ function initAuthUI() {
 
   const currentPage = location.pathname.split("/").pop();
 
-  if (!PUBLIC_PAGES.includes(currentPage)) {
+  if (!PUBLIC_PAGES.includes(currentPage) && logged !== "1") {
     console.warn("⛔ Página protegida sin sesión → redirección forzada");
     window.location.replace("index.html");
   }
@@ -117,7 +116,7 @@ function initAuthUI() {
 
 /* ========================= EVENTOS GLOBALES ========================= */
 
-// Login correcto (disparado desde Supabase / login.js)
+// Login correcto (desde login.js / Supabase)
 document.addEventListener("userLoggedIn", (e) => {
   if (!e.detail) return;
 
@@ -127,11 +126,11 @@ document.addEventListener("userLoggedIn", (e) => {
   setLoggedIn(e.detail);
 });
 
-// Logout desde cualquier parte (header, admin, etc.)
+// Logout desde cualquier parte
 document.addEventListener("userLoggedOut", () => {
   setLoggedOut();
 
-  // 🔥 EXPULSIÓN GLOBAL
+  // 🔥 Redirección limpia (mata estados residuales)
   window.location.replace("index.html");
 });
 
