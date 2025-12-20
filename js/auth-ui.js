@@ -3,21 +3,21 @@
 // UI + protección automática por URL
 // ============================================================
 
-console.log("👤 auth-ui.js cargado — CORE FINAL CORREGIDO");
+console.log("👤 auth-ui.js cargado — CORE FINAL");
 
 /* ========================= HELPERS ========================= */
-const safe = (id) => document.getElementById(id);
+const $auth = (id) => document.getElementById(id);
 
 /* ========================= DRAWER ========================= */
 function closeDrawerUI() {
-  safe("user-drawer")?.classList.remove("open");
-  safe("user-scrim")?.classList.remove("open");
+  $auth("user-drawer")?.classList.remove("open");
+  $auth("user-scrim")?.classList.remove("open");
   document.body.style.overflow = "";
 }
 
 /* ========================= RESET VISUAL ========================= */
 function resetAuthUI() {
-  const drawer = safe("user-drawer");
+  const drawer = $auth("user-drawer");
   const header = document.querySelector(".header-fixed");
 
   drawer?.classList.remove("logged");
@@ -33,7 +33,7 @@ function resetAuthUI() {
 function setLoggedIn(user) {
   resetAuthUI();
 
-  const drawer = safe("user-drawer");
+  const drawer = $auth("user-drawer");
   const header = document.querySelector(".header-fixed");
   if (!drawer || !header) return;
 
@@ -44,11 +44,11 @@ function setLoggedIn(user) {
   header.classList.add("logged");
 
   const photo = user?.photo_url || "imagenes/avatar-default.svg";
-  safe("avatar-user")?.setAttribute("src", photo);
-  safe("avatar-user-drawer")?.setAttribute("src", photo);
+  $auth("avatar-user")?.setAttribute("src", photo);
+  $auth("avatar-user-drawer")?.setAttribute("src", photo);
 
-  safe("drawer-name")  && (safe("drawer-name").textContent  = user?.name  || "Usuario");
-  safe("drawer-email") && (safe("drawer-email").textContent = user?.email || "");
+  $auth("drawer-name")  && ($auth("drawer-name").textContent  = user?.name  || "Usuario");
+  $auth("drawer-email") && ($auth("drawer-email").textContent = user?.email || "");
 
   closeDrawerUI();
 }
@@ -60,12 +60,10 @@ function hardLogout() {
 
   resetAuthUI();
 
-  // 🔔 avisar a todo el sistema
   document.dispatchEvent(new CustomEvent("authStateChanged", {
     detail: { logged: false }
   }));
 
-  // ⛔ nunca volver a login automáticamente
   window.location.replace("index.html");
 }
 
@@ -82,10 +80,9 @@ function initAuthUI() {
   const currentPage =
     location.pathname.split("/").pop() || "index.html";
 
-  // Siempre limpiar UI primero
   resetAuthUI();
 
-  /* ================= SESIÓN VÁLIDA ================= */
+  /* ======== SESIÓN VÁLIDA ======== */
   if (logged && raw) {
     try {
       setLoggedIn(JSON.parse(raw));
@@ -95,14 +92,13 @@ function initAuthUI() {
       }));
       return;
     } catch {
-      // sesión corrupta → limpiar
       localStorage.removeItem("cortero_user");
       localStorage.removeItem("cortero_logged");
     }
   }
 
-  /* ================= PROTECCIÓN DE RUTAS ================= */
-  // ❗ NUNCA bloquear login ni registro
+  /* ======== PROTECCIÓN DE RUTAS ======== */
+  // ❗ NUNCA redirigir login ni registro
   if (
     !logged &&
     !PUBLIC_PAGES.includes(currentPage) &&
@@ -129,7 +125,7 @@ document.addEventListener("userLoggedIn", (e) => {
   }));
 });
 
-// Logout desde cualquier parte (header, drawer, etc.)
+// Logout desde cualquier lugar
 document.addEventListener("userLoggedOut", hardLogout);
 
 /* ========================= AUTO INIT ========================= */
