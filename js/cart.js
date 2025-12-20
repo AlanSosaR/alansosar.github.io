@@ -2,7 +2,8 @@
    Carrito — Café Cortero 2025  
    Integrado con Supabase + Avatar del Index  
 ============================================================ */
-
+// 🔐 Página protegida
+window.PAGE_PROTECTED = true;
 const CART_KEY = "cafecortero_cart";
 
 /* -----------------------------------------------------------
