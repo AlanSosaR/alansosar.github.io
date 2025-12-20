@@ -1,7 +1,7 @@
 console.log("🧭 header.js — CORE FINAL ESTABLE");
 
 /* =====================================================
-   GUARDIÁN GLOBAL — EVITA BUCLES
+   GUARDIÁN GLOBAL — EVITA DOBLE CARGA
 ===================================================== */
 if (window.__HEADER_CORE_LOADED__) {
   console.warn("⚠️ header.js ya estaba cargado");
@@ -13,17 +13,19 @@ if (window.__HEADER_CORE_LOADED__) {
    HELPERS
 ===================================================== */
 const $ = (id) => document.getElementById(id);
-const CART_KEY = "cafecortero_cart";
 
 /* =====================================================
-   CARRITO
+   CARRITO (SOLO LECTURA — SIN CART_KEY)
 ===================================================== */
 function updateCartCount() {
   const badge = $("cart-count");
   if (!badge) return;
 
   try {
-    const cart = JSON.parse(localStorage.getItem(CART_KEY)) || [];
+    const cart = JSON.parse(
+      localStorage.getItem("cafecortero_cart")
+    ) || [];
+
     badge.textContent = cart.reduce((a, i) => a + i.qty, 0);
   } catch {
     badge.textContent = "0";
@@ -85,7 +87,7 @@ function updateAuthUI(isLogged) {
 }
 
 /* =====================================================
-   INIT HEADER — SOLO UNA VEZ
+   INIT HEADER — UNA SOLA VEZ
 ===================================================== */
 let HEADER_INITIALIZED = false;
 
@@ -105,7 +107,7 @@ function initHeader() {
   const drawer     = $("user-drawer");
   const scrim      = $("user-scrim");
 
-  /* ================= EVENTOS LOCALES ================= */
+  /* ================= EVENTOS ================= */
 
   menuToggle?.addEventListener("click", (e) => {
     e.preventDefault();
@@ -147,7 +149,7 @@ function initHeader() {
 }
 
 /* =====================================================
-   EVENTOS GLOBALES — REGISTRADOS UNA VEZ
+   EVENTOS GLOBALES — SOLO UNA VEZ
 ===================================================== */
 if (!window.__HEADER_GLOBAL_EVENTS__) {
   window.__HEADER_GLOBAL_EVENTS__ = true;
