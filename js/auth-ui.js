@@ -1,6 +1,7 @@
 // ============================================================
 // AUTH-UI — Café Cortero (2025)
-// UI + protección de páginas (SIN backend)
+// UI + protección automática por URL
+// NO maneja backend
 // ============================================================
 
 console.log("👤 auth-ui.js cargado — CORE FINAL");
@@ -71,10 +72,17 @@ function initAuthUI() {
   const logged = localStorage.getItem("cortero_logged");
   const raw    = localStorage.getItem("cortero_user");
 
-  const PUBLIC_PAGES = ["", "index.html", "login.html", "registro.html"];
+  // 🔓 Páginas públicas (SIEMPRE accesibles)
+  const PUBLIC_PAGES = [
+    "",                 // raíz
+    "index.html",
+    "login.html",
+    "registro.html"
+  ];
+
   const currentPage = location.pathname.split("/").pop();
 
-  // 🔹 Siempre limpiar UI primero (visual)
+  // 🔹 Siempre limpiar UI visual primero
   resetAuthUI();
 
   // 🔹 Reactivar SOLO si la sesión es válida
@@ -87,16 +95,17 @@ function initAuthUI() {
     }
   }
 
-  // 🔐 Protección SOLO para páginas privadas
-  if (window.PAGE_PROTECTED === true && !PUBLIC_PAGES.includes(currentPage)) {
-    console.warn("⛔ Página protegida sin sesión");
+  // 🔐 Protección automática:
+  // Si NO es página pública y NO hay sesión → expulsar
+  if (!PUBLIC_PAGES.includes(currentPage) && logged !== "1") {
+    console.warn("⛔ Página privada sin sesión");
     window.location.replace("index.html");
   }
 }
 
 /* ========================= EVENTOS GLOBALES ========================= */
 
-// Login correcto (login.js / Supabase)
+// Login correcto (desde login.js / Supabase)
 document.addEventListener("userLoggedIn", (e) => {
   if (!e.detail) return;
 
