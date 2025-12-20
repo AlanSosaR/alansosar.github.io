@@ -1,24 +1,43 @@
 // =====================================================
-// LAYOUT — INYECTAR HEADER GLOBAL (CORE FINAL)
+// LAYOUT — INYECTAR HEADER GLOBAL
+// VERSIÓN FINAL, ESTABLE, ANTI LOOP
 // =====================================================
+
 document.addEventListener("DOMContentLoaded", async () => {
+
+  // 🔒 GUARD CRÍTICO:
+  // Si el header ya existe, NO volver a inyectar ni inicializar nada
+  if (document.getElementById("main-header")) {
+    console.warn("⚠️ layout.js: header ya existe, abortando ejecución");
+    return;
+  }
+
   try {
-    const res = await fetch("header.html");
-    if (!res.ok) throw new Error("Header no encontrado");
+    console.log("📦 layout.js: cargando header.html…");
+
+    const res = await fetch("header.html", {
+      cache: "no-store" // evita cache raro en desarrollo
+    });
+
+    if (!res.ok) {
+      throw new Error("Header no encontrado");
+    }
 
     const html = await res.text();
 
-    // 🔑 Inyectar header
+    // 🔑 Inyectar el header SOLO UNA VEZ
     document.body.insertAdjacentHTML("afterbegin", html);
 
-    // 🔑 Inicializar header
+    console.log("✅ Header inyectado correctamente");
+
+    // 🔑 Inicializar HEADER
     if (typeof initHeader === "function") {
       initHeader();
     } else {
       console.error("❌ initHeader() no está disponible");
     }
 
-    // 🔑 Inicializar Auth UI (OBLIGATORIO)
+    // 🔑 Inicializar AUTH UI
     if (typeof initAuthUI === "function") {
       initAuthUI();
     } else {
@@ -26,6 +45,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
   } catch (err) {
-    console.error("❌ Error cargando header:", err);
+    console.error("❌ Error cargando layout/header:", err);
   }
 });
