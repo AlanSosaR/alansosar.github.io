@@ -1,22 +1,21 @@
 // =====================================================
-// LAYOUT — INYECTAR HEADER GLOBAL
-// VERSIÓN FINAL, ESTABLE, ANTI LOOP
+// LAYOUT — INYECTAR HEADER GLOBAL (ANTI LOOP FINAL)
 // =====================================================
 
 document.addEventListener("DOMContentLoaded", async () => {
 
-  // 🔒 GUARD CRÍTICO:
-  // Si el header ya existe, NO volver a inyectar ni inicializar nada
+  // 🔒 GUARD ABSOLUTO:
+  // Si el header ya existe, NO volver a inyectar ni inicializar
   if (document.getElementById("main-header")) {
-    console.warn("⚠️ layout.js: header ya existe, abortando ejecución");
+    console.warn("⚠️ layout.js: header ya existe, abortando");
     return;
   }
 
   try {
-    console.log("📦 layout.js: cargando header.html…");
+    console.log("📦 layout.js: cargando header.html");
 
     const res = await fetch("header.html", {
-      cache: "no-store" // evita cache raro en desarrollo
+      cache: "no-store"
     });
 
     if (!res.ok) {
@@ -25,26 +24,26 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const html = await res.text();
 
-    // 🔑 Inyectar el header SOLO UNA VEZ
+    // 🔑 Inyectar SOLO UNA VEZ
     document.body.insertAdjacentHTML("afterbegin", html);
 
-    console.log("✅ Header inyectado correctamente");
+    console.log("✅ Header inyectado");
 
-    // 🔑 Inicializar HEADER
+    // 🔑 Inicializar header
     if (typeof initHeader === "function") {
       initHeader();
     } else {
-      console.error("❌ initHeader() no está disponible");
+      console.error("❌ initHeader no disponible");
     }
 
-    // 🔑 Inicializar AUTH UI
+    // 🔑 Inicializar auth UI
     if (typeof initAuthUI === "function") {
       initAuthUI();
     } else {
-      console.error("❌ initAuthUI() no está disponible");
+      console.error("❌ initAuthUI no disponible");
     }
 
   } catch (err) {
-    console.error("❌ Error cargando layout/header:", err);
+    console.error("❌ Error en layout.js:", err);
   }
 });
