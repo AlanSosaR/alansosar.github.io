@@ -1,49 +1,85 @@
 // =====================================================
-// LAYOUT — INYECTAR HEADER GLOBAL (ANTI LOOP FINAL)
+// LAYOUT — HEADER GLOBAL (CORE FINAL SIN LOOP)
 // =====================================================
 
-document.addEventListener("DOMContentLoaded", async () => {
+console.log("📐 layout.js cargado");
 
-  // 🔒 GUARD ABSOLUTO:
-  // Si el header ya existe, NO volver a inyectar ni inicializar
-  if (document.getElementById("main-header")) {
-    console.warn("⚠️ layout.js: header ya existe, abortando");
-    return;
-  }
+/*
+  REGLAS:
+  - layout.js SOLO inyecta header
+  - NO decide auth
+  - NO redirige
+  - NO se ejecuta en login.html
+*/
 
-  try {
-    console.log("📦 layout.js: cargando header.html");
+// =====================================================
+// 1️⃣ BLOQUEO ABSOLUTO EN LOGIN
+// =====================================================
+if (document.body.dataset.page === "login") {
+  console.warn("⛔ layout.js deshabilitado (página login)");
+} else {
 
-    const res = await fetch("header.html", {
-      cache: "no-store"
+  // =====================================================
+  // 2️⃣ GUARD GLOBAL — EVITA DOBLE EJECUCIÓN
+  // =====================================================
+  if (window.__LAYOUT_LOADED__) {
+    console.warn("⚠️ layout.js ya ejecutado, abortando");
+  } else {
+    window.__LAYOUT_LOADED__ = true;
+
+    // =====================================================
+    // 3️⃣ DOM READY
+    // =====================================================
+    document.addEventListener("DOMContentLoaded", async () => {
+
+      // 🔒 Si el header ya existe, NO hacer nada
+      if (document.getElementById("main-header")) {
+        console.warn("⚠️ Header ya existe en DOM, no se inyecta");
+        return;
+      }
+
+      try {
+        console.log("📦 layout.js: cargando header.html");
+
+        const res = await fetch("header.html", {
+          cache: "no-store"
+        });
+
+        if (!res.ok) {
+          throw new Error("header.html no encontrado");
+        }
+
+        const html = await res.text();
+
+        // =====================================================
+        // 4️⃣ INYECTAR HEADER (UNA SOLA VEZ)
+        // =====================================================
+        document.body.insertAdjacentHTML("afterbegin", html);
+        console.log("✅ Header inyectado");
+
+        // =====================================================
+        // 5️⃣ INIT HEADER (EVENTOS)
+        // =====================================================
+        if (typeof window.initHeader === "function") {
+          window.initHeader();
+          console.log("🧭 initHeader OK");
+        } else {
+          console.warn("⚠️ initHeader no existe");
+        }
+
+        // =====================================================
+        // 6️⃣ INIT AUTH UI (SOLO UI)
+        // =====================================================
+        if (typeof window.initAuthUI === "function") {
+          window.initAuthUI();
+          console.log("👤 initAuthUI OK");
+        } else {
+          console.warn("⚠️ initAuthUI no existe");
+        }
+
+      } catch (err) {
+        console.error("❌ Error en layout.js:", err);
+      }
     });
-
-    if (!res.ok) {
-      throw new Error("Header no encontrado");
-    }
-
-    const html = await res.text();
-
-    // 🔑 Inyectar SOLO UNA VEZ
-    document.body.insertAdjacentHTML("afterbegin", html);
-
-    console.log("✅ Header inyectado");
-
-    // 🔑 Inicializar header
-    if (typeof initHeader === "function") {
-      initHeader();
-    } else {
-      console.error("❌ initHeader no disponible");
-    }
-
-    // 🔑 Inicializar auth UI
-    if (typeof initAuthUI === "function") {
-      initAuthUI();
-    } else {
-      console.error("❌ initAuthUI no disponible");
-    }
-
-  } catch (err) {
-    console.error("❌ Error en layout.js:", err);
   }
-});
+}
