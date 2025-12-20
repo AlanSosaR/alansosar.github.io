@@ -1,6 +1,6 @@
 // ============================================================
 // AUTH-UI — Café Cortero (2025)
-// UI + protección (SIN backend)
+// UI + protección de páginas (SIN backend)
 // ============================================================
 
 console.log("👤 auth-ui.js cargado — CORE FINAL");
@@ -15,7 +15,7 @@ function closeDrawerUI() {
   document.body.style.overflow = "";
 }
 
-/* ========================= UI RESET (NO TOCA STORAGE) ========================= */
+/* ========================= RESET VISUAL (NO TOCA STORAGE) ========================= */
 function resetAuthUI() {
   const drawer = safe("user-drawer");
   const header = document.querySelector(".header-fixed");
@@ -29,7 +29,7 @@ function resetAuthUI() {
   closeDrawerUI();
 }
 
-/* ========================= UI LOGUEADA ========================= */
+/* ========================= ESTADO LOGUEADO ========================= */
 function setLoggedIn(user) {
   resetAuthUI();
 
@@ -62,33 +62,41 @@ function hardLogout() {
   window.location.replace("index.html");
 }
 
-/* ========================= INIT GLOBAL ========================= */
+/* ============================================================
+   INIT GLOBAL — ESTABLE, SIN LOOP, SIN BLOQUEAR LOGIN
+============================================================ */
 function initAuthUI() {
   console.log("👤 initAuthUI ejecutado");
 
   const logged = localStorage.getItem("cortero_logged");
   const raw    = localStorage.getItem("cortero_user");
 
+  const PUBLIC_PAGES = ["", "index.html", "login.html", "registro.html"];
+  const currentPage = location.pathname.split("/").pop();
+
   // 🔹 Siempre limpiar UI primero (visual)
   resetAuthUI();
 
-  // 🔹 Reactivar SOLO si hay sesión válida
+  // 🔹 Reactivar SOLO si la sesión es válida
   if (logged === "1" && raw) {
     try {
       setLoggedIn(JSON.parse(raw));
       return;
-    } catch {}
+    } catch (e) {
+      console.warn("⚠️ Usuario corrupto");
+    }
   }
 
-  // 🔐 Protección páginas privadas
-  if (window.PAGE_PROTECTED && logged !== "1") {
+  // 🔐 Protección SOLO para páginas privadas
+  if (window.PAGE_PROTECTED === true && !PUBLIC_PAGES.includes(currentPage)) {
+    console.warn("⛔ Página protegida sin sesión");
     window.location.replace("index.html");
   }
 }
 
-/* ========================= EVENTOS ========================= */
+/* ========================= EVENTOS GLOBALES ========================= */
 
-// Login correcto
+// Login correcto (login.js / Supabase)
 document.addEventListener("userLoggedIn", (e) => {
   if (!e.detail) return;
 
