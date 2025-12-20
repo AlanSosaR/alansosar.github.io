@@ -1,7 +1,6 @@
 // ============================================================
 // AUTH-UI — Café Cortero (2025)
 // UI + protección automática por URL
-// NO maneja backend
 // ============================================================
 
 console.log("👤 auth-ui.js cargado — CORE FINAL");
@@ -16,7 +15,7 @@ function closeDrawerUI() {
   document.body.style.overflow = "";
 }
 
-/* ========================= RESET VISUAL (NO TOCA STORAGE) ========================= */
+/* ========================= RESET VISUAL ========================= */
 function resetAuthUI() {
   const drawer = safe("user-drawer");
   const header = document.querySelector(".header-fixed");
@@ -54,52 +53,56 @@ function setLoggedIn(user) {
   closeDrawerUI();
 }
 
-/* ========================= LOGOUT REAL ========================= */
+/* ========================= LOGOUT GLOBAL ========================= */
 function hardLogout() {
   localStorage.removeItem("cortero_user");
   localStorage.removeItem("cortero_logged");
 
   resetAuthUI();
 
-  // 🔔 avisar a header
-  document.dispatchEvent(new Event("authStateChanged"));
+  // 🔔 notificar a todo el sistema
+  document.dispatchEvent(new CustomEvent("authStateChanged", {
+    detail: { logged: false }
+  }));
 
   window.location.replace("index.html");
 }
 
 /* ============================================================
-   INIT GLOBAL — ESTABLE
+   INIT GLOBAL
 ============================================================ */
 function initAuthUI() {
   console.log("👤 initAuthUI ejecutado");
 
-  const logged = localStorage.getItem("cortero_logged");
+  const logged = localStorage.getItem("cortero_logged") === "1";
   const raw    = localStorage.getItem("cortero_user");
 
   const PUBLIC_PAGES = ["", "index.html", "login.html", "registro.html"];
-  const currentPage = location.pathname.split("/").pop();
+  const currentPage = location.pathname.split("/").pop() || "index.html";
 
-  // Siempre limpiar UI
   resetAuthUI();
 
-  // Reactivar si hay sesión válida
-  if (logged === "1" && raw) {
+  // Sesión válida
+  if (logged && raw) {
     try {
       setLoggedIn(JSON.parse(raw));
-      document.dispatchEvent(new Event("authStateChanged"));
+
+      document.dispatchEvent(new CustomEvent("authStateChanged", {
+        detail: { logged: true }
+      }));
       return;
     } catch {}
   }
 
-  // Protección automática por URL
-  if (!PUBLIC_PAGES.includes(currentPage) && logged !== "1") {
+  // Protección de rutas
+  if (!PUBLIC_PAGES.includes(currentPage) && !logged) {
     window.location.replace("index.html");
   }
 }
 
-/* ========================= EVENTOS GLOBALES ========================= */
+/* ========================= EVENTOS ========================= */
 
-// Login correcto (desde login.js)
+// Login exitoso
 document.addEventListener("userLoggedIn", (e) => {
   if (!e.detail) return;
 
@@ -108,11 +111,12 @@ document.addEventListener("userLoggedIn", (e) => {
 
   setLoggedIn(e.detail);
 
-  // 🔔 avisar al header que el estado cambió
-  document.dispatchEvent(new Event("authStateChanged"));
+  document.dispatchEvent(new CustomEvent("authStateChanged", {
+    detail: { logged: true }
+  }));
 });
 
-// Logout desde cualquier parte
+// Logout desde cualquier lugar
 document.addEventListener("userLoggedOut", hardLogout);
 
 /* ========================= AUTO INIT ========================= */
