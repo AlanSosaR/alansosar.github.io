@@ -1,12 +1,13 @@
 /* =====================================================
-   HEADER — CORE LIMPIO Y ESTABLE (FINAL)
-   ⚠️ NO contiene reset global ni body
+   HEADER — CORE LIMPIO Y ESTABLE (FINAL DEFINITIVO)
+   ✔ No afecta contenido
+   ✔ No contiene reset global
 ===================================================== */
 
 header.header-fixed {
   position: sticky;
   top: 0;
-  z-index: 1000;
+  z-index: 100; /* 🔑 CLAVE: no tapar contenido */
 
   height: 72px;
   padding: 0 16px;
@@ -115,8 +116,8 @@ header.header-fixed {
   outline: none;
 
   box-shadow:
-    0 6px 14px rgba(0, 0, 0, 0.18),
-    0 2px 4px rgba(0, 0, 0, 0.12);
+    0 6px 14px rgba(0,0,0,0.18),
+    0 2px 4px rgba(0,0,0,0.12);
 
   transition: transform .2s ease, box-shadow .2s ease;
 }
@@ -124,8 +125,8 @@ header.header-fixed {
 .header-avatar-button:hover {
   transform: translateY(-3px);
   box-shadow:
-    0 10px 24px rgba(0, 0, 0, 0.22),
-    0 4px 10px rgba(0, 0, 0, 0.16);
+    0 10px 24px rgba(0,0,0,0.22),
+    0 4px 10px rgba(0,0,0,0.16);
 }
 
 .header-avatar-button img {
@@ -152,7 +153,7 @@ header.header-fixed {
   position: relative;
   cursor: pointer;
 
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.18);
   transition: transform .18s ease, box-shadow .18s ease;
 }
 
@@ -164,7 +165,7 @@ header.header-fixed {
 @media (min-width: 901px) {
   #cart-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 12px 26px rgba(0, 0, 0, 0.22);
+    box-shadow: 0 12px 26px rgba(0,0,0,0.22);
   }
 }
 
@@ -179,7 +180,7 @@ header.header-fixed {
   background: #d72638;
   color: #fff;
 
-  font-size: .7rem;
+  font-size: 0.7rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -238,19 +239,20 @@ header.header-fixed {
 .user-scrim {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,.45);
+  background: rgba(0,0,0,0.45);
   opacity: 0;
   pointer-events: none;
   transition: opacity .2s ease;
-  z-index: 998;
+  z-index: 90;
 }
+
 .user-scrim.open {
   opacity: 1;
   pointer-events: auto;
 }
 
 /* =====================================================
-   DRAWER — MATERIAL 3 EXPRESSIVE
+   DRAWER — MATERIAL 3 EXPRESSIVE (RESTAURADO)
 ===================================================== */
 .user-drawer {
   position: fixed;
@@ -259,14 +261,14 @@ header.header-fixed {
 
   width: min(360px, calc(100% - 24px));
   background: #16181a;
-  color: #fff;
+  color: #ffffff;
 
   border-radius: 24px;
   overflow: hidden;
 
   box-shadow:
-    0 18px 40px rgba(0,0,0,.75),
-    0 0 0 1px rgba(255,255,255,.04);
+    0 18px 40px rgba(0,0,0,0.75),
+    0 0 0 1px rgba(255,255,255,0.04);
 
   transform: translateX(120%);
   opacity: 0;
@@ -274,7 +276,7 @@ header.header-fixed {
     transform .25s cubic-bezier(.2,0,0,1),
     opacity .2s ease;
 
-  z-index: 999;
+  z-index: 200;
 }
 
 .user-drawer.open {
@@ -282,9 +284,7 @@ header.header-fixed {
   opacity: 1;
 }
 
-/* =====================================================
-   DRAWER — CONTENIDO
-===================================================== */
+/* ===== PERFIL ===== */
 .user-drawer-header {
   display: flex;
   align-items: center;
@@ -297,6 +297,7 @@ header.header-fixed {
   height: 52px;
   border-radius: 18px;
   overflow: hidden;
+  flex-shrink: 0;
 }
 
 .user-drawer-avatar img {
@@ -305,16 +306,31 @@ header.header-fixed {
   object-fit: cover;
 }
 
+.user-drawer-profile-texts {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
 .user-drawer-name {
+  margin: 0;
   font-size: 15px;
   font-weight: 600;
 }
 
 .user-drawer-email {
+  margin-top: 2px;
   font-size: 13px;
-  opacity: .7;
+  opacity: 0.7;
 }
 
+.user-drawer-arrow {
+  margin-left: auto;
+  font-size: 22px;
+  color: rgba(255,255,255,0.6);
+}
+
+/* ===== DIVISOR ===== */
 .user-drawer-divider {
   height: 1.6px;
   background: var(--verde);
@@ -322,6 +338,7 @@ header.header-fixed {
   margin: 6px 0 10px;
 }
 
+/* ===== NAVEGACIÓN ===== */
 .user-drawer-nav {
   display: flex;
   flex-direction: column;
@@ -332,21 +349,27 @@ header.header-fixed {
   display: flex;
   align-items: center;
   gap: 16px;
-  color: #fff;
+  color: #ffffff;
   text-decoration: none;
+  cursor: pointer;
 }
 
 .user-drawer-item:hover {
-  background: rgba(255,255,255,.06);
+  background: rgba(255,255,255,0.06);
 }
 
+/* ===== LOGOUT ===== */
 .user-drawer-item.logout {
   color: #ff4b4b;
+  font-weight: 500;
+  margin-top: 6px;
 }
 
+/* ===== VISIBILIDAD ===== */
 .user-drawer.logged .no-user {
   display: none;
 }
+
 .user-drawer.no-user .logged {
   display: none;
 }
