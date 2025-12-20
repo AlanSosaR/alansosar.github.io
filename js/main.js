@@ -1,19 +1,11 @@
 /* ============================================================
    MAIN.JS — Café Cortero 2025
    UI + CARRITO + INTERACCIONES
-   ✔ Drawer funcional móvil / desktop
-   ✔ Invitado / Logueado por clases
-   ✔ Logout REAL con Supabase
 ============================================================ */
 
 /* ========================= SAFE ========================= */
 function safe(id) {
   return document.getElementById(id);
-}
-
-/* ========================= SUPABASE SAFE ========================= */
-function getSupabaseClient() {
-  return window.supabaseClient || window.supabase || null;
 }
 
 /* ========================= CARRITO ========================= */
@@ -90,44 +82,46 @@ function loadSimilarProducts() {
 
 document.addEventListener("DOMContentLoaded", () => {
 
-  /* ========================= DRAWER ========================= */
-  const drawer     = safe("user-drawer");
-  const scrim      = safe("user-scrim");
-  const menuToggle = safe("menu-toggle");
+  /* =====================================================
+     HEADER — SOLO SI NO ESTÁ MIGRADO
+  ===================================================== */
+  const HEADER_MANAGED_EXTERNALLY = typeof initHeader === "function";
 
-  function openDrawer() {
-    drawer?.classList.add("open");
-    scrim?.classList.add("open");
-    document.body.style.overflow = "hidden";
+  if (!HEADER_MANAGED_EXTERNALLY) {
+
+    const drawer     = safe("user-drawer");
+    const scrim      = safe("user-scrim");
+    const menuToggle = safe("menu-toggle");
+
+    function openDrawer() {
+      drawer?.classList.add("open");
+      scrim?.classList.add("open");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeDrawer() {
+      drawer?.classList.remove("open");
+      scrim?.classList.remove("open");
+      document.body.style.overflow = "";
+    }
+
+    menuToggle?.addEventListener("click", e => {
+      e.preventDefault();
+      drawer?.classList.contains("open") ? closeDrawer() : openDrawer();
+    });
+
+    scrim?.addEventListener("click", closeDrawer);
+
+    document.addEventListener("click", (e) => {
+      const avatarBtn = e.target.closest("#btn-header-user");
+      if (!avatarBtn) return;
+      e.preventDefault();
+      e.stopPropagation();
+      openDrawer();
+    });
   }
 
-  function closeDrawer() {
-    drawer?.classList.remove("open");
-    scrim?.classList.remove("open");
-    document.body.style.overflow = "";
-  }
-
-  menuToggle?.addEventListener("click", e => {
-    e.preventDefault();
-    drawer?.classList.contains("open") ? closeDrawer() : openDrawer();
-  });
-
-  scrim?.addEventListener("click", closeDrawer);
-
-  /* =========================
-     AVATAR DESKTOP — ABRE DRAWER
-  ========================= */
-  document.addEventListener("click", (e) => {
-    const avatarBtn = e.target.closest("#btn-header-user");
-    if (!avatarBtn) return;
-
-    e.preventDefault();
-    e.stopPropagation();
-    openDrawer();
-  });
-
-
-  /* ========================= HERO CAROUSEL ========================= */
+  /* ========================= HERO ========================= */
   const heroImgs = document.querySelectorAll(".hero-carousel img");
   let heroIndex = 0;
 
@@ -151,7 +145,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const fabMain = safe("fab-main");
 
   if (fabContainer && fabMain) {
-
     fabMain.addEventListener("click", (e) => {
       e.stopPropagation();
       fabContainer.classList.toggle("active");
@@ -162,7 +155,6 @@ document.addEventListener("DOMContentLoaded", () => {
         fabContainer.classList.remove("active");
       }
     });
-
   }
 
   /* ========================= SELECTOR CANTIDAD ========================= */
@@ -198,16 +190,13 @@ document.addEventListener("DOMContentLoaded", () => {
     qtyNumber.textContent = "1";
   });
 
-  /* ========================= SIMILARES INIT ========================= */
+  /* ========================= SIMILARES ========================= */
   loadSimilarProducts();
   bindSimilarCardEvents();
   initSimilarCarousel();
-
 });
 
-/* =========================
-   SIMILARES — SELECCIÓN DE TARJETA
-========================= */
+/* ========================= SIMILARES ========================= */
 function bindSimilarCardEvents() {
   const cards = document.querySelectorAll(".similar-card");
   const productSection = document.querySelector(".product-main");
@@ -230,9 +219,6 @@ function bindSimilarCardEvents() {
   });
 }
 
-/* =========================
-   SIMILARES — CARRUSEL + DOTS
-========================= */
 function initSimilarCarousel() {
   const list = safe("lista-similares");
   const prev = safe("similar-prev");
@@ -251,29 +237,18 @@ function initSimilarCarousel() {
   const maxIndex = dots.length - 1;
 
   function updateUI() {
-    list.scrollTo({
-      left: CARD_WIDTH * index,
-      behavior: "smooth"
-    });
-
+    list.scrollTo({ left: CARD_WIDTH * index, behavior: "smooth" });
     dots.forEach((d, i) => d.classList.toggle("active", i === index));
-
     prev.disabled = index === 0;
     next.disabled = index === maxIndex;
   }
 
   prev.addEventListener("click", () => {
-    if (index > 0) {
-      index--;
-      updateUI();
-    }
+    if (index > 0) { index--; updateUI(); }
   });
 
   next.addEventListener("click", () => {
-    if (index < maxIndex) {
-      index++;
-      updateUI();
-    }
+    if (index < maxIndex) { index++; updateUI(); }
   });
 
   dots.forEach((dot, i) => {
