@@ -67,14 +67,15 @@ header.header-fixed {
 }
 
 /* =====================================================
-   NAV DESKTOP
+   NAV DESKTOP — ESPACIADO CORRECTO
 ===================================================== */
 .header-nav {
   display: flex;
   align-items: center;
-  gap: 20px;
 
-  margin-left: auto; /* 🔑 ÚNICO empujador */
+  margin-left: auto; /* empuja todo a la derecha */
+
+  gap: 28px; /* 🔑 separación ENTRE links y acciones */
 }
 
 .nav-links {
