@@ -3,50 +3,85 @@
 ====================================================== -->
 <header class="header-fixed no-user" id="main-header">
 
-  <!-- Hamburguesa (solo móvil) -->
+  <!-- =====================
+       HAMBURGUESA (SOLO MÓVIL)
+       Visible en móvil (abre drawer)
+  ====================== -->
   <button id="menu-toggle" class="menu-toggle mobile-only" aria-label="Abrir menú">
-  <span class="material-symbols-outlined">menu</span>
-</button>
+    <span class="material-symbols-outlined">menu</span>
+  </button>
 
-  <!-- Logo -->
+  <!-- =====================
+       LOGO (SIEMPRE VISIBLE)
+  ====================== -->
   <a href="index.html" class="header-logo-link">
     <img src="/imagenes/logo.png" alt="Café Cortero" class="header-logo">
   </a>
 
-  <!-- 🔑 TÍTULO DINÁMICO (carrito / recibo / etc.) -->
+  <!-- =====================
+       TÍTULO DINÁMICO
+       (carrito / recibo / etc.)
+  ====================== -->
   <h1 id="header-title" class="header-title hidden"></h1>
 
-  <!-- NAV DESKTOP -->
-  <nav class="nav-links desktop-only header-nav">
-    <a href="#productos">Variedades de café</a>
-    <a href="#nosotros">Quiénes somos</a>
-    <a href="#contacto">Contáctanos</a>
-  </nav>
+  <!-- =====================
+       BLOQUE DERECHO ÚNICO
+       (nav + login/avatar + carrito)
+  ====================== -->
+  <div class="header-right">
 
-  <!-- ACCIONES DERECHA -->
-  <div class="header-actions">
+    <!-- =====================
+         NAV DESKTOP
+         Visible para invitado y logueado
+    ====================== -->
+    <nav class="nav-links desktop-only header-nav">
+      <a href="#productos">Variedades de café</a>
+      <a href="#nosotros">Quiénes somos</a>
+      <a href="#contacto">Contáctanos</a>
+    </nav>
 
-    <!-- LOGIN / AVATAR (SOLO DESKTOP) -->
-    <div class="desktop-only header-user">
+    <!-- =====================
+         ACCIONES DERECHA
+    ====================== -->
+    <div class="header-actions">
 
-      <!-- Invitado -->
-      <a href="login.html" id="login-desktop" class="login-link no-user">
-        Iniciar sesión
-      </a>
+      <!-- =====================
+           USUARIO — SOLO DESKTOP
+      ====================== -->
+      <div class="desktop-only header-user">
 
-      <!-- Logueado -->
-      <button id="btn-header-user" class="header-avatar-button logged" aria-label="Perfil">
-        <img id="avatar-user" src="/imagenes/avatar-default.svg" alt="Usuario">
+        <!-- ===== INVITADO ===== -->
+        <!-- Visible cuando NO hay sesión -->
+        <a href="login.html"
+           id="login-desktop"
+           class="login-link no-user">
+          Iniciar sesión
+        </a>
+
+        <!-- ===== LOGUEADO ===== -->
+        <!-- Visible cuando hay sesión -->
+        <button id="btn-header-user"
+                class="header-avatar-button logged"
+                aria-label="Perfil">
+          <img id="avatar-user"
+               src="/imagenes/avatar-default.svg"
+               alt="Usuario">
+        </button>
+
+      </div>
+
+      <!-- =====================
+           CARRITO
+           (Siempre visible)
+      ====================== -->
+      <button id="cart-btn"
+              class="cart-button"
+              aria-label="Ver carrito">
+        <i class="fa-solid fa-cart-shopping"></i>
+        <span id="cart-count" class="cart-count">0</span>
       </button>
 
     </div>
-
-    <!-- CARRITO (SIEMPRE VISIBLE) -->
-    <button id="cart-btn" class="cart-button" aria-label="Ver carrito">
-      <i class="fa-solid fa-cart-shopping"></i>
-      <span id="cart-count" class="cart-count">0</span>
-    </button>
-
   </div>
 </header>
 
