@@ -187,30 +187,58 @@ header.header-fixed {
 }
 
 /* =====================================================
-   HAMBURGUESA (MÓVIL)
+   MOBILE HEADER — INDEX (FINAL DEFINITIVO)
+   ✔ Hamburguesa izquierda
+   ✔ Carrito derecha
+   ✔ Sin logo
+   ✔ Sin login en header
 ===================================================== */
-.menu-toggle {
-  background: none;
-  border: none;
-  font-size: 1.9rem;
-  color: var(--marron);
-  cursor: pointer;
-  display: none;
-}
-
 @media (max-width: 900px) {
+
+  header.header-fixed {
+    justify-content: center;
+    padding: 0 16px;
+  }
+
+  /* ❌ Ocultar logo en móvil */
+  .header-logo-link {
+    display: none !important;
+  }
+
+  /* ❌ Ocultar login desktop */
+  #login-desktop {
+    display: none !important;
+  }
+
+  /* ❌ Ocultar avatar en header */
+  .header-avatar-button {
+    display: none !important;
+  }
+
+  /* ❌ Ocultar navegación desktop */
+  .nav-links {
+    display: none !important;
+  }
+
+  /* ✅ Hamburguesa a la IZQUIERDA */
   .menu-toggle {
     display: block;
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.9rem;
+    color: var(--marron);
+    z-index: 6000;
+  }
+
+  /* ✅ Carrito a la DERECHA */
+  #cart-btn {
+    display: flex !important;
     position: absolute;
     right: 16px;
     top: 50%;
     transform: translateY(-50%);
-  }
-
-  .nav-links,
-  .header-avatar-button,
-  #cart-btn {
-    display: none !important;
   }
 }
 
