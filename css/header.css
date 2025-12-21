@@ -58,16 +58,23 @@ header.header-fixed {
   white-space: nowrap;
   pointer-events: none;
 }
+/* =====================================================
+   HEADER LAYOUT — CORRECCIÓN DEFINITIVA
+===================================================== */
+.header-fixed {
+  display: flex;
+  align-items: center;
+}
 
 /* =====================================================
-   NAV DESKTOP — CORRECTO Y LIMPIO
+   NAV DESKTOP
 ===================================================== */
 .header-nav {
   display: flex;
   align-items: center;
   gap: 20px;
 
-  margin-left: auto; /* 🔑 empuja TODO a la derecha */
+  margin-left: auto; /* 🔑 ÚNICO empujador */
 }
 
 .nav-links {
@@ -94,7 +101,8 @@ header.header-fixed {
   display: flex;
   align-items: center;
   gap: 16px;
-  margin-left: auto;
+
+  /* ❌ ELIMINADO margin-left */
 }
 
 /* =====================================================
@@ -249,12 +257,10 @@ header.header-fixed {
     z-index: 2000;
   }
 
-  /* FontAwesome */
   .menu-toggle i {
     font-size: 22px;
     color: var(--marron);
   }
-}
 
   /* ================= CARRITO ================= */
   #cart-btn {
