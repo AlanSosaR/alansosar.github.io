@@ -187,58 +187,102 @@ header.header-fixed {
 }
 
 /* =====================================================
-   MOBILE HEADER — INDEX (FINAL DEFINITIVO)
-   ✔ Hamburguesa izquierda
-   ✔ Carrito derecha
+   MOBILE HEADER — MATERIAL 3 EXPRESSIVE (FINAL)
+   ✔ Hamburguesa izquierda (Material)
+   ✔ Carrito derecha flotante
    ✔ Sin logo
    ✔ Sin login en header
 ===================================================== */
 @media (max-width: 900px) {
 
+  /* HEADER BASE */
   header.header-fixed {
     justify-content: center;
     padding: 0 16px;
+    height: 64px;
   }
 
-  /* ❌ Ocultar logo en móvil */
-  .header-logo-link {
-    display: none !important;
-  }
-
-  /* ❌ Ocultar login desktop */
-  #login-desktop {
-    display: none !important;
-  }
-
-  /* ❌ Ocultar avatar en header */
-  .header-avatar-button {
-    display: none !important;
-  }
-
-  /* ❌ Ocultar navegación desktop */
+  /* ❌ Ocultar elementos desktop */
+  .header-logo-link,
+  #login-desktop,
+  .header-avatar-button,
   .nav-links {
     display: none !important;
   }
 
-  /* ✅ Hamburguesa a la IZQUIERDA */
+  /* =====================================================
+     HAMBURGUESA — MATERIAL 3
+  ===================================================== */
   .menu-toggle {
-    display: block;
+    display: flex;
     position: absolute;
     left: 16px;
     top: 50%;
     transform: translateY(-50%);
-    font-size: 1.9rem;
-    color: var(--marron);
+
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+
+    background: #ffffff;
+    border: none;
+    outline: none;
+
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+
+    /* Elevación Material */
+    box-shadow:
+      0 4px 10px rgba(0,0,0,0.14),
+      0 1px 3px rgba(0,0,0,0.10);
+
     z-index: 6000;
   }
 
-  /* ✅ Carrito a la DERECHA */
+  .menu-toggle .material-symbols-outlined {
+    font-size: 26px;
+    color: var(--marron);
+    line-height: 1;
+  }
+
+  /* =====================================================
+     CARRITO — MATERIAL 3
+  ===================================================== */
   #cart-btn {
     display: flex !important;
     position: absolute;
     right: 16px;
     top: 50%;
     transform: translateY(-50%);
+
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+
+    background: #ffffff;
+    border: none;
+    outline: none;
+
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+
+    /* Elevación Material */
+    box-shadow:
+      0 4px 10px rgba(0,0,0,0.14),
+      0 1px 3px rgba(0,0,0,0.10);
+  }
+
+  #cart-btn i {
+    font-size: 22px;
+    color: var(--verde);
+  }
+
+  /* Badge carrito */
+  .cart-count {
+    top: -3px;
+    right: -3px;
   }
 }
 
