@@ -15,11 +15,27 @@
   box-sizing: border-box;
 }
 
+/* =====================================================
+   BODY — AJUSTE POR HEADER FIJO
+   Evita que el contenido quede debajo del header
+===================================================== */
+
 body {
   font-family: "Poppins", sans-serif;
   background: var(--fondo);
   color: var(--marron);
   -webkit-tap-highlight-color: transparent;
+
+  /* 🔑 Espacio para header fijo (desktop) */
+  padding-top: 72px;
+}
+
+/* ================= MOBILE ================= */
+@media (max-width: 900px) {
+  body {
+    /* 🔑 Espacio para header fijo (móvil) */
+    padding-top: 64px;
+  }
 }
 
 
