@@ -1,9 +1,9 @@
 // ============================================================
 // AUTH-UI — Café Cortero (2025)
-// UI ONLY — SIN REDIRECCIONES — ANTI LOOP FINAL
+// UI ONLY — CONTROLADO POR SUPABASE — FINAL DEFINITIVO
 // ============================================================
 
-console.log("👤 auth-ui.js cargado — CORE FINAL");
+console.log("👤 auth-ui.js cargado — FINAL SUPABASE");
 
 /* ============================================================
    GUARDIÁN GLOBAL — EVITA DOBLE CARGA
@@ -15,18 +15,18 @@ if (window.__AUTH_UI_LOADED__) {
 }
 
 /* ========================= HELPERS ========================= */
-const $auth = (id) => document.getElementById(id);
+const $ = (id) => document.getElementById(id);
 
 /* ========================= DRAWER ========================= */
 function closeDrawerUI() {
-  $auth("user-drawer")?.classList.remove("open");
-  $auth("user-scrim")?.classList.remove("open");
+  $("user-drawer")?.classList.remove("open");
+  $("user-scrim")?.classList.remove("open");
   document.body.style.overflow = "";
 }
 
 /* ========================= RESET VISUAL ========================= */
 function resetAuthUI() {
-  const drawer = $auth("user-drawer");
+  const drawer = $("user-drawer");
   const header = document.querySelector(".header-fixed");
 
   drawer?.classList.remove("logged");
@@ -40,10 +40,9 @@ function resetAuthUI() {
 
 /* ========================= ESTADO LOGUEADO ========================= */
 function setLoggedIn(user) {
-  resetAuthUI();
-
-  const drawer = $auth("user-drawer");
+  const drawer = $("user-drawer");
   const header = document.querySelector(".header-fixed");
+
   if (!drawer || !header) return;
 
   drawer.classList.remove("no-user");
@@ -52,42 +51,36 @@ function setLoggedIn(user) {
   header.classList.remove("no-user");
   header.classList.add("logged");
 
-  const photo = user?.photo_url || "imagenes/avatar-default.svg";
-  $auth("avatar-user")?.setAttribute("src", photo);
-  $auth("avatar-user-drawer")?.setAttribute("src", photo);
+  const photo =
+    user?.photo_url ||
+    user?.avatar_url ||
+    "imagenes/avatar-default.svg";
 
-  if ($auth("drawer-name")) {
-    $auth("drawer-name").textContent = user?.name || "Usuario";
+  $("avatar-user")?.setAttribute("src", photo);
+  $("avatar-user-drawer")?.setAttribute("src", photo);
+
+  if ($("drawer-name")) {
+    $("drawer-name").textContent = user?.name || "Usuario";
   }
-  if ($auth("drawer-email")) {
-    $auth("drawer-email").textContent = user?.email || "";
+
+  if ($("drawer-email")) {
+    $("drawer-email").textContent = user?.email || "";
   }
 
   closeDrawerUI();
 }
 
-/* ========================= LOGOUT GLOBAL (UI ONLY) ========================= */
-function hardLogout() {
-  console.log("🚪 Logout (UI ONLY)");
-
-  // Limpieza de estado
-  localStorage.removeItem("cortero_user");
-  localStorage.removeItem("cortero_logged");
-
-  resetAuthUI();
-
-  // 🔔 Notificar al sistema (header.js escucha esto)
-  document.dispatchEvent(
-    new CustomEvent("authStateChanged", {
-      detail: { logged: false }
-    })
-  );
-
-  // ❌ SIN REDIRECCIÓN
+/* ============================================================
+   LOGOUT REAL — SUPABASE
+============================================================ */
+async function hardLogout() {
+  console.log("🚪 Logout real (Supabase)");
+  await supabase.auth.signOut();
+  // Supabase dispara el cambio de estado automáticamente
 }
 
 /* ============================================================
-   INIT GLOBAL — LLAMADO SOLO DESDE layout.js
+   INIT AUTH UI — LLAMADO DESDE layout.js
 ============================================================ */
 function initAuthUI() {
   if (window.__AUTH_UI_INIT__) {
@@ -98,14 +91,22 @@ function initAuthUI() {
 
   console.log("👤 initAuthUI ejecutado");
 
-  const logged = localStorage.getItem("cortero_logged") === "1";
-  const raw    = localStorage.getItem("cortero_user");
-
+  // Estado inicial: invitado
   resetAuthUI();
 
-  if (logged && raw) {
-    try {
-      const user = JSON.parse(raw);
+  /* ========================================================
+     ESCUCHAR SUPABASE (ÚNICA FUENTE DE VERDAD)
+  ======================================================== */
+  supabase.auth.onAuthStateChange((event, session) => {
+    console.log("🔐 Supabase Auth:", event);
+
+    if (session?.user) {
+      const user = {
+        email: session.user.email,
+        name: session.user.user_metadata?.name,
+        photo_url: session.user.user_metadata?.avatar_url
+      };
+
       setLoggedIn(user);
 
       document.dispatchEvent(
@@ -113,32 +114,21 @@ function initAuthUI() {
           detail: { logged: true }
         })
       );
-    } catch {
-      localStorage.removeItem("cortero_user");
-      localStorage.removeItem("cortero_logged");
+    } else {
+      resetAuthUI();
+
+      document.dispatchEvent(
+        new CustomEvent("authStateChanged", {
+          detail: { logged: false }
+        })
+      );
     }
-  }
+  });
 }
 
 /* ========================= EVENTOS ========================= */
 
-// Login exitoso (desde login.js)
-document.addEventListener("userLoggedIn", (e) => {
-  if (!e.detail) return;
-
-  localStorage.setItem("cortero_logged", "1");
-  localStorage.setItem("cortero_user", JSON.stringify(e.detail));
-
-  setLoggedIn(e.detail);
-
-  document.dispatchEvent(
-    new CustomEvent("authStateChanged", {
-      detail: { logged: true }
-    })
-  );
-});
-
-// Logout desde cualquier parte
+// Logout solicitado desde header.js o cualquier parte
 document.addEventListener("userLoggedOut", hardLogout);
 
 /* ============================================================
