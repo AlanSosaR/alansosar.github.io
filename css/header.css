@@ -59,7 +59,7 @@ header.header-fixed {
   pointer-events: none;
 }
 /* =====================================================
-   HEADER LAYOUT — CORRECCIÓN DEFINITIVA
+   HEADER LAYOUT — DEFINITIVO
 ===================================================== */
 .header-fixed {
   display: flex;
@@ -67,21 +67,28 @@ header.header-fixed {
 }
 
 /* =====================================================
-   NAV DESKTOP — ESPACIADO CORRECTO
+   BLOQUE DERECHO — EMPUJA TODO A LA DERECHA
+   (NAV + ACCIONES)
+===================================================== */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 28px;           /* separación entre NAV y acciones */
+  margin-left: auto;  /* 🔑 CLAVE REAL */
+}
+
+/* =====================================================
+   NAV DESKTOP — LINKS
 ===================================================== */
 .header-nav {
   display: flex;
   align-items: center;
-
-  margin-left: auto; /* empuja todo a la derecha */
-
-  gap: 28px; /* 🔑 separación ENTRE links y acciones */
 }
 
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 20px;           /* separación ENTRE links */
 }
 
 .nav-links a {
@@ -89,6 +96,7 @@ header.header-fixed {
   color: var(--marron);
   font-weight: 500;
   font-size: 0.95rem;
+  white-space: nowrap;
 }
 
 .nav-links a:hover {
@@ -96,14 +104,12 @@ header.header-fixed {
 }
 
 /* =====================================================
-   ACCIONES DERECHA
+   ACCIONES DERECHA (LOGIN / AVATAR / CARRITO)
 ===================================================== */
 .header-actions {
   display: flex;
   align-items: center;
   gap: 16px;
-
-  /* ❌ ELIMINADO margin-left */
 }
 
 /* =====================================================
@@ -113,6 +119,7 @@ header.header-fixed {
   text-decoration: none;
   color: var(--marron);
   font-weight: 500;
+  white-space: nowrap;
 }
 
 .login-link:hover {
