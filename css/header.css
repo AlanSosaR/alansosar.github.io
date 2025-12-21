@@ -277,8 +277,10 @@ header.header-fixed {
 }
 
 /* =====================================================
-   VISIBILIDAD POR ESTADO
+   VISIBILIDAD POR ESTADO — DESKTOP
 ===================================================== */
+
+/* ---------- INVITADO ---------- */
 .header-fixed.no-user #btn-header-user {
   display: none;
 }
@@ -287,12 +289,23 @@ header.header-fixed {
   display: inline-flex;
 }
 
+/* ❌ hamburguesa nunca en desktop */
+.header-fixed.no-user .menu-toggle {
+  display: none;
+}
+
+/* ---------- LOGUEADO ---------- */
 .header-fixed.logged #login-desktop {
   display: none;
 }
 
 .header-fixed.logged #btn-header-user {
   display: flex;
+}
+
+/* ❌ hamburguesa nunca en desktop */
+.header-fixed.logged .menu-toggle {
+  display: none;
 }
 
 /* =====================================================
