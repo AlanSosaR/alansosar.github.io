@@ -8,7 +8,8 @@ console.log("📐 layout.js cargado");
   REGLAS:
   - layout.js SOLO inyecta header
   - NO decide auth
-  - NO redirige
+  - NO toca sesión
+  - NO toca UI de usuario
   - NO se ejecuta en login.html
 */
 
@@ -58,23 +59,13 @@ if (document.body.dataset.page === "login") {
         console.log("✅ Header inyectado");
 
         // =====================================================
-        // 5️⃣ INIT HEADER (EVENTOS)
+        // 5️⃣ INIT HEADER (EVENTOS + AUTH INTERNO)
         // =====================================================
         if (typeof window.initHeader === "function") {
           window.initHeader();
           console.log("🧭 initHeader OK");
         } else {
           console.warn("⚠️ initHeader no existe");
-        }
-
-        // =====================================================
-        // 6️⃣ INIT AUTH UI (SOLO UI)
-        // =====================================================
-        if (typeof window.initAuthUI === "function") {
-          window.initAuthUI();
-          console.log("👤 initAuthUI OK");
-        } else {
-          console.warn("⚠️ initAuthUI no existe");
         }
 
       } catch (err) {
