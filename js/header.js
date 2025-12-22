@@ -59,22 +59,72 @@ if (!window.__HEADER_CORE_LOADED__) {
   }
 
   /* =====================================================
+     PERFIL UI — INYECCIÓN REAL (NUEVO)
+  ===================================================== */
+  function renderUserProfile(user, profile) {
+    if (!user) return;
+
+    const name =
+      profile?.nombre ||
+      user.user_metadata?.name ||
+      "Usuario";
+
+    const email = user.email;
+
+    const avatar =
+      profile?.avatar_url ||
+      user.user_metadata?.avatar_url ||
+      "/imagenes/avatar-default.svg";
+
+    $("avatar-user")?.setAttribute("src", avatar);
+    $("avatar-user-drawer")?.setAttribute("src", avatar);
+
+    $("drawer-name") && ($("drawer-name").textContent = name);
+    $("drawer-email") && ($("drawer-email").textContent = email);
+  }
+
+  /* =====================================================
+     NAV PÚBLICO — OCULTAR CUANDO LOGUEADO (NUEVO)
+  ===================================================== */
+  function togglePublicNav(isLogged) {
+    const nav = document.getElementById("public-nav");
+    if (!nav) return;
+
+    nav.style.display = isLogged ? "none" : "";
+  }
+
+  /* =====================================================
      🔑 SINCRONIZAR SESIÓN REAL DE SUPABASE
   ===================================================== */
   async function syncAuthFromSupabase() {
     if (!window.supabaseClient) return;
 
     const { data } = await supabaseClient.auth.getSession();
-
-    const logged = !!data?.session?.user;
+    const user = data?.session?.user;
+    const logged = !!user;
 
     localStorage.setItem("cortero_logged", logged ? "1" : "0");
 
     document.dispatchEvent(
       new CustomEvent("authStateChanged", {
-        detail: { logged }
+        detail: { logged, user }
       })
     );
+  }
+
+  /* =====================================================
+     CARGAR PERFIL DESDE BD (NUEVO)
+  ===================================================== */
+  async function loadUserProfile(user) {
+    if (!user || !window.supabaseClient) return;
+
+    const { data: profile } = await supabaseClient
+      .from("usuarios")
+      .select("nombre, avatar_url")
+      .eq("id", user.id)
+      .single();
+
+    renderUserProfile(user, profile);
   }
 
   /* =====================================================
@@ -96,6 +146,7 @@ if (!window.__HEADER_CORE_LOADED__) {
       await supabaseClient.auth.signOut();
       localStorage.setItem("cortero_logged", "0");
       updateAuthUI(false);
+      togglePublicNav(false);
       closeDrawer();
     });
 
@@ -114,9 +165,17 @@ if (!window.__HEADER_CORE_LOADED__) {
     window.__HEADER_GLOBAL_EVENTS__ = true;
 
     document.addEventListener("authStateChanged", (e) => {
-      updateAuthUI(e.detail?.logged === true);
+      const logged = e.detail?.logged === true;
+      const user = e.detail?.user || null;
+
+      updateAuthUI(logged);
+      togglePublicNav(logged);
       updateCartCount();
       closeDrawer();
+
+      if (logged && user) {
+        loadUserProfile(user);
+      }
     });
 
     document.addEventListener("keydown", (e) => {
