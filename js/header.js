@@ -1,28 +1,22 @@
 console.log("🧭 header.js — CORE FINAL ESTABLE");
 
 /* =====================================================
-   GUARDIÁN GLOBAL — EVITA DOBLE CARGA (CORRECTO)
+   GUARDIÁN GLOBAL — EVITA DOBLE CARGA
 ===================================================== */
 if (!window.__HEADER_CORE_LOADED__) {
   window.__HEADER_CORE_LOADED__ = true;
 
-  /* =====================================================
-     HELPERS
-  ===================================================== */
   const $ = (id) => document.getElementById(id);
 
   /* =====================================================
      CARRITO (LECTURA SOLAMENTE)
-     ❌ NO declara CART_KEY
   ===================================================== */
   function updateCartCount() {
     const badge = $("cart-count");
     if (!badge) return;
 
     try {
-      const cart = JSON.parse(
-        localStorage.getItem("cafecortero_cart")
-      ) || [];
+      const cart = JSON.parse(localStorage.getItem("cafecortero_cart")) || [];
       badge.textContent = cart.reduce((a, i) => a + i.qty, 0);
     } catch {
       badge.textContent = "0";
@@ -51,7 +45,7 @@ if (!window.__HEADER_CORE_LOADED__) {
   }
 
   /* =====================================================
-     AUTH UI — SOLO CLASES
+     AUTH UI — SOLO CLASES (NO SE TOCA)
   ===================================================== */
   function updateAuthUI(isLogged) {
     const header = document.querySelector(".header-fixed");
@@ -65,7 +59,26 @@ if (!window.__HEADER_CORE_LOADED__) {
   }
 
   /* =====================================================
-     INIT HEADER — LLAMADO DESDE layout.js
+     🔑 SINCRONIZAR SESIÓN REAL DE SUPABASE
+  ===================================================== */
+  async function syncAuthFromSupabase() {
+    if (!window.supabaseClient) return;
+
+    const { data } = await supabaseClient.auth.getSession();
+
+    const logged = !!data?.session?.user;
+
+    localStorage.setItem("cortero_logged", logged ? "1" : "0");
+
+    document.dispatchEvent(
+      new CustomEvent("authStateChanged", {
+        detail: { logged }
+      })
+    );
+  }
+
+  /* =====================================================
+     INIT HEADER
   ===================================================== */
   let HEADER_INITIALIZED = false;
 
@@ -79,9 +92,9 @@ if (!window.__HEADER_CORE_LOADED__) {
     $("btn-header-user")?.addEventListener("click", toggleDrawer);
     $("user-scrim")?.addEventListener("click", closeDrawer);
 
-    $("logout-btn")?.addEventListener("click", () => {
-      localStorage.removeItem("cortero_user");
-      localStorage.removeItem("cortero_logged");
+    $("logout-btn")?.addEventListener("click", async () => {
+      await supabaseClient.auth.signOut();
+      localStorage.setItem("cortero_logged", "0");
       updateAuthUI(false);
       closeDrawer();
     });
@@ -90,14 +103,12 @@ if (!window.__HEADER_CORE_LOADED__) {
       window.location.href = "carrito.html";
     });
 
-    updateAuthUI(
-      localStorage.getItem("cortero_logged") === "1"
-    );
     updateCartCount();
+    syncAuthFromSupabase(); // 🔑 CLAVE
   }
 
   /* =====================================================
-     EVENTOS GLOBALES — UNA SOLA VEZ
+     EVENTOS GLOBALES
   ===================================================== */
   if (!window.__HEADER_GLOBAL_EVENTS__) {
     window.__HEADER_GLOBAL_EVENTS__ = true;
@@ -114,7 +125,7 @@ if (!window.__HEADER_CORE_LOADED__) {
   }
 
   /* =====================================================
-     EXPORT GLOBAL
+     EXPORT
   ===================================================== */
   window.initHeader = initHeader;
 }
