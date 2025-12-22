@@ -59,38 +59,37 @@ if (!window.__HEADER_CORE_LOADED__) {
   }
 
   /* =====================================================
-     PERFIL UI — INYECCIÓN REAL (NUEVO)
+     PERFIL UI — CORREGIDO (NOMBRE COMPLETO BD)
   ===================================================== */
   function renderUserProfile(user, profile) {
     if (!user) return;
 
     const name =
-      profile?.nombre ||
-      user.user_metadata?.name ||
-      "Usuario";
+      profile?.nombre && profile.nombre.trim().length > 0
+        ? profile.nombre
+        : "Usuario";
 
     const email = user.email;
 
     const avatar =
       profile?.avatar_url ||
-      user.user_metadata?.avatar_url ||
       "/imagenes/avatar-default.svg";
 
     $("avatar-user")?.setAttribute("src", avatar);
     $("avatar-user-drawer")?.setAttribute("src", avatar);
 
-    $("drawer-name") && ($("drawer-name").textContent = name);
-    $("drawer-email") && ($("drawer-email").textContent = email);
+    if ($("drawer-name")) $("drawer-name").textContent = name;
+    if ($("drawer-email")) $("drawer-email").textContent = email;
   }
 
   /* =====================================================
-     NAV PÚBLICO — OCULTAR CUANDO LOGUEADO (NUEVO)
+     NAV PÚBLICO — CORREGIDO (PC + MÓVIL)
   ===================================================== */
   function togglePublicNav(isLogged) {
     const nav = document.getElementById("public-nav");
     if (!nav) return;
 
-    nav.style.display = isLogged ? "none" : "";
+    nav.classList.toggle("hidden", isLogged);
   }
 
   /* =====================================================
@@ -113,7 +112,7 @@ if (!window.__HEADER_CORE_LOADED__) {
   }
 
   /* =====================================================
-     CARGAR PERFIL DESDE BD (NUEVO)
+     CARGAR PERFIL DESDE BD
   ===================================================== */
   async function loadUserProfile(user) {
     if (!user || !window.supabaseClient) return;
@@ -155,7 +154,7 @@ if (!window.__HEADER_CORE_LOADED__) {
     });
 
     updateCartCount();
-    syncAuthFromSupabase(); // 🔑 CLAVE
+    syncAuthFromSupabase();
   }
 
   /* =====================================================
