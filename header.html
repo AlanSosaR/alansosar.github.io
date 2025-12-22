@@ -1,11 +1,10 @@
 <!-- =====================================================
-     HEADER — DEFINITIVO, ESTABLE (FINAL)
+     HEADER — DEFINITIVO, ESTABLE (FINAL CORREGIDO)
 ====================================================== -->
 <header class="header-fixed no-user" id="main-header">
 
   <!-- =====================
        HAMBURGUESA (SOLO MÓVIL)
-       Visible en móvil (abre drawer)
   ====================== -->
   <button id="menu-toggle" class="menu-toggle mobile-only" aria-label="Abrir menú">
     <span class="material-symbols-outlined">menu</span>
@@ -20,24 +19,31 @@
 
   <!-- =====================
        TÍTULO DINÁMICO
-       (carrito / recibo / etc.)
   ====================== -->
   <h1 id="header-title" class="header-title hidden"></h1>
 
   <!-- =====================
-       BLOQUE DERECHO ÚNICO
-       (nav + login/avatar + carrito)
+       BLOQUE DERECHO
   ====================== -->
   <div class="header-right">
 
     <!-- =====================
-         NAV DESKTOP
-         Visible para invitado y logueado
+         NAV DESKTOP — VISITANTE
     ====================== -->
-    <nav class="nav-links desktop-only header-nav">
+    <nav id="public-nav"
+         class="nav-links desktop-only header-nav no-user">
       <a href="#productos">Variedades de café</a>
       <a href="#nosotros">Quiénes somos</a>
       <a href="#contacto">Contáctanos</a>
+    </nav>
+
+    <!-- =====================
+         NAV DESKTOP — LOGUEADO
+    ====================== -->
+    <nav id="private-nav"
+         class="nav-links desktop-only header-nav logged hidden">
+      <a href="mispedidos.html">Mis pedidos</a>
+      <a href="historial.html">Historial</a>
     </nav>
 
     <!-- =====================
@@ -50,16 +56,14 @@
       ====================== -->
       <div class="desktop-only header-user">
 
-        <!-- ===== INVITADO ===== -->
-        <!-- Visible cuando NO hay sesión -->
+        <!-- INVITADO -->
         <a href="login.html"
            id="login-desktop"
            class="login-link no-user">
           Iniciar sesión
         </a>
 
-        <!-- ===== LOGUEADO ===== -->
-        <!-- Visible cuando hay sesión -->
+        <!-- LOGUEADO -->
         <button id="btn-header-user"
                 class="header-avatar-button logged"
                 aria-label="Perfil">
@@ -71,8 +75,7 @@
       </div>
 
       <!-- =====================
-           CARRITO
-           (Siempre visible)
+           CARRITO (SIEMPRE)
       ====================== -->
       <button id="cart-btn"
               class="cart-button"
@@ -118,38 +121,30 @@
   <!-- NAVEGACIÓN -->
   <nav class="user-drawer-nav">
 
+    <!-- LOGUEADO -->
     <a href="mispedidos.html" class="user-drawer-item logged">
-      <span class="material-symbols-outlined user-drawer-item-icon">
-        shopping_bag
-      </span>
+      <span class="material-symbols-outlined user-drawer-item-icon">shopping_bag</span>
       Mis pedidos
     </a>
 
     <a href="historial.html" class="user-drawer-item logged">
-      <span class="material-symbols-outlined user-drawer-item-icon">
-        history
-      </span>
+      <span class="material-symbols-outlined user-drawer-item-icon">history</span>
       Historial de compras
     </a>
 
+    <!-- PÚBLICO -->
     <a href="#productos" class="user-drawer-item">
-      <span class="material-symbols-outlined user-drawer-item-icon">
-        local_cafe
-      </span>
+      <span class="material-symbols-outlined user-drawer-item-icon">local_cafe</span>
       Variedades de café
     </a>
 
     <a href="#nosotros" class="user-drawer-item">
-      <span class="material-symbols-outlined user-drawer-item-icon">
-        groups
-      </span>
+      <span class="material-symbols-outlined user-drawer-item-icon">groups</span>
       Quiénes somos
     </a>
 
     <a href="#contacto" class="user-drawer-item">
-      <span class="material-symbols-outlined user-drawer-item-icon">
-        mail
-      </span>
+      <span class="material-symbols-outlined user-drawer-item-icon">mail</span>
       Contáctanos
     </a>
 
@@ -157,19 +152,15 @@
 
   <hr class="user-drawer-divider">
 
-  <!-- LOGOUT (LOGUEADO) -->
+  <!-- LOGOUT -->
   <button id="logout-btn" class="user-drawer-item logout logged">
-    <span class="material-symbols-outlined user-drawer-item-icon">
-      logout
-    </span>
+    <span class="material-symbols-outlined user-drawer-item-icon">logout</span>
     Cerrar sesión
   </button>
 
-  <!-- LOGIN (INVITADO) -->
+  <!-- LOGIN -->
   <a href="login.html" class="user-drawer-item login no-user">
-    <span class="material-symbols-outlined user-drawer-item-icon">
-      login
-    </span>
+    <span class="material-symbols-outlined user-drawer-item-icon">login</span>
     Iniciar sesión
   </a>
 
