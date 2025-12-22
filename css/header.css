@@ -8,12 +8,11 @@
    HEADER — CORE LIMPIO, FIJO Y ESTABLE (FINAL)
 ===================================================== */
 header.header-fixed {
-  position: fixed;           /* ✅ Fijo real */
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-
-  z-index: 1000;             /* ✅ Por encima del contenido */
+  z-index: 1000;
 
   height: 72px;
   padding: 0 16px;
@@ -26,7 +25,6 @@ header.header-fixed {
   -webkit-backdrop-filter: blur(10px);
 
   border-bottom: 1.5px solid rgba(0, 0, 0, 0.05);
-
   box-sizing: border-box;
 }
 
@@ -44,42 +42,41 @@ header.header-fixed {
 }
 
 /* =====================================================
-   TÍTULO CENTRAL (RECIBO / CARRITO)
+   TÍTULO CENTRAL
 ===================================================== */
 .header-title {
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-
   font-size: 1.05rem;
   font-weight: 600;
   color: var(--marron);
   white-space: nowrap;
   pointer-events: none;
 }
+
 /* =====================================================
-   HEADER — DESKTOP (BASE REAL)
+   HEADER — DESKTOP
 ===================================================== */
 .header-fixed {
   display: flex;
   align-items: center;
-  justify-content: flex-start; /* 🔑 CLAVE: permite empujar a la derecha */
+  justify-content: flex-start;
 }
 
 /* =====================================================
    BLOQUE DERECHO
-   (NAV + LOGIN/AVATAR + CARRITO)
 ===================================================== */
 .header-right {
   display: flex;
   align-items: center;
-  gap: 28px;          /* separación entre NAV y acciones */
-  margin-left: auto; /* 🔑 empuja TODO a la derecha */
+  gap: 28px;
+  margin-left: auto;
 }
 
 /* =====================================================
-   NAV DESKTOP — LINKS
+   NAV DESKTOP
 ===================================================== */
 .header-nav {
   display: flex;
@@ -89,7 +86,7 @@ header.header-fixed {
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 20px;          /* separación ENTRE links */
+  gap: 20px;
 }
 
 .nav-links a {
@@ -97,7 +94,7 @@ header.header-fixed {
   color: var(--marron);
   font-weight: 500;
   font-size: 0.95rem;
-  white-space: nowrap; /* evita que se peguen */
+  white-space: nowrap;
 }
 
 .nav-links a:hover {
@@ -105,8 +102,7 @@ header.header-fixed {
 }
 
 /* =====================================================
-   ACCIONES DERECHA
-   (LOGIN / AVATAR / CARRITO)
+   ACCIONES
 ===================================================== */
 .header-actions {
   display: flex;
@@ -121,7 +117,6 @@ header.header-fixed {
   text-decoration: none;
   color: var(--marron);
   font-weight: 500;
-  white-space: nowrap;
 }
 
 .login-link:hover {
@@ -164,7 +159,6 @@ header.header-fixed {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: block;
 }
 
 /* =====================================================
@@ -176,7 +170,6 @@ header.header-fixed {
   border-radius: 50%;
   background: transparent;
   border: none;
-  outline: none;
 
   display: flex;
   align-items: center;
@@ -193,48 +186,35 @@ header.header-fixed {
   color: var(--verde);
 }
 
-@media (min-width: 901px) {
-  #cart-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 26px rgba(0,0,0,0.22);
-  }
-}
-
 .cart-count {
   position: absolute;
   top: -4px;
   right: -4px;
-
   width: 18px;
   height: 18px;
   border-radius: 50%;
   background: #d72638;
   color: #fff;
-
   font-size: 0.7rem;
+
   display: flex;
   align-items: center;
   justify-content: center;
 }
+
 /* =====================================================
-   HAMBURGUESA — CONTROL GLOBAL
+   MOBILE HEADER
 ===================================================== */
 .menu-toggle {
   display: none;
 }
 
-/* =====================================================
-   MOBILE HEADER — MATERIAL 3 EXPRESSIVE (FINAL)
-===================================================== */
 @media (max-width: 900px) {
-
   header.header-fixed {
     justify-content: center;
-    padding: 0 16px;
     height: 64px;
   }
 
-  /* Ocultar elementos desktop */
   .header-logo-link,
   #login-desktop,
   .header-avatar-button,
@@ -242,7 +222,6 @@ header.header-fixed {
     display: none !important;
   }
 
-  /* ================= HAMBURGUESA ================= */
   .menu-toggle {
     display: flex !important;
     position: absolute;
@@ -253,90 +232,35 @@ header.header-fixed {
     width: 44px;
     height: 44px;
     border-radius: 50%;
-    background: #ffffff;
+    background: #fff;
     border: none;
 
     align-items: center;
     justify-content: center;
-    cursor: pointer;
-
     box-shadow:
       0 4px 10px rgba(0,0,0,0.14),
       0 1px 3px rgba(0,0,0,0.10);
-
-    z-index: 2000;
   }
 
-  .menu-toggle i {
-    font-size: 22px;
-    color: var(--marron);
-  }
-
-  /* ================= CARRITO ================= */
   #cart-btn {
-    display: flex !important;
     position: absolute;
     right: 16px;
     top: 50%;
     transform: translateY(-50%);
-
     width: 44px;
     height: 44px;
-    border-radius: 50%;
-    background: #ffffff;
-    border: none;
-
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-
-    box-shadow:
-      0 4px 10px rgba(0,0,0,0.14),
-      0 1px 3px rgba(0,0,0,0.10);
-  }
-
-  #cart-btn i {
-    font-size: 22px;
-    color: var(--verde);
-  }
-
-  .cart-count {
-    top: -3px;
-    right: -3px;
+    background: #fff;
   }
 }
 
 /* =====================================================
-   VISIBILIDAD POR ESTADO — DESKTOP
+   VISIBILIDAD POR ESTADO
 ===================================================== */
+.header-fixed.no-user #btn-header-user { display: none; }
+.header-fixed.no-user #login-desktop { display: inline-flex; }
 
-/* ---------- INVITADO ---------- */
-.header-fixed.no-user #btn-header-user {
-  display: none;
-}
-
-.header-fixed.no-user #login-desktop {
-  display: inline-flex;
-}
-
-/* ❌ hamburguesa nunca en desktop */
-.header-fixed.no-user .menu-toggle {
-  display: none;
-}
-
-/* ---------- LOGUEADO ---------- */
-.header-fixed.logged #login-desktop {
-  display: none;
-}
-
-.header-fixed.logged #btn-header-user {
-  display: flex;
-}
-
-/* ❌ hamburguesa nunca en desktop */
-.header-fixed.logged .menu-toggle {
-  display: none;
-}
+.header-fixed.logged #login-desktop { display: none; }
+.header-fixed.logged #btn-header-user { display: flex; }
 
 /* =====================================================
    SCRIM
@@ -357,7 +281,7 @@ header.header-fixed {
 }
 
 /* =====================================================
-   DRAWER — MATERIAL 3 EXPRESSIVE (RESTAURADO)
+   DRAWER — MATERIAL 3 EXPRESSIVE (UNIFICADO)
 ===================================================== */
 .user-drawer {
   position: fixed;
@@ -389,12 +313,22 @@ header.header-fixed {
   opacity: 1;
 }
 
-/* ===== PERFIL ===== */
-.user-drawer-header {
+/* ===== PERFIL (CORREGIDO) ===== */
+.user-drawer-profile-link {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 16px 18px 12px;
+
+  padding: 16px 18px 14px;
+  border-radius: 18px;
+  text-decoration: none;
+  color: inherit;
+
+  transition: background .2s ease;
+}
+
+.user-drawer-profile-link:hover {
+  background: rgba(255,255,255,0.06);
 }
 
 .user-drawer-avatar {
@@ -402,7 +336,6 @@ header.header-fixed {
   height: 52px;
   border-radius: 18px;
   overflow: hidden;
-  flex-shrink: 0;
 }
 
 .user-drawer-avatar img {
@@ -415,18 +348,21 @@ header.header-fixed {
   display: flex;
   flex-direction: column;
   flex: 1;
+  min-width: 0;
 }
 
 .user-drawer-name {
-  margin: 0;
   font-size: 15px;
   font-weight: 600;
+  line-height: 1.25;
 }
 
 .user-drawer-email {
-  margin-top: 2px;
   font-size: 13px;
   opacity: 0.7;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .user-drawer-arrow {
@@ -457,27 +393,39 @@ header.header-fixed {
   color: #ffffff;
   text-decoration: none;
   cursor: pointer;
+  font-size: 15px;
+
+  transition: background .18s ease;
 }
 
 .user-drawer-item:hover {
   background: rgba(255,255,255,0.06);
 }
 
+/* ===== LOGIN ===== */
+.user-drawer-item.login {
+  color: var(--verde);
+  font-weight: 600;
+}
+
+.user-drawer-item.login .material-symbols-outlined {
+  color: var(--verde);
+}
+
 /* ===== LOGOUT ===== */
 .user-drawer-item.logout {
   color: #ff4b4b;
-  font-weight: 500;
+  font-weight: 600;
   margin-top: 6px;
 }
 
-/* ===== VISIBILIDAD ===== */
-.user-drawer.logged .no-user {
-  display: none;
+.user-drawer-item.logout .material-symbols-outlined {
+  color: #ff4b4b;
 }
 
-.user-drawer.no-user .logged {
-  display: none;
-}
+/* ===== VISIBILIDAD ===== */
+.user-drawer.logged .no-user { display: none; }
+.user-drawer.no-user .logged { display: none; }
 
 /* =====================================================
    UTILIDAD
