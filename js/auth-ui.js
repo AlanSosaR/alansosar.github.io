@@ -24,6 +24,22 @@ function closeDrawerUI() {
   document.body.style.overflow = "";
 }
 
+/* ========================= HEADER LINKS =========================
+   👉 SOLO VISUAL — NO DECIDE AUTH
+============================================================ */
+function toggleHeaderLinks(isLogged) {
+  const publicNav  = document.getElementById("public-nav");
+  const privateNav = document.getElementById("private-nav");
+
+  if (publicNav) {
+    publicNav.classList.toggle("hidden", isLogged);
+  }
+
+  if (privateNav) {
+    privateNav.classList.toggle("hidden", !isLogged);
+  }
+}
+
 /* ========================= RESET VISUAL ========================= */
 function resetAuthUI() {
   const drawer = $("user-drawer");
@@ -34,6 +50,8 @@ function resetAuthUI() {
 
   header?.classList.remove("logged");
   header?.classList.add("no-user");
+
+  toggleHeaderLinks(false); // 👈 visitante
 
   closeDrawerUI();
 }
@@ -67,6 +85,8 @@ function setLoggedIn(user) {
     $("drawer-email").textContent = user?.email || "";
   }
 
+  toggleHeaderLinks(true); // 👈 logueado
+
   closeDrawerUI();
 }
 
@@ -76,7 +96,7 @@ function setLoggedIn(user) {
 async function hardLogout() {
   console.log("🚪 Logout real (Supabase)");
   await supabase.auth.signOut();
-  // Supabase dispara el cambio de estado automáticamente
+  // Supabase emite el evento automáticamente
 }
 
 /* ============================================================
@@ -90,9 +110,6 @@ function initAuthUI() {
   window.__AUTH_UI_INIT__ = true;
 
   console.log("👤 initAuthUI ejecutado");
-
-  // Estado inicial: invitado
-  resetAuthUI();
 
   /* ========================================================
      ESCUCHAR SUPABASE (ÚNICA FUENTE DE VERDAD)
@@ -128,7 +145,7 @@ function initAuthUI() {
 
 /* ========================= EVENTOS ========================= */
 
-// Logout solicitado desde header.js o cualquier parte
+// Logout solicitado desde cualquier parte
 document.addEventListener("userLoggedOut", hardLogout);
 
 /* ============================================================
