@@ -1,4 +1,4 @@
-console.log("🧭 header.js — CORE FINAL ESTABLE");
+console.log("🧭 header.js — UI CORE (COMPATIBLE CON auth-ui)");
 
 /* =====================================================
    GUARDIÁN GLOBAL — EVITA DOBLE CARGA
@@ -45,89 +45,7 @@ if (!window.__HEADER_CORE_LOADED__) {
   }
 
   /* =====================================================
-     AUTH UI — SOLO CLASES (NO SE TOCA)
-  ===================================================== */
-  function updateAuthUI(isLogged) {
-    const header = document.querySelector(".header-fixed");
-    const drawer = $("user-drawer");
-    if (!header || !drawer) return;
-
-    header.classList.toggle("logged", isLogged);
-    header.classList.toggle("no-user", !isLogged);
-    drawer.classList.toggle("logged", isLogged);
-    drawer.classList.toggle("no-user", !isLogged);
-  }
-
-  /* =====================================================
-     PERFIL UI — CORREGIDO (NOMBRE COMPLETO BD)
-  ===================================================== */
-  function renderUserProfile(user, profile) {
-    if (!user) return;
-
-    const name =
-      profile?.nombre && profile.nombre.trim().length > 0
-        ? profile.nombre
-        : "Usuario";
-
-    const email = user.email;
-
-    const avatar =
-      profile?.avatar_url ||
-      "/imagenes/avatar-default.svg";
-
-    $("avatar-user")?.setAttribute("src", avatar);
-    $("avatar-user-drawer")?.setAttribute("src", avatar);
-
-    if ($("drawer-name")) $("drawer-name").textContent = name;
-    if ($("drawer-email")) $("drawer-email").textContent = email;
-  }
-
-  /* =====================================================
-     NAV PÚBLICO — CORREGIDO (PC + MÓVIL)
-  ===================================================== */
-  function togglePublicNav(isLogged) {
-    const nav = document.getElementById("public-nav");
-    if (!nav) return;
-
-    nav.classList.toggle("hidden", isLogged);
-  }
-
-  /* =====================================================
-     🔑 SINCRONIZAR SESIÓN REAL DE SUPABASE
-  ===================================================== */
-  async function syncAuthFromSupabase() {
-    if (!window.supabaseClient) return;
-
-    const { data } = await supabaseClient.auth.getSession();
-    const user = data?.session?.user;
-    const logged = !!user;
-
-    localStorage.setItem("cortero_logged", logged ? "1" : "0");
-
-    document.dispatchEvent(
-      new CustomEvent("authStateChanged", {
-        detail: { logged, user }
-      })
-    );
-  }
-
-  /* =====================================================
-     CARGAR PERFIL DESDE BD
-  ===================================================== */
-  async function loadUserProfile(user) {
-    if (!user || !window.supabaseClient) return;
-
-    const { data: profile } = await supabaseClient
-      .from("usuarios")
-      .select("nombre, avatar_url")
-      .eq("id", user.id)
-      .single();
-
-    renderUserProfile(user, profile);
-  }
-
-  /* =====================================================
-     INIT HEADER
+     INIT HEADER (EVENTOS UI)
   ===================================================== */
   let HEADER_INITIALIZED = false;
 
@@ -135,26 +53,25 @@ if (!window.__HEADER_CORE_LOADED__) {
     if (HEADER_INITIALIZED) return;
     HEADER_INITIALIZED = true;
 
-    console.log("✅ initHeader ejecutado");
+    console.log("✅ initHeader ejecutado (UI only)");
 
+    // Drawer
     $("menu-toggle")?.addEventListener("click", toggleDrawer);
     $("btn-header-user")?.addEventListener("click", toggleDrawer);
     $("user-scrim")?.addEventListener("click", closeDrawer);
 
-    $("logout-btn")?.addEventListener("click", async () => {
-      await supabaseClient.auth.signOut();
-      localStorage.setItem("cortero_logged", "0");
-      updateAuthUI(false);
-      togglePublicNav(false);
+    // Logout → delega a auth-ui.js
+    $("logout-btn")?.addEventListener("click", () => {
+      document.dispatchEvent(new Event("userLoggedOut"));
       closeDrawer();
     });
 
+    // Carrito
     $("cart-btn")?.addEventListener("click", () => {
       window.location.href = "carrito.html";
     });
 
     updateCartCount();
-    syncAuthFromSupabase();
   }
 
   /* =====================================================
@@ -163,18 +80,16 @@ if (!window.__HEADER_CORE_LOADED__) {
   if (!window.__HEADER_GLOBAL_EVENTS__) {
     window.__HEADER_GLOBAL_EVENTS__ = true;
 
+    // 🔑 REACCIÓN AL AUTH (NO DECIDE NADA)
     document.addEventListener("authStateChanged", (e) => {
       const logged = e.detail?.logged === true;
-      const user = e.detail?.user || null;
 
-      updateAuthUI(logged);
-      togglePublicNav(logged);
-      updateCartCount();
-      closeDrawer();
-
-      if (logged && user) {
-        loadUserProfile(user);
+      // Header solo ajusta UX
+      if (!logged) {
+        closeDrawer();
       }
+
+      updateCartCount();
     });
 
     document.addEventListener("keydown", (e) => {
