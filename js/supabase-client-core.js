@@ -75,11 +75,14 @@ async function cargarPerfilGlobal(user) {
 // ------------------------------------------------------------
 async function logoutTotal() {
   await window.supabaseClient.auth.signOut();
-  localStorage.clear();
+
+  // 🔑 limpiar SOLO datos de auth
+  localStorage.removeItem("cortero_user");
+  localStorage.removeItem("cortero_logged");
+
   document.dispatchEvent(new CustomEvent("userLoggedOut"));
 }
 window.corteroLogout = logoutTotal;
-
 // ------------------------------------------------------------
 // 7) EVENTOS DE AUTH (login, logout, confirmación de correo)
 // ------------------------------------------------------------
