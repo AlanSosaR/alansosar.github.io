@@ -59,13 +59,23 @@ if (document.body.dataset.page === "login") {
         console.log("✅ Header inyectado");
 
         // =====================================================
-        // 5️⃣ INIT HEADER (EVENTOS + AUTH INTERNO)
+        // 5️⃣ INIT HEADER (SOLO UI)
         // =====================================================
         if (typeof window.initHeader === "function") {
           window.initHeader();
           console.log("🧭 initHeader OK");
         } else {
           console.warn("⚠️ initHeader no existe");
+        }
+
+        // =====================================================
+        // 6️⃣ INIT AUTH UI (SINCRONIZA MENÚ)
+        // =====================================================
+        if (typeof window.initAuthUI === "function") {
+          await window.initAuthUI();
+          console.log("🔐 initAuthUI OK");
+        } else {
+          console.warn("⚠️ initAuthUI no existe");
         }
 
       } catch (err) {
