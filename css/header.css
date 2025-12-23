@@ -255,7 +255,7 @@ header.header-fixed {
 }
 
 /* =====================================================
-   DRAWER — MATERIAL 3 (ANTI-DEFORMACIÓN)
+   DRAWER — MATERIAL 3 (ANTI-DEFORMACIÓN FINAL)
 ===================================================== */
 .user-drawer {
   position: fixed;
@@ -263,6 +263,8 @@ header.header-fixed {
   right: 16px;
 
   width: min(360px, calc(100% - 24px));
+  max-width: 360px;
+
   background: #16181a;
   color: #fff;
 
@@ -273,29 +275,38 @@ header.header-fixed {
     0 18px 40px rgba(0,0,0,0.75),
     0 0 0 1px rgba(255,255,255,0.04);
 
-  /* 🔑 MOBILE SAFE */
-  transform: translateY(-12px);
+  /* 🔒 AISLAMIENTO TOTAL */
+  contain: layout paint;
+  will-change: transform, opacity;
+
+  /* ESTADO CERRADO — UN SOLO EJE */
+  transform: translateX(120%);
   opacity: 0;
   pointer-events: none;
 
   transition:
-    transform .25s cubic-bezier(.2,0,0,1),
+    transform .28s cubic-bezier(.2,0,0,1),
     opacity .2s ease;
 
   z-index: 200;
 }
 
 .user-drawer.open {
-  transform: translateY(0);
+  transform: translateX(0);
   opacity: 1;
   pointer-events: auto;
 }
 
-/* DESKTOP → SLIDE LATERAL */
-@media (min-width: 901px) {
+/* MOBILE — MISMO EJE (NO Y) */
+@media (max-width: 900px) {
   .user-drawer {
+    left: 12px;
+    right: 12px;
+    width: auto;
+    max-width: none;
     transform: translateX(120%);
   }
+
   .user-drawer.open {
     transform: translateX(0);
   }
