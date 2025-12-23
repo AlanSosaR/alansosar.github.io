@@ -20,14 +20,16 @@
   <div class="header-right">
 
     <!-- NAV DESKTOP — VISITANTE -->
-    <nav id="public-nav" class="nav-links desktop-only header-nav no-user">
+    <nav id="public-nav"
+         class="nav-links desktop-only header-nav no-user">
       <a href="#productos">Variedades de café</a>
       <a href="#nosotros">Quiénes somos</a>
       <a href="#contacto">Contáctanos</a>
     </nav>
 
     <!-- NAV DESKTOP — LOGUEADO -->
-    <nav id="private-nav" class="nav-links desktop-only header-nav logged hidden">
+    <nav id="private-nav"
+         class="nav-links desktop-only header-nav logged hidden">
       <a href="mispedidos.html">Mis pedidos</a>
       <a href="historial.html">Historial</a>
     </nav>
@@ -38,14 +40,14 @@
       <!-- USUARIO — DESKTOP -->
       <div class="desktop-only header-user">
 
-        <!-- LOGIN (VISIBLE PARA VISITANTE) -->
+        <!-- LOGIN (VISITANTE) -->
         <a href="login.html"
            id="login-desktop"
-           class="login-link no-user">
+           class="login-link no-user hidden">
           Iniciar sesión
         </a>
 
-        <!-- AVATAR (SOLO LOGUEADO) -->
+        <!-- AVATAR (LOGUEADO) -->
         <button id="btn-header-user"
                 class="header-avatar-button logged hidden"
                 aria-label="Perfil">
@@ -103,28 +105,28 @@
 
     <!-- LOGUEADO -->
     <a href="mispedidos.html" class="user-drawer-item logged hidden">
-      <span class="material-symbols-outlined user-drawer-item-icon">shopping_bag</span>
+      <span class="material-symbols-outlined">shopping_bag</span>
       Mis pedidos
     </a>
 
     <a href="historial.html" class="user-drawer-item logged hidden">
-      <span class="material-symbols-outlined user-drawer-item-icon">history</span>
+      <span class="material-symbols-outlined">history</span>
       Historial de compras
     </a>
 
     <!-- PÚBLICO -->
     <a href="#productos" class="user-drawer-item no-user">
-      <span class="material-symbols-outlined user-drawer-item-icon">local_cafe</span>
+      <span class="material-symbols-outlined">local_cafe</span>
       Variedades de café
     </a>
 
     <a href="#nosotros" class="user-drawer-item no-user">
-      <span class="material-symbols-outlined user-drawer-item-icon">groups</span>
+      <span class="material-symbols-outlined">groups</span>
       Quiénes somos
     </a>
 
     <a href="#contacto" class="user-drawer-item no-user">
-      <span class="material-symbols-outlined user-drawer-item-icon">mail</span>
+      <span class="material-symbols-outlined">mail</span>
       Contáctanos
     </a>
 
@@ -132,15 +134,17 @@
 
   <hr class="user-drawer-divider">
 
-  <!-- LOGOUT (SOLO LOGUEADO) -->
-  <button id="logout-btn" class="user-drawer-item logout logged hidden">
-    <span class="material-symbols-outlined user-drawer-item-icon">logout</span>
+  <!-- LOGOUT (LOGUEADO) -->
+  <button id="logout-btn"
+          class="user-drawer-item logout logged hidden">
+    <span class="material-symbols-outlined">logout</span>
     Cerrar sesión
   </button>
 
-  <!-- LOGIN (VISIBLE PARA VISITANTE) -->
-  <a href="login.html" class="user-drawer-item login no-user">
-    <span class="material-symbols-outlined user-drawer-item-icon">login</span>
+  <!-- LOGIN (VISITANTE) -->
+  <a href="login.html"
+     class="user-drawer-item login no-user hidden">
+    <span class="material-symbols-outlined">login</span>
     Iniciar sesión
   </a>
 
