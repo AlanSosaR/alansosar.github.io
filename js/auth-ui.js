@@ -1,9 +1,9 @@
 // ============================================================
 // AUTH-UI — Café Cortero (2025)
-// UI ONLY — CONTROLADO POR SUPABASE — FINAL ESTABLE
+// UI ONLY — SIN ESCUCHAR SUPABASE DIRECTO
 // ============================================================
 
-console.log("👤 auth-ui.js cargado — FINAL SUPABASE");
+console.log("👤 auth-ui.js cargado — UI ONLY");
 
 /* ============================================================
    GUARDIÁN GLOBAL — EVITA DOBLE CARGA
@@ -18,24 +18,6 @@ if (window.__AUTH_UI_LOADED__) {
 
   function isLoginPage() {
     return document.body.dataset.page === "login";
-  }
-
-  /* ============================================================
-     ⏳ ESPERAR A SUPABASE (ANTI-RACE CONDITION)
-  ============================================================ */
-  async function waitForSupabase() {
-    if (window.supabase?.auth) return;
-
-    console.warn("⏳ Esperando Supabase...");
-    return new Promise(resolve => {
-      const i = setInterval(() => {
-        if (window.supabase?.auth) {
-          clearInterval(i);
-          console.log("✅ Supabase listo");
-          resolve();
-        }
-      }, 50);
-    });
   }
 
   /* ========================= DRAWER ========================= */
@@ -67,7 +49,7 @@ if (window.__AUTH_UI_LOADED__) {
   }
 
   /* ========================= ESTADO LOGUEADO ========================= */
-  function setLoggedIn(user) {
+  function setLoggedIn(user = {}) {
     const drawer = $("user-drawer");
     const header = document.querySelector(".header-fixed");
     if (!drawer || !header) return;
@@ -78,96 +60,55 @@ if (window.__AUTH_UI_LOADED__) {
     header.classList.remove("no-user");
     header.classList.add("logged");
 
-    const photo = user?.photo_url || "imagenes/avatar-default.svg";
+    const photo = user.photo_url || "imagenes/avatar-default.svg";
     $("avatar-user")?.setAttribute("src", photo);
     $("avatar-user-drawer")?.setAttribute("src", photo);
 
-    $("drawer-name") && ($("drawer-name").textContent = user?.name || "Usuario");
-    $("drawer-email") && ($("drawer-email").textContent = user?.email || "");
+    if (user.name) $("drawer-name") && ($("drawer-name").textContent = user.name);
+    if (user.email) $("drawer-email") && ($("drawer-email").textContent = user.email);
 
     toggleHeaderLinks(true);
     closeDrawerUI();
   }
 
   /* ============================================================
-     🔑 SINCRONIZAR SESIÓN INICIAL
+     INIT AUTH UI — SOLO UI
   ============================================================ */
-  async function syncInitialSession() {
-    await waitForSupabase();
-
-    const { data } = await supabase.auth.getSession();
-
-    if (data.session?.user) {
-      setLoggedIn({
-        email: data.session.user.email,
-        name: data.session.user.user_metadata?.name,
-        photo_url: data.session.user.user_metadata?.avatar_url
-      });
-
-      document.dispatchEvent(new CustomEvent("authStateChanged", {
-        detail: { logged: true }
-      }));
-    } else {
-      resetAuthUI();
-
-      document.dispatchEvent(new CustomEvent("authStateChanged", {
-        detail: { logged: false }
-      }));
-    }
-  }
-
-  /* ============================================================
-     LOGOUT REAL — SEGURO
-  ============================================================ */
-  async function hardLogout() {
-    await waitForSupabase();
-
-    const { data } = await supabase.auth.getSession();
-    if (!data.session) return;
-
-    console.log("🚪 Logout real (Supabase)");
-    await supabase.auth.signOut();
-  }
-
-  /* ============================================================
-     INIT AUTH UI — LLAMADO DESDE layout.js
-  ============================================================ */
-  async function initAuthUI() {
+  function initAuthUI() {
     if (window.__AUTH_UI_INIT__) return;
     window.__AUTH_UI_INIT__ = true;
 
-    console.log("👤 initAuthUI ejecutado");
+    console.log("👤 initAuthUI ejecutado (UI)");
 
     if (isLoginPage()) {
       console.warn("⛔ auth-ui deshabilitado en login.html");
       return;
     }
 
-    await syncInitialSession();
-
-    supabase.auth.onAuthStateChange((_event, session) => {
-      if (session?.user) {
-        setLoggedIn({
-          email: session.user.email,
-          name: session.user.user_metadata?.name,
-          photo_url: session.user.user_metadata?.avatar_url
-        });
-
-        document.dispatchEvent(new CustomEvent("authStateChanged", {
-          detail: { logged: true }
-        }));
+    // Estado inicial basado en localStorage (opcional)
+    try {
+      const raw = localStorage.getItem("cortero_user");
+      if (raw) {
+        setLoggedIn(JSON.parse(raw));
       } else {
         resetAuthUI();
-
-        document.dispatchEvent(new CustomEvent("authStateChanged", {
-          detail: { logged: false }
-        }));
       }
-    });
+    } catch {
+      resetAuthUI();
+    }
   }
 
-  /* ========================= EVENTOS ========================= */
-  document.addEventListener("userLoggedOut", hardLogout);
+  /* ========================= EVENTOS GLOBALES ========================= */
+
+  // Login exitoso (emitido desde supabase-client-core.js)
+  document.addEventListener("userLoggedIn", (e) => {
+    setLoggedIn(e.detail || {});
+  });
+
+  // Logout (emitido desde supabase-client-core.js o header)
+  document.addEventListener("userLoggedOut", () => {
+    resetAuthUI();
+  });
 
   /* ========================= EXPORT ========================= */
   window.initAuthUI = initAuthUI;
