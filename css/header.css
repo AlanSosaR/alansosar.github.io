@@ -412,14 +412,35 @@ header.header-fixed {
   color: var(--verde);
 }
 
-/* ===== LOGOUT (MISMO ESTILO QUE LOGIN) ===== */
+/* ===== LOGOUT — IGUAL QUE LINKS, PERO ROJO ===== */
 .user-drawer-item.logout {
+  background: transparent !important;   /* 🔑 quita fondo blanco */
+  border: none !important;               /* 🔑 quita borde botón */
+  box-shadow: none !important;
+
   color: #ff4b4b;
   font-weight: 500;
   margin-top: 4px;
+
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  width: 100%;
+  padding: 12px 16px;                    /* igual que los links */
+  cursor: pointer;
+  text-align: left;
 }
+
+/* Ícono rojo */
 .user-drawer-item.logout .material-symbols-outlined {
   color: #ff4b4b;
+  font-size: 22px;
+}
+
+/* Hover igual que los demás (sin fondo blanco) */
+.user-drawer-item.logout:hover {
+  background: rgba(255, 75, 75, 0.08);   /* rojo suave */
 }
 /* ===== VISIBILIDAD ===== */
 .user-drawer.logged .no-user { display: none; }
