@@ -42,14 +42,14 @@
 
       <!-- AVATAR (PC – LOGUEADO) -->
       <button id="btn-header-user"
-              class="header-avatar-button desktop-only logged hidden"
+              class="header-avatar-button desktop-only logged"
               aria-label="Perfil">
         <img id="avatar-user"
              src="/imagenes/avatar-default.svg"
              alt="Usuario">
       </button>
 
-      <!-- CARRITO (SIEMPRE) -->
+      <!-- CARRITO (SIEMPRE VISIBLE) -->
       <button id="cart-btn"
               class="cart-button"
               aria-label="Ver carrito">
@@ -62,37 +62,45 @@
 </header>
 
 <!-- =====================================================
-     SCRIM + DRAWER
+     SCRIM
 ====================================================== -->
 <div id="user-scrim" class="user-scrim"></div>
 
+<!-- =====================================================
+     DRAWER — MATERIAL 3
+====================================================== -->
 <aside id="user-drawer" class="user-drawer no-user">
 
   <!-- PERFIL (LOGUEADO) -->
   <a href="perfil.html"
-     class="user-drawer-header logged hidden">
+     class="user-drawer-header logged">
     <img id="avatar-user-drawer"
-         src="/imagenes/avatar-default.svg">
+         src="/imagenes/avatar-default.svg"
+         alt="Usuario">
     <div>
       <p id="drawer-name">Usuario</p>
       <p id="drawer-email">correo@ejemplo.com</p>
     </div>
   </a>
 
-  <hr class="logged hidden">
+  <hr class="user-drawer-divider logged">
 
-  <!-- LOGUEADO -->
-  <a href="mispedidos.html" class="user-drawer-item logged hidden">
+  <!-- =====================
+       LINKS LOGUEADO
+  ====================== -->
+  <a href="mispedidos.html" class="user-drawer-item logged">
     <span class="material-symbols-outlined">shopping_bag</span>
     Mis pedidos
   </a>
 
-  <a href="historial.html" class="user-drawer-item logged hidden">
+  <a href="historial.html" class="user-drawer-item logged">
     <span class="material-symbols-outlined">history</span>
     Historial
   </a>
 
-  <!-- PÚBLICO -->
+  <!-- =====================
+       LINKS PÚBLICOS
+  ====================== -->
   <a href="#productos" class="user-drawer-item no-user">
     <span class="material-symbols-outlined">local_cafe</span>
     Variedades de café
@@ -108,16 +116,16 @@
     Contáctanos
   </a>
 
-  <hr>
+  <hr class="user-drawer-divider">
 
-  <!-- LOGOUT -->
+  <!-- LOGOUT (LOGUEADO) -->
   <button id="logout-btn"
-          class="user-drawer-item logout logged hidden">
+          class="user-drawer-item logout logged">
     <span class="material-symbols-outlined">logout</span>
     Cerrar sesión
   </button>
 
-  <!-- LOGIN -->
+  <!-- LOGIN (INVITADO) -->
   <a href="login.html"
      class="user-drawer-item login no-user">
     <span class="material-symbols-outlined">login</span>
