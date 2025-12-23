@@ -91,6 +91,15 @@ window.corteroLogout = logoutTotal;
 window.supabaseClient.auth.onAuthStateChange(async (event, session) => {
   console.log("🔄 Evento de Auth:", event);
 
+  // 🔑 Si hubo logout manual, bloquear cualquier re-login
+  if (localStorage.getItem("cortero_manual_logout") === "1") {
+    if (!session?.user) {
+      // Supabase ya confirmó logout → limpiar flag
+      localStorage.removeItem("cortero_manual_logout");
+    }
+    return;
+  }
+
   if (session?.user) {
     cargarPerfilGlobal(session.user);
   } else {
@@ -104,10 +113,10 @@ window.supabaseClient.auth.onAuthStateChange(async (event, session) => {
 // 8) RESTAURAR SESIÓN AUTOMÁTICA AL CARGAR LA PÁGINA
 // ------------------------------------------------------------
 document.addEventListener("DOMContentLoaded", async () => {
-  // 🔑 Si el usuario cerró sesión manualmente, NO restaurar
-  if (localStorage.getItem("cortero_manual_logout") === "1") {
+  const manualLogout = localStorage.getItem("cortero_manual_logout");
+
+  if (manualLogout === "1") {
     console.log("🚫 Restauración bloqueada (logout manual)");
-    localStorage.removeItem("cortero_manual_logout");
     return;
   }
 
