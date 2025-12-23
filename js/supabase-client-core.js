@@ -38,6 +38,8 @@ window.supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     storage
   }
 });
+// 🔑 Alias global para compatibilidad total
+window.supabase = window.supabaseClient;
 
 // ------------------------------------------------------------
 // 5) CARGAR PERFIL GLOBAL DESDE TABLA "users"
