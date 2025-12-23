@@ -378,6 +378,12 @@ header.header-fixed {
 .user-drawer-item.logout:hover {
   background: rgba(255,75,75,.08);
 }
+/* =====================================================
+   LINKS PÚBLICOS — SIEMPRE VISIBLES EN DRAWER
+===================================================== */
+.user-drawer .public-link {
+  display: flex;
+}
 
 /* =====================================================
    VISIBILIDAD DRAWER
