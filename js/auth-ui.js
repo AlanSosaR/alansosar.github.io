@@ -51,7 +51,7 @@ function resetAuthUI() {
   header?.classList.remove("logged");
   header?.classList.add("no-user");
 
-  toggleHeaderLinks(false); // 👈 visitante
+  toggleHeaderLinks(false);
 
   closeDrawerUI();
 }
@@ -85,9 +85,40 @@ function setLoggedIn(user) {
     $("drawer-email").textContent = user?.email || "";
   }
 
-  toggleHeaderLinks(true); // 👈 logueado
+  toggleHeaderLinks(true);
 
   closeDrawerUI();
+}
+
+/* ============================================================
+   🔑 SINCRONIZAR SESIÓN INICIAL (FIX REAL)
+============================================================ */
+async function syncInitialSession() {
+  const { data } = await supabase.auth.getSession();
+
+  if (data.session?.user) {
+    const user = {
+      email: data.session.user.email,
+      name: data.session.user.user_metadata?.name,
+      photo_url: data.session.user.user_metadata?.avatar_url
+    };
+
+    setLoggedIn(user);
+
+    document.dispatchEvent(
+      new CustomEvent("authStateChanged", {
+        detail: { logged: true }
+      })
+    );
+  } else {
+    resetAuthUI();
+
+    document.dispatchEvent(
+      new CustomEvent("authStateChanged", {
+        detail: { logged: false }
+      })
+    );
+  }
 }
 
 /* ============================================================
@@ -96,13 +127,12 @@ function setLoggedIn(user) {
 async function hardLogout() {
   console.log("🚪 Logout real (Supabase)");
   await supabase.auth.signOut();
-  // Supabase emite el evento automáticamente
 }
 
 /* ============================================================
    INIT AUTH UI — LLAMADO DESDE layout.js
 ============================================================ */
-function initAuthUI() {
+async function initAuthUI() {
   if (window.__AUTH_UI_INIT__) {
     console.warn("⚠️ initAuthUI ya ejecutado");
     return;
@@ -110,6 +140,9 @@ function initAuthUI() {
   window.__AUTH_UI_INIT__ = true;
 
   console.log("👤 initAuthUI ejecutado");
+
+  // 🔑 ESTADO INICIAL (ANTES DE ESCUCHAR EVENTOS)
+  await syncInitialSession();
 
   /* ========================================================
      ESCUCHAR SUPABASE (ÚNICA FUENTE DE VERDAD)
@@ -144,8 +177,6 @@ function initAuthUI() {
 }
 
 /* ========================= EVENTOS ========================= */
-
-// Logout solicitado desde cualquier parte
 document.addEventListener("userLoggedOut", hardLogout);
 
 /* ============================================================
