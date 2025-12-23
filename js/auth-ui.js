@@ -10,14 +10,18 @@ if (!window.__AUTH_UI_LOADED__) {
 
   const $ = (id) => document.getElementById(id);
 
-  /* =====================================================
-     HELPERS
-  ===================================================== */
+  /* ========================= HELPERS ========================= */
   const show = (el) => el && el.classList.remove("hidden");
   const hide = (el) => el && el.classList.add("hidden");
 
   const showAll = (list) => list?.forEach(el => el.classList.remove("hidden"));
   const hideAll = (list) => list?.forEach(el => el.classList.add("hidden"));
+
+  const closeDrawer = () => {
+    $("user-drawer")?.classList.remove("open");
+    $("user-scrim")?.classList.remove("open");
+    document.body.style.overflow = "";
+  };
 
   /* =====================================================
      ESTADO → USUARIO INVITADO
@@ -43,15 +47,13 @@ if (!window.__AUTH_UI_LOADED__) {
     hide($("btn-header-user"));
 
     // DRAWER
-    hide($("drawer-name"));
-    hide($("drawer-email"));
-
-    hide($(".user-drawer-header.logged"));
+    hide(document.querySelector(".user-drawer-header.logged"));
     hideAll(document.querySelectorAll(".user-drawer-item.logged"));
     hide($("logout-btn"));
 
     showAll(document.querySelectorAll(".user-drawer-item.no-user"));
-    show(document.querySelector(".user-drawer-item.login"));
+
+    closeDrawer();
   }
 
   /* =====================================================
@@ -83,7 +85,6 @@ if (!window.__AUTH_UI_LOADED__) {
     show($("logout-btn"));
 
     hideAll(document.querySelectorAll(".user-drawer-item.no-user"));
-    hide(document.querySelector(".user-drawer-item.login"));
 
     // DATOS USUARIO
     const photo = user.photo_url || "imagenes/avatar-default.svg";
@@ -92,6 +93,8 @@ if (!window.__AUTH_UI_LOADED__) {
 
     if (user.name) $("drawer-name").textContent = user.name;
     if (user.email) $("drawer-email").textContent = user.email;
+
+    closeDrawer();
   }
 
   /* =====================================================
