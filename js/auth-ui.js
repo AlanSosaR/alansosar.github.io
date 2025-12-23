@@ -1,22 +1,18 @@
 // ============================================================
 // AUTH-UI — Café Cortero (2025)
-// UI ONLY — NO DECIDE AUTH
+// UI ONLY — ESTADO LIMPIO (SIN CONFLICTOS)
 // ============================================================
 
-console.log("👤 auth-ui.js cargado — UI ONLY");
+console.log("👤 auth-ui.js cargado — UI STATE ONLY");
 
 if (!window.__AUTH_UI_LOADED__) {
   window.__AUTH_UI_LOADED__ = true;
 
   const $ = (id) => document.getElementById(id);
 
-  /* ========================= HELPERS ========================= */
-  const show = (el) => el && el.classList.remove("hidden");
-  const hide = (el) => el && el.classList.add("hidden");
-
-  const showAll = (list) => list?.forEach(el => el.classList.remove("hidden"));
-  const hideAll = (list) => list?.forEach(el => el.classList.add("hidden"));
-
+  /* =====================================================
+     HELPERS
+  ===================================================== */
   const closeDrawer = () => {
     $("user-drawer")?.classList.remove("open");
     $("user-scrim")?.classList.remove("open");
@@ -24,9 +20,9 @@ if (!window.__AUTH_UI_LOADED__) {
   };
 
   /* =====================================================
-     ESTADO → USUARIO INVITADO
+     ESTADO → INVITADO
   ===================================================== */
-  function resetAuthUI() {
+  function setGuestUI() {
     console.log("👤 UI → invitado");
 
     const header = document.querySelector(".header-fixed");
@@ -38,28 +34,13 @@ if (!window.__AUTH_UI_LOADED__) {
     drawer?.classList.remove("logged");
     drawer?.classList.add("no-user");
 
-    // NAV PC
-    show($("public-nav"));
-    hide($("private-nav"));
-
-    // HEADER PC
-    show($("login-desktop"));
-    hide($("btn-header-user"));
-
-    // DRAWER
-    hide(document.querySelector(".user-drawer-header.logged"));
-    hideAll(document.querySelectorAll(".user-drawer-item.logged"));
-    hide($("logout-btn"));
-
-    showAll(document.querySelectorAll(".user-drawer-item.no-user"));
-
     closeDrawer();
   }
 
   /* =====================================================
-     ESTADO → USUARIO LOGUEADO
+     ESTADO → LOGUEADO
   ===================================================== */
-  function setLoggedIn(user = {}) {
+  function setLoggedUI(user = {}) {
     console.log("👤 UI → logueado");
 
     const header = document.querySelector(".header-fixed");
@@ -71,22 +52,7 @@ if (!window.__AUTH_UI_LOADED__) {
     drawer?.classList.remove("no-user");
     drawer?.classList.add("logged");
 
-    // NAV PC
-    hide($("public-nav"));
-    show($("private-nav"));
-
-    // HEADER PC
-    hide($("login-desktop"));
-    show($("btn-header-user"));
-
-    // DRAWER
-    show(document.querySelector(".user-drawer-header.logged"));
-    showAll(document.querySelectorAll(".user-drawer-item.logged"));
-    show($("logout-btn"));
-
-    hideAll(document.querySelectorAll(".user-drawer-item.no-user"));
-
-    // DATOS USUARIO
+    // Datos del usuario (NO layout)
     const photo = user.photo_url || "imagenes/avatar-default.svg";
     $("avatar-user")?.setAttribute("src", photo);
     $("avatar-user-drawer")?.setAttribute("src", photo);
@@ -108,9 +74,9 @@ if (!window.__AUTH_UI_LOADED__) {
 
     try {
       const raw = localStorage.getItem("cortero_user");
-      raw ? setLoggedIn(JSON.parse(raw)) : resetAuthUI();
+      raw ? setLoggedUI(JSON.parse(raw)) : setGuestUI();
     } catch {
-      resetAuthUI();
+      setGuestUI();
     }
   }
 
@@ -118,12 +84,12 @@ if (!window.__AUTH_UI_LOADED__) {
      EVENTOS
   ===================================================== */
   document.addEventListener("userLoggedIn", (e) => {
-    setLoggedIn(e.detail || {});
+    setLoggedUI(e.detail || {});
   });
 
   document.addEventListener("userLoggedOut", () => {
     localStorage.removeItem("cortero_user");
-    resetAuthUI();
+    setGuestUI();
   });
 
   document.addEventListener("DOMContentLoaded", initAuthUI);
