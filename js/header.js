@@ -1,4 +1,4 @@
-console.log("🧭 header.js — UI CORE (COMPATIBLE CON auth-ui)");
+console.log("🧭 header.js — UI CORE FINAL (AUTH SAFE)");
 
 /* =====================================================
    GUARDIÁN GLOBAL — EVITA DOBLE CARGA
@@ -55,14 +55,16 @@ if (!window.__HEADER_CORE_LOADED__) {
 
     console.log("✅ initHeader ejecutado (UI only)");
 
-    // Drawer
+    // Abrir / cerrar drawer
     $("menu-toggle")?.addEventListener("click", toggleDrawer);
     $("btn-header-user")?.addEventListener("click", toggleDrawer);
     $("user-scrim")?.addEventListener("click", closeDrawer);
 
-    // Logout → delega a auth-ui.js
-    $("logout-btn")?.addEventListener("click", () => {
-      document.dispatchEvent(new Event("userLoggedOut"));
+    // 🔑 LOGOUT REAL (NO UI FAKE)
+    $("logout-btn")?.addEventListener("click", async () => {
+      if (typeof window.corteroLogout === "function") {
+        await window.corteroLogout(); // Supabase signOut real
+      }
       closeDrawer();
     });
 
@@ -75,21 +77,20 @@ if (!window.__HEADER_CORE_LOADED__) {
   }
 
   /* =====================================================
-     EVENTOS GLOBALES
+     EVENTOS GLOBALES (UI REACTIVA)
   ===================================================== */
   if (!window.__HEADER_GLOBAL_EVENTS__) {
     window.__HEADER_GLOBAL_EVENTS__ = true;
 
-    // 🔑 REACCIÓN AL AUTH (NO DECIDE NADA)
-    document.addEventListener("authStateChanged", (e) => {
-      const logged = e.detail?.logged === true;
-
-      // Header solo ajusta UX
-      if (!logged) {
-        closeDrawer();
-      }
-
+    // Auth → solo UX (NO decide sesión)
+    document.addEventListener("userLoggedIn", () => {
       updateCartCount();
+      closeDrawer();
+    });
+
+    document.addEventListener("userLoggedOut", () => {
+      updateCartCount();
+      closeDrawer();
     });
 
     document.addEventListener("keydown", (e) => {
