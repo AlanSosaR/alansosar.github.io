@@ -74,9 +74,11 @@ async function cargarPerfilGlobal(user) {
 // 6) LOGOUT REAL (Auth + limpieza local)
 // ------------------------------------------------------------
 async function logoutTotal() {
+  // 🔑 marcar logout manual
+  localStorage.setItem("cortero_manual_logout", "1");
+
   await window.supabaseClient.auth.signOut();
 
-  // 🔑 limpiar SOLO datos de auth
   localStorage.removeItem("cortero_user");
   localStorage.removeItem("cortero_logged");
 
@@ -102,6 +104,13 @@ window.supabaseClient.auth.onAuthStateChange(async (event, session) => {
 // 8) RESTAURAR SESIÓN AUTOMÁTICA AL CARGAR LA PÁGINA
 // ------------------------------------------------------------
 document.addEventListener("DOMContentLoaded", async () => {
+  // 🔑 Si el usuario cerró sesión manualmente, NO restaurar
+  if (localStorage.getItem("cortero_manual_logout") === "1") {
+    console.log("🚫 Restauración bloqueada (logout manual)");
+    localStorage.removeItem("cortero_manual_logout");
+    return;
+  }
+
   const { data } = await window.supabaseClient.auth.getSession();
 
   if (data?.session?.user) {
