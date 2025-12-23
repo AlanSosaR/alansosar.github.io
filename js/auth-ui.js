@@ -1,6 +1,6 @@
 // ============================================================
 // AUTH-UI — Café Cortero (2025)
-// UI ONLY — CONTROLADO POR SUPABASE — FINAL DEFINITIVO
+// UI ONLY — CONTROLADO POR SUPABASE — FINAL ESTABLE
 // ============================================================
 
 console.log("👤 auth-ui.js cargado — FINAL SUPABASE");
@@ -10,25 +10,28 @@ console.log("👤 auth-ui.js cargado — FINAL SUPABASE");
 ============================================================ */
 if (window.__AUTH_UI_LOADED__) {
   console.warn("⚠️ auth-ui.js ya estaba cargado");
-} else {
-  window.__AUTH_UI_LOADED__ = true;
+  return;
 }
+window.__AUTH_UI_LOADED__ = true;
 
 /* ========================= HELPERS ========================= */
 const $ = (id) => document.getElementById(id);
 
+function isLoginPage() {
+  return document.body.dataset.page === "login";
+}
+
 /* ============================================================
    ⏳ ESPERAR A SUPABASE (ANTI-RACE CONDITION)
-   👉 NO altera lógica existente
 ============================================================ */
 async function waitForSupabase() {
   if (window.supabase?.auth) return;
 
   console.warn("⏳ Esperando Supabase...");
   return new Promise(resolve => {
-    const interval = setInterval(() => {
+    const i = setInterval(() => {
       if (window.supabase?.auth) {
-        clearInterval(interval);
+        clearInterval(i);
         console.log("✅ Supabase listo");
         resolve();
       }
@@ -43,20 +46,10 @@ function closeDrawerUI() {
   document.body.style.overflow = "";
 }
 
-/* ========================= HEADER LINKS =========================
-   👉 SOLO VISUAL — NO DECIDE AUTH
-============================================================ */
+/* ========================= HEADER LINKS ========================= */
 function toggleHeaderLinks(isLogged) {
-  const publicNav  = document.getElementById("public-nav");
-  const privateNav = document.getElementById("private-nav");
-
-  if (publicNav) {
-    publicNav.classList.toggle("hidden", isLogged);
-  }
-
-  if (privateNav) {
-    privateNav.classList.toggle("hidden", !isLogged);
-  }
+  $("public-nav")?.classList.toggle("hidden", isLogged);
+  $("private-nav")?.classList.toggle("hidden", !isLogged);
 }
 
 /* ========================= RESET VISUAL ========================= */
@@ -87,63 +80,57 @@ function setLoggedIn(user) {
   header.classList.remove("no-user");
   header.classList.add("logged");
 
-  const photo =
-    user?.photo_url ||
-    user?.avatar_url ||
-    "imagenes/avatar-default.svg";
+  const photo = user?.photo_url || "imagenes/avatar-default.svg";
 
   $("avatar-user")?.setAttribute("src", photo);
   $("avatar-user-drawer")?.setAttribute("src", photo);
 
-  if ($("drawer-name")) {
-    $("drawer-name").textContent = user?.name || "Usuario";
-  }
-
-  if ($("drawer-email")) {
-    $("drawer-email").textContent = user?.email || "";
-  }
+  $("drawer-name") && ($("drawer-name").textContent = user?.name || "Usuario");
+  $("drawer-email") && ($("drawer-email").textContent = user?.email || "");
 
   toggleHeaderLinks(true);
   closeDrawerUI();
 }
 
 /* ============================================================
-   🔑 SINCRONIZAR SESIÓN INICIAL (FIX REAL)
+   🔑 SINCRONIZAR SESIÓN INICIAL
 ============================================================ */
 async function syncInitialSession() {
-  await waitForSupabase(); // 🔑 ÚNICA LÍNEA NUEVA AQUÍ
+  await waitForSupabase();
 
   const { data } = await supabase.auth.getSession();
 
   if (data.session?.user) {
-    const user = {
+    setLoggedIn({
       email: data.session.user.email,
       name: data.session.user.user_metadata?.name,
       photo_url: data.session.user.user_metadata?.avatar_url
-    };
+    });
 
-    setLoggedIn(user);
-
-    document.dispatchEvent(
-      new CustomEvent("authStateChanged", {
-        detail: { logged: true }
-      })
-    );
+    document.dispatchEvent(new CustomEvent("authStateChanged", {
+      detail: { logged: true }
+    }));
   } else {
     resetAuthUI();
 
-    document.dispatchEvent(
-      new CustomEvent("authStateChanged", {
-        detail: { logged: false }
-      })
-    );
+    document.dispatchEvent(new CustomEvent("authStateChanged", {
+      detail: { logged: false }
+    }));
   }
 }
 
 /* ============================================================
-   LOGOUT REAL — SUPABASE
+   LOGOUT REAL — SEGURO
 ============================================================ */
 async function hardLogout() {
+  await waitForSupabase();
+
+  const { data } = await supabase.auth.getSession();
+  if (!data.session) {
+    console.warn("ℹ️ Logout ignorado (sin sesión)");
+    return;
+  }
+
   console.log("🚪 Logout real (Supabase)");
   await supabase.auth.signOut();
 }
@@ -152,45 +139,36 @@ async function hardLogout() {
    INIT AUTH UI — LLAMADO DESDE layout.js
 ============================================================ */
 async function initAuthUI() {
-  if (window.__AUTH_UI_INIT__) {
-    console.warn("⚠️ initAuthUI ya ejecutado");
-    return;
-  }
+  if (window.__AUTH_UI_INIT__) return;
   window.__AUTH_UI_INIT__ = true;
 
   console.log("👤 initAuthUI ejecutado");
 
-  // 🔑 ESTADO INICIAL (ANTES DE ESCUCHAR EVENTOS)
+  // ⛔ NO ejecutar en login.html
+  if (isLoginPage()) {
+    console.warn("⛔ auth-ui deshabilitado en login.html");
+    return;
+  }
+
   await syncInitialSession();
 
-  /* ========================================================
-     ESCUCHAR SUPABASE (ÚNICA FUENTE DE VERDAD)
-  ======================================================== */
-  supabase.auth.onAuthStateChange((event, session) => {
-    console.log("🔐 Supabase Auth:", event);
-
+  supabase.auth.onAuthStateChange(async (_event, session) => {
     if (session?.user) {
-      const user = {
+      setLoggedIn({
         email: session.user.email,
         name: session.user.user_metadata?.name,
         photo_url: session.user.user_metadata?.avatar_url
-      };
+      });
 
-      setLoggedIn(user);
-
-      document.dispatchEvent(
-        new CustomEvent("authStateChanged", {
-          detail: { logged: true }
-        })
-      );
+      document.dispatchEvent(new CustomEvent("authStateChanged", {
+        detail: { logged: true }
+      }));
     } else {
       resetAuthUI();
 
-      document.dispatchEvent(
-        new CustomEvent("authStateChanged", {
-          detail: { logged: false }
-        })
-      );
+      document.dispatchEvent(new CustomEvent("authStateChanged", {
+        detail: { logged: false }
+      }));
     }
   });
 }
@@ -202,8 +180,3 @@ document.addEventListener("userLoggedOut", hardLogout);
    EXPORT GLOBAL
 ============================================================ */
 window.initAuthUI = initAuthUI;
-
-/* ============================================================
-   ⛔ SIN DOMContentLoaded
-   layout.js controla el flujo
-============================================================ */
