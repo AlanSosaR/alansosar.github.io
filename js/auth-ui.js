@@ -1,9 +1,9 @@
 // ============================================================
 // AUTH-UI — Café Cortero (2025)
-// UI ONLY — ESTADO LIMPIO (SIN CONFLICTOS)
+// UI ONLY — ESTADO SEGURO (ANTI-CRASH)
 // ============================================================
 
-console.log("👤 auth-ui.js cargado — UI STATE ONLY");
+console.log("👤 auth-ui.js cargado — UI STATE SAFE");
 
 if (!window.__AUTH_UI_LOADED__) {
   window.__AUTH_UI_LOADED__ = true;
@@ -52,13 +52,19 @@ if (!window.__AUTH_UI_LOADED__) {
     drawer?.classList.remove("no-user");
     drawer?.classList.add("logged");
 
-    // Datos del usuario (NO layout)
+    // AVATARES (seguros)
     const photo = user.photo_url || "imagenes/avatar-default.svg";
     $("avatar-user")?.setAttribute("src", photo);
     $("avatar-user-drawer")?.setAttribute("src", photo);
 
-    if (user.name) $("drawer-name").textContent = user.name;
-    if (user.email) $("drawer-email").textContent = user.email;
+    // TEXTOS (ANTI NULL)
+    if ($("drawer-name") && user.name) {
+      $("drawer-name").textContent = user.name;
+    }
+
+    if ($("drawer-email") && user.email) {
+      $("drawer-email").textContent = user.email;
+    }
 
     closeDrawer();
   }
@@ -75,7 +81,8 @@ if (!window.__AUTH_UI_LOADED__) {
     try {
       const raw = localStorage.getItem("cortero_user");
       raw ? setLoggedUI(JSON.parse(raw)) : setGuestUI();
-    } catch {
+    } catch (e) {
+      console.warn("⚠ Error leyendo cortero_user", e);
       setGuestUI();
     }
   }
