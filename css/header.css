@@ -415,35 +415,11 @@ header.header-fixed {
 /* ===== LOGOUT (MISMO ESTILO QUE LOGIN) ===== */
 .user-drawer-item.logout {
   color: #ff4b4b;
-  font-weight: 600;
-
-  display: flex;
-  align-items: center;
-  gap: 14px;
-
-  padding: 14px 16px;
-  border-radius: 14px;
-
-  background: transparent;
-  cursor: pointer;
-
-  transition: background 0.18s ease;
+  font-weight: 500;
+  margin-top: 4px;
 }
-
 .user-drawer-item.logout .material-symbols-outlined {
   color: #ff4b4b;
-}
-
-/* Hover igual que Login */
-@media (hover: hover) {
-  .user-drawer-item.logout:hover {
-    background: rgba(255, 75, 75, 0.12);
-  }
-}
-
-/* Active / pressed */
-.user-drawer-item.logout:active {
-  background: rgba(255, 75, 75, 0.20);
 }
 /* ===== VISIBILIDAD ===== */
 .user-drawer.logged .no-user { display: none; }
