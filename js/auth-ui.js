@@ -5,9 +5,7 @@
 
 console.log("👤 auth-ui.js cargado — UI ONLY");
 
-if (window.__AUTH_UI_LOADED__) {
-  console.warn("⚠️ auth-ui.js ya estaba cargado");
-} else {
+if (!window.__AUTH_UI_LOADED__) {
   window.__AUTH_UI_LOADED__ = true;
 
   const $ = (id) => document.getElementById(id);
@@ -18,8 +16,11 @@ if (window.__AUTH_UI_LOADED__) {
   const show = (el) => el && el.classList.remove("hidden");
   const hide = (el) => el && el.classList.add("hidden");
 
+  const showAll = (list) => list?.forEach(el => el.classList.remove("hidden"));
+  const hideAll = (list) => list?.forEach(el => el.classList.add("hidden"));
+
   /* =====================================================
-     RESET → USUARIO INVITADO
+     ESTADO → USUARIO INVITADO
   ===================================================== */
   function resetAuthUI() {
     console.log("👤 UI → invitado");
@@ -33,24 +34,28 @@ if (window.__AUTH_UI_LOADED__) {
     drawer?.classList.remove("logged");
     drawer?.classList.add("no-user");
 
-    // NAVS
+    // NAV PC
     show($("public-nav"));
     hide($("private-nav"));
 
-    // HEADER
+    // HEADER PC
     show($("login-desktop"));
     hide($("btn-header-user"));
 
     // DRAWER
-    hide(document.querySelector(".user-drawer-header.logged"));
-    hide(document.querySelector(".user-drawer-item.logout"));
-    hide(document.querySelectorAll(".user-drawer-item.logged"));
+    hide($("drawer-name"));
+    hide($("drawer-email"));
 
+    hide($(".user-drawer-header.logged"));
+    hideAll(document.querySelectorAll(".user-drawer-item.logged"));
+    hide($("logout-btn"));
+
+    showAll(document.querySelectorAll(".user-drawer-item.no-user"));
     show(document.querySelector(".user-drawer-item.login"));
   }
 
   /* =====================================================
-     SET → USUARIO LOGUEADO
+     ESTADO → USUARIO LOGUEADO
   ===================================================== */
   function setLoggedIn(user = {}) {
     console.log("👤 UI → logueado");
@@ -64,19 +69,20 @@ if (window.__AUTH_UI_LOADED__) {
     drawer?.classList.remove("no-user");
     drawer?.classList.add("logged");
 
-    // NAVS
+    // NAV PC
     hide($("public-nav"));
     show($("private-nav"));
 
-    // HEADER
+    // HEADER PC
     hide($("login-desktop"));
     show($("btn-header-user"));
 
     // DRAWER
     show(document.querySelector(".user-drawer-header.logged"));
-    show(document.querySelectorAll(".user-drawer-item.logged"));
-    show(document.querySelector(".user-drawer-item.logout"));
+    showAll(document.querySelectorAll(".user-drawer-item.logged"));
+    show($("logout-btn"));
 
+    hideAll(document.querySelectorAll(".user-drawer-item.no-user"));
     hide(document.querySelector(".user-drawer-item.login"));
 
     // DATOS USUARIO
@@ -113,8 +119,11 @@ if (window.__AUTH_UI_LOADED__) {
   });
 
   document.addEventListener("userLoggedOut", () => {
+    localStorage.removeItem("cortero_user");
     resetAuthUI();
   });
+
+  document.addEventListener("DOMContentLoaded", initAuthUI);
 
   window.initAuthUI = initAuthUI;
 }
