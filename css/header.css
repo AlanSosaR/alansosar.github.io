@@ -79,7 +79,19 @@ header.header-fixed {
 .nav-links a:hover {
   color: var(--verde);
 }
+/* =====================================================
+   NAV DESKTOP — VISIBILIDAD POR ESTADO
+===================================================== */
 
+/* Invitado */
+.header-fixed.no-user #public-nav {
+  display: flex;
+}
+
+/* Logueado */
+.header-fixed.logged #public-nav {
+  display: none !important;
+}
 /* =====================================================
    ACCIONES HEADER
 ===================================================== */
