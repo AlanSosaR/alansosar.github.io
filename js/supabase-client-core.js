@@ -1,10 +1,9 @@
 // ============================================================
-// SUPABASE CLIENT — VERSIÓN FINAL ESTABLE 2025
-// Funciona con trigger, login, registro y menú dinámico
-// Sin errores rojos, sin PKCE, sin SDK duplicado
+// SUPABASE CLIENT — VERSIÓN FINAL ESTABLE 2025 (CORREGIDA)
+// ÚNICA FUENTE DE VERDAD PARA AUTH
 // ============================================================
 
-console.log("🔥 SUPABASE CLIENT — Versión FINAL estable 2025");
+console.log("🔥 SUPABASE CLIENT — FINAL LIMPIO 2025");
 
 // ------------------------------------------------------------
 // 1) SDK de Supabase ya cargado desde index.html
@@ -12,14 +11,14 @@ console.log("🔥 SUPABASE CLIENT — Versión FINAL estable 2025");
 const { createClient } = window.supabase;
 
 // ------------------------------------------------------------
-// 2) Credenciales REALES del proyecto
+// 2) Credenciales del proyecto
 // ------------------------------------------------------------
 const SUPABASE_URL = "https://eaipcuvvddyrqkbmjmvw.supabase.co";
 const SUPABASE_ANON_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVhaXBjdXZ2ZGR5cnFrYm1qbXZ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMwOTcxMDEsImV4cCI6MjA3ODY3MzEwMX0.2qICLx3qZgeGr0oXZ8PYRxXPL1X5Vog4UoOnTQBFzNA";
 
 // ------------------------------------------------------------
-// 3) Persistencia segura en localStorage
+// 3) Persistencia segura
 // ------------------------------------------------------------
 const storage = {
   getItem: (k) => { try { return localStorage.getItem(k); } catch { return null; } },
@@ -28,7 +27,7 @@ const storage = {
 };
 
 // ------------------------------------------------------------
-// 4) CREAR CLIENTE SUPABASE (REAL, DEFINITIVO)
+// 4) Crear cliente Supabase
 // ------------------------------------------------------------
 window.supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: {
@@ -38,16 +37,17 @@ window.supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     storage
   }
 });
-// 🔑 Alias global para compatibilidad total
+
+// Alias global
 window.supabase = window.supabaseClient;
 
 // ------------------------------------------------------------
-// 5) CARGAR PERFIL GLOBAL DESDE TABLA "users"
+// 5) Cargar perfil global (tabla users)
 // ------------------------------------------------------------
 async function cargarPerfilGlobal(user) {
   if (!user) return;
 
-  console.log("📥 Cargando perfil para ID:", user.id);
+  console.log("📥 Cargando perfil:", user.id);
 
   const { data, error } = await window.supabaseClient
     .from("users")
@@ -56,26 +56,23 @@ async function cargarPerfilGlobal(user) {
     .single();
 
   if (error) {
-    console.error("❌ Error cargando perfil de BD:", error);
+    console.error("❌ Error perfil:", error);
     return;
   }
 
-  // Guardar perfil en localStorage
   localStorage.setItem("cortero_user", JSON.stringify(data));
   localStorage.setItem("cortero_logged", "1");
 
-  console.log("👤 Perfil completo cargado:", data);
-
-  // Avisar a todo el sistema (menú, avatar, saludos, etc.)
-  document.dispatchEvent(new CustomEvent("userLoggedIn", { detail: data }));
+  document.dispatchEvent(
+    new CustomEvent("userLoggedIn", { detail: data })
+  );
 }
 
 // ------------------------------------------------------------
-// 6) LOGOUT REAL (Auth + limpieza local)
+// 6) Logout real y definitivo
 // ------------------------------------------------------------
 async function logoutTotal() {
-  // 🔑 marcar logout manual
-  localStorage.setItem("cortero_manual_logout", "1");
+  console.log("🚪 Logout total");
 
   await window.supabaseClient.auth.signOut();
 
@@ -85,24 +82,23 @@ async function logoutTotal() {
   document.dispatchEvent(new CustomEvent("userLoggedOut"));
 }
 window.corteroLogout = logoutTotal;
-// ------------------------------------------------------------
-// 7) EVENTOS DE AUTH (login, logout, confirmación de correo)
-// ------------------------------------------------------------
-window.supabaseClient.auth.onAuthStateChange(async (event, session) => {
-  console.log("🔄 Evento de Auth:", event);
 
-  // 🔑 Si hubo logout manual, bloquear cualquier re-login
-  if (localStorage.getItem("cortero_manual_logout") === "1") {
-    if (!session?.user) {
-      // Supabase ya confirmó logout → limpiar flag
-      localStorage.removeItem("cortero_manual_logout");
-    }
-    return;
+// ------------------------------------------------------------
+// 7) AUTH STATE — ÚNICA FUENTE DE VERDAD
+// ------------------------------------------------------------
+window.supabaseClient.auth.onAuthStateChange((event, session) => {
+  console.log("🔐 Auth event:", event);
+
+  // Sesión activa (login o restauración válida)
+  if (
+    (event === "INITIAL_SESSION" || event === "SIGNED_IN") &&
+    session?.user
+  ) {
+    cargarPerfilGlobal(session.user);
   }
 
-  if (session?.user) {
-    cargarPerfilGlobal(session.user);
-  } else {
+  // Logout real
+  if (event === "SIGNED_OUT") {
     localStorage.removeItem("cortero_user");
     localStorage.removeItem("cortero_logged");
     document.dispatchEvent(new CustomEvent("userLoggedOut"));
@@ -110,44 +106,19 @@ window.supabaseClient.auth.onAuthStateChange(async (event, session) => {
 });
 
 // ------------------------------------------------------------
-// 8) RESTAURAR SESIÓN AUTOMÁTICA AL CARGAR LA PÁGINA
-// ------------------------------------------------------------
-document.addEventListener("DOMContentLoaded", async () => {
-  const manualLogout = localStorage.getItem("cortero_manual_logout");
-
-  if (manualLogout === "1") {
-    console.log("🚫 Restauración bloqueada (logout manual)");
-    return;
-  }
-
-  const { data } = await window.supabaseClient.auth.getSession();
-
-  if (data?.session?.user) {
-    console.log("🔁 Sesión restaurada automáticamente");
-    cargarPerfilGlobal(data.session.user);
-  } else {
-    console.log("🚫 No hay sesión activa");
-  }
-});
-
-// ------------------------------------------------------------
-// 9) CONECTAR SESIÓN CON HEADER (PC)
+// 8) CONECTAR SESIÓN CON HEADER (UI)
 // ------------------------------------------------------------
 
 // Usuario logueado
 document.addEventListener("userLoggedIn", () => {
   const header = document.querySelector(".header-fixed");
-  if (header) {
-    header.classList.add("logged");
-    header.classList.remove("no-user");
-  }
+  header?.classList.add("logged");
+  header?.classList.remove("no-user");
 });
 
-// Usuario invitado / logout
+// Usuario invitado
 document.addEventListener("userLoggedOut", () => {
   const header = document.querySelector(".header-fixed");
-  if (header) {
-    header.classList.remove("logged");
-    header.classList.add("no-user");
-  }
+  header?.classList.remove("logged");
+  header?.classList.add("no-user");
 });
