@@ -1,5 +1,5 @@
 <!-- =====================================================
-     HEADER — DEFINITIVO, ESTABLE (FINAL)
+     HEADER — DEFINITIVO, ESTABLE (FINAL CORREGIDO)
 ====================================================== -->
 <header class="header-fixed no-user" id="main-header">
 
@@ -20,16 +20,14 @@
   <div class="header-right">
 
     <!-- NAV DESKTOP — VISITANTE -->
-    <nav id="public-nav"
-         class="nav-links desktop-only header-nav">
+    <nav id="public-nav" class="nav-links desktop-only header-nav no-user">
       <a href="#productos">Variedades de café</a>
       <a href="#nosotros">Quiénes somos</a>
       <a href="#contacto">Contáctanos</a>
     </nav>
 
     <!-- NAV DESKTOP — LOGUEADO -->
-    <nav id="private-nav"
-         class="nav-links desktop-only header-nav hidden">
+    <nav id="private-nav" class="nav-links desktop-only header-nav logged hidden">
       <a href="mispedidos.html">Mis pedidos</a>
       <a href="historial.html">Historial</a>
     </nav>
@@ -40,14 +38,14 @@
       <!-- USUARIO — DESKTOP -->
       <div class="desktop-only header-user">
 
-        <!-- LOGIN -->
+        <!-- LOGIN (VISIBLE PARA VISITANTE) -->
         <a href="login.html"
            id="login-desktop"
-           class="login-link no-user hidden">
+           class="login-link no-user">
           Iniciar sesión
         </a>
 
-        <!-- AVATAR -->
+        <!-- AVATAR (SOLO LOGUEADO) -->
         <button id="btn-header-user"
                 class="header-avatar-button logged hidden"
                 aria-label="Perfil">
@@ -58,7 +56,7 @@
 
       </div>
 
-      <!-- CARRITO -->
+      <!-- CARRITO (SIEMPRE VISIBLE) -->
       <button id="cart-btn"
               class="cart-button"
               aria-label="Ver carrito">
@@ -115,17 +113,17 @@
     </a>
 
     <!-- PÚBLICO -->
-    <a href="#productos" class="user-drawer-item">
+    <a href="#productos" class="user-drawer-item no-user">
       <span class="material-symbols-outlined user-drawer-item-icon">local_cafe</span>
       Variedades de café
     </a>
 
-    <a href="#nosotros" class="user-drawer-item">
+    <a href="#nosotros" class="user-drawer-item no-user">
       <span class="material-symbols-outlined user-drawer-item-icon">groups</span>
       Quiénes somos
     </a>
 
-    <a href="#contacto" class="user-drawer-item">
+    <a href="#contacto" class="user-drawer-item no-user">
       <span class="material-symbols-outlined user-drawer-item-icon">mail</span>
       Contáctanos
     </a>
@@ -134,14 +132,14 @@
 
   <hr class="user-drawer-divider">
 
-  <!-- LOGOUT -->
+  <!-- LOGOUT (SOLO LOGUEADO) -->
   <button id="logout-btn" class="user-drawer-item logout logged hidden">
     <span class="material-symbols-outlined user-drawer-item-icon">logout</span>
     Cerrar sesión
   </button>
 
-  <!-- LOGIN -->
-  <a href="login.html" class="user-drawer-item login no-user hidden">
+  <!-- LOGIN (VISIBLE PARA VISITANTE) -->
+  <a href="login.html" class="user-drawer-item login no-user">
     <span class="material-symbols-outlined user-drawer-item-icon">login</span>
     Iniciar sesión
   </a>
