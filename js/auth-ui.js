@@ -17,6 +17,25 @@ if (window.__AUTH_UI_LOADED__) {
 /* ========================= HELPERS ========================= */
 const $ = (id) => document.getElementById(id);
 
+/* ============================================================
+   ⏳ ESPERAR A SUPABASE (ANTI-RACE CONDITION)
+   👉 NO altera lógica existente
+============================================================ */
+async function waitForSupabase() {
+  if (window.supabase?.auth) return;
+
+  console.warn("⏳ Esperando Supabase...");
+  return new Promise(resolve => {
+    const interval = setInterval(() => {
+      if (window.supabase?.auth) {
+        clearInterval(interval);
+        console.log("✅ Supabase listo");
+        resolve();
+      }
+    }, 50);
+  });
+}
+
 /* ========================= DRAWER ========================= */
 function closeDrawerUI() {
   $("user-drawer")?.classList.remove("open");
@@ -52,7 +71,6 @@ function resetAuthUI() {
   header?.classList.add("no-user");
 
   toggleHeaderLinks(false);
-
   closeDrawerUI();
 }
 
@@ -86,7 +104,6 @@ function setLoggedIn(user) {
   }
 
   toggleHeaderLinks(true);
-
   closeDrawerUI();
 }
 
@@ -94,6 +111,8 @@ function setLoggedIn(user) {
    🔑 SINCRONIZAR SESIÓN INICIAL (FIX REAL)
 ============================================================ */
 async function syncInitialSession() {
+  await waitForSupabase(); // 🔑 ÚNICA LÍNEA NUEVA AQUÍ
+
   const { data } = await supabase.auth.getSession();
 
   if (data.session?.user) {
