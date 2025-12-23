@@ -45,8 +45,8 @@ if (!window.__HEADER_CORE_LOADED__) {
   }
 
   /* =====================================================
-     INIT HEADER (EVENTOS UI)
-  ===================================================== */
+     INIT HEADER (EVENTOS UI BASE)
+===================================================== */
   let HEADER_INITIALIZED = false;
 
   function initHeader() {
@@ -55,18 +55,11 @@ if (!window.__HEADER_CORE_LOADED__) {
 
     console.log("✅ initHeader ejecutado (UI only)");
 
-    // Abrir / cerrar drawer
+    // Hamburguesa (móvil)
     $("menu-toggle")?.addEventListener("click", toggleDrawer);
-    $("btn-header-user")?.addEventListener("click", toggleDrawer);
-    $("user-scrim")?.addEventListener("click", closeDrawer);
 
-    // 🔑 LOGOUT REAL (NO UI FAKE)
-    $("logout-btn")?.addEventListener("click", async () => {
-      if (typeof window.corteroLogout === "function") {
-        await window.corteroLogout(); // Supabase signOut real
-      }
-      closeDrawer();
-    });
+    // Scrim
+    $("user-scrim")?.addEventListener("click", closeDrawer);
 
     // Carrito
     $("cart-btn")?.addEventListener("click", () => {
@@ -77,22 +70,45 @@ if (!window.__HEADER_CORE_LOADED__) {
   }
 
   /* =====================================================
-     EVENTOS GLOBALES (UI REACTIVA)
-  ===================================================== */
+     EVENTOS GLOBALES (AUTH + UI)
+===================================================== */
   if (!window.__HEADER_GLOBAL_EVENTS__) {
     window.__HEADER_GLOBAL_EVENTS__ = true;
 
-    // Auth → solo UX (NO decide sesión)
+    // CUANDO USUARIO SE LOGUEA
     document.addEventListener("userLoggedIn", () => {
+      console.log("👤 header.js detecta login");
+
       updateCartCount();
       closeDrawer();
+
+      // 🔑 ENGANCHAR AVATAR CUANDO YA EXISTE
+      const avatarBtn = $("btn-header-user");
+      if (avatarBtn && !avatarBtn.dataset.bound) {
+        avatarBtn.addEventListener("click", toggleDrawer);
+        avatarBtn.dataset.bound = "1";
+      }
+
+      // Logout (una sola vez)
+      const logoutBtn = $("logout-btn");
+      if (logoutBtn && !logoutBtn.dataset.bound) {
+        logoutBtn.addEventListener("click", async () => {
+          if (typeof window.corteroLogout === "function") {
+            await window.corteroLogout(); // Supabase signOut real
+          }
+        });
+        logoutBtn.dataset.bound = "1";
+      }
     });
 
+    // CUANDO USUARIO CIERRA SESIÓN
     document.addEventListener("userLoggedOut", () => {
+      console.log("👤 header.js detecta logout");
       updateCartCount();
       closeDrawer();
     });
 
+    // ESC
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") closeDrawer();
     });
