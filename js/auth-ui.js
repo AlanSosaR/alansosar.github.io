@@ -19,7 +19,7 @@ if (window.__AUTH_UI_LOADED__) {
   const hide = (el) => el && el.classList.add("hidden");
 
   /* =====================================================
-     RESET → USUARIO NO LOGUEADO
+     RESET → USUARIO INVITADO
   ===================================================== */
   function resetAuthUI() {
     console.log("👤 UI → invitado");
@@ -37,13 +37,16 @@ if (window.__AUTH_UI_LOADED__) {
     show($("public-nav"));
     hide($("private-nav"));
 
-    // HEADER USER
+    // HEADER
     show($("login-desktop"));
     hide($("btn-header-user"));
 
     // DRAWER
-    document.querySelectorAll(".logged").forEach(hide);
-    document.querySelectorAll(".no-user").forEach(show);
+    hide(document.querySelector(".user-drawer-header.logged"));
+    hide(document.querySelector(".user-drawer-item.logout"));
+    hide(document.querySelectorAll(".user-drawer-item.logged"));
+
+    show(document.querySelector(".user-drawer-item.login"));
   }
 
   /* =====================================================
@@ -65,13 +68,16 @@ if (window.__AUTH_UI_LOADED__) {
     hide($("public-nav"));
     show($("private-nav"));
 
-    // HEADER USER
+    // HEADER
     hide($("login-desktop"));
     show($("btn-header-user"));
 
     // DRAWER
-    document.querySelectorAll(".no-user").forEach(hide);
-    document.querySelectorAll(".logged").forEach(show);
+    show(document.querySelector(".user-drawer-header.logged"));
+    show(document.querySelectorAll(".user-drawer-item.logged"));
+    show(document.querySelector(".user-drawer-item.logout"));
+
+    hide(document.querySelector(".user-drawer-item.login"));
 
     // DATOS USUARIO
     const photo = user.photo_url || "imagenes/avatar-default.svg";
