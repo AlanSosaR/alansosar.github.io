@@ -528,7 +528,7 @@ body.page-carrito.logged #login-desktop {
 
 /* =====================================================
    MÓVIL — CARRITO (LOGUEADO O NO)
-   ☰  TEXTO  LOGO
+   ☰  TEXTO CENTRO  LOGO
 ===================================================== */
 @media (max-width: 900px) {
 
@@ -540,26 +540,42 @@ body.page-carrito.logged #login-desktop {
       display: none !important;
     }
 
-    /* ❌ ocultar login */
+    /* ❌ ocultar login COMPLETAMENTE */
     #login-desktop {
       display: none !important;
+      width: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
     }
 
-    /* ❌ ocultar cualquier acción extra */
-    .header-actions {
+    /* ✅ header base limpio */
+    .header-fixed {
       display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
     }
 
-    /* ✅ mostrar logo a la derecha */
+    /* ✅ logo SOLO a la derecha */
     .header-logo-link {
       display: flex !important;
       align-items: center;
-      margin-left: auto !important; /* 🔑 clave */
+      margin-left: auto !important;
+      flex-shrink: 0;
     }
 
-    /* tamaño correcto del logo */
+    /* tamaño correcto */
     .header-logo {
       height: 44px;
+    }
+
+    /* ✅ asegurar que el título NO se monte */
+    .header-title {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      white-space: nowrap;
+      pointer-events: none;
     }
   }
 }
