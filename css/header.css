@@ -493,30 +493,40 @@ body.page-carrito .header-cart-title {
 .user-drawer.no-user .logged { display: none; }
 
 /* =====================================================
-   OCULTAR ICONO DEL CARRITO EN PÁGINA CARRITO
+   HEADER — MODO CARRITO (CHECKOUT)
 ===================================================== */
+
+/* Ocultar carrito siempre */
 body.page-carrito #cart-btn {
   display: none !important;
 }
-/* =====================================================
-   HEADER — MODO CARRITO
-   Solo mostrar "Iniciar sesión"
-===================================================== */
 
-/* Ocultar navegación pública */
+/* Ocultar navegación pública siempre */
 body.page-carrito .header-nav,
 body.page-carrito .nav-links {
   display: none !important;
 }
 
-/* Ocultar avatar (logueado o no) */
-body.page-carrito #btn-header-user,
-body.page-carrito .header-avatar-button {
+/* =========================
+   USUARIO NO LOGUEADO
+========================= */
+body.page-carrito.no-user #btn-header-user,
+body.page-carrito.no-user .header-avatar-button {
   display: none !important;
 }
 
+body.page-carrito.no-user #login-desktop {
+  display: inline-flex !important;
+}
 
-/* Mostrar SOLO login */
-body.page-carrito #login-desktop {
+/* =========================
+   USUARIO LOGUEADO
+========================= */
+body.page-carrito.logged #login-desktop {
+  display: none !important;
+}
+
+body.page-carrito.logged #btn-header-user,
+body.page-carrito.logged .header-avatar-button {
   display: inline-flex !important;
 }
