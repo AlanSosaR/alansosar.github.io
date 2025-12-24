@@ -28,6 +28,10 @@ if (!window.__AUTH_UI_LOADED__) {
     const header = document.querySelector(".header-fixed");
     const drawer = $("user-drawer");
 
+    // 🔑 BODY (nuevo — NO rompe nada)
+    document.body.classList.remove("logged");
+    document.body.classList.add("no-user");
+
     header?.classList.remove("logged");
     header?.classList.add("no-user");
 
@@ -45,6 +49,10 @@ if (!window.__AUTH_UI_LOADED__) {
 
     const header = document.querySelector(".header-fixed");
     const drawer = $("user-drawer");
+
+    // 🔑 BODY (nuevo — NO rompe nada)
+    document.body.classList.remove("no-user");
+    document.body.classList.add("logged");
 
     header?.classList.remove("no-user");
     header?.classList.add("logged");
