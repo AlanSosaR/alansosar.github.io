@@ -31,7 +31,49 @@ header.header-fixed {
   z-index: 1000;
   box-sizing: border-box;
 }
+/* =====================================================
+   TÍTULO CENTRAL — CARRITO
+===================================================== */
 
+/* Oculto por defecto (todas las páginas) */
+.header-cart-title {
+  display: none;
+}
+
+/* Visible SOLO en carrito */
+body.page-carrito .header-cart-title {
+  display: block;
+}
+
+/* Estilo visual */
+.header-cart-title {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--marron);
+  white-space: nowrap;
+
+  pointer-events: none; /* 🔑 no bloquea clicks */
+}
+
+/* Contador de cafés */
+.header-cart-title span {
+  font-weight: 600;
+  color: var(--verde);
+}
+
+/* =====================================================
+   MOBILE — AJUSTE FINO
+===================================================== */
+@media (max-width: 900px) {
+  .header-cart-title {
+    font-size: 0.95rem;
+  }
+}
 /* LOGO */
 .header-logo-link {
   display: flex;
