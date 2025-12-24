@@ -58,7 +58,19 @@ body {
   color: var(--verde);
   text-decoration: none;
 }
-
+/* =====================================================
+   AJUSTE — SEGUIR COMPRANDO CON HEADER FIJO
+===================================================== */
+body.page-carrito .seguir-comprando {
+  margin-top: calc(72px + 0.75rem); /* altura del header */
+  position: relative;
+  z-index: 5;
+}
+@media (max-width: 900px) {
+  body.page-carrito .seguir-comprando {
+    margin-top: calc(72px + 0.5rem);
+  }
+}
 /* =====================================================
    GRID PRINCIPAL
 ===================================================== */
