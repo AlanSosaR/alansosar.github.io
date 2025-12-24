@@ -534,38 +534,39 @@ body.page-carrito.logged #login-desktop {
 
   body.page-carrito {
 
-    /* ❌ ocultar avatar */
+    /* ❌ apagar TODAS las acciones de usuario (login + avatar) */
+    .header-actions {
+      display: none !important;
+    }
+
+    /* ❌ refuerzo extra (por si hay reglas sueltas) */
+    #login-desktop,
     #btn-header-user,
     .header-avatar-button {
       display: none !important;
     }
 
-    /* ❌ ocultar login */
-    #login-desktop {
-      display: none !important;
-    }
-
-    /* ✅ header como contenedor real */
+    /* ✅ header limpio */
     .header-fixed {
       display: flex;
       align-items: center;
       position: relative;
     }
 
-    /* ✅ mover EL ÚNICO logo a la derecha */
+    /* ✅ logo a la derecha */
     .header-logo-link {
       display: flex !important;
       align-items: center;
-      margin-left: auto !important; /* 🔑 ESTA ES LA CLAVE */
+      margin-left: auto !important;
       flex-shrink: 0;
     }
 
-    /* tamaño correcto del logo */
+    /* tamaño del logo */
     .header-logo {
       height: 44px;
     }
 
-    /* ✅ título centrado real (sin montarse) */
+    /* ✅ título centrado REAL */
     .header-title {
       position: absolute;
       left: 50%;
