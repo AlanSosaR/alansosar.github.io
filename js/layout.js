@@ -9,7 +9,7 @@ console.log("📐 layout.js cargado");
   - layout.js SOLO inyecta header
   - NO decide auth
   - NO toca sesión
-  - NO toca UI de usuario
+  - NO toca lógica de usuario
   - NO se ejecuta en login.html
 */
 
@@ -33,7 +33,7 @@ if (document.body.dataset.page === "login") {
     // =====================================================
     document.addEventListener("DOMContentLoaded", async () => {
 
-      // 🔒 Si el header ya existe, NO hacer nada
+      // 🔒 Si el header ya existe, no volver a inyectar
       if (document.getElementById("main-header")) {
         console.warn("⚠️ Header ya existe en DOM, no se inyecta");
         return;
@@ -42,13 +42,8 @@ if (document.body.dataset.page === "login") {
       try {
         console.log("📦 layout.js: cargando header.html");
 
-        const res = await fetch("header.html", {
-          cache: "no-store"
-        });
-
-        if (!res.ok) {
-          throw new Error("header.html no encontrado");
-        }
+        const res = await fetch("header.html", { cache: "no-store" });
+        if (!res.ok) throw new Error("header.html no encontrado");
 
         const html = await res.text();
 
@@ -59,7 +54,7 @@ if (document.body.dataset.page === "login") {
         console.log("✅ Header inyectado");
 
         // =====================================================
-        // 5️⃣ INIT HEADER (SOLO UI)
+        // 5️⃣ INIT HEADER (UI PURA)
         // =====================================================
         if (typeof window.initHeader === "function") {
           window.initHeader();
@@ -69,7 +64,7 @@ if (document.body.dataset.page === "login") {
         }
 
         // =====================================================
-        // 6️⃣ INIT AUTH UI (SINCRONIZA MENÚ)
+        // 6️⃣ INIT AUTH UI (SOLO VISIBILIDAD logged / no-user)
         // =====================================================
         if (typeof window.initAuthUI === "function") {
           await window.initAuthUI();
@@ -77,6 +72,12 @@ if (document.body.dataset.page === "login") {
         } else {
           console.warn("⚠️ initAuthUI no existe");
         }
+
+        // =====================================================
+        // 7️⃣ HEADER LISTO — NOTIFICAR AL RESTO DE LA APP
+        // =====================================================
+        document.dispatchEvent(new Event("header:ready"));
+        console.log("📣 Evento header:ready disparado");
 
       } catch (err) {
         console.error("❌ Error en layout.js:", err);
