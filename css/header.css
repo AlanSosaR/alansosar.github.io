@@ -368,6 +368,23 @@ header.header-fixed {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+/* =====================================================
+   FLECHA PERFIL DRAWER — VERDE
+===================================================== */
+.user-drawer-arrow {
+  margin-left: auto;
+  font-size: 22px;
+  color: var(--verde);      /* 🔑 VERDE */
+  opacity: 0.85;
+  flex-shrink: 0;
+  transition: transform .2s ease, opacity .2s ease;
+}
+
+/* Hover elegante */
+.user-drawer-profile-link:hover .user-drawer-arrow {
+  transform: translateX(2px);
+  opacity: 1;
+}
 
 /* =====================================================
    ITEMS DRAWER
