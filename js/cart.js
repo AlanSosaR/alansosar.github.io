@@ -127,7 +127,20 @@ if (cartContainer) {
     renderCart();
   });
 }
+/* -----------------------------------------------------------
+   SINCRONIZAR HEADER CUANDO ESTÉ LISTO
+----------------------------------------------------------- */
+document.addEventListener("header:ready", () => {
+  console.log("🧩 header listo → sincronizando carrito");
 
+  // Actualiza badge del header
+  if (typeof window.updateCartCount === "function") {
+    window.updateCartCount();
+  }
+
+  // Actualiza texto "X cafés"
+  renderCart();
+});
 /* -----------------------------------------------------------
    VALIDAR LOGIN PARA PROCEDER
 ----------------------------------------------------------- */
