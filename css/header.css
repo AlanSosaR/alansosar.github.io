@@ -393,13 +393,32 @@ header.header-fixed {
 }
 
 .user-drawer-item.logout {
+  width: 100%;                 /* 🔑 ocupa todo el drawer */
+  padding: 12px 18px;
+
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
   color: #ff4b4b;
   font-weight: 500;
-  background: none;
+
+  background: transparent;
   border: none;
+  cursor: pointer;
+  text-align: left;
+
+  transition: background .2s ease;
 }
+
+/* Hover rojo a TODO el bloque */
 .user-drawer-item.logout:hover {
-  background: rgba(255,75,75,.08);
+  background: rgba(255, 75, 75, 0.14);
+}
+
+/* Click (active) */
+.user-drawer-item.logout:active {
+  background: rgba(255, 75, 75, 0.22);
 }
 /* =====================================================
    LINKS PÚBLICOS — SIEMPRE VISIBLES EN DRAWER
