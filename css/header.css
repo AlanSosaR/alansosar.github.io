@@ -498,3 +498,25 @@ body.page-carrito .header-cart-title {
 body.page-carrito #cart-btn {
   display: none !important;
 }
+/* =====================================================
+   HEADER — MODO CARRITO
+   Solo mostrar "Iniciar sesión"
+===================================================== */
+
+/* Ocultar navegación pública */
+body.page-carrito .header-nav,
+body.page-carrito .nav-links {
+  display: none !important;
+}
+
+/* Ocultar avatar (logueado o no) */
+body.page-carrito #btn-header-user,
+body.page-carrito .header-avatar-button {
+  display: none !important;
+}
+
+
+/* Mostrar SOLO login */
+body.page-carrito #login-desktop {
+  display: inline-flex !important;
+}
