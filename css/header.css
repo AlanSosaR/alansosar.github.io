@@ -545,32 +545,27 @@ body.page-carrito.logged #login-desktop {
       display: none !important;
     }
 
-    /* ❌ ocultar LOGO IZQUIERDO ORIGINAL */
-    .header-logo-link:not(.logo-right) {
-      display: none !important;
-    }
-
-    /* ✅ header base */
+    /* ✅ header como contenedor real */
     .header-fixed {
       display: flex;
       align-items: center;
       position: relative;
     }
 
-    /* ✅ LOGO DERECHO (reemplaza avatar/login) */
-    .header-logo-link.logo-right {
+    /* ✅ mover EL ÚNICO logo a la derecha */
+    .header-logo-link {
       display: flex !important;
       align-items: center;
-      margin-left: auto !important;
+      margin-left: auto !important; /* 🔑 ESTA ES LA CLAVE */
       flex-shrink: 0;
     }
 
-    /* tamaño del logo */
+    /* tamaño correcto del logo */
     .header-logo {
       height: 44px;
     }
 
-    /* ✅ título centrado REAL */
+    /* ✅ título centrado real (sin montarse) */
     .header-title {
       position: absolute;
       left: 50%;
@@ -579,5 +574,4 @@ body.page-carrito.logged #login-desktop {
       pointer-events: none;
     }
   }
-}
 }
