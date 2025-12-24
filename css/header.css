@@ -509,7 +509,7 @@ body.page-carrito .nav-links {
 
 /* =====================================================
    USUARIO NO LOGUEADO
-   → Mostrar SOLO "Iniciar sesión"
+   → Mostrar SOLO "Iniciar sesión" (DESKTOP)
 ===================================================== */
 body.page-carrito.no-user #login-desktop {
   display: inline-flex !important;
@@ -522,7 +522,7 @@ body.page-carrito.no-user .header-avatar-button {
 
 /* =====================================================
    USUARIO LOGUEADO
-   → Mostrar avatar, ocultar login
+   → Mostrar avatar, ocultar login (DESKTOP)
 ===================================================== */
 body.page-carrito.logged #login-desktop {
   display: none !important;
@@ -531,4 +531,39 @@ body.page-carrito.logged #login-desktop {
 body.page-carrito.logged #btn-header-user,
 body.page-carrito.logged .header-avatar-button {
   display: inline-flex !important;
+}
+
+/* =====================================================
+   CARRITO — VISTA MÓVIL
+   ❌ Sin avatar
+   ❌ Sin login
+   ✅ Logo a la derecha
+===================================================== */
+@media (max-width: 900px) {
+
+  body.page-carrito {
+
+    /* ❌ ocultar avatar SIEMPRE */
+    #btn-header-user,
+    .header-avatar-button {
+      display: none !important;
+    }
+
+    /* ❌ ocultar login SIEMPRE */
+    #login-desktop {
+      display: none !important;
+    }
+
+    /* ✅ mostrar logo a la derecha */
+    .header-logo-link {
+      display: flex !important;
+      align-items: center;
+      margin-left: auto !important; /* 🔑 clave */
+    }
+
+    /* Tamaño correcto del logo en móvil */
+    .header-logo {
+      height: 44px;
+    }
+  }
 }
