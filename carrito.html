@@ -1,125 +1,43 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tu selección de café | Café Cortero</title>
 
   <!-- Tipografía -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
-  <!-- Iconos Font Awesome (para botones del carrito) -->
+  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-  <!-- Material Symbols (Material 3) -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@300;400;500&display=swap">
+  <!-- CSS GLOBAL (HEADER + DRAWER) -->
+  <link rel="stylesheet" href="css/header.css?v=30">
 
-  <!-- CSS del carrito (incluye el menú flotante) -->
+  <!-- CSS CARRITO -->
   <link rel="stylesheet" href="css/carrito.css?v=30">
 </head>
 
-<body>
-
-<!-- =====================================================
-     HEADER IGUAL AL INDEX (ADAPTADO AL CARRITO)
-====================================================== -->
-<header class="header-fixed">
-  <!-- Logo -->
-  <a href="index.html" class="header-logo-link">
-    <img src="imagenes/logo.png" alt="Café Cortero" class="header-logo">
-  </a>
-
-  <!-- Título central -->
-  <span id="cart-title" class="cart-title">
-    Tu selección de café (<span id="count-items">0 cafés</span>)
-  </span>
-
-  <!-- Avatar (abre menú flotante en PC y móvil) -->
-  <div class="profile-wrapper-cart">
-    <button id="btn-header-user" class="header-avatar-button" aria-label="Abrir menú de usuario">
-      <img id="avatar-user" src="imagenes/avatar-default.svg" alt="Usuario" class="header-avatar profile-photo-round">
-    </button>
-  </div>
-</header>
-
-<!-- =====================================================
-     MENÚ FLOTANTE MATERIAL 3 (PC + MÓVIL)
-====================================================== -->
-
-<div id="user-scrim" class="user-scrim"></div>
-
-<aside id="user-drawer" class="user-drawer no-user" aria-hidden="true">
-  <!-- Bloque de perfil clicable que lleva a perfil.html -->
-  <a href="perfil.html" class="user-drawer-header user-drawer-profile-link">
-    <div class="user-drawer-avatar">
-      <img id="avatar-user-drawer" src="imagenes/avatar-default.svg" alt="Usuario">
-    </div>
-
-    <div class="user-drawer-profile-texts">
-      <p class="user-drawer-name" id="hello-desktop-cart">Usuario</p>
-      <p class="user-drawer-email" id="email-drawer-cart">alansosa225@gmail.com</p>
-    </div>
-
-    <!-- Flecha estilo Google Store -->
-    <span class="material-symbols-outlined user-drawer-arrow">chevron_right</span>
-  </a>
-
-  <hr class="user-drawer-divider">
-
-  <nav class="user-drawer-nav">
-    <a href="mispedidos.html" class="user-drawer-item">
-      <span class="user-drawer-item-icon material-symbols-outlined">shopping_bag</span>
-      <span>Mis pedidos</span>
-    </a>
-
-    <a href="historial.html" class="user-drawer-item">
-      <span class="user-drawer-item-icon material-symbols-outlined">history</span>
-      <span>Historial de compras</span>
-    </a>
-
-    <a href="index.html#productos" class="user-drawer-item">
-      <span class="user-drawer-item-icon material-symbols-outlined">local_cafe</span>
-      <span>Variedades de café</span>
-    </a>
-
-    <a href="index.html#nosotros" class="user-drawer-item">
-      <span class="user-drawer-item-icon material-symbols-outlined">groups</span>
-      <span>Quiénes somos</span>
-    </a>
-
-    <a href="index.html#contacto" class="user-drawer-item">
-      <span class="user-drawer-item-icon material-symbols-outlined">mail</span>
-      <span>Contáctanos</span>
-    </a>
-
-    <hr class="user-drawer-divider">
-
-    <button id="logout-btn" class="user-drawer-item logout">
-      <span class="user-drawer-item-icon material-symbols-outlined">logout</span>
-      <span>Cerrar sesión</span>
-    </button>
-  </nav>
-</aside>
+<body class="page-carrito">
 
 <!-- =====================================================
      SEGUIR COMPRANDO
 ====================================================== -->
-<div id="seguir-comprando-box" class="seguir-comprando">
-  <button id="top-back-btn" class="icon-back" onclick="window.location.href='index.html#productos'">
+<div class="seguir-comprando">
+  <button class="icon-back" onclick="location.href='index.html#productos'">
     <i class="fa-solid fa-chevron-left"></i>
   </button>
-
-  <a id="top-back-text" href="index.html" class="seguir-link">Seguir comprando</a>
+  <a href="index.html#productos" class="seguir-link">Seguir comprando</a>
 </div>
 
 <!-- =====================================================
-     TEMPLATE DEL ITEM
+     TEMPLATE ITEM CARRITO
 ====================================================== -->
 <template id="template-cart-item">
   <div class="item">
 
     <div class="item-img-box">
-      <img class="item-image" src="">
+      <img class="item-image" alt="">
     </div>
 
     <div class="item-info">
@@ -142,6 +60,7 @@
         </button>
       </div>
     </div>
+
   </div>
 </template>
 
@@ -151,14 +70,13 @@
 <main>
   <div class="grid-carrito">
 
-    <!-- IZQUIERDA: productos -->
+    <!-- PRODUCTOS -->
     <div class="col-productos">
       <div id="cart-container"></div>
     </div>
 
-    <!-- DERECHA: resumen -->
-    <div class="col-resumen" id="resumen-container">
-
+    <!-- RESUMEN -->
+    <div class="col-resumen">
       <div class="resumen-box">
         <h2>Resumen del pedido</h2>
 
@@ -185,25 +103,31 @@
       <div id="snackbar-login" class="snackbar hidden">
         Necesitas iniciar sesión para continuar con tu pedido.
       </div>
-
     </div>
+
   </div>
 </main>
 
-<!-- Loader -->
+<!-- =====================================================
+     LOADER
+====================================================== -->
 <div id="page-loader" class="page-loader hidden">
   <div class="loader-circle"></div>
 </div>
 
 <!-- =====================================================
-     SCRIPTS EXISTENTES (solo referencias, sin JS inline nuevo)
+     SCRIPTS (ORDEN CORRECTO)
 ====================================================== -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase-client-core.js"></script>
 <script src="js/supabase-auth.js"></script>
 <script src="js/auth-ui.js"></script>
-<script src="js/cart.js?v=2601"></script>
 
+<!-- 🔑 INYECTA HEADER GLOBAL + MODO CARRITO -->
+<script src="js/layout.js"></script>
+
+<!-- LÓGICA DEL CARRITO -->
+<script src="js/cart.js?v=2601"></script>
 
 </body>
 </html>
