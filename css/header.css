@@ -491,3 +491,10 @@ body.page-carrito .header-cart-title {
 ===================================================== */
 .user-drawer.logged .no-user { display: none; }
 .user-drawer.no-user .logged { display: none; }
+
+/* =====================================================
+   OCULTAR ICONO DEL CARRITO EN PÁGINA CARRITO
+===================================================== */
+body.page-carrito #cart-btn {
+  display: none !important;
+}
