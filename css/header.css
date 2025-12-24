@@ -496,32 +496,34 @@ body.page-carrito .header-cart-title {
    HEADER — MODO CARRITO (CHECKOUT)
 ===================================================== */
 
-/* Ocultar carrito siempre */
+/* 🔒 Siempre ocultar icono del carrito */
 body.page-carrito #cart-btn {
   display: none !important;
 }
 
-/* Ocultar navegación pública siempre */
+/* 🔒 Siempre ocultar navegación pública */
 body.page-carrito .header-nav,
 body.page-carrito .nav-links {
   display: none !important;
 }
 
-/* =========================
+/* =====================================================
    USUARIO NO LOGUEADO
-========================= */
+   → Mostrar SOLO "Iniciar sesión"
+===================================================== */
+body.page-carrito.no-user #login-desktop {
+  display: inline-flex !important;
+}
+
 body.page-carrito.no-user #btn-header-user,
 body.page-carrito.no-user .header-avatar-button {
   display: none !important;
 }
 
-body.page-carrito.no-user #login-desktop {
-  display: inline-flex !important;
-}
-
-/* =========================
+/* =====================================================
    USUARIO LOGUEADO
-========================= */
+   → Mostrar avatar, ocultar login
+===================================================== */
 body.page-carrito.logged #login-desktop {
   display: none !important;
 }
