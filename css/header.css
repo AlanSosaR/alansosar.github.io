@@ -528,36 +528,34 @@ body.page-carrito.logged #login-desktop {
 
 /* =====================================================
    MÓVIL — CARRITO (LOGUEADO O NO)
-   ☰  TEXTO CENTRO  LOGO
+   ☰  TEXTO CENTRO  LOGO DERECHA
 ===================================================== */
 @media (max-width: 900px) {
 
   body.page-carrito {
 
-    /* ❌ apagar TODAS las acciones de usuario (login + avatar) */
-    .header-actions {
-      display: none !important;
-    }
-
-    /* ❌ refuerzo extra (por si hay reglas sueltas) */
+    /* ❌ apagar TODAS las acciones de usuario */
+    .header-actions,
     #login-desktop,
     #btn-header-user,
     .header-avatar-button {
       display: none !important;
     }
 
-    /* ✅ header limpio */
+    /* ✅ header ocupa TODO el ancho */
     .header-fixed {
       display: flex;
       align-items: center;
       position: relative;
+      width: 100%; /* 🔑 CLAVE */
     }
 
-    /* ✅ logo a la derecha */
+    /* ✅ logo pegado a la derecha */
     .header-logo-link {
       display: flex !important;
       align-items: center;
       margin-left: auto !important;
+      padding-right: 12px;
       flex-shrink: 0;
     }
 
@@ -566,7 +564,7 @@ body.page-carrito.logged #login-desktop {
       height: 44px;
     }
 
-    /* ✅ título centrado REAL */
+    /* ✅ título centrado real */
     .header-title {
       position: absolute;
       left: 50%;
