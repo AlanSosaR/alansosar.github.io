@@ -508,50 +508,46 @@ body.page-carrito .nav-links {
 }
 
 /* =====================================================
-   USUARIO NO LOGUEADO
-   → Mostrar SOLO "Iniciar sesión" (DESKTOP)
+   DESKTOP (PC) — comportamiento normal
 ===================================================== */
+
+/* No logueado → mostrar login */
 body.page-carrito.no-user #login-desktop {
   display: inline-flex !important;
 }
 
-body.page-carrito.no-user #btn-header-user,
-body.page-carrito.no-user .header-avatar-button {
-  display: none !important;
-}
-
-/* =====================================================
-   USUARIO LOGUEADO
-   → Mostrar avatar, ocultar login (DESKTOP)
-===================================================== */
-body.page-carrito.logged #login-desktop {
-  display: none !important;
-}
-
+/* Logueado → mostrar avatar */
 body.page-carrito.logged #btn-header-user,
 body.page-carrito.logged .header-avatar-button {
   display: inline-flex !important;
 }
 
+body.page-carrito.logged #login-desktop {
+  display: none !important;
+}
+
 /* =====================================================
-   CARRITO — VISTA MÓVIL
-   ❌ Sin avatar
-   ❌ Sin login
-   ✅ Logo a la derecha
+   MÓVIL — CARRITO (LOGUEADO O NO)
+   ☰  TEXTO  LOGO
 ===================================================== */
 @media (max-width: 900px) {
 
   body.page-carrito {
 
-    /* ❌ ocultar avatar SIEMPRE */
+    /* ❌ ocultar avatar */
     #btn-header-user,
     .header-avatar-button {
       display: none !important;
     }
 
-    /* ❌ ocultar login SIEMPRE */
+    /* ❌ ocultar login */
     #login-desktop {
       display: none !important;
+    }
+
+    /* ❌ ocultar cualquier acción extra */
+    .header-actions {
+      display: flex;
     }
 
     /* ✅ mostrar logo a la derecha */
@@ -561,7 +557,7 @@ body.page-carrito.logged .header-avatar-button {
       margin-left: auto !important; /* 🔑 clave */
     }
 
-    /* Tamaño correcto del logo en móvil */
+    /* tamaño correcto del logo */
     .header-logo {
       height: 44px;
     }
