@@ -563,23 +563,26 @@ body.page-carrito.logged #login-desktop {
 }
 
 /* =====================================================
-   DESKTOP — LOGO SIEMPRE A LA IZQUIERDA
+   HEADER — MODO CHECKOUT
+   (Carrito / Datos Cliente / Recibo)
 ===================================================== */
+
+/* ===================== DESKTOP ===================== */
 @media (min-width: 901px) {
-  body.page-carrito .header-logo-link {
+
+  body.header-checkout .header-logo-link {
     position: static !important;
     margin-right: auto;
     transform: none !important;
     display: flex !important;
   }
+
 }
 
-/* =====================================================
-   MÓVIL — LOGO A LA DERECHA (CARRITO)
-===================================================== */
+/* ===================== MÓVIL ===================== */
 @media (max-width: 900px) {
 
-  body.page-carrito header.header-fixed {
+  body.header-checkout header.header-fixed {
     position: fixed !important;
     top: 0;
     left: 0;
@@ -587,11 +590,14 @@ body.page-carrito.logged #login-desktop {
     justify-content: center;
   }
 
-  body.page-carrito .header-cart-title {
+  /* Texto centrado */
+  body.header-checkout .header-cart-title {
     z-index: 1;
+    pointer-events: none;
   }
 
-  body.page-carrito .header-logo-link {
+  /* Logo a la derecha */
+  body.header-checkout .header-logo-link {
     display: flex !important;
     position: absolute;
     right: 16px;
@@ -600,7 +606,7 @@ body.page-carrito.logged #login-desktop {
     z-index: 3001;
   }
 
-  body.page-carrito .header-logo {
+  body.header-checkout .header-logo {
     height: 44px;
   }
 }
