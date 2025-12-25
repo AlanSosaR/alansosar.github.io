@@ -519,18 +519,23 @@ body.page-carrito .header-cart-title {
   display: flex;
 }
 /* =====================================================
-   DRAWER — DIVISORES VERDES FUERTES (FINAL REAL)
+   DRAWER — DIVISORES VERDE PREMIUM (FINAL)
 ===================================================== */
 
 .user-drawer-divider,
 .user-drawer hr {
   border: 0 !important;
-  border-top: 2.5px solid var(--verde) !important; /* grosor visible */
-  opacity: 1 !important;                           /* verde vivo real */
-  margin: 16px 0;
 
-  /* toque premium sin apagar el color */
-  box-shadow: 0 1px 0 rgba(0,0,0,0.08);
+  /* Línea principal */
+  border-top: 3px solid var(--verde) !important;
+
+  /* Segunda línea sutil (efecto doble stroke) */
+  box-shadow:
+    0 1px 0 rgba(51, 103, 59, 0.55),   /* verde suave */
+    0 0 6px rgba(51, 103, 59, 0.35);   /* glow premium */
+
+  margin: 18px 0;
+  opacity: 1 !important;
 }
 /* =====================================================
    VISIBILIDAD DRAWER
