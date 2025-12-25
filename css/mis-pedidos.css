@@ -15,11 +15,17 @@
 /* =====================================================
    BASE
 ===================================================== */
+/* =====================================================
+   AJUSTE HEADER FIJO — RESPIRO SUPERIOR
+===================================================== */
 
 body.page-mis-pedidos {
   margin: 0;
-  background: var(--blanco); /* ✅ FONDO BLANCO REAL */
+  background: var(--blanco); /* fondo blanco real */
   font-family: "Poppins", -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* 🔑 CLAVE: espacio para el header fijo */
+  padding-top: 92px;
 }
 
 /* =====================================================
@@ -74,8 +80,13 @@ body.page-mis-pedidos {
   padding: 22px;
   margin-bottom: 26px;
 
-  border: 2px solid var(--border-cafe);
-  box-shadow: var(--sombra-card);
+  /* ❌ sin borde */
+  border: none;
+
+  /* ✅ efecto flotante real */
+  box-shadow:
+    0 12px 30px rgba(0, 0, 0, 0.12),
+    0 4px 10px rgba(0, 0, 0, 0.06);
 }
 
 /* =====================================================
@@ -92,7 +103,8 @@ body.page-mis-pedidos {
 .pedido-fecha {
   margin: 6px 0 4px;
   font-size: 0.9rem;
-  color: #6b6b6b;
+  color: var(--verde); /* ✅ verde corporativo */
+  font-weight: 500;
 }
 
 .pedido-total {
@@ -111,8 +123,8 @@ body.page-mis-pedidos {
   border-radius: 22px;
 
   background: var(--blanco);
-  border: 2px solid var(--border-cafe);
-  box-shadow: 0 8px 22px rgba(0,0,0,0.06);
+  border: 1.8px solid var(--cafe-real); /* ☕ contorno café real */
+  box-shadow: 0 10px 26px rgba(0,0,0,0.08);
 }
 
 .progreso-title {
@@ -175,7 +187,7 @@ body.page-mis-pedidos {
 ===================================================== */
 
 .pedido-footer {
-  margin-top: 16px;
+  margin-top: 18px;
   text-align: center;
 }
 
@@ -184,8 +196,44 @@ body.page-mis-pedidos {
   border: none;
   color: var(--verde);
   font-weight: 700;
-  font-size: 1rem;
+  font-size: 1.05rem;
   cursor: pointer;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 8px 14px;
+  border-radius: 18px;
+
+  transition: 
+    color 0.25s ease,
+    background 0.25s ease,
+    transform 0.25s ease;
+}
+
+/* Flecha más bonita */
+.ver-recibo::after {
+  content: "→";
+  font-size: 1.2rem;
+  transition: transform 0.25s ease;
+}
+
+/* Hover elegante */
+.ver-recibo:hover {
+  background: rgba(51, 103, 59, 0.08); /* verde suave */
+  transform: translateY(-1px);
+}
+
+/* Flecha animada */
+.ver-recibo:hover::after {
+  transform: translateX(4px);
+}
+
+/* Active (tap móvil) */
+.ver-recibo:active {
+  transform: translateY(0);
+  background: rgba(51, 103, 59, 0.14);
 }
 
 /* =====================================================
