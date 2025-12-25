@@ -68,21 +68,22 @@ body.header-checkout {
 /* ============================================================
    TARJETA EXTERIOR — SIN BORDE
 ============================================================ */
-.profile-card {
-  background: var(--blanco);
-  border-radius: 26px;
+.profile-container {
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
 
-  /* ⬆️ MÁS AIRE ARRIBA PARA LA FLECHA */
-  padding: 5rem 1.8rem 3rem; /* antes 4rem */
+  /* 🖥️ MÁS AIRE SUPERIOR (desktop) */
+  margin-top: 48px;
 
-  box-shadow: 0 12px 28px rgba(0,0,0,0.06);
-  position: relative;
-  border: none !important;
+  margin-bottom: 2.5rem;
+  padding: 0 1rem;
 }
 
+/* 📱 MÓVIL — aire suficiente sin romper layout */
 @media (max-width: 900px) {
-  .profile-card {
-    padding-top: 4.2rem; /* antes 3.2rem */
+  .profile-container {
+    margin-top: 32px;
   }
 }
 
