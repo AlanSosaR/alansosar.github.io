@@ -68,13 +68,13 @@ body.header-checkout .profile-container {
 }
 
 /* ============================================================
-   BOTÓN ATRÁS — ESTILO PERFIL PERO VERDE
+   BOTÓN ATRÁS — ANCLADO AL HEADER (ESTABLE)
 ============================================================ */
 
 .back-btn {
-  position: absolute;
-  top: 22px;
-  left: 22px;
+  position: fixed;               /* 🔑 CLAVE: ya NO depende de la tarjeta */
+  top: 88px;                     /* header (72px) + aire visual */
+  left: 16px;
 
   width: 48px;
   height: 48px;
@@ -89,18 +89,31 @@ body.header-checkout .profile-container {
   justify-content: center;
 
   cursor: pointer;
-  transition: .25s ease;
+  z-index: 4000;                 /* 🔒 por encima de tarjetas */
+
+  transition: transform .25s ease, box-shadow .25s ease;
 }
 
-.back-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 7px 20px rgba(0,0,0,0.20);
+/* Hover solo en desktop */
+@media (min-width: 901px) {
+  .back-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 7px 20px rgba(0,0,0,0.20);
+  }
 }
 
 .back-btn .material-symbols-outlined {
   font-size: 26px;
   font-weight: 600;
   color: var(--verde) !important;
+}
+
+/* Ajuste fino móvil */
+@media (max-width: 900px) {
+  .back-btn {
+    top: 84px;
+    left: 14px;
+  }
 }
 
 /* ============================================================
