@@ -1,6 +1,7 @@
 /* ============================================================
    DETALLES DE ENTREGA — VERSIÓN FINAL PERFECTA (FEB 2025)
    Alineado EXACTO a PERFIL y REGISTRO
+   (SIN HEADER — USA HEADER GLOBAL)
 ============================================================ */
 
 :root {
@@ -22,36 +23,6 @@ body {
   background: var(--gris-fondo);
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
   -webkit-tap-highlight-color: transparent;
-}
-
-/* ============================================================
-   HEADER — MISMO ESTILO QUE CARRITO
-============================================================ */
-
-.header-fixed {
-  position: sticky;
-  top: 0;
-  height: 72px;
-  background: var(--blanco);
-  padding: 0 1.2rem;
-
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  border-bottom: 1.4px solid rgba(0,0,0,0.06);
-  z-index: 999;
-}
-
-.header-logo {
-  height: 52px;
-}
-
-.form-title {
-  font-size: 1.28rem;
-  font-weight: 500;
-  color: var(--marron);
-  letter-spacing: -0.25px;
 }
 
 /* ============================================================
@@ -175,6 +146,7 @@ body {
 .m3-input select.filled {
   color: var(--marron);
 }
+
 .m3-field.filled .floating-label {
   top: -6px;
   left: 2.85rem;
@@ -274,7 +246,7 @@ body {
 }
 
 /* ============================================================
-   ERRORES MATERIAL 3 — BAJO CADA CAMPO (CLAVE)
+   ERRORES MATERIAL 3 — BAJO CADA CAMPO
 ============================================================ */
 
 .m3-field.error .m3-input {
@@ -289,7 +261,6 @@ body {
   color: var(--error) !important;
 }
 
-/* Texto de error */
 .helper-text {
   margin-top: .35rem;
   margin-left: 3rem;
@@ -299,7 +270,6 @@ body {
   min-height: 1em;
 }
 
-/* Transiciones suaves */
 .m3-input,
 .floating-label,
 .helper-text {
