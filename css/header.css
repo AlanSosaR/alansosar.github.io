@@ -566,11 +566,14 @@ body.page-carrito.logged #login-desktop {
    LOGO — SOLO CARRITO + SOLO MÓVIL (FINAL REAL)
 ===================================================== */
 @media (max-width: 900px) {
-
   body.page-carrito header.header-fixed {
-    position: relative;
-    justify-content: flex-start;
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    justify-content: center;
   }
+}
 
   body.page-carrito .header-cart-title {
     z-index: 1;
