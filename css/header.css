@@ -519,15 +519,14 @@ body.page-carrito .header-cart-title {
   display: flex;
 }
 /* =====================================================
-   DRAWER — DIVISORES VERDES (FIJO Y AISLADO)
+   DRAWER — DIVISORES VERDES (DEFINITIVO Y REAL)
 ===================================================== */
 
 .user-drawer-divider,
 .user-drawer hr {
-  border: none !important;
-  height: 1px;
-  background-color: var(--verde) !important;
-  opacity: 0.35;               /* elegante, no chillón */
+  border: 0 !important;
+  border-top: 1.5px solid var(--verde) !important;
+  opacity: 0.35;
   margin: 14px 0;
 }
 /* =====================================================
