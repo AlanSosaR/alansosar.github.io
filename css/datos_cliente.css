@@ -27,94 +27,58 @@ body {
 }
 
 /* ============================================================
-   OFFSET REAL POR HEADER GLOBAL (CHECKOUT)
-   ❌ NO usar padding-top en body
+   TARJETA EXTERIOR — SIN BORDE
 ============================================================ */
-body.header-checkout .profile-container {
-  margin-top: 96px;
-}
 
-@media (max-width: 900px) {
-  body.header-checkout .profile-container {
-    margin-top: 88px;
-  }
-}
-
-/* ============================================================
-   CONTENEDOR PRINCIPAL
-   🔑 SIN margen superior visual
-============================================================ */
 .profile-container {
   max-width: 900px;
-  margin: 0 auto 2.5rem;
+  margin: 2.5rem auto;
   padding: 0 1rem;
 }
 
-/* ============================================================
-   TARJETA EXTERIOR
-============================================================ */
 .profile-card {
   background: var(--blanco);
   border-radius: 26px;
-
-  /* 🔑 Aire interno NORMAL */
-  padding: 4rem 1.8rem 3rem;
-
+  padding: 6rem 1.8rem 3rem;
   box-shadow: 0 12px 28px rgba(0,0,0,0.06);
   position: relative;
   border: none !important;
 }
 
-@media (max-width: 900px) {
-  .profile-card {
-    padding-top: 3.2rem;
-  }
-}
-
 /* ============================================================
-   BOTÓN ATRÁS — ANCLADO AL HEADER (NO A LA TARJETA)
+   BOTÓN ATRÁS — ESTILO PERFIL PERO VERDE
 ============================================================ */
+
 .back-btn {
-  position: fixed;
-  top: 88px;              /* header (72px) + aire */
-  left: 16px;
+  position: absolute;
+  top: 22px;
+  left: 22px;
 
   width: 48px;
   height: 48px;
   border-radius: 50%;
-
   background: #ffffff;
   border: none;
+
+  box-shadow: 0 5px 16px rgba(0,0,0,0.15);
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  box-shadow: 0 5px 16px rgba(0,0,0,0.15);
   cursor: pointer;
-
-  z-index: 4000;          /* 🔒 por encima de todo */
-  transition: transform .25s ease, box-shadow .25s ease;
+  transition: .25s ease;
 }
 
-@media (min-width: 901px) {
-  .back-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 7px 20px rgba(0,0,0,0.20);
-  }
+.back-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 7px 20px rgba(0,0,0,0.20);
 }
 
 .back-btn .material-symbols-outlined {
   font-size: 26px;
   font-weight: 600;
-  color: var(--verde);
-}
-
-@media (max-width: 900px) {
-  .back-btn {
-    top: 84px;
-    left: 14px;
-  }
+  color: var(--verde) !important;
 }
 
 /* ============================================================
