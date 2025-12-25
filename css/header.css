@@ -563,9 +563,22 @@ body.page-carrito.logged #login-desktop {
 }
 
 /* =====================================================
-   LOGO — SOLO CARRITO + SOLO MÓVIL (FINAL REAL)
+   DESKTOP — LOGO SIEMPRE A LA IZQUIERDA
+===================================================== */
+@media (min-width: 901px) {
+  body.page-carrito .header-logo-link {
+    position: static !important;
+    margin-right: auto;
+    transform: none !important;
+    display: flex !important;
+  }
+}
+
+/* =====================================================
+   MÓVIL — LOGO A LA DERECHA (CARRITO)
 ===================================================== */
 @media (max-width: 900px) {
+
   body.page-carrito header.header-fixed {
     position: fixed !important;
     top: 0;
@@ -573,7 +586,6 @@ body.page-carrito.logged #login-desktop {
     right: 0;
     justify-content: center;
   }
-}
 
   body.page-carrito .header-cart-title {
     z-index: 1;
