@@ -42,28 +42,29 @@ body.header-checkout {
 }
 
 /* ============================================================
-   CONTENEDOR PRINCIPAL — SUBE LA TARJETA
+   CONTENEDOR PRINCIPAL — AIRE LIMPIO (SIN HACKS)
 ============================================================ */
 .profile-container {
   max-width: 900px;
   margin-left: auto;
   margin-right: auto;
 
-  /* 🔑 SUBE la tarjeta */
-  margin-top: -24px;
+  /* 🖥️ Aire natural debajo del header */
+  margin-top: 32px;
 
   margin-bottom: 2.5rem;
   padding: 0 1rem;
 }
 
-/* 📱 MÓVIL — un poco menos */
+/* 📱 MÓVIL */
 @media (max-width: 900px) {
   .profile-container {
-    margin-top: -16px;
+    margin-top: 24px;
   }
 }
+
 /* ============================================================
-   TARJETA EXTERIOR — IGUAL A RECIBO
+   TARJETA EXTERIOR — ESPACIO REAL PARA LA FLECHA
 ============================================================ */
 .profile-card {
   position: relative;
@@ -76,8 +77,11 @@ body.header-checkout {
   background: var(--blanco);
   border-radius: 26px;
 
-  /* 🔑 espacio superior para flecha */
-  padding: 5.6rem 24px 3rem;
+  /* 🔑 CLAVE: colchón interno para la flecha */
+  padding-top: 6.8rem;
+  padding-left: 24px;
+  padding-right: 24px;
+  padding-bottom: 3rem;
 
   box-shadow:
     0 18px 44px rgba(0,0,0,0.10),
@@ -86,10 +90,13 @@ body.header-checkout {
   border: none !important;
 }
 
-/* 📱 MÓVIL */
+/* 📱 MÓVIL — proporcional y estable */
 @media (max-width: 900px) {
   .profile-card {
-    padding: 4.2rem 16px 24px;
+    padding-top: 5.4rem;
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-bottom: 24px;
     border-radius: 24px;
   }
 }
