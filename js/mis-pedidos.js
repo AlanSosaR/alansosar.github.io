@@ -1,7 +1,9 @@
 /* ============================================================
    Mis pedidos — Café Cortero 2025
-   SOLO LÓGICA DE PEDIDOS (SIN HEADER / SIN DRAWER)
+   SOLO LÓGICA (SIN HEADER / SIN DRAWER)
 ============================================================ */
+
+console.log("📦 mis-pedidos.js — INIT");
 
 /* -----------------------------------------------------------
    Helpers
@@ -12,53 +14,72 @@ function getSupabaseClient() {
 
 function formatFecha(fechaISO) {
   const d = new Date(fechaISO);
-  return d.toLocaleDateString("es-HN", {
+  return d.toLocaleString("es-HN", {
     day: "2-digit",
     month: "short",
     year: "numeric",
     hour: "2-digit",
-    minute: "2-digit"
+    minute: "2-digit",
+    hour12: true
   });
 }
 
 /* -----------------------------------------------------------
-   MAPEO DE ESTADOS → PROGRESO
+   MAPEO DE STATUS → PROGRESO
+   (alineado con recibo.js)
 ----------------------------------------------------------- */
-function mapEstadoToSteps(estado) {
-  // pasos: Pago → Revisión → Confirmado → Envío
+function mapStatusToSteps(status) {
+  switch (status) {
+    case "payment_review":      // Pago en revisión
+      return 2;
+    case "payment_confirmed":   // Pago confirmado
+      return 3;
+    case "cash_on_delivery":    // Pago en efectivo
+      return 3;
+    case "processing":          // En ejecución
+      return 3;
+    case "shipped":             // Enviado
+      return 4;
+    case "delivered":           // Entregado
+      return 4;
+    default:
+      return 1;                 // Pendiente
+  }
+}
+
+function formatStatusLabel(status) {
   const map = {
-    "Pendiente de pago": 1,
-    "Pago en revisión": 2,
-    "Pago confirmado": 3,
-    "En ejecución": 3,
-    "Enviado": 4,
-    "Entregado": 4
+    payment_review: "Pago en revisión",
+    payment_confirmed: "Pago confirmado",
+    cash_on_delivery: "Pago contra entrega",
+    processing: "En ejecución",
+    shipped: "Enviado",
+    delivered: "Entregado"
   };
-  return map[estado] || 1;
+  return map[status] || "Pendiente de pago";
 }
 
 /* -----------------------------------------------------------
-   RENDER DE PEDIDOS + ESTADO VACÍO
+   RENDER PEDIDOS
 ----------------------------------------------------------- */
 async function renderPedidos() {
   const sb = getSupabaseClient();
   if (!sb) return;
 
-  const lista       = document.getElementById("pedidos-lista");
-  const emptyState  = document.getElementById("empty-state");
-  const seguirBack  = document.querySelector(".seguir-comprando");
-  const template    = document.getElementById("pedido-template");
+  const lista      = document.getElementById("pedidos-lista");
+  const emptyState = document.getElementById("empty-state");
+  const seguirBack = document.querySelector(".seguir-comprando");
+  const template   = document.getElementById("pedido-template");
 
   if (!lista || !template) return;
 
   lista.innerHTML = "";
 
   /* -------------------------------------------------------
-     Validar sesión
+     Sesión
   ------------------------------------------------------- */
   const { data: sessionData } = await sb.auth.getSession();
   if (!sessionData?.session) {
-    // sin sesión → no hay pedidos visibles
     mostrarVacio();
     return;
   }
@@ -66,10 +87,10 @@ async function renderPedidos() {
   const userId = sessionData.session.user.id;
 
   /* -------------------------------------------------------
-     Consultar pedidos
+     CONSULTA REAL (TABLA CORRECTA)
   ------------------------------------------------------- */
   const { data: pedidos, error } = await sb
-    .from("pedidos")
+    .from("orders")                // ✅ TABLA CORRECTA
     .select("*")
     .eq("user_id", userId)
     .order("created_at", { ascending: false });
@@ -80,16 +101,13 @@ async function renderPedidos() {
     return;
   }
 
-  /* -------------------------------------------------------
-     Estado vacío
-  ------------------------------------------------------- */
   if (!pedidos || pedidos.length === 0) {
     mostrarVacio();
     return;
   }
 
   /* -------------------------------------------------------
-     Hay pedidos
+     HAY PEDIDOS
   ------------------------------------------------------- */
   emptyState.classList.add("hidden");
   if (seguirBack) seguirBack.style.display = "flex";
@@ -98,7 +116,7 @@ async function renderPedidos() {
     const clone = template.content.cloneNode(true);
 
     clone.querySelector(".pedido-numero").textContent =
-      `Pedido #${pedido.id}`;
+      `Pedido #${pedido.order_number}`;
 
     clone.querySelector(".pedido-fecha").textContent =
       formatFecha(pedido.created_at);
@@ -107,10 +125,11 @@ async function renderPedidos() {
       `Total: L ${Number(pedido.total).toFixed(2)}`;
 
     /* -------- Estado -------- */
-    clone.querySelector(".estado-text").textContent = pedido.estado;
+    const label = formatStatusLabel(pedido.status);
+    clone.querySelector(".estado-text").textContent = label;
 
     /* -------- Progreso -------- */
-    const stepsActivos = mapEstadoToSteps(pedido.estado);
+    const stepsActivos = mapStatusToSteps(pedido.status);
     const steps = clone.querySelectorAll(".step");
     const lines = clone.querySelectorAll(".line");
 
@@ -131,7 +150,7 @@ async function renderPedidos() {
   });
 
   /* -------------------------------------------------------
-     Helpers locales
+     Estado vacío
   ------------------------------------------------------- */
   function mostrarVacio() {
     lista.innerHTML = "";
@@ -141,14 +160,14 @@ async function renderPedidos() {
 }
 
 /* -----------------------------------------------------------
-   SINCRONIZAR CUANDO HEADER ESTÉ LISTO
+   SINCRONIZAR CON HEADER
 ----------------------------------------------------------- */
 document.addEventListener("header:ready", () => {
-  console.log("🧾 header listo → cargando mis pedidos");
+  console.log("🧩 header listo → cargar pedidos");
   renderPedidos();
 });
 
 /* -----------------------------------------------------------
-   INIT (fallback por si header ya cargó)
+   INIT FALLBACK
 ----------------------------------------------------------- */
 renderPedidos();
