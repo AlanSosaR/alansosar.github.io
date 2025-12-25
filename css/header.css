@@ -549,29 +549,7 @@ body.page-carrito.logged #login-desktop {
       width: 100%; /* 🔑 CLAVE */
     }
 
-/* =====================================================
-   LOGO — SOLO CARRITO + SOLO MÓVIL (FINAL)
-===================================================== */
-@media (max-width: 900px) {
-  body.page-carrito header.header-fixed {
-    position: relative;
-  }
 
-  body.page-carrito .header-logo-link {
-    display: flex !important;
-    position: absolute;
-    right: 16px;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 3001;
-    margin: 0 !important;
-    padding: 0 !important;
-  }
-
-  body.page-carrito .header-logo {
-    height: 44px;
-  }
-}
 
     /* ✅ título centrado real */
     .header-title {
@@ -581,5 +559,31 @@ body.page-carrito.logged #login-desktop {
       white-space: nowrap;
       pointer-events: none;
     }
+  }
+}
+/* =====================================================
+   LOGO — SOLO CARRITO + SOLO MÓVIL (FINAL REAL)
+===================================================== */
+@media (max-width: 900px) {
+
+  body.page-carrito header.header-fixed {
+    position: relative;
+  }
+
+  body.page-carrito .header-logo-link {
+    display: flex !important;
+
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+
+    z-index: 3001;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  body.page-carrito .header-logo {
+    height: 44px;
   }
 }
