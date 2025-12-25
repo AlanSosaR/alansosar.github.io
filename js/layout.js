@@ -54,6 +54,28 @@ if (document.body.dataset.page === "login") {
         console.log("✅ Header inyectado");
 
         // =====================================================
+        // 4.1️⃣ HEADER — TÍTULO CENTRAL SEGÚN PÁGINA
+        // =====================================================
+
+        // Ocultar TODOS los títulos primero
+        document.querySelectorAll(".header-cart-title").forEach(el => {
+          el.classList.add("hidden");
+        });
+
+        // Mostrar SOLO el que corresponde
+        if (document.body.classList.contains("page-carrito")) {
+          document.getElementById("header-cart-title")?.classList.remove("hidden");
+        }
+
+        if (document.body.classList.contains("page-datos-cliente")) {
+          document.getElementById("header-datos-title")?.classList.remove("hidden");
+        }
+
+        if (document.body.classList.contains("page-recibo")) {
+          document.getElementById("header-recibo-title")?.classList.remove("hidden");
+        }
+
+        // =====================================================
         // 5️⃣ INIT HEADER (UI PURA)
         // =====================================================
         if (typeof window.initHeader === "function") {
