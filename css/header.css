@@ -583,7 +583,7 @@ body.page-carrito.logged #login-desktop {
 @media (max-width: 900px) {
 
   body.header-checkout header.header-fixed {
-    position: fixed !important;
+    position: fixed !important; /* ✅ se mantiene fijo */
     top: 0;
     left: 0;
     right: 0;
@@ -594,6 +594,8 @@ body.page-carrito.logged #login-desktop {
   body.header-checkout .header-cart-title {
     z-index: 1;
     pointer-events: none;
+    top: 50%;
+    transform: translate(-50%, -50%);
   }
 
   /* Logo a la derecha */
@@ -609,4 +611,28 @@ body.page-carrito.logged #login-desktop {
   body.header-checkout .header-logo {
     height: 44px;
   }
+}
+
+/* =====================================================
+   TÍTULOS CENTRALES — VISIBILIDAD POR PÁGINA
+===================================================== */
+
+/* Base (todos ocultos) */
+.header-cart-title {
+  display: none;
+}
+
+/* CARRITO */
+body.page-carrito #header-cart-title {
+  display: block;
+}
+
+/* DATOS DEL CLIENTE */
+body.page-datos-cliente #header-datos-title {
+  display: block;
+}
+
+/* RECIBO */
+body.page-recibo #header-recibo-title {
+  display: block;
 }
