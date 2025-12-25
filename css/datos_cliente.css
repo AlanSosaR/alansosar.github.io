@@ -52,10 +52,19 @@ body.header-checkout .profile-container {
 .profile-card {
   background: var(--blanco);
   border-radius: 26px;
-  padding: 6rem 1.8rem 3rem;
+
+  /* ⬇️ Aire interno normal (NO compensa header) */
+  padding: 4rem 1.8rem 3rem;
+
   box-shadow: 0 12px 28px rgba(0,0,0,0.06);
   position: relative;
   border: none !important;
+}
+
+@media (max-width: 900px) {
+  .profile-card {
+    padding-top: 3.2rem;
+  }
 }
 
 /* ============================================================
