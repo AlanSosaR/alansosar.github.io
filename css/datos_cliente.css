@@ -42,21 +42,26 @@ body.header-checkout {
 }
 
 /* ============================================================
-   CONTENEDOR PRINCIPAL — CORRECTO
+   CONTENEDOR PRINCIPAL — SUBE LA TARJETA
 ============================================================ */
 .profile-container {
   max-width: 900px;
-  margin: 0 auto 2.5rem;   /* ❌ sin margin-top */
+  margin-left: auto;
+  margin-right: auto;
+
+  /* 🔑 SUBE la tarjeta */
+  margin-top: -24px;
+
+  margin-bottom: 2.5rem;
   padding: 0 1rem;
 }
 
+/* 📱 MÓVIL — un poco menos */
 @media (max-width: 900px) {
   .profile-container {
-    padding-left: 12px;
-    padding-right: 12px;
+    margin-top: -16px;
   }
 }
-
 /* ============================================================
    TARJETA EXTERIOR — IGUAL A RECIBO
 ============================================================ */
