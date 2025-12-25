@@ -1,5 +1,6 @@
 /* ============================================================
-   RECIBO / DETALLES DEL PEDIDO — BLOQUE CORREGIDO
+   RECIBO / DETALLES DEL PEDIDO — VERSIÓN FINAL ESTABLE
+   USA HEADER GLOBAL (CHECKOUT)
 ============================================================ */
 
 /* ================= ROOT ================= */
@@ -9,7 +10,6 @@
   --blanco: #ffffff;
   --fondo: #fafafa;
   --marron-suave: rgba(75, 44, 25, 0.7);
-
   --border-cafe: rgba(81, 38, 21, 0.75);
 }
 
@@ -21,73 +21,49 @@ body {
                "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
   color: var(--marron);
 }
-/* =====================================================
-   HEADER — TÍTULO SOLO PARA RECIBO
-===================================================== */
 
-.page-recibo .header-center-title {
-  position: fixed;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-
-  height: 72px;
-  display: flex;
-  align-items: center;
-
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--marron);
-
-  pointer-events: none; /* 🔑 no bloquea avatar ni menú */
-  z-index: 3001;
+/* ============================================================
+   OFFSET POR HEADER GLOBAL (CHECKOUT)
+============================================================ */
+body.header-checkout .recibo-container {
+  margin-top: 96px; /* desktop */
 }
 
-/* Mobile ajuste */
-@media (max-width: 600px) {
-  .page-recibo .header-center-title {
-    font-size: 0.95rem;
+@media (max-width: 900px) {
+  body.header-checkout .recibo-container {
+    margin-top: 88px; /* móvil */
   }
 }
+
 /* ================= CONTENEDOR ================= */
 .recibo-container {
   max-width: 900px;
-  margin: 2.5rem auto;
+  margin-left: auto;
+  margin-right: auto;
   padding: 0 1rem;
 }
 
-@media (max-width: 600px) {
-  .recibo-container {
-    margin: 2rem auto;
-    padding: 0 12px;
-  }
-}
-
 /* ============================================================
-   TARJETA PRINCIPAL (FIJA — NO SE MUEVE)
+   TARJETA PRINCIPAL
 ============================================================ */
 .recibo-card {
   position: relative;
   width: 100%;
   max-width: 900px;
-  position: relative;
 
   background: #ffffff;
   border-radius: 26px;
 
-  /* 🔒 ESTE ESPACIO NUNCA CAMBIA */
   padding: 6rem 1.8rem 3rem;
 
-  /* Sombra real de tarjeta flotante */
   box-shadow:
     0 18px 44px rgba(0, 0, 0, 0.14),
     0 6px 16px rgba(0, 0, 0, 0.10);
 }
 
-/* MOBILE — SOLO AJUSTES LATERALES */
+/* MOBILE */
 @media (max-width: 600px) {
   .recibo-card {
-    max-width: 100%;
     padding-left: 16px;
     padding-right: 16px;
     padding-bottom: 24px;
@@ -96,12 +72,12 @@ body {
 }
 
 /* =====================================================
-   BOTÓN VOLVER — ESTABLE Y UNIFICADO
+   BOTÓN VOLVER — DENTRO DE LA TARJETA (CORRECTO)
 ===================================================== */
 .card-back {
-  position: fixed;        /* 🔑 CLAVE */
-  top: 88px;              /* header (72px) + aire */
-  left: 16px;
+  position: absolute;
+  top: 22px;
+  left: 22px;
 
   width: 44px;
   height: 44px;
@@ -119,12 +95,11 @@ body {
     0 2px 6px rgba(0,0,0,0.12);
 
   cursor: pointer;
-  z-index: 900;
+  z-index: 5;
 
   transition: transform .2s ease, box-shadow .2s ease;
 }
 
-/* Hover solo desktop */
 @media (min-width: 901px) {
   .card-back:hover {
     transform: translateY(-2px);
@@ -140,16 +115,8 @@ body {
   color: var(--verde);
 }
 
-/* ================= MOBILE ================= */
-@media (max-width: 600px) {
-  .card-back {
-    top: 88px;  /* un poco más compacto en móvil */
-    left: 16px;
-  }
-}
-
 /* ============================================================
-   TARJETA INTERNA (SE MUEVE SIN AFECTAR FLECHA)
+   TARJETA INTERNA
 ============================================================ */
 .inner-card-full {
   position: relative;
@@ -159,50 +126,44 @@ body {
   border: 2px solid var(--marron);
 
   padding: 3rem 2rem;
-  margin-top: 1.4rem; /* 🔑 baja contenido, no tarjeta */
+  margin-top: 1.4rem;
 }
 
 @media (max-width: 600px) {
   .inner-card-full {
-    padding: 22px 16px;
-    margin-top: 1.2rem;
+    padding: 20px 16px;
     border-radius: 20px;
   }
 }
+
 /* ================= TITULOS ================= */
 .recibo-card h2 {
   text-align: center;
   font-size: 1.45rem;
   margin-bottom: 6px;
-  color: var(--marron); /* 🟤 título principal */
 }
 
-/* ===== FECHA ===== */
 .fecha {
   text-align: center;
   font-size: 0.95rem;
   margin-bottom: 24px;
 }
 
-/* Texto "Fecha:" */
 .fecha strong {
-  color: var(--marron); /* 🟤 */
   font-weight: 600;
 }
 
-/* Valor dinámico de la fecha (BD) */
 .fecha span {
-  color: var(--verde); /* 🟢 */
+  color: var(--verde);
   font-weight: 500;
 }
 
-/* ===== SUBTÍTULOS ===== */
 h3 {
   margin-top: 24px;
   font-size: 1.1rem;
-  color: var(--verde);             /* 🟢 título sección */
+  color: var(--verde);
   padding-left: 12px;
-  border-left: 4px solid var(--marron); /* 🟤 barra */
+  border-left: 4px solid var(--marron);
 }
 
 /* ================= CLIENTE ================= */
@@ -211,15 +172,12 @@ h3 {
   font-size: 0.95rem;
 }
 
-/* Etiquetas: Nombre, Correo, Teléfono, etc. */
 .cliente-info strong {
-  color: var(--marron);   /* 🟤 café */
   font-weight: 600;
 }
 
-/* Valores que vienen de la BD */
 .cliente-info span {
-  color: var(--verde);    /* 🟢 verde */
+  color: var(--verde);
   font-weight: 500;
 }
 
@@ -245,31 +203,21 @@ h3 {
 .cafe-nombre {
   font-weight: 600;
 }
+
 .cafe-cantidad {
   font-size: .8rem;
   color: var(--marron-suave);
 }
+
 .cafe-qty {
-  color: var(--verde); /* = #33673B */
+  color: var(--verde);
 }
+
 .cafe-precio {
   font-weight: 600;
   color: var(--verde);
 }
-/* Icono método de pago */
-.pago-icon {
-  font-size: 20px;
-  vertical-align: middle;
-  margin-right: 6px;
 
-  color: var(--verde);
-
-  font-variation-settings:
-    'FILL' 0,
-    'wght' 400,
-    'GRAD' 0,
-    'opsz' 24;
-}
 /* ================= TOTAL ================= */
 .recibo-total {
   margin-top: 18px;
@@ -281,37 +229,14 @@ h3 {
   justify-content: flex-end;
   align-items: center;
   gap: 6px;
-
-  color: var(--marron); /* 🟤 texto y precio */
 }
 
-/* Ícono Material 3 */
 .total-icon {
   font-size: 22px;
-  line-height: 1;
-  display: flex;
-  align-items: center;
-
-  color: var(--verde); /* 🟢 SOLO el icono */
-
-  font-variation-settings:
-    'FILL' 0,
-    'wght' 400,
-    'GRAD' 0,
-    'opsz' 24;
+  color: var(--verde);
 }
 
-/* Blindaje de texto en café */
-.recibo-total strong,
-.recibo-total span:not(.total-icon) {
-  color: var(--marron);
-}
-
-/* ============================================================
-   MÉTODO DE PAGO — SELECT + BLOQUES
-============================================================ */
-
-/* Contenedor general */
+/* ================= PAGOS ================= */
 .pagos {
   margin-top: 12px;
   display: flex;
@@ -319,11 +244,6 @@ h3 {
   gap: 18px;
 }
 
-/* ===============================
-   SELECTOR DE MÉTODO
-================================ */
-
-/* Label contenedor */
 .pago-select-label {
   display: flex;
   align-items: center;
@@ -331,182 +251,46 @@ h3 {
 
   padding: 14px 16px;
   border-radius: 16px;
-
   border: 1.7px solid var(--border-cafe);
   background: #fff;
-
-  cursor: pointer;
 }
 
-/* Icono del selector */
-.pago-select-label .material-symbols-outlined {
-  font-size: 22px;
-  color: var(--verde);
-
-  font-variation-settings:
-    'FILL' 0,
-    'wght' 400,
-    'GRAD' 0,
-    'opsz' 24;
-}
-
-/* Select */
 #metodoPago {
   flex: 1;
   border: none;
   outline: none;
   background: transparent;
-
   font-size: 0.95rem;
   font-weight: 500;
-  color: var(--marron);
-
-  appearance: none;
   cursor: pointer;
 }
 
-/* ===============================
-   BLOQUES DE PAGO
-================================ */
-
-/* Base para ambos métodos */
 .pago-bloque {
-  padding: 18px 18px;
+  padding: 18px;
   border-radius: 18px;
-
   background: #fff;
   border: 1.6px solid rgba(0,0,0,0.08);
-
   display: flex;
   flex-direction: column;
   gap: 14px;
 }
 
-/* Oculto */
 .pago-bloque.hidden {
   display: none;
 }
 
-/* ===============================
-   TEXTO INFORMATIVO
-================================ */
-
-.pago-bloque p {
-  font-size: 0.95rem;
-  line-height: 1.6;
-  color: var(--marron);
-}
-
-/* Reutiliza tus colores */
-.pago-bloque strong {
-  color: var(--verde);
-  font-weight: 600;
-}
-
-/* Icono dentro del bloque */
-.pago-bloque .pago-icon {
-  font-size: 20px;
-  margin-right: 6px;
-  vertical-align: middle;
-  color: var(--verde);
-
-  font-variation-settings:
-    'FILL' 0,
-    'wght' 400,
-    'GRAD' 0,
-    'opsz' 24;
-}
-
-/* ===============================
-   COMPROBANTE (solo depósito)
-================================ */
-
-/* Ajuste fino para el botón de subir */
-#pago-deposito .comprobante-link {
-  margin-top: 4px;
-}
-
-/* Preview separado */
-#pago-deposito .preview {
-  margin-top: 10px;
-}
-
-/* =====================================================
-   COMPROBANTE DE PAGO — BLOQUE FINAL
-===================================================== */
-
-/* Contenedor del bloque (si aplica) */
-.comprobante-box {
-  margin-top: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-/* Texto informativo */
-.comprobante-info {
-  font-size: 0.95rem;
-  line-height: 1.6;
-  color: var(--marron); /* 🟤 texto café */
-}
-
-/* Resaltados importantes dentro del texto */
-.comprobante-info strong {
-  color: var(--verde); /* 🟢 acciones clave */
-  font-weight: 600;
-}
-
-/* Botón tipo enlace (Material 3, como "Cambiar contraseña") */
+/* ================= COMPROBANTE ================= */
 .comprobante-link {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-
-  margin-top: 12px;
-  padding: 0;
-
   background: none;
   border: none;
-
   font-size: 0.95rem;
   font-weight: 600;
-  color: var(--marron); /* 🟤 texto café */
-
   cursor: pointer;
-  text-align: left;
-
-  text-decoration: none; /* ❌ sin subrayado */
 }
 
-/* Ícono Material 3 (solo icono en verde) */
-.comprobante-link .material-symbols-outlined {
-  font-size: 22px;
-  line-height: 1;
-  color: var(--verde); /* 🟢 icono verde */
-
-  font-variation-settings:
-    'FILL' 0,
-    'wght' 400,
-    'GRAD' 0,
-    'opsz' 24;
-}
-
-/* Estados interactivos (SIN subrayado) */
-.comprobante-link:hover,
-.comprobante-link:focus,
-.comprobante-link:active {
-  text-decoration: none;
-  outline: none;
-}
-
-/* 🔑 Blindaje final: texto SIEMPRE café */
-.comprobante-link,
-.comprobante-link span:not(.material-symbols-outlined),
-.comprobante-link strong {
-  color: var(--marron);
-}
-
-/* Preview del comprobante */
 .preview img {
   max-width: 100%;
   border-radius: 18px;
@@ -519,152 +303,29 @@ h3 {
   text-align: center;
 }
 
-/* Utilidad */
-.hidden {
-  display: none;
-}
-
 /* ================= BOTONES ================= */
 .recibo-botones {
   margin-top: 28px;
 }
 
-/* ===============================
-   BOTONES BASE
-================================ */
-.btn-primary,
-.btn-secondary {
+.btn-primary {
   width: 100%;
   border-radius: 16px;
   padding: 14px 16px;
-
   font-size: 1rem;
   font-weight: 500;
-
   border: none;
-  cursor: pointer;
-
-  display: flex;                 /* 🔑 centra texto y loader */
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-
-  transition: background 0.2s ease, opacity 0.2s ease;
-}
-
-/* ===============================
-   BOTÓN PRINCIPAL
-================================ */
-.btn-primary {
   background: var(--verde);
   color: #fff;
+  cursor: pointer;
 }
 
-/* Hover solo si está habilitado */
-.btn-primary:not(:disabled):hover {
-  background: #2f5f38; /* verde un poco más oscuro */
-}
-
-/* Estado deshabilitado */
 .btn-primary:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
-/* ===============================
-   BOTÓN SECUNDARIO
-================================ */
-.btn-secondary {
-  background: var(--marron);
-  color: #fff;
-}
-
-/* ===============================
-   LOADER
-================================ */
-.btn-primary i {
-  font-size: 1.1rem;
-  line-height: 1;
-}
-
-/* Oculto por defecto */
+/* ================= UTIL ================= */
 .hidden {
-  display: none;
-}
-
-/* ================= RESPONSIVE ================= */
-@media (max-width: 600px) {
-
-  /* Contenedor principal */
-  .recibo-container {
-    padding-top: 3.6rem; /* 🔑 sube la tarjeta */
-  }
-
-  /* Tarjeta principal */
-  .recibo-card {
-    max-width: 100%;
-    padding: 28px 16px 24px; /* 🔑 menos padding arriba */
-    border-radius: 24px;
-  }
-
-  /* Tarjeta interna */
-  .inner-card-full {
-    padding: 20px 16px;
-    border-radius: 20px;
-  }
-
-  /* Botón volver — DENTRO de la tarjeta */
-  .card-back {
-    top: 16px;      /* 🔑 ya no queda flotando a la mitad */
-    left: 16px;
-  }
-}
-
-/* ================= DESKTOP ================= */
-@media (min-width: 900px) {
-  .recibo-card {
-    max-width: 760px; /* 🔥 PC intacto */
-  }
-}
-/* =====================================================
-   SNACKBAR — MENSAJES DE ESTADO
-===================================================== */
-.snackbar {
-  position: fixed;
-  left: 50%;
-  bottom: 24px;
-  transform: translateX(-50%) translateY(12px);
-
-  background: #323232;
-  color: #ffffff;
-
-  padding: 14px 20px;
-  border-radius: 14px;
-
-  font-size: 0.95rem;
-  font-weight: 500;
-
-  opacity: 0;
-  pointer-events: none;
-
-  transition:
-    opacity 0.25s ease,
-    transform 0.25s ease;
-
-  z-index: 9999; /* 🔑 MÁS ALTO QUE HEADER Y DRAWER */
-}
-
-/* Visible */
-.snackbar.show {
-  opacity: 1;
-  pointer-events: auto;
-  transform: translateX(-50%) translateY(0);
-}
-
-/* Mobile ajuste */
-@media (max-width: 600px) {
-  .snackbar {
-    bottom: 16px;
-    font-size: 0.9rem;
-  }
+  display: none !important;
 }
