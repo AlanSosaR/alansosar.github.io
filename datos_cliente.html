@@ -1,145 +1,139 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Detalles de entrega | Café Cortero</title>
 
-  <!-- Iconos globales -->
+  <!-- ================= TIPOGRAFÍA ================= -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- ================= ICONOS ================= -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-  <!-- Material Symbols -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+  <!-- ================= MATERIAL SYMBOLS ================= -->
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@300;400;500&display=swap">
 
-  <!-- Tipografía Apple -->
-  <link rel="stylesheet" href="css/tipografia.css">
+  <!-- ================= CSS GLOBAL HEADER ================= -->
+  <link rel="stylesheet" href="css/header.css?v=30">
 
-  <!-- Tipografía Fraunces -->
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600&display=swap" rel="stylesheet">
-
-  <!-- Estilos de esta pantalla -->
+  <!-- ================= CSS PANTALLA ================= -->
   <link rel="stylesheet" href="css/datos_cliente.css?v=10">
 </head>
 
-<body>
+<body class="page-datos-cliente">
 
-  <!-- ===== HEADER ===== -->
-  <header class="header-fixed">
-    <a href="index.html">
-      <img src="imagenes/logo.png" alt="Café Cortero" class="header-logo">
-    </a>
-    <span class="form-title">Detalles de entrega</span>
-  </header>
+<!-- =====================================================
+     CONTENIDO PRINCIPAL
+====================================================== -->
+<main class="profile-container">
+  <section class="profile-card">
 
-  <!-- ===== CONTENEDOR PRINCIPAL ===== -->
-  <main class="profile-container">
-    <section class="profile-card">
+    <!-- BOTÓN ATRÁS -->
+    <button class="back-btn" onclick="window.location.href='carrito.html'">
+      <span class="material-symbols-outlined">chevron_left</span>
+    </button>
 
-      <!-- BOTÓN ATRÁS -->
-      <button class="back-btn" onclick="window.location.href='carrito.html'">
-        <span class="material-symbols-outlined">chevron_left</span>
-      </button>
+    <div class="profile-inner-card">
 
-      <!-- TARJETA INTERIOR -->
-      <div class="profile-inner-card">
+      <!-- FORMULARIO -->
+      <form id="cliente-form" novalidate>
 
-        <!-- FORMULARIO -->
-        <form id="cliente-form" novalidate>
-
-          <!-- NOMBRE -->
-          <div class="m3-field">
-            <div class="m3-input">
-              <span class="material-symbols-outlined">person</span>
-              <input id="nombre" type="text" placeholder=" " required>
-              <label class="floating-label">Nombre completo *</label>
-            </div>
+        <!-- NOMBRE -->
+        <div class="m3-field">
+          <div class="m3-input">
+            <span class="material-symbols-outlined">person</span>
+            <input id="nombre" type="text" placeholder=" " required>
+            <label class="floating-label">Nombre completo *</label>
           </div>
+        </div>
 
-          <!-- CORREO -->
-          <div class="m3-field">
-            <div class="m3-input no-edit">
-              <span class="material-symbols-outlined">mail</span>
-              <input id="correo" type="email" placeholder=" " readonly required>
-              <label class="floating-label">Correo electrónico *</label>
-            </div>
+        <!-- CORREO -->
+        <div class="m3-field">
+          <div class="m3-input no-edit">
+            <span class="material-symbols-outlined">mail</span>
+            <input id="correo" type="email" placeholder=" " readonly required>
+            <label class="floating-label">Correo electrónico *</label>
           </div>
+        </div>
 
-          <!-- TELÉFONO -->
-          <div class="m3-field">
-            <div class="m3-input">
-              <span class="material-symbols-outlined">call</span>
-              <input id="telefono" type="tel" placeholder=" " required>
-              <label class="floating-label">Teléfono *</label>
-            </div>
+        <!-- TELÉFONO -->
+        <div class="m3-field">
+          <div class="m3-input">
+            <span class="material-symbols-outlined">call</span>
+            <input id="telefono" type="tel" placeholder=" " required>
+            <label class="floating-label">Teléfono *</label>
           </div>
+        </div>
 
-          <!-- CIUDAD -->
-          <div class="m3-field">
-            <div class="m3-input">
-              <span class="material-symbols-outlined">location_city</span>
-              <input id="ciudad" type="text" placeholder=" " required>
-              <label class="floating-label">Ciudad *</label>
-            </div>
+        <!-- CIUDAD -->
+        <div class="m3-field">
+          <div class="m3-input">
+            <span class="material-symbols-outlined">location_city</span>
+            <input id="ciudad" type="text" placeholder=" " required>
+            <label class="floating-label">Ciudad *</label>
           </div>
+        </div>
 
-          <!-- DEPARTAMENTO (SELECT M3 CORREGIDO) -->
-          <div class="m3-field">
-            <div class="m3-input">
-              <span class="material-symbols-outlined">map</span>
-
-              <!-- SELECT CORREGIDO PARA FLOATING LABEL -->
-              <select id="zona" class="m3-select" required>
-                <option value="" disabled selected></option>
-                <option value="El Paraíso">El Paraíso</option>
-                <option value="Francisco Morazán">Francisco Morazán</option>
-                <option value="Choluteca">Choluteca</option>
-                <option value="Cortés">Cortés</option>
-                <option value="Comayagua">Comayagua</option>
-                <option value="La Paz">La Paz</option>
-                <option value="Olancho">Olancho</option>
-                <option value="Yoro">Yoro</option>
-              </select>
-
-              <label class="floating-label">Departamento *</label>
-            </div>
+        <!-- DEPARTAMENTO -->
+        <div class="m3-field">
+          <div class="m3-input">
+            <span class="material-symbols-outlined">map</span>
+            <select id="zona" class="m3-select" required>
+              <option value="" disabled selected></option>
+              <option value="El Paraíso">El Paraíso</option>
+              <option value="Francisco Morazán">Francisco Morazán</option>
+              <option value="Choluteca">Choluteca</option>
+              <option value="Cortés">Cortés</option>
+              <option value="Comayagua">Comayagua</option>
+              <option value="La Paz">La Paz</option>
+              <option value="Olancho">Olancho</option>
+              <option value="Yoro">Yoro</option>
+            </select>
+            <label class="floating-label">Departamento *</label>
           </div>
+        </div>
 
-          <!-- DIRECCIÓN (TEXTAREA M3) -->
-          <div class="m3-field">
-            <div class="m3-input textarea-field">
-              <span class="material-symbols-outlined">home</span>
-              <textarea id="direccion" placeholder=" " rows="3" required></textarea>
-              <label class="floating-label">Dirección de entrega *</label>
-            </div>
+        <!-- DIRECCIÓN -->
+        <div class="m3-field">
+          <div class="m3-input textarea-field">
+            <span class="material-symbols-outlined">home</span>
+            <textarea id="direccion" rows="3" placeholder=" " required></textarea>
+            <label class="floating-label">Dirección de entrega *</label>
           </div>
+        </div>
 
-          <!-- NOTA -->
-          <div class="m3-field">
-            <div class="m3-input textarea-field">
-              <span class="material-symbols-outlined">note</span>
-              <textarea id="nota" placeholder=" " rows="2"></textarea>
-              <label class="floating-label">Nota adicional</label>
-            </div>
+        <!-- NOTA -->
+        <div class="m3-field">
+          <div class="m3-input textarea-field">
+            <span class="material-symbols-outlined">note</span>
+            <textarea id="nota" rows="2" placeholder=" "></textarea>
+            <label class="floating-label">Nota adicional</label>
           </div>
+        </div>
 
-          <!-- BOTÓN -->
-          <button type="submit" id="btn-submit" class="m3-btn">
-            <span class="loader"></span>
-            <span class="btn-text">Proceder con el pedido</span>
-          </button>
+        <!-- BOTÓN -->
+        <button type="submit" id="btn-submit" class="m3-btn">
+          <span class="loader"></span>
+          <span class="btn-text">Proceder con el pedido</span>
+        </button>
 
-        </form>
+      </form>
 
-      </div>
-    </section>
-  </main>
+    </div>
+  </section>
+</main>
+
+<!-- =====================================================
+     SCRIPTS (MISMO ORDEN QUE CARRITO)
+====================================================== -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase-client-core.js"></script>
 <script src="js/supabase-auth.js"></script>
 <script src="js/auth-ui.js"></script>
-
-<!-- SIEMPRE DE ÚLTIMO -->
+<script src="js/layout.js"></script>
+<script src="js/header.js"></script>
 <script src="js/datos_cliente.js?v=10"></script>
 
 </body>
