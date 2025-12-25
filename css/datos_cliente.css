@@ -50,8 +50,19 @@ body.header-checkout {
   max-width: 900px;
   margin-left: auto;
   margin-right: auto;
+
+  /* 🔑 AIRE VISUAL SUPERIOR */
+  margin-top: 24px;
+
   margin-bottom: 2.5rem;
   padding: 0 1rem;
+}
+
+/* Móvil un poco menos */
+@media (max-width: 900px) {
+  .profile-container {
+    margin-top: 16px;
+  }
 }
 
 /* ============================================================
@@ -62,7 +73,7 @@ body.header-checkout {
   background: var(--blanco);
   border-radius: 26px;
 
-  /* Aire interno normal (NO compensa el header) */
+  /* Aire interno normal */
   padding: 4rem 1.8rem 3rem;
 
   box-shadow: 0 12px 28px rgba(0,0,0,0.06);
@@ -70,7 +81,6 @@ body.header-checkout {
   border: none !important;
 }
 
-/* Ajuste fino móvil */
 @media (max-width: 900px) {
   .profile-card {
     padding-top: 3.2rem;
