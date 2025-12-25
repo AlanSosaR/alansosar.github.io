@@ -519,23 +519,15 @@ body.page-carrito .header-cart-title {
   display: flex;
 }
 /* =====================================================
-   DRAWER — DIVISORES VERDE PREMIUM (FINAL)
+   DRAWER — DIVISORES VERDE LIMPIO (FINAL REAL)
 ===================================================== */
 
 .user-drawer-divider,
 .user-drawer hr {
   border: 0 !important;
-
-  /* Línea principal */
-  border-top: 3px solid var(--verde) !important;
-
-  /* Segunda línea sutil (efecto doble stroke) */
-  box-shadow:
-    0 1px 0 rgba(51, 103, 59, 0.55),   /* verde suave */
-    0 0 6px rgba(51, 103, 59, 0.35);   /* glow premium */
-
-  margin: 18px 0;
-  opacity: 1 !important;
+  border-top: 2px solid var(--verde) !important; /* verde marca */
+  opacity: 0.85;                                /* elegante, no chillón */
+  margin: 16px 0;
 }
 /* =====================================================
    VISIBILIDAD DRAWER
