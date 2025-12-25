@@ -3,7 +3,7 @@
    SOLO LÓGICA (SIN HEADER / SIN DRAWER)
 ============================================================ */
 
-console.log("📦 mis-pedidos.js — INIT");
+console.log("📦 mis-pedidos.js — PROGRESO AVANZADO");
 
 /* -----------------------------------------------------------
    Helpers
@@ -25,25 +25,30 @@ function formatFecha(fechaISO) {
 }
 
 /* -----------------------------------------------------------
-   MAPEO DE STATUS → PROGRESO
-   (alineado con recibo.js)
+   MAPEO DE STATUS → ETAPAS VISUALES
+   (coincide con recibo.js)
 ----------------------------------------------------------- */
-function mapStatusToSteps(status) {
+function mapStatusToProgress(status) {
+  /*
+    Orden visual:
+    0 → pago
+    1 → revision
+    2 → confirmado
+    3 → envio
+  */
+
   switch (status) {
-    case "payment_review":      // Pago en revisión
-      return 2;
-    case "payment_confirmed":   // Pago confirmado
-      return 3;
-    case "cash_on_delivery":    // Pago en efectivo
-      return 3;
-    case "processing":          // En ejecución
-      return 3;
-    case "shipped":             // Enviado
-      return 4;
-    case "delivered":           // Entregado
-      return 4;
+    case "payment_review":
+      return 1; // pago → revisión
+    case "payment_confirmed":
+    case "cash_on_delivery":
+    case "processing":
+      return 2; // confirmado
+    case "shipped":
+    case "delivered":
+      return 3; // envío
     default:
-      return 1;                 // Pendiente
+      return 0; // pendiente de pago
   }
 }
 
@@ -57,6 +62,26 @@ function formatStatusLabel(status) {
     delivered: "Entregado"
   };
   return map[status] || "Pendiente de pago";
+}
+
+/* -----------------------------------------------------------
+   APLICAR COLORES AL PROGRESO
+----------------------------------------------------------- */
+function applyProgressColors(container, etapa) {
+  const steps = container.querySelectorAll(".step");
+  const lines = container.querySelectorAll(".line");
+
+  const clases = ["pago", "revision", "confirmado", "envio"];
+
+  steps.forEach((step, i) => {
+    step.classList.remove(...clases);
+    if (i <= etapa) step.classList.add(clases[i]);
+  });
+
+  lines.forEach((line, i) => {
+    line.classList.remove(...clases);
+    if (i < etapa) line.classList.add(clases[i]);
+  });
 }
 
 /* -----------------------------------------------------------
@@ -76,7 +101,7 @@ async function renderPedidos() {
   lista.innerHTML = "";
 
   /* -------------------------------------------------------
-     Sesión
+     Validar sesión
   ------------------------------------------------------- */
   const { data: sessionData } = await sb.auth.getSession();
   if (!sessionData?.session) {
@@ -87,27 +112,22 @@ async function renderPedidos() {
   const userId = sessionData.session.user.id;
 
   /* -------------------------------------------------------
-     CONSULTA REAL (TABLA CORRECTA)
+     Consultar pedidos reales
   ------------------------------------------------------- */
   const { data: pedidos, error } = await sb
-    .from("orders")                // ✅ TABLA CORRECTA
+    .from("orders")
     .select("*")
     .eq("user_id", userId)
     .order("created_at", { ascending: false });
 
-  if (error) {
-    console.error("❌ Error cargando pedidos:", error);
-    mostrarVacio();
-    return;
-  }
-
-  if (!pedidos || pedidos.length === 0) {
+  if (error || !pedidos || pedidos.length === 0) {
+    console.warn("ℹ️ Sin pedidos");
     mostrarVacio();
     return;
   }
 
   /* -------------------------------------------------------
-     HAY PEDIDOS
+     Mostrar pedidos
   ------------------------------------------------------- */
   emptyState.classList.add("hidden");
   if (seguirBack) seguirBack.style.display = "flex";
@@ -124,22 +144,12 @@ async function renderPedidos() {
     clone.querySelector(".pedido-total").textContent =
       `Total: L ${Number(pedido.total).toFixed(2)}`;
 
-    /* -------- Estado -------- */
-    const label = formatStatusLabel(pedido.status);
-    clone.querySelector(".estado-text").textContent = label;
+    clone.querySelector(".estado-text").textContent =
+      formatStatusLabel(pedido.status);
 
-    /* -------- Progreso -------- */
-    const stepsActivos = mapStatusToSteps(pedido.status);
-    const steps = clone.querySelectorAll(".step");
-    const lines = clone.querySelectorAll(".line");
-
-    steps.forEach((step, i) => {
-      if (i < stepsActivos) step.classList.add("active");
-    });
-
-    lines.forEach((line, i) => {
-      if (i < stepsActivos - 1) line.classList.add("active");
-    });
+    /* -------- Progreso visual -------- */
+    const etapa = mapStatusToProgress(pedido.status);
+    applyProgressColors(clone, etapa);
 
     /* -------- Ver recibo -------- */
     clone.querySelector(".ver-recibo").addEventListener("click", () => {
@@ -160,14 +170,7 @@ async function renderPedidos() {
 }
 
 /* -----------------------------------------------------------
-   SINCRONIZAR CON HEADER
+   INIT
 ----------------------------------------------------------- */
-document.addEventListener("header:ready", () => {
-  console.log("🧩 header listo → cargar pedidos");
-  renderPedidos();
-});
-
-/* -----------------------------------------------------------
-   INIT FALLBACK
------------------------------------------------------------ */
+document.addEventListener("header:ready", renderPedidos);
 renderPedidos();
