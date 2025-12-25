@@ -26,6 +26,20 @@ body {
 }
 
 /* ============================================================
+   OFFSET POR HEADER GLOBAL (CHECKOUT)
+============================================================ */
+
+body.header-checkout .profile-container {
+  margin-top: 96px; /* Desktop */
+}
+
+@media (max-width: 900px) {
+  body.header-checkout .profile-container {
+    margin-top: 88px; /* Móvil */
+  }
+}
+
+/* ============================================================
    TARJETA EXTERIOR — SIN BORDE
 ============================================================ */
 
