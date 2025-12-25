@@ -518,7 +518,18 @@ body.page-carrito .header-cart-title {
 .user-drawer .public-link {
   display: flex;
 }
+/* =====================================================
+   DRAWER — DIVISORES VERDES (FIJO Y AISLADO)
+===================================================== */
 
+.user-drawer-divider,
+.user-drawer hr {
+  border: none !important;
+  height: 1px;
+  background-color: var(--verde) !important;
+  opacity: 0.35;               /* elegante, no chillón */
+  margin: 14px 0;
+}
 /* =====================================================
    VISIBILIDAD DRAWER
 ===================================================== */
