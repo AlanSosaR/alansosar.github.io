@@ -25,6 +25,16 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
   -webkit-tap-highlight-color: transparent;
 }
+/* OFFSET POR HEADER GLOBAL */
+body.header-checkout .profile-container {
+  margin-top: 96px; /* desktop */
+}
+
+@media (max-width: 900px) {
+  body.header-checkout .profile-container {
+    margin-top: 88px; /* móvil */
+  }
+}
 
 /* ============================================================
    TARJETA EXTERIOR — SIN BORDE
