@@ -519,15 +519,18 @@ body.page-carrito .header-cart-title {
   display: flex;
 }
 /* =====================================================
-   DRAWER — DIVISORES VERDES (DEFINITIVO Y REAL)
+   DRAWER — DIVISORES VERDES FUERTES (FINAL REAL)
 ===================================================== */
 
 .user-drawer-divider,
 .user-drawer hr {
   border: 0 !important;
-  border-top: 1.5px solid var(--verde) !important;
-  opacity: 0.35;
-  margin: 14px 0;
+  border-top: 2.5px solid var(--verde) !important; /* grosor visible */
+  opacity: 1 !important;                           /* verde vivo real */
+  margin: 16px 0;
+
+  /* toque premium sin apagar el color */
+  box-shadow: 0 1px 0 rgba(0,0,0,0.08);
 }
 /* =====================================================
    VISIBILIDAD DRAWER
