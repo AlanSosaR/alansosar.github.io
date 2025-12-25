@@ -250,33 +250,34 @@ body.page-mis-pedidos {
 
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 
-  padding: 8px 14px;
+  padding: 8px 16px;
   border-radius: 18px;
 
-  transition: 
-    color 0.25s ease,
+  transition:
     background 0.25s ease,
     transform 0.25s ease;
 }
 
-/* Flecha más bonita */
-.ver-recibo::after {
-  content: "→";
-  font-size: 1.2rem;
+/* Flecha Material más gruesa */
+.ver-recibo .arrow {
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1;
+
   transition: transform 0.25s ease;
 }
 
 /* Hover elegante */
 .ver-recibo:hover {
-  background: rgba(51, 103, 59, 0.08); /* verde suave */
+  background: rgba(51, 103, 59, 0.08);
   transform: translateY(-1px);
 }
 
 /* Flecha animada */
-.ver-recibo:hover::after {
-  transform: translateX(4px);
+.ver-recibo:hover .arrow {
+  transform: translateX(5px);
 }
 
 /* Active (tap móvil) */
