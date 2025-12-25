@@ -550,20 +550,20 @@ body.page-carrito.logged #login-desktop {
     }
 
 /* =====================================================
-   LOGO — SOLO CARRITO + SOLO MÓVIL
+   LOGO — SOLO CARRITO + SOLO MÓVIL (FINAL)
 ===================================================== */
 @media (max-width: 900px) {
+  body.page-carrito header.header-fixed {
+    position: relative;
+  }
+
   body.page-carrito .header-logo-link {
     display: flex !important;
-
     position: absolute;
-    right: 14px;
+    right: 16px;
     top: 50%;
     transform: translateY(-50%);
-
-    align-items: center;
     z-index: 3001;
-
     margin: 0 !important;
     padding: 0 !important;
   }
