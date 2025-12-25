@@ -1,127 +1,232 @@
-body {
-  font-family: 'Poppins', sans-serif;
-  margin: 0;
-  background: #f8f6f2;
-  color: #4b2e1e;
+/* =====================================================
+   MIS PEDIDOS — CAFÉ CORTERO (FINAL)
+===================================================== */
+
+:root {
+  --marron: #512615;
+  --verde: #33673B;
+  --blanco: #ffffff;
+
+  /* contorno café */
+  --border-cafe: rgba(81, 38, 21, 0.55);
+  --sombra-card: 0 14px 34px rgba(0,0,0,0.08);
 }
 
-/* ===== ENCABEZADO ===== */
-.header {
+/* =====================================================
+   BASE
+===================================================== */
+
+body.page-mis-pedidos {
+  margin: 0;
+  background: var(--blanco); /* ✅ FONDO BLANCO REAL */
+  font-family: "Poppins", -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* =====================================================
+   SEGUIR COMPRANDO (IGUAL A CARRITO)
+===================================================== */
+
+.seguir-comprando {
   display: flex;
   align-items: center;
-  justify-content: space-between; /* Logo izquierda, texto derecha */
-  background: #fff;
-  padding: 12px 20px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  gap: 12px;
-}
-
-.logo {
-  width: 55px;
-  height: auto;
-  flex-shrink: 0;
-}
-
-.header h1 {
-  font-size: 1.3rem;
+  gap: 10px;
+  padding: 14px 16px;
   font-weight: 600;
-  color: #4b2e1e;
-  margin: 0;
-  white-space: nowrap;
-  margin-left: auto; /* 🔹 empuja hacia la derecha */
+  color: var(--verde);
 }
 
-/* ===== CONTENIDO ===== */
-.pedidos-container {
-  max-width: 800px;
-  margin: 2rem auto;
-  padding: 1rem;
-}
-
-/* ===== TARJETA DE PEDIDO ===== */
-.pedido {
+.seguir-comprando .icon-back {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: none;
   background: #fff;
-  padding: 1rem 1.5rem;
-  border-radius: 15px;
-  margin-bottom: 1.2rem;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
-  transition: transform 0.2s ease;
-  animation: fadeIn 0.5s ease-in;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.pedido:hover {
-  transform: translateY(-3px);
+.seguir-comprando .icon-back i {
+  font-size: 1.1rem;
+  color: var(--verde);
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+/* =====================================================
+   CONTENEDOR
+===================================================== */
+
+.pedidos-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 16px 48px;
 }
 
-.pedido h3 {
-  color: #4b2e1e;
-  font-size: 1.05rem;
-  margin-bottom: 0.4rem;
+/* =====================================================
+   TARJETA PEDIDO (PRINCIPAL)
+===================================================== */
+
+.pedido-card {
+  background: var(--blanco);
+  border-radius: 26px;
+  padding: 22px;
+  margin-bottom: 26px;
+
+  border: 2px solid var(--border-cafe);
+  box-shadow: var(--sombra-card);
 }
 
-.pedido p {
-  margin: 0.2rem 0;
+/* =====================================================
+   HEADER PEDIDO
+===================================================== */
+
+.pedido-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: var(--marron);
+  font-weight: 600;
+}
+
+.pedido-fecha {
+  margin: 6px 0 4px;
   font-size: 0.9rem;
-  line-height: 1.4;
+  color: #6b6b6b;
 }
+
+.pedido-total {
+  font-weight: 700;
+  color: var(--marron);
+}
+
+/* =====================================================
+   TARJETA INTERNA — PROGRESO
+   (IGUAL A LA PRINCIPAL, MÁS COMPACTA)
+===================================================== */
+
+.pedido-progreso {
+  margin-top: 18px;
+  padding: 18px;
+  border-radius: 22px;
+
+  background: var(--blanco);
+  border: 2px solid var(--border-cafe);
+  box-shadow: 0 8px 22px rgba(0,0,0,0.06);
+}
+
+.progreso-title {
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--marron);
+}
+
+/* =====================================================
+   BARRA DE PROGRESO
+===================================================== */
+
+.progreso-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.step {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #d6d6d6;
+}
+
+.step.active {
+  background: var(--verde);
+}
+
+.line {
+  flex: 1;
+  height: 3px;
+  border-radius: 3px;
+  background: #d6d6d6;
+}
+
+.line.active {
+  background: var(--verde);
+}
+
+/* =====================================================
+   ESTADO
+===================================================== */
 
 .estado {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-weight: 600;
-  color: #20603d;
+  color: var(--verde);
 }
 
-.detalle {
-  background: #f2efe9;
-  padding: 0.7rem 1rem;
-  border-radius: 10px;
-  margin-top: 0.7rem;
-  font-size: 0.9rem;
+.estado-icon {
+  font-size: 1.3rem;
 }
 
-/* ===== BOTÓN ===== */
-.btn-volver {
-  display: block;
-  width: fit-content;
-  margin: 2rem auto;
-  padding: 0.7rem 1.5rem;
+/* =====================================================
+   FOOTER
+===================================================== */
+
+.pedido-footer {
+  margin-top: 16px;
+  text-align: center;
+}
+
+.ver-recibo {
+  background: none;
   border: none;
-  border-radius: 999px;
-  background: #4b2e1e;
-  color: #fff;
-  font-weight: 600;
-  cursor: pointer;
+  color: var(--verde);
+  font-weight: 700;
   font-size: 1rem;
+  cursor: pointer;
 }
 
-.btn-volver:hover {
-  background: #3a2316;
+/* =====================================================
+   EMPTY STATE
+===================================================== */
+
+.empty-state {
+  text-align: center;
+  padding: 90px 20px;
 }
 
-/* ===== RESPONSIVO ===== */
+.empty-state h2 {
+  color: var(--marron);
+  margin-bottom: 8px;
+}
+
+.empty-state p {
+  color: #6b6b6b;
+  margin-bottom: 26px;
+}
+
+.btn-principal {
+  border: 2px solid var(--verde);
+  background: transparent;
+  color: var(--verde);
+  padding: 12px 30px;
+  border-radius: 30px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
 @media (max-width: 600px) {
-  .header {
-    padding: 10px 15px;
+  .pedido-card {
+    padding: 18px;
   }
 
-  .logo {
-    width: 48px;
-  }
-
-  .header h1 {
-    font-size: 1.1rem;
-    margin-left: auto;
-  }
-
-  .pedido {
-    padding: 1rem;
-  }
-
-  .pedido p {
-    font-size: 0.85rem;
+  .pedido-progreso {
+    padding: 16px;
   }
 }
