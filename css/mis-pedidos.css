@@ -134,7 +134,7 @@ body.page-mis-pedidos {
 }
 
 /* =====================================================
-   BARRA DE PROGRESO
+   BARRA DE PROGRESO — MIS PEDIDOS
 ===================================================== */
 
 .progreso-bar {
@@ -144,26 +144,75 @@ body.page-mis-pedidos {
   margin-bottom: 14px;
 }
 
+/* ------------------
+   PASOS (CÍRCULOS)
+------------------ */
 .step {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #d6d6d6;
+  background: #e0e0e0; /* fondo base visible */
+  position: relative;
 }
 
-.step.active {
-  background: var(--verde);
+/* Estados por etapa */
+.step.pago {
+  background: #7a4a2e; /* ☕ café */
 }
 
+.step.revision {
+  background: #c28b00; /* 🟡 ámbar */
+}
+
+.step.confirmado {
+  background: var(--verde); /* 🟢 verde */
+}
+
+.step.envio {
+  background: #4a6f8a; /* 🚚 azul/gris */
+}
+
+/* ------------------
+   LÍNEAS (TRAMOS)
+------------------ */
 .line {
   flex: 1;
-  height: 3px;
-  border-radius: 3px;
-  background: #d6d6d6;
+  height: 4px;
+  border-radius: 4px;
+  background: #e0e0e0; /* fondo base SIEMPRE visible */
+  position: relative;
+  overflow: hidden;
 }
 
-.line.active {
+/* Relleno activo */
+.line::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 0%;
+  background: transparent;
+  transition: width .3s ease;
+}
+
+/* Estados de línea */
+.line.pago::after {
+  width: 100%;
+  background: #7a4a2e;
+}
+
+.line.revision::after {
+  width: 100%;
+  background: #c28b00;
+}
+
+.line.confirmado::after {
+  width: 100%;
   background: var(--verde);
+}
+
+.line.envio::after {
+  width: 100%;
+  background: #4a6f8a;
 }
 
 /* =====================================================
