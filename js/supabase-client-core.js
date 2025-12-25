@@ -80,7 +80,13 @@ async function logoutTotal() {
   localStorage.removeItem("cortero_logged");
 
   document.dispatchEvent(new CustomEvent("userLoggedOut"));
+
+  // 🔁 Redirección global segura
+  if (!location.pathname.endsWith("index.html")) {
+    window.location.href = "/index.html";
+  }
 }
+
 window.corteroLogout = logoutTotal;
 
 // ------------------------------------------------------------
