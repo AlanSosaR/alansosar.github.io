@@ -38,9 +38,9 @@ body.header-checkout .recibo-container {
 /* ================= CONTENEDOR ================= */
 .recibo-container {
   max-width: 900px;
-  margin-left: auto;
-  margin-right: auto;
-  padding: 0 1rem;
+  margin: 0 auto;        /* 🔑 centra correctamente */
+  padding: 0 16px;      /* 🔑 aire lateral uniforme (Material 3) */
+  box-sizing: border-box;
 }
 
 /* ============================================================
@@ -51,22 +51,24 @@ body.header-checkout .recibo-container {
   width: 100%;
   max-width: 900px;
 
+  margin: 0 auto;                /* 🔑 centra la tarjeta */
+  box-sizing: border-box;        /* 🔑 evita desplazamientos */
+
   background: #ffffff;
   border-radius: 26px;
 
-  padding: 6rem 1.8rem 3rem;
+  /* Padding vertical fuerte + lateral controlado */
+  padding: 6rem 24px 3rem;
 
   box-shadow:
     0 18px 44px rgba(0, 0, 0, 0.14),
     0 6px 16px rgba(0, 0, 0, 0.10);
 }
 
-/* MOBILE */
+/* ================= MOBILE ================= */
 @media (max-width: 600px) {
   .recibo-card {
-    padding-left: 16px;
-    padding-right: 16px;
-    padding-bottom: 24px;
+    padding: 4rem 16px 24px;   /* 🔑 reduce alto + mismo aire lateral */
     border-radius: 24px;
   }
 }
