@@ -62,26 +62,32 @@
         </header>
 
         <section class="pedido-progreso">
-          <p class="progreso-title">Progreso del pedido</p>
+  <p class="progreso-title">Progreso del pedido</p>
 
-          <div class="progreso-bar">
-            <span class="step"></span>
-            <span class="line"></span>
-            <span class="step"></span>
-            <span class="line"></span>
-            <span class="step"></span>
-            <span class="line"></span>
-            <span class="step"></span>
-          </div>
+  <div class="progreso-bar">
+    <!-- PAGO -->
+    <span class="step pago"></span>
+    <span class="line pago"></span>
 
-          <div class="estado">
-            <span class="material-symbols-outlined estado-icon">
-              check_circle
-            </span>
-            <span class="estado-text">—</span>
-          </div>
-        </section>
+    <!-- REVISIÓN -->
+    <span class="step revision"></span>
+    <span class="line revision"></span>
 
+    <!-- CONFIRMADO -->
+    <span class="step confirmado"></span>
+    <span class="line confirmado"></span>
+
+    <!-- ENVÍO -->
+    <span class="step envio"></span>
+  </div>
+
+  <div class="estado">
+    <span class="material-symbols-outlined estado-icon">
+      check_circle
+    </span>
+    <span class="estado-text">Pago confirmado</span>
+  </div>
+</section>
         <footer class="pedido-footer">
           <button class="ver-recibo">
             Ver recibo →
