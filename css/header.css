@@ -568,6 +568,11 @@ body.page-carrito.logged #login-desktop {
 
   body.page-carrito header.header-fixed {
     position: relative;
+    justify-content: flex-start;
+  }
+
+  body.page-carrito .header-cart-title {
+    z-index: 1;
   }
 
   body.page-carrito .header-logo-link {
@@ -577,8 +582,6 @@ body.page-carrito.logged #login-desktop {
     top: 50%;
     transform: translateY(-50%);
     z-index: 3001;
-    margin: 0 !important;
-    padding: 0 !important;
   }
 
   body.page-carrito .header-logo {
