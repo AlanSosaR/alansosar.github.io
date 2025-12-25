@@ -554,14 +554,15 @@ body.page-carrito.logged #login-desktop {
 ===================================================== */
 @media (max-width: 900px) {
   body.page-carrito .header-logo-link {
+    display: flex !important;
+
     position: absolute;
     right: 14px;
     top: 50%;
     transform: translateY(-50%);
-    z-index: 3001;
 
-    display: flex;
     align-items: center;
+    z-index: 3001;
 
     margin: 0 !important;
     padding: 0 !important;
