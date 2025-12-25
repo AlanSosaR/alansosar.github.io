@@ -495,11 +495,12 @@ body.page-carrito .header-cart-title {
    HEADER — MODO CARRITO (CHECKOUT)
 ===================================================== */
 
-/* 🔒 Siempre ocultar icono del carrito */
-body.page-carrito #cart-btn {
+/* 🔒 Siempre ocultar icono del carrito (checkout completo) */
+body.page-carrito #cart-btn,
+body.page-datos-cliente #cart-btn,
+body.page-recibo #cart-btn {
   display: none !important;
 }
-
 /* 🔒 Siempre ocultar navegación pública */
 body.page-carrito .header-nav,
 body.page-carrito .nav-links {
