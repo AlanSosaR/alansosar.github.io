@@ -219,12 +219,11 @@ body.page-carrito .header-cart-title {
     height: 64px;
   }
 
-  .header-logo-link,
   .nav-links,
-  #login-desktop,
-  .header-avatar-button {
-    display: none !important;
-  }
+#login-desktop,
+.header-avatar-button {
+  display: none !important;
+}
 
   .menu-toggle {
     display: flex !important;
