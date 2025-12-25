@@ -681,3 +681,7 @@ body.page-datos-cliente #header-datos-title {
 body.page-recibo #header-recibo-title {
   display: block;
 }
+/* MIS PEDIDOS */
+body.page-mis-pedidos #header-pedidos-title {
+  display: block;
+}
