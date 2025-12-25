@@ -25,34 +25,56 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
   -webkit-tap-highlight-color: transparent;
 }
-/* OFFSET POR HEADER GLOBAL */
-body.header-checkout .profile-container {
-  margin-top: 96px; /* desktop */
+
+/* ============================================================
+   OFFSET POR HEADER GLOBAL (CHECKOUT)
+   ✔️ CORRECTO: se hace con padding-top en el body
+============================================================ */
+
+body.header-checkout {
+  padding-top: 96px; /* Desktop */
 }
 
 @media (max-width: 900px) {
-  body.header-checkout .profile-container {
-    margin-top: 88px; /* móvil */
+  body.header-checkout {
+    padding-top: 88px; /* Móvil */
   }
+}
+
+/* ============================================================
+   CONTENEDOR PRINCIPAL
+   ❌ NO usa margin-top
+============================================================ */
+
+.profile-container {
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 2.5rem;
+  padding: 0 1rem;
 }
 
 /* ============================================================
    TARJETA EXTERIOR — SIN BORDE
 ============================================================ */
 
-.profile-container {
-  max-width: 900px;
-  margin: 2.5rem auto;
-  padding: 0 1rem;
-}
-
 .profile-card {
   background: var(--blanco);
   border-radius: 26px;
-  padding: 6rem 1.8rem 3rem;
+
+  /* Aire interno normal (NO compensa el header) */
+  padding: 4rem 1.8rem 3rem;
+
   box-shadow: 0 12px 28px rgba(0,0,0,0.06);
   position: relative;
   border: none !important;
+}
+
+/* Ajuste fino móvil */
+@media (max-width: 900px) {
+  .profile-card {
+    padding-top: 3.2rem;
+  }
 }
 
 /* ============================================================
