@@ -542,7 +542,8 @@ body.page-carrito .header-cart-title {
 /* 🔒 Siempre ocultar icono del carrito (checkout completo) */
 body.page-carrito #cart-btn,
 body.page-datos-cliente #cart-btn,
-body.page-recibo #cart-btn {
+body.page-recibo #cart-btn,
+body.page-mis-pedidos #cart-btn {
   display: none !important;
 }
 /* 🔒 Siempre ocultar navegación pública */
