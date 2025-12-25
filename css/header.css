@@ -561,17 +561,7 @@ body.page-carrito.logged #login-desktop {
     }
   }
 }
-/* =====================================================
-   CARRITO — ESPACIO PARA HEADER FIJO
-===================================================== */
-body.page-carrito {
-  padding-top: 72px; /* mismo alto del header */
-}
-@media (max-width: 900px) {
-  body.page-carrito {
-    padding-top: 64px;
-  }
-}
+
 /* =====================================================
    LOGO — SOLO CARRITO + SOLO MÓVIL (FINAL REAL)
 ===================================================== */
