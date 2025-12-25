@@ -1,9 +1,11 @@
 /* ============================================================
-   DETALLES DE ENTREGA — VERSIÓN FINAL PERFECTA (FEB 2025)
-   Alineado EXACTO a PERFIL y REGISTRO
-   (SIN HEADER — USA HEADER GLOBAL)
+   DETALLES DE ENTREGA — VERSIÓN FINAL ESTABLE (FEB 2025)
+   ✔ Compatible con HEADER GLOBAL
+   ✔ Sin interferir con menú / drawer
+   ✔ Flecha estable
 ============================================================ */
 
+/* ================= ROOT ================= */
 :root {
   --marron: #512615;
   --verde: #33673B;
@@ -13,11 +15,10 @@
 
   --border-cafe: rgba(81, 38, 21, 0.75);
   --input-border: rgba(0,0,0,0.22);
-  --input-focus: #33673B;
-
   --error: #B3261E;
 }
 
+/* ================= BASE ================= */
 body {
   margin: 0;
   background: var(--gris-fondo);
@@ -26,34 +27,37 @@ body {
 }
 
 /* ============================================================
-   OFFSET POR HEADER GLOBAL (CHECKOUT)
+   OFFSET REAL POR HEADER GLOBAL (CHECKOUT)
+   ❌ NO usar padding-top en body
 ============================================================ */
-
 body.header-checkout .profile-container {
-  margin-top: 96px; /* Desktop */
+  margin-top: 96px;
 }
 
 @media (max-width: 900px) {
   body.header-checkout .profile-container {
-    margin-top: 88px; /* Móvil */
+    margin-top: 88px;
   }
 }
 
 /* ============================================================
-   TARJETA EXTERIOR — SIN BORDE
+   CONTENEDOR PRINCIPAL
+   🔑 SIN margen superior visual
 ============================================================ */
-
 .profile-container {
   max-width: 900px;
-  margin: 2.5rem auto;
+  margin: 0 auto 2.5rem;
   padding: 0 1rem;
 }
 
+/* ============================================================
+   TARJETA EXTERIOR
+============================================================ */
 .profile-card {
   background: var(--blanco);
   border-radius: 26px;
 
-  /* ⬇️ Aire interno normal (NO compensa header) */
+  /* 🔑 Aire interno NORMAL */
   padding: 4rem 1.8rem 3rem;
 
   box-shadow: 0 12px 28px rgba(0,0,0,0.06);
@@ -68,33 +72,31 @@ body.header-checkout .profile-container {
 }
 
 /* ============================================================
-   BOTÓN ATRÁS — ANCLADO AL HEADER (ESTABLE)
+   BOTÓN ATRÁS — ANCLADO AL HEADER (NO A LA TARJETA)
 ============================================================ */
-
 .back-btn {
-  position: fixed;               /* 🔑 CLAVE: ya NO depende de la tarjeta */
-  top: 88px;                     /* header (72px) + aire visual */
+  position: fixed;
+  top: 88px;              /* header (72px) + aire */
   left: 16px;
 
   width: 48px;
   height: 48px;
   border-radius: 50%;
+
   background: #ffffff;
   border: none;
-
-  box-shadow: 0 5px 16px rgba(0,0,0,0.15);
 
   display: flex;
   align-items: center;
   justify-content: center;
 
+  box-shadow: 0 5px 16px rgba(0,0,0,0.15);
   cursor: pointer;
-  z-index: 4000;                 /* 🔒 por encima de tarjetas */
 
+  z-index: 4000;          /* 🔒 por encima de todo */
   transition: transform .25s ease, box-shadow .25s ease;
 }
 
-/* Hover solo en desktop */
 @media (min-width: 901px) {
   .back-btn:hover {
     transform: translateY(-2px);
@@ -105,10 +107,9 @@ body.header-checkout .profile-container {
 .back-btn .material-symbols-outlined {
   font-size: 26px;
   font-weight: 600;
-  color: var(--verde) !important;
+  color: var(--verde);
 }
 
-/* Ajuste fino móvil */
 @media (max-width: 900px) {
   .back-btn {
     top: 84px;
@@ -117,13 +118,13 @@ body.header-checkout .profile-container {
 }
 
 /* ============================================================
-   TARJETA INTERIOR — IGUAL A PERFIL
+   TARJETA INTERIOR
 ============================================================ */
-
 .profile-inner-card {
   background: #ffffff;
   border-radius: 22px;
   padding: 3rem 2rem;
+
   border: 1.8px solid var(--border-cafe);
   box-shadow: 0 4px 14px rgba(0,0,0,0.05);
 }
@@ -131,7 +132,6 @@ body.header-checkout .profile-container {
 /* ============================================================
    CAMPOS MATERIAL 3
 ============================================================ */
-
 .m3-field {
   margin-bottom: 2rem;
 }
@@ -167,14 +167,9 @@ body.header-checkout .profile-container {
   padding: .35rem 0;
 }
 
-/* ============================================================
-   SELECT — FIX COMPLETO
-============================================================ */
-
+/* ================= SELECT ================= */
 .m3-input select {
   appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
   padding-right: 32px;
   color: rgba(0,0,0,0.45);
 }
@@ -183,18 +178,7 @@ body.header-checkout .profile-container {
   color: var(--marron);
 }
 
-.m3-field.filled .floating-label {
-  top: -6px;
-  left: 2.85rem;
-  font-size: .78rem;
-  background: #ffffff;
-  padding: 0 5px;
-}
-
-/* ============================================================
-   FLOATING LABEL — EXACTO A PERFIL
-============================================================ */
-
+/* ================= FLOATING LABEL ================= */
 .floating-label {
   position: absolute;
   left: 3rem;
@@ -203,8 +187,8 @@ body.header-checkout .profile-container {
   font-size: 1rem;
   color: rgba(0,0,0,0.45);
   padding: 0 4px;
-  transition: all .22s ease;
   pointer-events: none;
+  transition: all .22s ease;
 }
 
 .m3-input input:not(:placeholder-shown) + .floating-label,
@@ -219,10 +203,7 @@ body.header-checkout .profile-container {
   padding: 0 5px;
 }
 
-/* ============================================================
-   TEXTAREA
-============================================================ */
-
+/* ================= TEXTAREA ================= */
 .textarea-field {
   align-items: flex-start !important;
   padding-top: 1.4rem !important;
@@ -236,7 +217,6 @@ body.header-checkout .profile-container {
 /* ============================================================
    BOTÓN FINAL
 ============================================================ */
-
 .m3-btn {
   width: 100%;
   background: var(--verde);
@@ -259,6 +239,7 @@ body.header-checkout .profile-container {
   transform: scale(.97);
 }
 
+/* ================= LOADER ================= */
 .m3-btn .loader {
   width: 18px;
   height: 18px;
@@ -282,19 +263,15 @@ body.header-checkout .profile-container {
 }
 
 /* ============================================================
-   ERRORES MATERIAL 3 — BAJO CADA CAMPO
+   ERRORES
 ============================================================ */
-
 .m3-field.error .m3-input {
-  border-color: var(--error) !important;
+  border-color: var(--error);
 }
 
-.m3-field.error .material-symbols-outlined {
-  color: var(--error) !important;
-}
-
+.m3-field.error .material-symbols-outlined,
 .m3-field.error .floating-label {
-  color: var(--error) !important;
+  color: var(--error);
 }
 
 .helper-text {
@@ -302,12 +279,5 @@ body.header-checkout .profile-container {
   margin-left: 3rem;
   font-size: .82rem;
   color: var(--error);
-  line-height: 1.2;
   min-height: 1em;
-}
-
-.m3-input,
-.floating-label,
-.helper-text {
-  transition: all .2s ease;
 }
