@@ -347,3 +347,9 @@ body.page-carrito .seguir-comprando {
     transform: none;
   }
 }
+/* =====================================================
+   OCULTAR "SEGUIR COMPRANDO" CUANDO EL CARRITO ESTÁ VACÍO
+===================================================== */
+body.page-carrito.carrito-vacio .seguir-comprando {
+  display: none !important;
+}
