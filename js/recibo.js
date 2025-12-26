@@ -6,6 +6,17 @@ console.log("🧾 recibo.js — CORE FINAL");
 const $id = (id) => document.getElementById(id);
 
 /* =========================================================
+   CONTEXTO DE RECIBO
+========================================================= */
+function getOrderIdFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("id");
+}
+
+const ORDER_ID = getOrderIdFromURL();
+const IS_READ_ONLY = Boolean(ORDER_ID);
+
+/* =========================================================
    SNACKBAR
 ========================================================= */
 function showSnack(message) {
@@ -33,7 +44,7 @@ function esperarSupabase() {
 }
 
 /* =========================================================
-   USUARIO EN CACHE
+   USUARIO CACHE
 ========================================================= */
 function getUserCache() {
   try {
@@ -45,28 +56,146 @@ function getUserCache() {
 }
 
 /* =========================================================
-   NÚMERO DE PEDIDO
+   UI — MODO RECIBO
 ========================================================= */
-async function obtenerSiguienteNumeroPedido(userId) {
-  const sb = window.supabaseClient;
+function aplicarModoRecibo() {
+  const progreso = $id("pedido-progreso-recibo");
+  const selectPago = document.querySelector(".pago-select-label");
+  const botones = document.querySelector(".recibo-botones");
 
-  const { data } = await sb
-    .from("orders")
-    .select("order_number")
-    .eq("user_id", userId)
-    .not("order_number", "is", null)
-    .order("order_number", { ascending: false })
-    .limit(1);
+  if (IS_READ_ONLY) {
+    progreso?.classList.remove("hidden");
+    selectPago?.classList.add("hidden");
+    botones?.classList.add("hidden");
 
-  if (!data || data.length === 0) return 1;
-  return data[0].order_number + 1;
+    if (metodoPago) metodoPago.disabled = true;
+  } else {
+    progreso?.classList.add("hidden");
+  }
 }
 
 /* =========================================================
-   FECHA
+   PROGRESO DEL PEDIDO
+========================================================= */
+function aplicarProgresoPedido(status) {
+  const steps = document.querySelectorAll(
+    "#pedido-progreso-recibo .step"
+  );
+  const lines = document.querySelectorAll(
+    "#pedido-progreso-recibo .line"
+  );
+
+  const estadoTexto = $id("estadoPedidoTexto");
+
+  const mapSteps = {
+    payment_review: 2,
+    payment_confirmed: 3,
+    cash_on_delivery: 3,
+    processing: 3,
+    shipped: 4,
+    delivered: 4
+  };
+
+  const labels = {
+    payment_review: "Pago en revisión",
+    payment_confirmed: "Pago confirmado",
+    cash_on_delivery: "Pago contra entrega",
+    processing: "En ejecución",
+    shipped: "Enviado",
+    delivered: "Entregado"
+  };
+
+  const activos = mapSteps[status] || 1;
+
+  steps.forEach((s, i) => {
+    if (i < activos) s.classList.add("active");
+  });
+
+  lines.forEach((l, i) => {
+    if (i < activos - 1) l.classList.add("active");
+  });
+
+  estadoTexto.textContent = labels[status] || "Pendiente";
+}
+
+/* =========================================================
+   CARGAR PEDIDO EXISTENTE (MIS PEDIDOS)
+========================================================= */
+async function cargarPedidoExistente(orderId) {
+  const sb = window.supabaseClient;
+
+  const { data: pedido, error } = await sb
+    .from("orders")
+    .select(`
+      id,
+      order_number,
+      created_at,
+      total,
+      payment_method,
+      status,
+      order_items ( name, qty, price ),
+      payment_receipts ( file_url )
+    `)
+    .eq("id", orderId)
+    .single();
+
+  if (error || !pedido) {
+    console.error("❌ Pedido no encontrado", error);
+    showSnack("Pedido no encontrado");
+    return;
+  }
+
+  /* HEADER */
+  $id("numeroPedido").textContent = pedido.order_number;
+  $id("fechaPedido").textContent = new Date(pedido.created_at)
+    .toLocaleString("es-HN", {
+      dateStyle: "short",
+      timeStyle: "short",
+      hour12: true
+    });
+
+  /* PRODUCTOS */
+  lista.innerHTML = "";
+  pedido.order_items.forEach(item => {
+    lista.innerHTML += `
+      <div class="cafe-item">
+        <span class="cafe-nombre">
+          ${item.name} (${item.qty} bolsas)
+        </span>
+        <span class="cafe-precio">
+          L ${(item.qty * item.price).toFixed(2)}
+        </span>
+      </div>
+    `;
+  });
+
+  $id("totalPedido").textContent = pedido.total.toFixed(2);
+
+  /* MÉTODO DE PAGO */
+  metodoPago.value = pedido.payment_method;
+
+  if (pedido.payment_method === "cash") {
+    bloqueEfectivo.classList.remove("hidden");
+  }
+
+  if (pedido.payment_method === "bank_transfer") {
+    bloqueDeposito.classList.remove("hidden");
+
+    if (pedido.payment_receipts?.length) {
+      imgPreview.src = pedido.payment_receipts[0].file_url;
+      previewBox.classList.remove("hidden");
+    }
+  }
+
+  /* PROGRESO */
+  aplicarProgresoPedido(pedido.status);
+}
+
+/* =========================================================
+   FECHA (CHECKOUT)
 ========================================================= */
 const fechaEl = $id("fechaPedido");
-if (fechaEl) {
+if (fechaEl && !IS_READ_ONLY) {
   fechaEl.textContent = new Date().toLocaleString("es-HN", {
     dateStyle: "short",
     timeStyle: "medium",
@@ -75,7 +204,7 @@ if (fechaEl) {
 }
 
 /* =========================================================
-   DATOS DEL CLIENTE
+   DATOS CLIENTE (CHECKOUT)
 ========================================================= */
 async function cargarDatosCliente() {
   const sb = window.supabaseClient;
@@ -109,13 +238,13 @@ async function cargarDatosCliente() {
 }
 
 /* =========================================================
-   CARRITO
+   CARRITO (CHECKOUT)
 ========================================================= */
 const carrito = JSON.parse(localStorage.getItem("cafecortero_cart")) || [];
 const lista = $id("listaProductos");
 let total = 0;
 
-if (lista) {
+if (lista && !IS_READ_ONLY) {
   lista.innerHTML = "";
 
   carrito.forEach(item => {
@@ -191,9 +320,11 @@ inputFile?.addEventListener("change", () => {
 });
 
 /* =========================================================
-   ENVIAR PEDIDO
+   ENVIAR PEDIDO (SOLO CHECKOUT)
 ========================================================= */
 btnEnviar?.addEventListener("click", async () => {
+  if (IS_READ_ONLY) return;
+
   const sb = window.supabaseClient;
   const user = getUserCache();
   if (!user) return;
@@ -202,18 +333,21 @@ btnEnviar?.addEventListener("click", async () => {
   loader.classList.remove("hidden");
 
   try {
-    const orderNumber = await obtenerSiguienteNumeroPedido(user.id);
+    const { data: last } = await sb
+      .from("orders")
+      .select("order_number")
+      .eq("user_id", user.id)
+      .order("order_number", { ascending: false })
+      .limit(1);
+
+    const orderNumber = last?.length ? last[0].order_number + 1 : 1;
 
     const isCash = metodoPago.value === "cash";
     const isBank = metodoPago.value === "bank_transfer";
 
-    if (isBank && !comprobante) {
-      throw new Error("No hay comprobante");
-    }
+    if (isBank && !comprobante) throw new Error("No comprobante");
 
-    const status = isCash
-      ? "cash_on_delivery"
-      : "payment_review";
+    const status = isCash ? "cash_on_delivery" : "payment_review";
 
     const { data: order, error } = await sb
       .from("orders")
@@ -238,8 +372,7 @@ btnEnviar?.addEventListener("click", async () => {
         .upload(path, comprobante);
 
       const { data: urlData } =
-        sb.storage.from("payment-receipts")
-          .getPublicUrl(path);
+        sb.storage.from("payment-receipts").getPublicUrl(path);
 
       await sb.from("payment_receipts").insert({
         order_id: order.id,
@@ -251,18 +384,14 @@ btnEnviar?.addEventListener("click", async () => {
 
     localStorage.removeItem("cafecortero_cart");
 
-    const mensaje = isCash
-      ? `Pedido N.º ${orderNumber} enviado. Pago en efectivo al entregar.`
-      : `Pedido N.º ${orderNumber} enviado. Pago en revisión.`;
-
-    showSnack(mensaje);
+    showSnack("Pedido enviado correctamente");
 
     setTimeout(() => {
       window.location.href = "mis-pedidos.html";
-    }, 1600);
+    }, 1500);
 
   } catch (err) {
-    console.error("❌ Error pedido:", err);
+    console.error(err);
     showSnack("No se pudo enviar el pedido");
     btnEnviar.disabled = false;
     loader.classList.add("hidden");
@@ -281,11 +410,12 @@ btnEnviar?.addEventListener("click", async () => {
     return;
   }
 
-  await cargarDatosCliente();
-  resetMetodoPago();
+  aplicarModoRecibo();
 
-  const numeroPedido =
-    await obtenerSiguienteNumeroPedido(user.id);
-
-  $id("numeroPedido").textContent = numeroPedido;
+  if (IS_READ_ONLY) {
+    await cargarPedidoExistente(ORDER_ID);
+  } else {
+    await cargarDatosCliente();
+    resetMetodoPago();
+  }
 })();
