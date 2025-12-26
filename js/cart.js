@@ -1,6 +1,8 @@
 /* ============================================================
    Carrito — Café Cortero 2025  
    SOLO LÓGICA DE CARRITO (SIN HEADER / SIN DRAWER)
+   ✅ product_id incluido
+   ✅ flecha oculta cuando está vacío
 ============================================================ */
 
 const CART_KEY = "cafecortero_cart";
@@ -40,7 +42,7 @@ function renderCart() {
   container.innerHTML = "";
 
   /* Contar cafés */
-  const totalCafes = cart.reduce((sum, p) => sum + p.qty, 0);
+  const totalCafes = cart.reduce((sum, p) => sum + (p.qty || 0), 0);
   if (countItems) {
     countItems.textContent = `${totalCafes} ${totalCafes === 1 ? "café" : "cafés"}`;
   }
@@ -49,6 +51,7 @@ function renderCart() {
   if (cart.length === 0) {
     if (main) main.classList.add("carrito-vacio-activo");
 
+    // 🔴 ocultar flecha y texto
     if (topBack)     topBack.style.display = "none";
     if (topBackText) topBackText.style.display = "none";
 
@@ -80,10 +83,16 @@ function renderCart() {
   let subtotal = 0;
 
   cart.forEach((item, index) => {
+    // 🛡️ blindaje
+    if (!item.product_id) {
+      console.warn("Producto sin product_id en carrito:", item);
+      return;
+    }
+
     const clone = template.content.cloneNode(true);
 
-    clone.querySelector(".item-image").src         = item.img;
-    clone.querySelector(".item-name").textContent  = item.name;
+    clone.querySelector(".item-image").src         = item.img || "";
+    clone.querySelector(".item-name").textContent  = item.name || "";
     clone.querySelector(".item-price").textContent = `L ${item.price} / unidad`;
     clone.querySelector(".qty-number").textContent = item.qty;
 
@@ -127,20 +136,17 @@ if (cartContainer) {
     renderCart();
   });
 }
+
 /* -----------------------------------------------------------
    SINCRONIZAR HEADER CUANDO ESTÉ LISTO
 ----------------------------------------------------------- */
 document.addEventListener("header:ready", () => {
-  console.log("🧩 header listo → sincronizando carrito");
-
-  // Actualiza badge del header
   if (typeof window.updateCartCount === "function") {
     window.updateCartCount();
   }
-
-  // Actualiza texto "X cafés"
   renderCart();
 });
+
 /* -----------------------------------------------------------
    VALIDAR LOGIN PARA PROCEDER
 ----------------------------------------------------------- */
