@@ -1,15 +1,14 @@
 /* ============================================================
-   Carrito — Café Cortero 2025  
-   SOLO LÓGICA DE CARRITO (SIN HEADER / SIN DRAWER)
-   ✅ compatible con recibo.js
-   ✅ product_id obligatorio SOLO para checkout
-   ✅ flecha oculta cuando está vacío
+   Carrito — Café Cortero 2025 (FINAL)
+   ✔ Limpieza automática de productos inválidos
+   ✔ product_id obligatorio SOLO para checkout
+   ✔ Compatible con recibo.js
 ============================================================ */
 
 const CART_KEY = "cafecortero_cart";
 
 /* -----------------------------------------------------------
-   Helpers
+   HELPERS
 ----------------------------------------------------------- */
 function getCart() {
   try {
@@ -28,11 +27,31 @@ function getSupabaseClient() {
 }
 
 /* -----------------------------------------------------------
-   RENDER DEL CARRITO + ESTADO VACÍO
+   LIMPIAR PRODUCTOS INVÁLIDOS (AUTO)
+----------------------------------------------------------- */
+function sanitizeCart() {
+  const cart = getCart();
+  const valid = cart.filter(p =>
+    p &&
+    typeof p === "object" &&
+    Number(p.qty) > 0 &&
+    Number(p.price) > 0 &&
+    p.name
+  );
+
+  if (valid.length !== cart.length) {
+    console.warn("🧹 Carrito limpiado (productos antiguos o inválidos)");
+    saveCart(valid);
+  }
+}
+
+/* -----------------------------------------------------------
+   RENDER DEL CARRITO
 ----------------------------------------------------------- */
 function renderCart() {
-  const cart = getCart();
+  sanitizeCart();
 
+  const cart = getCart();
   const container     = document.getElementById("cart-container");
   const subtotalLabel = document.getElementById("subtotal-label");
   const totalLabel    = document.getElementById("total-label");
@@ -43,21 +62,19 @@ function renderCart() {
   const topBackText   = document.getElementById("top-back-text");
 
   if (!container) return;
-
   container.innerHTML = "";
 
-  /* Contador de cafés */
-  const totalCafes = cart.reduce((sum, p) => sum + (Number(p.qty) || 0), 0);
+  const totalCafes = cart.reduce((s, p) => s + p.qty, 0);
   if (countItems) {
     countItems.textContent = `${totalCafes} ${totalCafes === 1 ? "café" : "cafés"}`;
   }
 
-  /* ================= CARRITO VACÍO ================= */
-  if (cart.length === 0) {
-    if (main) main.classList.add("carrito-vacio-activo");
-
-    if (topBack)     topBack.style.display = "none";
+  /* ================= VACÍO ================= */
+  if (!cart.length) {
+    main?.classList.add("carrito-vacio-activo");
+    if (topBack) topBack.style.display = "none";
     if (topBackText) topBackText.style.display = "none";
+    if (resumenBox) resumenBox.style.display = "none";
 
     container.innerHTML = `
       <div class="empty-container">
@@ -69,17 +86,16 @@ function renderCart() {
       </div>
     `;
 
-    if (resumenBox) resumenBox.style.display = "none";
-    if (subtotalLabel) subtotalLabel.textContent = "L 0.00";
-    if (totalLabel)    totalLabel.textContent    = "L 0.00";
+    subtotalLabel.textContent = "L 0.00";
+    totalLabel.textContent    = "L 0.00";
     return;
   }
 
-  /* ================= HAY PRODUCTOS ================= */
-  if (main) main.classList.remove("carrito-vacio-activo");
-  if (topBack)     topBack.style.display = "flex";
+  /* ================= CON PRODUCTOS ================= */
+  main?.classList.remove("carrito-vacio-activo");
+  if (topBack) topBack.style.display = "flex";
   if (topBackText) topBackText.style.display = "inline-block";
-  if (resumenBox)  resumenBox.style.display = "block";
+  if (resumenBox) resumenBox.style.display = "block";
 
   const template = document.getElementById("template-cart-item");
   if (!template) return;
@@ -87,124 +103,80 @@ function renderCart() {
   let subtotal = 0;
 
   cart.forEach((item, index) => {
-    const qty   = Number(item.qty)   || 0;
-    const price = Number(item.price) || 0;
-
     const clone = template.content.cloneNode(true);
 
-    clone.querySelector(".item-image").src =
-      item.img || "";
-
-    clone.querySelector(".item-name").textContent =
-      item.name || "Producto";
-
+    clone.querySelector(".item-image").src = item.img || "";
+    clone.querySelector(".item-name").textContent = item.name;
     clone.querySelector(".item-price").textContent =
-      `L ${price.toFixed(2)} / unidad`;
+      `L ${item.price.toFixed(2)} / unidad`;
+    clone.querySelector(".qty-number").textContent = item.qty;
 
-    clone.querySelector(".qty-number").textContent =
-      qty;
-
-    // marcar botones
     clone.querySelectorAll("button").forEach(btn => {
       btn.dataset.index = index;
     });
 
-    // advertencia SOLO visual si falta product_id
-    if (!item.product_id) {
-      clone.querySelector(".item-name").textContent +=
-        " (volver a agregar)";
-      console.warn("⚠️ Producto sin product_id:", item);
-    }
-
-    subtotal += qty * price;
+    subtotal += item.qty * item.price;
     container.appendChild(clone);
   });
 
-  if (subtotalLabel) subtotalLabel.textContent = `L ${subtotal.toFixed(2)}`;
-  if (totalLabel)    totalLabel.textContent    = `L ${subtotal.toFixed(2)}`;
-
-  saveCart(cart);
+  subtotalLabel.textContent = `L ${subtotal.toFixed(2)}`;
+  totalLabel.textContent    = `L ${subtotal.toFixed(2)}`;
 }
 
 /* -----------------------------------------------------------
    CONTROLES + / – / 🗑
 ----------------------------------------------------------- */
-const cartContainer = document.getElementById("cart-container");
-if (cartContainer) {
-  cartContainer.addEventListener("click", e => {
-    const btn = e.target.closest("button");
-    if (!btn) return;
+document.getElementById("cart-container")?.addEventListener("click", e => {
+  const btn = e.target.closest("button");
+  if (!btn) return;
 
-    const action = btn.dataset.action;
-    const index  = parseInt(btn.dataset.index, 10);
-    const cart   = getCart();
+  const index = Number(btn.dataset.index);
+  const action = btn.dataset.action;
+  const cart = getCart();
 
-    if (isNaN(index) || !cart[index]) return;
+  if (!cart[index]) return;
 
-    if (action === "plus")  cart[index].qty++;
-    if (action === "minus") {
-      cart[index].qty--;
-      if (cart[index].qty <= 0) cart.splice(index, 1);
-    }
-    if (action === "del") cart.splice(index, 1);
-
-    saveCart(cart);
-    renderCart();
-  });
-}
-
-/* -----------------------------------------------------------
-   SINCRONIZAR HEADER
------------------------------------------------------------ */
-document.addEventListener("header:ready", () => {
-  if (typeof window.updateCartCount === "function") {
-    window.updateCartCount();
+  if (action === "plus") cart[index].qty++;
+  if (action === "minus") {
+    cart[index].qty--;
+    if (cart[index].qty <= 0) cart.splice(index, 1);
   }
+  if (action === "del") cart.splice(index, 1);
+
+  saveCart(cart);
   renderCart();
 });
 
 /* -----------------------------------------------------------
-   VALIDAR LOGIN + PRODUCT_ID PARA PROCEDER
+   PROCEDER AL PAGO
 ----------------------------------------------------------- */
-const procederBtn = document.getElementById("proceder-btn");
-if (procederBtn) {
-  procederBtn.addEventListener("click", async () => {
-    const cart = getCart();
-    if (!cart.length) return;
+document.getElementById("proceder-btn")?.addEventListener("click", async () => {
+  const cart = getCart();
+  if (!cart.length) return;
 
-    // 🔴 BLOQUEO REAL (NO RENDER)
-    const invalid = cart.some(p => !p.product_id);
-    if (invalid) {
-      alert("Uno o más productos deben volver a agregarse al carrito.");
-      return;
-    }
+  // 🚨 VALIDACIÓN FINAL (SOLO AQUÍ)
+  const invalid = cart.some(p => !p.product_id);
+  if (invalid) {
+    alert("Actualizamos el sistema. Vuelve a agregar tu café 😊");
+    localStorage.removeItem(CART_KEY);
+    location.reload();
+    return;
+  }
 
-    const sb = getSupabaseClient();
-    if (!sb) {
-      location.href = "login.html?redirect=carrito";
-      return;
-    }
+  const sb = getSupabaseClient();
+  if (!sb) {
+    location.href = "login.html?redirect=carrito";
+    return;
+  }
 
-    const { data } = await sb.auth.getSession();
-    if (!data?.session) {
-      const snack = document.getElementById("snackbar-login");
-      if (snack) {
-        snack.classList.remove("hidden");
-        snack.classList.add("show");
-        setTimeout(() => {
-          snack.classList.remove("show");
-          snack.classList.add("hidden");
-          location.href = "login.html?redirect=carrito";
-        }, 1500);
-      } else {
-        location.href = "login.html?redirect=carrito";
-      }
-      return;
-    }
+  const { data } = await sb.auth.getSession();
+  if (!data?.session) {
+    location.href = "login.html?redirect=carrito";
+    return;
+  }
 
-    location.href = "datos_cliente.html";
-  });
-}
+  location.href = "datos_cliente.html";
+});
 
 /* -----------------------------------------------------------
    INIT
