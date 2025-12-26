@@ -1,7 +1,8 @@
 /* ============================================================
    Carrito — Café Cortero 2025  
    SOLO LÓGICA DE CARRITO (SIN HEADER / SIN DRAWER)
-   ✅ product_id incluido
+   ✅ compatible con recibo.js
+   ✅ product_id obligatorio SOLO para checkout
    ✅ flecha oculta cuando está vacío
 ============================================================ */
 
@@ -11,7 +12,11 @@ const CART_KEY = "cafecortero_cart";
    Helpers
 ----------------------------------------------------------- */
 function getCart() {
-  return JSON.parse(localStorage.getItem(CART_KEY)) || [];
+  try {
+    return JSON.parse(localStorage.getItem(CART_KEY)) || [];
+  } catch {
+    return [];
+  }
 }
 
 function saveCart(cart) {
@@ -41,17 +46,16 @@ function renderCart() {
 
   container.innerHTML = "";
 
-  /* Contar cafés */
-  const totalCafes = cart.reduce((sum, p) => sum + (p.qty || 0), 0);
+  /* Contador de cafés */
+  const totalCafes = cart.reduce((sum, p) => sum + (Number(p.qty) || 0), 0);
   if (countItems) {
     countItems.textContent = `${totalCafes} ${totalCafes === 1 ? "café" : "cafés"}`;
   }
 
-  /* ========= CARRITO VACÍO ========= */
+  /* ================= CARRITO VACÍO ================= */
   if (cart.length === 0) {
     if (main) main.classList.add("carrito-vacio-activo");
 
-    // 🔴 ocultar flecha y texto
     if (topBack)     topBack.style.display = "none";
     if (topBackText) topBackText.style.display = "none";
 
@@ -71,7 +75,7 @@ function renderCart() {
     return;
   }
 
-  /* ========= HAY PRODUCTOS ========= */
+  /* ================= HAY PRODUCTOS ================= */
   if (main) main.classList.remove("carrito-vacio-activo");
   if (topBack)     topBack.style.display = "flex";
   if (topBackText) topBackText.style.display = "inline-block";
@@ -83,24 +87,36 @@ function renderCart() {
   let subtotal = 0;
 
   cart.forEach((item, index) => {
-    // 🛡️ blindaje
-    if (!item.product_id) {
-      console.warn("Producto sin product_id en carrito:", item);
-      return;
-    }
+    const qty   = Number(item.qty)   || 0;
+    const price = Number(item.price) || 0;
 
     const clone = template.content.cloneNode(true);
 
-    clone.querySelector(".item-image").src         = item.img || "";
-    clone.querySelector(".item-name").textContent  = item.name || "";
-    clone.querySelector(".item-price").textContent = `L ${item.price} / unidad`;
-    clone.querySelector(".qty-number").textContent = item.qty;
+    clone.querySelector(".item-image").src =
+      item.img || "";
 
+    clone.querySelector(".item-name").textContent =
+      item.name || "Producto";
+
+    clone.querySelector(".item-price").textContent =
+      `L ${price.toFixed(2)} / unidad`;
+
+    clone.querySelector(".qty-number").textContent =
+      qty;
+
+    // marcar botones
     clone.querySelectorAll("button").forEach(btn => {
       btn.dataset.index = index;
     });
 
-    subtotal += item.qty * item.price;
+    // advertencia SOLO visual si falta product_id
+    if (!item.product_id) {
+      clone.querySelector(".item-name").textContent +=
+        " (volver a agregar)";
+      console.warn("⚠️ Producto sin product_id:", item);
+    }
+
+    subtotal += qty * price;
     container.appendChild(clone);
   });
 
@@ -138,7 +154,7 @@ if (cartContainer) {
 }
 
 /* -----------------------------------------------------------
-   SINCRONIZAR HEADER CUANDO ESTÉ LISTO
+   SINCRONIZAR HEADER
 ----------------------------------------------------------- */
 document.addEventListener("header:ready", () => {
   if (typeof window.updateCartCount === "function") {
@@ -148,13 +164,20 @@ document.addEventListener("header:ready", () => {
 });
 
 /* -----------------------------------------------------------
-   VALIDAR LOGIN PARA PROCEDER
+   VALIDAR LOGIN + PRODUCT_ID PARA PROCEDER
 ----------------------------------------------------------- */
 const procederBtn = document.getElementById("proceder-btn");
 if (procederBtn) {
   procederBtn.addEventListener("click", async () => {
     const cart = getCart();
-    if (cart.length === 0) return;
+    if (!cart.length) return;
+
+    // 🔴 BLOQUEO REAL (NO RENDER)
+    const invalid = cart.some(p => !p.product_id);
+    if (invalid) {
+      alert("Uno o más productos deben volver a agregarse al carrito.");
+      return;
+    }
 
     const sb = getSupabaseClient();
     if (!sb) {
