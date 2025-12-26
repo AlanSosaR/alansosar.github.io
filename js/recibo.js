@@ -161,7 +161,11 @@ const { data: pedido, error } = await sb
     ),
 
     addresses:addresses!orders_address_id_fkey (
+      full_name,
+      phone,
+      country,
       state,
+      city,
       street,
       postal_code
     ),
@@ -202,11 +206,20 @@ const { data: pedido, error } = await sb
     $id("telefonoCliente").textContent = pedido.users.phone || "";
   }
 
-  if (pedido.addresses) {
-    $id("zonaCliente").textContent      = pedido.addresses.state || "";
-    $id("direccionCliente").textContent = pedido.addresses.street || "";
-    $id("notaCliente").textContent      = pedido.addresses.postal_code || "";
-  }
+ if (pedido.addresses) {
+  // Zona = Estado + Ciudad
+  $id("zonaCliente").textContent =
+    [pedido.addresses.state, pedido.addresses.city]
+      .filter(Boolean)
+      .join(", ");
+
+  // Dirección real
+  $id("direccionCliente").textContent =
+    pedido.addresses.street || "";
+
+  // Nota NO existe en addresses
+  $id("notaCliente").textContent = "—";
+}
 
   /* ================= PRODUCTOS ================= */
   lista.innerHTML = "";
