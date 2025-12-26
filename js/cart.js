@@ -1,7 +1,8 @@
 /* ============================================================
-   Carrito — Café Cortero 2025 (FINAL)
-   ✔ Limpieza automática de productos inválidos
-   ✔ product_id obligatorio SOLO para checkout
+   Carrito — Café Cortero 2025 (ESTABLE Y FINAL)
+   ✔ No borra productos al agregar
+   ✔ product_id viaja oculto hasta recibo
+   ✔ Validación SOLO en checkout
    ✔ Compatible con recibo.js
 ============================================================ */
 
@@ -27,31 +28,11 @@ function getSupabaseClient() {
 }
 
 /* -----------------------------------------------------------
-   LIMPIAR PRODUCTOS INVÁLIDOS (AUTO)
------------------------------------------------------------ */
-function sanitizeCart() {
-  const cart = getCart();
-  const valid = cart.filter(p =>
-    p &&
-    typeof p === "object" &&
-    Number(p.qty) > 0 &&
-    Number(p.price) > 0 &&
-    p.name
-  );
-
-  if (valid.length !== cart.length) {
-    console.warn("🧹 Carrito limpiado (productos antiguos o inválidos)");
-    saveCart(valid);
-  }
-}
-
-/* -----------------------------------------------------------
    RENDER DEL CARRITO
 ----------------------------------------------------------- */
 function renderCart() {
-  sanitizeCart();
-
   const cart = getCart();
+
   const container     = document.getElementById("cart-container");
   const subtotalLabel = document.getElementById("subtotal-label");
   const totalLabel    = document.getElementById("total-label");
@@ -64,7 +45,7 @@ function renderCart() {
   if (!container) return;
   container.innerHTML = "";
 
-  const totalCafes = cart.reduce((s, p) => s + p.qty, 0);
+  const totalCafes = cart.reduce((s, p) => s + (Number(p.qty) || 0), 0);
   if (countItems) {
     countItems.textContent = `${totalCafes} ${totalCafes === 1 ? "café" : "cafés"}`;
   }
@@ -72,9 +53,9 @@ function renderCart() {
   /* ================= VACÍO ================= */
   if (!cart.length) {
     main?.classList.add("carrito-vacio-activo");
-    if (topBack) topBack.style.display = "none";
-    if (topBackText) topBackText.style.display = "none";
-    if (resumenBox) resumenBox.style.display = "none";
+    resumenBox && (resumenBox.style.display = "none");
+    topBack && (topBack.style.display = "none");
+    topBackText && (topBackText.style.display = "none");
 
     container.innerHTML = `
       <div class="empty-container">
@@ -93,9 +74,9 @@ function renderCart() {
 
   /* ================= CON PRODUCTOS ================= */
   main?.classList.remove("carrito-vacio-activo");
-  if (topBack) topBack.style.display = "flex";
-  if (topBackText) topBackText.style.display = "inline-block";
-  if (resumenBox) resumenBox.style.display = "block";
+  resumenBox && (resumenBox.style.display = "block");
+  topBack && (topBack.style.display = "flex");
+  topBackText && (topBackText.style.display = "inline-block");
 
   const template = document.getElementById("template-cart-item");
   if (!template) return;
@@ -106,16 +87,16 @@ function renderCart() {
     const clone = template.content.cloneNode(true);
 
     clone.querySelector(".item-image").src = item.img || "";
-    clone.querySelector(".item-name").textContent = item.name;
+    clone.querySelector(".item-name").textContent = item.name || "Producto";
     clone.querySelector(".item-price").textContent =
-      `L ${item.price.toFixed(2)} / unidad`;
-    clone.querySelector(".qty-number").textContent = item.qty;
+      `L ${Number(item.price).toFixed(2)} / unidad`;
+    clone.querySelector(".qty-number").textContent = item.qty || 1;
 
     clone.querySelectorAll("button").forEach(btn => {
       btn.dataset.index = index;
     });
 
-    subtotal += item.qty * item.price;
+    subtotal += (Number(item.qty) || 0) * (Number(item.price) || 0);
     container.appendChild(clone);
   });
 
@@ -130,9 +111,9 @@ document.getElementById("cart-container")?.addEventListener("click", e => {
   const btn = e.target.closest("button");
   if (!btn) return;
 
-  const index = Number(btn.dataset.index);
+  const index  = Number(btn.dataset.index);
   const action = btn.dataset.action;
-  const cart = getCart();
+  const cart   = getCart();
 
   if (!cart[index]) return;
 
@@ -148,18 +129,16 @@ document.getElementById("cart-container")?.addEventListener("click", e => {
 });
 
 /* -----------------------------------------------------------
-   PROCEDER AL PAGO
+   PROCEDER AL PAGO (VALIDACIÓN REAL)
 ----------------------------------------------------------- */
 document.getElementById("proceder-btn")?.addEventListener("click", async () => {
   const cart = getCart();
   if (!cart.length) return;
 
-  // 🚨 VALIDACIÓN FINAL (SOLO AQUÍ)
+  // 🔒 VALIDAR product_id SOLO AQUÍ
   const invalid = cart.some(p => !p.product_id);
   if (invalid) {
-    alert("Actualizamos el sistema. Vuelve a agregar tu café 😊");
-    localStorage.removeItem(CART_KEY);
-    location.reload();
+    alert("Uno o más productos necesitan actualizarse. Vuelve a agregarlos 😊");
     return;
   }
 
@@ -174,6 +153,9 @@ document.getElementById("proceder-btn")?.addEventListener("click", async () => {
     location.href = "login.html?redirect=carrito";
     return;
   }
+
+  // 👉 EL CARRITO VIAJA OCULTO A RECIBO
+  localStorage.setItem("checkout_cart", JSON.stringify(cart));
 
   location.href = "datos_cliente.html";
 });
