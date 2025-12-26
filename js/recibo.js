@@ -73,20 +73,19 @@ function aplicarModoRecibo() {
 }
 
 /* =========================================================
-   PROGRESO DEL PEDIDO — CORREGIDO
+   PROGRESO DEL PEDIDO (LECTURA REAL DESDE STATUS)
 ========================================================= */
 function aplicarProgresoPedido(status) {
   const steps = document.querySelectorAll("#pedido-progreso-recibo .step");
   const lines = document.querySelectorAll("#pedido-progreso-recibo .line");
   const estadoTexto = $id("estadoPedidoTexto");
 
-  // 🔑 cantidad REAL de pasos completados
   const mapSteps = {
-    payment_review: 1,        // Pag → Rev
-    payment_confirmed: 2,     // Pag → Rev → Conf
+    payment_review: 1,
+    payment_confirmed: 2,
     cash_on_delivery: 2,
     processing: 2,
-    shipped: 3,               // Pag → Rev → Conf → Envío
+    shipped: 3,
     delivered: 3
   };
 
@@ -101,12 +100,10 @@ function aplicarProgresoPedido(status) {
 
   const activos = mapSteps[status] ?? 0;
 
-  // pasos (círculos)
   steps.forEach((step, i) => {
     step.classList.toggle("active", i <= activos);
   });
 
-  // líneas entre pasos
   lines.forEach((line, i) => {
     line.classList.toggle("active", i < activos);
   });
@@ -156,6 +153,19 @@ async function cargarPedidoExistente(orderId) {
       total,
       payment_method,
       status,
+
+      users (
+        name,
+        email,
+        phone
+      ),
+
+      addresses (
+        state,
+        street,
+        postal_code
+      ),
+
       order_items (
         quantity,
         price,
@@ -163,6 +173,7 @@ async function cargarPedidoExistente(orderId) {
           name
         )
       ),
+
       payment_receipts (
         file_url
       )
@@ -176,7 +187,7 @@ async function cargarPedidoExistente(orderId) {
     return;
   }
 
-  /* HEADER */
+  /* ================= HEADER ================= */
   $id("numeroPedido").textContent = pedido.order_number;
   $id("fechaPedido").textContent = new Date(pedido.created_at).toLocaleString("es-HN", {
     dateStyle: "short",
@@ -184,7 +195,20 @@ async function cargarPedidoExistente(orderId) {
     hour12: true
   });
 
-  /* PRODUCTOS */
+  /* ================= DATOS CLIENTE ================= */
+  if (pedido.users) {
+    $id("nombreCliente").textContent   = pedido.users.name || "";
+    $id("correoCliente").textContent   = pedido.users.email || "";
+    $id("telefonoCliente").textContent = pedido.users.phone || "";
+  }
+
+  if (pedido.addresses) {
+    $id("zonaCliente").textContent      = pedido.addresses.state || "";
+    $id("direccionCliente").textContent = pedido.addresses.street || "";
+    $id("notaCliente").textContent      = pedido.addresses.postal_code || "";
+  }
+
+  /* ================= PRODUCTOS ================= */
   lista.innerHTML = "";
   pedido.order_items.forEach(item => {
     lista.innerHTML += `
@@ -199,9 +223,9 @@ async function cargarPedidoExistente(orderId) {
     `;
   });
 
-  $id("totalPedido").textContent = pedido.total.toFixed(2);
+  $id("totalPedido").textContent = Number(pedido.total).toFixed(2);
 
-  /* MÉTODO DE PAGO */
+  /* ================= MÉTODO DE PAGO ================= */
   metodoPago.value = pedido.payment_method;
 
   if (pedido.payment_method === "cash") {
@@ -216,7 +240,7 @@ async function cargarPedidoExistente(orderId) {
     }
   }
 
-  /* PROGRESO */
+  /* ================= PROGRESO ================= */
   aplicarProgresoPedido(pedido.status);
 }
 
@@ -255,7 +279,7 @@ async function cargarDatosCliente() {
 }
 
 /* =========================================================
-   CARRITO
+   CARRITO (SOLO CHECKOUT)
 ========================================================= */
 const lista = $id("listaProductos");
 const carrito = JSON.parse(localStorage.getItem("cafecortero_cart")) || [];
