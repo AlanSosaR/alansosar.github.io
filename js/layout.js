@@ -62,18 +62,24 @@ if (document.body.dataset.page === "login") {
           el.classList.add("hidden");
         });
 
-        // Mostrar SOLO el que corresponde
-        if (document.body.classList.contains("page-carrito")) {
-          document.getElementById("header-cart-title")?.classList.remove("hidden");
-        }
+        // Mostrar SOLO el título que corresponde según la página
 
-        if (document.body.classList.contains("page-datos-cliente")) {
-          document.getElementById("header-datos-title")?.classList.remove("hidden");
-        }
+if (document.body.classList.contains("page-carrito")) {
+  document.getElementById("header-cart-title")?.classList.remove("hidden");
+}
 
-        if (document.body.classList.contains("page-recibo")) {
-          document.getElementById("header-recibo-title")?.classList.remove("hidden");
-        }
+if (document.body.classList.contains("page-datos-cliente")) {
+  document.getElementById("header-datos-title")?.classList.remove("hidden");
+}
+
+if (document.body.classList.contains("page-recibo")) {
+  document.getElementById("header-recibo-title")?.classList.remove("hidden");
+}
+
+
+if (document.body.classList.contains("page-mis-pedidos")) {
+  document.getElementById("header-mis-pedidos-title")?.classList.remove("hidden");
+}
 
         // =====================================================
         // 5️⃣ INIT HEADER (UI PURA)
