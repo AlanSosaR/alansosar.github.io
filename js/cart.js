@@ -1,16 +1,16 @@
 /* ============================================================
-   Carrito — Café Cortero 2025 (ESTABLE Y FINAL)
-   ✔ No borra productos al agregar
-   ✔ product_id viaja oculto hasta recibo
-   ✔ Validación SOLO en checkout
+   Carrito — Café Cortero 2025 (FINAL ESTABLE)
+   ✔ No borra productos
+   ✔ product_id SOLO para checkout
+   ✔ Flecha superior oculta cuando está vacío
    ✔ Compatible con recibo.js
 ============================================================ */
 
 const CART_KEY = "cafecortero_cart";
 
-/* -----------------------------------------------------------
+/* ============================================================
    HELPERS
------------------------------------------------------------ */
+============================================================ */
 function getCart() {
   try {
     return JSON.parse(localStorage.getItem(CART_KEY)) || [];
@@ -27,9 +27,9 @@ function getSupabaseClient() {
   return window.supabaseClient || window.supabase || null;
 }
 
-/* -----------------------------------------------------------
+/* ============================================================
    RENDER DEL CARRITO
------------------------------------------------------------ */
+============================================================ */
 function renderCart() {
   const cart = getCart();
 
@@ -39,23 +39,29 @@ function renderCart() {
   const countItems    = document.getElementById("count-items");
   const resumenBox    = document.querySelector(".resumen-box");
   const main          = document.querySelector("main");
+
+  /* 🔑 Flecha superior */
   const topBack       = document.getElementById("top-back-btn");
   const topBackText   = document.getElementById("top-back-text");
 
   if (!container) return;
   container.innerHTML = "";
 
-  const totalCafes = cart.reduce((s, p) => s + (Number(p.qty) || 0), 0);
+  const totalCafes = cart.reduce((s, p) => s + Number(p.qty || 0), 0);
   if (countItems) {
-    countItems.textContent = `${totalCafes} ${totalCafes === 1 ? "café" : "cafés"}`;
+    countItems.textContent =
+      `${totalCafes} ${totalCafes === 1 ? "café" : "cafés"}`;
   }
 
-  /* ================= VACÍO ================= */
+  /* ================= CARRITO VACÍO ================= */
   if (!cart.length) {
     main?.classList.add("carrito-vacio-activo");
-    resumenBox && (resumenBox.style.display = "none");
-    topBack && (topBack.style.display = "none");
-    topBackText && (topBackText.style.display = "none");
+
+    /* 🔒 Ocultar flecha y texto superior */
+    if (topBack)     topBack.style.display = "none";
+    if (topBackText) topBackText.style.display = "none";
+
+    if (resumenBox) resumenBox.style.display = "none";
 
     container.innerHTML = `
       <div class="empty-container">
@@ -67,16 +73,19 @@ function renderCart() {
       </div>
     `;
 
-    subtotalLabel.textContent = "L 0.00";
-    totalLabel.textContent    = "L 0.00";
+    if (subtotalLabel) subtotalLabel.textContent = "L 0.00";
+    if (totalLabel)    totalLabel.textContent    = "L 0.00";
     return;
   }
 
   /* ================= CON PRODUCTOS ================= */
   main?.classList.remove("carrito-vacio-activo");
-  resumenBox && (resumenBox.style.display = "block");
-  topBack && (topBack.style.display = "flex");
-  topBackText && (topBackText.style.display = "inline-block");
+
+  /* 🔓 Mostrar flecha y texto */
+  if (topBack)     topBack.style.display = "flex";
+  if (topBackText) topBackText.style.display = "inline-block";
+
+  if (resumenBox) resumenBox.style.display = "block";
 
   const template = document.getElementById("template-cart-item");
   if (!template) return;
@@ -86,27 +95,33 @@ function renderCart() {
   cart.forEach((item, index) => {
     const clone = template.content.cloneNode(true);
 
-    clone.querySelector(".item-image").src = item.img || "";
-    clone.querySelector(".item-name").textContent = item.name || "Producto";
+    clone.querySelector(".item-image").src =
+      item.img || "";
+
+    clone.querySelector(".item-name").textContent =
+      item.name || "Producto";
+
     clone.querySelector(".item-price").textContent =
       `L ${Number(item.price).toFixed(2)} / unidad`;
-    clone.querySelector(".qty-number").textContent = item.qty || 1;
+
+    clone.querySelector(".qty-number").textContent =
+      item.qty || 1;
 
     clone.querySelectorAll("button").forEach(btn => {
       btn.dataset.index = index;
     });
 
-    subtotal += (Number(item.qty) || 0) * (Number(item.price) || 0);
+    subtotal += Number(item.qty || 0) * Number(item.price || 0);
     container.appendChild(clone);
   });
 
-  subtotalLabel.textContent = `L ${subtotal.toFixed(2)}`;
-  totalLabel.textContent    = `L ${subtotal.toFixed(2)}`;
+  if (subtotalLabel) subtotalLabel.textContent = `L ${subtotal.toFixed(2)}`;
+  if (totalLabel)    totalLabel.textContent    = `L ${subtotal.toFixed(2)}`;
 }
 
-/* -----------------------------------------------------------
+/* ============================================================
    CONTROLES + / – / 🗑
------------------------------------------------------------ */
+============================================================ */
 document.getElementById("cart-container")?.addEventListener("click", e => {
   const btn = e.target.closest("button");
   if (!btn) return;
@@ -128,17 +143,16 @@ document.getElementById("cart-container")?.addEventListener("click", e => {
   renderCart();
 });
 
-/* -----------------------------------------------------------
-   PROCEDER AL PAGO (VALIDACIÓN REAL)
------------------------------------------------------------ */
+/* ============================================================
+   PROCEDER AL PAGO
+============================================================ */
 document.getElementById("proceder-btn")?.addEventListener("click", async () => {
   const cart = getCart();
   if (!cart.length) return;
 
-  // 🔒 VALIDAR product_id SOLO AQUÍ
-  const invalid = cart.some(p => !p.product_id);
-  if (invalid) {
-    alert("Uno o más productos necesitan actualizarse. Vuelve a agregarlos 😊");
+  /* 🔒 Validar product_id SOLO aquí */
+  if (cart.some(p => !p.product_id)) {
+    alert("Uno o más productos deben volver a agregarse al carrito.");
     return;
   }
 
@@ -154,13 +168,10 @@ document.getElementById("proceder-btn")?.addEventListener("click", async () => {
     return;
   }
 
-  // 👉 EL CARRITO VIAJA OCULTO A RECIBO
-  localStorage.setItem("checkout_cart", JSON.stringify(cart));
-
   location.href = "datos_cliente.html";
 });
 
-/* -----------------------------------------------------------
+/* ============================================================
    INIT
------------------------------------------------------------ */
+============================================================ */
 renderCart();
