@@ -353,3 +353,15 @@ body.page-carrito .seguir-comprando {
 body.page-carrito.carrito-vacio .seguir-comprando {
   display: none !important;
 }
+/* =====================================================
+   COMPENSAR ESPACIO CUANDO SE OCULTA "SEGUIR COMPRANDO"
+===================================================== */
+body.page-carrito.carrito-vacio main {
+  padding-top: calc(72px + 1.5rem); /* header + aire visual */
+}
+
+@media (max-width: 900px) {
+  body.page-carrito.carrito-vacio main {
+    padding-top: calc(72px + 1rem);
+  }
+}
