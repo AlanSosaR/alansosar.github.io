@@ -48,9 +48,11 @@ function renderCart() {
       `${totalCafes} ${totalCafes === 1 ? "café" : "cafés"}`;
   }
 
-  /* ---- VACÍO ---- */
+  /* ================= CARRITO VACÍO ================= */
   if (!cart.length) {
     main?.classList.add("carrito-vacio-activo");
+    document.body.classList.add("carrito-vacio"); // 🔑 CLAVE CSS
+
     resumenBox && (resumenBox.style.display = "none");
     topBack && (topBack.style.display = "none");
     topBackText && (topBackText.style.display = "none");
@@ -65,13 +67,15 @@ function renderCart() {
       </div>
     `;
 
-    subtotalLabel.textContent = "L 0.00";
-    totalLabel.textContent    = "L 0.00";
+    if (subtotalLabel) subtotalLabel.textContent = "L 0.00";
+    if (totalLabel)    totalLabel.textContent    = "L 0.00";
     return;
   }
 
-  /* ---- CON PRODUCTOS ---- */
+  /* ================= CON PRODUCTOS ================= */
   main?.classList.remove("carrito-vacio-activo");
+  document.body.classList.remove("carrito-vacio"); // 🔑 CLAVE CSS
+
   resumenBox && (resumenBox.style.display = "block");
   topBack && (topBack.style.display = "flex");
   topBackText && (topBackText.style.display = "inline-block");
@@ -98,10 +102,9 @@ function renderCart() {
     container.appendChild(clone);
   });
 
-  subtotalLabel.textContent = `L ${subtotal.toFixed(2)}`;
-  totalLabel.textContent    = `L ${subtotal.toFixed(2)}`;
+  if (subtotalLabel) subtotalLabel.textContent = `L ${subtotal.toFixed(2)}`;
+  if (totalLabel)    totalLabel.textContent    = `L ${subtotal.toFixed(2)}`;
 }
-
 /* ================= CONTROLES ================= */
 document.getElementById("cart-container")?.addEventListener("click", e => {
   const btn = e.target.closest("button");
