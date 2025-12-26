@@ -247,7 +247,17 @@ body.page-mis-pedidos {
 /* =====================================================
    FOOTER
 ===================================================== */
-
+.divider-footer {
+  height: 1.5px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--verde),
+    transparent
+  );
+  margin: 14px 0 10px;
+  opacity: 0.6;
+}
 .pedido-footer {
   margin-top: 18px;
   text-align: center;
