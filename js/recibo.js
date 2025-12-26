@@ -586,3 +586,21 @@ if (btnEnviar && !IS_READ_ONLY) {
     validarBotonEnviar();
   }
 })();
+/* =========================================================
+   BOTÓN ATRÁS — COMPORTAMIENTO CORRECTO
+========================================================= */
+const btnBack = document.getElementById("btnBack");
+
+if (btnBack) {
+  btnBack.addEventListener("click", (e) => {
+    e.preventDefault();
+
+    if (IS_READ_ONLY) {
+      // 🔙 Vino de MIS PEDIDOS
+      window.location.href = "mispedidos.html";
+    } else {
+      // 🔙 Vino de DETALLES DEL CLIENTE
+      window.location.href = "datos_cliente.html";
+    }
+  });
+}
