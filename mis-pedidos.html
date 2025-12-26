@@ -60,7 +60,6 @@
           <p class="pedido-fecha">—</p>
           <p class="pedido-total">Total: L 0.00</p>
         </header>
-
 <section class="pedido-progreso">
   <p class="progreso-title">Progreso del pedido</p>
 
@@ -84,7 +83,7 @@
       <span class="step envio"></span>
     </div>
 
-    <!-- 👇 TEXTOS DEBAJO DE CADA PUNTO -->
+    <!-- TEXTOS -->
     <div class="progreso-labels">
       <span>Pag.</span>
       <span>Rev.</span>
@@ -99,18 +98,19 @@
     <span class="material-symbols-outlined estado-icon">check_circle</span>
     <span class="estado-text">Pago confirmado</span>
   </div>
+
+  <!-- 🔽 LÍNEA DIVISORIA -->
+  <div class="divider-footer"></div>
+
+  <!-- FOOTER (YA DENTRO) -->
+  <footer class="pedido-footer">
+    <button class="ver-recibo">
+      <span class="ver-text">Ver recibo</span>
+      <span class="arrow material-symbols-outlined">arrow_forward</span>
+    </button>
+  </footer>
+
 </section>
-        <footer class="pedido-footer">
-  <button class="ver-recibo">
-    <span class="ver-text">Ver recibo</span>
-    <span class="arrow material-symbols-outlined">arrow_forward</span>
-  </button>
-</footer>
-
-      </article>
-    </template>
-
-  </div>
 
   <!-- ================= EMPTY STATE ================= -->
   <section class="empty-state hidden" id="empty-state">
