@@ -58,9 +58,9 @@ function getUserCache() {
    UI — MODO RECIBO
 ========================================================= */
 function aplicarModoRecibo() {
-  const progreso = $id("pedido-progreso-recibo");
+  const progreso   = $id("pedido-progreso-recibo");
   const selectPago = document.querySelector(".pago-select-label");
-  const botones = document.querySelector(".recibo-botones");
+  const botones    = document.querySelector(".recibo-botones");
 
   if (IS_READ_ONLY) {
     progreso?.classList.remove("hidden");
@@ -125,17 +125,12 @@ async function setNumeroPedidoProvisional() {
 
   const siguiente = data?.length ? data[0].order_number + 1 : 1;
 
-  const numEl = $id("numeroPedido");
-  if (numEl) numEl.textContent = siguiente;
-
-  const fechaEl = $id("fechaPedido");
-  if (fechaEl) {
-    fechaEl.textContent = new Date().toLocaleString("es-HN", {
-      dateStyle: "short",
-      timeStyle: "short",
-      hour12: true
-    });
-  }
+  $id("numeroPedido").textContent = siguiente;
+  $id("fechaPedido").textContent = new Date().toLocaleString("es-HN", {
+    dateStyle: "short",
+    timeStyle: "short",
+    hour12: true
+  });
 }
 
 /* =========================================================
@@ -173,7 +168,7 @@ async function cargarPedidoExistente(orderId) {
     return;
   }
 
-  /* ===== HEADER ===== */
+  /* HEADER */
   $id("numeroPedido").textContent = pedido.order_number;
   $id("fechaPedido").textContent = new Date(pedido.created_at).toLocaleString("es-HN", {
     dateStyle: "short",
@@ -181,7 +176,7 @@ async function cargarPedidoExistente(orderId) {
     hour12: true
   });
 
-  /* ===== PRODUCTOS ===== */
+  /* PRODUCTOS */
   lista.innerHTML = "";
   pedido.order_items.forEach(item => {
     lista.innerHTML += `
@@ -198,7 +193,7 @@ async function cargarPedidoExistente(orderId) {
 
   $id("totalPedido").textContent = pedido.total.toFixed(2);
 
-  /* ===== MÉTODO DE PAGO ===== */
+  /* MÉTODO DE PAGO */
   metodoPago.value = pedido.payment_method;
 
   if (pedido.payment_method === "cash") {
@@ -213,7 +208,7 @@ async function cargarPedidoExistente(orderId) {
     }
   }
 
-  /* ===== PROGRESO ===== */
+  /* PROGRESO */
   aplicarProgresoPedido(pedido.status);
 }
 
@@ -232,8 +227,8 @@ async function cargarDatosCliente() {
     .single();
 
   if (userRow) {
-    $id("nombreCliente").textContent = userRow.name || "";
-    $id("correoCliente").textContent = userRow.email || "";
+    $id("nombreCliente").textContent   = userRow.name || "";
+    $id("correoCliente").textContent   = userRow.email || "";
     $id("telefonoCliente").textContent = userRow.phone || "";
   }
 
@@ -245,34 +240,10 @@ async function cargarDatosCliente() {
     .limit(1);
 
   if (addr?.length) {
-    $id("zonaCliente").textContent = addr[0].state || "";
+    $id("zonaCliente").textContent      = addr[0].state || "";
     $id("direccionCliente").textContent = addr[0].street || "";
-    $id("notaCliente").textContent = addr[0].postal_code || "";
+    $id("notaCliente").textContent      = addr[0].postal_code || "";
   }
-}
-/* =========================================================
-   DATOS CLIENTE (DESDE PEDIDO - SOLO LECTURA)
-========================================================= */
-function cargarDatosClienteDesdePedido(pedido) {
-  if (!pedido) return;
-
-  $id("nombreCliente").textContent =
-    pedido.customer_name || "—";
-
-  $id("correoCliente").textContent =
-    pedido.customer_email || "—";
-
-  $id("telefonoCliente").textContent =
-    pedido.customer_phone || "—";
-
-  $id("zonaCliente").textContent =
-    pedido.customer_zone || "—";
-
-  $id("direccionCliente").textContent =
-    pedido.customer_address || "—";
-
-  $id("notaCliente").textContent =
-    pedido.customer_note || "—";
 }
 
 /* =========================================================
@@ -303,14 +274,14 @@ if (lista && !IS_READ_ONLY) {
 /* =========================================================
    MÉTODO DE PAGO
 ========================================================= */
-const metodoPago = $id("metodoPago");
+const metodoPago     = $id("metodoPago");
 const bloqueDeposito = $id("pago-deposito");
 const bloqueEfectivo = $id("pago-efectivo");
-const btnEnviar = $id("btnEnviar");
-const loader = $id("loaderEnviar");
-const inputFile = $id("inputComprobante");
-const previewBox = $id("previewComprobante");
-const imgPreview = $id("imgComprobante");
+const btnEnviar      = $id("btnEnviar");
+const loader         = $id("loaderEnviar");
+const inputFile      = $id("inputComprobante");
+const previewBox     = $id("previewComprobante");
+const imgPreview     = $id("imgComprobante");
 
 function resetMetodoPago() {
   bloqueDeposito?.classList.add("hidden");
@@ -336,7 +307,7 @@ function resetMetodoPago() {
   if (IS_READ_ONLY) {
     await cargarPedidoExistente(ORDER_ID);
   } else {
-    await setNumeroPedidoProvisional(); // ✅ AQUÍ ESTABA LA FALLA
+    await setNumeroPedidoProvisional();
     await cargarDatosCliente();
     resetMetodoPago();
   }
