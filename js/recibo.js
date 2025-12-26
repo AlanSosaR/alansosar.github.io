@@ -73,20 +73,21 @@ function aplicarModoRecibo() {
 }
 
 /* =========================================================
-   PROGRESO DEL PEDIDO
+   PROGRESO DEL PEDIDO — CORREGIDO
 ========================================================= */
 function aplicarProgresoPedido(status) {
   const steps = document.querySelectorAll("#pedido-progreso-recibo .step");
   const lines = document.querySelectorAll("#pedido-progreso-recibo .line");
   const estadoTexto = $id("estadoPedidoTexto");
 
+  // 🔑 cantidad REAL de pasos completados
   const mapSteps = {
-    payment_review: 2,
-    payment_confirmed: 3,
-    cash_on_delivery: 3,
-    processing: 3,
-    shipped: 4,
-    delivered: 4
+    payment_review: 1,        // Pag → Rev
+    payment_confirmed: 2,     // Pag → Rev → Conf
+    cash_on_delivery: 2,
+    processing: 2,
+    shipped: 3,               // Pag → Rev → Conf → Envío
+    delivered: 3
   };
 
   const labels = {
@@ -98,13 +99,20 @@ function aplicarProgresoPedido(status) {
     delivered: "Entregado"
   };
 
-  const activos = mapSteps[status] || 1;
+  const activos = mapSteps[status] ?? 0;
 
-  steps.forEach((s, i) => s.classList.toggle("active", i < activos));
-  lines.forEach((l, i) => l.classList.toggle("active", i < activos - 1));
+  // pasos (círculos)
+  steps.forEach((step, i) => {
+    step.classList.toggle("active", i <= activos);
+  });
+
+  // líneas entre pasos
+  lines.forEach((line, i) => {
+    line.classList.toggle("active", i < activos);
+  });
 
   if (estadoTexto) {
-    estadoTexto.textContent = labels[status] || "Pendiente";
+    estadoTexto.textContent = labels[status] || "Pendiente de pago";
   }
 }
 
