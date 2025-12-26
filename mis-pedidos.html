@@ -28,14 +28,10 @@
 <!-- =====================================================
      HEADER — EXACTAMENTE IGUAL AL CARRITO
 ====================================================== -->
-<!-- 🔑 COPIA AQUÍ TAL CUAL el <header class="header-fixed"> 
-     que usas en carrito.html
-     ❌ SIN drawer
-     ❌ SIN cambios -->
-<!-- header-fixed -->
+<!-- COPIA AQUÍ el <header class="header-fixed"> del carrito -->
 
 <!-- =====================================================
-     SEGUIR COMPRANDO (MISMO ESTILO CARRITO)
+     SEGUIR COMPRANDO
 ====================================================== -->
 <div class="seguir-comprando">
   <button class="icon-back" onclick="location.href='index.html#productos'">
@@ -49,68 +45,71 @@
 ====================================================== -->
 <main>
 
+  <!-- CONTENEDOR DE PEDIDOS -->
   <div class="pedidos-container" id="pedidos-lista">
 
     <!-- ================= TEMPLATE PEDIDO ================= -->
     <template id="pedido-template">
       <article class="pedido-card">
 
+        <!-- HEADER PEDIDO -->
         <header class="pedido-header">
           <h3 class="pedido-numero">Pedido #000</h3>
           <p class="pedido-fecha">—</p>
           <p class="pedido-total">Total: L 0.00</p>
         </header>
-<section class="pedido-progreso">
-  <p class="progreso-title">Progreso del pedido</p>
 
-  <!-- CONTENEDOR PROGRESO -->
-  <div class="progreso-wrapper">
+        <!-- PROGRESO -->
+        <section class="pedido-progreso">
+          <p class="progreso-title">Progreso del pedido</p>
 
-    <div class="progreso-bar">
-      <!-- PAGO -->
-      <span class="step pago"></span>
-      <span class="line pago"></span>
+          <div class="progreso-wrapper">
 
-      <!-- REVISIÓN -->
-      <span class="step revision"></span>
-      <span class="line revision"></span>
+            <div class="progreso-bar">
+              <span class="step pago"></span>
+              <span class="line pago"></span>
 
-      <!-- CONFIRMADO -->
-      <span class="step confirmado"></span>
-      <span class="line confirmado"></span>
+              <span class="step revision"></span>
+              <span class="line revision"></span>
 
-      <!-- ENVÍO -->
-      <span class="step envio"></span>
-    </div>
+              <span class="step confirmado"></span>
+              <span class="line confirmado"></span>
 
-    <!-- TEXTOS -->
-    <div class="progreso-labels">
-      <span>Pag.</span>
-      <span>Rev.</span>
-      <span>Conf.</span>
-      <span>Envío</span>
-    </div>
+              <span class="step envio"></span>
+            </div>
+
+            <div class="progreso-labels">
+              <span>Pag.</span>
+              <span>Rev.</span>
+              <span>Conf.</span>
+              <span>Envío</span>
+            </div>
+
+          </div>
+
+          <!-- ESTADO ACTUAL -->
+          <div class="estado">
+            <span class="material-symbols-outlined estado-icon">check_circle</span>
+            <span class="estado-text">Pago confirmado</span>
+          </div>
+
+          <!-- DIVISOR -->
+          <div class="divider-footer"></div>
+
+          <!-- FOOTER -->
+          <footer class="pedido-footer">
+            <button class="ver-recibo">
+              <span class="ver-text">Ver recibo</span>
+              <span class="arrow material-symbols-outlined">arrow_forward</span>
+            </button>
+          </footer>
+
+        </section>
+
+      </article>
+    </template>
 
   </div>
-
-  <!-- ESTADO ACTUAL -->
-  <div class="estado">
-    <span class="material-symbols-outlined estado-icon">check_circle</span>
-    <span class="estado-text">Pago confirmado</span>
-  </div>
-
-  <!-- 🔽 LÍNEA DIVISORIA -->
-  <div class="divider-footer"></div>
-
-  <!-- FOOTER (YA DENTRO) -->
-  <footer class="pedido-footer">
-    <button class="ver-recibo">
-      <span class="ver-text">Ver recibo</span>
-      <span class="arrow material-symbols-outlined">arrow_forward</span>
-    </button>
-  </footer>
-
-</section>
 
   <!-- ================= EMPTY STATE ================= -->
   <section class="empty-state hidden" id="empty-state">
@@ -125,9 +124,8 @@
 </main>
 
 <!-- =====================================================
-     SCRIPTS — MISMO ORDEN QUE CARRITO
+     SCRIPTS
 ====================================================== -->
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script src="js/supabase-client-core.js"></script>
