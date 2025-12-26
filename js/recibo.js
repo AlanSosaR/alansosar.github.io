@@ -153,8 +153,16 @@ async function cargarPedidoExistente(orderId) {
       total,
       payment_method,
       status,
-      order_items ( name, qty, price ),
-      payment_receipts ( file_url )
+      order_items (
+        quantity,
+        price,
+        products (
+          name
+        )
+      ),
+      payment_receipts (
+        file_url
+      )
     `)
     .eq("id", orderId)
     .single();
@@ -165,6 +173,7 @@ async function cargarPedidoExistente(orderId) {
     return;
   }
 
+  /* ===== HEADER ===== */
   $id("numeroPedido").textContent = pedido.order_number;
   $id("fechaPedido").textContent = new Date(pedido.created_at).toLocaleString("es-HN", {
     dateStyle: "short",
@@ -172,18 +181,24 @@ async function cargarPedidoExistente(orderId) {
     hour12: true
   });
 
+  /* ===== PRODUCTOS ===== */
   lista.innerHTML = "";
   pedido.order_items.forEach(item => {
     lista.innerHTML += `
       <div class="cafe-item">
-        <span class="cafe-nombre">${item.name} (${item.qty} bolsas)</span>
-        <span class="cafe-precio">L ${(item.qty * item.price).toFixed(2)}</span>
+        <span class="cafe-nombre">
+          ${item.products.name} (${item.quantity} bolsas)
+        </span>
+        <span class="cafe-precio">
+          L ${(item.quantity * item.price).toFixed(2)}
+        </span>
       </div>
     `;
   });
 
   $id("totalPedido").textContent = pedido.total.toFixed(2);
 
+  /* ===== MÉTODO DE PAGO ===== */
   metodoPago.value = pedido.payment_method;
 
   if (pedido.payment_method === "cash") {
@@ -198,6 +213,7 @@ async function cargarPedidoExistente(orderId) {
     }
   }
 
+  /* ===== PROGRESO ===== */
   aplicarProgresoPedido(pedido.status);
 }
 
@@ -233,6 +249,30 @@ async function cargarDatosCliente() {
     $id("direccionCliente").textContent = addr[0].street || "";
     $id("notaCliente").textContent = addr[0].postal_code || "";
   }
+}
+/* =========================================================
+   DATOS CLIENTE (DESDE PEDIDO - SOLO LECTURA)
+========================================================= */
+function cargarDatosClienteDesdePedido(pedido) {
+  if (!pedido) return;
+
+  $id("nombreCliente").textContent =
+    pedido.customer_name || "—";
+
+  $id("correoCliente").textContent =
+    pedido.customer_email || "—";
+
+  $id("telefonoCliente").textContent =
+    pedido.customer_phone || "—";
+
+  $id("zonaCliente").textContent =
+    pedido.customer_zone || "—";
+
+  $id("direccionCliente").textContent =
+    pedido.customer_address || "—";
+
+  $id("notaCliente").textContent =
+    pedido.customer_note || "—";
 }
 
 /* =========================================================
