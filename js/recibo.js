@@ -521,13 +521,13 @@ async function enviarPedido() {
 
     if (oErr || !orderRow) throw (oErr || new Error("No se pudo crear la orden"));
 
-    // 2) Crear items
-    const itemsPayload = (carrito || []).map((it) => ({
-      order_id: orderRow.id,
-      product_id: it.id,      // si tu carrito guarda el id del producto como it.id (como ya vienes usando)
-      quantity: it.qty,
-      price: Number(it.price) || 0
-    }));
+   // 2) Crear items
+const itemsPayload = (carrito || []).map((it) => ({
+  order_id: orderRow.id,
+  product_id: it.product_id,   // ✅ CORRECTO
+  quantity: it.qty,
+  price: Number(it.price) || 0
+}));
 
     if (itemsPayload.length) {
       const { error: iErr } = await sb.from("order_items").insert(itemsPayload);
