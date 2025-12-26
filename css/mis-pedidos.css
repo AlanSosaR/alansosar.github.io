@@ -214,6 +214,19 @@ body.page-mis-pedidos {
   width: 100%;
   background: #4a6f8a;
 }
+.progreso-wrapper {
+  margin-bottom: 10px;
+}
+
+.progreso-labels {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  margin-top: 6px;
+  text-align: center;
+  font-size: 0.8rem;
+  color: #6b6b6b;
+  font-weight: 500;
+}
 
 /* =====================================================
    ESTADO
