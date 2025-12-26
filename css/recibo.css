@@ -167,7 +167,168 @@ h3 {
   padding-left: 12px;
   border-left: 4px solid var(--marron);
 }
+/* =====================================================
+   PROGRESO DEL PEDIDO — RECIBO (SOLO LECTURA)
+===================================================== */
 
+.pedido-progreso {
+  margin: 26px 0 18px;
+  padding: 20px 18px 18px;
+
+  background: var(--blanco);
+  border-radius: 22px;
+
+  box-shadow: var(--sombra-card);
+}
+
+/* Título */
+.progreso-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--marron);
+  margin-bottom: 16px;
+}
+
+/* Wrapper */
+.progreso-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* =====================================================
+   BARRA DE PROGRESO
+===================================================== */
+
+.progreso-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ------------------
+   PASOS (CÍRCULOS)
+------------------ */
+.step {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #e0e0e0; /* base */
+  flex-shrink: 0;
+}
+
+/* Estados por color */
+.step.pago {
+  background: #7a4a2e; /* café */
+}
+
+.step.revision {
+  background: #c28b00; /* ámbar */
+}
+
+.step.confirmado {
+  background: var(--verde); /* verde */
+}
+
+.step.envio {
+  background: #4a6f8a; /* azul/gris */
+}
+
+/* ------------------
+   LÍNEAS
+------------------ */
+.line {
+  flex: 1;
+  height: 4px;
+  border-radius: 4px;
+  background: #e0e0e0;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Relleno */
+.line::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 0%;
+  background: transparent;
+  transition: width 0.25s ease;
+}
+
+/* Estados activos */
+.line.pago::after {
+  width: 100%;
+  background: #7a4a2e;
+}
+
+.line.revision::after {
+  width: 100%;
+  background: #c28b00;
+}
+
+.line.confirmado::after {
+  width: 100%;
+  background: var(--verde);
+}
+
+.line.envio::after {
+  width: 100%;
+  background: #4a6f8a;
+}
+
+/* =====================================================
+   LABELS DEBAJO
+===================================================== */
+
+.progreso-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+  padding: 0 2px;
+}
+
+.progreso-labels span {
+  font-size: 0.78rem;
+  color: #6b6b6b;
+  text-align: center;
+  width: 25%;
+}
+
+/* =====================================================
+   ESTADO ACTUAL
+===================================================== */
+
+.estado {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.estado-icon {
+  font-size: 1.25rem;
+  color: var(--verde);
+}
+
+.estado-text {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--verde);
+}
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+@media (max-width: 480px) {
+  .pedido-progreso {
+    padding: 18px 16px;
+  }
+
+  .progreso-title {
+    font-size: 0.95rem;
+  }
+}
 /* ================= CLIENTE ================= */
 .cliente-info p {
   margin: 8px 0;
