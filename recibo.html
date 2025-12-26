@@ -43,6 +43,48 @@
         <p class="fecha">
           <strong>Fecha:</strong> <span id="fechaPedido"></span>
         </p>
+        <!-- =========================
+     PROGRESO DEL PEDIDO (SOLO LECTURA)
+========================= -->
+<section id="pedido-progreso-recibo" class="pedido-progreso hidden">
+
+  <p class="progreso-title">Progreso del pedido</p>
+
+  <div class="progreso-wrapper">
+
+    <div class="progreso-bar">
+      <!-- PAGO -->
+      <span class="step pago"></span>
+      <span class="line pago"></span>
+
+      <!-- REVISIÓN -->
+      <span class="step revision"></span>
+      <span class="line revision"></span>
+
+      <!-- CONFIRMADO -->
+      <span class="step confirmado"></span>
+      <span class="line confirmado"></span>
+
+      <!-- ENVÍO -->
+      <span class="step envio"></span>
+    </div>
+
+    <div class="progreso-labels">
+      <span>Pag.</span>
+      <span>Rev.</span>
+      <span>Conf.</span>
+      <span>Envío</span>
+    </div>
+
+  </div>
+
+  <!-- ESTADO ACTUAL -->
+  <div class="estado">
+    <span class="material-symbols-outlined estado-icon">check_circle</span>
+    <span class="estado-text" id="estadoPedidoTexto">—</span>
+  </div>
+
+</section>
 
         <!-- DATOS CLIENTE -->
         <h3>Datos del cliente</h3>
