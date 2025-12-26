@@ -100,16 +100,41 @@ function aplicarProgresoPedido(status) {
 
   const activos = mapSteps[status] || 1;
 
-  steps.forEach((s, i) => {
-    s.classList.toggle("active", i < activos);
-  });
-
-  lines.forEach((l, i) => {
-    l.classList.toggle("active", i < activos - 1);
-  });
+  steps.forEach((s, i) => s.classList.toggle("active", i < activos));
+  lines.forEach((l, i) => l.classList.toggle("active", i < activos - 1));
 
   if (estadoTexto) {
     estadoTexto.textContent = labels[status] || "Pendiente";
+  }
+}
+
+/* =========================================================
+   NÚMERO PROVISIONAL (CHECKOUT)
+========================================================= */
+async function setNumeroPedidoProvisional() {
+  const sb = window.supabaseClient;
+  const user = getUserCache();
+  if (!user) return;
+
+  const { data } = await sb
+    .from("orders")
+    .select("order_number")
+    .eq("user_id", user.id)
+    .order("order_number", { ascending: false })
+    .limit(1);
+
+  const siguiente = data?.length ? data[0].order_number + 1 : 1;
+
+  const numEl = $id("numeroPedido");
+  if (numEl) numEl.textContent = siguiente;
+
+  const fechaEl = $id("fechaPedido");
+  if (fechaEl) {
+    fechaEl.textContent = new Date().toLocaleString("es-HN", {
+      dateStyle: "short",
+      timeStyle: "short",
+      hour12: true
+    });
   }
 }
 
@@ -140,20 +165,13 @@ async function cargarPedidoExistente(orderId) {
     return;
   }
 
-  /* ===== HEADER ===== */
-  const numEl = $id("numeroPedido");
-  if (numEl) numEl.textContent = pedido.order_number ?? "—";
+  $id("numeroPedido").textContent = pedido.order_number;
+  $id("fechaPedido").textContent = new Date(pedido.created_at).toLocaleString("es-HN", {
+    dateStyle: "short",
+    timeStyle: "short",
+    hour12: true
+  });
 
-  const fechaEl = $id("fechaPedido");
-  if (fechaEl) {
-    fechaEl.textContent = new Date(pedido.created_at).toLocaleString("es-HN", {
-      dateStyle: "short",
-      timeStyle: "short",
-      hour12: true
-    });
-  }
-
-  /* ===== PRODUCTOS ===== */
   lista.innerHTML = "";
   pedido.order_items.forEach(item => {
     lista.innerHTML += `
@@ -166,7 +184,6 @@ async function cargarPedidoExistente(orderId) {
 
   $id("totalPedido").textContent = pedido.total.toFixed(2);
 
-  /* ===== MÉTODO DE PAGO ===== */
   metodoPago.value = pedido.payment_method;
 
   if (pedido.payment_method === "cash") {
@@ -181,7 +198,6 @@ async function cargarPedidoExistente(orderId) {
     }
   }
 
-  /* ===== PROGRESO ===== */
   aplicarProgresoPedido(pedido.status);
 }
 
@@ -220,7 +236,7 @@ async function cargarDatosCliente() {
 }
 
 /* =========================================================
-   CARRITO (CHECKOUT)
+   CARRITO
 ========================================================= */
 const lista = $id("listaProductos");
 const carrito = JSON.parse(localStorage.getItem("cafecortero_cart")) || [];
@@ -256,13 +272,10 @@ const inputFile = $id("inputComprobante");
 const previewBox = $id("previewComprobante");
 const imgPreview = $id("imgComprobante");
 
-let comprobante = null;
-
 function resetMetodoPago() {
   bloqueDeposito?.classList.add("hidden");
   bloqueEfectivo?.classList.add("hidden");
   previewBox?.classList.add("hidden");
-  comprobante = null;
   if (btnEnviar) btnEnviar.disabled = true;
 }
 
@@ -283,6 +296,7 @@ function resetMetodoPago() {
   if (IS_READ_ONLY) {
     await cargarPedidoExistente(ORDER_ID);
   } else {
+    await setNumeroPedidoProvisional(); // ✅ AQUÍ ESTABA LA FALLA
     await cargarDatosCliente();
     resetMetodoPago();
   }
