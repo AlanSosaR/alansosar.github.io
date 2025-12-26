@@ -356,12 +356,12 @@ body.page-carrito.carrito-vacio .seguir-comprando {
 /* =====================================================
    COMPENSAR ESPACIO CUANDO SE OCULTA "SEGUIR COMPRANDO"
 ===================================================== */
-body.page-carrito.carrito-vacio main {
-  padding-top: calc(72px + 1.5rem); /* header + aire visual */
+main.carrito-vacio-activo {
+  padding-top: calc(72px + 1.5rem);
 }
 
 @media (max-width: 900px) {
-  body.page-carrito.carrito-vacio main {
+  main.carrito-vacio-activo {
     padding-top: calc(72px + 1rem);
   }
 }
