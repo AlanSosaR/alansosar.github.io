@@ -1,10 +1,8 @@
 /* ============================================================
-   MAIN.JS — Café Cortero 2025
+   MAIN.JS — Café Cortero 2025 (FIX DEFINITIVO)
    UI + CARRITO + INTERACCIONES
-   ❌ SIN HEADER
 ============================================================ */
 
-/* ========================= SAFE ========================= */
 function safe(id) {
   return document.getElementById(id);
 }
@@ -39,12 +37,27 @@ function animateCartBadge() {
   badge.classList.add("animate");
 }
 
+/* ============================================================
+   ADD TO CART — FIX REAL
+============================================================ */
 function addToCart(product) {
   const cart = getCart();
-  const index = cart.findIndex(p => p.name === product.name);
 
-  if (index >= 0) cart[index].qty += product.qty;
-  else cart.push(product);
+  const index = cart.findIndex(
+    p => p.product_id === product.product_id
+  );
+
+  if (index >= 0) {
+    cart[index].qty += product.qty;
+  } else {
+    cart.push({
+      product_id: product.product_id, // 🔑 CLAVE
+      name: product.name,
+      price: product.price,
+      img: product.img,
+      qty: product.qty
+    });
+  }
 
   saveCart(cart);
   updateCartCount();
@@ -54,12 +67,12 @@ function addToCart(product) {
 /* ========================= SIMILARES ========================= */
 function loadSimilarProducts() {
   const productos = [
-    { img: 'imagenes/bolsa_1.png', nombre: 'Café Cortero 250g', precio: 'L 180' },
-    { img: 'imagenes/bolsa_2.png', nombre: 'Café Cortero 500g', precio: 'L 320' },
-    { img: 'imagenes/bolsa_1.png', nombre: 'Café Cortero 1lb',  precio: 'L 550' },
-    { img: 'imagenes/bolsa_2.png', nombre: 'Café Regalo',        precio: 'L 260' },
-    { img: 'imagenes/bolsa_1.png', nombre: 'Café Premium',       precio: 'L 480' },
-    { img: 'imagenes/bolsa_2.png', nombre: 'Café Tradicional',   precio: 'L 150' }
+    { id: "250g", nombre: "Café Cortero 250g", precio: "L 180", img: "imagenes/bolsa_1.png" },
+    { id: "500g", nombre: "Café Cortero 500g", precio: "L 320", img: "imagenes/bolsa_2.png" },
+    { id: "1lb",  nombre: "Café Cortero 1lb",  precio: "L 550", img: "imagenes/bolsa_1.png" },
+    { id: "gift", nombre: "Café Regalo",        precio: "L 260", img: "imagenes/bolsa_2.png" },
+    { id: "prem", nombre: "Café Premium",       precio: "L 480", img: "imagenes/bolsa_1.png" },
+    { id: "trad", nombre: "Café Tradicional",   precio: "L 150", img: "imagenes/bolsa_2.png" }
   ];
 
   const cont = safe("lista-similares");
@@ -67,6 +80,7 @@ function loadSimilarProducts() {
 
   cont.innerHTML = productos.map(p => `
     <div class="similar-card"
+         data-id="${p.id}"
          data-name="${p.nombre}"
          data-price="${p.precio}"
          data-img="${p.img}">
@@ -78,45 +92,13 @@ function loadSimilarProducts() {
 }
 
 /* ============================================================
-   EVENTO PRINCIPAL
+   DOM READY
 ============================================================ */
-
 document.addEventListener("DOMContentLoaded", () => {
 
-  /* ========================= HERO ========================= */
-  const heroImgs = document.querySelectorAll(".hero-carousel img");
-  let heroIndex = 0;
-
-  if (heroImgs.length) {
-    heroImgs[0].classList.add("active");
-    setInterval(() => {
-      heroImgs.forEach(i => i.classList.remove("active"));
-      heroIndex = (heroIndex + 1) % heroImgs.length;
-      heroImgs[heroIndex].classList.add("active");
-    }, 8000);
-  }
-
-  /* ========================= CARRITO ========================= */
   updateCartCount();
 
-  /* ========================= FAB ========================= */
-  const fabContainer = safe("fab");
-  const fabMain = safe("fab-main");
-
-  if (fabContainer && fabMain) {
-    fabMain.addEventListener("click", (e) => {
-      e.stopPropagation();
-      fabContainer.classList.toggle("active");
-    });
-
-    document.addEventListener("click", (e) => {
-      if (!fabContainer.contains(e.target)) {
-        fabContainer.classList.remove("active");
-      }
-    });
-  }
-
-  /* ========================= SELECTOR CANTIDAD ========================= */
+  /* ========================= CANTIDAD ========================= */
   const qtyNumber = safe("qty-number");
   const qtyMinus  = safe("qty-minus");
   const qtyPlus   = safe("qty-plus");
@@ -131,21 +113,28 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   /* ========================= AGREGAR AL CARRITO ========================= */
-  const btnAdd = safe("product-add");
-
-  btnAdd?.addEventListener("click", () => {
-    const nameEl  = safe("product-name");
-    const imgEl   = safe("product-image");
-    const priceEl = document.querySelector(".price-part");
-
-    if (!nameEl || !imgEl || !priceEl) return;
-
+  safe("product-add")?.addEventListener("click", () => {
     const qty   = parseInt(qtyNumber.textContent) || 1;
-    const name  = nameEl.textContent.trim();
-    const price = parseFloat(priceEl.textContent.replace(/[^\d.-]/g, ""));
-    const img   = imgEl.src;
+    const name  = safe("product-name").textContent.trim();
+    const img   = safe("product-image").src;
+    const price = parseFloat(
+      document.querySelector(".price-part").textContent.replace(/[^\d.-]/g, "")
+    );
 
-    addToCart({ name, price, img, qty });
+    const productId = safe("product-add").dataset.id;
+    if (!productId) {
+      alert("Producto no válido. Recarga la página.");
+      return;
+    }
+
+    addToCart({
+      product_id: productId,
+      name,
+      price,
+      img,
+      qty
+    });
+
     qtyNumber.textContent = "1";
   });
 
@@ -157,27 +146,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
 /* ========================= SIMILARES ========================= */
 function bindSimilarCardEvents() {
-  const cards = document.querySelectorAll(".similar-card");
-  const productSection = document.querySelector(".product-main");
-
-  cards.forEach(card => {
+  document.querySelectorAll(".similar-card").forEach(card => {
     card.addEventListener("click", () => {
-      cards.forEach(c => c.classList.remove("active-card"));
-      card.classList.add("active-card");
-
       safe("product-name").textContent = card.dataset.name;
       safe("product-image").src = card.dataset.img;
       document.querySelector(".price-part").textContent = card.dataset.price;
+      safe("product-add").dataset.id = card.dataset.id; // 🔑
       safe("qty-number").textContent = "1";
-
-      productSection?.scrollIntoView({
-        behavior: "smooth",
-        block: "center"
-      });
     });
   });
 }
 
+/* ========================= CARRUSEL ========================= */
 function initSimilarCarousel() {
   const list = safe("lista-similares");
   const prev = safe("similar-prev");
@@ -193,29 +173,17 @@ function initSimilarCarousel() {
   const CARD_WIDTH = card.offsetWidth + gap;
 
   let index = 0;
-  const maxIndex = dots.length - 1;
 
   function updateUI() {
     list.scrollTo({ left: CARD_WIDTH * index, behavior: "smooth" });
     dots.forEach((d, i) => d.classList.toggle("active", i === index));
     prev.disabled = index === 0;
-    next.disabled = index === maxIndex;
+    next.disabled = index === dots.length - 1;
   }
 
-  prev.addEventListener("click", () => {
-    if (index > 0) { index--; updateUI(); }
-  });
-
-  next.addEventListener("click", () => {
-    if (index < maxIndex) { index++; updateUI(); }
-  });
-
-  dots.forEach((dot, i) => {
-    dot.addEventListener("click", () => {
-      index = i;
-      updateUI();
-    });
-  });
+  prev.onclick = () => index > 0 && (--index, updateUI());
+  next.onclick = () => index < dots.length - 1 && (++index, updateUI());
+  dots.forEach((dot, i) => dot.onclick = () => (index = i, updateUI()));
 
   updateUI();
 }
