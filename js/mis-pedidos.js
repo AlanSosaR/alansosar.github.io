@@ -152,12 +152,11 @@ async function renderPedidos() {
     applyProgressColors(clone, etapa);
 
     /* -------- Ver recibo -------- */
-    clone.querySelector(".ver-recibo").addEventListener("click", () => {
-      location.href = `recibo.html?id=${pedido.id}`;
-    });
+clone.querySelector(".ver-recibo").addEventListener("click", () => {
+  location.href = `recibo.html?id=${pedido.id}`;
+});
 
-    lista.appendChild(clone);
-  });
+lista.appendChild(clone);
 
   /* -------------------------------------------------------
      Estado vacío
