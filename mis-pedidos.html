@@ -61,30 +61,42 @@
           <p class="pedido-total">Total: L 0.00</p>
         </header>
 
-        <section class="pedido-progreso">
+<section class="pedido-progreso">
   <p class="progreso-title">Progreso del pedido</p>
 
-  <div class="progreso-bar">
-    <!-- PAGO -->
-    <span class="step pago"></span>
-    <span class="line pago"></span>
+  <!-- CONTENEDOR PROGRESO -->
+  <div class="progreso-wrapper">
 
-    <!-- REVISIÓN -->
-    <span class="step revision"></span>
-    <span class="line revision"></span>
+    <div class="progreso-bar">
+      <!-- PAGO -->
+      <span class="step pago"></span>
+      <span class="line pago"></span>
 
-    <!-- CONFIRMADO -->
-    <span class="step confirmado"></span>
-    <span class="line confirmado"></span>
+      <!-- REVISIÓN -->
+      <span class="step revision"></span>
+      <span class="line revision"></span>
 
-    <!-- ENVÍO -->
-    <span class="step envio"></span>
+      <!-- CONFIRMADO -->
+      <span class="step confirmado"></span>
+      <span class="line confirmado"></span>
+
+      <!-- ENVÍO -->
+      <span class="step envio"></span>
+    </div>
+
+    <!-- 👇 TEXTOS DEBAJO DE CADA PUNTO -->
+    <div class="progreso-labels">
+      <span>Pag.</span>
+      <span>Rev.</span>
+      <span>Conf.</span>
+      <span>Envío</span>
+    </div>
+
   </div>
 
+  <!-- ESTADO ACTUAL -->
   <div class="estado">
-    <span class="material-symbols-outlined estado-icon">
-      check_circle
-    </span>
+    <span class="material-symbols-outlined estado-icon">check_circle</span>
     <span class="estado-text">Pago confirmado</span>
   </div>
 </section>
