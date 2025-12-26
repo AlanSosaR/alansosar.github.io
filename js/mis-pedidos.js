@@ -26,29 +26,20 @@ function formatFecha(fechaISO) {
 
 /* -----------------------------------------------------------
    MAPEO DE STATUS → ETAPAS VISUALES
-   (coincide con recibo.js)
 ----------------------------------------------------------- */
 function mapStatusToProgress(status) {
-  /*
-    Orden visual:
-    0 → pago
-    1 → revision
-    2 → confirmado
-    3 → envio
-  */
-
   switch (status) {
     case "payment_review":
-      return 1; // pago → revisión
+      return 1;
     case "payment_confirmed":
     case "cash_on_delivery":
     case "processing":
-      return 2; // confirmado
+      return 2;
     case "shipped":
     case "delivered":
-      return 3; // envío
+      return 3;
     default:
-      return 0; // pendiente de pago
+      return 0;
   }
 }
 
@@ -152,20 +143,25 @@ async function renderPedidos() {
     applyProgressColors(clone, etapa);
 
     /* -------- Ver recibo -------- */
-clone.querySelector(".ver-recibo").addEventListener("click", () => {
-  location.href = `recibo.html?id=${pedido.id}`;
-});
+    clone.querySelector(".ver-recibo").addEventListener("click", () => {
+      location.href = `recibo.html?id=${pedido.id}`;
+    });
 
-lista.appendChild(clone);
+    lista.appendChild(clone);
+  });
+}
 
-  /* -------------------------------------------------------
-     Estado vacío
-  ------------------------------------------------------- */
-  function mostrarVacio() {
-    lista.innerHTML = "";
-    emptyState.classList.remove("hidden");
-    if (seguirBack) seguirBack.style.display = "none";
-  }
+/* -----------------------------------------------------------
+   ESTADO VACÍO
+----------------------------------------------------------- */
+function mostrarVacio() {
+  const lista      = document.getElementById("pedidos-lista");
+  const emptyState = document.getElementById("empty-state");
+  const seguirBack = document.querySelector(".seguir-comprando");
+
+  if (lista) lista.innerHTML = "";
+  emptyState?.classList.remove("hidden");
+  if (seguirBack) seguirBack.style.display = "none";
 }
 
 /* -----------------------------------------------------------
