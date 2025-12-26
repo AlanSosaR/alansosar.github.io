@@ -144,42 +144,42 @@ async function setNumeroPedidoProvisional() {
 async function cargarPedidoExistente(orderId) {
   const sb = window.supabaseClient;
 
-  const { data: pedido, error } = await sb
-    .from("orders")
-    .select(`
-      id,
-      order_number,
-      created_at,
-      total,
-      payment_method,
-      status,
+const { data: pedido, error } = await sb
+  .from("orders")
+  .select(`
+    id,
+    order_number,
+    created_at,
+    total,
+    payment_method,
+    status,
 
-      users (
-        name,
-        email,
-        phone
-      ),
+    users:users!orders_user_id_fkey (
+      name,
+      email,
+      phone
+    ),
 
-      addresses (
-        state,
-        street,
-        postal_code
-      ),
+    addresses:addresses!orders_address_id_fkey (
+      state,
+      street,
+      postal_code
+    ),
 
-      order_items (
-        quantity,
-        price,
-        products (
-          name
-        )
-      ),
-
-      payment_receipts (
-        file_url
+    order_items (
+      quantity,
+      price,
+      products (
+        name
       )
-    `)
-    .eq("id", orderId)
-    .single();
+    ),
+
+    payment_receipts (
+      file_url
+    )
+  `)
+  .eq("id", orderId)
+  .single();
 
   if (error || !pedido) {
     console.error("❌ Pedido no encontrado", error);
