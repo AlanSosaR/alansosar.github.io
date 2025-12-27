@@ -272,7 +272,7 @@ if (pedido.payment_method === "bank_transfer") {
     previewBox?.classList.remove("hidden");
   }
 }
-
+} 
 /* =========================================================
    CARRITO (CHECKOUT)
 ========================================================= */
