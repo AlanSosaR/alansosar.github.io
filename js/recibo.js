@@ -300,7 +300,7 @@ inputFile?.addEventListener("change", () => {
 });
 
 /* =========================================================
-   ENVIAR PEDIDO
+   ENVIAR PEDIDO — DEFINITIVO
 ========================================================= */
 async function enviarPedido() {
   const sb = window.supabaseClient;
@@ -311,16 +311,21 @@ async function enviarPedido() {
   loader?.classList.remove("hidden");
 
   try {
-    const { data: last } = await sb
+    // 🔑 SIEMPRE revisar BD antes de insertar
+    const { data: last, error: lastError } = await sb
       .from("orders")
       .select("order_number")
       .eq("user_id", user.id)
       .order("order_number", { ascending: false })
       .limit(1);
 
-    const nextOrderNumber = (last?.[0]?.order_number || 0) + 1;
+    if (lastError) throw lastError;
 
-    const { data: order } = await sb
+    const lastNumber = Number(last?.[0]?.order_number) || 0;
+    const nextOrderNumber = lastNumber + 1;
+
+    // 🔑 INSERT REAL (la verdad absoluta)
+    const { data: order, error: insertError } = await sb
       .from("orders")
       .insert({
         user_id: user.id,
@@ -328,13 +333,17 @@ async function enviarPedido() {
         order_number: nextOrderNumber,
         total,
         payment_method: metodoPago.value,
-        status: metodoPago.value === "bank_transfer"
-          ? "payment_review"
-          : "cash_on_delivery"
+        status:
+          metodoPago.value === "bank_transfer"
+            ? "payment_review"
+            : "cash_on_delivery"
       })
       .select("id")
       .single();
 
+    if (insertError) throw insertError;
+
+    // items
     await sb.from("order_items").insert(
       carrito.map(it => ({
         order_id: order.id,
@@ -344,10 +353,14 @@ async function enviarPedido() {
       }))
     );
 
+    // limpiar carrito
     localStorage.setItem(CART_KEY, "[]");
+
+    // ir a recibo en modo lectura
     location.href = `recibo.html?id=${order.id}`;
 
-  } catch {
+  } catch (err) {
+    console.error("❌ Error pedido:", err);
     showSnack("Error al enviar pedido");
     btnEnviar.disabled = false;
   } finally {
@@ -359,7 +372,6 @@ btnEnviar?.addEventListener("click", e => {
   e.preventDefault();
   enviarPedido();
 });
-
 /* =========================================================
    BOTÓN ATRÁS
 ========================================================= */
