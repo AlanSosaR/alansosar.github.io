@@ -251,21 +251,25 @@ async function cargarPedidoExistente(orderId) {
 
   aplicarProgresoPedido(pedido.status, pedido.payment_method);
 
-  /* === MÉTODO DE PAGO SOLO LECTURA === */
-  document.querySelector(".pago-select-label")?.classList.add("hidden");
-  document.querySelector(".recibo-botones")?.classList.add("hidden");
+/* === MÉTODO DE PAGO SOLO LECTURA === */
+document.querySelector(".pago-select-label")?.classList.add("hidden");
+document.querySelector(".recibo-botones")?.classList.add("hidden");
 
-  if (pedido.payment_method === "cash") {
-    bloqueEfectivo?.classList.remove("hidden");
-  }
+// 🔒 ocultar acciones de subida en lectura
+btnSubirComprobante?.classList.add("hidden");
+inputFile?.classList.add("hidden");
 
-  if (pedido.payment_method === "bank_transfer") {
-    bloqueDeposito?.classList.remove("hidden");
+if (pedido.payment_method === "cash") {
+  bloqueEfectivo?.classList.remove("hidden");
+}
 
-    if (pedido.payment_receipts?.length && imgPreview && previewBox) {
-      imgPreview.src = pedido.payment_receipts[0].file_url;
-      previewBox.classList.remove("hidden");
-    }
+if (pedido.payment_method === "bank_transfer") {
+  bloqueDeposito?.classList.remove("hidden");
+
+  // ✅ mostrar comprobante guardado en BD
+  if (pedido.payment_receipts?.length) {
+    imgPreview.src = pedido.payment_receipts[0].file_url;
+    previewBox?.classList.remove("hidden");
   }
 }
 
