@@ -260,26 +260,37 @@ if (!IS_READ_ONLY) {
 }
 
 /* =========================================================
-   MÉTODO DE PAGO (CHECKOUT)
+   MÉTODO DE PAGO (CHECKOUT) — CORREGIDO FINAL
 ========================================================= */
 const metodoPago = $id("metodoPago");
 const bloqueDeposito = $id("pago-deposito");
 const bloqueEfectivo = $id("pago-efectivo");
 const btnEnviar = $id("btnEnviar");
 const loader = $id("loaderEnviar");
+
 const inputFile = $id("inputComprobante");
 const previewBox = $id("previewComprobante");
 const imgPreview = $id("imgComprobante");
+const btnSubirComprobante = $id("btnSubirComprobante");
 
+/* =========================
+   RESET UI
+========================= */
 function resetMetodoPago() {
   bloqueDeposito?.classList.add("hidden");
   bloqueEfectivo?.classList.add("hidden");
   previewBox?.classList.add("hidden");
   btnEnviar && (btnEnviar.disabled = true);
+
+  if (inputFile) inputFile.value = ""; // limpiar input
 }
 
+/* =========================
+   CAMBIO MÉTODO DE PAGO
+========================= */
 metodoPago?.addEventListener("change", () => {
   if (IS_READ_ONLY) return;
+
   resetMetodoPago();
 
   if (metodoPago.value === "cash") {
@@ -292,9 +303,34 @@ metodoPago?.addEventListener("change", () => {
   }
 });
 
+/* =========================
+   BOTÓN SUBIR COMPROBANTE
+========================= */
+btnSubirComprobante?.addEventListener("click", (e) => {
+  e.preventDefault();
+  inputFile?.click(); // 🔑 abre galería / archivos
+});
+
+/* =========================
+   PREVIEW COMPROBANTE
+========================= */
 inputFile?.addEventListener("change", () => {
-  if (!inputFile.files.length) return btnEnviar.disabled = true;
-  imgPreview.src = URL.createObjectURL(inputFile.files[0]);
+  if (!inputFile.files.length) {
+    btnEnviar.disabled = true;
+    return;
+  }
+
+  const file = inputFile.files[0];
+
+  // solo imágenes
+  if (!file.type.startsWith("image/")) {
+    showSnack("Solo se permiten imágenes");
+    inputFile.value = "";
+    btnEnviar.disabled = true;
+    return;
+  }
+
+  imgPreview.src = URL.createObjectURL(file);
   previewBox?.classList.remove("hidden");
   btnEnviar.disabled = false;
 });
