@@ -32,7 +32,7 @@ function syncHeaderCounter() {
   }
 }
 
-/* Animación visual del badge (permitido) */
+/* Animación visual del badge */
 function animateCartBadge() {
   const badge = safe("cart-count");
   if (!badge) return;
@@ -42,20 +42,18 @@ function animateCartBadge() {
 }
 
 /* ============================================================
-   ADD TO CART — FIX REAL
+   ADD TO CART
 ============================================================ */
 function addToCart(product) {
   const cart = getCart();
 
-  const index = cart.findIndex(
-    p => p.product_id === product.product_id
-  );
+  const index = cart.findIndex(p => p.product_id === product.product_id);
 
   if (index >= 0) {
     cart[index].qty += product.qty;
   } else {
     cart.push({
-      product_id: product.product_id, // 🔑 CLAVE ÚNICA
+      product_id: product.product_id,
       name: product.name,
       price: product.price,
       img: product.img,
@@ -64,8 +62,6 @@ function addToCart(product) {
   }
 
   saveCart(cart);
-
-  // 🔑 SOLO sincronizar, NO modificar badge directo
   syncHeaderCounter();
   animateCartBadge();
 }
@@ -84,8 +80,8 @@ function loadSimilarProducts() {
   const cont = safe("lista-similares");
   if (!cont) return;
 
-  cont.innerHTML = productos.map(p => `
-    <div class="similar-card"
+  cont.innerHTML = productos.map((p, i) => `
+    <div class="similar-card ${i === 0 ? "active" : ""}"
          data-id="${p.id}"
          data-name="${p.nombre}"
          data-price="${p.precio}"
@@ -102,8 +98,16 @@ function loadSimilarProducts() {
 ============================================================ */
 document.addEventListener("DOMContentLoaded", () => {
 
-  // 🔑 Cuando el header ya exista, sincronizar contador
   syncHeaderCounter();
+
+  /* ========================= FAB ========================= */
+  const fab = document.querySelector(".fab");
+  const fabMenu = document.querySelector(".fab-menu");
+
+  fab?.addEventListener("click", () => {
+    fab.classList.toggle("open");
+    fabMenu?.classList.toggle("open");
+  });
 
   /* ========================= CANTIDAD ========================= */
   const qtyNumber = safe("qty-number");
@@ -125,28 +129,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const name  = safe("product-name").textContent.trim();
     const img   = safe("product-image").src;
     const price = parseFloat(
-      document.querySelector(".price-part")
-        .textContent.replace(/[^\d.-]/g, "")
+      document.querySelector(".price-part").textContent.replace(/[^\d.-]/g, "")
     );
 
     const productId = safe("product-add").dataset.id;
-    if (!productId) {
-      alert("Producto no válido. Recarga la página.");
-      return;
-    }
+    if (!productId) return alert("Producto no válido");
 
-    addToCart({
-      product_id: productId,
-      name,
-      price,
-      img,
-      qty
-    });
-
+    addToCart({ product_id: productId, name, price, img, qty });
     qtyNumber.textContent = "1";
   });
 
-  /* ========================= SIMILARES ========================= */
   loadSimilarProducts();
   bindSimilarCardEvents();
   initSimilarCarousel();
@@ -154,13 +146,30 @@ document.addEventListener("DOMContentLoaded", () => {
 
 /* ========================= SIMILARES ========================= */
 function bindSimilarCardEvents() {
-  document.querySelectorAll(".similar-card").forEach(card => {
+  document.querySelectorAll(".similar-card").forEach((card, idx) => {
     card.addEventListener("click", () => {
+
+      /* 🔑 Marcar activo */
+      document.querySelectorAll(".similar-card")
+        .forEach(c => c.classList.remove("active"));
+      card.classList.add("active");
+
+      /* 🔑 Animación del producto principal */
+      const img = safe("product-image");
+      img.classList.remove("swap");
+      void img.offsetWidth;
+      img.classList.add("swap");
+
       safe("product-name").textContent = card.dataset.name;
-      safe("product-image").src = card.dataset.img;
+      img.src = card.dataset.img;
       document.querySelector(".price-part").textContent = card.dataset.price;
-      safe("product-add").dataset.id = card.dataset.id; // 🔑
+      safe("product-add").dataset.id = card.dataset.id;
       safe("qty-number").textContent = "1";
+
+      /* 🔑 Scroll suave del carrusel */
+      const list = safe("lista-similares");
+      const cardWidth = card.offsetWidth + 16;
+      list.scrollTo({ left: cardWidth * idx, behavior: "smooth" });
     });
   });
 }
@@ -184,7 +193,11 @@ function initSimilarCarousel() {
 
   function updateUI() {
     list.scrollTo({ left: CARD_WIDTH * index, behavior: "smooth" });
+
     dots.forEach((d, i) => d.classList.toggle("active", i === index));
+    document.querySelectorAll(".similar-card")
+      .forEach((c, i) => c.classList.toggle("active", i === index));
+
     prev.disabled = index === 0;
     next.disabled = index === dots.length - 1;
   }
