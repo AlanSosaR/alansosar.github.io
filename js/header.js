@@ -119,8 +119,13 @@ window.updateHeaderCartCount = updateCartCount;
     });
   }
 
-  /* =====================================================
-     EXPORT
-  ===================================================== */
-  window.initHeader = initHeader;
+/* =====================================================
+   EXPORT
+===================================================== */
+window.initHeader = initHeader;
+
+/* 🔔 SINCRONIZAR CONTADOR CUANDO EL HEADER YA EXISTE */
+document.addEventListener("header:ready", () => {
+  updateCartCount();
+});
 }
