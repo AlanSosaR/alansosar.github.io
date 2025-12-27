@@ -5,6 +5,7 @@
    ✔ Flecha oculta cuando está vacío
    ✔ Snackbar login visible
    ✔ Contador del header controlado por header.js
+   ✔ Título del carrito sincronizado (FIX)
    ✔ Compatible con recibo.js
 ============================================================ */
 
@@ -28,17 +29,29 @@ function getSupabaseClient() {
   return window.supabaseClient || window.supabase || null;
 }
 
-/* ================= HEADER COUNTER ================= */
-/* 🔑 El header es el dueño del contador */
+/* ================= HEADER (BADGE) ================= */
+/* 🔑 El header.js es el dueño del badge */
 function syncHeaderCounter() {
   if (typeof window.updateHeaderCartCount === "function") {
     window.updateHeaderCartCount();
   }
 }
 
+/* ================= HEADER (TÍTULO) ================= */
+/* 🔑 ESTE ERA EL FIX FALTANTE */
+function updateHeaderCartTitle(cart) {
+  const label = document.getElementById("count-items");
+  if (!label) return;
+
+  const total = cart.reduce((sum, i) => sum + Number(i.qty || 0), 0);
+  label.textContent = `${total} ${total === 1 ? "café" : "cafés"}`;
+}
+
 /* ================= RENDER ================= */
 function renderCart() {
   const cart = getCart();
+
+  updateHeaderCartTitle(cart);   // ✅ ACTUALIZA “X cafés”
 
   const container     = document.getElementById("cart-container");
   const subtotalLabel = document.getElementById("subtotal-label");
@@ -87,12 +100,10 @@ function renderCart() {
     const clone = template.content.cloneNode(true);
 
     clone.querySelector(".item-image").src = item.img || "";
-    clone.querySelector(".item-name").textContent =
-      item.name || "Producto";
+    clone.querySelector(".item-name").textContent = item.name || "Producto";
     clone.querySelector(".item-price").textContent =
       `L ${Number(item.price).toFixed(2)} / unidad`;
-    clone.querySelector(".qty-number").textContent =
-      item.qty || 1;
+    clone.querySelector(".qty-number").textContent = item.qty || 1;
 
     clone.querySelectorAll("button").forEach(btn => {
       btn.dataset.index = index;
@@ -177,14 +188,13 @@ document.getElementById("proceder-btn")?.addEventListener("click", async () => {
   /* ➡️ CONTINUAR */
   location.href = "datos_cliente.html";
 });
+
 /* ================= INIT ================= */
 
-// 1️⃣ Renderizar carrito (NO depende del header)
+// Render inmediato (no depende del header)
 renderCart();
 
-// 2️⃣ Cuando el header ya exista → sincronizar contador
+// Cuando el header esté listo → sincronizar badge
 document.addEventListener("header:ready", () => {
-  if (typeof window.updateHeaderCartCount === "function") {
-    window.updateHeaderCartCount();
-  }
+  syncHeaderCounter();
 });
