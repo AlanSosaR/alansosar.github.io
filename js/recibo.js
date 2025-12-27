@@ -4,7 +4,6 @@ console.log("🧾 recibo.js — CORE FINAL DEFINITIVO");
    CONSTANTES
 ========================================================= */
 const CART_KEY = "cafecortero_cart";
-const RECEIPT_BUCKET = "payment_receipts";
 
 /* =========================================================
    HELPERS
@@ -113,7 +112,7 @@ function aplicarProgresoPedido(status) {
 }
 
 /* =========================================================
-   NÚMERO PROVISIONAL
+   NÚMERO PROVISIONAL (CHECKOUT)
 ========================================================= */
 async function setNumeroPedidoProvisional() {
   const sb = window.supabaseClient;
@@ -152,11 +151,11 @@ async function cargarDatosCliente() {
     .eq("id", user.id)
     .single();
 
-  userRow && (
-    $id("nombreCliente").textContent = userRow.name || "",
-    $id("correoCliente").textContent = userRow.email || "",
-    $id("telefonoCliente").textContent = userRow.phone || ""
-  );
+  if (userRow) {
+    $id("nombreCliente").textContent = userRow.name || "";
+    $id("correoCliente").textContent = userRow.email || "";
+    $id("telefonoCliente").textContent = userRow.phone || "";
+  }
 
   const { data: addr } = await sb
     .from("addresses")
@@ -174,7 +173,7 @@ async function cargarDatosCliente() {
 }
 
 /* =========================================================
-   CARGAR PEDIDO EXISTENTE
+   CARGAR PEDIDO EXISTENTE (MIS PEDIDOS)
 ========================================================= */
 async function cargarPedidoExistente(orderId) {
   const sb = window.supabaseClient;
@@ -182,10 +181,11 @@ async function cargarPedidoExistente(orderId) {
   const { data: pedido } = await sb
     .from("orders")
     .select(`
-      order_number,created_at,total,status,
+      order_number,created_at,total,status,payment_method,
       users(name,email,phone),
       addresses(state,city,street,postal_code),
-      order_items(quantity,price,products(name))
+      order_items(quantity,price,products(name)),
+      payment_receipts(file_url)
     `)
     .eq("id", orderId)
     .single();
@@ -195,19 +195,17 @@ async function cargarPedidoExistente(orderId) {
   $id("numeroPedido").textContent = pedido.order_number;
   $id("fechaPedido").textContent = new Date(pedido.created_at).toLocaleString("es-HN");
 
-  const u = pedido.users;
-  u && (
-    $id("nombreCliente").textContent = u.name,
-    $id("correoCliente").textContent = u.email,
-    $id("telefonoCliente").textContent = u.phone
-  );
+  if (pedido.users) {
+    $id("nombreCliente").textContent = pedido.users.name || "";
+    $id("correoCliente").textContent = pedido.users.email || "";
+    $id("telefonoCliente").textContent = pedido.users.phone || "";
+  }
 
-  const a = pedido.addresses;
-  a && (
-    $id("zonaCliente").textContent = `${a.state}, ${a.city}`,
-    $id("direccionCliente").textContent = a.street,
-    $id("notaCliente").textContent = a.postal_code
-  );
+  if (pedido.addresses) {
+    $id("zonaCliente").textContent = `${pedido.addresses.state}, ${pedido.addresses.city}`;
+    $id("direccionCliente").textContent = pedido.addresses.street || "";
+    $id("notaCliente").textContent = pedido.addresses.postal_code || "";
+  }
 
   const lista = $id("listaProductos");
   lista.innerHTML = "";
@@ -220,7 +218,25 @@ async function cargarPedidoExistente(orderId) {
   });
 
   $id("totalPedido").textContent = pedido.total.toFixed(2);
+
   aplicarProgresoPedido(pedido.status);
+
+  /* === MÉTODO DE PAGO SOLO LECTURA === */
+  document.querySelector(".pago-select-label")?.classList.add("hidden");
+  document.querySelector(".recibo-botones")?.classList.add("hidden");
+
+  if (pedido.payment_method === "cash") {
+    bloqueEfectivo?.classList.remove("hidden");
+  }
+
+  if (pedido.payment_method === "bank_transfer") {
+    bloqueDeposito?.classList.remove("hidden");
+
+    if (pedido.payment_receipts?.length && imgPreview && previewBox) {
+      imgPreview.src = pedido.payment_receipts[0].file_url;
+      previewBox.classList.remove("hidden");
+    }
+  }
 }
 
 /* =========================================================
@@ -244,7 +260,7 @@ if (!IS_READ_ONLY) {
 }
 
 /* =========================================================
-   MÉTODO DE PAGO
+   MÉTODO DE PAGO (CHECKOUT)
 ========================================================= */
 const metodoPago = $id("metodoPago");
 const bloqueDeposito = $id("pago-deposito");
@@ -265,10 +281,12 @@ function resetMetodoPago() {
 metodoPago?.addEventListener("change", () => {
   if (IS_READ_ONLY) return;
   resetMetodoPago();
+
   if (metodoPago.value === "cash") {
     bloqueEfectivo?.classList.remove("hidden");
     btnEnviar.disabled = false;
   }
+
   if (metodoPago.value === "bank_transfer") {
     bloqueDeposito?.classList.remove("hidden");
   }
@@ -293,11 +311,21 @@ async function enviarPedido() {
   loader?.classList.remove("hidden");
 
   try {
+    const { data: last } = await sb
+      .from("orders")
+      .select("order_number")
+      .eq("user_id", user.id)
+      .order("order_number", { ascending: false })
+      .limit(1);
+
+    const nextOrderNumber = (last?.[0]?.order_number || 0) + 1;
+
     const { data: order } = await sb
       .from("orders")
       .insert({
         user_id: user.id,
         address_id: selectedAddressId,
+        order_number: nextOrderNumber,
         total,
         payment_method: metodoPago.value,
         status: metodoPago.value === "bank_transfer"
@@ -318,6 +346,7 @@ async function enviarPedido() {
 
     localStorage.setItem(CART_KEY, "[]");
     location.href = `recibo.html?id=${order.id}`;
+
   } catch {
     showSnack("Error al enviar pedido");
     btnEnviar.disabled = false;
