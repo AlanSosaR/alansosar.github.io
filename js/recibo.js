@@ -1,7 +1,7 @@
 console.log("🧾 recibo.js — CORE FINAL DEFINITIVO");
 
 /* =========================================================
-   CONSTANTES GLOBALES
+   CONSTANTES
 ========================================================= */
 const CART_KEY = "cafecortero_cart";
 const RECEIPT_BUCKET = "payment_receipts";
@@ -12,11 +12,10 @@ const RECEIPT_BUCKET = "payment_receipts";
 const $id = (id) => document.getElementById(id);
 
 /* =========================================================
-   CONTEXTO (¿VIENE DE MIS PEDIDOS?)
+   CONTEXTO
 ========================================================= */
 function getOrderIdFromURL() {
-  const params = new URLSearchParams(window.location.search);
-  return params.get("id");
+  return new URLSearchParams(window.location.search).get("id");
 }
 
 const ORDER_ID = getOrderIdFromURL();
@@ -25,10 +24,10 @@ const IS_READ_ONLY = Boolean(ORDER_ID);
 /* =========================================================
    SNACKBAR
 ========================================================= */
-function showSnack(message) {
+function showSnack(msg) {
   const bar = $id("snackbar");
   if (!bar) return;
-  bar.innerHTML = `<span>${message}</span>`;
+  bar.innerHTML = `<span>${msg}</span>`;
   bar.classList.add("show");
   setTimeout(() => bar.classList.remove("show"), 3200);
 }
@@ -72,7 +71,8 @@ function aplicarModoRecibo() {
     progreso?.classList.remove("hidden");
     selectPago?.classList.add("hidden");
     botones?.classList.add("hidden");
-    if (metodoPago) metodoPago.disabled = true;
+    metodoPago && (metodoPago.disabled = true);
+    btnEnviar && (btnEnviar.disabled = true);
   } else {
     progreso?.classList.add("hidden");
   }
@@ -86,7 +86,7 @@ function aplicarProgresoPedido(status) {
   const lines = document.querySelectorAll("#pedido-progreso-recibo .line");
   const estadoTexto = $id("estadoPedidoTexto");
 
-  const mapSteps = {
+  const map = {
     pending_payment: 0,
     payment_review: 1,
     payment_confirmed: 2,
@@ -106,12 +106,10 @@ function aplicarProgresoPedido(status) {
     delivered: "Entregado"
   };
 
-  const activos = mapSteps[status] ?? 0;
-
-  steps.forEach((s, i) => s.classList.toggle("active", i <= activos));
-  lines.forEach((l, i) => l.classList.toggle("active", i < activos));
-
-  if (estadoTexto) estadoTexto.textContent = labels[status] || "Pendiente de pago";
+  const active = map[status] ?? 0;
+  steps.forEach((s, i) => s.classList.toggle("active", i <= active));
+  lines.forEach((l, i) => l.classList.toggle("active", i < active));
+  estadoTexto && (estadoTexto.textContent = labels[status] || "Pendiente de pago");
 }
 
 /* =========================================================
@@ -129,10 +127,8 @@ async function setNumeroPedidoProvisional() {
     .order("order_number", { ascending: false })
     .limit(1);
 
-  const last = data?.length ? Number(data[0].order_number) : 0;
-  const siguiente = last + 1;
-
-  $id("numeroPedido").textContent = String(siguiente);
+  const next = (data?.[0]?.order_number || 0) + 1;
+  $id("numeroPedido").textContent = next;
   $id("fechaPedido").textContent = new Date().toLocaleString("es-HN", {
     dateStyle: "short",
     timeStyle: "short",
@@ -141,7 +137,7 @@ async function setNumeroPedidoProvisional() {
 }
 
 /* =========================================================
-   DATOS CLIENTE + DIRECCIÓN
+   DATOS CLIENTE
 ========================================================= */
 let selectedAddressId = null;
 
@@ -156,11 +152,11 @@ async function cargarDatosCliente() {
     .eq("id", user.id)
     .single();
 
-  if (userRow) {
-    $id("nombreCliente").textContent = userRow.name || "";
-    $id("correoCliente").textContent = userRow.email || "";
-    $id("telefonoCliente").textContent = userRow.phone || "";
-  }
+  userRow && (
+    $id("nombreCliente").textContent = userRow.name || "",
+    $id("correoCliente").textContent = userRow.email || "",
+    $id("telefonoCliente").textContent = userRow.phone || ""
+  );
 
   const { data: addr } = await sb
     .from("addresses")
@@ -171,83 +167,59 @@ async function cargarDatosCliente() {
 
   if (addr?.length) {
     selectedAddressId = addr[0].id;
-    $id("zonaCliente").textContent =
-      [addr[0].state, addr[0].city].filter(Boolean).join(", ");
+    $id("zonaCliente").textContent = `${addr[0].state}, ${addr[0].city}`;
     $id("direccionCliente").textContent = addr[0].street || "";
     $id("notaCliente").textContent = addr[0].postal_code || "";
   }
 }
 
 /* =========================================================
-   CARGAR PEDIDO EXISTENTE (MIS PEDIDOS)
+   CARGAR PEDIDO EXISTENTE
 ========================================================= */
 async function cargarPedidoExistente(orderId) {
   const sb = window.supabaseClient;
 
-  const { data: pedido, error } = await sb
+  const { data: pedido } = await sb
     .from("orders")
     .select(`
-      id,
-      user_id,
-      address_id,
-      order_number,
-      created_at,
-      total,
-      payment_method,
-      status,
-
-      users:users!orders_user_id_fkey (
-        name,email,phone
-      ),
-
-      addresses:addresses!orders_address_id_fkey (
-        state,city,street,postal_code
-      ),
-
-      order_items (
-        quantity,price,
-        products ( name )
-      ),
-
-      payment_receipts ( file_url )
+      order_number,created_at,total,status,
+      users(name,email,phone),
+      addresses(state,city,street,postal_code),
+      order_items(quantity,price,products(name))
     `)
     .eq("id", orderId)
     .single();
 
-  if (error || !pedido) {
-    showSnack("Pedido no encontrado");
-    return;
-  }
+  if (!pedido) return showSnack("Pedido no encontrado");
 
   $id("numeroPedido").textContent = pedido.order_number;
   $id("fechaPedido").textContent = new Date(pedido.created_at).toLocaleString("es-HN");
 
-  if (pedido.users) {
-    $id("nombreCliente").textContent = pedido.users.name || "";
-    $id("correoCliente").textContent = pedido.users.email || "";
-    $id("telefonoCliente").textContent = pedido.users.phone || "";
-  }
+  const u = pedido.users;
+  u && (
+    $id("nombreCliente").textContent = u.name,
+    $id("correoCliente").textContent = u.email,
+    $id("telefonoCliente").textContent = u.phone
+  );
 
-  if (pedido.addresses) {
-    $id("zonaCliente").textContent =
-      [pedido.addresses.state, pedido.addresses.city].filter(Boolean).join(", ");
-    $id("direccionCliente").textContent = pedido.addresses.street || "";
-    $id("notaCliente").textContent = pedido.addresses.postal_code || "";
-  }
+  const a = pedido.addresses;
+  a && (
+    $id("zonaCliente").textContent = `${a.state}, ${a.city}`,
+    $id("direccionCliente").textContent = a.street,
+    $id("notaCliente").textContent = a.postal_code
+  );
 
-  if (lista) {
-    lista.innerHTML = "";
-    pedido.order_items.forEach(it => {
-      lista.innerHTML += `
-        <div class="cafe-item">
-          <span class="cafe-nombre">${it.products.name} (${it.quantity})</span>
-          <span class="cafe-precio">L ${(it.quantity * it.price).toFixed(2)}</span>
-        </div>
-      `;
-    });
-  }
+  const lista = $id("listaProductos");
+  lista.innerHTML = "";
+  pedido.order_items.forEach(i => {
+    lista.innerHTML += `
+      <div class="cafe-item">
+        <span>${i.products.name} (${i.quantity})</span>
+        <span>L ${(i.quantity * i.price).toFixed(2)}</span>
+      </div>`;
+  });
 
-  $id("totalPedido").textContent = Number(pedido.total).toFixed(2);
+  $id("totalPedido").textContent = pedido.total.toFixed(2);
   aplicarProgresoPedido(pedido.status);
 }
 
@@ -258,17 +230,15 @@ const lista = $id("listaProductos");
 const carrito = JSON.parse(localStorage.getItem(CART_KEY)) || [];
 let total = 0;
 
-if (lista && !IS_READ_ONLY) {
+if (!IS_READ_ONLY) {
   lista.innerHTML = "";
   carrito.forEach(it => {
-    const sub = it.qty * it.price;
-    total += sub;
+    total += it.qty * it.price;
     lista.innerHTML += `
       <div class="cafe-item">
-        <span class="cafe-nombre">${it.name} (${it.qty})</span>
-        <span class="cafe-precio">L ${sub.toFixed(2)}</span>
-      </div>
-    `;
+        <span>${it.name} (${it.qty})</span>
+        <span>L ${(it.qty * it.price).toFixed(2)}</span>
+      </div>`;
   });
   $id("totalPedido").textContent = total.toFixed(2);
 }
@@ -289,8 +259,27 @@ function resetMetodoPago() {
   bloqueDeposito?.classList.add("hidden");
   bloqueEfectivo?.classList.add("hidden");
   previewBox?.classList.add("hidden");
-  if (btnEnviar) btnEnviar.disabled = true;
+  btnEnviar && (btnEnviar.disabled = true);
 }
+
+metodoPago?.addEventListener("change", () => {
+  if (IS_READ_ONLY) return;
+  resetMetodoPago();
+  if (metodoPago.value === "cash") {
+    bloqueEfectivo?.classList.remove("hidden");
+    btnEnviar.disabled = false;
+  }
+  if (metodoPago.value === "bank_transfer") {
+    bloqueDeposito?.classList.remove("hidden");
+  }
+});
+
+inputFile?.addEventListener("change", () => {
+  if (!inputFile.files.length) return btnEnviar.disabled = true;
+  imgPreview.src = URL.createObjectURL(inputFile.files[0]);
+  previewBox?.classList.remove("hidden");
+  btnEnviar.disabled = false;
+});
 
 /* =========================================================
    ENVIAR PEDIDO
@@ -298,23 +287,13 @@ function resetMetodoPago() {
 async function enviarPedido() {
   const sb = window.supabaseClient;
   const user = getUserCache();
-  if (!user) return;
-
-  if (!selectedAddressId) {
-    showSnack("Falta dirección");
-    return;
-  }
-
-  if (carrito.some(p => !p.product_id)) {
-    showSnack("Producto inválido. Reagrégalo.");
-    return;
-  }
+  if (!user || !selectedAddressId) return;
 
   btnEnviar.disabled = true;
   loader?.classList.remove("hidden");
 
   try {
-    const { data: orderRow } = await sb
+    const { data: order } = await sb
       .from("orders")
       .insert({
         user_id: user.id,
@@ -328,19 +307,18 @@ async function enviarPedido() {
       .select("id")
       .single();
 
-    const items = carrito.map(it => ({
-      order_id: orderRow.id,
-      product_id: it.product_id,
-      quantity: it.qty,
-      price: it.price
-    }));
+    await sb.from("order_items").insert(
+      carrito.map(it => ({
+        order_id: order.id,
+        product_id: it.product_id,
+        quantity: it.qty,
+        price: it.price
+      }))
+    );
 
-    await sb.from("order_items").insert(items);
-    localStorage.setItem(CART_KEY, JSON.stringify([]));
-    location.href = `recibo.html?id=${orderRow.id}`;
-
-  } catch (e) {
-    console.error(e);
+    localStorage.setItem(CART_KEY, "[]");
+    location.href = `recibo.html?id=${order.id}`;
+  } catch {
     showSnack("Error al enviar pedido");
     btnEnviar.disabled = false;
   } finally {
@@ -351,6 +329,13 @@ async function enviarPedido() {
 btnEnviar?.addEventListener("click", e => {
   e.preventDefault();
   enviarPedido();
+});
+
+/* =========================================================
+   BOTÓN ATRÁS
+========================================================= */
+$id("btn-back")?.addEventListener("click", () => {
+  location.href = IS_READ_ONLY ? "mis-pedidos.html" : "datos_cliente.html";
 });
 
 /* =========================================================
