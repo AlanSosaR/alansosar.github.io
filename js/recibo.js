@@ -297,55 +297,56 @@ async function cargarPedidoExistente(orderId) {
     bloqueEfectivo?.classList.remove("hidden");
   }
 
+/* =========================
+   DEPÓSITO BANCARIO
+========================= */
+if (pedido.payment_method === "bank_transfer") {
+  bloqueDeposito?.classList.remove("hidden");
+
+  // 🔑 FIX CLAVE — forzar layout visible (ANDROID / CHROME)
+  bloqueDeposito.style.display = "flex";
+  bloqueDeposito.style.flexDirection = "column";
+
+  // 🔕 ocultar instrucciones
+  bloqueDeposito
+    ?.querySelector(".pago-instrucciones")
+    ?.classList.add("hidden");
+
   /* =========================
-     DEPÓSITO BANCARIO
+     COMPROBANTE DESDE BD
+     FIX DEFINITIVO
   ========================= */
-  if (pedido.payment_method === "bank_transfer") {
-    bloqueDeposito?.classList.remove("hidden");
+  if (
+    pedido.payment_receipts &&
+    pedido.payment_receipts.length > 0 &&
+    pedido.payment_receipts[0].file_url
+  ) {
+    // asegurar que el preview esté dentro del bloque visible
+    bloqueDeposito.appendChild(previewBox);
 
-    // ocultar instrucciones
-    bloqueDeposito
-      ?.querySelector(".pago-instrucciones")
-      ?.classList.add("hidden");
+    // 🔓 forzar visibilidad REAL
+    previewBox.classList.remove("hidden");
+    previewBox.style.display = "block";
+    previewBox.style.visibility = "visible";
+    previewBox.style.position = "relative";
+    previewBox.style.overflow = "visible";
 
-    /* =========================
-       COMPROBANTE DESDE BD
-       FIX DEFINITIVO
-    ========================= */
-    if (
-      pedido.payment_receipts &&
-      pedido.payment_receipts.length > 0 &&
-      pedido.payment_receipts[0].file_url
-    ) {
-      // asegurar que el preview esté en el bloque visible
-      bloqueDeposito.appendChild(previewBox);
+    imgPreview.style.display = "block";
+    imgPreview.style.visibility = "visible";
+    imgPreview.style.width = "100%";
+    imgPreview.style.height = "auto";
+    imgPreview.style.objectFit = "contain";
 
-      // forzar visibilidad REAL
-      previewBox.classList.remove("hidden");
-      previewBox.style.display = "block";
-      previewBox.style.visibility = "visible";
-      previewBox.style.position = "relative";
-      previewBox.style.overflow = "visible";
+    imgPreview.onerror = () => {
+      console.error("❌ No se pudo cargar el comprobante");
+    };
 
-      imgPreview.style.display = "block";
-      imgPreview.style.visibility = "visible";
-      imgPreview.style.width = "100%";
-      imgPreview.style.height = "auto";
-      imgPreview.style.objectFit = "contain";
+    // 🔑 asignar src AL FINAL
+    imgPreview.src = pedido.payment_receipts[0].file_url;
 
-      imgPreview.onerror = () => {
-        console.error("❌ No se pudo cargar el comprobante");
-      };
-
-      // asignar src AL FINAL (clave)
-      imgPreview.src = pedido.payment_receipts[0].file_url;
-
-      console.log(
-        "🧾 comprobante mostrado correctamente:",
-        imgPreview.src
-      );
-    }
+    console.log("🧾 comprobante mostrado correctamente:", imgPreview.src);
   }
+}
 }
 /* =========================================================
    CARRITO (CHECKOUT)
