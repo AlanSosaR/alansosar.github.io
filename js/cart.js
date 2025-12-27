@@ -179,5 +179,12 @@ document.getElementById("proceder-btn")?.addEventListener("click", async () => {
 });
 
 /* ================= INIT ================= */
+if (typeof window.initHeader === "function") {
+  window.initHeader(); // inicializa header + contador
+}
+
 renderCart();
-syncHeaderCounter();
+
+if (typeof window.updateHeaderCartCount === "function") {
+  window.updateHeaderCartCount(); // sincroniza badge
+}
