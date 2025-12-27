@@ -1,6 +1,8 @@
 /* ============================================================
    MAIN.JS — Café Cortero 2025 (FIX DEFINITIVO)
    UI + CARRITO + INTERACCIONES
+   ❌ NO toca cart-count directamente
+   ✅ Header es dueño del contador
 ============================================================ */
 
 function safe(id) {
@@ -23,12 +25,14 @@ function saveCart(cart) {
   localStorage.setItem(CART_KEY, JSON.stringify(cart));
 }
 
-function updateCartCount() {
-  const total = getCart().reduce((acc, item) => acc + item.qty, 0);
-  const badge = safe("cart-count");
-  if (badge) badge.textContent = total;
+/* 🔑 SINCRONIZAR CONTADOR CON HEADER */
+function syncHeaderCounter() {
+  if (typeof window.updateHeaderCartCount === "function") {
+    window.updateHeaderCartCount();
+  }
 }
 
+/* Animación visual del badge (permitido) */
 function animateCartBadge() {
   const badge = safe("cart-count");
   if (!badge) return;
@@ -51,7 +55,7 @@ function addToCart(product) {
     cart[index].qty += product.qty;
   } else {
     cart.push({
-      product_id: product.product_id, // 🔑 CLAVE
+      product_id: product.product_id, // 🔑 CLAVE ÚNICA
       name: product.name,
       price: product.price,
       img: product.img,
@@ -60,7 +64,9 @@ function addToCart(product) {
   }
 
   saveCart(cart);
-  updateCartCount();
+
+  // 🔑 SOLO sincronizar, NO modificar badge directo
+  syncHeaderCounter();
   animateCartBadge();
 }
 
@@ -96,7 +102,8 @@ function loadSimilarProducts() {
 ============================================================ */
 document.addEventListener("DOMContentLoaded", () => {
 
-  updateCartCount();
+  // 🔑 Cuando el header ya exista, sincronizar contador
+  syncHeaderCounter();
 
   /* ========================= CANTIDAD ========================= */
   const qtyNumber = safe("qty-number");
@@ -118,7 +125,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const name  = safe("product-name").textContent.trim();
     const img   = safe("product-image").src;
     const price = parseFloat(
-      document.querySelector(".price-part").textContent.replace(/[^\d.-]/g, "")
+      document.querySelector(".price-part")
+        .textContent.replace(/[^\d.-]/g, "")
     );
 
     const productId = safe("product-add").dataset.id;
