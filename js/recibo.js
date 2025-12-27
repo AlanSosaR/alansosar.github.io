@@ -300,18 +300,24 @@ inputFile?.addEventListener("change", () => {
 });
 
 /* =========================================================
-   ENVIAR PEDIDO — DEFINITIVO
+   ENVIAR PEDIDO — DEFINITIVO + COMPROBANTE
 ========================================================= */
 async function enviarPedido() {
   const sb = window.supabaseClient;
   const user = getUserCache();
   if (!user || !selectedAddressId) return;
 
+  // 🔒 Validar comprobante si es depósito
+  if (metodoPago.value === "bank_transfer" && !inputFile.files.length) {
+    showSnack("Debes subir el comprobante de pago");
+    return;
+  }
+
   btnEnviar.disabled = true;
   loader?.classList.remove("hidden");
 
   try {
-    // 🔑 SIEMPRE revisar BD antes de insertar
+    /* === 1. NÚMERO DE PEDIDO === */
     const { data: last, error: lastError } = await sb
       .from("orders")
       .select("order_number")
@@ -321,10 +327,10 @@ async function enviarPedido() {
 
     if (lastError) throw lastError;
 
-    const lastNumber = Number(last?.[0]?.order_number) || 0;
-    const nextOrderNumber = lastNumber + 1;
+    const nextOrderNumber =
+      (Number(last?.[0]?.order_number) || 0) + 1;
 
-    // 🔑 INSERT REAL (la verdad absoluta)
+    /* === 2. CREAR PEDIDO === */
     const { data: order, error: insertError } = await sb
       .from("orders")
       .insert({
@@ -343,7 +349,7 @@ async function enviarPedido() {
 
     if (insertError) throw insertError;
 
-    // items
+    /* === 3. ITEMS === */
     await sb.from("order_items").insert(
       carrito.map(it => ({
         order_id: order.id,
@@ -353,10 +359,30 @@ async function enviarPedido() {
       }))
     );
 
-    // limpiar carrito
-    localStorage.setItem(CART_KEY, "[]");
+    /* === 4. SUBIR COMPROBANTE === */
+    if (metodoPago.value === "bank_transfer") {
+      const file = inputFile.files[0];
+      const ext = file.name.split(".").pop();
+      const path = `${user.id}/${order.id}.${ext}`;
 
-    // ir a recibo en modo lectura
+      const { error: uploadError } = await sb.storage
+        .from(RECEIPT_BUCKET)
+        .upload(path, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      const { data: urlData } = sb.storage
+        .from(RECEIPT_BUCKET)
+        .getPublicUrl(path);
+
+      await sb.from("payment_receipts").insert({
+        order_id: order.id,
+        file_url: urlData.publicUrl
+      });
+    }
+
+    /* === 5. LIMPIAR Y REDIRIGIR === */
+    localStorage.setItem(CART_KEY, "[]");
     location.href = `recibo.html?id=${order.id}`;
 
   } catch (err) {
@@ -367,11 +393,6 @@ async function enviarPedido() {
     loader?.classList.add("hidden");
   }
 }
-
-btnEnviar?.addEventListener("click", e => {
-  e.preventDefault();
-  enviarPedido();
-});
 /* =========================================================
    BOTÓN ATRÁS
 ========================================================= */
