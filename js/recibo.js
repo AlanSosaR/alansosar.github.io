@@ -10,7 +10,19 @@ const RECEIPT_BUCKET = "payment-receipts";
    HELPERS
 ========================================================= */
 const $id = (id) => document.getElementById(id);
+/* =========================================================
+   MÉTODO DE PAGO (CHECKOUT) — CORREGIDO FINAL
+========================================================= */
+const metodoPago = $id("metodoPago");
+const bloqueDeposito = $id("pago-deposito");
+const bloqueEfectivo = $id("pago-efectivo");
+const btnEnviar = $id("btnEnviar");
+const loader = $id("loaderEnviar");
 
+const inputFile = $id("inputComprobante");
+const previewBox = $id("previewComprobante");
+const imgPreview = $id("imgComprobante");
+const btnSubirComprobante = $id("btnSubirComprobante");
 /* =========================================================
    CONTEXTO
 ========================================================= */
@@ -308,19 +320,7 @@ if (!IS_READ_ONLY) {
   $id("totalPedido").textContent = total.toFixed(2);
 }
 
-/* =========================================================
-   MÉTODO DE PAGO (CHECKOUT) — CORREGIDO FINAL
-========================================================= */
-const metodoPago = $id("metodoPago");
-const bloqueDeposito = $id("pago-deposito");
-const bloqueEfectivo = $id("pago-efectivo");
-const btnEnviar = $id("btnEnviar");
-const loader = $id("loaderEnviar");
 
-const inputFile = $id("inputComprobante");
-const previewBox = $id("previewComprobante");
-const imgPreview = $id("imgComprobante");
-const btnSubirComprobante = $id("btnSubirComprobante");
 
 /* =========================
    RESET UI
