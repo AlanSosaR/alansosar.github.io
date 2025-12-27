@@ -266,13 +266,21 @@ if (pedido.payment_method === "cash") {
 if (pedido.payment_method === "bank_transfer") {
   bloqueDeposito?.classList.remove("hidden");
 
+  // 🔕 ocultar texto instructivo de subir comprobante
+  bloqueDeposito
+    ?.querySelector(".pago-instrucciones")
+    ?.classList.add("hidden");
+
   // ✅ mostrar comprobante guardado en BD
   if (pedido.payment_receipts?.length) {
     imgPreview.src = pedido.payment_receipts[0].file_url;
+
     previewBox?.classList.remove("hidden");
+    previewBox.style.display = "block";   // 🔑 fuerza visibilidad
+    imgPreview.style.display = "block";   // 🔑 asegura imagen
   }
 }
-} 
+}
 /* =========================================================
    CARRITO (CHECKOUT)
 ========================================================= */
