@@ -318,9 +318,12 @@ if (pedido.payment_method === "bank_transfer") {
   ========================= */
   if (
     pedido.payment_receipts &&
-    pedido.payment_receipts.length > 0 &&
-    pedido.payment_receipts[0].file_url
+    pedido.payment_receipts.length > 0
   ) {
+    // 🔑 tomar el comprobante MÁS RECIENTE
+    const receipt = pedido.payment_receipts
+      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
+
     // asegurar que el preview esté dentro del bloque visible
     bloqueDeposito.appendChild(previewBox);
 
@@ -341,10 +344,10 @@ if (pedido.payment_method === "bank_transfer") {
       console.error("❌ No se pudo cargar el comprobante");
     };
 
-    // 🔑 asignar src AL FINAL
-    imgPreview.src = pedido.payment_receipts[0].file_url;
+    // 🔑 asignar src DEL COMPROBANTE CORRECTO
+    imgPreview.src = receipt.file_url;
 
-    console.log("🧾 comprobante mostrado correctamente:", imgPreview.src);
+    console.log("🧾 comprobante mostrado correctamente:", receipt.file_url);
   }
 }
 }
