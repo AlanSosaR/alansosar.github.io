@@ -365,6 +365,15 @@ inputFile?.addEventListener("change", () => {
   btnEnviar.disabled = false;
 });
 
+/* =========================
+   CLICK EN ENVIAR PEDIDO
+   🔑 ESTO ERA LO QUE FALTABA
+========================= */
+btnEnviar?.addEventListener("click", (e) => {
+  e.preventDefault();
+  enviarPedido();
+});
+
 /* =========================================================
    ENVIAR PEDIDO — DEFINITIVO + COMPROBANTE
 ========================================================= */
