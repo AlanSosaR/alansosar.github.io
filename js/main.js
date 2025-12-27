@@ -10,7 +10,6 @@ function safe(id) {
 }
 
 /* ========================= CARRITO ========================= */
-
 const CART_KEY = "cafecortero_cart";
 
 function getCart() {
@@ -44,11 +43,8 @@ function addToCart(product) {
   const cart = getCart();
   const index = cart.findIndex(p => p.product_id === product.product_id);
 
-  if (index >= 0) {
-    cart[index].qty += product.qty;
-  } else {
-    cart.push(product);
-  }
+  if (index >= 0) cart[index].qty += product.qty;
+  else cart.push(product);
 
   saveCart(cart);
   syncHeaderCounter();
@@ -56,7 +52,6 @@ function addToCart(product) {
 }
 
 /* ========================= SIMILARES ========================= */
-
 function loadSimilarProducts() {
   const productos = [
     { id: "cafe-cortero-250g", nombre: "Café Cortero 250g", precio: "L 180", img: "imagenes/bolsa_1.png" },
@@ -70,8 +65,8 @@ function loadSimilarProducts() {
   const cont = safe("lista-similares");
   if (!cont) return;
 
-  cont.innerHTML = productos.map((p, i) => `
-    <div class="similar-card ${i === 0 ? "active" : ""}"
+  cont.innerHTML = productos.map(p => `
+    <div class="similar-card"
          data-id="${p.id}"
          data-name="${p.nombre}"
          data-price="${p.precio}"
@@ -84,33 +79,25 @@ function loadSimilarProducts() {
 }
 
 /* ========================= CARRUSEL — ESTADO ÚNICO ========================= */
-
 let similarIndex = 0;
-
-function setSimilarIndex(i) {
-  similarIndex = i;
-}
-
-function getSimilarIndex() {
-  return similarIndex;
-}
+const setSimilarIndex = i => similarIndex = i;
+const getSimilarIndex = () => similarIndex;
 
 /* ========================= DOM READY ========================= */
-
 document.addEventListener("DOMContentLoaded", () => {
 
   syncHeaderCounter();
 
-  /* ========================= FAB (FIX REAL) ========================= */
+  /* ========================= FAB ========================= */
   const fabContainer = safe("fab");
   const fabMain = safe("fab-main");
 
-  fabMain?.addEventListener("click", (e) => {
+  fabMain?.addEventListener("click", e => {
     e.stopPropagation();
     fabContainer.classList.toggle("active");
   });
 
-  document.addEventListener("click", (e) => {
+  document.addEventListener("click", e => {
     if (fabContainer && !fabContainer.contains(e.target)) {
       fabContainer.classList.remove("active");
     }
@@ -150,29 +137,21 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /* ========================= SIMILAR EVENTS ========================= */
-
 function bindSimilarCardEvents() {
   const cards = document.querySelectorAll(".similar-card");
   const productSection = document.querySelector(".product-main");
 
   cards.forEach((card, idx) => {
 
-    /* 🔑 Evita salto vertical en móvil */
     card.addEventListener("mousedown", e => e.preventDefault());
 
     card.addEventListener("click", () => {
 
-      /* =========================
-         MARCAR TARJETA
-      ========================= */
-      cards.forEach(c => c.classList.remove("active"));
-      card.classList.add("active");
+      /* 🔑 SOLO CAMBIAMOS ÍNDICE */
+      setSimilarIndex(idx);
 
-      /* =========================
-         ACTUALIZAR PRODUCTO PRINCIPAL
-      ========================= */
+      /* Producto principal */
       const img = safe("product-image");
-
       img.classList.remove("swap");
       void img.offsetWidth;
       img.classList.add("swap");
@@ -183,25 +162,18 @@ function bindSimilarCardEvents() {
       safe("product-add").dataset.id = card.dataset.id;
       safe("qty-number").textContent = "1";
 
-      /* =========================
-         SCROLL SUAVE AL PRODUCTO PRINCIPAL
-      ========================= */
-      productSection?.scrollIntoView({
-        behavior: "smooth",
-        block: "start"
-      });
+      /* Scroll vertical SUAVE */
+      if (productSection) {
+        const y = productSection.getBoundingClientRect().top + window.scrollY - 20;
+        window.scrollTo({ top: y, behavior: "smooth" });
+      }
 
-      /* =========================
-         CARRUSEL HORIZONTAL
-      ========================= */
-      setSimilarIndex(idx);
       updateSimilarUI();
     });
   });
 }
 
 /* ========================= CARRUSEL ========================= */
-
 function initSimilarCarousel() {
   const prev = safe("similar-prev");
   const next = safe("similar-next");
