@@ -395,27 +395,33 @@ async function enviarPedido() {
       }))
     );
 
-    /* === 4. SUBIR COMPROBANTE === */
-    if (metodoPago.value === "bank_transfer") {
-      const file = inputFile.files[0];
-      const ext = file.name.split(".").pop();
-      const path = `${user.id}/${order.id}.${ext}`;
+   /* === 4. SUBIR COMPROBANTE === */
+if (metodoPago.value === "bank_transfer") {
+  const file = inputFile.files[0];
 
-      const { error: uploadError } = await sb.storage
-        .from(RECEIPT_BUCKET)
-        .upload(path, file, { upsert: true });
+  if (!file) throw new Error("No hay archivo de comprobante");
 
-      if (uploadError) throw uploadError;
+  const ext = file.name.split(".").pop().toLowerCase();
+  const path = `${user.id}/${order.id}.${ext}`;
 
-      const { data: urlData } = sb.storage
-        .from(RECEIPT_BUCKET)
-        .getPublicUrl(path);
+  const { error: uploadError } = await sb.storage
+    .from(RECEIPT_BUCKET)
+    .upload(path, file, {
+      upsert: true,
+      contentType: file.type
+    });
 
-      await sb.from("payment_receipts").insert({
-        order_id: order.id,
-        file_url: urlData.publicUrl
-      });
-    }
+  if (uploadError) throw uploadError;
+
+  const { data: urlData } = sb.storage
+    .from(RECEIPT_BUCKET)
+    .getPublicUrl(path);
+
+  await sb.from("payment_receipts").insert({
+    order_id: order.id,
+    file_url: urlData.publicUrl
+  });
+}
 
     /* === 5. LIMPIAR Y REDIRIGIR === */
     localStorage.setItem(CART_KEY, "[]");
