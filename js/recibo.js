@@ -273,28 +273,34 @@ if (pedido.payment_method === "bank_transfer") {
     ?.querySelector(".pago-instrucciones")
     ?.classList.add("hidden");
 
-  // ✅ mostrar comprobante desde BD
-  if (pedido.payment_receipts?.length && pedido.payment_receipts[0].file_url) {
+ // ✅ mostrar comprobante desde BD (FIX DEFINITIVO)
+if (pedido.payment_receipts?.length && pedido.payment_receipts[0].file_url) {
 
-    // 🔑 forzar visibilidad (NO depender de onload)
-    previewBox?.classList.remove("hidden");
-    previewBox.style.display = "block";
-    previewBox.style.visibility = "visible";
-    previewBox.style.maxHeight = "none";
+  // 🔑 mover el preview dentro del bloque visible de pago
+  bloqueDeposito.appendChild(previewBox);
 
-    imgPreview.style.display = "block";
-    imgPreview.style.visibility = "visible";
-    imgPreview.style.maxHeight = "none";
+  // 🔓 forzar visibilidad REAL
+  previewBox.classList.remove("hidden");
+  previewBox.style.display = "block";
+  previewBox.style.visibility = "visible";
+  previewBox.style.height = "auto";
+  previewBox.style.maxHeight = "none";
+  previewBox.style.overflow = "visible";
+  previewBox.style.position = "relative";
 
-    imgPreview.onerror = () => {
-      console.error("❌ No se pudo cargar el comprobante");
-    };
+  imgPreview.style.display = "block";
+  imgPreview.style.visibility = "visible";
+  imgPreview.style.width = "100%";
+  imgPreview.style.height = "auto";
+  imgPreview.style.objectFit = "contain";
 
-    imgPreview.src = pedido.payment_receipts[0].file_url;
+  imgPreview.onerror = () => {
+    console.error("❌ No se pudo cargar el comprobante");
+  };
 
-    // 🔍 debug útil
-    console.log("🧾 comprobante cargado:", imgPreview.src);
-  }
+  imgPreview.src = pedido.payment_receipts[0].file_url;
+
+  console.log("🧾 comprobante cargado desde BD:", imgPreview.src);
 }
 }
 /* =========================================================
