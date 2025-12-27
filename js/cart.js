@@ -3,8 +3,8 @@
    ✔ Flujo correcto login → validaciones → checkout
    ✔ product_id validado SOLO cuando corresponde
    ✔ Flecha oculta cuando está vacío
-   ✔ Snackbar login restaurado
-   ✔ Contador del header sincronizado
+   ✔ Snackbar login visible
+   ✔ Contador del header independiente (SIN main.js)
    ✔ Compatible con recibo.js
 ============================================================ */
 
@@ -28,11 +28,17 @@ function getSupabaseClient() {
   return window.supabaseClient || window.supabase || null;
 }
 
-/* 🔑 SINCRONIZAR CONTADOR HEADER */
-function syncHeaderCartCount() {
-  if (typeof window.updateCartCount === "function") {
-    window.updateCartCount();
-  }
+/* ================= HEADER COUNTER (LOCAL) ================= */
+function updateHeaderCartCount() {
+  const badge = document.getElementById("cart-count");
+  if (!badge) return;
+
+  const total = getCart().reduce(
+    (acc, item) => acc + Number(item.qty || 0),
+    0
+  );
+
+  badge.textContent = total;
 }
 
 /* ================= RENDER ================= */
@@ -51,7 +57,10 @@ function renderCart() {
   if (!container) return;
   container.innerHTML = "";
 
-  const totalCafes = cart.reduce((s, p) => s + Number(p.qty || 0), 0);
+  const totalCafes = cart.reduce(
+    (s, p) => s + Number(p.qty || 0),
+    0
+  );
 
   if (countItems) {
     countItems.textContent =
@@ -80,7 +89,7 @@ function renderCart() {
     if (subtotalLabel) subtotalLabel.textContent = "L 0.00";
     if (totalLabel)    totalLabel.textContent    = "L 0.00";
 
-    syncHeaderCartCount();
+    updateHeaderCartCount();
     return;
   }
 
@@ -101,7 +110,8 @@ function renderCart() {
     const clone = template.content.cloneNode(true);
 
     clone.querySelector(".item-image").src = item.img || "";
-    clone.querySelector(".item-name").textContent = item.name || "Producto";
+    clone.querySelector(".item-name").textContent =
+      item.name || "Producto";
     clone.querySelector(".item-price").textContent =
       `L ${Number(item.price).toFixed(2)} / unidad`;
     clone.querySelector(".qty-number").textContent = item.qty || 1;
@@ -114,10 +124,12 @@ function renderCart() {
     container.appendChild(clone);
   });
 
-  if (subtotalLabel) subtotalLabel.textContent = `L ${subtotal.toFixed(2)}`;
-  if (totalLabel)    totalLabel.textContent    = `L ${subtotal.toFixed(2)}`;
+  if (subtotalLabel)
+    subtotalLabel.textContent = `L ${subtotal.toFixed(2)}`;
+  if (totalLabel)
+    totalLabel.textContent    = `L ${subtotal.toFixed(2)}`;
 
-  syncHeaderCartCount();
+  updateHeaderCartCount();
 }
 
 /* ================= CONTROLES ================= */
@@ -190,4 +202,4 @@ document.getElementById("proceder-btn")?.addEventListener("click", async () => {
 
 /* ================= INIT ================= */
 renderCart();
-syncHeaderCartCount();
+updateHeaderCartCount();
