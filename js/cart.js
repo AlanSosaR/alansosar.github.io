@@ -177,14 +177,14 @@ document.getElementById("proceder-btn")?.addEventListener("click", async () => {
   /* ➡️ CONTINUAR */
   location.href = "datos_cliente.html";
 });
-
 /* ================= INIT ================= */
-if (typeof window.initHeader === "function") {
-  window.initHeader(); // inicializa header + contador
-}
 
+// 1️⃣ Renderizar carrito (NO depende del header)
 renderCart();
 
-if (typeof window.updateHeaderCartCount === "function") {
-  window.updateHeaderCartCount(); // sincroniza badge
-}
+// 2️⃣ Cuando el header ya exista → sincronizar contador
+document.addEventListener("header:ready", () => {
+  if (typeof window.updateHeaderCartCount === "function") {
+    window.updateHeaderCartCount();
+  }
+});
