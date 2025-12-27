@@ -266,18 +266,25 @@ if (pedido.payment_method === "cash") {
 if (pedido.payment_method === "bank_transfer") {
   bloqueDeposito?.classList.remove("hidden");
 
-  // 🔕 ocultar texto instructivo de subir comprobante
+  // 🔕 ocultar texto instructivo
   bloqueDeposito
     ?.querySelector(".pago-instrucciones")
     ?.classList.add("hidden");
 
-  // ✅ mostrar comprobante guardado en BD
-  if (pedido.payment_receipts?.length) {
-    imgPreview.src = pedido.payment_receipts[0].file_url;
+  // ✅ mostrar comprobante desde BD
+  if (pedido.payment_receipts?.length && pedido.payment_receipts[0].file_url) {
 
-    previewBox?.classList.remove("hidden");
-    previewBox.style.display = "block";   // 🔑 fuerza visibilidad
-    imgPreview.style.display = "block";   // 🔑 asegura imagen
+    imgPreview.onload = () => {
+      previewBox?.classList.remove("hidden");
+      previewBox.style.display = "block";
+      imgPreview.style.display = "block";
+    };
+
+    imgPreview.onerror = () => {
+      console.error("❌ No se pudo cargar el comprobante");
+    };
+
+    imgPreview.src = pedido.payment_receipts[0].file_url;
   }
 }
 }
