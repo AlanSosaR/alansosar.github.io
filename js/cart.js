@@ -3,6 +3,8 @@
    ✔ Flujo correcto login → validaciones → checkout
    ✔ product_id validado SOLO cuando corresponde
    ✔ Flecha oculta cuando está vacío
+   ✔ Snackbar login restaurado
+   ✔ Contador del header sincronizado
    ✔ Compatible con recibo.js
 ============================================================ */
 
@@ -26,6 +28,13 @@ function getSupabaseClient() {
   return window.supabaseClient || window.supabase || null;
 }
 
+/* 🔑 SINCRONIZAR CONTADOR HEADER */
+function syncHeaderCartCount() {
+  if (typeof window.updateCartCount === "function") {
+    window.updateCartCount();
+  }
+}
+
 /* ================= RENDER ================= */
 function renderCart() {
   const cart = getCart();
@@ -43,6 +52,7 @@ function renderCart() {
   container.innerHTML = "";
 
   const totalCafes = cart.reduce((s, p) => s + Number(p.qty || 0), 0);
+
   if (countItems) {
     countItems.textContent =
       `${totalCafes} ${totalCafes === 1 ? "café" : "cafés"}`;
@@ -51,7 +61,7 @@ function renderCart() {
   /* ================= CARRITO VACÍO ================= */
   if (!cart.length) {
     main?.classList.add("carrito-vacio-activo");
-    document.body.classList.add("carrito-vacio"); // 🔑 CLAVE CSS
+    document.body.classList.add("carrito-vacio");
 
     resumenBox && (resumenBox.style.display = "none");
     topBack && (topBack.style.display = "none");
@@ -69,12 +79,14 @@ function renderCart() {
 
     if (subtotalLabel) subtotalLabel.textContent = "L 0.00";
     if (totalLabel)    totalLabel.textContent    = "L 0.00";
+
+    syncHeaderCartCount();
     return;
   }
 
   /* ================= CON PRODUCTOS ================= */
   main?.classList.remove("carrito-vacio-activo");
-  document.body.classList.remove("carrito-vacio"); // 🔑 CLAVE CSS
+  document.body.classList.remove("carrito-vacio");
 
   resumenBox && (resumenBox.style.display = "block");
   topBack && (topBack.style.display = "flex");
@@ -104,7 +116,10 @@ function renderCart() {
 
   if (subtotalLabel) subtotalLabel.textContent = `L ${subtotal.toFixed(2)}`;
   if (totalLabel)    totalLabel.textContent    = `L ${subtotal.toFixed(2)}`;
+
+  syncHeaderCartCount();
 }
+
 /* ================= CONTROLES ================= */
 document.getElementById("cart-container")?.addEventListener("click", e => {
   const btn = e.target.closest("button");
@@ -140,25 +155,39 @@ document.getElementById("proceder-btn")?.addEventListener("click", async () => {
 
   const { data } = await sb.auth.getSession();
 
-  /* 🔐 1) FORZAR LOGIN PRIMERO */
+  /* 🔐 NO LOGUEADO → SNACKBAR */
   if (!data?.session) {
-    location.href = "login.html?redirect=carrito";
+    const snack = document.getElementById("snackbar-login");
+
+    if (snack) {
+      snack.classList.remove("hidden");
+      snack.classList.add("show");
+
+      setTimeout(() => {
+        snack.classList.remove("show");
+        snack.classList.add("hidden");
+        location.href = "login.html?redirect=carrito";
+      }, 1500);
+    } else {
+      location.href = "login.html?redirect=carrito";
+    }
     return;
   }
 
-  /* 🔒 2) VALIDAR product_id YA LOGUEADO */
+  /* 🔒 VALIDAR product_id */
   const invalid = cart.some(p => !p.product_id);
   if (invalid) {
     alert("Algunos productos necesitan actualizarse. Vuelve a agregarlos 😊");
     return;
   }
 
-  /* 📦 3) GUARDAR CARRITO DE CHECKOUT */
+  /* 📦 GUARDAR CHECKOUT */
   localStorage.setItem(CHECKOUT_KEY, JSON.stringify(cart));
 
-  /* ➡️ 4) CONTINUAR */
+  /* ➡️ CONTINUAR */
   location.href = "datos_cliente.html";
 });
 
 /* ================= INIT ================= */
 renderCart();
+syncHeaderCartCount();
