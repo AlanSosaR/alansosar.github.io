@@ -117,18 +117,18 @@ function aplicarProgresoPedido(status, paymentMethod) {
   ========================= */
   else {
     map = {
-      cash_on_delivery: 1,
-      processing: 2,
-      shipped: 3,
-      delivered: 3
-    };
+  cash_on_delivery: 0,
+  processing: 1,
+  shipped: 2,
+  delivered: 3
+};
 
-    labels = {
-      cash_on_delivery: "Pago al recibir",
-      processing: "En preparación",
-      shipped: "Enviado",
-      delivered: "Entregado"
-    };
+labels = {
+  cash_on_delivery: "Pago al recibir",
+  processing: "En preparación",
+  shipped: "Enviado",
+  delivered: "Entregado"
+};
   }
 
   const active = map[status] ?? 0;
