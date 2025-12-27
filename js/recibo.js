@@ -4,6 +4,7 @@ console.log("🧾 recibo.js — CORE FINAL DEFINITIVO");
    CONSTANTES
 ========================================================= */
 const CART_KEY = "cafecortero_cart";
+const RECEIPT_BUCKET = "payment-receipts";
 
 /* =========================================================
    HELPERS
