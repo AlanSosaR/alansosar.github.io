@@ -147,8 +147,12 @@ function bindSimilarCardEvents() {
 
     card.addEventListener("click", () => {
 
-      /* 🔑 SOLO CAMBIAMOS ÍNDICE */
+      /* 🔑 ÍNDICE ÚNICO */
       setSimilarIndex(idx);
+
+      /* 🔑 MARCAR BORDE VERDE (CSS) */
+      cards.forEach(c => c.classList.remove("active-card"));
+      card.classList.add("active-card");
 
       /* Producto principal */
       const img = safe("product-image");
@@ -162,7 +166,7 @@ function bindSimilarCardEvents() {
       safe("product-add").dataset.id = card.dataset.id;
       safe("qty-number").textContent = "1";
 
-      /* Scroll vertical SUAVE */
+      /* Scroll vertical suave */
       if (productSection) {
         const y = productSection.getBoundingClientRect().top + window.scrollY - 20;
         window.scrollTo({ top: y, behavior: "smooth" });
@@ -225,6 +229,6 @@ function updateSimilarUI() {
 
   document.querySelectorAll(".similar-card")
     .forEach((c, i) =>
-      c.classList.toggle("active", i === getSimilarIndex())
+      c.classList.toggle("active-card", i === getSimilarIndex())
     );
 }
