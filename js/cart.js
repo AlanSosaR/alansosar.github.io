@@ -4,7 +4,7 @@
    ✔ product_id validado SOLO cuando corresponde
    ✔ Flecha oculta cuando está vacío
    ✔ Snackbar login visible
-   ✔ Contador del header independiente (SIN main.js)
+   ✔ Contador del header controlado por header.js
    ✔ Compatible con recibo.js
 ============================================================ */
 
@@ -28,17 +28,12 @@ function getSupabaseClient() {
   return window.supabaseClient || window.supabase || null;
 }
 
-/* ================= HEADER COUNTER (LOCAL) ================= */
-function updateHeaderCartCount() {
-  const badge = document.getElementById("cart-count");
-  if (!badge) return;
-
-  const total = getCart().reduce(
-    (acc, item) => acc + Number(item.qty || 0),
-    0
-  );
-
-  badge.textContent = total;
+/* ================= HEADER COUNTER ================= */
+/* 🔑 El header es el dueño del contador */
+function syncHeaderCounter() {
+  if (typeof window.updateHeaderCartCount === "function") {
+    window.updateHeaderCartCount();
+  }
 }
 
 /* ================= RENDER ================= */
@@ -48,33 +43,18 @@ function renderCart() {
   const container     = document.getElementById("cart-container");
   const subtotalLabel = document.getElementById("subtotal-label");
   const totalLabel    = document.getElementById("total-label");
-  const countItems    = document.getElementById("count-items");
   const resumenBox    = document.querySelector(".resumen-box");
   const main          = document.querySelector("main");
-  const topBack       = document.getElementById("top-back-btn");
-  const topBackText   = document.getElementById("top-back-text");
 
   if (!container) return;
   container.innerHTML = "";
-
-  const totalCafes = cart.reduce(
-    (s, p) => s + Number(p.qty || 0),
-    0
-  );
-
-  if (countItems) {
-    countItems.textContent =
-      `${totalCafes} ${totalCafes === 1 ? "café" : "cafés"}`;
-  }
 
   /* ================= CARRITO VACÍO ================= */
   if (!cart.length) {
     main?.classList.add("carrito-vacio-activo");
     document.body.classList.add("carrito-vacio");
 
-    resumenBox && (resumenBox.style.display = "none");
-    topBack && (topBack.style.display = "none");
-    topBackText && (topBackText.style.display = "none");
+    if (resumenBox) resumenBox.style.display = "none";
 
     container.innerHTML = `
       <div class="empty-container">
@@ -89,17 +69,14 @@ function renderCart() {
     if (subtotalLabel) subtotalLabel.textContent = "L 0.00";
     if (totalLabel)    totalLabel.textContent    = "L 0.00";
 
-    updateHeaderCartCount();
+    syncHeaderCounter();
     return;
   }
 
   /* ================= CON PRODUCTOS ================= */
   main?.classList.remove("carrito-vacio-activo");
   document.body.classList.remove("carrito-vacio");
-
-  resumenBox && (resumenBox.style.display = "block");
-  topBack && (topBack.style.display = "flex");
-  topBackText && (topBackText.style.display = "inline-block");
+  if (resumenBox) resumenBox.style.display = "block";
 
   const template = document.getElementById("template-cart-item");
   if (!template) return;
@@ -114,7 +91,8 @@ function renderCart() {
       item.name || "Producto";
     clone.querySelector(".item-price").textContent =
       `L ${Number(item.price).toFixed(2)} / unidad`;
-    clone.querySelector(".qty-number").textContent = item.qty || 1;
+    clone.querySelector(".qty-number").textContent =
+      item.qty || 1;
 
     clone.querySelectorAll("button").forEach(btn => {
       btn.dataset.index = index;
@@ -129,7 +107,7 @@ function renderCart() {
   if (totalLabel)
     totalLabel.textContent    = `L ${subtotal.toFixed(2)}`;
 
-  updateHeaderCartCount();
+  syncHeaderCounter();
 }
 
 /* ================= CONTROLES ================= */
@@ -202,4 +180,4 @@ document.getElementById("proceder-btn")?.addEventListener("click", async () => {
 
 /* ================= INIT ================= */
 renderCart();
-updateHeaderCartCount();
+syncHeaderCounter();
