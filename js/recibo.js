@@ -81,35 +81,64 @@ function aplicarModoRecibo() {
 /* =========================================================
    PROGRESO DEL PEDIDO
 ========================================================= */
-function aplicarProgresoPedido(status) {
+function aplicarProgresoPedido(status, paymentMethod) {
   const steps = document.querySelectorAll("#pedido-progreso-recibo .step");
   const lines = document.querySelectorAll("#pedido-progreso-recibo .line");
-  const estadoTexto = $id("estadoPedidoTexto");
+  const estadoTexto = document.getElementById("estadoPedidoTexto");
 
-  const map = {
-    pending_payment: 0,
-    payment_review: 1,
-    payment_confirmed: 2,
-    cash_on_delivery: 2,
-    processing: 2,
-    shipped: 3,
-    delivered: 3
-  };
+  let map = {};
+  let labels = {};
 
-  const labels = {
-    pending_payment: "Pendiente de pago",
-    payment_review: "Pago en revisión",
-    payment_confirmed: "Pago confirmado",
-    cash_on_delivery: "Pago contra entrega",
-    processing: "En ejecución",
-    shipped: "Enviado",
-    delivered: "Entregado"
-  };
+  /* =========================
+     DEPÓSITO BANCARIO
+  ========================= */
+  if (paymentMethod === "bank_transfer") {
+    map = {
+      pending_payment: 0,
+      payment_review: 1,
+      payment_confirmed: 2,
+      processing: 2,
+      shipped: 3,
+      delivered: 3
+    };
+
+    labels = {
+      pending_payment: "Pendiente de pago",
+      payment_review: "Pago en revisión",
+      payment_confirmed: "Pago confirmado",
+      processing: "En preparación",
+      shipped: "Enviado",
+      delivered: "Entregado"
+    };
+  }
+
+  /* =========================
+     PAGO EN EFECTIVO
+  ========================= */
+  else {
+    map = {
+      cash_on_delivery: 1,
+      processing: 2,
+      shipped: 3,
+      delivered: 3
+    };
+
+    labels = {
+      cash_on_delivery: "Pago al recibir",
+      processing: "En preparación",
+      shipped: "Enviado",
+      delivered: "Entregado"
+    };
+  }
 
   const active = map[status] ?? 0;
+
   steps.forEach((s, i) => s.classList.toggle("active", i <= active));
   lines.forEach((l, i) => l.classList.toggle("active", i < active));
-  estadoTexto && (estadoTexto.textContent = labels[status] || "Pendiente de pago");
+
+  if (estadoTexto) {
+    estadoTexto.textContent = labels[status] || "Pendiente";
+  }
 }
 
 /* =========================================================
@@ -220,7 +249,7 @@ async function cargarPedidoExistente(orderId) {
 
   $id("totalPedido").textContent = pedido.total.toFixed(2);
 
-  aplicarProgresoPedido(pedido.status);
+  aplicarProgresoPedido(pedido.status, pedido.payment_method);
 
   /* === MÉTODO DE PAGO SOLO LECTURA === */
   document.querySelector(".pago-select-label")?.classList.add("hidden");
