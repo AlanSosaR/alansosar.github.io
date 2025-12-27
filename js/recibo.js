@@ -265,6 +265,8 @@ if (pedido.payment_method === "cash") {
 
 if (pedido.payment_method === "bank_transfer") {
   bloqueDeposito?.classList.remove("hidden");
+  bloqueDeposito.style.display = "block";
+  bloqueDeposito.style.visibility = "visible";
 
   // 🔕 ocultar texto instructivo
   bloqueDeposito
@@ -274,17 +276,24 @@ if (pedido.payment_method === "bank_transfer") {
   // ✅ mostrar comprobante desde BD
   if (pedido.payment_receipts?.length && pedido.payment_receipts[0].file_url) {
 
-    imgPreview.onload = () => {
-      previewBox?.classList.remove("hidden");
-      previewBox.style.display = "block";
-      imgPreview.style.display = "block";
-    };
+    // 🔑 forzar visibilidad (NO depender de onload)
+    previewBox?.classList.remove("hidden");
+    previewBox.style.display = "block";
+    previewBox.style.visibility = "visible";
+    previewBox.style.maxHeight = "none";
+
+    imgPreview.style.display = "block";
+    imgPreview.style.visibility = "visible";
+    imgPreview.style.maxHeight = "none";
 
     imgPreview.onerror = () => {
       console.error("❌ No se pudo cargar el comprobante");
     };
 
     imgPreview.src = pedido.payment_receipts[0].file_url;
+
+    // 🔍 debug útil
+    console.log("🧾 comprobante cargado:", imgPreview.src);
   }
 }
 }
