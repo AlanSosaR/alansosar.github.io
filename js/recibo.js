@@ -524,9 +524,12 @@ if (metodoPago.value === "bank_transfer") {
     .getPublicUrl(path);
 
   await sb.from("payment_receipts").insert({
-    order_id: order.id,
-    file_url: urlData.publicUrl
-  });
+  order_id: order.id,
+  user_id: user.id,
+  file_url: urlData.publicUrl,
+  file_path: path,           // 🔑 CLAVE
+  review_status: "pending"
+});
 }
 
     /* === 5. LIMPIAR Y REDIRIGIR === */
