@@ -492,3 +492,23 @@ h3 {
 .hidden {
   display: none !important;
 }
+/* =====================================================
+   FIX — PREVIEW COMPROBANTE (MIS PEDIDOS)
+===================================================== */
+#previewComprobante {
+  display: block;
+  visibility: visible;
+}
+
+#previewComprobante.hidden {
+  display: none !important;
+}
+
+#imgComprobante {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  border-radius: 18px;
+  box-shadow: 0 6px 18px rgba(0,0,0,.15);
+}
