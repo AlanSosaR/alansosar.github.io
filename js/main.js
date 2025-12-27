@@ -1,10 +1,10 @@
 /* ============================================================
-   MAIN.JS — Café Cortero 2025 (FIX DEFINITIVO)
+   MAIN.JS — Café Cortero 2025 (FINAL ESTABLE)
    UI + CARRITO + INTERACCIONES
-   ❌ NO toca cart-count directamente
    ✅ Header es dueño del contador
 ============================================================ */
 
+/* ========================= SAFE ========================= */
 function safe(id) {
   return document.getElementById(id);
 }
@@ -25,14 +25,13 @@ function saveCart(cart) {
   localStorage.setItem(CART_KEY, JSON.stringify(cart));
 }
 
-/* 🔑 SINCRONIZAR CONTADOR CON HEADER */
+/* 🔑 HEADER CONTROLA EL BADGE */
 function syncHeaderCounter() {
   if (typeof window.updateHeaderCartCount === "function") {
     window.updateHeaderCartCount();
   }
 }
 
-/* Animación visual del badge */
 function animateCartBadge() {
   const badge = safe("cart-count");
   if (!badge) return;
@@ -41,24 +40,14 @@ function animateCartBadge() {
   badge.classList.add("animate");
 }
 
-/* ============================================================
-   ADD TO CART
-============================================================ */
 function addToCart(product) {
   const cart = getCart();
-
   const index = cart.findIndex(p => p.product_id === product.product_id);
 
   if (index >= 0) {
     cart[index].qty += product.qty;
   } else {
-    cart.push({
-      product_id: product.product_id,
-      name: product.name,
-      price: product.price,
-      img: product.img,
-      qty: product.qty
-    });
+    cart.push(product);
   }
 
   saveCart(cart);
@@ -67,6 +56,7 @@ function addToCart(product) {
 }
 
 /* ========================= SIMILARES ========================= */
+
 function loadSimilarProducts() {
   const productos = [
     { id: "250g", nombre: "Café Cortero 250g", precio: "L 180", img: "imagenes/bolsa_1.png" },
@@ -93,9 +83,20 @@ function loadSimilarProducts() {
   `).join("");
 }
 
-/* ============================================================
-   DOM READY
-============================================================ */
+/* ========================= CARRUSEL ESTADO ÚNICO ========================= */
+
+let similarIndex = 0;
+
+function setSimilarIndex(i) {
+  similarIndex = i;
+}
+
+function getSimilarIndex() {
+  return similarIndex;
+}
+
+/* ========================= DOM READY ========================= */
+
 document.addEventListener("DOMContentLoaded", () => {
 
   syncHeaderCounter();
@@ -104,26 +105,31 @@ document.addEventListener("DOMContentLoaded", () => {
   const fab = document.querySelector(".fab");
   const fabMenu = document.querySelector(".fab-menu");
 
-  fab?.addEventListener("click", () => {
+  fab?.addEventListener("click", (e) => {
+    e.stopPropagation();
     fab.classList.toggle("open");
     fabMenu?.classList.toggle("open");
   });
 
+  document.addEventListener("click", (e) => {
+    if (fab && !fab.contains(e.target)) {
+      fab.classList.remove("open");
+      fabMenu?.classList.remove("open");
+    }
+  });
+
   /* ========================= CANTIDAD ========================= */
   const qtyNumber = safe("qty-number");
-  const qtyMinus  = safe("qty-minus");
-  const qtyPlus   = safe("qty-plus");
-
-  qtyMinus?.addEventListener("click", () => {
+  safe("qty-minus")?.addEventListener("click", () => {
     const n = parseInt(qtyNumber.textContent);
     if (n > 1) qtyNumber.textContent = n - 1;
   });
 
-  qtyPlus?.addEventListener("click", () => {
+  safe("qty-plus")?.addEventListener("click", () => {
     qtyNumber.textContent = parseInt(qtyNumber.textContent) + 1;
   });
 
-  /* ========================= AGREGAR AL CARRITO ========================= */
+  /* ========================= ADD TO CART ========================= */
   safe("product-add")?.addEventListener("click", () => {
     const qty   = parseInt(qtyNumber.textContent) || 1;
     const name  = safe("product-name").textContent.trim();
@@ -144,18 +150,21 @@ document.addEventListener("DOMContentLoaded", () => {
   initSimilarCarousel();
 });
 
-/* ========================= SIMILARES ========================= */
+/* ========================= SIMILAR EVENTS ========================= */
+
 function bindSimilarCardEvents() {
   document.querySelectorAll(".similar-card").forEach((card, idx) => {
+
+    /* 🔑 evita salto vertical */
+    card.addEventListener("mousedown", e => e.preventDefault());
+
     card.addEventListener("click", () => {
 
-      /* 🔑 Marcar activo */
-      document.querySelectorAll(".similar-card")
-        .forEach(c => c.classList.remove("active"));
-      card.classList.add("active");
-
-      /* 🔑 Animación del producto principal */
+      /* producto principal sin reflow */
       const img = safe("product-image");
+      const h = img.offsetHeight;
+      img.style.height = h + "px";
+
       img.classList.remove("swap");
       void img.offsetWidth;
       img.classList.add("swap");
@@ -166,22 +175,49 @@ function bindSimilarCardEvents() {
       safe("product-add").dataset.id = card.dataset.id;
       safe("qty-number").textContent = "1";
 
-      /* 🔑 Scroll suave del carrusel */
-      const list = safe("lista-similares");
-      const cardWidth = card.offsetWidth + 16;
-      list.scrollTo({ left: cardWidth * idx, behavior: "smooth" });
+      setTimeout(() => img.style.height = "", 300);
+
+      setSimilarIndex(idx);
+      updateSimilarUI();
     });
   });
 }
 
 /* ========================= CARRUSEL ========================= */
+
 function initSimilarCarousel() {
-  const list = safe("lista-similares");
   const prev = safe("similar-prev");
   const next = safe("similar-next");
   const dots = document.querySelectorAll(".carousel-dots .dot");
 
-  if (!list || !prev || !next || !dots.length) return;
+  prev && (prev.onclick = () => {
+    if (getSimilarIndex() > 0) {
+      setSimilarIndex(getSimilarIndex() - 1);
+      updateSimilarUI();
+    }
+  });
+
+  next && (next.onclick = () => {
+    if (getSimilarIndex() < dots.length - 1) {
+      setSimilarIndex(getSimilarIndex() + 1);
+      updateSimilarUI();
+    }
+  });
+
+  dots.forEach((dot, i) => {
+    dot.onclick = () => {
+      setSimilarIndex(i);
+      updateSimilarUI();
+    };
+  });
+
+  updateSimilarUI();
+}
+
+function updateSimilarUI() {
+  const list = safe("lista-similares");
+  const dots = document.querySelectorAll(".carousel-dots .dot");
+  if (!list) return;
 
   const card = list.querySelector(".similar-card");
   if (!card) return;
@@ -189,22 +225,17 @@ function initSimilarCarousel() {
   const gap = parseInt(getComputedStyle(list).gap || 16);
   const CARD_WIDTH = card.offsetWidth + gap;
 
-  let index = 0;
+  list.scrollTo({
+    left: CARD_WIDTH * getSimilarIndex(),
+    behavior: "smooth"
+  });
 
-  function updateUI() {
-    list.scrollTo({ left: CARD_WIDTH * index, behavior: "smooth" });
+  dots.forEach((d, i) =>
+    d.classList.toggle("active", i === getSimilarIndex())
+  );
 
-    dots.forEach((d, i) => d.classList.toggle("active", i === index));
-    document.querySelectorAll(".similar-card")
-      .forEach((c, i) => c.classList.toggle("active", i === index));
-
-    prev.disabled = index === 0;
-    next.disabled = index === dots.length - 1;
-  }
-
-  prev.onclick = () => index > 0 && (--index, updateUI());
-  next.onclick = () => index < dots.length - 1 && (++index, updateUI());
-  dots.forEach((dot, i) => dot.onclick = () => (index = i, updateUI()));
-
-  updateUI();
+  document.querySelectorAll(".similar-card")
+    .forEach((c, i) =>
+      c.classList.toggle("active", i === getSimilarIndex())
+    );
 }
