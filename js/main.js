@@ -1,7 +1,7 @@
 /* ============================================================
    MAIN.JS — Café Cortero 2025 (FINAL ESTABLE)
    UI + CARRITO + INTERACCIONES
-   ✅ Header es dueño del contador
+   ✅ Header controla contador
 ============================================================ */
 
 /* ========================= SAFE ========================= */
@@ -25,7 +25,7 @@ function saveCart(cart) {
   localStorage.setItem(CART_KEY, JSON.stringify(cart));
 }
 
-/* 🔑 HEADER CONTROLA EL BADGE */
+/* 🔑 HEADER CONTROLA BADGE */
 function syncHeaderCounter() {
   if (typeof window.updateHeaderCartCount === "function") {
     window.updateHeaderCartCount();
@@ -59,12 +59,12 @@ function addToCart(product) {
 
 function loadSimilarProducts() {
   const productos = [
-    { id: "250g", nombre: "Café Cortero 250g", precio: "L 180", img: "imagenes/bolsa_1.png" },
-    { id: "500g", nombre: "Café Cortero 500g", precio: "L 320", img: "imagenes/bolsa_2.png" },
-    { id: "1lb",  nombre: "Café Cortero 1lb",  precio: "L 550", img: "imagenes/bolsa_1.png" },
-    { id: "gift", nombre: "Café Regalo",        precio: "L 260", img: "imagenes/bolsa_2.png" },
-    { id: "prem", nombre: "Café Premium",       precio: "L 480", img: "imagenes/bolsa_1.png" },
-    { id: "trad", nombre: "Café Tradicional",   precio: "L 150", img: "imagenes/bolsa_2.png" }
+    { id: "cafe-cortero-250g", nombre: "Café Cortero 250g", precio: "L 180", img: "imagenes/bolsa_1.png" },
+    { id: "cafe-cortero-500g", nombre: "Café Cortero 500g", precio: "L 320", img: "imagenes/bolsa_2.png" },
+    { id: "cafe-cortero-1lb",  nombre: "Café Cortero 1lb",  precio: "L 550", img: "imagenes/bolsa_1.png" },
+    { id: "cafe-regalo",       nombre: "Café Regalo",       precio: "L 260", img: "imagenes/bolsa_2.png" },
+    { id: "cafe-premium",      nombre: "Café Premium",      precio: "L 480", img: "imagenes/bolsa_1.png" },
+    { id: "cafe-tradicional",  nombre: "Café Tradicional",  precio: "L 150", img: "imagenes/bolsa_2.png" }
   ];
 
   const cont = safe("lista-similares");
@@ -83,7 +83,7 @@ function loadSimilarProducts() {
   `).join("");
 }
 
-/* ========================= CARRUSEL ESTADO ÚNICO ========================= */
+/* ========================= CARRUSEL — ESTADO ÚNICO ========================= */
 
 let similarIndex = 0;
 
@@ -101,25 +101,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
   syncHeaderCounter();
 
-  /* ========================= FAB ========================= */
-  const fab = document.querySelector(".fab");
-  const fabMenu = document.querySelector(".fab-menu");
+  /* ========================= FAB (FIX REAL) ========================= */
+  const fabContainer = safe("fab");
+  const fabMain = safe("fab-main");
 
-  fab?.addEventListener("click", (e) => {
+  fabMain?.addEventListener("click", (e) => {
     e.stopPropagation();
-    fab.classList.toggle("open");
-    fabMenu?.classList.toggle("open");
+    fabContainer.classList.toggle("active");
   });
 
   document.addEventListener("click", (e) => {
-    if (fab && !fab.contains(e.target)) {
-      fab.classList.remove("open");
-      fabMenu?.classList.remove("open");
+    if (fabContainer && !fabContainer.contains(e.target)) {
+      fabContainer.classList.remove("active");
     }
   });
 
   /* ========================= CANTIDAD ========================= */
   const qtyNumber = safe("qty-number");
+
   safe("qty-minus")?.addEventListener("click", () => {
     const n = parseInt(qtyNumber.textContent);
     if (n > 1) qtyNumber.textContent = n - 1;
@@ -153,17 +152,26 @@ document.addEventListener("DOMContentLoaded", () => {
 /* ========================= SIMILAR EVENTS ========================= */
 
 function bindSimilarCardEvents() {
-  document.querySelectorAll(".similar-card").forEach((card, idx) => {
+  const cards = document.querySelectorAll(".similar-card");
+  const productSection = document.querySelector(".product-main");
 
-    /* 🔑 evita salto vertical */
+  cards.forEach((card, idx) => {
+
+    /* 🔑 Evita salto vertical en móvil */
     card.addEventListener("mousedown", e => e.preventDefault());
 
     card.addEventListener("click", () => {
 
-      /* producto principal sin reflow */
+      /* =========================
+         MARCAR TARJETA
+      ========================= */
+      cards.forEach(c => c.classList.remove("active"));
+      card.classList.add("active");
+
+      /* =========================
+         ACTUALIZAR PRODUCTO PRINCIPAL
+      ========================= */
       const img = safe("product-image");
-      const h = img.offsetHeight;
-      img.style.height = h + "px";
 
       img.classList.remove("swap");
       void img.offsetWidth;
@@ -175,8 +183,17 @@ function bindSimilarCardEvents() {
       safe("product-add").dataset.id = card.dataset.id;
       safe("qty-number").textContent = "1";
 
-      setTimeout(() => img.style.height = "", 300);
+      /* =========================
+         SCROLL SUAVE AL PRODUCTO PRINCIPAL
+      ========================= */
+      productSection?.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
 
+      /* =========================
+         CARRUSEL HORIZONTAL
+      ========================= */
       setSimilarIndex(idx);
       updateSimilarUI();
     });
