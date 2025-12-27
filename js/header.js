@@ -8,20 +8,25 @@ if (!window.__HEADER_CORE_LOADED__) {
 
   const $ = (id) => document.getElementById(id);
 
-  /* =====================================================
-     CARRITO (LECTURA SOLAMENTE)
-  ===================================================== */
-  function updateCartCount() {
-    const badge = $("cart-count");
-    if (!badge) return;
+/* =====================================================
+   CARRITO (LECTURA SOLAMENTE)
+===================================================== */
+function updateCartCount() {
+  const badge = $("cart-count");
+  if (!badge) return;
 
-    try {
-      const cart = JSON.parse(localStorage.getItem("cafecortero_cart")) || [];
-      badge.textContent = cart.reduce((a, i) => a + i.qty, 0);
-    } catch {
-      badge.textContent = "0";
-    }
+  try {
+    const cart = JSON.parse(localStorage.getItem("cafecortero_cart")) || [];
+    badge.textContent = cart.reduce((a, i) => a + Number(i.qty || 0), 0);
+  } catch {
+    badge.textContent = "0";
   }
+}
+
+/* =====================================================
+   EXPORTAR PARA OTROS MÓDULOS (cart.js, recibo.js, etc.)
+===================================================== */
+window.updateHeaderCartCount = updateCartCount;
 
   /* =====================================================
      DRAWER
