@@ -8,25 +8,43 @@ if (!window.__HEADER_CORE_LOADED__) {
 
   const $ = (id) => document.getElementById(id);
 
-/* =====================================================
-   CARRITO (LECTURA SOLAMENTE)
-===================================================== */
-function updateCartCount() {
-  const badge = $("cart-count");
-  if (!badge) return;
+  /* =====================================================
+     CARRITO — BADGE (ICONO)
+  ===================================================== */
+  function updateCartCount() {
+    const badge = $("cart-count");
+    if (!badge) return;
 
-  try {
-    const cart = JSON.parse(localStorage.getItem("cafecortero_cart")) || [];
-    badge.textContent = cart.reduce((a, i) => a + Number(i.qty || 0), 0);
-  } catch {
-    badge.textContent = "0";
+    try {
+      const cart = JSON.parse(localStorage.getItem("cafecortero_cart")) || [];
+      const total = cart.reduce((a, i) => a + Number(i.qty || 0), 0);
+      badge.textContent = total;
+    } catch {
+      badge.textContent = "0";
+    }
   }
-}
 
-/* =====================================================
-   EXPORTAR PARA OTROS MÓDULOS (cart.js, recibo.js, etc.)
-===================================================== */
-window.updateHeaderCartCount = updateCartCount;
+  /* =====================================================
+     CARRITO — TÍTULO CENTRAL (0 cafés)
+  ===================================================== */
+  function updateHeaderCartTitle() {
+    const label = $("count-items");
+    if (!label) return;
+
+    try {
+      const cart = JSON.parse(localStorage.getItem("cafecortero_cart")) || [];
+      const total = cart.reduce((s, i) => s + Number(i.qty || 0), 0);
+      label.textContent = `${total} ${total === 1 ? "café" : "cafés"}`;
+    } catch {
+      label.textContent = "0 cafés";
+    }
+  }
+
+  /* =====================================================
+     EXPORTAR PARA OTROS MÓDULOS
+  ===================================================== */
+  window.updateHeaderCartCount = updateCartCount;
+  window.updateHeaderCartTitle = updateHeaderCartTitle;
 
   /* =====================================================
      DRAWER
@@ -50,8 +68,8 @@ window.updateHeaderCartCount = updateCartCount;
   }
 
   /* =====================================================
-     INIT HEADER (EVENTOS UI BASE)
-===================================================== */
+     INIT HEADER (UI BASE)
+  ===================================================== */
   let HEADER_INITIALIZED = false;
 
   function initHeader() {
@@ -60,72 +78,55 @@ window.updateHeaderCartCount = updateCartCount;
 
     console.log("✅ initHeader ejecutado (UI only)");
 
-    // Hamburguesa (móvil)
+    // Hamburguesa
     $("menu-toggle")?.addEventListener("click", toggleDrawer);
 
     // Scrim
     $("user-scrim")?.addEventListener("click", closeDrawer);
 
-    // Carrito
+    // Botón carrito
     $("cart-btn")?.addEventListener("click", () => {
       window.location.href = "carrito.html";
     });
 
+    // 🔑 SINCRONIZAR TODO
     updateCartCount();
+    updateHeaderCartTitle();
   }
 
   /* =====================================================
-     EVENTOS GLOBALES (AUTH + UI)
-===================================================== */
+     EVENTOS GLOBALES
+  ===================================================== */
   if (!window.__HEADER_GLOBAL_EVENTS__) {
     window.__HEADER_GLOBAL_EVENTS__ = true;
 
-    // CUANDO USUARIO SE LOGUEA
     document.addEventListener("userLoggedIn", () => {
-      console.log("👤 header.js detecta login");
-
       updateCartCount();
+      updateHeaderCartTitle();
       closeDrawer();
-
-      // 🔑 ENGANCHAR AVATAR CUANDO YA EXISTE
-      const avatarBtn = $("btn-header-user");
-      if (avatarBtn && !avatarBtn.dataset.bound) {
-        avatarBtn.addEventListener("click", toggleDrawer);
-        avatarBtn.dataset.bound = "1";
-      }
-
-      // Logout (una sola vez)
-      const logoutBtn = $("logout-btn");
-      if (logoutBtn && !logoutBtn.dataset.bound) {
-        logoutBtn.addEventListener("click", async () => {
-          if (typeof window.corteroLogout === "function") {
-            await window.corteroLogout(); // Supabase signOut real
-          }
-        });
-        logoutBtn.dataset.bound = "1";
-      }
     });
 
-    // CUANDO USUARIO CIERRA SESIÓN
     document.addEventListener("userLoggedOut", () => {
-      console.log("👤 header.js detecta logout");
       updateCartCount();
+      updateHeaderCartTitle();
       closeDrawer();
     });
 
-    // ESC
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") closeDrawer();
     });
   }
 
-/* =====================================================
-   EXPORT
-===================================================== */
-window.initHeader = initHeader;
+  /* =====================================================
+     EXPORT
+  ===================================================== */
+  window.initHeader = initHeader;
 
-/* 🔔 SINCRONIZAR CONTADOR CUANDO EL HEADER YA EXISTE */
-document.addEventListener("header:ready", () => {
-  updateCartCount();
-});
+  /* =====================================================
+     CUANDO EL HEADER YA EXISTE EN DOM
+  ===================================================== */
+  document.addEventListener("header:ready", () => {
+    updateCartCount();
+    updateHeaderCartTitle();
+  });
 }
