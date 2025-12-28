@@ -148,8 +148,8 @@ async function renderPedidos() {
       });
 
     /* -------- Total -------- */
-    clone.querySelector(".pedido-total").textContent =
-      `Total: L ${Number(pedido.total).toFixed(2)}`;
+   clone.querySelector(".pedido-total-valor").textContent =
+  `L ${Number(pedido.total).toFixed(2)}`;
 
     /* -------- Texto de estado -------- */
     clone.querySelector(".estado-text").textContent =
