@@ -94,18 +94,23 @@ function aplicarModoRecibo() {
    PROGRESO DEL PEDIDO
 ========================================================= */
 function aplicarProgresoPedido(status, paymentMethod) {
-  const steps = document.querySelectorAll("#pedido-progreso-recibo .step");
-  const lines = document.querySelectorAll("#pedido-progreso-recibo .line");
+  const container   = document.getElementById("pedido-progreso-recibo");
+  const steps       = container.querySelectorAll(".step");
+  const lines       = container.querySelectorAll(".line");
   const estadoTexto = document.getElementById("estadoPedidoTexto");
+  const estadoEl    = container.querySelector(".estado");
+  const iconEl      = container.querySelector(".estado-icon");
 
-  let map = {};
-  let labels = {};
+  if (!container) return;
 
-  /* =========================
-     DEPÓSITO BANCARIO
-  ========================= */
+  /* =================================================
+     MAPEO STATUS → ETAPA (MISMO QUE MIS PEDIDOS)
+  ================================================= */
+  let etapaMap = {};
+  let labelMap = {};
+
   if (paymentMethod === "bank_transfer") {
-    map = {
+    etapaMap = {
       pending_payment: 0,
       payment_review: 1,
       payment_confirmed: 2,
@@ -114,43 +119,81 @@ function aplicarProgresoPedido(status, paymentMethod) {
       delivered: 3
     };
 
-    labels = {
+    labelMap = {
       pending_payment: "Pendiente de pago",
       payment_review: "Pago en revisión",
       payment_confirmed: "Pago confirmado",
-      processing: "En preparación",
+      processing: "En ejecución",
+      shipped: "Enviado",
+      delivered: "Entregado"
+    };
+  } else {
+    etapaMap = {
+      cash_on_delivery: 0,
+      processing: 1,
+      shipped: 2,
+      delivered: 3
+    };
+
+    labelMap = {
+      cash_on_delivery: "Pago al recibir",
+      processing: "En ejecución",
       shipped: "Enviado",
       delivered: "Entregado"
     };
   }
 
-  /* =========================
-     PAGO EN EFECTIVO
-  ========================= */
-  else {
-    map = {
-  cash_on_delivery: 0,
-  processing: 1,
-  shipped: 2,
-  delivered: 3
-};
+  const etapa = etapaMap[status] ?? 0;
 
-labels = {
-  cash_on_delivery: "Pago al recibir",
-  processing: "En preparación",
-  shipped: "Enviado",
-  delivered: "Entregado"
-};
-  }
+  /* =================================================
+     BARRA DE PROGRESO (CLASES CORRECTAS)
+  ================================================= */
+  const clases = ["pago", "revision", "confirmado", "envio"];
 
-  const active = map[status] ?? 0;
+  steps.forEach((step, i) => {
+    step.classList.remove(...clases);
+    if (i <= etapa) step.classList.add(clases[i]);
+  });
 
-  steps.forEach((s, i) => s.classList.toggle("active", i <= active));
-  lines.forEach((l, i) => l.classList.toggle("active", i < active));
+  lines.forEach((line, i) => {
+    line.classList.remove(...clases);
+    if (i < etapa) line.classList.add(clases[i]);
+  });
 
+  /* =================================================
+     TEXTO DEL ESTADO
+  ================================================= */
   if (estadoTexto) {
-    estadoTexto.textContent = labels[status] || "Pendiente";
+    estadoTexto.textContent =
+      labelMap[status] || "Pendiente de pago";
   }
+
+  /* =================================================
+     ICONO MATERIAL 3 + COLOR
+  ================================================= */
+  const iconMap = {
+    pending_payment: "payments",
+    payment_review: "fact_check",
+    payment_confirmed: "verified",
+    cash_on_delivery: "payments",
+    processing: "autorenew",
+    shipped: "local_shipping",
+    delivered: "done_all"
+  };
+
+  estadoEl.classList.remove(...clases);
+
+  if (clases[etapa]) {
+    estadoEl.classList.add(clases[etapa]);
+  }
+
+  iconEl.textContent =
+    iconMap[status] || "payments";
+
+  /* =================================================
+     MOSTRAR SECCIÓN
+  ================================================= */
+  container.classList.remove("hidden");
 }
 
 /* =========================================================
