@@ -504,15 +504,15 @@ async function enviarPedido() {
       }))
     );
 
-   /* === 4. SUBIR COMPROBANTE === */
+/* === 4. SUBIR COMPROBANTE === */
 if (metodoPago.value === "bank_transfer") {
   const file = inputFile.files[0];
-
   if (!file) throw new Error("No hay archivo de comprobante");
 
   const ext = file.name.split(".").pop().toLowerCase();
   const path = `${user.id}/${order.id}.${ext}`;
 
+  /* === 4.1 SUBIR ARCHIVO === */
   const { error: uploadError } = await sb.storage
     .from(RECEIPT_BUCKET)
     .upload(path, file, {
@@ -522,19 +522,27 @@ if (metodoPago.value === "bank_transfer") {
 
   if (uploadError) throw uploadError;
 
+  /* === 4.2 URL PÚBLICA === */
   const { data: urlData } = sb.storage
     .from(RECEIPT_BUCKET)
     .getPublicUrl(path);
 
-  await sb.from("payment_receipts").insert({
-  order_id: order.id,
-  user_id: user.id,
-  file_url: urlData.publicUrl,
-  file_path: path,           // 🔑 CLAVE
-  review_status: "pending"
-});
-}
+  /* === 4.3 INSERT BD (🔑 FIX REAL) === */
+  const { error: receiptError } = await sb
+    .from("payment_receipts")
+    .insert({
+      order_id: order.id,
+      file_url: urlData.publicUrl,
+      file_path: path
+      // ❌ NO user_id
+      // ❌ NO review_status
+    });
 
+  if (receiptError) {
+    console.error("❌ Error insert payment_receipts:", receiptError);
+    throw receiptError;
+  }
+}
     /* === 5. LIMPIAR Y REDIRIGIR === */
     localStorage.setItem(CART_KEY, "[]");
     location.href = `recibo.html?id=${order.id}`;
