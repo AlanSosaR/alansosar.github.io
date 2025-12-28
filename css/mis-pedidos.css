@@ -111,7 +111,20 @@ body.page-mis-pedidos {
   font-weight: 700;
   color: var(--marron);
 }
+.pedido-items {
+  margin: 6px 0;
+  font-size: 0.95rem;
+}
 
+.pedido-label {
+  color: var(--verde);        /* verde marca */
+  font-weight: 600;
+}
+
+.pedido-count {
+  color: var(--marron);      /* café */
+  font-weight: 500;
+}
 /* =====================================================
    TARJETA INTERNA — PROGRESO
    (IGUAL A LA PRINCIPAL, MÁS COMPACTA)
