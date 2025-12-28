@@ -274,8 +274,24 @@ body.page-mis-pedidos {
   color: var(--verde);
 }
 
-.estado-icon {
-  font-size: 1.3rem;
+/* ☕ Pendiente de pago */
+.estado.pago .estado-icon {
+  color: #7a4a2e;
+}
+
+/* 🟡 Pago en revisión */
+.estado.revision .estado-icon {
+  color: #c28b00;
+}
+
+/* 🟢 Pago confirmado */
+.estado.confirmado .estado-icon {
+  color: var(--verde);
+}
+
+/* 🚚 Envío */
+.estado.envio .estado-icon {
+  color: #4a6f8a;
 }
 
 /* =====================================================
