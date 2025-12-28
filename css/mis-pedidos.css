@@ -157,7 +157,7 @@ body.page-mis-pedidos {
   border-radius: 22px;
 
   background: var(--blanco);
-  border: 1.8px solid var(--cafe-real); /* ☕ contorno café real */
+  border: 1.8px solid var(--marron); /* ☕ contorno café más marcado */
   box-shadow: 0 10px 26px rgba(0,0,0,0.08);
 }
 
