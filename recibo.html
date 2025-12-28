@@ -41,33 +41,35 @@
         <!-- ENCABEZADO TARJETA -->
 <h2>Pedido N.º <span id="numeroPedido"></span></h2>
 
-<p class="fecha">
-  <strong>Fecha:</strong> <span id="fechaPedido"></span><br>
-  <strong>Hora:</strong> <span id="horaPedido"></span>
-</p>
+<div class="pedido-fecha">
+  <p>
+    <span class="pedido-fecha-label">Fecha:</span>
+    <span class="pedido-fecha-valor" id="fechaPedido">—</span>
+  </p>
+  <p>
+    <span class="pedido-fecha-label">Hora:</span>
+    <span class="pedido-fecha-valor" id="horaPedido">—</span>
+  </p>
+</div>
         <!-- =========================
      PROGRESO DEL PEDIDO (SOLO LECTURA)
 ========================= -->
-<section id="pedido-progreso-recibo" class="pedido-progreso hidden">
+<section id="pedido-progreso-recibo" class="pedido-progreso">
 
-  <p class="progreso-title">Progreso del pedido</p>
+  <p class="progreso-title">Estado del pedido</p>
 
   <div class="progreso-wrapper">
 
     <div class="progreso-bar">
-      <!-- PAGO -->
       <span class="step pago"></span>
       <span class="line pago"></span>
 
-      <!-- REVISIÓN -->
       <span class="step revision"></span>
       <span class="line revision"></span>
 
-      <!-- CONFIRMADO -->
       <span class="step confirmado"></span>
       <span class="line confirmado"></span>
 
-      <!-- ENVÍO -->
       <span class="step envio"></span>
     </div>
 
@@ -80,9 +82,8 @@
 
   </div>
 
-  <!-- ESTADO ACTUAL -->
   <div class="estado">
-    <span class="material-symbols-outlined estado-icon">check_circle</span>
+    <span class="material-symbols-outlined estado-icon">payments</span>
     <span class="estado-text" id="estadoPedidoTexto">—</span>
   </div>
 
