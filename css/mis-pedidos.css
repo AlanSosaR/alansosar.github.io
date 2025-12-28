@@ -103,8 +103,19 @@ body.page-mis-pedidos {
 .pedido-fecha {
   margin: 6px 0 4px;
   font-size: 0.9rem;
-  color: var(--verde); /* ✅ verde corporativo */
   font-weight: 500;
+}
+
+/* Etiquetas: Fecha / Hora → ☕ café */
+.pedido-fecha-label {
+  color: var(--marron);
+  font-weight: 600;
+}
+
+/* Valores: fecha y hora → 🟢 verde */
+.pedido-fecha-valor {
+  color: var(--verde);
+  font-weight: 600;
 }
 
 .pedido-total {
