@@ -287,20 +287,26 @@ async function cargarPedidoExistente(orderId) {
   /* =========================
      DATOS GENERALES
   ========================= */
-  $id("numeroPedido").textContent = pedido.order_number;
-  $id("fechaPedido").textContent = new Date(pedido.created_at).toLocaleString("es-HN");
+$id("numeroPedido").textContent =
+  `Pedido N.º ${String(pedido.order_number).padStart(3, "0")}`;
 
-  if (pedido.users) {
-    $id("nombreCliente").textContent = pedido.users.name || "";
-    $id("correoCliente").textContent = pedido.users.email || "";
-    $id("telefonoCliente").textContent = pedido.users.phone || "";
-  }
+const fecha = new Date(pedido.created_at);
 
-  if (pedido.addresses) {
-    $id("zonaCliente").textContent = `${pedido.addresses.state}, ${pedido.addresses.city}`;
-    $id("direccionCliente").textContent = pedido.addresses.street || "";
-    $id("notaCliente").textContent = pedido.addresses.postal_code || "";
-  }
+/* Fecha */
+$id("fechaPedido").textContent =
+  fecha.toLocaleDateString("es-HN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric"
+  });
+
+/* Hora */
+$id("horaPedido").textContent =
+  fecha.toLocaleTimeString("es-HN", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true
+  });
 
   /* =========================
      PRODUCTOS
