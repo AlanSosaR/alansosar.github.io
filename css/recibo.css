@@ -145,19 +145,29 @@ body.header-checkout .recibo-container {
   margin-bottom: 6px;
 }
 
-.fecha {
-  text-align: center;
-  font-size: 0.95rem;
-  margin-bottom: 24px;
+/* ================= FECHA Y HORA — RECIBO ================= */
+
+.pedido-fecha {
+  margin: 12px 0 18px;
+  text-align: left;
+  line-height: 1.6;
 }
 
-.fecha strong {
+.pedido-fecha p {
+  margin: 4px 0;
+  font-size: 0.95rem;
+}
+
+/* Label → ☕ café */
+.pedido-fecha-label {
+  color: var(--marron);
   font-weight: 600;
 }
 
-.fecha span {
+/* Valor → 🟢 verde */
+.pedido-fecha-valor {
   color: var(--verde);
-  font-weight: 500;
+  font-weight: 600;
 }
 
 h3 {
