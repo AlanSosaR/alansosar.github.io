@@ -127,7 +127,7 @@ async function renderPedidos() {
     const clone = template.content.cloneNode(true);
 
     clone.querySelector(".pedido-numero").textContent =
-      `Pedido #${pedido.order_number}`;
+  `Pedido N.º ${String(pedido.order_number).padStart(3, "0")}`;
 
     const fecha = new Date(pedido.created_at);
 
