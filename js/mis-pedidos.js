@@ -3,25 +3,13 @@
    SOLO LÓGICA (SIN HEADER / SIN DRAWER)
 ============================================================ */
 
-console.log("📦 mis-pedidos.js — PROGRESO AVANZADO");
+console.log("📦 mis-pedidos.js — PROGRESO AVANZADO + ICONOS MATERIAL 3");
 
 /* -----------------------------------------------------------
    Helpers
 ----------------------------------------------------------- */
 function getSupabaseClient() {
   return window.supabaseClient || window.supabase || null;
-}
-
-function formatFecha(fechaISO) {
-  const d = new Date(fechaISO);
-  return d.toLocaleString("es-HN", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true
-  });
 }
 
 /* -----------------------------------------------------------
@@ -54,6 +42,19 @@ function formatStatusLabel(status) {
   };
   return map[status] || "Pendiente de pago";
 }
+
+/* -----------------------------------------------------------
+   ICONOS MATERIAL 3 POR ESTADO (DEFINITIVO)
+----------------------------------------------------------- */
+const statusIconMap = {
+  payment_review: "fact_check",
+  payment_confirmed: "verified",
+  cash_on_delivery: "payments",
+  processing: "autorenew",
+  shipped: "local_shipping",
+  delivered: "done_all",
+  default: "payments"
+};
 
 /* -----------------------------------------------------------
    APLICAR COLORES AL PROGRESO
@@ -126,33 +127,51 @@ async function renderPedidos() {
   pedidos.forEach(pedido => {
     const clone = template.content.cloneNode(true);
 
+    /* -------- Número de pedido -------- */
     clone.querySelector(".pedido-numero").textContent =
-  `Pedido N.º ${String(pedido.order_number).padStart(3, "0")}`;
+      `Pedido N.º ${String(pedido.order_number).padStart(3, "0")}`;
 
+    /* -------- Fecha y hora -------- */
     const fecha = new Date(pedido.created_at);
 
-clone.querySelector("#fechaPedido").textContent =
-  fecha.toLocaleDateString("es-HN", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric"
-  });
+    clone.querySelector("#fechaPedido").textContent =
+      fecha.toLocaleDateString("es-HN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric"
+      });
 
-clone.querySelector("#horaPedido").textContent =
-  fecha.toLocaleTimeString("es-HN", {
-    hour: "2-digit",
-    minute: "2-digit"
-  });
+    clone.querySelector("#horaPedido").textContent =
+      fecha.toLocaleTimeString("es-HN", {
+        hour: "2-digit",
+        minute: "2-digit"
+      });
 
+    /* -------- Total -------- */
     clone.querySelector(".pedido-total").textContent =
       `Total: L ${Number(pedido.total).toFixed(2)}`;
 
+    /* -------- Texto de estado -------- */
     clone.querySelector(".estado-text").textContent =
       formatStatusLabel(pedido.status);
 
     /* -------- Progreso visual -------- */
     const etapa = mapStatusToProgress(pedido.status);
     applyProgressColors(clone, etapa);
+
+    /* -------- Icono + color según estado -------- */
+    const estadoEl = clone.querySelector(".estado");
+    const iconEl   = clone.querySelector(".estado-icon");
+
+    estadoEl.classList.remove("pago", "revision", "confirmado", "envio");
+
+    const etapaClases = ["pago", "revision", "confirmado", "envio"];
+    const etapaClase  = etapaClases[etapa];
+
+    if (etapaClase) estadoEl.classList.add(etapaClase);
+
+    iconEl.textContent =
+      statusIconMap[pedido.status] || statusIconMap.default;
 
     /* -------- Ver recibo -------- */
     clone.querySelector(".ver-recibo").addEventListener("click", () => {
