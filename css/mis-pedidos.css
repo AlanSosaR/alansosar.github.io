@@ -127,14 +127,16 @@ body.page-mis-pedidos {
   font-size: 0.95rem;
 }
 
+/* “Tu pedido” → ☕ café */
 .pedido-label {
-  color: var(--verde);        /* verde marca */
+  color: var(--marron);
   font-weight: 600;
 }
 
+/* “(3 cafés)” → 🟢 verde */
 .pedido-count {
-  color: var(--marron);      /* café */
-  font-weight: 500;
+  color: var(--verde);
+  font-weight: 600;
 }
 /* =====================================================
    TARJETA INTERNA — PROGRESO
