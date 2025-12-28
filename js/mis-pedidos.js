@@ -129,8 +129,20 @@ async function renderPedidos() {
     clone.querySelector(".pedido-numero").textContent =
       `Pedido #${pedido.order_number}`;
 
-    clone.querySelector(".pedido-fecha").textContent =
-      formatFecha(pedido.created_at);
+    const fecha = new Date(pedido.created_at);
+
+clone.querySelector("#fechaPedido").textContent =
+  fecha.toLocaleDateString("es-HN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric"
+  });
+
+clone.querySelector("#horaPedido").textContent =
+  fecha.toLocaleTimeString("es-HN", {
+    hour: "2-digit",
+    minute: "2-digit"
+  });
 
     clone.querySelector(".pedido-total").textContent =
       `Total: L ${Number(pedido.total).toFixed(2)}`;
