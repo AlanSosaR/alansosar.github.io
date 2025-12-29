@@ -328,6 +328,30 @@ async function cargarPedidoExistente(orderId) {
 }
 
 /* =========================================================
+   CARRITO (CHECKOUT)
+========================================================= */
+const lista = $id("listaProductos");
+const carrito = JSON.parse(localStorage.getItem(CART_KEY)) || [];
+let total = 0;
+
+if (!IS_READ_ONLY && lista) {
+  lista.innerHTML = "";
+  carrito.forEach(it => {
+    total += it.qty * it.price;
+    lista.innerHTML += `
+      <div class="cafe-item">
+        <span>${it.name} (${it.qty})</span>
+        <span>L ${(it.qty * it.price).toFixed(2)}</span>
+      </div>`;
+  });
+
+  const totalEl = $id("totalPedido");
+  if (totalEl) {
+    totalEl.textContent = total.toFixed(2);
+  }
+}
+
+/* =========================================================
    MÉTODO DE PAGO — UI CONTROL (COMPLETO Y CORRECTO)
 ========================================================= */
 function resetMetodoPago() {
