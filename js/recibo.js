@@ -426,7 +426,7 @@ if (inputFile) {
 }
 
 /* =========================================================
-   BOTÓN ATRÁS — FIX DEFINITIVO
+   BOTÓN ATRÁS — FIX DEFINITIVO (RUTAS REALES)
 ========================================================= */
 document.addEventListener("DOMContentLoaded", () => {
   const btnBack = document.getElementById("btn-back");
@@ -440,8 +440,8 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault();
 
     location.href = IS_READ_ONLY
-      ? "mispedidos.html"
-      : "detalles-cliente.html";
+      ? "mis-pedidos.html"
+      : "datos_cliente.html";
   });
 });
 
