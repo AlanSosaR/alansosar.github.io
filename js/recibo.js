@@ -352,7 +352,7 @@ if (!IS_READ_ONLY && lista) {
 }
 
 /* =========================================================
-   MÉTODO DE PAGO — UI CONTROL (COMPLETO Y CORRECTO)
+   MÉTODO DE PAGO — UI CONTROL (FINAL LIMPIO)
 ========================================================= */
 function resetMetodoPago() {
   bloqueDeposito?.classList.add("hidden");
@@ -377,21 +377,16 @@ if (metodoPago && !IS_READ_ONLY) {
     ========================= */
     if (metodoPago.value === "bank_transfer") {
       bloqueDeposito?.classList.remove("hidden");
-      // btnEnviar se habilita SOLO cuando se suba imagen
+      // botón se habilita solo al subir imagen
     }
 
     /* =========================
        EFECTIVO (NUEVO)
     ========================= */
-    if (metodoPago.value === "cash") {
-      bloqueEfectivo?.classList.remove("hidden");
-      btnEnviar.disabled = false;
-    }
-
-    /* =========================
-       EFECTIVO (LEGACY)
-    ========================= */
-    if (metodoPago.value === "cash_on_delivery") {
+    if (
+      metodoPago.value === "cash" ||
+      metodoPago.value === "cash_on_delivery"
+    ) {
       bloqueEfectivo?.classList.remove("hidden");
       btnEnviar.disabled = false;
     }
@@ -403,11 +398,11 @@ if (metodoPago && !IS_READ_ONLY) {
 ========================================================= */
 btnSubirComprobante?.addEventListener("click", (e) => {
   e.preventDefault();
-  inputFile?.click(); // 🔑 abre galería / archivos
+  inputFile?.click();
 });
 
 /* =========================================================
-   PREVIEW COMPROBANTE + HABILITAR ENVIAR
+   PREVIEW COMPROBANTE + HABILITAR ENVIAR (ÚNICO)
 ========================================================= */
 inputFile?.addEventListener("change", () => {
   if (!inputFile.files.length) {
@@ -417,7 +412,7 @@ inputFile?.addEventListener("change", () => {
 
   const file = inputFile.files[0];
 
-  // Validar que sea imagen
+  // Validar imagen
   if (!file.type.startsWith("image/")) {
     showSnack("Solo se permiten imágenes");
     inputFile.value = "";
@@ -430,25 +425,17 @@ inputFile?.addEventListener("change", () => {
   imgPreview.style.display = "block";
   previewBox?.classList.remove("hidden");
 
-  // Habilitar enviar pedido
+  // Habilitar envío
   btnEnviar.disabled = false;
 });
 
 /* =========================================================
-   PREVIEW COMPROBANTE
+   BOTÓN ENVIAR PEDIDO — FIX DEFINITIVO
 ========================================================= */
-if (inputFile) {
-  inputFile.addEventListener("change", () => {
-    const file = inputFile.files[0];
-    if (!file) return;
-
-    const url = URL.createObjectURL(file);
-    imgPreview.src = url;
-    imgPreview.style.display = "block";
-    previewBox.classList.remove("hidden");
-  });
-}
-
+btnEnviar?.addEventListener("click", (e) => {
+  e.preventDefault();
+  enviarPedido();
+});
 /* =========================================================
    BOTÓN ATRÁS — FIX DEFINITIVO (RUTAS REALES)
 ========================================================= */
