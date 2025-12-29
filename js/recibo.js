@@ -258,7 +258,7 @@ async function cargarDatosCliente() {
 }
 
 /* =========================================================
-   CARGAR PEDIDO EXISTENTE (MIS PEDIDOS)
+   CARGAR PEDIDO EXISTENTE (MIS PEDIDOS / RECIBO)
 ========================================================= */
 async function cargarPedidoExistente(orderId) {
   const sb = window.supabaseClient;
@@ -287,26 +287,48 @@ async function cargarPedidoExistente(orderId) {
   /* =========================
      DATOS GENERALES
   ========================= */
-$id("numeroPedido").textContent =
-  `Pedido N.º ${String(pedido.order_number).padStart(3, "0")}`;
 
-const fecha = new Date(pedido.created_at);
+  // 🔑 SOLO EL NÚMERO (el texto ya está en HTML)
+  $id("numeroPedido").textContent =
+    String(pedido.order_number).padStart(3, "0");
 
-/* Fecha */
-$id("fechaPedido").textContent =
-  fecha.toLocaleDateString("es-HN", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric"
-  });
+  const fecha = new Date(pedido.created_at);
 
-/* Hora */
-$id("horaPedido").textContent =
-  fecha.toLocaleTimeString("es-HN", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true
-  });
+  // Fecha
+  $id("fechaPedido").textContent =
+    fecha.toLocaleDateString("es-HN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric"
+    });
+
+  // Hora
+  $id("horaPedido").textContent =
+    fecha.toLocaleTimeString("es-HN", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true
+    });
+
+  /* =========================
+     DATOS DEL CLIENTE
+  ========================= */
+  if (pedido.users) {
+    $id("nombreCliente").textContent   = pedido.users.name  || "—";
+    $id("correoCliente").textContent   = pedido.users.email || "—";
+    $id("telefonoCliente").textContent = pedido.users.phone || "—";
+  }
+
+  if (pedido.addresses) {
+    $id("zonaCliente").textContent =
+      `${pedido.addresses.state}, ${pedido.addresses.city}`;
+
+    $id("direccionCliente").textContent =
+      pedido.addresses.street || "—";
+
+    $id("notaCliente").textContent =
+      pedido.addresses.postal_code || "—";
+  }
 
   /* =========================
      PRODUCTOS
@@ -314,21 +336,24 @@ $id("horaPedido").textContent =
   const lista = $id("listaProductos");
   lista.innerHTML = "";
 
-  pedido.order_items.forEach(i => {
+  pedido.order_items.forEach(item => {
     lista.innerHTML += `
       <div class="cafe-item">
-        <span>${i.products.name} (${i.quantity})</span>
-        <span>L ${(i.quantity * i.price).toFixed(2)}</span>
+        <span>${item.products.name} (${item.quantity})</span>
+        <span>L ${(item.quantity * item.price).toFixed(2)}</span>
       </div>
     `;
   });
 
-  $id("totalPedido").textContent = pedido.total.toFixed(2);
+  // Total
+  $id("totalPedido").textContent =
+    pedido.total.toFixed(2);
 
   /* =========================
-     PROGRESO
+     PROGRESO DEL PEDIDO
   ========================= */
   aplicarProgresoPedido(pedido.status, pedido.payment_method);
+}
 
   /* =========================
      UI SOLO LECTURA
