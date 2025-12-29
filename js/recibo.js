@@ -190,11 +190,22 @@ async function setNumeroPedidoProvisional() {
   const next = (data?.[0]?.order_number || 0) + 1;
 
   $id("numeroPedido").textContent = next;
-  $id("fechaPedido").textContent = new Date().toLocaleString("es-HN", {
-    dateStyle: "short",
-    timeStyle: "short",
-    hour12: true
+
+  // 👉 FORMATO SOLO PARA CHECKOUT
+  $id("fechaPedido").textContent = new Date().toLocaleDateString("es-ES", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric"
   });
+
+  const horaEl = $id("horaPedido");
+  if (horaEl) {
+    horaEl.textContent = new Date().toLocaleTimeString("es-ES", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true
+    });
+  }
 }
 
 /* =========================================================
@@ -317,32 +328,87 @@ async function cargarPedidoExistente(orderId) {
 }
 
 /* =========================================================
-   MÉTODO DE PAGO — UI CONTROL
+   MÉTODO DE PAGO — UI CONTROL (COMPLETO Y CORRECTO)
 ========================================================= */
 function resetMetodoPago() {
   bloqueDeposito?.classList.add("hidden");
   bloqueEfectivo?.classList.add("hidden");
 
+  previewBox?.classList.add("hidden");
+  imgPreview.src = "";
+
   btnSubirComprobante?.classList.remove("hidden");
   inputFile?.classList.remove("hidden");
 
-  previewBox?.classList.add("hidden");
-  imgPreview.src = "";
+  if (btnEnviar) btnEnviar.disabled = true;
+  if (inputFile) inputFile.value = "";
 }
 
 if (metodoPago && !IS_READ_ONLY) {
   metodoPago.addEventListener("change", () => {
     resetMetodoPago();
 
+    /* =========================
+       DEPÓSITO BANCARIO
+    ========================= */
     if (metodoPago.value === "bank_transfer") {
       bloqueDeposito?.classList.remove("hidden");
+      // btnEnviar se habilita SOLO cuando se suba imagen
     }
 
+    /* =========================
+       EFECTIVO (NUEVO)
+    ========================= */
+    if (metodoPago.value === "cash") {
+      bloqueEfectivo?.classList.remove("hidden");
+      btnEnviar.disabled = false;
+    }
+
+    /* =========================
+       EFECTIVO (LEGACY)
+    ========================= */
     if (metodoPago.value === "cash_on_delivery") {
       bloqueEfectivo?.classList.remove("hidden");
+      btnEnviar.disabled = false;
     }
   });
 }
+
+/* =========================================================
+   BOTÓN SUBIR COMPROBANTE — FIX MÓVIL
+========================================================= */
+btnSubirComprobante?.addEventListener("click", (e) => {
+  e.preventDefault();
+  inputFile?.click(); // 🔑 abre galería / archivos
+});
+
+/* =========================================================
+   PREVIEW COMPROBANTE + HABILITAR ENVIAR
+========================================================= */
+inputFile?.addEventListener("change", () => {
+  if (!inputFile.files.length) {
+    btnEnviar.disabled = true;
+    return;
+  }
+
+  const file = inputFile.files[0];
+
+  // Validar que sea imagen
+  if (!file.type.startsWith("image/")) {
+    showSnack("Solo se permiten imágenes");
+    inputFile.value = "";
+    btnEnviar.disabled = true;
+    return;
+  }
+
+  // Mostrar preview
+  imgPreview.src = URL.createObjectURL(file);
+  imgPreview.style.display = "block";
+  previewBox?.classList.remove("hidden");
+
+  // Habilitar enviar pedido
+  btnEnviar.disabled = false;
+});
 
 /* =========================================================
    PREVIEW COMPROBANTE
