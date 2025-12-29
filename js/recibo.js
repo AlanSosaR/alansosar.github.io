@@ -204,7 +204,7 @@ function aplicarProgresoPedido(status, paymentMethod) {
 ========================================================= */
 async function setNumeroPedidoProvisional() {
   const sb = window.supabaseClient;
-  const user = getUserCache();
+  const user = await getUserSession(); // 🔑 NO getUserCache
   if (!user) return;
 
   const { data } = await sb
@@ -216,9 +216,20 @@ async function setNumeroPedidoProvisional() {
 
   const next = (data?.[0]?.order_number || 0) + 1;
   $id("numeroPedido").textContent = next;
-  $id("fechaPedido").textContent = new Date().toLocaleString("es-HN", {
-    dateStyle: "short",
-    timeStyle: "short",
+
+  const now = new Date();
+
+  // 📅 FECHA (solo fecha)
+  $id("fechaPedido").textContent = now.toLocaleDateString("es-HN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric"
+  });
+
+  // ⏰ HORA (solo hora)
+  $id("horaPedido").textContent = now.toLocaleTimeString("es-HN", {
+    hour: "2-digit",
+    minute: "2-digit",
     hour12: true
   });
 }
