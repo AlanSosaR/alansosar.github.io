@@ -321,33 +321,39 @@ h3 {
   font-weight: 600;
 }
 
-/* Colores por estado */
-.estado.pago,
-.estado.pago .estado-icon {
-  color: #7a4a2e;
-}
-
-.estado.revision,
-.estado.revision .estado-icon {
-  color: #c28b00;
-}
-
-.estado.confirmado,
-.estado.confirmado .estado-icon {
+/* TEXTO — SIEMPRE VERDE */
+.estado-text {
+  font-size: 0.95rem;
   color: var(--verde);
 }
 
-.estado.envio,
-.estado.envio .estado-icon {
-  color: #4a6f8a;
-}
-
+/* ICONO BASE */
 .estado-icon {
   font-size: 1.25rem;
 }
 
-.estado-text {
-  font-size: 0.95rem;
+/* =========================
+   COLORES SOLO PARA ICONO
+========================= */
+
+/* Pago */
+.estado.pago .estado-icon {
+  color: #7a4a2e;
+}
+
+/* Revisión */
+.estado.revision .estado-icon {
+  color: #c28b00;
+}
+
+/* Confirmado */
+.estado.confirmado .estado-icon {
+  color: var(--verde);
+}
+
+/* Envío */
+.estado.envio .estado-icon {
+  color: #4a6f8a;
 }
 
 /* =====================================================
