@@ -12,7 +12,7 @@ const RECEIPT_BUCKET = "payment-receipts";
 const $id = (id) => document.getElementById(id);
 
 /* =========================================================
-   MÉTODO DE PAGO (CHECKOUT)
+   ELEMENTOS UI
 ========================================================= */
 const metodoPago = $id("metodoPago");
 const bloqueDeposito = $id("pago-deposito");
@@ -31,6 +31,7 @@ const btnSubirComprobante = $id("btnSubirComprobante");
 function getOrderIdFromURL() {
   return new URLSearchParams(window.location.search).get("id");
 }
+
 const ORDER_ID = getOrderIdFromURL();
 const IS_READ_ONLY = Boolean(ORDER_ID);
 
@@ -166,8 +167,8 @@ function aplicarProgresoPedido(status, paymentMethod) {
     shipped: "local_shipping",
     delivered: "done_all"
   };
-  iconEl.textContent = iconMap[status] || "payments";
 
+  iconEl.textContent = iconMap[status] || "payments";
   container.classList.remove("hidden");
 }
 
@@ -187,6 +188,7 @@ async function setNumeroPedidoProvisional() {
     .limit(1);
 
   const next = (data?.[0]?.order_number || 0) + 1;
+
   $id("numeroPedido").textContent = next;
   $id("fechaPedido").textContent = new Date().toLocaleString("es-HN", {
     dateStyle: "short",
@@ -284,6 +286,7 @@ async function cargarPedidoExistente(orderId) {
 
   const lista = $id("listaProductos");
   lista.innerHTML = "";
+
   pedido.order_items.forEach(i => {
     lista.innerHTML += `
       <div class="cafe-item">
@@ -314,10 +317,67 @@ async function cargarPedidoExistente(orderId) {
 }
 
 /* =========================================================
+   MÉTODO DE PAGO — UI CONTROL
+========================================================= */
+function resetMetodoPago() {
+  bloqueDeposito?.classList.add("hidden");
+  bloqueEfectivo?.classList.add("hidden");
+
+  btnSubirComprobante?.classList.remove("hidden");
+  inputFile?.classList.remove("hidden");
+
+  previewBox?.classList.add("hidden");
+  imgPreview.src = "";
+}
+
+if (metodoPago && !IS_READ_ONLY) {
+  metodoPago.addEventListener("change", () => {
+    resetMetodoPago();
+
+    if (metodoPago.value === "bank_transfer") {
+      bloqueDeposito?.classList.remove("hidden");
+    }
+
+    if (metodoPago.value === "cash_on_delivery") {
+      bloqueEfectivo?.classList.remove("hidden");
+    }
+  });
+}
+
+/* =========================================================
+   PREVIEW COMPROBANTE
+========================================================= */
+if (inputFile) {
+  inputFile.addEventListener("change", () => {
+    const file = inputFile.files[0];
+    if (!file) return;
+
+    const url = URL.createObjectURL(file);
+    imgPreview.src = url;
+    imgPreview.style.display = "block";
+    previewBox.classList.remove("hidden");
+  });
+}
+
+/* =========================================================
+   BOTÓN ATRÁS — CONTEXTO INTELIGENTE
+========================================================= */
+const btnBack = $id("btnBack");
+
+if (btnBack) {
+  btnBack.addEventListener("click", () => {
+    location.href = IS_READ_ONLY
+      ? "mispedidos.html"
+      : "detalles-cliente.html";
+  });
+}
+
+/* =========================================================
    INIT
 ========================================================= */
 (async function init() {
   await esperarSupabase();
+
   const user = getUserCache();
   if (!user) return location.href = "login.html";
 
