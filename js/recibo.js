@@ -426,17 +426,24 @@ if (inputFile) {
 }
 
 /* =========================================================
-   BOTÓN ATRÁS — CONTEXTO INTELIGENTE
+   BOTÓN ATRÁS — FIX DEFINITIVO
 ========================================================= */
-const btnBack = $id("btnBack");
+document.addEventListener("DOMContentLoaded", () => {
+  const btnBack = document.getElementById("btn-back");
 
-if (btnBack) {
-  btnBack.addEventListener("click", () => {
+  if (!btnBack) {
+    console.warn("⚠️ Botón atrás no encontrado");
+    return;
+  }
+
+  btnBack.addEventListener("click", (e) => {
+    e.preventDefault();
+
     location.href = IS_READ_ONLY
       ? "mispedidos.html"
       : "detalles-cliente.html";
   });
-}
+});
 
 /* =========================================================
    INIT
