@@ -428,7 +428,115 @@ inputFile?.addEventListener("change", () => {
   // Habilitar envío
   btnEnviar.disabled = false;
 });
+/* =========================================================
+   ENVIAR PEDIDO — FUNCIÓN DEFINITIVA
+========================================================= */
+async function enviarPedido() {
+  console.log("🚀 enviarPedido() ejecutado");
 
+  const sb = window.supabaseClient;
+  const user = getUserCache();
+
+  if (!user || !selectedAddressId) {
+    showSnack("Faltan datos del cliente");
+    return;
+  }
+
+  // Validar comprobante si es depósito
+  if (
+    metodoPago.value === "bank_transfer" &&
+    !inputFile.files.length
+  ) {
+    showSnack("Debes subir el comprobante de pago");
+    return;
+  }
+
+  btnEnviar.disabled = true;
+  loader?.classList.remove("hidden");
+
+  try {
+    /* === 1. ÚLTIMO NÚMERO DE PEDIDO === */
+    const { data: last, error: lastError } = await sb
+      .from("orders")
+      .select("order_number")
+      .eq("user_id", user.id)
+      .order("order_number", { ascending: false })
+      .limit(1);
+
+    if (lastError) throw lastError;
+
+    const nextOrderNumber =
+      (Number(last?.[0]?.order_number) || 0) + 1;
+
+    /* === 2. CREAR PEDIDO === */
+    const { data: order, error: insertError } = await sb
+      .from("orders")
+      .insert({
+        user_id: user.id,
+        address_id: selectedAddressId,
+        order_number: nextOrderNumber,
+        total,
+        payment_method: metodoPago.value,
+        status:
+          metodoPago.value === "bank_transfer"
+            ? "payment_review"
+            : "cash_on_delivery"
+      })
+      .select("id")
+      .single();
+
+    if (insertError) throw insertError;
+
+    /* === 3. ITEMS === */
+    await sb.from("order_items").insert(
+      carrito.map(it => ({
+        order_id: order.id,
+        product_id: it.product_id,
+        quantity: it.qty,
+        price: it.price
+      }))
+    );
+
+    /* === 4. COMPROBANTE === */
+    if (metodoPago.value === "bank_transfer") {
+      const file = inputFile.files[0];
+      const ext = file.name.split(".").pop().toLowerCase();
+      const path = `${user.id}/${order.id}.${ext}`;
+
+      const { error: uploadError } = await sb.storage
+        .from(RECEIPT_BUCKET)
+        .upload(path, file, {
+          upsert: true,
+          contentType: file.type
+        });
+
+      if (uploadError) throw uploadError;
+
+      const { data: urlData } = sb.storage
+        .from(RECEIPT_BUCKET)
+        .getPublicUrl(path);
+
+      await sb.from("payment_receipts").insert({
+        order_id: order.id,
+        user_id: user.id,
+        file_url: urlData.publicUrl,
+        file_path: path,
+        review_status: "pending"
+      });
+    }
+
+    /* === 5. LIMPIAR Y REDIRIGIR === */
+    localStorage.setItem(CART_KEY, "[]");
+    location.href = `recibo.html?id=${order.id}`;
+
+  } catch (err) {
+    console.error("❌ Error al enviar pedido:", err);
+    showSnack("Error al enviar el pedido");
+    btnEnviar.disabled = false;
+  } finally {
+    loader?.classList.add("hidden");
+  }
+}
 /* =========================================================
    BOTÓN ENVIAR PEDIDO — FIX DEFINITIVO
 ========================================================= */
