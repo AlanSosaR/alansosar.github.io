@@ -274,7 +274,7 @@ async function cargarPedidoExistente(orderId) {
       users(name,email,phone),
       addresses(state,city,street,postal_code),
       order_items(quantity,price,products(name)),
-      payment_receipts(file_url)
+      payment_receipts(file_url,created_at)
     `)
     .eq("id", orderId)
     .single();
@@ -287,14 +287,11 @@ async function cargarPedidoExistente(orderId) {
   /* =========================
      DATOS GENERALES
   ========================= */
-
-  // 🔑 SOLO EL NÚMERO (el texto ya está en HTML)
   $id("numeroPedido").textContent =
     String(pedido.order_number).padStart(3, "0");
 
   const fecha = new Date(pedido.created_at);
 
-  // Fecha
   $id("fechaPedido").textContent =
     fecha.toLocaleDateString("es-HN", {
       day: "2-digit",
@@ -302,7 +299,6 @@ async function cargarPedidoExistente(orderId) {
       year: "numeric"
     });
 
-  // Hora
   $id("horaPedido").textContent =
     fecha.toLocaleTimeString("es-HN", {
       hour: "2-digit",
@@ -345,7 +341,6 @@ async function cargarPedidoExistente(orderId) {
     `;
   });
 
-  // Total
   $id("totalPedido").textContent =
     pedido.total.toFixed(2);
 
@@ -353,77 +348,55 @@ async function cargarPedidoExistente(orderId) {
      PROGRESO DEL PEDIDO
   ========================= */
   aplicarProgresoPedido(pedido.status, pedido.payment_method);
-}
 
   /* =========================
-     UI SOLO LECTURA
+     UI — SOLO LECTURA
   ========================= */
   document.querySelector(".pago-select-label")?.classList.add("hidden");
   document.querySelector(".recibo-botones")?.classList.add("hidden");
-
   btnSubirComprobante?.classList.add("hidden");
   inputFile?.classList.add("hidden");
 
   /* =========================
-     PAGO EN EFECTIVO
+     MÉTODO DE PAGO
   ========================= */
   if (pedido.payment_method === "cash") {
     bloqueEfectivo?.classList.remove("hidden");
   }
 
-/* =========================
-   DEPÓSITO BANCARIO
-========================= */
-if (pedido.payment_method === "bank_transfer") {
-  bloqueDeposito?.classList.remove("hidden");
+  if (pedido.payment_method === "bank_transfer") {
+    bloqueDeposito?.classList.remove("hidden");
 
-  // 🔑 FIX CLAVE — forzar layout visible (ANDROID / CHROME)
-  bloqueDeposito.style.display = "flex";
-  bloqueDeposito.style.flexDirection = "column";
+    bloqueDeposito.style.display = "flex";
+    bloqueDeposito.style.flexDirection = "column";
 
-  // 🔕 ocultar instrucciones
-  bloqueDeposito
-    ?.querySelector(".pago-instrucciones")
-    ?.classList.add("hidden");
+    bloqueDeposito
+      ?.querySelector(".pago-instrucciones")
+      ?.classList.add("hidden");
 
-  /* =========================
-     COMPROBANTE DESDE BD
-     FIX DEFINITIVO
-  ========================= */
-  if (
-    pedido.payment_receipts &&
-    pedido.payment_receipts.length > 0
-  ) {
-    // 🔑 tomar el comprobante MÁS RECIENTE
-    const receipt = pedido.payment_receipts
-      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
+    /* =========================
+       COMPROBANTE DESDE BD
+    ========================= */
+    if (pedido.payment_receipts?.length) {
+      const receipt = pedido.payment_receipts
+        .sort(
+          (a, b) =>
+            new Date(b.created_at) - new Date(a.created_at)
+        )[0];
 
-    // asegurar que el preview esté dentro del bloque visible
-    bloqueDeposito.appendChild(previewBox);
+      bloqueDeposito.appendChild(previewBox);
+      previewBox.classList.remove("hidden");
 
-    // 🔓 forzar visibilidad REAL
-    previewBox.classList.remove("hidden");
-    previewBox.style.display = "block";
-    previewBox.style.visibility = "visible";
-    previewBox.style.position = "relative";
-    previewBox.style.overflow = "visible";
+      imgPreview.src = receipt.file_url;
+      imgPreview.alt = "Comprobante de pago";
+      imgPreview.style.display = "block";
 
-    imgPreview.style.display = "block";
-    imgPreview.style.visibility = "visible";
-    imgPreview.style.width = "100%";
-    imgPreview.style.height = "auto";
-    imgPreview.style.objectFit = "contain";
-
-    imgPreview.onerror = () => {
-      console.error("❌ No se pudo cargar el comprobante");
-    };
-
-    // 🔑 asignar src DEL COMPROBANTE CORRECTO
-    imgPreview.src = receipt.file_url;
-
-    console.log("🧾 comprobante mostrado correctamente:", receipt.file_url);
+      console.log(
+        "🧾 comprobante mostrado correctamente:",
+        receipt.file_url
+      );
+    }
   }
-}
 }
 /* =========================================================
    CARRITO (CHECKOUT)
