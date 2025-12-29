@@ -62,13 +62,16 @@ function esperarSupabase() {
 /* =========================================================
    USUARIO CACHE
 ========================================================= */
-function getUserCache() {
-  try {
-    if (localStorage.getItem("cortero_logged") !== "1") return null;
-    return JSON.parse(localStorage.getItem("cortero_user"));
-  } catch {
+async function getUserSession() {
+  const sb = window.supabaseClient;
+  const { data, error } = await sb.auth.getSession();
+
+  if (error) {
+    console.error("❌ Error sesión:", error);
     return null;
   }
+
+  return data?.session?.user || null;
 }
 
 /* =========================================================
