@@ -68,46 +68,37 @@ async function cargarPerfilGlobal(user) {
   );
 }
 
-// ------------------------------------------------------------
-// 6) Logout real y definitivo
-// ------------------------------------------------------------
+// ============================================================
+// 6 + 7) LOGOUT + AUTH STATE — FINAL
+// ============================================================
+
+// 6) Logout: solo signOut
 async function logoutTotal() {
   console.log("🚪 Logout total");
-
   await window.supabaseClient.auth.signOut();
-
-  localStorage.removeItem("cortero_user");
-  localStorage.removeItem("cortero_logged");
-
-  document.dispatchEvent(new CustomEvent("userLoggedOut"));
-
-  // 🔁 Redirección global segura
-  if (!location.pathname.endsWith("index.html")) {
-    window.location.href = "/index.html";
-  }
 }
-
 window.corteroLogout = logoutTotal;
 
-// ------------------------------------------------------------
-// 7) AUTH STATE — ÚNICA FUENTE DE VERDAD
-// ------------------------------------------------------------
+// 7) Auth state: fuente única de verdad
 window.supabaseClient.auth.onAuthStateChange((event, session) => {
   console.log("🔐 Auth event:", event);
 
-  // Sesión activa (login o restauración válida)
   if (
     (event === "INITIAL_SESSION" || event === "SIGNED_IN") &&
     session?.user
   ) {
     cargarPerfilGlobal(session.user);
+    return;
   }
 
-  // Logout real
   if (event === "SIGNED_OUT") {
     localStorage.removeItem("cortero_user");
     localStorage.removeItem("cortero_logged");
     document.dispatchEvent(new CustomEvent("userLoggedOut"));
+
+    if (!location.pathname.endsWith("index.html")) {
+      window.location.href = "/index.html";
+    }
   }
 });
 
