@@ -147,17 +147,20 @@ async function renderPedidos() {
         minute: "2-digit"
       });
 
-     /* -------- Total de cafés -------- */
+   /* -------- Total de cafés -------- */
 const { data: items, error: itemsError } = await sb
   .from("order_items")
-  .select("qty")
+  .select("quantity")
   .eq("order_id", pedido.id);
 
 if (itemsError) {
   console.error("❌ Error cargando cafés:", itemsError);
 }
 
-const totalCafes = items?.reduce((sum, i) => sum + i.qty, 0) || 0;
+const totalCafes = items?.reduce(
+  (sum, i) => sum + i.quantity,
+  0
+) || 0;
 
 const countEl = clone.querySelector(".pedido-count");
 if (countEl) {
