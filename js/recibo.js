@@ -488,14 +488,26 @@ async function enviarPedido() {
     if (insertError) throw insertError;
 
     /* === 3. ITEMS === */
-    await sb.from("order_items").insert(
-      carrito.map(it => ({
-        order_id: order.id,
-        product_id: it.product_id,
-        quantity: it.qty,
-        price: it.price
-      }))
-    );
+const itemsPayload = carrito.map(it => ({
+  order_id: order.id,
+  product_id: it.product_id,
+  quantity: it.qty,
+  price: it.price
+}));
+
+console.log("🧾 ITEMS A INSERTAR:", itemsPayload);
+
+const { data: itemsInserted, error: itemsError } = await sb
+  .from("order_items")
+  .insert(itemsPayload)
+  .select();
+
+if (itemsError) {
+  console.error("❌ Error insertando order_items:", itemsError);
+  throw itemsError;
+}
+
+console.log("✅ Items insertados:", itemsInserted);
 
     /* === 4. COMPROBANTE === */
     if (metodoPago.value === "bank_transfer") {
