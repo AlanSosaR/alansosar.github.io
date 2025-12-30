@@ -147,6 +147,27 @@ async function renderPedidos() {
         minute: "2-digit"
       });
 
+     /* -------- Total de cafés -------- */
+(async () => {
+  const { data: items, error } = await sb
+    .from("order_items")
+    .select("qty")
+    .eq("order_id", pedido.id);
+
+  if (error) {
+    console.error("❌ Error cargando cafés:", error);
+    return;
+  }
+
+  const totalCafes = items.reduce((sum, i) => sum + i.qty, 0);
+
+  const countEl = clone.querySelector(".pedido-count");
+  if (countEl) {
+    countEl.textContent =
+      `(${totalCafes} café${totalCafes !== 1 ? "s" : ""})`;
+  }
+})();
+     
     /* -------- Total -------- */
    clone.querySelector(".pedido-total-valor").textContent =
   `L ${Number(pedido.total).toFixed(2)}`;
