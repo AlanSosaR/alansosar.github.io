@@ -78,18 +78,40 @@ if (!window.__HEADER_CORE_LOADED__) {
 
     console.log("✅ initHeader ejecutado (UI only)");
 
-    // Hamburguesa
+    /* ---------------- HAMBURGUESA ---------------- */
     $("menu-toggle")?.addEventListener("click", toggleDrawer);
 
-    // Scrim
+    /* ---------------- SCRIM ---------------- */
     $("user-scrim")?.addEventListener("click", closeDrawer);
 
-    // Botón carrito
+    /* ---------------- CARRITO ---------------- */
     $("cart-btn")?.addEventListener("click", () => {
       window.location.href = "carrito.html";
     });
 
-    // 🔑 SINCRONIZAR TODO
+    /* =====================================================
+       LOGOUT — CONEXIÓN REAL (FIX DEFINITIVO)
+    ===================================================== */
+    const logoutBtn = $("logout-btn");
+
+    if (logoutBtn) {
+      logoutBtn.addEventListener("click", () => {
+        console.log("🚪 Click en Cerrar sesión");
+
+        // Delegar SIEMPRE al logout principal
+        if (window.supabaseAuth?.logoutUser) {
+          window.supabaseAuth.logoutUser(); // → corteroLogout()
+        } else if (window.corteroLogout) {
+          window.corteroLogout();
+        } else {
+          console.error("❌ No existe función de logout");
+        }
+      });
+    } else {
+      console.warn("⚠️ logout-btn no encontrado (header aún no inyectado)");
+    }
+
+    /* ---------------- SINCRONIZAR ---------------- */
     updateCartCount();
     updateHeaderCartTitle();
   }
