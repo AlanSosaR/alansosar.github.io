@@ -1,4 +1,4 @@
-console.log("🧭 header.js — UI CORE FINAL (AUTH SAFE)");
+console.log("🧭 header.js — UI CORE FINAL (AUTH + ADMIN + NOTIFICATIONS)");
 
 /* =====================================================
    GUARDIÁN GLOBAL — EVITA DOBLE CARGA
@@ -9,7 +9,19 @@ if (!window.__HEADER_CORE_LOADED__) {
   const $ = (id) => document.getElementById(id);
 
   /* =====================================================
-     CARRITO — BADGE (ICONO)
+     HELPERS
+  ===================================================== */
+  function getUserCache() {
+    try {
+      if (localStorage.getItem("cortero_logged") !== "1") return null;
+      return JSON.parse(localStorage.getItem("cortero_user"));
+    } catch {
+      return null;
+    }
+  }
+
+  /* =====================================================
+     CARRITO — BADGE
   ===================================================== */
   function updateCartCount() {
     const badge = $("cart-count");
@@ -25,7 +37,7 @@ if (!window.__HEADER_CORE_LOADED__) {
   }
 
   /* =====================================================
-     CARRITO — TÍTULO CENTRAL (0 cafés)
+     CARRITO — TÍTULO CENTRAL
   ===================================================== */
   function updateHeaderCartTitle() {
     const label = $("count-items");
@@ -41,10 +53,58 @@ if (!window.__HEADER_CORE_LOADED__) {
   }
 
   /* =====================================================
-     EXPORTAR PARA OTROS MÓDULOS
+     NOTIFICACIONES — BADGE
   ===================================================== */
-  window.updateHeaderCartCount = updateCartCount;
-  window.updateHeaderCartTitle = updateHeaderCartTitle;
+  function updateNotificationsBadge(count = 0) {
+    const badge = $("notifications-count");
+    if (!badge) return;
+
+    if (count > 0) {
+      badge.textContent = count;
+      badge.classList.remove("hidden");
+    } else {
+      badge.textContent = "0";
+      badge.classList.add("hidden");
+    }
+  }
+
+  /* =====================================================
+     PERFIL + ROL (CLIENTE / ADMIN)
+  ===================================================== */
+  function syncUserUI() {
+    const user = getUserCache();
+    const header = document.querySelector(".header-fixed");
+    const drawer = $("user-drawer");
+
+    if (!header || !drawer) return;
+
+    if (!user) {
+      header.classList.add("no-user");
+      header.classList.remove("logged");
+      drawer.classList.add("no-user");
+      drawer.classList.remove("logged");
+      return;
+    }
+
+    /* ---- ESTADO LOGUEADO ---- */
+    header.classList.add("logged");
+    header.classList.remove("no-user");
+    drawer.classList.add("logged");
+    drawer.classList.remove("no-user");
+
+    /* ---- AVATAR + TEXTO ---- */
+    if ($("avatar-user")) $("avatar-user").src = user.photo_url || "/imagenes/avatar-default.svg";
+    if ($("avatar-user-drawer")) $("avatar-user-drawer").src = user.photo_url || "/imagenes/avatar-default.svg";
+    if ($("drawer-name")) $("drawer-name").textContent = user.name || "Usuario";
+    if ($("drawer-email")) $("drawer-email").textContent = user.email || "";
+
+    /* ---- ADMIN ---- */
+    const isAdmin = user.rol === "admin";
+
+    document.querySelectorAll(".admin-only").forEach(el => {
+      el.classList.toggle("hidden", !isAdmin);
+    });
+  }
 
   /* =====================================================
      DRAWER
@@ -68,7 +128,7 @@ if (!window.__HEADER_CORE_LOADED__) {
   }
 
   /* =====================================================
-     INIT HEADER (UI BASE)
+     INIT HEADER
   ===================================================== */
   let HEADER_INITIALIZED = false;
 
@@ -76,42 +136,39 @@ if (!window.__HEADER_CORE_LOADED__) {
     if (HEADER_INITIALIZED) return;
     HEADER_INITIALIZED = true;
 
-    console.log("✅ initHeader ejecutado (UI only)");
+    console.log("✅ initHeader ejecutado");
 
-    /* ---------------- HAMBURGUESA ---------------- */
+    /* ---- HAMBURGUESA ---- */
     $("menu-toggle")?.addEventListener("click", toggleDrawer);
 
-    /* ---------------- SCRIM ---------------- */
+    /* ---- SCRIM ---- */
     $("user-scrim")?.addEventListener("click", closeDrawer);
 
-    /* ---------------- CARRITO ---------------- */
+    /* ---- CARRITO ---- */
     $("cart-btn")?.addEventListener("click", () => {
-      window.location.href = "carrito.html";
+      location.href = "carrito.html";
     });
 
-    /* =====================================================
-       LOGOUT — CONEXIÓN REAL (FIX DEFINITIVO)
-    ===================================================== */
-    const logoutBtn = $("logout-btn");
+    /* ---- NOTIFICACIONES ---- */
+    $("notifications-btn")?.addEventListener("click", () => {
+      location.href = "notificaciones.html";
+    });
 
-    if (logoutBtn) {
-      logoutBtn.addEventListener("click", () => {
-        console.log("🚪 Click en Cerrar sesión");
+    /* ---- LOGOUT ---- */
+    $("logout-btn")?.addEventListener("click", () => {
+      console.log("🚪 Logout solicitado");
 
-        // Delegar SIEMPRE al logout principal
-        if (window.supabaseAuth?.logoutUser) {
-          window.supabaseAuth.logoutUser(); // → corteroLogout()
-        } else if (window.corteroLogout) {
-          window.corteroLogout();
-        } else {
-          console.error("❌ No existe función de logout");
-        }
-      });
-    } else {
-      console.warn("⚠️ logout-btn no encontrado (header aún no inyectado)");
-    }
+      if (window.supabaseAuth?.logoutUser) {
+        window.supabaseAuth.logoutUser(); // delega a corteroLogout
+      } else if (window.corteroLogout) {
+        window.corteroLogout();
+      } else {
+        console.error("❌ Logout no disponible");
+      }
+    });
 
-    /* ---------------- SINCRONIZAR ---------------- */
+    /* ---- SYNC ---- */
+    syncUserUI();
     updateCartCount();
     updateHeaderCartTitle();
   }
@@ -123,14 +180,17 @@ if (!window.__HEADER_CORE_LOADED__) {
     window.__HEADER_GLOBAL_EVENTS__ = true;
 
     document.addEventListener("userLoggedIn", () => {
+      syncUserUI();
       updateCartCount();
       updateHeaderCartTitle();
       closeDrawer();
     });
 
     document.addEventListener("userLoggedOut", () => {
+      syncUserUI();
       updateCartCount();
       updateHeaderCartTitle();
+      updateNotificationsBadge(0);
       closeDrawer();
     });
 
@@ -140,14 +200,18 @@ if (!window.__HEADER_CORE_LOADED__) {
   }
 
   /* =====================================================
-     EXPORT
+     EXPORTS
   ===================================================== */
   window.initHeader = initHeader;
+  window.updateHeaderCartCount = updateCartCount;
+  window.updateHeaderCartTitle = updateHeaderCartTitle;
+  window.updateNotificationsBadge = updateNotificationsBadge;
 
   /* =====================================================
-     CUANDO EL HEADER YA EXISTE EN DOM
+     HEADER LISTO
   ===================================================== */
   document.addEventListener("header:ready", () => {
+    syncUserUI();
     updateCartCount();
     updateHeaderCartTitle();
   });
