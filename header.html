@@ -1,9 +1,9 @@
 <!-- =====================================================
-     HEADER — FINAL DEFINITIVO (PC + MÓVIL CORRECTO)
+     HEADER — FINAL DEFINITIVO (PC + MÓVIL)
 ====================================================== -->
 <header class="header-fixed no-user" id="main-header">
 
-  <!-- HAMBURGUESA (SOLO MÓVIL) -->
+  <!-- HAMBURGUESA -->
   <button id="menu-toggle"
           class="menu-toggle mobile-only"
           aria-label="Abrir menú">
@@ -17,7 +17,7 @@
          class="header-logo">
   </a>
 
-  <!-- TÍTULOS CENTRALES -->
+  <!-- TÍTULOS -->
   <span id="header-cart-title" class="header-cart-title hidden">
     Tu selección de café (<span id="count-items">0 cafés</span>)
   </span>
@@ -37,7 +37,7 @@
   <!-- DERECHA -->
   <div class="header-right">
 
-    <!-- LINKS PÚBLICOS (PC) -->
+    <!-- NAV PÚBLICO (PC) -->
     <nav id="public-nav"
          class="nav-links desktop-only no-user">
       <a href="/index.html#productos">Variedades de café</a>
@@ -48,23 +48,14 @@
     <!-- ACCIONES -->
     <div class="header-actions">
 
-      <!-- LOGIN (PC – VISITANTE) -->
+      <!-- LOGIN -->
       <a href="login.html"
          id="login-desktop"
          class="login-link desktop-only no-user">
         Iniciar sesión
       </a>
 
-      <!-- 🔔 NOTIFICACIONES (LOGUEADO) -->
-      <button id="notifications-btn"
-              class="notifications-button desktop-only logged"
-              aria-label="Notificaciones">
-        <span class="material-symbols-outlined">notifications</span>
-        <span id="notifications-count"
-              class="notifications-count hidden">0</span>
-      </button>
-
-      <!-- AVATAR (PC – LOGUEADO) -->
+      <!-- AVATAR -->
       <button id="btn-header-user"
               class="header-avatar-button desktop-only logged"
               aria-label="Perfil">
@@ -73,7 +64,7 @@
              alt="Usuario">
       </button>
 
-      <!-- CARRITO (SIEMPRE VISIBLE) -->
+      <!-- CARRITO -->
       <button id="cart-btn"
               class="cart-button"
               aria-label="Ver carrito">
@@ -95,7 +86,7 @@
 ====================================================== -->
 <aside id="user-drawer" class="user-drawer no-user">
 
-  <!-- PERFIL (LOGUEADO) -->
+  <!-- PERFIL -->
   <a href="perfil.html"
      class="user-drawer-profile-link logged">
 
@@ -115,14 +106,18 @@
     </span>
   </a>
 
+  <!-- LÍNEA VERDE (INICIO) -->
   <hr class="user-drawer-divider logged">
 
   <!-- =====================
-       LINKS CLIENTE
+       CLIENTE
   ====================== -->
   <a href="mis-pedidos.html" class="user-drawer-item logged">
     <span class="material-symbols-outlined">shopping_bag</span>
-    Mis pedidos
+    <span class="drawer-text">Mis pedidos</span>
+
+    <!-- 🔴 INDICADOR -->
+    <span class="drawer-dot" id="mis-pedidos-dot"></span>
   </a>
 
   <a href="historial.html" class="user-drawer-item logged">
@@ -130,21 +125,13 @@
     Historial
   </a>
 
-  <a href="notificaciones.html" class="user-drawer-item logged">
-    <span class="material-symbols-outlined">notifications</span>
-    Notificaciones
-  </a>
-
   <!-- =====================
-       SECCIÓN ADMIN (INVISIBLE SI NO ES ADMIN)
+       ADMIN (SOLO ADMIN)
   ====================== -->
-  <hr id="admin-divider"
-      class="user-drawer-divider admin-only hidden">
-
   <a href="admin-pedidos.html"
      class="user-drawer-item admin-only hidden">
     <span class="material-symbols-outlined">list_alt</span>
-    Pedidos (Admin)
+    Gestión de pedidos
   </a>
 
   <a href="admin-productos.html"
@@ -162,8 +149,6 @@
   <!-- =====================
        LINKS PÚBLICOS
   ====================== -->
-  <hr class="user-drawer-divider">
-
   <a href="/index.html#productos" class="user-drawer-item public-link">
     <span class="material-symbols-outlined">local_cafe</span>
     Variedades de café
@@ -179,6 +164,7 @@
     Contáctanos
   </a>
 
+  <!-- LÍNEA VERDE (FINAL) -->
   <hr class="user-drawer-divider">
 
   <!-- LOGOUT -->
@@ -188,7 +174,7 @@
     Cerrar sesión
   </button>
 
-  <!-- LOGIN (INVITADO) -->
+  <!-- LOGIN INVITADO -->
   <a href="login.html"
      class="user-drawer-item login no-user">
     <span class="material-symbols-outlined">login</span>
