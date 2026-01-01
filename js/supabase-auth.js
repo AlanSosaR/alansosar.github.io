@@ -1,12 +1,12 @@
 /* ============================================================
-   SUPABASE AUTH — VERSIÓN FINAL 2025
-   ✔ Registro: primero Auth (signUp) → trigger llena tabla users
-   ✔ Envía correo de verificación
-   ✔ Envía foto por defecto y metadatos (name, phone, country, rol)
-   ✔ Login / logout compatibles con perfil y menú
+   SUPABASE AUTH — COMPATIBLE CON SUPABASE CLIENT
+   ✔ Auth-first (signUp / signIn)
+   ✔ NO maneja sesión
+   ✔ NO toca storage
+   ✔ Logout delega a corteroLogout()
 ============================================================ */
 
-console.log("🔥 supabase-auth.js cargado — versión AUTH-FIRST FINAL 2025");
+console.log("🔥 supabase-auth.js cargado — COMPATIBLE 2025");
 
 const sb = window.supabaseClient;
 
@@ -14,9 +14,7 @@ const sb = window.supabaseClient;
 window.supabaseAuth = {};
 
 /* ============================================================
-   1) REGISTRO — NUEVO FLUJO CORRECTO:
-      ✔ Crea usuario en Auth (manda correo)
-      ✔ Trigger se encarga de insertar en tabla users
+   1) REGISTRO
 ============================================================ */
 window.supabaseAuth.registerUser = async function (
   email,
@@ -26,44 +24,27 @@ window.supabaseAuth.registerUser = async function (
   country = "Honduras",
   photoUrl = "/imagenes/avatar-default.svg"
 ) {
-  console.log("🟡 REGISTRO: creando usuario en Supabase Auth…");
-
   const { data, error } = await sb.auth.signUp({
     email,
     password,
     options: {
-      // URL a donde redirige cuando el usuario confirma el correo
       emailRedirectTo: window.location.origin + "/login.html",
-      // Metadatos que leerá el trigger en auth.users.raw_user_meta_data
       data: {
         name: fullName,
-        phone: phone,
-        country: country,
+        phone,
+        country,
         photo_url: photoUrl,
         rol: "cliente"
       }
     }
   });
 
-  if (error) {
-    console.error("❌ Error creando usuario en Auth:", error);
-    throw error;
-  }
-
-  if (data?.user) {
-    console.log("✅ Usuario creado en Auth:", data.user.id);
-    console.log("📨 Supabase enviará correo de verificación (si el correo existe de verdad).");
-  } else {
-    console.warn("⚠ signUp no devolvió user, revisar configuración de Auth.");
-  }
-
-  // IMPORTANTE:
-  // El trigger handle_new_auth_user() creará la fila en public.users
+  if (error) throw error;
   return data;
 };
 
 /* ============================================================
-   2) LOGIN — Iniciar sesión normal (email + password)
+   2) LOGIN — Email / Password
 ============================================================ */
 window.supabaseAuth.loginUser = async function (email, password) {
   const { data, error } = await sb.auth.signInWithPassword({
@@ -71,16 +52,12 @@ window.supabaseAuth.loginUser = async function (email, password) {
     password
   });
 
-  if (error) {
-    console.error("❌ Error Login:", error);
-    throw error;
-  }
-
+  if (error) throw error;
   return data;
 };
 
 /* ============================================================
-   3) LOGIN — Magic Link (OTP por correo)
+   3) LOGIN — Magic Link
 ============================================================ */
 window.supabaseAuth.loginMagicLink = async function (email) {
   const { data, error } = await sb.auth.signInWithOtp({
@@ -90,39 +67,30 @@ window.supabaseAuth.loginMagicLink = async function (email) {
     }
   });
 
-  if (error) {
-    console.error("❌ Error login Magic Link:", error);
-    throw error;
-  }
-
+  if (error) throw error;
   return data;
 };
 
 /* ============================================================
-   4) Obtener usuario desde LocalStorage (perfil cacheado)
+   4) PERFIL CACHEADO (READ-ONLY)
 ============================================================ */
 window.supabaseAuth.getCurrentUser = function () {
   try {
     const raw = localStorage.getItem("cortero_user");
-    if (!raw) return null;
-    return JSON.parse(raw);
+    return raw ? JSON.parse(raw) : null;
   } catch {
     return null;
   }
 };
 
 /* ============================================================
-   5) LOGOUT
+   5) LOGOUT — DELEGADO (CLAVE)
 ============================================================ */
-window.supabaseAuth.logoutUser = async function () {
-  try {
-    await sb.auth.signOut();
-  } catch (e) {
-    console.warn("⚠ Error en logout:", e);
+window.supabaseAuth.logoutUser = function () {
+  if (typeof window.corteroLogout === "function") {
+    console.log("🚪 Logout delegado a corteroLogout()");
+    window.corteroLogout();
+  } else {
+    console.error("❌ corteroLogout no está definido");
   }
-
-  localStorage.removeItem("cortero_user");
-  localStorage.removeItem("cortero_logged");
-
-  console.log("👋 Sesión cerrada correctamente");
 };
