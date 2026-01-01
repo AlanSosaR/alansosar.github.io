@@ -83,6 +83,48 @@ let similarIndex = 0;
 const setSimilarIndex = i => similarIndex = i;
 const getSimilarIndex = () => similarIndex;
 
+/* ========================= HERO CAROUSEL (ARRIBA) ========================= */
+function initHeroCarousel() {
+  const carousel = document.querySelector(".hero-carousel");
+  if (!carousel) return;
+
+  const slides = carousel.querySelectorAll("img");
+  if (!slides.length) return;
+
+  let index = 0;
+
+  slides.forEach((img, i) => {
+    img.style.opacity = i === 0 ? "1" : "0";
+    img.style.position = "absolute";
+    img.style.inset = "0";
+    img.style.transition = "opacity 0.6s ease";
+  });
+
+  setInterval(() => {
+    slides[index].style.opacity = "0";
+    index = (index + 1) % slides.length;
+    slides[index].style.opacity = "1";
+  }, 3500);
+}
+
+/* ========================= INIT PRODUCTO DEFAULT ========================= */
+function initDefaultProduct() {
+  const firstCard = document.querySelector(".similar-card");
+  if (!firstCard) return;
+
+  safe("product-name").textContent = firstCard.dataset.name;
+  safe("product-image").src = firstCard.dataset.img;
+  document.querySelector(".price-part").textContent = firstCard.dataset.price;
+  safe("product-add").dataset.id = firstCard.dataset.id;
+  safe("qty-number").textContent = "1";
+
+  document.querySelectorAll(".similar-card")
+    .forEach(c => c.classList.remove("active-card"));
+  firstCard.classList.add("active-card");
+
+  setSimilarIndex(0);
+}
+
 /* ========================= DOM READY ========================= */
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -131,8 +173,11 @@ document.addEventListener("DOMContentLoaded", () => {
     qtyNumber.textContent = "1";
   });
 
+  /* ===== ORDEN CORRECTO DE INICIALIZACIÓN ===== */
+  initHeroCarousel();        // 🔑 HERO ARRIBA
   loadSimilarProducts();
   bindSimilarCardEvents();
+  initDefaultProduct();      // 🔑 PRODUCTO PRINCIPAL
   initSimilarCarousel();
 });
 
@@ -147,14 +192,11 @@ function bindSimilarCardEvents() {
 
     card.addEventListener("click", () => {
 
-      /* 🔑 ÍNDICE ÚNICO */
       setSimilarIndex(idx);
 
-      /* 🔑 MARCAR BORDE VERDE (CSS) */
       cards.forEach(c => c.classList.remove("active-card"));
       card.classList.add("active-card");
 
-      /* Producto principal */
       const img = safe("product-image");
       img.classList.remove("swap");
       void img.offsetWidth;
@@ -166,7 +208,6 @@ function bindSimilarCardEvents() {
       safe("product-add").dataset.id = card.dataset.id;
       safe("qty-number").textContent = "1";
 
-      /* Scroll vertical suave */
       if (productSection) {
         const y = productSection.getBoundingClientRect().top + window.scrollY - 20;
         window.scrollTo({ top: y, behavior: "smooth" });
@@ -177,7 +218,7 @@ function bindSimilarCardEvents() {
   });
 }
 
-/* ========================= CARRUSEL ========================= */
+/* ========================= CARRUSEL SIMILARES ========================= */
 function initSimilarCarousel() {
   const prev = safe("similar-prev");
   const next = safe("similar-next");
