@@ -44,7 +44,7 @@ function formatStatusLabel(status) {
 }
 
 /* -----------------------------------------------------------
-   ICONOS MATERIAL 3 POR ESTADO (DEFINITIVO)
+   ICONOS MATERIAL 3 POR ESTADO
 ----------------------------------------------------------- */
 const statusIconMap = {
   payment_review: "fact_check",
@@ -92,9 +92,7 @@ async function renderPedidos() {
 
   lista.innerHTML = "";
 
-  /* -------------------------------------------------------
-     Validar sesión
-  ------------------------------------------------------- */
+  /* ---------------- Validar sesión ---------------- */
   const { data: sessionData } = await sb.auth.getSession();
   if (!sessionData?.session) {
     mostrarVacio();
@@ -103,9 +101,7 @@ async function renderPedidos() {
 
   const userId = sessionData.session.user.id;
 
-  /* -------------------------------------------------------
-     Consultar pedidos reales
-  ------------------------------------------------------- */
+  /* ---------------- Consultar pedidos ---------------- */
   const { data: pedidos, error } = await sb
     .from("orders")
     .select("*")
@@ -113,21 +109,21 @@ async function renderPedidos() {
     .order("created_at", { ascending: false });
 
   if (error || !pedidos || pedidos.length === 0) {
-    console.warn("ℹ️ Sin pedidos");
     mostrarVacio();
     return;
   }
 
-  /* -------------------------------------------------------
-     Mostrar pedidos
-  ------------------------------------------------------- */
   emptyState.classList.add("hidden");
   if (seguirBack) seguirBack.style.display = "flex";
 
-  pedidos.forEach(pedido => {
+  /* ===================================================
+     🔑 FOR...OF (PERMITE AWAIT)
+  =================================================== */
+  for (const pedido of pedidos) {
+
     const clone = template.content.cloneNode(true);
 
-    /* -------- Número de pedido -------- */
+    /* -------- Número -------- */
     clone.querySelector(".pedido-numero").textContent =
       `Pedido N.º ${String(pedido.order_number).padStart(3, "0")}`;
 
@@ -147,49 +143,43 @@ async function renderPedidos() {
         minute: "2-digit"
       });
 
-   /* -------- Total de cafés -------- */
-const { data: items, error: itemsError } = await sb
-  .from("order_items")
-  .select("quantity")
-  .eq("order_id", pedido.id);
+    /* -------- Total de cafés -------- */
+    const { data: items, error: itemsError } = await sb
+      .from("order_items")
+      .select("quantity")
+      .eq("order_id", pedido.id);
 
-if (itemsError) {
-  console.error("❌ Error cargando cafés:", itemsError);
-}
+    if (itemsError) {
+      console.error("❌ Error cargando cafés:", itemsError);
+    }
 
-const totalCafes = items?.reduce(
-  (sum, i) => sum + i.quantity,
-  0
-) || 0;
+    const totalCafes =
+      items?.reduce((sum, i) => sum + i.quantity, 0) || 0;
 
-const countEl = clone.querySelector(".pedido-count");
-if (countEl) {
-  countEl.textContent =
-    `(${totalCafes} café${totalCafes !== 1 ? "s" : ""})`;
-}
-     
+    const countEl = clone.querySelector(".pedido-count");
+    if (countEl) {
+      countEl.textContent =
+        `(${totalCafes} café${totalCafes !== 1 ? "s" : ""})`;
+    }
+
     /* -------- Total -------- */
-   clone.querySelector(".pedido-total-valor").textContent =
-  `L ${Number(pedido.total).toFixed(2)}`;
+    clone.querySelector(".pedido-total-valor").textContent =
+      `L ${Number(pedido.total).toFixed(2)}`;
 
-    /* -------- Texto de estado -------- */
+    /* -------- Estado -------- */
     clone.querySelector(".estado-text").textContent =
       formatStatusLabel(pedido.status);
 
-    /* -------- Progreso visual -------- */
     const etapa = mapStatusToProgress(pedido.status);
     applyProgressColors(clone, etapa);
 
-    /* -------- Icono + color según estado -------- */
     const estadoEl = clone.querySelector(".estado");
     const iconEl   = clone.querySelector(".estado-icon");
 
     estadoEl.classList.remove("pago", "revision", "confirmado", "envio");
 
-    const etapaClases = ["pago", "revision", "confirmado", "envio"];
-    const etapaClase  = etapaClases[etapa];
-
-    if (etapaClase) estadoEl.classList.add(etapaClase);
+    const clases = ["pago", "revision", "confirmado", "envio"];
+    if (clases[etapa]) estadoEl.classList.add(clases[etapa]);
 
     iconEl.textContent =
       statusIconMap[pedido.status] || statusIconMap.default;
@@ -200,7 +190,7 @@ if (countEl) {
     });
 
     lista.appendChild(clone);
-  });
+  }
 }
 
 /* -----------------------------------------------------------
