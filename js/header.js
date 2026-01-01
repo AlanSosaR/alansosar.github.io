@@ -1,4 +1,4 @@
-console.log("🧭 header.js — UI CORE FINAL (AUTH + ADMIN + NOTIFICATIONS)");
+console.log("🧭 header.js — UI CORE FINAL (AUTH + ADMIN)");
 
 /* =====================================================
    GUARDIÁN GLOBAL — EVITA DOBLE CARGA
@@ -9,7 +9,7 @@ if (!window.__HEADER_CORE_LOADED__) {
   const $ = (id) => document.getElementById(id);
 
   /* =====================================================
-     HELPERS
+     HELPERS — USUARIO CACHE
   ===================================================== */
   function getUserCache() {
     try {
@@ -53,22 +53,6 @@ if (!window.__HEADER_CORE_LOADED__) {
   }
 
   /* =====================================================
-     NOTIFICACIONES — BADGE
-  ===================================================== */
-  function updateNotificationsBadge(count = 0) {
-    const badge = $("notifications-count");
-    if (!badge) return;
-
-    if (count > 0) {
-      badge.textContent = count;
-      badge.classList.remove("hidden");
-    } else {
-      badge.textContent = "0";
-      badge.classList.add("hidden");
-    }
-  }
-
-  /* =====================================================
      PERFIL + ROL (CLIENTE / ADMIN)
   ===================================================== */
   function syncUserUI() {
@@ -78,6 +62,7 @@ if (!window.__HEADER_CORE_LOADED__) {
 
     if (!header || !drawer) return;
 
+    /* ---------- INVITADO ---------- */
     if (!user) {
       header.classList.add("no-user");
       header.classList.remove("logged");
@@ -86,19 +71,27 @@ if (!window.__HEADER_CORE_LOADED__) {
       return;
     }
 
-    /* ---- ESTADO LOGUEADO ---- */
+    /* ---------- LOGUEADO ---------- */
     header.classList.add("logged");
     header.classList.remove("no-user");
     drawer.classList.add("logged");
     drawer.classList.remove("no-user");
 
-    /* ---- AVATAR + TEXTO ---- */
-    if ($("avatar-user")) $("avatar-user").src = user.photo_url || "/imagenes/avatar-default.svg";
-    if ($("avatar-user-drawer")) $("avatar-user-drawer").src = user.photo_url || "/imagenes/avatar-default.svg";
-    if ($("drawer-name")) $("drawer-name").textContent = user.name || "Usuario";
-    if ($("drawer-email")) $("drawer-email").textContent = user.email || "";
+    /* Avatar + textos */
+    if ($("avatar-user")) {
+      $("avatar-user").src = user.photo_url || "/imagenes/avatar-default.svg";
+    }
+    if ($("avatar-user-drawer")) {
+      $("avatar-user-drawer").src = user.photo_url || "/imagenes/avatar-default.svg";
+    }
+    if ($("drawer-name")) {
+      $("drawer-name").textContent = user.name || "Usuario";
+    }
+    if ($("drawer-email")) {
+      $("drawer-email").textContent = user.email || "";
+    }
 
-    /* ---- ADMIN ---- */
+    /* ---------- ADMIN ---------- */
     const isAdmin = user.rol === "admin";
 
     document.querySelectorAll(".admin-only").forEach(el => {
@@ -138,28 +131,23 @@ if (!window.__HEADER_CORE_LOADED__) {
 
     console.log("✅ initHeader ejecutado");
 
-    /* ---- HAMBURGUESA ---- */
+    /* Hamburguesa */
     $("menu-toggle")?.addEventListener("click", toggleDrawer);
 
-    /* ---- SCRIM ---- */
+    /* Scrim */
     $("user-scrim")?.addEventListener("click", closeDrawer);
 
-    /* ---- CARRITO ---- */
+    /* Carrito */
     $("cart-btn")?.addEventListener("click", () => {
       location.href = "carrito.html";
     });
 
-    /* ---- NOTIFICACIONES ---- */
-    $("notifications-btn")?.addEventListener("click", () => {
-      location.href = "notificaciones.html";
-    });
-
-    /* ---- LOGOUT ---- */
+    /* Logout */
     $("logout-btn")?.addEventListener("click", () => {
       console.log("🚪 Logout solicitado");
 
       if (window.supabaseAuth?.logoutUser) {
-        window.supabaseAuth.logoutUser(); // delega a corteroLogout
+        window.supabaseAuth.logoutUser();
       } else if (window.corteroLogout) {
         window.corteroLogout();
       } else {
@@ -167,7 +155,7 @@ if (!window.__HEADER_CORE_LOADED__) {
       }
     });
 
-    /* ---- SYNC ---- */
+    /* Sync inicial */
     syncUserUI();
     updateCartCount();
     updateHeaderCartTitle();
@@ -190,7 +178,6 @@ if (!window.__HEADER_CORE_LOADED__) {
       syncUserUI();
       updateCartCount();
       updateHeaderCartTitle();
-      updateNotificationsBadge(0);
       closeDrawer();
     });
 
@@ -205,7 +192,6 @@ if (!window.__HEADER_CORE_LOADED__) {
   window.initHeader = initHeader;
   window.updateHeaderCartCount = updateCartCount;
   window.updateHeaderCartTitle = updateHeaderCartTitle;
-  window.updateNotificationsBadge = updateNotificationsBadge;
 
   /* =====================================================
      HEADER LISTO
