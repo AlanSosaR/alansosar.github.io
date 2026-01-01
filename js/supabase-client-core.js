@@ -1,24 +1,24 @@
 // ============================================================
-// SUPABASE CLIENT — VERSIÓN FINAL ESTABLE 2025 (CORREGIDA)
+// SUPABASE CLIENT — FINAL DEFINITIVO 2025 (LOGOUT FIXED)
 // ÚNICA FUENTE DE VERDAD PARA AUTH
 // ============================================================
 
-console.log("🔥 SUPABASE CLIENT — FINAL LIMPIO 2025");
+console.log("🔥 SUPABASE CLIENT — FINAL DEFINITIVO 2025");
 
 // ------------------------------------------------------------
-// 1) SDK de Supabase ya cargado desde index.html
+// 1) SDK ya cargado en HTML
 // ------------------------------------------------------------
 const { createClient } = window.supabase;
 
 // ------------------------------------------------------------
-// 2) Credenciales del proyecto
+// 2) Credenciales
 // ------------------------------------------------------------
 const SUPABASE_URL = "https://eaipcuvvddyrqkbmjmvw.supabase.co";
 const SUPABASE_ANON_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVhaXBjdXZ2ZGR5cnFrYm1qbXZ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMwOTcxMDEsImV4cCI6MjA3ODY3MzEwMX0.2qICLx3qZgeGr0oXZ8PYRxXPL1X5Vog4UoOnTQBFzNA";
 
 // ------------------------------------------------------------
-// 3) Persistencia segura
+// 3) Storage seguro
 // ------------------------------------------------------------
 const storage = {
   getItem: (k) => { try { return localStorage.getItem(k); } catch { return null; } },
@@ -41,13 +41,11 @@ window.supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
 // Alias global
 window.supabase = window.supabaseClient;
 
-// ------------------------------------------------------------
-// 5) Cargar perfil global (tabla users)
-// ------------------------------------------------------------
+// ============================================================
+// 5) PERFIL GLOBAL
+// ============================================================
 async function cargarPerfilGlobal(user) {
   if (!user) return;
-
-  console.log("📥 Cargando perfil:", user.id);
 
   const { data, error } = await window.supabaseClient
     .from("users")
@@ -69,17 +67,30 @@ async function cargarPerfilGlobal(user) {
 }
 
 // ============================================================
-// 6 + 7) LOGOUT + AUTH STATE — FINAL
+// 6) LOGOUT TOTAL (FIX REAL)
 // ============================================================
-
-// 6) Logout: solo signOut
 async function logoutTotal() {
   console.log("🚪 Logout total");
+
+  // 1️⃣ Cerrar sesión Supabase
   await window.supabaseClient.auth.signOut();
+
+  // 2️⃣ LIMPIAR TODO rastro local
+  localStorage.removeItem("cortero_user");
+  localStorage.removeItem("cortero_logged");
+  localStorage.removeItem("cortero.session.v2");
+
+  // 3️⃣ Notificar UI
+  document.dispatchEvent(new CustomEvent("userLoggedOut"));
+
+  // 4️⃣ Redirección controlada
+  window.location.href = "/index.html";
 }
 window.corteroLogout = logoutTotal;
 
-// 7) Auth state: fuente única de verdad
+// ============================================================
+// 7) AUTH STATE — SOLO SIN REDIRECCIONES
+// ============================================================
 window.supabaseClient.auth.onAuthStateChange((event, session) => {
   console.log("🔐 Auth event:", event);
 
@@ -92,19 +103,13 @@ window.supabaseClient.auth.onAuthStateChange((event, session) => {
   }
 
   if (event === "SIGNED_OUT") {
-    localStorage.removeItem("cortero_user");
-    localStorage.removeItem("cortero_logged");
-    document.dispatchEvent(new CustomEvent("userLoggedOut"));
-
-    if (!location.pathname.endsWith("index.html")) {
-      window.location.href = "/index.html";
-    }
+    console.log("👋 Sesión cerrada");
   }
 });
 
-// ------------------------------------------------------------
-// 8) CONECTAR SESIÓN CON HEADER (UI)
-// ------------------------------------------------------------
+// ============================================================
+// 8) CONEXIÓN CON HEADER (UI)
+// ============================================================
 
 // Usuario logueado
 document.addEventListener("userLoggedIn", () => {
