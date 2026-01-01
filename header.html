@@ -2,7 +2,6 @@
      HEADER — FINAL DEFINITIVO (PC + MÓVIL CORRECTO)
 ====================================================== -->
 <header class="header-fixed no-user" id="main-header">
-     
 
   <!-- HAMBURGUESA (SOLO MÓVIL) -->
   <button id="menu-toggle"
@@ -17,36 +16,34 @@
          alt="Café Cortero"
          class="header-logo">
   </a>
-     <!-- TÍTULO CENTRAL — CARRITO -->
-<span id="header-cart-title" class="header-cart-title hidden">
-  Tu selección de café (<span id="count-items">0 cafés</span>)
-</span>
 
-<!-- TÍTULO CENTRAL — DATOS DEL CLIENTE -->
-<span id="header-datos-title" class="header-cart-title hidden">
-  Detalles de entrega
-</span>
+  <!-- TÍTULOS CENTRALES -->
+  <span id="header-cart-title" class="header-cart-title hidden">
+    Tu selección de café (<span id="count-items">0 cafés</span>)
+  </span>
 
-<!-- TÍTULO CENTRAL — RECIBO -->
-<span id="header-recibo-title" class="header-cart-title hidden">
-  Resumen del pedido
-</span>
-     <!-- TÍTULO CENTRAL — MIS PEDIDOS -->
-<span id="header-mis-pedidos-title" class="header-cart-title hidden">
-  Mis pedidos
-</span>
+  <span id="header-datos-title" class="header-cart-title hidden">
+    Detalles de entrega
+  </span>
+
+  <span id="header-recibo-title" class="header-cart-title hidden">
+    Resumen del pedido
+  </span>
+
+  <span id="header-mis-pedidos-title" class="header-cart-title hidden">
+    Mis pedidos
+  </span>
+
   <!-- DERECHA -->
   <div class="header-right">
 
-    <!-- =====================
-         LINKS PC — VISITANTE
-    ====================== -->
-  <nav id="public-nav"
-     class="nav-links desktop-only no-user">
-  <a href="/index.html#productos">Variedades de café</a>
-  <a href="/index.html#nosotros">Quiénes somos</a>
-  <a href="/index.html#contacto">Contáctanos</a>
-</nav>
+    <!-- LINKS PÚBLICOS (PC) -->
+    <nav id="public-nav"
+         class="nav-links desktop-only no-user">
+      <a href="/index.html#productos">Variedades de café</a>
+      <a href="/index.html#nosotros">Quiénes somos</a>
+      <a href="/index.html#contacto">Contáctanos</a>
+    </nav>
 
     <!-- ACCIONES -->
     <div class="header-actions">
@@ -57,6 +54,15 @@
          class="login-link desktop-only no-user">
         Iniciar sesión
       </a>
+
+      <!-- 🔔 NOTIFICACIONES (LOGUEADO) -->
+      <button id="notifications-btn"
+              class="notifications-button desktop-only logged"
+              aria-label="Notificaciones">
+        <span class="material-symbols-outlined">notifications</span>
+        <span id="notifications-count"
+              class="notifications-count hidden">0</span>
+      </button>
 
       <!-- AVATAR (PC – LOGUEADO) -->
       <button id="btn-header-user"
@@ -90,62 +96,92 @@
 <aside id="user-drawer" class="user-drawer no-user">
 
   <!-- PERFIL (LOGUEADO) -->
-<a href="perfil.html"
-   class="user-drawer-profile-link logged">
+  <a href="perfil.html"
+     class="user-drawer-profile-link logged">
 
-  <div class="user-drawer-avatar">
-    <img id="avatar-user-drawer"
-         src="/imagenes/avatar-default.svg"
-         alt="Usuario">
-  </div>
+    <div class="user-drawer-avatar">
+      <img id="avatar-user-drawer"
+           src="/imagenes/avatar-default.svg"
+           alt="Usuario">
+    </div>
 
-  <div class="user-drawer-profile-texts">
-    <p id="drawer-name">Usuario</p>
-    <p id="drawer-email">correo@ejemplo.com</p>
-  </div>
+    <div class="user-drawer-profile-texts">
+      <p id="drawer-name">Usuario</p>
+      <p id="drawer-email">correo@ejemplo.com</p>
+    </div>
 
-  <!-- FLECHA -->
-  <span class="material-symbols-outlined user-drawer-arrow">
-    chevron_right
-  </span>
-</a>
+    <span class="material-symbols-outlined user-drawer-arrow">
+      chevron_right
+    </span>
+  </a>
 
   <hr class="user-drawer-divider logged">
 
   <!-- =====================
-       LINKS LOGUEADO
+       LINKS CLIENTE
   ====================== -->
- <a href="mis-pedidos.html" class="user-drawer-item logged">
-  <span class="material-symbols-outlined">shopping_bag</span>
-  Mis pedidos
-</a>
+  <a href="mis-pedidos.html" class="user-drawer-item logged">
+    <span class="material-symbols-outlined">shopping_bag</span>
+    Mis pedidos
+  </a>
 
   <a href="historial.html" class="user-drawer-item logged">
     <span class="material-symbols-outlined">history</span>
     Historial
   </a>
 
-<!-- =====================
-     LINKS PÚBLICOS (SIEMPRE VISIBLES EN DRAWER)
-====================== -->
-<a href="/index.html#productos" class="user-drawer-item public-link">
-  <span class="material-symbols-outlined">local_cafe</span>
-  Variedades de café
-</a>
+  <a href="notificaciones.html" class="user-drawer-item logged">
+    <span class="material-symbols-outlined">notifications</span>
+    Notificaciones
+  </a>
 
-<a href="/index.html#nosotros" class="user-drawer-item public-link">
-  <span class="material-symbols-outlined">groups</span>
-  Quiénes somos
-</a>
+  <!-- =====================
+       SECCIÓN ADMIN (INVISIBLE SI NO ES ADMIN)
+  ====================== -->
+  <hr id="admin-divider"
+      class="user-drawer-divider admin-only hidden">
 
-<a href="/index.html#contacto" class="user-drawer-item public-link">
-  <span class="material-symbols-outlined">mail</span>
-  Contáctanos
-</a>
+  <a href="admin-pedidos.html"
+     class="user-drawer-item admin-only hidden">
+    <span class="material-symbols-outlined">list_alt</span>
+    Pedidos (Admin)
+  </a>
+
+  <a href="admin-productos.html"
+     class="user-drawer-item admin-only hidden">
+    <span class="material-symbols-outlined">inventory</span>
+    Productos
+  </a>
+
+  <a href="admin-usuarios.html"
+     class="user-drawer-item admin-only hidden">
+    <span class="material-symbols-outlined">group</span>
+    Usuarios
+  </a>
+
+  <!-- =====================
+       LINKS PÚBLICOS
+  ====================== -->
+  <hr class="user-drawer-divider">
+
+  <a href="/index.html#productos" class="user-drawer-item public-link">
+    <span class="material-symbols-outlined">local_cafe</span>
+    Variedades de café
+  </a>
+
+  <a href="/index.html#nosotros" class="user-drawer-item public-link">
+    <span class="material-symbols-outlined">groups</span>
+    Quiénes somos
+  </a>
+
+  <a href="/index.html#contacto" class="user-drawer-item public-link">
+    <span class="material-symbols-outlined">mail</span>
+    Contáctanos
+  </a>
 
   <hr class="user-drawer-divider">
 
-  <!-- LOGOUT (LOGUEADO) -->
+  <!-- LOGOUT -->
   <button id="logout-btn"
           class="user-drawer-item logout logged">
     <span class="material-symbols-outlined">logout</span>
