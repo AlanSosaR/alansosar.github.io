@@ -1,4 +1,4 @@
-console.log("🧭 header.js — UI CORE FINAL (AUTH + ADMIN)");
+console.log("🧭 header.js — UI CORE FINAL (AUTH + ADMIN + NOTIFS)");
 
 /* =====================================================
    GUARDIÁN GLOBAL — EVITA DOBLE CARGA
@@ -20,6 +20,10 @@ if (!window.__HEADER_CORE_LOADED__) {
     }
   }
 
+  async function getSupabase() {
+    return window.sb || window.supabase || null;
+  }
+
   /* =====================================================
      CARRITO — BADGE
   ===================================================== */
@@ -29,8 +33,7 @@ if (!window.__HEADER_CORE_LOADED__) {
 
     try {
       const cart = JSON.parse(localStorage.getItem("cafecortero_cart")) || [];
-      const total = cart.reduce((a, i) => a + Number(i.qty || 0), 0);
-      badge.textContent = total;
+      badge.textContent = cart.reduce((a, i) => a + Number(i.qty || 0), 0);
     } catch {
       badge.textContent = "0";
     }
@@ -78,25 +81,77 @@ if (!window.__HEADER_CORE_LOADED__) {
     drawer.classList.remove("no-user");
 
     /* Avatar + textos */
-    if ($("avatar-user")) {
-      $("avatar-user").src = user.photo_url || "/imagenes/avatar-default.svg";
-    }
-    if ($("avatar-user-drawer")) {
-      $("avatar-user-drawer").src = user.photo_url || "/imagenes/avatar-default.svg";
-    }
-    if ($("drawer-name")) {
-      $("drawer-name").textContent = user.name || "Usuario";
-    }
-    if ($("drawer-email")) {
-      $("drawer-email").textContent = user.email || "";
-    }
+    $("avatar-user") && ($("avatar-user").src = user.photo_url || "/imagenes/avatar-default.svg");
+    $("avatar-user-drawer") && ($("avatar-user-drawer").src = user.photo_url || "/imagenes/avatar-default.svg");
+    $("drawer-name") && ($("drawer-name").textContent = user.name || "Usuario");
+    $("drawer-email") && ($("drawer-email").textContent = user.email || "");
 
     /* ---------- ADMIN ---------- */
     const isAdmin = user.rol === "admin";
-
     document.querySelectorAll(".admin-only").forEach(el => {
       el.classList.toggle("hidden", !isAdmin);
     });
+  }
+
+  /* =====================================================
+     🔔 NOTIFICACIÓN CLIENTE — MIS PEDIDOS
+  ===================================================== */
+  async function syncClientOrderNotification() {
+    const user = getUserCache();
+    if (!user || user.rol !== "user") return;
+
+    const sb = await getSupabase();
+    if (!sb) return;
+
+    const { data, error } = await sb
+      .from("orders")
+      .select("id")
+      .eq("user_id", user.id)
+      .or("client_viewed_at.is.null,updated_at.gt.client_viewed_at");
+
+    if (error) return;
+
+    const item = $("mis-pedidos-item");
+    if (!item) return;
+
+    let dot = $("mis-pedidos-dot");
+
+    if (data.length > 0 && !dot) {
+      dot = document.createElement("span");
+      dot.className = "drawer-dot";
+      dot.id = "mis-pedidos-dot";
+      item.appendChild(dot);
+    }
+
+    if (data.length === 0 && dot) {
+      dot.remove();
+    }
+  }
+
+  /* =====================================================
+     🔴 CONTADOR ADMIN — PEDIDOS
+  ===================================================== */
+  async function syncAdminOrdersCount() {
+    const user = getUserCache();
+    if (!user || user.rol !== "admin") return;
+
+    const badge = $("admin-orders-count");
+    if (!badge) return;
+
+    const sb = await getSupabase();
+    if (!sb) return;
+
+    const { data, error } = await sb
+      .from("orders")
+      .select("id")
+      .in("status", ["pending_payment", "payment_review"])
+      .or("client_viewed_at.is.null,updated_at.gt.client_viewed_at");
+
+    if (error) return;
+
+    const total = data.length;
+    badge.textContent = total;
+    badge.style.display = total > 0 ? "inline-flex" : "none";
   }
 
   /* =====================================================
@@ -131,34 +186,26 @@ if (!window.__HEADER_CORE_LOADED__) {
 
     console.log("✅ initHeader ejecutado");
 
-    /* Hamburguesa */
     $("menu-toggle")?.addEventListener("click", toggleDrawer);
-
-    /* Scrim */
     $("user-scrim")?.addEventListener("click", closeDrawer);
 
-    /* Carrito */
     $("cart-btn")?.addEventListener("click", () => {
       location.href = "carrito.html";
     });
 
-    /* Logout */
     $("logout-btn")?.addEventListener("click", () => {
-      console.log("🚪 Logout solicitado");
-
       if (window.supabaseAuth?.logoutUser) {
         window.supabaseAuth.logoutUser();
       } else if (window.corteroLogout) {
         window.corteroLogout();
-      } else {
-        console.error("❌ Logout no disponible");
       }
     });
 
-    /* Sync inicial */
     syncUserUI();
     updateCartCount();
     updateHeaderCartTitle();
+    syncClientOrderNotification();
+    syncAdminOrdersCount();
   }
 
   /* =====================================================
@@ -171,6 +218,8 @@ if (!window.__HEADER_CORE_LOADED__) {
       syncUserUI();
       updateCartCount();
       updateHeaderCartTitle();
+      syncClientOrderNotification();
+      syncAdminOrdersCount();
       closeDrawer();
     });
 
@@ -200,5 +249,7 @@ if (!window.__HEADER_CORE_LOADED__) {
     syncUserUI();
     updateCartCount();
     updateHeaderCartTitle();
+    syncClientOrderNotification();
+    syncAdminOrdersCount();
   });
 }
