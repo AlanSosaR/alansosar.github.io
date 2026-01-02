@@ -191,27 +191,37 @@ if (!window.__HEADER_CORE_LOADED__) {
   ===================================================== */
   let HEADER_INITIALIZED = false;
 
-  function initHeader() {
-    if (HEADER_INITIALIZED) return;
-    HEADER_INITIALIZED = true;
+function initHeader() {
+  if (HEADER_INITIALIZED) return;
+  HEADER_INITIALIZED = true;
 
-    $("menu-toggle")?.addEventListener("click", toggleDrawer);
-    $("user-scrim")?.addEventListener("click", closeDrawer);
+  $("menu-toggle")?.addEventListener("click", toggleDrawer);
+  $("user-scrim")?.addEventListener("click", closeDrawer);
 
-    $("cart-btn")?.addEventListener("click", () => {
-      location.href = "carrito.html";
-    });
+  $("cart-btn")?.addEventListener("click", () => {
+    location.href = "carrito.html";
+  });
 
-    $("logout-btn")?.addEventListener("click", () => {
-      window.supabaseAuth?.logoutUser?.() || window.corteroLogout?.();
-    });
+  // ✅ LOGOUT CORREGIDO
+  $("logout-btn")?.addEventListener("click", async () => {
+    try {
+      if (window.supabaseAuth?.logoutUser) {
+        await window.supabaseAuth.logoutUser();
+      } else if (window.corteroLogout) {
+        await window.corteroLogout();
+      }
+    } finally {
+      document.dispatchEvent(new Event("userLoggedOut"));
+      closeDrawer();
+    }
+  });
 
-    syncUserUI();
-    updateCartCount();
-    updateHeaderCartTitle();
-    syncClientOrderNotification();
-    syncAdminOrdersCount();
-  }
+  syncUserUI();
+  updateCartCount();
+  updateHeaderCartTitle();
+  syncClientOrderNotification();
+  syncAdminOrdersCount();
+}
 
   /* =====================================================
      EVENTOS GLOBALES
