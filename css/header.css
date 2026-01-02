@@ -599,6 +599,33 @@ body.page-carrito.logged #login-desktop {
 }
 
 /* =====================================================
+   BADGE — PEDIDOS (MISMO ESTILO QUE CARRITO)
+===================================================== */
+.drawer-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 20px;
+  height: 20px;
+
+  margin-left: 8px;        /* separación del texto "Pedidos" */
+
+  font-size: 0.75rem;
+  font-weight: 600;
+
+  color: #fff;
+  background-color: #d72638;
+
+  border-radius: 50%;      /* 🔴 círculo perfecto */
+  line-height: 1;
+}
+
+/* Ocultar cuando no hay pedidos */
+.drawer-badge:empty {
+  display: none;
+}
+/* =====================================================
    MÓVIL — CARRITO (LOGUEADO O NO)
    ☰  TEXTO CENTRO  LOGO DERECHA
 ===================================================== */
@@ -713,3 +740,4 @@ body.page-recibo #header-recibo-title {
 body.page-mis-pedidos #header-mis-pedidos-title {
   display: block;
 }
+
