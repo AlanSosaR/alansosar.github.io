@@ -56,7 +56,7 @@ if (!window.__HEADER_CORE_LOADED__) {
   }
 
   /* =====================================================
-     PERFIL + ROL (CLIENTE / ADMIN) — CORREGIDO
+     PERFIL + ROL (CLIENTE / ADMIN)
   ===================================================== */
   function syncUserUI() {
     const user = getUserCache();
@@ -72,9 +72,9 @@ if (!window.__HEADER_CORE_LOADED__) {
       drawer.classList.add("no-user");
       drawer.classList.remove("logged");
 
-      document.querySelectorAll(".admin-only, .client-only").forEach(el => {
-        el.classList.add("hidden");
-      });
+      document.querySelectorAll(".admin-only, .client-only").forEach(el =>
+        el.classList.add("hidden")
+      );
 
       return;
     }
@@ -86,22 +86,27 @@ if (!window.__HEADER_CORE_LOADED__) {
     drawer.classList.remove("no-user");
 
     /* Avatar + textos */
-    $("avatar-user") && ($("avatar-user").src = user.photo_url || "/imagenes/avatar-default.svg");
-    $("avatar-user-drawer") && ($("avatar-user-drawer").src = user.photo_url || "/imagenes/avatar-default.svg");
-    $("drawer-name") && ($("drawer-name").textContent = user.name || "Usuario");
-    $("drawer-email") && ($("drawer-email").textContent = user.email || "");
+    $("avatar-user") &&
+      ($("avatar-user").src = user.photo_url || "/imagenes/avatar-default.svg");
+    $("avatar-user-drawer") &&
+      ($("avatar-user-drawer").src =
+        user.photo_url || "/imagenes/avatar-default.svg");
+    $("drawer-name") &&
+      ($("drawer-name").textContent = user.name || "Usuario");
+    $("drawer-email") &&
+      ($("drawer-email").textContent = user.email || "");
 
     const isAdmin = user.rol === "admin";
 
     /* ---------- ADMIN ---------- */
-    document.querySelectorAll(".admin-only").forEach(el => {
-      el.classList.toggle("hidden", !isAdmin);
-    });
+    document.querySelectorAll(".admin-only").forEach(el =>
+      el.classList.toggle("hidden", !isAdmin)
+    );
 
     /* ---------- CLIENTE ---------- */
-    document.querySelectorAll(".client-only").forEach(el => {
-      el.classList.toggle("hidden", isAdmin);
-    });
+    document.querySelectorAll(".client-only").forEach(el =>
+      el.classList.toggle("hidden", isAdmin)
+    );
   }
 
   /* =====================================================
@@ -109,32 +114,30 @@ if (!window.__HEADER_CORE_LOADED__) {
   ===================================================== */
   async function syncClientOrderNotification() {
     const user = getUserCache();
-    if (!user || user.rol !== "user") return;
+    if (!user || user.rol !== "cliente") return;
 
     const sb = await getSupabase();
     if (!sb) return;
 
-    const { data, error } = await sb
+    const { data } = await sb
       .from("orders")
       .select("id")
       .eq("user_id", user.id)
       .or("client_viewed_at.is.null,updated_at.gt.client_viewed_at");
-
-    if (error) return;
 
     const item = $("mis-pedidos-item");
     if (!item) return;
 
     let dot = $("mis-pedidos-dot");
 
-    if (data.length > 0 && !dot) {
+    if (data?.length > 0 && !dot) {
       dot = document.createElement("span");
       dot.className = "drawer-dot";
       dot.id = "mis-pedidos-dot";
       item.appendChild(dot);
     }
 
-    if (data.length === 0 && dot) {
+    if ((!data || data.length === 0) && dot) {
       dot.remove();
     }
   }
@@ -152,15 +155,12 @@ if (!window.__HEADER_CORE_LOADED__) {
     const sb = await getSupabase();
     if (!sb) return;
 
-    const { data, error } = await sb
+    const { data } = await sb
       .from("orders")
       .select("id")
-      .in("status", ["pending_payment", "payment_review"])
-      .or("client_viewed_at.is.null,updated_at.gt.client_viewed_at");
+      .in("status", ["pending_payment", "payment_review"]);
 
-    if (error) return;
-
-    const total = data.length;
+    const total = data?.length || 0;
     badge.textContent = total;
     badge.style.display = total > 0 ? "inline-flex" : "none";
   }
@@ -191,37 +191,33 @@ if (!window.__HEADER_CORE_LOADED__) {
   ===================================================== */
   let HEADER_INITIALIZED = false;
 
-function initHeader() {
-  if (HEADER_INITIALIZED) return;
-  HEADER_INITIALIZED = true;
+  function initHeader() {
+    if (HEADER_INITIALIZED) return;
+    HEADER_INITIALIZED = true;
 
-  $("menu-toggle")?.addEventListener("click", toggleDrawer);
-  $("user-scrim")?.addEventListener("click", closeDrawer);
+    $("menu-toggle")?.addEventListener("click", toggleDrawer);
+    $("user-scrim")?.addEventListener("click", closeDrawer);
 
-  $("cart-btn")?.addEventListener("click", () => {
-    location.href = "carrito.html";
-  });
+    $("cart-btn")?.addEventListener("click", () => {
+      location.href = "carrito.html";
+    });
 
-  // ✅ LOGOUT CORREGIDO
-  $("logout-btn")?.addEventListener("click", async () => {
-    try {
+    /* 🔑 LOGOUT — SOLO DELEGA */
+    $("logout-btn")?.addEventListener("click", async () => {
       if (window.supabaseAuth?.logoutUser) {
         await window.supabaseAuth.logoutUser();
       } else if (window.corteroLogout) {
         await window.corteroLogout();
       }
-    } finally {
-      document.dispatchEvent(new Event("userLoggedOut"));
       closeDrawer();
-    }
-  });
+    });
 
-  syncUserUI();
-  updateCartCount();
-  updateHeaderCartTitle();
-  syncClientOrderNotification();
-  syncAdminOrdersCount();
-}
+    syncUserUI();
+    updateCartCount();
+    updateHeaderCartTitle();
+    syncClientOrderNotification();
+    syncAdminOrdersCount();
+  }
 
   /* =====================================================
      EVENTOS GLOBALES
