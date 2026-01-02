@@ -82,7 +82,7 @@
 <div id="user-scrim" class="user-scrim"></div>
 
 <!-- =====================================================
-     DRAWER — MATERIAL 3
+     DRAWER — MATERIAL 3 (CLIENTE + ADMIN)
 ====================================================== -->
 <aside id="user-drawer" class="user-drawer no-user">
 
@@ -106,17 +106,16 @@
     </span>
   </a>
 
-  <!-- LÍNEA VERDE (INICIO) -->
   <hr class="user-drawer-divider logged">
 
   <!-- =====================
        CLIENTE
   ====================== -->
   <a href="mis-pedidos.html"
-     class="user-drawer-item logged client-only">
+     class="user-drawer-item logged client-only"
+     id="mis-pedidos-item">
     <span class="material-symbols-outlined">shopping_bag</span>
     <span class="drawer-text">Mis pedidos</span>
-    <span class="drawer-dot" id="mis-pedidos-dot"></span>
   </a>
 
   <a href="historial.html"
@@ -126,45 +125,68 @@
   </a>
 
   <!-- =====================
-       ADMIN
+       ADMIN — OPERACIÓN
   ====================== -->
+  <p class="drawer-section admin-only hidden">OPERACIÓN</p>
+
   <a href="admin-pedidos.html"
      class="user-drawer-item admin-only hidden">
-    <span class="material-symbols-outlined">list_alt</span>
-    Pedidos
+    <span class="material-symbols-outlined">inventory_2</span>
+    <span>Pedidos</span>
+    <span class="drawer-badge" id="admin-orders-count">5</span>
   </a>
 
-  <a href="admin-productos.html"
+  <a href="admin-clientes.html"
      class="user-drawer-item admin-only hidden">
-    <span class="material-symbols-outlined">inventory</span>
-    Productos
-  </a>
-
-  <a href="admin-usuarios.html"
-     class="user-drawer-item admin-only hidden">
-    <span class="material-symbols-outlined">group</span>
-    Usuarios
+    <span class="material-symbols-outlined">groups</span>
+    Clientes
   </a>
 
   <!-- =====================
-       LINKS PÚBLICOS
+       ADMIN — CATÁLOGO
   ====================== -->
-  <a href="/index.html#productos" class="user-drawer-item public-link">
-    <span class="material-symbols-outlined">local_cafe</span>
-    Variedades de café
+  <p class="drawer-section admin-only hidden">CATÁLOGO</p>
+
+  <a href="admin-productos.html"
+     class="user-drawer-item admin-only hidden">
+    <span class="material-symbols-outlined">storefront</span>
+    Productos
   </a>
 
-  <a href="/index.html#nosotros" class="user-drawer-item public-link">
-    <span class="material-symbols-outlined">groups</span>
+  <!-- =====================
+       ADMIN — SISTEMA
+  ====================== -->
+  <p class="drawer-section admin-only hidden">SISTEMA</p>
+
+  <a href="admin-usuarios.html"
+     class="user-drawer-item admin-only hidden">
+    <span class="material-symbols-outlined">person</span>
+    Usuarios
+  </a>
+
+  <a href="admin-configuracion.html"
+     class="user-drawer-item admin-only hidden">
+    <span class="material-symbols-outlined">settings</span>
+    Configuración
+  </a>
+
+  <!-- =====================
+       ADMIN — CONTENIDO
+  ====================== -->
+  <p class="drawer-section admin-only hidden">CONTENIDO</p>
+
+  <a href="/index.html#nosotros"
+     class="user-drawer-item admin-only hidden">
+    <span class="material-symbols-outlined">info</span>
     Quiénes somos
   </a>
 
-  <a href="/index.html#contacto" class="user-drawer-item public-link">
+  <a href="/index.html#contacto"
+     class="user-drawer-item admin-only hidden">
     <span class="material-symbols-outlined">mail</span>
     Contáctanos
   </a>
 
-  <!-- LÍNEA VERDE (FINAL) -->
   <hr class="user-drawer-divider">
 
   <!-- LOGOUT -->
