@@ -82,7 +82,7 @@
 <div id="user-scrim" class="user-scrim"></div>
 
 <!-- =====================================================
-     DRAWER — MATERIAL 3 (CLIENTE + ADMIN)
+     DRAWER — MATERIAL 3 (CLIENTE + ADMIN) LIMPIO
 ====================================================== -->
 <aside id="user-drawer" class="user-drawer no-user">
 
@@ -108,9 +108,7 @@
 
   <hr class="user-drawer-divider logged">
 
-  <!-- =====================
-       CLIENTE
-  ====================== -->
+  <!-- CLIENTE -->
   <a href="mis-pedidos.html"
      class="user-drawer-item logged client-only"
      id="mis-pedidos-item">
@@ -124,11 +122,7 @@
     Historial
   </a>
 
-  <!-- =====================
-       ADMIN — OPERACIÓN
-  ====================== -->
-  <p class="drawer-section admin-only hidden">OPERACIÓN</p>
-
+  <!-- ADMIN -->
   <a href="admin-pedidos.html"
      class="user-drawer-item admin-only hidden">
     <span class="material-symbols-outlined">inventory_2</span>
@@ -142,21 +136,11 @@
     Clientes
   </a>
 
-  <!-- =====================
-       ADMIN — CATÁLOGO
-  ====================== -->
-  <p class="drawer-section admin-only hidden">CATÁLOGO</p>
-
   <a href="admin-productos.html"
      class="user-drawer-item admin-only hidden">
     <span class="material-symbols-outlined">storefront</span>
     Productos
   </a>
-
-  <!-- =====================
-       ADMIN — SISTEMA
-  ====================== -->
-  <p class="drawer-section admin-only hidden">SISTEMA</p>
 
   <a href="admin-usuarios.html"
      class="user-drawer-item admin-only hidden">
@@ -170,19 +154,15 @@
     Configuración
   </a>
 
-  <!-- =====================
-       ADMIN — CONTENIDO
-  ====================== -->
-  <p class="drawer-section admin-only hidden">CONTENIDO</p>
-
+  <!-- CONTENIDO (VISIBLE PARA TODOS) -->
   <a href="/index.html#nosotros"
-     class="user-drawer-item admin-only hidden">
+     class="user-drawer-item">
     <span class="material-symbols-outlined">info</span>
     Quiénes somos
   </a>
 
   <a href="/index.html#contacto"
-     class="user-drawer-item admin-only hidden">
+     class="user-drawer-item">
     <span class="material-symbols-outlined">mail</span>
     Contáctanos
   </a>
