@@ -56,7 +56,7 @@ if (!window.__HEADER_CORE_LOADED__) {
   }
 
   /* =====================================================
-     PERFIL + ROL (CLIENTE / ADMIN)
+     PERFIL + ROL (CLIENTE / ADMIN) — CORREGIDO
   ===================================================== */
   function syncUserUI() {
     const user = getUserCache();
@@ -71,6 +71,11 @@ if (!window.__HEADER_CORE_LOADED__) {
       header.classList.remove("logged");
       drawer.classList.add("no-user");
       drawer.classList.remove("logged");
+
+      document.querySelectorAll(".admin-only, .client-only").forEach(el => {
+        el.classList.add("hidden");
+      });
+
       return;
     }
 
@@ -86,10 +91,16 @@ if (!window.__HEADER_CORE_LOADED__) {
     $("drawer-name") && ($("drawer-name").textContent = user.name || "Usuario");
     $("drawer-email") && ($("drawer-email").textContent = user.email || "");
 
-    /* ---------- ADMIN ---------- */
     const isAdmin = user.rol === "admin";
+
+    /* ---------- ADMIN ---------- */
     document.querySelectorAll(".admin-only").forEach(el => {
       el.classList.toggle("hidden", !isAdmin);
+    });
+
+    /* ---------- CLIENTE ---------- */
+    document.querySelectorAll(".client-only").forEach(el => {
+      el.classList.toggle("hidden", isAdmin);
     });
   }
 
@@ -184,8 +195,6 @@ if (!window.__HEADER_CORE_LOADED__) {
     if (HEADER_INITIALIZED) return;
     HEADER_INITIALIZED = true;
 
-    console.log("✅ initHeader ejecutado");
-
     $("menu-toggle")?.addEventListener("click", toggleDrawer);
     $("user-scrim")?.addEventListener("click", closeDrawer);
 
@@ -194,11 +203,7 @@ if (!window.__HEADER_CORE_LOADED__) {
     });
 
     $("logout-btn")?.addEventListener("click", () => {
-      if (window.supabaseAuth?.logoutUser) {
-        window.supabaseAuth.logoutUser();
-      } else if (window.corteroLogout) {
-        window.corteroLogout();
-      }
+      window.supabaseAuth?.logoutUser?.() || window.corteroLogout?.();
     });
 
     syncUserUI();
