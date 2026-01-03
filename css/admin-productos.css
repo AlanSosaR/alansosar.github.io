@@ -12,6 +12,12 @@
 }
 
 /* =========================
+   VISIBILIDAD PC / MÓVIL
+========================= */
+.desktop-only { display: block; }
+.mobile-only  { display: none; }
+
+/* =========================
    CONTENEDOR GENERAL
 ========================= */
 .admin-products-container {
@@ -22,13 +28,13 @@
 }
 
 /* =========================
-   BARRA SUPERIOR (BUSCAR → AGREGAR)
+   BARRA SUPERIOR
 ========================= */
 .products-actions-bar {
   display: flex;
   align-items: center;
   gap: 16px;
-  margin-bottom: 20px;
+  margin-bottom: 22px;
 }
 
 /* BUSCADOR */
@@ -38,7 +44,7 @@
   align-items: center;
   gap: 8px;
   padding: 10px 16px;
-  border-radius: 18px;
+  border-radius: 20px;
   border: 1px solid var(--gris-line);
   background: var(--blanco);
 }
@@ -57,16 +63,16 @@
   background: transparent;
 }
 
-/* BOTÓN AGREGAR */
+/* BOTÓN */
 .btn-primary {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   background: var(--verde);
   color: #fff;
   border: none;
-  border-radius: 18px;
-  padding: 10px 18px;
+  border-radius: 22px;
+  padding: 12px 22px;
   font-weight: 500;
   cursor: pointer;
   white-space: nowrap;
@@ -77,29 +83,25 @@
 }
 
 /* =========================
-   CARD TABLA
+   TABLA (DESKTOP)
 ========================= */
 .products-card {
   background: var(--blanco);
-  border-radius: 22px;
+  border-radius: 24px;
   padding: 16px;
   box-shadow: 0 10px 28px rgba(0,0,0,0.06);
-  overflow-x: auto; /* 🔑 CLAVE PARA MÓVIL */
+  overflow-x: auto;
 }
 
-/* =========================
-   TABLA
-========================= */
 .products-table {
   width: 100%;
-  min-width: 720px; /* 🔑 evita que se aplaste en móvil */
+  min-width: 780px;
   border-collapse: separate;
   border-spacing: 0;
   border-radius: 16px;
   overflow: hidden;
 }
 
-/* ENCABEZADO CAFÉ */
 .products-table thead {
   background: var(--cafe);
 }
@@ -113,35 +115,27 @@
   white-space: nowrap;
 }
 
-/* FILAS */
-.products-table tbody tr {
-  border-bottom: 1px solid var(--gris-line);
-}
-
-.products-table tbody tr:last-child {
-  border-bottom: none;
-}
-
 .products-table tbody td {
   padding: 14px;
   font-size: 0.95rem;
   color: var(--cafe);
   vertical-align: middle;
   white-space: nowrap;
+  border-bottom: 1px solid var(--gris-line);
 }
 
-/* IMAGEN */
+.products-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
 .products-table td img {
   width: 56px;
   height: 56px;
-  object-fit: cover;
   border-radius: 12px;
-  background: #f0f0f0;
+  object-fit: cover;
 }
 
-/* =========================
-   SWITCH CARRUSEL
-========================= */
+/* SWITCH */
 .switch {
   position: relative;
   width: 46px;
@@ -150,8 +144,6 @@
 
 .switch input {
   opacity: 0;
-  width: 0;
-  height: 0;
 }
 
 .slider {
@@ -160,7 +152,7 @@
   background: #ccc;
   border-radius: 999px;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: .3s;
 }
 
 .slider::before {
@@ -172,7 +164,7 @@
   top: 3px;
   background: #fff;
   border-radius: 50%;
-  transition: transform 0.3s;
+  transition: .3s;
 }
 
 .switch input:checked + .slider {
@@ -183,46 +175,32 @@
   transform: translateX(22px);
 }
 
-/* =========================
-   ESTADO
-========================= */
+/* ESTADO */
 .badge-active {
   background: var(--verde);
   color: #fff;
-  padding: 6px 12px;
+  padding: 6px 14px;
   border-radius: 999px;
   font-size: 0.8rem;
-  font-weight: 500;
 }
 
-/* =========================
-   ACCIONES
-========================= */
+/* ACCIONES */
 .actions {
   display: flex;
-  gap: 8px;
+  gap: 10px;
 }
 
 .action-btn {
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   border: none;
   background: #f4efe9;
   color: var(--cafe);
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
-.action-btn:hover {
-  background: #e4dbd2;
-}
-
-/* =========================
-   FOOTER TABLA
-========================= */
+/* FOOTER */
 .table-footer {
   margin-top: 12px;
   font-size: 0.85rem;
@@ -231,9 +209,82 @@
 }
 
 /* =========================
+   CARDS (MÓVIL)
+========================= */
+.products-mobile {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.product-card {
+  background: var(--blanco);
+  border-radius: 22px;
+  padding: 16px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+}
+
+.product-card-header {
+  display: flex;
+  gap: 14px;
+}
+
+.product-card img {
+  width: 64px;
+  height: 64px;
+  border-radius: 14px;
+  object-fit: cover;
+}
+
+.product-info h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--cafe);
+}
+
+.product-info p {
+  margin: 4px 0;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.product-card-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.product-card-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 14px;
+  border-top: 1px solid var(--gris-line);
+  padding-top: 12px;
+}
+
+.product-card-actions button {
+  background: none;
+  border: none;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.product-card-actions .edit {
+  color: var(--verde);
+}
+
+.product-card-actions .delete {
+  color: #c0392b;
+}
+
+/* =========================
    RESPONSIVE
 ========================= */
-@media (max-width: 768px) {
+@media (max-width: 900px) {
+  .desktop-only { display: none; }
+  .mobile-only  { display: block; }
+
   .products-actions-bar {
     flex-direction: column;
     align-items: stretch;
