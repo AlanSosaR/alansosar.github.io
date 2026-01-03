@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Admin · Productos | Café Cortero</title>
+
+  <!-- Tipografía -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- Material Symbols -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- CSS GLOBAL -->
+  <link rel="stylesheet" href="css/header.css">
+
+  <!-- CSS SOLO DE ESTA PÁGINA -->
+  <link rel="stylesheet" href="css/admin-productos.css">
+</head>
+
+<body class="admin-page admin-products">
+
+  <!-- ⚠️ HEADER SE INYECTA POR JS (IGUAL QUE RECIBO) -->
+
+  <!-- =========================
+       CONTENIDO ADMIN
+  ========================= -->
+  <main class="admin-products-container fade-in">
+
+    <!-- SIDEBAR ADMIN -->
+    <aside class="admin-sidebar">
+
+      <div class="sidebar-brand">
+        <img src="imagenes/logo.png" alt="Café Cortero">
+        <span>Café Cortero</span>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="admin.html">
+          <span class="material-symbols-outlined">dashboard</span>
+          Dashboard
+        </a>
+
+        <a href="admin-productos.html" class="active">
+          <span class="material-symbols-outlined">storefront</span>
+          Productos
+        </a>
+
+        <a href="admin-pedidos.html">
+          <span class="material-symbols-outlined">shopping_bag</span>
+          Pedidos
+        </a>
+
+        <a href="admin-clientes.html">
+          <span class="material-symbols-outlined">group</span>
+          Clientes
+        </a>
+
+        <a href="admin-ajustes.html">
+          <span class="material-symbols-outlined">settings</span>
+          Ajustes
+        </a>
+      </nav>
+
+    </aside>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <section class="admin-content">
+
+      <!-- HEADER DEL MÓDULO -->
+      <div class="products-header">
+
+        <h1>Productos</h1>
+
+        <div class="products-actions">
+
+          <div class="search-box">
+            <span class="material-symbols-outlined">search</span>
+            <input
+              type="search"
+              id="search-products"
+              placeholder="Buscar producto…"
+            />
+          </div>
+
+          <button class="btn-primary" id="btnAddProduct">
+            <span class="material-symbols-outlined">add</span>
+            Agregar producto
+          </button>
+
+        </div>
+      </div>
+
+      <!-- TABLA -->
+      <div class="products-card">
+
+        <table class="products-table">
+          <thead>
+            <tr>
+              <th>Imagen</th>
+              <th>Nombre</th>
+              <th>Precio</th>
+              <th>Stock</th>
+              <th>Carrusel</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+
+          <tbody id="products-body">
+            <!-- JS inyecta filas -->
+          </tbody>
+        </table>
+
+        <div class="table-footer">
+          <span id="products-count">Mostrando 0 productos</span>
+        </div>
+
+      </div>
+
+    </section>
+  </main>
+
+  <!-- SNACKBAR -->
+  <div id="snackbar" class="snackbar"></div>
+
+  <!-- =========================
+       SCRIPTS (MISMA ARQUITECTURA)
+  ========================= -->
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client-core.js"></script>
+
+  <!-- 🔑 MODO DE PÁGINA -->
+  <script>
+    window.PAGE_MODE = "admin-products";
+  </script>
+
+  <!-- HEADER CORE -->
+  <script src="js/header.js"></script>
+
+  <!-- AUTH UI -->
+  <script src="js/auth-ui.js"></script>
+
+  <!-- LAYOUT (INYECTA HEADER) -->
+  <script src="js/layout.js"></script>
+
+  <!-- LÓGICA DE ESTA PÁGINA -->
+  <script src="js/admin-productos.js"></script>
+
+</body>
+</html>
