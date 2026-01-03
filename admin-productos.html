@@ -7,22 +7,13 @@
   <title>Admin · Productos | Café Cortero</title>
 
   <!-- Tipografía -->
-  <link
-    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap"
-    rel="stylesheet"
-  />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
 
   <!-- Material Symbols -->
-  <link
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
-    rel="stylesheet"
-  />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 
   <!-- Font Awesome -->
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-  />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
   <!-- CSS GLOBAL -->
   <link rel="stylesheet" href="css/header.css" />
@@ -34,16 +25,16 @@
 <body class="admin-page admin-products">
 
   <!-- ⚠️ HEADER GLOBAL SE INYECTA POR JS -->
-  <!-- header.js + layout.js -->
 
   <!-- =========================
        CONTENIDO ADMIN PRODUCTOS
   ========================= -->
   <main class="admin-products-container fade-in">
 
-    <!-- BARRA SUPERIOR: BUSCAR + AGREGAR -->
-    <div class="products-actions-bar">
+    <!-- ACCIONES SUPERIORES -->
+    <section class="products-actions-bar">
 
+      <!-- BUSCADOR (PRIMERO) -->
       <div class="search-box">
         <span class="material-symbols-outlined">search</span>
         <input
@@ -53,15 +44,16 @@
         />
       </div>
 
+      <!-- AGREGAR PRODUCTO (SEGUNDO) -->
       <button class="btn-primary" id="btnAddProduct">
         <span class="material-symbols-outlined">add</span>
         Agregar producto
       </button>
 
-    </div>
+    </section>
 
-    <!-- TABLA DE PRODUCTOS -->
-    <div class="products-card">
+    <!-- TABLA (TERCERO) -->
+    <section class="products-card">
 
       <table class="products-table">
         <thead>
@@ -85,7 +77,7 @@
         <span id="products-count">Mostrando 0 productos</span>
       </div>
 
-    </div>
+    </section>
 
   </main>
 
