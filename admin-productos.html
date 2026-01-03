@@ -7,22 +7,13 @@
   <title>Admin · Productos | Café Cortero</title>
 
   <!-- Tipografía -->
-  <link
-    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap"
-    rel="stylesheet"
-  />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
 
   <!-- Material Symbols -->
-  <link
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
-    rel="stylesheet"
-  />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 
   <!-- Font Awesome -->
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-  />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
   <!-- CSS GLOBAL -->
   <link rel="stylesheet" href="css/header.css" />
@@ -34,7 +25,6 @@
 <body class="admin-page admin-products">
 
   <!-- ⚠️ HEADER GLOBAL SE INYECTA POR JS -->
-  <!-- header.js + layout.js -->
 
   <!-- =========================
        CONTENIDO ADMIN PRODUCTOS
@@ -43,21 +33,19 @@
 
     <!-- =========================
          ACCIONES SUPERIORES
+         (Buscar → Agregar)
     ========================= -->
     <section class="products-actions-bar">
 
-      <!-- BUSCADOR -->
       <div class="search-box">
         <span class="material-symbols-outlined">search</span>
         <input
           type="search"
           id="search-products"
           placeholder="Buscar producto…"
-          autocomplete="off"
         />
       </div>
 
-      <!-- AGREGAR PRODUCTO -->
       <button class="btn-primary" id="btnAddProduct">
         <span class="material-symbols-outlined">add</span>
         Agregar producto
@@ -66,48 +54,47 @@
     </section>
 
     <!-- =========================
-         CONTENIDO (TABLA + CARDS)
+         LISTADO DESKTOP (TABLA)
     ========================= -->
-    <section class="products-card">
+    <section class="products-card desktop-only">
 
-      <!-- ===== TABLA (PC / TABLET) ===== -->
-      <div class="table-scroll">
-        <table class="products-table">
-          <thead>
-            <tr>
-              <th>Imagen</th>
-              <th>Nombre</th>
-              <th>Precio</th>
-              <th>Stock</th>
-              <th>Carrusel</th>
-              <th>Estado</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
+      <table class="products-table">
+        <thead>
+          <tr>
+            <th>Imagen</th>
+            <th>Nombre</th>
+            <th>Precio</th>
+            <th>Stock</th>
+            <th>Carrusel</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
 
-          <tbody id="products-body">
-            <!-- FILAS INYECTADAS POR JS -->
-          </tbody>
-        </table>
-      </div>
+        <tbody id="products-body">
+          <!-- FILAS INYECTADAS POR JS -->
+        </tbody>
+      </table>
 
-      <!-- ===== CARDS (SOLO MÓVIL) ===== -->
-      <div class="products-cards" id="products-cards">
-        <!-- CARDS INYECTADAS POR JS -->
-      </div>
-
-      <!-- FOOTER -->
       <div class="table-footer">
         <span id="products-count">Mostrando 0 productos</span>
       </div>
 
     </section>
 
+    <!-- =========================
+         LISTADO MÓVIL (CARDS)
+    ========================= -->
+    <section class="products-mobile mobile-only" id="products-mobile">
+      <!--
+        Cards inyectadas por JS
+        (una card por producto)
+      -->
+    </section>
+
   </main>
 
-  <!-- =========================
-       SNACKBAR
-  ========================= -->
+  <!-- SNACKBAR -->
   <div id="snackbar" class="snackbar"></div>
 
   <!-- =========================
