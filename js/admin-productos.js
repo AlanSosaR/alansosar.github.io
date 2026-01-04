@@ -1,4 +1,4 @@
-console.log("🧩 admin-productos.js — LISTADO PRODUCTOS (FINAL REAL)");
+console.log("🧩 admin-productos.js — FINAL SIN HTML");
 
 /* ============================================================
    ESPERAR SUPABASE
@@ -24,6 +24,9 @@ const searchInput = document.getElementById("search-products");
 const productsCount = document.getElementById("products-count");
 const btnAddProduct = document.getElementById("btnAddProduct");
 
+const rowTemplate = document.getElementById("tpl-product-row");
+const cardTemplate = document.getElementById("tpl-product-card");
+
 /* ============================================================
    ESTADO
 ============================================================ */
@@ -40,125 +43,77 @@ function formatPrice(value, currency = "HNL") {
   }).format(value);
 }
 
-function showSnackbar(message) {
-  const bar = document.getElementById("snackbar");
-  if (!bar) return;
-  bar.textContent = message;
-  bar.classList.add("show");
-  setTimeout(() => bar.classList.remove("show"), 3200);
-}
-
-function isActivo(product) {
-  return product.status === "activo";
+function isActivo(p) {
+  return p.status === "activo";
 }
 
 /* ============================================================
-   RENDER DESKTOP (TABLA)
+   RENDER DESKTOP
 ============================================================ */
 function renderTable(list) {
   tbody.innerHTML = "";
 
   if (!list.length) {
-    tbody.innerHTML = `
-      <tr>
-        <td colspan="7" style="text-align:center; padding:24px;">
-          No hay productos
-        </td>
-      </tr>`;
+    productsCount.textContent = "Mostrando 0 productos";
     return;
   }
 
   list.forEach(p => {
-    const tr = document.createElement("tr");
+    const row = rowTemplate.content.cloneNode(true);
 
-    tr.innerHTML = `
-      <td>
-        <img
-          src="${p.image_url || "imagenes/no-image.png"}"
-          alt="${p.name}"
-          class="product-thumb"
-          loading="lazy"
-          onerror="this.src='imagenes/no-image.png'"
-        >
-      </td>
+    const img = row.querySelector("img");
+    img.src = p.image_url || "imagenes/no-image.png";
+    img.onerror = () => img.src = "imagenes/no-image.png";
+    img.alt = p.name;
 
-      <td>${p.name}</td>
-      <td>${formatPrice(p.price, p.currency)}</td>
-      <td>${p.stock}</td>
+    row.querySelector(".p-name").textContent = p.name;
+    row.querySelector(".p-price").textContent = formatPrice(p.price, p.currency);
+    row.querySelector(".p-stock").textContent = p.stock;
 
-      <td>
-        <span class="badge ${p.stock > 0 ? "ok" : "off"}">
-          ${p.stock > 0 ? "Sí" : "No"}
-        </span>
-      </td>
+    const carousel = row.querySelector(".p-carousel");
+    carousel.textContent = p.stock > 0 ? "Sí" : "No";
+    carousel.className = `badge ${p.stock > 0 ? "ok" : "off"}`;
 
-      <td>
-        <span class="badge ${isActivo(p) ? "active" : "inactive"}">
-          ${isActivo(p) ? "Activo" : "Inactivo"}
-        </span>
-      </td>
+    const status = row.querySelector(".p-status");
+    status.textContent = isActivo(p) ? "Activo" : "Inactivo";
+    status.className = `badge ${isActivo(p) ? "active" : "inactive"}`;
 
-      <td class="actions">
-        <button class="icon-btn" title="Editar" data-id="${p.id}">
-          <span class="material-symbols-outlined">edit</span>
-        </button>
-        <button class="icon-btn danger" title="Eliminar" data-id="${p.id}">
-          <span class="material-symbols-outlined">delete</span>
-        </button>
-      </td>
-    `;
+    row.querySelector(".edit").dataset.id = p.id;
+    row.querySelector(".delete").dataset.id = p.id;
 
-    tbody.appendChild(tr);
+    tbody.appendChild(row);
   });
 }
 
 /* ============================================================
-   RENDER MÓVIL (CARDS)
+   RENDER MÓVIL
 ============================================================ */
 function renderMobile(list) {
   mobileContainer.innerHTML = "";
 
-  if (!list.length) {
-    mobileContainer.innerHTML = `
-      <p style="text-align:center; opacity:.65;">
-        No hay productos
-      </p>`;
-    return;
-  }
+  if (!list.length) return;
 
   list.forEach(p => {
-    const card = document.createElement("article");
-    card.className = "product-card";
+    const card = cardTemplate.content.cloneNode(true);
 
-    card.innerHTML = `
-      <img
-        src="${p.image_url || "imagenes/no-image.png"}"
-        alt="${p.name}"
-        loading="lazy"
-        onerror="this.src='imagenes/no-image.png'"
-      >
+    const img = card.querySelector("img");
+    img.src = p.image_url || "imagenes/no-image.png";
+    img.onerror = () => img.src = "imagenes/no-image.png";
+    img.alt = p.name;
 
-      <div class="product-card-body">
-        <h3>${p.name}</h3>
-        <p class="price">${formatPrice(p.price, p.currency)}</p>
+    card.querySelector(".p-name").textContent = p.name;
+    card.querySelector(".p-price").textContent = formatPrice(p.price, p.currency);
 
-        <div class="meta">
-          <span>Stock: ${p.stock}</span>
-          <span class="status ${isActivo(p) ? "active" : "inactive"}">
-            ${isActivo(p) ? "Activo" : "Inactivo"}
-          </span>
-        </div>
-
-        <div class="actions">
-          <button class="icon-btn" data-id="${p.id}">
-            <span class="material-symbols-outlined">edit</span>
-          </button>
-          <button class="icon-btn danger" data-id="${p.id}">
-            <span class="material-symbols-outlined">delete</span>
-          </button>
-        </div>
-      </div>
+    const stock = card.querySelector(".p-stock");
+    stock.innerHTML = `
+      Stock: ${p.stock}
+      <span class="status ${isActivo(p) ? "active" : "inactive"}">
+        ${isActivo(p) ? "Activo" : "Inactivo"}
+      </span>
     `;
+
+    card.querySelector(".edit").dataset.id = p.id;
+    card.querySelector(".delete").dataset.id = p.id;
 
     mobileContainer.appendChild(card);
   });
@@ -194,14 +149,11 @@ async function cargarProductos() {
     .order("created_at", { ascending: false });
 
   if (error) {
-    console.error("❌ Error cargando productos", error);
-    showSnackbar("Error cargando productos");
+    console.error(error);
     return;
   }
 
   products = data || [];
-  filteredProducts = [...products];
-
   aplicarFiltro();
 }
 
