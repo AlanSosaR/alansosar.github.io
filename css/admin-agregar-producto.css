@@ -1,9 +1,9 @@
 /* ============================================================
-   ADMIN — AGREGAR PRODUCTO (FINAL CORREGIDO)
+   ADMIN — AGREGAR PRODUCTO (FINAL DEFINITIVO)
    ✔ Material 3 real
-   ✔ Upload ocupa todo el bloque
-   ✔ Preview reemplaza contenido
-   ✔ Switch de estado real
+   ✔ Upload con preview reemplazable
+   ✔ Validaciones visuales
+   ✔ Switch de estado correcto
 ============================================================ */
 
 /* ================= ROOT ================= */
@@ -74,6 +74,11 @@ body.header-checkout {
   cursor: pointer;
 }
 
+.back-btn .material-symbols-outlined {
+  font-size: 26px;
+  color: var(--verde);
+}
+
 /* ================= TARJETA INTERNA ================= */
 .profile-inner-card {
   border-radius: 22px;
@@ -83,7 +88,7 @@ body.header-checkout {
 }
 
 /* ============================================================
-   UPLOAD DE IMAGEN (CORREGIDO)
+   UPLOAD DE IMAGEN
 ============================================================ */
 .upload-box {
   position: relative;
@@ -103,11 +108,6 @@ body.header-checkout {
   cursor: pointer;
 }
 
-.upload-box.has-image {
-  padding: 0;
-  border: none;
-}
-
 .upload-icon {
   font-size: 44px;
   color: var(--verde);
@@ -125,13 +125,25 @@ body.header-checkout {
 
 .upload-preview {
   width: 100%;
-  height: 240px;
+  height: 260px;
   object-fit: cover;
   border-radius: 18px;
   display: block;
 }
 
 .upload-preview.hidden {
+  display: none;
+}
+
+/* Ocultar texto cuando hay imagen */
+.upload-box.has-image {
+  padding: 0;
+  border: none;
+}
+
+.upload-box.has-image .upload-icon,
+.upload-box.has-image .upload-title,
+.upload-box.has-image .upload-hint {
   display: none;
 }
 
@@ -178,9 +190,9 @@ body.header-checkout {
   transform: translateY(-50%);
   font-size: 1rem;
   color: rgba(0,0,0,.45);
-  transition: .22s ease;
   pointer-events: none;
   background: #fff;
+  transition: .22s ease;
 }
 
 .m3-input:focus-within .floating-label,
@@ -231,14 +243,20 @@ body.header-checkout {
 ============================================================ */
 .estado-field {
   display: flex;
-  align-items: center;
-  gap: 1rem;
+  flex-direction: column;
+  gap: .75rem;
 }
 
 .field-title {
-  font-weight: 500;
-  margin: 0;
-  min-width: 80px;
+  font-weight: 600;
+  font-size: .95rem;
+  color: var(--marron);
+}
+
+.estado-switch-wrapper {
+  display: flex;
+  align-items: center;
+  gap: .9rem;
 }
 
 /* SWITCH */
@@ -332,6 +350,7 @@ body.header-checkout {
 .m3-btn.loading .loader {
   display: inline-block;
 }
+
 .m3-btn.loading .btn-text {
   opacity: .6;
 }
