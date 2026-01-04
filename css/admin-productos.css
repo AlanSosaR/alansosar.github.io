@@ -1,45 +1,35 @@
 /* =========================================================
-   VARIABLES DE MARCA — Café Cortero
+   VARIABLES DE MARCA
 ========================================================= */
 :root {
   --cafe: #512615;
   --cafe-soft: #6b3a1e;
   --verde: #33673B;
   --verde-soft: #4a8a57;
-
+  --rojo: #c0392b;
   --gris-bg: #fafafa;
   --gris-line: #e6e2de;
-  --gris-text: #6b6b6b;
-
+  --gris-text: #777;
   --blanco: #ffffff;
-
-  --radius-xl: 28px;
-  --radius-lg: 22px;
-  --radius-md: 16px;
-  --radius-sm: 12px;
-
-  --shadow-soft:
-    0 10px 30px rgba(0,0,0,.08),
-    0 2px 8px rgba(0,0,0,.04);
 }
 
 /* =========================================================
-   VISIBILIDAD RESPONSIVE (CLAVE)
+   VISIBILIDAD RESPONSIVE
 ========================================================= */
 .desktop-only { display: block; }
 .mobile-only  { display: none; }
 
 @media (max-width: 900px) {
-  .desktop-only { display: none !important; }
-  .mobile-only  { display: block !important; }
+  .desktop-only { display: none; }
+  .mobile-only  { display: block; }
 }
 
 /* =========================================================
    CONTENEDOR GENERAL
 ========================================================= */
 .admin-products-container {
-  padding: 24px;
-  padding-top: calc(var(--header-height, 72px) + 20px);
+  padding: 20px;
+  padding-top: calc(var(--header-height, 72px) + 16px);
   background: var(--gris-bg);
   min-height: 100vh;
 }
@@ -49,8 +39,9 @@
 ========================================================= */
 .products-actions-bar {
   display: flex;
+  align-items: center;
   gap: 16px;
-  margin-bottom: 26px;
+  margin-bottom: 20px;
 }
 
 @media (max-width: 900px) {
@@ -59,21 +50,18 @@
   }
 }
 
-/* BUSCADOR */
+/* =========================================================
+   BUSCADOR
+========================================================= */
 .search-box {
   flex: 1;
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 14px 18px;
+  padding: 12px 16px;
   border-radius: 999px;
-  background: var(--blanco);
   border: 1px solid var(--gris-line);
-}
-
-.search-box span {
-  font-size: 22px;
-  color: var(--cafe-soft);
+  background: var(--blanco);
 }
 
 .search-box input {
@@ -81,23 +69,23 @@
   outline: none;
   flex: 1;
   font-size: 0.95rem;
-  color: var(--cafe);
-  background: transparent;
 }
 
-/* BOTÓN */
+/* =========================================================
+   BOTÓN AGREGAR
+========================================================= */
 .btn-primary {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
-  padding: 14px 26px;
-  border-radius: 999px;
-  border: none;
   background: var(--verde);
   color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 14px 22px;
   font-weight: 500;
   cursor: pointer;
-  white-space: nowrap;
 }
 
 .btn-primary:hover {
@@ -106,64 +94,120 @@
 
 @media (max-width: 900px) {
   .btn-primary {
-    justify-content: center;
+    width: 100%;
   }
 }
 
 /* =========================================================
-   TABLA — DESKTOP
+   ================= DESKTOP (TABLA) =================
 ========================================================= */
 .products-card {
   background: var(--blanco);
-  border-radius: var(--radius-xl);
-  padding: 18px;
-  box-shadow: var(--shadow-soft);
+  border-radius: 24px;
+  padding: 16px;
+  box-shadow: 0 12px 28px rgba(0,0,0,.08);
   overflow-x: auto;
 }
 
 .products-table {
   width: 100%;
-  min-width: 820px;
-  border-collapse: separate;
-  border-spacing: 0;
+  border-collapse: collapse;
 }
 
 .products-table thead {
   background: var(--cafe);
 }
 
-.products-table thead th {
-  padding: 14px;
-  font-size: 0.9rem;
-  font-weight: 500;
+.products-table th {
   color: #fff;
+  padding: 14px;
+  font-weight: 500;
   text-align: left;
 }
 
-.products-table tbody td {
+.products-table td {
   padding: 14px;
-  font-size: 0.95rem;
-  color: var(--cafe);
   border-bottom: 1px solid var(--gris-line);
-  vertical-align: middle;
 }
 
-.products-table tbody tr:last-child td {
-  border-bottom: none;
-}
-
-.products-table img {
-  width: 58px;
-  height: 58px;
+.product-thumb-box {
+  width: 56px;
+  height: 56px;
   border-radius: 14px;
+  overflow: hidden;
+  background: #eee;
+}
+
+.product-thumb-box img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
 }
 
-/* ESTADOS */
+/* =========================================================
+   ================= MÓVIL (CARDS) =================
+========================================================= */
+.products-mobile {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* CARD BASE */
+.product-card {
+  background: var(--blanco);
+  border-radius: 26px;
+  padding: 18px;
+  box-shadow: 0 10px 26px rgba(0,0,0,.08);
+}
+
+/* HEADER CARD */
+.product-card-header {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+/* IMAGEN */
+.product-card .product-thumb-box {
+  width: 76px;
+  height: 76px;
+  border-radius: 18px;
+  flex-shrink: 0;
+}
+
+/* INFO */
+.product-info h3 {
+  margin: 0;
+  font-size: 1.05rem;
+  color: var(--cafe);
+}
+
+.product-info .p-price {
+  margin: 4px 0;
+  font-weight: 500;
+}
+
+.product-info .p-stock {
+  font-size: .9rem;
+  color: var(--gris-text);
+}
+
+/* =========================================================
+   CARRUSEL + ESTADO
+========================================================= */
+.p-carousel {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: .8rem;
+  margin-top: 6px;
+}
+
 .badge {
   padding: 6px 14px;
   border-radius: 999px;
-  font-size: 0.8rem;
+  font-size: .75rem;
   font-weight: 500;
 }
 
@@ -173,151 +217,38 @@
 }
 
 .badge.inactive {
-  background: #ccc;
-  color: #333;
-}
-
-/* ACCIONES */
-.actions {
-  display: flex;
-  gap: 10px;
-}
-
-.icon-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: none;
-  background: #f3efe9;
-  color: var(--cafe);
-  cursor: pointer;
-}
-
-.icon-btn.danger {
-  color: #c0392b;
+  background: #ddd;
+  color: #555;
 }
 
 /* =========================================================
-   CARDS — MÓVIL (MATERIAL 3 EXPRESSIVE)
+   DIVISOR
 ========================================================= */
-.products-mobile {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-/* CARD */
-.product-card {
-  background: var(--blanco);
-  border-radius: var(--radius-xl);
-  padding: 18px;
-  box-shadow: var(--shadow-soft);
-}
-
-/* HEADER */
-.product-card-header {
-  display: flex;
-  gap: 18px;
-  align-items: center;
-}
-
-/* IMAGEN GRANDE */
-.product-card-header img {
-  width: 96px;
-  height: 96px;
-  border-radius: var(--radius-lg);
-  object-fit: cover;
-  flex-shrink: 0;
-}
-
-/* INFO */
-.product-info {
-  flex: 1;
-}
-
-.product-info h3 {
-  margin: 0;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--cafe);
-}
-
-.product-info p {
-  margin: 6px 0 0;
-  font-size: 0.9rem;
-  color: var(--gris-text);
-}
-
-/* FILA ESTADO */
-.product-status-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 10px;
-}
-
-.product-status-label {
-  font-size: 0.9rem;
-  color: var(--gris-text);
-}
-
-/* SWITCH ESTILO MATERIAL */
-.switch {
-  position: relative;
-  width: 52px;
-  height: 28px;
-}
-
-.switch input {
-  opacity: 0;
-}
-
-.slider {
-  position: absolute;
-  inset: 0;
-  background: #dcdcdc;
-  border-radius: 999px;
-  transition: .25s;
-}
-
-.slider::before {
+.product-card::after {
   content: "";
-  position: absolute;
-  width: 22px;
-  height: 22px;
-  left: 3px;
-  top: 3px;
-  background: #fff;
-  border-radius: 50%;
-  transition: .25s;
+  display: block;
+  height: 1px;
+  background: var(--gris-line);
+  margin: 16px 0;
 }
 
-.switch input:checked + .slider {
-  background: var(--verde);
-}
-
-.switch input:checked + .slider::before {
-  transform: translateX(24px);
-}
-
-/* FOOTER */
+/* =========================================================
+   ACCIONES
+========================================================= */
 .product-card-actions {
   display: flex;
   justify-content: space-between;
-  margin-top: 18px;
-  padding-top: 14px;
-  border-top: 1px solid var(--gris-line);
+  align-items: center;
 }
 
 .product-card-actions button {
-  background: none;
-  border: none;
-  font-weight: 500;
-  font-size: 0.95rem;
-  cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
+  border: none;
+  background: none;
+  font-weight: 500;
+  cursor: pointer;
 }
 
 .product-card-actions .edit {
@@ -325,13 +256,16 @@
 }
 
 .product-card-actions .delete {
-  color: #c0392b;
+  color: var(--rojo);
 }
 
-/* FOOTER TEXTO */
-.table-footer {
-  margin-top: 16px;
-  font-size: 0.85rem;
-  color: #777;
+/* =========================================================
+   FOOTER CONTADOR
+========================================================= */
+.table-footer,
+.products-footer {
   text-align: center;
+  margin-top: 18px;
+  font-size: .85rem;
+  color: var(--gris-text);
 }
