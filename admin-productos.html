@@ -26,14 +26,13 @@
 
   <!-- ⚠️ HEADER GLOBAL SE INYECTA POR JS -->
 
-  <!-- =========================
+  <!-- =====================================================
        CONTENIDO ADMIN PRODUCTOS
-  ========================= -->
+  ====================================================== -->
   <main class="admin-products-container fade-in">
 
     <!-- =========================
          ACCIONES SUPERIORES
-         (Buscar → Agregar)
     ========================= -->
     <section class="products-actions-bar">
 
@@ -72,7 +71,7 @@
         </thead>
 
         <tbody id="products-body">
-          <!-- FILAS INYECTADAS POR JS -->
+          <!-- JS inyecta filas -->
         </tbody>
       </table>
 
@@ -86,40 +85,96 @@
          LISTADO MÓVIL (CARDS)
     ========================= -->
     <section class="products-mobile mobile-only" id="products-mobile">
-      <!--
-        Cards inyectadas por JS
-        (una card por producto)
-      -->
+      <!-- JS inyecta cards -->
     </section>
 
   </main>
 
-  <!-- SNACKBAR -->
+  <!-- =========================
+       TEMPLATES (NO SE RENDERIZAN)
+  ========================= -->
+
+  <!-- TEMPLATE FILA DESKTOP -->
+  <template id="tpl-product-row">
+    <tr>
+      <td>
+        <div class="product-thumb-box">
+          <img alt="" />
+        </div>
+      </td>
+
+      <td class="p-name"></td>
+      <td class="p-price"></td>
+      <td class="p-stock"></td>
+      <td class="p-carousel badge"></td>
+      <td class="p-status badge"></td>
+
+      <td class="actions">
+        <button class="icon-btn edit" title="Editar">
+          <span class="material-symbols-outlined">edit</span>
+        </button>
+        <button class="icon-btn danger delete" title="Eliminar">
+          <span class="material-symbols-outlined">delete</span>
+        </button>
+      </td>
+    </tr>
+  </template>
+
+  <!-- TEMPLATE CARD MÓVIL -->
+  <template id="tpl-product-card">
+    <article class="product-card">
+
+      <div class="product-card-header">
+        <div class="product-thumb-box">
+          <img alt="" />
+        </div>
+
+        <div class="product-info">
+          <h3 class="p-name"></h3>
+          <p class="p-price"></p>
+          <p class="p-stock"></p>
+        </div>
+      </div>
+
+      <div class="product-card-actions">
+        <button class="edit">
+          <span class="material-symbols-outlined">edit</span>
+          Editar
+        </button>
+
+        <button class="delete">
+          <span class="material-symbols-outlined">delete</span>
+          Eliminar
+        </button>
+      </div>
+
+    </article>
+  </template>
+
+  <!-- =========================
+       SNACKBAR
+  ========================= -->
   <div id="snackbar" class="snackbar"></div>
 
   <!-- =========================
-       SCRIPTS (MISMA ARQUITECTURA)
+       SCRIPTS
   ========================= -->
 
   <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-client-core.js"></script>
 
-  <!-- 🔑 MODO DE PÁGINA -->
+  <!-- MODO DE PÁGINA -->
   <script>
     window.PAGE_MODE = "admin-products";
   </script>
 
-  <!-- HEADER CORE -->
+  <!-- CORE -->
   <script src="js/header.js"></script>
-
-  <!-- AUTH UI -->
   <script src="js/auth-ui.js"></script>
-
-  <!-- LAYOUT (INYECTA HEADER) -->
   <script src="js/layout.js"></script>
 
-  <!-- LÓGICA DE ESTA PÁGINA -->
+  <!-- LÓGICA -->
   <script src="js/admin-productos.js"></script>
 
 </body>
