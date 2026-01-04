@@ -1,9 +1,8 @@
 /* ============================================================
-   ADMIN — AGREGAR PRODUCTO
-   ✔ Basado en Detalles de entrega (FEB 2025)
-   ✔ Labels flotantes Material 3
-   ✔ Compatible con HEADER GLOBAL
-   ✔ Sin interferir con drawer / menú
+   ADMIN — AGREGAR PRODUCTO (FINAL)
+   ✔ Material 3 real
+   ✔ Upload con preview
+   ✔ Estados error / ok
 ============================================================ */
 
 /* ================= ROOT ================= */
@@ -17,6 +16,7 @@
   --border-cafe: rgba(81, 38, 21, 0.75);
   --input-border: rgba(0,0,0,0.22);
   --error: #B3261E;
+  --ok: #2e7d32;
 }
 
 /* ================= BASE ================= */
@@ -27,111 +27,100 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* ============================================================
-   OFFSET POR HEADER GLOBAL
-============================================================ */
+/* ================= OFFSET HEADER ================= */
 body.header-checkout {
-  padding-top: 96px; /* Desktop */
+  padding-top: 96px;
 }
-
 @media (max-width: 900px) {
   body.header-checkout {
-    padding-top: 88px; /* Móvil */
+    padding-top: 88px;
   }
 }
 
-/* ============================================================
-   CONTENEDOR PRINCIPAL
-============================================================ */
+/* ================= CONTENEDOR ================= */
 .profile-container {
   max-width: 900px;
   margin: 32px auto 2.5rem;
   padding: 0 1rem;
 }
 
-@media (max-width: 900px) {
-  .profile-container {
-    margin-top: 24px;
-  }
-}
-
-/* ============================================================
-   TARJETA EXTERIOR
-============================================================ */
+/* ================= TARJETA ================= */
 .profile-card {
   position: relative;
-  width: 100%;
-  max-width: 900px;
-  margin: 0 auto;
-
   background: var(--blanco);
   border-radius: 26px;
-
-  padding-top: 6.8rem;
-  padding-left: 24px;
-  padding-right: 24px;
-  padding-bottom: 3rem;
-
-  box-shadow:
-    0 18px 44px rgba(0,0,0,0.10),
-    0 6px 16px rgba(0,0,0,0.08);
+  padding: 6.8rem 24px 3rem;
+  box-shadow: 0 18px 44px rgba(0,0,0,.1), 0 6px 16px rgba(0,0,0,.08);
 }
 
-@media (max-width: 900px) {
-  .profile-card {
-    padding-top: 5.4rem;
-    padding-left: 16px;
-    padding-right: 16px;
-    padding-bottom: 24px;
-    border-radius: 24px;
-  }
-}
-
-/* ============================================================
-   BOTÓN ATRÁS
-============================================================ */
+/* ================= BOTÓN ATRÁS ================= */
 .back-btn {
   position: absolute;
   top: 22px;
   left: 22px;
-
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: #ffffff;
+  background: #fff;
   border: none;
-
-  box-shadow: 0 5px 16px rgba(0,0,0,0.15);
-
+  box-shadow: 0 5px 16px rgba(0,0,0,.15);
   display: flex;
   align-items: center;
   justify-content: center;
-
   cursor: pointer;
-  transition: .25s ease;
 }
 
-.back-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 7px 20px rgba(0,0,0,0.20);
-}
-
-.back-btn .material-symbols-outlined {
-  font-size: 26px;
-  font-weight: 600;
-  color: var(--verde);
+/* ================= TARJETA INTERNA ================= */
+.profile-inner-card {
+  border-radius: 22px;
+  padding: 3rem 2rem;
+  border: 1.8px solid var(--border-cafe);
+  box-shadow: 0 4px 14px rgba(0,0,0,.05);
 }
 
 /* ============================================================
-   TARJETA INTERIOR
+   UPLOAD DE IMAGEN
 ============================================================ */
-.profile-inner-card {
-  background: #ffffff;
-  border-radius: 22px;
-  padding: 3rem 2rem;
+.upload-box {
+  position: relative;
+  border: 2px dashed rgba(0,0,0,.25);
+  border-radius: 18px;
+  padding: 2.2rem 1rem;
+  text-align: center;
+  cursor: pointer;
+  background: #fafafa;
+}
 
-  border: 1.8px solid var(--border-cafe);
-  box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+.upload-box.has-image {
+  padding: 0;
+  border: none;
+}
+
+.upload-icon {
+  font-size: 44px;
+  color: var(--verde);
+}
+
+.upload-title {
+  font-weight: 600;
+  margin-top: .75rem;
+}
+
+.upload-hint {
+  font-size: .85rem;
+  color: rgba(0,0,0,.55);
+}
+
+.upload-preview {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  border-radius: 18px;
+  display: block;
+}
+
+.upload-preview.hidden {
+  display: none;
 }
 
 /* ============================================================
@@ -146,13 +135,10 @@ body.header-checkout {
   display: flex;
   align-items: center;
   gap: .75rem;
-
   padding: 1rem;
   border-radius: 14px;
-  background: #ffffff;
-
+  background: #fff;
   border: 1.7px solid var(--input-border);
-  transition: border-color .2s ease;
 }
 
 .m3-input span.material-symbols-outlined {
@@ -169,87 +155,89 @@ body.header-checkout {
   background: transparent;
   font-size: 1rem;
   color: var(--marron);
-  padding: .35rem 0;
 }
 
-/* ================= SELECT ================= */
-.m3-input select {
-  appearance: none;
-  padding-right: 32px;
-  color: rgba(0,0,0,0.45);
-}
-
-.m3-input select.filled {
-  color: var(--marron);
-}
-
-/* ================= FLOATING LABEL ================= */
+/* ================= FLOAT LABEL ================= */
 .floating-label {
   position: absolute;
   left: 3rem;
   top: 50%;
   transform: translateY(-50%);
   font-size: 1rem;
-  color: rgba(0,0,0,0.45);
-  padding: 0 4px;
+  color: rgba(0,0,0,.45);
+  transition: .22s ease;
   pointer-events: none;
-  transition: all .22s ease;
 }
 
-.m3-input input:not(:placeholder-shown) + .floating-label,
-.m3-input textarea:not(:placeholder-shown) + .floating-label,
-.m3-input select.filled + .floating-label,
-.m3-input:focus-within .floating-label {
+.m3-input:focus-within .floating-label,
+.m3-field.filled .floating-label {
   top: -6px;
-  left: 2.85rem;
   font-size: .78rem;
-  background: #ffffff;
-  color: var(--verde);
+  background: #fff;
   padding: 0 5px;
+  color: var(--verde);
 }
 
 /* ================= TEXTAREA ================= */
 .textarea-field {
-  align-items: flex-start !important;
-  padding-top: 1.4rem !important;
+  align-items: flex-start;
+  padding-top: 1.4rem;
 }
 
 .textarea-field .floating-label {
   top: 18px;
-  transform: none;
 }
 
 /* ============================================================
-   BOTÓN FINAL
+   ESTADOS
+============================================================ */
+.m3-field.error .m3-input {
+  border-color: var(--error);
+}
+.m3-field.error .floating-label,
+.m3-field.error .material-symbols-outlined {
+  color: var(--error);
+}
+
+.m3-field.ok .m3-input {
+  border-color: var(--ok);
+}
+.m3-field.ok .floating-label,
+.m3-field.ok .material-symbols-outlined {
+  color: var(--ok);
+}
+
+/* ================= HELP TEXT ================= */
+.helper-text {
+  margin-left: 3rem;
+  font-size: .8rem;
+  color: var(--error);
+}
+
+/* ============================================================
+   BOTÓN
 ============================================================ */
 .m3-btn {
   width: 100%;
   background: var(--verde);
   color: #fff;
   border-radius: 14px;
-  padding: 1.05rem;
+  padding: 1.1rem;
   font-size: 1.05rem;
   font-weight: 600;
   border: none;
-
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: .7rem;
-
-  cursor: pointer;
-}
-
-.m3-btn:active {
-  transform: scale(.97);
+  gap: .6rem;
 }
 
 /* ================= LOADER ================= */
 .m3-btn .loader {
   width: 18px;
   height: 18px;
-  border: 2.4px solid rgba(255,255,255,0.45);
-  border-top-color: white;
+  border: 2.4px solid rgba(255,255,255,.45);
+  border-top-color: #fff;
   border-radius: 50%;
   animation: spin .9s linear infinite;
   display: none;
@@ -258,9 +246,8 @@ body.header-checkout {
 .m3-btn.loading .loader {
   display: inline-block;
 }
-
 .m3-btn.loading .btn-text {
-  opacity: .55;
+  opacity: .6;
 }
 
 @keyframes spin {
@@ -268,21 +255,31 @@ body.header-checkout {
 }
 
 /* ============================================================
-   ERRORES
+   SNACKBAR
 ============================================================ */
-.m3-field.error .m3-input {
-  border-color: var(--error);
+.snackbar {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #333;
+  color: #fff;
+  padding: 14px 22px;
+  border-radius: 14px;
+  opacity: 0;
+  pointer-events: none;
+  transition: .3s ease;
+  z-index: 9999;
 }
 
-.m3-field.error .material-symbols-outlined,
-.m3-field.error .floating-label {
-  color: var(--error);
+.snackbar.show {
+  opacity: 1;
 }
 
-.helper-text {
-  margin-top: .35rem;
-  margin-left: 3rem;
-  font-size: .82rem;
-  color: var(--error);
-  min-height: 1em;
+.snackbar.success {
+  background: var(--verde);
+}
+
+.snackbar.error {
+  background: var(--error);
 }
