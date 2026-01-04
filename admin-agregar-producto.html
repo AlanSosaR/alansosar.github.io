@@ -19,7 +19,7 @@
   <link rel="stylesheet" href="css/header.css?v=30">
 
   <!-- CSS PROPIO -->
-  <link rel="stylesheet" href="css/admin-agregar-producto.css?v=2">
+  <link rel="stylesheet" href="css/admin-agregar-producto.css?v=3">
 </head>
 
 <body class="page-admin header-checkout">
@@ -56,19 +56,15 @@
       <!-- ================= FORM ================= -->
       <form id="producto-form" novalidate>
 
-        <!-- =====================================================
-             IMAGEN (UPLOAD REAL COMO EN LA IMAGEN)
-        ====================================================== -->
+        <!-- ================= IMAGEN ================= -->
         <div class="m3-field">
           <div class="upload-box" id="uploadBox">
 
-            <!-- PREVIEW -->
             <img id="imagePreview"
                  class="upload-preview hidden"
                  alt="Vista previa del producto">
 
             <span class="material-symbols-outlined upload-icon">photo_camera</span>
-
             <p class="upload-title">Subir imagen</p>
             <p class="upload-hint">JPG, PNG o WEBP (máx. 2 MB)</p>
 
@@ -143,19 +139,24 @@
           </div>
         </div>
 
-        <!-- =====================================================
-             ESTADO — SWITCH REAL (NO SELECT)
-        ====================================================== -->
+        <!-- ================= ESTADO (CORRECTO) ================= -->
         <div class="m3-field estado-field">
 
+          <!-- TÍTULO ARRIBA -->
           <p class="field-title">Estado</p>
 
-          <label class="switch">
-            <input type="checkbox" id="estado" checked>
-            <span class="slider"></span>
-          </label>
+          <!-- SWITCH ABAJO -->
+          <div class="estado-switch-wrapper">
+            <label class="switch">
+              <input type="checkbox" id="estadoToggle" checked>
+              <span class="slider"></span>
+            </label>
 
-          <span id="estadoLabel" class="estado-label activo">Activo</span>
+            <span id="estadoTexto" class="estado-label activo">Activo</span>
+          </div>
+
+          <!-- INPUT REAL PARA SUPABASE -->
+          <input type="hidden" id="estadoHidden" value="activo">
 
         </div>
 
@@ -184,7 +185,7 @@
 <script src="js/layout.js"></script>
 <script src="js/header.js"></script>
 
-<!-- 🔑 JS ÚNICO -->
+<!-- JS FINAL -->
 <script src="js/admin-agregar-producto.js"></script>
 
 </body>
