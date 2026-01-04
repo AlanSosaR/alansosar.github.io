@@ -1,4 +1,4 @@
-console.log("📦 admin-agregar-producto.js — FINAL VALIDADO");
+console.log("📦 admin-agregar-producto.js — FINAL DEFINITIVO");
 
 /* ============================================================
    ESPERAR SUPABASE
@@ -16,7 +16,7 @@ function esperarSupabase() {
 }
 
 /* ============================================================
-   CAMPOS
+   ELEMENTOS
 ============================================================ */
 const form = document.getElementById("producto-form");
 
@@ -30,6 +30,10 @@ const stockInput    = document.getElementById("stock");
 const estadoSelect  = document.getElementById("estado");
 
 const btnSubmit = document.getElementById("btn-submit");
+
+/* PREVIEW */
+const uploadBox   = document.getElementById("uploadBox");
+const imagePreview = document.getElementById("imagePreview");
 
 /* ============================================================
    SNACKBAR
@@ -47,13 +51,13 @@ function showSnackbar(message, type = "success") {
 }
 
 /* ============================================================
-   UI — ERRORES MATERIAL 3
+   UI — ERRORES / OK (Material 3)
 ============================================================ */
 function marcarError(input, mensaje) {
   const field = input.closest(".m3-field");
   if (!field) return;
 
-  const box = field.querySelector(".m3-input");
+  const box   = field.querySelector(".m3-input") || field;
   const label = field.querySelector(".floating-label");
 
   field.classList.add("error", "filled");
@@ -74,7 +78,7 @@ function marcarOk(input) {
   const field = input.closest(".m3-field");
   if (!field) return;
 
-  const box = field.querySelector(".m3-input");
+  const box   = field.querySelector(".m3-input") || field;
   const label = field.querySelector(".floating-label");
   const helper = field.querySelector(".helper-text");
 
@@ -87,68 +91,83 @@ function marcarOk(input) {
 }
 
 /* ============================================================
-   VALIDACIÓN EN CADENA (CLAVE)
+   VALIDACIÓN EN CADENA (UX PREMIUM)
 ============================================================ */
-function validarFormularioEnCadena() {
+function validarFormulario() {
 
-  // 1️⃣ IMAGEN
   if (!imagenInput.files.length) {
     marcarError(imagenInput, "La imagen es obligatoria");
-    imagenInput.focus();
     return false;
-  } else marcarOk(imagenInput);
+  } marcarOk(imagenInput);
 
-  // 2️⃣ NOMBRE
   if (!nombreInput.value.trim()) {
     marcarError(nombreInput, "El nombre es obligatorio");
     nombreInput.focus();
     return false;
-  } else marcarOk(nombreInput);
+  } marcarOk(nombreInput);
 
-  // 3️⃣ DESCRIPCIÓN
   if (!descInput.value.trim()) {
     marcarError(descInput, "La descripción es obligatoria");
     descInput.focus();
     return false;
-  } else marcarOk(descInput);
+  } marcarOk(descInput);
 
-  // 4️⃣ CATEGORÍA
   if (!categoriaSel.value) {
     marcarError(categoriaSel, "Selecciona una categoría");
     categoriaSel.focus();
     return false;
-  } else marcarOk(categoriaSel);
+  } marcarOk(categoriaSel);
 
-  // 5️⃣ PRESENTACIÓN
   if (!presentacion.value) {
     marcarError(presentacion, "Selecciona una presentación");
     presentacion.focus();
     return false;
-  } else marcarOk(presentacion);
+  } marcarOk(presentacion);
 
-  // 6️⃣ PRECIO
   if (!precioInput.value || Number(precioInput.value) <= 0) {
     marcarError(precioInput, "Precio inválido");
     precioInput.focus();
     return false;
-  } else marcarOk(precioInput);
+  } marcarOk(precioInput);
 
-  // 7️⃣ STOCK
   if (stockInput.value === "" || Number(stockInput.value) < 0) {
     marcarError(stockInput, "Stock inválido");
     stockInput.focus();
     return false;
-  } else marcarOk(stockInput);
+  } marcarOk(stockInput);
 
   return true;
 }
 
 /* ============================================================
-   STORAGE — SUBIR IMAGEN
+   PREVIEW DE IMAGEN
+============================================================ */
+imagenInput.addEventListener("change", () => {
+  const file = imagenInput.files[0];
+  if (!file) return;
+
+  if (file.size > 2 * 1024 * 1024) {
+    showSnackbar("La imagen no puede superar 2 MB", "error");
+    imagenInput.value = "";
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = e => {
+    imagePreview.src = e.target.result;
+    imagePreview.classList.remove("hidden");
+    uploadBox.classList.add("has-image");
+    marcarOk(imagenInput);
+  };
+  reader.readAsDataURL(file);
+});
+
+/* ============================================================
+   SUBIR IMAGEN (STORAGE)
 ============================================================ */
 async function subirImagenProducto() {
   const file = imagenInput.files[0];
-  const ext = file.name.split(".").pop();
+  const ext  = file.name.split(".").pop();
   const path = `products/${crypto.randomUUID()}.${ext}`;
 
   const { error } = await window.supabaseClient.storage
@@ -180,7 +199,8 @@ async function guardarProducto(imageUrl) {
       price: Number(precioInput.value),
       currency: "HNL",
       stock: Number(stockInput.value),
-      image_url: imageUrl
+      image_url: imageUrl,
+      status: estadoSelect.value
     });
 
   if (error) throw error;
@@ -192,7 +212,7 @@ async function guardarProducto(imageUrl) {
 form.addEventListener("submit", async e => {
   e.preventDefault();
 
-  if (!validarFormularioEnCadena()) return;
+  if (!validarFormulario()) return;
 
   btnSubmit.classList.add("loading");
 
@@ -207,8 +227,8 @@ form.addEventListener("submit", async e => {
     }, 1200);
 
   } catch (err) {
-    console.error("❌ Error al guardar producto", err);
-    showSnackbar("❌ No se pudo guardar el producto", "error");
+    console.error(err);
+    showSnackbar("❌ Error al guardar el producto", "error");
     btnSubmit.classList.remove("loading");
   }
 });
@@ -224,23 +244,18 @@ form.addEventListener("submit", async e => {
     return;
   }
 
-  [
-    nombreInput,
-    descInput,
-    precioInput,
-    stockInput
-  ].forEach(el => {
+  [nombreInput, descInput, precioInput, stockInput].forEach(el => {
     el.addEventListener("input", () => {
       if (el.value.trim()) marcarOk(el);
     });
   });
 
   categoriaSel.addEventListener("change", () => {
-    categoriaSel.value ? marcarOk(categoriaSel) : null;
+    categoriaSel.value && marcarOk(categoriaSel);
   });
 
   presentacion.addEventListener("change", () => {
-    presentacion.value ? marcarOk(presentacion) : null;
+    presentacion.value && marcarOk(presentacion);
   });
 
 })();
