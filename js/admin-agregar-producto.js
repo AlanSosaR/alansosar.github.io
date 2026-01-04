@@ -1,4 +1,4 @@
-console.log("📦 admin-agregar-producto.js — FINAL CORREGIDO");
+console.log("📦 admin-agregar-producto.js — FINAL DEFINITIVO");
 
 /* ============================================================
    ESPERAR SUPABASE
@@ -27,13 +27,17 @@ const categoriaSel  = document.getElementById("categoria");
 const presentacion  = document.getElementById("presentacion");
 const precioInput   = document.getElementById("precio");
 const stockInput    = document.getElementById("stock");
-const estadoSelect  = document.getElementById("estado");
 
 const btnSubmit     = document.getElementById("btn-submit");
 
 /* UPLOAD */
 const uploadBox     = document.getElementById("uploadBox");
 const imagePreview  = document.getElementById("imagePreview");
+
+/* ESTADO (SWITCH) */
+const estadoToggle  = document.getElementById("estadoToggle");
+const estadoTexto   = document.getElementById("estadoTexto");
+const estadoHidden  = document.getElementById("estado");
 
 /* ============================================================
    SNACKBAR
@@ -51,7 +55,7 @@ function showSnackbar(message, type = "success") {
 }
 
 /* ============================================================
-   UI — ERRORES / OK (Material 3)
+   UI — ERRORES / OK
 ============================================================ */
 function marcarError(input, mensaje) {
   const field = input.closest(".m3-field");
@@ -93,7 +97,7 @@ function marcarOk(input) {
 }
 
 /* ============================================================
-   VALIDACIÓN EN CADENA (UX PREMIUM)
+   VALIDACIÓN EN CADENA
 ============================================================ */
 function validarFormulario() {
 
@@ -149,9 +153,17 @@ function validarFormulario() {
 }
 
 /* ============================================================
-   PREVIEW DE IMAGEN (CORREGIDO)
+   PREVIEW DE IMAGEN — FIX DEFINITIVO
 ============================================================ */
-uploadBox.addEventListener("click", () => imagenInput.click());
+uploadBox.addEventListener("click", () => {
+  if (!uploadBox.classList.contains("has-image")) {
+    imagenInput.click();
+  }
+});
+
+imagePreview.addEventListener("click", e => {
+  e.stopPropagation();
+});
 
 imagenInput.addEventListener("change", () => {
   const file = imagenInput.files[0];
@@ -172,6 +184,26 @@ imagenInput.addEventListener("change", () => {
   };
   reader.readAsDataURL(file);
 });
+
+/* ============================================================
+   ESTADO — SWITCH ACTIVO / DESACTIVADO
+============================================================ */
+function syncEstadoUI() {
+  if (estadoToggle.checked) {
+    estadoTexto.textContent = "Activo";
+    estadoTexto.classList.remove("inactivo");
+    estadoTexto.classList.add("activo");
+    estadoHidden.value = "activo";
+  } else {
+    estadoTexto.textContent = "Desactivado";
+    estadoTexto.classList.remove("activo");
+    estadoTexto.classList.add("inactivo");
+    estadoHidden.value = "inactivo";
+  }
+}
+
+estadoToggle.addEventListener("change", syncEstadoUI);
+syncEstadoUI();
 
 /* ============================================================
    STORAGE — SUBIR IMAGEN
@@ -211,7 +243,7 @@ async function guardarProducto(imageUrl) {
       currency: "HNL",
       stock: Number(stockInput.value),
       image_url: imageUrl,
-      status: estadoSelect?.value || "activo"
+      status: estadoHidden.value
     });
 
   if (error) throw error;
@@ -257,7 +289,7 @@ form.addEventListener("submit", async e => {
 
   [nombreInput, descInput, precioInput, stockInput].forEach(el => {
     el.addEventListener("input", () => {
-      el.value.trim() ? marcarOk(el) : null;
+      el.value.trim() && marcarOk(el);
     });
   });
 
