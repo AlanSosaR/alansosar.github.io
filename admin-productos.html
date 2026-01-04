@@ -9,188 +9,152 @@
   <!-- Material Symbols -->
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-
   <!-- Tipografía -->
   <link rel="stylesheet" href="css/tipografia.css" />
-
-  <!-- CSS GLOBAL -->
   <link rel="stylesheet" href="css/header.css" />
-
-  <!-- CSS DE ESTA PÁGINA -->
   <link rel="stylesheet" href="css/admin-productos.css" />
 </head>
 
 <body class="admin-page admin-products">
 
-  <!-- HEADER (inyectado por JS) -->
+<main class="admin-products-container fade-in">
 
-  <main class="admin-products-container fade-in">
+  <!-- ACCIONES -->
+  <section class="products-actions-bar">
+    <div class="search-box">
+      <span class="material-symbols-outlined">search</span>
+      <input type="search" id="search-products" placeholder="Buscar producto…" />
+    </div>
 
-    <!-- =========================
-         ACCIONES SUPERIORES
-    ========================= -->
-    <section class="products-actions-bar">
+    <button class="btn-primary" id="btnAddProduct">
+      <span class="material-symbols-outlined">add</span>
+      Agregar producto
+    </button>
+  </section>
 
-      <div class="search-box">
-        <span class="material-symbols-outlined">search</span>
-        <input
-          type="search"
-          id="search-products"
-          placeholder="Buscar producto…"
-        />
+  <!-- LISTADO DESKTOP -->
+  <section class="products-card desktop-only">
+    <table class="products-table">
+      <thead>
+        <tr>
+          <th>Imagen</th>
+          <th>Nombre</th>
+          <th>Precio</th>
+          <th>Stock</th>
+          <th>Carrusel</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="products-body"></tbody>
+    </table>
+
+    <div class="table-footer">
+      <span id="products-count">Mostrando 0 productos</span>
+    </div>
+  </section>
+
+  <!-- LISTADO MÓVIL -->
+  <section class="products-mobile mobile-only" id="products-mobile"></section>
+
+</main>
+
+<!-- =========================
+     TEMPLATE DESKTOP
+========================= -->
+<template id="tpl-product-row">
+  <tr>
+    <td>
+      <div class="product-thumb-box">
+        <img alt="" />
+      </div>
+    </td>
+    <td class="p-name"></td>
+    <td class="p-price"></td>
+    <td class="p-stock"></td>
+    <td class="p-carousel badge"></td>
+    <td class="p-status badge"></td>
+    <td class="actions">
+      <button class="icon-btn edit">
+        <span class="material-symbols-outlined">edit</span>
+      </button>
+      <button class="icon-btn danger delete">
+        <span class="material-symbols-outlined">delete</span>
+      </button>
+    </td>
+  </tr>
+</template>
+
+<!-- =========================
+     TEMPLATE MÓVIL — BOCETO REAL ✅
+========================= -->
+<template id="tpl-product-card">
+  <article class="product-card">
+
+    <!-- BLOQUE SUPERIOR (IMAGEN + TEXTO) -->
+    <div class="product-card-top">
+
+      <!-- IMAGEN -->
+      <div class="product-thumb-box">
+        <img alt="" />
       </div>
 
-      <button class="btn-primary" id="btnAddProduct">
-        <span class="material-symbols-outlined">add</span>
-        Agregar producto
+      <!-- TEXTO (MISMA ALTURA QUE IMAGEN) -->
+      <div class="product-card-text">
+
+        <h3 class="p-name"></h3>
+        <p class="p-price"></p>
+        <p class="p-stock"></p>
+
+        <!-- CARRUSEL ALINEADO CON TEXTO -->
+        <div class="product-card-carousel">
+          <span class="carousel-label">Carrusel</span>
+
+          <label class="switch">
+            <input type="checkbox" class="p-carousel-toggle" />
+            <span class="slider"></span>
+          </label>
+
+          <span class="carousel-status"></span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- DIVISOR -->
+    <div class="divider"></div>
+
+    <!-- ACCIONES -->
+    <div class="product-card-actions">
+      <button class="edit">
+        <span class="material-symbols-outlined">edit</span>
+        Editar
       </button>
 
-    </section>
+      <span class="vertical-divider"></span>
 
-    <!-- =========================
-         LISTADO DESKTOP
-    ========================= -->
-    <section class="products-card desktop-only">
+      <button class="delete">
+        <span class="material-symbols-outlined">delete</span>
+        Eliminar
+      </button>
+    </div>
 
-      <table class="products-table">
-        <thead>
-          <tr>
-            <th>Imagen</th>
-            <th>Nombre</th>
-            <th>Precio</th>
-            <th>Stock</th>
-            <th>Carrusel</th>
-            <th>Estado</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
+  </article>
+</template>
 
-        <tbody id="products-body"></tbody>
-      </table>
+<div id="snackbar" class="snackbar"></div>
 
-      <div class="table-footer">
-        <span id="products-count">Mostrando 0 productos</span>
-      </div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-client-core.js"></script>
 
-    </section>
+<script>
+  window.PAGE_MODE = "admin-products";
+</script>
 
-    <!-- =========================
-         LISTADO MÓVIL
-    ========================= -->
-    <section class="products-mobile mobile-only" id="products-mobile"></section>
-
-  </main>
-
-  <!-- =====================================================
-       TEMPLATES
-  ====================================================== -->
-
-  <!-- =========================
-       TEMPLATE DESKTOP
-  ========================= -->
-  <template id="tpl-product-row">
-    <tr>
-      <td>
-        <div class="product-thumb-box">
-          <img alt="" />
-        </div>
-      </td>
-
-      <td class="p-name"></td>
-      <td class="p-price"></td>
-      <td class="p-stock"></td>
-      <td class="p-carousel badge"></td>
-      <td class="p-status badge"></td>
-
-      <td class="actions">
-        <button class="icon-btn edit">
-          <span class="material-symbols-outlined">edit</span>
-        </button>
-        <button class="icon-btn danger delete">
-          <span class="material-symbols-outlined">delete</span>
-        </button>
-      </td>
-    </tr>
-  </template>
-
-  <!-- =====================================================
-       TEMPLATE MÓVIL — EXACTO AL BOCETO ASCII ✅
-  ====================================================== -->
-  <template id="tpl-product-card">
-    <article class="product-card">
-
-      <!-- BLOQUE SUPERIOR -->
-      <div class="product-card-top">
-
-        <!-- IMAGEN IZQUIERDA (LLEGA HASTA LA LÍNEA) -->
-        <div class="product-thumb-box">
-          <img alt="" />
-        </div>
-
-        <!-- CONTENIDO DERECHO -->
-        <div class="product-card-content">
-
-          <h3 class="p-name"></h3>
-          <p class="p-price"></p>
-          <p class="p-stock"></p>
-
-          <!-- CARRUSEL ALINEADO CON TEXTO -->
-          <div class="product-card-carousel">
-            <span class="carousel-label">Carrusel</span>
-
-            <label class="switch">
-              <input type="checkbox" class="p-carousel-toggle" />
-              <span class="slider"></span>
-            </label>
-
-            <span class="carousel-status"></span>
-          </div>
-
-        </div>
-      </div>
-
-      <!-- DIVISOR -->
-      <div class="divider"></div>
-
-      <!-- ACCIONES -->
-      <div class="product-card-actions">
-
-        <button class="edit">
-          <span class="material-symbols-outlined">edit</span>
-          Editar
-        </button>
-
-        <span class="vertical-divider"></span>
-
-        <button class="delete">
-          <span class="material-symbols-outlined">delete</span>
-          Eliminar
-        </button>
-
-      </div>
-
-    </article>
-  </template>
-
-  <!-- SNACKBAR -->
-  <div id="snackbar" class="snackbar"></div>
-
-  <!-- =========================
-       SCRIPTS
-  ========================= -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/supabase-client-core.js"></script>
-
-  <script>
-    window.PAGE_MODE = "admin-products";
-  </script>
-
-  <script src="js/header.js"></script>
-  <script src="js/auth-ui.js"></script>
-  <script src="js/layout.js"></script>
-  <script src="js/admin-productos.js"></script>
+<script src="js/header.js"></script>
+<script src="js/auth-ui.js"></script>
+<script src="js/layout.js"></script>
+<script src="js/admin-productos.js"></script>
 
 </body>
 </html>
