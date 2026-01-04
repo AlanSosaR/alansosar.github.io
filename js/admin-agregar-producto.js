@@ -34,7 +34,7 @@ const btnSubmit     = document.getElementById("btn-submit");
 const uploadBox     = document.getElementById("uploadBox");
 const imagePreview  = document.getElementById("imagePreview");
 
-/* ESTADO (SWITCH) */
+/* ESTADO */
 const estadoToggle  = document.getElementById("estadoToggle");
 const estadoTexto   = document.getElementById("estadoTexto");
 const estadoHidden  = document.getElementById("estado");
@@ -67,7 +67,7 @@ function marcarError(input, mensaje) {
   field.classList.remove("ok");
   field.classList.add("error", "filled");
 
-  if (box) box.classList.add("error");
+  box?.classList.add("error");
   if (label) label.style.color = "var(--error)";
 
   let helper = field.querySelector(".helper-text");
@@ -76,7 +76,6 @@ function marcarError(input, mensaje) {
     helper.className = "helper-text";
     field.appendChild(helper);
   }
-
   helper.textContent = mensaje;
 }
 
@@ -84,14 +83,14 @@ function marcarOk(input) {
   const field = input.closest(".m3-field");
   if (!field) return;
 
-  const box   = field.querySelector(".m3-input") || field;
-  const label = field.querySelector(".floating-label");
+  const box    = field.querySelector(".m3-input") || field;
+  const label  = field.querySelector(".floating-label");
   const helper = field.querySelector(".helper-text");
 
   field.classList.remove("error");
   field.classList.add("filled", "ok");
 
-  if (box) box.classList.remove("error");
+  box?.classList.remove("error");
   if (label) label.style.color = "var(--verde)";
   if (helper) helper.textContent = "";
 }
@@ -153,21 +152,18 @@ function validarFormulario() {
 }
 
 /* ============================================================
-   PREVIEW DE IMAGEN — FIX DEFINITIVO
+   IMAGEN — MISMO PATRÓN QUE RECIBO (CLAVE)
 ============================================================ */
-uploadBox.addEventListener("click", () => {
-  if (!uploadBox.classList.contains("has-image")) {
-    imagenInput.click();
-  }
-});
-
-imagePreview.addEventListener("click", e => {
-  e.stopPropagation();
-});
-
 imagenInput.addEventListener("change", () => {
+  if (!imagenInput.files.length) return;
+
   const file = imagenInput.files[0];
-  if (!file) return;
+
+  if (!file.type.startsWith("image/")) {
+    showSnackbar("Solo se permiten imágenes", "error");
+    imagenInput.value = "";
+    return;
+  }
 
   if (file.size > 2 * 1024 * 1024) {
     showSnackbar("La imagen no puede superar 2 MB", "error");
@@ -175,29 +171,26 @@ imagenInput.addEventListener("change", () => {
     return;
   }
 
-  const reader = new FileReader();
-  reader.onload = e => {
-    imagePreview.src = e.target.result;
-    imagePreview.classList.remove("hidden");
-    uploadBox.classList.add("has-image");
-    marcarOk(imagenInput);
-  };
-  reader.readAsDataURL(file);
+  imagePreview.src = URL.createObjectURL(file);
+  imagePreview.classList.remove("hidden");
+  uploadBox.classList.add("has-image");
+
+  marcarOk(imagenInput);
 });
 
 /* ============================================================
-   ESTADO — SWITCH ACTIVO / DESACTIVADO
+   ESTADO — SWITCH
 ============================================================ */
 function syncEstadoUI() {
   if (estadoToggle.checked) {
     estadoTexto.textContent = "Activo";
-    estadoTexto.classList.remove("inactivo");
     estadoTexto.classList.add("activo");
+    estadoTexto.classList.remove("inactivo");
     estadoHidden.value = "activo";
   } else {
     estadoTexto.textContent = "Desactivado";
-    estadoTexto.classList.remove("activo");
     estadoTexto.classList.add("inactivo");
+    estadoTexto.classList.remove("activo");
     estadoHidden.value = "inactivo";
   }
 }
