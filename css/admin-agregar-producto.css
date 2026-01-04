@@ -1,14 +1,16 @@
 /* ============================================================
-   ADMIN — AGREGAR PRODUCTO (FINAL)
+   ADMIN — AGREGAR PRODUCTO (FINAL CORREGIDO)
    ✔ Material 3 real
-   ✔ Upload con preview
-   ✔ Estados error / ok
+   ✔ Upload ocupa todo el bloque
+   ✔ Preview reemplaza contenido
+   ✔ Switch de estado real
 ============================================================ */
 
 /* ================= ROOT ================= */
 :root {
   --marron: #512615;
   --verde: #33673B;
+  --rojo: #B3261E;
 
   --gris-fondo: #f7f7f7;
   --blanco: #ffffff;
@@ -50,7 +52,9 @@ body.header-checkout {
   background: var(--blanco);
   border-radius: 26px;
   padding: 6.8rem 24px 3rem;
-  box-shadow: 0 18px 44px rgba(0,0,0,.1), 0 6px 16px rgba(0,0,0,.08);
+  box-shadow:
+    0 18px 44px rgba(0,0,0,.10),
+    0 6px 16px rgba(0,0,0,.08);
 }
 
 /* ================= BOTÓN ATRÁS ================= */
@@ -79,16 +83,24 @@ body.header-checkout {
 }
 
 /* ============================================================
-   UPLOAD DE IMAGEN
+   UPLOAD DE IMAGEN (CORREGIDO)
 ============================================================ */
 .upload-box {
   position: relative;
   border: 2px dashed rgba(0,0,0,.25);
   border-radius: 18px;
-  padding: 2.2rem 1rem;
+  padding: 2.4rem 1rem;
   text-align: center;
   cursor: pointer;
   background: #fafafa;
+  overflow: hidden;
+}
+
+.upload-box input[type="file"] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
 }
 
 .upload-box.has-image {
@@ -113,7 +125,7 @@ body.header-checkout {
 
 .upload-preview {
   width: 100%;
-  height: 220px;
+  height: 240px;
   object-fit: cover;
   border-radius: 18px;
   display: block;
@@ -139,6 +151,7 @@ body.header-checkout {
   border-radius: 14px;
   background: #fff;
   border: 1.7px solid var(--input-border);
+  transition: border-color .2s ease;
 }
 
 .m3-input span.material-symbols-outlined {
@@ -167,13 +180,13 @@ body.header-checkout {
   color: rgba(0,0,0,.45);
   transition: .22s ease;
   pointer-events: none;
+  background: #fff;
 }
 
 .m3-input:focus-within .floating-label,
 .m3-field.filled .floating-label {
   top: -6px;
   font-size: .78rem;
-  background: #fff;
   padding: 0 5px;
   color: var(--verde);
 }
@@ -189,7 +202,7 @@ body.header-checkout {
 }
 
 /* ============================================================
-   ESTADOS
+   ESTADOS DE VALIDACIÓN
 ============================================================ */
 .m3-field.error .m3-input {
   border-color: var(--error);
@@ -207,11 +220,79 @@ body.header-checkout {
   color: var(--ok);
 }
 
-/* ================= HELP TEXT ================= */
 .helper-text {
   margin-left: 3rem;
   font-size: .8rem;
   color: var(--error);
+}
+
+/* ============================================================
+   ESTADO — SWITCH REAL
+============================================================ */
+.estado-field {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.field-title {
+  font-weight: 500;
+  margin: 0;
+  min-width: 80px;
+}
+
+/* SWITCH */
+.switch {
+  position: relative;
+  width: 52px;
+  height: 30px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  inset: 0;
+  background: var(--rojo);
+  border-radius: 30px;
+  transition: .25s ease;
+}
+
+.slider::before {
+  content: "";
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  left: 4px;
+  top: 4px;
+  background: #fff;
+  border-radius: 50%;
+  transition: .25s ease;
+}
+
+/* ACTIVO */
+.switch input:checked + .slider {
+  background: var(--verde);
+}
+
+.switch input:checked + .slider::before {
+  transform: translateX(22px);
+}
+
+.estado-label {
+  font-weight: 600;
+}
+
+.estado-label.activo {
+  color: var(--verde);
+}
+
+.estado-label.inactivo {
+  color: var(--rojo);
 }
 
 /* ============================================================
@@ -230,6 +311,11 @@ body.header-checkout {
   align-items: center;
   justify-content: center;
   gap: .6rem;
+  cursor: pointer;
+}
+
+.m3-btn:active {
+  transform: scale(.98);
 }
 
 /* ================= LOADER ================= */
