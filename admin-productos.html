@@ -6,28 +6,28 @@
 
   <title>Admin · Productos | Café Cortero</title>
 
-  <!-- Tipografía -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
-
   <!-- Material Symbols -->
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
+  <!-- ✅ TIPOGRAFÍA SISTEMA (APPLE STYLE) -->
+  <link rel="stylesheet" href="css/tipografia.css" />
+
   <!-- CSS GLOBAL -->
   <link rel="stylesheet" href="css/header.css" />
 
-  <!-- CSS SOLO DE ESTA PÁGINA -->
+  <!-- CSS DE ESTA PÁGINA -->
   <link rel="stylesheet" href="css/admin-productos.css" />
 </head>
 
 <body class="admin-page admin-products">
 
-  <!-- ⚠️ HEADER GLOBAL SE INYECTA POR JS -->
+  <!-- HEADER GLOBAL (INYECTADO POR JS) -->
 
   <!-- =====================================================
-       CONTENIDO ADMIN PRODUCTOS
+       CONTENIDO
   ====================================================== -->
   <main class="admin-products-container fade-in">
 
@@ -90,9 +90,9 @@
 
   </main>
 
-  <!-- =========================
+  <!-- =====================================================
        TEMPLATES (NO SE RENDERIZAN)
-  ========================= -->
+  ====================================================== -->
 
   <!-- TEMPLATE FILA DESKTOP -->
   <template id="tpl-product-row">
@@ -106,6 +106,7 @@
       <td class="p-name"></td>
       <td class="p-price"></td>
       <td class="p-stock"></td>
+
       <td class="p-carousel badge"></td>
       <td class="p-status badge"></td>
 
@@ -120,10 +121,11 @@
     </tr>
   </template>
 
-  <!-- TEMPLATE CARD MÓVIL -->
+  <!-- TEMPLATE CARD MÓVIL (MATERIAL 3 EXPRESSIVE) -->
   <template id="tpl-product-card">
     <article class="product-card">
 
+      <!-- HEADER -->
       <div class="product-card-header">
         <div class="product-thumb-box">
           <img alt="" />
@@ -136,16 +138,36 @@
         </div>
       </div>
 
+      <!-- CARRUSEL -->
+      <div class="product-card-carousel">
+        <span class="carousel-label">Carrusel:</span>
+
+        <label class="switch">
+          <input type="checkbox" class="p-carousel-toggle" />
+          <span class="slider"></span>
+        </label>
+
+        <span class="carousel-status"></span>
+      </div>
+
+      <!-- LÍNEA DIVISORIA -->
+      <div class="divider"></div>
+
+      <!-- ACCIONES -->
       <div class="product-card-actions">
+
         <button class="edit">
           <span class="material-symbols-outlined">edit</span>
           Editar
         </button>
 
+        <span class="vertical-divider"></span>
+
         <button class="delete">
           <span class="material-symbols-outlined">delete</span>
           Eliminar
         </button>
+
       </div>
 
     </article>
