@@ -93,9 +93,7 @@
 }
 
 @media (max-width: 900px) {
-  .btn-primary {
-    width: 100%;
-  }
+  .btn-primary { width: 100%; }
 }
 
 /* =========================================================
@@ -130,12 +128,16 @@
   border-bottom: 1px solid var(--gris-line);
 }
 
+/* =========================================================
+   THUMBNAIL
+========================================================= */
 .product-thumb-box {
-  width: 56px;
-  height: 56px;
-  border-radius: 14px;
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  background: #f1f1f1;
   overflow: hidden;
-  background: #eee;
+  flex-shrink: 0;
 }
 
 .product-thumb-box img {
@@ -150,30 +152,22 @@
 .products-mobile {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 20px;
 }
 
 /* CARD BASE */
 .product-card {
   background: var(--blanco);
-  border-radius: 26px;
+  border-radius: 28px;
   padding: 18px;
-  box-shadow: 0 10px 26px rgba(0,0,0,.08);
+  box-shadow: 0 12px 28px rgba(0,0,0,.08);
 }
 
-/* HEADER CARD */
+/* HEADER */
 .product-card-header {
   display: flex;
   gap: 16px;
   align-items: center;
-}
-
-/* IMAGEN */
-.product-card .product-thumb-box {
-  width: 76px;
-  height: 76px;
-  border-radius: 18px;
-  flex-shrink: 0;
 }
 
 /* INFO */
@@ -194,39 +188,77 @@
 }
 
 /* =========================================================
-   CARRUSEL + ESTADO
+   CARRUSEL (SWITCH REAL)
 ========================================================= */
-.p-carousel {
-  display: inline-flex;
+.product-card-carousel {
+  display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: .8rem;
-  margin-top: 6px;
+  gap: 12px;
+  margin-top: 14px;
 }
 
-.badge {
-  padding: 6px 14px;
-  border-radius: 999px;
-  font-size: .75rem;
+.carousel-label {
+  font-size: .9rem;
+  color: var(--gris-text);
+}
+
+.carousel-status {
+  font-size: .85rem;
   font-weight: 500;
 }
 
-.badge.active {
-  background: var(--verde);
-  color: #fff;
+.carousel-status.active {
+  color: var(--verde);
 }
 
-.badge.inactive {
-  background: #ddd;
-  color: #555;
+.carousel-status.inactive {
+  color: var(--rojo);
+}
+
+/* SWITCH */
+.switch {
+  position: relative;
+  width: 46px;
+  height: 26px;
+}
+
+.switch input {
+  opacity: 0;
+}
+
+.slider {
+  position: absolute;
+  inset: 0;
+  background: #ccc;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: .25s;
+}
+
+.slider::before {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  left: 3px;
+  top: 3px;
+  background: #fff;
+  border-radius: 50%;
+  transition: .25s;
+}
+
+.switch input:checked + .slider {
+  background: var(--verde);
+}
+
+.switch input:checked + .slider::before {
+  transform: translateX(20px);
 }
 
 /* =========================================================
    DIVISOR
 ========================================================= */
-.product-card::after {
-  content: "";
-  display: block;
+.divider {
   height: 1px;
   background: var(--gris-line);
   margin: 16px 0;
@@ -237,8 +269,8 @@
 ========================================================= */
 .product-card-actions {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
 }
 
 .product-card-actions button {
@@ -259,8 +291,15 @@
   color: var(--rojo);
 }
 
+/* DIVISOR VERTICAL */
+.vertical-divider {
+  width: 1px;
+  height: 20px;
+  background: var(--gris-line);
+}
+
 /* =========================================================
-   FOOTER CONTADOR
+   FOOTER
 ========================================================= */
 .table-footer,
 .products-footer {
