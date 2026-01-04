@@ -25,7 +25,7 @@
 <body class="page-admin header-checkout">
 
 <!-- =====================================================
-     HEADER (MISMO DEL PROYECTO)
+     HEADER (GLOBAL)
 ====================================================== -->
 <header class="header-fixed" id="main-header">
   <button id="menu-toggle" class="menu-toggle" aria-label="Abrir menú">
@@ -46,7 +46,7 @@
 
   <section class="profile-card">
 
-    <!-- 🔙 BOTÓN ATRÁS (MISMO UX QUE DATOS CLIENTE) -->
+    <!-- 🔙 BOTÓN ATRÁS -->
     <button class="back-btn" onclick="history.back()">
       <span class="material-symbols-outlined">chevron_left</span>
     </button>
@@ -56,12 +56,18 @@
       <!-- ================= FORMULARIO ================= -->
       <form id="producto-form" novalidate>
 
-        <!-- IMAGEN -->
+        <!-- ================= IMAGEN ================= -->
         <div class="m3-field">
-          <div class="m3-input upload-box">
-            <span class="material-symbols-outlined">photo_camera</span>
-            <input type="file" id="imagen" accept="image/*" required>
-            <label class="floating-label">Imagen del producto *</label>
+          <div class="upload-box" id="uploadBox">
+
+            <!-- Preview (se controla por JS externo) -->
+            <img id="imagePreview" class="upload-preview hidden" alt="Preview producto">
+
+            <span class="material-symbols-outlined upload-icon">photo_camera</span>
+            <p class="upload-title">Subir imagen</p>
+            <p class="upload-hint">JPG, PNG o WEBP (máx. 2 MB)</p>
+
+            <input type="file" id="imagen" accept="image/*" hidden>
           </div>
         </div>
 
@@ -132,16 +138,20 @@
           </div>
         </div>
 
-        <!-- ESTADO -->
+        <!-- ================= ESTADO (SIN FLOATING LABEL) ================= -->
         <div class="m3-field">
-          <div class="m3-input">
+
+          <p class="field-title">Estado</p>
+
+          <div class="estado-box">
             <span class="material-symbols-outlined">toggle_on</span>
-            <select id="estado" class="m3-select">
+
+            <select id="estado" class="estado-select">
               <option value="activo">Activo</option>
               <option value="inactivo">Inactivo</option>
             </select>
-            <label class="floating-label">Estado</label>
           </div>
+
         </div>
 
         <!-- BOTÓN -->
@@ -156,23 +166,21 @@
   </section>
 </main>
 
+<!-- ================= SNACKBAR ================= -->
+<div id="snackbar" class="snackbar"></div>
+
 <!-- =====================================================
-     SCRIPTS (MISMO ORDEN QUE CARRITO / DATOS CLIENTE)
+     SCRIPTS
 ====================================================== -->
 
-<!-- SUPABASE -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase-client-core.js"></script>
 <script src="js/supabase-auth.js"></script>
-
-<!-- AUTH UI (PROTEGE LA PÁGINA) -->
 <script src="js/auth-ui.js"></script>
-
-<!-- LAYOUT + HEADER -->
 <script src="js/layout.js"></script>
 <script src="js/header.js"></script>
 
-<!-- JS DE ESTA PÁGINA -->
+<!-- 🔑 TODA LA LÓGICA (preview, validación, submit) -->
 <script src="js/admin-agregar-producto.js"></script>
 
 </body>
