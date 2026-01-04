@@ -1,4 +1,4 @@
-console.log("🧩 admin-productos.js — LISTADO PRODUCTOS (FINAL)");
+console.log("🧩 admin-productos.js — LISTADO PRODUCTOS (FINAL REAL)");
 
 /* ============================================================
    ESPERAR SUPABASE
@@ -43,7 +43,6 @@ function formatPrice(value, currency = "HNL") {
 function showSnackbar(message) {
   const bar = document.getElementById("snackbar");
   if (!bar) return;
-
   bar.textContent = message;
   bar.classList.add("show");
   setTimeout(() => bar.classList.remove("show"), 3200);
@@ -74,15 +73,17 @@ function renderTable(list) {
 
     tr.innerHTML = `
       <td>
-        <img src="${p.image_url || "imagenes/no-image.png"}"
-             alt="${p.name}"
-             class="product-thumb">
+        <img
+          src="${p.image_url || "imagenes/no-image.png"}"
+          alt="${p.name}"
+          class="product-thumb"
+          loading="lazy"
+          onerror="this.src='imagenes/no-image.png'"
+        >
       </td>
 
       <td>${p.name}</td>
-
       <td>${formatPrice(p.price, p.currency)}</td>
-
       <td>${p.stock}</td>
 
       <td>
@@ -130,12 +131,15 @@ function renderMobile(list) {
     card.className = "product-card";
 
     card.innerHTML = `
-      <img src="${p.image_url || "imagenes/no-image.png"}"
-           alt="${p.name}">
+      <img
+        src="${p.image_url || "imagenes/no-image.png"}"
+        alt="${p.name}"
+        loading="lazy"
+        onerror="this.src='imagenes/no-image.png'"
+      >
 
       <div class="product-card-body">
         <h3>${p.name}</h3>
-
         <p class="price">${formatPrice(p.price, p.currency)}</p>
 
         <div class="meta">
