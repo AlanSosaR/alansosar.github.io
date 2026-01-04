@@ -14,6 +14,23 @@
 }
 
 /* =========================================================
+   🔒 REGLA GLOBAL — QUITAR FLASH AZUL (ANDROID / iOS)
+========================================================= */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button,
+input,
+label,
+a,
+.switch,
+.slider {
+  outline: none;
+  box-shadow: none;
+}
+
+/* =========================================================
    VISIBILIDAD RESPONSIVE
 ========================================================= */
 .desktop-only { display: block; }
@@ -122,7 +139,6 @@
   padding: 14px;
   font-weight: 500;
   text-align: left;
-  white-space: nowrap;
 }
 
 .products-table td {
@@ -132,7 +148,7 @@
 }
 
 /* =========================================================
-   THUMBNAIL (DESKTOP + MÓVIL)
+   THUMBNAIL DESKTOP
 ========================================================= */
 .product-thumb-box {
   width: 72px;
@@ -140,7 +156,6 @@
   border-radius: 18px;
   background: #f1f1f1;
   overflow: hidden;
-  flex-shrink: 0;
 }
 
 .product-thumb-box img {
@@ -150,7 +165,7 @@
 }
 
 /* =========================================================
-   ================= MÓVIL (CARDS) =================
+   ================= MÓVIL (CARDS — FINAL) =================
 ========================================================= */
 .products-mobile {
   display: flex;
@@ -158,7 +173,7 @@
   gap: 20px;
 }
 
-/* CARD BASE */
+/* CARD */
 .product-card {
   background: var(--blanco);
   border-radius: 28px;
@@ -166,11 +181,37 @@
   box-shadow: 0 12px 28px rgba(0,0,0,.08);
 }
 
-/* HEADER */
-.product-card-header {
+/* CONTENEDOR PRINCIPAL */
+.product-card-main {
   display: flex;
-  gap: 16px;
-  align-items: center;
+  gap: 18px;
+  align-items: stretch;
+}
+
+/* =========================================================
+   IMAGEN GRANDE IZQUIERDA (BAJA HASTA DIVISOR)
+========================================================= */
+.product-thumb-box.large {
+  width: 96px;
+  min-width: 96px;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.product-thumb-box.large img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* =========================================================
+   COLUMNA DERECHA
+========================================================= */
+.product-card-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 /* INFO */
@@ -192,13 +233,13 @@
 }
 
 /* =========================================================
-   CARRUSEL (SWITCH)
+   CARRUSEL — ALINEADO A LA DERECHA
 ========================================================= */
 .product-card-carousel {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-top: 16px;
+  justify-content: flex-end;
 }
 
 .carousel-label {
@@ -228,8 +269,6 @@
 
 .switch input {
   opacity: 0;
-  width: 0;
-  height: 0;
 }
 
 .slider {
@@ -262,7 +301,7 @@
 }
 
 /* =========================================================
-   DIVISOR HORIZONTAL
+   DIVISOR
 ========================================================= */
 .divider {
   height: 1px;
@@ -306,10 +345,9 @@
 }
 
 /* =========================================================
-   FOOTER CONTADOR
+   FOOTER
 ========================================================= */
-.table-footer,
-.products-footer {
+.table-footer {
   text-align: center;
   margin-top: 18px;
   font-size: .85rem;
