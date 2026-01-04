@@ -1,4 +1,4 @@
-console.log("📦 admin-agregar-producto.js — FINAL Material 3");
+console.log("📦 admin-agregar-producto.js — FINAL VALIDADO");
 
 /* ============================================================
    ESPERAR SUPABASE
@@ -32,16 +32,33 @@ const estadoSelect  = document.getElementById("estado");
 const btnSubmit = document.getElementById("btn-submit");
 
 /* ============================================================
-   UI — ERRORES MATERIAL 3 (MISMA LÓGICA)
+   SNACKBAR
 ============================================================ */
-function mostrarError(input, mensaje) {
+function showSnackbar(message, type = "success") {
+  const bar = document.getElementById("snackbar");
+  if (!bar) return;
+
+  bar.textContent = message;
+  bar.className = `snackbar show ${type}`;
+
+  setTimeout(() => {
+    bar.classList.remove("show", "success", "error");
+  }, 3200);
+}
+
+/* ============================================================
+   UI — ERRORES MATERIAL 3
+============================================================ */
+function marcarError(input, mensaje) {
   const field = input.closest(".m3-field");
   if (!field) return;
 
-  const box   = field.querySelector(".m3-input");
+  const box = field.querySelector(".m3-input");
   const label = field.querySelector(".floating-label");
 
-  field.classList.add("filled");
+  field.classList.add("error", "filled");
+  box.classList.add("error");
+  if (label) label.style.color = "#B3261E";
 
   let helper = field.querySelector(".helper-text");
   if (!helper) {
@@ -50,89 +67,95 @@ function mostrarError(input, mensaje) {
     field.appendChild(helper);
   }
 
-  field.classList.add("error");
-  box.classList.add("error");
-  if (label) label.style.color = "#B3261E";
-
   helper.textContent = mensaje;
 }
 
-function limpiarError(input) {
+function marcarOk(input) {
   const field = input.closest(".m3-field");
   if (!field) return;
 
-  const box    = field.querySelector(".m3-input");
-  const label  = field.querySelector(".floating-label");
+  const box = field.querySelector(".m3-input");
+  const label = field.querySelector(".floating-label");
   const helper = field.querySelector(".helper-text");
 
   field.classList.remove("error");
   box.classList.remove("error");
 
-  if (!input.value?.trim?.()) {
-    field.classList.remove("filled");
-  }
-
-  if (label) label.style.color = "";
+  field.classList.add("filled", "ok");
+  if (label) label.style.color = "var(--verde)";
   if (helper) helper.textContent = "";
 }
 
 /* ============================================================
-   VALIDACIÓN FINAL
+   VALIDACIÓN EN CADENA (CLAVE)
 ============================================================ */
-function validarFormulario() {
-  let ok = true;
+function validarFormularioEnCadena() {
 
+  // 1️⃣ IMAGEN
   if (!imagenInput.files.length) {
-    mostrarError(imagenInput, "La imagen es obligatoria");
-    ok = false;
-  }
+    marcarError(imagenInput, "La imagen es obligatoria");
+    imagenInput.focus();
+    return false;
+  } else marcarOk(imagenInput);
 
+  // 2️⃣ NOMBRE
   if (!nombreInput.value.trim()) {
-    mostrarError(nombreInput, "El nombre es obligatorio");
-    ok = false;
-  }
+    marcarError(nombreInput, "El nombre es obligatorio");
+    nombreInput.focus();
+    return false;
+  } else marcarOk(nombreInput);
 
+  // 3️⃣ DESCRIPCIÓN
   if (!descInput.value.trim()) {
-    mostrarError(descInput, "La descripción es obligatoria");
-    ok = false;
-  }
+    marcarError(descInput, "La descripción es obligatoria");
+    descInput.focus();
+    return false;
+  } else marcarOk(descInput);
 
+  // 4️⃣ CATEGORÍA
   if (!categoriaSel.value) {
-    mostrarError(categoriaSel, "Selecciona una categoría");
-    ok = false;
-  }
+    marcarError(categoriaSel, "Selecciona una categoría");
+    categoriaSel.focus();
+    return false;
+  } else marcarOk(categoriaSel);
 
+  // 5️⃣ PRESENTACIÓN
   if (!presentacion.value) {
-    mostrarError(presentacion, "Selecciona una presentación");
-    ok = false;
-  }
+    marcarError(presentacion, "Selecciona una presentación");
+    presentacion.focus();
+    return false;
+  } else marcarOk(presentacion);
 
+  // 6️⃣ PRECIO
   if (!precioInput.value || Number(precioInput.value) <= 0) {
-    mostrarError(precioInput, "Precio inválido");
-    ok = false;
-  }
+    marcarError(precioInput, "Precio inválido");
+    precioInput.focus();
+    return false;
+  } else marcarOk(precioInput);
 
-  if (!stockInput.value || Number(stockInput.value) < 0) {
-    mostrarError(stockInput, "Stock inválido");
-    ok = false;
-  }
+  // 7️⃣ STOCK
+  if (stockInput.value === "" || Number(stockInput.value) < 0) {
+    marcarError(stockInput, "Stock inválido");
+    stockInput.focus();
+    return false;
+  } else marcarOk(stockInput);
 
-  return ok;
+  return true;
 }
 
 /* ============================================================
-   SUBIR IMAGEN A STORAGE
+   STORAGE — SUBIR IMAGEN
 ============================================================ */
 async function subirImagenProducto() {
   const file = imagenInput.files[0];
-  const ext  = file.name.split(".").pop();
+  const ext = file.name.split(".").pop();
   const path = `products/${crypto.randomUUID()}.${ext}`;
 
   const { error } = await window.supabaseClient.storage
     .from("product-images")
     .upload(path, file, {
-      upsert: false,
-      contentType: file.type
+      contentType: file.type,
+      upsert: false
     });
 
   if (error) throw error;
@@ -145,7 +168,7 @@ async function subirImagenProducto() {
 }
 
 /* ============================================================
-   GUARDAR PRODUCTO EN BD
+   GUARDAR PRODUCTO
 ============================================================ */
 async function guardarProducto(imageUrl) {
   const { error } = await window.supabaseClient
@@ -169,7 +192,7 @@ async function guardarProducto(imageUrl) {
 form.addEventListener("submit", async e => {
   e.preventDefault();
 
-  if (!validarFormulario()) return;
+  if (!validarFormularioEnCadena()) return;
 
   btnSubmit.classList.add("loading");
 
@@ -177,12 +200,15 @@ form.addEventListener("submit", async e => {
     const imageUrl = await subirImagenProducto();
     await guardarProducto(imageUrl);
 
+    showSnackbar("✅ Producto agregado correctamente", "success");
+
     setTimeout(() => {
-      window.location.href = "admin-k.html";
-    }, 600);
+      window.location.href = "admin-productos.html";
+    }, 1200);
 
   } catch (err) {
-    console.error("❌ Error guardando producto", err);
+    console.error("❌ Error al guardar producto", err);
+    showSnackbar("❌ No se pudo guardar el producto", "error");
     btnSubmit.classList.remove("loading");
   }
 });
@@ -203,21 +229,18 @@ form.addEventListener("submit", async e => {
     descInput,
     precioInput,
     stockInput
-  ].forEach(el =>
-    el.addEventListener("input", () => limpiarError(el))
-  );
+  ].forEach(el => {
+    el.addEventListener("input", () => {
+      if (el.value.trim()) marcarOk(el);
+    });
+  });
 
   categoriaSel.addEventListener("change", () => {
-    limpiarError(categoriaSel);
-    categoriaSel.value
-      ? categoriaSel.classList.add("filled")
-      : categoriaSel.classList.remove("filled");
+    categoriaSel.value ? marcarOk(categoriaSel) : null;
   });
 
   presentacion.addEventListener("change", () => {
-    limpiarError(presentacion);
-    presentacion.value
-      ? presentacion.classList.add("filled")
-      : presentacion.classList.remove("filled");
+    presentacion.value ? marcarOk(presentacion) : null;
   });
+
 })();
