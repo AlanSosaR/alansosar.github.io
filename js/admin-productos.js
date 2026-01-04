@@ -1,4 +1,4 @@
-console.log("🧩 admin-productos.js — FINAL CORREGIDO (IMÁGENES OK)");
+console.log("🧩 admin-productos.js — FINAL DEFINITIVO (IMÁGENES + CARRUSEL OK)");
 
 /* ============================================================
    ESPERAR SUPABASE
@@ -47,14 +47,18 @@ function isActivo(product) {
   return product.status === "activo";
 }
 
+function isInCarousel(product) {
+  return product.carousel === true;
+}
+
 function getImageUrl(product) {
-  if (!product.image_url) return "imagenes/no-image.png";
+  if (!product?.image_url) return "imagenes/no-image.png";
 
   if (product.image_url.startsWith("http")) {
     return product.image_url;
   }
 
-  // fallback por si algún día guardas solo el path
+  // fallback si algún día guardas solo el path
   return `https://eaipcuvvddyrqkbmjmvw.supabase.co/storage/v1/object/public/product-images/${product.image_url}`;
 }
 
@@ -78,25 +82,30 @@ function renderTable(list) {
   list.forEach(product => {
     const row = rowTemplate.content.cloneNode(true);
 
+    /* Imagen */
     const img = row.querySelector("img");
     img.src = getImageUrl(product);
     img.alt = product.name;
     img.loading = "lazy";
     img.onerror = () => img.src = "imagenes/no-image.png";
 
+    /* Texto */
     row.querySelector(".p-name").textContent = product.name;
     row.querySelector(".p-price").textContent =
       formatPrice(product.price, product.currency);
-
     row.querySelector(".p-stock").textContent = product.stock;
 
+    /* Carrusel */
     const carousel = row.querySelector(".p-carousel");
-    carousel.textContent = product.stock > 0 ? "Sí" : "No";
-    carousel.className = `badge ${product.stock > 0 ? "active" : "inactive"}`;
+    carousel.textContent = isInCarousel(product) ? "Activo" : "Inactivo";
+    carousel.className =
+      `badge ${isInCarousel(product) ? "active" : "inactive"}`;
 
+    /* Estado producto */
     const status = row.querySelector(".p-status");
     status.textContent = isActivo(product) ? "Activo" : "Inactivo";
-    status.className = `badge ${isActivo(product) ? "active" : "inactive"}`;
+    status.className =
+      `badge ${isActivo(product) ? "active" : "inactive"}`;
 
     row.querySelector(".edit").dataset.id = product.id;
     row.querySelector(".delete").dataset.id = product.id;
@@ -106,7 +115,7 @@ function renderTable(list) {
 }
 
 /* ============================================================
-   RENDER MÓVIL (CARDS MATERIAL 3)
+   RENDER MÓVIL (CARDS — MATERIAL 3)
 ============================================================ */
 function renderMobile(list) {
   mobileContainer.innerHTML = "";
@@ -116,6 +125,7 @@ function renderMobile(list) {
   list.forEach(product => {
     const card = cardTemplate.content.cloneNode(true);
 
+    /* Imagen */
     const img = card.querySelector("img");
     img.src = getImageUrl(product);
     img.alt = product.name;
@@ -123,23 +133,21 @@ function renderMobile(list) {
     img.decoding = "async";
     img.onerror = () => img.src = "imagenes/no-image.png";
 
-    card.querySelector(".product-thumb-box").style.flexShrink = "0";
-
+    /* Info */
     card.querySelector(".p-name").textContent = product.name;
     card.querySelector(".p-price").textContent =
       formatPrice(product.price, product.currency);
-
     card.querySelector(".p-stock").textContent =
       `Stock: ${product.stock}`;
 
-    // Carrusel (solo visual por ahora)
+    /* Carrusel */
     const toggle = card.querySelector(".p-carousel-toggle");
-    const label = card.querySelector(".carousel-status");
+    const label  = card.querySelector(".carousel-status");
 
-    toggle.checked = isActivo(product);
-    label.textContent = isActivo(product) ? "Activo" : "Inactivo";
+    toggle.checked = isInCarousel(product);
+    label.textContent = isInCarousel(product) ? "Activo" : "Desactivado";
     label.className =
-      `carousel-status ${isActivo(product) ? "active" : "inactive"}`;
+      `carousel-status ${isInCarousel(product) ? "active" : "inactive"}`;
 
     card.querySelector(".edit").dataset.id = product.id;
     card.querySelector(".delete").dataset.id = product.id;
