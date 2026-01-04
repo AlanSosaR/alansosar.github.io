@@ -26,9 +26,6 @@
 
   <!-- HEADER (inyectado por JS) -->
 
-  <!-- =====================================================
-       CONTENIDO
-  ====================================================== -->
   <main class="admin-products-container fade-in">
 
     <!-- =========================
@@ -90,7 +87,9 @@
        TEMPLATES
   ====================================================== -->
 
-  <!-- ===== TEMPLATE DESKTOP ===== -->
+  <!-- =========================
+       TEMPLATE DESKTOP
+  ========================= -->
   <template id="tpl-product-row">
     <tr>
       <td>
@@ -102,7 +101,6 @@
       <td class="p-name"></td>
       <td class="p-price"></td>
       <td class="p-stock"></td>
-
       <td class="p-carousel badge"></td>
       <td class="p-status badge"></td>
 
@@ -118,15 +116,15 @@
   </template>
 
   <!-- =====================================================
-       TEMPLATE CARD MÓVIL — IMAGEN IZQUIERDA COMPLETA
+       TEMPLATE MÓVIL — COMO EL BOCETO 🔥
   ====================================================== -->
   <template id="tpl-product-card">
     <article class="product-card">
 
-      <!-- CONTENEDOR PRINCIPAL -->
+      <!-- FILA PRINCIPAL -->
       <div class="product-card-main">
 
-        <!-- IMAGEN IZQUIERDA (ALTA) -->
+        <!-- IMAGEN IZQUIERDA (ALTA, LEVANTADA) -->
         <div class="product-thumb-box large">
           <img alt="" />
         </div>
@@ -141,7 +139,7 @@
             <p class="p-stock"></p>
           </div>
 
-          <!-- CARRUSEL (DERECHA) -->
+          <!-- CARRUSEL (ABAJO, DESDE BORDE DE IMAGEN) -->
           <div class="product-card-carousel">
             <span class="carousel-label">Carrusel</span>
 
@@ -156,7 +154,7 @@
         </div>
       </div>
 
-      <!-- DIVISOR (imagen llega hasta aquí) -->
+      <!-- DIVISOR (IMAGEN LLEGA HASTA AQUÍ) -->
       <div class="divider"></div>
 
       <!-- ACCIONES -->
