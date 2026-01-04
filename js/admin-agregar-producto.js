@@ -1,4 +1,4 @@
-console.log("📦 admin-agregar-producto.js — FINAL DEFINITIVO");
+console.log("📦 admin-agregar-producto.js — FINAL DEFINITIVO ESTABLE");
 
 /* ============================================================
    ESPERAR SUPABASE
@@ -28,16 +28,14 @@ const presentacion  = document.getElementById("presentacion");
 const precioInput   = document.getElementById("precio");
 const stockInput    = document.getElementById("stock");
 
-const btnSubmit     = document.getElementById("btn-submit");
-
-/* UPLOAD */
 const uploadBox     = document.getElementById("uploadBox");
 const imagePreview  = document.getElementById("imagePreview");
 
-/* ESTADO */
+const btnSubmit     = document.getElementById("btn-submit");
+
+/* ESTADO (SWITCH) */
 const estadoToggle  = document.getElementById("estadoToggle");
 const estadoTexto   = document.getElementById("estadoTexto");
-const estadoHidden  = document.getElementById("estado");
 
 /* ============================================================
    SNACKBAR
@@ -61,14 +59,8 @@ function marcarError(input, mensaje) {
   const field = input.closest(".m3-field");
   if (!field) return;
 
-  const box   = field.querySelector(".m3-input") || field;
-  const label = field.querySelector(".floating-label");
-
   field.classList.remove("ok");
   field.classList.add("error", "filled");
-
-  box?.classList.add("error");
-  if (label) label.style.color = "var(--error)";
 
   let helper = field.querySelector(".helper-text");
   if (!helper) {
@@ -83,15 +75,10 @@ function marcarOk(input) {
   const field = input.closest(".m3-field");
   if (!field) return;
 
-  const box    = field.querySelector(".m3-input") || field;
-  const label  = field.querySelector(".floating-label");
-  const helper = field.querySelector(".helper-text");
-
   field.classList.remove("error");
   field.classList.add("filled", "ok");
 
-  box?.classList.remove("error");
-  if (label) label.style.color = "var(--verde)";
+  const helper = field.querySelector(".helper-text");
   if (helper) helper.textContent = "";
 }
 
@@ -108,42 +95,36 @@ function validarFormulario() {
 
   if (!nombreInput.value.trim()) {
     marcarError(nombreInput, "El nombre es obligatorio");
-    nombreInput.focus();
     return false;
   }
   marcarOk(nombreInput);
 
   if (!descInput.value.trim()) {
     marcarError(descInput, "La descripción es obligatoria");
-    descInput.focus();
     return false;
   }
   marcarOk(descInput);
 
   if (!categoriaSel.value) {
     marcarError(categoriaSel, "Selecciona una categoría");
-    categoriaSel.focus();
     return false;
   }
   marcarOk(categoriaSel);
 
   if (!presentacion.value) {
     marcarError(presentacion, "Selecciona una presentación");
-    presentacion.focus();
     return false;
   }
   marcarOk(presentacion);
 
   if (!precioInput.value || Number(precioInput.value) <= 0) {
     marcarError(precioInput, "Precio inválido");
-    precioInput.focus();
     return false;
   }
   marcarOk(precioInput);
 
   if (stockInput.value === "" || Number(stockInput.value) < 0) {
     marcarError(stockInput, "Stock inválido");
-    stockInput.focus();
     return false;
   }
   marcarOk(stockInput);
@@ -179,24 +160,19 @@ imagenInput.addEventListener("change", () => {
 });
 
 /* ============================================================
-   ESTADO — SWITCH
+   ESTADO — SWITCH (UI + DATA)
 ============================================================ */
-function syncEstadoUI() {
+estadoToggle.addEventListener("change", () => {
   if (estadoToggle.checked) {
     estadoTexto.textContent = "Activo";
     estadoTexto.classList.add("activo");
     estadoTexto.classList.remove("inactivo");
-    estadoHidden.value = "activo";
   } else {
     estadoTexto.textContent = "Desactivado";
     estadoTexto.classList.add("inactivo");
     estadoTexto.classList.remove("activo");
-    estadoHidden.value = "inactivo";
   }
-}
-
-estadoToggle.addEventListener("change", syncEstadoUI);
-syncEstadoUI();
+});
 
 /* ============================================================
    STORAGE — SUBIR IMAGEN
@@ -223,7 +199,7 @@ async function subirImagenProducto() {
 }
 
 /* ============================================================
-   GUARDAR PRODUCTO
+   GUARDAR PRODUCTO — DEFINITIVO
 ============================================================ */
 async function guardarProducto(imageUrl) {
   const { error } = await window.supabaseClient
@@ -236,7 +212,9 @@ async function guardarProducto(imageUrl) {
       currency: "HNL",
       stock: Number(stockInput.value),
       image_url: imageUrl,
-      status: estadoHidden.value
+
+      // 🔑 STATUS REAL (TEXT)
+      status: estadoToggle.checked ? "activo" : "inactivo"
     });
 
   if (error) throw error;
@@ -259,7 +237,7 @@ form.addEventListener("submit", async e => {
     showSnackbar("✅ Producto agregado correctamente", "success");
 
     setTimeout(() => {
-      window.location.href = "admin-productos.html";
+      location.href = "admin-productos.html";
     }, 1200);
 
   } catch (err) {
@@ -276,21 +254,6 @@ form.addEventListener("submit", async e => {
   await esperarSupabase();
 
   if (localStorage.getItem("cortero_logged") !== "1") {
-    window.location.href = "login.html";
-    return;
+    location.href = "login.html";
   }
-
-  [nombreInput, descInput, precioInput, stockInput].forEach(el => {
-    el.addEventListener("input", () => {
-      el.value.trim() && marcarOk(el);
-    });
-  });
-
-  categoriaSel.addEventListener("change", () => {
-    categoriaSel.value && marcarOk(categoriaSel);
-  });
-
-  presentacion.addEventListener("change", () => {
-    presentacion.value && marcarOk(presentacion);
-  });
 })();
