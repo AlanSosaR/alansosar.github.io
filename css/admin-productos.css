@@ -14,7 +14,7 @@
 }
 
 /* =========================================================
-   🔒 REGLA GLOBAL — QUITAR FLASH AZUL (ANDROID / iOS)
+   🔒 QUITAR FLASH AZUL (ANDROID / iOS)
 ========================================================= */
 * {
   -webkit-tap-highlight-color: transparent;
@@ -23,9 +23,7 @@
 button,
 input,
 label,
-a,
-.switch,
-.slider {
+a {
   outline: none;
   box-shadow: none;
 }
@@ -115,14 +113,13 @@ a,
 }
 
 /* =========================================================
-   ================= DESKTOP (TABLA) =================
+   ================= DESKTOP =================
 ========================================================= */
 .products-card {
   background: var(--blanco);
   border-radius: 24px;
   padding: 16px;
   box-shadow: 0 12px 28px rgba(0,0,0,.08);
-  overflow-x: auto;
 }
 
 .products-table {
@@ -130,42 +127,20 @@ a,
   border-collapse: collapse;
 }
 
-.products-table thead {
-  background: var(--cafe);
-}
-
 .products-table th {
+  background: var(--cafe);
   color: #fff;
   padding: 14px;
   font-weight: 500;
-  text-align: left;
 }
 
 .products-table td {
   padding: 14px;
   border-bottom: 1px solid var(--gris-line);
-  vertical-align: middle;
 }
 
 /* =========================================================
-   THUMBNAIL DESKTOP
-========================================================= */
-.product-thumb-box {
-  width: 72px;
-  height: 72px;
-  border-radius: 18px;
-  background: #f1f1f1;
-  overflow: hidden;
-}
-
-.product-thumb-box img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* =========================================================
-   ================= MÓVIL (CARDS — FINAL) =================
+   ================= MÓVIL (CARDS — DEFINITIVO) =================
 ========================================================= */
 .products-mobile {
   display: flex;
@@ -181,67 +156,63 @@ a,
   box-shadow: 0 12px 28px rgba(0,0,0,.08);
 }
 
-/* CONTENEDOR PRINCIPAL */
-.product-card-main {
+/* FILA SUPERIOR: IMAGEN + TEXTO */
+.product-card-top {
   display: flex;
-  gap: 18px;
-  align-items: stretch;
+  gap: 16px;
+  align-items: flex-start;
 }
 
-/* =========================================================
-   IMAGEN GRANDE IZQUIERDA (BAJA HASTA DIVISOR)
-========================================================= */
-.product-thumb-box.large {
-  width: 96px;
-  min-width: 96px;
-  border-radius: 20px;
+/* IMAGEN IZQUIERDA */
+.product-thumb-box {
+  width: 72px;
+  min-width: 72px;
+  height: auto;
+  border-radius: 18px;
+  background: #f1f1f1;
   overflow: hidden;
 }
 
-.product-thumb-box.large img {
+.product-thumb-box img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-/* =========================================================
-   COLUMNA DERECHA
-========================================================= */
-.product-card-right {
+/* BLOQUE DE TEXTO */
+.product-card-text {
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
 }
 
-/* INFO */
-.product-info h3 {
+/* TEXTO */
+.product-card-text h3 {
   margin: 0;
   font-size: 1.05rem;
   font-weight: 600;
   color: var(--cafe);
 }
 
-.product-info .p-price {
+.product-card-text .p-price {
   margin: 6px 0 2px;
   font-weight: 500;
 }
 
-.product-info .p-stock {
+.product-card-text .p-stock {
   font-size: .9rem;
   color: var(--gris-text);
 }
 
-/* =========================================================
-   CARRUSEL — ALINEADO A LA DERECHA
-========================================================= */
+/* CARRUSEL — ALINEADO CON TEXTO */
 .product-card-carousel {
   display: flex;
   align-items: center;
   gap: 12px;
-  justify-content: flex-end;
+  margin-top: 8px;
 }
 
+/* LABELS */
 .carousel-label {
   font-size: .9rem;
   color: var(--gris-text);
@@ -252,13 +223,8 @@ a,
   font-weight: 600;
 }
 
-.carousel-status.active {
-  color: var(--verde);
-}
-
-.carousel-status.inactive {
-  color: var(--rojo);
-}
+.carousel-status.active { color: var(--verde); }
+.carousel-status.inactive { color: var(--rojo); }
 
 /* SWITCH */
 .switch {
@@ -277,7 +243,6 @@ a,
   background: #ccc;
   border-radius: 999px;
   cursor: pointer;
-  transition: background .25s ease;
 }
 
 .slider::before {
@@ -300,18 +265,14 @@ a,
   transform: translateX(20px);
 }
 
-/* =========================================================
-   DIVISOR
-========================================================= */
+/* DIVISOR */
 .divider {
   height: 1px;
   background: var(--gris-line);
   margin: 16px 0;
 }
 
-/* =========================================================
-   ACCIONES
-========================================================= */
+/* ACCIONES */
 .product-card-actions {
   display: flex;
   align-items: center;
@@ -322,31 +283,22 @@ a,
   display: flex;
   align-items: center;
   gap: 6px;
-  border: none;
   background: none;
+  border: none;
   font-weight: 500;
   cursor: pointer;
-  font-size: .95rem;
 }
 
-.product-card-actions .edit {
-  color: var(--verde);
-}
+.product-card-actions .edit { color: var(--verde); }
+.product-card-actions .delete { color: var(--rojo); }
 
-.product-card-actions .delete {
-  color: var(--rojo);
-}
-
-/* DIVISOR VERTICAL */
 .vertical-divider {
   width: 1px;
   height: 22px;
   background: var(--gris-line);
 }
 
-/* =========================================================
-   FOOTER
-========================================================= */
+/* FOOTER */
 .table-footer {
   text-align: center;
   margin-top: 18px;
