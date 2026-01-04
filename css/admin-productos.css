@@ -41,7 +41,7 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 @media (max-width: 900px) {
@@ -58,7 +58,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 12px 16px;
+  padding: 14px 18px;
   border-radius: 999px;
   border: 1px solid var(--gris-line);
   background: var(--blanco);
@@ -69,6 +69,7 @@
   outline: none;
   flex: 1;
   font-size: 0.95rem;
+  background: transparent;
 }
 
 /* =========================================================
@@ -121,20 +122,22 @@
   padding: 14px;
   font-weight: 500;
   text-align: left;
+  white-space: nowrap;
 }
 
 .products-table td {
   padding: 14px;
   border-bottom: 1px solid var(--gris-line);
+  vertical-align: middle;
 }
 
 /* =========================================================
-   THUMBNAIL
+   THUMBNAIL (DESKTOP + MÓVIL)
 ========================================================= */
 .product-thumb-box {
-  width: 64px;
-  height: 64px;
-  border-radius: 16px;
+  width: 72px;
+  height: 72px;
+  border-radius: 18px;
   background: #f1f1f1;
   overflow: hidden;
   flex-shrink: 0;
@@ -174,11 +177,12 @@
 .product-info h3 {
   margin: 0;
   font-size: 1.05rem;
+  font-weight: 600;
   color: var(--cafe);
 }
 
 .product-info .p-price {
-  margin: 4px 0;
+  margin: 6px 0 2px;
   font-weight: 500;
 }
 
@@ -188,13 +192,13 @@
 }
 
 /* =========================================================
-   CARRUSEL (SWITCH REAL)
+   CARRUSEL (SWITCH)
 ========================================================= */
 .product-card-carousel {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-top: 14px;
+  margin-top: 16px;
 }
 
 .carousel-label {
@@ -204,7 +208,7 @@
 
 .carousel-status {
   font-size: .85rem;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .carousel-status.active {
@@ -224,6 +228,8 @@
 
 .switch input {
   opacity: 0;
+  width: 0;
+  height: 0;
 }
 
 .slider {
@@ -232,7 +238,7 @@
   background: #ccc;
   border-radius: 999px;
   cursor: pointer;
-  transition: .25s;
+  transition: background .25s ease;
 }
 
 .slider::before {
@@ -244,7 +250,7 @@
   top: 3px;
   background: #fff;
   border-radius: 50%;
-  transition: .25s;
+  transition: transform .25s ease;
 }
 
 .switch input:checked + .slider {
@@ -256,7 +262,7 @@
 }
 
 /* =========================================================
-   DIVISOR
+   DIVISOR HORIZONTAL
 ========================================================= */
 .divider {
   height: 1px;
@@ -281,6 +287,7 @@
   background: none;
   font-weight: 500;
   cursor: pointer;
+  font-size: .95rem;
 }
 
 .product-card-actions .edit {
@@ -294,12 +301,12 @@
 /* DIVISOR VERTICAL */
 .vertical-divider {
   width: 1px;
-  height: 20px;
+  height: 22px;
   background: var(--gris-line);
 }
 
 /* =========================================================
-   FOOTER
+   FOOTER CONTADOR
 ========================================================= */
 .table-footer,
 .products-footer {
