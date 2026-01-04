@@ -5,27 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Agregar producto | Café Cortero</title>
 
-  <!-- ================= TIPOGRAFÍA ================= -->
+  <!-- TIPOGRAFÍA -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
-  <!-- ================= ICONOS ================= -->
+  <!-- ICONOS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-  <!-- ================= MATERIAL SYMBOLS ================= -->
+  <!-- MATERIAL SYMBOLS -->
   <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@300;400;500&display=swap">
 
-  <!-- ================= HEADER ================= -->
+  <!-- HEADER -->
   <link rel="stylesheet" href="css/header.css?v=30">
 
-  <!-- ================= CSS PROPIO ================= -->
-  <link rel="stylesheet" href="css/admin-agregar-producto.css?v=1">
+  <!-- CSS PROPIO -->
+  <link rel="stylesheet" href="css/admin-agregar-producto.css?v=2">
 </head>
 
 <body class="page-admin header-checkout">
 
 <!-- =====================================================
-     HEADER (GLOBAL)
+     HEADER GLOBAL
 ====================================================== -->
 <header class="header-fixed" id="main-header">
   <button id="menu-toggle" class="menu-toggle" aria-label="Abrir menú">
@@ -46,28 +46,33 @@
 
   <section class="profile-card">
 
-    <!-- 🔙 BOTÓN ATRÁS -->
+    <!-- BOTÓN ATRÁS -->
     <button class="back-btn" onclick="history.back()">
       <span class="material-symbols-outlined">chevron_left</span>
     </button>
 
     <div class="profile-inner-card">
 
-      <!-- ================= FORMULARIO ================= -->
+      <!-- ================= FORM ================= -->
       <form id="producto-form" novalidate>
 
-        <!-- ================= IMAGEN ================= -->
+        <!-- =====================================================
+             IMAGEN (UPLOAD REAL COMO EN LA IMAGEN)
+        ====================================================== -->
         <div class="m3-field">
           <div class="upload-box" id="uploadBox">
 
-            <!-- Preview (se controla por JS externo) -->
-            <img id="imagePreview" class="upload-preview hidden" alt="Preview producto">
+            <!-- PREVIEW -->
+            <img id="imagePreview"
+                 class="upload-preview hidden"
+                 alt="Vista previa del producto">
 
             <span class="material-symbols-outlined upload-icon">photo_camera</span>
+
             <p class="upload-title">Subir imagen</p>
             <p class="upload-hint">JPG, PNG o WEBP (máx. 2 MB)</p>
 
-            <input type="file" id="imagen" accept="image/*" hidden>
+            <input type="file" id="imagen" accept="image/*">
           </div>
         </div>
 
@@ -93,7 +98,7 @@
         <div class="m3-field">
           <div class="m3-input">
             <span class="material-symbols-outlined">category</span>
-            <select id="categoria" class="m3-select" required>
+            <select id="categoria" required>
               <option value="" disabled selected></option>
               <option value="Tradicional">Tradicional</option>
               <option value="Premium">Premium</option>
@@ -109,7 +114,7 @@
         <div class="m3-field">
           <div class="m3-input">
             <span class="material-symbols-outlined">scale</span>
-            <select id="presentacion" class="m3-select" required>
+            <select id="presentacion" required>
               <option value="" disabled selected></option>
               <option value="250g">250 g</option>
               <option value="500g">500 g</option>
@@ -138,19 +143,19 @@
           </div>
         </div>
 
-        <!-- ================= ESTADO (SIN FLOATING LABEL) ================= -->
-        <div class="m3-field">
+        <!-- =====================================================
+             ESTADO — SWITCH REAL (NO SELECT)
+        ====================================================== -->
+        <div class="m3-field estado-field">
 
           <p class="field-title">Estado</p>
 
-          <div class="estado-box">
-            <span class="material-symbols-outlined">toggle_on</span>
+          <label class="switch">
+            <input type="checkbox" id="estado" checked>
+            <span class="slider"></span>
+          </label>
 
-            <select id="estado" class="estado-select">
-              <option value="activo">Activo</option>
-              <option value="inactivo">Inactivo</option>
-            </select>
-          </div>
+          <span id="estadoLabel" class="estado-label activo">Activo</span>
 
         </div>
 
@@ -166,13 +171,12 @@
   </section>
 </main>
 
-<!-- ================= SNACKBAR ================= -->
+<!-- SNACKBAR -->
 <div id="snackbar" class="snackbar"></div>
 
 <!-- =====================================================
      SCRIPTS
 ====================================================== -->
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase-client-core.js"></script>
 <script src="js/supabase-auth.js"></script>
@@ -180,7 +184,7 @@
 <script src="js/layout.js"></script>
 <script src="js/header.js"></script>
 
-<!-- 🔑 TODA LA LÓGICA (preview, validación, submit) -->
+<!-- 🔑 JS ÚNICO -->
 <script src="js/admin-agregar-producto.js"></script>
 
 </body>
