@@ -12,7 +12,7 @@
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
-  <!-- ✅ TIPOGRAFÍA SISTEMA (APPLE STYLE) -->
+  <!-- Tipografía Apple style -->
   <link rel="stylesheet" href="css/tipografia.css" />
 
   <!-- CSS GLOBAL -->
@@ -121,36 +121,46 @@
     </tr>
   </template>
 
-  <!-- TEMPLATE CARD MÓVIL (MATERIAL 3 EXPRESSIVE) -->
+  <!-- =====================================================
+       TEMPLATE CARD MÓVIL (FINAL — COMO EL BOCETO)
+  ====================================================== -->
   <template id="tpl-product-card">
     <article class="product-card">
 
-      <!-- HEADER -->
-      <div class="product-card-header">
-        <div class="product-thumb-box">
+      <!-- FILA SUPERIOR -->
+      <div class="product-card-top">
+
+        <!-- IMAGEN GRANDE -->
+        <div class="product-thumb-box large">
           <img alt="" />
         </div>
 
-        <div class="product-info">
-          <h3 class="p-name"></h3>
-          <p class="p-price"></p>
-          <p class="p-stock"></p>
+        <!-- CONTENIDO DERECHO -->
+        <div class="product-card-content">
+
+          <!-- INFO -->
+          <div class="product-info">
+            <h3 class="p-name"></h3>
+            <p class="p-price"></p>
+            <p class="p-stock"></p>
+          </div>
+
+          <!-- CARRUSEL A LA DERECHA -->
+          <div class="product-card-carousel">
+            <span class="carousel-label">Carrusel</span>
+
+            <label class="switch">
+              <input type="checkbox" class="p-carousel-toggle" />
+              <span class="slider"></span>
+            </label>
+
+            <span class="carousel-status"></span>
+          </div>
+
         </div>
       </div>
 
-      <!-- CARRUSEL -->
-      <div class="product-card-carousel">
-        <span class="carousel-label">Carrusel:</span>
-
-        <label class="switch">
-          <input type="checkbox" class="p-carousel-toggle" />
-          <span class="slider"></span>
-        </label>
-
-        <span class="carousel-status"></span>
-      </div>
-
-      <!-- LÍNEA DIVISORIA -->
+      <!-- DIVISOR -->
       <div class="divider"></div>
 
       <!-- ACCIONES -->
