@@ -12,7 +12,7 @@
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
-  <!-- Tipografía Apple style -->
+  <!-- Tipografía -->
   <link rel="stylesheet" href="css/tipografia.css" />
 
   <!-- CSS GLOBAL -->
@@ -24,7 +24,7 @@
 
 <body class="admin-page admin-products">
 
-  <!-- HEADER GLOBAL (INYECTADO POR JS) -->
+  <!-- HEADER (inyectado por JS) -->
 
   <!-- =====================================================
        CONTENIDO
@@ -53,7 +53,7 @@
     </section>
 
     <!-- =========================
-         LISTADO DESKTOP (TABLA)
+         LISTADO DESKTOP
     ========================= -->
     <section class="products-card desktop-only">
 
@@ -70,9 +70,7 @@
           </tr>
         </thead>
 
-        <tbody id="products-body">
-          <!-- JS inyecta filas -->
-        </tbody>
+        <tbody id="products-body"></tbody>
       </table>
 
       <div class="table-footer">
@@ -82,19 +80,17 @@
     </section>
 
     <!-- =========================
-         LISTADO MÓVIL (CARDS)
+         LISTADO MÓVIL
     ========================= -->
-    <section class="products-mobile mobile-only" id="products-mobile">
-      <!-- JS inyecta cards -->
-    </section>
+    <section class="products-mobile mobile-only" id="products-mobile"></section>
 
   </main>
 
   <!-- =====================================================
-       TEMPLATES (NO SE RENDERIZAN)
+       TEMPLATES
   ====================================================== -->
 
-  <!-- TEMPLATE FILA DESKTOP -->
+  <!-- ===== TEMPLATE DESKTOP ===== -->
   <template id="tpl-product-row">
     <tr>
       <td>
@@ -111,10 +107,10 @@
       <td class="p-status badge"></td>
 
       <td class="actions">
-        <button class="icon-btn edit" title="Editar">
+        <button class="icon-btn edit">
           <span class="material-symbols-outlined">edit</span>
         </button>
-        <button class="icon-btn danger delete" title="Eliminar">
+        <button class="icon-btn danger delete">
           <span class="material-symbols-outlined">delete</span>
         </button>
       </td>
@@ -122,21 +118,21 @@
   </template>
 
   <!-- =====================================================
-       TEMPLATE CARD MÓVIL (FINAL — COMO EL BOCETO)
+       TEMPLATE CARD MÓVIL — IMAGEN IZQUIERDA COMPLETA
   ====================================================== -->
   <template id="tpl-product-card">
     <article class="product-card">
 
-      <!-- FILA SUPERIOR -->
-      <div class="product-card-top">
+      <!-- CONTENEDOR PRINCIPAL -->
+      <div class="product-card-main">
 
-        <!-- IMAGEN GRANDE -->
+        <!-- IMAGEN IZQUIERDA (ALTA) -->
         <div class="product-thumb-box large">
           <img alt="" />
         </div>
 
         <!-- CONTENIDO DERECHO -->
-        <div class="product-card-content">
+        <div class="product-card-right">
 
           <!-- INFO -->
           <div class="product-info">
@@ -145,7 +141,7 @@
             <p class="p-stock"></p>
           </div>
 
-          <!-- CARRUSEL A LA DERECHA -->
+          <!-- CARRUSEL (DERECHA) -->
           <div class="product-card-carousel">
             <span class="carousel-label">Carrusel</span>
 
@@ -160,7 +156,7 @@
         </div>
       </div>
 
-      <!-- DIVISOR -->
+      <!-- DIVISOR (imagen llega hasta aquí) -->
       <div class="divider"></div>
 
       <!-- ACCIONES -->
@@ -183,30 +179,22 @@
     </article>
   </template>
 
-  <!-- =========================
-       SNACKBAR
-  ========================= -->
+  <!-- SNACKBAR -->
   <div id="snackbar" class="snackbar"></div>
 
   <!-- =========================
        SCRIPTS
   ========================= -->
-
-  <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-client-core.js"></script>
 
-  <!-- MODO DE PÁGINA -->
   <script>
     window.PAGE_MODE = "admin-products";
   </script>
 
-  <!-- CORE -->
   <script src="js/header.js"></script>
   <script src="js/auth-ui.js"></script>
   <script src="js/layout.js"></script>
-
-  <!-- LÓGICA -->
   <script src="js/admin-productos.js"></script>
 
 </body>
