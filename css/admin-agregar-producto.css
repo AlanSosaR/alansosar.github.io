@@ -1,0 +1,288 @@
+/* ============================================================
+   ADMIN — AGREGAR PRODUCTO
+   ✔ Basado en Detalles de entrega (FEB 2025)
+   ✔ Labels flotantes Material 3
+   ✔ Compatible con HEADER GLOBAL
+   ✔ Sin interferir con drawer / menú
+============================================================ */
+
+/* ================= ROOT ================= */
+:root {
+  --marron: #512615;
+  --verde: #33673B;
+
+  --gris-fondo: #f7f7f7;
+  --blanco: #ffffff;
+
+  --border-cafe: rgba(81, 38, 21, 0.75);
+  --input-border: rgba(0,0,0,0.22);
+  --error: #B3261E;
+}
+
+/* ================= BASE ================= */
+body {
+  margin: 0;
+  background: var(--gris-fondo);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ============================================================
+   OFFSET POR HEADER GLOBAL
+============================================================ */
+body.header-checkout {
+  padding-top: 96px; /* Desktop */
+}
+
+@media (max-width: 900px) {
+  body.header-checkout {
+    padding-top: 88px; /* Móvil */
+  }
+}
+
+/* ============================================================
+   CONTENEDOR PRINCIPAL
+============================================================ */
+.profile-container {
+  max-width: 900px;
+  margin: 32px auto 2.5rem;
+  padding: 0 1rem;
+}
+
+@media (max-width: 900px) {
+  .profile-container {
+    margin-top: 24px;
+  }
+}
+
+/* ============================================================
+   TARJETA EXTERIOR
+============================================================ */
+.profile-card {
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+
+  background: var(--blanco);
+  border-radius: 26px;
+
+  padding-top: 6.8rem;
+  padding-left: 24px;
+  padding-right: 24px;
+  padding-bottom: 3rem;
+
+  box-shadow:
+    0 18px 44px rgba(0,0,0,0.10),
+    0 6px 16px rgba(0,0,0,0.08);
+}
+
+@media (max-width: 900px) {
+  .profile-card {
+    padding-top: 5.4rem;
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-bottom: 24px;
+    border-radius: 24px;
+  }
+}
+
+/* ============================================================
+   BOTÓN ATRÁS
+============================================================ */
+.back-btn {
+  position: absolute;
+  top: 22px;
+  left: 22px;
+
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: none;
+
+  box-shadow: 0 5px 16px rgba(0,0,0,0.15);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  transition: .25s ease;
+}
+
+.back-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 7px 20px rgba(0,0,0,0.20);
+}
+
+.back-btn .material-symbols-outlined {
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--verde);
+}
+
+/* ============================================================
+   TARJETA INTERIOR
+============================================================ */
+.profile-inner-card {
+  background: #ffffff;
+  border-radius: 22px;
+  padding: 3rem 2rem;
+
+  border: 1.8px solid var(--border-cafe);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+}
+
+/* ============================================================
+   CAMPOS MATERIAL 3
+============================================================ */
+.m3-field {
+  margin-bottom: 2rem;
+}
+
+.m3-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+
+  padding: 1rem;
+  border-radius: 14px;
+  background: #ffffff;
+
+  border: 1.7px solid var(--input-border);
+  transition: border-color .2s ease;
+}
+
+.m3-input span.material-symbols-outlined {
+  font-size: 1.45rem;
+  color: var(--verde);
+}
+
+.m3-input input,
+.m3-input textarea,
+.m3-input select {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 1rem;
+  color: var(--marron);
+  padding: .35rem 0;
+}
+
+/* ================= SELECT ================= */
+.m3-input select {
+  appearance: none;
+  padding-right: 32px;
+  color: rgba(0,0,0,0.45);
+}
+
+.m3-input select.filled {
+  color: var(--marron);
+}
+
+/* ================= FLOATING LABEL ================= */
+.floating-label {
+  position: absolute;
+  left: 3rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1rem;
+  color: rgba(0,0,0,0.45);
+  padding: 0 4px;
+  pointer-events: none;
+  transition: all .22s ease;
+}
+
+.m3-input input:not(:placeholder-shown) + .floating-label,
+.m3-input textarea:not(:placeholder-shown) + .floating-label,
+.m3-input select.filled + .floating-label,
+.m3-input:focus-within .floating-label {
+  top: -6px;
+  left: 2.85rem;
+  font-size: .78rem;
+  background: #ffffff;
+  color: var(--verde);
+  padding: 0 5px;
+}
+
+/* ================= TEXTAREA ================= */
+.textarea-field {
+  align-items: flex-start !important;
+  padding-top: 1.4rem !important;
+}
+
+.textarea-field .floating-label {
+  top: 18px;
+  transform: none;
+}
+
+/* ============================================================
+   BOTÓN FINAL
+============================================================ */
+.m3-btn {
+  width: 100%;
+  background: var(--verde);
+  color: #fff;
+  border-radius: 14px;
+  padding: 1.05rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  border: none;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .7rem;
+
+  cursor: pointer;
+}
+
+.m3-btn:active {
+  transform: scale(.97);
+}
+
+/* ================= LOADER ================= */
+.m3-btn .loader {
+  width: 18px;
+  height: 18px;
+  border: 2.4px solid rgba(255,255,255,0.45);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin .9s linear infinite;
+  display: none;
+}
+
+.m3-btn.loading .loader {
+  display: inline-block;
+}
+
+.m3-btn.loading .btn-text {
+  opacity: .55;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================================
+   ERRORES
+============================================================ */
+.m3-field.error .m3-input {
+  border-color: var(--error);
+}
+
+.m3-field.error .material-symbols-outlined,
+.m3-field.error .floating-label {
+  color: var(--error);
+}
+
+.helper-text {
+  margin-top: .35rem;
+  margin-left: 3rem;
+  font-size: .82rem;
+  color: var(--error);
+  min-height: 1em;
+}
