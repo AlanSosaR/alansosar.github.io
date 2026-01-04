@@ -1,4 +1,4 @@
-console.log("🧩 admin-productos.js — FINAL DEFINITIVO (IMÁGENES + CARRUSEL OK)");
+console.log("🧩 admin-productos.js — FINAL CORREGIDO (SWITCH + TEXTO + BD)");
 
 /* ============================================================
    ESPERAR SUPABASE
@@ -53,17 +53,13 @@ function isInCarousel(product) {
 
 function getImageUrl(product) {
   if (!product?.image_url) return "imagenes/no-image.png";
+  if (product.image_url.startsWith("http")) return product.image_url;
 
-  if (product.image_url.startsWith("http")) {
-    return product.image_url;
-  }
-
-  // fallback si algún día guardas solo el path
   return `https://eaipcuvvddyrqkbmjmvw.supabase.co/storage/v1/object/public/product-images/${product.image_url}`;
 }
 
 /* ============================================================
-   RENDER DESKTOP (TABLA)
+   RENDER DESKTOP
 ============================================================ */
 function renderTable(list) {
   tbody.innerHTML = "";
@@ -82,26 +78,22 @@ function renderTable(list) {
   list.forEach(product => {
     const row = rowTemplate.content.cloneNode(true);
 
-    /* Imagen */
     const img = row.querySelector("img");
     img.src = getImageUrl(product);
     img.alt = product.name;
     img.loading = "lazy";
     img.onerror = () => img.src = "imagenes/no-image.png";
 
-    /* Texto */
     row.querySelector(".p-name").textContent = product.name;
     row.querySelector(".p-price").textContent =
       formatPrice(product.price, product.currency);
     row.querySelector(".p-stock").textContent = product.stock;
 
-    /* Carrusel */
     const carousel = row.querySelector(".p-carousel");
     carousel.textContent = isInCarousel(product) ? "Activo" : "Inactivo";
     carousel.className =
       `badge ${isInCarousel(product) ? "active" : "inactive"}`;
 
-    /* Estado producto */
     const status = row.querySelector(".p-status");
     status.textContent = isActivo(product) ? "Activo" : "Inactivo";
     status.className =
@@ -115,39 +107,51 @@ function renderTable(list) {
 }
 
 /* ============================================================
-   RENDER MÓVIL (CARDS — MATERIAL 3)
+   RENDER MÓVIL (FIX DEFINITIVO)
 ============================================================ */
 function renderMobile(list) {
   mobileContainer.innerHTML = "";
-
   if (!list.length) return;
 
   list.forEach(product => {
     const card = cardTemplate.content.cloneNode(true);
 
-    /* Imagen */
     const img = card.querySelector("img");
     img.src = getImageUrl(product);
     img.alt = product.name;
     img.loading = "lazy";
-    img.decoding = "async";
     img.onerror = () => img.src = "imagenes/no-image.png";
 
-    /* Info */
     card.querySelector(".p-name").textContent = product.name;
     card.querySelector(".p-price").textContent =
       formatPrice(product.price, product.currency);
     card.querySelector(".p-stock").textContent =
       `Stock: ${product.stock}`;
 
-    /* Carrusel */
     const toggle = card.querySelector(".p-carousel-toggle");
     const label  = card.querySelector(".carousel-status");
 
+    /* estado inicial */
     toggle.checked = isInCarousel(product);
-    label.textContent = isInCarousel(product) ? "Activo" : "Desactivado";
-    label.className =
-      `carousel-status ${isInCarousel(product) ? "active" : "inactive"}`;
+    actualizarLabel(label, toggle.checked);
+
+    /* 🔥 FIX: escucha cambios */
+    toggle.addEventListener("change", async () => {
+      const activo = toggle.checked;
+      actualizarLabel(label, activo);
+
+      /* guarda en BD */
+      const { error } = await window.supabaseClient
+        .from("products")
+        .update({ carousel: activo })
+        .eq("id", product.id);
+
+      if (error) {
+        console.error("❌ Error actualizando carrusel", error);
+        toggle.checked = !activo;
+        actualizarLabel(label, !activo);
+      }
+    });
 
     card.querySelector(".edit").dataset.id = product.id;
     card.querySelector(".delete").dataset.id = product.id;
@@ -157,7 +161,16 @@ function renderMobile(list) {
 }
 
 /* ============================================================
-   FILTRAR
+   UI HELPERS
+============================================================ */
+function actualizarLabel(label, activo) {
+  label.textContent = activo ? "Activo" : "Desactivado";
+  label.className =
+    `carousel-status ${activo ? "active" : "inactive"}`;
+}
+
+/* ============================================================
+   FILTRO
 ============================================================ */
 function aplicarFiltro() {
   const q = searchInput.value.toLowerCase().trim();
@@ -177,7 +190,7 @@ function aplicarFiltro() {
 }
 
 /* ============================================================
-   CARGAR PRODUCTOS
+   CARGA
 ============================================================ */
 async function cargarProductos() {
   const { data, error } = await window.supabaseClient
@@ -198,7 +211,6 @@ async function cargarProductos() {
    EVENTOS
 ============================================================ */
 searchInput.addEventListener("input", aplicarFiltro);
-
 btnAddProduct.addEventListener("click", () => {
   location.href = "admin-agregar-producto.html";
 });
