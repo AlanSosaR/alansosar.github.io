@@ -1,4 +1,4 @@
-console.log("🧩 admin-productos.js — LISTADO PRODUCTOS");
+console.log("🧩 admin-productos.js — LISTADO PRODUCTOS (FINAL)");
 
 /* ============================================================
    ESPERAR SUPABASE
@@ -49,6 +49,10 @@ function showSnackbar(message) {
   setTimeout(() => bar.classList.remove("show"), 3200);
 }
 
+function isActivo(product) {
+  return product.status === "activo";
+}
+
 /* ============================================================
    RENDER DESKTOP (TABLA)
 ============================================================ */
@@ -74,24 +78,30 @@ function renderTable(list) {
              alt="${p.name}"
              class="product-thumb">
       </td>
+
       <td>${p.name}</td>
+
       <td>${formatPrice(p.price, p.currency)}</td>
+
       <td>${p.stock}</td>
+
       <td>
         <span class="badge ${p.stock > 0 ? "ok" : "off"}">
           ${p.stock > 0 ? "Sí" : "No"}
         </span>
       </td>
+
       <td>
-        <span class="badge ${p.stock > 0 ? "active" : "inactive"}">
-          ${p.stock > 0 ? "Activo" : "Inactivo"}
+        <span class="badge ${isActivo(p) ? "active" : "inactive"}">
+          ${isActivo(p) ? "Activo" : "Inactivo"}
         </span>
       </td>
+
       <td class="actions">
-        <button class="icon-btn" title="Editar">
+        <button class="icon-btn" title="Editar" data-id="${p.id}">
           <span class="material-symbols-outlined">edit</span>
         </button>
-        <button class="icon-btn danger" title="Eliminar">
+        <button class="icon-btn danger" title="Eliminar" data-id="${p.id}">
           <span class="material-symbols-outlined">delete</span>
         </button>
       </td>
@@ -125,20 +135,21 @@ function renderMobile(list) {
 
       <div class="product-card-body">
         <h3>${p.name}</h3>
+
         <p class="price">${formatPrice(p.price, p.currency)}</p>
 
         <div class="meta">
           <span>Stock: ${p.stock}</span>
-          <span class="status ${p.stock > 0 ? "active" : "inactive"}">
-            ${p.stock > 0 ? "Activo" : "Inactivo"}
+          <span class="status ${isActivo(p) ? "active" : "inactive"}">
+            ${isActivo(p) ? "Activo" : "Inactivo"}
           </span>
         </div>
 
         <div class="actions">
-          <button class="icon-btn">
+          <button class="icon-btn" data-id="${p.id}">
             <span class="material-symbols-outlined">edit</span>
           </button>
-          <button class="icon-btn danger">
+          <button class="icon-btn danger" data-id="${p.id}">
             <span class="material-symbols-outlined">delete</span>
           </button>
         </div>
@@ -164,6 +175,7 @@ function aplicarFiltro() {
 
   renderTable(filteredProducts);
   renderMobile(filteredProducts);
+
   productsCount.textContent =
     `Mostrando ${filteredProducts.length} productos`;
 }
@@ -195,7 +207,7 @@ async function cargarProductos() {
 searchInput.addEventListener("input", aplicarFiltro);
 
 btnAddProduct.addEventListener("click", () => {
-  window.location.href = "admin-agregar-producto.html";
+  location.href = "admin-agregar-producto.html";
 });
 
 /* ============================================================
@@ -204,9 +216,8 @@ btnAddProduct.addEventListener("click", () => {
 (async function init() {
   await esperarSupabase();
 
-  // Protección extra (auth-ui ya hace esto)
   if (localStorage.getItem("cortero_logged") !== "1") {
-    window.location.href = "login.html";
+    location.href = "login.html";
     return;
   }
 
