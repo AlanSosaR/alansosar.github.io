@@ -1,4 +1,4 @@
-console.log("📦 admin-agregar-producto.js — FINAL DEFINITIVO");
+console.log("📦 admin-agregar-producto.js — FINAL CORREGIDO");
 
 /* ============================================================
    ESPERAR SUPABASE
@@ -29,11 +29,11 @@ const precioInput   = document.getElementById("precio");
 const stockInput    = document.getElementById("stock");
 const estadoSelect  = document.getElementById("estado");
 
-const btnSubmit = document.getElementById("btn-submit");
+const btnSubmit     = document.getElementById("btn-submit");
 
-/* PREVIEW */
-const uploadBox   = document.getElementById("uploadBox");
-const imagePreview = document.getElementById("imagePreview");
+/* UPLOAD */
+const uploadBox     = document.getElementById("uploadBox");
+const imagePreview  = document.getElementById("imagePreview");
 
 /* ============================================================
    SNACKBAR
@@ -60,9 +60,11 @@ function marcarError(input, mensaje) {
   const box   = field.querySelector(".m3-input") || field;
   const label = field.querySelector(".floating-label");
 
+  field.classList.remove("ok");
   field.classList.add("error", "filled");
-  box.classList.add("error");
-  if (label) label.style.color = "#B3261E";
+
+  if (box) box.classList.add("error");
+  if (label) label.style.color = "var(--error)";
 
   let helper = field.querySelector(".helper-text");
   if (!helper) {
@@ -83,9 +85,9 @@ function marcarOk(input) {
   const helper = field.querySelector(".helper-text");
 
   field.classList.remove("error");
-  box.classList.remove("error");
-
   field.classList.add("filled", "ok");
+
+  if (box) box.classList.remove("error");
   if (label) label.style.color = "var(--verde)";
   if (helper) helper.textContent = "";
 }
@@ -98,50 +100,59 @@ function validarFormulario() {
   if (!imagenInput.files.length) {
     marcarError(imagenInput, "La imagen es obligatoria");
     return false;
-  } marcarOk(imagenInput);
+  }
+  marcarOk(imagenInput);
 
   if (!nombreInput.value.trim()) {
     marcarError(nombreInput, "El nombre es obligatorio");
     nombreInput.focus();
     return false;
-  } marcarOk(nombreInput);
+  }
+  marcarOk(nombreInput);
 
   if (!descInput.value.trim()) {
     marcarError(descInput, "La descripción es obligatoria");
     descInput.focus();
     return false;
-  } marcarOk(descInput);
+  }
+  marcarOk(descInput);
 
   if (!categoriaSel.value) {
     marcarError(categoriaSel, "Selecciona una categoría");
     categoriaSel.focus();
     return false;
-  } marcarOk(categoriaSel);
+  }
+  marcarOk(categoriaSel);
 
   if (!presentacion.value) {
     marcarError(presentacion, "Selecciona una presentación");
     presentacion.focus();
     return false;
-  } marcarOk(presentacion);
+  }
+  marcarOk(presentacion);
 
   if (!precioInput.value || Number(precioInput.value) <= 0) {
     marcarError(precioInput, "Precio inválido");
     precioInput.focus();
     return false;
-  } marcarOk(precioInput);
+  }
+  marcarOk(precioInput);
 
   if (stockInput.value === "" || Number(stockInput.value) < 0) {
     marcarError(stockInput, "Stock inválido");
     stockInput.focus();
     return false;
-  } marcarOk(stockInput);
+  }
+  marcarOk(stockInput);
 
   return true;
 }
 
 /* ============================================================
-   PREVIEW DE IMAGEN
+   PREVIEW DE IMAGEN (CORREGIDO)
 ============================================================ */
+uploadBox.addEventListener("click", () => imagenInput.click());
+
 imagenInput.addEventListener("change", () => {
   const file = imagenInput.files[0];
   if (!file) return;
@@ -163,18 +174,18 @@ imagenInput.addEventListener("change", () => {
 });
 
 /* ============================================================
-   SUBIR IMAGEN (STORAGE)
+   STORAGE — SUBIR IMAGEN
 ============================================================ */
 async function subirImagenProducto() {
   const file = imagenInput.files[0];
-  const ext  = file.name.split(".").pop();
+  const ext  = file.name.split(".").pop().toLowerCase();
   const path = `products/${crypto.randomUUID()}.${ext}`;
 
   const { error } = await window.supabaseClient.storage
     .from("product-images")
     .upload(path, file, {
-      contentType: file.type,
-      upsert: false
+      upsert: false,
+      contentType: file.type
     });
 
   if (error) throw error;
@@ -200,7 +211,7 @@ async function guardarProducto(imageUrl) {
       currency: "HNL",
       stock: Number(stockInput.value),
       image_url: imageUrl,
-      status: estadoSelect.value
+      status: estadoSelect?.value || "activo"
     });
 
   if (error) throw error;
@@ -227,7 +238,7 @@ form.addEventListener("submit", async e => {
     }, 1200);
 
   } catch (err) {
-    console.error(err);
+    console.error("❌ Error guardando producto", err);
     showSnackbar("❌ Error al guardar el producto", "error");
     btnSubmit.classList.remove("loading");
   }
@@ -246,7 +257,7 @@ form.addEventListener("submit", async e => {
 
   [nombreInput, descInput, precioInput, stockInput].forEach(el => {
     el.addEventListener("input", () => {
-      if (el.value.trim()) marcarOk(el);
+      el.value.trim() ? marcarOk(el) : null;
     });
   });
 
@@ -257,5 +268,4 @@ form.addEventListener("submit", async e => {
   presentacion.addEventListener("change", () => {
     presentacion.value && marcarOk(presentacion);
   });
-
 })();
