@@ -534,3 +534,8 @@ a {
     display: none;
   }
 }
+
+.snackbar.show {
+  opacity: 1;
+  pointer-events: auto; /* ✅ CLAVE */
+}
