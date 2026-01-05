@@ -87,20 +87,69 @@ function syncFloatingLabels() {
    VALIDACIÓN
 ============================================================ */
 function validarFormulario() {
+  let valido = true;
+
+  // Limpiar estados previos
+  document.querySelectorAll(".m3-field")
+    .forEach(f => f.classList.remove("error", "ok"));
+
+  const marcarError = (input) => {
+    const field = input.closest(".m3-field");
+    if (field) field.classList.add("error");
+    valido = false;
+  };
+
+  const marcarOk = (input) => {
+    const field = input.closest(".m3-field");
+    if (field) field.classList.add("ok");
+  };
+
+  // IMAGEN (solo al agregar)
   if (!IS_EDIT && !imagenInput.files.length) {
     showSnackbar("La imagen es obligatoria", "error");
     return false;
   }
 
-  if (!nombreInput.value.trim()) return false;
-  if (!descInput.value.trim()) return false;
-  if (!categoriaSel.value) return false;
-  if (!tipoCafeSel.value) return false;
-  if (!presentacion.value) return false;
-  if (!precioInput.value || Number(precioInput.value) <= 0) return false;
-  if (stockInput.value === "" || Number(stockInput.value) < 0) return false;
+  // NOMBRE
+  nombreInput.value.trim()
+    ? marcarOk(nombreInput)
+    : marcarError(nombreInput);
 
-  return true;
+  // DESCRIPCIÓN
+  descInput.value.trim()
+    ? marcarOk(descInput)
+    : marcarError(descInput);
+
+  // CATEGORÍA
+  categoriaSel.value
+    ? marcarOk(categoriaSel)
+    : marcarError(categoriaSel);
+
+  // TIPO DE CAFÉ
+  tipoCafeSel.value
+    ? marcarOk(tipoCafeSel)
+    : marcarError(tipoCafeSel);
+
+  // PRESENTACIÓN
+  presentacion.value
+    ? marcarOk(presentacion)
+    : marcarError(presentacion);
+
+  // PRECIO
+  precioInput.value && Number(precioInput.value) > 0
+    ? marcarOk(precioInput)
+    : marcarError(precioInput);
+
+  // STOCK
+  stockInput.value !== "" && Number(stockInput.value) >= 0
+    ? marcarOk(stockInput)
+    : marcarError(stockInput);
+
+  if (!valido) {
+    showSnackbar("Completa todos los campos obligatorios", "error");
+  }
+
+  return valido;
 }
 
 /* ============================================================
