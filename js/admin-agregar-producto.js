@@ -1,4 +1,4 @@
-console.log("📦 admin-agregar-producto.js — FINAL DEFINITIVO ESTABLE");
+console.log("📦 admin-agregar-producto.js — FINAL DEFINITIVO");
 
 /* ============================================================
    ESPERAR SUPABASE
@@ -16,6 +16,13 @@ function esperarSupabase() {
 }
 
 /* ============================================================
+   CONTEXTO (AGREGAR / EDITAR)
+============================================================ */
+const params = new URLSearchParams(location.search);
+const PRODUCT_ID = params.get("id");
+const IS_EDIT = Boolean(PRODUCT_ID);
+
+/* ============================================================
    ELEMENTOS
 ============================================================ */
 const form = document.getElementById("producto-form");
@@ -24,6 +31,7 @@ const imagenInput   = document.getElementById("imagen");
 const nombreInput   = document.getElementById("nombre");
 const descInput     = document.getElementById("descripcion");
 const categoriaSel  = document.getElementById("categoria");
+const tipoCafeSel   = document.getElementById("tipoCafe");
 const presentacion  = document.getElementById("presentacion");
 const precioInput   = document.getElementById("precio");
 const stockInput    = document.getElementById("stock");
@@ -33,7 +41,6 @@ const imagePreview  = document.getElementById("imagePreview");
 
 const btnSubmit     = document.getElementById("btn-submit");
 
-/* ESTADO (SWITCH) */
 const estadoToggle  = document.getElementById("estadoToggle");
 const estadoTexto   = document.getElementById("estadoTexto");
 
@@ -53,87 +60,36 @@ function showSnackbar(message, type = "success") {
 }
 
 /* ============================================================
-   UI — ERRORES / OK
+   LABELS — FORZAR FILLED
 ============================================================ */
-function marcarError(input, mensaje) {
+function marcarFilled(input) {
   const field = input.closest(".m3-field");
-  if (!field) return;
-
-  field.classList.remove("ok");
-  field.classList.add("error", "filled");
-
-  let helper = field.querySelector(".helper-text");
-  if (!helper) {
-    helper = document.createElement("div");
-    helper.className = "helper-text";
-    field.appendChild(helper);
-  }
-  helper.textContent = mensaje;
-}
-
-function marcarOk(input) {
-  const field = input.closest(".m3-field");
-  if (!field) return;
-
-  field.classList.remove("error");
-  field.classList.add("filled", "ok");
-
-  const helper = field.querySelector(".helper-text");
-  if (helper) helper.textContent = "";
+  if (field) field.classList.add("filled");
 }
 
 /* ============================================================
-   VALIDACIÓN EN CADENA
+   VALIDACIÓN
 ============================================================ */
 function validarFormulario() {
 
-  if (!imagenInput.files.length) {
-    marcarError(imagenInput, "La imagen es obligatoria");
+  if (!IS_EDIT && !imagenInput.files.length) {
+    showSnackbar("La imagen es obligatoria", "error");
     return false;
   }
-  marcarOk(imagenInput);
 
-  if (!nombreInput.value.trim()) {
-    marcarError(nombreInput, "El nombre es obligatorio");
-    return false;
-  }
-  marcarOk(nombreInput);
-
-  if (!descInput.value.trim()) {
-    marcarError(descInput, "La descripción es obligatoria");
-    return false;
-  }
-  marcarOk(descInput);
-
-  if (!categoriaSel.value) {
-    marcarError(categoriaSel, "Selecciona una categoría");
-    return false;
-  }
-  marcarOk(categoriaSel);
-
-  if (!presentacion.value) {
-    marcarError(presentacion, "Selecciona una presentación");
-    return false;
-  }
-  marcarOk(presentacion);
-
-  if (!precioInput.value || Number(precioInput.value) <= 0) {
-    marcarError(precioInput, "Precio inválido");
-    return false;
-  }
-  marcarOk(precioInput);
-
-  if (stockInput.value === "" || Number(stockInput.value) < 0) {
-    marcarError(stockInput, "Stock inválido");
-    return false;
-  }
-  marcarOk(stockInput);
+  if (!nombreInput.value.trim()) return false;
+  if (!descInput.value.trim()) return false;
+  if (!categoriaSel.value) return false;
+  if (!tipoCafeSel.value) return false;
+  if (!presentacion.value) return false;
+  if (!precioInput.value || Number(precioInput.value) <= 0) return false;
+  if (stockInput.value === "" || Number(stockInput.value) < 0) return false;
 
   return true;
 }
 
 /* ============================================================
-   IMAGEN — MISMO PATRÓN QUE RECIBO (CLAVE)
+   IMAGEN — PREVIEW
 ============================================================ */
 imagenInput.addEventListener("change", () => {
   if (!imagenInput.files.length) return;
@@ -147,7 +103,7 @@ imagenInput.addEventListener("change", () => {
   }
 
   if (file.size > 2 * 1024 * 1024) {
-    showSnackbar("La imagen no puede superar 2 MB", "error");
+    showSnackbar("Máx. 2 MB", "error");
     imagenInput.value = "";
     return;
   }
@@ -155,12 +111,10 @@ imagenInput.addEventListener("change", () => {
   imagePreview.src = URL.createObjectURL(file);
   imagePreview.classList.remove("hidden");
   uploadBox.classList.add("has-image");
-
-  marcarOk(imagenInput);
 });
 
 /* ============================================================
-   ESTADO — SWITCH (UI + DATA)
+   ESTADO
 ============================================================ */
 estadoToggle.addEventListener("change", () => {
   if (estadoToggle.checked) {
@@ -168,26 +122,25 @@ estadoToggle.addEventListener("change", () => {
     estadoTexto.classList.add("activo");
     estadoTexto.classList.remove("inactivo");
   } else {
-    estadoTexto.textContent = "Desactivado";
+    estadoTexto.textContent = "Inactivo";
     estadoTexto.classList.add("inactivo");
     estadoTexto.classList.remove("activo");
   }
 });
 
 /* ============================================================
-   STORAGE — SUBIR IMAGEN
+   STORAGE — SUBIR IMAGEN (SOLO SI HAY NUEVA)
 ============================================================ */
 async function subirImagenProducto() {
+  if (!imagenInput.files.length) return null;
+
   const file = imagenInput.files[0];
-  const ext  = file.name.split(".").pop().toLowerCase();
+  const ext  = file.name.split(".").pop();
   const path = `products/${crypto.randomUUID()}.${ext}`;
 
   const { error } = await window.supabaseClient.storage
     .from("product-images")
-    .upload(path, file, {
-      upsert: false,
-      contentType: file.type
-    });
+    .upload(path, file, { upsert: false });
 
   if (error) throw error;
 
@@ -199,25 +152,69 @@ async function subirImagenProducto() {
 }
 
 /* ============================================================
-   GUARDAR PRODUCTO — DEFINITIVO
+   GUARDAR / ACTUALIZAR
 ============================================================ */
 async function guardarProducto(imageUrl) {
-  const { error } = await window.supabaseClient
-    .from("products")
-    .insert({
-      name: nombreInput.value.trim(),
-      description: descInput.value.trim(),
-      category: categoriaSel.value,
-      price: Number(precioInput.value),
-      currency: "HNL",
-      stock: Number(stockInput.value),
-      image_url: imageUrl,
 
-      // 🔑 STATUS REAL (TEXT)
-      status: estadoToggle.checked ? "activo" : "inactivo"
-    });
+  const payload = {
+    name: nombreInput.value.trim(),
+    description: descInput.value.trim(),
+    category: categoriaSel.value,
+    grind_type: tipoCafeSel.value,
+    price: Number(precioInput.value),
+    currency: "HNL",
+    stock: Number(stockInput.value),
+    status: estadoToggle.checked ? "activo" : "inactivo"
+  };
 
+  if (imageUrl) payload.image_url = imageUrl;
+
+  const query = IS_EDIT
+    ? window.supabaseClient.from("products").update(payload).eq("id", PRODUCT_ID)
+    : window.supabaseClient.from("products").insert(payload);
+
+  const { error } = await query;
   if (error) throw error;
+}
+
+/* ============================================================
+   CARGAR PRODUCTO (EDITAR)
+============================================================ */
+async function cargarProducto() {
+  const { data, error } = await window.supabaseClient
+    .from("products")
+    .select("*")
+    .eq("id", PRODUCT_ID)
+    .single();
+
+  if (error) return;
+
+  nombreInput.value = data.name;
+  descInput.value = data.description;
+  categoriaSel.value = data.category;
+  tipoCafeSel.value = data.grind_type;
+  presentacion.value = data.presentation || "";
+  precioInput.value = data.price;
+  stockInput.value = data.stock;
+
+  estadoToggle.checked = data.status === "activo";
+  estadoTexto.textContent = estadoToggle.checked ? "Activo" : "Inactivo";
+
+  if (data.image_url) {
+    imagePreview.src = data.image_url;
+    imagePreview.classList.remove("hidden");
+    uploadBox.classList.add("has-image");
+  }
+
+  [
+    nombreInput,
+    descInput,
+    categoriaSel,
+    tipoCafeSel,
+    presentacion,
+    precioInput,
+    stockInput
+  ].forEach(marcarFilled);
 }
 
 /* ============================================================
@@ -226,7 +223,10 @@ async function guardarProducto(imageUrl) {
 form.addEventListener("submit", async e => {
   e.preventDefault();
 
-  if (!validarFormulario()) return;
+  if (!validarFormulario()) {
+    showSnackbar("Completa todos los campos", "error");
+    return;
+  }
 
   btnSubmit.classList.add("loading");
 
@@ -234,15 +234,24 @@ form.addEventListener("submit", async e => {
     const imageUrl = await subirImagenProducto();
     await guardarProducto(imageUrl);
 
-    showSnackbar("✅ Producto agregado correctamente", "success");
+    showSnackbar(
+      IS_EDIT
+        ? "✅ Cambios actualizados correctamente"
+        : "✅ Producto agregado correctamente",
+      "success"
+    );
 
-    setTimeout(() => {
-      location.href = "admin-productos.html";
-    }, 1200);
+    if (!IS_EDIT) {
+      setTimeout(() => {
+        location.href = "admin-productos.html";
+      }, 1200);
+    }
+
+    btnSubmit.classList.remove("loading");
 
   } catch (err) {
-    console.error("❌ Error guardando producto", err);
-    showSnackbar("❌ Error al guardar el producto", "error");
+    console.error(err);
+    showSnackbar("❌ Error al guardar", "error");
     btnSubmit.classList.remove("loading");
   }
 });
@@ -255,5 +264,12 @@ form.addEventListener("submit", async e => {
 
   if (localStorage.getItem("cortero_logged") !== "1") {
     location.href = "login.html";
+    return;
+  }
+
+  if (IS_EDIT) {
+    document.querySelector(".header-title").textContent = "Editar producto";
+    document.querySelector(".btn-text").textContent = "Guardar cambios";
+    await cargarProducto();
   }
 })();
