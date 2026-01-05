@@ -120,25 +120,24 @@ a {
   }
 }
 
-/* TEXTO */
-.product-label small {
-  font-weight: 600;
-  letter-spacing: .04em;
-  color: var(--cafe);
-}
-
-.product-label .subtext {
-  color: #a78c7c;
-  font-size: 0.9rem;
-}
-
+/* =========================================================
+   TEXTO
+========================================================= */
 .product-text h2 {
   font-family: "Playfair Display", serif;
   font-size: 2rem;
-  margin: .6rem 0;
+  margin-bottom: .6rem;
   color: var(--cafe);
 }
 
+.product-description {
+  font-size: .95rem;
+  color: var(--gris-text);
+  line-height: 1.55;
+  margin-bottom: 1rem;
+}
+
+/* PÍLDORA CALIDAD */
 .pill {
   display: inline-block;
   border: 1px solid var(--gris-line);
@@ -146,21 +145,14 @@ a {
   border-radius: 999px;
   font-size: .85rem;
   color: var(--cafe);
-  margin-bottom: .8rem;
+  margin-bottom: 1.2rem;
 }
 
-.product-description {
-  margin-top: 1rem;
-  font-size: .95rem;
-  color: var(--gris-text);
-  line-height: 1.55;
-}
-
-/* INFO */
+/* INFO CLAVE */
 .admin-product-info {
   list-style: none;
   padding: 0;
-  margin-top: 1.2rem;
+  margin: 0 0 1.4rem;
 }
 
 .admin-product-info li {
@@ -172,11 +164,11 @@ a {
    SWITCH CARRUSEL
 ========================================================= */
 .admin-carousel-toggle {
-  margin-top: 1.6rem;
   display: flex;
   align-items: center;
   gap: 14px;
   font-size: .9rem;
+  margin-bottom: 1rem;
 }
 
 .carousel-status {
@@ -192,30 +184,7 @@ a {
   color: var(--rojo);
 }
 
-/* =========================================================
-   IMAGEN PREVIEW (NO SE SALE)
-========================================================= */
-.product-img-wrap {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: radial-gradient(circle at center, #f5f5f5 0%, #fff 100%);
-  border-radius: 18px;
-  padding: 1.2rem;
-  overflow: hidden; /* 🔑 CLAVE */
-}
-
-.product-img-wrap img {
-  max-width: 320px;
-  width: 100%;
-  height: auto;
-  object-fit: contain;
-  display: block;
-}
-
-/* =========================================================
-   SWITCH
-========================================================= */
+/* SWITCH */
 .switch {
   position: relative;
   width: 46px;
@@ -256,19 +225,18 @@ a {
 }
 
 /* =========================================================
-   BOTONES FLOTANTES (EDITAR / ELIMINAR)
+   ACCIONES ADMIN (DEBAJO DEL SWITCH)
 ========================================================= */
-.admin-actions {
-  position: absolute;
-  bottom: 18px;
-  left: 18px;
+.admin-actions.inline-actions {
   display: flex;
   gap: 14px;
+  margin-top: .8rem;
 }
 
+/* BOTONES */
 .admin-action-btn {
-  width: 52px;
-  height: 52px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   border: none;
   background: #fff;
@@ -286,7 +254,7 @@ a {
 }
 
 .admin-action-btn .material-symbols-outlined {
-  font-size: 26px;
+  font-size: 24px;
 }
 
 .admin-action-btn.edit {
@@ -298,7 +266,28 @@ a {
 }
 
 /* =========================================================
-   CARRUSEL ADMIN (NO SE SALE)
+   IMAGEN PREVIEW (NO SE SALE)
+========================================================= */
+.product-img-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: radial-gradient(circle at center, #f5f5f5 0%, #fff 100%);
+  border-radius: 18px;
+  padding: 1.2rem;
+  overflow: hidden;
+}
+
+.product-img-wrap img {
+  max-width: 320px;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+
+/* =========================================================
+   CARRUSEL ADMIN
 ========================================================= */
 .related {
   max-width: 1100px;
@@ -340,7 +329,7 @@ a {
   padding: 1rem;
   cursor: pointer;
   transition: transform .25s ease, box-shadow .25s ease;
-  overflow: hidden; /* 🔑 CLAVE */
+  overflow: hidden;
 }
 
 .similar-card img {
