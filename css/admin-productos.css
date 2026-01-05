@@ -76,24 +76,65 @@ a {
   color: var(--cafe);
 }
 
-/* BOTÓN */
+/* BOTÓN AGREGAR — CIRCULAR ELEVADO */
 .btn-primary {
+  width: 52px;
+  height: 52px;
+
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: center;
+
   background: var(--verde);
   color: #fff;
+
   border: none;
-  border-radius: 999px;
-  padding: 14px 22px;
-  font-weight: 500;
+  border-radius: 50%;
+
   cursor: pointer;
-  transition: background .2s ease, transform .15s ease;
+
+  /* Elevación base */
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.18),
+    0 6px 14px rgba(0, 0, 0, 0.12);
+
+  transition:
+    background 0.2s ease,
+    transform 0.18s cubic-bezier(.2, .8, .2, 1),
+    box-shadow 0.18s cubic-bezier(.2, .8, .2, 1);
 }
 
+.btn-primary span {
+  font-size: 26px;
+  line-height: 1;
+}
+
+/* Hover — sube */
 .btn-primary:hover {
   background: var(--verde-soft);
+
+  transform: translateY(-3px);
+
+  box-shadow:
+    0 6px 8px rgba(0, 0, 0, 0.22),
+    0 12px 24px rgba(0, 0, 0, 0.18);
+}
+
+/* Active — baja */
+.btn-primary:active {
   transform: translateY(-1px);
+
+  box-shadow:
+    0 3px 6px rgba(0, 0, 0, 0.18),
+    0 6px 12px rgba(0, 0, 0, 0.12);
+}
+
+/* Focus visible — accesibilidad */
+.btn-primary:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 4px rgba(51, 103, 59, 0.35),
+    0 6px 14px rgba(0, 0, 0, 0.16);
 }
 
 /* =========================================================
