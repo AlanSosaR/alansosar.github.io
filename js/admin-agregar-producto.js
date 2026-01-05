@@ -60,7 +60,7 @@ function showSnackbar(message, type = "success") {
 }
 
 /* =====================================================
-   FLOATING LABEL — FIX GLOBAL (INPUT + TEXTAREA + SELECT)
+   FLOATING LABEL — FIX GLOBAL
 ===================================================== */
 function syncFloatingLabels() {
   document.querySelectorAll(".m3-field").forEach(field => {
@@ -76,24 +76,17 @@ function syncFloatingLabels() {
       field.classList.toggle("filled", hasValue);
     };
 
-    // Estado inicial (editar / reload)
     update();
-
-    // Cambios dinámicos
     control.addEventListener("input", update);
     control.addEventListener("change", update);
     control.addEventListener("blur", update);
   });
 }
 
-/* Ejecutar al cargar */
-document.addEventListener("DOMContentLoaded", syncFloatingLabels);
-
 /* ============================================================
    VALIDACIÓN
 ============================================================ */
 function validarFormulario() {
-
   if (!IS_EDIT && !imagenInput.files.length) {
     showSnackbar("La imagen es obligatoria", "error");
     return false;
@@ -136,22 +129,7 @@ imagenInput.addEventListener("change", () => {
 });
 
 /* ============================================================
-   ESTADO
-============================================================ */
-estadoToggle.addEventListener("change", () => {
-  if (estadoToggle.checked) {
-    estadoTexto.textContent = "Activo";
-    estadoTexto.classList.add("activo");
-    estadoTexto.classList.remove("inactivo");
-  } else {
-    estadoTexto.textContent = "Inactivo";
-    estadoTexto.classList.add("inactivo");
-    estadoTexto.classList.remove("activo");
-  }
-});
-
-/* ============================================================
-   STORAGE — SUBIR IMAGEN (SOLO SI HAY NUEVA)
+   STORAGE — SUBIR IMAGEN
 ============================================================ */
 async function subirImagenProducto() {
   if (!imagenInput.files.length) return null;
@@ -177,12 +155,12 @@ async function subirImagenProducto() {
    GUARDAR / ACTUALIZAR
 ============================================================ */
 async function guardarProducto(imageUrl) {
-
   const payload = {
     name: nombreInput.value.trim(),
     description: descInput.value.trim(),
     category: categoriaSel.value,
     grind_type: tipoCafeSel.value,
+    presentation: presentacion.value,
     price: Number(precioInput.value),
     currency: "HNL",
     stock: Number(stockInput.value),
@@ -209,15 +187,15 @@ async function cargarProducto() {
     .eq("id", PRODUCT_ID)
     .single();
 
-  if (error) return;
+  if (error || !data) return;
 
-  nombreInput.value = data.name;
-  descInput.value = data.description;
-  categoriaSel.value = data.category;
-  tipoCafeSel.value = data.grind_type;
+  nombreInput.value = data.name || "";
+  descInput.value = data.description || "";
+  categoriaSel.value = data.category || "";
+  tipoCafeSel.value = data.grind_type || "";
   presentacion.value = data.presentation || "";
-  precioInput.value = data.price;
-  stockInput.value = data.stock;
+  precioInput.value = data.price ?? "";
+  stockInput.value = data.stock ?? "";
 
   estadoToggle.checked = data.status === "activo";
   estadoTexto.textContent = estadoToggle.checked ? "Activo" : "Inactivo";
@@ -228,15 +206,7 @@ async function cargarProducto() {
     uploadBox.classList.add("has-image");
   }
 
-  [
-    nombreInput,
-    descInput,
-    categoriaSel,
-    tipoCafeSel,
-    presentacion,
-    precioInput,
-    stockInput
-  ].forEach(marcarFilled);
+  syncFloatingLabels(); // 🔑 CLAVE
 }
 
 /* ============================================================
@@ -259,21 +229,18 @@ form.addEventListener("submit", async e => {
     showSnackbar(
       IS_EDIT
         ? "✅ Cambios actualizados correctamente"
-        : "✅ Producto agregado correctamente",
+        : "✅ Café agregado correctamente",
       "success"
     );
 
-    if (!IS_EDIT) {
-      setTimeout(() => {
-        location.href = "admin-productos.html";
-      }, 1200);
-    }
-
-    btnSubmit.classList.remove("loading");
+    setTimeout(() => {
+      location.href = "admin-productos.html";
+    }, 1200);
 
   } catch (err) {
     console.error(err);
     showSnackbar("❌ Error al guardar", "error");
+  } finally {
     btnSubmit.classList.remove("loading");
   }
 });
@@ -289,9 +256,9 @@ form.addEventListener("submit", async e => {
     return;
   }
 
+  syncFloatingLabels();
+
   if (IS_EDIT) {
-    document.querySelector(".header-title").textContent = "Editar producto";
-    document.querySelector(".btn-text").textContent = "Guardar cambios";
     await cargarProducto();
   }
 })();
