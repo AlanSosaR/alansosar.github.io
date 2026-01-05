@@ -6,15 +6,16 @@
   <title>Producto | Café Cortero</title>
 
   <!-- =====================================================
-       TÍTULO DINÁMICO PARA HEADER GLOBAL
-       (Agregar / Editar)
-  ====================================================== -->
-  <script>
-    const params = new URLSearchParams(location.search);
-    window.PAGE_TITLE = params.get("id")
-      ? "Editar producto"
-      : "Agregar producto";
-  </script>
+     TÍTULO DINÁMICO PARA HEADER GLOBAL (ADMIN CAFÉS)
+     Agregar / Editar
+====================================================== -->
+<script>
+  const params = new URLSearchParams(location.search);
+
+  window.PAGE_TITLE = params.get("id")
+    ? "Editar café"
+    : "Agregar café";
+</script>
 
   <!-- TIPOGRAFÍA -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
@@ -33,8 +34,7 @@
   <link rel="stylesheet" href="css/admin-agregar-producto.css?v=3">
 </head>
 
-<body class="page-admin header-checkout">
-
+<body class="page-admin-agregar-cafe header-checkout">
 <!-- ❌ NO HEADER AQUÍ -->
 <!-- layout.js lo inyecta automáticamente -->
 
