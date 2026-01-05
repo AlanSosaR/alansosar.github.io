@@ -1,4 +1,4 @@
-console.log("🧩 admin-productos.js — FINAL ESTABLE");
+console.log("🧩 admin-productos.js — FINAL DEFINITIVO");
 
 /* ============================================================
    ESPERAR SUPABASE
@@ -21,10 +21,8 @@ function esperarSupabase() {
 const searchInput   = document.getElementById("search-products");
 const btnAddProduct = document.getElementById("btnAddProduct");
 
-/* ESTADO VACÍO */
 const emptyState = document.getElementById("admin-empty-state");
 
-/* PREVIEW */
 const preview = {
   section: document.getElementById("admin-product-preview"),
   name: document.getElementById("p-name"),
@@ -37,11 +35,9 @@ const preview = {
   carouselStatus: document.getElementById("carousel-status")
 };
 
-/* ACCIONES ADMIN */
 const btnEditProduct   = document.querySelector(".admin-action-btn.edit");
 const btnDeleteProduct = document.querySelector(".admin-action-btn.delete");
 
-/* CARRUSEL */
 const relatedSection    = document.querySelector(".admin-related");
 const carouselContainer = document.getElementById("admin-products-carousel");
 const carouselTemplate  = document.getElementById("tpl-admin-carousel-card");
@@ -49,7 +45,6 @@ const carouselTemplate  = document.getElementById("tpl-admin-carousel-card");
 const btnPrev = document.getElementById("admin-prev");
 const btnNext = document.getElementById("admin-next");
 
-/* SNACKBAR */
 const snackbar = document.getElementById("snackbar");
 
 /* ============================================================
@@ -79,11 +74,7 @@ function getImageUrl(product) {
 
 function updateCarouselStatus(active) {
   if (!preview.carouselStatus) return;
-
-  preview.carouselStatus.textContent = active
-    ? "Activo"
-    : "Desactivado";
-
+  preview.carouselStatus.textContent = active ? "Activo" : "Desactivado";
   preview.carouselStatus.className =
     `carousel-status ${active ? "active" : "inactive"}`;
 }
@@ -104,23 +95,23 @@ function ocultarEstadoVacio() {
 }
 
 /* ============================================================
-   SNACKBAR CONFIRMACIÓN
+   SNACKBAR — CONFIRMACIÓN ELIMINAR
 ============================================================ */
-function showDeleteConfirm(onConfirm) {
-  if (!snackbar) return;
+function showDeleteConfirm(product) {
+  if (!snackbar || !product) return;
 
   snackbar.innerHTML = `
-    <span>¿Seguro que deseas eliminar este producto?</span>
-    <button class="snackbar-btn-confirm">Sí</button>
+    <span>¿Seguro que deseas eliminar este café?</span>
+    <button class="snackbar-btn-danger">Eliminar</button>
   `;
 
   snackbar.classList.add("show");
 
-  const btnConfirm = snackbar.querySelector(".snackbar-btn-confirm");
+  const btnConfirm = snackbar.querySelector(".snackbar-btn-danger");
 
   btnConfirm.onclick = async () => {
     snackbar.classList.remove("show");
-    await onConfirm();
+    await eliminarProducto(product);
   };
 
   setTimeout(() => {
@@ -136,32 +127,24 @@ function renderPreview(product) {
 
   selectedProductId = product.id;
 
-  preview.name.textContent =
-    product.name || "—";
-
+  preview.name.textContent = product.name || "—";
   preview.description.textContent =
     product.description || "Sin descripción";
 
-  /* PÍLDORA */
   const badgeParts = [];
-
   if (product.category?.trim()) badgeParts.push(product.category);
   if (product.grind_type?.trim()) badgeParts.push(product.grind_type);
-
-  preview.badge.textContent =
-    badgeParts.length ? badgeParts.join(" · ") : "—";
+  preview.badge.textContent = badgeParts.join(" · ") || "—";
 
   preview.price.textContent =
     formatPrice(product.price, product.currency);
 
-  preview.stock.textContent =
-    product.stock ?? "—";
+  preview.stock.textContent = product.stock ?? "—";
 
   preview.image.src = getImageUrl(product);
   preview.image.onerror = () =>
     preview.image.src = "imagenes/no-image.png";
 
-  /* SWITCH CARRUSEL */
   const activo = product.carousel === true;
   preview.carouselToggle.checked = activo;
   updateCarouselStatus(activo);
@@ -176,7 +159,6 @@ function renderPreview(product) {
       .eq("id", product.id);
 
     if (error) {
-      console.error("❌ Error actualizando carrusel", error);
       preview.carouselToggle.checked = !nuevoEstado;
       updateCarouselStatus(!nuevoEstado);
       return;
@@ -204,17 +186,12 @@ function renderCarousel(list) {
     root.dataset.id = product.id;
     root.dataset.index = index;
 
-    const img = root.querySelector("img");
-    img.src = getImageUrl(product);
-    img.alt = product.name;
-
+    root.querySelector("img").src = getImageUrl(product);
     root.querySelector(".c-name").textContent = product.name;
     root.querySelector(".c-price").textContent =
       formatPrice(product.price, product.currency);
 
-    root.addEventListener("click", () => {
-      seleccionarProducto(index);
-    });
+    root.addEventListener("click", () => seleccionarProducto(index));
 
     carouselContainer.appendChild(card);
   });
@@ -235,10 +212,9 @@ function seleccionarProducto(index) {
     .querySelectorAll(".admin-card")
     .forEach(c => c.classList.remove("active-card"));
 
-  const activeCard =
-    carouselContainer.querySelector(`[data-index="${index}"]`);
-
-  activeCard?.classList.add("active-card");
+  carouselContainer
+    .querySelector(`[data-index="${index}"]`)
+    ?.classList.add("active-card");
 
   renderPreview(product);
   actualizarScrollCarrusel();
@@ -259,21 +235,6 @@ function actualizarScrollCarrusel() {
     behavior: "smooth"
   });
 }
-
-/* ============================================================
-   FLECHAS
-============================================================ */
-btnPrev?.addEventListener("click", () => {
-  if (carouselIndex > 0) {
-    seleccionarProducto(carouselIndex - 1);
-  }
-});
-
-btnNext?.addEventListener("click", () => {
-  if (carouselIndex < filteredProducts.length - 1) {
-    seleccionarProducto(carouselIndex + 1);
-  }
-});
 
 /* ============================================================
    FILTRO
@@ -303,10 +264,8 @@ function aplicarFiltro() {
 async function eliminarProducto(product) {
   if (!product) return;
 
-  /* 1️⃣ Eliminar imagen del bucket */
   if (product.image_url && !product.image_url.startsWith("http")) {
     const path = product.image_url.split("/product-images/")[1];
-
     if (path) {
       await window.supabaseClient
         .storage
@@ -315,18 +274,13 @@ async function eliminarProducto(product) {
     }
   }
 
-  /* 2️⃣ Eliminar registro BD */
   const { error } = await window.supabaseClient
     .from("products")
     .delete()
     .eq("id", product.id);
 
-  if (error) {
-    console.error("❌ Error eliminando producto", error);
-    return;
-  }
+  if (error) return;
 
-  /* 3️⃣ Actualizar estado */
   products = products.filter(p => p.id !== product.id);
   filteredProducts = filteredProducts.filter(p => p.id !== product.id);
 
@@ -347,19 +301,12 @@ async function cargarProductos() {
     .select("*")
     .order("created_at", { ascending: false });
 
-  if (error) {
-    console.error("❌ Error cargando productos", error);
+  if (error || !data?.length) {
     mostrarEstadoVacio();
     return;
   }
 
-  products = data || [];
-
-  if (!products.length) {
-    mostrarEstadoVacio();
-    return;
-  }
-
+  products = data;
   aplicarFiltro();
 }
 
@@ -374,27 +321,21 @@ async function cargarProductos() {
     return;
   }
 
-  /* 🔍 Buscador */
   searchInput?.addEventListener("input", aplicarFiltro);
 
-  /* ➕ Agregar producto */
   btnAddProduct?.addEventListener("click", () => {
     location.href = "admin-agregar-producto.html";
   });
 
-  /* ✏️ Editar */
   btnEditProduct?.addEventListener("click", () => {
     if (!selectedProductId) return;
-    location.href =
-      `admin-agregar-producto.html?id=${selectedProductId}`;
+    location.href = `admin-agregar-producto.html?id=${selectedProductId}`;
   });
 
-  /* 🗑️ Eliminar */
   btnDeleteProduct?.addEventListener("click", () => {
     const product = products.find(p => p.id === selectedProductId);
     if (!product) return;
-
-    showDeleteConfirm(() => eliminarProducto(product));
+    showDeleteConfirm(product);
   });
 
   cargarProductos();
