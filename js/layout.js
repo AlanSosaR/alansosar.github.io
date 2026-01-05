@@ -62,25 +62,51 @@ if (document.body.dataset.page === "login") {
           el.classList.add("hidden");
         });
 
-        // Mostrar SOLO el título que corresponde según la página
+        // =====================================================
+// MOSTRAR SOLO EL TÍTULO CORRESPONDIENTE (HEADER)
+// =====================================================
 
+// 🛒 Carrito
 if (document.body.classList.contains("page-carrito")) {
   document.getElementById("header-cart-title")?.classList.remove("hidden");
 }
 
+// 👤 Datos del cliente
 if (document.body.classList.contains("page-datos-cliente")) {
   document.getElementById("header-datos-title")?.classList.remove("hidden");
 }
 
+// 🧾 Recibo
 if (document.body.classList.contains("page-recibo")) {
   document.getElementById("header-recibo-title")?.classList.remove("hidden");
 }
 
-
+// 📦 Mis pedidos
 if (document.body.classList.contains("page-mis-pedidos")) {
   document.getElementById("header-mis-pedidos-title")?.classList.remove("hidden");
 }
 
+// ☕ ADMIN — LISTADO DE CAFÉS
+if (document.body.classList.contains("page-admin-cafes")) {
+  document.getElementById("header-admin-cafes-title")?.classList.remove("hidden");
+}
+
+// ☕➕ ADMIN — AGREGAR / EDITAR CAFÉ
+if (document.body.classList.contains("page-admin-agregar-cafe")) {
+  const params = new URLSearchParams(window.location.search);
+
+  if (params.get("id")) {
+    // ✏️ Editar café
+    document
+      .getElementById("header-admin-edit-cafe-title")
+      ?.classList.remove("hidden");
+  } else {
+    // ➕ Agregar café
+    document
+      .getElementById("header-admin-add-cafe-title")
+      ?.classList.remove("hidden");
+  }
+}
         // =====================================================
         // 5️⃣ INIT HEADER (UI PURA)
         // =====================================================
