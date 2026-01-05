@@ -23,7 +23,6 @@ const btnAddProduct = document.getElementById("btnAddProduct");
 
 /* ESTADO VACÍO */
 const emptyState = document.getElementById("admin-empty-state");
-const btnAddProductEmpty = document.getElementById("btnAddProductEmpty");
 
 /* PREVIEW */
 const preview = {
@@ -38,6 +37,10 @@ const preview = {
   carouselStatus: document.getElementById("carousel-status")
 };
 
+/* ACCIONES ADMIN */
+const btnEditProduct   = document.querySelector(".admin-action-btn.edit");
+const btnDeleteProduct = document.querySelector(".admin-action-btn.delete");
+
 /* CARRUSEL */
 const relatedSection    = document.querySelector(".admin-related");
 const carouselContainer = document.getElementById("admin-products-carousel");
@@ -45,6 +48,9 @@ const carouselTemplate  = document.getElementById("tpl-admin-carousel-card");
 
 const btnPrev = document.getElementById("admin-prev");
 const btnNext = document.getElementById("admin-next");
+
+/* SNACKBAR */
+const snackbar = document.getElementById("snackbar");
 
 /* ============================================================
    ESTADO
@@ -98,6 +104,31 @@ function ocultarEstadoVacio() {
 }
 
 /* ============================================================
+   SNACKBAR CONFIRMACIÓN
+============================================================ */
+function showDeleteConfirm(onConfirm) {
+  if (!snackbar) return;
+
+  snackbar.innerHTML = `
+    <span>¿Seguro que deseas eliminar este producto?</span>
+    <button class="snackbar-btn-confirm">Sí</button>
+  `;
+
+  snackbar.classList.add("show");
+
+  const btnConfirm = snackbar.querySelector(".snackbar-btn-confirm");
+
+  btnConfirm.onclick = async () => {
+    snackbar.classList.remove("show");
+    await onConfirm();
+  };
+
+  setTimeout(() => {
+    snackbar.classList.remove("show");
+  }, 6000);
+}
+
+/* ============================================================
    PREVIEW PRINCIPAL
 ============================================================ */
 function renderPreview(product) {
@@ -111,24 +142,14 @@ function renderPreview(product) {
   preview.description.textContent =
     product.description || "Sin descripción";
 
-/* =========================================================
-   PÍLDORA = CALIDAD + TIPO DE CAFÉ
-========================================================= */
-const badgeParts = [];
+  /* PÍLDORA */
+  const badgeParts = [];
 
-/* Calidad (Premium / Tradicional / etc.) */
-if (product.category && product.category.trim()) {
-  badgeParts.push(product.category);
-}
+  if (product.category?.trim()) badgeParts.push(product.category);
+  if (product.grind_type?.trim()) badgeParts.push(product.grind_type);
 
-/* Tipo de café (Molido / En grano) */
-if (product.grind_type && product.grind_type.trim()) {
-  badgeParts.push(product.grind_type);
-}
-
-preview.badge.textContent = badgeParts.length
-  ? badgeParts.join(" · ")
-  : "—";
+  preview.badge.textContent =
+    badgeParts.length ? badgeParts.join(" · ") : "—";
 
   preview.price.textContent =
     formatPrice(product.price, product.currency);
@@ -277,6 +298,47 @@ function aplicarFiltro() {
 }
 
 /* ============================================================
+   ELIMINAR PRODUCTO (BD + IMAGEN)
+============================================================ */
+async function eliminarProducto(product) {
+  if (!product) return;
+
+  /* 1️⃣ Eliminar imagen del bucket */
+  if (product.image_url && !product.image_url.startsWith("http")) {
+    const path = product.image_url.split("/product-images/")[1];
+
+    if (path) {
+      await window.supabaseClient
+        .storage
+        .from("product-images")
+        .remove([path]);
+    }
+  }
+
+  /* 2️⃣ Eliminar registro BD */
+  const { error } = await window.supabaseClient
+    .from("products")
+    .delete()
+    .eq("id", product.id);
+
+  if (error) {
+    console.error("❌ Error eliminando producto", error);
+    return;
+  }
+
+  /* 3️⃣ Actualizar estado */
+  products = products.filter(p => p.id !== product.id);
+  filteredProducts = filteredProducts.filter(p => p.id !== product.id);
+
+  if (!filteredProducts.length) {
+    mostrarEstadoVacio();
+  } else {
+    renderCarousel(filteredProducts);
+    seleccionarProducto(0);
+  }
+}
+
+/* ============================================================
    CARGA
 ============================================================ */
 async function cargarProductos() {
@@ -312,24 +374,28 @@ async function cargarProductos() {
     return;
   }
 
-  // 🔍 Buscador
-  if (searchInput) {
-    searchInput.addEventListener("input", aplicarFiltro);
-  }
+  /* 🔍 Buscador */
+  searchInput?.addEventListener("input", aplicarFiltro);
 
-  // ➕ Botón agregar (barra superior)
-  if (btnAddProduct) {
-    btnAddProduct.onclick = () => {
-      location.href = "admin-agregar-producto.html";
-    };
-  }
+  /* ➕ Agregar producto */
+  btnAddProduct?.addEventListener("click", () => {
+    location.href = "admin-agregar-producto.html";
+  });
 
-  // ➕ Botón agregar (estado vacío)
-  if (btnAddProductEmpty) {
-    btnAddProductEmpty.onclick = () => {
-      location.href = "admin-agregar-producto.html";
-    };
-  }
+  /* ✏️ Editar */
+  btnEditProduct?.addEventListener("click", () => {
+    if (!selectedProductId) return;
+    location.href =
+      `admin-agregar-producto.html?id=${selectedProductId}`;
+  });
+
+  /* 🗑️ Eliminar */
+  btnDeleteProduct?.addEventListener("click", () => {
+    const product = products.find(p => p.id === selectedProductId);
+    if (!product) return;
+
+    showDeleteConfirm(() => eliminarProducto(product));
+  });
 
   cargarProductos();
 })();
