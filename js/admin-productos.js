@@ -1,4 +1,4 @@
-console.log("🧩 admin-productos.js — PREVIEW + CARRUSEL (FINAL)");
+console.log("🧩 admin-productos.js — FINAL ESTABLE");
 
 /* ============================================================
    ESPERAR SUPABASE
@@ -21,14 +21,16 @@ function esperarSupabase() {
 const searchInput   = document.getElementById("search-products");
 const btnAddProduct = document.getElementById("btnAddProduct");
 
+/* ESTADO VACÍO */
+const emptyState = document.getElementById("admin-empty-state");
+const btnAddProductEmpty = document.getElementById("btnAddProductEmpty");
+
 /* PREVIEW */
 const preview = {
   section: document.getElementById("admin-product-preview"),
   name: document.getElementById("p-name"),
-  category: document.getElementById("p-category"),
-  subtext: document.getElementById("p-subtext"),
-  badge: document.getElementById("p-badge"),
   description: document.getElementById("p-description"),
+  badge: document.getElementById("p-badge"),
   price: document.getElementById("p-price"),
   stock: document.getElementById("p-stock"),
   image: document.getElementById("p-image"),
@@ -36,6 +38,8 @@ const preview = {
   carouselStatus: document.getElementById("carousel-status")
 };
 
+/* CARRUSEL */
+const relatedSection    = document.querySelector(".admin-related");
 const carouselContainer = document.getElementById("admin-products-carousel");
 const carouselTemplate  = document.getElementById("tpl-admin-carousel-card");
 
@@ -54,6 +58,7 @@ let carouselIndex = 0;
    HELPERS
 ============================================================ */
 function formatPrice(value, currency = "HNL") {
+  if (value == null) return "—";
   return new Intl.NumberFormat("es-HN", {
     style: "currency",
     currency
@@ -78,6 +83,21 @@ function updateCarouselStatus(active) {
 }
 
 /* ============================================================
+   ESTADO VACÍO
+============================================================ */
+function mostrarEstadoVacio() {
+  emptyState?.classList.remove("hidden");
+  preview.section?.classList.add("hidden");
+  relatedSection?.classList.add("hidden");
+}
+
+function ocultarEstadoVacio() {
+  emptyState?.classList.add("hidden");
+  preview.section?.classList.remove("hidden");
+  relatedSection?.classList.remove("hidden");
+}
+
+/* ============================================================
    PREVIEW PRINCIPAL
 ============================================================ */
 function renderPreview(product) {
@@ -85,29 +105,33 @@ function renderPreview(product) {
 
   selectedProductId = product.id;
 
-  preview.name.textContent        = product.name;
-  preview.category.textContent    = product.category || "—";
-  preview.subtext.textContent     = product.subtext || "—";
-  preview.badge.textContent       = product.badge || "—";
-  preview.description.textContent = product.description || "Sin descripción";
+  preview.name.textContent =
+    product.name || "—";
+
+  preview.description.textContent =
+    product.description || "Sin descripción";
+
+  /* PÍLDORA = CALIDAD / TIPO */
+  preview.badge.textContent =
+    product.quality || product.badge || "—";
 
   preview.price.textContent =
     formatPrice(product.price, product.currency);
 
-  preview.stock.textContent = product.stock ?? "—";
+  preview.stock.textContent =
+    product.stock ?? "—";
 
   preview.image.src = getImageUrl(product);
   preview.image.onerror = () =>
     preview.image.src = "imagenes/no-image.png";
 
-  /* SWITCH + ESTADO */
+  /* SWITCH CARRUSEL */
   const activo = product.carousel === true;
   preview.carouselToggle.checked = activo;
   updateCarouselStatus(activo);
 
   preview.carouselToggle.onchange = async () => {
     const nuevoEstado = preview.carouselToggle.checked;
-
     updateCarouselStatus(nuevoEstado);
 
     const { error } = await window.supabaseClient
@@ -117,8 +141,6 @@ function renderPreview(product) {
 
     if (error) {
       console.error("❌ Error actualizando carrusel", error);
-
-      /* REVERTIR */
       preview.carouselToggle.checked = !nuevoEstado;
       updateCarouselStatus(!nuevoEstado);
       return;
@@ -127,7 +149,6 @@ function renderPreview(product) {
     product.carousel = nuevoEstado;
   };
 
-  /* SCROLL SUAVE */
   preview.section.scrollIntoView({
     behavior: "smooth",
     block: "start"
@@ -135,7 +156,7 @@ function renderPreview(product) {
 }
 
 /* ============================================================
-   CARRUSEL ADMIN
+   CARRUSEL
 ============================================================ */
 function renderCarousel(list) {
   carouselContainer.innerHTML = "";
@@ -154,11 +175,6 @@ function renderCarousel(list) {
     root.querySelector(".c-name").textContent = product.name;
     root.querySelector(".c-price").textContent =
       formatPrice(product.price, product.currency);
-
-    if (product.id === selectedProductId) {
-      root.classList.add("active-card");
-      carouselIndex = index;
-    }
 
     root.addEventListener("click", () => {
       seleccionarProducto(index);
@@ -193,7 +209,7 @@ function seleccionarProducto(index) {
 }
 
 /* ============================================================
-   SCROLL DEL CARRUSEL
+   SCROLL
 ============================================================ */
 function actualizarScrollCarrusel() {
   const card = carouselContainer.querySelector(".admin-card");
@@ -232,15 +248,17 @@ function aplicarFiltro() {
   filteredProducts = !q
     ? [...products]
     : products.filter(p =>
-        p.name.toLowerCase().includes(q) ||
-        p.category?.toLowerCase().includes(q)
+        p.name.toLowerCase().includes(q)
       );
 
-  renderCarousel(filteredProducts);
-
-  if (filteredProducts.length) {
-    seleccionarProducto(0);
+  if (!filteredProducts.length) {
+    mostrarEstadoVacio();
+    return;
   }
+
+  ocultarEstadoVacio();
+  renderCarousel(filteredProducts);
+  seleccionarProducto(0);
 }
 
 /* ============================================================
@@ -254,10 +272,17 @@ async function cargarProductos() {
 
   if (error) {
     console.error("❌ Error cargando productos", error);
+    mostrarEstadoVacio();
     return;
   }
 
   products = data || [];
+
+  if (!products.length) {
+    mostrarEstadoVacio();
+    return;
+  }
+
   aplicarFiltro();
 }
 
@@ -272,8 +297,10 @@ async function cargarProductos() {
     return;
   }
 
-  searchInput.addEventListener("input", aplicarFiltro);
-  btnAddProduct.onclick = () =>
+  searchInput?.addEventListener("input", aplicarFiltro);
+
+  btnAddProduct.onclick =
+  btnAddProductEmpty.onclick = () =>
     location.href = "admin-agregar-producto.html";
 
   cargarProductos();
