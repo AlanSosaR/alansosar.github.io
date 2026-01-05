@@ -97,7 +97,7 @@ a {
 }
 
 /* =========================================================
-   TARJETA PRINCIPAL (MISMO CLIENTE)
+   TARJETA PRINCIPAL (PREVIEW ADMIN)
 ========================================================= */
 .product-main {
   max-width: 1100px;
@@ -168,7 +168,9 @@ a {
   font-size: .95rem;
 }
 
-/* SWITCH */
+/* =========================================================
+   SWITCH CARRUSEL
+========================================================= */
 .admin-carousel-toggle {
   margin-top: 1.6rem;
   display: flex;
@@ -177,7 +179,22 @@ a {
   font-size: .9rem;
 }
 
-/* IMAGEN */
+.carousel-status {
+  font-weight: 600;
+  font-size: .85rem;
+}
+
+.carousel-status.active {
+  color: var(--verde);
+}
+
+.carousel-status.inactive {
+  color: var(--rojo);
+}
+
+/* =========================================================
+   IMAGEN PREVIEW (NO SE SALE)
+========================================================= */
 .product-img-wrap {
   display: flex;
   justify-content: center;
@@ -185,16 +202,19 @@ a {
   background: radial-gradient(circle at center, #f5f5f5 0%, #fff 100%);
   border-radius: 18px;
   padding: 1.2rem;
+  overflow: hidden; /* 🔑 CLAVE */
 }
 
 .product-img-wrap img {
   max-width: 320px;
   width: 100%;
+  height: auto;
   object-fit: contain;
+  display: block;
 }
 
 /* =========================================================
-   SWITCH REUTILIZADO
+   SWITCH
 ========================================================= */
 .switch {
   position: relative;
@@ -241,7 +261,7 @@ a {
 .admin-actions {
   position: absolute;
   bottom: 18px;
-  right: 18px;
+  left: 18px;
   display: flex;
   gap: 14px;
 }
@@ -256,7 +276,6 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.35rem;
   box-shadow: 0 8px 22px rgba(0,0,0,.18);
   transition: transform .15s ease, box-shadow .15s ease;
 }
@@ -264,6 +283,10 @@ a {
 .admin-action-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 14px 30px rgba(0,0,0,.22);
+}
+
+.admin-action-btn .material-symbols-outlined {
+  font-size: 26px;
 }
 
 .admin-action-btn.edit {
@@ -275,7 +298,7 @@ a {
 }
 
 /* =========================================================
-   CARRUSEL — MISMO CLIENTE
+   CARRUSEL ADMIN (NO SE SALE)
 ========================================================= */
 .related {
   max-width: 1100px;
@@ -308,14 +331,34 @@ a {
   display: none;
 }
 
+/* TARJETA */
 .similar-card {
   flex: 0 0 190px;
   background: #fff;
   border-radius: 18px;
   box-shadow: 0 10px 24px rgba(0,0,0,.08);
-  padding: 1.2rem 1rem;
+  padding: 1rem;
   cursor: pointer;
   transition: transform .25s ease, box-shadow .25s ease;
+  overflow: hidden; /* 🔑 CLAVE */
+}
+
+.similar-card img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.similar-card h4 {
+  margin-top: .6rem;
+  font-size: .95rem;
+  color: var(--cafe);
+}
+
+.similar-card p {
+  font-size: .85rem;
+  color: var(--gris-text);
 }
 
 .similar-card:hover {
@@ -328,7 +371,9 @@ a {
   transform: translateY(-6px);
 }
 
-/* FLECHAS PC */
+/* =========================================================
+   FLECHAS (PC)
+========================================================= */
 .carousel-prev-circle,
 .carousel-next-circle {
   position: absolute;
@@ -341,6 +386,9 @@ a {
   border: none;
   cursor: pointer;
   box-shadow: 0 6px 16px rgba(0,0,0,.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .carousel-prev-circle { left: -28px; }
