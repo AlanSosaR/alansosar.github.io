@@ -165,25 +165,31 @@ a {
 }
 
 /* =========================================================
-   MOBILE — SEARCH BAR FIJA
+   BARRA SUPERIOR — SEARCH FIJA (PC + MÓVIL)
 ========================================================= */
-@media (max-width: 600px) {
+.products-actions-bar {
+  position: sticky;
+  top: calc(var(--header-height, 72px) + 8px); /* desktop */
+  z-index: 20;
 
-  .products-actions-bar {
-    position: sticky;
-    top: calc(var(--header-height, 64px) + 8px);
-    z-index: 20;
-
-    background: var(--gris-bg, #fafafa);
-    padding-bottom: 12px;
-  }
-
+  background: var(--gris-bg, #fafafa);
+  padding-bottom: 12px;
 }
 
 /* =========================================================
-   RESPONSIVE — AJUSTES FINOS
+   MOBILE — AJUSTE DE ALTURA DEL HEADER
 ========================================================= */
 @media (max-width: 600px) {
+  .products-actions-bar {
+    top: calc(var(--header-height, 64px) + 8px); /* móvil */
+  }
+}
+
+/* =========================================================
+   RESPONSIVE — AJUSTES FINOS (SOLO MÓVIL)
+========================================================= */
+@media (max-width: 600px) {
+
   .search-box {
     padding: 8px 10px;
   }
