@@ -114,8 +114,15 @@ function renderPreview(product) {
   /* PÍLDORA = CALIDAD / TIPO */
 const badgeParts = [];
 
-if (product.grind_type?.trim()) badgeParts.push(product.grind_type);
-if (product.quality?.trim()) badgeParts.push(product.quality);
+/* Categoría (Molido / En grano) */
+if (product.category?.trim()) {
+  badgeParts.push(product.category);
+}
+
+/* Calidad (Premium / Tradicional) */
+if (product.quality?.trim()) {
+  badgeParts.push(product.quality);
+}
 
 preview.badge.textContent = badgeParts.length
   ? badgeParts.join(" · ")
