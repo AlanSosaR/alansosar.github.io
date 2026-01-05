@@ -259,36 +259,63 @@ function aplicarFiltro() {
 }
 
 /* ============================================================
-   ELIMINAR PRODUCTO (BD + IMAGEN)
+   ELIMINAR CAFÉ (BD + IMAGEN)
 ============================================================ */
 async function eliminarProducto(product) {
   if (!product) return;
 
-  if (product.image_url && !product.image_url.startsWith("http")) {
-    const path = product.image_url.split("/product-images/")[1];
-    if (path) {
-      await window.supabaseClient
-        .storage
-        .from("product-images")
-        .remove([path]);
+  try {
+    /* =====================
+       1️⃣ ELIMINAR IMAGEN (SI EXISTE)
+    ===================== */
+    if (product.image_url) {
+      try {
+        // Extraer path real del bucket
+        const url = new URL(product.image_url);
+        const path = url.pathname.split("/product-images/")[1];
+
+        if (path) {
+          await window.supabaseClient
+            .storage
+            .from("product-images")
+            .remove([path]);
+        }
+      } catch (e) {
+        console.warn("⚠️ No se pudo eliminar imagen:", e);
+      }
     }
-  }
 
-  const { error } = await window.supabaseClient
-    .from("products")
-    .delete()
-    .eq("id", product.id);
+    /* =====================
+       2️⃣ ELIMINAR REGISTRO BD
+    ===================== */
+    const { error } = await window.supabaseClient
+      .from("products")
+      .delete()
+      .eq("id", product.id);
 
-  if (error) return;
+    if (error) throw error;
 
-  products = products.filter(p => p.id !== product.id);
-  filteredProducts = filteredProducts.filter(p => p.id !== product.id);
+    /* =====================
+       3️⃣ ACTUALIZAR ESTADO LOCAL
+    ===================== */
+    products = products.filter(p => p.id !== product.id);
+    filteredProducts = filteredProducts.filter(p => p.id !== product.id);
 
-  if (!filteredProducts.length) {
-    mostrarEstadoVacio();
-  } else {
-    renderCarousel(filteredProducts);
-    seleccionarProducto(0);
+    if (!filteredProducts.length) {
+      mostrarEstadoVacio();
+    } else {
+      renderCarousel(filteredProducts);
+      seleccionarProducto(0);
+    }
+
+    /* =====================
+       4️⃣ FEEDBACK
+    ===================== */
+    showSnackbar("☕ Café eliminado correctamente", "success");
+
+  } catch (err) {
+    console.error("❌ Error eliminando café:", err);
+    showSnackbar("❌ No se pudo eliminar el café", "error");
   }
 }
 
