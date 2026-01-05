@@ -566,16 +566,33 @@ body.page-carrito .header-cart-title {
    HEADER — MODO CARRITO (CHECKOUT)
 ===================================================== */
 
-/* 🔒 Siempre ocultar icono del carrito (checkout completo) */
+/* =====================================================
+   OCULTAR CARRITO — CHECKOUT + ADMIN CAFÉS
+===================================================== */
 body.page-carrito #cart-btn,
 body.page-datos-cliente #cart-btn,
 body.page-recibo #cart-btn,
-body.page-mis-pedidos #cart-btn {
+body.page-mis-pedidos #cart-btn,
+
+/* ADMIN CAFÉS */
+body.page-admin-cafes #cart-btn,
+body.page-admin-agregar-cafe #cart-btn,
+body.page-admin-editar-cafe #cart-btn {
   display: none !important;
 }
-/* 🔒 Siempre ocultar navegación pública */
+
+/* =====================================================
+   OCULTAR NAVEGACIÓN PÚBLICA
+===================================================== */
 body.page-carrito .header-nav,
-body.page-carrito .nav-links {
+body.page-carrito .nav-links,
+
+body.page-admin-cafes .header-nav,
+body.page-admin-cafes .nav-links,
+body.page-admin-agregar-cafe .header-nav,
+body.page-admin-agregar-cafe .nav-links,
+body.page-admin-editar-cafe .header-nav,
+body.page-admin-editar-cafe .nav-links {
   display: none !important;
 }
 
