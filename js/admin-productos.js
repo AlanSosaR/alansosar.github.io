@@ -18,7 +18,7 @@ function esperarSupabase() {
 /* ============================================================
    DOM
 ============================================================ */
-const searchInput = document.getElementById("search-products");
+const searchInput   = document.getElementById("search-products");
 const btnAddProduct = document.getElementById("btnAddProduct");
 
 /* PREVIEW */
@@ -37,7 +37,10 @@ const preview = {
 };
 
 const carouselContainer = document.getElementById("admin-products-carousel");
-const carouselTemplate = document.getElementById("tpl-admin-carousel-card");
+const carouselTemplate  = document.getElementById("tpl-admin-carousel-card");
+
+const btnPrev = document.getElementById("admin-prev");
+const btnNext = document.getElementById("admin-next");
 
 /* ============================================================
    ESTADO
@@ -45,6 +48,7 @@ const carouselTemplate = document.getElementById("tpl-admin-carousel-card");
 let products = [];
 let filteredProducts = [];
 let selectedProductId = null;
+let carouselIndex = 0;
 
 /* ============================================================
    HELPERS
@@ -67,7 +71,7 @@ function isActivo(product) {
 }
 
 /* ============================================================
-   PREVIEW PRINCIPAL (MISMO FLUJO CLIENTE)
+   PREVIEW PRINCIPAL (MISMO COMPORTAMIENTO CLIENTE)
 ============================================================ */
 function renderPreview(product) {
   if (!product) return;
@@ -93,9 +97,9 @@ function renderPreview(product) {
   preview.image.onerror = () =>
     preview.image.src = "imagenes/no-image.png";
 
+  /* SWITCH CARRUSEL */
   preview.carouselToggle.checked = product.carousel === true;
 
-  /* switch carrusel */
   preview.carouselToggle.onchange = async () => {
     const activo = preview.carouselToggle.checked;
 
@@ -111,10 +115,9 @@ function renderPreview(product) {
     }
 
     product.carousel = activo;
-    renderCarousel(filteredProducts);
   };
 
-  /* scroll suave */
+  /* SCROLL SUAVE COMO CLIENTE */
   preview.section.scrollIntoView({
     behavior: "smooth",
     block: "start"
@@ -122,16 +125,18 @@ function renderPreview(product) {
 }
 
 /* ============================================================
-   CARRUSEL ADMIN (SELECCIÓN + ACTIVO)
+   CARRUSEL ADMIN
 ============================================================ */
 function renderCarousel(list) {
   carouselContainer.innerHTML = "";
 
-  list.forEach(product => {
+  list.forEach((product, index) => {
     const card = carouselTemplate.content.cloneNode(true);
     const root = card.querySelector(".admin-card");
 
     root.dataset.id = product.id;
+    root.dataset.index = index;
+
     root.querySelector("img").src = getImageUrl(product);
     root.querySelector("img").alt = product.name;
     root.querySelector(".c-name").textContent = product.name;
@@ -140,20 +145,71 @@ function renderCarousel(list) {
 
     if (product.id === selectedProductId) {
       root.classList.add("active-card");
+      carouselIndex = index;
     }
 
     root.addEventListener("click", () => {
-      document
-        .querySelectorAll(".admin-card")
-        .forEach(c => c.classList.remove("active-card"));
-
-      root.classList.add("active-card");
-      renderPreview(product);
+      seleccionarProducto(index);
     });
 
     carouselContainer.appendChild(card);
   });
+
+  actualizarScrollCarrusel();
 }
+
+/* ============================================================
+   SELECCIÓN (VERDE + SCROLL + PREVIEW)
+============================================================ */
+function seleccionarProducto(index) {
+  const product = filteredProducts[index];
+  if (!product) return;
+
+  carouselIndex = index;
+
+  document
+    .querySelectorAll(".admin-card")
+    .forEach(c => c.classList.remove("active-card"));
+
+  const activeCard =
+    carouselContainer.querySelector(`[data-index="${index}"]`);
+
+  activeCard?.classList.add("active-card");
+
+  renderPreview(product);
+  actualizarScrollCarrusel();
+}
+
+/* ============================================================
+   SCROLL DEL CARRUSEL (PC / MÓVIL)
+============================================================ */
+function actualizarScrollCarrusel() {
+  const card = carouselContainer.querySelector(".admin-card");
+  if (!card) return;
+
+  const gap = parseInt(getComputedStyle(carouselContainer).gap || 16);
+  const width = card.offsetWidth + gap;
+
+  carouselContainer.scrollTo({
+    left: width * carouselIndex,
+    behavior: "smooth"
+  });
+}
+
+/* ============================================================
+   FLECHAS (PC)
+============================================================ */
+btnPrev?.addEventListener("click", () => {
+  if (carouselIndex > 0) {
+    seleccionarProducto(carouselIndex - 1);
+  }
+});
+
+btnNext?.addEventListener("click", () => {
+  if (carouselIndex < filteredProducts.length - 1) {
+    seleccionarProducto(carouselIndex + 1);
+  }
+});
 
 /* ============================================================
    FILTRO
@@ -170,16 +226,13 @@ function aplicarFiltro() {
 
   renderCarousel(filteredProducts);
 
-  if (
-    filteredProducts.length &&
-    !filteredProducts.some(p => p.id === selectedProductId)
-  ) {
-    renderPreview(filteredProducts[0]);
+  if (filteredProducts.length) {
+    seleccionarProducto(0);
   }
 }
 
 /* ============================================================
-   CARGAR PRODUCTOS
+   CARGA
 ============================================================ */
 async function cargarProductos() {
   const { data, error } = await window.supabaseClient
@@ -208,7 +261,6 @@ async function cargarProductos() {
   }
 
   searchInput.addEventListener("input", aplicarFiltro);
-
   btnAddProduct.onclick = () =>
     location.href = "admin-agregar-producto.html";
 
