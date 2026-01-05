@@ -3,11 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Agregar producto | Café Cortero</title>
+  <title>Producto | Café Cortero</title>
 
-  <!-- TÍTULO PARA EL HEADER GLOBAL -->
+  <!-- =====================================================
+       TÍTULO DINÁMICO PARA HEADER GLOBAL
+       (Agregar / Editar)
+  ====================================================== -->
   <script>
-    window.PAGE_TITLE = "Agregar producto";
+    const params = new URLSearchParams(location.search);
+    window.PAGE_TITLE = params.get("id")
+      ? "Editar producto"
+      : "Agregar producto";
   </script>
 
   <!-- TIPOGRAFÍA -->
@@ -29,7 +35,8 @@
 
 <body class="page-admin header-checkout">
 
-<!-- HEADER GLOBAL SE INYECTA AUTOMÁTICAMENTE POR layout.js -->
+<!-- ❌ NO HEADER AQUÍ -->
+<!-- layout.js lo inyecta automáticamente -->
 
 <!-- =====================================================
      CONTENIDO
@@ -39,7 +46,7 @@
   <section class="profile-card">
 
     <!-- BOTÓN ATRÁS -->
-    <button class="back-btn" onclick="history.back()">
+    <button class="back-btn" onclick="history.back()" aria-label="Volver">
       <span class="material-symbols-outlined">chevron_left</span>
     </button>
 
@@ -82,36 +89,32 @@
           </div>
         </div>
 
-   <!-- CATEGORÍA -->
-<div class="m3-field">
-  <div class="m3-input">
-    <span class="material-symbols-outlined">category</span>
+        <!-- CATEGORÍA -->
+        <div class="m3-field">
+          <div class="m3-input">
+            <span class="material-symbols-outlined">category</span>
+            <select id="categoria" required>
+              <option value="" disabled selected></option>
+              <option value="Tradicional">Tradicional</option>
+              <option value="Premium">Premium</option>
+              <option value="Especial">Edición especial</option>
+            </select>
+            <label class="floating-label">Categoría *</label>
+          </div>
+        </div>
 
-    <select id="categoria" required>
-      <option value="" disabled selected></option>
-      <option value="Tradicional">Tradicional</option>
-      <option value="Premium">Premium</option>
-      <option value="Especial">Edición especial</option>
-    </select>
-
-    <label class="floating-label">Categoría *</label>
-  </div>
-</div>
-
-<!-- TIPO DE CAFÉ -->
-<div class="m3-field">
-  <div class="m3-input">
-    <span class="material-symbols-outlined">grain</span>
-
-    <select id="tipoCafe" required>
-      <option value="" disabled selected></option>
-      <option value="Molido">Molido</option>
-      <option value="En grano">En grano</option>
-    </select>
-
-    <label class="floating-label">Tipo de café *</label>
-  </div>
-</div>
+        <!-- TIPO DE CAFÉ -->
+        <div class="m3-field">
+          <div class="m3-input">
+            <span class="material-symbols-outlined">grain</span>
+            <select id="tipoCafe" required>
+              <option value="" disabled selected></option>
+              <option value="Molido">Molido</option>
+              <option value="En grano">En grano</option>
+            </select>
+            <label class="floating-label">Tipo de café *</label>
+          </div>
+        </div>
 
         <!-- PRESENTACIÓN -->
         <div class="m3-field">
@@ -146,21 +149,16 @@
           </div>
         </div>
 
-        <!-- ================= ESTADO ================= -->
+        <!-- ESTADO -->
         <div class="m3-field estado-field">
-
           <p class="field-title">Estado</p>
-
           <div class="estado-switch-wrapper">
             <label class="switch">
               <input type="checkbox" id="estadoToggle" checked>
               <span class="slider"></span>
             </label>
-
             <span id="estadoTexto" class="estado-label activo">Activo</span>
           </div>
-
-          <!-- 🔑 ID CORRECTO PARA EL JS -->
           <input type="hidden" id="estado" value="activo">
         </div>
 
@@ -180,16 +178,20 @@
 <div id="snackbar" class="snackbar"></div>
 
 <!-- =====================================================
-     SCRIPTS
+     SCRIPTS (ORDEN CRÍTICO)
 ====================================================== -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase-client-core.js"></script>
 <script src="js/supabase-auth.js"></script>
 <script src="js/auth-ui.js"></script>
+
+<!-- 🔑 INYECTA HEADER -->
 <script src="js/layout.js"></script>
+
+<!-- 🔑 ACTIVA HEADER -->
 <script src="js/header.js"></script>
 
-<!-- JS FINAL -->
+<!-- JS DE ESTA PÁGINA -->
 <script src="js/admin-agregar-producto.js"></script>
 
 </body>
