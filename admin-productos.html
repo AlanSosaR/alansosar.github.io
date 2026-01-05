@@ -34,7 +34,7 @@
   </section>
 
   <!-- =========================
-       PREVIEW PRODUCTO (ADMIN)
+       TARJETA PRINCIPAL (PREVIEW ADMIN)
        MISMO DISEÑO QUE CLIENTE
   ========================= -->
   <section id="admin-product-preview" class="product-main admin-preview">
@@ -57,13 +57,16 @@
       <ul class="admin-product-info">
         <li><strong>Precio:</strong> <span id="p-price">—</span></li>
         <li><strong>Stock:</strong> <span id="p-stock">—</span></li>
-        <li><strong>Estado:</strong> <span id="p-status">—</span></li>
+        <li>
+          <strong>Estado:</strong>
+          <span id="p-status" class="badge">—</span>
+        </li>
       </ul>
 
       <div class="admin-carousel-toggle">
         <span>Mostrar en carrusel del cliente</span>
         <label class="switch">
-          <input type="checkbox" id="p-carousel-toggle">
+          <input type="checkbox" id="p-carousel-toggle" />
           <span class="slider"></span>
         </label>
       </div>
@@ -77,7 +80,7 @@
   </section>
 
   <!-- =========================
-       CARRUSEL DE PRODUCTOS
+       CARRUSEL DE PRODUCTOS (ADMIN)
   ========================= -->
   <section class="related admin-related">
 
@@ -85,7 +88,7 @@
 
     <div class="carousel-container with-arrows">
 
-      <button class="carousel-prev-circle inside">
+      <button class="carousel-prev-circle inside" id="admin-prev">
         <span class="material-symbols-outlined">chevron_left</span>
       </button>
 
@@ -93,7 +96,7 @@
         <!-- JS renderiza tarjetas -->
       </div>
 
-      <button class="carousel-next-circle inside">
+      <button class="carousel-next-circle inside" id="admin-next">
         <span class="material-symbols-outlined">chevron_right</span>
       </button>
 
@@ -101,112 +104,10 @@
 
   </section>
 
-  <!-- =========================
-       LISTADO TABLA (DESKTOP)
-  ========================= -->
-  <section class="products-card desktop-only">
-    <table class="products-table">
-      <thead>
-        <tr>
-          <th>Imagen</th>
-          <th>Nombre</th>
-          <th>Precio</th>
-          <th>Stock</th>
-          <th>Carrusel</th>
-          <th>Estado</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody id="products-body"></tbody>
-    </table>
-
-    <div class="table-footer">
-      <span id="products-count">Mostrando 0 productos</span>
-    </div>
-  </section>
-
-  <!-- =========================
-       LISTADO MÓVIL
-  ========================= -->
-  <section class="products-mobile mobile-only" id="products-mobile"></section>
-
 </main>
 
 <!-- =========================
-     TEMPLATE TABLA DESKTOP
-========================= -->
-<template id="tpl-product-row">
-  <tr>
-    <td>
-      <div class="product-thumb-box">
-        <img alt="">
-      </div>
-    </td>
-    <td class="p-name"></td>
-    <td class="p-price"></td>
-    <td class="p-stock"></td>
-    <td class="p-carousel badge"></td>
-    <td class="p-status badge"></td>
-    <td class="actions">
-      <button class="icon-btn edit">
-        <span class="material-symbols-outlined">edit</span>
-      </button>
-      <button class="icon-btn danger delete">
-        <span class="material-symbols-outlined">delete</span>
-      </button>
-    </td>
-  </tr>
-</template>
-
-<!-- =========================
-     TEMPLATE TARJETA MÓVIL
-========================= -->
-<template id="tpl-product-card">
-  <article class="product-card">
-
-    <div class="product-card-top">
-
-      <div class="product-thumb-box">
-        <img alt="">
-      </div>
-
-      <div class="product-card-text">
-        <h3 class="p-name"></h3>
-        <p class="p-price"></p>
-        <p class="p-stock"></p>
-
-        <div class="product-card-carousel">
-          <span>Carrusel</span>
-          <label class="switch">
-            <input type="checkbox" class="p-carousel-toggle">
-            <span class="slider"></span>
-          </label>
-        </div>
-      </div>
-
-    </div>
-
-    <div class="divider"></div>
-
-    <div class="product-card-actions">
-      <button class="edit">
-        <span class="material-symbols-outlined">edit</span>
-        Editar
-      </button>
-
-      <span class="vertical-divider"></span>
-
-      <button class="delete">
-        <span class="material-symbols-outlined">delete</span>
-        Eliminar
-      </button>
-    </div>
-
-  </article>
-</template>
-
-<!-- =========================
-     TEMPLATE CARRUSEL ADMIN
+     TEMPLATE TARJETA CARRUSEL ADMIN
 ========================= -->
 <template id="tpl-admin-carousel-card">
   <article class="similar-card admin-card" data-id="">
