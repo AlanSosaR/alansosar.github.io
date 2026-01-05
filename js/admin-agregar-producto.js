@@ -209,7 +209,7 @@ async function guardarProducto(imageUrl) {
     description: descInput.value.trim(),
     category: categoriaSel.value,
     grind_type: tipoCafeSel.value,
-    presentation: presentacion.value,
+    presentation: presentacion.value.trim(),
     price: Number(precioInput.value),
     currency: "HNL",
     stock: Number(stockInput.value),
@@ -218,12 +218,36 @@ async function guardarProducto(imageUrl) {
 
   if (imageUrl) payload.image_url = imageUrl;
 
-  const query = IS_EDIT
-    ? window.supabaseClient.from("products").update(payload).eq("id", PRODUCT_ID)
-    : window.supabaseClient.from("products").insert(payload);
+  // ✅ UPDATE
+  if (IS_EDIT) {
+    const { data, error } = await window.supabaseClient
+      .from("products")
+      .update(payload)
+      .eq("id", PRODUCT_ID)
+      .select("id")         // 🔑 confirma que actualizó
+      .single();
 
-  const { error } = await query;
-  if (error) throw error;
+    if (error) {
+      console.error("❌ Error UPDATE products:", error);
+      throw error;
+    }
+
+    return data?.id;
+  }
+
+  // ✅ INSERT
+  const { data, error } = await window.supabaseClient
+    .from("products")
+    .insert(payload)
+    .select("id")          // 🔑 te devuelve el id nuevo
+    .single();
+
+  if (error) {
+    console.error("❌ Error INSERT products:", error);
+    throw error;
+  }
+
+  return data?.id;
 }
 
 /* ============================================================
@@ -261,18 +285,22 @@ async function cargarProducto() {
 /* ============================================================
    SUBMIT
 ============================================================ */
-form.addEventListener("submit", async e => {
+form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  if (!validarFormulario()) {
-    showSnackbar("Completa todos los campos", "error");
-    return;
-  }
+  // 🔒 Validación centralizada
+  if (!validarFormulario()) return;
 
   btnSubmit.classList.add("loading");
 
   try {
-    const imageUrl = await subirImagenProducto();
+    let imageUrl = null;
+
+    // 🔑 SOLO subir imagen si hay una nueva
+    if (imagenInput.files.length) {
+      imageUrl = await subirImagenProducto();
+    }
+
     await guardarProducto(imageUrl);
 
     showSnackbar(
@@ -287,8 +315,8 @@ form.addEventListener("submit", async e => {
     }, 1200);
 
   } catch (err) {
-    console.error(err);
-    showSnackbar("❌ Error al guardar", "error");
+    console.error("❌ Error guardando producto:", err);
+    showSnackbar("❌ Error al guardar el café", "error");
   } finally {
     btnSubmit.classList.remove("loading");
   }
