@@ -130,10 +130,11 @@ a {
     box-shadow 0.18s cubic-bezier(.2, .8, .2, 1);
 }
 
-/* Icono + */
+/* Icono + (blanco) */
 .search-box .search-action-btn span {
   font-size: 22px;
   line-height: 1;
+  color: #ffffff; /* 🔑 BLANCO */
 }
 
 /* Hover — flota */
