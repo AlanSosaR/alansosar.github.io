@@ -111,17 +111,19 @@ function renderPreview(product) {
   preview.description.textContent =
     product.description || "Sin descripción";
 
-  /* PÍLDORA = CALIDAD / TIPO */
+/* =========================================================
+   PÍLDORA = CALIDAD + TIPO DE CAFÉ
+========================================================= */
 const badgeParts = [];
 
-/* Categoría (Molido / En grano) */
-if (product.category?.trim()) {
+/* Calidad (Premium / Tradicional / etc.) */
+if (product.category && product.category.trim()) {
   badgeParts.push(product.category);
 }
 
-/* Calidad (Premium / Tradicional) */
-if (product.quality?.trim()) {
-  badgeParts.push(product.quality);
+/* Tipo de café (Molido / En grano) */
+if (product.grind_type && product.grind_type.trim()) {
+  badgeParts.push(product.grind_type);
 }
 
 preview.badge.textContent = badgeParts.length
