@@ -81,7 +81,6 @@ a {
 
 .search-box input {
   border: none;
-  outline: none;
   flex: 1;
   font-size: 0.95rem;
   background: transparent;
@@ -102,10 +101,12 @@ a {
   padding: 14px 22px;
   font-weight: 500;
   cursor: pointer;
+  transition: background .2s ease, transform .15s ease;
 }
 
 .btn-primary:hover {
   background: var(--verde-soft);
+  transform: translateY(-1px);
 }
 
 @media (max-width: 900px) {
@@ -120,6 +121,7 @@ a {
   border-radius: 24px;
   padding: 16px;
   box-shadow: 0 12px 28px rgba(0,0,0,.08);
+  overflow-x: auto;
 }
 
 .products-table {
@@ -132,15 +134,38 @@ a {
   color: #fff;
   padding: 14px;
   font-weight: 500;
+  text-align: left;
 }
 
 .products-table td {
   padding: 14px;
   border-bottom: 1px solid var(--gris-line);
+  vertical-align: middle;
 }
 
 /* =========================================================
-   ================= MÓVIL (CARDS — DEFINITIVO) =================
+   BADGES DESKTOP
+========================================================= */
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: .8rem;
+  font-weight: 600;
+}
+
+.badge.active {
+  background: rgba(51,103,59,.12);
+  color: var(--verde);
+}
+
+.badge.inactive {
+  background: rgba(192,57,43,.12);
+  color: var(--rojo);
+}
+
+/* =========================================================
+   ================= MÓVIL (CARDS) =================
 ========================================================= */
 .products-mobile {
   display: flex;
@@ -156,18 +181,18 @@ a {
   box-shadow: 0 12px 28px rgba(0,0,0,.08);
 }
 
-/* FILA SUPERIOR: IMAGEN + TEXTO */
+/* FILA SUPERIOR */
 .product-card-top {
   display: flex;
   gap: 16px;
   align-items: flex-start;
 }
 
-/* IMAGEN IZQUIERDA */
+/* IMAGEN */
 .product-thumb-box {
   width: 72px;
   min-width: 72px;
-  height: auto;
+  height: 72px;
   border-radius: 18px;
   background: #f1f1f1;
   overflow: hidden;
@@ -179,14 +204,13 @@ a {
   object-fit: cover;
 }
 
-/* BLOQUE DE TEXTO */
+/* TEXTO */
 .product-card-text {
   flex: 1;
   display: flex;
   flex-direction: column;
 }
 
-/* TEXTO */
 .product-card-text h3 {
   margin: 0;
   font-size: 1.05rem;
@@ -204,17 +228,18 @@ a {
   color: var(--gris-text);
 }
 
-/* CARRUSEL — ALINEADO CON TEXTO */
+/* =========================================================
+   CARRUSEL (SWITCH)
+========================================================= */
 .product-card-carousel {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-top: 8px;
+  margin-top: 10px;
 }
 
-/* LABELS */
 .carousel-label {
-  font-size: .9rem;
+  font-size: .85rem;
   color: var(--gris-text);
 }
 
@@ -235,6 +260,8 @@ a {
 
 .switch input {
   opacity: 0;
+  width: 0;
+  height: 0;
 }
 
 .slider {
@@ -243,6 +270,7 @@ a {
   background: #ccc;
   border-radius: 999px;
   cursor: pointer;
+  transition: background .25s ease;
 }
 
 .slider::before {
@@ -265,14 +293,18 @@ a {
   transform: translateX(20px);
 }
 
-/* DIVISOR */
+/* =========================================================
+   DIVISOR
+========================================================= */
 .divider {
   height: 1px;
   background: var(--gris-line);
   margin: 16px 0;
 }
 
-/* ACCIONES */
+/* =========================================================
+   ACCIONES
+========================================================= */
 .product-card-actions {
   display: flex;
   align-items: center;
@@ -298,7 +330,9 @@ a {
   background: var(--gris-line);
 }
 
-/* FOOTER */
+/* =========================================================
+   FOOTER
+========================================================= */
 .table-footer {
   text-align: center;
   margin-top: 18px;
