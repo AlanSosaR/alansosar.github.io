@@ -312,11 +312,24 @@ async function cargarProductos() {
     return;
   }
 
-  searchInput?.addEventListener("input", aplicarFiltro);
+  // 🔍 Buscador
+  if (searchInput) {
+    searchInput.addEventListener("input", aplicarFiltro);
+  }
 
-  btnAddProduct.onclick =
-  btnAddProductEmpty.onclick = () =>
-    location.href = "admin-agregar-producto.html";
+  // ➕ Botón agregar (barra superior)
+  if (btnAddProduct) {
+    btnAddProduct.onclick = () => {
+      location.href = "admin-agregar-producto.html";
+    };
+  }
+
+  // ➕ Botón agregar (estado vacío)
+  if (btnAddProductEmpty) {
+    btnAddProductEmpty.onclick = () => {
+      location.href = "admin-agregar-producto.html";
+    };
+  }
 
   cargarProductos();
 })();
