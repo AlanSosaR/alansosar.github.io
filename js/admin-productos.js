@@ -1,4 +1,4 @@
-console.log("🧩 admin-productos.js — PREVIEW + CARRUSEL + BD");
+console.log("🧩 admin-productos.js — PREVIEW + CARRUSEL (FINAL)");
 
 /* ============================================================
    ESPERAR SUPABASE
@@ -18,15 +18,8 @@ function esperarSupabase() {
 /* ============================================================
    DOM
 ============================================================ */
-const tbody = document.getElementById("products-body");
-const mobileContainer = document.getElementById("products-mobile");
 const searchInput = document.getElementById("search-products");
-const productsCount = document.getElementById("products-count");
 const btnAddProduct = document.getElementById("btnAddProduct");
-
-const rowTemplate = document.getElementById("tpl-product-row");
-const cardTemplate = document.getElementById("tpl-product-card");
-const carouselTemplate = document.getElementById("tpl-admin-carousel-card");
 
 /* PREVIEW */
 const preview = {
@@ -44,6 +37,7 @@ const preview = {
 };
 
 const carouselContainer = document.getElementById("admin-products-carousel");
+const carouselTemplate = document.getElementById("tpl-admin-carousel-card");
 
 /* ============================================================
    ESTADO
@@ -68,12 +62,12 @@ function getImageUrl(product) {
   return `https://eaipcuvvddyrqkbmjmvw.supabase.co/storage/v1/object/public/product-images/${product.image_url}`;
 }
 
-function isActivo(p) {
-  return p.status === "activo";
+function isActivo(product) {
+  return product.status === "activo";
 }
 
 /* ============================================================
-   PREVIEW PRINCIPAL (MISMO CONCEPTO CLIENTE)
+   PREVIEW PRINCIPAL (MISMO FLUJO CLIENTE)
 ============================================================ */
 function renderPreview(product) {
   if (!product) return;
@@ -82,20 +76,26 @@ function renderPreview(product) {
 
   preview.name.textContent = product.name;
   preview.category.textContent = product.category || "—";
-  preview.subtext.textContent = "Tueste medio · Altura · Esencia familiar";
-  preview.badge.textContent = "100% arábica · Danlí";
-  preview.description.textContent = product.description || "Sin descripción";
+  preview.subtext.textContent = product.subtext || "—";
+  preview.badge.textContent = product.badge || "—";
+  preview.description.textContent =
+    product.description || "Sin descripción";
 
-  preview.price.textContent = formatPrice(product.price, product.currency);
+  preview.price.textContent =
+    formatPrice(product.price, product.currency);
+
   preview.stock.textContent = product.stock;
   preview.status.textContent = isActivo(product) ? "Activo" : "Inactivo";
+  preview.status.className =
+    `badge ${isActivo(product) ? "active" : "inactive"}`;
 
   preview.image.src = getImageUrl(product);
-  preview.image.onerror = () => preview.image.src = "imagenes/no-image.png";
+  preview.image.onerror = () =>
+    preview.image.src = "imagenes/no-image.png";
 
   preview.carouselToggle.checked = product.carousel === true;
 
-  /* actualizar switch */
+  /* switch carrusel */
   preview.carouselToggle.onchange = async () => {
     const activo = preview.carouselToggle.checked;
 
@@ -107,20 +107,22 @@ function renderPreview(product) {
     if (error) {
       console.error("❌ Error actualizando carrusel", error);
       preview.carouselToggle.checked = !activo;
-    } else {
-      product.carousel = activo;
-      renderCarousel(filteredProducts);
-      renderTable(filteredProducts);
-      renderMobile(filteredProducts);
+      return;
     }
+
+    product.carousel = activo;
+    renderCarousel(filteredProducts);
   };
 
   /* scroll suave */
-  preview.section.scrollIntoView({ behavior: "smooth", block: "start" });
+  preview.section.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
 }
 
 /* ============================================================
-   CARRUSEL ADMIN
+   CARRUSEL ADMIN (SELECCIÓN + ACTIVO)
 ============================================================ */
 function renderCarousel(list) {
   carouselContainer.innerHTML = "";
@@ -154,99 +156,6 @@ function renderCarousel(list) {
 }
 
 /* ============================================================
-   TABLA DESKTOP
-============================================================ */
-function renderTable(list) {
-  tbody.innerHTML = "";
-
-  if (!list.length) {
-    tbody.innerHTML = `
-      <tr><td colspan="7" style="text-align:center;padding:24px">
-        No hay productos
-      </td></tr>`;
-    productsCount.textContent = "Mostrando 0 productos";
-    return;
-  }
-
-  list.forEach(product => {
-    const row = rowTemplate.content.cloneNode(true);
-
-    const img = row.querySelector("img");
-    img.src = getImageUrl(product);
-    img.alt = product.name;
-
-    row.querySelector(".p-name").textContent = product.name;
-    row.querySelector(".p-price").textContent =
-      formatPrice(product.price, product.currency);
-    row.querySelector(".p-stock").textContent = product.stock;
-
-    const carousel = row.querySelector(".p-carousel");
-    carousel.textContent = product.carousel ? "Activo" : "Inactivo";
-    carousel.className = `badge ${product.carousel ? "active" : "inactive"}`;
-
-    const status = row.querySelector(".p-status");
-    status.textContent = isActivo(product) ? "Activo" : "Inactivo";
-    status.className = `badge ${isActivo(product) ? "active" : "inactive"}`;
-
-    row.querySelector(".edit").onclick = () =>
-      location.href = `admin-editar-producto.html?id=${product.id}`;
-
-    row.querySelector(".delete").onclick = () =>
-      alert("Eliminar producto (pendiente)");
-
-    tbody.appendChild(row);
-  });
-}
-
-/* ============================================================
-   TARJETAS MÓVIL
-============================================================ */
-function renderMobile(list) {
-  mobileContainer.innerHTML = "";
-
-  list.forEach(product => {
-    const card = cardTemplate.content.cloneNode(true);
-
-    const img = card.querySelector("img");
-    img.src = getImageUrl(product);
-    img.alt = product.name;
-
-    card.querySelector(".p-name").textContent = product.name;
-    card.querySelector(".p-price").textContent =
-      formatPrice(product.price, product.currency);
-    card.querySelector(".p-stock").textContent =
-      `Stock: ${product.stock}`;
-
-    const toggle = card.querySelector(".p-carousel-toggle");
-    toggle.checked = product.carousel === true;
-
-    toggle.onchange = async () => {
-      const activo = toggle.checked;
-
-      const { error } = await window.supabaseClient
-        .from("products")
-        .update({ carousel: activo })
-        .eq("id", product.id);
-
-      if (error) {
-        toggle.checked = !activo;
-      } else {
-        product.carousel = activo;
-        renderCarousel(filteredProducts);
-      }
-    };
-
-    card.querySelector(".edit").onclick = () =>
-      location.href = `admin-editar-producto.html?id=${product.id}`;
-
-    card.querySelector(".delete").onclick = () =>
-      alert("Eliminar producto (pendiente)");
-
-    mobileContainer.appendChild(card);
-  });
-}
-
-/* ============================================================
    FILTRO
 ============================================================ */
 function aplicarFiltro() {
@@ -260,19 +169,17 @@ function aplicarFiltro() {
       );
 
   renderCarousel(filteredProducts);
-  renderTable(filteredProducts);
-  renderMobile(filteredProducts);
 
-  productsCount.textContent =
-    `Mostrando ${filteredProducts.length} productos`;
-
-  if (!selectedProductId && filteredProducts.length) {
+  if (
+    filteredProducts.length &&
+    !filteredProducts.some(p => p.id === selectedProductId)
+  ) {
     renderPreview(filteredProducts[0]);
   }
 }
 
 /* ============================================================
-   CARGA
+   CARGAR PRODUCTOS
 ============================================================ */
 async function cargarProductos() {
   const { data, error } = await window.supabaseClient
@@ -301,6 +208,7 @@ async function cargarProductos() {
   }
 
   searchInput.addEventListener("input", aplicarFiltro);
+
   btnAddProduct.onclick = () =>
     location.href = "admin-agregar-producto.html";
 
