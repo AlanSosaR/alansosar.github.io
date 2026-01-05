@@ -39,43 +39,66 @@
   ========================= -->
   <section id="admin-product-preview" class="product-main admin-preview">
 
-    <div class="product-text">
+ <div class="product-text">
 
-      <div class="product-label">
-        <small id="p-category">—</small>
-        <p class="subtext" id="p-subtext">—</p>
-      </div>
+  <!-- CATEGORÍA -->
+  <div class="product-label">
+    <small id="p-category">CAFÉ EN GRANO / MOLIDO</small>
+    <p class="subtext" id="p-subtext">
+      Tueste medio · Altura · Esencia familiar
+    </p>
+  </div>
 
-      <h2 id="p-name">Selecciona un producto</h2>
+  <!-- NOMBRE -->
+  <h2 id="p-name">Café Lempira</h2>
 
-      <span id="p-badge" class="pill">—</span>
+  <!-- BADGE (CALIDAD / TIPO) -->
+  <span id="p-badge" class="pill">
+    Premium · 100% arábica
+  </span>
 
-      <p id="p-description" class="product-description">
-        Selecciona un producto del carrusel para ver su información completa.
-      </p>
+  <!-- DESCRIPCIÓN -->
+  <p id="p-description" class="product-description">
+    Café de alta calidad.
+  </p>
 
-      <ul class="admin-product-info">
-        <li><strong>Precio:</strong> <span id="p-price">—</span></li>
-        <li><strong>Stock:</strong> <span id="p-stock">—</span></li>
-        <li>
-          <strong>Estado:</strong>
-          <span id="p-status" class="badge">—</span>
-        </li>
-      </ul>
+  <!-- DATOS CLAVE -->
+  <ul class="admin-product-info">
+    <li>
+      <strong>Precio:</strong>
+      <span id="p-price">HNL 250.00</span>
+    </li>
+    <li>
+      <strong>Stock:</strong>
+      <span id="p-stock">20</span>
+    </li>
+  </ul>
 
-      <div class="admin-carousel-toggle">
-        <span>Mostrar en carrusel del cliente</span>
-        <label class="switch">
-          <input type="checkbox" id="p-carousel-toggle" />
-          <span class="slider"></span>
-        </label>
-      </div>
+  <!-- CARRUSEL -->
+  <div class="admin-carousel-toggle">
+    <span>Mostrar en carrusel del cliente</span>
 
-    </div>
+    <label class="switch">
+      <input type="checkbox" id="p-carousel-toggle">
+      <span class="slider"></span>
+    </label>
 
-    <div class="product-img-wrap">
-      <img id="p-image" src="imagenes/placeholder.png" alt="Producto">
-    </div>
+    <span id="carousel-status" class="carousel-status inactive">
+      Desactivado
+    </span>
+  </div>
+
+  <!-- ACCIONES -->
+  <div class="admin-actions">
+    <button class="admin-action-btn edit">
+      ✏️
+    </button>
+    <button class="admin-action-btn delete">
+      🗑
+    </button>
+  </div>
+
+</div>
 
   </section>
 
