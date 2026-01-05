@@ -256,9 +256,10 @@ form.addEventListener("submit", async e => {
     return;
   }
 
-  syncFloatingLabels();
-
   if (IS_EDIT) {
     await cargarProducto();
   }
+
+  // 🔑 CLAVE: sincronizar labels AL FINAL
+  syncFloatingLabels();
 })();
