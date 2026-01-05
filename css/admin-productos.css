@@ -41,45 +41,71 @@ a {
 }
 
 /* =========================================================
-   BARRA SUPERIOR
+   BARRA SUPERIOR — ADMIN PRODUCTOS
 ========================================================= */
 .products-actions-bar {
   display: flex;
   align-items: center;
-  gap: 16px;
   margin-bottom: 32px;
 }
 
-@media (max-width: 900px) {
-  .products-actions-bar {
-    flex-direction: column;
-  }
-}
-
-/* BUSCADOR */
+/* =========================================================
+   SEARCH BAR (contenedor principal)
+========================================================= */
 .search-box {
   flex: 1;
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 14px 18px;
+
+  padding: 10px 12px;
   border-radius: 999px;
   border: 1px solid var(--gris-line);
   background: var(--blanco);
+
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
+/* Focus general del buscador */
+.search-box:focus-within {
+  border-color: var(--verde);
+  box-shadow: 0 0 0 3px rgba(51, 103, 59, 0.15);
+}
+
+/* =========================================================
+   ICONO LUPA
+========================================================= */
+.search-box .material-symbols-outlined {
+  font-size: 22px;
+  color: var(--cafe-soft);
+}
+
+/* =========================================================
+   INPUT
+========================================================= */
 .search-box input {
+  flex: 1;
   border: none;
   background: transparent;
-  flex: 1;
+
   font-size: 0.95rem;
   color: var(--cafe);
 }
 
-/* BOTÓN AGREGAR — CIRCULAR ELEVADO */
-.btn-primary {
-  width: 52px;
-  height: 52px;
+.search-box input::placeholder {
+  color: #9b9b9b;
+}
+
+.search-box input:focus {
+  outline: none;
+}
+
+/* =========================================================
+   BOTÓN AGREGAR — CIRCULAR ELEVADO (DENTRO DEL SEARCH)
+========================================================= */
+.search-box .btn-primary {
+  width: 44px;
+  height: 44px;
 
   display: flex;
   align-items: center;
@@ -104,24 +130,24 @@ a {
     box-shadow 0.18s cubic-bezier(.2, .8, .2, 1);
 }
 
-.btn-primary span {
-  font-size: 26px;
+/* Icono + */
+.search-box .btn-primary span {
+  font-size: 22px;
   line-height: 1;
 }
 
-/* Hover — sube */
-.btn-primary:hover {
+/* Hover — flota */
+.search-box .btn-primary:hover {
   background: var(--verde-soft);
-
-  transform: translateY(-3px);
+  transform: translateY(-2px);
 
   box-shadow:
     0 6px 8px rgba(0, 0, 0, 0.22),
     0 12px 24px rgba(0, 0, 0, 0.18);
 }
 
-/* Active — baja */
-.btn-primary:active {
+/* Active — baja ligeramente */
+.search-box .btn-primary:active {
   transform: translateY(-1px);
 
   box-shadow:
@@ -130,11 +156,45 @@ a {
 }
 
 /* Focus visible — accesibilidad */
-.btn-primary:focus-visible {
+.search-box .btn-primary:focus-visible {
   outline: none;
   box-shadow:
     0 0 0 4px rgba(51, 103, 59, 0.35),
     0 6px 14px rgba(0, 0, 0, 0.16);
+}
+
+/* =========================================================
+   MOBILE — SEARCH BAR FIJA
+========================================================= */
+@media (max-width: 600px) {
+
+  .products-actions-bar {
+    position: sticky;
+    top: calc(var(--header-height, 64px) + 8px);
+    z-index: 20;
+
+    background: var(--gris-bg, #fafafa);
+    padding-bottom: 12px;
+  }
+
+}
+
+/* =========================================================
+   RESPONSIVE — AJUSTES FINOS
+========================================================= */
+@media (max-width: 600px) {
+  .search-box {
+    padding: 8px 10px;
+  }
+
+  .search-box .btn-primary {
+    width: 40px;
+    height: 40px;
+  }
+
+  .search-box .btn-primary span {
+    font-size: 20px;
+  }
 }
 
 /* =========================================================
