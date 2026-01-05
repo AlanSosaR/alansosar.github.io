@@ -563,27 +563,33 @@ body.page-carrito .header-cart-title {
 .user-drawer.no-user .logged { display: none; }
 
 /* =====================================================
-   HEADER — MODO CARRITO (CHECKOUT)
-===================================================== */
-
-/* =====================================================
    OCULTAR CARRITO — CHECKOUT + ADMIN CAFÉS
 ===================================================== */
+
+/* Checkout cliente */
 body.page-carrito #cart-btn,
 body.page-datos-cliente #cart-btn,
 body.page-recibo #cart-btn,
 body.page-mis-pedidos #cart-btn,
 
-/* ADMIN CAFÉS */
+/* Admin cafés */
 body.page-admin-cafes #cart-btn,
 body.page-admin-agregar-cafe #cart-btn,
 body.page-admin-editar-cafe #cart-btn {
   display: none !important;
 }
 
+/* 🔑 Ocultar también el contenedor para evitar espacio fantasma */
+body.page-admin-cafes .header-actions,
+body.page-admin-agregar-cafe .header-actions,
+body.page-admin-editar-cafe .header-actions {
+  display: none !important;
+}
+
 /* =====================================================
    OCULTAR NAVEGACIÓN PÚBLICA
 ===================================================== */
+
 body.page-carrito .header-nav,
 body.page-carrito .nav-links,
 
@@ -596,6 +602,26 @@ body.page-admin-editar-cafe .nav-links {
   display: none !important;
 }
 
+/* =====================================================
+   ADMIN — FORZAR LOGO VISIBLE
+===================================================== */
+
+body.page-admin-cafes .header-logo-link,
+body.page-admin-agregar-cafe .header-logo-link,
+body.page-admin-editar-cafe .header-logo-link {
+  display: flex !important;
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3001;
+}
+
+body.page-admin-cafes .header-logo,
+body.page-admin-agregar-cafe .header-logo,
+body.page-admin-editar-cafe .header-logo {
+  height: 44px;
+}
 /* =====================================================
    DESKTOP (PC) — comportamiento normal
 ===================================================== */
