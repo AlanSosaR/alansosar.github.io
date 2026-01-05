@@ -33,84 +33,76 @@
     </button>
   </section>
 
-  <!-- =========================
-       TARJETA PRINCIPAL (PREVIEW ADMIN)
-  ========================= -->
-  <section id="admin-product-preview" class="product-main admin-preview">
+<!-- =========================
+     TARJETA PRINCIPAL (PREVIEW ADMIN)
+========================= -->
+<section id="admin-product-preview" class="product-main admin-preview">
 
-    <!-- ================= TEXTO ================= -->
-    <div class="product-text">
+  <!-- ================= TEXTO ================= -->
+  <div class="product-text">
 
-      <!-- CATEGORÍA -->
-      <div class="product-label">
-        <small id="p-category">CAFÉ EN GRANO / MOLIDO</small>
-        <p class="subtext" id="p-subtext">
-          Tueste medio · Altura · Esencia familiar
-        </p>
-      </div>
+    <!-- NOMBRE -->
+    <h2 id="p-name">Selecciona un producto</h2>
 
-      <!-- NOMBRE -->
-      <h2 id="p-name">Selecciona un producto</h2>
+    <!-- DESCRIPCIÓN -->
+    <p id="p-description" class="product-description">
+      Selecciona un producto del carrusel para ver su información completa.
+    </p>
 
-      <!-- BADGE (TIPO / CALIDAD) -->
-      <span id="p-badge" class="pill">
-        —
+    <!-- PÍLDORA · CALIDAD DEL CAFÉ -->
+    <span id="p-badge" class="pill">
+      —
+    </span>
+
+    <!-- INFO CLAVE -->
+    <ul class="admin-product-info">
+      <li>
+        <strong>Precio:</strong>
+        <span id="p-price">—</span>
+      </li>
+      <li>
+        <strong>En almacén:</strong>
+        <span id="p-stock">—</span>
+      </li>
+    </ul>
+
+    <!-- CARRUSEL CLIENTE -->
+    <div class="admin-carousel-toggle">
+      <span>Mostrar en carrusel del cliente</span>
+
+      <label class="switch">
+        <input type="checkbox" id="p-carousel-toggle">
+        <span class="slider"></span>
+      </label>
+
+      <span id="carousel-status" class="carousel-status inactive">
+        Desactivado
       </span>
-
-      <!-- DESCRIPCIÓN -->
-      <p id="p-description" class="product-description">
-        Selecciona un producto del carrusel para ver su información completa.
-      </p>
-
-      <!-- DATOS CLAVE -->
-      <ul class="admin-product-info">
-        <li>
-          <strong>Precio:</strong>
-          <span id="p-price">—</span>
-        </li>
-        <li>
-          <strong>En Almacén:</strong>
-          <span id="p-stock">—</span>
-        </li>
-      </ul>
-
-      <!-- CARRUSEL CLIENTE -->
-      <div class="admin-carousel-toggle">
-        <span>Mostrar en carrusel del cliente</span>
-
-        <label class="switch">
-          <input type="checkbox" id="p-carousel-toggle">
-          <span class="slider"></span>
-        </label>
-
-        <span id="carousel-status" class="carousel-status inactive">
-          Desactivado
-        </span>
-      </div>
-
-      <!-- ACCIONES ADMIN -->
-      <div class="admin-actions">
-        <button class="admin-action-btn edit" title="Editar producto">
-          <span class="material-symbols-outlined">edit</span>
-        </button>
-
-        <button class="admin-action-btn delete" title="Eliminar producto">
-          <span class="material-symbols-outlined">delete</span>
-        </button>
-      </div>
-
     </div>
 
-    <!-- ================= IMAGEN ================= -->
-    <div class="product-img-wrap">
-      <img
-        id="p-image"
-        src="imagenes/placeholder.png"
-        alt="Imagen del producto"
-      >
+    <!-- ACCIONES ADMIN (DEBAJO DEL SWITCH) -->
+    <div class="admin-actions inline-actions">
+      <button class="admin-action-btn edit" title="Editar producto">
+        <span class="material-symbols-outlined">edit</span>
+      </button>
+
+      <button class="admin-action-btn delete" title="Eliminar producto">
+        <span class="material-symbols-outlined">delete</span>
+      </button>
     </div>
 
-  </section>
+  </div>
+
+  <!-- ================= IMAGEN ================= -->
+  <div class="product-img-wrap">
+    <img
+      id="p-image"
+      src="imagenes/placeholder.png"
+      alt="Imagen del producto"
+    >
+  </div>
+
+</section>
 
   <!-- =========================
        CARRUSEL DE PRODUCTOS (ADMIN)
