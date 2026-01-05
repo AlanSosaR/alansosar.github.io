@@ -103,7 +103,7 @@ a {
 /* =========================================================
    BOTÓN AGREGAR — CIRCULAR ELEVADO (DENTRO DEL SEARCH)
 ========================================================= */
-.search-box .btn-primary {
+.search-box .search-action-btn {
   width: 44px;
   height: 44px;
 
@@ -131,13 +131,13 @@ a {
 }
 
 /* Icono + */
-.search-box .btn-primary span {
+.search-box .search-action-btn span {
   font-size: 22px;
   line-height: 1;
 }
 
 /* Hover — flota */
-.search-box .btn-primary:hover {
+.search-box .search-action-btn:hover {
   background: var(--verde-soft);
   transform: translateY(-2px);
 
@@ -147,7 +147,7 @@ a {
 }
 
 /* Active — baja ligeramente */
-.search-box .btn-primary:active {
+.search-box .search-action-btn:active {
   transform: translateY(-1px);
 
   box-shadow:
@@ -156,7 +156,7 @@ a {
 }
 
 /* Focus visible — accesibilidad */
-.search-box .btn-primary:focus-visible {
+.search-box .search-action-btn:focus-visible {
   outline: none;
   box-shadow:
     0 0 0 4px rgba(51, 103, 59, 0.35),
