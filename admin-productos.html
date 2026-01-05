@@ -38,6 +38,11 @@
 ========================= -->
 <section id="admin-product-preview" class="product-main admin-preview">
 
+  <!-- BOTÓN ATRÁS -->
+  <button class="back-btn" onclick="history.back()" aria-label="Volver">
+    <span class="material-symbols-outlined">chevron_left</span>
+  </button>
+
   <!-- ================= TEXTO ================= -->
   <div class="product-text">
 
@@ -50,9 +55,7 @@
     </p>
 
     <!-- PÍLDORA · CALIDAD DEL CAFÉ -->
-    <span id="p-badge" class="pill">
-      —
-    </span>
+    <span id="p-badge" class="pill">—</span>
 
     <!-- INFO CLAVE -->
     <ul class="admin-product-info">
@@ -80,7 +83,7 @@
       </span>
     </div>
 
-    <!-- ACCIONES ADMIN (DEBAJO DEL SWITCH) -->
+    <!-- ACCIONES ADMIN -->
     <div class="admin-actions inline-actions">
       <button class="admin-action-btn edit" title="Editar producto">
         <span class="material-symbols-outlined">edit</span>
@@ -95,11 +98,7 @@
 
   <!-- ================= IMAGEN ================= -->
   <div class="product-img-wrap">
-    <img
-      id="p-image"
-      src="imagenes/placeholder.png"
-      alt="Imagen del producto"
-    >
+    <img id="p-image" src="imagenes/placeholder.png" alt="Imagen del producto">
   </div>
 
 </section>
