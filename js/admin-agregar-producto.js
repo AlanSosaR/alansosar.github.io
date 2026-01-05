@@ -59,13 +59,35 @@ function showSnackbar(message, type = "success") {
   }, 3200);
 }
 
-/* ============================================================
-   LABELS — FORZAR FILLED
-============================================================ */
-function marcarFilled(input) {
-  const field = input.closest(".m3-field");
-  if (field) field.classList.add("filled");
+/* =====================================================
+   FLOATING LABEL — FIX GLOBAL (INPUT + TEXTAREA + SELECT)
+===================================================== */
+function syncFloatingLabels() {
+  document.querySelectorAll(".m3-field").forEach(field => {
+    const control = field.querySelector("input, textarea, select");
+    if (!control) return;
+
+    const update = () => {
+      const hasValue =
+        control.tagName === "SELECT"
+          ? control.value !== ""
+          : control.value.trim() !== "";
+
+      field.classList.toggle("filled", hasValue);
+    };
+
+    // Estado inicial (editar / reload)
+    update();
+
+    // Cambios dinámicos
+    control.addEventListener("input", update);
+    control.addEventListener("change", update);
+    control.addEventListener("blur", update);
+  });
 }
+
+/* Ejecutar al cargar */
+document.addEventListener("DOMContentLoaded", syncFloatingLabels);
 
 /* ============================================================
    VALIDACIÓN
