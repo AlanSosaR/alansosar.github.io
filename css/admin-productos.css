@@ -14,9 +14,10 @@
 }
 
 /* =========================================================
-   🔒 UX GLOBAL — SIN FLASH AZUL
+   UX GLOBAL
 ========================================================= */
 * {
+  box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -26,17 +27,6 @@ label,
 a {
   outline: none;
   box-shadow: none;
-}
-
-/* =========================================================
-   VISIBILIDAD RESPONSIVE
-========================================================= */
-.desktop-only { display: block; }
-.mobile-only  { display: none; }
-
-@media (max-width: 900px) {
-  .desktop-only { display: none; }
-  .mobile-only  { display: block; }
 }
 
 /* =========================================================
@@ -56,7 +46,7 @@ a {
   display: flex;
   align-items: center;
   gap: 16px;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
 }
 
 @media (max-width: 900px) {
@@ -65,9 +55,7 @@ a {
   }
 }
 
-/* =========================================================
-   BUSCADOR
-========================================================= */
+/* BUSCADOR */
 .search-box {
   flex: 1;
   display: flex;
@@ -86,13 +74,10 @@ a {
   font-size: 0.95rem;
 }
 
-/* =========================================================
-   BOTÓN AGREGAR
-========================================================= */
+/* BOTÓN */
 .btn-primary {
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 10px;
   background: var(--verde);
   color: #fff;
@@ -101,127 +86,108 @@ a {
   padding: 14px 22px;
   font-weight: 500;
   cursor: pointer;
-  transition: background .2s ease, transform .15s ease;
 }
 
 .btn-primary:hover {
   background: var(--verde-soft);
-  transform: translateY(-1px);
-}
-
-@media (max-width: 900px) {
-  .btn-primary { width: 100%; }
 }
 
 /* =========================================================
-   BADGES (USADOS EN PREVIEW)
+   ================= TARJETA PRINCIPAL (MISMO CLIENTE) =================
 ========================================================= */
-.badge {
-  display: inline-block;
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-size: .8rem;
-  font-weight: 600;
-}
-
-.badge.active {
-  background: rgba(51,103,59,.12);
-  color: var(--verde);
-}
-
-.badge.inactive {
-  background: rgba(192,57,43,.12);
-  color: var(--rojo);
-}
-
-/* =========================================================
-   ================= MÓVIL / CARDS =================
-========================================================= */
-.products-mobile {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-/* CARD BASE */
-.product-card {
+.product-main {
+  max-width: 1100px;
+  margin: 0 auto 3rem;
   background: var(--blanco);
-  border-radius: 28px;
-  padding: 18px;
+  border-radius: 24px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  padding: 2rem;
+  align-items: center;
   box-shadow: 0 12px 28px rgba(0,0,0,.08);
 }
 
-/* FILA SUPERIOR */
-.product-card-top {
-  display: flex;
-  gap: 16px;
-  align-items: flex-start;
-}
-
-/* IMAGEN */
-.product-thumb-box {
-  width: 72px;
-  min-width: 72px;
-  height: 72px;
-  border-radius: 18px;
-  background: #f1f1f1;
-  overflow: hidden;
-}
-
-.product-thumb-box img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+@media (max-width: 900px) {
+  .product-main {
+    grid-template-columns: 1fr;
+    padding: 1.5rem;
+  }
 }
 
 /* TEXTO */
-.product-card-text {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.product-card-text h3 {
-  margin: 0;
-  font-size: 1.05rem;
+.product-label small {
   font-weight: 600;
   color: var(--cafe);
 }
 
-.product-card-text .p-price {
-  margin: 6px 0 2px;
-  font-weight: 500;
+.product-label .subtext {
+  color: #a78c7c;
+  font-size: 0.9rem;
 }
 
-.product-card-text .p-stock {
-  font-size: .9rem;
+.product-text h2 {
+  font-family: "Playfair Display", serif;
+  font-size: 2rem;
+  margin: .6rem 0;
+  color: var(--cafe);
+}
+
+.pill {
+  display: inline-block;
+  border: 1px solid var(--gris-line);
+  padding: .4rem 1rem;
+  border-radius: 999px;
+  font-size: .85rem;
+  margin-bottom: .8rem;
+}
+
+.product-description {
+  margin-top: 1rem;
+  font-size: .95rem;
   color: var(--gris-text);
+  line-height: 1.5;
+}
+
+/* INFO ADMIN */
+.admin-product-info {
+  list-style: none;
+  padding: 0;
+  margin-top: 1.2rem;
+}
+
+.admin-product-info li {
+  margin-bottom: .4rem;
+  font-size: .95rem;
+}
+
+/* SWITCH ADMIN */
+.admin-carousel-toggle {
+  margin-top: 1.4rem;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+/* IMAGEN */
+.product-img-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: radial-gradient(circle at center, #f5f5f5 0%, #fff 100%);
+  border-radius: 18px;
+  padding: 1rem;
+}
+
+.product-img-wrap img {
+  max-width: 320px;
+  width: 100%;
+  object-fit: contain;
 }
 
 /* =========================================================
-   CARRUSEL / SWITCH
+   SWITCH (REUTILIZADO)
 ========================================================= */
-.product-card-carousel {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-top: 10px;
-}
-
-.carousel-label {
-  font-size: .85rem;
-  color: var(--gris-text);
-}
-
-.carousel-status {
-  font-size: .85rem;
-  font-weight: 600;
-}
-
-.carousel-status.active { color: var(--verde); }
-.carousel-status.inactive { color: var(--rojo); }
-
-/* SWITCH */
 .switch {
   position: relative;
   width: 46px;
@@ -230,8 +196,6 @@ a {
 
 .switch input {
   opacity: 0;
-  width: 0;
-  height: 0;
 }
 
 .slider {
@@ -240,7 +204,6 @@ a {
   background: #ccc;
   border-radius: 999px;
   cursor: pointer;
-  transition: background .25s ease;
 }
 
 .slider::before {
@@ -264,38 +227,103 @@ a {
 }
 
 /* =========================================================
-   DIVISOR
+   ================= CARRUSEL (MISMO CLIENTE) =================
 ========================================================= */
-.divider {
-  height: 1px;
-  background: var(--gris-line);
-  margin: 16px 0;
+.related {
+  max-width: 1100px;
+  margin: 0 auto 3rem;
+}
+
+.similar-title {
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+/* CONTENEDOR */
+.carousel-container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+/* LISTA */
+.similar-list {
+  display: flex;
+  gap: 1rem;
+  padding: 14px 0;
+  width: 100%;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+}
+
+.similar-list::-webkit-scrollbar {
+  display: none;
+}
+
+/* TARJETA */
+.similar-card {
+  flex: 0 0 190px;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 10px 25px rgba(0,0,0,.08);
+  padding: 1.2rem 1rem;
+  cursor: pointer;
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+
+.similar-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.similar-card h4 {
+  margin-top: .6rem;
+  font-size: .95rem;
+}
+
+.similar-card p {
+  font-size: .85rem;
+  color: var(--gris-text);
+}
+
+.similar-card.active-card {
+  border: 1px solid var(--verde);
+  box-shadow: 0 8px 20px rgba(51,103,59,.25);
+  transform: translateY(-6px);
 }
 
 /* =========================================================
-   ACCIONES
+   FLECHAS — SOLO PC
 ========================================================= */
-.product-card-actions {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.product-card-actions button {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: none;
+.carousel-prev-circle,
+.carousel-next-circle {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #fff;
   border: none;
-  font-weight: 500;
   cursor: pointer;
+  box-shadow: 0 6px 16px rgba(0,0,0,.18);
 }
 
-.product-card-actions .edit { color: var(--verde); }
-.product-card-actions .delete { color: var(--rojo); }
+.carousel-prev-circle {
+  left: -26px;
+}
 
-.vertical-divider {
-  width: 1px;
-  height: 22px;
-  background: var(--gris-line);
+.carousel-next-circle {
+  right: -26px;
+}
+
+@media (max-width: 900px) {
+  .carousel-prev-circle,
+  .carousel-next-circle {
+    display: none;
+  }
 }
