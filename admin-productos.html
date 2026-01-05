@@ -3,13 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <title>Admin · Productos | Café Cortero</title>
 
   <!-- Material Symbols -->
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 
-  <!-- Tipografía -->
+  <!-- Estilos -->
   <link rel="stylesheet" href="css/tipografia.css" />
   <link rel="stylesheet" href="css/header.css" />
   <link rel="stylesheet" href="css/admin-productos.css" />
@@ -19,7 +18,9 @@
 
 <main class="admin-products-container fade-in">
 
-  <!-- ACCIONES -->
+  <!-- =========================
+       BARRA SUPERIOR
+  ========================= -->
   <section class="products-actions-bar">
     <div class="search-box">
       <span class="material-symbols-outlined">search</span>
@@ -32,7 +33,77 @@
     </button>
   </section>
 
-  <!-- LISTADO DESKTOP -->
+  <!-- =========================
+       PREVIEW PRODUCTO (ADMIN)
+       MISMO DISEÑO QUE CLIENTE
+  ========================= -->
+  <section id="admin-product-preview" class="product-main admin-preview">
+
+    <div class="product-text">
+
+      <div class="product-label">
+        <small id="p-category">—</small>
+        <p class="subtext" id="p-subtext">—</p>
+      </div>
+
+      <h2 id="p-name">Selecciona un producto</h2>
+
+      <span id="p-badge" class="pill">—</span>
+
+      <p id="p-description" class="product-description">
+        Selecciona un producto del carrusel para ver su información completa.
+      </p>
+
+      <ul class="admin-product-info">
+        <li><strong>Precio:</strong> <span id="p-price">—</span></li>
+        <li><strong>Stock:</strong> <span id="p-stock">—</span></li>
+        <li><strong>Estado:</strong> <span id="p-status">—</span></li>
+      </ul>
+
+      <div class="admin-carousel-toggle">
+        <span>Mostrar en carrusel del cliente</span>
+        <label class="switch">
+          <input type="checkbox" id="p-carousel-toggle">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+    </div>
+
+    <div class="product-img-wrap">
+      <img id="p-image" src="imagenes/placeholder.png" alt="Producto">
+    </div>
+
+  </section>
+
+  <!-- =========================
+       CARRUSEL DE PRODUCTOS
+  ========================= -->
+  <section class="related admin-related">
+
+    <h3 class="similar-title">Productos</h3>
+
+    <div class="carousel-container with-arrows">
+
+      <button class="carousel-prev-circle inside">
+        <span class="material-symbols-outlined">chevron_left</span>
+      </button>
+
+      <div class="similar-list" id="admin-products-carousel">
+        <!-- JS renderiza tarjetas -->
+      </div>
+
+      <button class="carousel-next-circle inside">
+        <span class="material-symbols-outlined">chevron_right</span>
+      </button>
+
+    </div>
+
+  </section>
+
+  <!-- =========================
+       LISTADO TABLA (DESKTOP)
+  ========================= -->
   <section class="products-card desktop-only">
     <table class="products-table">
       <thead>
@@ -54,19 +125,21 @@
     </div>
   </section>
 
-  <!-- LISTADO MÓVIL -->
+  <!-- =========================
+       LISTADO MÓVIL
+  ========================= -->
   <section class="products-mobile mobile-only" id="products-mobile"></section>
 
 </main>
 
 <!-- =========================
-     TEMPLATE DESKTOP
+     TEMPLATE TABLA DESKTOP
 ========================= -->
 <template id="tpl-product-row">
   <tr>
     <td>
       <div class="product-thumb-box">
-        <img alt="" />
+        <img alt="">
       </div>
     </td>
     <td class="p-name"></td>
@@ -86,45 +159,35 @@
 </template>
 
 <!-- =========================
-     TEMPLATE MÓVIL — BOCETO REAL ✅
+     TEMPLATE TARJETA MÓVIL
 ========================= -->
 <template id="tpl-product-card">
   <article class="product-card">
 
-    <!-- BLOQUE SUPERIOR (IMAGEN + TEXTO) -->
     <div class="product-card-top">
 
-      <!-- IMAGEN -->
       <div class="product-thumb-box">
-        <img alt="" />
+        <img alt="">
       </div>
 
-      <!-- TEXTO (MISMA ALTURA QUE IMAGEN) -->
       <div class="product-card-text">
-
         <h3 class="p-name"></h3>
         <p class="p-price"></p>
         <p class="p-stock"></p>
 
-        <!-- CARRUSEL ALINEADO CON TEXTO -->
         <div class="product-card-carousel">
-          <span class="carousel-label">Carrusel</span>
-
+          <span>Carrusel</span>
           <label class="switch">
-            <input type="checkbox" class="p-carousel-toggle" />
+            <input type="checkbox" class="p-carousel-toggle">
             <span class="slider"></span>
           </label>
-
-          <span class="carousel-status"></span>
         </div>
-
       </div>
+
     </div>
 
-    <!-- DIVISOR -->
     <div class="divider"></div>
 
-    <!-- ACCIONES -->
     <div class="product-card-actions">
       <button class="edit">
         <span class="material-symbols-outlined">edit</span>
@@ -142,8 +205,22 @@
   </article>
 </template>
 
+<!-- =========================
+     TEMPLATE CARRUSEL ADMIN
+========================= -->
+<template id="tpl-admin-carousel-card">
+  <article class="similar-card admin-card" data-id="">
+    <img src="" alt="">
+    <h4 class="c-name"></h4>
+    <p class="c-price"></p>
+  </article>
+</template>
+
 <div id="snackbar" class="snackbar"></div>
 
+<!-- =========================
+     SCRIPTS
+========================= -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase-client-core.js"></script>
 
