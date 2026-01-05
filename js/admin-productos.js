@@ -31,9 +31,9 @@ const preview = {
   description: document.getElementById("p-description"),
   price: document.getElementById("p-price"),
   stock: document.getElementById("p-stock"),
-  status: document.getElementById("p-status"),
   image: document.getElementById("p-image"),
-  carouselToggle: document.getElementById("p-carousel-toggle")
+  carouselToggle: document.getElementById("p-carousel-toggle"),
+  carouselStatus: document.getElementById("carousel-status")
 };
 
 const carouselContainer = document.getElementById("admin-products-carousel");
@@ -66,58 +66,68 @@ function getImageUrl(product) {
   return `https://eaipcuvvddyrqkbmjmvw.supabase.co/storage/v1/object/public/product-images/${product.image_url}`;
 }
 
-function isActivo(product) {
-  return product.status === "activo";
+function updateCarouselStatus(active) {
+  if (!preview.carouselStatus) return;
+
+  preview.carouselStatus.textContent = active
+    ? "Activo"
+    : "Desactivado";
+
+  preview.carouselStatus.className =
+    `carousel-status ${active ? "active" : "inactive"}`;
 }
 
 /* ============================================================
-   PREVIEW PRINCIPAL (MISMO COMPORTAMIENTO CLIENTE)
+   PREVIEW PRINCIPAL
 ============================================================ */
 function renderPreview(product) {
   if (!product) return;
 
   selectedProductId = product.id;
 
-  preview.name.textContent = product.name;
-  preview.category.textContent = product.category || "—";
-  preview.subtext.textContent = product.subtext || "—";
-  preview.badge.textContent = product.badge || "—";
-  preview.description.textContent =
-    product.description || "Sin descripción";
+  preview.name.textContent        = product.name;
+  preview.category.textContent    = product.category || "—";
+  preview.subtext.textContent     = product.subtext || "—";
+  preview.badge.textContent       = product.badge || "—";
+  preview.description.textContent = product.description || "Sin descripción";
 
   preview.price.textContent =
     formatPrice(product.price, product.currency);
 
-  preview.stock.textContent = product.stock;
-  preview.status.textContent = isActivo(product) ? "Activo" : "Inactivo";
-  preview.status.className =
-    `badge ${isActivo(product) ? "active" : "inactive"}`;
+  preview.stock.textContent = product.stock ?? "—";
 
   preview.image.src = getImageUrl(product);
   preview.image.onerror = () =>
     preview.image.src = "imagenes/no-image.png";
 
-  /* SWITCH CARRUSEL */
-  preview.carouselToggle.checked = product.carousel === true;
+  /* SWITCH + ESTADO */
+  const activo = product.carousel === true;
+  preview.carouselToggle.checked = activo;
+  updateCarouselStatus(activo);
 
   preview.carouselToggle.onchange = async () => {
-    const activo = preview.carouselToggle.checked;
+    const nuevoEstado = preview.carouselToggle.checked;
+
+    updateCarouselStatus(nuevoEstado);
 
     const { error } = await window.supabaseClient
       .from("products")
-      .update({ carousel: activo })
+      .update({ carousel: nuevoEstado })
       .eq("id", product.id);
 
     if (error) {
       console.error("❌ Error actualizando carrusel", error);
-      preview.carouselToggle.checked = !activo;
+
+      /* REVERTIR */
+      preview.carouselToggle.checked = !nuevoEstado;
+      updateCarouselStatus(!nuevoEstado);
       return;
     }
 
-    product.carousel = activo;
+    product.carousel = nuevoEstado;
   };
 
-  /* SCROLL SUAVE COMO CLIENTE */
+  /* SCROLL SUAVE */
   preview.section.scrollIntoView({
     behavior: "smooth",
     block: "start"
@@ -137,8 +147,10 @@ function renderCarousel(list) {
     root.dataset.id = product.id;
     root.dataset.index = index;
 
-    root.querySelector("img").src = getImageUrl(product);
-    root.querySelector("img").alt = product.name;
+    const img = root.querySelector("img");
+    img.src = getImageUrl(product);
+    img.alt = product.name;
+
     root.querySelector(".c-name").textContent = product.name;
     root.querySelector(".c-price").textContent =
       formatPrice(product.price, product.currency);
@@ -159,7 +171,7 @@ function renderCarousel(list) {
 }
 
 /* ============================================================
-   SELECCIÓN (VERDE + SCROLL + PREVIEW)
+   SELECCIÓN
 ============================================================ */
 function seleccionarProducto(index) {
   const product = filteredProducts[index];
@@ -181,7 +193,7 @@ function seleccionarProducto(index) {
 }
 
 /* ============================================================
-   SCROLL DEL CARRUSEL (PC / MÓVIL)
+   SCROLL DEL CARRUSEL
 ============================================================ */
 function actualizarScrollCarrusel() {
   const card = carouselContainer.querySelector(".admin-card");
@@ -197,7 +209,7 @@ function actualizarScrollCarrusel() {
 }
 
 /* ============================================================
-   FLECHAS (PC)
+   FLECHAS
 ============================================================ */
 btnPrev?.addEventListener("click", () => {
   if (carouselIndex > 0) {
