@@ -740,4 +740,23 @@ body.page-recibo #header-recibo-title {
 body.page-mis-pedidos #header-mis-pedidos-title {
   display: block;
 }
+/* =====================================================
+   ADMIN — CAFÉS (LISTADO)
+===================================================== */
+body.page-admin-cafes #header-admin-cafes-title {
+  display: block;
+}
 
+/* =====================================================
+   ADMIN — AGREGAR CAFÉ
+===================================================== */
+body.page-admin-agregar-cafe #header-admin-add-cafe-title {
+  display: block;
+}
+
+/* =====================================================
+   ADMIN — EDITAR CAFÉ
+===================================================== */
+body.page-admin-agregar-cafe #header-admin-edit-cafe-title {
+  display: block;
+}
