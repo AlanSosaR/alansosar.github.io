@@ -27,6 +27,7 @@ label,
 a {
   outline: none;
   box-shadow: none;
+  font-family: inherit;
 }
 
 /* =========================================================
@@ -46,7 +47,7 @@ a {
   display: flex;
   align-items: center;
   gap: 16px;
-  margin-bottom: 28px;
+  margin-bottom: 32px;
 }
 
 @media (max-width: 900px) {
@@ -72,6 +73,7 @@ a {
   background: transparent;
   flex: 1;
   font-size: 0.95rem;
+  color: var(--cafe);
 }
 
 /* BOTÓN */
@@ -86,44 +88,49 @@ a {
   padding: 14px 22px;
   font-weight: 500;
   cursor: pointer;
+  transition: background .2s ease, transform .15s ease;
 }
 
 .btn-primary:hover {
   background: var(--verde-soft);
+  transform: translateY(-1px);
 }
 
 /* =========================================================
-   ================= TARJETA PRINCIPAL (MISMO CLIENTE) =================
+   TARJETA PRINCIPAL — MISMO DISEÑO CLIENTE
 ========================================================= */
 .product-main {
   max-width: 1100px;
-  margin: 0 auto 3rem;
+  margin: 0 auto 3.5rem;
   background: var(--blanco);
   border-radius: 24px;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-  padding: 2rem;
+  gap: 2.2rem;
+  padding: 2.2rem;
   align-items: center;
-  box-shadow: 0 12px 28px rgba(0,0,0,.08);
+  box-shadow: 0 14px 32px rgba(0,0,0,.08);
 }
 
 @media (max-width: 900px) {
   .product-main {
     grid-template-columns: 1fr;
-    padding: 1.5rem;
+    padding: 1.6rem;
+    margin-bottom: 2.5rem;
   }
 }
 
 /* TEXTO */
 .product-label small {
   font-weight: 600;
+  letter-spacing: .04em;
   color: var(--cafe);
 }
 
 .product-label .subtext {
   color: #a78c7c;
   font-size: 0.9rem;
+  margin-top: 2px;
 }
 
 .product-text h2 {
@@ -136,9 +143,10 @@ a {
 .pill {
   display: inline-block;
   border: 1px solid var(--gris-line);
-  padding: .4rem 1rem;
+  padding: .45rem 1.1rem;
   border-radius: 999px;
   font-size: .85rem;
+  color: var(--cafe);
   margin-bottom: .8rem;
 }
 
@@ -146,7 +154,7 @@ a {
   margin-top: 1rem;
   font-size: .95rem;
   color: var(--gris-text);
-  line-height: 1.5;
+  line-height: 1.55;
 }
 
 /* INFO ADMIN */
@@ -157,16 +165,17 @@ a {
 }
 
 .admin-product-info li {
-  margin-bottom: .4rem;
+  margin-bottom: .45rem;
   font-size: .95rem;
 }
 
 /* SWITCH ADMIN */
 .admin-carousel-toggle {
-  margin-top: 1.4rem;
+  margin-top: 1.5rem;
   display: flex;
   align-items: center;
   gap: 14px;
+  font-size: .9rem;
 }
 
 /* IMAGEN */
@@ -176,13 +185,14 @@ a {
   align-items: center;
   background: radial-gradient(circle at center, #f5f5f5 0%, #fff 100%);
   border-radius: 18px;
-  padding: 1rem;
+  padding: 1.2rem;
 }
 
 .product-img-wrap img {
   max-width: 320px;
   width: 100%;
   object-fit: contain;
+  display: block;
 }
 
 /* =========================================================
@@ -196,6 +206,8 @@ a {
 
 .switch input {
   opacity: 0;
+  width: 0;
+  height: 0;
 }
 
 .slider {
@@ -204,6 +216,7 @@ a {
   background: #ccc;
   border-radius: 999px;
   cursor: pointer;
+  transition: background .25s ease;
 }
 
 .slider::before {
@@ -227,17 +240,18 @@ a {
 }
 
 /* =========================================================
-   ================= CARRUSEL (MISMO CLIENTE) =================
+   CARRUSEL — MISMO CLIENTE
 ========================================================= */
 .related {
   max-width: 1100px;
-  margin: 0 auto 3rem;
+  margin: 0 auto 3.5rem;
 }
 
 .similar-title {
   font-size: 1.4rem;
   margin-bottom: 1rem;
   font-weight: 600;
+  color: var(--cafe);
 }
 
 /* CONTENEDOR */
@@ -267,10 +281,14 @@ a {
   flex: 0 0 190px;
   background: #fff;
   border-radius: 18px;
-  box-shadow: 0 10px 25px rgba(0,0,0,.08);
+  box-shadow: 0 10px 24px rgba(0,0,0,.08);
   padding: 1.2rem 1rem;
   cursor: pointer;
   transition: transform .25s ease, box-shadow .25s ease;
+}
+
+.similar-card:hover {
+  transform: translateY(-4px);
 }
 
 .similar-card img {
@@ -283,6 +301,7 @@ a {
 .similar-card h4 {
   margin-top: .6rem;
   font-size: .95rem;
+  color: var(--cafe);
 }
 
 .similar-card p {
@@ -291,8 +310,8 @@ a {
 }
 
 .similar-card.active-card {
-  border: 1px solid var(--verde);
-  box-shadow: 0 8px 20px rgba(51,103,59,.25);
+  border: 1.5px solid var(--verde);
+  box-shadow: 0 10px 26px rgba(51,103,59,.28);
   transform: translateY(-6px);
 }
 
@@ -304,21 +323,25 @@ a {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 52px;
-  height: 52px;
+  width: 54px;
+  height: 54px;
   border-radius: 50%;
   background: #fff;
   border: none;
   cursor: pointer;
   box-shadow: 0 6px 16px rgba(0,0,0,.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
 }
 
 .carousel-prev-circle {
-  left: -26px;
+  left: -28px;
 }
 
 .carousel-next-circle {
-  right: -26px;
+  right: -28px;
 }
 
 @media (max-width: 900px) {
