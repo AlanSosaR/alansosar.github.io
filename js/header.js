@@ -186,38 +186,49 @@ if (!window.__HEADER_CORE_LOADED__) {
       : openDrawer();
   }
 
-  /* =====================================================
-     INIT HEADER
-  ===================================================== */
-  let HEADER_INITIALIZED = false;
+/* =====================================================
+   INIT HEADER
+===================================================== */
+let HEADER_INITIALIZED = false;
 
-  function initHeader() {
-    if (HEADER_INITIALIZED) return;
-    HEADER_INITIALIZED = true;
+function initHeader() {
+  if (HEADER_INITIALIZED) return;
+  HEADER_INITIALIZED = true;
 
-    $("menu-toggle")?.addEventListener("click", toggleDrawer);
-    $("user-scrim")?.addEventListener("click", closeDrawer);
+  /* ☰ MENÚ (MÓVIL) */
+  $("menu-toggle")?.addEventListener("click", toggleDrawer);
 
-    $("cart-btn")?.addEventListener("click", () => {
-      location.href = "carrito.html";
-    });
+  /* 👤 AVATAR (PC) — ABRE DRAWER */
+  $("btn-header-user")?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggleDrawer();
+  });
 
-    /* 🔑 LOGOUT — SOLO DELEGA */
-    $("logout-btn")?.addEventListener("click", async () => {
-      if (window.supabaseAuth?.logoutUser) {
-        await window.supabaseAuth.logoutUser();
-      } else if (window.corteroLogout) {
-        await window.corteroLogout();
-      }
-      closeDrawer();
-    });
+  /* 🧼 SCRIM — CIERRA DRAWER */
+  $("user-scrim")?.addEventListener("click", closeDrawer);
 
-    syncUserUI();
-    updateCartCount();
-    updateHeaderCartTitle();
-    syncClientOrderNotification();
-    syncAdminOrdersCount();
-  }
+  /* 🛒 CARRITO */
+  $("cart-btn")?.addEventListener("click", () => {
+    location.href = "carrito.html";
+  });
+
+  /* 🔑 LOGOUT */
+  $("logout-btn")?.addEventListener("click", async () => {
+    if (window.supabaseAuth?.logoutUser) {
+      await window.supabaseAuth.logoutUser();
+    } else if (window.corteroLogout) {
+      await window.corteroLogout();
+    }
+    closeDrawer();
+  });
+
+  /* 🔄 SINCRONIZACIONES */
+  syncUserUI();
+  updateCartCount();
+  updateHeaderCartTitle();
+  syncClientOrderNotification();
+  syncAdminOrdersCount();
+}
 
   /* =====================================================
      EVENTOS GLOBALES
