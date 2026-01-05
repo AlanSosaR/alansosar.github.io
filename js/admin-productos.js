@@ -112,8 +112,14 @@ function renderPreview(product) {
     product.description || "Sin descripción";
 
   /* PÍLDORA = CALIDAD / TIPO */
-  preview.badge.textContent =
-    product.quality || product.badge || "—";
+const badgeParts = [];
+
+if (product.grind_type?.trim()) badgeParts.push(product.grind_type);
+if (product.quality?.trim()) badgeParts.push(product.quality);
+
+preview.badge.textContent = badgeParts.length
+  ? badgeParts.join(" · ")
+  : "—";
 
   preview.price.textContent =
     formatPrice(product.price, product.currency);
