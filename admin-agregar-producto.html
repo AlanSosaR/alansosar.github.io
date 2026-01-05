@@ -80,14 +80,11 @@
           </div>
         </div>
 
-      <!-- CATEGORÍA Y TIPO DE CAFÉ -->
+   <!-- CATEGORÍA -->
 <div class="m3-field">
-  <div class="m3-input dual-select">
-
-    <!-- ICONO -->
+  <div class="m3-input">
     <span class="material-symbols-outlined">category</span>
 
-    <!-- CATEGORÍA -->
     <select id="categoria" required>
       <option value="" disabled selected></option>
       <option value="Tradicional">Tradicional</option>
@@ -95,18 +92,22 @@
       <option value="Especial">Edición especial</option>
     </select>
 
-    <!-- TIPO DE CAFÉ -->
+    <label class="floating-label">Categoría *</label>
+  </div>
+</div>
+
+<!-- TIPO DE CAFÉ -->
+<div class="m3-field">
+  <div class="m3-input">
+    <span class="material-symbols-outlined">grain</span>
+
     <select id="tipoCafe" required>
       <option value="" disabled selected></option>
       <option value="Molido">Molido</option>
       <option value="En grano">En grano</option>
     </select>
 
-    <!-- LABEL -->
-    <label class="floating-label">
-      Categoría · Tipo de café *
-    </label>
-
+    <label class="floating-label">Tipo de café *</label>
   </div>
 </div>
 
