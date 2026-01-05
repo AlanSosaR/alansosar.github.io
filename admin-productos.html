@@ -33,80 +33,98 @@
     </button>
   </section>
 
-<!-- =========================
-     TARJETA PRINCIPAL (PREVIEW ADMIN)
-========================= -->
-<section id="admin-product-preview" class="product-main admin-preview">
-
-  <!-- BOTÓN ATRÁS -->
-  <button class="back-btn" onclick="history.back()" aria-label="Volver">
-    <span class="material-symbols-outlined">chevron_left</span>
-  </button>
-
-  <!-- ================= TEXTO ================= -->
-  <div class="product-text">
-
-    <!-- NOMBRE -->
-    <h2 id="p-name">Selecciona un producto</h2>
-
-    <!-- DESCRIPCIÓN -->
-    <p id="p-description" class="product-description">
-      Selecciona un producto del carrusel para ver su información completa.
+  <!-- =========================
+       ESTADO VACÍO (CONTROLADO POR JS)
+  ========================= -->
+  <section id="admin-empty-state" class="admin-empty-state hidden">
+    <h2 class="empty-title">No hay productos registrados</h2>
+    <p class="empty-text">
+      Agrega un producto para actualizar la información
+      que verá el cliente en la tienda.
     </p>
 
-    <!-- PÍLDORA · CALIDAD DEL CAFÉ -->
-    <span id="p-badge" class="pill">—</span>
+    <button class="btn-primary" id="btnAddProductEmpty">
+      <span class="material-symbols-outlined">add</span>
+      Agregar producto
+    </button>
+  </section>
 
-    <!-- INFO CLAVE -->
-    <ul class="admin-product-info">
-      <li>
-        <strong>Precio:</strong>
-        <span id="p-price">—</span>
-      </li>
-      <li>
-        <strong>En almacén:</strong>
-        <span id="p-stock">—</span>
-      </li>
-    </ul>
+  <!-- =========================
+       TARJETA PRINCIPAL (PREVIEW ADMIN)
+  ========================= -->
+  <section id="admin-product-preview" class="product-main admin-preview hidden">
 
-    <!-- CARRUSEL CLIENTE -->
-    <div class="admin-carousel-toggle">
-      <span>Mostrar en carrusel del cliente</span>
+    <!-- BOTÓN ATRÁS -->
+    <button class="back-btn" onclick="history.back()" aria-label="Volver">
+      <span class="material-symbols-outlined">chevron_left</span>
+    </button>
 
-      <label class="switch">
-        <input type="checkbox" id="p-carousel-toggle">
-        <span class="slider"></span>
-      </label>
+    <!-- ================= TEXTO ================= -->
+    <div class="product-text">
 
-      <span id="carousel-status" class="carousel-status inactive">
-        Desactivado
-      </span>
+      <!-- NOMBRE -->
+      <h2 id="p-name">—</h2>
+
+      <!-- DESCRIPCIÓN -->
+      <p id="p-description" class="product-description">—</p>
+
+      <!-- PÍLDORA · CALIDAD DEL CAFÉ -->
+      <span id="p-badge" class="pill">—</span>
+
+      <!-- INFO CLAVE -->
+      <ul class="admin-product-info">
+        <li>
+          <strong>Precio:</strong>
+          <span id="p-price">—</span>
+        </li>
+        <li>
+          <strong>En almacén:</strong>
+          <span id="p-stock">—</span>
+        </li>
+      </ul>
+
+      <!-- MOSTRAR EN CARRUSEL -->
+      <div class="admin-carousel-toggle">
+        <span>Mostrar en carrusel del cliente</span>
+
+        <label class="switch">
+          <input type="checkbox" id="p-carousel-toggle">
+          <span class="slider"></span>
+        </label>
+
+        <span id="carousel-status" class="carousel-status inactive">
+          Desactivado
+        </span>
+      </div>
+
+      <!-- ACCIONES ADMIN -->
+      <div class="admin-actions inline-actions">
+        <button class="admin-action-btn edit" title="Editar producto">
+          <span class="material-symbols-outlined">edit</span>
+        </button>
+
+        <button class="admin-action-btn delete" title="Eliminar producto">
+          <span class="material-symbols-outlined">delete</span>
+        </button>
+      </div>
+
     </div>
 
-    <!-- ACCIONES ADMIN -->
-    <div class="admin-actions inline-actions">
-      <button class="admin-action-btn edit" title="Editar producto">
-        <span class="material-symbols-outlined">edit</span>
-      </button>
-
-      <button class="admin-action-btn delete" title="Eliminar producto">
-        <span class="material-symbols-outlined">delete</span>
-      </button>
+    <!-- ================= IMAGEN ================= -->
+    <div class="product-img-wrap">
+      <img
+        id="p-image"
+        src="imagenes/placeholder.png"
+        alt="Imagen del producto"
+      >
     </div>
 
-  </div>
-
-  <!-- ================= IMAGEN ================= -->
-  <div class="product-img-wrap">
-    <img id="p-image" src="imagenes/placeholder.png" alt="Imagen del producto">
-  </div>
-
-</section>
+  </section>
 
   <!-- =========================
        CARRUSEL DE PRODUCTOS (ADMIN)
   ========================= -->
-  <section class="related admin-related">
+  <section class="related admin-related hidden">
 
     <h3 class="similar-title">Productos</h3>
 
