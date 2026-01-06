@@ -63,15 +63,22 @@ async function loadSimilarProducts() {
     .eq("status", "activo")
     .order("created_at", { ascending: false });
 
+  /* ❌ Error al consultar */
   if (error) {
     console.error("❌ Error cargando productos del carrusel:", error);
+    showEmptyCatalog();
     return;
   }
 
+  /* ☕ No hay productos en carrusel */
   if (!data || !data.length) {
     cont.innerHTML = "";
+    showEmptyCatalog();
     return;
   }
+
+  /* ✅ Hay productos */
+  hideEmptyCatalog();
 
   cont.innerHTML = data.map(p => `
     <div class="similar-card"
