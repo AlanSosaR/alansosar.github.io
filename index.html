@@ -39,37 +39,85 @@
   </section>
 
   <!-- PRODUCTO PRINCIPAL -->
-  <section id="productos" class="product-main">
-    <div class="product-text">
+<section id="productos" class="product-main">
 
-      <div class="product-label">
-        <small>CAFÉ EN GRANO / MOLIDO</small>
-        <p class="subtext">Tueste medio · Altura · Esencia familiar</p>
-      </div>
+  <!-- TEXTO -->
+  <div class="product-text">
 
-      <h2 id="product-name">Café Cortero 250g</h2>
-      <span id="product-badge" class="pill">100% arábica · Danlí</span>
+    <!-- TÍTULO -->
+    <h2 id="product-name" class="product-title">
+      Café Cortero 250g
+    </h2>
 
-      <div style="margin-top: 1.2rem;">
-        <div class="product-split" title="Agregar al carrito">
-          <span class="price-part">L 180</span>
-         <span class="icon-part" id="product-add" data-id="cafe-cortero-250g">
-  <i class="fa-solid fa-cart-plus"></i>
-</span>        </div>
-      </div>
+    <!-- DESCRIPCIÓN -->
+    <p id="product-description" class="product-description">
+      Café hondureño de altura, tueste medio y aroma intenso.
+    </p>
 
+    <!-- PÍLDORA -->
+    <span id="product-badge" class="pill">
+      100% arábica · Danlí
+    </span>
+
+    <!-- PRECIO -->
+    <div class="product-price">
+      <span id="product-price">L 180</span>
+    </div>
+
+    <!-- ESTADO (NO MOSTRAR NÚMERO DE STOCK) -->
+    <div
+      id="product-status"
+      class="product-status available"
+      aria-live="polite"
+    >
+      Disponible
+    </div>
+
+    <!-- ACCIÓN -->
+    <div class="product-actions">
+
+      <!-- AGREGAR AL CARRITO -->
+      <button
+        id="product-add"
+        class="add-to-cart-btn"
+        data-product-id=""
+        aria-label="Agregar al carrito"
+      >
+        <i class="fa-solid fa-cart-plus"></i>
+        <span>Agregar</span>
+      </button>
+
+      <!-- CANTIDAD -->
       <div class="quantity-container">
-        <button class="qty-btn minus-btn" id="qty-minus">−</button>
+        <button
+          class="qty-btn minus-btn"
+          id="qty-minus"
+          aria-label="Disminuir cantidad"
+        >−</button>
+
         <span class="qty-number" id="qty-number">1</span>
-        <button class="qty-btn plus-btn" id="qty-plus">+</button>
+
+        <button
+          class="qty-btn plus-btn"
+          id="qty-plus"
+          aria-label="Aumentar cantidad"
+        >+</button>
       </div>
 
     </div>
 
-    <div class="product-img-wrap">
-      <img id="product-image" src="imagenes/bolsa_1.png" alt="Bolsa Café Cortero">
-    </div>
-  </section>
+  </div>
+
+  <!-- IMAGEN -->
+  <div class="product-img-wrap">
+    <img
+      id="product-image"
+      src="imagenes/bolsa_1.png"
+      alt="Bolsa de Café Cortero"
+    >
+  </div>
+
+</section>
 
   <!-- SIMILARES -->
   <section class="related">
