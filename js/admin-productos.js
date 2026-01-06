@@ -407,3 +407,14 @@ async function cargarProductos() {
 
   await cargarProductos();
 })();
+
+/* ============================================================
+   SAFE HELPERS
+============================================================ */
+function safeSnackbar(msg, type = "info") {
+  if (typeof showSnackbar === "function") {
+    showSnackbar(msg, type);
+  } else {
+    console.warn("Snackbar:", msg);
+  }
+}
