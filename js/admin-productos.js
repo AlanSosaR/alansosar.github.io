@@ -173,10 +173,15 @@ function renderPreview(product) {
     formatPrice(product.price, product.currency);
 
   preview.stock.textContent = product.stock ?? "—";
+const imgUrl = getImageUrl(product);
 
-  preview.image.src = getImageUrl(product);
-  preview.image.onerror = () =>
-    preview.image.src = "imagenes/no-image.png";
+preview.image.src = imgUrl
+  ? `${imgUrl}?v=${Date.now()}`
+  : "imagenes/no-image.png";
+
+preview.image.onerror = () => {
+  preview.image.src = "imagenes/no-image.png";
+};
 
   const activo = product.carousel === true;
   preview.carouselToggle.checked = activo;
@@ -216,7 +221,17 @@ function renderCarousel(list) {
     root.dataset.index = index;
     root.dataset.id = product.id;
 
-    root.querySelector("img").src = getImageUrl(product);
+    const img = root.querySelector("img");
+    const imgUrl = getImageUrl(product);
+
+    img.src = imgUrl
+      ? `${imgUrl}?v=${Date.now()}`
+      : "imagenes/no-image.png";
+
+    img.onerror = () => {
+      img.src = "imagenes/no-image.png";
+    };
+
     root.querySelector(".c-name").textContent = product.name;
     root.querySelector(".c-price").textContent =
       formatPrice(product.price, product.currency);
