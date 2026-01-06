@@ -295,7 +295,7 @@ async function eliminarProducto(product) {
   // 🔒 Protección base
   if (!product || !product.id) {
     console.warn("⚠️ Producto inválido para eliminar:", product);
-    showSnackbar("⚠️ Producto inválido", "error");
+    safeSnackbar("⚠️ Producto inválido", "error");
     return;
   }
 
@@ -350,11 +350,11 @@ async function eliminarProducto(product) {
     /* =====================
        FEEDBACK
     ===================== */
-    showSnackbar("☕ Café eliminado correctamente", "success");
+    safeSnackbar("☕ Café eliminado correctamente", "success");
 
   } catch (err) {
     console.error("❌ Error eliminando café:", err);
-    showSnackbar("❌ No se pudo eliminar el café", "error");
+   safeSnackbar("❌ No se pudo eliminar el café", "error");
   }
 }
 
@@ -390,7 +390,7 @@ async function cargarProductos() {
 
   btnEditProduct?.addEventListener("click", () => {
     if (!selectedProductId) {
-      showSnackbar("Selecciona un café primero", "error");
+      safeSnackbar("Selecciona un café primero", "error");
       return;
     }
     location.href = `admin-agregar-producto.html?id=${selectedProductId}`;
@@ -398,7 +398,7 @@ async function cargarProductos() {
 
   btnDeleteProduct?.addEventListener("click", () => {
     if (!selectedProductId) {
-      showSnackbar("Selecciona un café primero", "error");
+      safeSnackbar("Selecciona un café primero", "error");
       return;
     }
     const product = products.find(p => p.id === selectedProductId);
