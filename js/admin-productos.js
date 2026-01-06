@@ -95,29 +95,50 @@ function ocultarEstadoVacio() {
   relatedSection?.classList.remove("hidden");
 }
 
-/* ============================================================
-   SNACKBAR — CONFIRMACIÓN ELIMINAR
-============================================================ */
-function showDeleteConfirm(product) {
-  if (!snackbarDelete || !product) return;
+/* =========================================================
+   SNACKBAR ELIMINAR — CONTROL REAL
+========================================================= */
 
+const snackbarDelete = document.getElementById("snackbar-delete");
+const btnConfirmDelete = document.getElementById("btnConfirmDelete");
+const btnCancelDelete = document.getElementById("btnCancelDelete");
+
+let productToDelete = null;
+
+/* ABRIR SNACKBAR */
+function showDeleteConfirm(product) {
   productToDelete = product;
+
   snackbarDelete.classList.add("show");
-  snackbarDelete.setAttribute("aria-hidden", "false");
+
+  // 🔑 mover foco al botón seguro
+  btnCancelDelete.focus();
 }
 
-function closeDeleteSnackbar() {
+/* CERRAR SNACKBAR */
+function closeDeleteConfirm() {
   snackbarDelete.classList.remove("show");
-  snackbarDelete.setAttribute("aria-hidden", "true");
   productToDelete = null;
 }
 
-btnCancelDelete?.addEventListener("click", closeDeleteSnackbar);
-
-btnConfirmDelete?.addEventListener("click", async () => {
+/* CONFIRMAR */
+btnConfirmDelete.addEventListener("click", async () => {
   if (!productToDelete) return;
-  closeDeleteSnackbar();
+
+  closeDeleteConfirm();
   await eliminarProducto(productToDelete);
+});
+
+/* CANCELAR */
+btnCancelDelete.addEventListener("click", () => {
+  closeDeleteConfirm();
+});
+
+/* ESC para cerrar */
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && snackbarDelete.classList.contains("show")) {
+    closeDeleteConfirm();
+  }
 });
 
 /* ============================================================
@@ -338,25 +359,39 @@ async function cargarProductos() {
 (async function init() {
   await esperarSupabase();
 
+  // 🔐 Seguridad básica
   if (localStorage.getItem("cortero_logged") !== "1") {
     location.href = "login.html";
     return;
   }
 
+  /* =====================
+     FILTRO
+  ===================== */
   searchInput?.addEventListener("input", aplicarFiltro);
 
+  /* =====================
+     AGREGAR
+  ===================== */
   btnAddProduct?.addEventListener("click", () => {
     location.href = "admin-agregar-producto.html";
   });
 
+  /* =====================
+     EDITAR
+  ===================== */
   btnEditProduct?.addEventListener("click", () => {
     if (!selectedProductId) {
       showSnackbar("Selecciona un café primero", "error");
       return;
     }
+
     location.href = `admin-agregar-producto.html?id=${selectedProductId}`;
   });
 
+  /* =====================
+     ELIMINAR (SNACKBAR CONFIRMACIÓN)
+  ===================== */
   btnDeleteProduct?.addEventListener("click", () => {
     if (!selectedProductId) {
       showSnackbar("Selecciona un café primero", "error");
@@ -364,13 +399,18 @@ async function cargarProductos() {
     }
 
     const product = products.find(p => p.id === selectedProductId);
+
     if (!product) {
       showSnackbar("No se pudo identificar el café", "error");
       return;
     }
 
+    // 🔑 abre snackbar de confirmación
     showDeleteConfirm(product);
   });
 
+  /* =====================
+     CARGA INICIAL
+  ===================== */
   await cargarProductos();
 })();
