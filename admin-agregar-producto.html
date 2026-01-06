@@ -5,8 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Producto | Café Cortero</title>
 
-
-
   <!-- TIPOGRAFÍA -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
@@ -25,14 +23,8 @@
 </head>
 
 <body class="page-admin-agregar-cafe header-checkout">
-<!-- ❌ NO HEADER AQUÍ -->
-<!-- layout.js lo inyecta automáticamente -->
 
-<!-- =====================================================
-     CONTENIDO
-====================================================== -->
 <main class="profile-container">
-
   <section class="profile-card">
 
     <!-- BOTÓN ATRÁS -->
@@ -59,6 +51,7 @@
 
             <input type="file" id="imagen" accept="image/*">
           </div>
+          <small class="field-error"></small>
         </div>
 
         <!-- NOMBRE -->
@@ -68,6 +61,7 @@
             <input id="nombre" type="text" placeholder=" " required>
             <label class="floating-label">Nombre del producto *</label>
           </div>
+          <small class="field-error"></small>
         </div>
 
         <!-- DESCRIPCIÓN -->
@@ -77,6 +71,7 @@
             <textarea id="descripcion" rows="3" placeholder=" " required></textarea>
             <label class="floating-label">Descripción *</label>
           </div>
+          <small class="field-error"></small>
         </div>
 
         <!-- CATEGORÍA -->
@@ -91,6 +86,7 @@
             </select>
             <label class="floating-label">Categoría *</label>
           </div>
+          <small class="field-error"></small>
         </div>
 
         <!-- TIPO DE CAFÉ -->
@@ -104,6 +100,7 @@
             </select>
             <label class="floating-label">Tipo de café *</label>
           </div>
+          <small class="field-error"></small>
         </div>
 
         <!-- PRESENTACIÓN -->
@@ -119,6 +116,7 @@
             </select>
             <label class="floating-label">Presentación / Tamaño *</label>
           </div>
+          <small class="field-error"></small>
         </div>
 
         <!-- PRECIO -->
@@ -128,6 +126,7 @@
             <input id="precio" type="number" step="0.01" placeholder=" " required>
             <label class="floating-label">Precio *</label>
           </div>
+          <small class="field-error"></small>
         </div>
 
         <!-- STOCK -->
@@ -137,6 +136,7 @@
             <input id="stock" type="number" min="0" placeholder=" " required>
             <label class="floating-label">Stock disponible *</label>
           </div>
+          <small class="field-error"></small>
         </div>
 
         <!-- ESTADO -->
@@ -149,7 +149,6 @@
             </label>
             <span id="estadoTexto" class="estado-label activo">Activo</span>
           </div>
-          <input type="hidden" id="estado" value="activo">
         </div>
 
         <!-- BOTÓN -->
@@ -164,21 +163,17 @@
   </section>
 </main>
 
-<!-- SNACKBAR -->
+<!-- SNACKBAR GLOBAL -->
 <div id="snackbar" class="snackbar"></div>
 
-<!-- =====================================================
-     SCRIPTS (ORDEN CRÍTICO)
-====================================================== -->
+<!-- ================= SCRIPTS ================= -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase-client-core.js"></script>
 <script src="js/supabase-auth.js"></script>
 <script src="js/auth-ui.js"></script>
 
-<!-- 🔑 INYECTA HEADER -->
+<!-- HEADER -->
 <script src="js/layout.js"></script>
-
-<!-- 🔑 ACTIVA HEADER -->
 <script src="js/header.js"></script>
 
 <!-- JS DE ESTA PÁGINA -->
