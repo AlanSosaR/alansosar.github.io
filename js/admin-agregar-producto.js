@@ -282,7 +282,6 @@ async function cargarProducto() {
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  // 🔒 Validación centralizada
   if (!validarFormulario()) return;
 
   btnSubmit.classList.add("loading");
@@ -290,7 +289,6 @@ form.addEventListener("submit", async (e) => {
   try {
     let imageUrl = null;
 
-    // 🔑 SOLO subir imagen si hay una nueva
     if (imagenInput.files.length) {
       imageUrl = await subirImagenProducto();
     }
@@ -304,9 +302,12 @@ form.addEventListener("submit", async (e) => {
       "success"
     );
 
-    setTimeout(() => {
-      location.href = "admin-productos.html";
-    }, 1200);
+    // 👉 SOLO REDIRIGE AL CREAR
+    if (!IS_EDIT) {
+      setTimeout(() => {
+        location.href = "admin-productos.html";
+      }, 1200);
+    }
 
   } catch (err) {
     console.error("❌ Error guardando producto:", err);
