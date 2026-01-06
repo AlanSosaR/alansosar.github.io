@@ -295,7 +295,7 @@ async function eliminarProducto(product) {
   // 🔒 Protección base
   if (!product || !product.id) {
     console.warn("⚠️ Producto inválido para eliminar:", product);
-    safeSnackbar("⚠️ Producto inválido", "error");
+    showSnackbar("⚠️ Producto inválido", "error");
     return;
   }
 
@@ -350,11 +350,11 @@ async function eliminarProducto(product) {
     /* =====================
        FEEDBACK
     ===================== */
-    safeSnackbar("☕ Café eliminado correctamente", "success");
+    showSnackbar("☕ Café eliminado correctamente", "success");
 
   } catch (err) {
     console.error("❌ Error eliminando café:", err);
-    safeSnackbar("❌ No se pudo eliminar el café", "error");
+    showSnackbar("❌ No se pudo eliminar el café", "error");
   }
 }
 
