@@ -94,30 +94,57 @@ function ocultarEstadoVacio() {
   relatedSection?.classList.remove("hidden");
 }
 
-/* ============================================================
-   SNACKBAR — CONFIRMAR ELIMINACIÓN
-============================================================ */
+/* =========================================================
+   SNACKBAR — CONFIRMACIÓN DE ELIMINACIÓN
+========================================================= */
+
 function showDeleteConfirm(product) {
+  if (!product) return;
+
   productToDelete = product;
+
   snackbarDelete.classList.add("show");
+  snackbarDelete.setAttribute("aria-hidden", "false");
+
+  // 🔑 foco seguro en cancelar (UX + accesibilidad)
   btnCancelDelete.focus();
 }
 
 function closeDeleteConfirm() {
   snackbarDelete.classList.remove("show");
+  snackbarDelete.setAttribute("aria-hidden", "true");
+
   productToDelete = null;
+
+  // devolver foco al botón eliminar (opcional pero pro)
+  btnDeleteProduct?.focus();
 }
 
+/* =====================
+   CONFIRMAR
+===================== */
 btnConfirmDelete.addEventListener("click", async () => {
   if (!productToDelete) return;
+
+  const product = productToDelete;
   closeDeleteConfirm();
-  await eliminarProducto(productToDelete);
+
+  await eliminarProducto(product);
 });
 
+/* =====================
+   CANCELAR
+===================== */
 btnCancelDelete.addEventListener("click", closeDeleteConfirm);
 
+/* =====================
+   TECLA ESC
+===================== */
 document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape" && snackbarDelete.classList.contains("show")) {
+  if (
+    e.key === "Escape" &&
+    snackbarDelete.classList.contains("show")
+  ) {
     closeDeleteConfirm();
   }
 });
@@ -265,32 +292,69 @@ function aplicarFiltro() {
    ELIMINAR CAFÉ
 ============================================================ */
 async function eliminarProducto(product) {
+  // 🔒 Protección base
+  if (!product || !product.id) {
+    console.warn("⚠️ Producto inválido para eliminar:", product);
+    safeSnackbar("⚠️ Producto inválido", "error");
+    return;
+  }
+
   try {
+    /* =====================
+       ELIMINAR IMAGEN (SI EXISTE)
+    ===================== */
     if (product.image_url) {
       let path = product.image_url;
+
+      // Si es URL pública, extraer path real
       if (path.startsWith("http")) {
-        const url = new URL(path);
-        path = url.pathname.split("/product-images/")[1];
+        try {
+          const url = new URL(path);
+          path = url.pathname.split("/product-images/")[1];
+        } catch (e) {
+          console.warn("⚠️ No se pudo parsear la URL de imagen:", product.image_url);
+          path = null;
+        }
       }
 
-      await window.supabaseClient
-        .storage
-        .from("product-images")
-        .remove([path]);
+      if (path) {
+        const { error: imgError } = await window.supabaseClient
+          .storage
+          .from("product-images")
+          .remove([path]);
+
+        if (imgError) {
+          console.warn("⚠️ Error eliminando imagen:", imgError.message);
+        }
+      }
     }
 
-    await window.supabaseClient
+    /* =====================
+       ELIMINAR PRODUCTO BD
+    ===================== */
+    const { error } = await window.supabaseClient
       .from("products")
       .delete()
       .eq("id", product.id);
 
+    if (error) throw error;
+
+    /* =====================
+       ACTUALIZAR ESTADO LOCAL
+    ===================== */
     products = products.filter(p => p.id !== product.id);
+    filteredProducts = filteredProducts.filter(p => p.id !== product.id);
+
     aplicarFiltro();
 
-    showSnackbar("☕ Café eliminado correctamente", "success");
+    /* =====================
+       FEEDBACK
+    ===================== */
+    safeSnackbar("☕ Café eliminado correctamente", "success");
+
   } catch (err) {
-    console.error(err);
-    showSnackbar("❌ No se pudo eliminar el café", "error");
+    console.error("❌ Error eliminando café:", err);
+    safeSnackbar("❌ No se pudo eliminar el café", "error");
   }
 }
 
