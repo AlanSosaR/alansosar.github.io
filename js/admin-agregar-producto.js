@@ -122,13 +122,16 @@ function validarFormulario() {
     }
   };
 
-  // imagen solo al crear
-  if (!IS_EDIT && !imagenInput.files.length) {
-    const field = imagenInput.closest(".m3-field");
-    field.classList.add("error");
-    field.querySelector(".field-error").textContent = "La imagen es obligatoria";
-    return false;
-  }
+// imagen obligatoria SOLO al crear
+if (!IS_EDIT && !imagenInput.files.length) {
+  const field = imagenInput.closest(".m3-field");
+  const error = field?.querySelector(".field-error");
+
+  if (field) field.classList.add("error");
+  if (error) error.textContent = "La imagen es obligatoria";
+
+  return false;
+}
 
   // validación en cadena
   validar(nombreInput, "El nombre es obligatorio");
