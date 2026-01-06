@@ -187,42 +187,47 @@ function renderPreview(product) {
     preview.image.src = "imagenes/no-image.png";
   };
 
-  /* =====================================================
-     SLICE — MOSTRAR EN CARRUSEL DEL CLIENTE
-  ===================================================== */
-  const activo = product.carousel === true;
-  preview.carouselToggle.checked = activo;
-  updateCarouselStatus(activo);
+ /* =====================================================
+   SLICE — MOSTRAR EN CARRUSEL DEL CLIENTE
+===================================================== */
+const activo = product.carousel === true;
+preview.carouselToggle.checked = activo;
+updateCarouselStatus(activo);
 
-  preview.carouselToggle.onchange = async () => {
-    const nuevoEstado = preview.carouselToggle.checked;
-    updateCarouselStatus(nuevoEstado);
+// ⚠️ quitar listeners anteriores (CLAVE)
+preview.carouselToggle.onchange = null;
 
-    const { error } = await window.supabaseClient
-      .from("products")
-      .update({ carousel: nuevoEstado })
-      .eq("id", product.id);
+preview.carouselToggle.onchange = async () => {
+  const nuevoEstado = preview.carouselToggle.checked;
 
-    if (error) {
-      // rollback visual
-      preview.carouselToggle.checked = !nuevoEstado;
-      updateCarouselStatus(!nuevoEstado);
-      return;
-    }
+  // feedback inmediato
+  updateCarouselStatus(nuevoEstado);
 
-    // 🔑 actualizar estado local (clave para que no se revierta)
-    const p = products.find(p => p.id === product.id);
-    if (p) p.carousel = nuevoEstado;
+  const { error } = await window.supabaseClient
+    .from("products")
+    .update({ carousel: nuevoEstado })
+    .eq("id", product.id);
 
-    const fp = filteredProducts.find(p => p.id === product.id);
-    if (fp) fp.carousel = nuevoEstado;
-  };
+  if (error) {
+    console.error("❌ Error actualizando carousel:", error);
 
-  preview.section.scrollIntoView({
-    behavior: "smooth",
-    block: "start"
-  });
-}
+    // rollback visual
+    preview.carouselToggle.checked = !nuevoEstado;
+    updateCarouselStatus(!nuevoEstado);
+    return;
+  }
+
+  // ✅ ACTUALIZAR ESTADO LOCAL (CRÍTICO)
+  product.carousel = nuevoEstado;
+
+  const p = products.find(p => p.id === product.id);
+  if (p) p.carousel = nuevoEstado;
+
+  const fp = filteredProducts.find(p => p.id === product.id);
+  if (fp) fp.carousel = nuevoEstado;
+
+  console.log("✅ Carousel actualizado:", product.name, nuevoEstado);
+};
 
 /* ============================================================
    CARRUSEL
