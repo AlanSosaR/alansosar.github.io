@@ -153,28 +153,28 @@ document.addEventListener("keydown", (e) => {
    PREVIEW PRINCIPAL
 ============================================================ */
 function renderPreview(product) {
-  if (!product) return;
+if (!product) return;
 
-  selectedProductId = product.id;
+selectedProductId = product.id;
 
-  preview.name.textContent = product.name || "—";
-  preview.description.textContent =
-    product.description || "Sin descripción";
+preview.name.textContent = product.name || "—";
+preview.description.textContent =
+  product.description || "Sin descripción";
 
-  const badgeParts = [];
-  if (product.category) badgeParts.push(product.category);
-  if (product.grind_type) badgeParts.push(product.grind_type);
-  if (product.presentation)
-    badgeParts.push(product.presentation === "1lb" ? "1 lb" : product.presentation);
+const badgeParts = [];
+if (product.category) badgeParts.push(product.category);
+if (product.grind_type) badgeParts.push(product.grind_type);
+if (product.presentation)
+  badgeParts.push(product.presentation === "1lb" ? "1 lb" : product.presentation);
 
-  preview.badge.textContent = badgeParts.join(" · ") || "—";
+preview.badge.textContent = badgeParts.join(" · ") || "—";
 
-  preview.price.textContent =
-    formatPrice(product.price, product.currency);
+preview.price.textContent =
+  formatPrice(product.price, product.currency);
 
-  preview.stock.textContent = product.stock ?? "—";
+preview.stock.textContent = product.stock ?? "—";
+
 const imgUrl = getImageUrl(product);
-
 preview.image.src = imgUrl
   ? `${imgUrl}?v=${Date.now()}`
   : "imagenes/no-image.png";
@@ -183,30 +183,41 @@ preview.image.onerror = () => {
   preview.image.src = "imagenes/no-image.png";
 };
 
-  const activo = product.carousel === true;
-  preview.carouselToggle.checked = activo;
-  updateCarouselStatus(activo);
+/* =====================================================
+   SLICE — MOSTRAR EN CARRUSEL DEL CLIENTE
+===================================================== */
+const activo = product.carousel === true;
+preview.carouselToggle.checked = activo;
+updateCarouselStatus(activo);
 
-  preview.carouselToggle.onchange = async () => {
-    const nuevoEstado = preview.carouselToggle.checked;
-    updateCarouselStatus(nuevoEstado);
+preview.carouselToggle.onchange = async () => {
+  const nuevoEstado = preview.carouselToggle.checked;
+  updateCarouselStatus(nuevoEstado);
 
-    const { error } = await window.supabaseClient
-      .from("products")
-      .update({ carousel: nuevoEstado })
-      .eq("id", product.id);
+  const { error } = await window.supabaseClient
+    .from("products")
+    .update({ carousel: nuevoEstado })
+    .eq("id", product.id);
 
-    if (error) {
-      preview.carouselToggle.checked = !nuevoEstado;
-      updateCarouselStatus(!nuevoEstado);
-    }
-  };
+  if (error) {
+    // rollback visual
+    preview.carouselToggle.checked = !nuevoEstado;
+    updateCarouselStatus(!nuevoEstado);
+    return;
+  }
 
-  preview.section.scrollIntoView({
-    behavior: "smooth",
-    block: "start"
-  });
-}
+  /* 🔑 CLAVE: actualizar estado LOCAL */
+  const p = products.find(p => p.id === product.id);
+  if (p) p.carousel = nuevoEstado;
+
+  const fp = filteredProducts.find(p => p.id === product.id);
+  if (fp) fp.carousel = nuevoEstado;
+};
+
+preview.section.scrollIntoView({
+  behavior: "smooth",
+  block: "start"
+});
 
 /* ============================================================
    CARRUSEL
