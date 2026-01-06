@@ -60,10 +60,7 @@
   class="pill"
   aria-live="polite"
 ></span>
-    <!-- PRECIO -->
-    <div class="product-price">
-      <span id="product-price">L 180</span>
-    </div>
+    
 
     <!-- ESTADO (NO MOSTRAR NÚMERO DE STOCK) -->
     <div
@@ -77,16 +74,24 @@
     <!-- ACCIÓN -->
     <div class="product-actions">
 
-      <!-- AGREGAR AL CARRITO -->
-      <button
-        id="product-add"
-        class="add-to-cart-btn"
-        data-product-id=""
-        aria-label="Agregar al carrito"
-      >
-        <i class="fa-solid fa-cart-plus"></i>
-        <span>Agregar</span>
-      </button>
+      <!-- PRECIO + AGREGAR AL CARRITO -->
+<div class="product-split" title="Agregar al carrito">
+  <span
+    class="price-part"
+    id="product-price"
+  >
+    <!-- JS carga el precio -->
+  </span>
+
+  <span
+    class="icon-part"
+    id="product-add"
+    data-product-id=""
+    aria-label="Agregar al carrito"
+  >
+    <i class="fa-solid fa-cart-plus"></i>
+  </span>
+</div>
 
       <!-- CANTIDAD -->
       <div class="quantity-container">
