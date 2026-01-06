@@ -293,7 +293,7 @@ async function cargarProducto() {
 /* ============================================================
    SUBMIT
 ============================================================ */
-form.addEventListener("submit", async e => {
+form.addEventListener("submit", async (e) => {
   e.preventDefault();
   if (!validarFormulario()) return;
 
@@ -302,20 +302,35 @@ form.addEventListener("submit", async e => {
   try {
     let imageUrl = null;
 
+    /* =====================
+       EDITAR → REEMPLAZO REAL
+    ===================== */
     if (IS_EDIT && imagenInput.files.length) {
       imageUrl = await subirImagenProductoReemplazo();
     }
 
+    /* =====================
+       CREAR → SUBIR IMAGEN NUEVA
+    ===================== */
+    if (!IS_EDIT && imagenInput.files.length) {
+      imageUrl = await subirImagenProducto(); // 👈 tu función normal
+    }
+
     await guardarProducto(imageUrl);
 
-    showSnackbar(IS_EDIT ? "Cambios guardados" : "Café agregado", "success");
+    showSnackbar(
+      IS_EDIT ? "Cambios guardados" : "Café agregado",
+      "success"
+    );
 
     if (!IS_EDIT) {
-      setTimeout(() => location.href = "admin-productos.html", 1200);
+      setTimeout(() => {
+        location.href = "admin-productos.html";
+      }, 1200);
     }
 
   } catch (err) {
-    console.error(err);
+    console.error("❌ Error guardando producto:", err);
     showSnackbar("Error al guardar", "error");
   } finally {
     btnSubmit.classList.remove("loading");
