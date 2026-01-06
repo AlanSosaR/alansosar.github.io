@@ -269,19 +269,32 @@ async function eliminarProducto(product) {
        1️⃣ ELIMINAR IMAGEN (SI EXISTE)
     ===================== */
     if (product.image_url) {
-      try {
-        // Extraer path real del bucket
-        const url = new URL(product.image_url);
-        const path = url.pathname.split("/product-images/")[1];
+      let path = null;
 
-        if (path) {
-          await window.supabaseClient
-            .storage
-            .from("product-images")
-            .remove([path]);
+      // Caso 1: URL pública completa
+      if (product.image_url.startsWith("http")) {
+        try {
+          const url = new URL(product.image_url);
+          path = url.pathname.split("/product-images/")[1];
+        } catch (e) {
+          console.warn("⚠️ URL inválida:", product.image_url);
         }
-      } catch (e) {
-        console.warn("⚠️ No se pudo eliminar imagen:", e);
+      }
+
+      // Caso 2: path directo guardado en BD
+      else {
+        path = product.image_url;
+      }
+
+      if (path) {
+        const { error: imgError } = await window.supabaseClient
+          .storage
+          .from("product-images")
+          .remove([path]);
+
+        if (imgError) {
+          console.warn("⚠️ No se pudo eliminar imagen:", imgError.message);
+        }
       }
     }
 
@@ -343,27 +356,59 @@ async function cargarProductos() {
 (async function init() {
   await esperarSupabase();
 
+  // 🔐 Seguridad básica
   if (localStorage.getItem("cortero_logged") !== "1") {
     location.href = "login.html";
     return;
   }
 
+  /* =====================
+     FILTRO
+  ===================== */
   searchInput?.addEventListener("input", aplicarFiltro);
 
+  /* =====================
+     AGREGAR
+  ===================== */
   btnAddProduct?.addEventListener("click", () => {
     location.href = "admin-agregar-producto.html";
   });
 
+  /* =====================
+     EDITAR
+  ===================== */
   btnEditProduct?.addEventListener("click", () => {
-    if (!selectedProductId) return;
+    if (!selectedProductId) {
+      showSnackbar("Selecciona un café primero", "error");
+      return;
+    }
+
     location.href = `admin-agregar-producto.html?id=${selectedProductId}`;
   });
 
+  /* =====================
+     ELIMINAR
+  ===================== */
   btnDeleteProduct?.addEventListener("click", () => {
+    console.log("🗑️ Click en eliminar");
+
+    if (!selectedProductId) {
+      showSnackbar("Selecciona un café primero", "error");
+      return;
+    }
+
     const product = products.find(p => p.id === selectedProductId);
-    if (!product) return;
+
+    if (!product) {
+      showSnackbar("No se pudo identificar el café", "error");
+      return;
+    }
+
     showDeleteConfirm(product);
   });
 
-  cargarProductos();
+  /* =====================
+     CARGA INICIAL
+  ===================== */
+  await cargarProductos();
 })();
