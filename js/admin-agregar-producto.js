@@ -89,65 +89,56 @@ function syncFloatingLabels() {
 function validarFormulario() {
   let valido = true;
 
-  // Limpiar estados previos
-  document.querySelectorAll(".m3-field")
-    .forEach(f => f.classList.remove("error", "ok"));
+  // limpiar estados previos
+  document.querySelectorAll(".m3-field").forEach(field => {
+    field.classList.remove("error", "ok");
+    const err = field.querySelector(".field-error");
+    if (err) err.textContent = "";
+  });
 
-  const marcarError = (input) => {
+  const validar = (input, mensaje) => {
     const field = input.closest(".m3-field");
-    if (field) field.classList.add("error");
-    valido = false;
+    const error = field.querySelector(".field-error");
+
+    if (!input.value || input.value.trim() === "") {
+      field.classList.add("error");
+      error.textContent = mensaje;
+      valido = false;
+    } else {
+      field.classList.add("ok");
+    }
   };
 
-  const marcarOk = (input) => {
+  const validarNumero = (input, mensaje) => {
     const field = input.closest(".m3-field");
-    if (field) field.classList.add("ok");
+    const error = field.querySelector(".field-error");
+
+    if (input.value === "" || Number(input.value) < 0) {
+      field.classList.add("error");
+      error.textContent = mensaje;
+      valido = false;
+    } else {
+      field.classList.add("ok");
+    }
   };
 
-  // IMAGEN (solo al agregar)
+  // imagen solo al crear
   if (!IS_EDIT && !imagenInput.files.length) {
-    showSnackbar("La imagen es obligatoria", "error");
+    const field = imagenInput.closest(".m3-field");
+    field.classList.add("error");
+    field.querySelector(".field-error").textContent = "La imagen es obligatoria";
     return false;
   }
 
-  // NOMBRE
-  nombreInput.value.trim()
-    ? marcarOk(nombreInput)
-    : marcarError(nombreInput);
+  // validación en cadena
+  validar(nombreInput, "El nombre es obligatorio");
+  validar(descInput, "La descripción es obligatoria");
+  validar(categoriaSel, "Selecciona una categoría");
+  validar(tipoCafeSel, "Selecciona el tipo de café");
+  validar(presentacion, "Selecciona la presentación");
 
-  // DESCRIPCIÓN
-  descInput.value.trim()
-    ? marcarOk(descInput)
-    : marcarError(descInput);
-
-  // CATEGORÍA
-  categoriaSel.value
-    ? marcarOk(categoriaSel)
-    : marcarError(categoriaSel);
-
-  // TIPO DE CAFÉ
-  tipoCafeSel.value
-    ? marcarOk(tipoCafeSel)
-    : marcarError(tipoCafeSel);
-
-  // PRESENTACIÓN
-  presentacion.value
-    ? marcarOk(presentacion)
-    : marcarError(presentacion);
-
-  // PRECIO
-  precioInput.value && Number(precioInput.value) > 0
-    ? marcarOk(precioInput)
-    : marcarError(precioInput);
-
-  // STOCK
-  stockInput.value !== "" && Number(stockInput.value) >= 0
-    ? marcarOk(stockInput)
-    : marcarError(stockInput);
-
-  if (!valido) {
-    showSnackbar("Completa todos los campos obligatorios", "error");
-  }
+  validarNumero(precioInput, "El precio debe ser mayor a 0");
+  validarNumero(stockInput, "Stock inválido");
 
   return valido;
 }
