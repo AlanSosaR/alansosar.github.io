@@ -19,7 +19,7 @@ function esperarSupabase() {
    CONTEXTO
 ============================================================ */
 const params = new URLSearchParams(location.search);
-const PRODUCT_ID = params.get("id");
+let PRODUCT_ID = params.get("id");
 const IS_EDIT = Boolean(PRODUCT_ID);
 
 /* ============================================================
@@ -83,7 +83,7 @@ function syncFloatingLabels() {
 }
 
 /* ============================================================
-   VALIDACIÓN EN CADENA (UNA POR UNA)
+   VALIDACIÓN EN CADENA
 ============================================================ */
 function validarFormulario() {
   const campos = [
@@ -96,32 +96,25 @@ function validarFormulario() {
     { el: stockInput,   msg: "Stock inválido", numeric: true }
   ];
 
-  // limpiar estados previos
   document.querySelectorAll(".m3-field").forEach(f => {
     f.classList.remove("error", "ok");
     const e = f.querySelector(".field-error");
     if (e) e.textContent = "";
   });
 
-  // imagen obligatoria SOLO al crear
   if (!IS_EDIT && !imagenInput.files.length) {
     const field = imagenInput.closest(".m3-field");
     field.classList.add("error");
-    field.querySelector(".field-error").textContent =
-      "La imagen es obligatoria";
+    field.querySelector(".field-error").textContent = "La imagen es obligatoria";
     return false;
   }
 
-  // validación secuencial
   for (const c of campos) {
     const value = c.el.value?.trim();
     const field = c.el.closest(".m3-field");
     const error = field.querySelector(".field-error");
 
-    if (
-      !value ||
-      (c.numeric && Number(value) <= 0)
-    ) {
+    if (!value || (c.numeric && Number(value) <= 0)) {
       field.classList.add("error");
       error.textContent = c.msg;
       c.el.focus();
@@ -159,30 +152,50 @@ imagenInput.addEventListener("change", () => {
 });
 
 /* ============================================================
-   STORAGE — SUBIR / REEMPLAZAR IMAGEN
+   STORAGE — REEMPLAZAR IMAGEN
 ============================================================ */
-async function subirImagenProducto() {
-  if (!imagenInput.files.length) return null;
-
+async function subirImagenProductoReemplazo() {
   const file = imagenInput.files[0];
   const ext  = file.name.split(".").pop().toLowerCase();
-  const path = `products/${PRODUCT_ID}.${ext}`;
 
-  const { error } = await window.supabaseClient.storage
+  /* 1️⃣ eliminar imagen anterior */
+  const { data: prod } = await window.supabaseClient
+    .from("products")
+    .select("image_url")
+    .eq("id", PRODUCT_ID)
+    .single();
+
+  if (prod?.image_url) {
+    let path = prod.image_url;
+
+    if (path.startsWith("http")) {
+      const url = new URL(path);
+      path = url.pathname.split("/product-images/")[1];
+    }
+
+    if (path) {
+      await window.supabaseClient.storage
+        .from("product-images")
+        .remove([path]);
+    }
+  }
+
+  /* 2️⃣ subir nueva */
+  const newPath = `products/${PRODUCT_ID}.${ext}`;
+
+  await window.supabaseClient.storage
     .from("product-images")
-    .upload(path, file, { upsert: true });
-
-  if (error) throw error;
+    .upload(newPath, file, { upsert: true });
 
   const { data } = window.supabaseClient.storage
     .from("product-images")
-    .getPublicUrl(path);
+    .getPublicUrl(newPath);
 
   return data.publicUrl;
 }
 
 /* ============================================================
-   GUARDAR / ACTUALIZAR PRODUCTO
+   GUARDAR PRODUCTO
 ============================================================ */
 async function guardarProducto(imageUrl = null) {
   const payload = {
@@ -200,27 +213,23 @@ async function guardarProducto(imageUrl = null) {
   if (imageUrl) payload.image_url = imageUrl;
 
   if (IS_EDIT) {
-    const { error } = await window.supabaseClient
+    await window.supabaseClient
       .from("products")
       .update(payload)
       .eq("id", PRODUCT_ID);
-
-    if (error) throw error;
     return;
   }
 
-  const { data, error } = await window.supabaseClient
+  const { data } = await window.supabaseClient
     .from("products")
     .insert(payload)
     .select("id")
     .single();
 
-  if (error) throw error;
+  PRODUCT_ID = data.id;
 
-  // 🔑 asignar ID real antes de subir imagen
   if (imagenInput.files.length) {
-    PRODUCT_ID = data.id;
-    const imgUrl = await subirImagenProducto();
+    const imgUrl = await subirImagenProductoReemplazo();
     await window.supabaseClient
       .from("products")
       .update({ image_url: imgUrl })
@@ -229,7 +238,7 @@ async function guardarProducto(imageUrl = null) {
 }
 
 /* ============================================================
-   CARGAR PRODUCTO (EDITAR)
+   CARGAR PRODUCTO
 ============================================================ */
 async function cargarProducto() {
   const { data } = await window.supabaseClient
@@ -271,16 +280,14 @@ form.addEventListener("submit", async e => {
 
   try {
     let imageUrl = null;
+
     if (IS_EDIT && imagenInput.files.length) {
-      imageUrl = await subirImagenProducto();
+      imageUrl = await subirImagenProductoReemplazo();
     }
 
     await guardarProducto(imageUrl);
 
-    showSnackbar(
-      IS_EDIT ? "Cambios guardados" : "Café agregado",
-      "success"
-    );
+    showSnackbar(IS_EDIT ? "Cambios guardados" : "Café agregado", "success");
 
     if (!IS_EDIT) {
       setTimeout(() => location.href = "admin-productos.html", 1200);
