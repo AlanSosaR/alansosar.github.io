@@ -324,8 +324,16 @@ form.addEventListener("submit", async (e) => {
     return;
   }
 
+  // 🔑 TEXTO DEL BOTÓN SEGÚN CONTEXTO
+  const btnText = btnSubmit.querySelector(".btn-text");
+
   if (IS_EDIT) {
+    btnText.textContent = "Actualizar café";
+    document.title = "Editar café | Café Cortero";
     await cargarProducto();
+  } else {
+    btnText.textContent = "Guardar café";
+    document.title = "Agregar café | Café Cortero";
   }
 
   // 🔑 CLAVE: sincronizar labels AL FINAL
