@@ -197,7 +197,7 @@ async function subirImagenProducto() {
 /* ============================================================
    GUARDAR / ACTUALIZAR
 ============================================================ */
-async function guardarProducto(imageUrl) {
+async function guardarProducto(imageUrl = null) {
   const payload = {
     name: nombreInput.value.trim(),
     description: descInput.value.trim(),
@@ -210,15 +210,20 @@ async function guardarProducto(imageUrl) {
     status: estadoToggle.checked ? "activo" : "inactivo"
   };
 
-  if (imageUrl) payload.image_url = imageUrl;
+  // 🔑 SOLO tocar image_url si hay imagen nueva
+  if (imageUrl) {
+    payload.image_url = imageUrl;
+  }
 
-  // ✅ UPDATE
+  /* =====================
+     UPDATE (EDITAR)
+  ===================== */
   if (IS_EDIT) {
     const { data, error } = await window.supabaseClient
       .from("products")
       .update(payload)
       .eq("id", PRODUCT_ID)
-      .select("id")         // 🔑 confirma que actualizó
+      .select("id")
       .single();
 
     if (error) {
@@ -226,14 +231,16 @@ async function guardarProducto(imageUrl) {
       throw error;
     }
 
-    return data?.id;
+    return data.id;
   }
 
-  // ✅ INSERT
+  /* =====================
+     INSERT (CREAR)
+  ===================== */
   const { data, error } = await window.supabaseClient
     .from("products")
     .insert(payload)
-    .select("id")          // 🔑 te devuelve el id nuevo
+    .select("id")
     .single();
 
   if (error) {
@@ -241,7 +248,7 @@ async function guardarProducto(imageUrl) {
     throw error;
   }
 
-  return data?.id;
+  return data.id;
 }
 
 /* ============================================================
