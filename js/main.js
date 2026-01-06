@@ -145,44 +145,35 @@ function initHeroCarousel() {
   }, 3500);
 }
 
-/* ========================= INIT PRODUCTO DEFAULT ========================= */
+/* =========================
+   INIT PRODUCTO DEFAULT
+========================= */
 function initDefaultProduct() {
   const firstCard = document.querySelector(".similar-card");
   if (!firstCard) return;
 
-  // 🔑 Datos base
-  const name  = firstCard.dataset.name;
-  const img   = firstCard.dataset.img || "imagenes/no-image.png";
-  const price = firstCard.dataset.price;
-  const id    = firstCard.dataset.id;
-
-  // 🔹 Título
-  safe("product-name").textContent = name;
-
-  // 🔹 Imagen
-  const imageEl = safe("product-image");
-  imageEl.src = img;
-  imageEl.onerror = () => {
-    imageEl.src = "imagenes/no-image.png";
+  const product = {
+    id: firstCard.dataset.id,
+    name: firstCard.dataset.name,
+    description: firstCard.dataset.description || "",
+    category: firstCard.dataset.category || "",
+    grind_type: firstCard.dataset.grind || "",
+    presentation: firstCard.dataset.presentation || "",
+    price: Number(firstCard.dataset.price.replace(/[^\d.]/g, "")),
+    stock: Number(firstCard.dataset.stock || 0),
+    status: "activo",
+    image_url: firstCard.dataset.img
   };
 
-  // 🔹 Precio
-  const priceEl = document.querySelector(".price-part");
-  if (priceEl) priceEl.textContent = price;
+  // 🔑 Renderiza TODO el producto principal
+  renderMainProduct(product);
 
-  // 🔹 Botón carrito (UUID real)
-  const addBtn = safe("product-add");
-  if (addBtn) addBtn.dataset.id = id;
-
-  // 🔹 Cantidad
-  safe("qty-number").textContent = "1";
-
-  // 🔹 Estado visual
-  document.querySelectorAll(".similar-card")
+  // 🔑 Estado visual del carrusel
+  document
+    .querySelectorAll(".similar-card")
     .forEach(c => c.classList.remove("active-card"));
-  firstCard.classList.add("active-card");
 
-  // 🔹 Índice carrusel
+  firstCard.classList.add("active-card");
   setSimilarIndex(0);
 }
 
