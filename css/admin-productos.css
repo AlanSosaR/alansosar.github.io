@@ -539,3 +539,132 @@ a {
   opacity: 1;
   pointer-events: auto; /* ✅ CLAVE */
 }
+/* =========================================================
+   SNACKBAR — CONFIRMACIÓN ELIMINAR (ACTION)
+========================================================= */
+
+.snackbar-action {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%) translateY(20px);
+
+  width: calc(100% - 32px);
+  max-width: 520px;
+
+  background: #ffffff;
+  color: var(--cafe);
+
+  border-radius: 16px;
+  box-shadow:
+    0 12px 30px rgba(0,0,0,.18),
+    0 4px 12px rgba(0,0,0,.12);
+
+  opacity: 0;
+  pointer-events: none;
+  z-index: 9999;
+
+  transition:
+    opacity .25s ease,
+    transform .25s cubic-bezier(.2,.8,.2,1);
+}
+
+/* Estado visible */
+.snackbar-action.show {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* =========================================================
+   CONTENIDO
+========================================================= */
+
+.snackbar-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 18px;
+}
+
+/* Texto */
+.snackbar-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.snackbar-text strong {
+  font-size: .95rem;
+  font-weight: 600;
+  color: var(--cafe);
+}
+
+.snackbar-text span {
+  font-size: .85rem;
+  color: var(--gris-text);
+}
+
+/* =========================================================
+   ACCIONES
+========================================================= */
+
+.snackbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* Botón base */
+.snackbar-btn {
+  border: none;
+  background: transparent;
+  font-size: .85rem;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background .2s ease, transform .15s ease;
+}
+
+/* Cancelar */
+.snackbar-btn.cancel {
+  color: var(--gris-text);
+}
+
+.snackbar-btn.cancel:hover {
+  background: rgba(0,0,0,.06);
+}
+
+/* Eliminar (danger) */
+.snackbar-btn.danger {
+  color: var(--rojo);
+}
+
+.snackbar-btn.danger:hover {
+  background: rgba(192,57,43,.12);
+}
+
+/* Active */
+.snackbar-btn:active {
+  transform: scale(.96);
+}
+
+/* =========================================================
+   MOBILE — STACK VERTICAL
+========================================================= */
+
+@media (max-width: 520px) {
+
+  .snackbar-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .snackbar-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
