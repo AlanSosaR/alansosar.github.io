@@ -748,7 +748,6 @@ footer p {
   display: flex;
   justify-content: center;
   align-items: center;
-
   padding: 64px 20px;
   background: var(--fondo);
 }
@@ -760,7 +759,6 @@ footer p {
 .empty-box {
   max-width: 420px;
   text-align: center;
-
   background: var(--blanco);
   padding: 36px 28px;
   border-radius: 20px;
@@ -769,12 +767,19 @@ footer p {
   animation: fadeUp 0.45s ease-out;
 }
 
-.empty-box i {
-  font-size: 48px;
-  color: var(--verde);
-  margin-bottom: 16px;
+/* =========================
+   LOGO
+========================= */
+.empty-logo {
+  width: 72px;
+  height: auto;
+  margin-bottom: 18px;
+  opacity: 0.95;
 }
 
+/* =========================
+   TEXTO
+========================= */
 .empty-box h3 {
   font-family: "Playfair Display", serif;
   font-size: 22px;
@@ -820,11 +825,11 @@ footer p {
     border-radius: 16px;
   }
 
-  .empty-box h3 {
-    font-size: 20px;
+  .empty-logo {
+    width: 60px;
   }
 
-  .empty-box i {
-    font-size: 42px;
+  .empty-box h3 {
+    font-size: 20px;
   }
 }
