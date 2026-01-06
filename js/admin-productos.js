@@ -1,4 +1,4 @@
-console.log("🧩 admin-productos.js — FINAL CORREGIDO");
+console.log("🧩 admin-productos.js — FINAL ESTABLE");
 
 /* ============================================================
    ESPERAR SUPABASE
@@ -16,12 +16,11 @@ function esperarSupabase() {
 }
 
 /* ============================================================
-   DOM
+   DOM (UNA SOLA VEZ)
 ============================================================ */
 const searchInput   = document.getElementById("search-products");
 const btnAddProduct = document.getElementById("btnAddProduct");
-
-const emptyState = document.getElementById("admin-empty-state");
+const emptyState    = document.getElementById("admin-empty-state");
 
 const preview = {
   section: document.getElementById("admin-product-preview"),
@@ -42,7 +41,7 @@ const relatedSection    = document.querySelector(".admin-related");
 const carouselContainer = document.getElementById("admin-products-carousel");
 const carouselTemplate  = document.getElementById("tpl-admin-carousel-card");
 
-/* ===== Snackbar confirmación eliminar ===== */
+/* SNACKBAR ELIMINAR */
 const snackbarDelete   = document.getElementById("snackbar-delete");
 const btnCancelDelete  = document.getElementById("btnCancelDelete");
 const btnConfirmDelete = document.getElementById("btnConfirmDelete");
@@ -95,46 +94,28 @@ function ocultarEstadoVacio() {
   relatedSection?.classList.remove("hidden");
 }
 
-/* =========================================================
-   SNACKBAR ELIMINAR — CONTROL REAL
-========================================================= */
-
-const snackbarDelete = document.getElementById("snackbar-delete");
-const btnConfirmDelete = document.getElementById("btnConfirmDelete");
-const btnCancelDelete = document.getElementById("btnCancelDelete");
-
-let productToDelete = null;
-
-/* ABRIR SNACKBAR */
+/* ============================================================
+   SNACKBAR — CONFIRMAR ELIMINACIÓN
+============================================================ */
 function showDeleteConfirm(product) {
   productToDelete = product;
-
   snackbarDelete.classList.add("show");
-
-  // 🔑 mover foco al botón seguro
   btnCancelDelete.focus();
 }
 
-/* CERRAR SNACKBAR */
 function closeDeleteConfirm() {
   snackbarDelete.classList.remove("show");
   productToDelete = null;
 }
 
-/* CONFIRMAR */
 btnConfirmDelete.addEventListener("click", async () => {
   if (!productToDelete) return;
-
   closeDeleteConfirm();
   await eliminarProducto(productToDelete);
 });
 
-/* CANCELAR */
-btnCancelDelete.addEventListener("click", () => {
-  closeDeleteConfirm();
-});
+btnCancelDelete.addEventListener("click", closeDeleteConfirm);
 
-/* ESC para cerrar */
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && snackbarDelete.classList.contains("show")) {
     closeDeleteConfirm();
@@ -153,13 +134,11 @@ function renderPreview(product) {
   preview.description.textContent =
     product.description || "Sin descripción";
 
-  const formatPresentation = (p) => p === "1lb" ? "1 lb" : p;
-
   const badgeParts = [];
-  if (product.category?.trim()) badgeParts.push(product.category);
-  if (product.grind_type?.trim()) badgeParts.push(product.grind_type);
-  if (product.presentation?.trim())
-    badgeParts.push(formatPresentation(product.presentation));
+  if (product.category) badgeParts.push(product.category);
+  if (product.grind_type) badgeParts.push(product.grind_type);
+  if (product.presentation)
+    badgeParts.push(product.presentation === "1lb" ? "1 lb" : product.presentation);
 
   preview.badge.textContent = badgeParts.join(" · ") || "—";
 
@@ -188,10 +167,7 @@ function renderPreview(product) {
     if (error) {
       preview.carouselToggle.checked = !nuevoEstado;
       updateCarouselStatus(!nuevoEstado);
-      return;
     }
-
-    product.carousel = nuevoEstado;
   };
 
   preview.section.scrollIntoView({
@@ -210,8 +186,8 @@ function renderCarousel(list) {
     const card = carouselTemplate.content.cloneNode(true);
     const root = card.querySelector(".admin-card");
 
-    root.dataset.id = product.id;
     root.dataset.index = index;
+    root.dataset.id = product.id;
 
     root.querySelector("img").src = getImageUrl(product);
     root.querySelector(".c-name").textContent = product.name;
@@ -223,7 +199,7 @@ function renderCarousel(list) {
     carouselContainer.appendChild(card);
   });
 
-  actualizarScrollCarrusel();
+  seleccionarProducto(0);
 }
 
 /* ============================================================
@@ -234,6 +210,7 @@ function seleccionarProducto(index) {
   if (!product) return;
 
   carouselIndex = index;
+  selectedProductId = product.id;
 
   document
     .querySelectorAll(".admin-card")
@@ -254,7 +231,7 @@ function actualizarScrollCarrusel() {
   const card = carouselContainer.querySelector(".admin-card");
   if (!card) return;
 
-  const gap = parseInt(getComputedStyle(carouselContainer).gap || 16);
+  const gap = parseInt(getComputedStyle(carouselContainer).gap || 16, 10);
   const width = card.offsetWidth + gap;
 
   carouselContainer.scrollTo({
@@ -282,55 +259,37 @@ function aplicarFiltro() {
 
   ocultarEstadoVacio();
   renderCarousel(filteredProducts);
-  seleccionarProducto(0);
 }
 
 /* ============================================================
-   ELIMINAR CAFÉ (BD + IMAGEN)
+   ELIMINAR CAFÉ
 ============================================================ */
 async function eliminarProducto(product) {
-  if (!product) return;
-
   try {
     if (product.image_url) {
       let path = product.image_url;
-
       if (path.startsWith("http")) {
-        try {
-          const url = new URL(path);
-          path = url.pathname.split("/product-images/")[1];
-        } catch {}
+        const url = new URL(path);
+        path = url.pathname.split("/product-images/")[1];
       }
 
-      if (path) {
-        await window.supabaseClient
-          .storage
-          .from("product-images")
-          .remove([path]);
-      }
+      await window.supabaseClient
+        .storage
+        .from("product-images")
+        .remove([path]);
     }
 
-    const { error } = await window.supabaseClient
+    await window.supabaseClient
       .from("products")
       .delete()
       .eq("id", product.id);
 
-    if (error) throw error;
-
     products = products.filter(p => p.id !== product.id);
-    filteredProducts = filteredProducts.filter(p => p.id !== product.id);
-
-    if (!filteredProducts.length) {
-      mostrarEstadoVacio();
-    } else {
-      renderCarousel(filteredProducts);
-      seleccionarProducto(0);
-    }
+    aplicarFiltro();
 
     showSnackbar("☕ Café eliminado correctamente", "success");
-
   } catch (err) {
-    console.error("❌ Error eliminando café:", err);
+    console.error(err);
     showSnackbar("❌ No se pudo eliminar el café", "error");
   }
 }
@@ -339,17 +298,12 @@ async function eliminarProducto(product) {
    CARGA
 ============================================================ */
 async function cargarProductos() {
-  const { data, error } = await window.supabaseClient
+  const { data } = await window.supabaseClient
     .from("products")
     .select("*")
     .order("created_at", { ascending: false });
 
-  if (error || !data?.length) {
-    mostrarEstadoVacio();
-    return;
-  }
-
-  products = data;
+  products = data || [];
   aplicarFiltro();
 }
 
@@ -359,58 +313,33 @@ async function cargarProductos() {
 (async function init() {
   await esperarSupabase();
 
-  // 🔐 Seguridad básica
   if (localStorage.getItem("cortero_logged") !== "1") {
     location.href = "login.html";
     return;
   }
 
-  /* =====================
-     FILTRO
-  ===================== */
   searchInput?.addEventListener("input", aplicarFiltro);
 
-  /* =====================
-     AGREGAR
-  ===================== */
   btnAddProduct?.addEventListener("click", () => {
     location.href = "admin-agregar-producto.html";
   });
 
-  /* =====================
-     EDITAR
-  ===================== */
   btnEditProduct?.addEventListener("click", () => {
     if (!selectedProductId) {
       showSnackbar("Selecciona un café primero", "error");
       return;
     }
-
     location.href = `admin-agregar-producto.html?id=${selectedProductId}`;
   });
 
-  /* =====================
-     ELIMINAR (SNACKBAR CONFIRMACIÓN)
-  ===================== */
   btnDeleteProduct?.addEventListener("click", () => {
     if (!selectedProductId) {
       showSnackbar("Selecciona un café primero", "error");
       return;
     }
-
     const product = products.find(p => p.id === selectedProductId);
-
-    if (!product) {
-      showSnackbar("No se pudo identificar el café", "error");
-      return;
-    }
-
-    // 🔑 abre snackbar de confirmación
-    showDeleteConfirm(product);
+    if (product) showDeleteConfirm(product);
   });
 
-  /* =====================
-     CARGA INICIAL
-  ===================== */
   await cargarProductos();
 })();
