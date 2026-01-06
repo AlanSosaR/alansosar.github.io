@@ -150,7 +150,29 @@ imagenInput.addEventListener("change", () => {
   imagePreview.classList.remove("hidden");
   uploadBox.classList.add("has-image");
 });
+/* ============================================================
+   STORAGE — SUBIR IMAGEN NUEVA (CREAR PRODUCTO)
+============================================================ */
+async function subirImagenProducto() {
+  if (!imagenInput.files.length) return null;
+  if (!PRODUCT_ID) throw new Error("Producto sin ID");
 
+  const file = imagenInput.files[0];
+  const ext  = file.name.split(".").pop().toLowerCase();
+  const path = `products/${PRODUCT_ID}.${ext}`;
+
+  const { error: uploadError } = await window.supabaseClient.storage
+    .from("product-images")
+    .upload(path, file, { upsert: true });
+
+  if (uploadError) throw uploadError;
+
+  const { data } = window.supabaseClient.storage
+    .from("product-images")
+    .getPublicUrl(path);
+
+  return data.publicUrl;
+}
 /* ============================================================
    STORAGE — REEMPLAZAR IMAGEN
 ============================================================ */
