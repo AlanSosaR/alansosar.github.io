@@ -147,6 +147,12 @@ body.header-checkout {
   display: none;
 }
 
+/* ERROR EN UPLOAD */
+.m3-field.error .upload-box {
+  border-color: var(--error);
+  background: #fff5f5;
+}
+
 /* ============================================================
    CAMPOS MATERIAL 3
 ============================================================ */
@@ -219,6 +225,7 @@ body.header-checkout {
 .m3-field.error .m3-input {
   border-color: var(--error);
 }
+
 .m3-field.error .floating-label,
 .m3-field.error .material-symbols-outlined {
   color: var(--error);
@@ -227,15 +234,23 @@ body.header-checkout {
 .m3-field.ok .m3-input {
   border-color: var(--ok);
 }
+
 .m3-field.ok .floating-label,
 .m3-field.ok .material-symbols-outlined {
   color: var(--ok);
 }
 
-.helper-text {
+/* ================= ERROR DEBAJO DEL CAMPO ================= */
+.field-error {
   margin-left: 3rem;
+  margin-top: .35rem;
   font-size: .8rem;
   color: var(--error);
+  display: none;
+}
+
+.m3-field.error .field-error {
+  display: block;
 }
 
 /* ============================================================
