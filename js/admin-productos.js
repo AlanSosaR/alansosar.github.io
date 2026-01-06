@@ -293,7 +293,7 @@ function aplicarFiltro() {
 ============================================================ */
 async function eliminarProducto(product) {
   // 🔒 Protección base
-  if (!product || !product.id) {
+  if (!product?.id) {
     console.warn("⚠️ Producto inválido para eliminar:", product);
     safeSnackbar("⚠️ Producto inválido", "error");
     return;
@@ -301,36 +301,22 @@ async function eliminarProducto(product) {
 
   try {
     /* =====================
-       ELIMINAR IMAGEN (SI EXISTE)
+       1️⃣ ELIMINAR IMAGEN DEL PRODUCTO
     ===================== */
-    if (product.image_url) {
-      let path = product.image_url;
+    const basePath = `products/${product.id}`;
 
-      // Si es URL pública, extraer path real
-      if (path.startsWith("http")) {
-        try {
-          const url = new URL(path);
-          path = url.pathname.split("/product-images/")[1];
-        } catch (e) {
-          console.warn("⚠️ No se pudo parsear la URL de imagen:", product.image_url);
-          path = null;
-        }
-      }
-
-      if (path) {
-        const { error: imgError } = await window.supabaseClient
-          .storage
-          .from("product-images")
-          .remove([path]);
-
-        if (imgError) {
-          console.warn("⚠️ Error eliminando imagen:", imgError.message);
-        }
-      }
-    }
+    await window.supabaseClient
+      .storage
+      .from("product-images")
+      .remove([
+        `${basePath}.jpg`,
+        `${basePath}.png`,
+        `${basePath}.webp`,
+        `${basePath}.jpeg`
+      ]);
 
     /* =====================
-       ELIMINAR PRODUCTO BD
+       2️⃣ ELIMINAR PRODUCTO BD
     ===================== */
     const { error } = await window.supabaseClient
       .from("products")
@@ -340,7 +326,7 @@ async function eliminarProducto(product) {
     if (error) throw error;
 
     /* =====================
-       ACTUALIZAR ESTADO LOCAL
+       3️⃣ ACTUALIZAR UI LOCAL
     ===================== */
     products = products.filter(p => p.id !== product.id);
     filteredProducts = filteredProducts.filter(p => p.id !== product.id);
@@ -348,13 +334,13 @@ async function eliminarProducto(product) {
     aplicarFiltro();
 
     /* =====================
-       FEEDBACK
+       4️⃣ FEEDBACK
     ===================== */
     safeSnackbar("☕ Café eliminado correctamente", "success");
 
   } catch (err) {
     console.error("❌ Error eliminando café:", err);
-   safeSnackbar("❌ No se pudo eliminar el café", "error");
+    safeSnackbar("❌ No se pudo eliminar el café", "error");
   }
 }
 
