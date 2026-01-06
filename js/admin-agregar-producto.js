@@ -155,22 +155,36 @@ imagenInput.addEventListener("change", () => {
    STORAGE — REEMPLAZAR IMAGEN
 ============================================================ */
 async function subirImagenProductoReemplazo() {
+  if (!imagenInput.files.length) return null;
+  if (!PRODUCT_ID) throw new Error("Producto sin ID");
+
   const file = imagenInput.files[0];
   const ext  = file.name.split(".").pop().toLowerCase();
 
-  /* 1️⃣ eliminar imagen anterior */
-  const { data: prod } = await window.supabaseClient
+  /* ====================================================
+     1️⃣ OBTENER Y ELIMINAR IMAGEN ANTERIOR
+  ==================================================== */
+  const { data: prod, error: prodError } = await window.supabaseClient
     .from("products")
     .select("image_url")
     .eq("id", PRODUCT_ID)
     .single();
 
+  if (prodError) {
+    console.warn("⚠️ No se pudo leer image_url:", prodError.message);
+  }
+
   if (prod?.image_url) {
     let path = prod.image_url;
 
+    // Si viene como URL pública → extraer path real
     if (path.startsWith("http")) {
-      const url = new URL(path);
-      path = url.pathname.split("/product-images/")[1];
+      try {
+        const url = new URL(path);
+        path = url.pathname.split("/product-images/")[1];
+      } catch {
+        path = null;
+      }
     }
 
     if (path) {
@@ -180,13 +194,20 @@ async function subirImagenProductoReemplazo() {
     }
   }
 
-  /* 2️⃣ subir nueva */
+  /* ====================================================
+     2️⃣ SUBIR NUEVA IMAGEN (MISMO PRODUCTO)
+  ==================================================== */
   const newPath = `products/${PRODUCT_ID}.${ext}`;
 
-  await window.supabaseClient.storage
+  const { error: uploadError } = await window.supabaseClient.storage
     .from("product-images")
     .upload(newPath, file, { upsert: true });
 
+  if (uploadError) throw uploadError;
+
+  /* ====================================================
+     3️⃣ OBTENER URL PÚBLICA
+  ==================================================== */
   const { data } = window.supabaseClient.storage
     .from("product-images")
     .getPublicUrl(newPath);
