@@ -289,7 +289,7 @@ function aplicarFiltro() {
 }
 
 /* ============================================================
-   ELIMINAR CAFÉ
+   ELIMINAR CAFÉ (BD + IMAGEN REAL)
 ============================================================ */
 async function eliminarProducto(product) {
   // 🔒 Protección base
@@ -301,19 +301,33 @@ async function eliminarProducto(product) {
 
   try {
     /* =====================
-       1️⃣ ELIMINAR IMAGEN DEL PRODUCTO
+       1️⃣ ELIMINAR IMAGEN (SI EXISTE)
     ===================== */
-    const basePath = `products/${product.id}`;
+    if (product.image_url) {
+      let path = product.image_url;
 
-    await window.supabaseClient
-      .storage
-      .from("product-images")
-      .remove([
-        `${basePath}.jpg`,
-        `${basePath}.png`,
-        `${basePath}.webp`,
-        `${basePath}.jpeg`
-      ]);
+      // 🔑 Si viene como URL pública → extraer path real
+      if (path.startsWith("http")) {
+        try {
+          const url = new URL(path);
+          path = url.pathname.split("/product-images/")[1];
+        } catch {
+          console.warn("⚠️ No se pudo parsear image_url:", product.image_url);
+          path = null;
+        }
+      }
+
+      if (path) {
+        const { error: imgError } = await window.supabaseClient
+          .storage
+          .from("product-images")
+          .remove([path]);
+
+        if (imgError) {
+          console.warn("⚠️ Error eliminando imagen:", imgError.message);
+        }
+      }
+    }
 
     /* =====================
        2️⃣ ELIMINAR PRODUCTO BD
