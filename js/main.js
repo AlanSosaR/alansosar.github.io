@@ -9,6 +9,19 @@ function safe(id) {
   return document.getElementById(id);
 }
 
+/* ========================= EMPTY CATALOG ========================= */
+function showEmptyCatalog() {
+  safe("empty-catalog")?.classList.remove("hidden");
+  document.querySelector(".product-main")?.classList.add("hidden");
+  document.querySelector(".related")?.classList.add("hidden");
+}
+
+function hideEmptyCatalog() {
+  safe("empty-catalog")?.classList.add("hidden");
+  document.querySelector(".product-main")?.classList.remove("hidden");
+  document.querySelector(".related")?.classList.remove("hidden");
+}
+
 /* ========================= CARRITO ========================= */
 const CART_KEY = "cafecortero_cart";
 
