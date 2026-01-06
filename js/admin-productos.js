@@ -127,24 +127,54 @@ function renderPreview(product) {
 
   selectedProductId = product.id;
 
+  /* =====================
+     TEXTO PRINCIPAL
+  ===================== */
   preview.name.textContent = product.name || "—";
   preview.description.textContent =
     product.description || "Sin descripción";
 
+  /* =====================
+     PÍLDORA (BADGE)
+  ===================== */
+  const formatPresentation = (p) =>
+    p === "1lb" ? "1 lb" : p;
+
   const badgeParts = [];
-  if (product.category?.trim()) badgeParts.push(product.category);
-  if (product.grind_type?.trim()) badgeParts.push(product.grind_type);
+
+  if (product.category?.trim()) {
+    badgeParts.push(product.category);
+  }
+
+  if (product.grind_type?.trim()) {
+    badgeParts.push(product.grind_type);
+  }
+
+  if (product.presentation?.trim()) {
+    badgeParts.push(formatPresentation(product.presentation));
+  }
+
   preview.badge.textContent = badgeParts.join(" · ") || "—";
 
+  /* =====================
+     PRECIO Y STOCK
+  ===================== */
   preview.price.textContent =
     formatPrice(product.price, product.currency);
 
   preview.stock.textContent = product.stock ?? "—";
 
+  /* =====================
+     IMAGEN
+  ===================== */
   preview.image.src = getImageUrl(product);
-  preview.image.onerror = () =>
+  preview.image.onerror = () => {
     preview.image.src = "imagenes/no-image.png";
+  };
 
+  /* =====================
+     CARRUSEL (SWITCH)
+  ===================== */
   const activo = product.carousel === true;
   preview.carouselToggle.checked = activo;
   updateCarouselStatus(activo);
@@ -167,6 +197,9 @@ function renderPreview(product) {
     product.carousel = nuevoEstado;
   };
 
+  /* =====================
+     SCROLL A PREVIEW
+  ===================== */
   preview.section.scrollIntoView({
     behavior: "smooth",
     block: "start"
