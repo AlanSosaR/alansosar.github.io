@@ -99,7 +99,7 @@ async function loadSimilarProducts() {
          data-name="${p.name}"
          data-price="L ${p.price}"
          data-img="${p.image_url || "imagenes/no-image.png"}">
-         
+
       <img
         src="${p.image_url || "imagenes/no-image.png"}"
         alt="${p.name}"
@@ -110,6 +110,10 @@ async function loadSimilarProducts() {
       <div class="price-sm">L ${p.price}</div>
     </div>
   `).join("");
+
+  /* 🔑 CLAVES */
+  bindSimilarCardEvents();   // conecta clicks
+  initDefaultProduct();      // carga el primer producto arriba
 }
 
 /* ========================= CARRUSEL — ESTADO ÚNICO ========================= */
