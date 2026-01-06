@@ -668,3 +668,17 @@ a {
     justify-content: flex-end;
   }
 }
+/* =========================
+   EMPTY STATES — GLOBAL
+========================= */
+
+.empty-title {
+  color: var(--cafe); /* 🔑 mismo color del carrito */
+  font-weight: 700;
+}
+
+.empty-text {
+  color: #6f6f6f; /* mismo gris del carrito */
+  font-size: 15px;
+  line-height: 1.4;
+}
