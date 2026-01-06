@@ -1,4 +1,4 @@
-console.log("📦 admin-agregar-producto.js — FINAL DEFINITIVO");
+console.log("📦 admin-agregar-producto.js — FINAL ESTABLE");
 
 /* ============================================================
    ESPERAR SUPABASE
@@ -16,7 +16,7 @@ function esperarSupabase() {
 }
 
 /* ============================================================
-   CONTEXTO (AGREGAR / EDITAR)
+   CONTEXTO
 ============================================================ */
 const params = new URLSearchParams(location.search);
 const PRODUCT_ID = params.get("id");
@@ -27,22 +27,22 @@ const IS_EDIT = Boolean(PRODUCT_ID);
 ============================================================ */
 const form = document.getElementById("producto-form");
 
-const imagenInput   = document.getElementById("imagen");
-const nombreInput   = document.getElementById("nombre");
-const descInput     = document.getElementById("descripcion");
-const categoriaSel  = document.getElementById("categoria");
-const tipoCafeSel   = document.getElementById("tipoCafe");
-const presentacion  = document.getElementById("presentacion");
-const precioInput   = document.getElementById("precio");
-const stockInput    = document.getElementById("stock");
+const imagenInput  = document.getElementById("imagen");
+const nombreInput  = document.getElementById("nombre");
+const descInput    = document.getElementById("descripcion");
+const categoriaSel = document.getElementById("categoria");
+const tipoCafeSel  = document.getElementById("tipoCafe");
+const presentacion = document.getElementById("presentacion");
+const precioInput  = document.getElementById("precio");
+const stockInput   = document.getElementById("stock");
 
-const uploadBox     = document.getElementById("uploadBox");
-const imagePreview  = document.getElementById("imagePreview");
+const uploadBox    = document.getElementById("uploadBox");
+const imagePreview = document.getElementById("imagePreview");
 
-const btnSubmit     = document.getElementById("btn-submit");
+const btnSubmit    = document.getElementById("btn-submit");
 
-const estadoToggle  = document.getElementById("estadoToggle");
-const estadoTexto   = document.getElementById("estadoTexto");
+const estadoToggle = document.getElementById("estadoToggle");
+const estadoTexto  = document.getElementById("estadoTexto");
 
 /* ============================================================
    SNACKBAR
@@ -56,112 +56,99 @@ function showSnackbar(message, type = "success") {
 
   setTimeout(() => {
     bar.classList.remove("show", "success", "error");
-  }, 3200);
+  }, 3000);
 }
 
-/* =====================================================
-   FLOATING LABEL — FIX GLOBAL
-===================================================== */
+/* ============================================================
+   FLOATING LABELS
+============================================================ */
 function syncFloatingLabels() {
   document.querySelectorAll(".m3-field").forEach(field => {
-    const control = field.querySelector("input, textarea, select");
-    if (!control) return;
+    const input = field.querySelector("input, textarea, select");
+    if (!input) return;
 
     const update = () => {
       const hasValue =
-        control.tagName === "SELECT"
-          ? control.value !== ""
-          : control.value.trim() !== "";
+        input.tagName === "SELECT"
+          ? input.value !== ""
+          : input.value.trim() !== "";
 
       field.classList.toggle("filled", hasValue);
     };
 
     update();
-    control.addEventListener("input", update);
-    control.addEventListener("change", update);
-    control.addEventListener("blur", update);
+    input.addEventListener("input", update);
+    input.addEventListener("change", update);
   });
 }
 
 /* ============================================================
-   VALIDACIÓN
+   VALIDACIÓN EN CADENA (UNA POR UNA)
 ============================================================ */
 function validarFormulario() {
-  let valido = true;
+  const campos = [
+    { el: nombreInput,  msg: "El nombre es obligatorio" },
+    { el: descInput,    msg: "La descripción es obligatoria" },
+    { el: categoriaSel, msg: "Selecciona una categoría" },
+    { el: tipoCafeSel,  msg: "Selecciona el tipo de café" },
+    { el: presentacion, msg: "Selecciona la presentación" },
+    { el: precioInput,  msg: "El precio debe ser mayor a 0", numeric: true },
+    { el: stockInput,   msg: "Stock inválido", numeric: true }
+  ];
 
   // limpiar estados previos
-  document.querySelectorAll(".m3-field").forEach(field => {
-    field.classList.remove("error", "ok");
-    const err = field.querySelector(".field-error");
-    if (err) err.textContent = "";
+  document.querySelectorAll(".m3-field").forEach(f => {
+    f.classList.remove("error", "ok");
+    const e = f.querySelector(".field-error");
+    if (e) e.textContent = "";
   });
 
-  const validar = (input, mensaje) => {
-    const field = input.closest(".m3-field");
+  // imagen obligatoria SOLO al crear
+  if (!IS_EDIT && !imagenInput.files.length) {
+    const field = imagenInput.closest(".m3-field");
+    field.classList.add("error");
+    field.querySelector(".field-error").textContent =
+      "La imagen es obligatoria";
+    return false;
+  }
+
+  // validación secuencial
+  for (const c of campos) {
+    const value = c.el.value?.trim();
+    const field = c.el.closest(".m3-field");
     const error = field.querySelector(".field-error");
 
-    if (!input.value || input.value.trim() === "") {
+    if (
+      !value ||
+      (c.numeric && Number(value) <= 0)
+    ) {
       field.classList.add("error");
-      error.textContent = mensaje;
-      valido = false;
-    } else {
-      field.classList.add("ok");
+      error.textContent = c.msg;
+      c.el.focus();
+      return false;
     }
-  };
 
-  const validarNumero = (input, mensaje) => {
-    const field = input.closest(".m3-field");
-    const error = field.querySelector(".field-error");
+    field.classList.add("ok");
+  }
 
-    if (input.value === "" || Number(input.value) < 0) {
-      field.classList.add("error");
-      error.textContent = mensaje;
-      valido = false;
-    } else {
-      field.classList.add("ok");
-    }
-  };
-
-// imagen obligatoria SOLO al crear
-if (!IS_EDIT && !imagenInput.files.length) {
-  const field = imagenInput.closest(".m3-field");
-  const error = field?.querySelector(".field-error");
-
-  if (field) field.classList.add("error");
-  if (error) error.textContent = "La imagen es obligatoria";
-
-  return false;
-}
-
-  // validación en cadena
-  validar(nombreInput, "El nombre es obligatorio");
-  validar(descInput, "La descripción es obligatoria");
-  validar(categoriaSel, "Selecciona una categoría");
-  validar(tipoCafeSel, "Selecciona el tipo de café");
-  validar(presentacion, "Selecciona la presentación");
-
-  validarNumero(precioInput, "El precio debe ser mayor a 0");
-  validarNumero(stockInput, "Stock inválido");
-
-  return valido;
+  return true;
 }
 
 /* ============================================================
-   IMAGEN — PREVIEW
+   PREVIEW IMAGEN
 ============================================================ */
 imagenInput.addEventListener("change", () => {
-  if (!imagenInput.files.length) return;
-
   const file = imagenInput.files[0];
+  if (!file) return;
 
   if (!file.type.startsWith("image/")) {
-    showSnackbar("Solo se permiten imágenes", "error");
+    showSnackbar("Solo imágenes", "error");
     imagenInput.value = "";
     return;
   }
 
   if (file.size > 2 * 1024 * 1024) {
-    showSnackbar("Máx. 2 MB", "error");
+    showSnackbar("Máx. 2MB", "error");
     imagenInput.value = "";
     return;
   }
@@ -172,18 +159,18 @@ imagenInput.addEventListener("change", () => {
 });
 
 /* ============================================================
-   STORAGE — SUBIR IMAGEN
+   STORAGE — SUBIR / REEMPLAZAR IMAGEN
 ============================================================ */
 async function subirImagenProducto() {
   if (!imagenInput.files.length) return null;
 
   const file = imagenInput.files[0];
-  const ext  = file.name.split(".").pop();
-  const path = `products/${crypto.randomUUID()}.${ext}`;
+  const ext  = file.name.split(".").pop().toLowerCase();
+  const path = `products/${PRODUCT_ID}.${ext}`;
 
   const { error } = await window.supabaseClient.storage
     .from("product-images")
-    .upload(path, file, { upsert: false });
+    .upload(path, file, { upsert: true });
 
   if (error) throw error;
 
@@ -195,7 +182,7 @@ async function subirImagenProducto() {
 }
 
 /* ============================================================
-   GUARDAR / ACTUALIZAR
+   GUARDAR / ACTUALIZAR PRODUCTO
 ============================================================ */
 async function guardarProducto(imageUrl = null) {
   const payload = {
@@ -210,58 +197,48 @@ async function guardarProducto(imageUrl = null) {
     status: estadoToggle.checked ? "activo" : "inactivo"
   };
 
-  // 🔑 SOLO tocar image_url si hay imagen nueva
-  if (imageUrl) {
-    payload.image_url = imageUrl;
-  }
+  if (imageUrl) payload.image_url = imageUrl;
 
-  /* =====================
-     UPDATE (EDITAR)
-  ===================== */
   if (IS_EDIT) {
-    const { data, error } = await window.supabaseClient
+    const { error } = await window.supabaseClient
       .from("products")
       .update(payload)
-      .eq("id", PRODUCT_ID)
-      .select("id")
-      .single();
+      .eq("id", PRODUCT_ID);
 
-    if (error) {
-      console.error("❌ Error UPDATE products:", error);
-      throw error;
-    }
-
-    return data.id;
+    if (error) throw error;
+    return;
   }
 
-  /* =====================
-     INSERT (CREAR)
-  ===================== */
   const { data, error } = await window.supabaseClient
     .from("products")
     .insert(payload)
     .select("id")
     .single();
 
-  if (error) {
-    console.error("❌ Error INSERT products:", error);
-    throw error;
-  }
+  if (error) throw error;
 
-  return data.id;
+  // 🔑 asignar ID real antes de subir imagen
+  if (imagenInput.files.length) {
+    PRODUCT_ID = data.id;
+    const imgUrl = await subirImagenProducto();
+    await window.supabaseClient
+      .from("products")
+      .update({ image_url: imgUrl })
+      .eq("id", PRODUCT_ID);
+  }
 }
 
 /* ============================================================
    CARGAR PRODUCTO (EDITAR)
 ============================================================ */
 async function cargarProducto() {
-  const { data, error } = await window.supabaseClient
+  const { data } = await window.supabaseClient
     .from("products")
     .select("*")
     .eq("id", PRODUCT_ID)
     .single();
 
-  if (error || !data) return;
+  if (!data) return;
 
   nombreInput.value = data.name || "";
   descInput.value = data.description || "";
@@ -280,45 +257,38 @@ async function cargarProducto() {
     uploadBox.classList.add("has-image");
   }
 
-  syncFloatingLabels(); // 🔑 CLAVE
+  syncFloatingLabels();
 }
 
 /* ============================================================
    SUBMIT
 ============================================================ */
-form.addEventListener("submit", async (e) => {
+form.addEventListener("submit", async e => {
   e.preventDefault();
-
   if (!validarFormulario()) return;
 
   btnSubmit.classList.add("loading");
 
   try {
     let imageUrl = null;
-
-    if (imagenInput.files.length) {
+    if (IS_EDIT && imagenInput.files.length) {
       imageUrl = await subirImagenProducto();
     }
 
     await guardarProducto(imageUrl);
 
     showSnackbar(
-      IS_EDIT
-        ? "✅ Cambios actualizados correctamente"
-        : "✅ Café agregado correctamente",
+      IS_EDIT ? "Cambios guardados" : "Café agregado",
       "success"
     );
 
-    // 👉 SOLO REDIRIGE AL CREAR
     if (!IS_EDIT) {
-      setTimeout(() => {
-        location.href = "admin-productos.html";
-      }, 1200);
+      setTimeout(() => location.href = "admin-productos.html", 1200);
     }
 
   } catch (err) {
-    console.error("❌ Error guardando producto:", err);
-    showSnackbar("❌ Error al guardar el café", "error");
+    console.error(err);
+    showSnackbar("Error al guardar", "error");
   } finally {
     btnSubmit.classList.remove("loading");
   }
@@ -335,18 +305,10 @@ form.addEventListener("submit", async (e) => {
     return;
   }
 
-  // 🔑 TEXTO DEL BOTÓN SEGÚN CONTEXTO
-  const btnText = btnSubmit.querySelector(".btn-text");
-
   if (IS_EDIT) {
-    btnText.textContent = "Actualizar café";
     document.title = "Editar café | Café Cortero";
     await cargarProducto();
-  } else {
-    btnText.textContent = "Guardar café";
-    document.title = "Agregar café | Café Cortero";
   }
 
-  // 🔑 CLAVE: sincronizar labels AL FINAL
   syncFloatingLabels();
 })();
