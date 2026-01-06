@@ -1,4 +1,4 @@
-console.log("🧩 admin-productos.js — FINAL DEFINITIVO");
+console.log("🧩 admin-productos.js — FINAL CORREGIDO");
 
 /* ============================================================
    ESPERAR SUPABASE
@@ -35,17 +35,17 @@ const preview = {
   carouselStatus: document.getElementById("carousel-status")
 };
 
-const btnEditProduct   = document.querySelector(".admin-action-btn.edit");
-const btnDeleteProduct = document.querySelector(".admin-action-btn.delete");
+const btnEditProduct   = document.getElementById("btnEditProduct");
+const btnDeleteProduct = document.getElementById("btnDeleteProduct");
 
 const relatedSection    = document.querySelector(".admin-related");
 const carouselContainer = document.getElementById("admin-products-carousel");
 const carouselTemplate  = document.getElementById("tpl-admin-carousel-card");
 
-const btnPrev = document.getElementById("admin-prev");
-const btnNext = document.getElementById("admin-next");
-
-const snackbar = document.getElementById("snackbar");
+/* ===== Snackbar confirmación eliminar ===== */
+const snackbarDelete   = document.getElementById("snackbar-delete");
+const btnCancelDelete  = document.getElementById("btnCancelDelete");
+const btnConfirmDelete = document.getElementById("btnConfirmDelete");
 
 /* ============================================================
    ESTADO
@@ -54,6 +54,7 @@ let products = [];
 let filteredProducts = [];
 let selectedProductId = null;
 let carouselIndex = 0;
+let productToDelete = null;
 
 /* ============================================================
    HELPERS
@@ -98,26 +99,26 @@ function ocultarEstadoVacio() {
    SNACKBAR — CONFIRMACIÓN ELIMINAR
 ============================================================ */
 function showDeleteConfirm(product) {
-  if (!snackbar || !product) return;
+  if (!snackbarDelete || !product) return;
 
-  snackbar.innerHTML = `
-    <span>¿Seguro que deseas eliminar este café?</span>
-    <button class="snackbar-btn-danger">Eliminar</button>
-  `;
-
-  snackbar.classList.add("show");
-
-  const btnConfirm = snackbar.querySelector(".snackbar-btn-danger");
-
-  btnConfirm.onclick = async () => {
-    snackbar.classList.remove("show");
-    await eliminarProducto(product);
-  };
-
-  setTimeout(() => {
-    snackbar.classList.remove("show");
-  }, 6000);
+  productToDelete = product;
+  snackbarDelete.classList.add("show");
+  snackbarDelete.setAttribute("aria-hidden", "false");
 }
+
+function closeDeleteSnackbar() {
+  snackbarDelete.classList.remove("show");
+  snackbarDelete.setAttribute("aria-hidden", "true");
+  productToDelete = null;
+}
+
+btnCancelDelete?.addEventListener("click", closeDeleteSnackbar);
+
+btnConfirmDelete?.addEventListener("click", async () => {
+  if (!productToDelete) return;
+  closeDeleteSnackbar();
+  await eliminarProducto(productToDelete);
+});
 
 /* ============================================================
    PREVIEW PRINCIPAL
@@ -127,54 +128,29 @@ function renderPreview(product) {
 
   selectedProductId = product.id;
 
-  /* =====================
-     TEXTO PRINCIPAL
-  ===================== */
   preview.name.textContent = product.name || "—";
   preview.description.textContent =
     product.description || "Sin descripción";
 
-  /* =====================
-     PÍLDORA (BADGE)
-  ===================== */
-  const formatPresentation = (p) =>
-    p === "1lb" ? "1 lb" : p;
+  const formatPresentation = (p) => p === "1lb" ? "1 lb" : p;
 
   const badgeParts = [];
-
-  if (product.category?.trim()) {
-    badgeParts.push(product.category);
-  }
-
-  if (product.grind_type?.trim()) {
-    badgeParts.push(product.grind_type);
-  }
-
-  if (product.presentation?.trim()) {
+  if (product.category?.trim()) badgeParts.push(product.category);
+  if (product.grind_type?.trim()) badgeParts.push(product.grind_type);
+  if (product.presentation?.trim())
     badgeParts.push(formatPresentation(product.presentation));
-  }
 
   preview.badge.textContent = badgeParts.join(" · ") || "—";
 
-  /* =====================
-     PRECIO Y STOCK
-  ===================== */
   preview.price.textContent =
     formatPrice(product.price, product.currency);
 
   preview.stock.textContent = product.stock ?? "—";
 
-  /* =====================
-     IMAGEN
-  ===================== */
   preview.image.src = getImageUrl(product);
-  preview.image.onerror = () => {
+  preview.image.onerror = () =>
     preview.image.src = "imagenes/no-image.png";
-  };
 
-  /* =====================
-     CARRUSEL (SWITCH)
-  ===================== */
   const activo = product.carousel === true;
   preview.carouselToggle.checked = activo;
   updateCarouselStatus(activo);
@@ -197,9 +173,6 @@ function renderPreview(product) {
     product.carousel = nuevoEstado;
   };
 
-  /* =====================
-     SCROLL A PREVIEW
-  ===================== */
   preview.section.scrollIntoView({
     behavior: "smooth",
     block: "start"
@@ -298,42 +271,24 @@ async function eliminarProducto(product) {
   if (!product) return;
 
   try {
-    /* =====================
-       1️⃣ ELIMINAR IMAGEN (SI EXISTE)
-    ===================== */
     if (product.image_url) {
-      let path = null;
+      let path = product.image_url;
 
-      // Caso 1: URL pública completa
-      if (product.image_url.startsWith("http")) {
+      if (path.startsWith("http")) {
         try {
-          const url = new URL(product.image_url);
+          const url = new URL(path);
           path = url.pathname.split("/product-images/")[1];
-        } catch (e) {
-          console.warn("⚠️ URL inválida:", product.image_url);
-        }
-      }
-
-      // Caso 2: path directo guardado en BD
-      else {
-        path = product.image_url;
+        } catch {}
       }
 
       if (path) {
-        const { error: imgError } = await window.supabaseClient
+        await window.supabaseClient
           .storage
           .from("product-images")
           .remove([path]);
-
-        if (imgError) {
-          console.warn("⚠️ No se pudo eliminar imagen:", imgError.message);
-        }
       }
     }
 
-    /* =====================
-       2️⃣ ELIMINAR REGISTRO BD
-    ===================== */
     const { error } = await window.supabaseClient
       .from("products")
       .delete()
@@ -341,9 +296,6 @@ async function eliminarProducto(product) {
 
     if (error) throw error;
 
-    /* =====================
-       3️⃣ ACTUALIZAR ESTADO LOCAL
-    ===================== */
     products = products.filter(p => p.id !== product.id);
     filteredProducts = filteredProducts.filter(p => p.id !== product.id);
 
@@ -354,9 +306,6 @@ async function eliminarProducto(product) {
       seleccionarProducto(0);
     }
 
-    /* =====================
-       4️⃣ FEEDBACK
-    ===================== */
     showSnackbar("☕ Café eliminado correctamente", "success");
 
   } catch (err) {
@@ -389,49 +338,32 @@ async function cargarProductos() {
 (async function init() {
   await esperarSupabase();
 
-  // 🔐 Seguridad básica
   if (localStorage.getItem("cortero_logged") !== "1") {
     location.href = "login.html";
     return;
   }
 
-  /* =====================
-     FILTRO
-  ===================== */
   searchInput?.addEventListener("input", aplicarFiltro);
 
-  /* =====================
-     AGREGAR
-  ===================== */
   btnAddProduct?.addEventListener("click", () => {
     location.href = "admin-agregar-producto.html";
   });
 
-  /* =====================
-     EDITAR
-  ===================== */
   btnEditProduct?.addEventListener("click", () => {
     if (!selectedProductId) {
       showSnackbar("Selecciona un café primero", "error");
       return;
     }
-
     location.href = `admin-agregar-producto.html?id=${selectedProductId}`;
   });
 
-  /* =====================
-     ELIMINAR
-  ===================== */
   btnDeleteProduct?.addEventListener("click", () => {
-    console.log("🗑️ Click en eliminar");
-
     if (!selectedProductId) {
       showSnackbar("Selecciona un café primero", "error");
       return;
     }
 
     const product = products.find(p => p.id === selectedProductId);
-
     if (!product) {
       showSnackbar("No se pudo identificar el café", "error");
       return;
@@ -440,8 +372,5 @@ async function cargarProductos() {
     showDeleteConfirm(product);
   });
 
-  /* =====================
-     CARGA INICIAL
-  ===================== */
   await cargarProductos();
 })();
