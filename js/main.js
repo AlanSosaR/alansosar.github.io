@@ -64,6 +64,34 @@ function addToCart(product) {
   animateCartBadge();
 }
 
+/* =========================
+   RENDER PRODUCTO PRINCIPAL
+   🔑 (ANTES NO EXISTÍA)
+========================= */
+function renderMainProduct(product) {
+  safe("product-name").textContent = product.name || "";
+  safe("product-description").textContent = product.description || "";
+
+  const badge = [
+    product.category,
+    product.grind_type,
+    product.presentation
+  ].filter(Boolean).join(" · ");
+
+  safe("product-badge").textContent = badge;
+  safe("product-price").textContent = `L ${product.price}`;
+
+  const img = safe("product-image");
+  img.src = product.image_url || "imagenes/no-image.png";
+  img.onerror = () => img.src = "imagenes/no-image.png";
+
+  const addBtn = safe("product-add");
+  addBtn.dataset.id = product.id;
+  addBtn.dataset.stock = product.stock ?? 0;
+
+  safe("qty-number").textContent = "1";
+}
+
 /* ========================= SIMILARES (DESDE BD) ========================= */
 async function loadSimilarProducts() {
   const cont = safe("lista-similares");
@@ -76,105 +104,145 @@ async function loadSimilarProducts() {
     .eq("status", "activo")
     .order("created_at", { ascending: false });
 
-  /* ❌ Error al consultar */
-  if (error) {
-    console.error("❌ Error cargando productos del carrusel:", error);
-    showEmptyCatalog();
-    return;
-  }
-
-  /* ☕ No hay productos en carrusel */
-  if (!data || !data.length) {
+  if (error || !data || !data.length) {
     cont.innerHTML = "";
     showEmptyCatalog();
     return;
   }
 
-  /* ✅ Hay productos */
   hideEmptyCatalog();
 
   cont.innerHTML = data.map(p => `
     <div class="similar-card"
-         data-id="${p.id}"
-         data-name="${p.name}"
-         data-price="L ${p.price}"
-         data-img="${p.image_url || "imagenes/no-image.png"}">
-
-      <img
-        src="${p.image_url || "imagenes/no-image.png"}"
-        alt="${p.name}"
-        onerror="this.src='imagenes/no-image.png'"
-      >
-
+      data-id="${p.id}"
+      data-name="${p.name}"
+      data-price="L ${p.price}"
+      data-img="${p.image_url || "imagenes/no-image.png"}"
+      data-description="${p.description || ""}"
+      data-category="${p.category || ""}"
+      data-grind="${p.grind_type || ""}"
+      data-presentation="${p.presentation || ""}"
+      data-stock="${p.stock ?? 0}"
+    >
+      <img src="${p.image_url || "imagenes/no-image.png"}"
+           onerror="this.src='imagenes/no-image.png'">
       <h4>${p.name}</h4>
       <div class="price-sm">L ${p.price}</div>
     </div>
   `).join("");
 
-  /* 🔑 CLAVES */
-  bindSimilarCardEvents();   // conecta clicks
-  initDefaultProduct();      // carga el primer producto arriba
+  bindSimilarCardEvents();
+  initDefaultProduct();
+  initSimilarCarousel();
 }
 
-/* ========================= CARRUSEL — ESTADO ÚNICO ========================= */
+/* ========================= CARRUSEL — ESTADO ========================= */
 let similarIndex = 0;
 const setSimilarIndex = i => similarIndex = i;
 const getSimilarIndex = () => similarIndex;
 
-/* ========================= HERO CAROUSEL (ARRIBA) ========================= */
-function initHeroCarousel() {
-  const carousel = document.querySelector(".hero-carousel");
-  if (!carousel) return;
-
-  const slides = carousel.querySelectorAll("img");
-  if (!slides.length) return;
-
-  let index = 0;
-
-  slides.forEach((img, i) => {
-    img.style.opacity = i === 0 ? "1" : "0";
-    img.style.position = "absolute";
-    img.style.inset = "0";
-    img.style.transition = "opacity 0.6s ease";
-  });
-
-  setInterval(() => {
-    slides[index].style.opacity = "0";
-    index = (index + 1) % slides.length;
-    slides[index].style.opacity = "1";
-  }, 3500);
-}
-
-/* =========================
-   INIT PRODUCTO DEFAULT
-========================= */
+/* ========================= INIT PRODUCTO DEFAULT ========================= */
 function initDefaultProduct() {
   const firstCard = document.querySelector(".similar-card");
   if (!firstCard) return;
 
-  const product = {
+  renderMainProduct({
     id: firstCard.dataset.id,
     name: firstCard.dataset.name,
-    description: firstCard.dataset.description || "",
-    category: firstCard.dataset.category || "",
-    grind_type: firstCard.dataset.grind || "",
-    presentation: firstCard.dataset.presentation || "",
+    description: firstCard.dataset.description,
+    category: firstCard.dataset.category,
+    grind_type: firstCard.dataset.grind,
+    presentation: firstCard.dataset.presentation,
     price: Number(firstCard.dataset.price.replace(/[^\d.]/g, "")),
     stock: Number(firstCard.dataset.stock || 0),
-    status: "activo",
     image_url: firstCard.dataset.img
-  };
+  });
 
-  // 🔑 Renderiza TODO el producto principal
-  renderMainProduct(product);
-
-  // 🔑 Estado visual del carrusel
-  document
-    .querySelectorAll(".similar-card")
+  document.querySelectorAll(".similar-card")
     .forEach(c => c.classList.remove("active-card"));
 
   firstCard.classList.add("active-card");
   setSimilarIndex(0);
+}
+
+/* ========================= SIMILAR EVENTS ========================= */
+function bindSimilarCardEvents() {
+  const cards = document.querySelectorAll(".similar-card");
+  const productSection = document.querySelector(".product-main");
+
+  cards.forEach((card, idx) => {
+    card.addEventListener("mousedown", e => e.preventDefault());
+
+    card.addEventListener("click", () => {
+      setSimilarIndex(idx);
+
+      cards.forEach(c => c.classList.remove("active-card"));
+      card.classList.add("active-card");
+
+      renderMainProduct({
+        id: card.dataset.id,
+        name: card.dataset.name,
+        description: card.dataset.description,
+        category: card.dataset.category,
+        grind_type: card.dataset.grind,
+        presentation: card.dataset.presentation,
+        price: Number(card.dataset.price.replace(/[^\d.]/g, "")),
+        stock: Number(card.dataset.stock || 0),
+        image_url: card.dataset.img
+      });
+
+      productSection?.scrollIntoView({ behavior: "smooth" });
+      updateSimilarUI();
+    });
+  });
+}
+
+/* ========================= CARRUSEL UI ========================= */
+function initSimilarCarousel() {
+  const prev = safe("similar-prev");
+  const next = safe("similar-next");
+  const dots = document.querySelectorAll(".carousel-dots .dot");
+
+  prev && (prev.onclick = () => {
+    if (similarIndex > 0) {
+      similarIndex--;
+      updateSimilarUI();
+    }
+  });
+
+  next && (next.onclick = () => {
+    if (similarIndex < dots.length - 1) {
+      similarIndex++;
+      updateSimilarUI();
+    }
+  });
+
+  dots.forEach((dot, i) => {
+    dot.onclick = () => {
+      similarIndex = i;
+      updateSimilarUI();
+    };
+  });
+
+  updateSimilarUI();
+}
+
+function updateSimilarUI() {
+  const list = safe("lista-similares");
+  if (!list) return;
+
+  const cards = list.querySelectorAll(".similar-card");
+  if (!cards.length) return;
+
+  const gap = parseInt(getComputedStyle(list).gap || 16, 10);
+  list.scrollTo({
+    left: (cards[0].offsetWidth + gap) * similarIndex,
+    behavior: "smooth"
+  });
+
+  cards.forEach((c, i) =>
+    c.classList.toggle("active-card", i === similarIndex)
+  );
 }
 
 /* ========================= DOM READY ========================= */
@@ -197,180 +265,5 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-/* ========================= CANTIDAD ========================= */
-const qtyNumber = safe("qty-number");
-
-safe("qty-minus")?.addEventListener("click", () => {
-  const n = parseInt(qtyNumber.textContent, 10);
-  if (n > 1) qtyNumber.textContent = n - 1;
+  loadSimilarProducts(); // 🔑 TODO ARRANCA AQUÍ
 });
-
-safe("qty-plus")?.addEventListener("click", () => {
-  const n = parseInt(qtyNumber.textContent, 10);
-  const maxStock = Number(safe("product-add")?.dataset.stock || 99);
-
-  if (n < maxStock) {
-    qtyNumber.textContent = n + 1;
-  }
-});
-
-/* ========================= ADD TO CART ========================= */
-safe("product-add")?.addEventListener("click", () => {
-  const qty = parseInt(qtyNumber.textContent, 10) || 1;
-
-  const productId = safe("product-add").dataset.id;   // 🔑 ID real BD
-  const name      = safe("product-name").textContent.trim();
-  const img       = safe("product-image").src;
-
-  const priceText = document.querySelector(".price-part")?.textContent || "";
-  const price     = Number(priceText.replace(/[^\d.]/g, ""));
-
-  if (!productId) {
-    safeSnackbar("Producto no válido", "error");
-    return;
-  }
-
-  addToCart({
-    product_id: productId,
-    name,
-    price,
-    img,
-    qty
-  });
-
-  qtyNumber.textContent = "1";
-});
-
-  /* ===== ORDEN CORRECTO DE INICIALIZACIÓN ===== */
-  initHeroCarousel();        // 🔑 HERO ARRIBA
-  loadSimilarProducts();
-  bindSimilarCardEvents();
-  initDefaultProduct();      // 🔑 PRODUCTO PRINCIPAL
-  initSimilarCarousel();
-});
-
-/* ========================= SIMILAR EVENTS ========================= */
-function bindSimilarCardEvents() {
-  const cards = document.querySelectorAll(".similar-card");
-  const productSection = document.querySelector(".product-main");
-
-  cards.forEach((card, idx) => {
-
-    // Evita drag fantasma en móvil / desktop
-    card.addEventListener("mousedown", e => e.preventDefault());
-
-    card.addEventListener("click", () => {
-
-      // 🔑 Estado carrusel
-      setSimilarIndex(idx);
-
-      cards.forEach(c => c.classList.remove("active-card"));
-      card.classList.add("active-card");
-
-      // 🔑 Imagen principal
-      const img = safe("product-image");
-      img.classList.remove("swap");
-      void img.offsetWidth; // reflow
-      img.classList.add("swap");
-
-      img.src = card.dataset.img || "imagenes/no-image.png";
-      img.onerror = () => {
-        img.src = "imagenes/no-image.png";
-      };
-
-      // 🔑 Título
-      safe("product-name").textContent = card.dataset.name || "Producto";
-
-      // 🔑 Precio
-      const priceEl = document.querySelector(".price-part");
-      if (priceEl) priceEl.textContent = card.dataset.price || "—";
-
-      // 🔑 Botón carrito (UUID real desde BD)
-      const addBtn = safe("product-add");
-      if (addBtn) addBtn.dataset.id = card.dataset.id;
-
-      // 🔑 Cantidad
-      safe("qty-number").textContent = "1";
-
-      // 🔑 Scroll suave al producto principal
-      if (productSection) {
-        const y =
-          productSection.getBoundingClientRect().top +
-          window.scrollY - 20;
-
-        window.scrollTo({
-          top: y,
-          behavior: "smooth"
-        });
-      }
-
-      updateSimilarUI();
-    });
-  });
-}
-
-/* ========================= CARRUSEL SIMILARES ========================= */
-function initSimilarCarousel() {
-  const prev = safe("similar-prev");
-  const next = safe("similar-next");
-  const dots = document.querySelectorAll(".carousel-dots .dot");
-
-  prev && (prev.onclick = () => {
-    if (getSimilarIndex() > 0) {
-      setSimilarIndex(getSimilarIndex() - 1);
-      updateSimilarUI();
-    }
-  });
-
-  next && (next.onclick = () => {
-    if (getSimilarIndex() < dots.length - 1) {
-      setSimilarIndex(getSimilarIndex() + 1);
-      updateSimilarUI();
-    }
-  });
-
-  dots.forEach((dot, i) => {
-    dot.onclick = () => {
-      setSimilarIndex(i);
-      updateSimilarUI();
-    };
-  });
-
-  updateSimilarUI();
-}
-
-/* ========================= ACTUALIZAR UI SIMILARES ========================= */
-function updateSimilarUI() {
-  const list = safe("lista-similares");
-  const dots = document.querySelectorAll(".carousel-dots .dot");
-  if (!list) return;
-
-  const cards = list.querySelectorAll(".similar-card");
-  if (!cards.length) return;
-
-  // 🔑 Clamp índice (seguridad)
-  const maxIndex = cards.length - 1;
-  if (getSimilarIndex() > maxIndex) {
-    setSimilarIndex(maxIndex);
-  }
-
-  const card = cards[0];
-  const gap = parseInt(getComputedStyle(list).gap || 16, 10);
-  const CARD_WIDTH = card.offsetWidth + gap;
-
-  list.scrollTo({
-    left: CARD_WIDTH * getSimilarIndex(),
-    behavior: "smooth"
-  });
-
-  // 🔑 Dots (solo los necesarios)
-  dots.forEach((d, i) => {
-    d.classList.toggle("active", i === getSimilarIndex());
-    d.style.display = i <= maxIndex ? "inline-block" : "none";
-  });
-
-  // 🔑 Tarjeta activa
-  cards.forEach((c, i) =>
-    c.classList.toggle("active-card", i === getSimilarIndex())
-  );
-}
