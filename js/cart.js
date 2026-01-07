@@ -1,12 +1,12 @@
 /* ============================================================
    Carrito — Café Cortero 2025 (FINAL DEFINITIVO)
-   ✔ Flujo correcto login → validaciones → checkout
-   ✔ product_id validado SOLO cuando corresponde
-   ✔ Flecha oculta cuando está vacío
-   ✔ Snackbar login visible
+   ✔ Render del carrito SIEMPRE (logueado o no)
+   ✔ Validaciones SOLO al "Proceder al pago"
+   ✔ Bloquea admin (solo clientes compran)
+   ✔ Valida que product_id exista en BD (products)
+   ✔ Snackbar genérico #snackbar
    ✔ Contador del header controlado por header.js
-   ✔ Título del carrito sincronizado (FIX)
-   ✔ Compatible con recibo.js
+   ✔ Título del header sincronizado (X cafés)
 ============================================================ */
 
 const CART_KEY = "cafecortero_cart";
@@ -37,8 +37,24 @@ function syncHeaderCounter() {
   }
 }
 
+/* ================= SNACKBAR (GENÉRICO) ================= */
+function showSnackbar(message, duration = 1800) {
+  const el = document.getElementById("snackbar");
+  if (!el) return;
+
+  el.textContent = message;
+
+  el.classList.remove("hidden");
+  el.classList.add("show");
+
+  clearTimeout(el._t);
+  el._t = setTimeout(() => {
+    el.classList.remove("show");
+    el.classList.add("hidden");
+  }, duration);
+}
+
 /* ================= HEADER (TÍTULO) ================= */
-/* 🔑 ESTE ERA EL FIX FALTANTE */
 function updateHeaderCartTitle(cart) {
   const label = document.getElementById("count-items");
   if (!label) return;
@@ -51,7 +67,7 @@ function updateHeaderCartTitle(cart) {
 function renderCart() {
   const cart = getCart();
 
-  updateHeaderCartTitle(cart);   // ✅ ACTUALIZA “X cafés”
+  updateHeaderCartTitle(cart);
 
   const container     = document.getElementById("cart-container");
   const subtotalLabel = document.getElementById("subtotal-label");
@@ -99,11 +115,17 @@ function renderCart() {
   cart.forEach((item, index) => {
     const clone = template.content.cloneNode(true);
 
-    clone.querySelector(".item-image").src = item.img || "";
-    clone.querySelector(".item-name").textContent = item.name || "Producto";
-    clone.querySelector(".item-price").textContent =
-      `L ${Number(item.price).toFixed(2)} / unidad`;
-    clone.querySelector(".qty-number").textContent = item.qty || 1;
+    const imgEl = clone.querySelector(".item-image");
+    if (imgEl) imgEl.src = item.img || "";
+
+    const nameEl = clone.querySelector(".item-name");
+    if (nameEl) nameEl.textContent = item.name || "Producto";
+
+    const priceEl = clone.querySelector(".item-price");
+    if (priceEl) priceEl.textContent = `L ${Number(item.price || 0).toFixed(2)} / unidad`;
+
+    const qtyEl = clone.querySelector(".qty-number");
+    if (qtyEl) qtyEl.textContent = item.qty || 1;
 
     clone.querySelectorAll("button").forEach(btn => {
       btn.dataset.index = index;
@@ -113,15 +135,13 @@ function renderCart() {
     container.appendChild(clone);
   });
 
-  if (subtotalLabel)
-    subtotalLabel.textContent = `L ${subtotal.toFixed(2)}`;
-  if (totalLabel)
-    totalLabel.textContent    = `L ${subtotal.toFixed(2)}`;
+  if (subtotalLabel) subtotalLabel.textContent = `L ${subtotal.toFixed(2)}`;
+  if (totalLabel)    totalLabel.textContent    = `L ${subtotal.toFixed(2)}`;
 
   syncHeaderCounter();
 }
 
-/* ================= CONTROLES ================= */
+/* ================= CONTROLES +/-/DELETE ================= */
 document.getElementById("cart-container")?.addEventListener("click", e => {
   const btn = e.target.closest("button");
   if (!btn) return;
@@ -143,12 +163,14 @@ document.getElementById("cart-container")?.addEventListener("click", e => {
   renderCart();
 });
 
+/* ================= CHECKOUT ================= */
 document.getElementById("proceder-btn")?.addEventListener("click", async () => {
   const cart = getCart();
   if (!cart.length) return;
 
   const sb = getSupabaseClient();
   if (!sb) {
+    // Si por alguna razón no cargó Supabase, igual mandamos a login
     location.href = "login.html?redirect=carrito";
     return;
   }
@@ -168,9 +190,9 @@ document.getElementById("proceder-btn")?.addEventListener("click", async () => {
     return;
   }
 
-  /* 🔐 BLOQUEAR ADMIN */
-  const authUser = data.session.user;
-  const authId = authUser.id;
+  /* 🔐 BLOQUEAR ADMIN (solo clientes compran) */
+  const authUser  = data.session.user;
+  const authId    = authUser.id;
   const authEmail = authUser.email;
 
   let userRow = null;
@@ -210,19 +232,19 @@ document.getElementById("proceder-btn")?.addEventListener("click", async () => {
     return;
   }
 
-  if (String(userRow.rol).toLowerCase() === "admin") {
+  if (String(userRow.rol || "").toLowerCase() === "admin") {
     showSnackbar("Las cuentas de administrador no pueden realizar compras.");
     return;
   }
 
-  /* 🔒 VALIDAR product_id */
+  /* 🔒 VALIDAR product_id (solo aquí, antes de checkout) */
   const invalid = cart.some(p => !p.product_id);
   if (invalid) {
-    showSnackbar("Algunos productos necesitan actualizarse.");
+    showSnackbar("Algunos productos necesitan actualizarse. Vuelve a agregarlos.");
     return;
   }
 
-  /* 🔎 VALIDAR IDs EN SUPABASE */
+  /* 🔎 VALIDAR IDs EN SUPABASE (que existan en products) */
   const ids = [...new Set(cart.map(i => String(i.product_id)))];
 
   const { data: products, error: productsError } = await sb
@@ -231,7 +253,7 @@ document.getElementById("proceder-btn")?.addEventListener("click", async () => {
     .in("id", ids);
 
   if (productsError) {
-    showSnackbar("No se pudo validar el carrito.");
+    showSnackbar("No se pudo validar el carrito. Intenta de nuevo.");
     return;
   }
 
@@ -239,73 +261,7 @@ document.getElementById("proceder-btn")?.addEventListener("click", async () => {
   const missing = ids.filter(id => !found.has(id));
 
   if (missing.length) {
-    showSnackbar("Algunos productos ya no existen o cambiaron.");
-    return;
-  }
-
-  /* 📦 GUARDAR CHECKOUT */
-  localStorage.setItem(CHECKOUT_KEY, JSON.stringify(cart));
-
-  /* ➡️ CONTINUAR */
-  location.href = "datos_cliente.html";
-});
-  if (errById) {
-    showSnackbar("No se pudo validar tu cuenta.");
-    return;
-  }
-
-  userRow = byId;
-
-  if (!userRow && authEmail) {
-    const { data: byEmail, error: errByEmail } = await sb
-      .from("users")
-      .select("rol")
-      .eq("email", authEmail)
-      .maybeSingle();
-
-    if (errByEmail) {
-      showSnackbar("No se pudo validar tu cuenta.");
-      return;
-    }
-
-    userRow = byEmail;
-  }
-
-  if (!userRow) {
-    showSnackbar("Tu usuario no está registrado.");
-    return;
-  }
-
-  if (String(userRow.rol).toLowerCase() === "admin") {
-    showSnackbar("Las cuentas de administrador no pueden realizar compras.");
-    return;
-  }
-
-  /* 🔒 VALIDAR product_id */
-  const invalid = cart.some(p => !p.product_id);
-  if (invalid) {
-    showSnackbar("Algunos productos necesitan actualizarse.");
-    return;
-  }
-
-  /* 🔎 VALIDAR IDs EN SUPABASE */
-  const ids = [...new Set(cart.map(i => String(i.product_id)))];
-
-  const { data: products, error: productsError } = await sb
-    .from("products")
-    .select("id")
-    .in("id", ids);
-
-  if (productsError) {
-    showSnackbar("No se pudo validar el carrito.");
-    return;
-  }
-
-  const found = new Set((products || []).map(p => String(p.id)));
-  const missing = ids.filter(id => !found.has(id));
-
-  if (missing.length) {
-    showSnackbar("Algunos productos ya no existen o cambiaron.");
+    showSnackbar("Algunos productos ya no existen o cambiaron. Vuelve a agregarlos.");
     return;
   }
 
@@ -317,11 +273,8 @@ document.getElementById("proceder-btn")?.addEventListener("click", async () => {
 });
 
 /* ================= INIT ================= */
+renderCart(); // ✅ SIEMPRE renderiza aunque no esté logueado
 
-// Render inmediato (no depende del header)
-renderCart();
-
-// Cuando el header esté listo → sincronizar badge
 document.addEventListener("header:ready", () => {
   syncHeaderCounter();
 });
