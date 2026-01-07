@@ -623,20 +623,20 @@ body.page-admin-editar-cafe .header-logo {
   height: 44px;
 }
 /* =====================================================
-   ADMIN — AVATAR VISIBLE (DESKTOP)
+   ADMIN — NO ocultar header-actions en PC
 ===================================================== */
 @media (min-width: 901px) {
-
-  body.page-admin-cafes.logged #btn-header-user,
-  body.page-admin-agregar-cafe.logged #btn-header-user,
-  body.page-admin-editar-cafe.logged #btn-header-user {
+  body.page-admin-cafes .header-actions,
+  body.page-admin-agregar-cafe .header-actions,
+  body.page-admin-editar-cafe .header-actions {
     display: flex !important;
   }
 
-  body.page-admin-cafes.logged .header-avatar-button,
-  body.page-admin-agregar-cafe.logged .header-avatar-button,
-  body.page-admin-editar-cafe.logged .header-avatar-button {
-    display: flex !important;
+  /* (si quieres ocultar solo el carrito) */
+  body.page-admin-cafes #cart-btn,
+  body.page-admin-agregar-cafe #cart-btn,
+  body.page-admin-editar-cafe #cart-btn {
+    display: none !important;
   }
 }
 /* =====================================================
