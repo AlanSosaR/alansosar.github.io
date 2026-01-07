@@ -182,6 +182,27 @@ document.getElementById("proceder-btn")?.addEventListener("click", async () => {
     return;
   }
 
+  /* 🔎 VALIDAR QUE LOS IDs EXISTAN EN SUPABASE */
+  const ids = cart.map(i => i.product_id);
+
+  const { data: products, error } = await sb
+    .from("products")
+    .select("id")
+    .in("id", ids);
+
+  if (error) {
+    alert("No se pudo validar el carrito. Intenta de nuevo.");
+    return;
+  }
+
+  const found = new Set((products || []).map(p => String(p.id)));
+  const missing = ids.filter(id => !found.has(String(id)));
+
+  if (missing.length) {
+    alert("Algunos productos ya no existen o cambiaron. Vuelve a agregarlos.");
+    return;
+  }
+
   /* 📦 GUARDAR CHECKOUT */
   localStorage.setItem(CHECKOUT_KEY, JSON.stringify(cart));
 
