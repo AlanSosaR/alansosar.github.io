@@ -578,14 +578,6 @@ body.page-admin-agregar-cafe #cart-btn,
 body.page-admin-editar-cafe #cart-btn {
   display: none !important;
 }
-
-/* 🔑 Ocultar también el contenedor para evitar espacio fantasma */
-body.page-admin-cafes .header-actions,
-body.page-admin-agregar-cafe .header-actions,
-body.page-admin-editar-cafe .header-actions {
-  display: none !important;
-}
-
 /* =====================================================
    OCULTAR NAVEGACIÓN PÚBLICA
 ===================================================== */
@@ -773,45 +765,50 @@ body.page-carrito.logged #login-desktop {
   }
 }
 /* =====================================================
-   ADMIN — AVATAR IZQUIERDA (SOLO PC)
+   ADMIN — AVATAR IZQUIERDA + LOGO DERECHA (SOLO PC)
 ===================================================== */
 @media (min-width: 901px) {
 
-  /* Asegura que el header sea el “contenedor” de los absolutos */
+  /* Header como contenedor */
   body.page-admin-cafes header.header-fixed,
   body.page-admin-agregar-cafe header.header-fixed,
   body.page-admin-editar-cafe header.header-fixed {
-    position: fixed; /* o relative si ya es fixed */
+    position: fixed; /* ya lo tienes, se queda */
   }
 
-  /* Mostrar el botón/avatar cuando está logueado */
+  /* ✅ Avatar (botón real) a la izquierda cuando está logueado */
   body.page-admin-cafes.logged #btn-header-user,
   body.page-admin-agregar-cafe.logged #btn-header-user,
   body.page-admin-editar-cafe.logged #btn-header-user {
     display: flex !important;
+
+    position: absolute !important;
+    left: 16px !important;
+    right: auto !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    z-index: 3002 !important;
   }
 
+  /* (Opcional) por si existe .header-avatar-button dentro */
   body.page-admin-cafes.logged .header-avatar-button,
   body.page-admin-agregar-cafe.logged .header-avatar-button,
   body.page-admin-editar-cafe.logged .header-avatar-button {
     display: flex !important;
-
-    /* 👈 avatar a la izquierda */
-    position: absolute;
-    left: 16px;
-    right: auto;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 3002;
   }
 
-  /* Mantener logo a la derecha (por si otra regla lo mueve) */
+  /* ✅ Logo SIEMPRE a la derecha */
   body.page-admin-cafes .header-logo-link,
   body.page-admin-agregar-cafe .header-logo-link,
   body.page-admin-editar-cafe .header-logo-link {
-    left: auto;
-    right: 16px;
-    z-index: 3001;
+    display: flex !important;
+
+    position: absolute !important;
+    right: 16px !important;
+    left: auto !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    z-index: 3001 !important;
   }
 }
 /* =====================================================
