@@ -252,7 +252,10 @@ function initSimilarCarousel() {
     }
   });
 
-  updateSimilarUI();
+  // 🔑 esperar a que el navegador calcule tamaños reales
+  requestAnimationFrame(() => {
+    requestAnimationFrame(updateSimilarUI);
+  });
 }
 
 function updateSimilarUI() {
@@ -263,27 +266,25 @@ function updateSimilarUI() {
   const dots  = document.querySelectorAll(".carousel-dots .dot");
   if (!cards.length) return;
 
-  // 🔑 MEDIDA REAL (evita offsetWidth = 0)
-  const cardRect = cards[0].getBoundingClientRect();
-  if (cardRect.width === 0) return; // aún no renderizado
+  // 🔑 medir tamaño REAL (no offsetWidth ciego)
+  const rect = cards[0].getBoundingClientRect();
+  if (rect.width === 0) return; // aún no visible
 
   const gap = parseInt(getComputedStyle(list).gap || 16, 10);
-  const CARD_WIDTH = cardRect.width + gap;
+  const CARD_WIDTH = rect.width + gap;
 
   list.scrollTo({
-    left: CARD_WIDTH * similarIndex,
+    left: CARD_WIDTH * getSimilarIndex(),
     behavior: "smooth"
   });
 
-  // Estado visual cards
-  cards.forEach((c, i) => {
-    c.classList.toggle("active-card", i === similarIndex);
-  });
+  cards.forEach((c, i) =>
+    c.classList.toggle("active-card", i === getSimilarIndex())
+  );
 
-  // Estado visual dots
-  dots.forEach((d, i) => {
-    d.classList.toggle("active", i === similarIndex);
-  });
+  dots.forEach((d, i) =>
+    d.classList.toggle("active", i === getSimilarIndex())
+  );
 }
 
 /* =========================
