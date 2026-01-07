@@ -188,49 +188,48 @@ function renderPreview(product) {
     preview.image.src = "imagenes/no-image.png";
   };
 
-  /* =====================================================
-     SLICE — MOSTRAR EN CARRUSEL DEL CLIENTE
-  ===================================================== */
-  const activo = product.carousel === true;
-  preview.carouselToggle.checked = activo;
-  updateCarouselStatus(activo);
+/* =====================================================
+   SLICE — DESTACAR PRODUCTO EN LA TIENDA
+===================================================== */
+const activo = product.featured === true;
+preview.carouselToggle.checked = activo;
+updateCarouselStatus(activo);
 
-  // ⚠️ quitar listeners anteriores (CLAVE)
-  preview.carouselToggle.onchange = null;
+// ⚠️ quitar listeners anteriores (CLAVE)
+preview.carouselToggle.onchange = null;
 
-  preview.carouselToggle.onchange = async () => {
-    const nuevoEstado = preview.carouselToggle.checked;
+preview.carouselToggle.onchange = async () => {
+  const nuevoEstado = preview.carouselToggle.checked;
 
-    // feedback inmediato
-    updateCarouselStatus(nuevoEstado);
+  // feedback inmediato
+  updateCarouselStatus(nuevoEstado);
 
-    const { error } = await window.supabaseClient
-  .from("products")
-  .update({ featured: nuevoEstado })
-  .eq("id", product.id);
+  const { error } = await window.supabaseClient
+    .from("products")
+    .update({ featured: nuevoEstado })
+    .eq("id", product.id);
 
-    if (error) {
-      console.error("❌ Error actualizando carousel:", error);
+  if (error) {
+    console.error("❌ Error actualizando featured:", error);
 
-      // rollback visual
-      preview.carouselToggle.checked = !nuevoEstado;
-      updateCarouselStatus(!nuevoEstado);
-      return;
-    }
+    // rollback visual
+    preview.carouselToggle.checked = !nuevoEstado;
+    updateCarouselStatus(!nuevoEstado);
+    return;
+  }
 
-    // ✅ ACTUALIZAR ESTADO LOCAL (CRÍTICO)
-    product.carousel = nuevoEstado;
+  // ✅ ACTUALIZAR ESTADO LOCAL (CRÍTICO)
+  product.featured = nuevoEstado;
 
-    const p = products.find(p => p.id === product.id);
-    if (p) p.carousel = nuevoEstado;
+  const p = products.find(p => p.id === product.id);
+  if (p) p.featured = nuevoEstado;
 
-    const fp = filteredProducts.find(p => p.id === product.id);
-    if (fp) fp.carousel = nuevoEstado;
+  const fp = filteredProducts.find(p => p.id === product.id);
+  if (fp) fp.featured = nuevoEstado;
 
-    console.log("✅ Carousel actualizado:", product.name, nuevoEstado);
-  };
+  console.log("✅ Featured actualizado:", product.name, nuevoEstado);
+};
 }
-
 /* ============================================================
    CARRUSEL
 ============================================================ */
