@@ -257,25 +257,33 @@ function initSimilarCarousel() {
 
 function updateSimilarUI() {
   const list = safe("lista-similares");
-  const cards = list?.querySelectorAll(".similar-card");
-  const dots = document.querySelectorAll(".carousel-dots .dot");
-  if (!cards || !cards.length) return;
+  if (!list) return;
 
-  const gap = parseInt(getComputedStyle(list).gap || 16);
-  const CARD_WIDTH = cards[0].offsetWidth + gap;
+  const cards = list.querySelectorAll(".similar-card");
+  const dots  = document.querySelectorAll(".carousel-dots .dot");
+  if (!cards.length) return;
+
+  // 🔑 MEDIDA REAL (evita offsetWidth = 0)
+  const cardRect = cards[0].getBoundingClientRect();
+  if (cardRect.width === 0) return; // aún no renderizado
+
+  const gap = parseInt(getComputedStyle(list).gap || 16, 10);
+  const CARD_WIDTH = cardRect.width + gap;
 
   list.scrollTo({
     left: CARD_WIDTH * similarIndex,
     behavior: "smooth"
   });
 
-  cards.forEach((c, i) =>
-    c.classList.toggle("active-card", i === similarIndex)
-  );
+  // Estado visual cards
+  cards.forEach((c, i) => {
+    c.classList.toggle("active-card", i === similarIndex);
+  });
 
-  dots.forEach((d, i) =>
-    d.classList.toggle("active", i === similarIndex)
-  );
+  // Estado visual dots
+  dots.forEach((d, i) => {
+    d.classList.toggle("active", i === similarIndex);
+  });
 }
 
 /* =========================
