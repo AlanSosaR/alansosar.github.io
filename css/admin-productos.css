@@ -504,12 +504,27 @@ a {
   margin: 0 auto 3.5rem;
 }
 
+/* =========================================================
+   TÍTULO Y SUBTÍTULO — ADMIN CARRUSEL
+========================================================= */
+
 .similar-title {
   font-size: 1.4rem;
-  margin-bottom: 1rem;
   font-weight: 600;
-  color: var(--cafe);
+  color: var(--verde);
+  margin-bottom: 0.3rem;
 }
+
+.section-subtitle {
+  font-size: 0.9rem;
+  color: var(--cafe);
+  margin-bottom: 1.4rem;
+  max-width: 520px;
+  line-height: 1.45;
+}
+/* =========================================================
+   — ADMIN CARRUSEL
+========================================================= */
 
 .carousel-container {
   position: relative;
