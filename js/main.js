@@ -274,16 +274,16 @@ function updateSimilarUI() {
   const CARD_WIDTH = rect.width + gap;
 
   list.scrollTo({
-    left: CARD_WIDTH * getSimilarIndex(),
+    left: CARD_WIDTH * similarIndex, // <-- aquí
     behavior: "smooth"
   });
 
   cards.forEach((c, i) =>
-    c.classList.toggle("active-card", i === getSimilarIndex())
+    c.classList.toggle("active-card", i === similarIndex) // <-- aquí
   );
 
   dots.forEach((d, i) =>
-    d.classList.toggle("active", i === getSimilarIndex())
+    d.classList.toggle("active", i === similarIndex) // <-- y aquí
   );
 }
 
