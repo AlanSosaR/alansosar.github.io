@@ -66,7 +66,6 @@ function addToCart(product) {
 
 /* =========================
    RENDER PRODUCTO PRINCIPAL
-   🔑 (ANTES NO EXISTÍA)
 ========================= */
 function renderMainProduct(product) {
   safe("product-name").textContent = product.name || "";
@@ -92,18 +91,48 @@ function renderMainProduct(product) {
   safe("qty-number").textContent = "1";
 }
 
-/* ========================= SIMILARES (DESDE BD) ========================= */
+/* =========================
+   CARRUSEL — ESTADO
+========================= */
+let similarIndex = 0;
+
+/* =========================
+   DOTS DINÁMICOS
+========================= */
+function renderCarouselDots(count) {
+  const dotsContainer = document.querySelector(".carousel-dots");
+  if (!dotsContainer) return;
+
+  dotsContainer.innerHTML = "";
+
+  for (let i = 0; i < count; i++) {
+    const dot = document.createElement("span");
+    dot.className = "dot";
+    if (i === 0) dot.classList.add("active");
+
+    dot.onclick = () => {
+      similarIndex = i;
+      updateSimilarUI();
+    };
+
+    dotsContainer.appendChild(dot);
+  }
+}
+
+/* =========================
+   SIMILARES (DESDE BD)
+========================= */
 async function loadSimilarProducts() {
   const cont = safe("lista-similares");
   if (!cont) return;
 
-const { data, error } = await window.supabaseClient
-  .from("products")
-  .select("*")
-  .eq("featured", true)
-  .eq("status", "activo")
-  .gt("stock", 0) // 📦 solo con stock
-  .order("created_at", { ascending: false });
+  const { data, error } = await window.supabaseClient
+    .from("products")
+    .select("*")
+    .eq("featured", true)
+    .eq("status", "activo")
+    .gt("stock", 0)
+    .order("created_at", { ascending: false });
 
   if (error || !data || !data.length) {
     cont.innerHTML = "";
@@ -132,17 +161,15 @@ const { data, error } = await window.supabaseClient
     </div>
   `).join("");
 
+  renderCarouselDots(data.length);
   bindSimilarCardEvents();
   initDefaultProduct();
   initSimilarCarousel();
 }
 
-/* ========================= CARRUSEL — ESTADO ========================= */
-let similarIndex = 0;
-const setSimilarIndex = i => similarIndex = i;
-const getSimilarIndex = () => similarIndex;
-
-/* ========================= INIT PRODUCTO DEFAULT ========================= */
+/* =========================
+   PRODUCTO POR DEFECTO
+========================= */
 function initDefaultProduct() {
   const firstCard = document.querySelector(".similar-card");
   if (!firstCard) return;
@@ -163,10 +190,12 @@ function initDefaultProduct() {
     .forEach(c => c.classList.remove("active-card"));
 
   firstCard.classList.add("active-card");
-  setSimilarIndex(0);
+  similarIndex = 0;
 }
 
-/* ========================= SIMILAR EVENTS ========================= */
+/* =========================
+   EVENTOS DE CARDS
+========================= */
 function bindSimilarCardEvents() {
   const cards = document.querySelectorAll(".similar-card");
   const productSection = document.querySelector(".product-main");
@@ -174,8 +203,8 @@ function bindSimilarCardEvents() {
   cards.forEach((card, idx) => {
     card.addEventListener("mousedown", e => e.preventDefault());
 
-    card.addEventListener("click", () => {
-      setSimilarIndex(idx);
+    card.onclick = () => {
+      similarIndex = idx;
 
       cards.forEach(c => c.classList.remove("active-card"));
       card.classList.add("active-card");
@@ -194,15 +223,16 @@ function bindSimilarCardEvents() {
 
       productSection?.scrollIntoView({ behavior: "smooth" });
       updateSimilarUI();
-    });
+    };
   });
 }
 
-/* ========================= CARRUSEL UI ========================= */
+/* =========================
+   CARRUSEL UI
+========================= */
 function initSimilarCarousel() {
   const prev = safe("similar-prev");
   const next = safe("similar-next");
-  const dots = document.querySelectorAll(".carousel-dots .dot");
 
   prev && (prev.onclick = () => {
     if (similarIndex > 0) {
@@ -212,17 +242,11 @@ function initSimilarCarousel() {
   });
 
   next && (next.onclick = () => {
-    if (similarIndex < dots.length - 1) {
+    const cards = document.querySelectorAll(".similar-card");
+    if (similarIndex < cards.length - 1) {
       similarIndex++;
       updateSimilarUI();
     }
-  });
-
-  dots.forEach((dot, i) => {
-    dot.onclick = () => {
-      similarIndex = i;
-      updateSimilarUI();
-    };
   });
 
   updateSimilarUI();
@@ -233,6 +257,7 @@ function updateSimilarUI() {
   if (!list) return;
 
   const cards = list.querySelectorAll(".similar-card");
+  const dots = document.querySelectorAll(".carousel-dots .dot");
   if (!cards.length) return;
 
   const gap = parseInt(getComputedStyle(list).gap || 16, 10);
@@ -244,27 +269,16 @@ function updateSimilarUI() {
   cards.forEach((c, i) =>
     c.classList.toggle("active-card", i === similarIndex)
   );
+
+  dots.forEach((d, i) =>
+    d.classList.toggle("active", i === similarIndex)
+  );
 }
 
-/* ========================= DOM READY ========================= */
+/* =========================
+   DOM READY
+========================= */
 document.addEventListener("DOMContentLoaded", () => {
-
   syncHeaderCounter();
-
-  /* ========================= FAB ========================= */
-  const fabContainer = safe("fab");
-  const fabMain = safe("fab-main");
-
-  fabMain?.addEventListener("click", e => {
-    e.stopPropagation();
-    fabContainer.classList.toggle("active");
-  });
-
-  document.addEventListener("click", e => {
-    if (fabContainer && !fabContainer.contains(e.target)) {
-      fabContainer.classList.remove("active");
-    }
-  });
-
-  loadSimilarProducts(); // 🔑 TODO ARRANCA AQUÍ
+  loadSimilarProducts();
 });
