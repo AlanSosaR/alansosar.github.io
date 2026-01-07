@@ -236,8 +236,8 @@ a {
   all: unset;
 
   position: absolute;
-  top: 18px;
-  left: 18px;
+  top: 28px;      /* ⬆️ más separación vertical */
+  left: 24px;     /* ⬅️ más separación horizontal */
 
   width: 42px !important;
   height: 42px !important;
@@ -274,38 +274,47 @@ a {
   .back-btn {
     width: 48px !important;
     height: 48px !important;
+
+    top: 32px;   /* más separación del contenido */
+    left: 22px;  /* más aire lateral */
   }
 }
 
 /* =========================================================
    TEXTO
 ========================================================= */
+
+/* TÍTULO PRINCIPAL (VERDE) */
 .product-text h2 {
   font-family: "Playfair Display", serif;
   font-size: 2rem;
-  margin-bottom: .6rem;
-  color: var(--cafe);
+  margin-bottom: 0.6rem;
+  color: var(--verde);
 }
 
+/* DESCRIPCIÓN (CAFÉ) */
 .product-description {
-  font-size: .95rem;
-  color: var(--gris-text);
+  font-size: 0.95rem;
+  color: var(--cafe);
   line-height: 1.55;
   margin-bottom: 1rem;
 }
 
-/* PÍLDORA CALIDAD */
+/* PÍLDORA CALIDAD (BORDE VERDE, TEXTO CAFÉ) */
 .pill {
   display: inline-block;
-  border: 1px solid var(--gris-line);
-  padding: .45rem 1.1rem;
+  border: 1.6px solid var(--verde);
+  padding: 0.45rem 1.1rem;
   border-radius: 999px;
-  font-size: .85rem;
+  font-size: 0.85rem;
   color: var(--cafe);
   margin-bottom: 1.2rem;
+
+  /* leve elevación premium */
+  box-shadow: 0 4px 10px rgba(46, 125, 50, 0.10);
 }
 
-/* INFO CLAVE */
+/* INFO CLAVE (ADMIN / DETALLE) */
 .admin-product-info {
   list-style: none;
   padding: 0;
@@ -313,8 +322,31 @@ a {
 }
 
 .admin-product-info li {
-  margin-bottom: .45rem;
-  font-size: .95rem;
+  margin-bottom: 0.45rem;
+  font-size: 0.95rem;
+  color: var(--cafe);
+}
+
+/* PRECIO: TEXTO CAFÉ, CANTIDAD VERDE */
+.admin-product-info li .price-label {
+  color: var(--cafe);
+  font-weight: 500;
+}
+
+.admin-product-info li .price-value {
+  color: var(--verde);
+  font-weight: 600;
+}
+
+/* EN ALMACÉN: TEXTO CAFÉ, CANTIDAD VERDE */
+.admin-product-info li .stock-label {
+  color: var(--cafe);
+  font-weight: 500;
+}
+
+.admin-product-info li .stock-value {
+  color: var(--verde);
+  font-weight: 600;
 }
 
 /* =========================================================
@@ -324,8 +356,9 @@ a {
   display: flex;
   align-items: center;
   gap: 14px;
-  font-size: .9rem;
+  font-size: 0.9rem;
   margin-bottom: 1rem;
+  color: var(--cafe); /* 👈 texto en café */
 }
 
 .carousel-status {
