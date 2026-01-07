@@ -91,6 +91,25 @@ function renderMainProduct(product) {
   addBtn.dataset.id = product.id;
   addBtn.dataset.stock = product.stock ?? 0;
 
+  /* ✅ ESTADO DINÁMICO (sin mostrar stock numérico) */
+  const statusEl = safe("product-status");
+  const stock = Number(product.stock ?? 0);
+
+  if (statusEl) {
+    statusEl.classList.remove("available", "low", "out");
+
+    if (stock <= 0) {
+      statusEl.textContent = "Agotado";
+      statusEl.classList.add("out");
+    } else if (stock <= 5) {
+      statusEl.textContent = "Últimas unidades";
+      statusEl.classList.add("low");
+    } else {
+      statusEl.textContent = "Disponible";
+      statusEl.classList.add("available");
+    }
+  }
+
   safe("qty-number").textContent = "1";
 }
 
