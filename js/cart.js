@@ -154,19 +154,23 @@ document.getElementById("proceder-btn")?.addEventListener("click", async () => {
     return;
   }
 
-  const { data } = await sb.auth.getSession();
+  const { data, error: sessionError } = await sb.auth.getSession();
+  if (sessionError) {
+    showSnackbar("No se pudo validar tu sesión. Intenta de nuevo.");
+    return;
+  }
 
-  /* 🔐 NO LOGUEADO → SNACKBAR */
+  /* 🔐 NO LOGUEADO */
   if (!data?.session) {
-    const snack = document.getElementById("snackbar-login");
+    const snackLogin = document.getElementById("snackbar-login");
 
-    if (snack) {
-      snack.classList.remove("hidden");
-      snack.classList.add("show");
+    if (snackLogin) {
+      snackLogin.classList.remove("hidden");
+      snackLogin.classList.add("show");
 
       setTimeout(() => {
-        snack.classList.remove("show");
-        snack.classList.add("hidden");
+        snackLogin.classList.remove("show");
+        snackLogin.classList.add("hidden");
         location.href = "login.html?redirect=carrito";
       }, 1500);
     } else {
@@ -175,31 +179,76 @@ document.getElementById("proceder-btn")?.addEventListener("click", async () => {
     return;
   }
 
-  /* 🔒 VALIDAR product_id */
-  const invalid = cart.some(p => !p.product_id);
-  if (invalid) {
-    alert("Algunos productos necesitan actualizarse. Vuelve a agregarlos 😊");
+  /* 🔐 BLOQUEAR ADMIN */
+  const authUser = data.session.user;
+  const authId = authUser.id;
+  const authEmail = authUser.email;
+
+  let userRow = null;
+
+  const { data: byId, error: errById } = await sb
+    .from("users")
+    .select("rol")
+    .eq("id", authId)
+    .maybeSingle();
+
+  if (errById) {
+    showSnackbar("No se pudo validar tu cuenta.");
     return;
   }
 
-  /* 🔎 VALIDAR QUE LOS IDs EXISTAN EN SUPABASE */
-  const ids = cart.map(i => i.product_id);
+  userRow = byId;
 
-  const { data: products, error } = await sb
+  if (!userRow && authEmail) {
+    const { data: byEmail, error: errByEmail } = await sb
+      .from("users")
+      .select("rol")
+      .eq("email", authEmail)
+      .maybeSingle();
+
+    if (errByEmail) {
+      showSnackbar("No se pudo validar tu cuenta.");
+      return;
+    }
+
+    userRow = byEmail;
+  }
+
+  if (!userRow) {
+    showSnackbar("Tu usuario no está registrado.");
+    return;
+  }
+
+  if (String(userRow.rol).toLowerCase() === "admin") {
+    showSnackbar("Las cuentas de administrador no pueden realizar compras.");
+    return;
+  }
+
+  /* 🔒 VALIDAR product_id */
+  const invalid = cart.some(p => !p.product_id);
+  if (invalid) {
+    showSnackbar("Algunos productos necesitan actualizarse.");
+    return;
+  }
+
+  /* 🔎 VALIDAR IDs EN SUPABASE */
+  const ids = [...new Set(cart.map(i => String(i.product_id)))];
+
+  const { data: products, error: productsError } = await sb
     .from("products")
     .select("id")
     .in("id", ids);
 
-  if (error) {
-    alert("No se pudo validar el carrito. Intenta de nuevo.");
+  if (productsError) {
+    showSnackbar("No se pudo validar el carrito.");
     return;
   }
 
   const found = new Set((products || []).map(p => String(p.id)));
-  const missing = ids.filter(id => !found.has(String(id)));
+  const missing = ids.filter(id => !found.has(id));
 
   if (missing.length) {
-    alert("Algunos productos ya no existen o cambiaron. Vuelve a agregarlos.");
+    showSnackbar("Algunos productos ya no existen o cambiaron.");
     return;
   }
 
