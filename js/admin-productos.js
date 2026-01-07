@@ -205,9 +205,9 @@ function renderPreview(product) {
     updateCarouselStatus(nuevoEstado);
 
     const { error } = await window.supabaseClient
-      .from("products")
-      .update({ carousel: nuevoEstado })
-      .eq("id", product.id);
+  .from("products")
+  .update({ featured: nuevoEstado })
+  .eq("id", product.id);
 
     if (error) {
       console.error("❌ Error actualizando carousel:", error);
