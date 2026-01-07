@@ -291,6 +291,14 @@ a {
   margin-bottom: 0.6rem;
   color: var(--verde);
 }
+.product-text {
+  margin-top: 2.4rem; /* ⬅️ aire entre botón y texto */
+}
+@media (max-width: 900px) {
+  .product-text {
+    margin-top: 3rem;
+  }
+}
 
 /* DESCRIPCIÓN (CAFÉ) */
 .product-description {
