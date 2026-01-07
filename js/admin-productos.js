@@ -164,12 +164,13 @@ function renderPreview(product) {
   const badgeParts = [];
   if (product.category) badgeParts.push(product.category);
   if (product.grind_type) badgeParts.push(product.grind_type);
-  if (product.presentation)
+  if (product.presentation) {
     badgeParts.push(
       product.presentation === "1lb"
         ? "1 lb"
         : product.presentation
     );
+  }
 
   preview.badge.textContent = badgeParts.join(" · ") || "—";
 
@@ -186,48 +187,49 @@ function renderPreview(product) {
   preview.image.onerror = () => {
     preview.image.src = "imagenes/no-image.png";
   };
+
+  /* =====================================================
+     SLICE — MOSTRAR EN CARRUSEL DEL CLIENTE
+  ===================================================== */
+  const activo = product.carousel === true;
+  preview.carouselToggle.checked = activo;
+  updateCarouselStatus(activo);
+
+  // ⚠️ quitar listeners anteriores (CLAVE)
+  preview.carouselToggle.onchange = null;
+
+  preview.carouselToggle.onchange = async () => {
+    const nuevoEstado = preview.carouselToggle.checked;
+
+    // feedback inmediato
+    updateCarouselStatus(nuevoEstado);
+
+    const { error } = await window.supabaseClient
+      .from("products")
+      .update({ carousel: nuevoEstado })
+      .eq("id", product.id);
+
+    if (error) {
+      console.error("❌ Error actualizando carousel:", error);
+
+      // rollback visual
+      preview.carouselToggle.checked = !nuevoEstado;
+      updateCarouselStatus(!nuevoEstado);
+      return;
+    }
+
+    // ✅ ACTUALIZAR ESTADO LOCAL (CRÍTICO)
+    product.carousel = nuevoEstado;
+
+    const p = products.find(p => p.id === product.id);
+    if (p) p.carousel = nuevoEstado;
+
+    const fp = filteredProducts.find(p => p.id === product.id);
+    if (fp) fp.carousel = nuevoEstado;
+
+    console.log("✅ Carousel actualizado:", product.name, nuevoEstado);
+  };
 }
- /* =====================================================
-   SLICE — MOSTRAR EN CARRUSEL DEL CLIENTE
-===================================================== */
-const activo = product.carousel === true;
-preview.carouselToggle.checked = activo;
-updateCarouselStatus(activo);
-
-// ⚠️ quitar listeners anteriores (CLAVE)
-preview.carouselToggle.onchange = null;
-
-preview.carouselToggle.onchange = async () => {
-  const nuevoEstado = preview.carouselToggle.checked;
-
-  // feedback inmediato
-  updateCarouselStatus(nuevoEstado);
-
-  const { error } = await window.supabaseClient
-    .from("products")
-    .update({ carousel: nuevoEstado })
-    .eq("id", product.id);
-
-  if (error) {
-    console.error("❌ Error actualizando carousel:", error);
-
-    // rollback visual
-    preview.carouselToggle.checked = !nuevoEstado;
-    updateCarouselStatus(!nuevoEstado);
-    return;
-  }
-
-  // ✅ ACTUALIZAR ESTADO LOCAL (CRÍTICO)
-  product.carousel = nuevoEstado;
-
-  const p = products.find(p => p.id === product.id);
-  if (p) p.carousel = nuevoEstado;
-
-  const fp = filteredProducts.find(p => p.id === product.id);
-  if (fp) fp.carousel = nuevoEstado;
-
-  console.log("✅ Carousel actualizado:", product.name, nuevoEstado);
-};
 
 /* ============================================================
    CARRUSEL
