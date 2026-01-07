@@ -97,12 +97,12 @@ async function loadSimilarProducts() {
   const cont = safe("lista-similares");
   if (!cont) return;
 
-  const { data, error } = await window.supabaseClient
-    .from("products")
-    .select("*")
-    .eq("carousel", true)
-    .eq("status", "activo")
-    .order("created_at", { ascending: false });
+const { data, error } = await window.supabaseClient
+  .from("products")
+  .select("*")
+  .eq("featured", true)
+  .eq("status", "activo")
+  .order("created_at", { ascending: false });
 
   if (error || !data || !data.length) {
     cont.innerHTML = "";
