@@ -80,7 +80,38 @@ function limpiarError(input) {
   if (label) label.style.color = "";
   if (helper) helper.textContent = "";
 }
+/* ============================================================
+   CHECKOUT CART (VALIDACIÓN)
+============================================================ */
+const CHECKOUT_KEY = "checkout_cart";
 
+function getCheckoutCart() {
+  try {
+    return JSON.parse(localStorage.getItem(CHECKOUT_KEY)) || [];
+  } catch {
+    return [];
+  }
+}
+
+function validarCheckoutCart() {
+  const cart = getCheckoutCart();
+
+  if (!cart.length) {
+    // Ideal: snackbar. Por ahora fallback:
+    // showSnackbar("Tu carrito está vacío. Agrega productos para continuar.");
+    window.location.href = "carrito.html";
+    return false;
+  }
+
+  const invalid = cart.some(p => !p.product_id);
+  if (invalid) {
+    // showSnackbar("Productos inválidos. Vuelve a agregarlos al carrito.");
+    window.location.href = "carrito.html";
+    return false;
+  }
+
+  return true;
+}
 /* ============================================================
    CACHE USUARIO
 ============================================================ */
@@ -254,6 +285,10 @@ form.addEventListener("submit", async e => {
 
   if (!validarFormulario()) return;
 
+  // ✅ Validar checkout/cart ANTES de guardar y avanzar
+  // (asumiendo que ya tienes validarCheckoutCart() definido)
+  if (!validarCheckoutCart()) return;
+
   btnSubmit.classList.add("loading");
 
   if (!await updateUser() || !await guardarDireccion()) {
@@ -272,6 +307,9 @@ form.addEventListener("submit", async e => {
 
   userCache = getUserCache();
   if (!userCache) return window.location.href = "login.html";
+
+  // ✅ VALIDAR QUE HAY CHECKOUT (carrito) ANTES DE SEGUIR
+  if (!validarCheckoutCart()) return;
 
   userId = userCache.id;
 
