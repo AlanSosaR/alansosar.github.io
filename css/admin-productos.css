@@ -335,26 +335,17 @@ a {
   color: var(--cafe);
 }
 
-/* PRECIO: TEXTO CAFÉ, CANTIDAD VERDE */
-.admin-product-info li .price-label {
+/* Etiquetas (Precio / En almacén) */
+.admin-product-info li strong {
   color: var(--cafe);
   font-weight: 500;
 }
 
-.admin-product-info li .price-value {
+/* Valores (cantidades) en verde */
+.admin-product-info li span {
   color: var(--verde);
   font-weight: 600;
-}
-
-/* EN ALMACÉN: TEXTO CAFÉ, CANTIDAD VERDE */
-.admin-product-info li .stock-label {
-  color: var(--cafe);
-  font-weight: 500;
-}
-
-.admin-product-info li .stock-value {
-  color: var(--verde);
-  font-weight: 600;
+  margin-left: 4px;
 }
 
 /* =========================================================
