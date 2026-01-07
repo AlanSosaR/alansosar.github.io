@@ -772,7 +772,48 @@ body.page-carrito.logged #login-desktop {
     height: 44px;
   }
 }
+/* =====================================================
+   ADMIN — AVATAR IZQUIERDA (SOLO PC)
+===================================================== */
+@media (min-width: 901px) {
 
+  /* Asegura que el header sea el “contenedor” de los absolutos */
+  body.page-admin-cafes header.header-fixed,
+  body.page-admin-agregar-cafe header.header-fixed,
+  body.page-admin-editar-cafe header.header-fixed {
+    position: fixed; /* o relative si ya es fixed */
+  }
+
+  /* Mostrar el botón/avatar cuando está logueado */
+  body.page-admin-cafes.logged #btn-header-user,
+  body.page-admin-agregar-cafe.logged #btn-header-user,
+  body.page-admin-editar-cafe.logged #btn-header-user {
+    display: flex !important;
+  }
+
+  body.page-admin-cafes.logged .header-avatar-button,
+  body.page-admin-agregar-cafe.logged .header-avatar-button,
+  body.page-admin-editar-cafe.logged .header-avatar-button {
+    display: flex !important;
+
+    /* 👈 avatar a la izquierda */
+    position: absolute;
+    left: 16px;
+    right: auto;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 3002;
+  }
+
+  /* Mantener logo a la derecha (por si otra regla lo mueve) */
+  body.page-admin-cafes .header-logo-link,
+  body.page-admin-agregar-cafe .header-logo-link,
+  body.page-admin-editar-cafe .header-logo-link {
+    left: auto;
+    right: 16px;
+    z-index: 3001;
+  }
+}
 /* =====================================================
    TÍTULOS CENTRALES — VISIBILIDAD POR PÁGINA
 ===================================================== */
