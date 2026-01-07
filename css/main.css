@@ -291,30 +291,37 @@ body {
 .product-split .icon-part:active {
   transform: translateY(2px);
 }
-/* TARJETA DE IMAGEN VISUAL DEL PRODUCTO */
+/* TARJETA DE IMAGEN VISUAL DEL PRODUCTO (FULL COVER) */
 
 .product-img-wrap {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 100%;
+  height: 360px;              /* altura base */
+  border-radius: 22px;
+  overflow: hidden;           /* recorta la imagen */
 
   background: #ffffff;
-  border-radius: 22px;
-  padding: 1.4rem;
 
+  /* 🌿 Sombra verde premium */
   box-shadow:
-    0 14px 32px rgba(0, 0, 0, 0.10),
-    0 4px 10px rgba(0, 0, 0, 0.06);
+    0 14px 32px rgba(46, 125, 50, 0.22),
+    0 4px 10px rgba(46, 125, 50, 0.14);
 
-  margin-top: 0.6rem;
+  margin-top: 0.8rem;
 }
 
 .product-img-wrap img {
   width: 100%;
-  max-width: 340px;
-  border-radius: 16px;
-  object-fit: contain;
+  height: 100%;
+  object-fit: cover;          /* llena todo el contenedor */
+  border-radius: 22px;
   display: block;
+}
+
+/* 📱 Ajuste para mobile */
+@media (max-width: 480px) {
+  .product-img-wrap {
+    height: 300px;
+  }
 }
 /* =====================================================
    CARRUSEL SIMILARES — NAVEGACIÓN INFERIOR (PC)
