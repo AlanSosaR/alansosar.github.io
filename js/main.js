@@ -1,7 +1,6 @@
 /* ============================================================
-   MAIN.JS — Café Cortero 2025 (FINAL ESTABLE)
-   UI + CARRITO + INTERACCIONES
-   ✅ Header controla contador
+   MAIN.JS — Café Cortero 2025 (FINAL DEFINITIVO)
+   UI + CARRITO + CARRUSELES + SUPABASE
 ============================================================ */
 
 /* ========================= SAFE ========================= */
@@ -81,6 +80,10 @@ function renderMainProduct(product) {
   safe("product-price").textContent = `L ${product.price}`;
 
   const img = safe("product-image");
+  img.classList.remove("swap");
+  void img.offsetWidth;
+  img.classList.add("swap");
+
   img.src = product.image_url || "imagenes/no-image.png";
   img.onerror = () => img.src = "imagenes/no-image.png";
 
@@ -146,7 +149,7 @@ async function loadSimilarProducts() {
     <div class="similar-card"
       data-id="${p.id}"
       data-name="${p.name}"
-      data-price="L ${p.price}"
+      data-price="${p.price}"
       data-img="${p.image_url || "imagenes/no-image.png"}"
       data-description="${p.description || ""}"
       data-category="${p.category || ""}"
@@ -181,7 +184,7 @@ function initDefaultProduct() {
     category: firstCard.dataset.category,
     grind_type: firstCard.dataset.grind,
     presentation: firstCard.dataset.presentation,
-    price: Number(firstCard.dataset.price.replace(/[^\d.]/g, "")),
+    price: Number(firstCard.dataset.price),
     stock: Number(firstCard.dataset.stock || 0),
     image_url: firstCard.dataset.img
   });
@@ -216,7 +219,7 @@ function bindSimilarCardEvents() {
         category: card.dataset.category,
         grind_type: card.dataset.grind,
         presentation: card.dataset.presentation,
-        price: Number(card.dataset.price.replace(/[^\d.]/g, "")),
+        price: Number(card.dataset.price),
         stock: Number(card.dataset.stock || 0),
         image_url: card.dataset.img
       });
@@ -254,15 +257,15 @@ function initSimilarCarousel() {
 
 function updateSimilarUI() {
   const list = safe("lista-similares");
-  if (!list) return;
-
-  const cards = list.querySelectorAll(".similar-card");
+  const cards = list?.querySelectorAll(".similar-card");
   const dots = document.querySelectorAll(".carousel-dots .dot");
-  if (!cards.length) return;
+  if (!cards || !cards.length) return;
 
-  const gap = parseInt(getComputedStyle(list).gap || 16, 10);
+  const gap = parseInt(getComputedStyle(list).gap || 16);
+  const CARD_WIDTH = cards[0].offsetWidth + gap;
+
   list.scrollTo({
-    left: (cards[0].offsetWidth + gap) * similarIndex,
+    left: CARD_WIDTH * similarIndex,
     behavior: "smooth"
   });
 
@@ -279,6 +282,36 @@ function updateSimilarUI() {
    DOM READY
 ========================= */
 document.addEventListener("DOMContentLoaded", () => {
+
   syncHeaderCounter();
+
+  /* ===== CANTIDAD ===== */
+  const qtyNumber = safe("qty-number");
+
+  safe("qty-minus")?.addEventListener("click", () => {
+    const n = parseInt(qtyNumber.textContent);
+    if (n > 1) qtyNumber.textContent = n - 1;
+  });
+
+  safe("qty-plus")?.addEventListener("click", () => {
+    qtyNumber.textContent = parseInt(qtyNumber.textContent) + 1;
+  });
+
+  /* ===== ADD TO CART ===== */
+  safe("product-add")?.addEventListener("click", () => {
+    const qty   = parseInt(qtyNumber.textContent) || 1;
+    const name  = safe("product-name").textContent.trim();
+    const img   = safe("product-image").src;
+    const price = parseFloat(
+      safe("product-price").textContent.replace(/[^\d.-]/g, "")
+    );
+
+    const productId = safe("product-add").dataset.id;
+    if (!productId) return;
+
+    addToCart({ product_id: productId, name, price, img, qty });
+    qtyNumber.textContent = "1";
+  });
+
   loadSimilarProducts();
 });
