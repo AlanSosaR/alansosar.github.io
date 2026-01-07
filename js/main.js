@@ -288,11 +288,30 @@ function updateSimilarUI() {
 }
 
 /* =========================
+   HERO CAROUSEL (IMÁGENES)
+========================= */
+function initHeroCarousel() {
+  const images = document.querySelectorAll(".hero-carousel img");
+  if (!images.length) return;
+
+  let index = 0;
+
+  images.forEach(img => img.classList.remove("active"));
+  images[0].classList.add("active");
+
+  setInterval(() => {
+    images[index].classList.remove("active");
+    index = (index + 1) % images.length;
+    images[index].classList.add("active");
+  }, 4000);
+}
+/* =========================
    DOM READY
 ========================= */
 document.addEventListener("DOMContentLoaded", () => {
 
   syncHeaderCounter();
+  initHeroCarousel(); // 👈 ESTA LÍNEA
 
   /* ===== CANTIDAD ===== */
   const qtyNumber = safe("qty-number");
