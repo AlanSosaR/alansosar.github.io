@@ -205,42 +205,58 @@ body {
   font-size: 0.9rem;
 }
 
+/* ESPACIADO PREMIUM ENTRE SECCIONES DEL BLOQUE DE TEXTO */
+.product-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem; /* más aire general */
+}
+
 /* TÍTULO PRINCIPAL */
 .product-text h2 {
   font-family: "Playfair Display", serif;
-  font-size: 2.1rem;
+  font-size: 2.2rem;
   color: var(--verde);
   margin: 0;
-  line-height: 1.2;
+  line-height: 1.15;
 }
 
-/* DESCRIPCIÓN */
+/* DESCRIPCIÓN (CAFÉ) */
 .product-description {
-  margin: 0.2rem 0 0.4rem;
-  line-height: 1.5;
-  color: #6b4f3f;
+  margin: 0;
+  line-height: 1.55;
+  color: var(--marron); /* café */
 }
 
-/* PÍLDORA */
+/* PÍLDORA: borde verde + texto café + leve elevación */
 .pill {
   background: #fff;
-  border: 1px solid #ddd;
+  border: 1.6px solid var(--verde);
   color: var(--marron);
   border-radius: 999px;
-  padding: 0.4rem 1rem;
-  font-size: 0.85rem;
-  margin-top: 0.3rem;
+  padding: 0.45rem 1rem;
+  font-size: 0.88rem;
   align-self: flex-start;
+
+  box-shadow: 0 6px 14px rgba(46, 125, 50, 0.10); /* sombra verde suave */
 }
 
-/* ESTADO DEL PRODUCTO */
+/* ESTADO DEL PRODUCTO (dinámico por clases) */
 .product-status {
-  margin-top: 0.6rem;
-  padding-top: 0.3rem;
-  font-size: 0.95rem;
-  font-weight: 500;
-  color: var(--verde);
+  margin: 0.15rem 0 0;
+  font-size: 0.98rem;
+  font-weight: 600;
   letter-spacing: 0.2px;
+}
+
+/* Colores del estado */
+.product-status.available { color: var(--verde); }
+.product-status.low      { color: #b7791f; } /* ámbar (pocas unidades) */
+.product-status.out      { color: #b91c1c; } /* rojo (agotado) */
+
+/* Separación extra antes de acciones (precio + cantidad) */
+.product-actions {
+  margin-top: 0.9rem;
 }
 
 /* Split button */
@@ -275,6 +291,8 @@ body {
 .product-split .icon-part:active {
   transform: translateY(2px);
 }
+/* TARJETA DE IMAGEN VISUAL DEL PRODUCTO */
+
 .product-img-wrap {
   display: flex;
   align-items: center;
