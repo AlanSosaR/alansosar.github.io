@@ -463,18 +463,15 @@ a {
 }
 
 /* =========================================================
-   IMAGEN PREVIEW (ELEVADA – SOMBRA VERDE)
-   Consistente con index
+   IMAGEN PREVIEW — FULL COVER (IGUAL QUE INDEX)
 ========================================================= */
 .product-img-wrap {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  width: 100%;
+  height: 360px;                 /* controla el alto visual */
+  border-radius: 20px;
+  overflow: hidden;              /* recorte limpio */
 
   background: #ffffff;
-  border-radius: 20px;
-  padding: 1.3rem;
-  overflow: hidden;
 
   /* 🌿 Elevación con sombra verde */
   box-shadow:
@@ -485,12 +482,18 @@ a {
 }
 
 .product-img-wrap img {
-  max-width: 320px;
   width: 100%;
-  height: auto;
-  border-radius: 14px;
-  object-fit: contain;
+  height: 100%;
+  object-fit: cover;             /* 🔑 llena TODO el contenedor */
+  border-radius: 20px;
   display: block;
+}
+
+/* 📱 MOBILE */
+@media (max-width: 480px) {
+  .product-img-wrap {
+    height: 300px;
+  }
 }
 
 /* =========================================================
