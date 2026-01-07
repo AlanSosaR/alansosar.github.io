@@ -186,7 +186,7 @@ function renderPreview(product) {
   preview.image.onerror = () => {
     preview.image.src = "imagenes/no-image.png";
   };
-
+}
  /* =====================================================
    SLICE — MOSTRAR EN CARRUSEL DEL CLIENTE
 ===================================================== */
