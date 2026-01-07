@@ -229,7 +229,7 @@ preview.carouselToggle.onchange = async () => {
 
   console.log("✅ Featured actualizado:", product.name, nuevoEstado);
 };
-}
+
 /* ============================================================
    CARRUSEL
 ============================================================ */
