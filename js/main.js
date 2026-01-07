@@ -102,6 +102,7 @@ const { data, error } = await window.supabaseClient
   .select("*")
   .eq("featured", true)
   .eq("status", "activo")
+  .gt("stock", 0) // 📦 solo con stock
   .order("created_at", { ascending: false });
 
   if (error || !data || !data.length) {
