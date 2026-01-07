@@ -143,7 +143,6 @@ document.getElementById("cart-container")?.addEventListener("click", e => {
   renderCart();
 });
 
-/* ================= CHECKOUT ================= */
 document.getElementById("proceder-btn")?.addEventListener("click", async () => {
   const cart = getCart();
   if (!cart.length) return;
@@ -162,20 +161,10 @@ document.getElementById("proceder-btn")?.addEventListener("click", async () => {
 
   /* 🔐 NO LOGUEADO */
   if (!data?.session) {
-    const snackLogin = document.getElementById("snackbar-login");
-
-    if (snackLogin) {
-      snackLogin.classList.remove("hidden");
-      snackLogin.classList.add("show");
-
-      setTimeout(() => {
-        snackLogin.classList.remove("show");
-        snackLogin.classList.add("hidden");
-        location.href = "login.html?redirect=carrito";
-      }, 1500);
-    } else {
+    showSnackbar("Necesitas iniciar sesión para continuar con tu pedido.");
+    setTimeout(() => {
       location.href = "login.html?redirect=carrito";
-    }
+    }, 1500);
     return;
   }
 
@@ -186,12 +175,80 @@ document.getElementById("proceder-btn")?.addEventListener("click", async () => {
 
   let userRow = null;
 
+  // 1) Intentar por ID (si public.users.id = auth.uid())
   const { data: byId, error: errById } = await sb
     .from("users")
     .select("rol")
     .eq("id", authId)
     .maybeSingle();
 
+  if (errById) {
+    showSnackbar("No se pudo validar tu cuenta.");
+    return;
+  }
+
+  userRow = byId;
+
+  // 2) Fallback por email (si tu tabla users no usa auth.uid() como id)
+  if (!userRow && authEmail) {
+    const { data: byEmail, error: errByEmail } = await sb
+      .from("users")
+      .select("rol")
+      .eq("email", authEmail)
+      .maybeSingle();
+
+    if (errByEmail) {
+      showSnackbar("No se pudo validar tu cuenta.");
+      return;
+    }
+
+    userRow = byEmail;
+  }
+
+  if (!userRow) {
+    showSnackbar("Tu usuario no está registrado.");
+    return;
+  }
+
+  if (String(userRow.rol).toLowerCase() === "admin") {
+    showSnackbar("Las cuentas de administrador no pueden realizar compras.");
+    return;
+  }
+
+  /* 🔒 VALIDAR product_id */
+  const invalid = cart.some(p => !p.product_id);
+  if (invalid) {
+    showSnackbar("Algunos productos necesitan actualizarse.");
+    return;
+  }
+
+  /* 🔎 VALIDAR IDs EN SUPABASE */
+  const ids = [...new Set(cart.map(i => String(i.product_id)))];
+
+  const { data: products, error: productsError } = await sb
+    .from("products")
+    .select("id")
+    .in("id", ids);
+
+  if (productsError) {
+    showSnackbar("No se pudo validar el carrito.");
+    return;
+  }
+
+  const found = new Set((products || []).map(p => String(p.id)));
+  const missing = ids.filter(id => !found.has(id));
+
+  if (missing.length) {
+    showSnackbar("Algunos productos ya no existen o cambiaron.");
+    return;
+  }
+
+  /* 📦 GUARDAR CHECKOUT */
+  localStorage.setItem(CHECKOUT_KEY, JSON.stringify(cart));
+
+  /* ➡️ CONTINUAR */
+  location.href = "datos_cliente.html";
+});
   if (errById) {
     showSnackbar("No se pudo validar tu cuenta.");
     return;
