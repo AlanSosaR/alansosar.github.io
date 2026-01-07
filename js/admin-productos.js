@@ -230,6 +230,9 @@ preview.carouselToggle.onchange = async () => {
   console.log("✅ Featured actualizado:", product.name, nuevoEstado);
 };
 
+// 🔒 ESTE cierre es el que faltaba: cierra renderPreview(product)
+}
+
 /* ============================================================
    CARRUSEL
 ============================================================ */
