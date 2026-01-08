@@ -1,32 +1,115 @@
 (() => {
   const sb = window.supabaseClient || window.supabase || null;
 
-  const form          = document.getElementById("newPassForm");
+  const form = document.getElementById("newPassForm");
   if (!form) return;
 
-  const newPassInput  = document.getElementById("newPassword");
-  const confirmInput  = document.getElementById("confirmPassword");
+  const newPassInput = document.getElementById("newPassword");
+  const confirmInput = document.getElementById("confirmPassword");
 
-  const btn           = form.querySelector(".m3-btn");
-  const btnText       = btn?.querySelector(".btn-text");
-  const loader        = btn?.querySelector(".loader");
+  const btn     = form.querySelector(".m3-btn");
+  const btnText = btn?.querySelector(".btn-text");
+  const loader  = btn?.querySelector(".loader");
 
-  // Snackbar (solo para éxito final o token expirado)
-  const snack     = document.getElementById("snackbar");
-  const snackMsg  = snack?.querySelector(".snackbar__msg");
+  // Snackbar ACTION (no autocierra)
+  const snack        = document.getElementById("snackbar");
+  const snackMsg     = snack?.querySelector(".snackbar__msg");
+  const snackActions = snack?.querySelector(".snackbar__actions");
 
-  function showSnackbar(message, type = "info", ms = 2600) {
-    if (!snack || !snackMsg) return;
-    snack.classList.remove("hidden", "show", "is-error", "is-warn", "is-success");
-    if (type === "error")   snack.classList.add("is-error");
+  let snackResolver = null;
+  let snackClickHandler = null;
+
+  function setSnackType(type) {
+    if (!snack) return;
+    snack.classList.remove("is-error", "is-warn", "is-success");
+    if (type === "error") snack.classList.add("is-error");
+    if (type === "warn") snack.classList.add("is-warn");
     if (type === "success") snack.classList.add("is-success");
-    snackMsg.textContent = message;
+  }
+
+  function openSnack(message, type = "info") {
+    if (!snack) return;
+    snack.classList.remove("hidden", "show");
+    setSnackType(type);
+
+    if (snackMsg) snackMsg.textContent = message;
+    else snack.textContent = message;
+
     void snack.offsetWidth;
     snack.classList.add("show");
-    setTimeout(() => {
-      snack.classList.remove("show");
-      snack.classList.add("hidden");
-    }, ms);
+  }
+
+  function closeSnack() {
+    if (!snack) return;
+    snack.classList.remove("show");
+    snack.classList.add("hidden");
+
+    if (snackActions) snackActions.style.display = "";
+
+    if (snackClickHandler && snackActions) {
+      snackActions.removeEventListener("click", snackClickHandler);
+      snackClickHandler = null;
+    }
+
+    if (snackResolver) {
+      const r = snackResolver;
+      snackResolver = null;
+      r("cancel");
+    }
+  }
+
+  function actionSnack({
+    message,
+    type = "info",
+    confirmText = "Aceptar",
+    cancelText = "Cancelar",
+    showCancel = true,
+  }) {
+    return new Promise((resolve) => {
+      if (!snack || !snackActions) {
+        // fallback simple (sin acciones)
+        resolve("confirm");
+        return;
+      }
+
+      snackResolver = resolve;
+
+      // Mostrar acciones
+      snackActions.style.display = "inline-flex";
+
+      const btnCancel  = snackActions.querySelector('[data-action="cancel"]');
+      const btnConfirm = snackActions.querySelector('[data-action="confirm"]');
+
+      if (btnConfirm) btnConfirm.textContent = confirmText;
+
+      if (btnCancel) {
+        btnCancel.textContent = cancelText;
+        btnCancel.style.display = showCancel ? "" : "none";
+      }
+
+      openSnack(message, type);
+
+      // listener único
+      if (snackClickHandler) snackActions.removeEventListener("click", snackClickHandler);
+
+      snackClickHandler = (e) => {
+        const b = e.target.closest("button");
+        if (!b) return;
+
+        const action = b.dataset.action;
+        if (!action) return;
+
+        const r = snackResolver;
+        snackResolver = null;
+
+        snackActions.removeEventListener("click", snackClickHandler);
+        snackClickHandler = null;
+
+        r(action === "confirm" ? "confirm" : "cancel");
+      };
+
+      snackActions.addEventListener("click", snackClickHandler);
+    });
   }
 
   // Helpers UI (errores por campo)
@@ -39,12 +122,14 @@
   }
 
   function clearError(inputEl) {
+    if (!inputEl) return;
     const { box, msg } = fieldParts(inputEl);
     box?.classList.remove("error");
     if (msg) msg.textContent = "";
   }
 
   function setError(inputEl, text) {
+    if (!inputEl) return;
     const { box, msg } = fieldParts(inputEl);
     box?.classList.add("error");
     if (msg) msg.textContent = text || "";
@@ -59,7 +144,7 @@
     btn.classList.toggle("loading", !!on);
     btn.disabled = !!on;
     if (btnText) btnText.style.opacity = on ? "0" : "1";
-    if (loader)  loader.style.display   = on ? "inline-block" : "none";
+    if (loader) loader.style.display = on ? "inline-block" : "none";
   }
 
   // Password strength (0–3)
@@ -70,16 +155,22 @@
   function strengthLevel(pw) {
     let score = 0;
     if (pw.length >= 6) score++;
-    if (/[A-Z]/.test(pw) || /[^A-Za-z0-9]/.test(pw)) score++; // mayúscula o símbolo
-    if (pw.length >= 10 && /[0-9]/.test(pw)) score++;         // largo + dígito
+    if (/[A-Z]/.test(pw) || /[^A-Za-z0-9]/.test(pw)) score++;
+    if (pw.length >= 10 && /[0-9]/.test(pw)) score++;
     return Math.max(0, Math.min(score, 3));
   }
 
   function paintStrength(level) {
+    const colors = {
+      0: "#e1e1e1",
+      1: "#f6c343",
+      2: "#33c26b",
+      3: "#1e8f57",
+    };
+
     [bar1, bar2, bar3].forEach((el, i) => {
       if (!el) return;
-      el.className = ""; // limpia clases previas
-      el.style.background = i < level ? (level === 1 ? "#f6c343" : level === 2 ? "#33c26b" : "#1e8f57") : "#e1e1e1";
+      el.style.background = i < level ? colors[level] : colors[0];
       el.style.transition = ".25s";
       el.style.borderRadius = "4px";
     });
@@ -90,7 +181,6 @@
     paintStrength(strengthLevel(v));
   });
 
-  // Reglas de password (para validación)
   function validarPassword(pw) {
     return (
       pw.length >= 6 &&
@@ -99,22 +189,44 @@
     );
   }
 
-  // Sesión recovery (token/OTP)
+  // Sesión recovery
   async function asegurarSesionRecovery() {
     if (!sb) {
-      showSnackbar("Supabase no está listo. Revisa tus scripts.", "error", 3200);
+      // Error del sistema: como no tenemos action real, mostramos action con "Reintentar"
+      const decision = await actionSnack({
+        message: "Supabase no está listo. Intenta de nuevo.",
+        type: "error",
+        confirmText: "Cerrar",
+        cancelText: "",
+        showCancel: false,
+      });
+      if (decision) closeSnack();
       return false;
     }
+
     const { data, error } = await sb.auth.getSession();
     if (error || !data?.session) {
-      showSnackbar("Tu enlace de recuperación expiró. Vuelve a recuperar tu contraseña.", "error", 3600);
-      setTimeout(() => (window.location.href = "forgot-password.html"), 1200);
+      // Token expirado: NO autocierra, usuario decide
+      const decision = await actionSnack({
+        message: "Tu enlace de recuperación expiró. Vuelve a solicitar uno nuevo.",
+        type: "error",
+        confirmText: "Recuperar",
+        cancelText: "Cerrar",
+        showCancel: true,
+      });
+
+      closeSnack();
+
+      if (decision === "confirm") {
+        window.location.href = "forgot-password.html";
+      }
       return false;
     }
+
     return true;
   }
 
-  // Valida al cargar
+  // Validación al cargar
   (async () => {
     await asegurarSesionRecovery();
   })();
@@ -159,7 +271,6 @@
     const { error } = await sb.auth.updateUser({ password: pw1 });
 
     if (error) {
-      // error general del servidor: marca en confirm
       setLoading(false);
       setError(confirmInput, "No se pudo cambiar la contraseña. Intenta de nuevo.");
       return;
@@ -167,12 +278,34 @@
 
     setLoading(false);
 
-    // Limpieza de flags opcionales
     localStorage.removeItem("cortero_recovery_phone");
     localStorage.removeItem("cortero_recovery_email");
 
-    // Solo snackbar de éxito y redirección a login
-    showSnackbar("Contraseña actualizada. Redirigiendo a iniciar sesión…", "success", 1800);
-    setTimeout(() => (window.location.href = "login.html"), 900);
+    // Éxito: NO autocierra. Usuario decide y luego redirige.
+    const decision = await actionSnack({
+      message: "Contraseña actualizada correctamente. Presiona para ir a iniciar sesión.",
+      type: "success",
+      confirmText: "Ir a login",
+      cancelText: "Cerrar",
+      showCancel: true,
+    });
+
+    closeSnack();
+
+    if (decision === "confirm") {
+      window.location.href = "login.html";
+    }
+    // Si cierra, te deja en la misma página (como pediste).
+  });
+
+  // Toggle password
+  document.querySelectorAll(".toggle-pass").forEach((icon) => {
+    icon.addEventListener("click", () => {
+      const target = document.getElementById(icon.dataset.target);
+      if (!target) return;
+      const visible = target.type === "password";
+      target.type = visible ? "text" : "password";
+      icon.textContent = visible ? "visibility_off" : "visibility";
+    });
   });
 })();
