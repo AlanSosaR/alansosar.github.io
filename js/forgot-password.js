@@ -1,49 +1,94 @@
-/* ============================================================
-   Forgot Password — Café Cortero ☕ (FINAL)
-   ✔ Errores debajo del input (field-msg)
-   ✔ Snackbar solo para acciones (enviar correo / enviar SMS / fallos server)
-   ✔ Valida existencia en BD (tabla users)
-   ✔ Email: resetPasswordForEmail
-   ✔ Teléfono: signInWithOtp
-============================================================ */
+/* Forgot Password — Café Cortero (CORREGIDO)
+   - Email: se queda en la página (no redirige)
+   - Teléfono: redirige a verificar-sms.html
+   - Errores debajo del input (field-msg)
+   - Snackbar Material 3 Expressive (hidden/show + variantes)
+*/
 
 (() => {
   const sb = window.supabaseClient;
 
-  const form  = document.getElementById("forgotForm");
+  const form = document.getElementById("forgotForm");
   const input = document.getElementById("recoverInput");
-  const btn   = form?.querySelector(".m3-btn");
-  const btnText = btn?.querySelector(".btn-text");
-  const loader  = btn?.querySelector(".loader");
-
   if (!form || !input) return;
 
+  const btn = form.querySelector(".m3-btn");
+  const btnText = btn?.querySelector(".btn-text");
+  const loader = btn?.querySelector(".loader");
+
   const field = input.closest(".m3-field");
-  const box   = input.closest(".m3-input");
-  const msgEl = field?.querySelector(".field-msg");
+  const box = input.closest(".m3-input");
 
-  /* ---------------- SNACKBAR (M3 EXPRESSIVE) ---------------- */
+  // Si no existe <div class="field-msg"></div>, lo creamos.
+  let msgEl = field?.querySelector(".field-msg");
+  if (field && !msgEl) {
+    msgEl = document.createElement("div");
+    msgEl.className = "field-msg";
+    field.appendChild(msgEl);
+  }
+
+  const snackbarEl = document.getElementById("snackbar");
+  const snackMsgEl = snackbarEl?.querySelector(".snackbar__msg");
+  const snackActionsEl = snackbarEl?.querySelector(".snackbar__actions");
+
   function showSnackbar(message, type = "info", ms = 2600) {
-    const el = document.getElementById("snackbar");
-    if (!el) return;
+    if (!snackbarEl) return;
 
-    el.classList.remove("hidden", "show", "is-error", "is-warn", "is-success");
-    if (type === "error") el.classList.add("is-error");
-    if (type === "warn") el.classList.add("is-warn");
-    if (type === "success") el.classList.add("is-success");
+    snackbarEl.classList.remove("hidden", "show", "is-error", "is-warn", "is-success");
+    if (type === "error") snackbarEl.classList.add("is-error");
+    if (type === "warn") snackbarEl.classList.add("is-warn");
+    if (type === "success") snackbarEl.classList.add("is-success");
 
-    el.textContent = message;
-    void el.offsetWidth;
-    el.classList.add("show");
+    if (snackMsgEl) snackMsgEl.textContent = message;
+    else snackbarEl.textContent = message;
+
+    void snackbarEl.offsetWidth;
+    snackbarEl.classList.add("show");
 
     clearTimeout(window.__snackTimer);
     window.__snackTimer = setTimeout(() => {
-      el.classList.remove("show");
-      el.classList.add("hidden");
+      snackbarEl.classList.remove("show");
+      snackbarEl.classList.add("hidden");
     }, ms);
   }
 
-  /* ---------------- Errores debajo del input ---------------- */
+  // Snackbar con acciones (Confirmar/Cancelar) si tienes ese HTML.
+  function confirmSnackbar({ message, type = "info" }) {
+    return new Promise((resolve) => {
+      // Si no hay botones/estructura action, fallback directo a "confirmado".
+      if (!snackbarEl || !snackActionsEl || !snackMsgEl) {
+        showSnackbar(message, type, 2400);
+        resolve(true);
+        return;
+      }
+
+      snackbarEl.classList.remove("hidden", "show", "is-error", "is-warn", "is-success");
+      if (type === "error") snackbarEl.classList.add("is-error");
+      if (type === "warn") snackbarEl.classList.add("is-warn");
+      if (type === "success") snackbarEl.classList.add("is-success");
+
+      snackMsgEl.textContent = message;
+
+      // Mostrar y NO autocerrar hasta que el usuario elija
+      clearTimeout(window.__snackTimer);
+      void snackbarEl.offsetWidth;
+      snackbarEl.classList.add("show");
+
+      const onClick = (e) => {
+        const action = e.target?.dataset?.action;
+        if (!action) return;
+
+        snackActionsEl.removeEventListener("click", onClick);
+        snackbarEl.classList.remove("show");
+        snackbarEl.classList.add("hidden");
+
+        resolve(action === "confirm");
+      };
+
+      snackActionsEl.addEventListener("click", onClick);
+    });
+  }
+
   function clearFieldError() {
     box?.classList.remove("error");
     field?.classList.remove("has-error");
@@ -66,7 +111,6 @@
     btn.disabled = !!on;
   }
 
-  /* ---------------- Validaciones ---------------- */
   function isEmail(v) {
     return /^[^\s@]+@[^\s@]+\.[A-Za-z]{2,}$/.test(v);
   }
@@ -91,7 +135,6 @@
     return { ok: true, user: data || null };
   }
 
-  /* ---------------- SUBMIT ---------------- */
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     clearFieldError();
@@ -103,7 +146,6 @@
       return;
     }
 
-    // Vacío → error debajo
     if (!raw) {
       setFieldError("Ingresa tu correo o teléfono.");
       return;
@@ -112,7 +154,6 @@
     const emailMode = isEmail(raw);
     const phoneMode = !emailMode && isPhone(raw);
 
-    // Formato inválido → error debajo
     if (!emailMode && !phoneMode) {
       setFieldError("Formato inválido. Usa un correo o teléfono válido.");
       return;
@@ -121,7 +162,7 @@
     setLoading(true);
 
     try {
-      /* ===================== CORREO ===================== */
+      // ===================== EMAIL =====================
       if (emailMode) {
         const exists = await getUserBy("email", raw);
 
@@ -138,8 +179,17 @@
           return;
         }
 
-        // Acción → snackbar
-        showSnackbar("Se enviará un email para cambiar tu contraseña.", "success", 2400);
+        // Confirmación opcional (si tienes action snackbar). Si no, sigue normal.
+        const ok = await confirmSnackbar({
+          message: "¿Enviar enlace de recuperación a este correo?",
+          type: "warn"
+        });
+
+        if (!ok) {
+          setLoading(false);
+          showSnackbar("Acción cancelada.", "warn", 1800);
+          return;
+        }
 
         const redirectTo = `${window.location.origin}/new-password.html`;
         const { error } = await sb.auth.resetPasswordForEmail(raw, { redirectTo });
@@ -152,16 +202,16 @@
         }
 
         localStorage.setItem("cortero_recovery_email", raw);
+
         setLoading(false);
 
-        setTimeout(() => {
-          window.location.href = "correo-enviado.html";
-        }, 700);
+        // Importante: NO redirigir. Te quedas en la pantalla.
+        showSnackbar("Listo. Revisa tu correo para cambiar la contraseña.", "success", 3200);
 
         return;
       }
 
-      /* ===================== TELÉFONO ===================== */
+      // ===================== PHONE =====================
       const phone = normalizePhone(raw);
 
       const exists = await getUserBy("phone", phone);
@@ -179,8 +229,16 @@
         return;
       }
 
-      // Acción → snackbar
-      showSnackbar("Se enviará un código por SMS para cambiar tu contraseña.", "success", 2400);
+      const ok = await confirmSnackbar({
+        message: "¿Enviar código por SMS para recuperar la contraseña?",
+        type: "warn"
+      });
+
+      if (!ok) {
+        setLoading(false);
+        showSnackbar("Acción cancelada.", "warn", 1800);
+        return;
+      }
 
       const { error } = await sb.auth.signInWithOtp({
         phone,
@@ -195,7 +253,9 @@
       }
 
       localStorage.setItem("cortero_recovery_phone", phone);
+
       setLoading(false);
+      showSnackbar("Te enviamos un código por SMS.", "success", 2200);
 
       setTimeout(() => {
         window.location.href = "verificar-sms.html";
