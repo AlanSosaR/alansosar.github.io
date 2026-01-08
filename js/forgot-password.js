@@ -1,10 +1,3 @@
-/* Forgot Password — Café Cortero (CORREGIDO)
-   - Email: se queda en la página (no redirige)
-   - Teléfono: redirige a verificar-sms.html
-   - Errores debajo del input (field-msg)
-   - Snackbar Material 3 Expressive (hidden/show + variantes)
-*/
-
 (() => {
   const sb = window.supabaseClient;
 
@@ -19,7 +12,6 @@
   const field = input.closest(".m3-field");
   const box = input.closest(".m3-input");
 
-  // Si no existe <div class="field-msg"></div>, lo creamos.
   let msgEl = field?.querySelector(".field-msg");
   if (field && !msgEl) {
     msgEl = document.createElement("div");
@@ -31,61 +23,110 @@
   const snackMsgEl = snackbarEl?.querySelector(".snackbar__msg");
   const snackActionsEl = snackbarEl?.querySelector(".snackbar__actions");
 
-  function showSnackbar(message, type = "info", ms = 2600) {
-    if (!snackbarEl) return;
+  let snackResolver = null;
+  let snackClickHandler = null;
 
-    snackbarEl.classList.remove("hidden", "show", "is-error", "is-warn", "is-success");
+  function setSnackType(type) {
+    if (!snackbarEl) return;
+    snackbarEl.classList.remove("is-error", "is-warn", "is-success");
     if (type === "error") snackbarEl.classList.add("is-error");
     if (type === "warn") snackbarEl.classList.add("is-warn");
     if (type === "success") snackbarEl.classList.add("is-success");
+  }
+
+  function openSnackbar(message, type = "info") {
+    if (!snackbarEl) return;
+    snackbarEl.classList.remove("hidden", "show");
+    setSnackType(type);
 
     if (snackMsgEl) snackMsgEl.textContent = message;
     else snackbarEl.textContent = message;
 
     void snackbarEl.offsetWidth;
     snackbarEl.classList.add("show");
+  }
+
+  function closeSnackbar() {
+    if (!snackbarEl) return;
+    snackbarEl.classList.remove("show");
+    snackbarEl.classList.add("hidden");
+
+    if (snackActionsEl) snackActionsEl.style.display = "";
+    if (snackClickHandler && snackActionsEl) {
+      snackActionsEl.removeEventListener("click", snackClickHandler);
+      snackClickHandler = null;
+    }
+
+    if (snackResolver) {
+      const r = snackResolver;
+      snackResolver = null;
+      r("cancel");
+    }
+  }
+
+  // SOLO para errores del sistema (esto sí autocierra)
+  function showSnackbar(message, type = "info", ms = 2600) {
+    openSnackbar(message, type);
 
     clearTimeout(window.__snackTimer);
     window.__snackTimer = setTimeout(() => {
-      snackbarEl.classList.remove("show");
-      snackbarEl.classList.add("hidden");
+      closeSnackbar();
     }, ms);
   }
 
-  // Snackbar con acciones (Confirmar/Cancelar) si tienes ese HTML.
-  function confirmSnackbar({ message, type = "info" }) {
+  // Snackbar con acciones (NO autocierra)
+  function actionSnackbar({
+    message,
+    type = "info",
+    confirmText = "Confirmar",
+    cancelText = "Cancelar",
+    showCancel = true,
+  }) {
     return new Promise((resolve) => {
-      // Si no hay botones/estructura action, fallback directo a "confirmado".
       if (!snackbarEl || !snackActionsEl || !snackMsgEl) {
-        showSnackbar(message, type, 2400);
-        resolve(true);
+        // fallback: no hay snackbar action
+        showSnackbar(message, type, 2600);
+        resolve("confirm");
         return;
       }
 
-      snackbarEl.classList.remove("hidden", "show", "is-error", "is-warn", "is-success");
-      if (type === "error") snackbarEl.classList.add("is-error");
-      if (type === "warn") snackbarEl.classList.add("is-warn");
-      if (type === "success") snackbarEl.classList.add("is-success");
-
-      snackMsgEl.textContent = message;
-
-      // Mostrar y NO autocerrar hasta que el usuario elija
       clearTimeout(window.__snackTimer);
-      void snackbarEl.offsetWidth;
-      snackbarEl.classList.add("show");
 
-      const onClick = (e) => {
-        const action = e.target?.dataset?.action;
+      snackResolver = resolve;
+
+      snackActionsEl.style.display = "inline-flex";
+
+      const btnCancel = snackActionsEl.querySelector('[data-action="cancel"]');
+      const btnConfirm = snackActionsEl.querySelector('[data-action="confirm"]');
+
+      if (btnConfirm) btnConfirm.textContent = confirmText;
+
+      if (btnCancel) {
+        btnCancel.textContent = cancelText;
+        btnCancel.style.display = showCancel ? "" : "none";
+      }
+
+      openSnackbar(message, type);
+
+      if (snackClickHandler) snackActionsEl.removeEventListener("click", snackClickHandler);
+
+      snackClickHandler = (e) => {
+        const b = e.target.closest("button");
+        if (!b) return;
+
+        const action = b.dataset.action;
         if (!action) return;
 
-        snackActionsEl.removeEventListener("click", onClick);
-        snackbarEl.classList.remove("show");
-        snackbarEl.classList.add("hidden");
+        const r = snackResolver;
+        snackResolver = null;
 
-        resolve(action === "confirm");
+        snackActionsEl.removeEventListener("click", snackClickHandler);
+        snackClickHandler = null;
+
+        r(action === "confirm" ? "confirm" : "cancel");
       };
 
-      snackActionsEl.addEventListener("click", onClick);
+      snackActionsEl.addEventListener("click", snackClickHandler);
     });
   }
 
@@ -179,15 +220,18 @@
           return;
         }
 
-        // Confirmación opcional (si tienes action snackbar). Si no, sigue normal.
-        const ok = await confirmSnackbar({
+        // Confirmación (no autocierra)
+        const decision = await actionSnackbar({
           message: "¿Enviar enlace de recuperación a este correo?",
-          type: "warn"
+          type: "warn",
+          confirmText: "Confirmar",
+          cancelText: "Cancelar",
+          showCancel: true,
         });
 
-        if (!ok) {
+        if (decision !== "confirm") {
           setLoading(false);
-          showSnackbar("Acción cancelada.", "warn", 1800);
+          closeSnackbar();
           return;
         }
 
@@ -197,18 +241,25 @@
         if (error) {
           console.error(error);
           setLoading(false);
+          closeSnackbar();
           showSnackbar("No se pudo enviar el correo. Intenta de nuevo.", "error", 3200);
           return;
         }
 
         localStorage.setItem("cortero_recovery_email", raw);
-
         setLoading(false);
 
-        // Importante: NO redirigir. Te quedas en la pantalla.
-        showSnackbar("Listo. Revisa tu correo para cambiar la contraseña.", "success", 3200);
+        // Mensaje “enviado” (NO autocierra). Solo cierra si el usuario toca “Cerrar”
+        await actionSnackbar({
+          message: "Correo enviado. Revisa tu bandeja para cambiar la contraseña.",
+          type: "success",
+          confirmText: "Cerrar",
+          cancelText: "",
+          showCancel: false,
+        });
 
-        return;
+        closeSnackbar(); // cierra solo cuando el usuario tocó “Cerrar”
+        return; // te quedas en la misma página
       }
 
       // ===================== PHONE =====================
@@ -229,41 +280,51 @@
         return;
       }
 
-      const ok = await confirmSnackbar({
+      const decision = await actionSnackbar({
         message: "¿Enviar código por SMS para recuperar la contraseña?",
-        type: "warn"
+        type: "warn",
+        confirmText: "Confirmar",
+        cancelText: "Cancelar",
+        showCancel: true,
       });
 
-      if (!ok) {
+      if (decision !== "confirm") {
         setLoading(false);
-        showSnackbar("Acción cancelada.", "warn", 1800);
+        closeSnackbar();
         return;
       }
 
       const { error } = await sb.auth.signInWithOtp({
         phone,
-        options: { shouldCreateUser: false }
+        options: { shouldCreateUser: false },
       });
 
       if (error) {
         console.error(error);
         setLoading(false);
+        closeSnackbar();
         showSnackbar("No se pudo enviar el SMS. Revisa el número.", "error", 3600);
         return;
       }
 
       localStorage.setItem("cortero_recovery_phone", phone);
-
       setLoading(false);
-      showSnackbar("Te enviamos un código por SMS.", "success", 2200);
 
-      setTimeout(() => {
-        window.location.href = "verificar-sms.html";
-      }, 700);
+      // Mensaje “enviado” (NO autocierra). Al cerrar, redirige.
+      await actionSnackbar({
+        message: "Código enviado por SMS. Presiona “Cerrar” para continuar.",
+        type: "success",
+        confirmText: "Cerrar",
+        cancelText: "",
+        showCancel: false,
+      });
 
+      closeSnackbar();
+      window.location.href = "verificar-sms.html";
     } catch (err) {
       console.error("❌ Forgot error:", err);
       setLoading(false);
+      closeSnackbar();
       showSnackbar("Error inesperado. Intenta de nuevo.", "error", 3200);
     }
   });
