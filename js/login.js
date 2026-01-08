@@ -98,28 +98,27 @@ function marcarError(input, texto) {
 }
 
 /* ========================= LOGIN ========================= */
-
 loginForm.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const userValue = userInput.value.trim();
   const passValue = passInput.value.trim();
 
-  if (!userValue) return marcarError(userInput,"Ingresa tu correo o teléfono");
+  if (!userValue) return marcarError(userInput, "Ingresa tu correo o teléfono");
 
   const tipo = tipoDeEntrada(userValue);
 
   if (tipo === "correo" && !validarCorreo(userValue))
-    return marcarError(userInput,"Correo no válido");
+    return marcarError(userInput, "Correo no válido");
 
   if (tipo === "telefono" && !validarTelefono(userValue))
-    return marcarError(userInput,"Teléfono inválido");
+    return marcarError(userInput, "Teléfono inválido");
 
   if (!passValue)
-    return marcarError(passInput,"Ingresa tu contraseña");
+    return marcarError(passInput, "Ingresa tu contraseña");
 
   if (!validarPassword(passValue))
-    return marcarError(passInput,"Contraseña no válida");
+    return marcarError(passInput, "Contraseña no válida");
 
   activarLoading();
 
@@ -128,45 +127,101 @@ loginForm.addEventListener("submit", async (e) => {
 
     /* Teléfono → buscar email */
     if (tipo === "telefono") {
-      const { data } = await window.supabaseClient
+      const { data, error: phoneErr } = await window.supabaseClient
         .from("users")
         .select("email")
         .eq("phone", userValue)
-        .single();
+        .maybeSingle();
 
-      if (!data) {
+      if (phoneErr) {
         desactivarLoading();
-        return marcarError(userInput,"Teléfono no registrado");
+        mostrarSnackbar("No se pudo validar el teléfono.", "error");
+        return;
+      }
+
+      if (!data?.email) {
+        desactivarLoading();
+        return marcarError(userInput, "Teléfono no registrado");
       }
 
       emailFinal = data.email;
     }
 
     /* LOGIN REAL */
-    const { error } =
+    const { data: authData, error: loginErr } =
       await window.supabaseClient.auth.signInWithPassword({
         email: emailFinal,
         password: passValue
       });
 
-    if (error) {
+    if (loginErr) {
       desactivarLoading();
-      return marcarError(passInput,"Credenciales incorrectas");
+      marcarError(passInput, "Credenciales incorrectas");
+      mostrarSnackbar("Credenciales incorrectas", "error");
+      return;
     }
 
-    mostrarSnackbar("Inicio de sesión exitoso ☕");
+    /* ✅ Cargar perfil desde public.users y guardarlo en localStorage */
+    const authUser = authData?.user;
+    let perfil = null;
+
+    if (authUser?.id) {
+      // 1) Por ID (si public.users.id = auth.uid())
+      const { data: byId, error: errById } = await window.supabaseClient
+        .from("users")
+        .select("*")
+        .eq("id", authUser.id)
+        .maybeSingle();
+
+      if (errById) {
+        desactivarLoading();
+        mostrarSnackbar("No se pudo cargar tu perfil.", "error");
+        return;
+      }
+
+      perfil = byId || null;
+
+      // 2) Fallback por email (si tu tabla users.id NO es auth.uid())
+      if (!perfil && authUser.email) {
+        const { data: byEmail, error: errByEmail } = await window.supabaseClient
+          .from("users")
+          .select("*")
+          .eq("email", authUser.email)
+          .maybeSingle();
+
+        if (errByEmail) {
+          desactivarLoading();
+          mostrarSnackbar("No se pudo cargar tu perfil.", "error");
+          return;
+        }
+
+        perfil = byEmail || null;
+      }
+    }
+
+    if (perfil) {
+      localStorage.setItem("cortero_user", JSON.stringify(perfil));
+      localStorage.setItem("cortero_logged", "1");
+    }
+
+    desactivarLoading();
+    mostrarSnackbar("Inicio de sesión exitoso", "success");
 
     setTimeout(() => {
-      const from = new URLSearchParams(location.search).get("from");
-      location.href = from === "carrito"
-        ? "detalles-cliente.html"
+      const params = new URLSearchParams(location.search);
+      const from = params.get("from") || params.get("redirect");
+
+      // Si vienes del carrito → regresa al carrito (no a detalles)
+      location.href = (from === "carrito")
+        ? "carrito.html"
         : "index.html";
-    }, 1200);
+    }, 900);
 
   } catch (err) {
     console.error("❌ Error login:", err);
     desactivarLoading();
-    marcarError(userInput,"Error al iniciar sesión");
+    marcarError(userInput, "Error al iniciar sesión");
+    mostrarSnackbar("Error al iniciar sesión. Intenta de nuevo.", "error");
   }
 });
 
@@ -184,14 +239,24 @@ function desactivarLoading() {
   btnLoader.style.display = "none";
 }
 
-function mostrarSnackbar(msg) {
+function mostrarSnackbar(msg, type = "info", duration = 2600) {
   const s = document.getElementById("snackbar");
   if (!s) return;
-  s.textContent = msg;
-  s.classList.add("show");
-  setTimeout(() => s.classList.remove("show"), 2600);
-}
 
+  s.textContent = msg;
+
+  // Reset de clases
+  s.className = "snackbar";
+  s.id = "snackbar";
+
+  // Activar
+  s.classList.add("show", type);
+
+  clearTimeout(s._timer);
+  s._timer = setTimeout(() => {
+    s.classList.remove("show");
+  }, duration);
+}
 /* ========================= TOGGLE PASSWORD ========================= */
 
 document.querySelectorAll(".toggle-pass").forEach(icon => {
