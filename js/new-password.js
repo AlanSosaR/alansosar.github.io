@@ -1,56 +1,118 @@
-const supabase = window.supabaseClient;
+// ============================================================
+// New Password — Café Cortero ☕
+// Compatible con:
+// - Reset por correo (resetPasswordForEmail)
+// - Reset por teléfono (OTP verificado)
+// Supabase Auth v2
+// ============================================================
 
-const pass = document.getElementById("newPassword");
-const confirmPass = document.getElementById("confirmPassword");
-const bars = [bar1, bar2, bar3];
+const sb = window.supabaseClient;
 
-function snackbar(msg) {
+const form = document.getElementById("newPassForm");
+const newPassInput = document.getElementById("newPassword");
+const confirmInput = document.getElementById("confirmPassword");
+const btn = form.querySelector(".m3-btn");
+const btnText = btn.querySelector(".btn-text");
+const loader = btn.querySelector(".loader");
+
+/* ---------------- SNACKBAR ---------------- */
+function showSnackbar(msg, type = "info", ms = 2600) {
   const s = document.getElementById("snackbar");
+  if (!s) return;
+
+  s.className = "snackbar";
+  if (type === "error") s.classList.add("error");
+  if (type === "success") s.classList.add("success");
+
   s.textContent = msg;
+  void s.offsetWidth;
   s.classList.add("show");
-  setTimeout(() => s.classList.remove("show"), 2500);
+
+  clearTimeout(window.__snackTimer);
+  window.__snackTimer = setTimeout(() => {
+    s.classList.remove("show");
+  }, ms);
 }
 
-/* ===== FUERZA DE CONTRASEÑA ===== */
-pass.addEventListener("input", () => {
-  let val = pass.value;
-  let score =
-    /[a-z]/.test(val) +
-    /[A-Z]/.test(val) +
-    /[0-9]/.test(val) +
-    val.length >= 8;
+/* ---------------- HELPERS ---------------- */
+function validarPassword(pw) {
+  return (
+    pw.length >= 6 &&
+    !pw.includes(" ") &&
+    !["123456", "000000", "password"].includes(pw.toLowerCase())
+  );
+}
 
-  bars.forEach((b, i) => {
-    b.style.background = i < score ? "#33673B" : "#ddd";
-  });
-});
+function activarLoading() {
+  btn.classList.add("loading");
+  btnText.style.opacity = "0";
+  loader.style.display = "inline-block";
+}
 
-/* ===== SUBMIT ===== */
-document.getElementById("newPassForm").addEventListener("submit", async (e) => {
+function desactivarLoading() {
+  btn.classList.remove("loading");
+  btnText.style.opacity = "1";
+  loader.style.display = "none";
+}
+
+/* ---------------- SUBMIT ---------------- */
+form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  if (pass.value.length < 8) {
-    snackbar("La contraseña debe tener al menos 8 caracteres");
+  const pw1 = newPassInput.value.trim();
+  const pw2 = confirmInput.value.trim();
+
+  if (!pw1 || !pw2) {
+    showSnackbar("Completa ambos campos", "error");
     return;
   }
 
-  if (pass.value !== confirmPass.value) {
-    snackbar("Las contraseñas no coinciden");
+  if (!validarPassword(pw1)) {
+    showSnackbar("Contraseña no válida", "error");
     return;
   }
 
-  const { error } = await supabase.auth.updateUser({
-    password: pass.value
+  if (pw1 !== pw2) {
+    showSnackbar("Las contraseñas no coinciden", "error");
+    return;
+  }
+
+  if (!sb) {
+    showSnackbar("Supabase no está listo", "error");
+    return;
+  }
+
+  activarLoading();
+
+  // 🔐 ACTUALIZAR CONTRASEÑA (funciona para correo y teléfono)
+  const { error } = await sb.auth.updateUser({
+    password: pw1
   });
 
   if (error) {
-    snackbar("Error al actualizar");
+    console.error(error);
+    desactivarLoading();
+    showSnackbar("No se pudo cambiar la contraseña", "error");
     return;
   }
 
-  snackbar("Contraseña actualizada ✔");
+  showSnackbar("Contraseña actualizada ✔", "success");
+
+  // Limpieza de estado recovery
+  localStorage.removeItem("cortero_recovery_phone");
+  localStorage.removeItem("cortero_recovery_email");
 
   setTimeout(() => {
     window.location.href = "login.html";
-  }, 900);
+  }, 1200);
+});
+
+/* ---------------- TOGGLE PASSWORD ---------------- */
+document.querySelectorAll(".toggle-pass").forEach(icon => {
+  icon.addEventListener("click", () => {
+    const target = document.getElementById(icon.dataset.target);
+    const visible = target.type === "password";
+    target.type = visible ? "text" : "password";
+    icon.textContent = visible ? "visibility_off" : "visibility";
+  });
 });
