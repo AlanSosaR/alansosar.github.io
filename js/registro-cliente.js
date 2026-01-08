@@ -209,78 +209,77 @@ document.addEventListener("DOMContentLoaded", () => {
   // Submit
   // =========================
   form.addEventListener("submit", async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    const nombre = (campos.nombre?.value || "").trim();
-    const correo = (campos.correo?.value || "").trim();
-    const tel = (campos.telefono?.value || "").trim();
-    const pass = campos.password?.value || "";
-    const conf = campos.confirm?.value || "";
+  const nombre = (campos.nombre?.value || "").trim();
+  const correo = (campos.correo?.value || "").trim();
+  const tel    = (campos.telefono?.value || "").trim();
+  const pass   = campos.password?.value || "";
+  const conf   = campos.confirm?.value || "";
 
-    if (!nombre) return marcar("nombre", "Ingresa tu nombre");
-    if (!emailValido(correo)) return marcar("correo", "Correo no válido");
-    if (tel.length < 8) return marcar("telefono", "Teléfono no válido");
-    if (pass.length < 6) return marcar("password", "Mínimo 6 caracteres");
-    if (pass !== conf) return marcar("confirm", "No coinciden");
+  if (!nombre) return marcar("nombre", "Ingresa tu nombre");
+  if (!emailValido(correo)) return marcar("correo", "Correo no válido");
+  if (tel.length < 8) return marcar("telefono", "Teléfono no válido");
+  if (pass.length < 6) return marcar("password", "Mínimo 6 caracteres");
+  if (pass !== conf) return marcar("confirm", "No coinciden");
 
-    loading(true);
+  loading(true);
 
-    try {
-      const { error } = await sb.auth.signUp({
-        email: correo,
-        password: pass,
-        options: {
-          data: {
-            name: nombre,
-            phone: tel,
-            country: "Honduras",
-            photo_url: "/imagenes/avatar-default.svg",
-          },
-          // Si usas confirmación por email, define esto si lo necesitas:
-          // emailRedirectTo: `${window.location.origin}/login.html`
+  try {
+    const { error } = await sb.auth.signUp({
+      email: correo,
+      password: pass,
+      options: {
+        data: {
+          name: nombre,
+          phone: tel,
+          country: "Honduras",
+          photo_url: "/imagenes/avatar-default.svg",
         },
-      });
+        // emailRedirectTo: `${window.location.origin}/login.html`,
+      },
+    });
 
-      if (error) throw error;
+    if (error) throw error;
 
-      loading(false);
+    loading(false);
 
-      // Snackbar con confirmación manual (sin autocierre)
-      await actionSnackbar({
-        message: "Cuenta creada. Te enviamos un correo para confirmar tu cuenta.",
-        type: "success",
-        confirmText: "Entendido",
-        showCancel: false,
-      });
+    await actionSnackbar({
+      message: "Cuenta creada. Te enviamos un correo para confirmar tu cuenta.",
+      type: "success",
+      confirmText: "Confirmar",
+      showCancel: false,
+    });
 
-      // Redirige después de que el usuario lo lea
-      window.location.href = "login.html";
+    closeSnackbar();
+    window.location.href = "login.html";
 
-    } catch (err) {
-      console.error("❌ Registro:", err);
-      loading(false);
+  } catch (err) {
+    console.error("❌ Registro:", err);
+    loading(false);
 
-      const msg = (err && err.message) ? err.message : "";
+    const msg = err?.message || "";
 
-      if (msg.includes("already registered")) {
-        marcar("correo", "Este correo ya existe");
-        return;
-      }
-
-      if (msg.includes("users_phone_unique")) {
-        marcar("telefono", "Este teléfono ya está registrado");
-        return;
-      }
-
-      // Error general → snackbar (manual, para que lo lea)
-      await actionSnackbar({
-        message: "No se pudo crear la cuenta. Intenta de nuevo.",
-        type: "error",
-        confirmText: "Cerrar",
-        showCancel: false,
-      });
+    if (msg.includes("already registered")) {
+      marcar("correo", "Este correo ya existe");
+      return;
     }
-  });
+
+    if (msg.includes("users_phone_unique")) {
+      marcar("telefono", "Este teléfono ya está registrado");
+      return;
+    }
+
+    await actionSnackbar({
+      message: "No se pudo crear la cuenta. Intenta de nuevo.",
+      type: "error",
+      confirmText: "Cerrar",
+      showCancel: false,
+    });
+
+    closeSnackbar();
+  }
+});
 
   // =========================
   // Toggle password
