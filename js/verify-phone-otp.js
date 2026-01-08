@@ -2,129 +2,123 @@
 // Verify Phone OTP — Café Cortero ☕
 // Supabase Auth (SMS OTP)
 // Archivo: verify-phone-otp.js
+// HTML esperado:
+//  - form#pinForm
+//  - input#pinInput
+//  - #timer
+//  - #reenviarBtn
+//  - #snackbar
+// Requiere que antes esté cargado supabase-client-core.js
 // ============================================================
 
-const form      = document.getElementById("otpForm");
-const otpInput  = document.getElementById("otpInput");
-const timerEl   = document.getElementById("timer");
-const resendBtn = document.getElementById("reenviarBtn");
+(() => {
+  const supa = window.supabaseClient;
 
-const phone = localStorage.getItem("cortero_recovery_phone");
+  const form      = document.getElementById("pinForm");
+  const otpInput  = document.getElementById("pinInput");
+  const timerEl   = document.getElementById("timer");
+  const resendBtn = document.getElementById("reenviarBtn");
 
-/* ------------------- Guard: phone requerido ------------------- */
-if (!phone) {
-  window.location.href = "forgot-password.html";
-}
+  const phone = localStorage.getItem("cortero_recovery_phone");
 
-/* ------------------- Esperar Supabase ------------------- */
-function waitSupabase() {
-  return new Promise(resolve => {
-    if (window.supabaseClient) return resolve(window.supabaseClient);
-    const i = setInterval(() => {
-      if (window.supabaseClient) {
-        clearInterval(i);
-        resolve(window.supabaseClient);
-      }
-    }, 60);
-  });
-}
+  if (!supa) {
+    console.error("Supabase client no está listo (window.supabaseClient).");
+  }
 
-/* ------------------- Snackbar (Material 3 Expressive) ------------------- */
-function showSnackbar(msg, type = "info", ms = 2400) {
-  const s = document.getElementById("snackbar");
-  if (!s) return;
-
-  s.classList.remove("hidden", "show", "is-error", "is-success", "is-warn");
-  if (type === "error") s.classList.add("is-error");
-  if (type === "success") s.classList.add("is-success");
-  if (type === "warn") s.classList.add("is-warn");
-
-  s.textContent = msg;
-
-  // reflow
-  void s.offsetWidth;
-
-  s.classList.add("show");
-
-  clearTimeout(window.__snackTimer);
-  window.__snackTimer = setTimeout(() => {
-    s.classList.remove("show");
-    s.classList.add("hidden");
-  }, ms);
-}
-
-/* ------------------- Timer (único) ------------------- */
-let timer = 60;
-let intervalId = null;
-
-function startTimer(seconds = 60) {
-  timer = seconds;
-  resendBtn.classList.add("disabled");
-  timerEl.textContent = `Reenviar código en ${timer}s`;
-
-  if (intervalId) clearInterval(intervalId);
-
-  intervalId = setInterval(() => {
-    timer--;
-    if (timer > 0) {
-      timerEl.textContent = `Reenviar código en ${timer}s`;
-      return;
-    }
-
-    clearInterval(intervalId);
-    intervalId = null;
-    timerEl.textContent = "";
-    resendBtn.classList.remove("disabled");
-  }, 1000);
-}
-
-/* ------------------- Init ------------------- */
-(async function init() {
-  const sb = await waitSupabase();
-  if (!sb) {
-    showSnackbar("Supabase no está listo. Intenta de nuevo.", "error");
+  if (!phone) {
+    window.location.href = "forgot-password.html";
     return;
   }
 
-  // Arranca timer al entrar
-  startTimer(60);
+  /* ---------------- SNACKBAR ---------------- */
+  function showSnackbar(message, type = "info", ms = 2400) {
+    const el = document.getElementById("snackbar");
+    if (!el) return;
 
-  /* ------------------- Reenviar OTP ------------------- */
-  resendBtn.addEventListener("click", async () => {
+    // Si usas tu snackbar M3 (con .snackbar + .hidden), mantenemos compatibilidad
+    el.classList.remove("hidden", "show", "is-error", "is-success", "is-warn");
+    if (type === "error") el.classList.add("is-error");
+    if (type === "success") el.classList.add("is-success");
+
+    el.textContent = message;
+
+    // reflow
+    void el.offsetWidth;
+
+    el.classList.add("show");
+    clearTimeout(window.__snackTimer);
+    window.__snackTimer = setTimeout(() => {
+      el.classList.remove("show");
+      el.classList.add("hidden");
+    }, ms);
+  }
+
+  /* ---------------- TIMER ---------------- */
+  let timer = 60;
+  let intervalId = null;
+
+  function setResendDisabled(disabled) {
+    if (!resendBtn) return;
+    resendBtn.classList.toggle("disabled", disabled);
+  }
+
+  function startTimer() {
+    if (!timerEl) return;
+
+    // limpia timer anterior
+    if (intervalId) clearInterval(intervalId);
+
+    timer = 60;
+    setResendDisabled(true);
+    timerEl.textContent = `Reenviar código en ${timer}s`;
+
+    intervalId = setInterval(() => {
+      timer--;
+      timerEl.textContent = `Reenviar código en ${timer}s`;
+
+      if (timer <= 0) {
+        clearInterval(intervalId);
+        intervalId = null;
+        timerEl.textContent = "";
+        setResendDisabled(false);
+      }
+    }, 1000);
+  }
+
+  startTimer();
+
+  /* ---------------- REENVIAR OTP ---------------- */
+  resendBtn?.addEventListener("click", async () => {
     if (resendBtn.classList.contains("disabled")) return;
 
-    try {
-      // Reiniciar timer primero (UX)
-      startTimer(60);
-
-      const { error } = await sb.auth.signInWithOtp({
-        phone,
-        options: { shouldCreateUser: false }
-      });
-
-      if (error) {
-        showSnackbar("No se pudo reenviar el código.", "error");
-        // permitir reintento inmediato si falla
-        if (intervalId) {
-          clearInterval(intervalId);
-          intervalId = null;
-        }
-        timerEl.textContent = "";
-        resendBtn.classList.remove("disabled");
-        return;
-      }
-
-      showSnackbar("Código reenviado ✔", "success", 2000);
-
-    } catch (e) {
-      console.error("❌ Reenviar OTP:", e);
-      showSnackbar("Error al reenviar. Intenta de nuevo.", "error");
-      timerEl.textContent = "";
-      resendBtn.classList.remove("disabled");
+    if (!supa) {
+      showSnackbar("Supabase no está listo. Intenta de nuevo.", "error");
+      return;
     }
+
+    setResendDisabled(true);
+    startTimer();
+
+    const { error } = await supa.auth.signInWithOtp({
+      phone,
+      options: { shouldCreateUser: false }
+    });
+
+    if (error) {
+      console.error(error);
+      showSnackbar("No se pudo reenviar el SMS. Revisa el número.", "error");
+      // permitir reintentar sin esperar 60s si falló
+      if (intervalId) clearInterval(intervalId);
+      intervalId = null;
+      if (timerEl) timerEl.textContent = "";
+      setResendDisabled(false);
+      return;
+    }
+
+    showSnackbar("Código reenviado ✔", "success");
   });
 
-  /* ------------------- Verificar OTP ------------------- */
+  /* ---------------- VERIFICAR OTP ---------------- */
   form?.addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -132,36 +126,36 @@ function startTimer(seconds = 60) {
 
     if (code.length !== 6) {
       otpInput?.closest(".m3-input")?.classList.add("error");
-      showSnackbar("Código inválido (6 dígitos).", "warn");
+      showSnackbar("Código inválido", "error");
       return;
     }
 
-    try {
-      const { error } = await sb.auth.verifyOtp({
-        phone,
-        token: code,
-        type: "sms"
-      });
-
-      if (error) {
-        otpInput?.closest(".m3-input")?.classList.add("error");
-        showSnackbar("Código incorrecto.", "error");
-        return;
-      }
-
-      showSnackbar("Teléfono verificado ✔", "success");
-
-      setTimeout(() => {
-        window.location.href = "new-password.html";
-      }, 700);
-
-    } catch (err) {
-      console.error("❌ verifyOtp:", err);
-      showSnackbar("No se pudo verificar el código.", "error");
+    if (!supa) {
+      showSnackbar("Supabase no está listo. Intenta de nuevo.", "error");
+      return;
     }
+
+    const { error } = await supa.auth.verifyOtp({
+      phone,
+      token: code,
+      type: "sms"
+    });
+
+    if (error) {
+      console.error(error);
+      otpInput?.closest(".m3-input")?.classList.add("error");
+      showSnackbar("Código incorrecto", "error");
+      return;
+    }
+
+    showSnackbar("Teléfono verificado ✔", "success");
+
+    setTimeout(() => {
+      window.location.href = "new-password.html";
+    }, 700);
   });
 
-  /* ------------------- Limpiar error al escribir ------------------- */
+  /* ---------------- LIMPIAR ERROR AL ESCRIBIR ---------------- */
   otpInput?.addEventListener("input", () => {
     otpInput.closest(".m3-input")?.classList.remove("error");
   });
