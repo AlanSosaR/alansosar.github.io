@@ -1,46 +1,39 @@
 /* ============================================================
-   New Password — Café Cortero ☕ (CORREGIDO)
-   ✔ Reset por correo (resetPasswordForEmail)
-   ✔ Reset por teléfono (OTP verificado)
-   ✔ Snackbar Material 3 (mismo sistema del carrito)
-   ✔ Valida sesión de recuperación (si no hay, redirige)
-   ✔ Sin conflictos globales
+   Forgot Password — Café Cortero ☕ (FINAL)
+   ✔ Errores debajo del input (field-msg)
+   ✔ Snackbar solo para acciones (enviar correo / enviar SMS / fallos server)
+   ✔ Valida existencia en BD (tabla users)
+   ✔ Email: resetPasswordForEmail
+   ✔ Teléfono: signInWithOtp
 ============================================================ */
 
 (() => {
   const sb = window.supabaseClient;
 
-  const form = document.getElementById("newPassForm");
-  if (!form) return;
-
-  const newPassInput = document.getElementById("newPassword");
-  const confirmInput = document.getElementById("confirmPassword");
-
-  const btn = form.querySelector(".m3-btn");
+  const form  = document.getElementById("forgotForm");
+  const input = document.getElementById("recoverInput");
+  const btn   = form?.querySelector(".m3-btn");
   const btnText = btn?.querySelector(".btn-text");
-  const loader = btn?.querySelector(".loader");
+  const loader  = btn?.querySelector(".loader");
 
-  /* ================= SNACKBAR (GENÉRICO) =================
-     Requiere HTML:
-     <div id="snackbar" class="snackbar hidden"></div>
-     y CSS con .snackbar.show + .snackbar.hidden
-  ======================================================== */
+  if (!form || !input) return;
+
+  const field = input.closest(".m3-field");
+  const box   = input.closest(".m3-input");
+  const msgEl = field?.querySelector(".field-msg");
+
+  /* ---------------- SNACKBAR (M3 EXPRESSIVE) ---------------- */
   function showSnackbar(message, type = "info", ms = 2600) {
     const el = document.getElementById("snackbar");
     if (!el) return;
 
-    // Mantener el sistema hidden/show como en carrito
     el.classList.remove("hidden", "show", "is-error", "is-warn", "is-success");
-
     if (type === "error") el.classList.add("is-error");
     if (type === "warn") el.classList.add("is-warn");
     if (type === "success") el.classList.add("is-success");
 
     el.textContent = message;
-
-    // Reflow para reiniciar animación
     void el.offsetWidth;
-
     el.classList.add("show");
 
     clearTimeout(window.__snackTimer);
@@ -50,114 +43,168 @@
     }, ms);
   }
 
-  /* ================= VALIDACIÓN ================= */
-  function validarPassword(pw) {
-    return (
-      pw.length >= 6 &&
-      !pw.includes(" ") &&
-      !["123456", "000000", "password"].includes(pw.toLowerCase())
-    );
+  /* ---------------- Errores debajo del input ---------------- */
+  function clearFieldError() {
+    box?.classList.remove("error");
+    field?.classList.remove("has-error");
+    if (msgEl) msgEl.textContent = "";
   }
 
-  function activarLoading() {
-    btn?.classList.add("loading");
-    if (btnText) btnText.style.opacity = "0";
-    if (loader) loader.style.display = "inline-block";
+  function setFieldError(text) {
+    box?.classList.add("error");
+    field?.classList.add("has-error");
+    if (msgEl) msgEl.textContent = text || "";
   }
 
-  function desactivarLoading() {
-    btn?.classList.remove("loading");
-    if (btnText) btnText.style.opacity = "1";
-    if (loader) loader.style.display = "none";
+  input.addEventListener("input", clearFieldError);
+
+  function setLoading(on) {
+    if (!btn) return;
+    btn.classList.toggle("loading", !!on);
+    if (btnText) btnText.style.opacity = on ? "0" : "1";
+    if (loader) loader.style.display = on ? "inline-block" : "none";
+    btn.disabled = !!on;
   }
 
-  /* ================= VALIDAR SESIÓN RECOVERY =================
-     Si el usuario llega directo a esta página sin flujo de reset,
-     no habrá sesión y updateUser fallará.
-  ============================================================ */
-  async function asegurarSesionRecovery() {
-    if (!sb) {
-      showSnackbar("Supabase no está listo. Intenta recargar.", "error", 3200);
-      return false;
-    }
-
-    const { data, error } = await sb.auth.getSession();
-    if (error || !data?.session) {
-      showSnackbar(
-        "Sesión de recuperación expirada. Vuelve a recuperar tu contraseña.",
-        "error",
-        3200
-      );
-      setTimeout(() => (window.location.href = "forgot-password.html"), 1200);
-      return false;
-    }
-
-    return true;
+  /* ---------------- Validaciones ---------------- */
+  function isEmail(v) {
+    return /^[^\s@]+@[^\s@]+\.[A-Za-z]{2,}$/.test(v);
   }
 
-  /* ================= INIT ================= */
-  (async () => {
-    await asegurarSesionRecovery();
-  })();
+  function isPhone(v) {
+    const cleaned = v.replace(/[\s-]/g, "");
+    return /^\+?\d{7,15}$/.test(cleaned);
+  }
 
-  /* ================= SUBMIT ================= */
+  function normalizePhone(v) {
+    return v.replace(/[\s-]/g, "");
+  }
+
+  async function getUserBy(column, value) {
+    const { data, error } = await sb
+      .from("users")
+      .select("id,email,phone")
+      .eq(column, value)
+      .maybeSingle();
+
+    if (error) return { ok: false, error };
+    return { ok: true, user: data || null };
+  }
+
+  /* ---------------- SUBMIT ---------------- */
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
+    clearFieldError();
 
-    const pw1 = (newPassInput?.value || "").trim();
-    const pw2 = (confirmInput?.value || "").trim();
+    const raw = (input.value || "").trim();
 
-    if (!pw1 || !pw2) {
-      showSnackbar("Completa ambos campos.", "warn");
+    if (!sb) {
+      showSnackbar("Supabase no está listo. Revisa tus scripts.", "error", 3200);
       return;
     }
 
-    if (!validarPassword(pw1)) {
-      showSnackbar("Contraseña no válida.", "error");
+    // Vacío → error debajo
+    if (!raw) {
+      setFieldError("Ingresa tu correo o teléfono.");
       return;
     }
 
-    if (pw1 !== pw2) {
-      showSnackbar("Las contraseñas no coinciden.", "error");
+    const emailMode = isEmail(raw);
+    const phoneMode = !emailMode && isPhone(raw);
+
+    // Formato inválido → error debajo
+    if (!emailMode && !phoneMode) {
+      setFieldError("Formato inválido. Usa un correo o teléfono válido.");
       return;
     }
 
-    // Re-validar sesión justo antes de guardar
-    const okSesion = await asegurarSesionRecovery();
-    if (!okSesion) return;
+    setLoading(true);
 
-    activarLoading();
+    try {
+      /* ===================== CORREO ===================== */
+      if (emailMode) {
+        const exists = await getUserBy("email", raw);
 
-    const { error } = await sb.auth.updateUser({ password: pw1 });
+        if (!exists.ok) {
+          console.error(exists.error);
+          setLoading(false);
+          showSnackbar("No se pudo validar la cuenta.", "error", 3200);
+          return;
+        }
 
-    if (error) {
-      console.error("❌ updateUser error:", error);
-      desactivarLoading();
-      showSnackbar("No se pudo cambiar la contraseña.", "error", 3000);
-      return;
+        if (!exists.user) {
+          setLoading(false);
+          setFieldError("No encontramos una cuenta con ese correo.");
+          return;
+        }
+
+        // Acción → snackbar
+        showSnackbar("Se enviará un email para cambiar tu contraseña.", "success", 2400);
+
+        const redirectTo = `${window.location.origin}/new-password.html`;
+        const { error } = await sb.auth.resetPasswordForEmail(raw, { redirectTo });
+
+        if (error) {
+          console.error(error);
+          setLoading(false);
+          showSnackbar("No se pudo enviar el correo. Intenta de nuevo.", "error", 3200);
+          return;
+        }
+
+        localStorage.setItem("cortero_recovery_email", raw);
+        setLoading(false);
+
+        setTimeout(() => {
+          window.location.href = "correo-enviado.html";
+        }, 700);
+
+        return;
+      }
+
+      /* ===================== TELÉFONO ===================== */
+      const phone = normalizePhone(raw);
+
+      const exists = await getUserBy("phone", phone);
+
+      if (!exists.ok) {
+        console.error(exists.error);
+        setLoading(false);
+        showSnackbar("No se pudo validar la cuenta.", "error", 3200);
+        return;
+      }
+
+      if (!exists.user) {
+        setLoading(false);
+        setFieldError("No encontramos una cuenta con ese teléfono.");
+        return;
+      }
+
+      // Acción → snackbar
+      showSnackbar("Se enviará un código por SMS para cambiar tu contraseña.", "success", 2400);
+
+      const { error } = await sb.auth.signInWithOtp({
+        phone,
+        options: { shouldCreateUser: false }
+      });
+
+      if (error) {
+        console.error(error);
+        setLoading(false);
+        showSnackbar("No se pudo enviar el SMS. Revisa el número.", "error", 3600);
+        return;
+      }
+
+      localStorage.setItem("cortero_recovery_phone", phone);
+      setLoading(false);
+
+      setTimeout(() => {
+        window.location.href = "verificar-sms.html";
+      }, 700);
+
+    } catch (err) {
+      console.error("❌ Forgot error:", err);
+      setLoading(false);
+      showSnackbar("Error inesperado. Intenta de nuevo.", "error", 3200);
     }
-
-    desactivarLoading();
-    showSnackbar("Contraseña actualizada ✔", "success", 2200);
-
-    // Limpieza del estado de recuperación
-    localStorage.removeItem("cortero_recovery_phone");
-    localStorage.removeItem("cortero_recovery_email");
-
-    setTimeout(() => {
-      window.location.href = "login.html";
-    }, 1100);
-  });
-
-  /* ================= TOGGLE PASSWORD ================= */
-  document.querySelectorAll(".toggle-pass").forEach((icon) => {
-    icon.addEventListener("click", () => {
-      const target = document.getElementById(icon.dataset.target);
-      if (!target) return;
-
-      const visible = target.type === "password";
-      target.type = visible ? "text" : "password";
-      icon.textContent = visible ? "visibility_off" : "visibility";
-    });
   });
 })();
