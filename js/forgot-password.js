@@ -1,14 +1,14 @@
 /* ============================================================
-   New Password — Café Cortero ☕
+   New Password — Café Cortero ☕ (CORREGIDO)
    ✔ Reset por correo (resetPasswordForEmail)
    ✔ Reset por teléfono (OTP verificado)
-   ✔ Sin conflictos de variables globales
-   ✔ Compatible con Supabase Auth v2
+   ✔ Snackbar Material 3 (mismo sistema del carrito)
+   ✔ Valida sesión de recuperación (si no hay, redirige)
+   ✔ Sin conflictos globales
 ============================================================ */
 
 (() => {
   const sb = window.supabaseClient;
-  if (!sb) return;
 
   const form = document.getElementById("newPassForm");
   if (!form) return;
@@ -20,22 +20,33 @@
   const btnText = btn?.querySelector(".btn-text");
   const loader = btn?.querySelector(".loader");
 
-  /* ================= SNACKBAR ================= */
-  function showSnackbar(msg, type = "info", ms = 2600) {
-    const s = document.getElementById("snackbar");
-    if (!s) return;
+  /* ================= SNACKBAR (GENÉRICO) =================
+     Requiere HTML:
+     <div id="snackbar" class="snackbar hidden"></div>
+     y CSS con .snackbar.show + .snackbar.hidden
+  ======================================================== */
+  function showSnackbar(message, type = "info", ms = 2600) {
+    const el = document.getElementById("snackbar");
+    if (!el) return;
 
-    s.className = "snackbar";
-    if (type === "error") s.classList.add("error");
-    if (type === "success") s.classList.add("success");
+    // Mantener el sistema hidden/show como en carrito
+    el.classList.remove("hidden", "show", "is-error", "is-warn", "is-success");
 
-    s.textContent = msg;
-    void s.offsetWidth;
-    s.classList.add("show");
+    if (type === "error") el.classList.add("is-error");
+    if (type === "warn") el.classList.add("is-warn");
+    if (type === "success") el.classList.add("is-success");
+
+    el.textContent = message;
+
+    // Reflow para reiniciar animación
+    void el.offsetWidth;
+
+    el.classList.add("show");
 
     clearTimeout(window.__snackTimer);
     window.__snackTimer = setTimeout(() => {
-      s.classList.remove("show");
+      el.classList.remove("show");
+      el.classList.add("hidden");
     }, ms);
   }
 
@@ -60,43 +71,74 @@
     if (loader) loader.style.display = "none";
   }
 
+  /* ================= VALIDAR SESIÓN RECOVERY =================
+     Si el usuario llega directo a esta página sin flujo de reset,
+     no habrá sesión y updateUser fallará.
+  ============================================================ */
+  async function asegurarSesionRecovery() {
+    if (!sb) {
+      showSnackbar("Supabase no está listo. Intenta recargar.", "error", 3200);
+      return false;
+    }
+
+    const { data, error } = await sb.auth.getSession();
+    if (error || !data?.session) {
+      showSnackbar(
+        "Sesión de recuperación expirada. Vuelve a recuperar tu contraseña.",
+        "error",
+        3200
+      );
+      setTimeout(() => (window.location.href = "forgot-password.html"), 1200);
+      return false;
+    }
+
+    return true;
+  }
+
+  /* ================= INIT ================= */
+  (async () => {
+    await asegurarSesionRecovery();
+  })();
+
   /* ================= SUBMIT ================= */
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const pw1 = newPassInput.value.trim();
-    const pw2 = confirmInput.value.trim();
+    const pw1 = (newPassInput?.value || "").trim();
+    const pw2 = (confirmInput?.value || "").trim();
 
     if (!pw1 || !pw2) {
-      showSnackbar("Completa ambos campos", "error");
+      showSnackbar("Completa ambos campos.", "warn");
       return;
     }
 
     if (!validarPassword(pw1)) {
-      showSnackbar("Contraseña no válida", "error");
+      showSnackbar("Contraseña no válida.", "error");
       return;
     }
 
     if (pw1 !== pw2) {
-      showSnackbar("Las contraseñas no coinciden", "error");
+      showSnackbar("Las contraseñas no coinciden.", "error");
       return;
     }
+
+    // Re-validar sesión justo antes de guardar
+    const okSesion = await asegurarSesionRecovery();
+    if (!okSesion) return;
 
     activarLoading();
 
-    // 🔐 ACTUALIZAR CONTRASEÑA (correo o teléfono)
-    const { error } = await sb.auth.updateUser({
-      password: pw1
-    });
+    const { error } = await sb.auth.updateUser({ password: pw1 });
 
     if (error) {
-      console.error(error);
+      console.error("❌ updateUser error:", error);
       desactivarLoading();
-      showSnackbar("No se pudo cambiar la contraseña", "error");
+      showSnackbar("No se pudo cambiar la contraseña.", "error", 3000);
       return;
     }
 
-    showSnackbar("Contraseña actualizada ✔", "success");
+    desactivarLoading();
+    showSnackbar("Contraseña actualizada ✔", "success", 2200);
 
     // Limpieza del estado de recuperación
     localStorage.removeItem("cortero_recovery_phone");
@@ -104,11 +146,11 @@
 
     setTimeout(() => {
       window.location.href = "login.html";
-    }, 1200);
+    }, 1100);
   });
 
   /* ================= TOGGLE PASSWORD ================= */
-  document.querySelectorAll(".toggle-pass").forEach(icon => {
+  document.querySelectorAll(".toggle-pass").forEach((icon) => {
     icon.addEventListener("click", () => {
       const target = document.getElementById(icon.dataset.target);
       if (!target) return;
@@ -118,5 +160,4 @@
       icon.textContent = visible ? "visibility_off" : "visibility";
     });
   });
-
 })();
