@@ -1,153 +1,168 @@
 // ============================================================
-// Forgot Password — Café Cortero
-// Recuperación por CORREO (email reset) y TELÉFONO (OTP SMS)
-// Requiere: <div id="snackbar" class="snackbar hidden"></div>
+// Verify Phone OTP — Café Cortero ☕
+// Supabase Auth (SMS OTP)
+// Archivo: verify-phone-otp.js
 // ============================================================
 
-const sb = window.supabaseClient;
+const form      = document.getElementById("otpForm");
+const otpInput  = document.getElementById("otpInput");
+const timerEl   = document.getElementById("timer");
+const resendBtn = document.getElementById("reenviarBtn");
 
-const form = document.getElementById("forgotForm");
-const input = document.getElementById("recoverInput");
+const phone = localStorage.getItem("cortero_recovery_phone");
 
-/* ---------------- SNACKBAR (GENÉRICO) ---------------- */
-function showSnackbar(message, type = "info", ms = 2600) {
-  const el = document.getElementById("snackbar");
-  if (!el) return;
+/* ------------------- Guard: phone requerido ------------------- */
+if (!phone) {
+  window.location.href = "forgot-password.html";
+}
 
-  el.classList.remove("hidden", "show", "is-error", "is-warn", "is-success");
-  if (type === "error") el.classList.add("is-error");
-  if (type === "warn") el.classList.add("is-warn");
-  if (type === "success") el.classList.add("is-success");
+/* ------------------- Esperar Supabase ------------------- */
+function waitSupabase() {
+  return new Promise(resolve => {
+    if (window.supabaseClient) return resolve(window.supabaseClient);
+    const i = setInterval(() => {
+      if (window.supabaseClient) {
+        clearInterval(i);
+        resolve(window.supabaseClient);
+      }
+    }, 60);
+  });
+}
 
-  el.textContent = message;
+/* ------------------- Snackbar (Material 3 Expressive) ------------------- */
+function showSnackbar(msg, type = "info", ms = 2400) {
+  const s = document.getElementById("snackbar");
+  if (!s) return;
+
+  s.classList.remove("hidden", "show", "is-error", "is-success", "is-warn");
+  if (type === "error") s.classList.add("is-error");
+  if (type === "success") s.classList.add("is-success");
+  if (type === "warn") s.classList.add("is-warn");
+
+  s.textContent = msg;
 
   // reflow
-  void el.offsetWidth;
+  void s.offsetWidth;
 
-  el.classList.add("show");
+  s.classList.add("show");
+
   clearTimeout(window.__snackTimer);
   window.__snackTimer = setTimeout(() => {
-    el.classList.remove("show");
-    el.classList.add("hidden");
+    s.classList.remove("show");
+    s.classList.add("hidden");
   }, ms);
 }
 
-/* ---------------- Helpers ---------------- */
-function isEmail(v) {
-  return /^[^\s@]+@[^\s@]+\.[A-Za-z]{2,}$/.test(v);
+/* ------------------- Timer (único) ------------------- */
+let timer = 60;
+let intervalId = null;
+
+function startTimer(seconds = 60) {
+  timer = seconds;
+  resendBtn.classList.add("disabled");
+  timerEl.textContent = `Reenviar código en ${timer}s`;
+
+  if (intervalId) clearInterval(intervalId);
+
+  intervalId = setInterval(() => {
+    timer--;
+    if (timer > 0) {
+      timerEl.textContent = `Reenviar código en ${timer}s`;
+      return;
+    }
+
+    clearInterval(intervalId);
+    intervalId = null;
+    timerEl.textContent = "";
+    resendBtn.classList.remove("disabled");
+  }, 1000);
 }
 
-// E.164 “suave”: admite + y 7-15 dígitos
-function isPhone(v) {
-  const cleaned = v.replace(/[\s-]/g, "");
-  return /^\+?\d{7,15}$/.test(cleaned);
-}
-
-function normalizePhone(v) {
-  // Mantén el + si viene. Quita espacios/guiones.
-  return v.replace(/[\s-]/g, "");
-}
-
-async function userExistsBy(column, value) {
-  const { data, error } = await sb
-    .from("users")
-    .select("id,email,phone")
-    .eq(column, value)
-    .maybeSingle();
-
-  if (error) return { ok: false, error };
-  return { ok: !!data, user: data || null };
-}
-
-/* ---------------- SUBMIT ---------------- */
-form?.addEventListener("submit", async (e) => {
-  e.preventDefault();
-
-  const valueRaw = (input?.value || "").trim();
-  if (!valueRaw) {
-    showSnackbar("Ingresa tu correo o teléfono.", "warn");
-    return;
-  }
-
+/* ------------------- Init ------------------- */
+(async function init() {
+  const sb = await waitSupabase();
   if (!sb) {
     showSnackbar("Supabase no está listo. Intenta de nuevo.", "error");
     return;
   }
 
-  // Determinar tipo
-  const emailMode = isEmail(valueRaw);
-  const phoneMode = !emailMode && isPhone(valueRaw);
+  // Arranca timer al entrar
+  startTimer(60);
 
-  if (!emailMode && !phoneMode) {
-    showSnackbar("Formato inválido. Usa correo o teléfono.", "warn");
-    return;
-  }
+  /* ------------------- Reenviar OTP ------------------- */
+  resendBtn.addEventListener("click", async () => {
+    if (resendBtn.classList.contains("disabled")) return;
 
-  /* ===================== CORREO ===================== */
-  if (emailMode) {
-    // 1) Validar que exista en tu tabla pública
-    const exists = await userExistsBy("email", valueRaw);
-    if (!exists.ok) {
-      showSnackbar("No se pudo validar la cuenta. Intenta de nuevo.", "error");
-      return;
-    }
-    if (!exists.user) {
-      showSnackbar("No encontramos una cuenta con ese correo.", "warn");
-      return;
-    }
+    try {
+      // Reiniciar timer primero (UX)
+      startTimer(60);
 
-    // 2) Supabase envía email de reset
-    const redirectTo = `${window.location.origin}/new-password.html`;
+      const { error } = await sb.auth.signInWithOtp({
+        phone,
+        options: { shouldCreateUser: false }
+      });
 
-    const { error } = await sb.auth.resetPasswordForEmail(valueRaw, { redirectTo });
+      if (error) {
+        showSnackbar("No se pudo reenviar el código.", "error");
+        // permitir reintento inmediato si falla
+        if (intervalId) {
+          clearInterval(intervalId);
+          intervalId = null;
+        }
+        timerEl.textContent = "";
+        resendBtn.classList.remove("disabled");
+        return;
+      }
 
-    if (error) {
-      showSnackbar("No se pudo enviar el correo. Intenta de nuevo.", "error");
-      return;
-    }
+      showSnackbar("Código reenviado ✔", "success", 2000);
 
-    showSnackbar("Enviamos el enlace a tu correo.", "success", 2400);
-    setTimeout(() => {
-      window.location.href = "correo-enviado.html";
-    }, 900);
-
-    return;
-  }
-
-  /* ===================== TELÉFONO ===================== */
-  const phone = normalizePhone(valueRaw);
-
-  // 1) Validar que exista en tu tabla pública
-  const exists = await userExistsBy("phone", phone);
-  if (!exists.ok) {
-    showSnackbar("No se pudo validar la cuenta. Intenta de nuevo.", "error");
-    return;
-  }
-  if (!exists.user) {
-    showSnackbar("No encontramos una cuenta con ese teléfono.", "warn");
-    return;
-  }
-
-  // 2) Pedir OTP por SMS (Supabase)
-  // Nota: tu proyecto debe tener Phone Auth + proveedor SMS configurado.
-  const { error } = await sb.auth.signInWithOtp({
-    phone,
-    options: {
-      // opcional: si quieres que cree usuario (NO recomendado aquí)
-      shouldCreateUser: false
+    } catch (e) {
+      console.error("❌ Reenviar OTP:", e);
+      showSnackbar("Error al reenviar. Intenta de nuevo.", "error");
+      timerEl.textContent = "";
+      resendBtn.classList.remove("disabled");
     }
   });
 
-  if (error) {
-    showSnackbar("No se pudo enviar el SMS. Revisa el número.", "error");
-    return;
-  }
+  /* ------------------- Verificar OTP ------------------- */
+  form?.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-  // Guardar teléfono para la pantalla de verificación
-  localStorage.setItem("cortero_recovery_phone", phone);
+    const code = (otpInput?.value || "").trim();
 
-  showSnackbar("Te enviamos un código por SMS.", "success", 2200);
-  setTimeout(() => {
-    window.location.href = "verificar-sms.html";
-  }, 700);
-});
+    if (code.length !== 6) {
+      otpInput?.closest(".m3-input")?.classList.add("error");
+      showSnackbar("Código inválido (6 dígitos).", "warn");
+      return;
+    }
+
+    try {
+      const { error } = await sb.auth.verifyOtp({
+        phone,
+        token: code,
+        type: "sms"
+      });
+
+      if (error) {
+        otpInput?.closest(".m3-input")?.classList.add("error");
+        showSnackbar("Código incorrecto.", "error");
+        return;
+      }
+
+      showSnackbar("Teléfono verificado ✔", "success");
+
+      setTimeout(() => {
+        window.location.href = "new-password.html";
+      }, 700);
+
+    } catch (err) {
+      console.error("❌ verifyOtp:", err);
+      showSnackbar("No se pudo verificar el código.", "error");
+    }
+  });
+
+  /* ------------------- Limpiar error al escribir ------------------- */
+  otpInput?.addEventListener("input", () => {
+    otpInput.closest(".m3-input")?.classList.remove("error");
+  });
+})();
