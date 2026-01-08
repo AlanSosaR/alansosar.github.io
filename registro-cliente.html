@@ -111,12 +111,28 @@
           </button>
 
         </form>
+<!-- snackbar-->
+        <div id="snackbar" class="snackbar hidden" role="status" aria-live="polite">
+  <span class="snackbar__msg"></span>
 
-        <!-- SNACKBAR PREMIUM (LOGO + TEXTO) -->
-        <div id="snackbar">
-          <img src="imagenes/logo_secundario.png" class="snack-logo" alt="">
-          <span class="snack-text"></span>
-        </div>
+  <div class="snackbar__actions">
+    <button
+      type="button"
+      class="snackbar__btn snackbar__btn--text"
+      data-action="cancel"
+    >
+      Cancelar
+    </button>
+
+    <button
+      type="button"
+      class="snackbar__btn snackbar__btn--filled"
+      data-action="confirm"
+    >
+      Confirmar
+    </button>
+  </div>
+</div>
 
       </div>
     </section>
