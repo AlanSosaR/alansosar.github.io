@@ -45,23 +45,26 @@ body {
    HTML: <div id="snackbar" class="snackbar hidden"></div>
 ===================================================== */
 
+
 #snackbar.snackbar {
   position: fixed;
   left: 50%;
   bottom: 18px;
   transform: translate(-50%, 18px);
 
-  width: min(560px, calc(100% - 24px));
+  /* 🔑 TAMAÑO CONTROLADO */
+  max-width: 520px;
+  width: calc(100% - 48px);   /* más aire a los lados */
+  
   padding: 14px 16px;
-
   border-radius: 18px;
+
   background: rgba(20, 22, 24, 0.92);
   color: #fff;
 
   font-size: 14.5px;
   line-height: 1.25;
   font-weight: 600;
-  letter-spacing: 0.1px;
 
   box-shadow:
     0 18px 44px rgba(0,0,0,.55),
@@ -77,7 +80,6 @@ body {
 
   opacity: 0;
   pointer-events: none;
-
   z-index: 99999;
 
   transition:
@@ -115,6 +117,11 @@ body {
 @media (max-width: 900px) {
   #snackbar.snackbar {
     bottom: 14px;
+
+    /* 🔑 CLAVE: evitar que se pegue a los bordes */
+    width: calc(100% - 56px);
+    max-width: 480px;
+
     padding: 13px 14px;
     border-radius: 16px;
     font-size: 14px;
