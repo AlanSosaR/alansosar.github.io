@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Verificar código | Café Cortero</title>
 
-  <!-- Tipografía global -->
+  <!-- Tipografía -->
   <link rel="stylesheet" href="css/tipografia.css">
 
-  <!-- Iconos Material Symbols -->
+  <!-- Material Icons -->
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
 
   <!-- Estilos -->
-  <link rel="stylesheet" href="css/forgot-phone-pin.css?v=1">
+  <link rel="stylesheet" href="css/forgot-phone-pin.css?v=2">
 
   <link rel="icon" type="image/png" href="imagenes/logo.png">
 </head>
@@ -30,32 +30,36 @@
         <h2 class="login-title">Verificar código</h2>
       </div>
 
-      <!-- TARJETA INTERIOR -->
+      <!-- CONTENIDO -->
       <div class="login-inner-card">
 
         <p class="descripcion">
-          Te enviamos un código de verificación por SMS.  
+          Te enviamos un código de verificación por <b>SMS</b>.  
           Escríbelo para continuar con el cambio de contraseña.
         </p>
 
-        <form id="pinForm">
+        <!-- FORM OTP -->
+        <form id="otpForm">
 
-          <!-- INPUT -->
           <div class="m3-field">
             <div class="m3-input">
               <span class="material-symbols-outlined">dialpad</span>
-              <input 
+
+              <input
                 type="text"
-                id="pinInput"
+                id="otpInput"
+                inputmode="numeric"
                 autocomplete="one-time-code"
-                placeholder=""
                 maxlength="6"
+                placeholder=" "
               />
-              <label for="pinInput" class="floating-label">Código de 6 dígitos</label>
+
+              <label for="otpInput" class="floating-label">
+                Código de 6 dígitos
+              </label>
             </div>
           </div>
 
-          <!-- BOTÓN -->
           <button type="submit" class="m3-btn">
             <span class="btn-text">Verificar</span>
             <span class="loader"></span>
@@ -66,28 +70,33 @@
         <!-- REENVIAR -->
         <div class="reenviar">
           <span id="timer">Reenviar código en 60s</span>
-          <a id="reenviarBtn" class="reenviar-link disabled">Reenviar código</a>
+          <a id="reenviarBtn" class="reenviar-link disabled">
+            Reenviar código
+          </a>
         </div>
 
         <!-- VOLVER -->
         <div class="links" style="margin-top:20px;">
-          <a href="login.html" class="back-link">Volver a iniciar sesión</a>
+          <a href="login.html" class="back-link">
+            Volver a iniciar sesión
+          </a>
         </div>
 
       </div>
     </section>
   </main>
 
-  <div id="snackbar"></div>
+  <!-- SNACKBAR MATERIAL 3 -->
+  <div id="snackbar" class="snackbar hidden"></div>
 
   <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <!-- Core scripts -->
+  <!-- Core -->
   <script src="js/core-scripts.js"></script>
 
-  <!-- PIN Scripts -->
-  <script src="js/forgot-phone-pin.js?v=1"></script>
+  <!-- OTP JS -->
+  <script src="js/verify-phone-otp.js?v=2"></script>
 
 </body>
 </html>
