@@ -1,11 +1,9 @@
 // ============================================================
 // REGISTRO DE CLIENTE — Café Cortero
-// Supabase Auth v2 — FINAL ESTABLE 2025 (CON BARRAS)
+// Supabase Auth v2 — Snackbar M3 Expressive (action, sin logo)
 // ============================================================
 
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("🧾 registro-cliente.js — versión final con barras");
-
   const sb = window.supabaseClient;
   if (!sb) {
     console.error("❌ Supabase no inicializado");
@@ -13,10 +11,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   const form = document.getElementById("registroForm");
+  if (!form) return;
 
-  /* =========================================================
-     CAMPOS
-  ========================================================= */
   const campos = {
     nombre: document.getElementById("nombreInput"),
     correo: document.getElementById("correoInput"),
@@ -33,73 +29,135 @@ document.addEventListener("DOMContentLoaded", () => {
     confirm: document.getElementById("errorConfirm"),
   };
 
-  /* =========================================================
-     HELPERS UI
-  ========================================================= */
+  // =========================
+  // Snackbar Action (sin autocierre)
+  // =========================
+  const snackbarEl = document.getElementById("snackbar");
+  const snackMsgEl = snackbarEl?.querySelector(".snackbar__msg");
+  const snackActionsEl = snackbarEl?.querySelector(".snackbar__actions");
+
+  function openSnackbar(message, type = "info") {
+    if (!snackbarEl) return;
+
+    snackbarEl.classList.remove("hidden", "show", "is-error", "is-warn", "is-success");
+    if (type === "error") snackbarEl.classList.add("is-error");
+    if (type === "warn") snackbarEl.classList.add("is-warn");
+    if (type === "success") snackbarEl.classList.add("is-success");
+
+    if (snackMsgEl) snackMsgEl.textContent = message;
+    else snackbarEl.textContent = message;
+
+    void snackbarEl.offsetWidth;
+    snackbarEl.classList.add("show");
+  }
+
+  function closeSnackbar() {
+    if (!snackbarEl) return;
+    snackbarEl.classList.remove("show");
+    snackbarEl.classList.add("hidden");
+    if (snackActionsEl) snackActionsEl.style.display = "";
+  }
+
+  function actionSnackbar({
+    message,
+    type = "info",
+    confirmText = "Confirmar",
+    cancelText = "Cancelar",
+    showCancel = true,
+  }) {
+    return new Promise((resolve) => {
+      if (!snackbarEl || !snackActionsEl || !snackMsgEl) {
+        // fallback mínimo si no existe el snackbar action
+        alert(message);
+        resolve("confirm");
+        return;
+      }
+
+      // mostrar acciones
+      snackActionsEl.style.display = "inline-flex";
+
+      const btnCancel = snackActionsEl.querySelector('[data-action="cancel"]');
+      const btnConfirm = snackActionsEl.querySelector('[data-action="confirm"]');
+
+      if (btnConfirm) btnConfirm.textContent = confirmText;
+
+      if (btnCancel) {
+        btnCancel.textContent = cancelText;
+        btnCancel.style.display = showCancel ? "" : "none";
+      }
+
+      openSnackbar(message, type);
+
+      const onClick = (e) => {
+        const b = e.target.closest("button");
+        if (!b) return;
+
+        const action = b.dataset.action;
+        if (!action) return;
+
+        snackActionsEl.removeEventListener("click", onClick);
+        closeSnackbar();
+
+        resolve(action === "confirm" ? "confirm" : "cancel");
+      };
+
+      snackActionsEl.addEventListener("click", onClick);
+    });
+  }
+
+  // =========================
+  // Helpers UI por campo
+  // =========================
   function marcar(campo, mensaje = "", ok = false) {
     const input = campos[campo];
-    const box = input.closest(".m3-input");
-    if (!box) return;
+    const box = input?.closest(".m3-input");
+    if (!input || !box) return;
 
     box.classList.remove("error", "success");
 
     if (ok) {
       box.classList.add("success");
-      errores[campo].textContent = "";
+      if (errores[campo]) errores[campo].textContent = "";
     } else if (mensaje) {
       box.classList.add("error");
-      errores[campo].textContent = mensaje;
+      if (errores[campo]) errores[campo].textContent = mensaje;
     } else {
-      errores[campo].textContent = "";
+      if (errores[campo]) errores[campo].textContent = "";
     }
   }
 
-  function mostrarSnackbar(msg) {
-    const bar = document.getElementById("snackbar");
-    if (!bar) return;
-
-    bar.innerHTML = `
-      <img src="imagenes/logo_secundario.png" class="snack-logo">
-      <span>${msg}</span>
-    `;
-    bar.classList.add("show");
-    setTimeout(() => bar.classList.remove("show"), 3000);
-  }
-
-  /* =========================================================
-     VALIDACIONES EN VIVO
-  ========================================================= */
   function emailValido(v) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
   }
 
-  campos.nombre.addEventListener("input", () =>
-    marcar("nombre", "", campos.nombre.value.trim().length >= 2)
+  // =========================
+  // Validaciones en vivo
+  // =========================
+  campos.nombre?.addEventListener("input", () =>
+    marcar("nombre", "", (campos.nombre.value || "").trim().length >= 2)
   );
 
-  campos.correo.addEventListener("input", () =>
-    marcar("correo", "", emailValido(campos.correo.value.trim()))
+  campos.correo?.addEventListener("input", () =>
+    marcar("correo", "", emailValido((campos.correo.value || "").trim()))
   );
 
-  campos.telefono.addEventListener("input", () =>
-    marcar("telefono", "", campos.telefono.value.trim().length >= 8)
+  campos.telefono?.addEventListener("input", () =>
+    marcar("telefono", "", (campos.telefono.value || "").trim().length >= 8)
   );
 
-  campos.password.addEventListener("input", () =>
-    marcar("password", "", campos.password.value.length >= 6)
+  campos.password?.addEventListener("input", () =>
+    marcar("password", "", (campos.password.value || "").length >= 6)
   );
 
-  campos.confirm.addEventListener("input", () =>
-    marcar("confirm", "", campos.confirm.value === campos.password.value)
+  campos.confirm?.addEventListener("input", () =>
+    marcar("confirm", "", (campos.confirm.value || "") === (campos.password.value || ""))
   );
 
-  /* =========================================================
-     BARRA DE SEGURIDAD DE CONTRASEÑA (6 NIVELES)
-  ========================================================= */
+  // =========================
+  // Barra seguridad (6 niveles)
+  // =========================
   const barsContainer = document.getElementById("barsContainer");
-  const bars = barsContainer
-    ? barsContainer.querySelectorAll(".strength-bar")
-    : [];
+  const bars = barsContainer ? barsContainer.querySelectorAll(".strength-bar") : [];
 
   function nivelSeguridad(pass) {
     let score = 0;
@@ -114,11 +172,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (campos.password && barsContainer) {
     campos.password.addEventListener("input", () => {
-      const val = campos.password.value.trim();
+      const val = (campos.password.value || "").trim();
 
       if (!val) {
         barsContainer.style.display = "none";
-        bars.forEach(bar => (bar.className = "strength-bar"));
+        bars.forEach((bar) => (bar.className = "strength-bar"));
         return;
       }
 
@@ -132,30 +190,32 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  /* =========================================================
-     LOADER BOTÓN
-  ========================================================= */
-  const btn = document.querySelector(".m3-btn");
-  const btnText = btn.querySelector(".btn-text");
-  const loader = btn.querySelector(".loader");
+  // =========================
+  // Loader botón
+  // =========================
+  const btn = form.querySelector(".m3-btn");
+  const btnText = btn?.querySelector(".btn-text");
+  const loader = btn?.querySelector(".loader");
 
   function loading(on) {
-    btn.disabled = on;
-    loader.style.opacity = on ? "1" : "0";
-    btnText.style.opacity = "1";
+    if (!btn) return;
+    btn.disabled = !!on;
+    btn.classList.toggle("loading", !!on);
+    if (btnText) btnText.style.opacity = on ? "0" : "1";
+    if (loader) loader.style.display = on ? "inline-block" : "none";
   }
 
-  /* =========================================================
-     SUBMIT — REGISTRO REAL
-  ========================================================= */
-  form.addEventListener("submit", async e => {
+  // =========================
+  // Submit
+  // =========================
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const nombre = campos.nombre.value.trim();
-    const correo = campos.correo.value.trim();
-    const tel = campos.telefono.value.trim();
-    const pass = campos.password.value;
-    const conf = campos.confirm.value;
+    const nombre = (campos.nombre?.value || "").trim();
+    const correo = (campos.correo?.value || "").trim();
+    const tel = (campos.telefono?.value || "").trim();
+    const pass = campos.password?.value || "";
+    const conf = campos.confirm?.value || "";
 
     if (!nombre) return marcar("nombre", "Ingresa tu nombre");
     if (!emailValido(correo)) return marcar("correo", "Correo no válido");
@@ -174,46 +234,64 @@ document.addEventListener("DOMContentLoaded", () => {
             name: nombre,
             phone: tel,
             country: "Honduras",
-            photo_url: "/imagenes/avatar-default.svg"
-          }
-        }
+            photo_url: "/imagenes/avatar-default.svg",
+          },
+          // Si usas confirmación por email, define esto si lo necesitas:
+          // emailRedirectTo: `${window.location.origin}/login.html`
+        },
       });
 
       if (error) throw error;
 
-      mostrarSnackbar("Cuenta creada ✔ Revisa tu correo ✉️");
+      loading(false);
 
-      setTimeout(() => {
-        window.location.href = "login.html";
-      }, 1800);
+      // Snackbar con confirmación manual (sin autocierre)
+      await actionSnackbar({
+        message: "Cuenta creada. Te enviamos un correo para confirmar tu cuenta.",
+        type: "success",
+        confirmText: "Entendido",
+        showCancel: false,
+      });
+
+      // Redirige después de que el usuario lo lea
+      window.location.href = "login.html";
 
     } catch (err) {
       console.error("❌ Registro:", err);
-
-      if (err.message?.includes("already registered")) {
-        marcar("correo", "Este correo ya existe");
-      }
-      else if (err.message?.includes("users_phone_unique")) {
-        marcar("telefono", "Este teléfono ya está registrado");
-      }
-      else {
-        mostrarSnackbar("Error al crear la cuenta");
-      }
-
       loading(false);
+
+      const msg = (err && err.message) ? err.message : "";
+
+      if (msg.includes("already registered")) {
+        marcar("correo", "Este correo ya existe");
+        return;
+      }
+
+      if (msg.includes("users_phone_unique")) {
+        marcar("telefono", "Este teléfono ya está registrado");
+        return;
+      }
+
+      // Error general → snackbar (manual, para que lo lea)
+      await actionSnackbar({
+        message: "No se pudo crear la cuenta. Intenta de nuevo.",
+        type: "error",
+        confirmText: "Cerrar",
+        showCancel: false,
+      });
     }
   });
 
-  /* =========================================================
-     TOGGLE PASSWORD (MOSTRAR / OCULTAR)
-  ========================================================= */
-  document.querySelectorAll(".toggle-pass").forEach(icon => {
+  // =========================
+  // Toggle password
+  // =========================
+  document.querySelectorAll(".toggle-pass").forEach((icon) => {
     icon.addEventListener("click", () => {
-      const input = document.getElementById(icon.dataset.target);
-      if (!input) return;
+      const target = document.getElementById(icon.dataset.target);
+      if (!target) return;
 
-      const show = input.type === "password";
-      input.type = show ? "text" : "password";
+      const show = target.type === "password";
+      target.type = show ? "text" : "password";
       icon.textContent = show ? "visibility" : "visibility_off";
     });
   });
