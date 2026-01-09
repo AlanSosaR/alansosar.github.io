@@ -269,7 +269,7 @@ document.querySelectorAll(".toggle-pass").forEach(icon => {
 });
 
 /* ========================================================
-   LOGIN CON GOOGLE – Café Cortero ☕
+   LOGIN CON GOOGLE – Café Cortero ☕ (INTEGRACIÓN CORRECTA)
    - Google OAuth
    - Supabase crea auth.users
    - Trigger crea public.users
@@ -288,7 +288,9 @@ if (googleBtn) {
           redirectTo: `${window.location.origin}/login.html`,
         },
       });
-      // ⚠️ NO pongas loading ni redirect aquí
+      // ⚠️ NO loading
+      // ⚠️ NO redirect manual
+      // Google hace el redirect completo
     } catch (err) {
       console.error("❌ Google login:", err);
       mostrarSnackbar("No se pudo iniciar sesión con Google.", "error");
@@ -308,12 +310,12 @@ if (googleBtn) {
 
   if (sessionErr || !session?.user) return;
 
-  // Evitar reprocesar si ya está guardado
+  // Evitar reprocesar si ya hay sesión local
   if (localStorage.getItem("cortero_logged") === "1") return;
 
   const user = session.user;
 
-  // 🔹 El perfil YA fue creado por el trigger
+  // 🔹 El perfil YA fue creado por el trigger en Supabase
   const { data: perfil, error } = await sb
     .from("users")
     .select("*")
@@ -336,6 +338,7 @@ if (googleBtn) {
 
   window.location.href =
     from === "carrito" ? "carrito.html" : "index.html";
+})();
 })();
   const { data: perfil, error } = await sb
     .from("users")
