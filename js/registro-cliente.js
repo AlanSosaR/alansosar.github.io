@@ -208,7 +208,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // =========================
   // Submit
   // =========================
-  form.addEventListener("submit", async (e) => {
+form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const nombre = (campos.nombre?.value || "").trim();
@@ -221,7 +221,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (!emailValido(correo)) return marcar("correo", "Correo no válido");
   if (tel.length < 8) return marcar("telefono", "Teléfono no válido");
   if (pass.length < 6) return marcar("password", "Mínimo 6 caracteres");
-  if (pass !== conf) return marcar("confirm", "No coinciden");
+  if (pass !== conf) return marcar("confirm", "Las contraseñas no coinciden");
 
   loading(true);
 
@@ -244,15 +244,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
     loading(false);
 
-    await actionSnackbar({
-      message: "Cuenta creada. Te enviamos un correo para confirmar tu cuenta.",
+    // ✅ Snackbar NO autocierra
+    const decision = await actionSnackbar({
+      message:
+        "Cuenta creada correctamente. Te enviamos un correo para confirmar tu cuenta. " +
+        "Si no lo ves en tu bandeja principal, revisa la carpeta de spam.",
       type: "success",
       confirmText: "Confirmar",
       showCancel: false,
     });
 
-    closeSnackbar();
-    window.location.href = "login.html";
+    // Solo continúa cuando el usuario confirma
+    if (decision === "confirm") {
+      closeSnackbar();
+      window.location.href = "login.html";
+    }
 
   } catch (err) {
     console.error("❌ Registro:", err);
@@ -261,7 +267,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const msg = err?.message || "";
 
     if (msg.includes("already registered")) {
-      marcar("correo", "Este correo ya existe");
+      marcar("correo", "Este correo ya está registrado");
       return;
     }
 
@@ -270,8 +276,10 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    // Error genérico (NO autocierra)
     await actionSnackbar({
-      message: "No se pudo crear la cuenta. Intenta de nuevo.",
+      message:
+        "No se pudo crear la cuenta. Intenta de nuevo más tarde.",
       type: "error",
       confirmText: "Cerrar",
       showCancel: false,
