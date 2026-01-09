@@ -13,19 +13,59 @@
   const box = input.closest(".m3-input");
   const msgEl = field?.querySelector(".field-msg");
 
-  const snackbarEl = document.getElementById("snackbar");
-  const snackMsgEl = snackbarEl?.querySelector(".snackbar__msg");
+  // =====================
+  // SNACKBAR (MANUAL)
+  // =====================
+  const snackbar = document.getElementById("snackbar");
+  const snackMsg = snackbar?.querySelector(".snackbar__msg");
+  const snackActions = snackbar?.querySelector(".snackbar__actions");
 
-  function showSnackbar(message, type = "info", ms = 2600) {
-    if (!snackbarEl) return;
-    snackbarEl.className = `snackbar show is-${type}`;
-    snackMsgEl.textContent = message;
-    clearTimeout(window.__snackTimer);
-    window.__snackTimer = setTimeout(() => {
-      snackbarEl.classList.remove("show");
-    }, ms);
+  let snackHandler = null;
+
+  function openSnackbar(message, type = "info", {
+    confirmText = "Confirmar",
+    showCancel = false,
+  } = {}) {
+    if (!snackbar) return Promise.resolve("confirm");
+
+    snackbar.classList.remove("hidden", "is-error", "is-success", "is-warn");
+    snackbar.classList.add("show", `is-${type}`);
+
+    snackMsg.textContent = message;
+
+    snackActions.style.display = "inline-flex";
+
+    const btnConfirm = snackActions.querySelector('[data-action="confirm"]');
+    const btnCancel  = snackActions.querySelector('[data-action="cancel"]');
+
+    if (btnConfirm) btnConfirm.textContent = confirmText;
+    if (btnCancel) btnCancel.style.display = showCancel ? "" : "none";
+
+    return new Promise((resolve) => {
+      if (snackHandler) {
+        snackActions.removeEventListener("click", snackHandler);
+      }
+
+      snackHandler = (e) => {
+        const b = e.target.closest("button");
+        if (!b) return;
+
+        snackbar.classList.remove("show");
+        snackbar.classList.add("hidden");
+
+        snackActions.removeEventListener("click", snackHandler);
+        snackHandler = null;
+
+        resolve(b.dataset.action === "confirm" ? "confirm" : "cancel");
+      };
+
+      snackActions.addEventListener("click", snackHandler);
+    });
   }
 
+  // =====================
+  // ERRORES DE CAMPO
+  // =====================
   function setFieldError(text) {
     box?.classList.add("error");
     field?.classList.add("has-error");
@@ -38,13 +78,22 @@
     if (msgEl) msgEl.textContent = "";
   }
 
+  input.addEventListener("input", clearFieldError);
+
+  // =====================
+  // LOADING BUTTON
+  // =====================
   function setLoading(on) {
     btn.disabled = on;
     btn.classList.toggle("loading", on);
-    if (btnText) btnText.style.opacity = on ? "0" : "1";
+
+    // ⬅ loader a la izquierda, texto visible
     if (loader) loader.style.display = on ? "inline-block" : "none";
   }
 
+  // =====================
+  // VALIDACIONES
+  // =====================
   function isEmail(v) {
     return /^[^\s@]+@[^\s@]+\.[A-Za-z]{2,}$/.test(v);
   }
@@ -53,8 +102,9 @@
     return /^\+?\d{7,15}$/.test(v.replace(/[\s-]/g, ""));
   }
 
-  input.addEventListener("input", clearFieldError);
-
+  // =====================
+  // SUBMIT
+  // =====================
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     clearFieldError();
@@ -66,13 +116,11 @@
       return;
     }
 
-    // 🚫 TELÉFONO NO DISPONIBLE
     if (isPhone(value) && !isEmail(value)) {
       setFieldError("La recuperación por teléfono no está disponible por el momento.");
       return;
     }
 
-    // ❌ FORMATO INVÁLIDO
     if (!isEmail(value)) {
       setFieldError("Ingresa un correo electrónico válido.");
       return;
@@ -91,22 +139,39 @@
 
       if (error) {
         console.error(error);
-        showSnackbar("No se pudo enviar el correo. Intenta más tarde.", "error", 3200);
+        await openSnackbar(
+          "No se pudo enviar el correo. Intenta más tarde.",
+          "error",
+          { confirmText: "Cerrar" }
+        );
         return;
       }
 
-      // Mensaje seguro (no confirma existencia)
-      showSnackbar(
-        "Si el correo está registrado, recibirás un enlace para restablecer tu contraseña.",
+      // ✅ Confirmación del usuario
+      const decision = await openSnackbar(
+        "El enlace de recuperación se enviará a tu correo electrónico.",
         "success",
-        4200
+        { confirmText: "Confirmar" }
       );
 
-      input.value = "";
+      if (decision === "confirm") {
+        await openSnackbar(
+          "Si el correo está registrado, recibirás un enlace para restablecer tu contraseña. " +
+          "Si no lo ves en la bandeja principal, revisa tu carpeta de spam.",
+          "success",
+          { confirmText: "Cerrar" }
+        );
+
+        input.value = "";
+      }
     } catch (err) {
       console.error(err);
       setLoading(false);
-      showSnackbar("Error inesperado. Intenta de nuevo.", "error", 3200);
+      await openSnackbar(
+        "Error inesperado. Intenta de nuevo.",
+        "error",
+        { confirmText: "Cerrar" }
+      );
     }
   });
 })();
