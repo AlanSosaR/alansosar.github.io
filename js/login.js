@@ -269,15 +269,12 @@ document.querySelectorAll(".toggle-pass").forEach(icon => {
 });
 
 /* ========================================================
-   LOGIN CON GOOGLE – Café Cortero ☕
-   - Autentica con Google
-   - Crea usuario en auth.users (Supabase)
-   - Inserta / actualiza perfil en public.users
-   - Guarda sesión en localStorage
-   - Redirige correctamente
+   LOGIN CON GOOGLE – Café Cortero ☕ (FINAL CORRECTO)
+   - Google OAuth
+   - Supabase crea auth.users
+   - Trigger crea public.users
    ======================================================== */
 
-/* ---------- BOTÓN GOOGLE ---------- */
 const googleBtn = document.getElementById("googleLoginBtn");
 
 if (googleBtn) {
@@ -289,9 +286,6 @@ if (googleBtn) {
           redirectTo: `${window.location.origin}/login.html`,
         },
       });
-      // IMPORTANTE:
-      // No pongas loading ni redirecciones aquí.
-      // Google hace un redirect completo.
     } catch (err) {
       console.error("❌ Google login:", err);
       mostrarSnackbar("No se pudo iniciar sesión con Google.", "error");
@@ -307,10 +301,34 @@ if (googleBtn) {
   const { data: { session } } = await sb.auth.getSession();
   if (!session || !session.user) return;
 
-  // Evitar reprocesar si ya está logueado
-  if (localStorage.getItem("cortero_logged") === "1") return;
-
+  // Ya autenticado → el trigger ya creó el perfil
   const user = session.user;
+
+  // Cargar perfil desde public.users
+  const { data: perfil, error } = await sb
+    .from("users")
+    .select("*")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (error || !perfil) {
+    console.error("❌ Perfil no encontrado:", error);
+    mostrarSnackbar("Error al cargar tu perfil.", "error");
+    return;
+  }
+
+  // Guardar en localStorage
+  localStorage.setItem("cortero_user", JSON.stringify(perfil));
+  localStorage.setItem("cortero_logged", "1");
+
+  // Redirigir
+  const params = new URLSearchParams(location.search);
+  const from = params.get("from") || params.get("redirect");
+
+  location.href = (from === "carrito")
+    ? "carrito.html"
+    : "index.html";
+})();
 
   // Construir perfil según tu tabla public.users
   const perfil = {
