@@ -269,7 +269,7 @@ document.querySelectorAll(".toggle-pass").forEach(icon => {
 });
 
 /* ========================================================
-   LOGIN CON GOOGLE – Café Cortero ☕ (INTEGRACIÓN CORRECTA)
+   LOGIN CON GOOGLE – Café Cortero ☕
    - Google OAuth
    - Supabase crea auth.users
    - Trigger crea public.users
@@ -288,9 +288,7 @@ if (googleBtn) {
           redirectTo: `${window.location.origin}/login.html`,
         },
       });
-      // ⚠️ NO loading
-      // ⚠️ NO redirect manual
-      // Google hace el redirect completo
+      // Google maneja el redirect completo
     } catch (err) {
       console.error("❌ Google login:", err);
       mostrarSnackbar("No se pudo iniciar sesión con Google.", "error");
@@ -303,99 +301,35 @@ if (googleBtn) {
   const sb = window.supabaseClient;
   if (!sb) return;
 
-  const {
-    data: { session },
-    error: sessionErr,
-  } = await sb.auth.getSession();
+  const { data, error } = await sb.auth.getSession();
+  if (error || !data?.session?.user) return;
 
-  if (sessionErr || !session?.user) return;
-
-  // Evitar reprocesar si ya hay sesión local
+  // Evitar reprocesar si ya hay sesión
   if (localStorage.getItem("cortero_logged") === "1") return;
 
-  const user = session.user;
+  const user = data.session.user;
 
-  // 🔹 El perfil YA fue creado por el trigger en Supabase
-  const { data: perfil, error } = await sb
+  // El perfil YA fue creado por el trigger
+  const { data: perfil, error: perfilErr } = await sb
     .from("users")
     .select("*")
     .eq("id", user.id)
     .maybeSingle();
 
-  if (error || !perfil) {
-    console.error("❌ Perfil no encontrado:", error);
+  if (perfilErr || !perfil) {
+    console.error("❌ Perfil no encontrado:", perfilErr);
     mostrarSnackbar("No se pudo cargar tu perfil.", "error");
     return;
   }
 
-  // Guardar sesión local (MISMO formato que login normal)
+  // Guardar sesión local
   localStorage.setItem("cortero_user", JSON.stringify(perfil));
   localStorage.setItem("cortero_logged", "1");
 
-  // Redirección final
+  // Redirección
   const params = new URLSearchParams(location.search);
   const from = params.get("from") || params.get("redirect");
 
   window.location.href =
     from === "carrito" ? "carrito.html" : "index.html";
-})();
-})();
-  const { data: perfil, error } = await sb
-    .from("users")
-    .select("*")
-    .eq("id", user.id)
-    .maybeSingle();
-
-  if (error || !perfil) {
-    console.error("❌ Perfil no encontrado:", error);
-    mostrarSnackbar("Error al cargar tu perfil.", "error");
-    return;
-  }
-
-  // Guardar en localStorage
-  localStorage.setItem("cortero_user", JSON.stringify(perfil));
-  localStorage.setItem("cortero_logged", "1");
-
-  // Redirigir
-  const params = new URLSearchParams(location.search);
-  const from = params.get("from") || params.get("redirect");
-
-  location.href = (from === "carrito")
-    ? "carrito.html"
-    : "index.html";
-})();
-
-  // Construir perfil según tu tabla public.users
-  const perfil = {
-    id: user.id, // MISMO id que auth.users
-    name: user.user_metadata?.full_name || "",
-    email: user.email,
-    phone: user.user_metadata?.phone || null,
-    country: "Honduras",
-    photo_url: user.user_metadata?.avatar_url || "/imagenes/avatar-default.svg",
-    rol: "cliente",
-  };
-
-  // Insertar o actualizar perfil
-  const { error } = await sb
-    .from("users")
-    .upsert(perfil, { onConflict: "id" });
-
-  if (error) {
-    console.error("❌ Error guardando perfil Google:", error);
-    mostrarSnackbar("Error al completar el inicio de sesión.", "error");
-    return;
-  }
-
-  // Guardar en localStorage (MISMO FORMATO que login normal)
-  localStorage.setItem("cortero_user", JSON.stringify(perfil));
-  localStorage.setItem("cortero_logged", "1");
-
-  // Redirección final
-  const params = new URLSearchParams(location.search);
-  const from = params.get("from") || params.get("redirect");
-
-  location.href = (from === "carrito")
-    ? "carrito.html"
-    : "index.html";
 })();
