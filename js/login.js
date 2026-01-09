@@ -267,3 +267,82 @@ document.querySelectorAll(".toggle-pass").forEach(icon => {
     icon.textContent = visible ? "visibility_off" : "visibility";
   });
 });
+
+/* ========================================================
+   LOGIN CON GOOGLE – Café Cortero ☕
+   - Autentica con Google
+   - Crea usuario en auth.users (Supabase)
+   - Inserta / actualiza perfil en public.users
+   - Guarda sesión en localStorage
+   - Redirige correctamente
+   ======================================================== */
+
+/* ---------- BOTÓN GOOGLE ---------- */
+const googleBtn = document.getElementById("googleLoginBtn");
+
+if (googleBtn) {
+  googleBtn.addEventListener("click", async () => {
+    try {
+      await window.supabaseClient.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/login.html`,
+        },
+      });
+      // IMPORTANTE:
+      // No pongas loading ni redirecciones aquí.
+      // Google hace un redirect completo.
+    } catch (err) {
+      console.error("❌ Google login:", err);
+      mostrarSnackbar("No se pudo iniciar sesión con Google.", "error");
+    }
+  });
+}
+
+/* ---------- AL REGRESAR DE GOOGLE ---------- */
+(async () => {
+  const sb = window.supabaseClient;
+  if (!sb) return;
+
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session || !session.user) return;
+
+  // Evitar reprocesar si ya está logueado
+  if (localStorage.getItem("cortero_logged") === "1") return;
+
+  const user = session.user;
+
+  // Construir perfil según tu tabla public.users
+  const perfil = {
+    id: user.id, // MISMO id que auth.users
+    name: user.user_metadata?.full_name || "",
+    email: user.email,
+    phone: user.user_metadata?.phone || null,
+    country: "Honduras",
+    photo_url: user.user_metadata?.avatar_url || "/imagenes/avatar-default.svg",
+    rol: "cliente",
+  };
+
+  // Insertar o actualizar perfil
+  const { error } = await sb
+    .from("users")
+    .upsert(perfil, { onConflict: "id" });
+
+  if (error) {
+    console.error("❌ Error guardando perfil Google:", error);
+    mostrarSnackbar("Error al completar el inicio de sesión.", "error");
+    return;
+  }
+
+  // Guardar en localStorage (MISMO FORMATO que login normal)
+  localStorage.setItem("cortero_user", JSON.stringify(perfil));
+  localStorage.setItem("cortero_logged", "1");
+
+  // Redirección final
+  const params = new URLSearchParams(location.search);
+  const from = params.get("from") || params.get("redirect");
+
+  location.href = (from === "carrito")
+    ? "carrito.html"
+    : "index.html";
+})();
