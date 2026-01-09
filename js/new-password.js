@@ -11,7 +11,9 @@
   const btnText = btn?.querySelector(".btn-text");
   const loader  = btn?.querySelector(".loader");
 
-  // Snackbar
+  // =====================
+  // SNACKBAR (NO AUTOCLOSE)
+  // =====================
   const snack        = document.getElementById("snackbar");
   const snackMsg     = snack?.querySelector(".snackbar__msg");
   const snackActions = snack?.querySelector(".snackbar__actions");
@@ -19,62 +21,31 @@
   let snackResolver = null;
   let snackClickHandler = null;
 
-  function setSnackType(type) {
-    snack?.classList.remove("is-error", "is-warn", "is-success");
-    if (type) snack?.classList.add(`is-${type}`);
-  }
-
-  function openSnack(message, type = "info") {
+  function openSnack(message, type = "info", {
+    confirmText = "Confirmar",
+    cancelText = "",
+    showCancel = false,
+  } = {}) {
     if (!snack) return;
-    snack.classList.remove("hidden");
-    setSnackType(type);
+
+    snack.classList.remove("hidden", "is-error", "is-warn", "is-success");
+    snack.classList.add("show", `is-${type}`);
+
     snackMsg.textContent = message;
-    void snack.offsetWidth;
-    snack.classList.add("show");
-  }
+    snackActions.style.display = "inline-flex";
 
-  function closeSnack() {
-    snack?.classList.remove("show");
-    snack?.classList.add("hidden");
+    const btnConfirm = snackActions.querySelector('[data-action="confirm"]');
+    const btnCancel  = snackActions.querySelector('[data-action="cancel"]');
 
-    if (snackClickHandler && snackActions) {
-      snackActions.removeEventListener("click", snackClickHandler);
-      snackClickHandler = null;
+    if (btnConfirm) btnConfirm.textContent = confirmText;
+
+    if (btnCancel) {
+      btnCancel.textContent = cancelText;
+      btnCancel.style.display = showCancel ? "" : "none";
     }
 
-    if (snackResolver) {
-      const r = snackResolver;
-      snackResolver = null;
-      r("cancel");
-    }
-  }
-
-  function actionSnack({
-    message,
-    type = "info",
-    confirmText = "Aceptar",
-    cancelText = "Cancelar",
-    showCancel = true,
-  }) {
     return new Promise((resolve) => {
-      if (!snack || !snackActions) {
-        resolve("confirm");
-        return;
-      }
-
       snackResolver = resolve;
-      snackActions.style.display = "inline-flex";
-
-      const btnCancel  = snackActions.querySelector('[data-action="cancel"]');
-      const btnConfirm = snackActions.querySelector('[data-action="confirm"]');
-
-      if (btnConfirm) btnConfirm.textContent = confirmText;
-      if (btnCancel) {
-        btnCancel.textContent = cancelText;
-        btnCancel.style.display = showCancel ? "" : "none";
-      }
-
-      openSnack(message, type);
 
       if (snackClickHandler) {
         snackActions.removeEventListener("click", snackClickHandler);
@@ -83,16 +54,28 @@
       snackClickHandler = (e) => {
         const b = e.target.closest("button");
         if (!b) return;
+
         const action = b.dataset.action;
-        closeSnack();
-        resolve(action === "confirm" ? "confirm" : "cancel");
+
+        snack.classList.remove("show");
+        snack.classList.add("hidden");
+
+        snackActions.removeEventListener("click", snackClickHandler);
+        snackClickHandler = null;
+
+        const r = snackResolver;
+        snackResolver = null;
+
+        if (r) r(action === "confirm" ? "confirm" : "cancel");
       };
 
       snackActions.addEventListener("click", snackClickHandler);
     });
   }
 
-  // Helpers de error por campo
+  // =====================
+  // ERRORES POR CAMPO
+  // =====================
   function fieldParts(inputEl) {
     const field = inputEl.closest(".m3-field");
     return {
@@ -123,16 +106,17 @@
     if (loader) loader.style.display = on ? "inline-block" : "none";
   }
 
-  // Validar sesión recovery
+  // =====================
+  // VALIDAR SESIÓN RECOVERY
+  // =====================
   async function asegurarSesionRecovery() {
     const { data } = await sb.auth.getSession();
     if (!data?.session) {
-      const decision = await actionSnack({
-        message: "Tu enlace de recuperación expiró. Solicita uno nuevo.",
-        type: "error",
-        confirmText: "Recuperar",
-        cancelText: "Cerrar",
-      });
+      const decision = await openSnack(
+        "Tu enlace de recuperación expiró. Solicita uno nuevo.",
+        "error",
+        { confirmText: "Recuperar", cancelText: "Cerrar", showCancel: true }
+      );
 
       if (decision === "confirm") {
         window.location.href = "forgot-password.html";
@@ -146,10 +130,20 @@
     await asegurarSesionRecovery();
   })();
 
+  // =====================
+  // VALIDACIÓN PASSWORD
+  // =====================
   function validarPassword(pw) {
-    return pw.length >= 6 && !pw.includes(" ");
+    if (pw.length < 8) return "Debe tener al menos 8 caracteres.";
+    if (pw.includes(" ")) return "No debe contener espacios.";
+    if (!/[A-Za-z]/.test(pw)) return "Debe incluir al menos una letra.";
+    if (!/[0-9]/.test(pw)) return "Debe incluir al menos un número.";
+    return null;
   }
 
+  // =====================
+  // SUBMIT
+  // =====================
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -161,8 +155,10 @@
 
     if (!pw1) return setError(newPassInput, "Ingresa tu nueva contraseña.");
     if (!pw2) return setError(confirmInput, "Confirma tu contraseña.");
-    if (!validarPassword(pw1))
-      return setError(newPassInput, "Mínimo 6 caracteres, sin espacios.");
+
+    const pwError = validarPassword(pw1);
+    if (pwError) return setError(newPassInput, pwError);
+
     if (pw1 !== pw2)
       return setError(confirmInput, "Las contraseñas no coinciden.");
 
@@ -180,12 +176,12 @@
       return;
     }
 
-    const decision = await actionSnack({
-      message: "Contraseña actualizada correctamente.",
-      type: "success",
-      confirmText: "Ir a login",
-      cancelText: "Quedarme aquí",
-    });
+    // ✅ SNACKBAR NO SE CIERRA SOLO
+    const decision = await openSnack(
+      "Contraseña actualizada correctamente.",
+      "success",
+      { confirmText: "Ir a login" }
+    );
 
     if (decision === "confirm") {
       window.location.href = "login.html";
@@ -193,7 +189,7 @@
   });
 
   // =====================
-  // Toggle password (FIX)
+  // TOGGLE PASSWORD
   // =====================
   document.querySelectorAll(".toggle-pass").forEach((icon) => {
     const input = document.getElementById(icon.dataset.target);
