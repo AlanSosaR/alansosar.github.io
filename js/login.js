@@ -269,12 +269,14 @@ document.querySelectorAll(".toggle-pass").forEach(icon => {
 });
 
 /* ========================================================
-   LOGIN CON GOOGLE – Café Cortero ☕ (FINAL CORRECTO)
+   LOGIN CON GOOGLE – Café Cortero ☕
    - Google OAuth
    - Supabase crea auth.users
    - Trigger crea public.users
+   - Frontend SOLO lee el perfil
    ======================================================== */
 
+/* ---------- BOTÓN GOOGLE ---------- */
 const googleBtn = document.getElementById("googleLoginBtn");
 
 if (googleBtn) {
@@ -286,6 +288,7 @@ if (googleBtn) {
           redirectTo: `${window.location.origin}/login.html`,
         },
       });
+      // ⚠️ NO pongas loading ni redirect aquí
     } catch (err) {
       console.error("❌ Google login:", err);
       mostrarSnackbar("No se pudo iniciar sesión con Google.", "error");
@@ -294,17 +297,46 @@ if (googleBtn) {
 }
 
 /* ---------- AL REGRESAR DE GOOGLE ---------- */
-(async () => {
+(async function handleGoogleRedirect() {
   const sb = window.supabaseClient;
   if (!sb) return;
 
-  const { data: { session } } = await sb.auth.getSession();
-  if (!session || !session.user) return;
+  const {
+    data: { session },
+    error: sessionErr,
+  } = await sb.auth.getSession();
 
-  // Ya autenticado → el trigger ya creó el perfil
+  if (sessionErr || !session?.user) return;
+
+  // Evitar reprocesar si ya está guardado
+  if (localStorage.getItem("cortero_logged") === "1") return;
+
   const user = session.user;
 
-  // Cargar perfil desde public.users
+  // 🔹 El perfil YA fue creado por el trigger
+  const { data: perfil, error } = await sb
+    .from("users")
+    .select("*")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (error || !perfil) {
+    console.error("❌ Perfil no encontrado:", error);
+    mostrarSnackbar("No se pudo cargar tu perfil.", "error");
+    return;
+  }
+
+  // Guardar sesión local (MISMO formato que login normal)
+  localStorage.setItem("cortero_user", JSON.stringify(perfil));
+  localStorage.setItem("cortero_logged", "1");
+
+  // Redirección final
+  const params = new URLSearchParams(location.search);
+  const from = params.get("from") || params.get("redirect");
+
+  window.location.href =
+    from === "carrito" ? "carrito.html" : "index.html";
+})();
   const { data: perfil, error } = await sb
     .from("users")
     .select("*")
