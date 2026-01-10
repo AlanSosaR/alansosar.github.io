@@ -1,47 +1,73 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Términos del Servicio - Café Cortero</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Términos del Servicio | Café Cortero</title>
 
-  <!-- CSS Legal (Material 3 Expressive) -->
-  <link rel="stylesheet" href="../css/legal/privacidad.css">
+  <link rel="icon" type="image/png" href="../imagenes/logo.png">
+
+  <!-- Tipografía global -->
+  <link rel="stylesheet" href="../css/tipografia.css">
+
+  <!-- Material Symbols -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+
+  <!-- CSS EXCLUSIVO DE TÉRMINOS -->
+  <link rel="stylesheet" href="../css/legal/terms.css?v=1">
 </head>
 
 <body>
-  <!-- Botón regresar -->
-  <a href="javascript:history.back()" class="back-btn" aria-label="Regresar">
-    ←
-  </a>
+  <main class="legal-container terms">
+    <section class="legal-card">
 
-  <main class="legal-container">
-    <h1>Términos del Servicio</h1>
+      <!-- Botón atrás -->
+      <button class="back-btn" onclick="history.back()" aria-label="Volver">
+        <span class="material-symbols-outlined">chevron_left</span>
+      </button>
 
-    <p>
-      Al utilizar Café Cortero aceptas los presentes Términos del Servicio.
-    </p>
+      <!-- Header -->
+      <header class="legal-header">
+        <div class="logo-container" onclick="window.location.href='../index.html'">
+          <img src="../imagenes/logo.png" alt="Café Cortero" class="logo-img" />
+        </div>
+        <h1 class="legal-title">Términos del Servicio</h1>
+        <p class="legal-subtitle">
+          Condiciones de uso de la aplicación Café Cortero.
+        </p>
+      </header>
 
-    <p>
-      El servicio se proporciona “tal cual”, sin garantías de disponibilidad continua
-      ni ausencia de errores.
-    </p>
+      <!-- Contenido -->
+      <div class="legal-content">
 
-    <p>
-      El uso de la aplicación es responsabilidad exclusiva del usuario, quien se compromete
-      a utilizarla de forma lícita y adecuada.
-    </p>
+        <p>
+          Al utilizar Café Cortero aceptas los presentes Términos del Servicio.
+        </p>
 
-    <p>
-      Café Cortero se reserva el derecho de modificar estos términos en cualquier momento.
-      Las modificaciones entrarán en vigor una vez publicadas.
-    </p>
+        <h2>Uso del servicio</h2>
+        <p>
+          El servicio se proporciona “tal cual”, sin garantías de disponibilidad continua
+          ni ausencia de errores.
+        </p>
 
-    <hr>
+        <h2>Responsabilidad del usuario</h2>
+        <p>
+          El uso de la aplicación es responsabilidad exclusiva del usuario, quien se
+          compromete a utilizarla de forma lícita y adecuada.
+        </p>
 
-    <p class="legal-footer">
-      Última actualización: 2026
-    </p>
+        <h2>Modificaciones</h2>
+        <p>
+          Café Cortero se reserva el derecho de modificar estos términos en cualquier momento.
+          Las modificaciones entrarán en vigor una vez publicadas.
+        </p>
+
+        <footer class="legal-footer">
+          <small>Última actualización: 2026</small>
+        </footer>
+
+      </div>
+    </section>
   </main>
 </body>
 </html>
