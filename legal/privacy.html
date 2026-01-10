@@ -1,58 +1,79 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Política de Privacidad · Café Cortero</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Política de Privacidad | Café Cortero</title>
 
-  <!-- CSS externo (recomendado) -->
-  <link rel="stylesheet" href="/legal/ /privacidad.css">
+  <link rel="icon" type="image/png" href="../imagenes/logo.png">
 
-  <!-- Material Icons -->
-  <link
-    href="https://fonts.googleapis.com/icon?family=Material+Icons"
-    rel="stylesheet"
-  >
+  <!-- Tipografía (si la usas en todo el proyecto) -->
+  <link rel="stylesheet" href="../css/tipografia.css">
+
+  <!-- Material Symbols -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+
+  <!-- CSS de esta página -->
+  <link rel="stylesheet" href="privacidad.css">
 </head>
 
 <body>
+  <main class="legal-container">
+    <section class="legal-card">
 
-  <!-- Botón volver -->
-  <button class="back-btn" onclick="history.back()" aria-label="Volver">
-    <span class="material-icons">arrow_back</span>
-  </button>
+      <!-- Botón atrás -->
+      <button class="back-btn" onclick="history.back()" aria-label="Volver">
+        <span class="material-symbols-outlined">chevron_left</span>
+      </button>
 
-  <main class="container">
-    <h1>Política de Privacidad</h1>
+      <!-- Header -->
+      <header class="legal-header">
+        <div class="logo-container" onclick="window.location.href='../index.html'">
+          <img src="../imagenes/logo.png" alt="Café Cortero" class="logo-img" />
+        </div>
+        <h1 class="legal-title">Política de Privacidad</h1>
+        <p class="legal-subtitle">
+          Esta página explica cómo usamos tus datos cuando inicias sesión en Café Cortero.
+        </p>
+      </header>
 
-    <p>
-      Café Cortero utiliza autenticación mediante Google únicamente para permitir
-      a los usuarios iniciar sesión de forma segura.
-    </p>
+      <!-- Contenido -->
+      <div class="legal-content">
+        <h2>Datos que recopilamos</h2>
+        <ul>
+          <li>Correo electrónico y nombre básico (si inicias sesión con Google).</li>
+          <li>Datos necesarios para operar tu cuenta dentro de la aplicación.</li>
+        </ul>
 
-    <p>
-      No almacenamos contraseñas de Google ni accedemos a información privada distinta
-      del correo electrónico y nombre básico proporcionado por el proveedor.
-    </p>
+        <h2>Cómo usamos tus datos</h2>
+        <p>
+          Usamos esta información únicamente para autenticarte y gestionar tu cuenta dentro de Café Cortero.
+          No vendemos tus datos.
+        </p>
 
-    <p>
-      Los datos se utilizan exclusivamente para la gestión de la cuenta dentro
-      de la aplicación Café Cortero.
-    </p>
+        <h2>Google Sign-In</h2>
+        <p>
+          No almacenamos tu contraseña de Google. El acceso se gestiona mediante OAuth y tokens de sesión.
+        </p>
 
-    <p>
-      No compartimos información personal con terceros.
-    </p>
+        <h2>Compartición con terceros</h2>
+        <p>
+          No compartimos información personal con terceros, salvo cuando sea necesario para el funcionamiento
+          del inicio de sesión (por ejemplo, el proveedor de autenticación).
+        </p>
 
-    <p class="contacto">
-      Si tienes preguntas sobre esta política, puedes contactarnos en:
-      <strong>cafecortero@gmail.com</strong>
-    </p>
+        <h2>Contacto</h2>
+        <p class="contacto">
+          Si tienes preguntas, escríbenos a:
+          <a href="mailto:cafecortero@gmail.com"><strong>cafecortero@gmail.com</strong></a>
+        </p>
 
-    <footer>
-      <small>Última actualización: 2026</small>
-    </footer>
+        <footer class="legal-footer">
+          <small>Última actualización: 2026</small>
+        </footer>
+      </div>
+
+    </section>
   </main>
-
 </body>
 </html>
