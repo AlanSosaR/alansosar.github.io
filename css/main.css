@@ -663,9 +663,10 @@ footer {
   background: var(--blanco);
   border-top: 1px solid rgba(0,0,0,0.05);
   text-align: center;
-  padding: 1rem;
+  padding: 1rem 1rem 1.4rem;
 }
 
+/* Texto principal */
 footer p {
   margin: 0;
   font-size: 0.95rem;
@@ -673,13 +674,60 @@ footer p {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
+/* Logo inline */
 .footer-logo-inline {
   width: 40px !important;
   height: 40px !important;
   object-fit: contain;
   opacity: 0.95;
+}
+
+/* ===== Links legales ===== */
+.footer-legal {
+  margin-top: 6px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+}
+
+.footer-legal a {
+  color: var(--verde);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.footer-legal a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* 🔑 Punto separador en VERDE */
+.footer-legal .footer-sep {
+  color: var(--verde);
+  font-weight: 700;
+}
+
+/* ===== Mobile ===== */
+@media (max-width: 480px) {
+  footer {
+    padding: 1.2rem 1rem 1.6rem;
+  }
+
+  footer p,
+  .footer-legal {
+    font-size: 0.85rem;
+  }
+
+  .footer-logo-inline {
+    width: 36px !important;
+    height: 36px !important;
+  }
 }
 
 /* ================= FAB ================= */
