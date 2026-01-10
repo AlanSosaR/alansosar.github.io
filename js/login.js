@@ -293,96 +293,97 @@ if (googleBtn) {
   });
 }
 
-/* ---------- AL REGRESAR DE GOOGLE ---------- */
-(async function handleGoogleRedirect() {
+/* ---------- AL REGRESAR DE GOOGLE (FIX DEFINITIVO) ---------- */
+(function handleGoogleRedirect() {
   const sb = window.supabaseClient;
   if (!sb) return;
 
-  const { data, error } = await sb.auth.getSession();
-  if (error || !data?.session?.user?.id) return;
+  sb.auth.onAuthStateChange(async (event, session) => {
+    if (event !== "SIGNED_IN" || !session?.user) return;
 
-  // Evitar reprocesar sesión
-  if (localStorage.getItem("cortero_logged") === "1") {
-    window.location.replace("index.html");
-    return;
-  }
-
-  const authUser = data.session.user;
-
-  /* =========================
-     1️⃣ Buscar usuario
-     ========================= */
-  let { data: perfil, error: findErr } = await sb
-    .from("users")
-    .select("*")
-    .eq("id", authUser.id)
-    .maybeSingle();
-
-  if (findErr) {
-    console.error("❌ Error buscando perfil:", findErr);
-    mostrarSnackbar("Error cargando perfil", "error");
-    return;
-  }
-
-  /* =========================
-     2️⃣ Crear usuario si no existe
-     ========================= */
-  if (!perfil) {
-    const nuevoPerfil = {
-      id: authUser.id, // auth.uid()
-      email: authUser.email,
-      name:
-        authUser.user_metadata?.full_name ||
-        authUser.user_metadata?.name ||
-        "",
-      phone: authUser.user_metadata?.phone || null,
-      photo_url:
-        authUser.user_metadata?.avatar_url ||
-        authUser.user_metadata?.picture ||
-        DEFAULT_AVATAR,
-      created_at: new Date().toISOString(),
-    };
-
-    const { data: creado, error: createErr } = await sb
-      .from("users")
-      .insert(nuevoPerfil)
-      .select()
-      .single();
-
-    if (createErr) {
-      console.error("❌ Error creando usuario:", createErr);
-      mostrarSnackbar("No se pudo crear el usuario", "error");
+    // Evitar reprocesar
+    if (localStorage.getItem("cortero_logged") === "1") {
+      window.location.replace("index.html");
       return;
     }
 
-    perfil = creado;
-  }
+    const authUser = session.user;
 
-  /* =========================
-     3️⃣ Garantizar avatar
-     ========================= */
-  if (!perfil.photo_url) {
-    const avatar =
-      authUser.user_metadata?.avatar_url ||
-      authUser.user_metadata?.picture ||
-      DEFAULT_AVATAR;
-
-    await sb
+    /* =========================
+       1️⃣ Buscar usuario
+       ========================= */
+    let { data: perfil, error: findErr } = await sb
       .from("users")
-      .update({ photo_url: avatar })
-      .eq("id", authUser.id);
+      .select("*")
+      .eq("id", authUser.id)
+      .maybeSingle();
 
-    perfil.photo_url = avatar;
-  }
+    if (findErr) {
+      console.error("❌ Error buscando perfil:", findErr);
+      mostrarSnackbar("Error cargando perfil", "error");
+      return;
+    }
 
-  /* =========================
-     4️⃣ Guardar sesión local
-     ========================= */
-  localStorage.setItem("cortero_user", JSON.stringify(perfil));
-  localStorage.setItem("cortero_logged", "1");
+    /* =========================
+       2️⃣ Crear usuario si no existe
+       ========================= */
+    if (!perfil) {
+      const nuevoPerfil = {
+        id: authUser.id,
+        email: authUser.email,
+        name:
+          authUser.user_metadata?.full_name ||
+          authUser.user_metadata?.name ||
+          "",
+        phone: authUser.user_metadata?.phone || null,
+        photo_url:
+          authUser.user_metadata?.avatar_url ||
+          authUser.user_metadata?.picture ||
+          DEFAULT_AVATAR,
+        created_at: new Date().toISOString(),
+      };
 
-  /* =========================
-     5️⃣ Redirección inmediata
-     ========================= */
-  window.location.replace("index.html");
+      const { data: creado, error: createErr } = await sb
+        .from("users")
+        .insert(nuevoPerfil)
+        .select()
+        .single();
+
+      if (createErr) {
+        console.error("❌ Error creando usuario:", createErr);
+        mostrarSnackbar("No se pudo crear el usuario", "error");
+        return;
+      }
+
+      perfil = creado;
+    }
+
+    /* =========================
+       3️⃣ Asegurar avatar
+       ========================= */
+    if (!perfil.photo_url) {
+      const avatar =
+        authUser.user_metadata?.avatar_url ||
+        authUser.user_metadata?.picture ||
+        DEFAULT_AVATAR;
+
+      await sb
+        .from("users")
+        .update({ photo_url: avatar })
+        .eq("id", authUser.id);
+
+      perfil.photo_url = avatar;
+    }
+
+    /* =========================
+       4️⃣ Guardar sesión local
+       ========================= */
+    localStorage.setItem("cortero_user", JSON.stringify(perfil));
+    localStorage.setItem("cortero_logged", "1");
+
+    /* =========================
+       5️⃣ Redirección inmediata
+       ========================= */
+    window.location.replace("index.html");
+  });
 })();
