@@ -293,13 +293,13 @@ if (googleBtn) {
   });
 }
 
-/* ---------- AL REGRESAR DE GOOGLE (FIX DEFINITIVO) ---------- */
-(function handleGoogleRedirect() {
+/* ---------- AL REGRESAR DE GOOGLE (FIX REAL DEFINITIVO) ---------- */
+(async function handleGoogleRedirect() {
   const sb = window.supabaseClient;
   if (!sb) return;
 
-  sb.auth.onAuthStateChange(async (event, session) => {
-    if (event !== "SIGNED_IN" || !session?.user) return;
+  async function procesarSesion(session) {
+    if (!session?.user) return;
 
     // Evitar reprocesar
     if (localStorage.getItem("cortero_logged") === "1") {
@@ -309,9 +309,7 @@ if (googleBtn) {
 
     const authUser = session.user;
 
-    /* =========================
-       1️⃣ Buscar usuario
-       ========================= */
+    /* 1️⃣ Buscar usuario */
     let { data: perfil, error: findErr } = await sb
       .from("users")
       .select("*")
@@ -324,9 +322,7 @@ if (googleBtn) {
       return;
     }
 
-    /* =========================
-       2️⃣ Crear usuario si no existe
-       ========================= */
+    /* 2️⃣ Crear usuario si no existe */
     if (!perfil) {
       const nuevoPerfil = {
         id: authUser.id,
@@ -358,9 +354,7 @@ if (googleBtn) {
       perfil = creado;
     }
 
-    /* =========================
-       3️⃣ Asegurar avatar
-       ========================= */
+    /* 3️⃣ Asegurar avatar */
     if (!perfil.photo_url) {
       const avatar =
         authUser.user_metadata?.avatar_url ||
@@ -375,15 +369,24 @@ if (googleBtn) {
       perfil.photo_url = avatar;
     }
 
-    /* =========================
-       4️⃣ Guardar sesión local
-       ========================= */
+    /* 4️⃣ Guardar sesión local */
     localStorage.setItem("cortero_user", JSON.stringify(perfil));
     localStorage.setItem("cortero_logged", "1");
 
-    /* =========================
-       5️⃣ Redirección inmediata
-       ========================= */
+    /* 5️⃣ Redirección FINAL */
     window.location.replace("index.html");
+  }
+
+  /* ✅ CASO A: la sesión YA existe al cargar */
+  const { data } = await sb.auth.getSession();
+  if (data?.session) {
+    await procesarSesion(data.session);
+  }
+
+  /* ✅ CASO B: la sesión llega por evento */
+  sb.auth.onAuthStateChange(async (event, session) => {
+    if (event === "SIGNED_IN") {
+      await procesarSesion(session);
+    }
   });
 })();
