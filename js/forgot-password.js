@@ -1,23 +1,25 @@
 (() => {
   const sb = window.supabaseClient;
+  if (!sb) return;
 
-  const form = document.getElementById("forgotForm");
+  const form  = document.getElementById("forgotForm");
   const input = document.getElementById("recoverInput");
-  if (!form || !input || !sb) return;
+  if (!form || !input) return;
 
-  const btn = form.querySelector(".m3-btn");
-  const btnText = btn?.querySelector(".btn-text");
+  const btn    = form.querySelector(".m3-btn");
   const loader = btn?.querySelector(".loader");
 
   const field = input.closest(".m3-field");
-  const box = input.closest(".m3-input");
+  const box   = input.closest(".m3-input");
   const msgEl = field?.querySelector(".field-msg");
 
+  let sending = false;
+
   // =====================
-  // SNACKBAR (MANUAL)
+  // SNACKBAR
   // =====================
-  const snackbar = document.getElementById("snackbar");
-  const snackMsg = snackbar?.querySelector(".snackbar__msg");
+  const snackbar     = document.getElementById("snackbar");
+  const snackMsg     = snackbar?.querySelector(".snackbar__msg");
   const snackActions = snackbar?.querySelector(".snackbar__actions");
 
   let snackHandler = null;
@@ -32,7 +34,6 @@
     snackbar.classList.add("show", `is-${type}`);
 
     snackMsg.textContent = message;
-
     snackActions.style.display = "inline-flex";
 
     const btnConfirm = snackActions.querySelector('[data-action="confirm"]');
@@ -81,13 +82,11 @@
   input.addEventListener("input", clearFieldError);
 
   // =====================
-  // LOADING BUTTON
+  // LOADING
   // =====================
   function setLoading(on) {
     btn.disabled = on;
     btn.classList.toggle("loading", on);
-
-    // ⬅ loader a la izquierda, texto visible
     if (loader) loader.style.display = on ? "inline-block" : "none";
   }
 
@@ -107,6 +106,8 @@
   // =====================
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
+    if (sending) return;
+
     clearFieldError();
 
     const value = input.value.trim();
@@ -117,7 +118,7 @@
     }
 
     if (isPhone(value) && !isEmail(value)) {
-      setFieldError("La recuperación por teléfono no está disponible por el momento.");
+      setFieldError("La recuperación por teléfono no está disponible.");
       return;
     }
 
@@ -126,6 +127,7 @@
       return;
     }
 
+    sending = true;
     setLoading(true);
 
     try {
@@ -136,9 +138,18 @@
       });
 
       setLoading(false);
+      sending = false;
 
       if (error) {
-        console.error(error);
+        if (error.status === 429) {
+          await openSnackbar(
+            "Has solicitado demasiados enlaces. Espera unos minutos antes de intentarlo nuevamente.",
+            "warn",
+            { confirmText: "Entendido" }
+          );
+          return;
+        }
+
         await openSnackbar(
           "No se pudo enviar el correo. Intenta más tarde.",
           "error",
@@ -147,28 +158,22 @@
         return;
       }
 
-      // ✅ Confirmación del usuario
-      const decision = await openSnackbar(
-        "El enlace de recuperación se enviará a tu correo electrónico.",
+      // ✅ Mensaje seguro (no revela si existe el correo)
+      await openSnackbar(
+        "Si el correo está registrado, recibirás un enlace para restablecer tu contraseña.",
         "success",
-        { confirmText: "Confirmar" }
+        { confirmText: "Entendido" }
       );
 
-      if (decision === "confirm") {
-        await openSnackbar(
-          "Si el correo está registrado, recibirás un enlace para restablecer tu contraseña. " +
-          "Si no lo ves en la bandeja principal, revisa tu carpeta de spam.",
-          "success",
-          { confirmText: "Cerrar" }
-        );
+      input.value = "";
 
-        input.value = "";
-      }
     } catch (err) {
       console.error(err);
+      sending = false;
       setLoading(false);
+
       await openSnackbar(
-        "Error inesperado. Intenta de nuevo.",
+        "Ocurrió un error inesperado. Intenta de nuevo.",
         "error",
         { confirmText: "Cerrar" }
       );
