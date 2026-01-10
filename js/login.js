@@ -268,18 +268,21 @@ document.querySelectorAll(".toggle-pass").forEach(icon => {
   });
 });
 
-/* ---------- BOTÓN GOOGLE ---------- */
+/* ---------- BOTÓN GOOGLE + CALLBACK (CORRECTO SPA) ---------- */
 const googleBtn = document.getElementById("googleLoginBtn");
 
 if (googleBtn) {
   googleBtn.addEventListener("click", async () => {
     try {
-      await window.supabaseClient.auth.signInWithOAuth({
+      const sb = window.supabaseClient;
+      if (!sb) throw new Error("Supabase no está inicializado");
+
+      // Importante: en GitHub Pages debe ser EXACTO
+      const redirectTo = `${window.location.origin}/login.html`;
+
+      await sb.auth.signInWithOAuth({
         provider: "google",
-        options: {
-          // 🔒 Siempre regresar al login
-          redirectTo: `${window.location.origin}/login.html`,
-        },
+        options: { redirectTo },
       });
     } catch (err) {
       console.error("❌ Google login:", err);
@@ -288,30 +291,48 @@ if (googleBtn) {
   });
 }
 
-/* =========================================================
-   AUTH STATE LISTENER — GOOGLE OAUTH (FINAL CORRECTO)
-========================================================= */
+/* ---------- PROCESAR CALLBACK (?code=...) UNA SOLA VEZ ---------- */
+(async function handleOAuthCallback() {
+  const sb = window.supabaseClient;
+  if (!sb) return;
 
-if (window.supabaseClient) {
-  window.supabaseClient.auth.onAuthStateChange(async (event, session) => {
-    if (event === "SIGNED_IN" && session?.user) {
-      console.log("✅ Google OAuth OK:", session.user.email);
+  // Evita procesar varias veces
+  if (window.__oauth_handled__) return;
+  window.__oauth_handled__ = true;
 
-      try {
-        // Crear perfil si no existe
-        await window.supabaseClient.rpc("ensure_user_profile");
+  const url = new URL(window.location.href);
 
-        localStorage.setItem("cortero_logged", "1");
+  // Si no viene ?code=... no hay nada que hacer
+  if (!url.searchParams.get("code")) return;
 
-        // limpiar URL (?code=...)
-        history.replaceState(null, "", window.location.pathname);
+  try {
+    // Intercambia code -> session (esto es lo que crea auth.users)
+    const { data, error } = await sb.auth.exchangeCodeForSession(url.href);
 
-        // redirigir
-        window.location.replace("index.html");
-      } catch (e) {
-        console.error("❌ Error creando perfil:", e);
-        mostrarSnackbar("Error al crear perfil", "error");
-      }
+    console.log("OAuth exchange:", data, error);
+
+    if (error || !data?.session?.user) {
+      mostrarSnackbar("Google OAuth falló. Revisa la configuración.", "error");
+      return;
     }
-  });
-}
+
+    // Limpia la URL (quita ?code=...)
+    history.replaceState(null, "", url.pathname);
+
+    // (Opcional) Crear perfil en public.users si tienes el RPC
+    try {
+      await sb.rpc("ensure_user_profile");
+    } catch (e) {
+      console.warn("RPC ensure_user_profile falló (opcional):", e);
+      // No bloquees el login solo por esto
+    }
+
+    localStorage.setItem("cortero_logged", "1");
+
+    // Redirigir
+    window.location.replace("index.html");
+  } catch (e) {
+    console.error("❌ OAuth callback error:", e);
+    mostrarSnackbar("Error procesando Google OAuth.", "error");
+  }
+})();
