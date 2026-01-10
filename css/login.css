@@ -39,23 +39,22 @@ body {
   color: #2E2A27;
   position: relative;
 }
-
 /* =====================================================
-   SNACKBAR — Material 3 Expressive (GENÉRICO)
-   HTML: <div id="snackbar" class="snackbar hidden"></div>
+   SNACKBAR — Material 3 Expressive
+   Compatible con:
+   - Snackbar normal (solo texto)
+   - Snackbar con acción (texto + botón)
 ===================================================== */
-
 
 #snackbar.snackbar {
   position: fixed;
   left: 50%;
-  bottom: 18px;
+  bottom: 24px;                 /* Separación cómoda del borde inferior */
   transform: translate(-50%, 18px);
 
-  /* 🔑 TAMAÑO CONTROLADO */
   max-width: 520px;
-  width: calc(100% - 48px);   /* más aire a los lados */
-  
+  width: calc(100% - 56px);     /* Evita que se pegue a los lados */
+
   padding: 14px 16px;
   border-radius: 18px;
 
@@ -87,7 +86,7 @@ body {
     transform .22s cubic-bezier(.2,0,0,1);
 }
 
-/* Barra accent */
+/* Indicador lateral de estado */
 #snackbar.snackbar::before {
   content: "";
   width: 6px;
@@ -110,21 +109,82 @@ body {
   pointer-events: none;
 }
 
-/* Variantes opcionales */
-#snackbar.snackbar.is-error::before { background: #ff4b4b; }
-#snackbar.snackbar.is-warn::before  { background: #f6c343; }
+/* Variantes por tipo */
+#snackbar.snackbar.error::before   { background: #ff4b4b; }
+#snackbar.snackbar.warn::before    { background: #f6c343; }
+#snackbar.snackbar.success::before { background: #33c26b; }
 
+/* Texto del snackbar (normal o con acción) */
+#snackbar.snackbar .snackbar-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Botón de acción */
+#snackbar.snackbar .snackbar-action {
+  flex: 0 0 auto;
+  margin-left: auto;
+
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: rgba(255,255,255,.96);
+
+  font: inherit;
+  font-weight: 800;
+  letter-spacing: .2px;
+
+  padding: 9px 12px;
+  border-radius: 999px;
+
+  cursor: pointer;
+  user-select: none;
+
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.14);
+  transition:
+    background .18s ease,
+    transform .18s cubic-bezier(.2,0,0,1),
+    box-shadow .18s ease;
+}
+
+#snackbar.snackbar .snackbar-action:hover {
+  background: rgba(255,255,255,.10);
+}
+
+#snackbar.snackbar .snackbar-action:active {
+  transform: translateY(1px);
+  background: rgba(255,255,255,.14);
+}
+
+#snackbar.snackbar .snackbar-action:focus-visible {
+  outline: none;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.18),
+    0 0 0 3px rgba(77,163,255,.28);
+}
+
+/* Ajustes para pantallas pequeñas */
 @media (max-width: 900px) {
   #snackbar.snackbar {
-    bottom: 14px;
-
-    /* 🔑 CLAVE: evitar que se pegue a los bordes */
-    width: calc(100% - 56px);
+    bottom: 20px;               /* Aire respecto a la barra del sistema */
+    width: calc(100% - 64px);   /* Más margen lateral en móvil */
     max-width: 480px;
 
     padding: 13px 14px;
     border-radius: 16px;
     font-size: 14px;
+  }
+
+  /* En móvil permitimos hasta 2 líneas de texto */
+  #snackbar.snackbar .snackbar-text {
+    white-space: normal;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 }
 
@@ -464,4 +524,9 @@ body {
   .login-card { padding: 50px 25px 30px; }
   .login-inner-card { padding: 22px; }
   .login-title { font-size: 1.5rem; }
+}
+/* Evita el “flash” del login mientras se valida la sesión */
+html.auth-checking,
+body.auth-checking {
+  visibility: hidden;
 }
