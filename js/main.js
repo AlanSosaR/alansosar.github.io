@@ -8,6 +8,71 @@ function safe(id) {
   return document.getElementById(id);
 }
 
+/* =========================
+   AUTH — VALIDAR SESIÓN + PERFIL
+   (GOOGLE / EMAIL)
+========================= */
+(async function ensureAuthAndProfile() {
+  const sb = window.supabaseClient;
+  if (!sb) return;
+
+  /* 1️⃣ Verificar sesión Supabase */
+  const { data, error } = await sb.auth.getSession();
+
+  if (error || !data?.session?.user) {
+    // No hay sesión → volver al login
+    window.location.replace("login.html");
+    return;
+  }
+
+  const authUser = data.session.user;
+
+  /* 2️⃣ Buscar perfil en public.users */
+  let { data: perfil, error: findErr } = await sb
+    .from("users")
+    .select("*")
+    .eq("id", authUser.id)
+    .maybeSingle();
+
+  if (findErr) {
+    console.error("❌ Error cargando perfil:", findErr);
+    return;
+  }
+
+  /* 3️⃣ Crear perfil si NO existe (Google) */
+  if (!perfil) {
+    const { data: creado, error: createErr } = await sb
+      .from("users")
+      .insert({
+        id: authUser.id,
+        email: authUser.email,
+        name:
+          authUser.user_metadata?.full_name ||
+          authUser.user_metadata?.name ||
+          "",
+        phone: authUser.user_metadata?.phone || null,
+        photo_url:
+          authUser.user_metadata?.picture ||
+          "/imagenes/avatar-default.svg",
+        created_at: new Date().toISOString(),
+      })
+      .select()
+      .single();
+
+    if (createErr) {
+      console.error("❌ Error creando usuario:", createErr);
+      return;
+    }
+
+    perfil = creado;
+  }
+
+  /* 4️⃣ Guardar sesión local (solo UI) */
+  localStorage.setItem("cortero_user", JSON.stringify(perfil));
+  localStorage.setItem("cortero_logged", "1");
+
+  console.log("✅ Sesión válida:", perfil.email);
+})();
 /* ========================= EMPTY CATALOG ========================= */
 function showEmptyCatalog() {
   safe("empty-catalog")?.classList.remove("hidden");
