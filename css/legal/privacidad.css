@@ -1,109 +1,199 @@
 /* ==============================
    Material 3 Expressive – Legal
-   Café Cortero
+   Café Cortero (ajustado al HTML nuevo)
 ============================== */
 
-:root {
-  --primary: #6f4e37;        /* Café */
-  --primary-hover: #5a3f2c;
+:root{
+  --green: #2e7d32;           /* Verde (título, links, ícono back) */
+  --green-hover: #256528;
+
+  --coffee: #6f4e37;          /* Texto café */
+  --coffee-muted: #5a3f2c;
+
   --surface: #ffffff;
   --background: #f5f5f5;
-  --text: #1f1f1f;
-  --muted: #6b6b6b;
+
   --radius: 20px;
   --shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+
+  /* Click/press “azul” (ripple-like) */
+  --press-blue: rgba(77, 163, 255, .22);
 }
 
-/* ===== Reset básico ===== */
-* {
-  box-sizing: border-box;
-}
+*{ box-sizing:border-box; }
 
-body {
-  margin: 0;
-  padding: 0;
+body{
+  margin:0;
+  padding:0;
   font-family: "Roboto", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   background: var(--background);
-  color: var(--text);
+  color: var(--coffee);
   line-height: 1.65;
 }
 
-/* ===== Contenedor principal ===== */
-.container {
+/* Contenedor (equivale a tu .container, pero para el HTML nuevo) */
+.legal-container{
   max-width: 820px;
   margin: 80px auto;
+  padding: 0 16px;
+}
+
+.legal-card{
+  position: relative;
   background: var(--surface);
-  padding: 48px 40px;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
+  padding: 48px 40px;
 }
 
-/* ===== Título ===== */
-.container h1 {
-  margin-top: 0;
-  margin-bottom: 24px;
+/* Header */
+.legal-header{
+  text-align: left;
+  margin-bottom: 22px;
+}
+
+/* Logo */
+.logo-container{
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.logo-img{
+  width: 110px;
+  transition: transform .3s ease;
+}
+
+.logo-container:hover .logo-img{
+  transform: translateY(-2px);
+}
+
+/* Título en verde */
+.legal-title{
+  margin: 0 0 10px;
   font-size: 2.2rem;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: -0.5px;
+  color: var(--green);
 }
 
-/* ===== Texto ===== */
-.container p {
+/* Subtítulo (café más suave) */
+.legal-subtitle{
+  margin: 0;
+  color: var(--coffee-muted);
+  font-size: 1rem;
+}
+
+/* Contenido */
+.legal-content{
+  color: var(--coffee);
+}
+
+.legal-content h2{
+  margin: 22px 0 10px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--coffee);
+}
+
+.legal-content p,
+.legal-content li{
   font-size: 1rem;
   margin-bottom: 18px;
-  color: var(--text);
+  color: var(--coffee);
 }
 
-.container .contacto {
-  margin-top: 28px;
-  font-weight: 500;
+.legal-content ul{
+  margin: 6px 0 12px 18px;
+  padding: 0;
 }
 
-/* ===== Footer ===== */
-.container footer {
-  margin-top: 36px;
+/* Correo en verde */
+.contacto a{
+  color: var(--green);
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.contacto a:hover{
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Footer */
+.legal-footer{
+  margin-top: 30px;
   padding-top: 16px;
   border-top: 1px solid #e0e0e0;
-  color: var(--muted);
-  font-size: 0.9rem;
+  color: var(--coffee-muted);
+  font-size: 0.95rem;
 }
 
-/* ===== Botón volver ===== */
-.back-btn {
-  position: fixed;
-  top: 24px;
-  left: 24px;
+/* Botón volver: redondo, flotante, ícono verde, click “azul” */
+.back-btn{
+  position: absolute;
+  top: 18px;
+  left: 18px;
+
   width: 52px;
   height: 52px;
-  border-radius: 50%;
+  border-radius: 999px;
   border: none;
+
   background: var(--surface);
   box-shadow: var(--shadow);
+
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.25s ease, transform 0.2s ease;
+
+  transition: transform .18s ease, background .18s ease, box-shadow .18s ease;
 }
 
-.back-btn:hover {
-  background: #f0f0f0;
-  transform: scale(1.05);
+.back-btn:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 16px 34px rgba(0,0,0,.14);
 }
 
-.back-btn .material-icons {
-  font-size: 26px;
-  color: var(--primary);
+.back-btn:active{
+  transform: translateY(0);
+  background: var(--press-blue); /* “click en azul” */
 }
 
-/* ===== Responsive ===== */
-@media (max-width: 600px) {
-  .container {
-    margin: 96px 16px 40px;
-    padding: 32px 24px;
+.back-btn .material-symbols-outlined{
+  font-size: 28px;
+  color: var(--green);
+}
+
+/* Focus accesible (también azul) */
+.back-btn:focus-visible{
+  outline: none;
+  box-shadow:
+    0 16px 34px rgba(0,0,0,.14),
+    0 0 0 3px var(--press-blue);
+}
+
+/* Responsive */
+@media (max-width: 600px){
+  .legal-container{
+    margin: 96px auto 40px;
   }
 
-  .container h1 {
+  .legal-card{
+    padding: 32px 24px;
+    border-radius: 18px;
+  }
+
+  .legal-title{
     font-size: 1.8rem;
+  }
+
+  .back-btn{
+    top: 14px;
+    left: 14px;
+    width: 50px;
+    height: 50px;
   }
 }
