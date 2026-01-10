@@ -47,7 +47,10 @@ function safe(id) {
 
   const authUser = data.session.user;
 
-  /* 2️⃣ Buscar perfil (CREADO POR TRIGGER) */
+  /* 2️⃣ FORZAR creación del perfil (CLAVE) */
+  await sb.rpc("ensure_user_profile");
+
+  /* 3️⃣ Leer perfil ya garantizado */
   const { data: perfil, error: findErr } = await sb
     .from("users")
     .select("*")
@@ -55,12 +58,12 @@ function safe(id) {
     .single();
 
   if (findErr || !perfil) {
-    console.warn("⏳ Perfil aún no disponible, reintentando…");
-    setTimeout(() => window.location.reload(), 300);
+    console.error("❌ Perfil no disponible:", findErr);
+    window.location.replace("login.html");
     return;
   }
 
-  /* 3️⃣ Guardar sesión local (solo UI) */
+  /* 4️⃣ Guardar sesión local (solo UI) */
   localStorage.setItem("cortero_user", JSON.stringify(perfil));
   localStorage.setItem("cortero_logged", "1");
 
