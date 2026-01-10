@@ -8,26 +8,6 @@ function safe(id) {
   return document.getElementById(id);
 }
 
-/* =========================================================
-   AUTH — PROCESAR CALLBACK OAUTH (OBLIGATORIO)
-   GitHub Pages / Sitios estáticos
-========================================================= */
-(async function handleOAuthCallback() {
-  const sb = window.supabaseClient;
-  if (!sb) return;
-
-  // Fuerza a Supabase a consumir el #access_token del redirect
-  const { error } = await sb.auth.getSession();
-
-  if (error) {
-    console.error("❌ OAuth callback error:", error);
-  }
-
-  // Limpia la URL (quita #access_token=...)
-  if (window.location.hash.includes("access_token")) {
-    history.replaceState(null, "", window.location.pathname);
-  }
-})();
 
 /* =========================================================
    AUTH — VALIDAR SESIÓN + PERFIL
