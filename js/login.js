@@ -2,6 +2,7 @@
 // LOGIN – Café Cortero ☕ (VERSIÓN FINAL ESTABLE)
 // VALIDACIÓN + SESIÓN + PERFIL EN LOCALSTORAGE
 // + GOOGLE OAUTH (SPA) + AUTO-REDIRECT + AVATAR GOOGLE + STORAGE UPLOAD
+// + ANTI-FLASH + SNACKBAR ACCIÓN (GOOGLE)
 // ========================================================
 
 /* ========================= DOM ========================= */
@@ -81,7 +82,7 @@ async function tryPersistAvatarToDB(sb, user, avatarUrl) {
       .update({ photo_url: avatarUrl })
       .eq("id", user.id);
   } catch (_) {
-    // Silencioso: tu app no debe romperse por esto
+    // Silencioso
   }
 }
 
@@ -221,17 +222,59 @@ function desactivarLoading() {
   if (btnLoader) btnLoader.style.display = "none";
 }
 
+/**
+ * Snackbar normal (sin acción) - se queda como lo tenías.
+ */
 function mostrarSnackbar(msg, type = "info", duration = 2600) {
   const s = document.getElementById("snackbar");
   if (!s) return;
 
+  // Modo normal: solo texto
+  s.innerHTML = "";
   s.textContent = msg;
 
-  // Reset de clases
   s.className = "snackbar";
   s.id = "snackbar";
 
-  // Activar
+  s.classList.add("show", type);
+
+  clearTimeout(s._timer);
+  s._timer = setTimeout(() => {
+    s.classList.remove("show");
+  }, duration);
+}
+
+/**
+ * Snackbar con acción (botón).
+ * Se usa SOLO para Google.
+ */
+function mostrarSnackbarAccion(msg, actionText, onAction, type = "success", duration = 8000) {
+  const s = document.getElementById("snackbar");
+  if (!s) return;
+
+  // Reset
+  s.className = "snackbar";
+  s.id = "snackbar";
+  s.innerHTML = "";
+
+  const span = document.createElement("span");
+  span.className = "snackbar-text";
+  span.textContent = msg;
+
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "snackbar-action";
+  btn.textContent = actionText || "Aceptar";
+
+  btn.addEventListener("click", () => {
+    try { onAction?.(); } finally {
+      s.classList.remove("show");
+    }
+  });
+
+  s.appendChild(span);
+  s.appendChild(btn);
+
   s.classList.add("show", type);
 
   clearTimeout(s._timer);
@@ -253,90 +296,138 @@ document.querySelectorAll(".toggle-pass").forEach(icon => {
 });
 
 /* =========================================================
+   ANTI-FLASH: ocultar login mientras se valida auth/callback
+   (necesita CSS: html.auth-checking, body.auth-checking { visibility:hidden; })
+========================================================= */
+(function enableAuthChecking() {
+  try {
+    document.documentElement.classList.add("auth-checking");
+    document.body?.classList?.add("auth-checking");
+  } catch (_) {}
+})();
+
+function showLoginUI() {
+  try {
+    document.documentElement.classList.remove("auth-checking");
+    document.body?.classList?.remove("auth-checking");
+  } catch (_) {}
+}
+
+/* =========================================================
    GOOGLE OAUTH + AUTO-REDIRECT (ANTI-LOGIN-FLASH)
-   - Si viene ?code=... => exchangeCodeForSession y redirige
-   - Si YA existe sesión => redirige directo a index
+   Cambios clave:
+   - Si viene ?code=...: NO redirigimos inmediato.
+     Mostramos snackbar con acción y SOLO al aceptar -> index.
+   - Si ya hay sesión: igual, snackbar con acción y aceptar -> index.
+   - Si falla: mostramos login normal + snackbar normal de error.
 ========================================================= */
 (async function googleGateAndCallback() {
   const sb = window.supabaseClient;
-  if (!sb) return;
+  if (!sb) { showLoginUI(); return; }
 
-  // Evita dobles ejecuciones raras
-  if (window.__google_gate_ran__) return;
+  if (window.__google_gate_ran__) { showLoginUI(); return; }
   window.__google_gate_ran__ = true;
 
   const url = new URL(window.location.href);
   const code = url.searchParams.get("code");
 
   try {
-    // 1) Si viene callback con code: crear sesión
+    // 1) Callback con code: crear sesión
     if (code) {
       const { data, error } = await sb.auth.exchangeCodeForSession(url.href);
       console.log("OAuth exchange:", data, error);
 
       if (error || !data?.session?.user) {
+        showLoginUI();
         mostrarSnackbar("Google OAuth falló. Revisa la configuración.", "error");
-        return; // deja el login visible
+        return;
       }
 
       const user = data.session.user;
 
-      // Crear perfil (si tienes RPC). No bloquea el login si falla.
+      // Limpia URL (?code=...) para que no se reprocesa al refrescar
+      history.replaceState(null, "", url.pathname);
+
+      // Crear perfil (si tienes RPC). No bloquea.
       try {
         await sb.rpc("ensure_user_profile");
       } catch (e) {
         console.warn("RPC ensure_user_profile falló (opcional):", e);
       }
 
-      // 1) Intentar guardar imagen en Storage (bucket avatars)
+      // Intentar guardar imagen en Storage
       const storageUrl = await uploadGoogleAvatarToStorage(sb, user);
 
-      // 2) Elegir avatar final (preferimos Storage; si no, Google; si no, default)
+      // Elegir avatar final
       const googleUrl = getGoogleAvatarUrl(user);
       const avatarUrl = storageUrl || googleUrl || DEFAULT_AVATAR;
 
-      // Persistir local + merge con cortero_user
       persistAvatarToLocal(avatarUrl);
       mergeAvatarIntoCorteroUser(avatarUrl);
-
-      // Guardar en BD best-effort
       await tryPersistAvatarToDB(sb, user, avatarUrl);
 
       localStorage.setItem("cortero_logged", "1");
 
-      // Limpia la URL (quita ?code=...)
-      history.replaceState(null, "", url.pathname);
+      // Detectar si es "primera vez"
+      const createdAt = user?.created_at ? new Date(user.created_at).getTime() : 0;
+      const lastSignIn = user?.last_sign_in_at ? new Date(user.last_sign_in_at).getTime() : 0;
+      const isNew = createdAt && lastSignIn && Math.abs(lastSignIn - createdAt) < 15000; // 15s
 
-      // Redirigir directo (no mostrar login)
-      window.location.replace("index.html");
+      // Mostrar UI (pero no el login "feo", solo para que se vea el snackbar)
+      showLoginUI();
+
+      // Snackbar con acción -> redirección al aceptar
+      mostrarSnackbarAccion(
+        isNew ? "Cuenta creada con Google" : "Inicio de sesión exitoso",
+        "Aceptar",
+        () => window.location.replace("index.html"),
+        "success",
+        12000
+      );
+
       return;
     }
 
-    // 2) Si no hay code pero ya hay sesión, manda a index
+    // 2) Si no hay code pero ya hay sesión => NO mostrar login
     const { data: sesData, error: sesErr } = await sb.auth.getSession();
     if (!sesErr && sesData?.session?.user) {
       const user = sesData.session.user;
 
-      // Intentar Storage (por si aún no se subió)
-      const storageUrl = await uploadGoogleAvatarToStorage(sb, user);
-      const googleUrl = getGoogleAvatarUrl(user);
-      const avatarUrl = storageUrl || googleUrl || null;
+      // Intentar avatar (por si no se guardó antes)
+      // OJO: esto puede tardar y causar flash. Solo lo hacemos "best-effort".
+      try {
+        const storageUrl = await uploadGoogleAvatarToStorage(sb, user);
+        const googleUrl = getGoogleAvatarUrl(user);
+        const avatarUrl = storageUrl || googleUrl || null;
 
-      if (avatarUrl) {
-        persistAvatarToLocal(avatarUrl);
-        mergeAvatarIntoCorteroUser(avatarUrl);
-        await tryPersistAvatarToDB(sb, user, avatarUrl);
-      }
+        if (avatarUrl) {
+          persistAvatarToLocal(avatarUrl);
+          mergeAvatarIntoCorteroUser(avatarUrl);
+          await tryPersistAvatarToDB(sb, user, avatarUrl);
+        }
+      } catch (_) {}
 
       localStorage.setItem("cortero_logged", "1");
-      window.location.replace("index.html");
+
+      showLoginUI();
+
+      // Ya logueado: snackbar con acción y aceptar -> index
+      mostrarSnackbarAccion(
+        "Inicio de sesión exitoso",
+        "Aceptar",
+        () => window.location.replace("index.html"),
+        "success",
+        8000
+      );
+
       return;
     }
 
-    // 3) No hay sesión: se queda en login normal
+    // 3) No hay sesión: mostrar login normal
+    showLoginUI();
   } catch (e) {
     console.error("❌ Google gate/callback error:", e);
-    // No bloquees el login por errores aquí
+    showLoginUI();
   }
 })();
 
