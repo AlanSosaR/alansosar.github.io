@@ -20,54 +20,27 @@ function safe(id) {
   const { data, error } = await sb.auth.getSession();
 
   if (error || !data?.session?.user) {
-    // No hay sesión → volver al login
     window.location.replace("login.html");
     return;
   }
 
   const authUser = data.session.user;
 
-  /* 2️⃣ Buscar perfil en public.users */
-  let { data: perfil, error: findErr } = await sb
+  /* 2️⃣ Buscar perfil (YA CREADO POR TRIGGER) */
+  const { data: perfil, error: findErr } = await sb
     .from("users")
     .select("*")
     .eq("id", authUser.id)
-    .maybeSingle();
+    .single();
 
-  if (findErr) {
-    console.error("❌ Error cargando perfil:", findErr);
+  if (findErr || !perfil) {
+    console.error("❌ Perfil no encontrado:", findErr);
+    // Esperar un momento por si el trigger aún no terminó
+    setTimeout(() => window.location.reload(), 300);
     return;
   }
 
-  /* 3️⃣ Crear perfil si NO existe (Google) */
-  if (!perfil) {
-    const { data: creado, error: createErr } = await sb
-      .from("users")
-      .insert({
-        id: authUser.id,
-        email: authUser.email,
-        name:
-          authUser.user_metadata?.full_name ||
-          authUser.user_metadata?.name ||
-          "",
-        phone: authUser.user_metadata?.phone || null,
-        photo_url:
-          authUser.user_metadata?.picture ||
-          "/imagenes/avatar-default.svg",
-        created_at: new Date().toISOString(),
-      })
-      .select()
-      .single();
-
-    if (createErr) {
-      console.error("❌ Error creando usuario:", createErr);
-      return;
-    }
-
-    perfil = creado;
-  }
-
-  /* 4️⃣ Guardar sesión local (solo UI) */
+  /* 3️⃣ Guardar sesión local (solo UI) */
   localStorage.setItem("cortero_user", JSON.stringify(perfil));
   localStorage.setItem("cortero_logged", "1");
 
