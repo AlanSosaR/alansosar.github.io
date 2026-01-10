@@ -283,7 +283,7 @@ if (googleBtn) {
       await window.supabaseClient.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/login.html`,
+          redirectTo: `${window.location.origin}/index.html`,
         },
       });
     } catch (err) {
