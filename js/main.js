@@ -8,8 +8,6 @@ function safe(id) {
   return document.getElementById(id);
 }
 
-
-
 /* ========================= EMPTY CATALOG ========================= */
 function showEmptyCatalog() {
   safe("empty-catalog")?.classList.remove("hidden");
@@ -36,6 +34,26 @@ function getCart() {
 
 function saveCart(cart) {
   localStorage.setItem(CART_KEY, JSON.stringify(cart));
+}
+
+/* 🔑 cantidad del producto en carrito */
+function getQtyInCart(productId) {
+  const cart = getCart();
+  const item = cart.find(p => p.product_id === productId);
+  return item ? Number(item.qty) : 0;
+}
+
+/* 🔑 estado visual de stock */
+function getStockStatus(stockBD, qtyInCart) {
+  const available = stockBD - qtyInCart;
+
+  if (available <= 0) {
+    return { label: "Agotado", className: "out" };
+  }
+  if (available <= 5) {
+    return { label: "Últimas unidades", className: "low" };
+  }
+  return { label: "Disponible", className: "available" };
 }
 
 /* 🔑 HEADER CONTROLA BADGE */
@@ -93,23 +111,16 @@ function renderMainProduct(product) {
   addBtn.dataset.id = product.id;
   addBtn.dataset.stock = product.stock ?? 0;
 
-  /* ✅ ESTADO DINÁMICO (sin mostrar stock numérico) */
+  /* ✅ ESTADO DINÁMICO CORREGIDO */
   const statusEl = safe("product-status");
-  const stock = Number(product.stock ?? 0);
+  const stockBD = Number(product.stock ?? 0);
+  const qtyInCart = getQtyInCart(product.id);
 
   if (statusEl) {
     statusEl.classList.remove("available", "low", "out");
-
-    if (stock <= 0) {
-      statusEl.textContent = "Agotado";
-      statusEl.classList.add("out");
-    } else if (stock <= 5) {
-      statusEl.textContent = "Últimas unidades";
-      statusEl.classList.add("low");
-    } else {
-      statusEl.textContent = "Disponible";
-      statusEl.classList.add("available");
-    }
+    const status = getStockStatus(stockBD, qtyInCart);
+    statusEl.textContent = status.label;
+    statusEl.classList.add(status.className);
   }
 
   safe("qty-number").textContent = "1";
@@ -273,7 +284,6 @@ function initSimilarCarousel() {
     }
   });
 
-  // 🔑 esperar a que el navegador calcule tamaños reales
   requestAnimationFrame(() => {
     requestAnimationFrame(updateSimilarUI);
   });
@@ -287,36 +297,34 @@ function updateSimilarUI() {
   const dots  = document.querySelectorAll(".carousel-dots .dot");
   if (!cards.length) return;
 
-  // 🔑 medir tamaño REAL (no offsetWidth ciego)
   const rect = cards[0].getBoundingClientRect();
-  if (rect.width === 0) return; // aún no visible
+  if (rect.width === 0) return;
 
   const gap = parseInt(getComputedStyle(list).gap || 16, 10);
   const CARD_WIDTH = rect.width + gap;
 
   list.scrollTo({
-    left: CARD_WIDTH * similarIndex, // <-- aquí
+    left: CARD_WIDTH * similarIndex,
     behavior: "smooth"
   });
 
   cards.forEach((c, i) =>
-    c.classList.toggle("active-card", i === similarIndex) // <-- aquí
+    c.classList.toggle("active-card", i === similarIndex)
   );
 
   dots.forEach((d, i) =>
-    d.classList.toggle("active", i === similarIndex) // <-- y aquí
+    d.classList.toggle("active", i === similarIndex)
   );
 }
 
 /* =========================
-   HERO CAROUSEL (IMÁGENES)
+   HERO CAROUSEL
 ========================= */
 function initHeroCarousel() {
   const images = document.querySelectorAll(".hero-carousel img");
   if (!images.length) return;
 
   let index = 0;
-
   images.forEach(img => img.classList.remove("active"));
   images[0].classList.add("active");
 
@@ -326,15 +334,15 @@ function initHeroCarousel() {
     images[index].classList.add("active");
   }, 4000);
 }
+
 /* =========================
    DOM READY
 ========================= */
 document.addEventListener("DOMContentLoaded", () => {
 
   syncHeaderCounter();
-  initHeroCarousel(); // 👈 ESTA LÍNEA
+  initHeroCarousel();
 
-  /* ===== CANTIDAD ===== */
   const qtyNumber = safe("qty-number");
 
   safe("qty-minus")?.addEventListener("click", () => {
@@ -346,42 +354,52 @@ document.addEventListener("DOMContentLoaded", () => {
     qtyNumber.textContent = parseInt(qtyNumber.textContent) + 1;
   });
 
-/* ===== ADD TO CART ===== */
-safe("product-add")?.addEventListener("click", () => {
-  const qty   = parseInt(qtyNumber.textContent) || 1;
-  const name  = safe("product-name").textContent.trim();
-  const img   = safe("product-image").src;
-  const price = parseFloat(
-    safe("product-price").textContent.replace(/[^\d.-]/g, "")
-  );
+  /* ===== ADD TO CART (VALIDADO) ===== */
+  safe("product-add")?.addEventListener("click", () => {
+    const qty = parseInt(qtyNumber.textContent) || 1;
+    const name = safe("product-name").textContent.trim();
+    const img = safe("product-image").src;
+    const price = parseFloat(
+      safe("product-price").textContent.replace(/[^\d.-]/g, "")
+    );
 
-  const productId = safe("product-add").dataset.id;
-  if (!productId) return;
+    const productId = safe("product-add").dataset.id;
+    const stockBD = Number(safe("product-add").dataset.stock ?? 0);
+    const qtyInCart = getQtyInCart(productId);
+    const available = stockBD - qtyInCart;
 
-  addToCart({ product_id: productId, name, price, img, qty });
-  qtyNumber.textContent = "1";
-});
-
-loadSimilarProducts();
-
-/* =========================
-   FAB — CONTACTO
-========================= */
-const fab = document.getElementById("fab");
-const fabMain = document.getElementById("fab-main");
-
-if (fab && fabMain) {
-  fabMain.addEventListener("click", (e) => {
-    e.stopPropagation();
-    fab.classList.toggle("active");
-  });
-
-  // Cerrar FAB al tocar fuera
-  document.addEventListener("click", (e) => {
-    if (!fab.contains(e.target)) {
-      fab.classList.remove("active");
+    if (qty > available) {
+      alert(`Solo quedan ${available} unidades disponibles.`);
+      return;
     }
+
+    addToCart({ product_id: productId, name, price, img, qty });
+    qtyNumber.textContent = "1";
+    renderMainProduct({
+      id: productId,
+      name,
+      price,
+      img,
+      stock: stockBD
+    });
   });
-}
+
+  loadSimilarProducts();
+
+  const fab = document.getElementById("fab");
+  const fabMain = document.getElementById("fab-main");
+
+  if (fab && fabMain) {
+    fabMain.addEventListener("click", (e) => {
+      e.stopPropagation();
+      fab.classList.toggle("active");
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!fab.contains(e.target)) {
+        fab.classList.remove("active");
+      }
+    });
+  }
 
 });
