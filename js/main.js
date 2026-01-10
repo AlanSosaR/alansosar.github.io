@@ -346,21 +346,42 @@ document.addEventListener("DOMContentLoaded", () => {
     qtyNumber.textContent = parseInt(qtyNumber.textContent) + 1;
   });
 
-  /* ===== ADD TO CART ===== */
-  safe("product-add")?.addEventListener("click", () => {
-    const qty   = parseInt(qtyNumber.textContent) || 1;
-    const name  = safe("product-name").textContent.trim();
-    const img   = safe("product-image").src;
-    const price = parseFloat(
-      safe("product-price").textContent.replace(/[^\d.-]/g, "")
-    );
+/* ===== ADD TO CART ===== */
+safe("product-add")?.addEventListener("click", () => {
+  const qty   = parseInt(qtyNumber.textContent) || 1;
+  const name  = safe("product-name").textContent.trim();
+  const img   = safe("product-image").src;
+  const price = parseFloat(
+    safe("product-price").textContent.replace(/[^\d.-]/g, "")
+  );
 
-    const productId = safe("product-add").dataset.id;
-    if (!productId) return;
+  const productId = safe("product-add").dataset.id;
+  if (!productId) return;
 
-    addToCart({ product_id: productId, name, price, img, qty });
-    qtyNumber.textContent = "1";
+  addToCart({ product_id: productId, name, price, img, qty });
+  qtyNumber.textContent = "1";
+});
+
+loadSimilarProducts();
+
+/* =========================
+   FAB — CONTACTO
+========================= */
+const fab = document.getElementById("fab");
+const fabMain = document.getElementById("fab-main");
+
+if (fab && fabMain) {
+  fabMain.addEventListener("click", (e) => {
+    e.stopPropagation();
+    fab.classList.toggle("active");
   });
 
-  loadSimilarProducts();
+  // Cerrar FAB al tocar fuera
+  document.addEventListener("click", (e) => {
+    if (!fab.contains(e.target)) {
+      fab.classList.remove("active");
+    }
+  });
+}
+
 });
