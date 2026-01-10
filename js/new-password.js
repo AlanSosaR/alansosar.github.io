@@ -7,75 +7,45 @@
   const newPassInput = document.getElementById("newPassword");
   const confirmInput = document.getElementById("confirmPassword");
 
-  const btn     = form.querySelector(".m3-btn");
+  const btn = form.querySelector(".m3-btn");
   const btnText = btn?.querySelector(".btn-text");
-  const loader  = btn?.querySelector(".loader");
+  const loader = btn?.querySelector(".loader");
 
-  // =====================
-  // SNACKBAR (NO AUTOCLOSE)
-  // =====================
-  const snack        = document.getElementById("snackbar");
-  const snackMsg     = snack?.querySelector(".snackbar__msg");
+  const checklist = document.getElementById("passChecklist");
+
+  /* =====================
+     SNACKBAR
+  ===================== */
+  const snack = document.getElementById("snackbar");
+  const snackMsg = snack?.querySelector(".snackbar__msg");
   const snackActions = snack?.querySelector(".snackbar__actions");
 
   let snackResolver = null;
-  let snackClickHandler = null;
 
-  function openSnack(message, type = "info", {
-    confirmText = "Confirmar",
-    cancelText = "",
-    showCancel = false,
-  } = {}) {
-    if (!snack) return;
+  function openSnack(message, type = "info", { confirmText = "OK" } = {}) {
+    if (!snack) return Promise.resolve();
 
     snack.classList.remove("hidden", "is-error", "is-warn", "is-success");
     snack.classList.add("show", `is-${type}`);
-
     snackMsg.textContent = message;
-    snackActions.style.display = "inline-flex";
 
     const btnConfirm = snackActions.querySelector('[data-action="confirm"]');
-    const btnCancel  = snackActions.querySelector('[data-action="cancel"]');
-
     if (btnConfirm) btnConfirm.textContent = confirmText;
 
-    if (btnCancel) {
-      btnCancel.textContent = cancelText;
-      btnCancel.style.display = showCancel ? "" : "none";
-    }
-
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       snackResolver = resolve;
 
-      if (snackClickHandler) {
-        snackActions.removeEventListener("click", snackClickHandler);
-      }
-
-      snackClickHandler = (e) => {
-        const b = e.target.closest("button");
-        if (!b) return;
-
-        const action = b.dataset.action;
-
+      snackActions.onclick = () => {
         snack.classList.remove("show");
         snack.classList.add("hidden");
-
-        snackActions.removeEventListener("click", snackClickHandler);
-        snackClickHandler = null;
-
-        const r = snackResolver;
-        snackResolver = null;
-
-        if (r) r(action === "confirm" ? "confirm" : "cancel");
+        resolve("confirm");
       };
-
-      snackActions.addEventListener("click", snackClickHandler);
     });
   }
 
-  // =====================
-  // ERRORES POR CAMPO
-  // =====================
+  /* =====================
+     ERRORES POR CAMPO
+  ===================== */
   function fieldParts(inputEl) {
     const field = inputEl.closest(".m3-field");
     return {
@@ -99,6 +69,9 @@
   newPassInput.addEventListener("input", () => clearError(newPassInput));
   confirmInput.addEventListener("input", () => clearError(confirmInput));
 
+  /* =====================
+     LOADING
+  ===================== */
   function setLoading(on) {
     btn.disabled = on;
     btn.classList.toggle("loading", on);
@@ -106,44 +79,78 @@
     if (loader) loader.style.display = on ? "inline-block" : "none";
   }
 
-  // =====================
-  // VALIDAR SESIÓN RECOVERY
-  // =====================
+  /* =====================
+     SESIÓN RECOVERY
+  ===================== */
   async function asegurarSesionRecovery() {
     const { data } = await sb.auth.getSession();
     if (!data?.session) {
-      const decision = await openSnack(
-        "Tu enlace de recuperación expiró. Solicita uno nuevo.",
+      await openSnack(
+        "El enlace de recuperación ha expirado.",
         "error",
-        { confirmText: "Recuperar", cancelText: "Cerrar", showCancel: true }
+        { confirmText: "Solicitar nuevo" }
       );
-
-      if (decision === "confirm") {
-        window.location.href = "forgot-password.html";
-      }
+      window.location.href = "forgot-password.html";
       return false;
     }
     return true;
   }
 
-  (async () => {
-    await asegurarSesionRecovery();
-  })();
+  asegurarSesionRecovery();
 
-  // =====================
-  // VALIDACIÓN PASSWORD
-  // =====================
-  function validarPassword(pw) {
-    if (pw.length < 8) return "Debe tener al menos 8 caracteres.";
-    if (pw.includes(" ")) return "No debe contener espacios.";
-    if (!/[A-Za-z]/.test(pw)) return "Debe incluir al menos una letra.";
-    if (!/[0-9]/.test(pw)) return "Debe incluir al menos un número.";
-    return null;
+  /* =====================
+     CHECKLIST PASSWORD
+  ===================== */
+  function updateChecklist(pw) {
+    if (!checklist) return false;
+
+    const rules = {
+      length: pw.length >= 8,
+      letter: /[A-Za-z]/.test(pw),
+      number: /[0-9]/.test(pw),
+      space: !/\s/.test(pw),
+    };
+
+    let valid = true;
+
+    checklist.querySelectorAll("li").forEach(li => {
+      const rule = li.dataset.rule;
+      if (rules[rule]) {
+        li.classList.add("ok");
+        li.classList.remove("bad");
+      } else {
+        li.classList.add("bad");
+        li.classList.remove("ok");
+        valid = false;
+      }
+    });
+
+    return valid;
   }
 
-  // =====================
-  // SUBMIT
-  // =====================
+  newPassInput.addEventListener("input", () => {
+    const ok = updateChecklist(newPassInput.value);
+    btn.disabled = !ok;
+  });
+
+  /* =====================
+     MAPEO ERRORES SUPABASE
+  ===================== */
+  function mapSupabaseError(error) {
+    const msg = error?.message || "";
+
+    if (msg.includes("same password"))
+      return "La nueva contraseña no puede ser igual a la anterior.";
+
+    if (msg.includes("expired") || msg.includes("Invalid"))
+      return "El enlace ya no es válido. Solicita uno nuevo.";
+
+    return "No se pudo cambiar la contraseña. Inténtalo de nuevo.";
+  }
+
+  /* =====================
+     SUBMIT
+  ===================== */
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -155,10 +162,6 @@
 
     if (!pw1) return setError(newPassInput, "Ingresa tu nueva contraseña.");
     if (!pw2) return setError(confirmInput, "Confirma tu contraseña.");
-
-    const pwError = validarPassword(pw1);
-    if (pwError) return setError(newPassInput, pwError);
-
     if (pw1 !== pw2)
       return setError(confirmInput, "Las contraseñas no coinciden.");
 
@@ -172,26 +175,26 @@
     setLoading(false);
 
     if (error) {
-      setError(confirmInput, "No se pudo cambiar la contraseña.");
+      setError(newPassInput, mapSupabaseError(error));
       return;
     }
 
-    // ✅ SNACKBAR NO SE CIERRA SOLO
-    const decision = await openSnack(
+    /* 🔒 INVALIDAR ENLACE */
+    await sb.auth.signOut();
+
+    await openSnack(
       "Contraseña actualizada correctamente.",
       "success",
-      { confirmText: "Ir a login" }
+      { confirmText: "Iniciar sesión" }
     );
 
-    if (decision === "confirm") {
-      window.location.href = "login.html";
-    }
+    window.location.href = "login.html";
   });
 
-  // =====================
-  // TOGGLE PASSWORD
-  // =====================
-  document.querySelectorAll(".toggle-pass").forEach((icon) => {
+  /* =====================
+     TOGGLE PASSWORD
+  ===================== */
+  document.querySelectorAll(".toggle-pass").forEach(icon => {
     const input = document.getElementById(icon.dataset.target);
     if (!input) return;
 
