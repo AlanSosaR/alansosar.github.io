@@ -277,7 +277,7 @@ if (googleBtn) {
       await window.supabaseClient.auth.signInWithOAuth({
         provider: "google",
         options: {
-          // ✅ SIEMPRE login.html
+          // 🔒 Siempre regresar al login
           redirectTo: `${window.location.origin}/login.html`,
         },
       });
@@ -289,24 +289,30 @@ if (googleBtn) {
 }
 
 /* =========================================================
-   OAUTH CALLBACK — SUPABASE AUTH V2 (OBLIGATORIO)
+   AUTH STATE LISTENER — GOOGLE OAUTH (CORRECTO)
 ========================================================= */
-(async function oauthCallback() {
-  const sb = window.supabaseClient;
-  if (!sb) return;
+const sb = window.supabaseClient;
 
-  // 🔑 ESTA LÍNEA CREA auth.users
-  const { data, error } = await sb.auth.exchangeCodeForSession(
-    window.location.href
-  );
+if (sb) {
+  sb.auth.onAuthStateChange(async (event, session) => {
+    if (event === "SIGNED_IN" && session?.user) {
+      console.log("✅ Google OAuth OK:", session.user.email);
 
-  console.log("OAuth exchange:", data, error);
+      try {
+        // Crear perfil si no existe (public.users)
+        await sb.rpc("ensure_user_profile");
 
-  if (error || !data?.session) return;
+        localStorage.setItem("cortero_logged", "1");
 
-  // limpiar URL
-  history.replaceState(null, "", window.location.pathname);
+        // limpiar URL (quita ?code=...)
+        history.replaceState(null, "", window.location.pathname);
 
-  // ir al index
-  window.location.replace("index.html");
-})();
+        // redirigir
+        window.location.replace("index.html");
+      } catch (e) {
+        console.error("❌ Error creando perfil:", e);
+        mostrarSnackbar("Error al crear perfil", "error");
+      }
+    }
+  });
+}
