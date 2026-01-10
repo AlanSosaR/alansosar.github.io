@@ -8,10 +8,31 @@ function safe(id) {
   return document.getElementById(id);
 }
 
-/* =========================
+/* =========================================================
+   AUTH — PROCESAR CALLBACK OAUTH (OBLIGATORIO)
+   GitHub Pages / Sitios estáticos
+========================================================= */
+(async function handleOAuthCallback() {
+  const sb = window.supabaseClient;
+  if (!sb) return;
+
+  // Fuerza a Supabase a consumir el #access_token del redirect
+  const { error } = await sb.auth.getSession();
+
+  if (error) {
+    console.error("❌ OAuth callback error:", error);
+  }
+
+  // Limpia la URL (quita #access_token=...)
+  if (window.location.hash.includes("access_token")) {
+    history.replaceState(null, "", window.location.pathname);
+  }
+})();
+
+/* =========================================================
    AUTH — VALIDAR SESIÓN + PERFIL
    (GOOGLE / EMAIL)
-========================= */
+========================================================= */
 (async function ensureAuthAndProfile() {
   const sb = window.supabaseClient;
   if (!sb) return;
@@ -26,7 +47,7 @@ function safe(id) {
 
   const authUser = data.session.user;
 
-  /* 2️⃣ Buscar perfil (YA CREADO POR TRIGGER) */
+  /* 2️⃣ Buscar perfil (CREADO POR TRIGGER) */
   const { data: perfil, error: findErr } = await sb
     .from("users")
     .select("*")
@@ -34,8 +55,7 @@ function safe(id) {
     .single();
 
   if (findErr || !perfil) {
-    console.error("❌ Perfil no encontrado:", findErr);
-    // Esperar un momento por si el trigger aún no terminó
+    console.warn("⏳ Perfil aún no disponible, reintentando…");
     setTimeout(() => window.location.reload(), 300);
     return;
   }
@@ -46,6 +66,7 @@ function safe(id) {
 
   console.log("✅ Sesión válida:", perfil.email);
 })();
+
 /* ========================= EMPTY CATALOG ========================= */
 function showEmptyCatalog() {
   safe("empty-catalog")?.classList.remove("hidden");
