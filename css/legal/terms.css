@@ -1,107 +1,236 @@
 /* =====================================================
-   Material 3 Expressive — Términos del Servicio
-   Café Cortero
+   Material 3 Expressive — Términos del Servicio (TERMS)
+   Café Cortero — CSS exclusivo
 ===================================================== */
 
-:root {
-  --md-primary: #6f4e37;
-  --md-on-primary: #ffffff;
-  --md-surface: #ffffff;
-  --md-on-surface: #1f1f1f;
-  --md-outline: #e0e0e0;
-  --md-shadow: rgba(0, 0, 0, 0.12);
-  --md-radius: 20px;
-  --md-font: system-ui, -apple-system, BlinkMacSystemFont,
-             "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+:root{
+  --green: #33c26b;
+  --coffee: #6f4e37;
+
+  --bg: #f6f6f6;
+  --surface: rgba(255,255,255,.92);
+  --surface-solid: #ffffff;
+
+  --text: #2b1b12;        /* café oscuro */
+  --muted: rgba(43,27,18,.72);
+
+  --outline: rgba(0,0,0,.08);
+  --shadow: 0 18px 46px rgba(0,0,0,.14), 0 6px 16px rgba(0,0,0,.10);
+  --radius: 22px;
+
+  --font: system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
-* {
-  box-sizing: border-box;
+*{ box-sizing:border-box; }
+
+html,body{ height:100%; }
+
+body{
+  margin:0;
+  font-family: var(--font);
+  background: radial-gradient(1100px 500px at 30% -10%, rgba(51,194,107,.10), transparent 60%),
+              radial-gradient(900px 420px at 90% 10%, rgba(111,78,55,.10), transparent 55%),
+              var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-body {
-  margin: 0;
-  padding: 24px;
-  font-family: var(--md-font);
-  background: #fafafa;
-  color: var(--md-on-surface);
+/* Layout general (misma estructura que privacidad) */
+.legal-container{
+  min-height: 100vh;
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
+  padding: 86px 24px 48px;
 }
 
-.legal-container {
-  max-width: 820px;
-  margin: 80px auto 40px;
-  padding: 40px 32px;
-  background: var(--md-surface);
-  border-radius: var(--md-radius);
-  box-shadow: 0 12px 32px var(--md-shadow);
+.legal-card{
+  width: min(920px, 100%);
+  background: var(--surface);
+  border: 1px solid var(--outline);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  overflow: hidden;
 }
 
-.legal-container h1 {
-  margin-top: 0;
-  font-size: 2rem;
+/* Header */
+.legal-header{
+  padding: 34px 34px 18px;
+  text-align: center;
+  border-bottom: 1px solid var(--outline);
+}
+
+.logo-container{
+  cursor: pointer;
+  display:flex;
+  justify-content:center;
+  margin-bottom: 10px;
+}
+
+.logo-img{
+  width: 112px;
+  height: auto;
+  transform: translateY(-2px);
+  filter: drop-shadow(0 12px 18px rgba(0,0,0,.12));
+  transition: transform .22s cubic-bezier(.2,0,0,1), filter .22s ease;
+}
+
+.logo-container:hover .logo-img{
+  transform: translateY(-6px);
+  filter: drop-shadow(0 18px 22px rgba(0,0,0,.16));
+}
+
+.legal-title{
+  margin: 6px 0 8px;
+  font-size: clamp(1.6rem, 2.2vw, 2.2rem);
+  line-height: 1.08;
+  letter-spacing: -0.6px;
+  font-weight: 800;
+  color: var(--green);
+}
+
+.legal-subtitle{
+  margin: 0 auto;
+  max-width: 58ch;
+  font-size: 0.98rem;
+  line-height: 1.55;
+  color: var(--muted);
   font-weight: 600;
-  letter-spacing: -0.5px;
 }
 
-.legal-container p {
+/* Contenido */
+.legal-content{
+  padding: 22px 34px 34px;
+}
+
+.legal-content h2{
+  margin: 22px 0 10px;
+  font-size: 1.06rem;
+  letter-spacing: -0.2px;
+  font-weight: 850;
+  color: var(--coffee);
+}
+
+.legal-content p,
+.legal-content li{
+  color: rgba(111,78,55,.92);
   font-size: 1rem;
   line-height: 1.7;
-  margin: 16px 0;
-  color: #333;
 }
 
-.legal-container hr {
-  margin: 32px 0 16px;
-  border: none;
-  height: 1px;
-  background: var(--md-outline);
+.legal-content p{ margin: 12px 0; }
+
+.legal-content ul{
+  margin: 10px 0 18px 18px;
+  padding: 0;
 }
 
-.legal-footer {
-  font-size: 0.85rem;
-  color: #666;
-}
+.legal-content li{ margin: 8px 0; }
 
-/* Botón regresar */
-.back-btn {
-  position: fixed;
-  top: 24px;
-  left: 24px;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: var(--md-primary);
-  color: var(--md-on-primary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.contacto a{
+  color: var(--green);
   text-decoration: none;
-  font-size: 1.4rem;
-  box-shadow: 0 6px 16px var(--md-shadow);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  font-weight: 900;
 }
 
-.back-btn:hover {
+.contacto a:hover{
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Footer */
+.legal-footer{
+  margin-top: 26px;
+  padding-top: 14px;
+  border-top: 1px solid var(--outline);
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+/* Back button (igual estilo que el resto de páginas) */
+.back-btn{
+  position: fixed;
+  top: 18px;
+  left: 18px;
+
+  width: 46px;
+  height: 46px;
+  border-radius: 999px;
+
+  border: 1px solid rgba(0,0,0,.08);
+  background: rgba(255,255,255,.88);
+  color: var(--green);
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  box-shadow: 0 14px 32px rgba(0,0,0,.18), 0 4px 12px rgba(0,0,0,.12);
+  cursor: pointer;
+
+  transition: transform .18s cubic-bezier(.2,0,0,1), box-shadow .18s ease, background .18s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.back-btn:hover{
   transform: translateY(-1px);
-  box-shadow: 0 10px 22px var(--md-shadow);
+  background: rgba(255,255,255,.95);
+  box-shadow: 0 18px 38px rgba(0,0,0,.20), 0 6px 16px rgba(0,0,0,.14);
 }
 
-.back-btn:active {
-  transform: scale(0.96);
+.back-btn:active{
+  transform: translateY(0);
 }
 
-@media (max-width: 600px) {
-  .legal-container {
-    padding: 28px 20px;
-    margin-top: 72px;
+.back-btn:focus{
+  outline: none;
+}
+
+/* Quitar “azul” al click (Chrome/Android) */
+.back-btn:focus-visible{
+  outline: none;
+  box-shadow:
+    0 18px 38px rgba(0,0,0,.20),
+    0 0 0 4px rgba(51,194,107,.22);
+}
+
+.back-btn .material-symbols-outlined{
+  font-size: 26px;
+  line-height: 1;
+}
+
+/* Responsive (móvil: no pegado a bordes) */
+@media (max-width: 700px){
+  .legal-container{
+    padding: 84px 16px 40px;
   }
 
-  .legal-container h1 {
-    font-size: 1.6rem;
+  .legal-header{
+    padding: 28px 18px 16px;
   }
 
-  .back-btn {
-    top: 16px;
-    left: 16px;
+  .legal-content{
+    padding: 18px 18px 26px;
+  }
+
+  .logo-img{
+    width: 104px;
+  }
+}
+
+/* Móviles con notch (iOS/Android) */
+@supports (padding: max(0px)) {
+  .back-btn{
+    top: max(14px, env(safe-area-inset-top));
+    left: max(14px, env(safe-area-inset-left));
+  }
+
+  .legal-container{
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
   }
 }
