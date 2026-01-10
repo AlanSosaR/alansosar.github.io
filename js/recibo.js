@@ -508,7 +508,43 @@ if (itemsError) {
 }
 
 console.log("✅ Items insertados:", itemsInserted);
+     
+/* === 3.1 DESCONTAR STOCK (CRÍTICO) === */
+for (const it of carrito) {
+  // 1️⃣ Leer stock actual
+  const { data: product, error: stockError } = await sb
+    .from("products")
+    .select("stock")
+    .eq("id", it.product_id)
+    .single();
 
+  if (stockError || !product) {
+    throw new Error("Producto no encontrado");
+  }
+
+  // 2️⃣ Validar disponibilidad REAL
+  if (product.stock < it.qty) {
+    throw new Error(
+      `Stock insuficiente para ${it.name}. Solo quedan ${product.stock} unidades.`
+    );
+  }
+
+  // 3️⃣ Descontar stock (ANTI-SOBREVENTA)
+  const { error: updateError } = await sb
+    .from("products")
+    .update({
+      stock: product.stock - it.qty
+    })
+    .eq("id", it.product_id)
+    .gte("stock", it.qty); // 🔒 bloqueo concurrente
+
+  if (updateError) {
+    throw new Error(
+      `El stock de ${it.name} cambió. Intenta nuevamente.`
+    );
+  }
+}
+     
     /* === 4. COMPROBANTE === */
     if (metodoPago.value === "bank_transfer") {
       const file = inputFile.files[0];
