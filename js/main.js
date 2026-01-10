@@ -9,46 +9,6 @@ function safe(id) {
 }
 
 
-/* =========================================================
-   AUTH — VALIDAR SESIÓN + PERFIL
-   (GOOGLE / EMAIL)
-========================================================= */
-(async function ensureAuthAndProfile() {
-  const sb = window.supabaseClient;
-  if (!sb) return;
-
-  /* 1️⃣ Verificar sesión Supabase */
-  const { data, error } = await sb.auth.getSession();
-
-  if (error || !data?.session?.user) {
-    window.location.replace("login.html");
-    return;
-  }
-
-  const authUser = data.session.user;
-
-  /* 2️⃣ FORZAR creación del perfil (CLAVE) */
-  await sb.rpc("ensure_user_profile");
-
-  /* 3️⃣ Leer perfil ya garantizado */
-  const { data: perfil, error: findErr } = await sb
-    .from("users")
-    .select("*")
-    .eq("id", authUser.id)
-    .single();
-
-  if (findErr || !perfil) {
-    console.error("❌ Perfil no disponible:", findErr);
-    window.location.replace("login.html");
-    return;
-  }
-
-  /* 4️⃣ Guardar sesión local (solo UI) */
-  localStorage.setItem("cortero_user", JSON.stringify(perfil));
-  localStorage.setItem("cortero_logged", "1");
-
-  console.log("✅ Sesión válida:", perfil.email);
-})();
 
 /* ========================= EMPTY CATALOG ========================= */
 function showEmptyCatalog() {
