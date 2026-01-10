@@ -16,13 +16,30 @@
 
   --radius: 20px;
   --shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
-
-  /* efecto de presión azul (Material-like) */
-  --press-blue: rgba(77, 163, 255, .22);
 }
 
 *{
   box-sizing: border-box;
+}
+
+/* ===== Material Symbols FIX ===== */
+.material-symbols-outlined{
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 28px;
+  line-height: 1;
+  display: inline-flex;
+  white-space: nowrap;
+  direction: ltr;
+
+  -webkit-font-smoothing: antialiased;
+
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24;
 }
 
 body{
@@ -108,7 +125,7 @@ body{
   padding: 0;
 }
 
-/* Links (correo, etc.) */
+/* Links */
 .contacto a{
   color: var(--green);
   font-weight: 700;
@@ -129,7 +146,7 @@ body{
   font-size: 0.95rem;
 }
 
-/* ===== Botón volver ===== */
+/* ===== Botón volver (SIN feedback azul) ===== */
 .back-btn{
   position: absolute;
   top: 18px;
@@ -148,7 +165,9 @@ body{
   align-items: center;
   justify-content: center;
 
-  transition: transform .18s ease, background .18s ease, box-shadow .18s ease;
+  transition: transform .18s ease, box-shadow .18s ease;
+
+  /* elimina feedback táctil */
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -159,19 +178,18 @@ body{
 
 .back-btn:active{
   transform: translateY(0);
-  background: var(--press-blue);
+  background: var(--surface);
+}
+
+.back-btn:focus,
+.back-btn:focus-visible{
+  outline: none;
+  box-shadow: var(--shadow);
 }
 
 .back-btn .material-symbols-outlined{
   font-size: 28px;
   color: var(--green);
-}
-
-.back-btn:focus-visible{
-  outline: none;
-  box-shadow:
-    0 16px 34px rgba(0,0,0,.14),
-    0 0 0 3px var(--press-blue);
 }
 
 /* ===== Responsive ===== */
