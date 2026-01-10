@@ -192,12 +192,13 @@
 
   <!-- CONTACTO -->
   <section id="contacto" class="contacto">
-    <h2>Contáctanos</h2>
-    <p>
-      Escríbenos por <strong class="verde">WhatsApp</strong> o síguenos en
-      <strong class="verde">Facebook</strong>.
-    </p>
-  </section>
+  <h2>Contáctanos</h2>
+  <p>
+    Escríbenos por <strong class="verde">WhatsApp</strong> o síguenos en nuestras
+    redes sociales: <strong class="verde">Facebook</strong> e
+    <strong class="verde">Instagram</strong>.
+  </p>
+</section>
 
 </main>
 
@@ -219,16 +220,31 @@
 
 <!-- FAB -->
 <div class="fab-container" id="fab">
-  <button class="fab-main" id="fab-main">
-    <i class="fa-solid fa-comments"></i>
+  <!-- Botón principal -->
+  <button class="fab-main" id="fab-main" aria-label="Abrir opciones de contacto">
+    <span class="material-symbols-outlined">
+      mark_chat_unread
+    </span>
   </button>
 
+  <!-- Opciones -->
   <div class="fab-options">
-    <a href="https://wa.me/50494546047" target="_blank">
+    <a href="https://wa.me/50494546047"
+       target="_blank"
+       aria-label="Escribir por WhatsApp">
       <i class="fa-brands fa-whatsapp"></i>
     </a>
-    <a href="https://www.facebook.com/share/1FsrT4DYrU/" target="_blank">
+
+    <a href="https://www.facebook.com/share/1FsrT4DYrU/"
+       target="_blank"
+       aria-label="Visitar Facebook">
       <i class="fa-brands fa-facebook-f"></i>
+    </a>
+
+    <a href="https://www.instagram.com/TU_USUARIO"
+       target="_blank"
+       aria-label="Visitar Instagram">
+      <i class="fa-brands fa-instagram"></i>
     </a>
   </div>
 </div>
