@@ -72,7 +72,7 @@ body {
 }
 
 .hero-text p {
-  color: #6f5a4e;
+  color: var(--marron); /* café del sistema */
   margin-top: 0.5rem;
 }
 
@@ -662,8 +662,15 @@ body {
 footer {
   background: var(--blanco);
   border-top: 1px solid rgba(0,0,0,0.05);
-  text-align: center;
   padding: 1rem 1rem 1.4rem;
+
+  /* Layout */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+
+  flex-wrap: nowrap; /* PC: una sola línea */
 }
 
 /* Texto principal */
@@ -671,33 +678,33 @@ footer p {
   margin: 0;
   font-size: 0.95rem;
   color: var(--marron);
+
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  flex-wrap: wrap;
-  justify-content: center;
+
+  white-space: nowrap;
 }
 
 /* Logo inline */
 .footer-logo-inline {
-  width: 40px !important;
-  height: 40px !important;
+  width: 40px;
+  height: 40px;
   object-fit: contain;
   opacity: 0.95;
 }
 
 /* ===== Links legales ===== */
 .footer-legal {
-  margin-top: 6px;
-  display: flex;
-  justify-content: center;
+  display: inline-flex;
   align-items: center;
   gap: 6px;
   font-size: 0.9rem;
+  white-space: nowrap;
 }
 
 .footer-legal a {
-  color: var(--verde);
+  color: var(--marron);        /* 🔑 café */
   font-weight: 600;
   text-decoration: none;
 }
@@ -714,19 +721,23 @@ footer p {
 }
 
 /* ===== Mobile ===== */
-@media (max-width: 480px) {
+@media (max-width: 600px) {
   footer {
-    padding: 1.2rem 1rem 1.6rem;
+    flex-direction: column; /* se apila */
+    gap: 6px;
+    text-align: center;
   }
 
   footer p,
   .footer-legal {
+    white-space: normal;
+    justify-content: center;
     font-size: 0.85rem;
   }
 
   .footer-logo-inline {
-    width: 36px !important;
-    height: 36px !important;
+    width: 36px;
+    height: 36px;
   }
 }
 
