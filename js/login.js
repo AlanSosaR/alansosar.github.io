@@ -269,7 +269,7 @@ document.querySelectorAll(".toggle-pass").forEach(icon => {
 });
 
 /* ========================================================
-   LOGIN CON GOOGLE – Café Cortero ☕ (VERSIÓN FINAL)
+   LOGIN CON GOOGLE – Café Cortero ☕ (BLOQUE FINAL CORREGIDO)
    ======================================================== */
 
 const DEFAULT_AVATAR = "/imagenes/avatar-default.svg";
@@ -302,39 +302,87 @@ if (googleBtn) {
   if (error || !data?.session?.user?.id) return;
 
   // Evitar reprocesar sesión
-  if (localStorage.getItem("cortero_logged") === "1") return;
-
-  const authUser = data.session.user;
-
-  const { data: perfil, error: perfilErr } = await sb
-    .from("users")
-    .select("*")
-    .eq("id", authUser.id)
-    .single();
-
-  if (perfilErr || !perfil) {
-    console.error("❌ Perfil no encontrado:", perfilErr);
-    mostrarSnackbar("No se pudo cargar tu perfil.", "error");
+  if (localStorage.getItem("cortero_logged") === "1") {
+    window.location.replace("index.html");
     return;
   }
 
-  let perfilFinal = { ...perfil };
+  const authUser = data.session.user;
 
-  if (!perfilFinal.photo_url) {
-    perfilFinal.photo_url =
+  /* =========================
+     1️⃣ Buscar usuario
+     ========================= */
+  let { data: perfil, error: findErr } = await sb
+    .from("users")
+    .select("*")
+    .eq("id", authUser.id)
+    .maybeSingle();
+
+  if (findErr) {
+    console.error("❌ Error buscando perfil:", findErr);
+    mostrarSnackbar("Error cargando perfil", "error");
+    return;
+  }
+
+  /* =========================
+     2️⃣ Crear usuario si no existe
+     ========================= */
+  if (!perfil) {
+    const nuevoPerfil = {
+      id: authUser.id, // auth.uid()
+      email: authUser.email,
+      name:
+        authUser.user_metadata?.full_name ||
+        authUser.user_metadata?.name ||
+        "",
+      phone: authUser.user_metadata?.phone || null,
+      photo_url:
+        authUser.user_metadata?.avatar_url ||
+        authUser.user_metadata?.picture ||
+        DEFAULT_AVATAR,
+      created_at: new Date().toISOString(),
+    };
+
+    const { data: creado, error: createErr } = await sb
+      .from("users")
+      .insert(nuevoPerfil)
+      .select()
+      .single();
+
+    if (createErr) {
+      console.error("❌ Error creando usuario:", createErr);
+      mostrarSnackbar("No se pudo crear el usuario", "error");
+      return;
+    }
+
+    perfil = creado;
+  }
+
+  /* =========================
+     3️⃣ Garantizar avatar
+     ========================= */
+  if (!perfil.photo_url) {
+    const avatar =
       authUser.user_metadata?.avatar_url ||
       authUser.user_metadata?.picture ||
       DEFAULT_AVATAR;
 
     await sb
       .from("users")
-      .update({ photo_url: perfilFinal.photo_url })
+      .update({ photo_url: avatar })
       .eq("id", authUser.id);
+
+    perfil.photo_url = avatar;
   }
 
-  localStorage.setItem("cortero_user", JSON.stringify(perfilFinal));
+  /* =========================
+     4️⃣ Guardar sesión local
+     ========================= */
+  localStorage.setItem("cortero_user", JSON.stringify(perfil));
   localStorage.setItem("cortero_logged", "1");
 
-  // ✅ REDIRECCIÓN DIRECTA (sin historial)
+  /* =========================
+     5️⃣ Redirección inmediata
+     ========================= */
   window.location.replace("index.html");
 })();
