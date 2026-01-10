@@ -289,28 +289,24 @@ if (googleBtn) {
 }
 
 /* =========================================================
-   AUTH — GOOGLE CALLBACK (CREA PERFIL)
+   OAUTH CALLBACK — SUPABASE AUTH V2 (OBLIGATORIO)
 ========================================================= */
-(async function handleOAuthCallback() {
+(async function oauthCallback() {
   const sb = window.supabaseClient;
   if (!sb) return;
 
-  // 1️⃣ Consumir sesión OAuth
-  const { data } = await sb.auth.getSession();
-  if (!data?.session?.user) return;
+  // 🔑 ESTA LÍNEA CREA auth.users
+  const { data, error } = await sb.auth.exchangeCodeForSession(
+    window.location.href
+  );
 
-  // 2️⃣ CREAR PERFIL (OBLIGATORIO)
-  const { error } = await sb.rpc("ensure_user_profile");
-  if (error) {
-    console.error("❌ Error creando perfil:", error);
-    return;
-  }
+  console.log("OAuth exchange:", data, error);
 
-  // 3️⃣ Limpiar hash OAuth
-  if (window.location.hash.includes("access_token")) {
-    history.replaceState(null, "", window.location.pathname);
-  }
+  if (error || !data?.session) return;
 
-  // 4️⃣ Ir al index
+  // limpiar URL
+  history.replaceState(null, "", window.location.pathname);
+
+  // ir al index
   window.location.replace("index.html");
 })();
