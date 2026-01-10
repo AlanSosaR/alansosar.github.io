@@ -10,11 +10,14 @@
   <!-- Tipografía global -->
   <link rel="stylesheet" href="../css/tipografia.css">
 
-  <!-- Material Symbols -->
-  <link href="https://fonts.googleapis.com/css2?familyMaterial+Symbols+Outlined" rel="stylesheet">
+  <!-- ✅ Material Symbols (CORRECTO) -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+    rel="stylesheet"
+  >
 
   <!-- CSS EXCLUSIVO DE TÉRMINOS -->
-  <link rel="stylesheet" href="../css/legal/terms.css?v=1">
+  <link rel="stylesheet" href="../css/legal/terms.css?v=2">
 </head>
 
 <body>
@@ -22,7 +25,10 @@
     <section class="legal-card">
 
       <!-- Botón atrás -->
-      <button type="button" class="back-btn" onclick="history.back()" aria-label="Volver">
+      <button type="button"
+              class="back-btn"
+              onclick="history.back()"
+              aria-label="Volver">
         <span class="material-symbols-outlined">chevron_left</span>
       </button>
 
@@ -31,6 +37,7 @@
         <div class="logo-container" onclick="window.location.href='../index.html'">
           <img src="../imagenes/logo.png" alt="Café Cortero" class="logo-img" />
         </div>
+
         <h1 class="legal-title">Términos del Servicio</h1>
         <p class="legal-subtitle">
           Condiciones de uso de la aplicación Café Cortero.
