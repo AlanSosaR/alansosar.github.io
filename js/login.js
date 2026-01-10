@@ -268,12 +268,6 @@ document.querySelectorAll(".toggle-pass").forEach(icon => {
   });
 });
 
-/* ========================================================
-   LOGIN CON GOOGLE – Café Cortero ☕ (BLOQUE FINAL CORREGIDO)
-   ======================================================== */
-
-const DEFAULT_AVATAR = "/imagenes/avatar-default.svg";
-
 /* ---------- BOTÓN GOOGLE ---------- */
 const googleBtn = document.getElementById("googleLoginBtn");
 
@@ -283,7 +277,8 @@ if (googleBtn) {
       await window.supabaseClient.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/index.html`,
+          // ✅ SIEMPRE login.html
+          redirectTo: `${window.location.origin}/login.html`,
         },
       });
     } catch (err) {
@@ -293,4 +288,24 @@ if (googleBtn) {
   });
 }
 
+/* =========================================================
+   AUTH — PROCESAR CALLBACK OAUTH
+========================================================= */
+(async function handleOAuthCallback() {
+  const sb = window.supabaseClient;
+  if (!sb) return;
 
+  // Consume el token que devuelve Google
+  await sb.auth.getSession();
+
+  // Limpia el hash (#access_token)
+  if (window.location.hash.includes("access_token")) {
+    history.replaceState(null, "", window.location.pathname);
+  }
+
+  // Si ya hay sesión → ir al index
+  const { data } = await sb.auth.getSession();
+  if (data?.session) {
+    window.location.replace("index.html");
+  }
+})();
