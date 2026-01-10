@@ -261,12 +261,31 @@ body {
   cursor: pointer;
   display: flex;
   justify-content: center;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
+
+  /* Material 3 elevation */
+  filter: drop-shadow(0 10px 24px rgba(0,0,0,.25));
 }
 
 .logo-container img {
   width: 110px;
-  transition: transform 0.3s ease;
+
+  /* Sensación de flotación */
+  transform: translateY(0);
+  transition:
+    transform .35s cubic-bezier(.2,0,0,1),
+    filter .35s ease;
+}
+
+/* Hover (desktop) */
+.logo-container:hover img {
+  transform: translateY(-4px);
+  filter: drop-shadow(0 16px 32px rgba(0,0,0,.35));
+}
+
+/* Touch feedback (mobile) */
+.logo-container:active img {
+  transform: translateY(-2px) scale(0.98);
 }
 
 .login-title {
