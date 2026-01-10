@@ -6,8 +6,6 @@
 
 :root{
   --green: #2e7d32;
-  --green-hover: #256528;
-
   --coffee: #6f4e37;
   --coffee-muted: #5a3f2c;
 
@@ -15,25 +13,27 @@
   --background: #f5f5f5;
 
   --radius: 20px;
-  --shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+  --shadow: 0 12px 30px rgba(0,0,0,.12);
 }
 
 *{
   box-sizing: border-box;
 }
 
-/* ===== Material Symbols FIX ===== */
+/* ===== Material Symbols (FIX REAL) ===== */
 .material-symbols-outlined{
   font-family: 'Material Symbols Outlined';
-  font-weight: normal;
   font-style: normal;
+  font-weight: 400;
   font-size: 28px;
   line-height: 1;
-  display: inline-flex;
-  white-space: nowrap;
-  direction: ltr;
 
-  -webkit-font-smoothing: antialiased;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  white-space: nowrap;
+  user-select: none;
 
   font-variation-settings:
     'FILL' 0,
@@ -42,9 +42,9 @@
     'opsz' 24;
 }
 
+/* ===== Base ===== */
 body{
   margin: 0;
-  padding: 0;
   font-family: "Roboto", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   background: var(--background);
   color: var(--coffee);
@@ -72,12 +72,11 @@ body{
   margin-bottom: 22px;
 }
 
-/* Logo */
 .logo-container{
-  cursor: pointer;
   display: flex;
   justify-content: center;
   margin-bottom: 14px;
+  cursor: pointer;
 }
 
 .logo-img{
@@ -89,7 +88,6 @@ body{
   transform: translateY(-2px);
 }
 
-/* Título */
 .legal-title{
   margin: 0 0 10px;
   font-size: 2.2rem;
@@ -98,7 +96,6 @@ body{
   color: var(--green);
 }
 
-/* Subtítulo */
 .legal-subtitle{
   margin: 0;
   font-size: 1rem;
@@ -115,26 +112,14 @@ body{
 
 .legal-content p,
 .legal-content li{
-  font-size: 1rem;
   margin-bottom: 18px;
+  font-size: 1rem;
   color: var(--coffee);
 }
 
 .legal-content ul{
   margin: 6px 0 12px 18px;
   padding: 0;
-}
-
-/* Links */
-.contacto a{
-  color: var(--green);
-  font-weight: 700;
-  text-decoration: none;
-}
-
-.contacto a:hover{
-  text-decoration: underline;
-  text-underline-offset: 3px;
 }
 
 /* ===== Footer ===== */
@@ -146,7 +131,7 @@ body{
   font-size: 0.95rem;
 }
 
-/* ===== Botón volver (SIN feedback azul) ===== */
+/* ===== Botón volver (CORREGIDO) ===== */
 .back-btn{
   position: absolute;
   top: 18px;
@@ -154,20 +139,20 @@ body{
 
   width: 52px;
   height: 52px;
-  border-radius: 999px;
+  border-radius: 50%;
   border: none;
 
   background: var(--surface);
   box-shadow: var(--shadow);
 
-  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
 
+  cursor: pointer;
+
   transition: transform .18s ease, box-shadow .18s ease;
 
-  /* elimina feedback táctil */
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -178,7 +163,6 @@ body{
 
 .back-btn:active{
   transform: translateY(0);
-  background: var(--surface);
 }
 
 .back-btn:focus,
@@ -188,7 +172,6 @@ body{
 }
 
 .back-btn .material-symbols-outlined{
-  font-size: 28px;
   color: var(--green);
 }
 
@@ -200,7 +183,6 @@ body{
 
   .legal-card{
     padding: 32px 24px;
-    border-radius: 18px;
   }
 
   .legal-title{
