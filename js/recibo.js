@@ -509,7 +509,7 @@ if (itemsError) {
 
 console.log("✅ Items insertados:", itemsInserted);
      
-/* === 3.1 DESCONTAR STOCK (CRÍTICO) === */
+/* === 3.1 DESCONTAR STOCK (CRÍTICO Y SEGURO) === */
 for (const it of carrito) {
   // 1️⃣ Leer stock actual
   const { data: product, error: stockError } = await sb
@@ -519,28 +519,29 @@ for (const it of carrito) {
     .single();
 
   if (stockError || !product) {
-    throw new Error("Producto no encontrado");
+    throw new Error(`Producto no encontrado: ${it.name}`);
   }
 
-  // 2️⃣ Validar disponibilidad REAL
+  // 2️⃣ Validar disponibilidad real
   if (product.stock < it.qty) {
     throw new Error(
-      `Stock insuficiente para ${it.name}. Solo quedan ${product.stock} unidades.`
+      `Solo quedan ${product.stock} unidades disponibles de "${it.name}".`
     );
   }
 
-  // 3️⃣ Descontar stock (ANTI-SOBREVENTA)
-  const { error: updateError } = await sb
+  // 3️⃣ Descontar stock (anti-sobreventa real)
+  const { data: updatedRows, error: updateError } = await sb
     .from("products")
     .update({
       stock: product.stock - it.qty
     })
     .eq("id", it.product_id)
-    .gte("stock", it.qty); // 🔒 bloqueo concurrente
+    .gte("stock", it.qty)
+    .select("id");
 
-  if (updateError) {
+  if (updateError || !updatedRows || updatedRows.length === 0) {
     throw new Error(
-      `El stock de ${it.name} cambió. Intenta nuevamente.`
+      `El stock de "${it.name}" cambió. Solo quedan ${product.stock} unidades disponibles.`
     );
   }
 }
