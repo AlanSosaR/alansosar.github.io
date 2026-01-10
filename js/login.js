@@ -269,12 +269,10 @@ document.querySelectorAll(".toggle-pass").forEach(icon => {
 });
 
 /* ========================================================
-   LOGIN CON GOOGLE – Café Cortero ☕
-   - Google OAuth
-   - Supabase crea auth.users
-   - Trigger crea public.users
-   - Frontend SOLO lee el perfil
+   LOGIN CON GOOGLE – Café Cortero ☕ (VERSIÓN FINAL)
    ======================================================== */
+
+const DEFAULT_AVATAR = "/imagenes/avatar-default.svg";
 
 /* ---------- BOTÓN GOOGLE ---------- */
 const googleBtn = document.getElementById("googleLoginBtn");
@@ -288,7 +286,6 @@ if (googleBtn) {
           redirectTo: `${window.location.origin}/login.html`,
         },
       });
-      // Google maneja el redirect completo
     } catch (err) {
       console.error("❌ Google login:", err);
       mostrarSnackbar("No se pudo iniciar sesión con Google.", "error");
@@ -302,19 +299,18 @@ if (googleBtn) {
   if (!sb) return;
 
   const { data, error } = await sb.auth.getSession();
-  if (error || !data?.session?.user) return;
+  if (error || !data?.session?.user?.id) return;
 
-  // Evitar reprocesar si ya hay sesión
+  // Evitar reprocesar sesión
   if (localStorage.getItem("cortero_logged") === "1") return;
 
-  const user = data.session.user;
+  const authUser = data.session.user;
 
-  // El perfil YA fue creado por el trigger
   const { data: perfil, error: perfilErr } = await sb
     .from("users")
     .select("*")
-    .eq("id", user.id)
-    .maybeSingle();
+    .eq("id", authUser.id)
+    .single();
 
   if (perfilErr || !perfil) {
     console.error("❌ Perfil no encontrado:", perfilErr);
@@ -322,14 +318,23 @@ if (googleBtn) {
     return;
   }
 
-  // Guardar sesión local
-  localStorage.setItem("cortero_user", JSON.stringify(perfil));
+  let perfilFinal = { ...perfil };
+
+  if (!perfilFinal.photo_url) {
+    perfilFinal.photo_url =
+      authUser.user_metadata?.avatar_url ||
+      authUser.user_metadata?.picture ||
+      DEFAULT_AVATAR;
+
+    await sb
+      .from("users")
+      .update({ photo_url: perfilFinal.photo_url })
+      .eq("id", authUser.id);
+  }
+
+  localStorage.setItem("cortero_user", JSON.stringify(perfilFinal));
   localStorage.setItem("cortero_logged", "1");
 
-  // Redirección
-  const params = new URLSearchParams(location.search);
-  const from = params.get("from") || params.get("redirect");
-
-  window.location.href =
-    from === "carrito" ? "carrito.html" : "index.html";
+  // ✅ REDIRECCIÓN DIRECTA (sin historial)
+  window.location.replace("index.html");
 })();
