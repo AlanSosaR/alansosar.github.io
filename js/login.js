@@ -289,23 +289,28 @@ if (googleBtn) {
 }
 
 /* =========================================================
-   AUTH — PROCESAR CALLBACK OAUTH
+   AUTH — GOOGLE CALLBACK (CREA PERFIL)
 ========================================================= */
 (async function handleOAuthCallback() {
   const sb = window.supabaseClient;
   if (!sb) return;
 
-  // Consume el token que devuelve Google
-  await sb.auth.getSession();
+  // 1️⃣ Consumir sesión OAuth
+  const { data } = await sb.auth.getSession();
+  if (!data?.session?.user) return;
 
-  // Limpia el hash (#access_token)
+  // 2️⃣ CREAR PERFIL (OBLIGATORIO)
+  const { error } = await sb.rpc("ensure_user_profile");
+  if (error) {
+    console.error("❌ Error creando perfil:", error);
+    return;
+  }
+
+  // 3️⃣ Limpiar hash OAuth
   if (window.location.hash.includes("access_token")) {
     history.replaceState(null, "", window.location.pathname);
   }
 
-  // Si ya hay sesión → ir al index
-  const { data } = await sb.auth.getSession();
-  if (data?.session) {
-    window.location.replace("index.html");
-  }
+  // 4️⃣ Ir al index
+  window.location.replace("index.html");
 })();
