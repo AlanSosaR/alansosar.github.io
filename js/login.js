@@ -289,22 +289,21 @@ if (googleBtn) {
 }
 
 /* =========================================================
-   AUTH STATE LISTENER — GOOGLE OAUTH (CORRECTO)
+   AUTH STATE LISTENER — GOOGLE OAUTH (FINAL CORRECTO)
 ========================================================= */
-const sb = window.supabaseClient;
 
-if (sb) {
-  sb.auth.onAuthStateChange(async (event, session) => {
+if (window.supabaseClient) {
+  window.supabaseClient.auth.onAuthStateChange(async (event, session) => {
     if (event === "SIGNED_IN" && session?.user) {
       console.log("✅ Google OAuth OK:", session.user.email);
 
       try {
-        // Crear perfil si no existe (public.users)
-        await sb.rpc("ensure_user_profile");
+        // Crear perfil si no existe
+        await window.supabaseClient.rpc("ensure_user_profile");
 
         localStorage.setItem("cortero_logged", "1");
 
-        // limpiar URL (quita ?code=...)
+        // limpiar URL (?code=...)
         history.replaceState(null, "", window.location.pathname);
 
         // redirigir
