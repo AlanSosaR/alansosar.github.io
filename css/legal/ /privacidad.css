@@ -1,0 +1,162 @@
+/* =========================================================
+   legal/legal.css — Material 3 (Expressive) simple
+   Para: privacy.html / terms.html
+========================================================= */
+
+/* ---------- Reset mínimo ---------- */
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  line-height: 1.65;
+  background: #0b0f14;   /* fondo oscuro elegante */
+  color: #e7eaf0;
+}
+
+/* ---------- Contenedor ---------- */
+.container {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 72px 20px 40px; /* deja espacio para el botón */
+}
+
+/* ---------- Título ---------- */
+h1 {
+  margin: 0 0 14px;
+  font-size: 34px;
+  letter-spacing: -0.4px;
+  line-height: 1.15;
+}
+
+/* ---------- Texto ---------- */
+p {
+  margin: 0 0 14px;
+  font-size: 16px;
+  color: #cfd6e6;
+}
+
+.contacto strong {
+  color: #ffffff;
+}
+
+/* ---------- Footer ---------- */
+footer {
+  margin-top: 26px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255,255,255,.10);
+  color: rgba(231,234,240,.75);
+}
+
+/* =========================================================
+   Botón circular "volver" (Material-like)
+========================================================= */
+.back-btn {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  width: 48px;
+  height: 48px;
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  /* Material 3: superficie + brillo */
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+
+  /* sombra suave */
+  box-shadow:
+    0 10px 28px rgba(0,0,0,.45),
+    0 2px 10px rgba(0,0,0,.35);
+
+  /* transición */
+  transition: transform .12s ease, background .12s ease, box-shadow .12s ease;
+}
+
+/* Icono centrado y consistente */
+.back-btn .material-icons {
+  font-size: 22px;
+  line-height: 1;
+}
+
+/* Hover / focus */
+.back-btn:hover {
+  background: rgba(255, 255, 255, 0.14);
+  transform: translateY(-1px);
+  box-shadow:
+    0 14px 36px rgba(0,0,0,.50),
+    0 3px 12px rgba(0,0,0,.40);
+}
+
+.back-btn:active {
+  transform: translateY(0px) scale(0.98);
+}
+
+.back-btn:focus-visible {
+  outline: 3px solid rgba(125, 211, 252, 0.55);
+  outline-offset: 3px;
+}
+
+/* =========================================================
+   Responsive
+========================================================= */
+@media (max-width: 480px) {
+  .container {
+    padding: 68px 16px 34px;
+  }
+  h1 {
+    font-size: 28px;
+  }
+  p {
+    font-size: 15.5px;
+  }
+  .back-btn {
+    width: 46px;
+    height: 46px;
+    top: 14px;
+    left: 14px;
+  }
+}
+
+/* =========================================================
+   Modo claro automático (si el sistema es claro)
+========================================================= */
+@media (prefers-color-scheme: light) {
+  body {
+    background: #f6f7fb;
+    color: #111318;
+  }
+
+  p { color: #2b2f36; }
+
+  footer {
+    border-top: 1px solid rgba(0,0,0,.10);
+    color: rgba(17,19,24,.70);
+  }
+
+  .contacto strong { color: #111318; }
+
+  .back-btn {
+    background: rgba(17, 19, 24, 0.06);
+    color: #111318;
+    box-shadow:
+      0 10px 28px rgba(0,0,0,.15),
+      0 2px 10px rgba(0,0,0,.10);
+  }
+
+  .back-btn:hover {
+    background: rgba(17, 19, 24, 0.10);
+    box-shadow:
+      0 14px 36px rgba(0,0,0,.18),
+      0 3px 12px rgba(0,0,0,.12);
+  }
+
+  .back-btn:focus-visible {
+    outline: 3px solid rgba(59, 130, 246, 0.45);
+  }
+}
