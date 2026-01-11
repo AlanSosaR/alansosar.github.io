@@ -390,8 +390,8 @@ document.addEventListener("DOMContentLoaded", () => {
     );
   });
 
-  /* ===== ADD TO CART (VALIDADO) ===== */
- safe("product-add")?.addEventListener("click", () => {
+/* ===== ADD TO CART (VALIDADO) ===== */
+safe("product-add")?.addEventListener("click", () => {
   const qty = parseInt(qtyNumber.textContent) || 1;
 
   const productId = safe("product-add").dataset.id;
@@ -408,7 +408,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  // 👉 usar SIEMPRE el producto completo
+  // 👉 agregar al carrito
   addToCart({
     product_id: productId,
     name: currentProduct.name,
@@ -417,9 +417,19 @@ document.addEventListener("DOMContentLoaded", () => {
     qty
   });
 
+  // reset cantidad
   qtyNumber.textContent = "1";
+
+  // actualizar botones
   updateQtyControls(productId, stockBD);
 
-  // 🔑 volver a renderizar con el MISMO producto completo
-  renderMainProduct(currentProduct);
+  // ✅ actualizar SOLO el estado visual (SIN re-render)
+  const statusEl = safe("product-status");
+  if (statusEl) {
+    const newQtyInCart = getQtyInCart(productId);
+    const status = getStockStatus(stockBD, newQtyInCart);
+    statusEl.classList.remove("available", "low", "out");
+    statusEl.textContent = status.label;
+    statusEl.classList.add(status.className);
+  }
 });
