@@ -48,12 +48,37 @@ function getStockStatus(stockBD, qtyInCart) {
   const available = stockBD - qtyInCart;
 
   if (available <= 0) {
-    return { label: "Agotado", className: "out" };
+    return { label: "No disponible", className: "out" };
   }
   if (available <= 5) {
-    return { label: "Últimas unidades", className: "low" };
+    return { label: `Últimas ${available} bolsas`, className: "low" };
   }
   return { label: "Disponible", className: "available" };
+}
+
+/* 🔑 CONTROL DE BOTONES + / − / ADD */
+function updateQtyControls(productId, stockBD) {
+  const qtyEl   = safe("qty-number");
+  const btnPlus = safe("qty-plus");
+  const btnMinus= safe("qty-minus");
+  const addBtn  = safe("product-add");
+
+  if (!qtyEl || !btnPlus || !btnMinus || !addBtn) return;
+
+  const qty = Number(qtyEl.textContent);
+  const qtyInCart = getQtyInCart(productId);
+  const available = stockBD - qtyInCart;
+
+  if (available <= 0) {
+    btnPlus.disabled = true;
+    btnMinus.disabled = true;
+    addBtn.disabled = true;
+    return;
+  }
+
+  btnMinus.disabled = qty <= 1;
+  btnPlus.disabled  = qty >= available;
+  addBtn.disabled   = qty > available;
 }
 
 /* 🔑 HEADER CONTROLA BADGE */
@@ -111,11 +136,10 @@ function renderMainProduct(product) {
   addBtn.dataset.id = product.id;
   addBtn.dataset.stock = product.stock ?? 0;
 
-  /* ✅ ESTADO DINÁMICO CORREGIDO */
-  const statusEl = safe("product-status");
   const stockBD = Number(product.stock ?? 0);
   const qtyInCart = getQtyInCart(product.id);
 
+  const statusEl = safe("product-status");
   if (statusEl) {
     statusEl.classList.remove("available", "low", "out");
     const status = getStockStatus(stockBD, qtyInCart);
@@ -124,6 +148,7 @@ function renderMainProduct(product) {
   }
 
   safe("qty-number").textContent = "1";
+  updateQtyControls(product.id, stockBD);
 }
 
 /* =========================
@@ -166,7 +191,6 @@ async function loadSimilarProducts() {
     .select("*")
     .eq("featured", true)
     .eq("status", "activo")
-    .gt("stock", 0)
     .order("created_at", { ascending: false });
 
   if (error || !data || !data.length) {
@@ -348,10 +372,20 @@ document.addEventListener("DOMContentLoaded", () => {
   safe("qty-minus")?.addEventListener("click", () => {
     const n = parseInt(qtyNumber.textContent);
     if (n > 1) qtyNumber.textContent = n - 1;
+
+    updateQtyControls(
+      safe("product-add").dataset.id,
+      Number(safe("product-add").dataset.stock)
+    );
   });
 
   safe("qty-plus")?.addEventListener("click", () => {
     qtyNumber.textContent = parseInt(qtyNumber.textContent) + 1;
+
+    updateQtyControls(
+      safe("product-add").dataset.id,
+      Number(safe("product-add").dataset.stock)
+    );
   });
 
   /* ===== ADD TO CART (VALIDADO) ===== */
@@ -368,13 +402,18 @@ document.addEventListener("DOMContentLoaded", () => {
     const qtyInCart = getQtyInCart(productId);
     const available = stockBD - qtyInCart;
 
-    if (qty > available) {
-  showSnack(`Últimas ${available} bolsas disponibles.`);
-  return;
-}
+    if (available <= 0 || qty > available) {
+      showSnack(
+        available <= 0
+          ? "Este café no tiene disponibilidad actualmente."
+          : `Solo quedan ${available} bolsas disponibles.`
+      );
+      return;
+    }
 
     addToCart({ product_id: productId, name, price, img, qty });
     qtyNumber.textContent = "1";
+    updateQtyControls(productId, stockBD);
     renderMainProduct({
       id: productId,
       name,
@@ -385,21 +424,5 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   loadSimilarProducts();
-
-  const fab = document.getElementById("fab");
-  const fabMain = document.getElementById("fab-main");
-
-  if (fab && fabMain) {
-    fabMain.addEventListener("click", (e) => {
-      e.stopPropagation();
-      fab.classList.toggle("active");
-    });
-
-    document.addEventListener("click", (e) => {
-      if (!fab.contains(e.target)) {
-        fab.classList.remove("active");
-      }
-    });
-  }
 
 });
