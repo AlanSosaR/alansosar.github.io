@@ -369,9 +369,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const available = stockBD - qtyInCart;
 
     if (qty > available) {
-      alert(`Solo quedan ${available} unidades disponibles.`);
-      return;
-    }
+  showSnack(`Últimas ${available} bolsas disponibles.`);
+  return;
+}
 
     addToCart({ product_id: productId, name, price, img, qty });
     qtyNumber.textContent = "1";
