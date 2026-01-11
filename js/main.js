@@ -390,6 +390,9 @@ document.addEventListener("DOMContentLoaded", () => {
     );
   });
 
+  loadSimilarProducts(); // ← ESTA ES LA CLAVE
+});
+
 /* ===== ADD TO CART (VALIDADO) ===== */
 safe("product-add")?.addEventListener("click", () => {
   const qty = parseInt(qtyNumber.textContent) || 1;
