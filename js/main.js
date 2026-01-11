@@ -2,7 +2,7 @@
    MAIN.JS — Café Cortero 2025 (FINAL DEFINITIVO)
    UI + CARRITO + CARRUSELES + SUPABASE
 ============================================================ */
-
+let currentProduct = null;
 /* ========================= SAFE ========================= */
 function safe(id) {
   return document.getElementById(id);
