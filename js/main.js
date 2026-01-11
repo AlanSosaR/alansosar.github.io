@@ -112,6 +112,8 @@ function addToCart(product) {
    RENDER PRODUCTO PRINCIPAL
 ========================= */
 function renderMainProduct(product) {
+  currentProduct = product; // 🔑 CLAVE (NO QUITAR)
+
   safe("product-name").textContent = product.name || "";
   safe("product-description").textContent = product.description || "";
 
@@ -389,40 +391,35 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   /* ===== ADD TO CART (VALIDADO) ===== */
-  safe("product-add")?.addEventListener("click", () => {
-    const qty = parseInt(qtyNumber.textContent) || 1;
-    const name = safe("product-name").textContent.trim();
-    const img = safe("product-image").src;
-    const price = parseFloat(
-      safe("product-price").textContent.replace(/[^\d.-]/g, "")
+ safe("product-add")?.addEventListener("click", () => {
+  const qty = parseInt(qtyNumber.textContent) || 1;
+
+  const productId = safe("product-add").dataset.id;
+  const stockBD = Number(safe("product-add").dataset.stock ?? 0);
+  const qtyInCart = getQtyInCart(productId);
+  const available = stockBD - qtyInCart;
+
+  if (available <= 0 || qty > available) {
+    showSnack(
+      available <= 0
+        ? "Este café no tiene disponibilidad actualmente."
+        : `Solo quedan ${available} bolsas disponibles.`
     );
+    return;
+  }
 
-    const productId = safe("product-add").dataset.id;
-    const stockBD = Number(safe("product-add").dataset.stock ?? 0);
-    const qtyInCart = getQtyInCart(productId);
-    const available = stockBD - qtyInCart;
-
-    if (available <= 0 || qty > available) {
-      showSnack(
-        available <= 0
-          ? "Este café no tiene disponibilidad actualmente."
-          : `Solo quedan ${available} bolsas disponibles.`
-      );
-      return;
-    }
-
-    addToCart({ product_id: productId, name, price, img, qty });
-    qtyNumber.textContent = "1";
-    updateQtyControls(productId, stockBD);
-    renderMainProduct({
-      id: productId,
-      name,
-      price,
-      img,
-      stock: stockBD
-    });
+  // 👉 usar SIEMPRE el producto completo
+  addToCart({
+    product_id: productId,
+    name: currentProduct.name,
+    price: currentProduct.price,
+    img: currentProduct.image_url,
+    qty
   });
 
-  loadSimilarProducts();
+  qtyNumber.textContent = "1";
+  updateQtyControls(productId, stockBD);
 
+  // 🔑 volver a renderizar con el MISMO producto completo
+  renderMainProduct(currentProduct);
 });
