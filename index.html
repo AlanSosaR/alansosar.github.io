@@ -59,67 +59,56 @@
   </div>
 </section>
 
-  <!-- PRODUCTO PRINCIPAL -->
-<section id="productos" class="product-main">
+<!-- PRODUCTO PRINCIPAL -->
+<section id="productos" class="product-main hidden">
 
-  <!-- TEXTO -->
   <div class="product-text">
 
     <!-- TÍTULO -->
-    <h2 id="product-name" class="product-title">
-      Café Cortero 250g
-    </h2>
+    <h2 id="product-name" class="product-title"></h2>
 
     <!-- DESCRIPCIÓN -->
-    <p id="product-description" class="product-description">
-      Café hondureño de altura, tueste medio y aroma intenso.
-    </p>
+    <p id="product-description" class="product-description"></p>
 
-    <!-- PÍLDORA (JS LA RELLENA) -->
-<span
-  id="product-badge"
-  class="pill"
-  aria-live="polite"
-></span>
-    
+    <!-- PÍLDORA -->
+    <span
+      id="product-badge"
+      class="pill"
+      aria-live="polite"
+    ></span>
 
-    <!-- ESTADO (NO MOSTRAR NÚMERO DE STOCK) -->
+    <!-- ESTADO -->
     <div
       id="product-status"
-      class="product-status available"
+      class="product-status"
       aria-live="polite"
-    >
-      Disponible
-    </div>
+    ></div>
 
     <!-- ACCIÓN -->
     <div class="product-actions">
 
-      <!-- PRECIO + AGREGAR AL CARRITO -->
-<div class="product-split" title="Agregar al carrito">
-  <span
-    class="price-part"
-    id="product-price"
-  >
-    <!-- JS carga el precio -->
-  </span>
+      <!-- PRECIO + CARRITO -->
+      <div class="product-split">
+        <span
+          class="price-part"
+          id="product-price"
+        ></span>
 
-  <span
-    class="icon-part"
-    id="product-add"
-    data-product-id=""
-    aria-label="Agregar al carrito"
-  >
-    <i class="fa-solid fa-cart-plus"></i>
-  </span>
-</div>
+        <span
+          class="icon-part"
+          id="product-add"
+          aria-label="Agregar al carrito"
+        >
+          <i class="fa-solid fa-cart-plus"></i>
+        </span>
+      </div>
 
       <!-- CANTIDAD -->
       <div class="quantity-container">
         <button
           class="qty-btn minus-btn"
           id="qty-minus"
-          aria-label="Disminuir cantidad"
+          disabled
         >−</button>
 
         <span class="qty-number" id="qty-number">1</span>
@@ -127,20 +116,19 @@
         <button
           class="qty-btn plus-btn"
           id="qty-plus"
-          aria-label="Aumentar cantidad"
+          disabled
         >+</button>
       </div>
 
     </div>
-
   </div>
 
   <!-- IMAGEN -->
   <div class="product-img-wrap">
     <img
       id="product-image"
-      src="imagenes/bolsa_1.png"
-      alt="Bolsa de Café Cortero"
+      alt=""
+      loading="lazy"
     >
   </div>
 
