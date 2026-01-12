@@ -368,15 +368,18 @@ function initContactFAB() {
 
   if (!fab || !fabBtn) return;
 
-  fabBtn.addEventListener("click", e => {
+  // 🔑 EVITA que el click del FAB burbujee al document
+  fab.addEventListener("click", e => {
     e.stopPropagation();
+  });
+
+  fabBtn.addEventListener("click", () => {
     fab.classList.toggle("open");
   });
 
-  document.addEventListener("click", e => {
-    if (!fab.contains(e.target)) {
-      fab.classList.remove("open");
-    }
+  // Click fuera → cerrar
+  document.addEventListener("click", () => {
+    fab.classList.remove("open");
   });
 }
 /* =========================
