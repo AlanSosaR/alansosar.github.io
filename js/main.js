@@ -361,6 +361,24 @@ function initHeroCarousel() {
   }, 4000);
 }
 
+// FAB — botón flotante de contacto
+function initContactFAB() {
+  const fab = document.getElementById("fab");
+  const fabBtn = document.getElementById("fab-main");
+
+  if (!fab || !fabBtn) return;
+
+  fabBtn.addEventListener("click", e => {
+    e.stopPropagation();
+    fab.classList.toggle("open");
+  });
+
+  document.addEventListener("click", e => {
+    if (!fab.contains(e.target)) {
+      fab.classList.remove("open");
+    }
+  });
+}
 /* =========================
    DOM READY
 ========================= */
@@ -368,6 +386,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   syncHeaderCounter();
   initHeroCarousel();
+   // FAB contacto
+ initContactFAB();
 
   const qtyNumber = safe("qty-number");
 
