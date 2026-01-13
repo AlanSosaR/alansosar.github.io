@@ -92,21 +92,35 @@ body {
 .legal-header {
   text-align: center;
   margin-bottom: 32px;
+  overflow: hidden; /* evita desbordes */
 }
 
+/* -------- Logo encapsulado -------- */
 .logo-container {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 12px;
+
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 10px 14px;
+
+  max-width: 140px;
+  margin: 0 auto 14px;
+
+  overflow: hidden;
   cursor: pointer;
 }
 
 .logo-img {
-  height: 56px;
+  max-width: 100%;
+  max-height: 48px;
   width: auto;
+  height: auto;
+  display: block;
 }
 
+/* -------- Títulos -------- */
 .legal-title {
   font-size: 2rem;
   font-weight: 700;
@@ -186,7 +200,11 @@ body {
     font-size: 1.6rem;
   }
 
+  .logo-container {
+    max-width: 120px;
+  }
+
   .logo-img {
-    height: 48px;
+    max-height: 42px;
   }
 }
