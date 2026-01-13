@@ -5,33 +5,54 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Política de Privacidad | Café Cortero</title>
 
-  <link rel="icon" type="image/png" href="../imagenes/logo.png">
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="/imagenes/logo.png">
 
-  <!-- Tipografía (si la usas en todo el proyecto) -->
-  <link rel="stylesheet" href="../css/tipografia.css">
+  <!-- Tipografía global -->
+  <link rel="stylesheet" href="/css/tipografia.css">
 
   <!-- Material Symbols -->
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+    rel="stylesheet"
+  >
 
-  <!-- CSS de esta página -->
-  <link rel="stylesheet" href="../css/legal/privacy.css?v=1">
+  <!-- CSS legal (ruta absoluta, forzar recarga) -->
+  <link rel="stylesheet" href="/css/legal/privacy.css?v=5">
 </head>
 
 <body>
+
   <main class="legal-container">
     <section class="legal-card">
 
-      <!-- Botón atrás -->
-      <button class="back-btn" onclick="history.back()" aria-label="Volver">
+      <!-- Botón volver -->
+      <button
+        type="button"
+        class="back-btn"
+        onclick="history.back()"
+        aria-label="Volver"
+      >
         <span class="material-symbols-outlined">chevron_left</span>
       </button>
 
       <!-- Header -->
       <header class="legal-header">
-        <div class="logo-container" onclick="window.location.href='../index.html'">
-          <img src="../imagenes/logo.png" alt="Café Cortero" class="logo-img" />
+        <div
+          class="logo-container"
+          onclick="window.location.href='/'"
+          role="button"
+          aria-label="Ir al inicio"
+        >
+          <img
+            src="/imagenes/logo.png"
+            alt="Café Cortero"
+            class="logo-img"
+          />
         </div>
+
         <h1 class="legal-title">Política de Privacidad</h1>
+
         <p class="legal-subtitle">
           Esta página explica cómo usamos tus datos cuando inicias sesión en Café Cortero.
         </p>
@@ -39,6 +60,7 @@
 
       <!-- Contenido -->
       <div class="legal-content">
+
         <h2>Datos que recopilamos</h2>
         <ul>
           <li>Correo electrónico y nombre básico (si inicias sesión con Google).</li>
@@ -47,33 +69,38 @@
 
         <h2>Cómo usamos tus datos</h2>
         <p>
-          Usamos esta información únicamente para autenticarte y gestionar tu cuenta dentro de Café Cortero.
-          No vendemos tus datos.
+          Usamos esta información únicamente para autenticarte y gestionar tu cuenta dentro
+          de Café Cortero. No vendemos tus datos.
         </p>
 
         <h2>Google Sign-In</h2>
         <p>
-          No almacenamos tu contraseña de Google. El acceso se gestiona mediante OAuth y tokens de sesión.
+          No almacenamos tu contraseña de Google. El acceso se gestiona mediante OAuth
+          y tokens de sesión.
         </p>
 
         <h2>Compartición con terceros</h2>
         <p>
-          No compartimos información personal con terceros, salvo cuando sea necesario para el funcionamiento
-          del inicio de sesión (por ejemplo, el proveedor de autenticación).
+          No compartimos información personal con terceros, salvo cuando sea necesario
+          para el funcionamiento del inicio de sesión (por ejemplo, el proveedor de
+          autenticación).
         </p>
 
         <h2>Contacto</h2>
         <p class="contacto">
           Si tienes preguntas, escríbenos a:
-          <a href="mailto:cafecortero@gmail.com"><strong>cafecortero@gmail.com</strong></a>
+          <a href="mailto:cafecortero@gmail.com">
+            <strong>cafecortero@gmail.com</strong>
+          </a>
         </p>
 
         <footer class="legal-footer">
           <small>Última actualización: 2026</small>
         </footer>
-      </div>
 
+      </div>
     </section>
   </main>
+
 </body>
 </html>
