@@ -1,6 +1,6 @@
 /* ============================================================
    LEGAL — TÉRMINOS / PRIVACIDAD
-   MISMO LENGUAJE VISUAL QUE RECIBO
+   MISMO LENGUAJE VISUAL QUE RECIBO (FIX DEFINITIVO)
 ============================================================ */
 
 /* ================= ROOT ================= */
@@ -47,7 +47,7 @@ body {
   width: 100%;
   max-width: 900px;
 
-  margin: 96px auto 48px; /* mismo aire que checkout */
+  margin: 96px auto 48px;
   background: var(--blanco);
 
   border-radius: 26px;
@@ -101,36 +101,30 @@ body {
 }
 
 /* =====================================================
-   HEADER LEGAL (LOGO + TITULO)
+   HEADER LEGAL
 ===================================================== */
 .legal-header {
   text-align: center;
   margin-bottom: 36px;
 }
 
-/* ================= LOGO ================= */
+/* ================= LOGO (FIX DEFINITIVO) ================= */
 .logo-container {
-  display: inline-flex;
-  align-items: center;
+  width: 100%;
+  display: flex;
   justify-content: center;
-
-  background: #ffffff;
-  border-radius: 18px;
-  padding: 14px 18px;
-
-  margin: 0 auto 18px;
-  box-shadow: 0 6px 18px rgba(0,0,0,.12);
+  margin-bottom: 18px;
 }
 
 .logo-img {
-  max-width: 120px;
-  max-height: 56px;
   width: auto;
-  height: auto;
+  height: 48px;          /* CONTROL REAL */
+  max-width: 160px;      /* NO SE DESBORDA */
+  object-fit: contain;   /* CLAVE PARA NO DEFORMAR */
   display: block;
 }
 
-/* ================= TITULOS ================= */
+/* ================= TÍTULOS ================= */
 .legal-title {
   font-size: 1.45rem;
   font-weight: 600;
@@ -145,7 +139,7 @@ body {
 }
 
 /* =====================================================
-   CONTENIDO LEGAL (MISMO LOOK INNER-CARD)
+   CONTENIDO LEGAL (INNER CARD)
 ===================================================== */
 .legal-content {
   background: #ffffff;
@@ -212,4 +206,11 @@ body {
 .legal-footer small {
   font-size: 0.8rem;
   color: var(--marron-suave);
+}
+
+/* ================= MOBILE LOGO ================= */
+@media (max-width: 600px) {
+  .logo-img {
+    height: 40px;
+  }
 }
