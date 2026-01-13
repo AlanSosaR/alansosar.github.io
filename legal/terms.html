@@ -5,40 +5,54 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Términos del Servicio | Café Cortero</title>
 
-  <link rel="icon" type="image/png" href="../imagenes/logo.png">
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="/imagenes/logo.png">
 
   <!-- Tipografía global -->
-  <link rel="stylesheet" href="../css/tipografia.css">
+  <link rel="stylesheet" href="/css/tipografia.css">
 
-  <!-- ✅ Material Symbols (CORRECTO) -->
+  <!-- Material Symbols -->
   <link
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
     rel="stylesheet"
   >
 
-  <!-- CSS EXCLUSIVO DE TÉRMINOS -->
-  <link rel="stylesheet" href="../css/legal/terms.css?v=2">
+  <!-- CSS legal (ruta absoluta + cache busting) -->
+  <link rel="stylesheet" href="/css/legal/terms.css?v=5">
 </head>
 
 <body>
+
   <main class="legal-container">
     <section class="legal-card">
 
-      <!-- Botón atrás -->
-      <button type="button"
-              class="back-btn"
-              onclick="history.back()"
-              aria-label="Volver">
+      <!-- Botón volver -->
+      <button
+        type="button"
+        class="back-btn"
+        onclick="history.back()"
+        aria-label="Volver"
+      >
         <span class="material-symbols-outlined">chevron_left</span>
       </button>
 
       <!-- Header -->
       <header class="legal-header">
-        <div class="logo-container" onclick="window.location.href='../index.html'">
-          <img src="../imagenes/logo.png" alt="Café Cortero" class="logo-img" />
+        <div
+          class="logo-container"
+          onclick="window.location.href='/'"
+          role="button"
+          aria-label="Ir al inicio"
+        >
+          <img
+            src="/imagenes/logo.png"
+            alt="Café Cortero"
+            class="logo-img"
+          />
         </div>
 
         <h1 class="legal-title">Términos del Servicio</h1>
+
         <p class="legal-subtitle">
           Condiciones de uso de la aplicación Café Cortero.
         </p>
@@ -46,6 +60,7 @@
 
       <!-- Contenido -->
       <div class="legal-content">
+
         <p>
           Al utilizar Café Cortero aceptas los presentes Términos del Servicio.
         </p>
@@ -71,9 +86,10 @@
         <footer class="legal-footer">
           <small>Última actualización: 2026</small>
         </footer>
-      </div>
 
+      </div>
     </section>
   </main>
+
 </body>
 </html>
