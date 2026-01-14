@@ -343,45 +343,72 @@ function updateSimilarUI() {
   );
 }
 
-/* =========================
-   HERO CAROUSEL — MATERIAL 3 EXPRESSIVE
-========================= */
+/* =========================================================
+   HERO — MATERIAL 3 EXPRESSIVE (IMÁGENES + PÍLDORAS)
+========================================================= */
 function initHeroCarousel() {
-  const images = document.querySelectorAll(".hero-carousel img");
-  if (!images.length) return;
+  const images = document.querySelectorAll(".hero-img");
+  const pills = document.querySelectorAll(".pill");
+  const hero = document.querySelector(".hero-media");
 
-  let index = 0;
+  if (!images.length || !hero) return;
+
+  let current = 0;
   let timer = null;
-  const INTERVAL = 8000; // ritmo calmado, premium
+  const INTERVAL = 8000; // ritmo premium
 
   // Estado inicial
   images.forEach(img => img.classList.remove("active"));
-  images[0].classList.add("active");
+  pills.forEach(pill => pill.classList.remove("active"));
 
-  function nextImage() {
-    images[index].classList.remove("active");
-    index = (index + 1) % images.length;
-    images[index].classList.add("active");
+  images[0].classList.add("active");
+  pills[0]?.classList.add("active");
+
+  function setState(index) {
+    images[current].classList.remove("active");
+    pills[current]?.classList.remove("active");
+
+    current = index;
+
+    images[current].classList.add("active");
+    pills[current]?.classList.add("active");
   }
 
   function startAutoplay() {
-    timer = setInterval(nextImage, INTERVAL);
+    timer = setInterval(() => {
+      setState((current + 1) % images.length);
+    }, INTERVAL);
   }
 
   function stopAutoplay() {
-    if (timer) clearInterval(timer);
+    if (timer) {
+      clearInterval(timer);
+      timer = null;
+    }
   }
 
-  const hero = document.querySelector(".hero-carousel");
+  /* =========================
+     INTERACCIÓN USUARIO
+  ========================= */
 
-  // Pausa por interacción
-  hero?.addEventListener("mouseenter", stopAutoplay);
-  hero?.addEventListener("mouseleave", () => {
+  // Hover (desktop)
+  hero.addEventListener("mouseenter", stopAutoplay);
+  hero.addEventListener("mouseleave", () => {
     stopAutoplay();
     startAutoplay();
   });
 
-  hero?.addEventListener("touchstart", stopAutoplay, { passive: true });
+  // Touch (mobile)
+  hero.addEventListener("touchstart", stopAutoplay, { passive: true });
+
+  // Click en píldoras
+  pills.forEach(pill => {
+    pill.addEventListener("click", () => {
+      stopAutoplay();
+      setState(Number(pill.dataset.index));
+      startAutoplay();
+    });
+  });
 
   startAutoplay();
 }
