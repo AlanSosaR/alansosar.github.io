@@ -160,10 +160,10 @@ body {
    PÍLDORA ÚNICA — MATERIAL 3 EXPRESSIVE
 ========================================================= */
 
-.hero-pill {
+.hero-pill-group {
   position: absolute;
 
-  /* 👇 CLAVE: mitad afuera / mitad adentro */
+  /* mitad afuera / mitad adentro */
   bottom: -22px;
   left: 50%;
   transform: translateX(-50%);
@@ -195,7 +195,6 @@ body {
 
   font-size: 14px;
   font-weight: 500;
-
   cursor: pointer;
 
   transition:
@@ -210,9 +209,7 @@ body {
   background: #3e6b4f;
   color: #ffffff;
 
-  box-shadow:
-    0 4px 10px rgba(0,0,0,.25);
-
+  box-shadow: 0 4px 10px rgba(0,0,0,.25);
   transform: scale(1.03);
 }
 
