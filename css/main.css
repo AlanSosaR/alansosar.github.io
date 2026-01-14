@@ -156,55 +156,68 @@ body {
 }
 
 /* =========================================================
-   HERO PILLS (STATE INDICATORS)
+   PÍLDORA ÚNICA — MATERIAL 3 EXPRESSIVE
 ========================================================= */
 
-.hero-pills {
+.hero-pill {
   position: absolute;
-  bottom: 24px;
+
+  /* 👇 CLAVE: mitad afuera / mitad adentro */
+  bottom: -22px;
   left: 50%;
   transform: translateX(-50%);
 
   display: flex;
-  gap: 12px;
+  gap: 4px;
 
-  z-index: 3;
+  padding: 6px;
+  border-radius: 999px;
+
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+
+  box-shadow:
+    0 10px 28px rgba(0,0,0,0.25),
+    0 4px 10px rgba(0,0,0,0.18);
+
+  z-index: 5;
 }
 
-.pill {
-  padding: 10px 22px;
+/* SEGMENTOS INTERNOS */
+.pill-segment {
+  padding: 10px 20px;
   border-radius: 999px;
   border: none;
 
-  background: rgba(255, 255, 255, 0.9);
+  background: transparent;
   color: #2f3e34;
 
   font-size: 14px;
   font-weight: 500;
-  cursor: pointer;
 
-  backdrop-filter: blur(8px);
+  cursor: pointer;
 
   transition:
     background 250ms ease,
-    transform 250ms ease,
+    color 250ms ease,
     box-shadow 250ms ease,
-    color 250ms ease;
+    transform 250ms ease;
 }
 
-.pill:hover {
-  background: #e7efe9;
-}
-
-.pill.active {
+/* ESTADO ACTIVO */
+.pill-segment.active {
   background: #3e6b4f;
   color: #ffffff;
 
-  transform: scale(1.05);
-
   box-shadow:
-    0 6px 14px rgba(0, 0, 0, 0.18),
-    0 2px 6px rgba(0, 0, 0, 0.12);
+    0 4px 10px rgba(0,0,0,.25);
+
+  transform: scale(1.03);
+}
+
+/* HOVER SUAVE */
+.pill-segment:not(.active):hover {
+  background: rgba(62,107,79,0.12);
 }
 
 /* =========================================================
