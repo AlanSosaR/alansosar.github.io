@@ -86,7 +86,8 @@ body {
   margin: 0 auto;
 
   border-radius: 28px;
-  overflow: hidden;
+
+  overflow: visible; /* 👈 CLAVE */
 
   box-shadow:
     0 24px 60px rgba(0, 0, 0, 0.18),
@@ -110,7 +111,7 @@ body {
   position: relative;
   width: 100%;
   height: 560px;
-  overflow: hidden;
+  overflow: hidden;   /* 👈 debe quedarse */
   background: #f6f8f5;
 }
 
