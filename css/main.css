@@ -163,10 +163,9 @@ body {
 .hero-pill-group {
   position: absolute;
 
-  /* mitad afuera / mitad adentro */
-  bottom: -22px;
+  bottom: 0;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, 50%); /* 👈 mitad exacta */
 
   display: flex;
   gap: 4px;
