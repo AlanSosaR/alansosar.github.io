@@ -344,37 +344,66 @@ function updateSimilarUI() {
 }
 
 /* =========================
-   HERO CAROUSEL
+   HERO CAROUSEL — MATERIAL 3 EXPRESSIVE
 ========================= */
 function initHeroCarousel() {
   const images = document.querySelectorAll(".hero-carousel img");
   if (!images.length) return;
 
   let index = 0;
+  let timer = null;
+  const INTERVAL = 8000; // ritmo calmado, premium
+
+  // Estado inicial
   images.forEach(img => img.classList.remove("active"));
   images[0].classList.add("active");
 
-  setInterval(() => {
+  function nextImage() {
     images[index].classList.remove("active");
     index = (index + 1) % images.length;
     images[index].classList.add("active");
-  }, 4000);
+  }
+
+  function startAutoplay() {
+    timer = setInterval(nextImage, INTERVAL);
+  }
+
+  function stopAutoplay() {
+    if (timer) clearInterval(timer);
+  }
+
+  const hero = document.querySelector(".hero-carousel");
+
+  // Pausa por interacción
+  hero?.addEventListener("mouseenter", stopAutoplay);
+  hero?.addEventListener("mouseleave", () => {
+    stopAutoplay();
+    startAutoplay();
+  });
+
+  hero?.addEventListener("touchstart", stopAutoplay, { passive: true });
+
+  startAutoplay();
 }
 
-// FAB — botón flotante de contacto
+/* =========================
+   FAB — BOTÓN FLOTANTE DE CONTACTO
+========================= */
 function initContactFAB() {
   const fab = document.getElementById("fab");
   const fabBtn = document.getElementById("fab-main");
 
   if (!fab || !fabBtn) return;
 
-  // 🔑 EVITA que el click del FAB burbujee al document
-  fab.addEventListener("click", e => {
-    e.stopPropagation();
+  // Click en botón principal
+  fabBtn.addEventListener("click", (e) => {
+    e.stopPropagation(); // 🔑 CLAVE
+    fab.classList.toggle("open");
   });
 
-  fabBtn.addEventListener("click", () => {
-    fab.classList.toggle("open");
+  // Evita cerrar al interactuar dentro del FAB
+  fab.addEventListener("click", (e) => {
+    e.stopPropagation();
   });
 
   // Click fuera → cerrar
@@ -382,6 +411,7 @@ function initContactFAB() {
     fab.classList.remove("open");
   });
 }
+
 /* =========================
    DOM READY
 ========================= */
@@ -389,10 +419,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   syncHeaderCounter();
   initHeroCarousel();
-   // FAB contacto
- initContactFAB();
+  initContactFAB();
 
   const qtyNumber = safe("qty-number");
+
+});
 
   /* ===== BOTÓN MENOS ===== */
   safe("qty-minus")?.addEventListener("click", () => {
