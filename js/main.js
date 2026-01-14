@@ -440,7 +440,7 @@ function initContactFAB() {
 }
 
 /* =========================
-   DOM READY
+   DOM READY (ÚNICO Y CORRECTO)
 ========================= */
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -449,8 +449,6 @@ document.addEventListener("DOMContentLoaded", () => {
   initContactFAB();
 
   const qtyNumber = safe("qty-number");
-
-});
 
   /* ===== BOTÓN MENOS ===== */
   safe("qty-minus")?.addEventListener("click", () => {
@@ -491,7 +489,6 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // 👉 agregar al carrito
     addToCart({
       product_id: productId,
       name: currentProduct.name,
@@ -500,13 +497,9 @@ document.addEventListener("DOMContentLoaded", () => {
       qty
     });
 
-    // reset cantidad
     qtyNumber.textContent = "1";
-
-    // actualizar botones
     updateQtyControls(productId, stockBD);
 
-    // actualizar SOLO el estado visual (SIN re-render)
     const statusEl = safe("product-status");
     if (statusEl) {
       const newQtyInCart = getQtyInCart(productId);
@@ -519,4 +512,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* ===== CARGA INICIAL ===== */
   loadSimilarProducts();
+
 });
+      
