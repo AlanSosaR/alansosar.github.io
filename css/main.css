@@ -1,23 +1,38 @@
 /* ============================================
    VARIABLES GLOBALES
 ============================================ */
+
 :root {
   --marron: #512615;
   --verde: #33673B;
   --blanco: #ffffff;
   --fondo: #fafafa;
+
+  /* Altura del header fijo */
+  --header-height: 72px;
 }
 
-/* RESET */
-* {
+/* Mobile */
+@media (max-width: 900px) {
+  :root {
+    --header-height: 64px;
+  }
+}
+
+/* ============================================
+   RESET BÁSICO
+============================================ */
+
+*,
+*::before,
+*::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
 /* =====================================================
-   BODY — AJUSTE POR HEADER FIJO
-   Evita que el contenido quede debajo del header
+   BODY — AJUSTE POR HEADER FIJO (CORREGIDO)
 ===================================================== */
 
 body {
@@ -26,16 +41,12 @@ body {
   color: var(--marron);
   -webkit-tap-highlight-color: transparent;
 
-  /* 🔑 Espacio para header fijo (desktop) */
-  padding-top: 72px;
-}
+  /* Espacio real para header fijo */
+  padding-top: var(--header-height);
 
-/* ================= MOBILE ================= */
-@media (max-width: 900px) {
-  body {
-    /* 🔑 Espacio para header fijo (móvil) */
-    padding-top: 64px;
-  }
+  /* Mejora de renderizado */
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
 }
 
 /* =========================================================
