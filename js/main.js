@@ -351,40 +351,29 @@ function initHeroCarousel() {
   const images = Array.from(document.querySelectorAll(".hero-img"));
   const pills  = Array.from(document.querySelectorAll(".pill-segment"));
 
-  if (images.length === 0 || pills.length === 0) return;
+  if (!images.length || !pills.length) return;
 
-  /* =========================
-     MAPEO DE SEGMENTOS
-  ========================= */
   const STATES = [
-    [0, 1, 2],        // Origen
-    [3, 4, 5, 6, 7],  // Cosecha
-    [8, 9, 10, 11]    // Tueste
+    [0, 1, 2],
+    [3, 4, 5, 6, 7],
+    [8, 9, 10, 11]
   ];
 
-  let mode = "all";        // all | state
-  let stateIndex = 0;      // 0 | 1 | 2
-  let globalIndex = 0;     // índice real de imágenes
-  let localIndex = 0;      // índice dentro del grupo
+  let mode = "all";
+  let stateIndex = 0;
+  let globalIndex = 0;
+  let localIndex = 0;
   let timer = null;
 
   const INTERVAL = 8000;
 
-  /* =========================
-     CORE
-  ========================= */
   function showImage(i) {
-  images.forEach(img => img.classList.remove("is-visible"));
-
-  const target = images[i];
-  if (!target) return;
-
-  target.classList.add("is-visible");
-}
+    images.forEach(img => img.classList.remove("is-visible"));
+    images[i]?.classList.add("is-visible");
+  }
 
   function syncPillsByImage(i) {
     pills.forEach(p => p.classList.remove("active"));
-
     if (i <= 2) pills[0].classList.add("active");
     else if (i <= 7) pills[1].classList.add("active");
     else pills[2].classList.add("active");
@@ -409,15 +398,10 @@ function initHeroCarousel() {
   }
 
   function stop() {
-    if (timer) {
-      clearInterval(timer);
-      timer = null;
-    }
+    if (timer) clearInterval(timer);
+    timer = null;
   }
 
-  /* =========================
-     PÍLDORAS
-  ========================= */
   pills.forEach((pill, i) => {
     pill.addEventListener("click", () => {
       mode = "state";
@@ -433,17 +417,12 @@ function initHeroCarousel() {
     });
   });
 
-  /* =========================
-     INIT
-  ========================= */
-  function initHeroCarousel() {
-
+  // ✅ INIT REAL
   requestAnimationFrame(() => {
     showImage(0);
     syncPillsByImage(0);
     start();
   });
-
 }
 
 /* =========================
