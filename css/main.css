@@ -147,6 +147,7 @@ body {
 
 .hero-media {
   position: relative;
+  isolation: isolate;           /* 🔑 SOLUCIÓN REAL */
   width: 100%;
   height: clamp(320px, 45vh, 460px);
   overflow: hidden;
@@ -154,29 +155,29 @@ body {
   border-radius: 22px;
 }
 
-/* Imágenes como capas */
+/* Imágenes */
 .hero-img {
   position: absolute;
   inset: 0;
 
   width: 100%;
   height: 100%;
-  display: block;              /* 🔑 IMPORTANTE */
+  display: block;
   object-fit: cover;
   object-position: center;
 
   opacity: 0;
-  z-index: 1;                  /* 🔑 base visible */
+  z-index: 1;
 
   transition: opacity 700ms cubic-bezier(0.2, 0, 0, 1);
 }
 
 .hero-img.active {
   opacity: 1;
-  z-index: 2;                  /* 🔑 siempre sobre las demás */
+  z-index: 2;
 }
 
-/* Overlay Material (DEBAJO de la imagen) */
+/* Overlay */
 .hero-media::after {
   content: "";
   position: absolute;
@@ -189,9 +190,10 @@ body {
   );
 
   pointer-events: none;
-  z-index: 1;                  /* 🔑 YA NO TAPA LA IMAGEN */
+  z-index: 0;                  /* 🔑 CLAVE */
 }
-/* 🔑 GARANTIZA IMAGEN VISIBLE AL CARGAR */
+
+/* Imagen visible inicial */
 .hero-img:first-child {
   opacity: 1;
 }
