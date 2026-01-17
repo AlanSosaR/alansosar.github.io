@@ -192,11 +192,16 @@ body {
   pointer-events: none;
   z-index: 0;                  /* 🔑 CLAVE */
 }
-
-/* Imagen visible inicial */
-.hero-img:first-child {
-  opacity: 1;
+.hero-img {
+  opacity: 0;
+  pointer-events: none;
 }
+
+.hero-img.is-visible {
+  opacity: 1;
+  z-index: 2;
+}
+
 /* =========================================================
    PÍLDORA ÚNICA — MATERIAL 3 EXPRESSIVE
 ========================================================= */
