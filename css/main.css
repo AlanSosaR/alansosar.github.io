@@ -251,12 +251,12 @@ body {
 }
 
 /* =========================================================
-   RESPONSIVE
+   RESPONSIVE — HERO (CORREGIDO)
 ========================================================= */
 
 @media (max-width: 1200px) {
   .hero-media {
-    height: 420px;
+    height: clamp(300px, 42vh, 420px);
   }
 }
 
@@ -267,15 +267,15 @@ body {
   }
 
   .hero-media {
-    height: 360px;
+    height: clamp(280px, 40vh, 360px);
   }
 
-  .hero-pills {
+  .hero-pill-group {
     bottom: 16px;
     gap: 8px;
   }
 
-  .pill {
+  .pill-segment {
     padding: 8px 16px;
     font-size: 13px;
   }
