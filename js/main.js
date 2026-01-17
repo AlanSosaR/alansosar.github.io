@@ -345,7 +345,7 @@ function updateSimilarUI() {
 
 /* =========================================================
    HERO — MATERIAL 3 EXPRESSIVE
-   AUTO GLOBAL + FILTRO POR SEGMENTO
+   AUTO GLOBAL + FILTRO POR SEGMENTO (FIX DEFINITIVO)
 ========================================================= */
 function initHeroCarousel() {
   const images = Array.from(document.querySelectorAll(".hero-img"));
@@ -355,7 +355,15 @@ function initHeroCarousel() {
   if (!images.length || !hero) return;
 
   /* =========================
-     MAPEO DE SEGMENTOS (ÍNDICES REALES)
+     PRELOAD (evita blank inicial)
+  ========================= */
+  images.forEach(img => {
+    const pre = new Image();
+    pre.src = img.src;
+  });
+
+  /* =========================
+     MAPEO DE SEGMENTOS
   ========================= */
   const STATES = {
     origen:   [0, 1, 2],
@@ -365,19 +373,30 @@ function initHeroCarousel() {
 
   const STATE_KEYS = ["origen", "cosecha", "tostado"];
 
-  let mode = "all";           // "all" | "state"
-  let currentState = null;    // "origen" | "cosecha" | "tostado"
+  let mode = "all";
+  let currentState = null;
   let index = 0;
   let timer = null;
 
   const INTERVAL = 8000;
 
   /* =========================
-     CORE
+     CORE (FIX OPACITY RACE)
   ========================= */
   function showImage(i) {
-    images.forEach(img => img.classList.remove("active"));
-    images[i].classList.add("active");
+    images.forEach(img => {
+      img.classList.remove("active");
+      img.style.opacity = "0";
+    });
+
+    const target = images[i];
+    if (!target) return;
+
+    /* 🔑 fuerza repaint (bug Chrome/GHP) */
+    void target.offsetHeight;
+
+    target.classList.add("active");
+    target.style.opacity = "1";
   }
 
   function next() {
@@ -438,11 +457,13 @@ function initHeroCarousel() {
   hero.addEventListener("touchstart", stopAutoplay, { passive: true });
 
   /* =========================
-     INIT (AUTOMÁTICO GLOBAL)
+     INIT SEGURO
   ========================= */
-  showImage(0);
-  syncPills(0);
-  startAutoplay();
+  requestAnimationFrame(() => {
+    showImage(0);
+    syncPills(0);
+    startAutoplay();
+  });
 }
 
 /* =========================
