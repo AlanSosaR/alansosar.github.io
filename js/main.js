@@ -343,10 +343,6 @@ function updateSimilarUI() {
   );
 }
 
-/* =========================================================
-   HERO — MATERIAL 3 EXPRESSIVE
-   AUTO GLOBAL + FILTRO POR SEGMENTO (FIX DEFINITIVO)
-========================================================= */
 function initHeroCarousel() {
   const images = Array.from(document.querySelectorAll(".hero-img"));
   const pills  = Array.from(document.querySelectorAll(".pill-segment"));
@@ -368,9 +364,9 @@ function initHeroCarousel() {
   const INTERVAL = 8000;
 
   function showImage(i) {
-  images.forEach(img => img.classList.remove("active"));
-  images[i]?.classList.add("active");
-}
+    images.forEach(img => img.classList.remove("active"));
+    images[i]?.classList.add("active");
+  }
 
   function syncPillsByImage(i) {
     pills.forEach(p => p.classList.remove("active"));
@@ -417,12 +413,10 @@ function initHeroCarousel() {
     });
   });
 
-  // ✅ INIT REAL
-  requestAnimationFrame(() => {
-    showImage(0);
-    syncPillsByImage(0);
-    start();
-  });
+  // INIT REAL
+  showImage(0);
+  syncPillsByImage(0);
+  start();
 }
 
 /* =========================
