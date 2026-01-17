@@ -344,55 +344,65 @@ function updateSimilarUI() {
 }
 
 /* =========================================================
-   HERO — MATERIAL 3 EXPRESSIVE (5 IMÁGENES · 3 ESTADOS)
+   HERO — MATERIAL 3 EXPRESSIVE
+   AUTO GLOBAL + FILTRO POR SEGMENTO
 ========================================================= */
 function initHeroCarousel() {
-  const images = document.querySelectorAll(".hero-img");
+  const images = Array.from(document.querySelectorAll(".hero-img"));
   const pills  = document.querySelectorAll(".pill-segment");
   const hero   = document.querySelector(".hero-media");
 
-  if (!images.length || !pills.length || !hero) return;
+  if (!images.length || !hero) return;
 
   /* =========================
-     MAPEO NARRATIVO
+     MAPEO DE SEGMENTOS (ÍNDICES REALES)
   ========================= */
-  const STATES = [
-    [0, 1], // Origen
-    [2, 3], // Cosecha
-    [4]     // Tueste
-  ];
+  const STATES = {
+    origen:   [0, 1, 2],
+    cosecha: [3, 4, 5, 6, 7],
+    tostado: [8, 9, 10, 11]
+  };
 
-  let currentState = 0;
-  let indexInState = 0;
+  const STATE_KEYS = ["origen", "cosecha", "tostado"];
+
+  let mode = "all";           // "all" | "state"
+  let currentState = null;    // "origen" | "cosecha" | "tostado"
+  let index = 0;
   let timer = null;
+
   const INTERVAL = 8000;
 
   /* =========================
      CORE
   ========================= */
-  function showImage(imgIndex) {
+  function showImage(i) {
     images.forEach(img => img.classList.remove("active"));
-    images[imgIndex].classList.add("active");
+    images[i].classList.add("active");
   }
 
-  function setState(stateIndex) {
-    currentState = stateIndex;
-    indexInState = 0;
+  function next() {
+    if (mode === "all") {
+      index = (index + 1) % images.length;
+      showImage(index);
+      syncPills(index);
+    } else {
+      const group = STATES[currentState];
+      index = (index + 1) % group.length;
+      showImage(group[index]);
+    }
+  }
 
+  function syncPills(globalIndex) {
     pills.forEach(p => p.classList.remove("active"));
-    pills[stateIndex].classList.add("active");
 
-    showImage(STATES[stateIndex][0]);
-  }
-
-  function nextImage() {
-    const imgs = STATES[currentState];
-    indexInState = (indexInState + 1) % imgs.length;
-    showImage(imgs[indexInState]);
+    if (globalIndex <= 2) pills[0]?.classList.add("active");
+    else if (globalIndex <= 7) pills[1]?.classList.add("active");
+    else pills[2]?.classList.add("active");
   }
 
   function startAutoplay() {
-    timer = setInterval(nextImage, INTERVAL);
+    stopAutoplay();
+    timer = setInterval(next, INTERVAL);
   }
 
   function stopAutoplay() {
@@ -403,24 +413,35 @@ function initHeroCarousel() {
   }
 
   /* =========================
-     INTERACCIÓN USUARIO
+     FILTRO POR PÍLDORA
   ========================= */
   pills.forEach(pill => {
     pill.addEventListener("click", () => {
-      stopAutoplay();
-      setState(Number(pill.dataset.state));
+      const stateIndex = Number(pill.dataset.state);
+      currentState = STATE_KEYS[stateIndex];
+      mode = "state";
+      index = 0;
+
+      pills.forEach(p => p.classList.remove("active"));
+      pill.classList.add("active");
+
+      showImage(STATES[currentState][0]);
       startAutoplay();
     });
   });
 
+  /* =========================
+     INTERACCIÓN
+  ========================= */
   hero.addEventListener("mouseenter", stopAutoplay);
   hero.addEventListener("mouseleave", startAutoplay);
   hero.addEventListener("touchstart", stopAutoplay, { passive: true });
 
   /* =========================
-     INIT
+     INIT (AUTOMÁTICO GLOBAL)
   ========================= */
-  setState(0);
+  showImage(0);
+  syncPills(0);
   startAutoplay();
 }
 
