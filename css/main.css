@@ -1061,7 +1061,7 @@ footer p {
 }
 
 /* Estado abierto */
-.fab-container.active .fab-options a{
+.fab-container.open .fab-options a{
   opacity: 1;
   pointer-events: auto;
   transform: translateY(0) scale(1);
