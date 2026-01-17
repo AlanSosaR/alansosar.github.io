@@ -1,0 +1,282 @@
+/* =====================================================
+   SOBRE NOSOTROS — MATERIAL 3 EXPRESSIVE
+   Página editorial informativa
+===================================================== */
+
+/* =====================
+   CONTENEDOR BASE
+===================== */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Dos columnas reutilizable */
+.two-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+}
+
+@media (max-width: 900px) {
+  .two-columns {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
+
+/* =====================================================
+   HERO EDITORIAL
+===================================================== */
+.history-hero {
+  padding: clamp(3rem, 8vh, 6rem) 1rem 3rem;
+  text-align: center;
+}
+
+.history-hero-content {
+  max-width: 820px;
+  margin: 0 auto;
+}
+
+.history-hero h1 {
+  font-family: "Playfair Display", serif;
+  font-size: clamp(2.6rem, 5vw, 3.4rem);
+  color: var(--verde);
+  margin-bottom: 1rem;
+}
+
+.history-hero .subtitle {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: var(--marron);
+  margin-bottom: 1rem;
+}
+
+.history-hero .intro {
+  font-size: 1.05rem;
+  color: #6a3f2b;
+  line-height: 1.6;
+}
+
+/* =====================================================
+   PROPUESTA DE VALOR
+===================================================== */
+.history-value {
+  margin: 3rem 0 4rem;
+}
+
+.value-card {
+  background: #fff;
+  border-radius: 28px;
+  padding: clamp(2rem, 4vw, 3rem);
+  box-shadow:
+    0 18px 40px rgba(0,0,0,0.12),
+    0 6px 14px rgba(0,0,0,0.08);
+  text-align: center;
+}
+
+.value-card h2 {
+  font-family: "Playfair Display", serif;
+  font-size: 2.1rem;
+  color: var(--verde);
+  margin-bottom: 1rem;
+}
+
+.value-card p {
+  font-size: 1.05rem;
+  color: var(--marron);
+  max-width: 720px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* =====================================================
+   ORIGEN
+===================================================== */
+.history-origin {
+  padding: 4rem 0;
+}
+
+.history-origin h2 {
+  font-size: 2.2rem;
+  font-family: "Playfair Display", serif;
+  color: var(--verde);
+  margin-bottom: 1rem;
+}
+
+.history-origin p {
+  font-size: 1.05rem;
+  color: #6a3f2b;
+  line-height: 1.65;
+  margin-bottom: 1rem;
+}
+
+/* =====================================================
+   PROCESO — TIMELINE
+===================================================== */
+.history-timeline {
+  padding: 4rem 0;
+  background: #f7f7f7;
+}
+
+.history-timeline h2 {
+  text-align: center;
+  font-size: 2.3rem;
+  font-family: "Playfair Display", serif;
+  color: var(--verde);
+  margin-bottom: 3rem;
+}
+
+.timeline {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+}
+
+@media (max-width: 900px) {
+  .timeline {
+    grid-template-columns: 1fr;
+  }
+}
+
+.timeline-item {
+  background: #fff;
+  border-radius: 22px;
+  padding: 1.8rem;
+  box-shadow: 0 8px 22px rgba(0,0,0,0.1);
+}
+
+.timeline-item h3 {
+  font-size: 1.2rem;
+  color: var(--verde);
+  margin-bottom: 0.6rem;
+}
+
+.timeline-item p {
+  font-size: 0.95rem;
+  color: var(--marron);
+  line-height: 1.5;
+}
+
+/* =====================================================
+   VALORES
+===================================================== */
+.history-values {
+  padding: 4rem 0;
+}
+
+.history-values h2 {
+  text-align: center;
+  font-size: 2.3rem;
+  font-family: "Playfair Display", serif;
+  color: var(--verde);
+  margin-bottom: 2.5rem;
+}
+
+.values-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+}
+
+@media (max-width: 900px) {
+  .values-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.value-item {
+  background: #fff;
+  border-radius: 22px;
+  padding: 1.8rem;
+  box-shadow: 0 8px 22px rgba(0,0,0,0.1);
+}
+
+.value-item h3 {
+  font-size: 1.15rem;
+  color: var(--verde);
+  margin-bottom: 0.5rem;
+}
+
+.value-item p {
+  font-size: 0.95rem;
+  color: var(--marron);
+}
+
+/* =====================================================
+   ROSTRO HUMANO
+===================================================== */
+.history-human {
+  padding: 4rem 0;
+  background: #fafafa;
+}
+
+.history-human h2 {
+  font-size: 2.2rem;
+  font-family: "Playfair Display", serif;
+  color: var(--verde);
+  margin-bottom: 1rem;
+}
+
+.history-human p {
+  font-size: 1.05rem;
+  color: #6a3f2b;
+  line-height: 1.6;
+}
+
+.history-human img {
+  width: 100%;
+  height: 420px;
+  object-fit: cover;
+  border-radius: 26px;
+  box-shadow: 0 20px 48px rgba(0,0,0,0.18);
+}
+
+@media (max-width: 900px) {
+  .history-human img {
+    height: 300px;
+  }
+}
+
+/* =====================================================
+   CIERRE EDITORIAL
+===================================================== */
+.history-close {
+  padding: 4.5rem 0;
+  text-align: center;
+}
+
+.closing-text {
+  font-size: 1.2rem;
+  color: var(--marron);
+  margin-bottom: 2rem;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Botones reutilizando tu estilo */
+.btn-primary {
+  background: var(--verde);
+  color: #fff;
+  padding: 0.75rem 1.8rem;
+  border-radius: 999px;
+  text-decoration: none;
+  font-weight: 600;
+  box-shadow: 0 6px 16px rgba(51,103,59,0.3);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--verde);
+  padding: 0.75rem 1.8rem;
+  border-radius: 999px;
+  border: 2px solid var(--verde);
+  text-decoration: none;
+  font-weight: 600;
+}
