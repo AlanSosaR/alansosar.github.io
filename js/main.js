@@ -436,9 +436,14 @@ function initHeroCarousel() {
   /* =========================
      INIT
   ========================= */
-  showImage(0);
-  syncPillsByImage(0);
-  start();
+  function initHeroCarousel() {
+
+  requestAnimationFrame(() => {
+    showImage(0);
+    syncPillsByImage(0);
+    start();
+  });
+
 }
 
 /* =========================
