@@ -150,6 +150,7 @@ body {
 ========================================================= */
 .hero-media {
   position: relative;
+  isolation: isolate; /* 🔑 OBLIGATORIO */
   width: 100%;
   height: clamp(320px, 45vh, 460px);
   overflow: hidden;
