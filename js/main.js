@@ -368,9 +368,9 @@ function initHeroCarousel() {
   const INTERVAL = 8000;
 
   function showImage(i) {
-    images.forEach(img => img.classList.remove("is-visible"));
-    images[i]?.classList.add("is-visible");
-  }
+  images.forEach(img => img.classList.remove("active"));
+  images[i]?.classList.add("active");
+}
 
   function syncPillsByImage(i) {
     pills.forEach(p => p.classList.remove("active"));
