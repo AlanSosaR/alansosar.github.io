@@ -349,82 +349,62 @@ function updateSimilarUI() {
 ========================================================= */
 function initHeroCarousel() {
   const images = Array.from(document.querySelectorAll(".hero-img"));
-  const pills  = document.querySelectorAll(".pill-segment");
-  const hero   = document.querySelector(".hero-media");
+  const pills  = Array.from(document.querySelectorAll(".pill-segment"));
 
-  if (!images.length || !hero) return;
-
-  /* =========================
-     PRELOAD (evita blank inicial)
-  ========================= */
-  images.forEach(img => {
-    const pre = new Image();
-    pre.src = img.src;
-  });
+  if (images.length === 0 || pills.length === 0) return;
 
   /* =========================
      MAPEO DE SEGMENTOS
   ========================= */
-  const STATES = {
-    origen:   [0, 1, 2],
-    cosecha: [3, 4, 5, 6, 7],
-    tostado: [8, 9, 10, 11]
-  };
+  const STATES = [
+    [0, 1, 2],        // Origen
+    [3, 4, 5, 6, 7],  // Cosecha
+    [8, 9, 10, 11]    // Tueste
+  ];
 
-  const STATE_KEYS = ["origen", "cosecha", "tostado"];
-
-  let mode = "all";
-  let currentState = null;
-  let index = 0;
+  let mode = "all";        // all | state
+  let stateIndex = 0;      // 0 | 1 | 2
+  let globalIndex = 0;     // índice real de imágenes
+  let localIndex = 0;      // índice dentro del grupo
   let timer = null;
 
   const INTERVAL = 8000;
 
   /* =========================
-     CORE (FIX OPACITY RACE)
+     CORE
   ========================= */
   function showImage(i) {
-    images.forEach(img => {
-      img.classList.remove("active");
-      img.style.opacity = "0";
-    });
+    images.forEach(img => img.classList.remove("active"));
+    images[i]?.classList.add("active");
+  }
 
-    const target = images[i];
-    if (!target) return;
+  function syncPillsByImage(i) {
+    pills.forEach(p => p.classList.remove("active"));
 
-    /* 🔑 fuerza repaint (bug Chrome/GHP) */
-    void target.offsetHeight;
-
-    target.classList.add("active");
-    target.style.opacity = "1";
+    if (i <= 2) pills[0].classList.add("active");
+    else if (i <= 7) pills[1].classList.add("active");
+    else pills[2].classList.add("active");
   }
 
   function next() {
     if (mode === "all") {
-      index = (index + 1) % images.length;
-      showImage(index);
-      syncPills(index);
+      globalIndex = (globalIndex + 1) % images.length;
+      showImage(globalIndex);
+      syncPillsByImage(globalIndex);
     } else {
-      const group = STATES[currentState];
-      index = (index + 1) % group.length;
-      showImage(group[index]);
+      const group = STATES[stateIndex];
+      localIndex = (localIndex + 1) % group.length;
+      globalIndex = group[localIndex];
+      showImage(globalIndex);
     }
   }
 
-  function syncPills(globalIndex) {
-    pills.forEach(p => p.classList.remove("active"));
-
-    if (globalIndex <= 2) pills[0]?.classList.add("active");
-    else if (globalIndex <= 7) pills[1]?.classList.add("active");
-    else pills[2]?.classList.add("active");
-  }
-
-  function startAutoplay() {
-    stopAutoplay();
+  function start() {
+    stop();
     timer = setInterval(next, INTERVAL);
   }
 
-  function stopAutoplay() {
+  function stop() {
     if (timer) {
       clearInterval(timer);
       timer = null;
@@ -432,38 +412,29 @@ function initHeroCarousel() {
   }
 
   /* =========================
-     FILTRO POR PÍLDORA
+     PÍLDORAS
   ========================= */
-  pills.forEach(pill => {
+  pills.forEach((pill, i) => {
     pill.addEventListener("click", () => {
-      const stateIndex = Number(pill.dataset.state);
-      currentState = STATE_KEYS[stateIndex];
       mode = "state";
-      index = 0;
+      stateIndex = i;
+      localIndex = 0;
+      globalIndex = STATES[i][0];
 
       pills.forEach(p => p.classList.remove("active"));
       pill.classList.add("active");
 
-      showImage(STATES[currentState][0]);
-      startAutoplay();
+      showImage(globalIndex);
+      start();
     });
   });
 
   /* =========================
-     INTERACCIÓN
+     INIT
   ========================= */
-  hero.addEventListener("mouseenter", stopAutoplay);
-  hero.addEventListener("mouseleave", startAutoplay);
-  hero.addEventListener("touchstart", stopAutoplay, { passive: true });
-
-  /* =========================
-     INIT SEGURO
-  ========================= */
-  requestAnimationFrame(() => {
-    showImage(0);
-    syncPills(0);
-    startAutoplay();
-  });
+  showImage(0);
+  syncPillsByImage(0);
+  start();
 }
 
 /* =========================
