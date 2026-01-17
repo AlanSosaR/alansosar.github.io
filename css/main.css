@@ -963,7 +963,7 @@ footer p {
 
 /* ================= FAB — Material 3 Expressive ================= */
 
-.fab-container{
+.fab-container {
   position: fixed;
   right: 24px;
   bottom: 24px;
@@ -976,11 +976,10 @@ footer p {
 }
 
 /* ===== FAB PRINCIPAL ===== */
-.fab-main{
+.fab-main {
   width: 64px;
   height: 64px;
   border-radius: 50%;
-
   background: var(--verde);
   color: #fff;
 
@@ -989,10 +988,9 @@ footer p {
   justify-content: center;
 
   border: none;
-  outline: none;
   cursor: pointer;
+  outline: none;
 
-  /* Material 3 elevation */
   box-shadow:
     0 6px 12px rgba(0,0,0,.18),
     0 2px 4px rgba(0,0,0,.14);
@@ -1004,19 +1002,19 @@ footer p {
   -webkit-tap-highlight-color: transparent;
 }
 
-.fab-main:hover{
+.fab-main:hover {
   transform: translateY(-2px);
   box-shadow:
     0 10px 22px rgba(0,0,0,.22),
     0 4px 10px rgba(0,0,0,.18);
 }
 
-.fab-main:active{
+.fab-main:active {
   transform: scale(.96);
 }
 
-/* Icono principal (Material 3) */
-.fab-main .material-symbols-outlined{
+/* Icono */
+.fab-main .material-symbols-outlined {
   font-size: 30px;
   font-variation-settings:
     'FILL' 1,
@@ -1026,18 +1024,17 @@ footer p {
 }
 
 /* ===== OPCIONES ===== */
-.fab-options{
+.fab-options {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-/* Botones secundarios */
-.fab-options a{
+/* Botones secundarios (cerrado) */
+.fab-options a {
   width: 52px;
   height: 52px;
   border-radius: 50%;
-
   background: #fff;
 
   display: flex;
@@ -1045,15 +1042,11 @@ footer p {
   justify-content: center;
 
   text-decoration: none;
-  border: none;
-  outline: none;
 
-  /* Estado oculto */
   opacity: 0;
   pointer-events: none;
   transform: translateY(10px) scale(.9);
 
-  /* Elevación ligera */
   box-shadow:
     0 6px 14px rgba(0,0,0,.18),
     0 2px 6px rgba(0,0,0,.14);
@@ -1063,52 +1056,41 @@ footer p {
     transform .22s cubic-bezier(.2,0,0,1);
 }
 
-/* Estado abierto */
-.fab-container.open .fab-options a{
+/* ===== ESTADO ABIERTO ===== */
+.fab-container.open .fab-options a {
   opacity: 1;
   pointer-events: auto;
   transform: translateY(0) scale(1);
 }
 
-/* Hover */
-.fab-options a:hover{
+/* Hover opciones */
+.fab-options a:hover {
   transform: scale(1.08);
 }
 
-/* ===== ICONOS ===== */
-.fab-options i{
+/* Iconos */
+.fab-options i {
   font-size: 1.6rem;
   line-height: 1;
 }
 
-/* WhatsApp */
-.fab-options .fa-whatsapp{
-  color: #25D366;
-}
+.fa-whatsapp   { color: #25D366; }
+.fa-facebook-f { color: #1877F2; }
+.fa-instagram  { color: #E1306C; }
 
-/* Facebook */
-.fab-options .fa-facebook-f{
-  color: #1877F2;
-}
-
-/* Instagram */
-.fab-options .fa-instagram{
-  color: #E1306C;
-}
-
-/* ===== Mobile ajustes ===== */
-@media (max-width: 480px){
-  .fab-container{
+/* Mobile */
+@media (max-width: 480px) {
+  .fab-container {
     right: 18px;
     bottom: 18px;
   }
 
-  .fab-main{
+  .fab-main {
     width: 60px;
     height: 60px;
   }
 
-  .fab-options a{
+  .fab-options a {
     width: 48px;
     height: 48px;
   }
