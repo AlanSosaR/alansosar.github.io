@@ -374,9 +374,13 @@ function initHeroCarousel() {
      CORE
   ========================= */
   function showImage(i) {
-    images.forEach(img => img.classList.remove("active"));
-    images[i]?.classList.add("active");
-  }
+  images.forEach(img => img.classList.remove("is-visible"));
+
+  const target = images[i];
+  if (!target) return;
+
+  target.classList.add("is-visible");
+}
 
   function syncPillsByImage(i) {
     pills.forEach(p => p.classList.remove("active"));
