@@ -54,7 +54,9 @@ body {
 ========================================================= */
 
 .hero {
+  /* Altura correcta del viewport menos header */
   min-height: calc(100svh - var(--header-height));
+
   padding-block: clamp(2rem, 5vh, 3.5rem);
   padding-inline: clamp(16px, 4vw, 32px);
 
@@ -63,7 +65,9 @@ body {
 
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+
+  /* 🔑 CLAVE: permite que el contenido se vea */
+  justify-content: center;
 }
 
 /* =========================================================
