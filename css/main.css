@@ -191,7 +191,10 @@ body {
   pointer-events: none;
   z-index: 1;                  /* 🔑 YA NO TAPA LA IMAGEN */
 }
-
+/* 🔑 GARANTIZA IMAGEN VISIBLE AL CARGAR */
+.hero-img:first-child {
+  opacity: 1;
+}
 /* =========================================================
    PÍLDORA ÚNICA — MATERIAL 3 EXPRESSIVE
 ========================================================= */
