@@ -54,27 +54,32 @@ body {
 ========================================================= */
 
 .hero {
-  padding-block: clamp(2rem, 5vh, 3.5rem);
+  padding-top: clamp(2rem, 4vh, 3rem);
+  padding-bottom: clamp(1.25rem, 3vh, 2rem); /* 🔑 menos aire abajo */
   padding-inline: clamp(16px, 4vw, 32px);
 
   text-align: center;
-  margin-bottom: 2rem;
 
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+
+  margin-bottom: 1.5rem; /* 🔑 conexión con producto */
 }
 /* 🖥 Desktop: hero impactante */
 @media (min-width: 901px) {
   .hero {
     min-height: calc(100vh - var(--header-height));
+    justify-content: center; /* centra visualmente el hero */
+    margin-bottom: 2rem;
   }
 }
 
 /* 📱 Mobile: flujo natural */
 @media (max-width: 900px) {
   .hero {
-    min-height: auto;
+    min-height: unset; /* más seguro que auto */
+    margin-bottom: 1.25rem;
   }
 }
 /* =========================================================
