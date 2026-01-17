@@ -54,16 +54,28 @@ body {
 ========================================================= */
 
 .hero {
-  min-height: calc(100svh - var(--header-height));
   padding-block: clamp(2rem, 5vh, 3.5rem);
   padding-inline: clamp(16px, 4vw, 32px);
 
   text-align: center;
-  margin-bottom: 3rem;
+  margin-bottom: 2rem;
 
   display: flex;
   flex-direction: column;
-  justify-content: flex-start; /* ✅ CLAVE */
+  justify-content: flex-start;
+}
+/* 🖥 Desktop: hero impactante */
+@media (min-width: 901px) {
+  .hero {
+    min-height: calc(100vh - var(--header-height));
+  }
+}
+
+/* 📱 Mobile: flujo natural */
+@media (max-width: 900px) {
+  .hero {
+    min-height: auto;
+  }
 }
 /* =========================================================
    HERO TEXT
@@ -102,16 +114,16 @@ body {
 /* =========================================================
    HERO CARD — MATERIAL 3 EXPRESSIVE
 ========================================================= */
-
 .hero-card {
   position: relative;
-  display: block;
   width: 100%;
 
   background: var(--blanco);
   max-width: 1200px;
   margin-inline: auto;
-  margin-bottom: 64px;
+
+  /* 🔑 margen controlado */
+  margin-bottom: 2.5rem;
 
   border-radius: 28px;
   overflow: visible;
@@ -120,7 +132,12 @@ body {
     0 20px 48px rgba(0, 0, 0, 0.16),
     0 6px 16px rgba(0, 0, 0, 0.12);
 }
-
+@media (max-width: 900px) {
+  .hero-card {
+    margin-bottom: 1.75rem; /* 👈 elimina el salto */
+    border-radius: 22px;
+  }
+}
 /* Hover solo desktop real */
 @media (hover: hover) and (pointer: fine) {
   .hero-card:hover {
