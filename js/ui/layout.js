@@ -42,10 +42,15 @@ if (document.body.dataset.page === "login") {
       try {
         console.log("📦 layout.js: cargando header.html");
 
-        const res = await fetch("header.html", { cache: "no-store" });
-        if (!res.ok) throw new Error("header.html no encontrado");
+const HEADER_PATH =
+  window.PAGE_MODE?.startsWith("admin")
+    ? "../../ui/header.html"
+    : "ui/header.html";
 
-        const html = await res.text();
+const res = await fetch(HEADER_PATH, { cache: "no-store" });
+if (!res.ok) throw new Error(`header.html no encontrado (${HEADER_PATH})`);
+
+const html = await res.text();
 
         // =====================================================
         // 4️⃣ INYECTAR HEADER (UNA SOLA VEZ)
