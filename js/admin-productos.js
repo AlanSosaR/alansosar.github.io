@@ -268,7 +268,17 @@ function renderCarousel(list) {
 
   seleccionarProducto(0);
 }
+/* =====================
+   SCROLL PREVIEW (ADMIN)
+===================== */
+function scrollToAdminPreview() {
+  if (!preview.section) return;
 
+  preview.section.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+}
 /* ============================================================
    SELECCIÓN
 ============================================================ */
@@ -289,6 +299,9 @@ function seleccionarProducto(index) {
 
   renderPreview(product);
   actualizarScrollCarrusel();
+
+  // 👇 NUEVO: scroll suave al preview principal
+  scrollToAdminPreview();
 }
 
 /* ============================================================
