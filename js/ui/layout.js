@@ -28,29 +28,40 @@ if (document.body.dataset.page === "login") {
   } else {
     window.__LAYOUT_LOADED__ = true;
 
-    // =====================================================
-    // 3️⃣ DOM READY
-    // =====================================================
-    document.addEventListener("DOMContentLoaded", async () => {
+// =====================================================
+// 3️⃣ DOM READY
+// =====================================================
+document.addEventListener("DOMContentLoaded", async () => {
 
-      // 🔒 Si el header ya existe, no volver a inyectar
-      if (document.getElementById("main-header")) {
-        console.warn("⚠️ Header ya existe en DOM, no se inyecta");
-        return;
-      }
+  // 🔒 Si el header ya existe, no volver a inyectar
+  if (document.getElementById("main-header")) {
+    console.warn("⚠️ Header ya existe en DOM, no se inyecta");
+    return;
+  }
 
-      try {
-        console.log("📦 layout.js: cargando header.html");
+  try {
+    console.log("📦 layout.js: cargando header.html");
 
-const HEADER_PATH =
-  window.PAGE_MODE?.startsWith("admin")
-    ? "../../ui/header.html"
-    : "ui/header.html";
+    const HEADER_PATH =
+      window.PAGE_MODE?.startsWith("admin")
+        ? "../../header.html"   // ADMIN (pages/admin/*)
+        : "header.html";        // CLIENTE / PÚBLICO
 
-const res = await fetch(HEADER_PATH, { cache: "no-store" });
-if (!res.ok) throw new Error(`header.html no encontrado (${HEADER_PATH})`);
+    const res = await fetch(HEADER_PATH, { cache: "no-store" });
+    if (!res.ok) {
+      throw new Error(`header.html no encontrado (${HEADER_PATH})`);
+    }
 
-const html = await res.text();
+    const html = await res.text();
+
+    // Inyectar header
+    document.body.insertAdjacentHTML("afterbegin", html);
+    console.log("✅ Header inyectado");
+
+  } catch (err) {
+    console.error("❌ Error en layout.js:", err);
+  }
+});
 
         // =====================================================
         // 4️⃣ INYECTAR HEADER (UNA SOLA VEZ)
