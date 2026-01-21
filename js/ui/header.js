@@ -1,15 +1,12 @@
 console.log("🧭 header.js — UI CORE FINAL (AUTH + ADMIN + NOTIFS + REALTIME)");
 
-/* =====================================================
-   GUARDIÁN GLOBAL — EVITA DOBLE CARGA
-===================================================== */
 if (!window.__HEADER_CORE_LOADED__) {
   window.__HEADER_CORE_LOADED__ = true;
 
   const $ = (id) => document.getElementById(id);
 
   /* =====================================================
-     HELPERS — USUARIO CACHE
+     HELPERS — USUARIO
   ===================================================== */
   function getUserCache() {
     try {
@@ -25,13 +22,10 @@ if (!window.__HEADER_CORE_LOADED__) {
   }
 
   /* =====================================================
-     🔴 DOT GLOBAL (AVATAR + HAMBURGUESA)
-     ⚠️ usa .notification-dot (CSS real)
+     🔴 DOT GLOBAL
   ===================================================== */
   function toggleGlobalNotificationDot(show) {
-    const targets = ["avatar-user", "menu-toggle"];
-
-    targets.forEach(id => {
+    ["avatar-user", "menu-toggle"].forEach(id => {
       const el = $(id);
       if (!el) return;
 
@@ -49,7 +43,7 @@ if (!window.__HEADER_CORE_LOADED__) {
   }
 
   /* =====================================================
-     CARRITO — BADGE
+     🛒 CARRITO — CONTADOR (REAL TIME)
   ===================================================== */
   function updateCartCount() {
     const badge = $("cart-count");
@@ -57,22 +51,20 @@ if (!window.__HEADER_CORE_LOADED__) {
 
     try {
       const cart = JSON.parse(localStorage.getItem("cafecortero_cart")) || [];
-      badge.textContent = cart.reduce((a, i) => a + Number(i.qty || 0), 0);
+      const total = cart.reduce((a, i) => a + Number(i.qty || 0), 0);
+      badge.textContent = total;
     } catch {
       badge.textContent = "0";
     }
   }
 
-  /* =====================================================
-     CARRITO — TÍTULO CENTRAL
-  ===================================================== */
   function updateHeaderCartTitle() {
     const label = $("count-items");
     if (!label) return;
 
     try {
       const cart = JSON.parse(localStorage.getItem("cafecortero_cart")) || [];
-      const total = cart.reduce((s, i) => s + Number(i.qty || 0), 0);
+      const total = cart.reduce((a, i) => a + Number(i.qty || 0), 0);
       label.textContent = `${total} ${total === 1 ? "café" : "cafés"}`;
     } catch {
       label.textContent = "0 cafés";
@@ -80,7 +72,7 @@ if (!window.__HEADER_CORE_LOADED__) {
   }
 
   /* =====================================================
-     PERFIL + ROL
+     PERFIL + ROLES
   ===================================================== */
   function syncUserUI() {
     const user = getUserCache();
@@ -94,9 +86,9 @@ if (!window.__HEADER_CORE_LOADED__) {
       drawer.classList.add("no-user");
       drawer.classList.remove("logged");
 
-      document.querySelectorAll(".admin-only,.client-only").forEach(el =>
-        el.classList.add("hidden")
-      );
+      document
+        .querySelectorAll(".admin-only,.client-only")
+        .forEach(el => el.classList.add("hidden"));
 
       toggleGlobalNotificationDot(false);
       return;
@@ -111,10 +103,8 @@ if (!window.__HEADER_CORE_LOADED__) {
       ($("avatar-user").src = user.photo_url || "/imagenes/avatar-default.svg");
     $("avatar-user-drawer") &&
       ($("avatar-user-drawer").src = user.photo_url || "/imagenes/avatar-default.svg");
-    $("drawer-name") &&
-      ($("drawer-name").textContent = user.name || "Usuario");
-    $("drawer-email") &&
-      ($("drawer-email").textContent = user.email || "");
+    $("drawer-name") && ($("drawer-name").textContent = user.name || "Usuario");
+    $("drawer-email") && ($("drawer-email").textContent = user.email || "");
 
     const isAdmin = user.rol === "admin";
     document.querySelectorAll(".admin-only").forEach(el =>
@@ -126,9 +116,7 @@ if (!window.__HEADER_CORE_LOADED__) {
   }
 
   /* =====================================================
-     🔔 CLIENTE — NOTIFICACIONES + CONTADOR
-     ✔ NO al crear pedido
-     ✔ SOLO cuando admin cambia estado
+     🔔 CLIENTE — PEDIDOS
   ===================================================== */
   async function syncClientOrderNotification() {
     const user = getUserCache();
@@ -137,66 +125,37 @@ if (!window.__HEADER_CORE_LOADED__) {
     const sb = await getSupabase();
     if (!sb) return;
 
-    const { data } = await sb
-      .from("orders")
-      .select("id")
-      .eq("user_id", user.id)
-      .or("client_viewed_at.is.null,updated_at.gt.client_viewed_at");
-
-    const pendingUpdates = data?.length || 0;
-
-    // 🔢 contador TOTAL de pedidos (no notificación)
     const { data: allOrders } = await sb
       .from("orders")
       .select("id")
       .eq("user_id", user.id);
 
     const totalOrders = allOrders?.length || 0;
-
     const badge = $("client-orders-count");
     if (badge) badge.textContent = totalOrders;
-
-    // 🔴 notificación SOLO si hay cambios del admin
-    toggleGlobalNotificationDot(pendingUpdates > 0);
-
-    const item = $("mis-pedidos-item");
-    if (item) {
-      let dot = item.querySelector(".drawer-dot");
-      if (pendingUpdates > 0 && !dot) {
-        dot = document.createElement("span");
-        dot.className = "drawer-dot";
-        item.appendChild(dot);
-      }
-      if (pendingUpdates === 0 && dot) dot.remove();
-    }
   }
 
   /* =====================================================
-     🔴 ADMIN — CONTADOR DE PEDIDOS
+     🔔 ADMIN — PEDIDOS
   ===================================================== */
-async function syncAdminOrdersCount() {
-  const user = getUserCache();
-  if (!user || user.rol !== "admin") return;
+  async function syncAdminOrdersCount() {
+    const user = getUserCache();
+    if (!user || user.rol !== "admin") return;
 
-  const sb = await getSupabase();
-  if (!sb) return;
+    const sb = await getSupabase();
+    if (!sb) return;
 
-  // ✅ TODOS los pedidos, sin filtrar por estado
-  const { data } = await sb
-    .from("orders")
-    .select("id");
+    const { data } = await sb.from("orders").select("id");
+    const total = data?.length || 0;
 
-  const total = data?.length || 0;
+    const badge = $("admin-orders-count");
+    if (badge) badge.textContent = total;
 
-  const badge = $("admin-orders-count");
-  if (badge) badge.textContent = total;
-
-  // 🔴 punto rojo si hay al menos 1 pedido
-  toggleGlobalNotificationDot(total > 0);
-}
+    toggleGlobalNotificationDot(total > 0);
+  }
 
   /* =====================================================
-     🔄 REALTIME — ORDERS
+     🔄 REALTIME — ORDERS (INSERT + UPDATE)
   ===================================================== */
   async function initOrdersRealtime() {
     const user = getUserCache();
@@ -206,12 +165,10 @@ async function syncAdminOrdersCount() {
     sb.channel("orders-realtime")
       .on(
         "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "orders" },
-        payload => {
+        { event: "*", schema: "public", table: "orders" },
+        () => {
           if (user.rol === "admin") syncAdminOrdersCount();
-          if (user.rol === "cliente" && payload.new?.user_id === user.id) {
-            syncClientOrderNotification();
-          }
+          if (user.rol === "cliente") syncClientOrderNotification();
         }
       )
       .subscribe();
@@ -261,8 +218,6 @@ async function syncAdminOrdersCount() {
     $("logout-btn")?.addEventListener("click", async () => {
       if (window.supabaseAuth?.logoutUser) {
         await window.supabaseAuth.logoutUser();
-      } else if (window.corteroLogout) {
-        await window.corteroLogout();
       }
       closeDrawer();
     });
@@ -281,6 +236,11 @@ async function syncAdminOrdersCount() {
   if (!window.__HEADER_GLOBAL_EVENTS__) {
     window.__HEADER_GLOBAL_EVENTS__ = true;
 
+    window.addEventListener("cartUpdated", () => {
+      updateCartCount();
+      updateHeaderCartTitle();
+    });
+
     document.addEventListener("userLoggedIn", () => {
       syncUserUI();
       updateCartCount();
@@ -288,7 +248,6 @@ async function syncAdminOrdersCount() {
       syncClientOrderNotification();
       syncAdminOrdersCount();
       initOrdersRealtime();
-      closeDrawer();
     });
 
     document.addEventListener("userLoggedOut", () => {
@@ -296,11 +255,6 @@ async function syncAdminOrdersCount() {
       updateCartCount();
       updateHeaderCartTitle();
       toggleGlobalNotificationDot(false);
-      closeDrawer();
-    });
-
-    document.addEventListener("keydown", e => {
-      if (e.key === "Escape") closeDrawer();
     });
   }
 
