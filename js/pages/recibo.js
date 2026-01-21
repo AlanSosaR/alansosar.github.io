@@ -574,31 +574,7 @@ for (const it of carrito) {
       });
     }
      
-/* === 4.1 NOTIFICACIÓN ADMIN — NUEVO PEDIDO === */
-const { data: admins, error: adminsError } = await sb
-  .from("users")
-  .select("id")
-  .eq("rol", "admin");
 
-if (adminsError) {
-  console.error("❌ Error obteniendo admins:", adminsError);
-} else if (admins?.length) {
-  const notificationsPayload = admins.map(admin => ({
-    user_id: admin.id,          // ✅ SIEMPRE válido
-    title: "Nuevo pedido",
-    message: "Hay un nuevo pedido pendiente de revisión",
-    type: "order",
-    is_read: false
-  }));
-
-  const { error: notifError } = await sb
-    .from("notifications")
-    .insert(notificationsPayload);
-
-  if (notifError) {
-    console.error("❌ Error insertando notificaciones:", notifError);
-  }
-}
 
     /* === 5. LIMPIAR Y REDIRIGIR === */
     localStorage.setItem(CART_KEY, "[]");
