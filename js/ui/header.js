@@ -134,7 +134,7 @@ if (!window.__HEADER_CORE_LOADED__) {
   }
 
   /* =====================================================
-     🔔 ADMIN — CONTADOR PEDIDOS
+     🔔 ADMIN — CONTADOR DE PEDIDOS
   ===================================================== */
   async function syncAdminOrdersCount() {
     const user = getUserCache();
@@ -144,10 +144,8 @@ if (!window.__HEADER_CORE_LOADED__) {
     if (!sb) return;
 
     const { data } = await sb.from("orders").select("id");
-    const total = data?.length || 0;
-
     const badge = $("admin-orders-count");
-    if (badge) badge.textContent = total;
+    if (badge) badge.textContent = data?.length || 0;
   }
 
   /* =====================================================
@@ -162,12 +160,12 @@ if (!window.__HEADER_CORE_LOADED__) {
 
     const { data, error } = await sb
       .from("notifications")
-      .select("id", { count: "exact", head: true })
+      .select("id")
       .eq("user_id", user.id)
       .eq("is_read", false);
 
     if (error) {
-      console.error("❌ Error leyendo notificaciones admin:", error);
+      console.error("❌ Error leyendo notificaciones:", error);
       return;
     }
 
@@ -175,7 +173,7 @@ if (!window.__HEADER_CORE_LOADED__) {
   }
 
   /* =====================================================
-     🔄 REALTIME — SINGLETON
+     🔄 REALTIME — ORDERS + NOTIFICATIONS
   ===================================================== */
   let REALTIME_INIT = false;
 
@@ -187,6 +185,7 @@ if (!window.__HEADER_CORE_LOADED__) {
     const sb = await getSupabase();
     if (!user || !sb) return;
 
+    // Orders
     sb.channel("orders-realtime")
       .on(
         "postgres_changes",
@@ -198,12 +197,13 @@ if (!window.__HEADER_CORE_LOADED__) {
       )
       .subscribe();
 
+    // Notifications
     sb.channel("notifications-realtime")
       .on(
         "postgres_changes",
-        { event: "*", schema: "public", table: "notifications" },
+        { event: "INSERT", schema: "public", table: "notifications" },
         payload => {
-          if (user.rol === "admin" && payload.new?.user_id === user.id) {
+          if (user.rol === "admin" && payload.new.user_id === user.id) {
             syncAdminNotifications();
           }
         }
@@ -218,9 +218,6 @@ if (!window.__HEADER_CORE_LOADED__) {
     $("user-drawer")?.classList.add("open");
     $("user-scrim")?.classList.add("open");
     document.body.style.overflow = "hidden";
-
-    // 🔑 Al abrir, recalcula estado real
-    syncAdminNotifications();
   }
 
   function closeDrawer() {
@@ -267,7 +264,7 @@ if (!window.__HEADER_CORE_LOADED__) {
     updateHeaderCartTitle();
     syncClientOrderNotification();
     syncAdminOrdersCount();
-    syncAdminNotifications(); // 🔑 CLAVE
+    syncAdminNotifications(); // 🔴 CLAVE
     initRealtime();
   }
 
