@@ -573,6 +573,15 @@ for (const it of carrito) {
         review_status: "pending"
       });
     }
+     
+     /* === 4.1 NOTIFICACIÓN ADMIN — NUEVO PEDIDO === */
+await sb.from("notifications").insert({
+  user_id: null,                 // admins
+  title: "Nuevo pedido",
+  message: "Hay un nuevo pedido pendiente de revisión",
+  type: "order",
+  is_read: false
+});
 
     /* === 5. LIMPIAR Y REDIRIGIR === */
     localStorage.setItem(CART_KEY, "[]");
