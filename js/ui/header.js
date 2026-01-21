@@ -1,4 +1,4 @@
-console.log("🧭 header.js — UI CORE FINAL (AUTH + ADMIN + NOTIFS)");
+console.log("🧭 header.js — UI CORE FINAL (AUTH + ADMIN + NOTIFS + REALTIME)");
 
 /* =====================================================
    GUARDIÁN GLOBAL — EVITA DOBLE CARGA
@@ -22,6 +22,29 @@ if (!window.__HEADER_CORE_LOADED__) {
 
   async function getSupabase() {
     return window.sb || window.supabase || null;
+  }
+
+  /* =====================================================
+     🔴 DOT GLOBAL (AVATAR + HAMBURGUESA)
+  ===================================================== */
+  function toggleGlobalNotificationDot(show) {
+    const targets = ["avatar-user", "menu-toggle"];
+
+    targets.forEach(id => {
+      const el = $(id);
+      if (!el) return;
+
+      let dot = el.querySelector(".notif-dot");
+
+      if (show && !dot) {
+        dot = document.createElement("span");
+        dot.className = "notif-dot";
+        el.style.position = "relative";
+        el.appendChild(dot);
+      }
+
+      if (!show && dot) dot.remove();
+    });
   }
 
   /* =====================================================
@@ -56,61 +79,50 @@ if (!window.__HEADER_CORE_LOADED__) {
   }
 
   /* =====================================================
-     PERFIL + ROL (CLIENTE / ADMIN)
+     PERFIL + ROL
   ===================================================== */
   function syncUserUI() {
     const user = getUserCache();
     const header = document.querySelector(".header-fixed");
     const drawer = $("user-drawer");
-
     if (!header || !drawer) return;
 
-    /* ---------- INVITADO ---------- */
     if (!user) {
       header.classList.add("no-user");
       header.classList.remove("logged");
       drawer.classList.add("no-user");
       drawer.classList.remove("logged");
-
-      document.querySelectorAll(".admin-only, .client-only").forEach(el =>
+      document.querySelectorAll(".admin-only,.client-only").forEach(el =>
         el.classList.add("hidden")
       );
-
+      toggleGlobalNotificationDot(false);
       return;
     }
 
-    /* ---------- LOGUEADO ---------- */
     header.classList.add("logged");
     header.classList.remove("no-user");
     drawer.classList.add("logged");
     drawer.classList.remove("no-user");
 
-    /* Avatar + textos */
     $("avatar-user") &&
       ($("avatar-user").src = user.photo_url || "/imagenes/avatar-default.svg");
     $("avatar-user-drawer") &&
       ($("avatar-user-drawer").src =
         user.photo_url || "/imagenes/avatar-default.svg");
-    $("drawer-name") &&
-      ($("drawer-name").textContent = user.name || "Usuario");
-    $("drawer-email") &&
-      ($("drawer-email").textContent = user.email || "");
+    $("drawer-name") && ($("drawer-name").textContent = user.name || "Usuario");
+    $("drawer-email") && ($("drawer-email").textContent = user.email || "");
 
     const isAdmin = user.rol === "admin";
-
-    /* ---------- ADMIN ---------- */
     document.querySelectorAll(".admin-only").forEach(el =>
       el.classList.toggle("hidden", !isAdmin)
     );
-
-    /* ---------- CLIENTE ---------- */
     document.querySelectorAll(".client-only").forEach(el =>
       el.classList.toggle("hidden", isAdmin)
     );
   }
 
   /* =====================================================
-     🔔 NOTIFICACIÓN CLIENTE — MIS PEDIDOS
+     🔔 CLIENTE — NOTIFS + CONTADOR
   ===================================================== */
   async function syncClientOrderNotification() {
     const user = getUserCache();
@@ -125,32 +137,34 @@ if (!window.__HEADER_CORE_LOADED__) {
       .eq("user_id", user.id)
       .or("client_viewed_at.is.null,updated_at.gt.client_viewed_at");
 
+    const total = data?.length || 0;
+
+    const badge = $("client-orders-count");
+    if (badge) {
+      badge.textContent = total;
+      badge.style.display = total > 0 ? "inline-flex" : "none";
+    }
+
     const item = $("mis-pedidos-item");
-    if (!item) return;
-
-    let dot = $("mis-pedidos-dot");
-
-    if (data?.length > 0 && !dot) {
-      dot = document.createElement("span");
-      dot.className = "drawer-dot";
-      dot.id = "mis-pedidos-dot";
-      item.appendChild(dot);
+    if (item) {
+      let dot = item.querySelector(".drawer-dot");
+      if (total > 0 && !dot) {
+        dot = document.createElement("span");
+        dot.className = "drawer-dot";
+        item.appendChild(dot);
+      }
+      if (total === 0 && dot) dot.remove();
     }
 
-    if ((!data || data.length === 0) && dot) {
-      dot.remove();
-    }
+    toggleGlobalNotificationDot(total > 0);
   }
 
   /* =====================================================
-     🔴 CONTADOR ADMIN — PEDIDOS
+     🔴 ADMIN — CONTADOR
   ===================================================== */
   async function syncAdminOrdersCount() {
     const user = getUserCache();
     if (!user || user.rol !== "admin") return;
-
-    const badge = $("admin-orders-count");
-    if (!badge) return;
 
     const sb = await getSupabase();
     if (!sb) return;
@@ -161,8 +175,38 @@ if (!window.__HEADER_CORE_LOADED__) {
       .in("status", ["pending_payment", "payment_review"]);
 
     const total = data?.length || 0;
-    badge.textContent = total;
-    badge.style.display = total > 0 ? "inline-flex" : "none";
+
+    const badge = $("admin-orders-count");
+    if (badge) {
+      badge.textContent = total;
+      badge.style.display = total > 0 ? "inline-flex" : "none";
+    }
+
+    toggleGlobalNotificationDot(total > 0);
+  }
+
+  /* =====================================================
+     🔄 REALTIME — ORDERS
+  ===================================================== */
+  async function initOrdersRealtime() {
+    const user = getUserCache();
+    const sb = await getSupabase();
+    if (!user || !sb) return;
+
+    sb.channel("orders-realtime")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "orders" },
+        payload => {
+          if (user.rol === "admin") {
+            syncAdminOrdersCount();
+          }
+          if (user.rol === "cliente" && payload.new?.user_id === user.id) {
+            syncClientOrderNotification();
+          }
+        }
+      )
+      .subscribe();
   }
 
   /* =====================================================
@@ -186,49 +230,42 @@ if (!window.__HEADER_CORE_LOADED__) {
       : openDrawer();
   }
 
-/* =====================================================
-   INIT HEADER
-===================================================== */
-let HEADER_INITIALIZED = false;
+  /* =====================================================
+     INIT HEADER
+  ===================================================== */
+  let HEADER_INITIALIZED = false;
 
-function initHeader() {
-  if (HEADER_INITIALIZED) return;
-  HEADER_INITIALIZED = true;
+  function initHeader() {
+    if (HEADER_INITIALIZED) return;
+    HEADER_INITIALIZED = true;
 
-  /* ☰ MENÚ (MÓVIL) */
-  $("menu-toggle")?.addEventListener("click", toggleDrawer);
+    $("menu-toggle")?.addEventListener("click", toggleDrawer);
+    $("btn-header-user")?.addEventListener("click", e => {
+      e.stopPropagation();
+      toggleDrawer();
+    });
+    $("user-scrim")?.addEventListener("click", closeDrawer);
 
-  /* 👤 AVATAR (PC) — ABRE DRAWER */
-  $("btn-header-user")?.addEventListener("click", (e) => {
-    e.stopPropagation();
-    toggleDrawer();
-  });
+    $("cart-btn")?.addEventListener("click", () => {
+      location.href = "carrito.html";
+    });
 
-  /* 🧼 SCRIM — CIERRA DRAWER */
-  $("user-scrim")?.addEventListener("click", closeDrawer);
+    $("logout-btn")?.addEventListener("click", async () => {
+      if (window.supabaseAuth?.logoutUser) {
+        await window.supabaseAuth.logoutUser();
+      } else if (window.corteroLogout) {
+        await window.corteroLogout();
+      }
+      closeDrawer();
+    });
 
-  /* 🛒 CARRITO */
-  $("cart-btn")?.addEventListener("click", () => {
-    location.href = "carrito.html";
-  });
-
-  /* 🔑 LOGOUT */
-  $("logout-btn")?.addEventListener("click", async () => {
-    if (window.supabaseAuth?.logoutUser) {
-      await window.supabaseAuth.logoutUser();
-    } else if (window.corteroLogout) {
-      await window.corteroLogout();
-    }
-    closeDrawer();
-  });
-
-  /* 🔄 SINCRONIZACIONES */
-  syncUserUI();
-  updateCartCount();
-  updateHeaderCartTitle();
-  syncClientOrderNotification();
-  syncAdminOrdersCount();
-}
+    syncUserUI();
+    updateCartCount();
+    updateHeaderCartTitle();
+    syncClientOrderNotification();
+    syncAdminOrdersCount();
+    initOrdersRealtime(); // 🔄
+  }
 
   /* =====================================================
      EVENTOS GLOBALES
@@ -242,6 +279,7 @@ function initHeader() {
       updateHeaderCartTitle();
       syncClientOrderNotification();
       syncAdminOrdersCount();
+      initOrdersRealtime(); // 🔄
       closeDrawer();
     });
 
@@ -249,10 +287,11 @@ function initHeader() {
       syncUserUI();
       updateCartCount();
       updateHeaderCartTitle();
+      toggleGlobalNotificationDot(false);
       closeDrawer();
     });
 
-    document.addEventListener("keydown", (e) => {
+    document.addEventListener("keydown", e => {
       if (e.key === "Escape") closeDrawer();
     });
   }
@@ -273,5 +312,6 @@ function initHeader() {
     updateHeaderCartTitle();
     syncClientOrderNotification();
     syncAdminOrdersCount();
+    initOrdersRealtime(); // 🔄
   });
 }
