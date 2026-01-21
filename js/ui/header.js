@@ -301,14 +301,7 @@ if (!window.__HEADER_CORE_LOADED__) {
   window.initHeader = initHeader;
 }
 
-/* =====================================================
-   AUTO-INICIALIZACIÓN
-===================================================== */
-document.addEventListener("DOMContentLoaded", () => {
-  if (typeof window.initHeader === "function") {
-    window.initHeader();
-  }
-});
+
 // =====================================================
 // COMPATIBILIDAD LEGACY
 // =====================================================
