@@ -207,7 +207,33 @@ body.page-carrito .header-cart-title {
   align-items: center;
   justify-content: center;
 }
+/* =========================
+   NOTIFICATION DOT
+========================= */
+.notification-dot {
+  position: absolute;
+  top: 6px;
+  right: 6px;
 
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+
+  background: #e53935; /* rojo notificación */
+  box-shadow: 0 0 0 2px #fff;
+
+  pointer-events: none;
+}
+
+/* Oculto por defecto */
+.notification-dot.hidden {
+  display: none;
+}
+
+/* Asegurar posición relativa */
+.menu-toggle {
+  position: relative;
+}
 /* =====================================================
    MOBILE HEADER
 ===================================================== */
