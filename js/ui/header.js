@@ -92,9 +92,11 @@ if (!window.__HEADER_CORE_LOADED__) {
       header.classList.remove("logged");
       drawer.classList.add("no-user");
       drawer.classList.remove("logged");
+
       document.querySelectorAll(".admin-only,.client-only").forEach(el =>
         el.classList.add("hidden")
       );
+
       toggleGlobalNotificationDot(false);
       return;
     }
@@ -109,8 +111,10 @@ if (!window.__HEADER_CORE_LOADED__) {
     $("avatar-user-drawer") &&
       ($("avatar-user-drawer").src =
         user.photo_url || "/imagenes/avatar-default.svg");
-    $("drawer-name") && ($("drawer-name").textContent = user.name || "Usuario");
-    $("drawer-email") && ($("drawer-email").textContent = user.email || "");
+    $("drawer-name") &&
+      ($("drawer-name").textContent = user.name || "Usuario");
+    $("drawer-email") &&
+      ($("drawer-email").textContent = user.email || "");
 
     const isAdmin = user.rol === "admin";
     document.querySelectorAll(".admin-only").forEach(el =>
@@ -122,7 +126,7 @@ if (!window.__HEADER_CORE_LOADED__) {
   }
 
   /* =====================================================
-     🔔 CLIENTE — NOTIFS + CONTADOR
+     🔔 CLIENTE — NOTIFICACIONES + CONTADOR (CORREGIDO)
   ===================================================== */
   async function syncClientOrderNotification() {
     const user = getUserCache();
@@ -135,7 +139,7 @@ if (!window.__HEADER_CORE_LOADED__) {
       .from("orders")
       .select("id")
       .eq("user_id", user.id)
-      .or("client_viewed_at.is.null,updated_at.gt.client_viewed_at");
+      .gt("updated_at", "client_viewed_at"); // ✅ CLAVE
 
     const total = data?.length || 0;
 
@@ -160,7 +164,7 @@ if (!window.__HEADER_CORE_LOADED__) {
   }
 
   /* =====================================================
-     🔴 ADMIN — CONTADOR
+     🔴 ADMIN — CONTADOR DE PEDIDOS
   ===================================================== */
   async function syncAdminOrdersCount() {
     const user = getUserCache();
