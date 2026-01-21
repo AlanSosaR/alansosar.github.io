@@ -1,5 +1,5 @@
 // =====================================================
-// LAYOUT — HEADER GLOBAL (CORE FINAL LIMPIO)
+// LAYOUT — HEADER GLOBAL (CORE FINAL COMPATIBLE)
 // =====================================================
 
 console.log("📐 layout.js cargado");
@@ -43,8 +43,8 @@ if (document.body.dataset.page === "login") {
 
         const HEADER_PATH =
           window.PAGE_MODE?.startsWith("admin")
-            ? "../../header.html"   // pages/admin/*
-            : "header.html";        // raíz
+            ? "../../header.html"
+            : "header.html";
 
         const res = await fetch(HEADER_PATH, { cache: "no-store" });
         if (!res.ok) {
@@ -62,35 +62,36 @@ if (document.body.dataset.page === "login") {
         // =====================================================
         // 5️⃣ OCULTAR TODOS LOS TÍTULOS
         // =====================================================
-        document.querySelectorAll(".header-cart-title").forEach(el => {
-          el.classList.add("hidden");
-        });
+        document.querySelectorAll(".header-cart-title").forEach(el =>
+          el.classList.add("hidden")
+        );
 
         // =====================================================
         // 6️⃣ MOSTRAR TÍTULO SEGÚN PÁGINA
         // =====================================================
+        const body = document.body;
 
-        if (document.body.classList.contains("page-carrito")) {
+        if (body.classList.contains("page-carrito")) {
           document.getElementById("header-cart-title")?.classList.remove("hidden");
         }
 
-        if (document.body.classList.contains("page-datos-cliente")) {
+        if (body.classList.contains("page-datos-cliente")) {
           document.getElementById("header-datos-title")?.classList.remove("hidden");
         }
 
-        if (document.body.classList.contains("page-recibo")) {
+        if (body.classList.contains("page-recibo")) {
           document.getElementById("header-recibo-title")?.classList.remove("hidden");
         }
 
-        if (document.body.classList.contains("page-mis-pedidos")) {
+        if (body.classList.contains("page-mis-pedidos")) {
           document.getElementById("header-mis-pedidos-title")?.classList.remove("hidden");
         }
 
-        if (document.body.classList.contains("page-admin-cafes")) {
+        if (body.classList.contains("page-admin-cafes")) {
           document.getElementById("header-admin-cafes-title")?.classList.remove("hidden");
         }
 
-        if (document.body.classList.contains("page-admin-agregar-cafe")) {
+        if (body.classList.contains("page-admin-agregar-cafe")) {
           const isEdit = new URLSearchParams(location.search).has("id");
 
           document
@@ -103,15 +104,32 @@ if (document.body.dataset.page === "login") {
         }
 
         // =====================================================
-        // 7️⃣ INIT HEADER UI
+        // 7️⃣ ESPERAR A QUE HEADER.JS ESTÉ LISTO
         // =====================================================
-        if (typeof window.initHeader === "function") {
-          window.initHeader();
-          console.log("🧭 initHeader OK");
-        }
+        const waitForHeader = () =>
+          new Promise(resolve => {
+            if (typeof window.initHeader === "function") {
+              resolve();
+            } else {
+              const i = setInterval(() => {
+                if (typeof window.initHeader === "function") {
+                  clearInterval(i);
+                  resolve();
+                }
+              }, 30);
+            }
+          });
+
+        await waitForHeader();
 
         // =====================================================
-        // 8️⃣ INIT AUTH UI (VISUAL)
+        // 8️⃣ INIT HEADER UI (UNA SOLA VEZ)
+        // =====================================================
+        window.initHeader();
+        console.log("🧭 initHeader OK");
+
+        // =====================================================
+        // 9️⃣ INIT AUTH UI (VISUAL)
         // =====================================================
         if (typeof window.initAuthUI === "function") {
           await window.initAuthUI();
@@ -119,7 +137,7 @@ if (document.body.dataset.page === "login") {
         }
 
         // =====================================================
-        // 9️⃣ HEADER LISTO
+        // 🔟 HEADER LISTO
         // =====================================================
         document.dispatchEvent(new Event("header:ready"));
         console.log("📣 Evento header:ready");
