@@ -81,12 +81,7 @@ function updateQtyControls(productId, stockBD) {
   addBtn.disabled   = qty > available;
 }
 
-/* 🔑 HEADER CONTROLA BADGE */
-function syncHeaderCounter() {
-  if (typeof window.updateHeaderCartCount === "function") {
-    window.updateHeaderCartCount();
-  }
-}
+
 
 function animateCartBadge() {
   const badge = safe("cart-count");
@@ -100,11 +95,17 @@ function addToCart(product) {
   const cart = getCart();
   const index = cart.findIndex(p => p.product_id === product.product_id);
 
-  if (index >= 0) cart[index].qty += product.qty;
-  else cart.push(product);
+  if (index >= 0) {
+    cart[index].qty += product.qty;
+  } else {
+    cart.push(product);
+  }
 
   saveCart(cart);
-  syncHeaderCounter();
+
+  // 🔑 NOTIFICA AL HEADER EN TIEMPO REAL
+  window.dispatchEvent(new Event("cartUpdated"));
+
   animateCartBadge();
 }
 
