@@ -129,12 +129,12 @@ if (!window.__HEADER_CORE_LOADED__) {
       .select("id")
       .eq("user_id", user.id);
 
-    const badge = $("client-orders-count");
-    if (badge) badge.textContent = data?.length || 0;
+    $("client-orders-count") &&
+      ($("client-orders-count").textContent = data?.length || 0);
   }
 
   /* =====================================================
-     🔔 ADMIN — CONTADOR DE PEDIDOS
+     🔔 ADMIN — PEDIDOS
   ===================================================== */
   async function syncAdminOrdersCount() {
     const user = getUserCache();
@@ -144,12 +144,12 @@ if (!window.__HEADER_CORE_LOADED__) {
     if (!sb) return;
 
     const { data } = await sb.from("orders").select("id");
-    const badge = $("admin-orders-count");
-    if (badge) badge.textContent = data?.length || 0;
+    $("admin-orders-count") &&
+      ($("admin-orders-count").textContent = data?.length || 0);
   }
 
   /* =====================================================
-     🔴 ADMIN — NOTIFICACIONES NO LEÍDAS (CLAVE)
+     🔴 ADMIN — NOTIFICACIONES
   ===================================================== */
   async function syncAdminNotifications() {
     const user = getUserCache();
@@ -158,22 +158,17 @@ if (!window.__HEADER_CORE_LOADED__) {
     const sb = await getSupabase();
     if (!sb) return;
 
-    const { data, error } = await sb
+    const { data } = await sb
       .from("notifications")
       .select("id")
       .eq("user_id", user.id)
       .eq("is_read", false);
 
-    if (error) {
-      console.error("❌ Error leyendo notificaciones:", error);
-      return;
-    }
-
     toggleGlobalNotificationDot((data?.length || 0) > 0);
   }
 
   /* =====================================================
-     🔄 REALTIME — ORDERS + NOTIFICATIONS
+     🔄 REALTIME
   ===================================================== */
   let REALTIME_INIT = false;
 
@@ -185,30 +180,24 @@ if (!window.__HEADER_CORE_LOADED__) {
     const sb = await getSupabase();
     if (!user || !sb) return;
 
-    // Orders
     sb.channel("orders-realtime")
-      .on(
-        "postgres_changes",
+      .on("postgres_changes",
         { event: "*", schema: "public", table: "orders" },
         () => {
           if (user.rol === "admin") syncAdminOrdersCount();
           if (user.rol === "cliente") syncClientOrderNotification();
         }
-      )
-      .subscribe();
+      ).subscribe();
 
-    // Notifications
     sb.channel("notifications-realtime")
-      .on(
-        "postgres_changes",
+      .on("postgres_changes",
         { event: "INSERT", schema: "public", table: "notifications" },
         payload => {
           if (user.rol === "admin" && payload.new.user_id === user.id) {
             syncAdminNotifications();
           }
         }
-      )
-      .subscribe();
+      ).subscribe();
   }
 
   /* =====================================================
@@ -233,7 +222,7 @@ if (!window.__HEADER_CORE_LOADED__) {
   }
 
   /* =====================================================
-     INIT HEADER
+     INIT HEADER (EXTERNO)
   ===================================================== */
   let HEADER_INITIALIZED = false;
 
@@ -264,48 +253,9 @@ if (!window.__HEADER_CORE_LOADED__) {
     updateHeaderCartTitle();
     syncClientOrderNotification();
     syncAdminOrdersCount();
-    syncAdminNotifications(); // 🔴 CLAVE
+    syncAdminNotifications();
     initRealtime();
-  }
-
-  /* =====================================================
-     EVENTOS GLOBALES
-  ===================================================== */
-  if (!window.__HEADER_GLOBAL_EVENTS__) {
-    window.__HEADER_GLOBAL_EVENTS__ = true;
-
-    window.addEventListener("cartUpdated", () => {
-      updateCartCount();
-      updateHeaderCartTitle();
-    });
-
-    document.addEventListener("userLoggedIn", () => {
-      syncUserUI();
-      updateCartCount();
-      updateHeaderCartTitle();
-      syncClientOrderNotification();
-      syncAdminOrdersCount();
-      syncAdminNotifications();
-      initRealtime();
-    });
-
-    document.addEventListener("userLoggedOut", () => {
-      syncUserUI();
-      updateCartCount();
-      updateHeaderCartTitle();
-      toggleGlobalNotificationDot(false);
-      REALTIME_INIT = false;
-    });
   }
 
   window.initHeader = initHeader;
 }
-
-/* =====================================================
-   AUTO-INICIALIZACIÓN
-===================================================== */
-document.addEventListener("DOMContentLoaded", () => {
-  if (typeof window.initHeader === "function") {
-    window.initHeader();
-  }
-});
