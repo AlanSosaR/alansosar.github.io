@@ -694,22 +694,16 @@ body.page-carrito.logged #login-desktop {
 
   width: 20px;
   height: 20px;
-
-  margin-left: 8px;        /* separación del texto "Pedidos" */
+  margin-left: 8px;
 
   font-size: 0.75rem;
   font-weight: 600;
 
   color: #fff;
-  background-color: #d72638;
+  background-color: var(--verde); /* verde como el carrito */
 
-  border-radius: 50%;      /* 🔴 círculo perfecto */
+  border-radius: 50%;
   line-height: 1;
-}
-
-/* Ocultar cuando no hay pedidos */
-.drawer-badge:empty {
-  display: none;
 }
 /* =====================================================
    MÓVIL — CARRITO (LOGUEADO O NO)
