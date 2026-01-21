@@ -122,12 +122,13 @@
   <hr class="user-drawer-divider logged">
 
   <!-- CLIENTE -->
-  <a href="mis-pedidos.html"
-     class="user-drawer-item logged client-only"
-     id="mis-pedidos-item">
-    <span class="material-symbols-outlined">shopping_bag</span>
-    <span class="drawer-text">Mis pedidos</span>
-  </a>
+<a href="mis-pedidos.html"
+   class="user-drawer-item logged client-only"
+   id="mis-pedidos-item">
+  <span class="material-symbols-outlined">shopping_bag</span>
+  <span class="drawer-text">Mis pedidos</span>
+  <span class="drawer-badge hidden" id="client-orders-count">0</span>
+</a>
 
   <a href="historial.html"
      class="user-drawer-item logged client-only">
@@ -136,12 +137,12 @@
   </a>
 
   <!-- ADMIN -->
-  <a href="admin-pedidos.html"
-     class="user-drawer-item admin-only hidden">
-    <span class="material-symbols-outlined">inventory_2</span>
-    <span>Pedidos</span>
-    <span class="drawer-badge" id="admin-orders-count">5</span>
-  </a>
+<a href="admin-pedidos.html"
+   class="user-drawer-item admin-only hidden">
+  <span class="material-symbols-outlined">inventory_2</span>
+  <span>Pedidos</span>
+  <span class="drawer-badge hidden" id="admin-orders-count">0</span>
+</a>
 
   <a href="admin-clientes.html"
      class="user-drawer-item admin-only hidden">
