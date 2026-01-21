@@ -174,25 +174,26 @@ if (!window.__HEADER_CORE_LOADED__) {
   /* =====================================================
      🔴 ADMIN — CONTADOR DE PEDIDOS
   ===================================================== */
-  async function syncAdminOrdersCount() {
-    const user = getUserCache();
-    if (!user || user.rol !== "admin") return;
+async function syncAdminOrdersCount() {
+  const user = getUserCache();
+  if (!user || user.rol !== "admin") return;
 
-    const sb = await getSupabase();
-    if (!sb) return;
+  const sb = await getSupabase();
+  if (!sb) return;
 
-    const { data } = await sb
-      .from("orders")
-      .select("id")
-      .in("status", ["pending_payment", "payment_review"]);
+  // ✅ TODOS los pedidos, sin filtrar por estado
+  const { data } = await sb
+    .from("orders")
+    .select("id");
 
-    const total = data?.length || 0;
+  const total = data?.length || 0;
 
-    const badge = $("admin-orders-count");
-    if (badge) badge.textContent = total;
+  const badge = $("admin-orders-count");
+  if (badge) badge.textContent = total;
 
-    toggleGlobalNotificationDot(total > 0);
-  }
+  // 🔴 punto rojo si hay al menos 1 pedido
+  toggleGlobalNotificationDot(total > 0);
+}
 
   /* =====================================================
      🔄 REALTIME — ORDERS
