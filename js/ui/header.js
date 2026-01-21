@@ -21,26 +21,21 @@ if (!window.__HEADER_CORE_LOADED__) {
     return window.sb || window.supabase || null;
   }
 
-  /* =====================================================
-     🔴 DOT GLOBAL (AVATAR + HAMBURGUESA)
-  ===================================================== */
-  function toggleGlobalNotificationDot(show) {
-    ["avatar-user", "menu-toggle"].forEach(id => {
-      const el = $(id);
-      if (!el) return;
+/* =====================================================
+   🔴 DOT GLOBAL — AVATAR + HAMBURGUESA (FIX FINAL)
+===================================================== */
+function toggleGlobalNotificationDot(show) {
+  const menuDot   = document.getElementById("menu-notification-dot");
+  const avatarDot = document.getElementById("avatar-notification-dot");
 
-      let dot = el.querySelector(".notification-dot");
-
-      if (show && !dot) {
-        dot = document.createElement("span");
-        dot.className = "notification-dot";
-        el.style.position = "relative";
-        el.appendChild(dot);
-      }
-
-      if (!show && dot) dot.remove();
-    });
+  if (menuDot) {
+    menuDot.classList.toggle("hidden", !show);
   }
+
+  if (avatarDot) {
+    avatarDot.classList.toggle("hidden", !show);
+  }
+}
 
   /* =====================================================
      🛒 CARRITO — CONTADOR
