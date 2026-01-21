@@ -234,6 +234,14 @@ body.page-carrito .header-cart-title {
 .menu-toggle {
   position: relative;
 }
+.header-avatar-button {
+  position: relative;
+}
+
+.header-avatar-button .notification-dot {
+  top: 4px;
+  right: 4px;
+}
 /* =====================================================
    MOBILE HEADER
 ===================================================== */
