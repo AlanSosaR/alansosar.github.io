@@ -309,3 +309,13 @@ document.addEventListener("DOMContentLoaded", () => {
     window.initHeader();
   }
 });
+// =====================================================
+// COMPATIBILIDAD LEGACY
+// =====================================================
+window.syncHeaderCounter = function () {
+  if (typeof window.initHeader === "function") {
+    // actualiza contador de carrito
+    const event = new Event("cartUpdated");
+    window.dispatchEvent(event);
+  }
+};
