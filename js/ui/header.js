@@ -148,68 +148,67 @@ if (!window.__HEADER_CORE_LOADED__) {
     if (badge) badge.textContent = data?.length || 0;
   }
 
-  /* =====================================================
-     🔴 ADMIN — NOTIFICACIONES NO LEÍDAS (CLAVE)
-  ===================================================== */
-  async function syncAdminNotifications() {
-    const user = getUserCache();
-    if (!user || user.rol !== "admin") return;
+/* =====================================================
+   🔴 ADMIN — NOTIFICACIONES NO LEÍDAS (CORREGIDO)
+===================================================== */
+async function syncAdminNotifications() {
+  const user = getUserCache();
+  if (!user || user.rol !== "admin") return;
 
-    const sb = await getSupabase();
-    if (!sb) return;
+  const sb = await getSupabase();
+  if (!sb) return;
 
-    const { data, error } = await sb
-      .from("notifications")
-      .select("id")
-      .eq("user_id", user.id)
-      .eq("is_read", false);
+  const { data, error } = await sb
+    .from("notifications")
+    .select("id")
+    .eq("is_read", false); // 🔑 ADMIN VE TODAS LAS PENDIENTES
 
-    if (error) {
-      console.error("❌ Error leyendo notificaciones:", error);
-      return;
-    }
-
-    toggleGlobalNotificationDot((data?.length || 0) > 0);
+  if (error) {
+    console.error("❌ Error leyendo notificaciones:", error);
+    return;
   }
 
-  /* =====================================================
-     🔄 REALTIME — ORDERS + NOTIFICATIONS
-  ===================================================== */
-  let REALTIME_INIT = false;
+  toggleGlobalNotificationDot((data?.length || 0) > 0);
+}
 
-  async function initRealtime() {
-    if (REALTIME_INIT) return;
-    REALTIME_INIT = true;
+/* =====================================================
+   🔄 REALTIME — ORDERS + NOTIFICATIONS (CORREGIDO)
+===================================================== */
+let REALTIME_INIT = false;
 
-    const user = getUserCache();
-    const sb = await getSupabase();
-    if (!user || !sb) return;
+async function initRealtime() {
+  if (REALTIME_INIT) return;
+  REALTIME_INIT = true;
 
-    // Orders
-    sb.channel("orders-realtime")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "orders" },
-        () => {
-          if (user.rol === "admin") syncAdminOrdersCount();
-          if (user.rol === "cliente") syncClientOrderNotification();
+  const user = getUserCache();
+  const sb = await getSupabase();
+  if (!user || !sb) return;
+
+  /* ================= ORDERS ================= */
+  sb.channel("orders-realtime")
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "orders" },
+      () => {
+        if (user.rol === "admin") syncAdminOrdersCount();
+        if (user.rol === "cliente") syncClientOrderNotification();
+      }
+    )
+    .subscribe();
+
+  /* ================= NOTIFICATIONS ================= */
+  sb.channel("notifications-realtime")
+    .on(
+      "postgres_changes",
+      { event: "INSERT", schema: "public", table: "notifications" },
+      () => {
+        if (user.rol === "admin") {
+          syncAdminNotifications(); // 🔴 ACTIVA DOT EN TIEMPO REAL
         }
-      )
-      .subscribe();
-
-    // Notifications
-    sb.channel("notifications-realtime")
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "notifications" },
-        payload => {
-          if (user.rol === "admin" && payload.new.user_id === user.id) {
-            syncAdminNotifications();
-          }
-        }
-      )
-      .subscribe();
-  }
+      }
+    )
+    .subscribe();
+}
 
   /* =====================================================
      DRAWER
