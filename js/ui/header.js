@@ -260,3 +260,11 @@ if (!window.__HEADER_CORE_LOADED__) {
 
   window.initHeader = initHeader;
 }
+// =====================================================
+// AUTO-INICIALIZACIÓN DEL HEADER
+// =====================================================
+document.addEventListener("DOMContentLoaded", () => {
+  if (typeof window.initHeader === "function") {
+    window.initHeader();
+  }
+});
