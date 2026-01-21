@@ -26,6 +26,7 @@ if (!window.__HEADER_CORE_LOADED__) {
 
   /* =====================================================
      🔴 DOT GLOBAL (AVATAR + HAMBURGUESA)
+     ⚠️ usa .notification-dot (CSS real)
   ===================================================== */
   function toggleGlobalNotificationDot(show) {
     const targets = ["avatar-user", "menu-toggle"];
@@ -34,11 +35,11 @@ if (!window.__HEADER_CORE_LOADED__) {
       const el = $(id);
       if (!el) return;
 
-      let dot = el.querySelector(".notif-dot");
+      let dot = el.querySelector(".notification-dot");
 
       if (show && !dot) {
         dot = document.createElement("span");
-        dot.className = "notif-dot";
+        dot.className = "notification-dot";
         el.style.position = "relative";
         el.appendChild(dot);
       }
@@ -109,8 +110,7 @@ if (!window.__HEADER_CORE_LOADED__) {
     $("avatar-user") &&
       ($("avatar-user").src = user.photo_url || "/imagenes/avatar-default.svg");
     $("avatar-user-drawer") &&
-      ($("avatar-user-drawer").src =
-        user.photo_url || "/imagenes/avatar-default.svg");
+      ($("avatar-user-drawer").src = user.photo_url || "/imagenes/avatar-default.svg");
     $("drawer-name") &&
       ($("drawer-name").textContent = user.name || "Usuario");
     $("drawer-email") &&
@@ -126,7 +126,9 @@ if (!window.__HEADER_CORE_LOADED__) {
   }
 
   /* =====================================================
-     🔔 CLIENTE — NOTIFICACIONES + CONTADOR (CORREGIDO)
+     🔔 CLIENTE — NOTIFICACIONES + CONTADOR
+     ✔ NO al crear pedido
+     ✔ SOLO cuando admin cambia estado
   ===================================================== */
   async function syncClientOrderNotification() {
     const user = getUserCache();
@@ -139,28 +141,34 @@ if (!window.__HEADER_CORE_LOADED__) {
       .from("orders")
       .select("id")
       .eq("user_id", user.id)
-      .gt("updated_at", "client_viewed_at"); // ✅ CLAVE
+      .or("client_viewed_at.is.null,updated_at.gt.client_viewed_at");
 
-    const total = data?.length || 0;
+    const pendingUpdates = data?.length || 0;
+
+    // 🔢 contador TOTAL de pedidos (no notificación)
+    const { data: allOrders } = await sb
+      .from("orders")
+      .select("id")
+      .eq("user_id", user.id);
+
+    const totalOrders = allOrders?.length || 0;
 
     const badge = $("client-orders-count");
-    if (badge) {
-      badge.textContent = total;
-      badge.style.display = total > 0 ? "inline-flex" : "none";
-    }
+    if (badge) badge.textContent = totalOrders;
+
+    // 🔴 notificación SOLO si hay cambios del admin
+    toggleGlobalNotificationDot(pendingUpdates > 0);
 
     const item = $("mis-pedidos-item");
     if (item) {
       let dot = item.querySelector(".drawer-dot");
-      if (total > 0 && !dot) {
+      if (pendingUpdates > 0 && !dot) {
         dot = document.createElement("span");
         dot.className = "drawer-dot";
         item.appendChild(dot);
       }
-      if (total === 0 && dot) dot.remove();
+      if (pendingUpdates === 0 && dot) dot.remove();
     }
-
-    toggleGlobalNotificationDot(total > 0);
   }
 
   /* =====================================================
@@ -181,10 +189,7 @@ if (!window.__HEADER_CORE_LOADED__) {
     const total = data?.length || 0;
 
     const badge = $("admin-orders-count");
-    if (badge) {
-      badge.textContent = total;
-      badge.style.display = total > 0 ? "inline-flex" : "none";
-    }
+    if (badge) badge.textContent = total;
 
     toggleGlobalNotificationDot(total > 0);
   }
@@ -200,11 +205,9 @@ if (!window.__HEADER_CORE_LOADED__) {
     sb.channel("orders-realtime")
       .on(
         "postgres_changes",
-        { event: "*", schema: "public", table: "orders" },
+        { event: "UPDATE", schema: "public", table: "orders" },
         payload => {
-          if (user.rol === "admin") {
-            syncAdminOrdersCount();
-          }
+          if (user.rol === "admin") syncAdminOrdersCount();
           if (user.rol === "cliente" && payload.new?.user_id === user.id) {
             syncClientOrderNotification();
           }
@@ -268,7 +271,7 @@ if (!window.__HEADER_CORE_LOADED__) {
     updateHeaderCartTitle();
     syncClientOrderNotification();
     syncAdminOrdersCount();
-    initOrdersRealtime(); // 🔄
+    initOrdersRealtime();
   }
 
   /* =====================================================
@@ -283,7 +286,7 @@ if (!window.__HEADER_CORE_LOADED__) {
       updateHeaderCartTitle();
       syncClientOrderNotification();
       syncAdminOrdersCount();
-      initOrdersRealtime(); // 🔄
+      initOrdersRealtime();
       closeDrawer();
     });
 
@@ -300,22 +303,5 @@ if (!window.__HEADER_CORE_LOADED__) {
     });
   }
 
-  /* =====================================================
-     EXPORTS
-  ===================================================== */
   window.initHeader = initHeader;
-  window.updateHeaderCartCount = updateCartCount;
-  window.updateHeaderCartTitle = updateHeaderCartTitle;
-
-  /* =====================================================
-     HEADER LISTO
-  ===================================================== */
-  document.addEventListener("header:ready", () => {
-    syncUserUI();
-    updateCartCount();
-    updateHeaderCartTitle();
-    syncClientOrderNotification();
-    syncAdminOrdersCount();
-    initOrdersRealtime(); // 🔄
-  });
 }
