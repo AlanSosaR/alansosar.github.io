@@ -22,7 +22,7 @@ if (!window.__HEADER_CORE_LOADED__) {
   }
 
   /* =====================================================
-     🔴 DOT GLOBAL
+     🔴 DOT GLOBAL (AVATAR + HAMBURGUESA)
   ===================================================== */
   function toggleGlobalNotificationDot(show) {
     ["avatar-user", "menu-toggle"].forEach(id => {
@@ -43,7 +43,7 @@ if (!window.__HEADER_CORE_LOADED__) {
   }
 
   /* =====================================================
-     🛒 CARRITO — CONTADOR (REAL TIME)
+     🛒 CARRITO — CONTADOR
   ===================================================== */
   function updateCartCount() {
     const badge = $("cart-count");
@@ -51,8 +51,7 @@ if (!window.__HEADER_CORE_LOADED__) {
 
     try {
       const cart = JSON.parse(localStorage.getItem("cafecortero_cart")) || [];
-      const total = cart.reduce((a, i) => a + Number(i.qty || 0), 0);
-      badge.textContent = total;
+      badge.textContent = cart.reduce((a, i) => a + Number(i.qty || 0), 0);
     } catch {
       badge.textContent = "0";
     }
@@ -125,18 +124,17 @@ if (!window.__HEADER_CORE_LOADED__) {
     const sb = await getSupabase();
     if (!sb) return;
 
-    const { data: allOrders } = await sb
+    const { data } = await sb
       .from("orders")
       .select("id")
       .eq("user_id", user.id);
 
-    const totalOrders = allOrders?.length || 0;
     const badge = $("client-orders-count");
-    if (badge) badge.textContent = totalOrders;
+    if (badge) badge.textContent = data?.length || 0;
   }
 
   /* =====================================================
-     🔔 ADMIN — PEDIDOS
+     🔔 ADMIN — CONTADOR PEDIDOS
   ===================================================== */
   async function syncAdminOrdersCount() {
     const user = getUserCache();
@@ -150,14 +148,41 @@ if (!window.__HEADER_CORE_LOADED__) {
 
     const badge = $("admin-orders-count");
     if (badge) badge.textContent = total;
-
-    toggleGlobalNotificationDot(total > 0);
   }
 
   /* =====================================================
-     🔄 REALTIME — ORDERS (INSERT + UPDATE)
+     🔴 ADMIN — NOTIFICACIONES NO LEÍDAS (CLAVE)
   ===================================================== */
-  async function initOrdersRealtime() {
+  async function syncAdminNotifications() {
+    const user = getUserCache();
+    if (!user || user.rol !== "admin") return;
+
+    const sb = await getSupabase();
+    if (!sb) return;
+
+    const { data, error } = await sb
+      .from("notifications")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", user.id)
+      .eq("is_read", false);
+
+    if (error) {
+      console.error("❌ Error leyendo notificaciones admin:", error);
+      return;
+    }
+
+    toggleGlobalNotificationDot((data?.length || 0) > 0);
+  }
+
+  /* =====================================================
+     🔄 REALTIME — SINGLETON
+  ===================================================== */
+  let REALTIME_INIT = false;
+
+  async function initRealtime() {
+    if (REALTIME_INIT) return;
+    REALTIME_INIT = true;
+
     const user = getUserCache();
     const sb = await getSupabase();
     if (!user || !sb) return;
@@ -172,6 +197,18 @@ if (!window.__HEADER_CORE_LOADED__) {
         }
       )
       .subscribe();
+
+    sb.channel("notifications-realtime")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "notifications" },
+        payload => {
+          if (user.rol === "admin" && payload.new?.user_id === user.id) {
+            syncAdminNotifications();
+          }
+        }
+      )
+      .subscribe();
   }
 
   /* =====================================================
@@ -181,6 +218,9 @@ if (!window.__HEADER_CORE_LOADED__) {
     $("user-drawer")?.classList.add("open");
     $("user-scrim")?.classList.add("open");
     document.body.style.overflow = "hidden";
+
+    // 🔑 Al abrir, recalcula estado real
+    syncAdminNotifications();
   }
 
   function closeDrawer() {
@@ -227,7 +267,8 @@ if (!window.__HEADER_CORE_LOADED__) {
     updateHeaderCartTitle();
     syncClientOrderNotification();
     syncAdminOrdersCount();
-    initOrdersRealtime();
+    syncAdminNotifications(); // 🔑 CLAVE
+    initRealtime();
   }
 
   /* =====================================================
@@ -247,7 +288,8 @@ if (!window.__HEADER_CORE_LOADED__) {
       updateHeaderCartTitle();
       syncClientOrderNotification();
       syncAdminOrdersCount();
-      initOrdersRealtime();
+      syncAdminNotifications();
+      initRealtime();
     });
 
     document.addEventListener("userLoggedOut", () => {
@@ -255,14 +297,16 @@ if (!window.__HEADER_CORE_LOADED__) {
       updateCartCount();
       updateHeaderCartTitle();
       toggleGlobalNotificationDot(false);
+      REALTIME_INIT = false;
     });
   }
 
   window.initHeader = initHeader;
 }
-// =====================================================
-// AUTO-INICIALIZACIÓN DEL HEADER
-// =====================================================
+
+/* =====================================================
+   AUTO-INICIALIZACIÓN
+===================================================== */
 document.addEventListener("DOMContentLoaded", () => {
   if (typeof window.initHeader === "function") {
     window.initHeader();
