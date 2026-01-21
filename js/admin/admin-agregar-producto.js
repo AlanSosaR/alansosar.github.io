@@ -322,7 +322,18 @@ form.addEventListener("submit", async (e) => {
     btnSubmit.classList.remove("loading");
   }
 });
+/* ============================================================
+   BOTÓN VOLVER ATRÁS
+============================================================ */
+document.querySelector(".back-btn")?.addEventListener("click", (e) => {
+  const fallback = e.currentTarget.dataset.back;
 
+  if (history.length > 1) {
+    history.back();
+  } else if (fallback) {
+    location.href = fallback;
+  }
+});
 /* ============================================================
    INIT
 ============================================================ */
