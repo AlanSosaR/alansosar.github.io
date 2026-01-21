@@ -208,7 +208,7 @@ body.page-carrito .header-cart-title {
   justify-content: center;
 }
 /* =========================
-   NOTIFICATION DOT
+   NOTIFICATION DOT (FINAL)
 ========================= */
 .notification-dot {
   position: absolute;
@@ -219,32 +219,32 @@ body.page-carrito .header-cart-title {
   height: 8px;
   border-radius: 50%;
 
-  background: #e53935; /* rojo notificación */
+  background: #e53935;           /* rojo notificación */
   box-shadow: 0 0 0 2px #fff;
 
   pointer-events: none;
+  z-index: 9999;                 /* 🔑 CLAVE: visible sobre todo */
 }
 
 /* Oculto por defecto */
 .notification-dot.hidden {
-  display: none;
+  display: none !important;
 }
 
-/* Asegurar posición relativa */
-.menu-toggle {
-  position: relative;
-}
+/* =========================
+   CONTENEDORES (ANCLAJE)
+========================= */
+#menu-toggle,
+#btn-header-user,
+.menu-toggle,
 .header-avatar-button {
-  position: relative;
+  position: relative;            /* 🔑 ancla correcta */
 }
 
+/* Ajuste fino avatar (PC) */
 .header-avatar-button .notification-dot {
   top: 4px;
   right: 4px;
-}
-#menu-toggle,
-#btn-header-user {
-  position: relative;
 }
 /* =====================================================
    MOBILE HEADER
