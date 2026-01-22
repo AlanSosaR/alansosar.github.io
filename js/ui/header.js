@@ -28,13 +28,22 @@ function toggleGlobalNotificationDot(show) {
   const menuBadge   = document.getElementById("menu-notification-badge");
   const avatarBadge = document.getElementById("avatar-notification-badge");
 
-  if (menuBadge) {
-    menuBadge.classList.toggle("hidden", !show);
-  }
+  [menuBadge, avatarBadge].forEach(badge => {
+    if (!badge) return;
 
-  if (avatarBadge) {
-    avatarBadge.classList.toggle("hidden", !show);
-  }
+    if (show) {
+      badge.classList.remove("hidden");
+
+      // 🔑 reinicia la animación correctamente
+      badge.classList.remove("animate");
+      badge.offsetHeight; // fuerza reflow
+      badge.classList.add("animate");
+
+    } else {
+      badge.classList.add("hidden");
+      badge.classList.remove("animate");
+    }
+  });
 }
 
   /* =====================================================
