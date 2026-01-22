@@ -322,7 +322,11 @@ body.page-carrito .header-cart-title {
     box-shadow:
       0 8px 20px rgba(0,0,0,.18); /* 🔑 igual al carrito */
   }
-
+.menu-toggle > * {
+  margin: 0;
+  padding: 0;
+  line-height: 1;
+}
   /* 🛒 CARRITO — REFERENCIA VISUAL */
   #cart-btn {
     position: absolute;
