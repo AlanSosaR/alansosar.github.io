@@ -35,13 +35,12 @@ export async function registerPushToken(userId) {
   }
 
   /* ================= SERVICE WORKER ================= */
-  let registration = await navigator.serviceWorker.getRegistration(
-    "/firebase-messaging-sw.js"
-  );
+  let registration = await navigator.serviceWorker.getRegistration("/");
 
   if (!registration) {
     registration = await navigator.serviceWorker.register(
-      "/firebase-messaging-sw.js"
+      "/firebase-messaging-sw.js",
+      { scope: "/" }
     );
   }
 
