@@ -1,10 +1,31 @@
 // js/core/notifications.js
 import { registerPushToken } from "./push.js";
 
-console.log("🔔 notifications.js — CORE FINAL ESTABLE");
+console.log("🔔 notifications.js — CORE FINAL DEFINITIVO");
 
 /* =====================================================
-   HELPERS — USUARIO / SUPABASE
+   HELPERS — SUPABASE / SESIÓN
+===================================================== */
+function getSupabase() {
+  return window.supabase || null;
+}
+
+async function waitForSupabaseSession() {
+  const sb = getSupabase();
+  if (!sb) return null;
+
+  for (let i = 0; i < 15; i++) {
+    const { data } = await sb.auth.getSession();
+    if (data?.session?.user) {
+      return data.session.user;
+    }
+    await new Promise(r => setTimeout(r, 100));
+  }
+  return null;
+}
+
+/* =====================================================
+   HELPERS — CACHE UI (NO SEGURIDAD)
 ===================================================== */
 function getUserCache() {
   try {
@@ -15,42 +36,20 @@ function getUserCache() {
   }
 }
 
-function getSupabase() {
-  return window.supabase || null;
-}
-
-/* =====================================================
-   ESPERAR SESIÓN REAL (🔥 CLAVE RLS)
-===================================================== */
-async function waitForSupabaseSession() {
-  const sb = getSupabase();
-  if (!sb) return null;
-
-  for (let i = 0; i < 10; i++) {
-    const { data } = await sb.auth.getSession();
-    if (data?.session?.user) {
-      return data.session.user;
-    }
-    await new Promise(r => setTimeout(r, 100));
-  }
-
-  return null;
-}
-
 /* =====================================================
    UI — HEADER (HOOKS)
 ===================================================== */
-const setGlobalBadge = (show) =>
+const setGlobalBadge = show =>
   window.toggleGlobalNotificationDot?.(show);
 
-const setAdminCount = (count) =>
+const setAdminCount = count =>
   window.setAdminOrdersCount?.(count);
 
-const setMyCount = (count) =>
+const setMyCount = count =>
   window.setMyOrdersCount?.(count);
 
 /* =====================================================
-   UI — DRAWER (NOTIFICACIÓN SUPERIOR)
+   UI — DRAWER
 ===================================================== */
 function showNotificationUI({ title, message, created_at, role }) {
   const block = document.getElementById("drawer-notification");
@@ -73,7 +72,7 @@ function hideAllNotificationUI() {
 }
 
 /* =====================================================
-   ESTADOS REALES
+   ESTADOS
 ===================================================== */
 const ADMIN_ACTIVE_STATUSES = [
   "cash_on_delivery",
@@ -89,19 +88,16 @@ const CLIENT_VISIBLE_STATUSES = [
 ];
 
 /* =====================================================
-   CONTADORES — ADMIN
+   CONTADORES
 ===================================================== */
-async function syncAdminOrdersCount() {
-  const sb = getSupabase();
-  if (!sb) return;
-
+async function syncAdminOrdersCount(sb) {
   const { count, error } = await sb
     .from("orders")
     .select("*", { count: "exact", head: true })
     .in("status", ADMIN_ACTIVE_STATUSES);
 
   if (error) {
-    console.error("❌ Admin count error:", error);
+    console.error("❌ Admin count:", error);
     setAdminCount(0);
     return;
   }
@@ -109,21 +105,15 @@ async function syncAdminOrdersCount() {
   setAdminCount(count || 0);
 }
 
-/* =====================================================
-   CONTADORES — CLIENTE
-===================================================== */
-async function syncMyOrdersCount(userId) {
-  const sb = getSupabase();
-  if (!sb) return;
-
+async function syncMyOrdersCount(sb, authUser) {
   const { count, error } = await sb
     .from("orders")
     .select("*", { count: "exact", head: true })
-    .eq("user_id", userId)
+    .eq("user_id", authUser.id)
     .in("status", CLIENT_VISIBLE_STATUSES);
 
   if (error) {
-    console.error("❌ Client count error:", error);
+    console.error("❌ Client count:", error);
     setMyCount(0);
     return;
   }
@@ -132,114 +122,104 @@ async function syncMyOrdersCount(userId) {
 }
 
 /* =====================================================
-   NOTIFICACIONES (CAMPANA + TARJETA)
+   NOTIFICACIONES UI
 ===================================================== */
-async function syncNotificationsUI() {
-  const user = getUserCache();
-  if (!user) {
-    hideAllNotificationUI();
-    setGlobalBadge(false);
-    return;
-  }
-
-  const sb = getSupabase();
-  if (!sb) return;
-
+async function syncNotificationsUI(sb, authUser, role) {
   let query = sb
     .from("notifications")
     .select("*")
     .eq("is_read", false)
     .order("created_at", { ascending: false });
 
-  if (user.rol !== "admin") {
-    query = query.eq("user_id", user.id);
+  if (role !== "admin") {
+    query = query.eq("user_id", authUser.id);
   }
 
   const { data, error } = await query;
 
-  if (error || !data || data.length === 0) {
+  if (error || !data?.length) {
     hideAllNotificationUI();
     setGlobalBadge(false);
     return;
   }
 
-  const latest = data[0];
   setGlobalBadge(true);
 
   showNotificationUI({
-    title: latest.title || "Nuevo pedido",
+    title: data[0].title || "Nuevo pedido",
     message:
-      user.rol === "admin"
+      role === "admin"
         ? "Tienes pedidos pendientes de revisión."
         : "Tienes pedidos activos.",
-    created_at: latest.created_at,
-    role: user.rol
+    created_at: data[0].created_at,
+    role
   });
 }
 
 /* =====================================================
-   SINCRONIZACIÓN TOTAL
+   SINCRONIZACIÓN TOTAL (🔥 SEGURA)
 ===================================================== */
-async function syncAll() {
-  const user = getUserCache();
-  if (!user) return;
+async function syncAll(authUser) {
+  const sb = getSupabase();
+  const cache = getUserCache();
+  if (!sb || !authUser || !cache) return;
 
-  if (user.rol === "admin") {
-    await syncAdminOrdersCount();
+  if (cache.rol === "admin") {
+    await syncAdminOrdersCount(sb);
     setMyCount(0);
   } else {
-    await syncMyOrdersCount(user.id);
+    await syncMyOrdersCount(sb, authUser);
     setAdminCount(0);
   }
 
-  await syncNotificationsUI();
+  await syncNotificationsUI(sb, authUser, cache.rol);
 }
 
 // Expuesto para header.js
-window.syncNotificationsAll = syncAll;
+window.syncNotificationsAll = () => {
+  if (window.__AUTH_USER__) {
+    syncAll(window.__AUTH_USER__);
+  }
+};
 
 /* =====================================================
-   REALTIME — SUPABASE
+   REALTIME
 ===================================================== */
 let ordersChannel = null;
 let notificationChannel = null;
 
-async function initRealtime() {
+async function initRealtime(sb, authUser, role) {
   if (ordersChannel || notificationChannel) return;
 
-  const user = getUserCache();
-  const sb = getSupabase();
-  if (!user || !sb) return;
-
   ordersChannel = sb
-    .channel(`orders-${user.id}`)
+    .channel(`orders-${authUser.id}`)
     .on(
       "postgres_changes",
       {
         event: "*",
         schema: "public",
         table: "orders",
-        ...(user.rol !== "admin"
-          ? { filter: `user_id=eq.${user.id}` }
+        ...(role !== "admin"
+          ? { filter: `user_id=eq.${authUser.id}` }
           : {})
       },
-      syncAll
+      () => syncAll(authUser)
     )
     .subscribe();
 
   notificationChannel = sb
-    .channel(`notifications-${user.id}`)
+    .channel(`notifications-${authUser.id}`)
     .on(
       "postgres_changes",
       {
         event: "*",
         schema: "public",
         table: "notifications",
-        ...(user.rol !== "admin"
-          ? { filter: `user_id=eq.${user.id}` }
+        ...(role !== "admin"
+          ? { filter: `user_id=eq.${authUser.id}` }
           : {})
       },
-      syncNotificationsUI
+      () => syncNotificationsUI(sb, authUser, role)
     )
     .subscribe();
 }
@@ -256,15 +236,11 @@ async function cleanupRealtime() {
 }
 
 /* =====================================================
-   PUSH — FIREBASE
+   PUSH
 ===================================================== */
-async function initPush() {
-  const user = getUserCache();
-  if (!user) return;
-
+async function initPush(authUser) {
   if (localStorage.getItem("push_registered") === "1") return;
-
-  await registerPushToken(user.id);
+  await registerPushToken(authUser.id);
   localStorage.setItem("push_registered", "1");
 }
 
@@ -272,35 +248,37 @@ async function initPush() {
    UTIL
 ===================================================== */
 function timeAgo(date) {
-  const seconds = Math.floor((Date.now() - new Date(date)) / 1000);
-  if (seconds < 60) return "hace unos segundos";
-  if (seconds < 3600) return `hace ${Math.floor(seconds / 60)} min`;
-  if (seconds < 86400) return `hace ${Math.floor(seconds / 3600)} h`;
-  return `hace ${Math.floor(seconds / 86400)} días`;
+  const s = Math.floor((Date.now() - new Date(date)) / 1000);
+  if (s < 60) return "hace unos segundos";
+  if (s < 3600) return `hace ${Math.floor(s / 60)} min`;
+  if (s < 86400) return `hace ${Math.floor(s / 3600)} h`;
+  return `hace ${Math.floor(s / 86400)} días`;
 }
 
 /* =====================================================
-   INIT — SOLO CUANDO SUPABASE YA TIENE SESIÓN
+   INIT GLOBAL
 ===================================================== */
 document.addEventListener("userLoggedIn", async () => {
   console.log("🔔 notifications.js → INIT");
 
-  const user = getUserCache();
-  if (!user) return;
-
+  const sb = getSupabase();
   const authUser = await waitForSupabaseSession();
-  if (!authUser) {
-    console.warn("⚠️ Sesión Supabase no disponible");
+  const cache = getUserCache();
+
+  if (!sb || !authUser || !cache) {
+    console.warn("⚠️ No auth estable");
     return;
   }
 
-  await syncAll();
-  await initRealtime();
-  await initPush();
+  window.__AUTH_USER__ = authUser;
+
+  await syncAll(authUser);
+  await initRealtime(sb, authUser, cache.rol);
+  await initPush(authUser);
 });
 
 /* =====================================================
-   LIMPIEZA TOTAL
+   DESTROY
 ===================================================== */
 document.addEventListener("destroyNotifications", async () => {
   console.log("🔕 notifications.js → DESTROY");
@@ -311,5 +289,7 @@ document.addEventListener("destroyNotifications", async () => {
   setMyCount(0);
 
   localStorage.removeItem("push_registered");
+  window.__AUTH_USER__ = null;
+
   await cleanupRealtime();
 });
