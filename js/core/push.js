@@ -1,59 +1,23 @@
 // js/core/push.js
-import {
-  initializeApp
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-
-import {
-  getMessaging,
-  getToken
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js";
+import { getToken } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js";
+import { messaging } from "./firebase.js";
 
 console.log("📡 push.js — Firebase Push CORE");
 
-/* =====================================================
-   🔑 CONFIG FIREBASE (SOLO FRONT)
-===================================================== */
-const firebaseConfig = {
-  apiKey: "TU_API_KEY_FIREBASE",
-  authDomain: "cafecortero-eb674.firebaseapp.com",
-  projectId: "cafecortero-eb674",
-  messagingSenderId: "412829554061",
-  appId: "1:412829554061:web:XXXXXXX"
-};
-
-// 🔑 VAPID KEY (PUBLICA)
 const VAPID_KEY =
   "BF5zvPxmxryUSFZ1z_XO0DlTuXi76nCpXLskVF22LGAEXCMLJNQAvDdcouhDIxkUw72c4ZGF7Fa6qW3AviHsOss";
 
-/* =====================================================
-   INIT FIREBASE
-===================================================== */
-const app = initializeApp(firebaseConfig);
-const messaging = getMessaging(app);
-
-/* =====================================================
-   HELPERS
-===================================================== */
 async function getSupabase() {
   return window.sb || window.supabase || null;
 }
 
-/* =====================================================
-   🔔 REGISTER PUSH TOKEN
-===================================================== */
 export async function registerPushToken(userId) {
-  if (!("Notification" in window)) {
-    console.warn("❌ Browser sin soporte de notificaciones");
-    return;
-  }
+  if (!("Notification" in window)) return;
 
   const permission = await Notification.requestPermission();
-  if (permission !== "granted") {
-    console.warn("⚠️ Permiso de notificaciones denegado");
-    return;
-  }
+  if (permission !== "granted") return;
 
-  // 🔑 Registrar Service Worker
+  // Registrar SW (una vez)
   const registration = await navigator.serviceWorker.register(
     "/firebase-messaging-sw.js"
   );
@@ -64,27 +28,21 @@ export async function registerPushToken(userId) {
   });
 
   if (!token) {
-    console.warn("⚠️ No se pudo obtener token push");
+    console.warn("⚠️ Token push no generado");
     return;
   }
 
   const sb = await getSupabase();
-  if (!sb) {
-    console.error("❌ Supabase no disponible");
-    return;
-  }
+  if (!sb) throw new Error("Supabase no disponible");
 
-  await sb
-    .from("push_tokens")
-    .upsert(
-      {
-        user_id: userId,
-        token,
-        platform: "web",
-        updated_at: new Date().toISOString()
-      },
-      { onConflict: "token" }
-    );
+  await sb.from("push_tokens").upsert(
+    {
+      user_id: userId,
+      token,
+      platform: "web"
+    },
+    { onConflict: "token" }
+  );
 
-  console.log("🔔 Push token registrado / actualizado");
+  console.log("✅ Push token guardado en Supabase");
 }
