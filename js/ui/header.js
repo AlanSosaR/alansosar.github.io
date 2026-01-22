@@ -1,4 +1,4 @@
-console.log("🧭 header.js — UI CORE LIMPIO (CON HOOKS DE NOTIFICACIONES)");
+console.log("🧭 header.js — UI CORE LIMPIO (CON HOOKS COMPLETOS)");
 
 if (!window.__HEADER_CORE_LOADED__) {
   window.__HEADER_CORE_LOADED__ = true;
@@ -19,7 +19,6 @@ if (!window.__HEADER_CORE_LOADED__) {
 
   /* =====================================================
      🔔 BADGE GLOBAL (MENÚ + AVATAR)
-     👉 ESTO ES CLAVE
   ===================================================== */
   function toggleGlobalNotificationDot(show) {
     const menuBadge = $("menu-notification-badge");
@@ -27,17 +26,36 @@ if (!window.__HEADER_CORE_LOADED__) {
 
     [menuBadge, avatarBadge].forEach(badge => {
       if (!badge) return;
-
-      if (show) {
-        badge.classList.remove("hidden");
-      } else {
-        badge.classList.add("hidden");
-      }
+      badge.classList.toggle("hidden", !show);
     });
   }
 
-  // 🔑 EXPONER PARA notifications.js
+  // 👉 expuesto para notifications.js
   window.toggleGlobalNotificationDot = toggleGlobalNotificationDot;
+
+  /* =====================================================
+     📦 BADGES — PEDIDOS (ADMIN / CLIENTE)
+     ⚠️ SOLO UI — NO QUERIES AQUÍ
+  ===================================================== */
+  function setAdminOrdersCount(count) {
+    const badge = $("admin-orders-count");
+    if (!badge) return;
+
+    badge.textContent = count;
+    badge.classList.toggle("hidden", count === 0);
+  }
+
+  function setMyOrdersCount(count) {
+    const badge = $("my-orders-count");
+    if (!badge) return;
+
+    badge.textContent = count;
+    badge.classList.toggle("hidden", count === 0);
+  }
+
+  // 👉 expuestos para orders.js / notifications.js
+  window.setAdminOrdersCount = setAdminOrdersCount;
+  window.setMyOrdersCount = setMyOrdersCount;
 
   /* =====================================================
      🛒 CARRITO — CONTADOR
@@ -87,6 +105,8 @@ if (!window.__HEADER_CORE_LOADED__) {
         .forEach(el => el.classList.add("hidden"));
 
       toggleGlobalNotificationDot(false);
+      setAdminOrdersCount(0);
+      setMyOrdersCount(0);
       return;
     }
 
@@ -180,7 +200,7 @@ if (!window.__HEADER_CORE_LOADED__) {
       updateCartCount();
       updateHeaderCartTitle();
 
-      // 🔔 NOTIFICACIONES
+      // 🔔 inicializar sistema de notificaciones / pedidos
       document.dispatchEvent(new Event("initNotifications"));
     });
 
@@ -189,6 +209,8 @@ if (!window.__HEADER_CORE_LOADED__) {
       updateCartCount();
       updateHeaderCartTitle();
       toggleGlobalNotificationDot(false);
+      setAdminOrdersCount(0);
+      setMyOrdersCount(0);
 
       document.dispatchEvent(new Event("destroyNotifications"));
     });
