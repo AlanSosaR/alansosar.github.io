@@ -351,35 +351,34 @@ body.page-carrito .header-cart-title {
   }
 
   /* 🍔 MENÚ HAMBURGUESA */
-  .menu-toggle {
-    display: flex !important;
-    position: absolute;
-    left: 16px;
-    top: 50%;
-    transform: translateY(-50%);
+.menu-toggle {
+  display: flex !important;
+  position: absolute;
+  left: 16px;
 
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
 
-    background: #fff;
-    border: none;
+  background: #fff;
+  border: none;
 
-    align-items: center;
-    justify-content: center;
+  align-items: center;
+  justify-content: center;
 
-    box-shadow: 0 8px 20px rgba(0,0,0,.18);
-  }
+  box-shadow: 0 8px 20px rgba(0,0,0,.18);
+}
 
-  .menu-toggle > * {
-    margin: 0;
-    padding: 0;
-    line-height: 1;
-  }
+.menu-toggle > * {
+  margin: 0;
+  padding: 0;
+  line-height: 1;
+}
+
 /* Icono hamburguesa en verde */
 .menu-toggle .material-symbols-outlined {
   color: var(--verde);
-  font-size: 26px;        /* opcional, ajusta si quieres */
+  font-size: 26px;
   line-height: 1;
 }
   /* 🛒 CARRITO */
