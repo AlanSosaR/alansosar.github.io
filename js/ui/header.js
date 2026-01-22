@@ -22,18 +22,18 @@ if (!window.__HEADER_CORE_LOADED__) {
   }
 
 /* =====================================================
-   🔴 DOT GLOBAL — AVATAR + HAMBURGUESA (FIX FINAL)
+   🔴 BADGE GLOBAL — AVATAR + HAMBURGUESA (FINAL)
 ===================================================== */
 function toggleGlobalNotificationDot(show) {
-  const menuDot   = document.getElementById("menu-notification-dot");
-  const avatarDot = document.getElementById("avatar-notification-dot");
+  const menuBadge   = document.getElementById("menu-notification-badge");
+  const avatarBadge = document.getElementById("avatar-notification-badge");
 
-  if (menuDot) {
-    menuDot.classList.toggle("hidden", !show);
+  if (menuBadge) {
+    menuBadge.classList.toggle("hidden", !show);
   }
 
-  if (avatarDot) {
-    avatarDot.classList.toggle("hidden", !show);
+  if (avatarBadge) {
+    avatarBadge.classList.toggle("hidden", !show);
   }
 }
 
