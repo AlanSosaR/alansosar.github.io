@@ -788,7 +788,19 @@ body.page-carrito.logged .header-avatar-button {
 body.page-carrito.logged #login-desktop {
   display: none !important;
 }
+/* =====================================================
+   COMPENSACIÓN HEADER FIJO (OBLIGATORIA)
+===================================================== */
 
+body {
+  padding-top: 72px;
+}
+
+@media (max-width: 900px) {
+  body {
+    padding-top: 64px;
+  }
+}
 /* =====================================================
    BADGE — PEDIDOS (MISMO ESTILO QUE CARRITO)
 ===================================================== */
