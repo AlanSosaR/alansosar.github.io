@@ -105,11 +105,17 @@ async function syncAdminOrdersCount(sb) {
   setAdminCount(count || 0);
 }
 
-async function syncMyOrdersCount(sb, authUser) {
+async function syncMyOrdersCount(sb) {
+  const user = getUserCache();
+  if (!user?.id) {
+    setMyCount(0);
+    return;
+  }
+
   const { count, error } = await sb
     .from("orders")
     .select("*", { count: "exact", head: true })
-    .eq("user_id", authUser.id)
+    .eq("user_id", user.id)
     .in("status", CLIENT_VISIBLE_STATUSES);
 
   if (error) {
@@ -162,17 +168,19 @@ async function syncNotificationsUI(sb, authUser, role) {
 async function syncAll(authUser) {
   const sb = getSupabase();
   const cache = getUserCache();
-  if (!sb || !authUser || !cache) return;
+  if (!sb || !cache) return;
 
   if (cache.rol === "admin") {
     await syncAdminOrdersCount(sb);
     setMyCount(0);
   } else {
-    await syncMyOrdersCount(sb, authUser);
+    await syncMyOrdersCount(sb);   // ✅ SIN authUser
     setAdminCount(0);
   }
 
-  await syncNotificationsUI(sb, authUser, cache.rol);
+  if (authUser) {
+    await syncNotificationsUI(sb, authUser, cache.rol);
+  }
 }
 
 // Expuesto para header.js
