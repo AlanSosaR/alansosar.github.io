@@ -432,49 +432,82 @@ initNotificationRealtime(); // 🔔 NUEVO: realtime de notificaciones
   /* =========================
      🔐 LOGIN DE USUARIO
   ========================= */
-  document.addEventListener("userLoggedIn", async () => {
-    // UI base
-    syncUserUI();
-    updateCartCount();
-    updateHeaderCartTitle();
+document.addEventListener("userLoggedIn", async () => {
+  // =========================
+  // UI BASE
+  // =========================
+  syncUserUI();
+  updateCartCount();
+  updateHeaderCartTitle();
 
-    // contadores
-    syncClientOrderNotification();
-    syncAdminOrdersCount();
-    syncAdminNotifications();
+  // =========================
+  // CONTADORES
+  // =========================
+  syncClientOrderNotification();
+  syncAdminOrdersCount();
+  syncAdminNotifications();
 
-    // realtime
-    initRealtime();
-    initNotificationRealtime();
+  // =========================
+  // REALTIME
+  // =========================
+  initRealtime();
+  initNotificationRealtime();
 
-    // 🔔 PUSH NOTIFICATIONS (Firebase)
-    const user = getUserCache();
-    if (!user) return;
+  // =========================
+  // 🔔 PUSH NOTIFICATIONS (FIREBASE)
+  // =========================
+  const user = getUserCache();
+  if (!user) return;
 
-    try {
-      await registerPushToken(user.id);
-      console.log("🔔 Push token registrado");
-    } catch (err) {
-      console.error("❌ Error registrando push token:", err);
-    }
-  });
+  // 🔑 evita registrar varias veces el mismo token
+  if (localStorage.getItem("push_registered") === "1") {
+    console.log("🔔 Push token ya registrado");
+    return;
+  }
+
+  try {
+    await registerPushToken(user.id);
+    localStorage.setItem("push_registered", "1");
+    console.log("🔔 Push token registrado correctamente");
+  } catch (err) {
+    console.error("❌ Error registrando push token:", err);
+  }
+});
 
   /* =========================
      🚪 LOGOUT DE USUARIO
   ========================= */
-  document.addEventListener("userLoggedOut", async () => {
-    syncUserUI();
-    updateCartCount();
-    updateHeaderCartTitle();
+document.addEventListener("userLoggedOut", async () => {
+  // =========================
+  // UI BASE
+  // =========================
+  syncUserUI();
+  updateCartCount();
+  updateHeaderCartTitle();
 
-    toggleGlobalNotificationDot(false);
-    hideAllNotificationUI();
+  // =========================
+  // NOTIFICACIONES UI
+  // =========================
+  toggleGlobalNotificationDot(false);
+  hideAllNotificationUI();
 
-    // 🔕 cerrar realtime
-    REALTIME_INIT = false;
+  // =========================
+  // PUSH NOTIFICATIONS
+  // =========================
+  // permite volver a registrar token en el próximo login
+  localStorage.removeItem("push_registered");
+
+  // =========================
+  // REALTIME (SUPABASE)
+  // =========================
+  REALTIME_INIT = false;
+
+  try {
     await cleanupNotificationRealtime?.();
-  });
-}
+  } catch (err) {
+    console.warn("⚠️ Error limpiando realtime:", err);
+  }
+});
 
 window.initHeader = initHeader;
 
