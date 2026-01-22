@@ -1,7 +1,7 @@
 // js/core/notifications.js
 import { registerPushToken } from "./push.js";
 
-console.log("🔔 notifications.js — CORE FINAL ESTABLE");
+console.log("🔔 notifications.js — CORE FINAL DEFINITIVO");
 
 /* =====================================================
    HELPERS — USUARIO / SUPABASE
@@ -89,14 +89,11 @@ async function syncMyOrdersCount(userId) {
 /* =====================================================
    NOTIFICACIONES (SOLO UI + CAMPANA)
 ===================================================== */
-async function syncNotifications() {
+async function syncNotificationsUI() {
   const user = getUserCache();
-
   if (!user) {
     hideAllNotificationUI();
     setGlobalBadge(false);
-    setAdminCount(0);
-    setMyCount(0);
     return;
   }
 
@@ -118,23 +115,31 @@ async function syncNotifications() {
   if (!data || data.length === 0) {
     hideAllNotificationUI();
     setGlobalBadge(false);
-  } else {
-    const latest = data[0];
-
-    setGlobalBadge(true);
-
-    showNotificationUI({
-      title: latest.title || "Nueva notificación",
-      message:
-        user.rol === "admin"
-          ? "Tienes pedidos pendientes de revisión."
-          : "Tu pedido tiene una actualización.",
-      created_at: latest.created_at,
-      role: user.rol
-    });
+    return;
   }
 
-  // 🔑 CONTADORES REALES
+  const latest = data[0];
+
+  setGlobalBadge(true);
+
+  showNotificationUI({
+    title: latest.title || "Nueva notificación",
+    message:
+      user.rol === "admin"
+        ? "Tienes pedidos pendientes de revisión."
+        : "Tu pedido tiene una actualización.",
+    created_at: latest.created_at,
+    role: user.rol
+  });
+}
+
+/* =====================================================
+   SINCRONIZACIÓN GLOBAL (🔥 CLAVE)
+===================================================== */
+async function syncAll() {
+  const user = getUserCache();
+  if (!user) return;
+
   if (user.rol === "admin") {
     await syncAdminOrdersCount();
     setMyCount(0);
@@ -142,15 +147,18 @@ async function syncNotifications() {
     await syncMyOrdersCount(user.id);
     setAdminCount(0);
   }
+
+  await syncNotificationsUI();
 }
 
 /* =====================================================
    REALTIME — SUPABASE
 ===================================================== */
 let notificationChannel = null;
+let ordersChannel = null;
 
 async function initRealtime() {
-  if (notificationChannel) return;
+  if (notificationChannel || ordersChannel) return;
 
   const user = getUserCache();
   const sb = getSupabase();
@@ -161,19 +169,29 @@ async function initRealtime() {
     .on(
       "postgres_changes",
       { event: "*", schema: "public", table: "notifications" },
-      () => syncNotifications()
+      () => syncNotificationsUI()
     )
-    .subscribe(status => {
-      console.log("📡 Notifications realtime:", status);
-    });
+    .subscribe();
+
+  ordersChannel = sb
+    .channel(`orders-${user.id}`)
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "orders" },
+      () => syncAll()
+    )
+    .subscribe();
 }
 
 async function cleanupRealtime() {
   const sb = getSupabase();
-  if (!sb || !notificationChannel) return;
+  if (!sb) return;
 
-  await sb.removeChannel(notificationChannel);
+  if (notificationChannel) await sb.removeChannel(notificationChannel);
+  if (ordersChannel) await sb.removeChannel(ordersChannel);
+
   notificationChannel = null;
+  ordersChannel = null;
 }
 
 /* =====================================================
@@ -204,7 +222,7 @@ function timeAgo(date) {
    EVENTOS DESDE HEADER
 ===================================================== */
 document.addEventListener("initNotifications", async () => {
-  await syncNotifications();
+  await syncAll();        // 🔥 SIEMPRE
   await initRealtime();
   await initPush();
 });
