@@ -23,25 +23,19 @@ function getSupabase() {
    UI — HEADER (FUNCIONES EXPUESTAS)
 ===================================================== */
 function setGlobalBadge(show) {
-  if (typeof window.toggleGlobalNotificationDot === "function") {
-    window.toggleGlobalNotificationDot(show);
-  }
+  window.toggleGlobalNotificationDot?.(show);
 }
 
 function setAdminCount(count) {
-  if (typeof window.setAdminOrdersCount === "function") {
-    window.setAdminOrdersCount(count);
-  }
+  window.setAdminOrdersCount?.(count);
 }
 
 function setMyCount(count) {
-  if (typeof window.setMyOrdersCount === "function") {
-    window.setMyOrdersCount(count);
-  }
+  window.setMyOrdersCount?.(count);
 }
 
 /* =====================================================
-   UI — DRAWER (TARJETA DE NOTIFICACIÓN)
+   UI — DRAWER (TARJETA SUPERIOR)
 ===================================================== */
 function showNotificationUI({ title, message, created_at, role }) {
   const block = document.getElementById("drawer-notification");
@@ -61,13 +55,39 @@ function showNotificationUI({ title, message, created_at, role }) {
 }
 
 function hideAllNotificationUI() {
-  document
-    .getElementById("drawer-notification")
-    ?.classList.add("hidden");
+  document.getElementById("drawer-notification")?.classList.add("hidden");
 }
 
 /* =====================================================
-   DATA — SINCRONIZAR NOTIFICACIONES + CONTADORES
+   CONTADORES REALES — PEDIDOS
+===================================================== */
+async function syncAdminOrdersCount() {
+  const sb = getSupabase();
+  if (!sb) return;
+
+  const { count } = await sb
+    .from("orders")
+    .select("*", { count: "exact", head: true })
+    .eq("status", "pending");
+
+  setAdminCount(count || 0);
+}
+
+async function syncMyOrdersCount(userId) {
+  const sb = getSupabase();
+  if (!sb) return;
+
+  const { count } = await sb
+    .from("orders")
+    .select("*", { count: "exact", head: true })
+    .eq("user_id", userId)
+    .neq("status", "completed");
+
+  setMyCount(count || 0);
+}
+
+/* =====================================================
+   NOTIFICACIONES (SOLO UI + CAMPANA)
 ===================================================== */
 async function syncNotifications() {
   const user = getUserCache();
@@ -93,48 +113,35 @@ async function syncNotifications() {
     query = query.eq("user_id", user.id);
   }
 
-  const { data, error } = await query;
+  const { data } = await query;
 
-  if (error || !data || data.length === 0) {
+  if (!data || data.length === 0) {
     hideAllNotificationUI();
     setGlobalBadge(false);
-    setAdminCount(0);
-    setMyCount(0);
-    return;
+  } else {
+    const latest = data[0];
+
+    setGlobalBadge(true);
+
+    showNotificationUI({
+      title: latest.title || "Nueva notificación",
+      message:
+        user.rol === "admin"
+          ? "Tienes pedidos pendientes de revisión."
+          : "Tu pedido tiene una actualización.",
+      created_at: latest.created_at,
+      role: user.rol
+    });
   }
 
-  const orderNotifs = data.filter(n => n.type === "order");
-
-  if (orderNotifs.length === 0) {
-    hideAllNotificationUI();
-    setGlobalBadge(false);
-    setAdminCount(0);
-    setMyCount(0);
-    return;
-  }
-
-  const total = orderNotifs.length;
-  const latest = orderNotifs[0];
-
-  setGlobalBadge(true);
-
+  // 🔑 CONTADORES REALES
   if (user.rol === "admin") {
-    setAdminCount(total);
+    await syncAdminOrdersCount();
     setMyCount(0);
   } else {
-    setMyCount(total);
+    await syncMyOrdersCount(user.id);
     setAdminCount(0);
   }
-
-  showNotificationUI({
-    title: latest.title || "Nuevo pedido",
-    message:
-      user.rol === "admin"
-        ? `Hay ${total} pedidos pendientes de revisión.`
-        : `Tienes ${total} pedido${total === 1 ? "" : "s"} pendiente${total === 1 ? "" : "s"}.`,
-    created_at: latest.created_at,
-    role: user.rol
-  });
 }
 
 /* =====================================================
@@ -149,24 +156,12 @@ async function initRealtime() {
   const sb = getSupabase();
   if (!user || !sb) return;
 
-  const filter =
-    user.rol === "admin"
-      ? undefined
-      : `user_id=eq.${user.id}`;
-
   notificationChannel = sb
     .channel(`notifications-${user.id}`)
     .on(
       "postgres_changes",
-      {
-        event: "*",
-        schema: "public",
-        table: "notifications",
-        ...(filter ? { filter } : {})
-      },
-      () => {
-        syncNotifications();
-      }
+      { event: "*", schema: "public", table: "notifications" },
+      () => syncNotifications()
     )
     .subscribe(status => {
       console.log("📡 Notifications realtime:", status);
@@ -182,7 +177,7 @@ async function cleanupRealtime() {
 }
 
 /* =====================================================
-   PUSH — FIREBASE (UNA VEZ POR SESIÓN)
+   PUSH — FIREBASE
 ===================================================== */
 async function initPush() {
   const user = getUserCache();
@@ -190,17 +185,12 @@ async function initPush() {
 
   if (localStorage.getItem("push_registered") === "1") return;
 
-  try {
-    await registerPushToken(user.id);
-    localStorage.setItem("push_registered", "1");
-    console.log("🔔 Push token registrado");
-  } catch (err) {
-    console.error("❌ Error registrando push:", err);
-  }
+  await registerPushToken(user.id);
+  localStorage.setItem("push_registered", "1");
 }
 
 /* =====================================================
-   UTILIDAD — TIEMPO RELATIVO
+   UTILIDAD
 ===================================================== */
 function timeAgo(date) {
   const seconds = Math.floor((Date.now() - new Date(date)) / 1000);
@@ -214,14 +204,12 @@ function timeAgo(date) {
    EVENTOS DESDE HEADER
 ===================================================== */
 document.addEventListener("initNotifications", async () => {
-  console.log("🔔 Init notifications");
   await syncNotifications();
   await initRealtime();
   await initPush();
 });
 
 document.addEventListener("destroyNotifications", async () => {
-  console.log("🔕 Destroy notifications");
   hideAllNotificationUI();
   setGlobalBadge(false);
   setAdminCount(0);
