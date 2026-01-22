@@ -321,36 +321,38 @@ body.page-carrito .header-cart-title {
 }
 
 /* =====================================================
-   MOBILE HEADER — ALINEADO CON CARRITO
+   MOBILE HEADER — ALINEADO CON CARRITO (FINAL)
 ===================================================== */
+
 .menu-toggle {
   display: none;
 }
 
 @media (max-width: 900px) {
+
   header.header-fixed {
-    position: fixed;
     height: 64px;
-
     display: flex;
-    align-items: center;      /* 🔑 eje vertical real */
+    align-items: center;
     justify-content: center;
-
-    position: relative;       /* 🔑 ancla correcta para absolute */
   }
-}
 
-  /* Ocultar desktop */
+  /* ❌ ocultar elementos desktop */
   .nav-links,
   #login-desktop,
+  #btn-header-user,
   .header-avatar-button {
     display: none !important;
   }
 
-  /* 🍔 MENÚ — MISMA CAJA QUE CARRITO */
+  /* 🔔 solo el menú muestra notificaciones */
+  #avatar-notification-badge {
+    display: none !important;
+  }
+
+  /* 🍔 MENÚ HAMBURGUESA */
   .menu-toggle {
     display: flex !important;
-
     position: absolute;
     left: 16px;
     top: 50%;
@@ -366,15 +368,16 @@ body.page-carrito .header-cart-title {
     align-items: center;
     justify-content: center;
 
-    box-shadow:
-      0 8px 20px rgba(0,0,0,.18); /* 🔑 igual al carrito */
+    box-shadow: 0 8px 20px rgba(0,0,0,.18);
   }
-.menu-toggle > * {
-  margin: 0;
-  padding: 0;
-  line-height: 1;
-}
-  /* 🛒 CARRITO — REFERENCIA VISUAL */
+
+  .menu-toggle > * {
+    margin: 0;
+    padding: 0;
+    line-height: 1;
+  }
+
+  /* 🛒 CARRITO */
   #cart-btn {
     position: absolute;
     right: 16px;
@@ -383,7 +386,6 @@ body.page-carrito .header-cart-title {
 
     width: 44px;
     height: 44px;
-
     background: #fff;
     border-radius: 50%;
   }
