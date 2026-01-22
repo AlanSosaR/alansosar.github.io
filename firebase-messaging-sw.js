@@ -6,7 +6,7 @@ importScripts("https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"
 importScripts("https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js");
 
 /* =====================================================
-   🔑 CONFIG FIREBASE (MISMA QUE push.js)
+   🔑 CONFIG FIREBASE (MISMA QUE firebase.js)
 ===================================================== */
 firebase.initializeApp({
   apiKey: "AIzaSyA5B3a30g6cun08vQUGl1o2AHuTPvoZLcI4",
@@ -22,15 +22,17 @@ firebase.initializeApp({
 const messaging = firebase.messaging();
 
 /* =====================================================
-   🔔 BACKGROUND NOTIFICATIONS
+   🔔 BACKGROUND PUSH
 ===================================================== */
 messaging.onBackgroundMessage(payload => {
   console.log("🔔 Background push recibido:", payload);
 
-  const notificationTitle =
-    payload.notification?.title || "Café Cortero";
+  const title =
+    payload.notification?.title ||
+    payload.data?.title ||
+    "Café Cortero";
 
-  const notificationOptions = {
+  const options = {
     body:
       payload.notification?.body ||
       payload.data?.message ||
@@ -40,8 +42,5 @@ messaging.onBackgroundMessage(payload => {
     data: payload.data || {}
   };
 
-  self.registration.showNotification(
-    notificationTitle,
-    notificationOptions
-  );
+  self.registration.showNotification(title, options);
 });
