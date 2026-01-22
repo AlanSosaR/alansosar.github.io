@@ -261,7 +261,7 @@ body.page-carrito .header-cart-title {
 }
 
 /* =====================================================
-   MOBILE HEADER
+   MOBILE HEADER — ALINEADO CON CARRITO
 ===================================================== */
 .menu-toggle {
   display: none;
@@ -269,18 +269,22 @@ body.page-carrito .header-cart-title {
 
 @media (max-width: 900px) {
   header.header-fixed {
-    justify-content: center;
+    position: fixed;
     height: 64px;
+    justify-content: center;
   }
 
+  /* Ocultar desktop */
   .nav-links,
   #login-desktop,
   .header-avatar-button {
     display: none !important;
   }
 
+  /* 🍔 MENÚ — MISMA CAJA QUE CARRITO */
   .menu-toggle {
     display: flex !important;
+
     position: absolute;
     left: 16px;
     top: 50%;
@@ -289,6 +293,7 @@ body.page-carrito .header-cart-title {
     width: 44px;
     height: 44px;
     border-radius: 50%;
+
     background: #fff;
     border: none;
 
@@ -296,18 +301,21 @@ body.page-carrito .header-cart-title {
     justify-content: center;
 
     box-shadow:
-      0 4px 10px rgba(0,0,0,.14),
-      0 1px 3px rgba(0,0,0,.10);
+      0 8px 20px rgba(0,0,0,.18); /* 🔑 igual al carrito */
   }
 
+  /* 🛒 CARRITO — REFERENCIA VISUAL */
   #cart-btn {
     position: absolute;
     right: 16px;
     top: 50%;
     transform: translateY(-50%);
+
     width: 44px;
     height: 44px;
+
     background: #fff;
+    border-radius: 50%;
   }
 }
 
