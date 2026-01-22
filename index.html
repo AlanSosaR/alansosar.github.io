@@ -274,17 +274,26 @@
 <!-- SNACKBAR -->
 <div id="snackbar" class="snackbar" aria-live="polite"></div>
 <!-- ===================== SCRIPTS ===================== -->
+<!-- 1️⃣ SDK -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- 2️⃣ Supabase core -->
 <script src="js/core/supabase-client-core.js"></script>
 <script src="js/core/supabase-auth.js"></script>
 
-<!-- 🔑 HEADER GLOBAL -->
-<script type="module" src="js/ui/header.js"></script>
-  <script type="module" src="js/core/notifications.js"></script>
-<script src="js/core/auth-ui.js"></script>
+<!-- 3️⃣ Layout (inyecta header en el DOM) -->
 <script src="js/ui/layout.js"></script>
 
-<!-- LÓGICA DE LA PÁGINA -->
+<!-- 4️⃣ Header (define hooks + UI) -->
+<script type="module" src="js/ui/header.js"></script>
+
+<!-- 5️⃣ Auth UI (listeners de sesión) -->
+<script src="js/core/auth-ui.js"></script>
+
+<!-- 6️⃣ Notifications (consume TODO lo anterior) -->
+<script type="module" src="js/core/notifications.js"></script>
+
+<!-- 7️⃣ Página -->
 <script src="js/pages/main.js?v=13"></script>
 
 </body>
