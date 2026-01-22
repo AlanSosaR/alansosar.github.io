@@ -13,7 +13,6 @@ function getSupabase() {
 
 export async function registerPushToken(userId) {
   if (!userId) return;
-
   if (!("Notification" in window)) return;
 
   const permission = await Notification.requestPermission();
@@ -43,19 +42,18 @@ export async function registerPushToken(userId) {
     .from("push_tokens")
     .upsert(
       {
+        token,          // 🔑 CLAVE ÚNICA REAL
         user_id: userId,
-        token,
         platform: "web"
-        // ⚠️ NO updated_at
       },
       {
-        onConflict: "user_id,platform"
+        onConflict: "token" // 🔥 CORRECTO
       }
     );
 
   if (error) {
     console.error("❌ Error guardando push token:", error);
   } else {
-    console.log("✅ Push token guardado correctamente");
+    console.log("✅ Push token registrado / reasignado correctamente");
   }
 }
