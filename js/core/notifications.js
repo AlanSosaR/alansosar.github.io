@@ -239,9 +239,14 @@ async function cleanupRealtime() {
    PUSH
 ===================================================== */
 async function initPush(authUser) {
-  if (localStorage.getItem("push_registered") === "1") return;
-  await registerPushToken(authUser.id);
-  localStorage.setItem("push_registered", "1");
+  try {
+    if (localStorage.getItem("push_registered") === "1") return;
+
+    await registerPushToken(authUser.id);
+    localStorage.setItem("push_registered", "1");
+  } catch (err) {
+    console.warn("🔕 Push no soportado en este navegador", err);
+  }
 }
 
 /* =====================================================
