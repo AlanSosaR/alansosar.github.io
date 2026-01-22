@@ -246,7 +246,35 @@ body.page-carrito .header-cart-title {
 
 /* =========================
    NOTIFICATION BADGE
+   (con animación al aparecer)
 ========================= */
+
+/* Animación de entrada (pop) */
+@keyframes badgePop {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Micro-shake de campana (una sola vez) */
+@keyframes bellShake {
+  0%   { transform: rotate(0deg); }
+  20%  { transform: rotate(-12deg); }
+  40%  { transform: rotate(10deg); }
+  60%  { transform: rotate(-8deg); }
+  80%  { transform: rotate(6deg); }
+  100% { transform: rotate(0deg); }
+}
+
+/* Estado base del badge */
 .notification-badge {
   position: absolute;
   top: -4px;
@@ -266,19 +294,30 @@ body.page-carrito .header-cart-title {
   font-size: 9px;
   line-height: 1;
 
-  /* ❌ quitar contorno */
   box-shadow: none;
-
   pointer-events: none;
   z-index: 50;
+
+  transform-origin: center;
 }
 
+/* Icono campana */
+.notification-badge i {
+  font-size: 9px;
+  line-height: 1;
+  display: block;
+}
+
+/* Oculto */
 .notification-badge.hidden {
   display: none !important;
 }
 
-.notification-badge i {
-  font-size: 9px;
+/* 🔔 Animación SOLO cuando aparece */
+.notification-badge.animate {
+  animation:
+    badgePop 0.35s ease-out,
+    bellShake 0.6s ease-out 0.15s;
 }
 
 /* =====================================================
