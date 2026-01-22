@@ -241,17 +241,27 @@ async function initNotificationRealtime() {
   if (!user || !sb) return;
 
   notificationChannel = sb
-    .channel("drawer-notifications-realtime")
+    .channel(`drawer-notifications-${user.id}`) // 🔑 canal único por usuario
     .on(
       "postgres_changes",
-      { event: "INSERT", schema: "public", table: "notifications" },
+      {
+        event: "INSERT",
+        schema: "public",
+        table: "notifications",
+        filter: `user_id=eq.${user.id}` // 🔒 seguridad total
+      },
       () => {
         syncDrawerNotifications();
       }
     )
     .on(
       "postgres_changes",
-      { event: "UPDATE", schema: "public", table: "notifications" },
+      {
+        event: "UPDATE",
+        schema: "public",
+        table: "notifications",
+        filter: `user_id=eq.${user.id}` // 🔒 evita ruido de otros usuarios
+      },
       payload => {
         if (payload.new.is_read) {
           hideAllNotificationUI();
@@ -259,7 +269,9 @@ async function initNotificationRealtime() {
         }
       }
     )
-    .subscribe();
+    .subscribe(status => {
+      console.log("📡 Notifications realtime:", status);
+    });
 }
 /* =====================================================
    🧹 LIMPIEZA REALTIME — NOTIFICACIONES
