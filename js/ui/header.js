@@ -132,7 +132,7 @@ if (!window.__HEADER_CORE_LOADED__) {
   }
 
 /* =====================================================
-   DRAWER — CONTROL SEGURO + SYNC NOTIFICATIONS
+   DRAWER — CONTROL SEGURO (SIN LÓGICA DE DATOS)
 ===================================================== */
 function openDrawer() {
   const drawer = $("user-drawer");
@@ -146,13 +146,6 @@ function openDrawer() {
   drawer.classList.add("open");
   scrim.classList.add("open");
   document.body.style.overflow = "hidden";
-
-  // 🔥 CLAVE: esperar a que el DOM se pinte
-  requestAnimationFrame(() => {
-    if (typeof window.syncNotificationsAll === "function") {
-      window.syncNotificationsAll();
-    }
-  });
 }
 
 function closeDrawer() {
