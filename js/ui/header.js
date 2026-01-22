@@ -1,4 +1,4 @@
-console.log("🧭 header.js — UI CORE LIMPIO (SIN NOTIFICACIONES)");
+console.log("🧭 header.js — UI CORE LIMPIO (CON HOOKS DE NOTIFICACIONES)");
 
 if (!window.__HEADER_CORE_LOADED__) {
   window.__HEADER_CORE_LOADED__ = true;
@@ -16,6 +16,28 @@ if (!window.__HEADER_CORE_LOADED__) {
       return null;
     }
   }
+
+  /* =====================================================
+     🔔 BADGE GLOBAL (MENÚ + AVATAR)
+     👉 ESTO ES CLAVE
+  ===================================================== */
+  function toggleGlobalNotificationDot(show) {
+    const menuBadge = $("menu-notification-badge");
+    const avatarBadge = $("avatar-notification-badge");
+
+    [menuBadge, avatarBadge].forEach(badge => {
+      if (!badge) return;
+
+      if (show) {
+        badge.classList.remove("hidden");
+      } else {
+        badge.classList.add("hidden");
+      }
+    });
+  }
+
+  // 🔑 EXPONER PARA notifications.js
+  window.toggleGlobalNotificationDot = toggleGlobalNotificationDot;
 
   /* =====================================================
      🛒 CARRITO — CONTADOR
@@ -64,6 +86,7 @@ if (!window.__HEADER_CORE_LOADED__) {
         .querySelectorAll(".admin-only,.client-only")
         .forEach(el => el.classList.add("hidden"));
 
+      toggleGlobalNotificationDot(false);
       return;
     }
 
@@ -157,7 +180,7 @@ if (!window.__HEADER_CORE_LOADED__) {
       updateCartCount();
       updateHeaderCartTitle();
 
-      // 🔔 dispara inicialización de notificaciones
+      // 🔔 NOTIFICACIONES
       document.dispatchEvent(new Event("initNotifications"));
     });
 
@@ -165,8 +188,8 @@ if (!window.__HEADER_CORE_LOADED__) {
       syncUserUI();
       updateCartCount();
       updateHeaderCartTitle();
+      toggleGlobalNotificationDot(false);
 
-      // 🔕 dispara limpieza de notificaciones
       document.dispatchEvent(new Event("destroyNotifications"));
     });
   }
@@ -178,6 +201,5 @@ if (!window.__HEADER_CORE_LOADED__) {
    COMPATIBILIDAD LEGACY
 ===================================================== */
 window.syncHeaderCounter = function () {
-  const event = new Event("cartUpdated");
-  window.dispatchEvent(event);
+  window.dispatchEvent(new Event("cartUpdated"));
 };
