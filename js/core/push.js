@@ -18,7 +18,7 @@ async function getSupabase() {
 }
 
 /* =====================================================
-   🔔 REGISTER PUSH TOKEN (SAFE)
+   🔔 REGISTER PUSH TOKEN (PRODUCCIÓN)
 ===================================================== */
 export async function registerPushToken(userId) {
   if (!("Notification" in window)) {
@@ -32,15 +32,25 @@ export async function registerPushToken(userId) {
     return;
   }
 
-  // 1️⃣ Registrar Service Worker
-  const registration = await navigator.serviceWorker.register(
+  /* =====================================================
+     SERVICE WORKER (REUSO, NO RE-REGISTER)
+  ===================================================== */
+  let registration = await navigator.serviceWorker.getRegistration(
     "/firebase-messaging-sw.js"
   );
 
-  // 2️⃣ ESPERAR A QUE ESTÉ ACTIVO (CLAVE ABSOLUTA)
+  if (!registration) {
+    registration = await navigator.serviceWorker.register(
+      "/firebase-messaging-sw.js"
+    );
+  }
+
+  // Esperar a que esté activo (CRÍTICO)
   await navigator.serviceWorker.ready;
 
-  // 3️⃣ Obtener token PUSH
+  /* =====================================================
+     TOKEN FCM
+  ===================================================== */
   const token = await getToken(messaging, {
     vapidKey: VAPID_KEY,
     serviceWorkerRegistration: registration
@@ -51,6 +61,9 @@ export async function registerPushToken(userId) {
     return;
   }
 
+  /* =====================================================
+     GUARDAR EN SUPABASE
+  ===================================================== */
   const sb = await getSupabase();
   if (!sb) {
     console.error("❌ Supabase no disponible");
