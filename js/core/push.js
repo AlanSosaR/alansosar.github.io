@@ -23,7 +23,7 @@ const firebaseConfig = {
 
 // 🔑 VAPID KEY (PUBLICA)
 const VAPID_KEY =
-  "BF5zvPxmxyUSFZ1z_XOODlTuXi76nCpXLskVF22LGAEXCMLJNQAvDdcouhDIxUw72c4ZGF7Fa6qW3AviHsOss";
+  "BF5zvPxmxryUSFZ1z_XO0DlTuXi76nCpXLskVF22LGAEXCMLJNQAvDdcouhDIxkUw72c4ZGF7Fa6qW3AviHsOss";
 
 /* =====================================================
    INIT FIREBASE
