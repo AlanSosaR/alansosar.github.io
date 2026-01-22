@@ -331,8 +331,14 @@ body.page-carrito .header-cart-title {
   header.header-fixed {
     position: fixed;
     height: 64px;
+
+    display: flex;
+    align-items: center;      /* 🔑 eje vertical real */
     justify-content: center;
+
+    position: relative;       /* 🔑 ancla correcta para absolute */
   }
+}
 
   /* Ocultar desktop */
   .nav-links,
