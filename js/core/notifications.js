@@ -261,3 +261,18 @@ document.addEventListener("destroyNotifications", async () => {
   localStorage.removeItem("push_registered");
   await cleanupRealtime();
 });
+/* =====================================================
+   AUTO INIT — CLIENTE / ADMIN
+   🔥 ESTO ES LO QUE FALTABA
+===================================================== */
+document.addEventListener("DOMContentLoaded", () => {
+  const user = getUserCache();
+  if (!user) return;
+
+  // Fuerza sincronización inicial
+  syncAll();
+
+  // Inicializa realtime y push una sola vez
+  initRealtime();
+  initPush();
+});
