@@ -209,9 +209,11 @@ function initHeader() {
   updateHeaderCartTitle();
 
   // 🔥 FORZAR CARGA DEL CONTADOR "MIS PEDIDOS"
-  if (typeof window.syncNotificationsAll === "function") {
-    window.syncNotificationsAll();
-  }
+  requestAnimationFrame(() => {
+    if (typeof window.syncNotificationsAll === "function") {
+      window.syncNotificationsAll();
+    }
+  });
 }
 
   /* =====================================================
