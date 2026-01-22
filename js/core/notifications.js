@@ -1,10 +1,10 @@
 // js/core/notifications.js
 import { registerPushToken } from "./push.js";
 
-console.log("🔔 notifications.js — CORE FINAL (FIXED)");
+console.log("🔔 notifications.js — CORE FINAL ESTABLE");
 
 /* =====================================================
-   HELPERS
+   HELPERS — USUARIO / SUPABASE
 ===================================================== */
 function getUserCache() {
   try {
@@ -15,12 +15,12 @@ function getUserCache() {
   }
 }
 
-async function getSupabase() {
+function getSupabase() {
   return window.sb || window.supabase || null;
 }
 
 /* =====================================================
-   UI — HEADER (USAR EL QUE EXPONE header.js)
+   UI — HEADER (FUNCIONES EXPUESTAS)
 ===================================================== */
 function setGlobalBadge(show) {
   if (typeof window.toggleGlobalNotificationDot === "function") {
@@ -28,8 +28,20 @@ function setGlobalBadge(show) {
   }
 }
 
+function setAdminCount(count) {
+  if (typeof window.setAdminOrdersCount === "function") {
+    window.setAdminOrdersCount(count);
+  }
+}
+
+function setMyCount(count) {
+  if (typeof window.setMyOrdersCount === "function") {
+    window.setMyOrdersCount(count);
+  }
+}
+
 /* =====================================================
-   UI — DRAWER
+   UI — DRAWER (TARJETA DE NOTIFICACIÓN)
 ===================================================== */
 function showNotificationUI({ title, message, created_at, role }) {
   const block = document.getElementById("drawer-notification");
@@ -49,22 +61,26 @@ function showNotificationUI({ title, message, created_at, role }) {
 }
 
 function hideAllNotificationUI() {
-  document.getElementById("drawer-notification")
+  document
+    .getElementById("drawer-notification")
     ?.classList.add("hidden");
 }
 
 /* =====================================================
-   DATA — SYNC (ADMIN + CLIENTE)
+   DATA — SINCRONIZAR NOTIFICACIONES + CONTADORES
 ===================================================== */
 async function syncNotifications() {
   const user = getUserCache();
+
   if (!user) {
     hideAllNotificationUI();
     setGlobalBadge(false);
+    setAdminCount(0);
+    setMyCount(0);
     return;
   }
 
-  const sb = await getSupabase();
+  const sb = getSupabase();
   if (!sb) return;
 
   let query = sb
@@ -73,7 +89,6 @@ async function syncNotifications() {
     .eq("is_read", false)
     .order("created_at", { ascending: false });
 
-  // 🔑 DIFERENCIA CLAVE
   if (user.rol !== "admin") {
     query = query.eq("user_id", user.id);
   }
@@ -83,33 +98,47 @@ async function syncNotifications() {
   if (error || !data || data.length === 0) {
     hideAllNotificationUI();
     setGlobalBadge(false);
+    setAdminCount(0);
+    setMyCount(0);
     return;
   }
 
   const orderNotifs = data.filter(n => n.type === "order");
+
   if (orderNotifs.length === 0) {
     hideAllNotificationUI();
     setGlobalBadge(false);
+    setAdminCount(0);
+    setMyCount(0);
     return;
   }
 
+  const total = orderNotifs.length;
   const latest = orderNotifs[0];
 
   setGlobalBadge(true);
+
+  if (user.rol === "admin") {
+    setAdminCount(total);
+    setMyCount(0);
+  } else {
+    setMyCount(total);
+    setAdminCount(0);
+  }
 
   showNotificationUI({
     title: latest.title || "Nuevo pedido",
     message:
       user.rol === "admin"
-        ? `Hay ${orderNotifs.length} pedidos pendientes de revisión.`
-        : "Tu pedido ha sido actualizado.",
+        ? `Hay ${total} pedidos pendientes de revisión.`
+        : `Tienes ${total} pedido${total === 1 ? "" : "s"} pendiente${total === 1 ? "" : "s"}.`,
     created_at: latest.created_at,
     role: user.rol
   });
 }
 
 /* =====================================================
-   REALTIME — ADMIN Y CLIENTE
+   REALTIME — SUPABASE
 ===================================================== */
 let notificationChannel = null;
 
@@ -117,7 +146,7 @@ async function initRealtime() {
   if (notificationChannel) return;
 
   const user = getUserCache();
-  const sb = await getSupabase();
+  const sb = getSupabase();
   if (!user || !sb) return;
 
   const filter =
@@ -145,7 +174,7 @@ async function initRealtime() {
 }
 
 async function cleanupRealtime() {
-  const sb = await getSupabase();
+  const sb = getSupabase();
   if (!sb || !notificationChannel) return;
 
   await sb.removeChannel(notificationChannel);
@@ -153,7 +182,7 @@ async function cleanupRealtime() {
 }
 
 /* =====================================================
-   PUSH — FIREBASE
+   PUSH — FIREBASE (UNA VEZ POR SESIÓN)
 ===================================================== */
 async function initPush() {
   const user = getUserCache();
@@ -171,7 +200,7 @@ async function initPush() {
 }
 
 /* =====================================================
-   UTIL
+   UTILIDAD — TIEMPO RELATIVO
 ===================================================== */
 function timeAgo(date) {
   const seconds = Math.floor((Date.now() - new Date(date)) / 1000);
@@ -195,6 +224,8 @@ document.addEventListener("destroyNotifications", async () => {
   console.log("🔕 Destroy notifications");
   hideAllNotificationUI();
   setGlobalBadge(false);
+  setAdminCount(0);
+  setMyCount(0);
   localStorage.removeItem("push_registered");
   await cleanupRealtime();
 });
