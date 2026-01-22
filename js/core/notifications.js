@@ -264,25 +264,43 @@ function timeAgo(date) {
 }
 
 /* =====================================================
-   INIT AUTOMÁTICO (🔥 LO QUE FALTABA)
+   INIT CORRECTO — CUANDO EL USUARIO YA ESTÁ LOGUEADO
+   (NO DOMContentLoaded ❌)
 ===================================================== */
-document.addEventListener("DOMContentLoaded", async () => {
-  const user = getUserCache();
-  if (!user) return;
+document.addEventListener("userLoggedIn", async () => {
+  console.log("🔔 notifications.js → INIT (userLoggedIn)");
 
-  await syncAll();        // ← CLIENTE Y ADMIN VEN SU NÚMERO
-  await initRealtime();
-  await initPush();
+  const user = getUserCache();
+  if (!user) {
+    console.warn("⚠️ No hay usuario en cache");
+    return;
+  }
+
+  try {
+    await syncAll();        // 🔢 cliente y admin ven su número real
+    await initRealtime();   // 🔄 realtime estable
+    await initPush();       // 📡 push (una sola vez)
+  } catch (err) {
+    console.error("❌ Error inicializando notifications:", err);
+  }
 });
 
 /* =====================================================
-   EVENTOS DESDE HEADER
+   LIMPIEZA TOTAL AL CERRAR SESIÓN
 ===================================================== */
 document.addEventListener("destroyNotifications", async () => {
-  hideAllNotificationUI();
-  setGlobalBadge(false);
-  setAdminCount(0);
-  setMyCount(0);
-  localStorage.removeItem("push_registered");
-  await cleanupRealtime();
+  console.log("🔕 notifications.js → DESTROY");
+
+  try {
+    hideAllNotificationUI();
+    setGlobalBadge(false);
+    setAdminCount(0);
+    setMyCount(0);
+
+    localStorage.removeItem("push_registered");
+
+    await cleanupRealtime();
+  } catch (err) {
+    console.error("❌ Error limpiando notifications:", err);
+  }
 });
