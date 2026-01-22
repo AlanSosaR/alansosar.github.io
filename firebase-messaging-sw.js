@@ -1,7 +1,8 @@
 /* =====================================================
-   FIREBASE MESSAGING SERVICE WORKER
+   FIREBASE MESSAGING SERVICE WORKER — PRODUCCIÓN
 ===================================================== */
 
+/* Firebase (compat requerido en SW) */
 importScripts("https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js");
 importScripts("https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js");
 
@@ -22,7 +23,7 @@ firebase.initializeApp({
 const messaging = firebase.messaging();
 
 /* =====================================================
-   🔔 BACKGROUND PUSH
+   🔔 BACKGROUND PUSH (OBLIGATORIO PARA WEB)
 ===================================================== */
 messaging.onBackgroundMessage(payload => {
   console.log("🔔 Background push recibido:", payload);
@@ -39,8 +40,34 @@ messaging.onBackgroundMessage(payload => {
       "Tienes una nueva notificación",
     icon: "/imagenes/logo.png",
     badge: "/imagenes/logo.png",
-    data: payload.data || {}
+    data: payload.data || {},
+    requireInteraction: true
   };
 
   self.registration.showNotification(title, options);
+});
+
+/* =====================================================
+   CLICK EN NOTIFICACIÓN
+===================================================== */
+self.addEventListener("notificationclick", event => {
+  event.notification.close();
+
+  const url =
+    event.notification.data?.url ||
+    "/";
+
+  event.waitUntil(
+    clients.matchAll({ type: "window", includeUncontrolled: true })
+      .then(clientList => {
+        for (const client of clientList) {
+          if (client.url === url && "focus" in client) {
+            return client.focus();
+          }
+        }
+        if (clients.openWindow) {
+          return clients.openWindow(url);
+        }
+      })
+  );
 });
