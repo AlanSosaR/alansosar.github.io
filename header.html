@@ -77,13 +77,15 @@
       </a>
 
       <!-- AVATAR -->
-<button id="btn-header-user"
-        class="header-avatar-button desktop-only logged"
-        aria-label="Perfil">
+<div id="btn-header-user" class="desktop-only logged">
 
-  <img id="avatar-user"
-       src="/imagenes/avatar-default.svg"
-       alt="Usuario">
+  <!-- AVATAR REAL -->
+  <button class="header-avatar-button"
+          aria-label="Perfil">
+    <img id="avatar-user"
+         src="/imagenes/avatar-default.svg"
+         alt="Usuario">
+  </button>
 
   <!-- 🔔 Badge de notificación -->
   <span id="avatar-notification-badge"
@@ -91,8 +93,8 @@
         aria-hidden="true">
     <i class="fa-solid fa-bell"></i>
   </span>
-</button>
-      <!-- CARRITO -->
+
+</div>      <!-- CARRITO -->
       <button id="cart-btn"
               class="cart-button"
               aria-label="Ver carrito">
