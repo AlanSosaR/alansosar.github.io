@@ -376,7 +376,12 @@ body.page-carrito .header-cart-title {
     padding: 0;
     line-height: 1;
   }
-
+/* Icono hamburguesa en verde */
+.menu-toggle .material-symbols-outlined {
+  color: var(--verde);
+  font-size: 26px;        /* opcional, ajusta si quieres */
+  line-height: 1;
+}
   /* 🛒 CARRITO */
   #cart-btn {
     position: absolute;
