@@ -180,34 +180,39 @@ function toggleDrawer() {
   /* =====================================================
      INIT HEADER
   ===================================================== */
-  let HEADER_INITIALIZED = false;
+let HEADER_INITIALIZED = false;
 
-  function initHeader() {
-    if (HEADER_INITIALIZED) return;
-    HEADER_INITIALIZED = true;
+function initHeader() {
+  if (HEADER_INITIALIZED) return;
+  HEADER_INITIALIZED = true;
 
-    $("menu-toggle")?.addEventListener("click", toggleDrawer);
-    $("btn-header-user")?.addEventListener("click", e => {
-      e.stopPropagation();
-      toggleDrawer();
-    });
-    $("user-scrim")?.addEventListener("click", closeDrawer);
+  $("menu-toggle")?.addEventListener("click", toggleDrawer);
+  $("btn-header-user")?.addEventListener("click", e => {
+    e.stopPropagation();
+    toggleDrawer();
+  });
+  $("user-scrim")?.addEventListener("click", closeDrawer);
 
-    $("cart-btn")?.addEventListener("click", () => {
-      location.href = "carrito.html";
-    });
+  $("cart-btn")?.addEventListener("click", () => {
+    location.href = "carrito.html";
+  });
 
-    $("logout-btn")?.addEventListener("click", async () => {
-      if (window.supabaseAuth?.logoutUser) {
-        await window.supabaseAuth.logoutUser();
-      }
-      closeDrawer();
-    });
+  $("logout-btn")?.addEventListener("click", async () => {
+    if (window.supabaseAuth?.logoutUser) {
+      await window.supabaseAuth.logoutUser();
+    }
+    closeDrawer();
+  });
 
-    syncUserUI();
-    updateCartCount();
-    updateHeaderCartTitle();
+  syncUserUI();
+  updateCartCount();
+  updateHeaderCartTitle();
+
+  // 🔥 FORZAR CARGA DEL CONTADOR "MIS PEDIDOS"
+  if (typeof window.syncNotificationsAll === "function") {
+    window.syncNotificationsAll();
   }
+}
 
   /* =====================================================
      EVENTOS GLOBALES
