@@ -16,7 +16,25 @@ function getUserCache() {
 }
 
 function getSupabase() {
-  return window.sb || window.supabase || null;
+  return window.supabase || null;
+}
+
+/* =====================================================
+   ESPERAR SESIÓN REAL (🔥 CLAVE RLS)
+===================================================== */
+async function waitForSupabaseSession() {
+  const sb = getSupabase();
+  if (!sb) return null;
+
+  for (let i = 0; i < 10; i++) {
+    const { data } = await sb.auth.getSession();
+    if (data?.session?.user) {
+      return data.session.user;
+    }
+    await new Promise(r => setTimeout(r, 100));
+  }
+
+  return null;
 }
 
 /* =====================================================
@@ -177,7 +195,7 @@ async function syncAll() {
   await syncNotificationsUI();
 }
 
-// Expuesto para header.js (drawer)
+// Expuesto para header.js
 window.syncNotificationsAll = syncAll;
 
 /* =====================================================
@@ -193,7 +211,6 @@ async function initRealtime() {
   const sb = getSupabase();
   if (!user || !sb) return;
 
-  // 🔔 ÓRDENES
   ordersChannel = sb
     .channel(`orders-${user.id}`)
     .on(
@@ -210,7 +227,6 @@ async function initRealtime() {
     )
     .subscribe();
 
-  // 🔔 NOTIFICACIONES
   notificationChannel = sb
     .channel(`notifications-${user.id}`)
     .on(
@@ -264,43 +280,36 @@ function timeAgo(date) {
 }
 
 /* =====================================================
-   INIT CORRECTO — CUANDO EL USUARIO YA ESTÁ LOGUEADO
-   (NO DOMContentLoaded ❌)
+   INIT — SOLO CUANDO SUPABASE YA TIENE SESIÓN
 ===================================================== */
 document.addEventListener("userLoggedIn", async () => {
-  console.log("🔔 notifications.js → INIT (userLoggedIn)");
+  console.log("🔔 notifications.js → INIT");
 
   const user = getUserCache();
-  if (!user) {
-    console.warn("⚠️ No hay usuario en cache");
+  if (!user) return;
+
+  const authUser = await waitForSupabaseSession();
+  if (!authUser) {
+    console.warn("⚠️ Sesión Supabase no disponible");
     return;
   }
 
-  try {
-    await syncAll();        // 🔢 cliente y admin ven su número real
-    await initRealtime();   // 🔄 realtime estable
-    await initPush();       // 📡 push (una sola vez)
-  } catch (err) {
-    console.error("❌ Error inicializando notifications:", err);
-  }
+  await syncAll();
+  await initRealtime();
+  await initPush();
 });
 
 /* =====================================================
-   LIMPIEZA TOTAL AL CERRAR SESIÓN
+   LIMPIEZA TOTAL
 ===================================================== */
 document.addEventListener("destroyNotifications", async () => {
   console.log("🔕 notifications.js → DESTROY");
 
-  try {
-    hideAllNotificationUI();
-    setGlobalBadge(false);
-    setAdminCount(0);
-    setMyCount(0);
+  hideAllNotificationUI();
+  setGlobalBadge(false);
+  setAdminCount(0);
+  setMyCount(0);
 
-    localStorage.removeItem("push_registered");
-
-    await cleanupRealtime();
-  } catch (err) {
-    console.error("❌ Error limpiando notifications:", err);
-  }
+  localStorage.removeItem("push_registered");
+  await cleanupRealtime();
 });
