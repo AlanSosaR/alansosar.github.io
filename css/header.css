@@ -266,10 +266,11 @@ body.page-carrito .header-cart-title {
   font-size: 9px;
   line-height: 1;
 
-  box-shadow: 0 0 0 2px #fff;
-  pointer-events: none;
+  /* ❌ quitar contorno */
+  box-shadow: none;
 
-  z-index: 50;              /* 🔑 sobre el botón */
+  pointer-events: none;
+  z-index: 50;
 }
 
 .notification-badge.hidden {
