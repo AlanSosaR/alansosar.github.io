@@ -134,23 +134,38 @@ if (!window.__HEADER_CORE_LOADED__) {
   /* =====================================================
      DRAWER
   ===================================================== */
-  function openDrawer() {
-    $("user-drawer")?.classList.add("open");
-    $("user-scrim")?.classList.add("open");
-    document.body.style.overflow = "hidden";
-  }
+function openDrawer() {
+  const drawer = $("user-drawer");
+  const scrim = $("user-scrim");
 
-  function closeDrawer() {
-    $("user-drawer")?.classList.remove("open");
-    $("user-scrim")?.classList.remove("open");
-    document.body.style.overflow = "";
-  }
+  if (!drawer || !scrim) return;
 
-  function toggleDrawer() {
-    $("user-drawer")?.classList.contains("open")
-      ? closeDrawer()
-      : openDrawer();
+  drawer.classList.add("open");
+  scrim.classList.add("open");
+  document.body.style.overflow = "hidden";
+
+  // 🔥 CLAVE: cuando el drawer YA existe y es visible
+  if (typeof window.syncNotificationsAll === "function") {
+    window.syncNotificationsAll();
   }
+}
+
+function closeDrawer() {
+  const drawer = $("user-drawer");
+  const scrim = $("user-scrim");
+
+  if (!drawer || !scrim) return;
+
+  drawer.classList.remove("open");
+  scrim.classList.remove("open");
+  document.body.style.overflow = "";
+}
+
+function toggleDrawer() {
+  $("user-drawer")?.classList.contains("open")
+    ? closeDrawer()
+    : openDrawer();
+}
 
   /* =====================================================
      INIT HEADER
