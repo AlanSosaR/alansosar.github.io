@@ -175,6 +175,145 @@ async function syncAdminNotifications() {
   toggleGlobalNotificationDot((data?.length || 0) > 0);
 }
 
+  /* =====================================================
+   🔔 NOTIFICACIONES CONTEXTUALES — DRAWER (ADMIN + CLIENTE)
+===================================================== */
+
+let notificationChannel = null;
+
+async function syncDrawerNotifications() {
+  const user = getUserCache();
+  if (!user) {
+    hideAllNotificationUI();
+    return;
+  }
+
+  const sb = await getSupabase();
+  if (!sb) return;
+
+  const role = user.rol || "cliente";
+
+  const { data: notifications } = await sb
+    .from("notifications")
+    .select("*")
+    .eq("is_read", false)
+    .order("created_at", { ascending: false });
+
+  if (!notifications || notifications.length === 0) {
+    hideAllNotificationUI();
+    toggleGlobalNotificationDot(false);
+    return;
+  }
+
+  const orderNotifications = notifications.filter(n => n.type === "order");
+
+  if (orderNotifications.length === 0) {
+    hideAllNotificationUI();
+    toggleGlobalNotificationDot(false);
+    return;
+  }
+
+  const latest = orderNotifications[0];
+  const count = orderNotifications.length;
+
+  toggleGlobalNotificationDot(true);
+
+  showNotificationUI({
+    title: latest.title || "Nuevo pedido",
+    message:
+      role === "admin"
+        ? `Hay ${count} pedidos pendientes de revisión.`
+        : "Tu pedido ha sido actualizado.",
+    created_at: latest.created_at,
+    role
+  });
+}
+
+/* =====================================================
+   REALTIME — NOTIFICACIONES
+===================================================== */
+async function initNotificationRealtime() {
+  if (notificationChannel) return;
+
+  const user = getUserCache();
+  const sb = await getSupabase();
+  if (!user || !sb) return;
+
+  notificationChannel = sb
+    .channel("drawer-notifications-realtime")
+    .on(
+      "postgres_changes",
+      { event: "INSERT", schema: "public", table: "notifications" },
+      () => {
+        syncDrawerNotifications();
+      }
+    )
+    .on(
+      "postgres_changes",
+      { event: "UPDATE", schema: "public", table: "notifications" },
+      payload => {
+        if (payload.new.is_read) {
+          hideAllNotificationUI();
+          toggleGlobalNotificationDot(false);
+        }
+      }
+    )
+    .subscribe();
+}
+
+/* =====================================================
+   UI
+===================================================== */
+
+function showNotificationUI({ title, message, created_at, role }) {
+  const block = document.getElementById("drawer-notification");
+  if (!block) return;
+
+  block.classList.remove("hidden");
+
+  document.getElementById("drawer-notification-title").textContent = title;
+  document.getElementById("drawer-notification-message").textContent = message;
+  document.getElementById("drawer-notification-time").textContent =
+    timeAgo(created_at);
+
+  block.href =
+    role === "admin"
+      ? "/pages/admin/admin-pedidos.html"
+      : "/mis-pedidos.html";
+}
+
+function hideAllNotificationUI() {
+  document.getElementById("drawer-notification")
+    ?.classList.add("hidden");
+}
+
+/* =====================================================
+   MARCAR COMO LEÍDAS
+===================================================== */
+async function markNotificationsAsRead() {
+  const user = getUserCache();
+  const sb = await getSupabase();
+  if (!user || !sb) return;
+
+  await sb
+    .from("notifications")
+    .update({ is_read: true })
+    .eq("is_read", false);
+
+  hideAllNotificationUI();
+  toggleGlobalNotificationDot(false);
+}
+
+/* =====================================================
+   UTIL
+===================================================== */
+function timeAgo(date) {
+  const seconds = Math.floor((Date.now() - new Date(date)) / 1000);
+  if (seconds < 60) return "hace unos segundos";
+  if (seconds < 3600) return `hace ${Math.floor(seconds / 60)} min`;
+  if (seconds < 86400) return `hace ${Math.floor(seconds / 3600)} h`;
+  return `hace ${Math.floor(seconds / 86400)} días`;
+}
 /* =====================================================
    🔄 REALTIME — ORDERS + NOTIFICATIONS (CORREGIDO)
 ===================================================== */
@@ -262,13 +401,17 @@ async function initRealtime() {
       closeDrawer();
     });
 
-    syncUserUI();
-    updateCartCount();
-    updateHeaderCartTitle();
-    syncClientOrderNotification();
-    syncAdminOrdersCount();
-    syncAdminNotifications(); // 🔴 CLAVE
-    initRealtime();
+ syncUserUI();
+updateCartCount();
+updateHeaderCartTitle();
+
+syncClientOrderNotification();
+syncAdminOrdersCount();
+syncAdminNotifications();   // 🔴 badge simple (ya lo tenías)
+
+syncDrawerNotifications();  // 🔔 NUEVO: bloque visual del drawer
+initRealtime();             // realtime existente (orders + contadores)
+initNotificationRealtime(); // 🔔 NUEVO: realtime de notificaciones
   }
 
   /* =====================================================
