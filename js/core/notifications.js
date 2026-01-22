@@ -1,7 +1,7 @@
 // js/core/notifications.js
 import { registerPushToken } from "./push.js";
 
-console.log("🔔 notifications.js — CORE FINAL DEFINITIVO");
+console.log("🔔 notifications.js — CORE FINAL CORREGIDO");
 
 /* =====================================================
    HELPERS — USUARIO / SUPABASE
@@ -20,7 +20,7 @@ function getSupabase() {
 }
 
 /* =====================================================
-   UI — HEADER (FUNCIONES EXPUESTAS)
+   UI — HEADER (HOOKS)
 ===================================================== */
 function setGlobalBadge(show) {
   window.toggleGlobalNotificationDot?.(show);
@@ -35,7 +35,7 @@ function setMyCount(count) {
 }
 
 /* =====================================================
-   UI — DRAWER (TARJETA SUPERIOR)
+   UI — DRAWER (NOTIFICACIÓN SUPERIOR)
 ===================================================== */
 function showNotificationUI({ title, message, created_at, role }) {
   const block = document.getElementById("drawer-notification");
@@ -59,35 +59,51 @@ function hideAllNotificationUI() {
 }
 
 /* =====================================================
-   CONTADORES REALES — PEDIDOS
+   CONTADORES REALES — PEDIDOS (🔥 CLAVE)
 ===================================================== */
+const ACTIVE_STATUSES = ["cash_on_delivery", "payment_review"];
+
+/* ADMIN */
 async function syncAdminOrdersCount() {
   const sb = getSupabase();
   if (!sb) return;
 
-  const { count } = await sb
+  const { count, error } = await sb
     .from("orders")
     .select("*", { count: "exact", head: true })
-    .eq("status", "pending");
+    .in("status", ACTIVE_STATUSES);
+
+  if (error) {
+    console.error("❌ Error contando pedidos admin:", error);
+    setAdminCount(0);
+    return;
+  }
 
   setAdminCount(count || 0);
 }
 
+/* CLIENTE */
 async function syncMyOrdersCount(userId) {
   const sb = getSupabase();
   if (!sb) return;
 
-  const { count } = await sb
+  const { count, error } = await sb
     .from("orders")
     .select("*", { count: "exact", head: true })
     .eq("user_id", userId)
-    .neq("status", "completed");
+    .in("status", ACTIVE_STATUSES);
+
+  if (error) {
+    console.error("❌ Error contando pedidos cliente:", error);
+    setMyCount(0);
+    return;
+  }
 
   setMyCount(count || 0);
 }
 
 /* =====================================================
-   NOTIFICACIONES (SOLO UI + CAMPANA)
+   NOTIFICACIONES (CAMPANA + TARJETA)
 ===================================================== */
 async function syncNotificationsUI() {
   const user = getUserCache();
@@ -110,31 +126,30 @@ async function syncNotificationsUI() {
     query = query.eq("user_id", user.id);
   }
 
-  const { data } = await query;
+  const { data, error } = await query;
 
-  if (!data || data.length === 0) {
+  if (error || !data || data.length === 0) {
     hideAllNotificationUI();
     setGlobalBadge(false);
     return;
   }
 
   const latest = data[0];
-
   setGlobalBadge(true);
 
   showNotificationUI({
-    title: latest.title || "Nueva notificación",
+    title: latest.title || "Nuevo pedido",
     message:
       user.rol === "admin"
         ? "Tienes pedidos pendientes de revisión."
-        : "Tu pedido tiene una actualización.",
+        : "Tienes pedidos activos.",
     created_at: latest.created_at,
     role: user.rol
   });
 }
 
 /* =====================================================
-   SINCRONIZACIÓN GLOBAL (🔥 CLAVE)
+   SINCRONIZACIÓN TOTAL (🔥 USADA POR HEADER)
 ===================================================== */
 async function syncAll() {
   const user = getUserCache();
@@ -150,7 +165,10 @@ async function syncAll() {
 
   await syncNotificationsUI();
 }
+
+// 👉 usado por header.js al abrir drawer
 window.syncNotificationsAll = syncAll;
+
 /* =====================================================
    REALTIME — SUPABASE
 ===================================================== */
@@ -222,7 +240,7 @@ function timeAgo(date) {
    EVENTOS DESDE HEADER
 ===================================================== */
 document.addEventListener("initNotifications", async () => {
-  await syncAll();        // 🔥 SIEMPRE
+  await syncAll();        // 🔥 inicial inmediato
   await initRealtime();
   await initPush();
 });
