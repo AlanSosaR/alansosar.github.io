@@ -138,12 +138,18 @@ body.page-carrito .header-cart-title {
 }
 .login-link:hover { color: var(--verde); }
 
-/* AVATAR HEADER */
+/* =====================================================
+   AVATAR HEADER — PREMIUM (BLINDADO)
+===================================================== */
 .header-avatar-button {
   width: 48px;
   height: 48px;
-  border-radius: 50%;
-  overflow: hidden;
+
+  min-width: 48px;
+  min-height: 48px;
+
+  border-radius: 50% !important;   /* 🔑 BLINDAJE */
+  overflow: hidden !important;     /* 🔑 BLINDAJE */
 
   display: flex;
   align-items: center;
@@ -157,18 +163,31 @@ body.page-carrito .header-cart-title {
     0 6px 14px rgba(0,0,0,.18),
     0 2px 4px rgba(0,0,0,.12);
 
-  transition: transform .2s ease, box-shadow .2s ease;
+  transition:
+    transform .2s ease,
+    box-shadow .2s ease;
+
+  position: relative;              /* 🔑 badge seguro */
 }
+
+/* Hover (solo PC) */
 .header-avatar-button:hover {
   transform: translateY(-2px);
   box-shadow:
     0 10px 24px rgba(0,0,0,.22),
     0 4px 10px rgba(0,0,0,.16);
 }
+
+/* Imagen */
 .header-avatar-button img {
   width: 100%;
   height: 100%;
+
   object-fit: cover;
+  object-position: center;
+
+  border-radius: 50% !important;   /* 🔑 evita cuadrado */
+  display: block;
 }
 
 /* VISIBILIDAD HEADER */
@@ -384,7 +403,7 @@ body.page-carrito .header-cart-title {
   }
 }
 /* =====================================================
-   PERFIL — AVATAR PREMIUM FLOTANTE (SIN CONTORNO)
+   PERFIL — AVATAR PREMIUM FLOTANTE (BLINDADO)
 ===================================================== */
 .user-drawer-profile-link {
   display: flex;
@@ -400,21 +419,21 @@ body.page-carrito .header-cart-title {
   color: inherit;
 }
 
-/* CONTENEDOR AVATAR */
+/* =========================
+   CONTENEDOR AVATAR
+========================= */
 .user-drawer-avatar {
   width: 52px;
   height: 52px;
-
   min-width: 52px;
   min-height: 52px;
 
-  border-radius: 50%;
-  overflow: hidden;
+  border-radius: 50% !important;   /* 🔑 blindaje */
+  overflow: hidden !important;     /* 🔑 blindaje */
 
-  background: transparent;     /* ❌ sin fondo */
-  border: none;                /* ❌ sin contorno */
+  background: transparent;
+  border: none;
 
-  /* 🌟 EFECTO FLOTANTE PREMIUM */
   box-shadow:
     0 10px 26px rgba(0,0,0,0.28),
     0 4px 12px rgba(0,0,0,0.18);
@@ -427,7 +446,9 @@ body.page-carrito .header-cart-title {
     box-shadow .22s ease;
 }
 
-/* HOVER SUAVE (PC) */
+/* =========================
+   HOVER SUAVE (PC)
+========================= */
 .user-drawer-profile-link:hover .user-drawer-avatar {
   transform: translateY(-3px) scale(1.03);
   box-shadow:
@@ -435,17 +456,19 @@ body.page-carrito .header-cart-title {
     0 6px 18px rgba(0,0,0,0.22);
 }
 
-/* IMAGEN */
+/* =========================
+   IMAGEN AVATAR
+========================= */
 .user-drawer-avatar img {
   width: 100%;
   height: 100%;
+
   object-fit: cover;
   object-position: center;
 
-  border-radius: 50%;
+  border-radius: 50% !important;   /* 🔑 evita cuadrado */
   display: block;
 
-  /* nitidez visual */
   image-rendering: auto;
 }
 
