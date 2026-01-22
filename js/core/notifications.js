@@ -150,7 +150,7 @@ async function syncAll() {
 
   await syncNotificationsUI();
 }
-
+window.syncNotificationsAll = syncAll;
 /* =====================================================
    REALTIME — SUPABASE
 ===================================================== */
