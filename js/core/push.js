@@ -56,27 +56,29 @@ export async function registerPushToken(userId) {
     return;
   }
 
-  /* ================= SUPABASE ================= */
-  const sb = getSupabase();
-  if (!sb) {
-    console.error("❌ Supabase no disponible");
-    return;
-  }
+/* ================= SUPABASE ================= */
+const sb = getSupabase();
+if (!sb) {
+  console.error("❌ Supabase no disponible");
+  return;
+}
 
-  const { error } = await sb
-    .from("push_tokens")
-    .upsert(
-      {
-        user_id: userId,
-        token,
-        platform: "web"
-      },
-      { onConflict: "token" }
-    );
+const { error } = await sb
+  .from("push_tokens")
+  .upsert(
+    {
+      user_id: userId,
+      token,
+      platform: "web",
+      updated_at: new Date().toISOString()
+    },
+    {
+      onConflict: "user_id,platform"
+    }
+  );
 
-  if (error) {
-    console.error("❌ Error guardando push token:", error);
-  } else {
-    console.log("✅ Push token guardado REALMENTE en Supabase");
-  }
+if (error) {
+  console.error("❌ Error guardando push token:", error);
+} else {
+  console.log("✅ Push token guardado REALMENTE en Supabase");
 }
