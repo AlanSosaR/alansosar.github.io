@@ -32,6 +32,14 @@ header.header-fixed {
   box-sizing: border-box;
 }
 /* =====================================================
+   MOBILE — OCULTAR LOGO DETRÁS DEL MENÚ
+===================================================== */
+@media (max-width: 900px) {
+  .header-logo-link {
+    display: none !important;
+  }
+}
+/* =====================================================
    TÍTULO CENTRAL — CARRITO
 ===================================================== */
 
