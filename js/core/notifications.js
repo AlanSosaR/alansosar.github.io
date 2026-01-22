@@ -1,7 +1,7 @@
 // js/core/notifications.js
 import { registerPushToken } from "./push.js";
 
-console.log("🔔 notifications.js — CORE FINAL CORREGIDO");
+console.log("🔔 notifications.js — CORE FINAL ESTABLE");
 
 /* =====================================================
    HELPERS — USUARIO / SUPABASE
@@ -22,17 +22,14 @@ function getSupabase() {
 /* =====================================================
    UI — HEADER (HOOKS)
 ===================================================== */
-function setGlobalBadge(show) {
+const setGlobalBadge = (show) =>
   window.toggleGlobalNotificationDot?.(show);
-}
 
-function setAdminCount(count) {
+const setAdminCount = (count) =>
   window.setAdminOrdersCount?.(count);
-}
 
-function setMyCount(count) {
+const setMyCount = (count) =>
   window.setMyOrdersCount?.(count);
-}
 
 /* =====================================================
    UI — DRAWER (NOTIFICACIÓN SUPERIOR)
@@ -42,7 +39,6 @@ function showNotificationUI({ title, message, created_at, role }) {
   if (!block) return;
 
   block.classList.remove("hidden");
-
   document.getElementById("drawer-notification-title").textContent = title;
   document.getElementById("drawer-notification-message").textContent = message;
   document.getElementById("drawer-notification-time").textContent =
@@ -59,11 +55,24 @@ function hideAllNotificationUI() {
 }
 
 /* =====================================================
-   CONTADORES REALES — PEDIDOS (🔥 CLAVE)
+   ESTADOS (🔥 CLAVE)
 ===================================================== */
-const ACTIVE_STATUSES = ["cash_on_delivery", "payment_review"];
+const ADMIN_ACTIVE_STATUSES = [
+  "cash_on_delivery",
+  "payment_review"
+];
 
-/* ADMIN */
+const CLIENT_VISIBLE_STATUSES = [
+  "cash_on_delivery",
+  "payment_review",
+  "confirmed",
+  "shipped",
+  "delivered"
+];
+
+/* =====================================================
+   CONTADORES — ADMIN
+===================================================== */
 async function syncAdminOrdersCount() {
   const sb = getSupabase();
   if (!sb) return;
@@ -71,10 +80,10 @@ async function syncAdminOrdersCount() {
   const { count, error } = await sb
     .from("orders")
     .select("*", { count: "exact", head: true })
-    .in("status", ACTIVE_STATUSES);
+    .in("status", ADMIN_ACTIVE_STATUSES);
 
   if (error) {
-    console.error("❌ Error contando pedidos admin:", error);
+    console.error("❌ Admin count error:", error);
     setAdminCount(0);
     return;
   }
@@ -82,7 +91,9 @@ async function syncAdminOrdersCount() {
   setAdminCount(count || 0);
 }
 
-/* CLIENTE */
+/* =====================================================
+   CONTADORES — CLIENTE (🔥 FIX REAL)
+===================================================== */
 async function syncMyOrdersCount(userId) {
   const sb = getSupabase();
   if (!sb) return;
@@ -91,10 +102,10 @@ async function syncMyOrdersCount(userId) {
     .from("orders")
     .select("*", { count: "exact", head: true })
     .eq("user_id", userId)
-    .in("status", ACTIVE_STATUSES);
+    .in("status", CLIENT_VISIBLE_STATUSES);
 
   if (error) {
-    console.error("❌ Error contando pedidos cliente:", error);
+    console.error("❌ Client count error:", error);
     setMyCount(0);
     return;
   }
@@ -126,9 +137,9 @@ async function syncNotificationsUI() {
     query = query.eq("user_id", user.id);
   }
 
-  const { data, error } = await query;
+  const { data } = await query;
 
-  if (error || !data || data.length === 0) {
+  if (!data || data.length === 0) {
     hideAllNotificationUI();
     setGlobalBadge(false);
     return;
@@ -149,7 +160,7 @@ async function syncNotificationsUI() {
 }
 
 /* =====================================================
-   SINCRONIZACIÓN TOTAL (🔥 USADA POR HEADER)
+   SINCRONIZACIÓN TOTAL (🔥)
 ===================================================== */
 async function syncAll() {
   const user = getUserCache();
@@ -166,37 +177,34 @@ async function syncAll() {
   await syncNotificationsUI();
 }
 
-// 👉 usado por header.js al abrir drawer
 window.syncNotificationsAll = syncAll;
 
 /* =====================================================
    REALTIME — SUPABASE
 ===================================================== */
-let notificationChannel = null;
 let ordersChannel = null;
+let notificationChannel = null;
 
 async function initRealtime() {
-  if (notificationChannel || ordersChannel) return;
+  if (ordersChannel || notificationChannel) return;
 
   const user = getUserCache();
   const sb = getSupabase();
   if (!user || !sb) return;
 
-  notificationChannel = sb
-    .channel(`notifications-${user.id}`)
-    .on(
-      "postgres_changes",
-      { event: "*", schema: "public", table: "notifications" },
-      () => syncNotificationsUI()
+  ordersChannel = sb
+    .channel(`orders-${user.id}`)
+    .on("postgres_changes",
+      { event: "*", schema: "public", table: "orders" },
+      syncAll
     )
     .subscribe();
 
-  ordersChannel = sb
-    .channel(`orders-${user.id}`)
-    .on(
-      "postgres_changes",
-      { event: "*", schema: "public", table: "orders" },
-      () => syncAll()
+  notificationChannel = sb
+    .channel(`notifications-${user.id}`)
+    .on("postgres_changes",
+      { event: "*", schema: "public", table: "notifications" },
+      syncNotificationsUI
     )
     .subscribe();
 }
@@ -205,11 +213,11 @@ async function cleanupRealtime() {
   const sb = getSupabase();
   if (!sb) return;
 
-  if (notificationChannel) await sb.removeChannel(notificationChannel);
   if (ordersChannel) await sb.removeChannel(ordersChannel);
+  if (notificationChannel) await sb.removeChannel(notificationChannel);
 
-  notificationChannel = null;
   ordersChannel = null;
+  notificationChannel = null;
 }
 
 /* =====================================================
@@ -226,7 +234,7 @@ async function initPush() {
 }
 
 /* =====================================================
-   UTILIDAD
+   UTIL
 ===================================================== */
 function timeAgo(date) {
   const seconds = Math.floor((Date.now() - new Date(date)) / 1000);
@@ -240,7 +248,7 @@ function timeAgo(date) {
    EVENTOS DESDE HEADER
 ===================================================== */
 document.addEventListener("initNotifications", async () => {
-  await syncAll();        // 🔥 inicial inmediato
+  await syncAll();
   await initRealtime();
   await initPush();
 });
