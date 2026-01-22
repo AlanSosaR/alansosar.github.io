@@ -1,56 +1,17 @@
-// ============================================================
-// LOGOUT.JS — Café Cortero (2025)
-// Maneja SOLO el cierre de sesión (UI + estado)
-// ============================================================
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
 
-console.log("🚪 logout.js cargado");
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyA5Ba3Qs6cunO8vQUGi1e2AHuTPvozLcI4",
+  authDomain: "cafecortero-eb674.firebaseapp.com",
+  projectId: "cafecortero-eb674",
+  storageBucket: "cafecortero-eb674.firebasestorage.app",
+  messagingSenderId: "412829554061",
+  appId: "1:412829554061:web:61a29b4f59881858f599c4"
+};
 
-/* ========================= HELPERS ========================= */
-function safe(id) {
-  return document.getElementById(id);
-}
-
-/* ========================= LOGOUT ========================= */
-function doLogout(e) {
-  if (e) e.preventDefault();
-
-  console.log("🚪 Cerrando sesión…");
-
-  // 1️⃣ Eliminar sesión local
-  localStorage.removeItem("cortero_user");
-
-  // 2️⃣ Notificar al sistema
-  document.dispatchEvent(new CustomEvent("userLoggedOut"));
-
-  // 3️⃣ Cerrar drawer si está abierto
-  const drawer = safe("user-drawer");
-  const scrim = safe("user-scrim");
-
-  if (drawer) {
-    drawer.classList.remove("open");
-    drawer.setAttribute("aria-hidden", "true");
-  }
-
-  if (scrim) {
-    scrim.classList.remove("open");
-  }
-
-  document.body.style.overflow = "";
-
-  // 4️⃣ Redirigir (opcional pero recomendado)
-  setTimeout(() => {
-    window.location.href = "index.html";
-  }, 100);
-}
-
-/* ========================= INIT ========================= */
-document.addEventListener("DOMContentLoaded", () => {
-  const logoutBtn = safe("logout-btn");
-
-  if (!logoutBtn) {
-    console.warn("⚠️ Botón logout no encontrado (#logout-btn)");
-    return;
-  }
-
-  logoutBtn.addEventListener("click", doLogout);
-});
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
