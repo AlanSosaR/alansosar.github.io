@@ -148,8 +148,8 @@ body.page-carrito .header-cart-title {
   min-width: 48px;
   min-height: 48px;
 
-  border-radius: 50% !important;   /* 🔑 BLINDAJE */
-  overflow: hidden !important;     /* 🔑 BLINDAJE */
+  border-radius: 50% !important;
+  overflow: hidden !important;
 
   display: flex;
   align-items: center;
@@ -167,7 +167,8 @@ body.page-carrito .header-cart-title {
     transform .2s ease,
     box-shadow .2s ease;
 
-  position: relative;              /* 🔑 badge seguro */
+  /* ❌ QUITAR ESTO */
+  /* position: relative; */
 }
 
 /* Hover (solo PC) */
