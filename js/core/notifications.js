@@ -1,7 +1,7 @@
 // js/core/notifications.js
 import { registerPushToken } from "./push.js";
 
-console.log("🔔 notifications.js — CORE FINAL");
+console.log("🔔 notifications.js — CORE FINAL (FIXED)");
 
 /* =====================================================
    HELPERS
@@ -20,25 +20,12 @@ async function getSupabase() {
 }
 
 /* =====================================================
-   UI — BADGE GLOBAL (HEADER)
+   UI — HEADER (USAR EL QUE EXPONE header.js)
 ===================================================== */
-function toggleGlobalNotificationDot(show) {
-  const menuBadge   = document.getElementById("menu-notification-badge");
-  const avatarBadge = document.getElementById("avatar-notification-badge");
-
-  [menuBadge, avatarBadge].forEach(badge => {
-    if (!badge) return;
-
-    if (show) {
-      badge.classList.remove("hidden");
-      badge.classList.remove("animate");
-      badge.offsetHeight;
-      badge.classList.add("animate");
-    } else {
-      badge.classList.add("hidden");
-      badge.classList.remove("animate");
-    }
-  });
+function setGlobalBadge(show) {
+  if (typeof window.toggleGlobalNotificationDot === "function") {
+    window.toggleGlobalNotificationDot(show);
+  }
 }
 
 /* =====================================================
@@ -67,41 +54,48 @@ function hideAllNotificationUI() {
 }
 
 /* =====================================================
-   DATA — SYNC
+   DATA — SYNC (ADMIN + CLIENTE)
 ===================================================== */
 async function syncNotifications() {
   const user = getUserCache();
   if (!user) {
     hideAllNotificationUI();
-    toggleGlobalNotificationDot(false);
+    setGlobalBadge(false);
     return;
   }
 
   const sb = await getSupabase();
   if (!sb) return;
 
-  const { data, error } = await sb
+  let query = sb
     .from("notifications")
     .select("*")
     .eq("is_read", false)
     .order("created_at", { ascending: false });
 
+  // 🔑 DIFERENCIA CLAVE
+  if (user.rol !== "admin") {
+    query = query.eq("user_id", user.id);
+  }
+
+  const { data, error } = await query;
+
   if (error || !data || data.length === 0) {
     hideAllNotificationUI();
-    toggleGlobalNotificationDot(false);
+    setGlobalBadge(false);
     return;
   }
 
   const orderNotifs = data.filter(n => n.type === "order");
   if (orderNotifs.length === 0) {
     hideAllNotificationUI();
-    toggleGlobalNotificationDot(false);
+    setGlobalBadge(false);
     return;
   }
 
   const latest = orderNotifs[0];
 
-  toggleGlobalNotificationDot(true);
+  setGlobalBadge(true);
 
   showNotificationUI({
     title: latest.title || "Nuevo pedido",
@@ -115,7 +109,7 @@ async function syncNotifications() {
 }
 
 /* =====================================================
-   REALTIME
+   REALTIME — ADMIN Y CLIENTE
 ===================================================== */
 let notificationChannel = null;
 
@@ -126,6 +120,11 @@ async function initRealtime() {
   const sb = await getSupabase();
   if (!user || !sb) return;
 
+  const filter =
+    user.rol === "admin"
+      ? undefined
+      : `user_id=eq.${user.id}`;
+
   notificationChannel = sb
     .channel(`notifications-${user.id}`)
     .on(
@@ -134,7 +133,7 @@ async function initRealtime() {
         event: "*",
         schema: "public",
         table: "notifications",
-        filter: `user_id=eq.${user.id}`
+        ...(filter ? { filter } : {})
       },
       () => {
         syncNotifications();
@@ -160,9 +159,7 @@ async function initPush() {
   const user = getUserCache();
   if (!user) return;
 
-  if (localStorage.getItem("push_registered") === "1") {
-    return;
-  }
+  if (localStorage.getItem("push_registered") === "1") return;
 
   try {
     await registerPushToken(user.id);
@@ -197,7 +194,7 @@ document.addEventListener("initNotifications", async () => {
 document.addEventListener("destroyNotifications", async () => {
   console.log("🔕 Destroy notifications");
   hideAllNotificationUI();
-  toggleGlobalNotificationDot(false);
+  setGlobalBadge(false);
   localStorage.removeItem("push_registered");
   await cleanupRealtime();
 });
