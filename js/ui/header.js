@@ -1,3 +1,4 @@
+import { registerPushToken } from "./push.js";
 console.log("🧭 header.js — UI CORE FINAL (AUTH + ADMIN + NOTIFS + REALTIME)");
 
 if (!window.__HEADER_CORE_LOADED__) {
@@ -418,34 +419,64 @@ initNotificationRealtime(); // 🔔 NUEVO: realtime de notificaciones
      EVENTOS GLOBALES
   ===================================================== */
   if (!window.__HEADER_GLOBAL_EVENTS__) {
-    window.__HEADER_GLOBAL_EVENTS__ = true;
+  window.__HEADER_GLOBAL_EVENTS__ = true;
 
-    window.addEventListener("cartUpdated", () => {
-      updateCartCount();
-      updateHeaderCartTitle();
-    });
+  /* =========================
+     🛒 CARRITO ACTUALIZADO
+  ========================= */
+  window.addEventListener("cartUpdated", () => {
+    updateCartCount();
+    updateHeaderCartTitle();
+  });
 
-    document.addEventListener("userLoggedIn", () => {
-      syncUserUI();
-      updateCartCount();
-      updateHeaderCartTitle();
-      syncClientOrderNotification();
-      syncAdminOrdersCount();
-      syncAdminNotifications();
-      initRealtime();
-    });
+  /* =========================
+     🔐 LOGIN DE USUARIO
+  ========================= */
+  document.addEventListener("userLoggedIn", async () => {
+    // UI base
+    syncUserUI();
+    updateCartCount();
+    updateHeaderCartTitle();
 
-    document.addEventListener("userLoggedOut", () => {
-      syncUserUI();
-      updateCartCount();
-      updateHeaderCartTitle();
-      toggleGlobalNotificationDot(false);
-      REALTIME_INIT = false;
-    });
-  }
+    // contadores
+    syncClientOrderNotification();
+    syncAdminOrdersCount();
+    syncAdminNotifications();
 
-  window.initHeader = initHeader;
+    // realtime
+    initRealtime();
+    initNotificationRealtime();
+
+    // 🔔 PUSH NOTIFICATIONS (Firebase)
+    const user = getUserCache();
+    if (!user) return;
+
+    try {
+      await registerPushToken(user.id);
+      console.log("🔔 Push token registrado");
+    } catch (err) {
+      console.error("❌ Error registrando push token:", err);
+    }
+  });
+
+  /* =========================
+     🚪 LOGOUT DE USUARIO
+  ========================= */
+  document.addEventListener("userLoggedOut", async () => {
+    syncUserUI();
+    updateCartCount();
+    updateHeaderCartTitle();
+
+    toggleGlobalNotificationDot(false);
+    hideAllNotificationUI();
+
+    // 🔕 cerrar realtime
+    REALTIME_INIT = false;
+    await cleanupNotificationRealtime?.();
+  });
 }
+
+window.initHeader = initHeader;
 
 
 // =====================================================
