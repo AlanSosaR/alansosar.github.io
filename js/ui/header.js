@@ -261,7 +261,23 @@ async function initNotificationRealtime() {
     )
     .subscribe();
 }
+/* =====================================================
+   🧹 LIMPIEZA REALTIME — NOTIFICACIONES
+===================================================== */
+async function cleanupNotificationRealtime() {
+  const sb = await getSupabase();
+  if (!sb) return;
 
+  try {
+    if (notificationChannel) {
+      await sb.removeChannel(notificationChannel);
+      notificationChannel = null;
+      console.log("🧹 Notification realtime limpiado");
+    }
+  } catch (err) {
+    console.warn("⚠️ Error limpiando notification realtime:", err);
+  }
+}
 /* =====================================================
    UI
 ===================================================== */
