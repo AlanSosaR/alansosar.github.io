@@ -55,7 +55,7 @@ function hideAllNotificationUI() {
 }
 
 /* =====================================================
-   ESTADOS (🔥 CLAVE)
+   ESTADOS REALES
 ===================================================== */
 const ADMIN_ACTIVE_STATUSES = [
   "cash_on_delivery",
@@ -92,7 +92,7 @@ async function syncAdminOrdersCount() {
 }
 
 /* =====================================================
-   CONTADORES — CLIENTE (🔥 FIX REAL)
+   CONTADORES — CLIENTE
 ===================================================== */
 async function syncMyOrdersCount(userId) {
   const sb = getSupabase();
@@ -137,9 +137,9 @@ async function syncNotificationsUI() {
     query = query.eq("user_id", user.id);
   }
 
-  const { data } = await query;
+  const { data, error } = await query;
 
-  if (!data || data.length === 0) {
+  if (error || !data || data.length === 0) {
     hideAllNotificationUI();
     setGlobalBadge(false);
     return;
@@ -160,7 +160,7 @@ async function syncNotificationsUI() {
 }
 
 /* =====================================================
-   SINCRONIZACIÓN TOTAL (🔥)
+   SINCRONIZACIÓN TOTAL
 ===================================================== */
 async function syncAll() {
   const user = getUserCache();
@@ -177,6 +177,7 @@ async function syncAll() {
   await syncNotificationsUI();
 }
 
+// Expuesto para header.js (drawer)
 window.syncNotificationsAll = syncAll;
 
 /* =====================================================
@@ -192,18 +193,36 @@ async function initRealtime() {
   const sb = getSupabase();
   if (!user || !sb) return;
 
+  // 🔔 ÓRDENES
   ordersChannel = sb
     .channel(`orders-${user.id}`)
-    .on("postgres_changes",
-      { event: "*", schema: "public", table: "orders" },
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+        table: "orders",
+        ...(user.rol !== "admin"
+          ? { filter: `user_id=eq.${user.id}` }
+          : {})
+      },
       syncAll
     )
     .subscribe();
 
+  // 🔔 NOTIFICACIONES
   notificationChannel = sb
     .channel(`notifications-${user.id}`)
-    .on("postgres_changes",
-      { event: "*", schema: "public", table: "notifications" },
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+        table: "notifications",
+        ...(user.rol !== "admin"
+          ? { filter: `user_id=eq.${user.id}` }
+          : {})
+      },
       syncNotificationsUI
     )
     .subscribe();
@@ -245,14 +264,20 @@ function timeAgo(date) {
 }
 
 /* =====================================================
-   EVENTOS DESDE HEADER
+   INIT AUTOMÁTICO (🔥 LO QUE FALTABA)
 ===================================================== */
-document.addEventListener("initNotifications", async () => {
-  await syncAll();
+document.addEventListener("DOMContentLoaded", async () => {
+  const user = getUserCache();
+  if (!user) return;
+
+  await syncAll();        // ← CLIENTE Y ADMIN VEN SU NÚMERO
   await initRealtime();
   await initPush();
 });
 
+/* =====================================================
+   EVENTOS DESDE HEADER
+===================================================== */
 document.addEventListener("destroyNotifications", async () => {
   hideAllNotificationUI();
   setGlobalBadge(false);
@@ -260,19 +285,4 @@ document.addEventListener("destroyNotifications", async () => {
   setMyCount(0);
   localStorage.removeItem("push_registered");
   await cleanupRealtime();
-});
-/* =====================================================
-   AUTO INIT — CLIENTE / ADMIN
-   🔥 ESTO ES LO QUE FALTABA
-===================================================== */
-document.addEventListener("DOMContentLoaded", () => {
-  const user = getUserCache();
-  if (!user) return;
-
-  // Fuerza sincronización inicial
-  syncAll();
-
-  // Inicializa realtime y push una sola vez
-  initRealtime();
-  initPush();
 });
