@@ -7,6 +7,7 @@ console.log("📐 layout.js cargado");
 /*
   REGLAS:
   - layout.js orquesta UI global
+  - NO decide auth
   - NO se ejecuta en login
 */
 
@@ -42,7 +43,7 @@ if (document.body.dataset.page !== "login") {
         document.body.insertAdjacentHTML("afterbegin", html);
         console.log("✅ Header inyectado");
 
-        // ================= PUSH =================
+        // ================= PUSH (GLOBAL) =================
         if (!window.__PUSH_LOADED__) {
           window.__PUSH_LOADED__ = true;
 
@@ -70,20 +71,28 @@ if (document.body.dataset.page !== "login") {
         document.dispatchEvent(new Event("header:ready"));
         console.log("📣 Evento header:ready");
 
-        // ================= NOTIFICATIONS =================
-        if (window.currentUser && !window.__NOTIFICATIONS_LOADED__) {
-          window.__NOTIFICATIONS_LOADED__ = true;
-
-          const { initNotifications } = await import(
-            "/js/core/notifications.js"
-          );
-
-          initNotifications();
-          console.log("🔔 notifications inicializadas");
-        }
-
       } catch (err) {
         console.error("❌ Error crítico en layout.js:", err);
+      }
+    });
+
+    // =====================================================
+    // 🔔 NOTIFICATIONS — ESCUCHA AUTH:READY (ÚNICO PUNTO)
+    // =====================================================
+    document.addEventListener("auth:ready", async () => {
+      if (window.__NOTIFICATIONS_LOADED__) return;
+
+      window.__NOTIFICATIONS_LOADED__ = true;
+
+      try {
+        const { initNotifications } = await import(
+          "/js/core/notifications.js"
+        );
+
+        initNotifications();
+        console.log("🔔 notifications inicializadas (auth:ready)");
+      } catch (e) {
+        console.error("❌ Error cargando notifications.js", e);
       }
     });
 
