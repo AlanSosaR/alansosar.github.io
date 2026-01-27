@@ -76,6 +76,17 @@ if (!window.__AUTH_UI_LOADED__) {
   }
 
   /* =====================================================
+     AUTH READY (CONTROLADO)
+  ===================================================== */
+  function dispatchAuthReadyOnce() {
+    if (window.__AUTH_READY__) return;
+
+    window.__AUTH_READY__ = true;
+    document.dispatchEvent(new Event("auth:ready"));
+    console.log("📣 Evento auth:ready");
+  }
+
+  /* =====================================================
      INIT
   ===================================================== */
   function initAuthUI() {
@@ -90,22 +101,14 @@ if (!window.__AUTH_UI_LOADED__) {
       if (raw) {
         const user = JSON.parse(raw);
 
-        // 🔑 ESTADO GLOBAL DE USUARIO
+        // 🔑 ESTADO GLOBAL
         window.currentUser = user;
 
         setLoggedUI(user);
-
-        // 🔔 EVENTO GLOBAL (UNA SOLA VEZ)
-        if (!window.__AUTH_READY__) {
-          window.__AUTH_READY__ = true;
-          document.dispatchEvent(new Event("auth:ready"));
-          console.log("📣 Evento auth:ready");
-        }
-
+        dispatchAuthReadyOnce();
       } else {
         setGuestUI();
       }
-
     } catch (e) {
       console.warn("⚠ Error leyendo cortero_user", e);
       setGuestUI();
@@ -122,17 +125,18 @@ if (!window.__AUTH_UI_LOADED__) {
     window.currentUser = user;
 
     setLoggedUI(user);
-
-    if (!window.__AUTH_READY__) {
-      window.__AUTH_READY__ = true;
-      document.dispatchEvent(new Event("auth:ready"));
-      console.log("📣 Evento auth:ready");
-    }
+    dispatchAuthReadyOnce();
   });
 
   document.addEventListener("userLoggedOut", () => {
+    console.log("👤 UI → logout");
+
     localStorage.removeItem("cortero_user");
     window.currentUser = null;
+
+    // 🔄 RESET GLOBAL
+    window.__AUTH_READY__ = false;
+
     setGuestUI();
   });
 
