@@ -7,53 +7,102 @@ console.log("📡 push.js — Firebase Push CORE (PROD)");
 const VAPID_KEY =
   "BF5zvPxmxryUSFZ1z_XO0DlTuXi76nCpXLskVF22LGAEXCMLJNQAvDdcouhDIxkUw72c4ZGF7Fa6qW3AviHsOss";
 
+// =====================================================
+// UTIL — obtener supabase global
+// =====================================================
 function getSupabase() {
   return window.sb || window.supabase || null;
 }
 
+// =====================================================
+// CORE — registrar push token (IDEMPOTENTE)
+// =====================================================
 export async function registerPushToken(userId) {
-  if (!userId) return;
-  if (!("Notification" in window)) return;
+  try {
+    // -----------------------------
+    // Validaciones base
+    // -----------------------------
+    if (!userId) return;
+    if (!("Notification" in window)) return;
 
-  const permission = await Notification.requestPermission();
-  if (permission !== "granted") return;
+    // -----------------------------
+    // Bloqueo global (anti INIT duplicado)
+    // -----------------------------
+    if (window.__PUSH_REGISTERED__) {
+      console.log("🔁 Push ya registrado, se omite");
+      return;
+    }
+    window.__PUSH_REGISTERED__ = true;
 
-  let registration = await navigator.serviceWorker.getRegistration("/");
-  if (!registration) {
-    registration = await navigator.serviceWorker.register(
-      "/firebase-messaging-sw.js",
-      { scope: "/" }
-    );
-  }
+    // -----------------------------
+    // Permisos de notificación
+    // -----------------------------
+    if (Notification.permission === "denied") return;
 
-  await navigator.serviceWorker.ready;
+    if (Notification.permission !== "granted") {
+      const permission = await Notification.requestPermission();
+      if (permission !== "granted") return;
+    }
 
-  const token = await getToken(messaging, {
-    vapidKey: VAPID_KEY,
-    serviceWorkerRegistration: registration
-  });
+    // -----------------------------
+    // Service Worker (único)
+    // -----------------------------
+    let registration = await navigator.serviceWorker.getRegistration("/");
+    if (!registration) {
+      registration = await navigator.serviceWorker.register(
+        "/firebase-messaging-sw.js",
+        { scope: "/" }
+      );
+    }
 
-  if (!token) return;
+    await navigator.serviceWorker.ready;
 
-  const sb = getSupabase();
-  if (!sb) return;
+    // -----------------------------
+    // Obtener token FCM
+    // -----------------------------
+    const token = await getToken(messaging, {
+      vapidKey: VAPID_KEY,
+      serviceWorkerRegistration: registration
+    });
 
-  const { error } = await sb
-    .from("push_tokens")
-    .upsert(
-      {
-        token,          // 🔑 CLAVE ÚNICA REAL
-        user_id: userId,
-        platform: "web"
-      },
-      {
-        onConflict: "token" // 🔥 CORRECTO
-      }
-    );
+    if (!token) {
+      console.warn("⚠️ No se pudo obtener token FCM");
+      return;
+    }
 
-  if (error) {
-    console.error("❌ Error guardando push token:", error);
-  } else {
-    console.log("✅ Push token registrado / reasignado correctamente");
+    // -----------------------------
+    // Supabase
+    // -----------------------------
+    const sb = getSupabase();
+    if (!sb) {
+      console.error("❌ Supabase no disponible");
+      return;
+    }
+
+    // -----------------------------
+    // UPSERT alineado a constraint REAL
+    // UNIQUE (user_id, platform)
+    // -----------------------------
+    const { error } = await sb
+      .from("push_tokens")
+      .upsert(
+        {
+          token,
+          user_id: userId,
+          platform: "web"
+        },
+        {
+          onConflict: "user_id,platform"
+        }
+      );
+
+    if (error) {
+      console.error("❌ Error guardando push token:", error);
+      return;
+    }
+
+    console.log("✅ Push token registrado / actualizado correctamente");
+  } catch (err) {
+    console.error("🔥 Error crítico en registerPushToken:", err);
   }
 }
