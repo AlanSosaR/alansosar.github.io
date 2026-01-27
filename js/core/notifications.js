@@ -7,6 +7,7 @@ import { registerPushToken } from "./push.js";
 let initialized = false;
 let ordersChannel = null;
 let notificationChannel = null;
+let retryTimer = null;
 
 console.log("🔔 notifications.js cargado (pasivo)");
 
@@ -221,17 +222,27 @@ export async function initNotifications(authUser) {
     return;
   }
 
-  initialized = true;
-
-  console.log("🔔 notifications.js → INIT");
-
   const sb = getSupabase();
   const cache = getUserCache();
 
+  // ⏳ Estado aún no listo → reintento controlado
   if (!sb || !authUser || !cache) {
-    console.warn("⚠️ Notificaciones no inicializadas (estado inválido)");
+    console.warn("⏳ Esperando estado válido para notificaciones...");
+
+    if (!retryTimer) {
+      retryTimer = setTimeout(() => {
+        retryTimer = null;
+        initNotifications(authUser);
+      }, 200);
+    }
+
     return;
   }
+
+  // ✅ ESTADO VÁLIDO → MARCAMOS INIT
+  initialized = true;
+
+  console.log("🔔 notifications.js → INIT");
 
   await syncAll(sb, authUser, cache.rol);
   await initRealtime(sb, authUser, cache.rol);
