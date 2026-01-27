@@ -455,37 +455,25 @@ async function enviarPedido() {
   loader?.classList.remove("hidden");
 
   try {
-    /* === 1. ÚLTIMO NÚMERO DE PEDIDO === */
-    const { data: last, error: lastError } = await sb
-      .from("orders")
-      .select("order_number")
-      .eq("user_id", user.id)
-      .order("order_number", { ascending: false })
-      .limit(1);
 
-    if (lastError) throw lastError;
 
-    const nextOrderNumber =
-      (Number(last?.[0]?.order_number) || 0) + 1;
+/* === 2. CREAR PEDIDO === */
+const { data: order, error: insertError } = await sb
+  .from("orders")
+  .insert({
+    user_id: user.id,
+    address_id: selectedAddressId,
+    total,
+    payment_method: metodoPago.value,
+    status:
+      metodoPago.value === "bank_transfer"
+        ? "payment_review"
+        : "cash_on_delivery"
+  })
+  .select("id")
+  .single();
 
-    /* === 2. CREAR PEDIDO === */
-    const { data: order, error: insertError } = await sb
-      .from("orders")
-      .insert({
-        user_id: user.id,
-        address_id: selectedAddressId,
-        order_number: nextOrderNumber,
-        total,
-        payment_method: metodoPago.value,
-        status:
-          metodoPago.value === "bank_transfer"
-            ? "payment_review"
-            : "cash_on_delivery"
-      })
-      .select("id")
-      .single();
-
-    if (insertError) throw insertError;
+if (insertError) throw insertError;
 
     /* === 3. ITEMS === */
 const itemsPayload = carrito.map(it => ({
