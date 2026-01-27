@@ -571,19 +571,24 @@ async function enviarPedido() {
       if (receiptError) throw receiptError;
     }
 
-    /* =====================================================
-       6️⃣ NOTIFICAR ADMIN (NO BLOQUEANTE)
-    ===================================================== */
-    fetch(
-      "https://eaipcuvvddyrqkbmjmvw.supabase.co/functions/v1/swift-service",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ order_id: order.id })
-      }
-    ).catch(err =>
-      console.warn("⚠️ Notificación admin falló:", err)
-    );
+/* =====================================================
+   6️⃣ NOTIFICAR ADMIN (EDGE FUNCTION REAL)
+===================================================== */
+fetch(
+  "https://eaipcuvvddyrqkbmjmvw.supabase.co/functions/v1/notify-admin",
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${window.supabaseClient.auth.getSession
+        ? (await window.supabaseClient.auth.getSession()).data.session?.access_token
+        : ""}`
+    },
+    body: JSON.stringify({})
+  }
+).catch(err =>
+  console.warn("⚠️ notify-admin falló:", err)
+);
 
     /* =====================================================
        7️⃣ LIMPIAR Y REDIRIGIR
