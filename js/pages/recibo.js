@@ -574,17 +574,25 @@ async function enviarPedido() {
 /* =====================================================
    6️⃣ NOTIFICAR ADMIN (EDGE FUNCTION REAL)
 ===================================================== */
+const { data: sessionData } =
+  await window.supabaseClient.auth.getSession();
+
+const accessToken = sessionData?.session?.access_token;
+
 fetch(
   "https://eaipcuvvddyrqkbmjmvw.supabase.co/functions/v1/notify-admin",
   {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${window.supabaseClient.auth.getSession
-        ? (await window.supabaseClient.auth.getSession()).data.session?.access_token
-        : ""}`
+      ...(accessToken
+        ? { Authorization: `Bearer ${accessToken}` }
+        : {})
     },
-    body: JSON.stringify({})
+    body: JSON.stringify({
+      event: "order_created",
+      order_id: order.id
+    })
   }
 ).catch(err =>
   console.warn("⚠️ notify-admin falló:", err)
