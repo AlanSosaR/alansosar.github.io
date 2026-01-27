@@ -28,7 +28,6 @@ if (!window.__AUTH_UI_LOADED__) {
     const header = document.querySelector(".header-fixed");
     const drawer = $("user-drawer");
 
-    // 🔑 BODY (nuevo — NO rompe nada)
     document.body.classList.remove("logged");
     document.body.classList.add("no-user");
 
@@ -50,7 +49,6 @@ if (!window.__AUTH_UI_LOADED__) {
     const header = document.querySelector(".header-fixed");
     const drawer = $("user-drawer");
 
-    // 🔑 BODY (nuevo — NO rompe nada)
     document.body.classList.remove("no-user");
     document.body.classList.add("logged");
 
@@ -60,12 +58,12 @@ if (!window.__AUTH_UI_LOADED__) {
     drawer?.classList.remove("no-user");
     drawer?.classList.add("logged");
 
-    // AVATARES (seguros)
+    // AVATARES
     const photo = user.photo_url || "imagenes/avatar-default.svg";
     $("avatar-user")?.setAttribute("src", photo);
     $("avatar-user-drawer")?.setAttribute("src", photo);
 
-    // TEXTOS (ANTI NULL)
+    // TEXTOS
     if ($("drawer-name") && user.name) {
       $("drawer-name").textContent = user.name;
     }
@@ -88,7 +86,26 @@ if (!window.__AUTH_UI_LOADED__) {
 
     try {
       const raw = localStorage.getItem("cortero_user");
-      raw ? setLoggedUI(JSON.parse(raw)) : setGuestUI();
+
+      if (raw) {
+        const user = JSON.parse(raw);
+
+        // 🔑 ESTADO GLOBAL DE USUARIO
+        window.currentUser = user;
+
+        setLoggedUI(user);
+
+        // 🔔 EVENTO GLOBAL (UNA SOLA VEZ)
+        if (!window.__AUTH_READY__) {
+          window.__AUTH_READY__ = true;
+          document.dispatchEvent(new Event("auth:ready"));
+          console.log("📣 Evento auth:ready");
+        }
+
+      } else {
+        setGuestUI();
+      }
+
     } catch (e) {
       console.warn("⚠ Error leyendo cortero_user", e);
       setGuestUI();
@@ -96,14 +113,26 @@ if (!window.__AUTH_UI_LOADED__) {
   }
 
   /* =====================================================
-     EVENTOS
+     EVENTOS EXTERNOS
   ===================================================== */
   document.addEventListener("userLoggedIn", (e) => {
-    setLoggedUI(e.detail || {});
+    const user = e.detail || {};
+
+    localStorage.setItem("cortero_user", JSON.stringify(user));
+    window.currentUser = user;
+
+    setLoggedUI(user);
+
+    if (!window.__AUTH_READY__) {
+      window.__AUTH_READY__ = true;
+      document.dispatchEvent(new Event("auth:ready"));
+      console.log("📣 Evento auth:ready");
+    }
   });
 
   document.addEventListener("userLoggedOut", () => {
     localStorage.removeItem("cortero_user");
+    window.currentUser = null;
     setGuestUI();
   });
 
