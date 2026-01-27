@@ -77,20 +77,34 @@ if (document.body.dataset.page !== "login") {
     });
 
     // =====================================================
-    // 🔔 NOTIFICATIONS — ESCUCHA AUTH:READY (ÚNICO PUNTO)
+    // 🔔 NOTIFICATIONS — ESCUCHA AUTH:READY (CORRECTO)
     // =====================================================
     document.addEventListener("auth:ready", async () => {
       if (window.__NOTIFICATIONS_LOADED__) return;
-
       window.__NOTIFICATIONS_LOADED__ = true;
 
       try {
+        const sb = window.supabase;
+        if (!sb) {
+          console.warn("⚠️ Supabase no disponible para notificaciones");
+          return;
+        }
+
+        const { data } = await sb.auth.getSession();
+        const authUser = data?.session?.user;
+
+        if (!authUser) {
+          console.warn("⚠️ authUser no disponible para notificaciones");
+          return;
+        }
+
         const { initNotifications } = await import(
           "/js/core/notifications.js"
         );
 
-        initNotifications();
-        console.log("🔔 notifications inicializadas (auth:ready)");
+        initNotifications(authUser);
+        console.log("🔔 notifications inicializadas (authUser OK)");
+
       } catch (e) {
         console.error("❌ Error cargando notifications.js", e);
       }
