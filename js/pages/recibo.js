@@ -499,6 +499,8 @@ console.log("✅ Items insertados:", itemsInserted);
      
 /* === 3.1 DESCONTAR STOCK (CRÍTICO Y SEGURO) === */
 for (const it of carrito) {
+  const qty = Number(it.qty); // 🔑 FIX CLAVE
+
   // 1️⃣ Leer stock actual
   const { data: product, error: stockError } = await sb
     .from("products")
@@ -511,7 +513,7 @@ for (const it of carrito) {
   }
 
   // 2️⃣ Validar disponibilidad real
-  if (product.stock < it.qty) {
+  if (product.stock < qty) {
     throw new Error(
       `Solo quedan ${product.stock} unidades disponibles de "${it.name}".`
     );
@@ -521,10 +523,10 @@ for (const it of carrito) {
   const { data: updatedRows, error: updateError } = await sb
     .from("products")
     .update({
-      stock: product.stock - it.qty
+      stock: product.stock - qty
     })
     .eq("id", it.product_id)
-    .gte("stock", it.qty)
+    .gte("stock", qty)
     .select("id");
 
   if (updateError || !updatedRows || updatedRows.length === 0) {
@@ -533,7 +535,6 @@ for (const it of carrito) {
     );
   }
 }
-     
     /* === 4. COMPROBANTE === */
     if (metodoPago.value === "bank_transfer") {
       const file = inputFile.files[0];
