@@ -455,87 +455,91 @@ async function enviarPedido() {
   loader?.classList.remove("hidden");
 
   try {
+    /* =====================================================
+       1️⃣ OBTENER NÚMERO DE PEDIDO (SEGURO – DB LEVEL)
+    ===================================================== */
+    const { data: orderNumber, error: numError } = await sb
+      .rpc("next_order_number", { p_user_id: user.id });
 
+    if (numError) throw numError;
 
-/* === 2. CREAR PEDIDO === */
-const { data: order, error: insertError } = await sb
-  .from("orders")
-  .insert({
-    user_id: user.id,
-    address_id: selectedAddressId,
-    total,
-    payment_method: metodoPago.value,
-    status:
-      metodoPago.value === "bank_transfer"
-        ? "payment_review"
-        : "cash_on_delivery"
-  })
-  .select("id")
-  .single();
+    /* =====================================================
+       2️⃣ CREAR PEDIDO
+    ===================================================== */
+    const { data: order, error: insertError } = await sb
+      .from("orders")
+      .insert({
+        user_id: user.id,
+        address_id: selectedAddressId,
+        order_number: orderNumber, // 🔑 CLAVE
+        total,
+        payment_method: metodoPago.value,
+        status:
+          metodoPago.value === "bank_transfer"
+            ? "payment_review"
+            : "cash_on_delivery"
+      })
+      .select("id")
+      .single();
 
-if (insertError) throw insertError;
+    if (insertError) throw insertError;
 
-    /* === 3. ITEMS === */
-const itemsPayload = carrito.map(it => ({
-  order_id: order.id,
-  product_id: it.product_id,
-  quantity: it.qty,
-  price: it.price
-}));
+    /* =====================================================
+       3️⃣ INSERTAR ITEMS
+    ===================================================== */
+    const itemsPayload = carrito.map(it => ({
+      order_id: order.id,
+      product_id: it.product_id,
+      quantity: Number(it.qty),
+      price: it.price
+    }));
 
-console.log("🧾 ITEMS A INSERTAR:", itemsPayload);
+    const { error: itemsError } = await sb
+      .from("order_items")
+      .insert(itemsPayload);
 
-const { data: itemsInserted, error: itemsError } = await sb
-  .from("order_items")
-  .insert(itemsPayload)
-  .select();
+    if (itemsError) throw itemsError;
 
-if (itemsError) {
-  console.error("❌ Error insertando order_items:", itemsError);
-  throw itemsError;
-}
+    /* =====================================================
+       4️⃣ DESCONTAR STOCK (ANTI-SOBREVENTA)
+    ===================================================== */
+    for (const it of carrito) {
+      const qty = Number(it.qty);
 
-console.log("✅ Items insertados:", itemsInserted);
-     
-/* === 3.1 DESCONTAR STOCK (CRÍTICO Y SEGURO) === */
-for (const it of carrito) {
-  const qty = Number(it.qty); // 🔑 FIX CLAVE
+      // Leer stock actual
+      const { data: product, error: stockError } = await sb
+        .from("products")
+        .select("stock")
+        .eq("id", it.product_id)
+        .single();
 
-  // 1️⃣ Leer stock actual
-  const { data: product, error: stockError } = await sb
-    .from("products")
-    .select("stock")
-    .eq("id", it.product_id)
-    .single();
+      if (stockError || !product) {
+        throw new Error(`Producto no encontrado: ${it.name}`);
+      }
 
-  if (stockError || !product) {
-    throw new Error(`Producto no encontrado: ${it.name}`);
-  }
+      if (product.stock < qty) {
+        throw new Error(
+          `Solo quedan ${product.stock} unidades de "${it.name}".`
+        );
+      }
 
-  // 2️⃣ Validar disponibilidad real
-  if (product.stock < qty) {
-    throw new Error(
-      `Solo quedan ${product.stock} unidades disponibles de "${it.name}".`
-    );
-  }
+      const { data: updated, error: updateError } = await sb
+        .from("products")
+        .update({ stock: product.stock - qty })
+        .eq("id", it.product_id)
+        .gte("stock", qty)
+        .select("id");
 
-  // 3️⃣ Descontar stock (anti-sobreventa real)
-  const { data: updatedRows, error: updateError } = await sb
-    .from("products")
-    .update({
-      stock: product.stock - qty
-    })
-    .eq("id", it.product_id)
-    .gte("stock", qty)
-    .select("id");
+      if (updateError || !updated?.length) {
+        throw new Error(
+          `El stock de "${it.name}" cambió durante la compra.`
+        );
+      }
+    }
 
-  if (updateError || !updatedRows || updatedRows.length === 0) {
-    throw new Error(
-      `El stock de "${it.name}" cambió. Solo quedan ${product.stock} unidades disponibles.`
-    );
-  }
-}
-    /* === 4. COMPROBANTE === */
+    /* =====================================================
+       5️⃣ SUBIR COMPROBANTE (SI DEPÓSITO)
+    ===================================================== */
     if (metodoPago.value === "bank_transfer") {
       const file = inputFile.files[0];
       const ext = file.name.split(".").pop().toLowerCase();
@@ -554,38 +558,42 @@ for (const it of carrito) {
         .from(RECEIPT_BUCKET)
         .getPublicUrl(path);
 
-      await sb.from("payment_receipts").insert({
-        order_id: order.id,
-        user_id: user.id,
-        file_url: urlData.publicUrl,
-        file_path: path,
-        review_status: "pending"
-      });
-    }
-     
-// 🔔 Notificar admin (NO bloqueante)
-fetch(
-  "https://eaipcuvvddyrqkbmjmvw.supabase.co/functions/v1/swift-service",
-  {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      order_id: order.id
-    })
-  }
-).catch(err => {
-  console.warn("⚠️ Notificación falló (no crítico):", err);
-});
+      const { error: receiptError } = await sb
+        .from("payment_receipts")
+        .insert({
+          order_id: order.id,
+          user_id: user.id,
+          file_url: urlData.publicUrl,
+          file_path: path,
+          review_status: "pending"
+        });
 
-    /* === 5. LIMPIAR Y REDIRIGIR === */
+      if (receiptError) throw receiptError;
+    }
+
+    /* =====================================================
+       6️⃣ NOTIFICAR ADMIN (NO BLOQUEANTE)
+    ===================================================== */
+    fetch(
+      "https://eaipcuvvddyrqkbmjmvw.supabase.co/functions/v1/swift-service",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ order_id: order.id })
+      }
+    ).catch(err =>
+      console.warn("⚠️ Notificación admin falló:", err)
+    );
+
+    /* =====================================================
+       7️⃣ LIMPIAR Y REDIRIGIR
+    ===================================================== */
     localStorage.setItem(CART_KEY, "[]");
     location.href = `recibo.html?id=${order.id}`;
 
   } catch (err) {
     console.error("❌ Error al enviar pedido:", err);
-    showSnack("Error al enviar el pedido");
+    showSnack(err.message || "Error al enviar el pedido");
     btnEnviar.disabled = false;
   } finally {
     loader?.classList.add("hidden");
