@@ -563,7 +563,21 @@ for (const it of carrito) {
       });
     }
      
-
+// 🔔 Notificar admin (NO bloqueante)
+fetch(
+  "https://eaipcuvvddyrqkbmjmvw.supabase.co/functions/v1/swift-service",
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      order_id: order.id
+    })
+  }
+).catch(err => {
+  console.warn("⚠️ Notificación falló (no crítico):", err);
+});
 
     /* === 5. LIMPIAR Y REDIRIGIR === */
     localStorage.setItem(CART_KEY, "[]");
