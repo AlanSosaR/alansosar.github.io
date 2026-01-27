@@ -1,31 +1,24 @@
-// js/core/notifications.js
+// =====================================================
+// NOTIFICATIONS — CORE FINAL DEFINITIVO (PASIVO)
+// =====================================================
+
 import { registerPushToken } from "./push.js";
 
-console.log("🔔 notifications.js — CORE FINAL DEFINITIVO");
+let initialized = false;
+let ordersChannel = null;
+let notificationChannel = null;
+
+console.log("🔔 notifications.js cargado (pasivo)");
 
 /* =====================================================
-   HELPERS — SUPABASE / SESIÓN
+   HELPERS — SUPABASE
 ===================================================== */
 function getSupabase() {
   return window.supabase || null;
 }
 
-async function waitForSupabaseSession() {
-  const sb = getSupabase();
-  if (!sb) return null;
-
-  for (let i = 0; i < 15; i++) {
-    const { data } = await sb.auth.getSession();
-    if (data?.session?.user) {
-      return data.session.user;
-    }
-    await new Promise(r => setTimeout(r, 100));
-  }
-  return null;
-}
-
 /* =====================================================
-   HELPERS — CACHE UI (NO SEGURIDAD)
+   CACHE UI (NO SEGURIDAD)
 ===================================================== */
 function getUserCache() {
   try {
@@ -37,7 +30,7 @@ function getUserCache() {
 }
 
 /* =====================================================
-   UI — HEADER (HOOKS)
+   UI — HEADER HOOKS
 ===================================================== */
 const setGlobalBadge = show =>
   window.toggleGlobalNotificationDot?.(show);
@@ -91,38 +84,20 @@ const CLIENT_VISIBLE_STATUSES = [
    CONTADORES
 ===================================================== */
 async function syncAdminOrdersCount(sb) {
-  const { count, error } = await sb
+  const { count } = await sb
     .from("orders")
     .select("*", { count: "exact", head: true })
     .in("status", ADMIN_ACTIVE_STATUSES);
 
-  if (error) {
-    console.error("❌ Admin count:", error);
-    setAdminCount(0);
-    return;
-  }
-
   setAdminCount(count || 0);
 }
 
-async function syncMyOrdersCount(sb) {
-  const user = getUserCache();
-  if (!user?.id) {
-    setMyCount(0);
-    return;
-  }
-
-  const { count, error } = await sb
+async function syncMyOrdersCount(sb, userId) {
+  const { count } = await sb
     .from("orders")
     .select("*", { count: "exact", head: true })
-    .eq("user_id", user.id)
+    .eq("user_id", userId)
     .in("status", CLIENT_VISIBLE_STATUSES);
-
-  if (error) {
-    console.error("❌ Client count:", error);
-    setMyCount(0);
-    return;
-  }
 
   setMyCount(count || 0);
 }
@@ -141,9 +116,9 @@ async function syncNotificationsUI(sb, authUser, role) {
     query = query.eq("user_id", authUser.id);
   }
 
-  const { data, error } = await query;
+  const { data } = await query;
 
-  if (error || !data?.length) {
+  if (!data?.length) {
     hideAllNotificationUI();
     setGlobalBadge(false);
     return;
@@ -163,39 +138,23 @@ async function syncNotificationsUI(sb, authUser, role) {
 }
 
 /* =====================================================
-   SINCRONIZACIÓN TOTAL (🔥 SEGURA)
+   SINCRONIZACIÓN TOTAL
 ===================================================== */
-async function syncAll(authUser) {
-  const sb = getSupabase();
-  const cache = getUserCache();
-  if (!sb || !cache) return;
-
-  if (cache.rol === "admin") {
+async function syncAll(sb, authUser, role) {
+  if (role === "admin") {
     await syncAdminOrdersCount(sb);
     setMyCount(0);
   } else {
-    await syncMyOrdersCount(sb);   // ✅ SIN authUser
+    await syncMyOrdersCount(sb, authUser.id);
     setAdminCount(0);
   }
 
-  if (authUser) {
-    await syncNotificationsUI(sb, authUser, cache.rol);
-  }
+  await syncNotificationsUI(sb, authUser, role);
 }
-
-// Expuesto para header.js
-window.syncNotificationsAll = () => {
-  if (window.__AUTH_USER__) {
-    syncAll(window.__AUTH_USER__);
-  }
-};
 
 /* =====================================================
    REALTIME
 ===================================================== */
-let ordersChannel = null;
-let notificationChannel = null;
-
 async function initRealtime(sb, authUser, role) {
   if (ordersChannel || notificationChannel) return;
 
@@ -211,7 +170,7 @@ async function initRealtime(sb, authUser, role) {
           ? { filter: `user_id=eq.${authUser.id}` }
           : {})
       },
-      () => syncAll(authUser)
+      () => syncAll(sb, authUser, role)
     )
     .subscribe();
 
@@ -232,29 +191,14 @@ async function initRealtime(sb, authUser, role) {
     .subscribe();
 }
 
-async function cleanupRealtime() {
-  const sb = getSupabase();
-  if (!sb) return;
-
-  if (ordersChannel) await sb.removeChannel(ordersChannel);
-  if (notificationChannel) await sb.removeChannel(notificationChannel);
-
-  ordersChannel = null;
-  notificationChannel = null;
-}
-
 /* =====================================================
    PUSH
 ===================================================== */
 async function initPush(authUser) {
-  try {
-    if (localStorage.getItem("push_registered") === "1") return;
+  if (localStorage.getItem("push_registered") === "1") return;
 
-    await registerPushToken(authUser.id);
-    localStorage.setItem("push_registered", "1");
-  } catch (err) {
-    console.warn("🔕 Push no soportado en este navegador", err);
-  }
+  await registerPushToken(authUser.id);
+  localStorage.setItem("push_registered", "1");
 }
 
 /* =====================================================
@@ -269,40 +213,27 @@ function timeAgo(date) {
 }
 
 /* =====================================================
-   INIT GLOBAL
+   🔔 API PÚBLICA (ÚNICA)
 ===================================================== */
-document.addEventListener("userLoggedIn", async () => {
-  console.log("🔔 notifications.js → INIT");
-
-  const sb = getSupabase();
-  const authUser = await waitForSupabaseSession();
-  const cache = getUserCache();
-
-  if (!sb || !authUser || !cache) {
-    console.warn("⚠️ No auth estable");
+export async function initNotifications(authUser) {
+  if (initialized) {
+    console.warn("🔁 notifications.js ya inicializado, se omite");
     return;
   }
 
-  window.__AUTH_USER__ = authUser;
+  initialized = true;
 
-  await syncAll(authUser);
+  console.log("🔔 notifications.js → INIT");
+
+  const sb = getSupabase();
+  const cache = getUserCache();
+
+  if (!sb || !authUser || !cache) {
+    console.warn("⚠️ Notificaciones no inicializadas (estado inválido)");
+    return;
+  }
+
+  await syncAll(sb, authUser, cache.rol);
   await initRealtime(sb, authUser, cache.rol);
   await initPush(authUser);
-});
-
-/* =====================================================
-   DESTROY
-===================================================== */
-document.addEventListener("destroyNotifications", async () => {
-  console.log("🔕 notifications.js → DESTROY");
-
-  hideAllNotificationUI();
-  setGlobalBadge(false);
-  setAdminCount(0);
-  setMyCount(0);
-
-  localStorage.removeItem("push_registered");
-  window.__AUTH_USER__ = null;
-
-  await cleanupRealtime();
-});
+}
