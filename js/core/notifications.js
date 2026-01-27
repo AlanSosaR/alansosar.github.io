@@ -220,17 +220,21 @@ function timeAgo(date) {
 /* =====================================================
    🔔 API PÚBLICA (ÚNICA)
 ===================================================== */
-export async function initNotifications(authUser) {
+export async function initNotifications() {
   if (initialized) {
     console.warn("🔁 notifications.js ya inicializado, se omite");
     return;
   }
 
   const sb = getSupabase();
+  if (!sb) return;
+
+  // 🔑 FUENTE REAL DE AUTH
+  const { data } = await sb.auth.getSession();
+  const authUser = data?.session?.user;
   const cache = getUserCache();
 
-  // ⏳ Espera controlada (sin loop infinito)
-  if (!sb || !authUser || !cache) {
+  if (!authUser || !cache) {
     if (retryCount >= MAX_RETRIES) {
       console.error("❌ Notificaciones: estado inválido permanente", {
         supabase: !!sb,
@@ -241,24 +245,13 @@ export async function initNotifications(authUser) {
     }
 
     retryCount++;
-    console.warn(
-      `⏳ Esperando estado válido para notificaciones... (${retryCount})`
-    );
-
-    if (!retryTimer) {
-      retryTimer = setTimeout(() => {
-        retryTimer = null;
-        initNotifications(authUser);
-      }, 300);
-    }
-
+    retryTimer = setTimeout(initNotifications, 300);
     return;
   }
 
-  // ✅ ESTADO VÁLIDO
   initialized = true;
 
-  console.log("🔔 notifications.js → INIT");
+  console.log("🔔 notifications.js → INIT (Supabase OK)");
 
   await syncAll(sb, authUser, cache.rol);
   await initRealtime(sb, authUser, cache.rol);
