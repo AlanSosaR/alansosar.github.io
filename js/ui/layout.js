@@ -60,6 +60,21 @@ if (document.body.dataset.page === "login") {
         console.log("✅ Header inyectado");
 
         // =====================================================
+        // 🔔 4.5️⃣ PUSH LISTENER GLOBAL (FIREBASE)
+        // =====================================================
+        if (!window.__PUSH_LOADED__) {
+          window.__PUSH_LOADED__ = true;
+
+          const pushScript = document.createElement("script");
+          pushScript.type = "module";
+          pushScript.src = "/js/core/push.js";
+
+          document.body.appendChild(pushScript);
+
+          console.log("🔔 push.js cargado globalmente");
+        }
+
+        // =====================================================
         // 5️⃣ OCULTAR TODOS LOS TÍTULOS
         // =====================================================
         document.querySelectorAll(".header-cart-title").forEach(el => {
@@ -69,7 +84,6 @@ if (document.body.dataset.page === "login") {
         // =====================================================
         // 6️⃣ MOSTRAR TÍTULO SEGÚN PÁGINA
         // =====================================================
-
         if (document.body.classList.contains("page-carrito")) {
           document.getElementById("header-cart-title")?.classList.remove("hidden");
         }
