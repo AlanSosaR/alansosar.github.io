@@ -1,5 +1,9 @@
 // js/core/push.js
-import { getToken } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js";
+import {
+  getToken,
+  onMessage
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js";
+
 import { messaging } from "./firebase.js";
 
 console.log("📡 push.js — Firebase Push CORE (PROD)");
@@ -106,3 +110,24 @@ export async function registerPushToken(userId) {
     console.error("🔥 Error crítico en registerPushToken:", err);
   }
 }
+
+// =====================================================
+// 🔔 FOREGROUND PUSH (WEB ABIERTA)
+// =====================================================
+// ⚠️ ESTE BLOQUE ES EL QUE TE FALTABA
+// ⚠️ NO VA EN notifications.js
+// ⚠️ NO VA EN EL SERVICE WORKER
+// =====================================================
+onMessage(messaging, payload => {
+  console.log("📩 Push recibido en foreground:", payload);
+
+  // Seguridad básica
+  if (!payload?.notification) return;
+  if (Notification.permission !== "granted") return;
+
+  new Notification(payload.notification.title, {
+    body: payload.notification.body,
+    icon: "/imagenes/logo.png",
+    data: payload.data || {}
+  });
+});
