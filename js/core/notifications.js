@@ -8,6 +8,8 @@ let initialized = false;
 let ordersChannel = null;
 let notificationChannel = null;
 let retryTimer = null;
+let retryCount = 0;
+const MAX_RETRIES = 10;
 
 console.log("🔔 notifications.js cargado (pasivo)");
 
@@ -20,11 +22,13 @@ function getSupabase() {
 
 /* =====================================================
    CACHE UI (NO SEGURIDAD)
+   🔑 FUENTE ÚNICA: cortero_user
 ===================================================== */
 function getUserCache() {
   try {
-    if (localStorage.getItem("cortero_logged") !== "1") return null;
-    return JSON.parse(localStorage.getItem("cortero_user"));
+    const raw = localStorage.getItem("cortero_user");
+    if (!raw) return null;
+    return JSON.parse(raw);
   } catch {
     return null;
   }
@@ -225,21 +229,33 @@ export async function initNotifications(authUser) {
   const sb = getSupabase();
   const cache = getUserCache();
 
-  // ⏳ Estado aún no listo → reintento controlado
+  // ⏳ Espera controlada (sin loop infinito)
   if (!sb || !authUser || !cache) {
-    console.warn("⏳ Esperando estado válido para notificaciones...");
+    if (retryCount >= MAX_RETRIES) {
+      console.error("❌ Notificaciones: estado inválido permanente", {
+        supabase: !!sb,
+        authUser: !!authUser,
+        cache: !!cache
+      });
+      return;
+    }
+
+    retryCount++;
+    console.warn(
+      `⏳ Esperando estado válido para notificaciones... (${retryCount})`
+    );
 
     if (!retryTimer) {
       retryTimer = setTimeout(() => {
         retryTimer = null;
         initNotifications(authUser);
-      }, 200);
+      }, 300);
     }
 
     return;
   }
 
-  // ✅ ESTADO VÁLIDO → MARCAMOS INIT
+  // ✅ ESTADO VÁLIDO
   initialized = true;
 
   console.log("🔔 notifications.js → INIT");
