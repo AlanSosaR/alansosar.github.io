@@ -34,28 +34,31 @@
   </header>
 
   <!-- =========================
-       CONTROLES
+       CONTROLES UNIFICADOS
   ========================= -->
-  <section class="admin-controls">
+  <section class="admin-controls unified">
 
-    <div class="filter-group">
-      <label for="status-filter">Estado</label>
-      <select id="status-filter">
-        <option value="new">Nuevos</option>
-        <option value="processing">En preparación</option>
-        <option value="shipped">Enviados</option>
-        <option value="delivered">Entregados</option>
-        <option value="all">Todos</option>
-      </select>
-    </div>
+    <div class="search-filter-bar">
 
-    <div class="search-group">
-      <i class="fa-solid fa-magnifying-glass"></i>
-      <input
-        type="search"
-        id="admin-orders-search"
-        placeholder="Buscar por pedido, cliente o teléfono"
-      />
+      <div class="search-group">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input
+          type="search"
+          id="admin-orders-search"
+          placeholder="Buscar pedido, cliente, correo o teléfono"
+        />
+      </div>
+
+      <div class="filter-group">
+        <select id="status-filter">
+          <option value="new">Nuevos</option>
+          <option value="processing">En preparación</option>
+          <option value="shipped">Enviados</option>
+          <option value="delivered">Entregados</option>
+          <option value="all">Todos</option>
+        </select>
+      </div>
+
     </div>
 
   </section>
@@ -65,39 +68,77 @@
   ========================= -->
   <section class="admin-orders-list" id="pedidos-lista">
 
+    <!-- ================= TEMPLATE ================= -->
     <template id="pedido-template">
       <article class="admin-order-card">
 
+        <!-- HEADER -->
         <header class="order-header">
-          <h3 class="pedido-numero">Pedido N.º 000</h3>
-          <span class="order-date">—</span>
+          <div>
+            <h3 class="pedido-numero">Pedido N.º 000</h3>
+            <span class="order-date">—</span>
+          </div>
+
+          <span class="order-total">L 0.00</span>
         </header>
 
+        <!-- CLIENTE -->
         <section class="order-client">
-          <p class="client-name">—</p>
-          <p class="client-meta"></p>
+          <p class="client-name">Nombre del cliente</p>
+          <p class="client-meta">
+            <span><i class="fa-solid fa-envelope"></i> correo@email.com</span>
+            <span><i class="fa-solid fa-phone"></i> 0000-0000</span>
+          </p>
         </section>
 
-        <section class="order-status">
-          <span class="material-symbols-outlined">autorenew</span>
-          <span class="status-text">—</span>
+        <!-- DIRECCIÓN -->
+        <section class="order-address">
+          <p>
+            <i class="fa-solid fa-location-dot"></i>
+            <span class="direccion-text">Dirección completa</span>
+          </p>
+          <p class="referencia-text">
+            <strong>Referencia:</strong> —
+          </p>
         </section>
 
-        <section class="order-summary">
-          <span>—</span>
-          <strong>—</strong>
+        <!-- PAGO -->
+        <section class="order-payment">
+
+          <!-- CONTRA ENTREGA -->
+          <div class="payment-badge cash hidden">
+            <span class="material-symbols-outlined">payments</span>
+            Pago contra entrega
+          </div>
+
+          <!-- RECIBO -->
+          <div class="payment-receipt hidden">
+            <img src="" alt="Recibo de pago" class="receipt-thumb" />
+            <span>Recibo adjunto</span>
+          </div>
+
         </section>
 
+        <!-- ACCIONES -->
         <footer class="order-actions">
-          <button class="btn-outline">
-            <span class="material-symbols-outlined">local_shipping</span>
-            Marcar enviado
+
+          <button class="btn-outline btn-view">
+            <span class="material-symbols-outlined">receipt_long</span>
+            Ver información
           </button>
 
-          <button class="btn-outline">
-            <span class="material-symbols-outlined">done_all</span>
-            Marcar entregado
-          </button>
+          <div class="order-status-actions">
+            <button class="btn-outline btn-ship">
+              <span class="material-symbols-outlined">local_shipping</span>
+              Marcar enviado
+            </button>
+
+            <button class="btn-outline btn-deliver">
+              <span class="material-symbols-outlined">done_all</span>
+              Marcar entregado
+            </button>
+          </div>
+
         </footer>
 
       </article>
@@ -121,7 +162,7 @@
 </main>
 
 <!-- =========================
-     SCRIPTS (ORDEN CORRECTO)
+     SCRIPTS
 ========================= -->
 
 <!-- Supabase -->
