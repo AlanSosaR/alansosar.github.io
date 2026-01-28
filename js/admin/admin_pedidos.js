@@ -72,7 +72,7 @@ async function init() {
 }
 
 /* -----------------------------------------------------------
-   LOAD ORDERS — ADMIN (JOIN CORRECTO)
+   LOAD ORDERS — TABLA REAL `orders`
 ----------------------------------------------------------- */
 async function loadOrders() {
   const sb = getSupabaseClient();
@@ -85,8 +85,9 @@ async function loadOrders() {
       order_number,
       total,
       status,
+      payment_method,
       created_at,
-      users:users!orders_user_id_fkey (
+      users (
         name,
         email,
         phone
@@ -109,11 +110,13 @@ async function loadOrders() {
 ----------------------------------------------------------- */
 function applyFilters() {
   filteredOrders = allOrders.filter(order => {
+    // Estado
     if (currentStatus !== "all") {
       const allowed = STATUS_GROUPS[currentStatus] || [];
       if (!allowed.includes(order.status)) return false;
     }
 
+    // Buscador
     if (searchTerm) {
       const q = searchTerm.toLowerCase();
       const u = order.users || {};
