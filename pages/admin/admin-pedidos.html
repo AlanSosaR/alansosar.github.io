@@ -4,184 +4,194 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>Pedidos | Administración — Café Cortero</title>
+  <title>Admin · Pedidos | Café Cortero</title>
 
-  <!-- Tipografía -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-
-  <!-- Iconos -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link
-    rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@300;400;500&display=swap"
-  >
+  <!-- Material Symbols -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 
   <!-- Estilos -->
+  <link rel="stylesheet" href="../../css/tipografia.css" />
   <link rel="stylesheet" href="../../css/header.css" />
   <link rel="stylesheet" href="../../css/admin/admin-pedidos.css" />
 </head>
 
-<body class="page-admin page-admin-pedidos">
+<body class="page-admin-pedidos">
 
-<main class="admin-container fade-in">
+<main class="admin-orders-container fade-in">
 
-  <!-- =========================
-       CABECERA
-  ========================= -->
-  <header class="admin-page-header">
-    <h1>Pedidos</h1>
-    <p>Gestiona y controla los pedidos de los clientes</p>
-  </header>
+<!-- =========================
+     BARRA SUPERIOR (BUSCAR + FILTRO)
+========================= -->
+<section class="orders-actions-bar">
+  <div class="search-box has-filter">
 
-  <!-- =========================
-       CONTROLES UNIFICADOS
-  ========================= -->
-  <section class="admin-controls unified">
+    <span class="material-symbols-outlined search-icon">search</span>
 
-    <div class="search-filter-bar">
+    <input
+      type="search"
+      id="search-orders"
+      placeholder="Buscar pedido, cliente, correo o teléfono"
+    />
 
-      <div class="search-group">
-        <i class="fa-solid fa-magnifying-glass"></i>
-        <input
-          type="search"
-          id="admin-orders-search"
-          placeholder="Buscar pedido, cliente, correo o teléfono"
-        />
+    <select id="status-filter" class="status-filter">
+      <option value="new">Nuevos</option>
+      <option value="processing">En preparación</option>
+      <option value="shipped">Enviados</option>
+      <option value="delivered">Entregados</option>
+      <option value="all">Todos</option>
+    </select>
+
+  </div>
+</section>
+
+<!-- =========================
+     ESTADO VACÍO
+========================= -->
+<section id="admin-empty-state" class="admin-empty-state hidden">
+  <h2 class="empty-title">No hay pedidos</h2>
+  <p class="empty-text">
+    Cuando los clientes realicen pedidos, aparecerán aquí.
+  </p>
+</section>
+
+<!-- =========================
+     TARJETA PRINCIPAL — PEDIDO
+========================= -->
+<section id="admin-order-preview" class="order-main admin-preview hidden">
+
+  <!-- BOTÓN ATRÁS -->
+  <button class="back-btn" id="btnBackOrders" aria-label="Volver">
+    <span class="material-symbols-outlined">chevron_left</span>
+  </button>
+
+  <!-- ================= INFO ================= -->
+  <div class="order-text">
+
+    <!-- HEADER -->
+    <div class="order-header">
+      <h2 id="o-number">Pedido N.º —</h2>
+      <span id="o-date" class="order-date">—</span>
+      <strong id="o-total" class="order-total">L 0.00</strong>
+    </div>
+
+    <!-- CLIENTE -->
+    <section class="order-client">
+      <h3>Cliente</h3>
+      <p id="o-client-name">—</p>
+      <p class="client-meta">
+        <span><i class="material-symbols-outlined">mail</i> <span id="o-email">—</span></span>
+        <span><i class="material-symbols-outlined">call</i> <span id="o-phone">—</span></span>
+      </p>
+    </section>
+
+    <!-- DIRECCIÓN -->
+    <section class="order-address">
+      <h3>Entrega</h3>
+      <p id="o-address">—</p>
+      <p class="reference">
+        <strong>Referencia:</strong>
+        <span id="o-reference">—</span>
+      </p>
+    </section>
+
+    <!-- PAGO -->
+    <section class="order-payment">
+
+      <!-- PAGO CONTRA ENTREGA -->
+      <div id="cash-payment" class="payment-info hidden">
+        <span class="material-symbols-outlined">payments</span>
+        Pago contra entrega
       </div>
 
-      <div class="filter-group">
-        <select id="status-filter">
-          <option value="new">Nuevos</option>
-          <option value="processing">En preparación</option>
-          <option value="shipped">Enviados</option>
-          <option value="delivered">Entregados</option>
-          <option value="all">Todos</option>
-        </select>
+      <!-- RECIBO -->
+      <div id="receipt-payment" class="payment-receipt hidden">
+        <img id="receipt-img" src="" alt="Recibo de pago">
+        <span>Recibo adjunto</span>
+      </div>
+
+    </section>
+
+    <!-- ACCIONES -->
+    <div class="order-actions">
+
+      <button id="btnViewOrder" class="admin-action-btn">
+        <span class="material-symbols-outlined">receipt_long</span>
+        Ver información
+      </button>
+
+      <div class="status-actions">
+        <button id="btnShip" class="admin-action-btn ship">
+          <span class="material-symbols-outlined">local_shipping</span>
+          Marcar enviado
+        </button>
+
+        <button id="btnDeliver" class="admin-action-btn deliver">
+          <span class="material-symbols-outlined">done_all</span>
+          Marcar entregado
+        </button>
       </div>
 
     </div>
 
-  </section>
+  </div>
+</section>
 
-  <!-- =========================
-       LISTA DE PEDIDOS
-  ========================= -->
-  <section class="admin-orders-list" id="pedidos-lista">
+<!-- =========================
+     CARRUSEL DE PEDIDOS
+========================= -->
+<section class="related admin-related hidden">
 
-    <!-- ================= TEMPLATE ================= -->
-    <template id="pedido-template">
-      <article class="admin-order-card">
+  <h3 class="similar-title">Pedidos</h3>
+  <p class="section-subtitle">
+    Selecciona un pedido para gestionarlo.
+  </p>
 
-        <!-- HEADER -->
-        <header class="order-header">
-          <div>
-            <h3 class="pedido-numero">Pedido N.º 000</h3>
-            <span class="order-date">—</span>
-          </div>
+  <div class="carousel-container with-arrows">
 
-          <span class="order-total">L 0.00</span>
-        </header>
+    <button class="carousel-prev-circle inside" id="orders-prev">
+      <span class="material-symbols-outlined">chevron_left</span>
+    </button>
 
-        <!-- CLIENTE -->
-        <section class="order-client">
-          <p class="client-name">Nombre del cliente</p>
-          <p class="client-meta">
-            <span><i class="fa-solid fa-envelope"></i> correo@email.com</span>
-            <span><i class="fa-solid fa-phone"></i> 0000-0000</span>
-          </p>
-        </section>
+    <div class="similar-list" id="orders-carousel">
+      <!-- JS renderiza pedidos -->
+    </div>
 
-        <!-- DIRECCIÓN -->
-        <section class="order-address">
-          <p>
-            <i class="fa-solid fa-location-dot"></i>
-            <span class="direccion-text">Dirección completa</span>
-          </p>
-          <p class="referencia-text">
-            <strong>Referencia:</strong> —
-          </p>
-        </section>
+    <button class="carousel-next-circle inside" id="orders-next">
+      <span class="material-symbols-outlined">chevron_right</span>
+    </button>
 
-        <!-- PAGO -->
-        <section class="order-payment">
-
-          <!-- CONTRA ENTREGA -->
-          <div class="payment-badge cash hidden">
-            <span class="material-symbols-outlined">payments</span>
-            Pago contra entrega
-          </div>
-
-          <!-- RECIBO -->
-          <div class="payment-receipt hidden">
-            <img src="" alt="Recibo de pago" class="receipt-thumb" />
-            <span>Recibo adjunto</span>
-          </div>
-
-        </section>
-
-        <!-- ACCIONES -->
-        <footer class="order-actions">
-
-          <button class="btn-outline btn-view">
-            <span class="material-symbols-outlined">receipt_long</span>
-            Ver información
-          </button>
-
-          <div class="order-status-actions">
-            <button class="btn-outline btn-ship">
-              <span class="material-symbols-outlined">local_shipping</span>
-              Marcar enviado
-            </button>
-
-            <button class="btn-outline btn-deliver">
-              <span class="material-symbols-outlined">done_all</span>
-              Marcar entregado
-            </button>
-          </div>
-
-        </footer>
-
-      </article>
-    </template>
-
-  </section>
-
-  <!-- =========================
-       PAGINACIÓN
-  ========================= -->
-  <div id="pagination-container"></div>
-
-  <!-- =========================
-       EMPTY STATE
-  ========================= -->
-  <section id="empty-state" class="empty-state hidden">
-    <h2>No hay pedidos</h2>
-    <p>Cuando los clientes realicen pedidos, aparecerán aquí.</p>
-  </section>
+  </div>
+</section>
 
 </main>
+
+<!-- =========================
+     TEMPLATE PEDIDO (CARRUSEL)
+========================= -->
+<template id="tpl-order-card">
+  <article class="similar-card order-card" data-id="">
+    <h4 class="o-card-number">Pedido N.º 000</h4>
+    <p class="o-card-total">L 0.00</p>
+    <span class="o-card-status">—</span>
+  </article>
+</template>
 
 <!-- =========================
      SCRIPTS
 ========================= -->
 
-<!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<!-- CORE -->
 <script src="../../js/core/supabase-client-core.js"></script>
 
 <script>
   window.PAGE_MODE = "admin-pedidos";
 </script>
 
-<!-- UI -->
 <script type="module" src="../../js/ui/header.js"></script>
 <script src="../../js/core/auth-ui.js"></script>
 <script src="../../js/ui/layout.js"></script>
 
-<!-- ADMIN -->
-<script src="../../js/admin/admin_pedidos.js"></script>
+<script src="../../js/admin/admin-pedidos.js"></script>
 
 </body>
 </html>
