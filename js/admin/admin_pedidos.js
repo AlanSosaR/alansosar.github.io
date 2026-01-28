@@ -2,7 +2,7 @@
    ADMIN — PEDIDOS | CAFÉ CORTERO
 ============================================================ */
 
-console.log("🛠️ admin-pedidos.js — INIT");
+console.log("🛠️ admin_pedidos.js — ADMIN READY");
 
 /* -----------------------------------------------------------
    SUPABASE
@@ -24,7 +24,7 @@ let currentStatus = "new";
 let search = "";
 
 /* -----------------------------------------------------------
-   STATUS GROUPS
+   STATUS GROUPS (FILTRO)
 ----------------------------------------------------------- */
 const STATUS_GROUPS = {
   new: ["payment_review", "cash_on_delivery"],
@@ -32,6 +32,17 @@ const STATUS_GROUPS = {
   shipped: ["shipped"],
   delivered: ["delivered"],
   all: []
+};
+
+/* -----------------------------------------------------------
+   STATUS LABELS (UX)
+----------------------------------------------------------- */
+const STATUS_LABELS = {
+  payment_review: "Pago en revisión",
+  cash_on_delivery: "Pago contra entrega",
+  processing: "En preparación",
+  shipped: "Enviado",
+  delivered: "Entregado"
 };
 
 /* -----------------------------------------------------------
@@ -65,6 +76,8 @@ async function loadOrders() {
       total,
       status,
       created_at,
+      address,
+      address_reference,
       users (
         name,
         email,
@@ -78,8 +91,8 @@ async function loadOrders() {
     return;
   }
 
-  console.log("📦 PEDIDOS ADMIN:", data);
   orders = data || [];
+  console.log("📦 PEDIDOS ADMIN:", orders);
 }
 
 /* -----------------------------------------------------------
@@ -95,6 +108,7 @@ function applyFilters() {
     if (search) {
       const q = search.toLowerCase();
       const u = o.users || {};
+
       if (
         !String(o.order_number).includes(q) &&
         !u.name?.toLowerCase().includes(q) &&
@@ -118,7 +132,7 @@ function render() {
 }
 
 /* -----------------------------------------------------------
-   RENDER ORDERS (TARJETAS ADMIN)
+   RENDER ORDERS — TARJETA ADMIN
 ----------------------------------------------------------- */
 function renderOrders() {
   const list = document.getElementById("pedidos-lista");
@@ -141,6 +155,7 @@ function renderOrders() {
     const c = tpl.content.cloneNode(true);
     const u = o.users || {};
 
+    /* ================= HEADER ================= */
     c.querySelector(".pedido-numero").textContent =
       `Pedido N.º ${String(o.order_number).padStart(3, "0")}`;
 
@@ -153,19 +168,66 @@ function renderOrders() {
         minute: "2-digit"
       });
 
-    c.querySelector(".client-name").textContent = u.name || "Cliente";
+    /* ================= CLIENTE ================= */
+    c.querySelector(".client-name").textContent =
+      u.name || "Cliente";
+
     c.querySelector(".client-meta").innerHTML = `
       <span><i class="fa-solid fa-envelope"></i> ${u.email || "-"}</span>
       <span><i class="fa-solid fa-phone"></i> ${u.phone || "-"}</span>
     `;
 
-    c.querySelector(".status-text").textContent = o.status;
+    /* ================= ESTADO ================= */
+    c.querySelector(".status-text").textContent =
+      STATUS_LABELS[o.status] || "Pendiente";
 
-    c.querySelector(".order-summary").innerHTML =
-      `<strong>Total: L ${Number(o.total).toFixed(2)}</strong>`;
+    /* ================= RESUMEN ================= */
+    c.querySelector(".order-summary").innerHTML = `
+      <strong>Total: L ${Number(o.total).toFixed(2)}</strong>
+    `;
+
+    /* ================= ACCIONES ================= */
+    const btnShipped = c.querySelector(".btn-shipped");
+    const btnDelivered = c.querySelector(".btn-delivered");
+    const btnView = c.querySelector(".btn-view");
+
+    if (btnShipped) {
+      btnShipped.dataset.id = o.id;
+      btnShipped.onclick = () => updateStatus(o.id, "shipped");
+    }
+
+    if (btnDelivered) {
+      btnDelivered.dataset.id = o.id;
+      btnDelivered.onclick = () => updateStatus(o.id, "delivered");
+    }
+
+    if (btnView) {
+      btnView.onclick = () => {
+        location.href = `recibo.html?id=${o.id}`;
+      };
+    }
 
     list.appendChild(c);
   }
+}
+
+/* -----------------------------------------------------------
+   UPDATE STATUS
+----------------------------------------------------------- */
+async function updateStatus(orderId, status) {
+  const { error } = await sb
+    .from("orders")
+    .update({ status })
+    .eq("id", orderId);
+
+  if (error) {
+    console.error("❌ Error actualizando estado:", error);
+    return;
+  }
+
+  await loadOrders();
+  applyFilters();
+  render();
 }
 
 /* -----------------------------------------------------------
