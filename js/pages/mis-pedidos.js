@@ -1,8 +1,9 @@
 /* ============================================================
-   Mis pedidos — Café Cortero 2025 (CLIENTE)
+   Mis pedidos — Café Cortero 2025
+   CLIENTE + ADMIN (MISMO HTML)
 ============================================================ */
 
-console.log("📦 mis-pedidos.js — CLIENTE + PAGINACIÓN");
+console.log("📦 mis-pedidos.js — CLIENTE + ADMIN + PAGINACIÓN");
 
 /* -----------------------------------------------------------
    CONFIG
@@ -10,9 +11,10 @@ console.log("📦 mis-pedidos.js — CLIENTE + PAGINACIÓN");
 const PER_PAGE = 3;
 let currentPage = 1;
 let allPedidos = [];
+let isAdmin = false;
 
 /* -----------------------------------------------------------
-   Helpers
+   HELPERS
 ----------------------------------------------------------- */
 function getSupabaseClient() {
   return window.supabaseClient || window.supabase || null;
@@ -50,7 +52,7 @@ function formatStatusLabel(status) {
 }
 
 /* -----------------------------------------------------------
-   ICONOS MATERIAL 3 POR ESTADO
+   ICONOS MATERIAL 3
 ----------------------------------------------------------- */
 const statusIconMap = {
   payment_review: "fact_check",
@@ -63,12 +65,11 @@ const statusIconMap = {
 };
 
 /* -----------------------------------------------------------
-   APLICAR COLORES AL PROGRESO
+   PROGRESO VISUAL
 ----------------------------------------------------------- */
 function applyProgressColors(container, etapa) {
   const steps = container.querySelectorAll(".step");
   const lines = container.querySelectorAll(".line");
-
   const clases = ["pago", "revision", "confirmado", "envio"];
 
   steps.forEach((step, i) => {
@@ -89,12 +90,31 @@ document.addEventListener("header:ready", init);
 init();
 
 async function init() {
+  await detectMode();
   await loadPedidos();
   render();
 }
 
 /* -----------------------------------------------------------
-   CARGAR PEDIDOS (CLIENTE)
+   DETECTAR MODO (CLIENTE / ADMIN)
+----------------------------------------------------------- */
+async function detectMode() {
+  const sb = getSupabaseClient();
+  if (!sb) return;
+
+  const params = new URLSearchParams(location.search);
+  const adminParam = params.get("mode") === "admin";
+
+  const { data: sessionData } = await sb.auth.getSession();
+  const role = sessionData?.session?.user?.rol;
+
+  isAdmin = adminParam || role === "admin";
+
+  console.log(isAdmin ? "🛠️ MODO ADMIN" : "👤 MODO CLIENTE");
+}
+
+/* -----------------------------------------------------------
+   CARGAR PEDIDOS
 ----------------------------------------------------------- */
 async function loadPedidos() {
   const sb = getSupabaseClient();
@@ -106,13 +126,17 @@ async function loadPedidos() {
     return;
   }
 
-  const userId = sessionData.session.user.id;
-
-  const { data, error } = await sb
+  let query = sb
     .from("orders")
     .select("*")
-    .eq("user_id", userId)
     .order("created_at", { ascending: false });
+
+  // 👤 Cliente → solo sus pedidos
+  if (!isAdmin) {
+    query = query.eq("user_id", sessionData.session.user.id);
+  }
+
+  const { data, error } = await query;
 
   if (error || !data || data.length === 0) {
     mostrarVacio();
@@ -120,6 +144,7 @@ async function loadPedidos() {
   }
 
   allPedidos = data;
+  currentPage = 1;
 }
 
 /* -----------------------------------------------------------
@@ -160,11 +185,11 @@ async function renderPedidos() {
   for (const pedido of pagePedidos) {
     const clone = template.content.cloneNode(true);
 
-    /* ---- Número ---- */
+    /* Número */
     clone.querySelector(".pedido-numero").textContent =
       `Pedido N.º ${String(pedido.order_number).padStart(3, "0")}`;
 
-    /* ---- Fecha / hora ---- */
+    /* Fecha / Hora */
     const fecha = new Date(pedido.created_at);
     const fechas = clone.querySelectorAll(".pedido-fecha-valor");
 
@@ -174,14 +199,13 @@ async function renderPedidos() {
         month: "short",
         year: "numeric"
       });
-
       fechas[1].textContent = fecha.toLocaleTimeString("es-HN", {
         hour: "2-digit",
         minute: "2-digit"
       });
     }
 
-    /* ---- Total cafés ---- */
+    /* Total cafés */
     const { data: items } = await sb
       .from("order_items")
       .select("quantity")
@@ -193,11 +217,11 @@ async function renderPedidos() {
     clone.querySelector(".pedido-count").textContent =
       `(${totalCafes} café${totalCafes !== 1 ? "s" : ""})`;
 
-    /* ---- Total ---- */
+    /* Total */
     clone.querySelector(".pedido-total-valor").textContent =
       `L ${Number(pedido.total).toFixed(2)}`;
 
-    /* ---- Estado ---- */
+    /* Estado */
     clone.querySelector(".estado-text").textContent =
       formatStatusLabel(pedido.status);
 
@@ -208,14 +232,13 @@ async function renderPedidos() {
     const iconEl   = clone.querySelector(".estado-icon");
 
     estadoEl.classList.remove("pago", "revision", "confirmado", "envio");
-
     const clases = ["pago", "revision", "confirmado", "envio"];
     if (clases[etapa]) estadoEl.classList.add(clases[etapa]);
 
     iconEl.textContent =
       statusIconMap[pedido.status] || statusIconMap.default;
 
-    /* ---- Ver recibo ---- */
+    /* Ver recibo */
     clone.querySelector(".ver-recibo")
       .addEventListener("click", () => {
         location.href = `recibo.html?id=${pedido.id}`;
@@ -226,7 +249,7 @@ async function renderPedidos() {
 }
 
 /* -----------------------------------------------------------
-   PAGINACIÓN UI
+   PAGINACIÓN
 ----------------------------------------------------------- */
 function renderPagination() {
   const container = document.getElementById("pagination-container");
@@ -259,7 +282,7 @@ function renderPagination() {
 }
 
 /* -----------------------------------------------------------
-   ESTADO VACÍO
+   EMPTY STATE
 ----------------------------------------------------------- */
 function mostrarVacio() {
   const lista      = document.getElementById("pedidos-lista");
