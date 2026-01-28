@@ -3,7 +3,7 @@
    CLIENTE + ADMIN (MISMO HTML)
 ============================================================ */
 
-console.log("📦 mis-pedidos.js — CLIENTE + ADMIN + PAGINACIÓN");
+console.log("📦 mis-pedidos.js — ORQUESTADOR CLIENTE / ADMIN");
 
 /* -----------------------------------------------------------
    CONFIG
@@ -91,8 +91,17 @@ init();
 
 async function init() {
   await detectMode();
-  await loadPedidos();
-  render();
+
+  // 🛠️ ADMIN → cortar flujo cliente
+  if (isAdmin) {
+    const admin = await import("../admin/admin_pedidos.js");
+    admin.init();
+    return; // ⛔ MUY IMPORTANTE
+  }
+
+  // 👤 CLIENTE
+  await loadPedidosCliente();
+  renderCliente();
 }
 
 /* -----------------------------------------------------------
@@ -105,18 +114,35 @@ async function detectMode() {
   const params = new URLSearchParams(location.search);
   const adminParam = params.get("mode") === "admin";
 
-  const { data: sessionData } = await sb.auth.getSession();
-  const role = sessionData?.session?.user?.rol;
+  if (!adminParam) {
+    isAdmin = false;
+    return;
+  }
 
-  isAdmin = adminParam || role === "admin";
+  const { data: sessionData } = await sb.auth.getSession();
+  if (!sessionData?.session) {
+    isAdmin = false;
+    return;
+  }
+
+  const userId = sessionData.session.user.id;
+
+  // 🔑 EL ROL VIVE EN TU TABLA users
+  const { data: user } = await sb
+    .from("users")
+    .select("rol")
+    .eq("id", userId)
+    .single();
+
+  isAdmin = user?.rol === "admin";
 
   console.log(isAdmin ? "🛠️ MODO ADMIN" : "👤 MODO CLIENTE");
 }
 
 /* -----------------------------------------------------------
-   CARGAR PEDIDOS
+   CARGAR PEDIDOS (CLIENTE)
 ----------------------------------------------------------- */
-async function loadPedidos() {
+async function loadPedidosCliente() {
   const sb = getSupabaseClient();
   if (!sb) return;
 
@@ -126,17 +152,13 @@ async function loadPedidos() {
     return;
   }
 
-  let query = sb
+  const userId = sessionData.session.user.id;
+
+  const { data, error } = await sb
     .from("orders")
     .select("*")
+    .eq("user_id", userId)
     .order("created_at", { ascending: false });
-
-  // 👤 Cliente → solo sus pedidos
-  if (!isAdmin) {
-    query = query.eq("user_id", sessionData.session.user.id);
-  }
-
-  const { data, error } = await query;
 
   if (error || !data || data.length === 0) {
     mostrarVacio();
@@ -148,17 +170,17 @@ async function loadPedidos() {
 }
 
 /* -----------------------------------------------------------
-   RENDER GENERAL
+   RENDER CLIENTE
 ----------------------------------------------------------- */
-function render() {
-  renderPedidos();
-  renderPagination();
+function renderCliente() {
+  renderPedidosCliente();
+  renderPaginationCliente();
 }
 
 /* -----------------------------------------------------------
-   RENDER PEDIDOS (PAGINADOS)
+   RENDER PEDIDOS CLIENTE
 ----------------------------------------------------------- */
-async function renderPedidos() {
+async function renderPedidosCliente() {
   const lista      = document.getElementById("pedidos-lista");
   const emptyState = document.getElementById("empty-state");
   const seguirBack = document.querySelector(".seguir-comprando");
@@ -193,17 +215,16 @@ async function renderPedidos() {
     const fecha = new Date(pedido.created_at);
     const fechas = clone.querySelectorAll(".pedido-fecha-valor");
 
-    if (fechas.length >= 2) {
-      fechas[0].textContent = fecha.toLocaleDateString("es-HN", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric"
-      });
-      fechas[1].textContent = fecha.toLocaleTimeString("es-HN", {
-        hour: "2-digit",
-        minute: "2-digit"
-      });
-    }
+    fechas[0].textContent = fecha.toLocaleDateString("es-HN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric"
+    });
+
+    fechas[1].textContent = fecha.toLocaleTimeString("es-HN", {
+      hour: "2-digit",
+      minute: "2-digit"
+    });
 
     /* Total cafés */
     const { data: items } = await sb
@@ -228,30 +249,22 @@ async function renderPedidos() {
     const etapa = mapStatusToProgress(pedido.status);
     applyProgressColors(clone, etapa);
 
-    const estadoEl = clone.querySelector(".estado");
-    const iconEl   = clone.querySelector(".estado-icon");
-
-    estadoEl.classList.remove("pago", "revision", "confirmado", "envio");
-    const clases = ["pago", "revision", "confirmado", "envio"];
-    if (clases[etapa]) estadoEl.classList.add(clases[etapa]);
-
-    iconEl.textContent =
+    clone.querySelector(".estado-icon").textContent =
       statusIconMap[pedido.status] || statusIconMap.default;
 
     /* Ver recibo */
-    clone.querySelector(".ver-recibo")
-      .addEventListener("click", () => {
-        location.href = `recibo.html?id=${pedido.id}`;
-      });
+    clone.querySelector(".ver-recibo").onclick = () => {
+      location.href = `recibo.html?id=${pedido.id}`;
+    };
 
     lista.appendChild(clone);
   }
 }
 
 /* -----------------------------------------------------------
-   PAGINACIÓN
+   PAGINACIÓN CLIENTE
 ----------------------------------------------------------- */
-function renderPagination() {
+function renderPaginationCliente() {
   const container = document.getElementById("pagination-container");
   if (!container) return;
 
@@ -270,15 +283,15 @@ function renderPagination() {
     </div>
   `;
 
-  container.querySelector("#prev")?.addEventListener("click", () => {
+  container.querySelector("#prev").onclick = () => {
     currentPage--;
-    render();
-  });
+    renderCliente();
+  };
 
-  container.querySelector("#next")?.addEventListener("click", () => {
+  container.querySelector("#next").onclick = () => {
     currentPage++;
-    render();
-  });
+    renderCliente();
+  };
 }
 
 /* -----------------------------------------------------------
