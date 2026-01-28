@@ -43,7 +43,7 @@ const STATUS_GROUPS = {
 };
 
 /* -----------------------------------------------------------
-   INIT (ESPERA SUPABASE)
+   INIT
 ----------------------------------------------------------- */
 document.addEventListener("DOMContentLoaded", () => {
   waitForSupabase(init);
@@ -51,28 +51,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function waitForSupabase(cb, retries = 20) {
   if (getSupabaseClient()) return cb();
-  if (retries <= 0) {
-    console.error("❌ Supabase no disponible");
-    return;
-  }
+  if (retries <= 0) return console.error("❌ Supabase no disponible");
   setTimeout(() => waitForSupabase(cb, retries - 1), 200);
 }
 
 async function init() {
   const user = getUserCache();
-  if (!user || user.rol !== "admin") {
-    console.warn("⛔ Acceso denegado (no admin)");
-    return;
-  }
+  if (!user || user.rol !== "admin") return;
 
-  renderAdminToolbar();
+  bindControls();
   await loadOrders();
   applyFilters();
   render();
 }
 
 /* -----------------------------------------------------------
-   LOAD ORDERS — TABLA REAL `orders`
+   LOAD ORDERS
 ----------------------------------------------------------- */
 async function loadOrders() {
   const sb = getSupabaseClient();
@@ -85,7 +79,6 @@ async function loadOrders() {
       order_number,
       total,
       status,
-      payment_method,
       created_at,
       users (
         name,
@@ -96,12 +89,11 @@ async function loadOrders() {
     .order("created_at", { ascending: false });
 
   if (error) {
-    console.error("❌ Error cargando pedidos admin:", error);
+    console.error("❌ Error cargando pedidos:", error);
     return;
   }
 
   console.log("📦 PEDIDOS ADMIN:", data);
-
   allOrders = data || [];
 }
 
@@ -109,25 +101,20 @@ async function loadOrders() {
    FILTERS
 ----------------------------------------------------------- */
 function applyFilters() {
-  filteredOrders = allOrders.filter(order => {
-    // Estado
+  filteredOrders = allOrders.filter(o => {
     if (currentStatus !== "all") {
-      const allowed = STATUS_GROUPS[currentStatus] || [];
-      if (!allowed.includes(order.status)) return false;
+      if (!STATUS_GROUPS[currentStatus]?.includes(o.status)) return false;
     }
 
-    // Buscador
     if (searchTerm) {
       const q = searchTerm.toLowerCase();
-      const u = order.users || {};
-
-      const match =
-        String(order.order_number).includes(q) ||
-        u.name?.toLowerCase().includes(q) ||
-        u.email?.toLowerCase().includes(q) ||
-        u.phone?.includes(q);
-
-      if (!match) return false;
+      const u = o.users || {};
+      if (
+        !String(o.order_number).includes(q) &&
+        !u.name?.toLowerCase().includes(q) &&
+        !u.email?.toLowerCase().includes(q) &&
+        !u.phone?.includes(q)
+      ) return false;
     }
 
     return true;
@@ -141,10 +128,8 @@ function applyFilters() {
 ----------------------------------------------------------- */
 function paginate() {
   const start = (currentPage - 1) * PER_PAGE;
-  const end = start + PER_PAGE;
-
   return {
-    items: filteredOrders.slice(start, end),
+    items: filteredOrders.slice(start, start + PER_PAGE),
     totalPages: Math.ceil(filteredOrders.length / PER_PAGE)
   };
 }
@@ -158,88 +143,72 @@ function render() {
 }
 
 /* -----------------------------------------------------------
-   RENDER ORDERS
+   RENDER ORDERS — ADMIN CARD
 ----------------------------------------------------------- */
 function renderOrders() {
-  const lista = document.getElementById("pedidos-lista");
-  const template = document.getElementById("pedido-template");
-  const emptyState = document.getElementById("empty-state");
+  const list = document.getElementById("pedidos-lista");
+  const tpl = document.getElementById("pedido-template");
+  const empty = document.getElementById("empty-state");
 
-  if (!lista || !template) return;
-
-  lista.innerHTML = "";
+  list.innerHTML = "";
 
   if (!filteredOrders.length) {
-    emptyState?.classList.remove("hidden");
+    empty.classList.remove("hidden");
     return;
   }
 
-  emptyState?.classList.add("hidden");
+  empty.classList.add("hidden");
 
   const { items } = paginate();
 
-  for (const pedido of items) {
-    const clone = template.content.cloneNode(true);
-    const u = pedido.users || {};
+  for (const o of items) {
+    const c = tpl.content.cloneNode(true);
+    const u = o.users || {};
 
-    clone.querySelector(".pedido-numero").textContent =
-      `Pedido N.º ${String(pedido.order_number).padStart(3, "0")}`;
+    // Header
+    c.querySelector(".pedido-numero").textContent =
+      `Pedido N.º ${String(o.order_number).padStart(3, "0")}`;
 
-    const fecha = new Date(pedido.created_at);
-    const fechas = clone.querySelectorAll(".pedido-fecha-valor");
+    c.querySelector(".order-date").textContent =
+      new Date(o.created_at).toLocaleString("es-HN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
 
-    fechas[0].textContent = fecha.toLocaleDateString("es-HN");
-    fechas[1].textContent = fecha.toLocaleTimeString("es-HN", {
-      hour: "2-digit",
-      minute: "2-digit"
-    });
-
-    clone.querySelector(".pedido-total-valor").textContent =
-      `L ${Number(pedido.total).toFixed(2)}`;
-
-    clone.querySelector(".pedido-items").innerHTML = `
-      <span class="pedido-label">${u.name || "Cliente"}</span>
-      <span class="pedido-count">${u.phone || ""}</span>
+    // Cliente
+    c.querySelector(".client-name").textContent = u.name || "Cliente";
+    c.querySelector(".client-meta").innerHTML = `
+      <span><i class="fa-solid fa-envelope"></i> ${u.email || "-"}</span>
+      <span><i class="fa-solid fa-phone"></i> ${u.phone || "-"}</span>
     `;
 
-    clone.querySelector(".estado-text").textContent = pedido.status;
+    // Estado
+    c.querySelector(".status-text").textContent = o.status;
 
-    lista.appendChild(clone);
+    // Resumen
+    c.querySelector(".order-summary").innerHTML = `
+      <span>—</span>
+      <strong>Total: L ${Number(o.total).toFixed(2)}</strong>
+    `;
+
+    list.appendChild(c);
   }
 }
 
 /* -----------------------------------------------------------
-   TOOLBAR
+   CONTROLES
 ----------------------------------------------------------- */
-function renderAdminToolbar() {
-  const toolbar = document.getElementById("admin-toolbar");
-  if (!toolbar) return;
-
-  toolbar.innerHTML = `
-    <div class="admin-toolbar">
-      <select id="status-filter">
-        <option value="all">Todos</option>
-        <option value="new">Nuevos</option>
-        <option value="processing">En proceso</option>
-        <option value="shipped">Enviados</option>
-        <option value="delivered">Entregados</option>
-      </select>
-
-      <input
-        id="order-search"
-        type="search"
-        placeholder="Buscar pedido, cliente o teléfono"
-      />
-    </div>
-  `;
-
-  toolbar.querySelector("#status-filter").addEventListener("change", e => {
+function bindControls() {
+  document.getElementById("status-filter")?.addEventListener("change", e => {
     currentStatus = e.target.value;
     applyFilters();
     render();
   });
 
-  toolbar.querySelector("#order-search").addEventListener("input", e => {
+  document.getElementById("admin-orders-search")?.addEventListener("input", e => {
     searchTerm = e.target.value.trim();
     applyFilters();
     render();
@@ -250,17 +219,12 @@ function renderAdminToolbar() {
    PAGINATION UI
 ----------------------------------------------------------- */
 function renderPagination() {
-  const container = document.getElementById("pagination-container");
-  if (!container) return;
-
+  const el = document.getElementById("pagination-container");
   const { totalPages } = paginate();
 
-  if (totalPages <= 1) {
-    container.innerHTML = "";
-    return;
-  }
+  if (totalPages <= 1) return (el.innerHTML = "");
 
-  container.innerHTML = `
+  el.innerHTML = `
     <div class="pagination">
       <button ${currentPage === 1 ? "disabled" : ""} id="prev">◀</button>
       <span>${currentPage} / ${totalPages}</span>
@@ -268,13 +232,6 @@ function renderPagination() {
     </div>
   `;
 
-  container.querySelector("#prev")?.addEventListener("click", () => {
-    currentPage--;
-    render();
-  });
-
-  container.querySelector("#next")?.addEventListener("click", () => {
-    currentPage++;
-    render();
-  });
+  el.querySelector("#prev").onclick = () => { currentPage--; render(); };
+  el.querySelector("#next").onclick = () => { currentPage++; render(); };
 }
