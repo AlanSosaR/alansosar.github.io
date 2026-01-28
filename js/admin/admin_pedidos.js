@@ -1,5 +1,5 @@
 /* ============================================================
-   ADMIN — PEDIDOS | CAFÉ CORTERO (FINAL CON RELACIONES CORRECTAS)
+   ADMIN — PEDIDOS | CAFÉ CORTERO (FINAL CORRECTO)
 ============================================================ */
 
 console.log("🛠️ admin-pedidos.js — INIT");
@@ -21,7 +21,7 @@ let currentStatus = "all";
 let search = "";
 
 /* -----------------------------------------------------------
-   STATUS MAP
+   STATUS MAP (DB REAL)
 ----------------------------------------------------------- */
 const STATUS_GROUPS = {
   new: ["pending"],
@@ -50,15 +50,14 @@ async function init() {
   bindControls();
   await loadOrders();
 
-  console.log("📦 Pedidos cargados:", orders.length);
-
   applyFilters();
   renderCarousel();
+
   filtered.length ? selectOrder(filtered[0].id) : showEmpty();
 }
 
 /* -----------------------------------------------------------
-   LOAD ORDERS — RELACIONES CORRECTAS
+   LOAD ORDERS — RELACIONES REALES
 ----------------------------------------------------------- */
 async function loadOrders() {
   const { data, error } = await sb
@@ -101,6 +100,7 @@ async function loadOrders() {
   }
 
   orders = data || [];
+  console.log("📦 Pedidos cargados:", orders.length);
 }
 
 /* -----------------------------------------------------------
@@ -149,10 +149,13 @@ function renderCarousel() {
     const card = c.querySelector(".order-card");
 
     card.dataset.id = o.id;
+
     c.querySelector(".o-card-number").textContent =
       `Pedido N.º ${String(o.order_number).padStart(3, "0")}`;
+
     c.querySelector(".o-card-total").textContent =
       `L ${Number(o.total).toFixed(2)}`;
+
     c.querySelector(".o-card-status").textContent =
       STATUS_LABELS[o.status] || o.status;
 
@@ -162,18 +165,25 @@ function renderCarousel() {
 }
 
 /* -----------------------------------------------------------
-   SELECT ORDER
+   SELECT ORDER — UI STATE
 ----------------------------------------------------------- */
 function selectOrder(orderId) {
   selectedOrder = orders.find(o => o.id === orderId);
   if (!selectedOrder) return;
 
+  document.getElementById("admin-empty-state").classList.add("hidden");
+  document.querySelector(".admin-related").classList.add("hidden");
+  document.getElementById("admin-order-preview").classList.remove("hidden");
+
   renderPreview(selectedOrder);
-  window.scrollTo({ top: 0, behavior: "smooth" });
+
+  document
+    .getElementById("admin-order-preview")
+    .scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 /* -----------------------------------------------------------
-   RENDER PREVIEW — DATOS REALES
+   RENDER PREVIEW — DATOS COMPLETOS
 ----------------------------------------------------------- */
 function renderPreview(o) {
   const u = o.users || {};
@@ -184,29 +194,42 @@ function renderPreview(o) {
     `Pedido N.º ${String(o.order_number).padStart(3, "0")}`;
 
   document.getElementById("o-date").textContent =
-    new Date(o.created_at).toLocaleString("es-HN");
+    new Date(o.created_at).toLocaleString("es-HN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit"
+    });
 
   document.getElementById("o-total").textContent =
     `L ${Number(o.total).toFixed(2)}`;
 
+  /* CLIENTE */
   document.getElementById("o-client-name").textContent =
     u.name || a.full_name || "Cliente";
 
   document.getElementById("o-email").textContent = u.email || "—";
   document.getElementById("o-phone").textContent = u.phone || a.phone || "—";
 
+  /* DIRECCIÓN */
   document.getElementById("o-address").textContent =
     [a.street, a.city, a.state, a.country].filter(Boolean).join(", ") || "—";
 
   document.getElementById("o-reference").textContent =
     a.postal_code || "—";
 
+  /* PAGO */
   const cash = document.getElementById("cash-payment");
   const receiptBox = document.getElementById("receipt-payment");
+
   cash.classList.add("hidden");
   receiptBox.classList.add("hidden");
 
-  if (o.payment_method === "cash_on_delivery") cash.classList.remove("hidden");
+  if (o.payment_method === "cash_on_delivery") {
+    cash.classList.remove("hidden");
+  }
+
   if (r?.file_url) {
     receiptBox.classList.remove("hidden");
     document.getElementById("receipt-img").src = r.file_url;
@@ -214,7 +237,7 @@ function renderPreview(o) {
 }
 
 /* -----------------------------------------------------------
-   CONTROLS & EMPTY
+   CONTROLS
 ----------------------------------------------------------- */
 function bindControls() {
   document.getElementById("status-filter").onchange = e => {
@@ -230,9 +253,18 @@ function bindControls() {
     renderCarousel();
     filtered.length ? selectOrder(filtered[0].id) : showEmpty();
   };
+
+  document.getElementById("btnBackOrders").onclick = () => {
+    document.getElementById("admin-order-preview").classList.add("hidden");
+    document.querySelector(".admin-related").classList.remove("hidden");
+  };
 }
 
+/* -----------------------------------------------------------
+   EMPTY STATE
+----------------------------------------------------------- */
 function showEmpty() {
   document.getElementById("admin-order-preview").classList.add("hidden");
+  document.querySelector(".admin-related").classList.add("hidden");
   document.getElementById("admin-empty-state").classList.remove("hidden");
 }
