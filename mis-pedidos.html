@@ -6,164 +6,143 @@
 
   <title>Mis pedidos | Café Cortero</title>
 
-  <!-- ================= TIPOGRAFÍA ================= -->
+  <!-- Tipografía -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
-  <!-- ================= FONT AWESOME ================= -->
+  <!-- Iconos -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-  <!-- ================= MATERIAL SYMBOLS ================= -->
   <link
     rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@300;400;500&display=swap"
   >
 
-  <!-- ================= CSS HEADER ================= -->
+  <!-- Estilos -->
   <link rel="stylesheet" href="css/header.css?v=30">
-
-  <!-- ================= CSS PANTALLA ================= -->
-  <link rel="stylesheet" href="css/mis-pedidos.css?v=2">
+  <link rel="stylesheet" href="css/mis-pedidos.css?v=3">
 </head>
 
 <body class="page-mis-pedidos header-checkout">
 
-<!-- =====================================================
-     HEADER — EXACTAMENTE IGUAL AL CARRITO
-====================================================== -->
-<!-- COPIA AQUÍ el <header class="header-fixed"> del carrito -->
+  <!-- Header global (mismo del carrito) -->
+  <!-- Aquí se inyecta el header vía layout.js / header.js -->
 
-<!-- =====================================================
-     SEGUIR COMPRANDO
-====================================================== -->
-<div class="seguir-comprando">
-  <button class="icon-back" onclick="location.href='index.html#productos'">
-    <i class="fa-solid fa-chevron-left"></i>
-  </button>
-  <span class="seguir-link">Seguir Comprando</span>
-</div>
-
-<!-- =====================================================
-     CONTENIDO PRINCIPAL
-====================================================== -->
-<main>
-
-  <!-- =================================================
-       ADMIN TOOLBAR (solo se inyecta si es admin)
-  ================================================== -->
-  <div id="admin-toolbar"></div>
-
-  <!-- =================================================
-       CONTENEDOR DE PEDIDOS
-  ================================================== -->
-  <div class="pedidos-container" id="pedidos-lista">
-
-    <!-- ================= TEMPLATE PEDIDO ================= -->
-    <template id="pedido-template">
-      <article class="pedido-card">
-
-        <!-- HEADER PEDIDO -->
-        <header class="pedido-header">
-          <h3 class="pedido-numero">Pedido N.º 000</h3>
-
-          <p class="pedido-fecha">
-            <span class="pedido-fecha-label">Fecha:</span>
-            <span class="pedido-fecha-valor">—</span><br>
-            <span class="pedido-fecha-label">Hora:</span>
-            <span class="pedido-fecha-valor">—</span>
-          </p>
-
-          <p class="pedido-items">
-            <span class="pedido-label">Tu pedido</span>
-            <span class="pedido-count">(0 cafés)</span>
-          </p>
-
-          <p class="pedido-total">
-            <span class="pedido-total-label">Total:</span>
-            <span class="pedido-total-valor">L 0.00</span>
-          </p>
-        </header>
-
-        <!-- PROGRESO -->
-        <section class="pedido-progreso">
-          <p class="progreso-title">Estado del pedido</p>
-
-          <div class="progreso-wrapper">
-            <div class="progreso-bar">
-              <span class="step pago"></span>
-              <span class="line pago"></span>
-
-              <span class="step revision"></span>
-              <span class="line revision"></span>
-
-              <span class="step confirmado"></span>
-              <span class="line confirmado"></span>
-
-              <span class="step envio"></span>
-            </div>
-
-            <div class="progreso-labels">
-              <span>Pag.</span>
-              <span>Rev.</span>
-              <span>Conf.</span>
-              <span>Envío</span>
-            </div>
-          </div>
-
-          <!-- ESTADO ACTUAL -->
-          <div class="estado">
-            <span class="material-symbols-outlined estado-icon">check_circle</span>
-            <span class="estado-text">Pago confirmado</span>
-          </div>
-
-          <!-- DIVISOR -->
-          <div class="divider-footer"></div>
-
-          <!-- FOOTER -->
-          <footer class="pedido-footer">
-            <button class="ver-recibo">
-              <span class="ver-text">Ver recibo</span>
-              <span class="arrow material-symbols-outlined">arrow_forward</span>
-            </button>
-          </footer>
-        </section>
-
-      </article>
-    </template>
-
+  <!-- Volver a comprar -->
+  <div class="seguir-comprando">
+    <button class="icon-back" onclick="location.href='index.html#productos'">
+      <i class="fa-solid fa-chevron-left"></i>
+    </button>
+    <span class="seguir-link">Seguir comprando</span>
   </div>
 
-  <!-- =================================================
-       PAGINACIÓN (cliente y admin)
-  ================================================== -->
-  <div id="pagination-container"></div>
+  <main>
 
-  <!-- ================= EMPTY STATE ================= -->
-  <section class="empty-state hidden" id="empty-state">
-    <h2>Tu lista de pedidos está vacía</h2>
-    <p>Agrega tus cafés favoritos para continuar.</p>
+    <!-- Lista de pedidos -->
+    <div class="pedidos-container" id="pedidos-lista">
 
-    <button class="btn-principal" onclick="location.href='index.html#productos'">
-      Seguir comprando
-    </button>
-  </section>
+      <!-- Template de pedido -->
+      <template id="pedido-template">
+        <article class="pedido-card">
 
-</main>
+          <!-- Encabezado -->
+          <header class="pedido-header">
+            <h3 class="pedido-numero">Pedido N.º 000</h3>
 
-<!-- =====================================================
-     SCRIPTS
-====================================================== -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+            <p class="pedido-fecha">
+              <span class="pedido-fecha-label">Fecha:</span>
+              <span class="pedido-fecha-valor">—</span><br>
+              <span class="pedido-fecha-label">Hora:</span>
+              <span class="pedido-fecha-valor">—</span>
+            </p>
 
-<script src="js/core/supabase-client-core.js"></script>
-<script src="js/core/supabase-auth.js"></script>
-<script src="js/core/auth-ui.js"></script>
-<script src="js/ui/layout.js"></script>
-<script type="module" src="js/ui/header.js"></script>
+            <p class="pedido-items">
+              <span class="pedido-label">Tu pedido</span>
+              <span class="pedido-count">(0 cafés)</span>
+            </p>
 
-<!-- JS ORQUESTADOR -->
-<script type="module" src="js/pages/mis-pedidos.js"></script>
-  <script type="module" src="js/admin/admin_pedidos.js"></script>
+            <p class="pedido-total">
+              <span class="pedido-total-label">Total:</span>
+              <span class="pedido-total-valor">L 0.00</span>
+            </p>
+          </header>
 
+          <!-- Progreso del pedido -->
+          <section class="pedido-progreso">
+            <p class="progreso-title">Estado del pedido</p>
+
+            <div class="progreso-wrapper">
+              <div class="progreso-bar">
+                <span class="step pago"></span>
+                <span class="line pago"></span>
+
+                <span class="step revision"></span>
+                <span class="line revision"></span>
+
+                <span class="step confirmado"></span>
+                <span class="line confirmado"></span>
+
+                <span class="step envio"></span>
+              </div>
+
+              <div class="progreso-labels">
+                <span>Pag.</span>
+                <span>Rev.</span>
+                <span>Conf.</span>
+                <span>Envío</span>
+              </div>
+            </div>
+
+            <!-- Estado actual -->
+            <div class="estado">
+              <span class="material-symbols-outlined estado-icon">
+                check_circle
+              </span>
+              <span class="estado-text">Pago confirmado</span>
+            </div>
+
+            <div class="divider-footer"></div>
+
+            <!-- Acciones -->
+            <footer class="pedido-footer">
+              <button class="ver-recibo">
+                <span class="ver-text">Ver recibo</span>
+                <span class="arrow material-symbols-outlined">
+                  arrow_forward
+                </span>
+              </button>
+            </footer>
+          </section>
+
+        </article>
+      </template>
+
+    </div>
+
+    <!-- Paginación -->
+    <div id="pagination-container"></div>
+
+    <!-- Estado vacío -->
+    <section class="empty-state hidden" id="empty-state">
+      <h2>Tu lista de pedidos está vacía</h2>
+      <p>Agrega tus cafés favoritos para continuar.</p>
+
+      <button class="btn-principal" onclick="location.href='index.html#productos'">
+        Seguir comprando
+      </button>
+    </section>
+
+  </main>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script src="js/core/supabase-client-core.js"></script>
+  <script src="js/core/supabase-auth.js"></script>
+  <script src="js/core/auth-ui.js"></script>
+  <script src="js/ui/layout.js"></script>
+  <script type="module" src="js/ui/header.js"></script>
+
+  <!-- Lógica de pedidos (cliente) -->
+  <script type="module" src="js/pages/mis-pedidos.js"></script>
 
 </body>
 </html>
