@@ -13,14 +13,16 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <!-- ================= MATERIAL SYMBOLS ================= -->
-  <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@300;400;500&display=swap">
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@300;400;500&display=swap"
+  >
 
   <!-- ================= CSS HEADER ================= -->
   <link rel="stylesheet" href="css/header.css?v=30">
 
   <!-- ================= CSS PANTALLA ================= -->
-  <link rel="stylesheet" href="css/mis-pedidos.css?v=1">
+  <link rel="stylesheet" href="css/mis-pedidos.css?v=2">
 </head>
 
 <body class="page-mis-pedidos header-checkout">
@@ -45,7 +47,14 @@
 ====================================================== -->
 <main>
 
-  <!-- CONTENEDOR DE PEDIDOS -->
+  <!-- =================================================
+       ADMIN TOOLBAR (solo se inyecta si es admin)
+  ================================================== -->
+  <div id="admin-toolbar"></div>
+
+  <!-- =================================================
+       CONTENEDOR DE PEDIDOS
+  ================================================== -->
   <div class="pedidos-container" id="pedidos-lista">
 
     <!-- ================= TEMPLATE PEDIDO ================= -->
@@ -53,30 +62,32 @@
       <article class="pedido-card">
 
         <!-- HEADER PEDIDO -->
-<header class="pedido-header">
-  <h3 class="pedido-numero">Pedido N.º 000</h3>
-<p class="pedido-fecha">
-  <span class="pedido-fecha-label">Fecha:</span>
-  <span class="pedido-fecha-valor" id="fechaPedido">—</span><br>
-  <span class="pedido-fecha-label">Hora:</span>
-  <span class="pedido-fecha-valor" id="horaPedido">—</span>
-</p>
- <p class="pedido-items">
-  <span class="pedido-label">Tu pedido</span>
-  <span class="pedido-count" id="pedido-count">(0 cafés)</span>
- </p>
-<p class="pedido-total">
-  <span class="pedido-total-label">Total:</span>
-  <span class="pedido-total-valor">L 0.00</span>
-</p>
-</header>
+        <header class="pedido-header">
+          <h3 class="pedido-numero">Pedido N.º 000</h3>
+
+          <p class="pedido-fecha">
+            <span class="pedido-fecha-label">Fecha:</span>
+            <span class="pedido-fecha-valor">—</span><br>
+            <span class="pedido-fecha-label">Hora:</span>
+            <span class="pedido-fecha-valor">—</span>
+          </p>
+
+          <p class="pedido-items">
+            <span class="pedido-label">Tu pedido</span>
+            <span class="pedido-count">(0 cafés)</span>
+          </p>
+
+          <p class="pedido-total">
+            <span class="pedido-total-label">Total:</span>
+            <span class="pedido-total-valor">L 0.00</span>
+          </p>
+        </header>
 
         <!-- PROGRESO -->
         <section class="pedido-progreso">
           <p class="progreso-title">Estado del pedido</p>
 
           <div class="progreso-wrapper">
-
             <div class="progreso-bar">
               <span class="step pago"></span>
               <span class="line pago"></span>
@@ -96,7 +107,6 @@
               <span>Conf.</span>
               <span>Envío</span>
             </div>
-
           </div>
 
           <!-- ESTADO ACTUAL -->
@@ -115,13 +125,17 @@
               <span class="arrow material-symbols-outlined">arrow_forward</span>
             </button>
           </footer>
-
         </section>
 
       </article>
     </template>
 
   </div>
+
+  <!-- =================================================
+       PAGINACIÓN (cliente y admin)
+  ================================================== -->
+  <div id="pagination-container"></div>
 
   <!-- ================= EMPTY STATE ================= -->
   <section class="empty-state hidden" id="empty-state">
@@ -146,8 +160,8 @@
 <script src="js/ui/layout.js"></script>
 <script type="module" src="js/ui/header.js"></script>
 
-<!-- JS PROPIO -->
-<script src="js/pages/mis-pedidos.js"></script>
+<!-- JS ORQUESTADOR -->
+<script type="module" src="js/pages/mis-pedidos.js"></script>
 
 </body>
 </html>
