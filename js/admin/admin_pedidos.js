@@ -1,5 +1,5 @@
 /* ============================================================
-   ADMIN — PEDIDOS | CAFÉ CORTERO (CORE FINAL — NUEVOS POR DEFECTO)
+   ADMIN — PEDIDOS | CAFÉ CORTERO (CORE FINAL CORRECTO)
 ============================================================ */
 
 console.log("🛠️ admin-pedidos.js — INIT");
@@ -14,7 +14,7 @@ let orders = [];
 let filtered = [];
 let selectedOrder = null;
 
-/* 🔑 Estado inicial: SOLO NUEVOS */
+/* 🔑 Por defecto: NUEVOS */
 let currentStatus = "new";
 let search = "";
 
@@ -45,22 +45,20 @@ async function init() {
   const user = JSON.parse(localStorage.getItem("cortero_user") || "null");
   if (!user || user.rol !== "admin") return;
 
-  /* 🔑 sincroniza UI con lógica */
+  // sincroniza select
   document.getElementById("status-filter").value = "new";
 
   bindControls();
-  await loadOrders();        // 👈 SOLO NUEVOS
-  applyFilters();
-  renderCarousel();
+  await loadOrdersByStatus("new");
 
-  filtered.length ? forceSelectFirst() : showEmpty();
+  renderAll();
 }
 
 /* -----------------------------------------------------------
-   LOAD ORDERS — SOLO NUEVOS (BACKEND)
+   LOAD ORDERS BY STATUS (BACKEND)
 ----------------------------------------------------------- */
-async function loadOrders() {
-  const { data, error } = await sb
+async function loadOrdersByStatus(statusKey) {
+  let query = sb
     .from("orders")
     .select(`
       id,
@@ -91,8 +89,13 @@ async function loadOrders() {
         review_status
       )
     `)
-    .eq("status", "pending")              // 🔥 CLAVE
     .order("created_at", { ascending: false });
+
+  if (statusKey !== "all") {
+    query = query.in("status", STATUS_GROUPS[statusKey]);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     console.error("❌ Error cargando pedidos:", error);
@@ -101,19 +104,14 @@ async function loadOrders() {
   }
 
   orders = data || [];
-  console.log("📦 Pedidos NUEVOS:", orders.length);
+  console.log("📦 Pedidos cargados:", orders.length);
 }
 
 /* -----------------------------------------------------------
-   FILTERS (frontend solo cuando cambia el select)
+   FILTERS (SEARCH)
 ----------------------------------------------------------- */
 function applyFilters() {
   filtered = orders.filter(o => {
-    if (
-      currentStatus !== "all" &&
-      !STATUS_GROUPS[currentStatus].includes(o.status)
-    ) return false;
-
     if (!search) return true;
 
     const q = search.toLowerCase();
@@ -129,6 +127,21 @@ function applyFilters() {
 }
 
 /* -----------------------------------------------------------
+   RENDER ALL (CLAVE)
+----------------------------------------------------------- */
+function renderAll() {
+  applyFilters();
+  renderCarousel();
+
+  if (!filtered.length) {
+    showEmpty();
+    return;
+  }
+
+  selectOrder(filtered[0].id);
+}
+
+/* -----------------------------------------------------------
    CARRUSEL
 ----------------------------------------------------------- */
 function renderCarousel() {
@@ -137,12 +150,6 @@ function renderCarousel() {
   const related = document.querySelector(".admin-related");
 
   wrap.innerHTML = "";
-
-  if (!filtered.length) {
-    related.classList.add("hidden");
-    return;
-  }
-
   related.classList.remove("hidden");
 
   for (const o of filtered) {
@@ -150,23 +157,19 @@ function renderCarousel() {
     const card = node.querySelector(".order-card");
 
     card.dataset.id = o.id;
+
     node.querySelector(".o-card-number").textContent =
       `Pedido N.º ${String(o.order_number).padStart(3, "0")}`;
+
     node.querySelector(".o-card-total").textContent =
       `L ${Number(o.total).toFixed(2)}`;
+
     node.querySelector(".o-card-status").textContent =
       STATUS_LABELS[o.status] || o.status;
 
     card.addEventListener("click", () => selectOrder(o.id));
     wrap.appendChild(node);
   }
-}
-
-/* -----------------------------------------------------------
-   SELECCIÓN INICIAL
------------------------------------------------------------ */
-function forceSelectFirst() {
-  requestAnimationFrame(() => selectOrder(filtered[0].id));
 }
 
 /* -----------------------------------------------------------
@@ -177,20 +180,13 @@ function selectOrder(orderId) {
   if (!selectedOrder) return;
 
   document.getElementById("admin-empty-state").classList.add("hidden");
-
-  const related = document.querySelector(".admin-related");
-  related.classList.add("hidden");
-  related.style.display = "none";
-
-  const preview = document.getElementById("admin-order-preview");
-  preview.classList.remove("hidden");
+  document.getElementById("admin-order-preview").classList.remove("hidden");
 
   renderPreview(selectedOrder);
-  preview.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 /* -----------------------------------------------------------
-   PREVIEW
+   TARJETA GRANDE
 ----------------------------------------------------------- */
 function renderPreview(o) {
   const u = o.users || {};
@@ -199,26 +195,35 @@ function renderPreview(o) {
 
   document.getElementById("o-number").textContent =
     `Pedido N.º ${String(o.order_number).padStart(3, "0")}`;
+
   document.getElementById("o-date").textContent =
     new Date(o.created_at).toLocaleString("es-HN");
+
   document.getElementById("o-total").textContent =
     `L ${Number(o.total).toFixed(2)}`;
 
   document.getElementById("o-client-name").textContent =
     u.name || a.full_name || "Cliente";
+
   document.getElementById("o-email").textContent = u.email || "—";
   document.getElementById("o-phone").textContent = u.phone || a.phone || "—";
+
   document.getElementById("o-address").textContent =
     [a.street, a.city, a.state, a.country].filter(Boolean).join(", ") || "—";
+
   document.getElementById("o-reference").textContent =
     a.postal_code || "—";
 
   const cash = document.getElementById("cash-payment");
   const receiptBox = document.getElementById("receipt-payment");
+
   cash.classList.add("hidden");
   receiptBox.classList.add("hidden");
 
-  if (o.payment_method === "cash_on_delivery") cash.classList.remove("hidden");
+  if (o.payment_method === "cash_on_delivery") {
+    cash.classList.remove("hidden");
+  }
+
   if (r?.file_url) {
     receiptBox.classList.remove("hidden");
     document.getElementById("receipt-img").src = r.file_url;
@@ -231,30 +236,13 @@ function renderPreview(o) {
 function bindControls() {
   document.getElementById("status-filter").addEventListener("change", async e => {
     currentStatus = e.target.value;
-
-    if (currentStatus === "new") {
-      await loadOrders(); // recarga solo nuevos
-    } else {
-      await loadOrdersByStatus(currentStatus);
-    }
-
-    applyFilters();
-    renderCarousel();
-    filtered.length ? forceSelectFirst() : showEmpty();
+    await loadOrdersByStatus(currentStatus);
+    renderAll();
   });
 
   document.getElementById("search-orders").addEventListener("input", e => {
     search = e.target.value.trim();
-    applyFilters();
-    renderCarousel();
-    filtered.length ? forceSelectFirst() : showEmpty();
-  });
-
-  document.getElementById("btnBackOrders").addEventListener("click", () => {
-    document.getElementById("admin-order-preview").classList.add("hidden");
-    const related = document.querySelector(".admin-related");
-    related.style.display = "";
-    related.classList.remove("hidden");
+    renderAll();
   });
 }
 
@@ -263,6 +251,5 @@ function bindControls() {
 ----------------------------------------------------------- */
 function showEmpty() {
   document.getElementById("admin-order-preview").classList.add("hidden");
-  document.querySelector(".admin-related").classList.add("hidden");
   document.getElementById("admin-empty-state").classList.remove("hidden");
 }
