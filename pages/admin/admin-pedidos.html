@@ -20,11 +20,10 @@
 <main class="admin-orders-container fade-in">
 
 <!-- =========================
-     BARRA SUPERIOR (BUSCAR + FILTRO)
+     BARRA SUPERIOR
 ========================= -->
 <section class="orders-actions-bar">
   <div class="search-box has-filter">
-
     <span class="material-symbols-outlined search-icon">search</span>
 
     <input
@@ -40,7 +39,6 @@
       <option value="delivered">Entregados</option>
       <option value="all">Todos</option>
     </select>
-
   </div>
 </section>
 
@@ -55,131 +53,161 @@
 </section>
 
 <!-- =========================
-     TARJETA PRINCIPAL — PEDIDO
+     TARJETA PRINCIPAL
 ========================= -->
 <section id="admin-order-preview" class="order-main admin-preview hidden">
 
-  <!-- BOTÓN ATRÁS -->
-  <button class="back-btn" id="btnBackOrders" aria-label="Volver">
-    <span class="material-symbols-outlined">chevron_left</span>
-  </button>
+  <!-- HEADER DEL PEDIDO -->
+  <header class="order-preview-header">
+    <button
+      class="back-btn"
+      id="btnBackOrders"
+      aria-label="Volver al listado de pedidos"
+      type="button"
+    >
+      <span class="material-symbols-outlined">chevron_left</span>
+    </button>
 
-  <!-- ================= INFO ================= -->
-  <div class="order-text">
-
-    <!-- HEADER -->
-    <div class="order-header">
+    <div class="order-header-text">
       <h2 id="o-number">Pedido N.º —</h2>
       <span id="o-date" class="order-date">—</span>
-      <strong id="o-total" class="order-total">L 0.00</strong>
+    </div>
+  </header>
+
+  <div class="order-layout">
+
+    <!-- ================= TEXTO ================= -->
+    <div class="order-text">
+
+      <!-- CLIENTE -->
+      <section class="order-client">
+        <h3>Cliente</h3>
+        <p id="o-client-name" class="client-name">—</p>
+
+        <div class="client-meta-vertical">
+          <div class="meta-row">
+            <span class="material-symbols-outlined">call</span>
+            <span id="o-phone">—</span>
+          </div>
+
+          <div class="meta-row price">
+            <span class="material-symbols-outlined">payments</span>
+            <strong id="o-total">L 0.00</strong>
+          </div>
+        </div>
+      </section>
+
+      <!-- DIRECCIÓN -->
+      <section class="order-address">
+        <h3>Entrega</h3>
+        <p id="o-address">—</p>
+        <p class="reference">
+          <strong>Referencia:</strong>
+          <span id="o-reference">—</span>
+        </p>
+      </section>
+
+      <!-- ACCIONES -->
+      <div class="order-actions">
+        <button id="btnViewOrder" class="admin-action-btn view-info">
+          <span class="material-symbols-outlined">receipt_long</span>
+          Ver información
+        </button>
+
+        <div class="status-actions">
+          <button id="btnShip" class="admin-action-btn ship">
+            <span class="material-symbols-outlined">local_shipping</span>
+            Marcar enviado
+          </button>
+
+          <button id="btnDeliver" class="admin-action-btn deliver">
+            <span class="material-symbols-outlined">done_all</span>
+            Marcar entregado
+          </button>
+        </div>
+      </div>
     </div>
 
-    <!-- CLIENTE -->
-    <section class="order-client">
-      <h3>Cliente</h3>
-      <p id="o-client-name">—</p>
-      <p class="client-meta">
-        <span><i class="material-symbols-outlined">mail</i> <span id="o-email">—</span></span>
-        <span><i class="material-symbols-outlined">call</i> <span id="o-phone">—</span></span>
-      </p>
-    </section>
-
-    <!-- DIRECCIÓN -->
-    <section class="order-address">
-      <h3>Entrega</h3>
-      <p id="o-address">—</p>
-      <p class="reference">
-        <strong>Referencia:</strong>
-        <span id="o-reference">—</span>
-      </p>
-    </section>
-
-    <!-- PAGO -->
-    <section class="order-payment">
-
-      <!-- PAGO CONTRA ENTREGA -->
-      <div id="cash-payment" class="payment-info hidden">
-        <span class="material-symbols-outlined">payments</span>
-        Pago contra entrega
-      </div>
+    <!-- ================= MEDIA ================= -->
+    <div class="order-media">
 
       <!-- RECIBO -->
-      <div id="receipt-payment" class="payment-receipt hidden">
-        <img id="receipt-img" src="" alt="Recibo de pago">
-        <span>Recibo adjunto</span>
+      <div id="receipt-payment" class="payment-media hidden">
+        <img
+          id="receipt-img"
+          src=""
+          alt="Recibo de pago"
+          loading="lazy"
+        />
       </div>
 
-    </section>
-
-    <!-- ACCIONES -->
-    <div class="order-actions">
-
-      <button id="btnViewOrder" class="admin-action-btn">
-        <span class="material-symbols-outlined">receipt_long</span>
-        Ver información
-      </button>
-
-      <div class="status-actions">
-        <button id="btnShip" class="admin-action-btn ship">
-          <span class="material-symbols-outlined">local_shipping</span>
-          Marcar enviado
-        </button>
-
-        <button id="btnDeliver" class="admin-action-btn deliver">
-          <span class="material-symbols-outlined">done_all</span>
-          Marcar entregado
-        </button>
+      <!-- PLACEHOLDER PAGO CONTRA ENTREGA -->
+      <div id="cash-payment" class="payment-media placeholder hidden">
+        <span class="material-symbols-outlined">payments</span>
+        <p>Pago contra entrega</p>
       </div>
 
     </div>
-
   </div>
 </section>
 
 <!-- =========================
-     CARRUSEL DE PEDIDOS
+     CARRUSEL
 ========================= -->
 <section class="related admin-related hidden">
-
   <h3 class="similar-title">Pedidos</h3>
   <p class="section-subtitle">
     Selecciona un pedido para gestionarlo.
   </p>
 
   <div class="carousel-container with-arrows">
-
     <button class="carousel-prev-circle inside" id="orders-prev">
       <span class="material-symbols-outlined">chevron_left</span>
     </button>
 
-    <div class="similar-list" id="orders-carousel">
-      <!-- JS renderiza pedidos -->
-    </div>
+    <div class="similar-list" id="orders-carousel"></div>
 
     <button class="carousel-next-circle inside" id="orders-next">
       <span class="material-symbols-outlined">chevron_right</span>
     </button>
-
   </div>
 </section>
 
 </main>
 
 <!-- =========================
-     TEMPLATE PEDIDO (CARRUSEL)
+     TEMPLATE CARRUSEL
 ========================= -->
 <template id="tpl-order-card">
   <article class="similar-card order-card" data-id="">
-    <h4 class="o-card-number">Pedido N.º 000</h4>
-    <p class="o-card-total">L 0.00</p>
-    <span class="o-card-status">—</span>
+
+    <!-- MEDIA -->
+    <div class="order-card-media">
+      <img
+        class="order-card-img hidden"
+        alt="Recibo del pedido"
+        loading="lazy"
+      />
+
+      <div class="order-card-placeholder hidden">
+        <span class="material-symbols-outlined">payments</span>
+        <p>Pago contra entrega</p>
+      </div>
+    </div>
+
+    <!-- INFO -->
+    <div class="order-card-info">
+      <h4 class="o-card-number">Pedido N.º 000</h4>
+      <p class="o-card-total">L 0.00</p>
+      <span class="o-card-status">—</span>
+    </div>
+
   </article>
 </template>
 
 <!-- =========================
      SCRIPTS
 ========================= -->
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../../js/core/supabase-client-core.js"></script>
 
@@ -190,7 +218,6 @@
 <script type="module" src="../../js/ui/header.js"></script>
 <script src="../../js/core/auth-ui.js"></script>
 <script src="../../js/ui/layout.js"></script>
-
 <script src="../../js/admin/admin_pedidos.js"></script>
 
 </body>
