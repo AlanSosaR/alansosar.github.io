@@ -1,5 +1,5 @@
 /* ============================================================
-   ADMIN — PEDIDOS | CAFÉ CORTERO (FINAL ESTABLE)
+   ADMIN — PEDIDOS | CAFÉ CORTERO (FINAL DEFINITIVO)
 ============================================================ */
 
 console.log("🛠️ admin-pedidos.js — INIT");
@@ -17,7 +17,7 @@ let orders = [];
 let filtered = [];
 let selectedOrder = null;
 
-let currentStatus = "all"; // 👈 CLAVE
+let currentStatus = "all";
 let search = "";
 
 /* -----------------------------------------------------------
@@ -62,7 +62,7 @@ async function init() {
 }
 
 /* -----------------------------------------------------------
-   LOAD ORDERS (REAL JOIN)
+   LOAD ORDERS (JOINS CORRECTOS)
 ----------------------------------------------------------- */
 async function loadOrders() {
   const { data, error } = await sb
@@ -80,6 +80,8 @@ async function loadOrders() {
         phone
       ),
       addresses (
+        full_name,
+        phone,
         country,
         state,
         city,
@@ -115,7 +117,7 @@ function applyFilters() {
     if (!search) return true;
 
     const q = search.toLowerCase();
-    const u = o.users || {};
+    const u = o.users?.[0] || {};
 
     return (
       String(o.order_number).includes(q) ||
@@ -124,8 +126,6 @@ function applyFilters() {
       u.phone?.includes(q)
     );
   });
-
-  console.log("🔎 Filtrados:", filtered.length);
 }
 
 /* -----------------------------------------------------------
@@ -167,7 +167,7 @@ function renderCarousel() {
 }
 
 /* -----------------------------------------------------------
-   SELECT ORDER → PREVIEW + SCROLL
+   SELECT ORDER → PREVIEW
 ----------------------------------------------------------- */
 function selectOrder(orderId) {
   selectedOrder = orders.find(o => o.id === orderId);
@@ -179,7 +179,7 @@ function selectOrder(orderId) {
 }
 
 /* -----------------------------------------------------------
-   RENDER PREVIEW
+   RENDER PREVIEW (FIX CLAVE)
 ----------------------------------------------------------- */
 function renderPreview(o) {
   const preview = document.getElementById("admin-order-preview");
@@ -188,10 +188,11 @@ function renderPreview(o) {
   empty.classList.add("hidden");
   preview.classList.remove("hidden");
 
-  const u = o.users || {};
-  const a = o.addresses || {};
+  const u = o.users?.[0] || {};
+  const a = o.addresses?.[0] || {};
   const receipt = o.payment_receipts?.[0];
 
+  /* HEADER */
   document.getElementById("o-number").textContent =
     `Pedido N.º ${String(o.order_number).padStart(3, "0")}`;
 
@@ -207,17 +208,26 @@ function renderPreview(o) {
   document.getElementById("o-total").textContent =
     `L ${Number(o.total).toFixed(2)}`;
 
-  document.getElementById("o-client-name").textContent = u.name || "—";
-  document.getElementById("o-email").textContent = u.email || "—";
-  document.getElementById("o-phone").textContent = u.phone || "—";
+  /* CLIENTE */
+  document.getElementById("o-client-name").textContent =
+    u.name || a.full_name || "Cliente";
 
+  document.getElementById("o-email").textContent =
+    u.email || "—";
+
+  document.getElementById("o-phone").textContent =
+    u.phone || a.phone || "—";
+
+  /* DIRECCIÓN */
   document.getElementById("o-address").textContent =
-    [a.street, a.city, a.state].filter(Boolean).join(", ") || "—";
+    [a.street, a.city, a.state, a.country]
+      .filter(Boolean)
+      .join(", ") || "—";
 
   document.getElementById("o-reference").textContent =
     a.postal_code || "—";
 
-  /* --------- PAGO --------- */
+  /* PAGO */
   const cash = document.getElementById("cash-payment");
   const receiptBox = document.getElementById("receipt-payment");
 
@@ -233,7 +243,7 @@ function renderPreview(o) {
     document.getElementById("receipt-img").src = receipt.file_url;
   }
 
-  /* --------- ACCIONES --------- */
+  /* ACCIONES */
   document.getElementById("btnShip").onclick =
     () => updateStatus(o.id, "shipped");
 
