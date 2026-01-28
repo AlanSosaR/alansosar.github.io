@@ -1,41 +1,35 @@
 /* =====================================================
-   VARIABLES — MATERIAL 3 EXPRESSIVE
+   MATERIAL 3 EXPRESSIVE — ADMIN PEDIDOS
 ===================================================== */
+
+/* =====================
+   VARIABLES
+===================== */
 :root {
-  --md-primary: #2f5d46;           /* Verde */
+  --md-primary: #2f5d46;
   --md-primary-soft: #e6f0ea;
-  --md-secondary: #6b4b3e;         /* Café */
+  --md-secondary: #6b4b3e;
+
   --md-surface: #ffffff;
   --md-background: #f6f7f5;
   --md-outline: #e0e0e0;
+
   --md-text: #2b2b2b;
   --md-text-soft: #6f6f6f;
 
   --radius-xl: 24px;
-  --radius-lg: 16px;
-  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-md: 14px;
+  --radius-sm: 10px;
 
   --shadow-soft:
-    0 8px 24px rgba(0,0,0,0.08),
-    0 2px 8px rgba(0,0,0,0.06);
+    0 10px 28px rgba(0,0,0,0.08),
+    0 3px 10px rgba(0,0,0,0.06);
 }
 
-/* =====================================================
-   RESET TAP / CLICK HIGHLIGHT (MOBILE)
-===================================================== */
-* {
-  -webkit-tap-highlight-color: transparent;
-}
-
-button,
-a {
-  outline: none;
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* =====================================================
+/* =====================
    BASE
-===================================================== */
+===================== */
 body.page-admin-pedidos {
   margin: 0;
   font-family: "Poppins", system-ui, sans-serif;
@@ -43,335 +37,324 @@ body.page-admin-pedidos {
   color: var(--md-text);
 }
 
-.admin-container {
-  max-width: 1100px;
+.admin-orders-container {
+  max-width: 1200px;
   margin: 0 auto;
   padding: 1.5rem 1rem 3rem;
 }
 
-/* =====================================================
-   CABECERA
-===================================================== */
-.admin-page-header {
+/* =====================
+   ACTION BAR
+===================== */
+.orders-actions-bar {
   margin-bottom: 1.8rem;
 }
 
-.admin-page-header h1 {
-  font-size: 1.9rem;
-  font-weight: 600;
-  margin: 0;
-  color: var(--md-secondary); /* ☕ CAFÉ */
-}
-
-.admin-page-header p {
-  margin-top: 0.3rem;
-  font-size: 0.95rem;
-  color: var(--md-primary); /* 🌿 VERDE */
-}
-
-/* =====================================================
-   FLECHA ATRÁS (BACK BUTTON)
-===================================================== */
-.back-btn {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  border: none;
-  background: var(--md-surface);
-  box-shadow: var(--shadow-soft);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
-.back-btn span {
-  font-size: 1.4rem;
-  color: var(--md-secondary);
-}
-
-.back-btn:hover {
-  background: var(--md-primary-soft);
-}
-
-/* =====================================================
-   CONTROLES UNIFICADOS
-===================================================== */
-.admin-controls {
-  margin-bottom: 2rem;
-}
-
-.search-filter-bar {
+.search-box.has-filter {
   display: grid;
-  grid-template-columns: 1fr 180px;
-  gap: 1rem;
-}
-
-.filter-group select {
-  width: 100%;
-  padding: 0.7rem 0.75rem;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--md-outline);
-  background: var(--md-surface);
-  font-family: inherit;
-  font-size: 0.9rem;
-}
-
-.search-group {
-  position: relative;
-}
-
-.search-group i {
-  position: absolute;
-  top: 50%;
-  left: 0.85rem;
-  transform: translateY(-50%);
-  color: var(--md-text-soft);
-}
-
-.search-group input {
-  width: 100%;
-  padding: 0.7rem 0.85rem 0.7rem 2.4rem;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--md-outline);
-  font-family: inherit;
-  font-size: 0.9rem;
-}
-
-/* =====================================================
-   LISTA DE PEDIDOS
-===================================================== */
-.admin-orders-list {
-  display: grid;
-  gap: 1.4rem;
-}
-
-/* =====================================================
-   TARJETA DE PEDIDO
-===================================================== */
-.admin-order-card {
-  background: var(--md-surface);
-  border-radius: var(--radius-xl);
-  padding: 1.4rem;
-  box-shadow: var(--shadow-soft);
-  display: grid;
-  gap: 1.1rem;
-}
-
-/* =====================================================
-   HEADER PEDIDO
-===================================================== */
-.order-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 0.5rem;
-}
-
-.pedido-numero {
-  margin: 0;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--md-secondary);
-}
-
-.order-date {
-  font-size: 0.8rem;
-  color: var(--md-text-soft);
-}
-
-.order-total {
-  font-weight: 600;
-  color: var(--md-primary);
-}
-
-/* =====================================================
-   CLIENTE
-===================================================== */
-.order-client {
-  background: var(--md-primary-soft);
-  border-radius: var(--radius-md);
-  padding: 0.9rem 1rem;
-}
-
-.client-name {
-  margin: 0;
-  font-weight: 600;
-  color: var(--md-secondary);
-}
-
-.client-meta {
-  margin-top: 0.4rem;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  font-size: 0.8rem;
-  color: var(--md-text-soft);
-}
-
-.client-meta i {
-  margin-right: 0.35rem;
-}
-
-/* =====================================================
-   DIRECCIÓN
-===================================================== */
-.order-address {
-  font-size: 0.85rem;
-  color: var(--md-text);
-}
-
-.order-address i {
-  margin-right: 0.4rem;
-  color: var(--md-primary);
-}
-
-.referencia-text {
-  margin-top: 0.25rem;
-  color: var(--md-text-soft);
-}
-
-/* =====================================================
-   PAGO
-===================================================== */
-.order-payment {
-  display: flex;
+  grid-template-columns: 24px 1fr 200px;
   gap: 0.75rem;
-  flex-wrap: wrap;
-}
-
-.payment-badge {
-  display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
-  padding: 0.4rem 0.75rem;
+
+  background: var(--md-surface);
+  padding: 0.75rem 1rem;
   border-radius: 999px;
-  font-size: 0.75rem;
-  font-weight: 500;
+  box-shadow: var(--shadow-soft);
 }
 
-.payment-badge.cash {
+.search-icon {
+  color: var(--md-text-soft);
+  font-size: 1.2rem;
+}
+
+.search-box input {
+  border: none;
+  outline: none;
+  font-family: inherit;
+  font-size: 0.95rem;
+  background: transparent;
+}
+
+.status-filter {
+  border: none;
   background: var(--md-primary-soft);
   color: var(--md-primary);
-}
-
-.payment-receipt {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.receipt-thumb {
-  width: 44px;
-  height: 44px;
-  object-fit: cover;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--md-outline);
-}
-
-/* =====================================================
-   ACCIONES
-===================================================== */
-.order-actions {
-  display: flex;
-  justify-content: space-between;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-}
-
-.order-status-actions {
-  display: flex;
-  gap: 0.6rem;
-  flex-wrap: wrap;
-}
-
-.btn-outline {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
   padding: 0.55rem 0.9rem;
   border-radius: 999px;
-  border: 1px solid var(--md-primary);
-  background: transparent;
-  color: var(--md-primary);
   font-family: inherit;
   font-size: 0.85rem;
   cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease;
 }
 
-.btn-outline:hover {
-  background: var(--md-primary);
-  color: #fff;
-}
-
-.btn-outline .material-symbols-outlined {
-  font-size: 1.1rem;
-}
-
-/* =====================================================
-   PAGINACIÓN
-===================================================== */
-#pagination-container {
-  display: flex;
-  justify-content: center;
-  margin: 2.5rem 0 1rem;
-}
-
-.pagination {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.5rem 0.75rem;
-  border-radius: 999px;
-  background: var(--md-surface);
-  box-shadow: var(--shadow-soft);
-}
-
-.pagination button {
-  border: none;
-  background: transparent;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  cursor: pointer;
-}
-
-.pagination button:hover:not(:disabled) {
-  background: var(--md-primary-soft);
-}
-
-.pagination button:disabled {
-  opacity: 0.4;
-}
-
-/* =====================================================
+/* =====================
    EMPTY STATE
-===================================================== */
-.empty-state {
+===================== */
+.admin-empty-state {
   text-align: center;
   padding: 3rem 1rem;
   color: var(--md-text-soft);
 }
 
-/* =====================================================
+.admin-empty-state.hidden {
+  display: none;
+}
+
+/* =====================
+   ORDER PREVIEW
+===================== */
+.order-main {
+  position: relative;
+  background: var(--md-surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-soft);
+  padding: 2rem;
+  margin-bottom: 2.5rem;
+}
+
+.order-main.hidden {
+  display: none;
+}
+
+/* BACK BUTTON */
+.back-btn {
+  position: absolute;
+  top: 1.2rem;
+  left: 1.2rem;
+
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: var(--md-surface);
+  box-shadow: var(--shadow-soft);
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  -webkit-tap-highlight-color: transparent;
+}
+
+.back-btn span {
+  font-size: 1.6rem;
+  color: var(--md-primary);
+}
+
+/* =====================
+   ORDER TEXT
+===================== */
+.order-text {
+  display: grid;
+  gap: 1.5rem;
+}
+
+/* HEADER */
+.order-header h2 {
+  margin: 0;
+  font-size: 1.7rem;
+  color: var(--md-primary);
+}
+
+.order-date {
+  font-size: 0.85rem;
+  color: var(--md-text-soft);
+}
+
+.order-total {
+  font-size: 1.3rem;
+  color: var(--md-secondary);
+}
+
+/* CLIENT */
+.order-client h3,
+.order-address h3 {
+  margin: 0 0 0.3rem;
+  font-size: 0.95rem;
+  color: var(--md-text-soft);
+}
+
+.order-client p {
+  margin: 0;
+  font-weight: 500;
+}
+
+.client-meta {
+  display: flex;
+  gap: 1.2rem;
+  font-size: 0.85rem;
+  color: var(--md-text-soft);
+}
+
+.client-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+/* ADDRESS */
+.order-address p {
+  margin: 0.15rem 0;
+  font-size: 0.9rem;
+}
+
+.reference {
+  font-size: 0.85rem;
+  color: var(--md-text-soft);
+}
+
+/* =====================
+   PAYMENT
+===================== */
+.order-payment {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.payment-info {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  background: var(--md-primary-soft);
+  color: var(--md-primary);
+  padding: 0.55rem 0.9rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+}
+
+.payment-receipt {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  background: #f2f2f2;
+  padding: 0.6rem;
+  border-radius: var(--radius-md);
+}
+
+.payment-receipt img {
+  width: 52px;
+  height: 52px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+}
+
+/* =====================
+   ACTIONS
+===================== */
+.order-actions {
+  display: grid;
+  gap: 1rem;
+}
+
+.admin-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  border: none;
+  border-radius: 999px;
+  padding: 0.6rem 1rem;
+
+  font-family: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+
+  background: var(--md-primary-soft);
+  color: var(--md-primary);
+}
+
+.status-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.admin-action-btn.ship {
+  background: var(--md-primary);
+  color: #fff;
+}
+
+.admin-action-btn.deliver {
+  background: var(--md-secondary);
+  color: #fff;
+}
+
+/* =====================
+   CARRUSEL
+===================== */
+.admin-related.hidden {
+  display: none;
+}
+
+.similar-title {
+  margin: 0;
+  font-size: 1.2rem;
+  color: var(--md-primary);
+}
+
+.section-subtitle {
+  margin: 0.2rem 0 1rem;
+  font-size: 0.85rem;
+  color: var(--md-text-soft);
+}
+
+.carousel-container {
+  position: relative;
+}
+
+.similar-list {
+  display: grid;
+  grid-auto-flow: column;
+  gap: 1rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+}
+
+.order-card {
+  min-width: 180px;
+  background: var(--md-surface);
+  border-radius: var(--radius-lg);
+  padding: 1rem;
+  box-shadow: var(--shadow-soft);
+  cursor: pointer;
+}
+
+.o-card-number {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.o-card-total {
+  margin: 0.3rem 0;
+  font-weight: 600;
+  color: var(--md-secondary);
+}
+
+.o-card-status {
+  font-size: 0.75rem;
+  color: var(--md-text-soft);
+}
+
+/* =====================
    RESPONSIVE
-===================================================== */
-@media (max-width: 640px) {
-  .search-filter-bar {
-    grid-template-columns: 1fr;
+===================== */
+@media (max-width: 720px) {
+  .search-box.has-filter {
+    grid-template-columns: 24px 1fr;
   }
 
-  .order-header {
-    flex-direction: column;
+  .status-filter {
+    grid-column: 1 / -1;
   }
 
-  .order-actions {
-    flex-direction: column;
-    align-items: stretch;
+  .order-main {
+    padding: 1.5rem 1.2rem;
   }
 
-  .order-status-actions {
-    justify-content: space-between;
+  .order-header h2 {
+    font-size: 1.4rem;
   }
 }
