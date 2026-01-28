@@ -1,31 +1,27 @@
 /* ============================================================
-   ADMIN — PEDIDOS | CAFÉ CORTERO
+   ADMIN — PEDIDOS | CAFÉ CORTERO (FINAL)
 ============================================================ */
 
-console.log("🛠️ admin_pedidos.js — ADMIN READY");
+console.log("🛠️ admin-pedidos.js — INIT");
 
 /* -----------------------------------------------------------
    SUPABASE
 ----------------------------------------------------------- */
 const sb = window.supabaseClient;
-if (!sb) {
-  console.error("❌ supabaseClient no disponible");
-  throw new Error("Supabase no inicializado");
-}
+if (!sb) throw new Error("❌ Supabase no inicializado");
 
 /* -----------------------------------------------------------
-   CONFIG
+   STATE
 ----------------------------------------------------------- */
-const PER_PAGE = 5;
-
 let orders = [];
 let filtered = [];
-let page = 1;
+let selectedOrder = null;
+
 let currentStatus = "new";
 let search = "";
 
 /* -----------------------------------------------------------
-   STATUS GROUPS (FILTRO)
+   STATUS MAP
 ----------------------------------------------------------- */
 const STATUS_GROUPS = {
   new: ["payment_review", "cash_on_delivery"],
@@ -35,9 +31,6 @@ const STATUS_GROUPS = {
   all: []
 };
 
-/* -----------------------------------------------------------
-   STATUS LABELS (UX)
------------------------------------------------------------ */
 const STATUS_LABELS = {
   payment_review: "Pago en revisión",
   cash_on_delivery: "Pago contra entrega",
@@ -53,20 +46,22 @@ document.addEventListener("DOMContentLoaded", init);
 
 async function init() {
   const user = JSON.parse(localStorage.getItem("cortero_user") || "null");
-
-  if (!user || user.rol !== "admin") {
-    console.warn("⛔ Acceso no autorizado");
-    return;
-  }
+  if (!user || user.rol !== "admin") return;
 
   bindControls();
   await loadOrders();
   applyFilters();
-  render();
+  renderCarousel();
+
+  if (filtered.length) {
+    selectOrder(filtered[0].id);
+  } else {
+    showEmpty();
+  }
 }
 
 /* -----------------------------------------------------------
-   LOAD ORDERS (ADMIN)
+   LOAD ORDERS
 ----------------------------------------------------------- */
 async function loadOrders() {
   const { data, error } = await sb
@@ -79,25 +74,17 @@ async function loadOrders() {
       created_at,
       payment_method,
       receipt_url,
-      users (
-        name,
-        email,
-        phone
-      ),
-      addresses (
-        address,
-        reference
-      )
+      users ( name, email, phone ),
+      addresses ( address, reference )
     `)
     .order("created_at", { ascending: false });
 
   if (error) {
-    console.error("❌ Error cargando pedidos:", error);
+    console.error("❌ Error pedidos:", error);
     return;
   }
 
   orders = data || [];
-  console.log("📦 PEDIDOS ADMIN:", orders);
 }
 
 /* -----------------------------------------------------------
@@ -113,126 +100,123 @@ function applyFilters() {
     if (search) {
       const q = search.toLowerCase();
       const u = o.users || {};
-
-      if (
-        !String(o.order_number).includes(q) &&
-        !u.name?.toLowerCase().includes(q) &&
-        !u.email?.toLowerCase().includes(q) &&
-        !u.phone?.includes(q)
-      ) return false;
+      return (
+        String(o.order_number).includes(q) ||
+        u.name?.toLowerCase().includes(q) ||
+        u.email?.toLowerCase().includes(q) ||
+        u.phone?.includes(q)
+      );
     }
 
     return true;
   });
-
-  page = 1;
 }
 
 /* -----------------------------------------------------------
-   RENDER
+   RENDER — CAROUSEL
 ----------------------------------------------------------- */
-function render() {
-  renderOrders();
-  renderPagination();
-}
+function renderCarousel() {
+  const wrap = document.getElementById("orders-carousel");
+  const tpl = document.getElementById("tpl-order-card");
+  const related = document.querySelector(".admin-related");
 
-/* -----------------------------------------------------------
-   RENDER ORDERS — TARJETA ADMIN
------------------------------------------------------------ */
-function renderOrders() {
-  const list = document.getElementById("pedidos-lista");
-  const tpl = document.getElementById("pedido-template");
-  const empty = document.getElementById("empty-state");
-
-  list.innerHTML = "";
+  wrap.innerHTML = "";
 
   if (!filtered.length) {
-    empty.classList.remove("hidden");
+    related.classList.add("hidden");
     return;
   }
 
-  empty.classList.add("hidden");
+  related.classList.remove("hidden");
 
-  const start = (page - 1) * PER_PAGE;
-  const items = filtered.slice(start, start + PER_PAGE);
-
-  for (const o of items) {
+  for (const o of filtered) {
     const c = tpl.content.cloneNode(true);
+    const card = c.querySelector(".order-card");
 
-    const u = o.users || {};
-    const a = o.addresses || {};
-
-    /* ================= HEADER ================= */
-    c.querySelector(".pedido-numero").textContent =
+    card.dataset.id = o.id;
+    c.querySelector(".o-card-number").textContent =
       `Pedido N.º ${String(o.order_number).padStart(3, "0")}`;
+    c.querySelector(".o-card-total").textContent =
+      `L ${Number(o.total).toFixed(2)}`;
+    c.querySelector(".o-card-status").textContent =
+      STATUS_LABELS[o.status] || o.status;
 
-    c.querySelector(".order-date").textContent =
-      new Date(o.created_at).toLocaleString("es-HN", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit"
-      });
+    card.onclick = () => selectOrder(o.id);
 
-    /* ================= CLIENTE ================= */
-    c.querySelector(".client-name").textContent =
-      u.name || "Cliente";
-
-    c.querySelector(".client-meta").innerHTML = `
-      <span><i class="fa-solid fa-envelope"></i> ${u.email || "-"}</span>
-      <span><i class="fa-solid fa-phone"></i> ${u.phone || "-"}</span>
-    `;
-
-    /* ================= ESTADO ================= */
-    c.querySelector(".status-text").textContent =
-      STATUS_LABELS[o.status] || "Pendiente";
-
-    /* ================= DIRECCIÓN ================= */
-    const addressBlock = c.querySelector(".order-address");
-    if (addressBlock) {
-      addressBlock.innerHTML = `
-        <strong>Entrega</strong>
-        <p>${a.address || "—"}</p>
-        <small>${a.reference || ""}</small>
-      `;
-    }
-
-    /* ================= PAGO ================= */
-    const paymentBlock = c.querySelector(".order-payment");
-    if (paymentBlock) {
-      paymentBlock.textContent =
-        o.payment_method === "cash_on_delivery"
-          ? "Pago contra entrega"
-          : "Pago en línea";
-    }
-
-    /* ================= TOTAL ================= */
-    c.querySelector(".order-summary").innerHTML = `
-      <strong>Total: L ${Number(o.total).toFixed(2)}</strong>
-    `;
-
-    /* ================= ACCIONES ================= */
-    const btnShipped   = c.querySelector(".btn-shipped");
-    const btnDelivered = c.querySelector(".btn-delivered");
-    const btnView      = c.querySelector(".btn-view");
-
-    if (btnShipped) {
-      btnShipped.onclick = () => updateStatus(o.id, "shipped");
-    }
-
-    if (btnDelivered) {
-      btnDelivered.onclick = () => updateStatus(o.id, "delivered");
-    }
-
-    if (btnView) {
-      btnView.onclick = () => {
-        location.href = `recibo.html?id=${o.id}`;
-      };
-    }
-
-    list.appendChild(c);
+    wrap.appendChild(c);
   }
+}
+
+/* -----------------------------------------------------------
+   SELECT ORDER → PREVIEW
+----------------------------------------------------------- */
+function selectOrder(orderId) {
+  selectedOrder = orders.find(o => o.id === orderId);
+  if (!selectedOrder) return;
+
+  renderPreview(selectedOrder);
+
+  // 👉 scroll suave arriba (UX clave)
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+}
+
+/* -----------------------------------------------------------
+   RENDER PREVIEW
+----------------------------------------------------------- */
+function renderPreview(o) {
+  const preview = document.getElementById("admin-order-preview");
+  const empty = document.getElementById("admin-empty-state");
+
+  empty.classList.add("hidden");
+  preview.classList.remove("hidden");
+
+  const u = o.users || {};
+  const a = o.addresses || {};
+
+  document.getElementById("o-number").textContent =
+    `Pedido N.º ${String(o.order_number).padStart(3, "0")}`;
+
+  document.getElementById("o-date").textContent =
+    new Date(o.created_at).toLocaleString("es-HN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+
+  document.getElementById("o-total").textContent =
+    `L ${Number(o.total).toFixed(2)}`;
+
+  document.getElementById("o-client-name").textContent = u.name || "—";
+  document.getElementById("o-email").textContent = u.email || "—";
+  document.getElementById("o-phone").textContent = u.phone || "—";
+
+  document.getElementById("o-address").textContent = a.address || "—";
+  document.getElementById("o-reference").textContent = a.reference || "—";
+
+  // Pago
+  const cash = document.getElementById("cash-payment");
+  const receipt = document.getElementById("receipt-payment");
+  cash.classList.add("hidden");
+  receipt.classList.add("hidden");
+
+  if (o.payment_method === "cash_on_delivery") {
+    cash.classList.remove("hidden");
+  } else if (o.receipt_url) {
+    receipt.classList.remove("hidden");
+    document.getElementById("receipt-img").src = o.receipt_url;
+  }
+
+  // Acciones
+  document.getElementById("btnShip").onclick =
+    () => updateStatus(o.id, "shipped");
+
+  document.getElementById("btnDeliver").onclick =
+    () => updateStatus(o.id, "delivered");
 }
 
 /* -----------------------------------------------------------
@@ -245,13 +229,19 @@ async function updateStatus(orderId, status) {
     .eq("id", orderId);
 
   if (error) {
-    console.error("❌ Error actualizando estado:", error);
+    console.error("❌ Error update:", error);
     return;
   }
 
   await loadOrders();
   applyFilters();
-  render();
+  renderCarousel();
+
+  if (filtered.length) {
+    selectOrder(filtered[0].id);
+  } else {
+    showEmpty();
+  }
 }
 
 /* -----------------------------------------------------------
@@ -261,43 +251,30 @@ function bindControls() {
   document.getElementById("status-filter").onchange = e => {
     currentStatus = e.target.value;
     applyFilters();
-    render();
+    renderCarousel();
+
+    if (filtered.length) selectOrder(filtered[0].id);
+    else showEmpty();
   };
 
-  document.getElementById("admin-orders-search").oninput = e => {
+  document.getElementById("search-orders").oninput = e => {
     search = e.target.value.trim();
     applyFilters();
-    render();
+    renderCarousel();
+
+    if (filtered.length) selectOrder(filtered[0].id);
+    else showEmpty();
+  };
+
+  document.getElementById("btnBackOrders").onclick = () => {
+    document.getElementById("admin-order-preview").classList.add("hidden");
   };
 }
 
 /* -----------------------------------------------------------
-   PAGINATION
+   EMPTY
 ----------------------------------------------------------- */
-function renderPagination() {
-  const el = document.getElementById("pagination-container");
-  const total = Math.ceil(filtered.length / PER_PAGE);
-
-  if (total <= 1) {
-    el.innerHTML = "";
-    return;
-  }
-
-  el.innerHTML = `
-    <div class="pagination">
-      <button ${page === 1 ? "disabled" : ""} id="prev">◀</button>
-      <span>${page} / ${total}</span>
-      <button ${page === total ? "disabled" : ""} id="next">▶</button>
-    </div>
-  `;
-
-  el.querySelector("#prev").onclick = () => {
-    page--;
-    render();
-  };
-
-  el.querySelector("#next").onclick = () => {
-    page++;
-    render();
-  };
+function showEmpty() {
+  document.getElementById("admin-order-preview").classList.add("hidden");
+  document.getElementById("admin-empty-state").classList.remove("hidden");
 }
