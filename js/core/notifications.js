@@ -1,5 +1,5 @@
 // =====================================================
-// NOTIFICATIONS — CORE FINAL DEFINITIVO (PASIVO)
+// NOTIFICATIONS — CORE FINAL DEFINITIVO (PASIVO / PROD)
 // =====================================================
 
 import { registerPushToken } from "./push.js";
@@ -7,27 +7,25 @@ import { registerPushToken } from "./push.js";
 let initialized = false;
 let ordersChannel = null;
 let notificationChannel = null;
-let retryTimer = null;
 let retryCount = 0;
 const MAX_RETRIES = 10;
 
 console.log("🔔 notifications.js cargado (pasivo)");
 
 /* =====================================================
-   HELPERS — SUPABASE
+   HELPERS — SUPABASE (ROBUSTO)
 ===================================================== */
 function getSupabase() {
-  return window.supabase || null;
+  return window.supabaseClient || window.supabase || null;
 }
 
 /* =====================================================
-   CACHE UI (FUENTE ÚNICA)
+   CACHE UI — FUENTE ÚNICA
 ===================================================== */
 function getUserCache() {
   try {
     const raw = localStorage.getItem("cortero_user");
-    if (!raw) return null;
-    return JSON.parse(raw);
+    return raw ? JSON.parse(raw) : null;
   } catch {
     return null;
   }
@@ -112,17 +110,13 @@ async function syncMyOrdersCount(sb, userId) {
    NOTIFICACIONES UI
 ===================================================== */
 async function syncNotificationsUI(sb, authUser, role) {
-  let query = sb
+  const { data } = await sb
     .from("notifications")
     .select("*")
     .eq("is_read", false)
-    .order("created_at", { ascending: false });
-
-  if (role !== "admin") {
-    query = query.eq("user_id", authUser.id);
-  }
-
-  const { data } = await query;
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .then(res => res);
 
   if (!data?.length) {
     hideAllNotificationUI();
@@ -133,7 +127,7 @@ async function syncNotificationsUI(sb, authUser, role) {
   setGlobalBadge(true);
 
   showNotificationUI({
-    title: data[0].title || "Nuevo pedido",
+    title: data[0].title || "Nueva notificación",
     message:
       role === "admin"
         ? "Tienes pedidos pendientes de revisión."
@@ -147,64 +141,58 @@ async function syncNotificationsUI(sb, authUser, role) {
    SINCRONIZACIÓN TOTAL
 ===================================================== */
 async function syncAll(sb, authUser, role) {
-  if (role === "admin") {
-    await syncAdminOrdersCount(sb);
-    setMyCount(0);
-  } else {
-    await syncMyOrdersCount(sb, authUser.id);
-    setAdminCount(0);
-  }
+  try {
+    if (role === "admin") {
+      await syncAdminOrdersCount(sb);
+      setMyCount(0);
+    } else {
+      await syncMyOrdersCount(sb, authUser.id);
+      setAdminCount(0);
+    }
 
-  await syncNotificationsUI(sb, authUser, role);
+    await syncNotificationsUI(sb, authUser, role);
+  } catch (err) {
+    console.warn("⚠️ syncAll falló:", err);
+  }
 }
 
 /* =====================================================
-   REALTIME (ESTABLE)
+   REALTIME (SEGURO)
 ===================================================== */
 async function initRealtime(sb, authUser, role) {
   if (ordersChannel || notificationChannel) return;
 
   ordersChannel = sb
-    .channel(`orders-${authUser.id}`)
+    .channel("orders-global")
     .on(
       "postgres_changes",
-      {
-        event: "*",
-        schema: "public",
-        table: "orders",
-        ...(role !== "admin"
-          ? { filter: `user_id=eq.${authUser.id}` }
-          : {})
-      },
+      { event: "*", schema: "public", table: "orders" },
       () => syncAll(sb, authUser, role)
     )
     .subscribe();
 
   notificationChannel = sb
-    .channel(`notifications-${authUser.id}`)
+    .channel("notifications-global")
     .on(
       "postgres_changes",
-      {
-        event: "*",
-        schema: "public",
-        table: "notifications",
-        ...(role !== "admin"
-          ? { filter: `user_id=eq.${authUser.id}` }
-          : {})
-      },
+      { event: "*", schema: "public", table: "notifications" },
       () => syncNotificationsUI(sb, authUser, role)
     )
     .subscribe();
 }
 
 /* =====================================================
-   PUSH (UNA SOLA VEZ)
+   PUSH (IDEMPOTENTE)
 ===================================================== */
 async function initPush(authUser) {
   if (localStorage.getItem("push_registered") === "1") return;
 
-  await registerPushToken(authUser.id);
-  localStorage.setItem("push_registered", "1");
+  try {
+    await registerPushToken(authUser.id);
+    localStorage.setItem("push_registered", "1");
+  } catch (err) {
+    console.warn("⚠️ Push init falló:", err);
+  }
 }
 
 /* =====================================================
@@ -219,28 +207,18 @@ function timeAgo(date) {
 }
 
 /* =====================================================
-   🔔 API PÚBLICA (ÚNICA Y CORRECTA)
+   🔔 API PÚBLICA FINAL
 ===================================================== */
 export async function initNotifications() {
-  if (initialized) {
-    console.warn("🔁 notifications.js ya inicializado, se omite");
-    return;
-  }
+  if (initialized) return;
 
   const sb = getSupabase();
   const cache = getUserCache();
 
   if (!sb || !cache?.id || !cache?.rol) {
-    if (retryCount >= MAX_RETRIES) {
-      console.error("❌ Notificaciones: estado inválido permanente", {
-        supabase: !!sb,
-        cache
-      });
-      return;
+    if (++retryCount <= MAX_RETRIES) {
+      setTimeout(initNotifications, 300);
     }
-
-    retryCount++;
-    retryTimer = setTimeout(initNotifications, 300);
     return;
   }
 
@@ -249,10 +227,7 @@ export async function initNotifications() {
   const authUser = { id: cache.id };
   const role = cache.rol;
 
-  console.log("🔔 notifications.js → INIT OK", {
-    user: authUser.id,
-    role
-  });
+  console.log("🔔 notifications INIT OK", { user: authUser.id, role });
 
   await syncAll(sb, authUser, role);
   await initRealtime(sb, authUser, role);
