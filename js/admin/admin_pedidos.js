@@ -1,5 +1,5 @@
 /* ============================================================
-   ADMIN — PEDIDOS | CAFÉ CORTERO (FINAL REAL)
+   ADMIN — PEDIDOS | CAFÉ CORTERO (FINAL ESTABLE)
 ============================================================ */
 
 console.log("🛠️ admin-pedidos.js — INIT");
@@ -17,11 +17,11 @@ let orders = [];
 let filtered = [];
 let selectedOrder = null;
 
-let currentStatus = "new";
+let currentStatus = "all"; // 👈 CLAVE
 let search = "";
 
 /* -----------------------------------------------------------
-   STATUS MAP (REAL)
+   STATUS MAP (REAL DB)
 ----------------------------------------------------------- */
 const STATUS_GROUPS = {
   new: ["pending"],
@@ -45,15 +45,20 @@ document.addEventListener("DOMContentLoaded", init);
 
 async function init() {
   const user = JSON.parse(localStorage.getItem("cortero_user") || "null");
-  if (!user || user.rol !== "admin") return;
+  if (!user || user.rol !== "admin") {
+    console.warn("⛔ Acceso no autorizado");
+    return;
+  }
 
   bindControls();
   await loadOrders();
+
+  console.log("📦 Pedidos cargados:", orders.length);
+
   applyFilters();
   renderCarousel();
 
-  if (filtered.length) selectOrder(filtered[0].id);
-  else showEmpty();
+  filtered.length ? selectOrder(filtered[0].id) : showEmpty();
 }
 
 /* -----------------------------------------------------------
@@ -75,8 +80,6 @@ async function loadOrders() {
         phone
       ),
       addresses (
-        full_name,
-        phone,
         country,
         state,
         city,
@@ -91,7 +94,8 @@ async function loadOrders() {
     .order("created_at", { ascending: false });
 
   if (error) {
-    console.error("❌ Error pedidos:", error);
+    console.error("❌ Error cargando pedidos:", error);
+    orders = [];
     return;
   }
 
@@ -108,20 +112,20 @@ function applyFilters() {
       !STATUS_GROUPS[currentStatus].includes(o.status)
     ) return false;
 
-    if (search) {
-      const q = search.toLowerCase();
-      const u = o.users || {};
+    if (!search) return true;
 
-      return (
-        String(o.order_number).includes(q) ||
-        u.name?.toLowerCase().includes(q) ||
-        u.email?.toLowerCase().includes(q) ||
-        u.phone?.includes(q)
-      );
-    }
+    const q = search.toLowerCase();
+    const u = o.users || {};
 
-    return true;
+    return (
+      String(o.order_number).includes(q) ||
+      u.name?.toLowerCase().includes(q) ||
+      u.email?.toLowerCase().includes(q) ||
+      u.phone?.includes(q)
+    );
   });
+
+  console.log("🔎 Filtrados:", filtered.length);
 }
 
 /* -----------------------------------------------------------
@@ -171,10 +175,7 @@ function selectOrder(orderId) {
 
   renderPreview(selectedOrder);
 
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
-  });
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 /* -----------------------------------------------------------
@@ -211,7 +212,7 @@ function renderPreview(o) {
   document.getElementById("o-phone").textContent = u.phone || "—";
 
   document.getElementById("o-address").textContent =
-    `${a.street || ""}, ${a.city || ""}, ${a.state || ""}`;
+    [a.street, a.city, a.state].filter(Boolean).join(", ") || "—";
 
   document.getElementById("o-reference").textContent =
     a.postal_code || "—";
@@ -250,7 +251,7 @@ async function updateStatus(orderId, status) {
     .eq("id", orderId);
 
   if (error) {
-    console.error("❌ Error update:", error);
+    console.error("❌ Error actualizando estado:", error);
     return;
   }
 
@@ -258,8 +259,7 @@ async function updateStatus(orderId, status) {
   applyFilters();
   renderCarousel();
 
-  if (filtered.length) selectOrder(filtered[0].id);
-  else showEmpty();
+  filtered.length ? selectOrder(filtered[0].id) : showEmpty();
 }
 
 /* -----------------------------------------------------------
@@ -286,7 +286,7 @@ function bindControls() {
 }
 
 /* -----------------------------------------------------------
-   EMPTY
+   EMPTY STATE
 ----------------------------------------------------------- */
 function showEmpty() {
   document.getElementById("admin-order-preview").classList.add("hidden");
