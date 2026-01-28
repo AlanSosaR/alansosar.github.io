@@ -30,12 +30,10 @@ if (!window.__HEADER_CORE_LOADED__) {
     });
   }
 
-  // 👉 expuesto para notifications.js
   window.toggleGlobalNotificationDot = toggleGlobalNotificationDot;
 
   /* =====================================================
      📦 BADGES — PEDIDOS (ADMIN / CLIENTE)
-     ⚠️ SOLO UI — NO QUERIES AQUÍ
   ===================================================== */
   function setAdminOrdersCount(count) {
     const badge = $("admin-orders-count");
@@ -53,12 +51,11 @@ if (!window.__HEADER_CORE_LOADED__) {
     badge.classList.toggle("hidden", count === 0);
   }
 
-  // 👉 expuestos para orders.js / notifications.js
   window.setAdminOrdersCount = setAdminOrdersCount;
   window.setMyOrdersCount = setMyOrdersCount;
 
   /* =====================================================
-     🛒 CARRITO — CONTADOR
+     🛒 CARRITO
   ===================================================== */
   function updateCartCount() {
     const badge = $("cart-count");
@@ -86,14 +83,19 @@ if (!window.__HEADER_CORE_LOADED__) {
   }
 
   /* =====================================================
-     PERFIL + ROLES
+     PERFIL + ROLES + NOTIFICACIÓN CONTEXTUAL
   ===================================================== */
   function syncUserUI() {
     const user = getUserCache();
     const header = document.querySelector(".header-fixed");
     const drawer = $("user-drawer");
+    const notif  = $("drawer-notification");
+
     if (!header || !drawer) return;
 
+    // -----------------------------
+    // USUARIO NO LOGUEADO
+    // -----------------------------
     if (!user) {
       header.classList.add("no-user");
       header.classList.remove("logged");
@@ -107,9 +109,14 @@ if (!window.__HEADER_CORE_LOADED__) {
       toggleGlobalNotificationDot(false);
       setAdminOrdersCount(0);
       setMyOrdersCount(0);
+
+      if (notif) notif.classList.add("hidden");
       return;
     }
 
+    // -----------------------------
+    // USUARIO LOGUEADO
+    // -----------------------------
     header.classList.add("logged");
     header.classList.remove("no-user");
     drawer.classList.add("logged");
@@ -119,95 +126,104 @@ if (!window.__HEADER_CORE_LOADED__) {
       ($("avatar-user").src = user.photo_url || "/imagenes/avatar-default.svg");
     $("avatar-user-drawer") &&
       ($("avatar-user-drawer").src = user.photo_url || "/imagenes/avatar-default.svg");
+
     $("drawer-name") && ($("drawer-name").textContent = user.name || "Usuario");
     $("drawer-email") && ($("drawer-email").textContent = user.email || "");
 
     const isAdmin = user.rol === "admin";
+
     document.querySelectorAll(".admin-only").forEach(el =>
       el.classList.toggle("hidden", !isAdmin)
     );
     document.querySelectorAll(".client-only").forEach(el =>
       el.classList.toggle("hidden", isAdmin)
     );
+
+    // -----------------------------
+    // 🔔 NOTIFICACIÓN CONTEXTUAL
+    // -----------------------------
+    if (notif) {
+      notif.href = isAdmin
+        ? "/pages/admin/admin-pedidos.html"
+        : "/mis-pedidos.html";
+
+      notif.onclick = () => {
+        document.dispatchEvent(
+          new CustomEvent("notification:opened", {
+            detail: { role: user.rol }
+          })
+        );
+      };
+    }
   }
 
-/* =====================================================
-   DRAWER — CONTROL SEGURO (SIN LÓGICA DE DATOS)
-===================================================== */
-function openDrawer() {
-  const drawer = $("user-drawer");
-  const scrim  = $("user-scrim");
+  /* =====================================================
+     DRAWER
+  ===================================================== */
+  function openDrawer() {
+    const drawer = $("user-drawer");
+    const scrim  = $("user-scrim");
+    if (!drawer || !scrim) return;
 
-  if (!drawer || !scrim) return;
+    if (drawer.classList.contains("open")) return;
+    drawer.classList.add("open");
+    scrim.classList.add("open");
+    document.body.style.overflow = "hidden";
+  }
 
-  // Evitar doble apertura
-  if (drawer.classList.contains("open")) return;
+  function closeDrawer() {
+    const drawer = $("user-drawer");
+    const scrim  = $("user-scrim");
+    if (!drawer || !scrim) return;
 
-  drawer.classList.add("open");
-  scrim.classList.add("open");
-  document.body.style.overflow = "hidden";
-}
+    drawer.classList.remove("open");
+    scrim.classList.remove("open");
+    document.body.style.overflow = "";
+  }
 
-function closeDrawer() {
-  const drawer = $("user-drawer");
-  const scrim  = $("user-scrim");
-
-  if (!drawer || !scrim) return;
-
-  if (!drawer.classList.contains("open")) return;
-
-  drawer.classList.remove("open");
-  scrim.classList.remove("open");
-  document.body.style.overflow = "";
-}
-
-function toggleDrawer() {
-  const drawer = $("user-drawer");
-  if (!drawer) return;
-
-  drawer.classList.contains("open")
-    ? closeDrawer()
-    : openDrawer();
-}
+  function toggleDrawer() {
+    const drawer = $("user-drawer");
+    if (!drawer) return;
+    drawer.classList.contains("open") ? closeDrawer() : openDrawer();
+  }
 
   /* =====================================================
      INIT HEADER
   ===================================================== */
-let HEADER_INITIALIZED = false;
+  let HEADER_INITIALIZED = false;
 
-function initHeader() {
-  if (HEADER_INITIALIZED) return;
-  HEADER_INITIALIZED = true;
+  function initHeader() {
+    if (HEADER_INITIALIZED) return;
+    HEADER_INITIALIZED = true;
 
-  $("menu-toggle")?.addEventListener("click", toggleDrawer);
-  $("btn-header-user")?.addEventListener("click", e => {
-    e.stopPropagation();
-    toggleDrawer();
-  });
-  $("user-scrim")?.addEventListener("click", closeDrawer);
+    $("menu-toggle")?.addEventListener("click", toggleDrawer);
+    $("btn-header-user")?.addEventListener("click", e => {
+      e.stopPropagation();
+      toggleDrawer();
+    });
+    $("user-scrim")?.addEventListener("click", closeDrawer);
 
-  $("cart-btn")?.addEventListener("click", () => {
-    location.href = "carrito.html";
-  });
+    $("cart-btn")?.addEventListener("click", () => {
+      location.href = "carrito.html";
+    });
 
-  $("logout-btn")?.addEventListener("click", async () => {
-    if (window.supabaseAuth?.logoutUser) {
-      await window.supabaseAuth.logoutUser();
-    }
-    closeDrawer();
-  });
+    $("logout-btn")?.addEventListener("click", async () => {
+      if (window.supabaseAuth?.logoutUser) {
+        await window.supabaseAuth.logoutUser();
+      }
+      closeDrawer();
+    });
 
-  syncUserUI();
-  updateCartCount();
-  updateHeaderCartTitle();
+    syncUserUI();
+    updateCartCount();
+    updateHeaderCartTitle();
 
-  // 🔥 FORZAR CARGA DEL CONTADOR "MIS PEDIDOS"
-  requestAnimationFrame(() => {
-    if (typeof window.syncNotificationsAll === "function") {
-      window.syncNotificationsAll();
-    }
-  });
-}
+    requestAnimationFrame(() => {
+      if (typeof window.syncNotificationsAll === "function") {
+        window.syncNotificationsAll();
+      }
+    });
+  }
 
   /* =====================================================
      EVENTOS GLOBALES
@@ -224,8 +240,6 @@ function initHeader() {
       syncUserUI();
       updateCartCount();
       updateHeaderCartTitle();
-
-      // 🔔 inicializar sistema de notificaciones / pedidos
       document.dispatchEvent(new Event("initNotifications"));
     });
 
@@ -236,7 +250,6 @@ function initHeader() {
       toggleGlobalNotificationDot(false);
       setAdminOrdersCount(0);
       setMyOrdersCount(0);
-
       document.dispatchEvent(new Event("destroyNotifications"));
     });
   }
@@ -245,7 +258,7 @@ function initHeader() {
 }
 
 /* =====================================================
-   COMPATIBILIDAD LEGACY
+   LEGACY
 ===================================================== */
 window.syncHeaderCounter = function () {
   window.dispatchEvent(new Event("cartUpdated"));
