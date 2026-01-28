@@ -1,63 +1,35 @@
 /* ============================================================
-   ADMIN — Pedidos | Café Cortero
-   SOLO ADMIN
+   ADMIN — PEDIDOS | CAFÉ CORTERO
 ============================================================ */
 
-console.log("🛠️ admin_pedidos.js — PANEL ADMIN");
+console.log("🛠️ admin-pedidos.js — INIT");
 
-/* -----------------------------------------------------------
-   HELPERS
------------------------------------------------------------ */
-function getSupabaseClient() {
-  return window.supabaseClient || window.supabase || null;
+const sb = window.supabase;
+if (!sb) {
+  console.error("❌ Supabase no inicializado");
+  return;
 }
 
-function getUserCache() {
-  try {
-    return JSON.parse(localStorage.getItem("cortero_user"));
-  } catch {
-    return null;
-  }
-}
-
-/* -----------------------------------------------------------
-   CONFIG
------------------------------------------------------------ */
 const PER_PAGE = 5;
 
-let allOrders = [];
-let filteredOrders = [];
-let currentPage = 1;
-let currentStatus = "all";
-let searchTerm = "";
+let orders = [];
+let filtered = [];
+let page = 1;
+let status = "new";
+let search = "";
 
-/* -----------------------------------------------------------
-   STATUS GROUPS
------------------------------------------------------------ */
-const STATUS_GROUPS = {
-  new: ["payment_review", "cash_on_delivery"],
-  processing: ["processing"],
-  shipped: ["shipped"],
-  delivered: ["delivered"],
-  all: []
-};
-
-/* -----------------------------------------------------------
+/* ============================================================
    INIT
------------------------------------------------------------ */
-document.addEventListener("DOMContentLoaded", () => {
-  waitForSupabase(init);
-});
-
-function waitForSupabase(cb, retries = 20) {
-  if (getSupabaseClient()) return cb();
-  if (retries <= 0) return console.error("❌ Supabase no disponible");
-  setTimeout(() => waitForSupabase(cb, retries - 1), 200);
-}
+============================================================ */
+document.addEventListener("DOMContentLoaded", init);
 
 async function init() {
-  const user = getUserCache();
-  if (!user || user.rol !== "admin") return;
+  const user = JSON.parse(localStorage.getItem("cortero_user") || "null");
+
+  if (!user || user.rol !== "admin") {
+    console.warn("⛔ Acceso no autorizado");
+    return;
+  }
 
   bindControls();
   await loadOrders();
@@ -65,13 +37,10 @@ async function init() {
   render();
 }
 
-/* -----------------------------------------------------------
-   LOAD ORDERS
------------------------------------------------------------ */
+/* ============================================================
+   LOAD ORDERS — TABLA REAL `orders`
+============================================================ */
 async function loadOrders() {
-  const sb = getSupabaseClient();
-  if (!sb) return;
-
   const { data, error } = await sb
     .from("orders")
     .select(`
@@ -93,21 +62,29 @@ async function loadOrders() {
     return;
   }
 
-  console.log("📦 PEDIDOS ADMIN:", data);
-  allOrders = data || [];
+  console.log("📦 PEDIDOS:", data);
+  orders = data || [];
 }
 
-/* -----------------------------------------------------------
+/* ============================================================
    FILTERS
------------------------------------------------------------ */
+============================================================ */
+const STATUS_GROUPS = {
+  new: ["payment_review", "cash_on_delivery"],
+  processing: ["processing"],
+  shipped: ["shipped"],
+  delivered: ["delivered"],
+  all: []
+};
+
 function applyFilters() {
-  filteredOrders = allOrders.filter(o => {
-    if (currentStatus !== "all") {
-      if (!STATUS_GROUPS[currentStatus]?.includes(o.status)) return false;
+  filtered = orders.filter(o => {
+    if (status !== "all" && !STATUS_GROUPS[status].includes(o.status)) {
+      return false;
     }
 
-    if (searchTerm) {
-      const q = searchTerm.toLowerCase();
+    if (search) {
+      const q = search.toLowerCase();
       const u = o.users || {};
       if (
         !String(o.order_number).includes(q) &&
@@ -120,31 +97,17 @@ function applyFilters() {
     return true;
   });
 
-  currentPage = 1;
+  page = 1;
 }
 
-/* -----------------------------------------------------------
-   PAGINATION
------------------------------------------------------------ */
-function paginate() {
-  const start = (currentPage - 1) * PER_PAGE;
-  return {
-    items: filteredOrders.slice(start, start + PER_PAGE),
-    totalPages: Math.ceil(filteredOrders.length / PER_PAGE)
-  };
-}
-
-/* -----------------------------------------------------------
+/* ============================================================
    RENDER
------------------------------------------------------------ */
+============================================================ */
 function render() {
   renderOrders();
   renderPagination();
 }
 
-/* -----------------------------------------------------------
-   RENDER ORDERS — ADMIN CARD
------------------------------------------------------------ */
 function renderOrders() {
   const list = document.getElementById("pedidos-lista");
   const tpl = document.getElementById("pedido-template");
@@ -152,20 +115,20 @@ function renderOrders() {
 
   list.innerHTML = "";
 
-  if (!filteredOrders.length) {
+  if (!filtered.length) {
     empty.classList.remove("hidden");
     return;
   }
 
   empty.classList.add("hidden");
 
-  const { items } = paginate();
+  const start = (page - 1) * PER_PAGE;
+  const items = filtered.slice(start, start + PER_PAGE);
 
   for (const o of items) {
     const c = tpl.content.cloneNode(true);
     const u = o.users || {};
 
-    // Header
     c.querySelector(".pedido-numero").textContent =
       `Pedido N.º ${String(o.order_number).padStart(3, "0")}`;
 
@@ -178,60 +141,54 @@ function renderOrders() {
         minute: "2-digit"
       });
 
-    // Cliente
     c.querySelector(".client-name").textContent = u.name || "Cliente";
     c.querySelector(".client-meta").innerHTML = `
       <span><i class="fa-solid fa-envelope"></i> ${u.email || "-"}</span>
       <span><i class="fa-solid fa-phone"></i> ${u.phone || "-"}</span>
     `;
 
-    // Estado
     c.querySelector(".status-text").textContent = o.status;
-
-    // Resumen
-    c.querySelector(".order-summary").innerHTML = `
-      <span>—</span>
-      <strong>Total: L ${Number(o.total).toFixed(2)}</strong>
-    `;
+    c.querySelector(".order-summary").innerHTML =
+      `<strong>Total: L ${Number(o.total).toFixed(2)}</strong>`;
 
     list.appendChild(c);
   }
 }
 
-/* -----------------------------------------------------------
-   CONTROLES
------------------------------------------------------------ */
+/* ============================================================
+   CONTROLS
+============================================================ */
 function bindControls() {
-  document.getElementById("status-filter")?.addEventListener("change", e => {
-    currentStatus = e.target.value;
+  document.getElementById("status-filter").onchange = e => {
+    status = e.target.value;
     applyFilters();
     render();
-  });
+  };
 
-  document.getElementById("admin-orders-search")?.addEventListener("input", e => {
-    searchTerm = e.target.value.trim();
+  document.getElementById("admin-orders-search").oninput = e => {
+    search = e.target.value.trim();
     applyFilters();
     render();
-  });
+  };
 }
 
-/* -----------------------------------------------------------
-   PAGINATION UI
------------------------------------------------------------ */
+/* ============================================================
+   PAGINATION
+============================================================ */
 function renderPagination() {
   const el = document.getElementById("pagination-container");
-  const { totalPages } = paginate();
+  const total = Math.ceil(filtered.length / PER_PAGE);
 
-  if (totalPages <= 1) return (el.innerHTML = "");
+  if (total <= 1) return (el.innerHTML = "");
 
   el.innerHTML = `
     <div class="pagination">
-      <button ${currentPage === 1 ? "disabled" : ""} id="prev">◀</button>
-      <span>${currentPage} / ${totalPages}</span>
-      <button ${currentPage === totalPages ? "disabled" : ""} id="next">▶</button>
+      <button ${page === 1 ? "disabled" : ""} id="prev">◀</button>
+      <span>${page} / ${total}</span>
+      <button ${page === total ? "disabled" : ""} id="next">▶</button>
     </div>
   `;
 
-  el.querySelector("#prev").onclick = () => { currentPage--; render(); };
-  el.querySelector("#next").onclick = () => { currentPage++; render(); };
+  el.querySelector("#prev").onclick = () => { page--; render(); };
+  el.querySelector("#next").onclick = () => { page++; render(); };
 }
