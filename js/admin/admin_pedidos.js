@@ -32,7 +32,7 @@ let currentStatus = "all";
 let searchTerm = "";
 
 /* -----------------------------------------------------------
-   STATUS GROUPS (UNIFICADOS)
+   STATUS GROUPS
 ----------------------------------------------------------- */
 const STATUS_GROUPS = {
   new: ["payment_review", "cash_on_delivery"],
@@ -43,9 +43,20 @@ const STATUS_GROUPS = {
 };
 
 /* -----------------------------------------------------------
-   INIT (AUTO)
+   INIT (ESPERA SUPABASE)
 ----------------------------------------------------------- */
-document.addEventListener("DOMContentLoaded", init);
+document.addEventListener("DOMContentLoaded", () => {
+  waitForSupabase(init);
+});
+
+function waitForSupabase(cb, retries = 20) {
+  if (getSupabaseClient()) return cb();
+  if (retries <= 0) {
+    console.error("❌ Supabase no disponible");
+    return;
+  }
+  setTimeout(() => waitForSupabase(cb, retries - 1), 200);
+}
 
 async function init() {
   const user = getUserCache();
@@ -61,7 +72,7 @@ async function init() {
 }
 
 /* -----------------------------------------------------------
-   LOAD ORDERS (ADMIN VE TODOS)
+   LOAD ORDERS — ADMIN (JOIN CORRECTO)
 ----------------------------------------------------------- */
 async function loadOrders() {
   const sb = getSupabaseClient();
@@ -75,7 +86,7 @@ async function loadOrders() {
       total,
       status,
       created_at,
-      users (
+      users:users!orders_user_id_fkey (
         name,
         email,
         phone
@@ -84,9 +95,11 @@ async function loadOrders() {
     .order("created_at", { ascending: false });
 
   if (error) {
-    console.error("❌ Error cargando pedidos:", error);
+    console.error("❌ Error cargando pedidos admin:", error);
     return;
   }
+
+  console.log("📦 PEDIDOS ADMIN:", data);
 
   allOrders = data || [];
 }
@@ -96,22 +109,20 @@ async function loadOrders() {
 ----------------------------------------------------------- */
 function applyFilters() {
   filteredOrders = allOrders.filter(order => {
-    // STATUS
     if (currentStatus !== "all") {
       const allowed = STATUS_GROUPS[currentStatus] || [];
       if (!allowed.includes(order.status)) return false;
     }
 
-    // SEARCH
     if (searchTerm) {
       const q = searchTerm.toLowerCase();
-      const user = order.users || {};
+      const u = order.users || {};
 
       const match =
         String(order.order_number).includes(q) ||
-        user.name?.toLowerCase().includes(q) ||
-        user.email?.toLowerCase().includes(q) ||
-        user.phone?.includes(q);
+        u.name?.toLowerCase().includes(q) ||
+        u.email?.toLowerCase().includes(q) ||
+        u.phone?.includes(q);
 
       if (!match) return false;
     }
@@ -155,7 +166,7 @@ function renderOrders() {
 
   lista.innerHTML = "";
 
-  if (filteredOrders.length === 0) {
+  if (!filteredOrders.length) {
     emptyState?.classList.remove("hidden");
     return;
   }
@@ -166,7 +177,7 @@ function renderOrders() {
 
   for (const pedido of items) {
     const clone = template.content.cloneNode(true);
-    const user = pedido.users || {};
+    const u = pedido.users || {};
 
     clone.querySelector(".pedido-numero").textContent =
       `Pedido N.º ${String(pedido.order_number).padStart(3, "0")}`;
@@ -184,8 +195,8 @@ function renderOrders() {
       `L ${Number(pedido.total).toFixed(2)}`;
 
     clone.querySelector(".pedido-items").innerHTML = `
-      <span class="pedido-label">${user.name || "Cliente"}</span>
-      <span class="pedido-count">${user.phone || ""}</span>
+      <span class="pedido-label">${u.name || "Cliente"}</span>
+      <span class="pedido-count">${u.phone || ""}</span>
     `;
 
     clone.querySelector(".estado-text").textContent = pedido.status;
@@ -211,7 +222,11 @@ function renderAdminToolbar() {
         <option value="delivered">Entregados</option>
       </select>
 
-      <input id="order-search" type="search" placeholder="Buscar pedido o cliente" />
+      <input
+        id="order-search"
+        type="search"
+        placeholder="Buscar pedido, cliente o teléfono"
+      />
     </div>
   `;
 
