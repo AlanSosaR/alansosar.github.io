@@ -10,6 +10,7 @@ console.log("🛠️ admin_pedidos.js — ADMIN READY");
 const sb = window.supabaseClient;
 if (!sb) {
   console.error("❌ supabaseClient no disponible");
+  throw new Error("Supabase no inicializado");
 }
 
 /* -----------------------------------------------------------
@@ -76,12 +77,16 @@ async function loadOrders() {
       total,
       status,
       created_at,
-      address,
-      address_reference,
+      payment_method,
+      receipt_url,
       users (
         name,
         email,
         phone
+      ),
+      addresses (
+        address,
+        reference
       )
     `)
     .order("created_at", { ascending: false });
@@ -153,7 +158,9 @@ function renderOrders() {
 
   for (const o of items) {
     const c = tpl.content.cloneNode(true);
+
     const u = o.users || {};
+    const a = o.addresses || {};
 
     /* ================= HEADER ================= */
     c.querySelector(".pedido-numero").textContent =
@@ -181,23 +188,40 @@ function renderOrders() {
     c.querySelector(".status-text").textContent =
       STATUS_LABELS[o.status] || "Pendiente";
 
-    /* ================= RESUMEN ================= */
+    /* ================= DIRECCIÓN ================= */
+    const addressBlock = c.querySelector(".order-address");
+    if (addressBlock) {
+      addressBlock.innerHTML = `
+        <strong>Entrega</strong>
+        <p>${a.address || "—"}</p>
+        <small>${a.reference || ""}</small>
+      `;
+    }
+
+    /* ================= PAGO ================= */
+    const paymentBlock = c.querySelector(".order-payment");
+    if (paymentBlock) {
+      paymentBlock.textContent =
+        o.payment_method === "cash_on_delivery"
+          ? "Pago contra entrega"
+          : "Pago en línea";
+    }
+
+    /* ================= TOTAL ================= */
     c.querySelector(".order-summary").innerHTML = `
       <strong>Total: L ${Number(o.total).toFixed(2)}</strong>
     `;
 
     /* ================= ACCIONES ================= */
-    const btnShipped = c.querySelector(".btn-shipped");
+    const btnShipped   = c.querySelector(".btn-shipped");
     const btnDelivered = c.querySelector(".btn-delivered");
-    const btnView = c.querySelector(".btn-view");
+    const btnView      = c.querySelector(".btn-view");
 
     if (btnShipped) {
-      btnShipped.dataset.id = o.id;
       btnShipped.onclick = () => updateStatus(o.id, "shipped");
     }
 
     if (btnDelivered) {
-      btnDelivered.dataset.id = o.id;
       btnDelivered.onclick = () => updateStatus(o.id, "delivered");
     }
 
