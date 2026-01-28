@@ -21,8 +21,7 @@ function getSupabase() {
 }
 
 /* =====================================================
-   CACHE UI (NO SEGURIDAD)
-   🔑 FUENTE ÚNICA: cortero_user
+   CACHE UI (FUENTE ÚNICA)
 ===================================================== */
 function getUserCache() {
   try {
@@ -35,7 +34,7 @@ function getUserCache() {
 }
 
 /* =====================================================
-   UI — HEADER HOOKS
+   UI — HEADER HOOKS (PASIVOS)
 ===================================================== */
 const setGlobalBadge = show =>
   window.toggleGlobalNotificationDot?.(show);
@@ -66,7 +65,9 @@ function showNotificationUI({ title, message, created_at, role }) {
 }
 
 function hideAllNotificationUI() {
-  document.getElementById("drawer-notification")?.classList.add("hidden");
+  document
+    .getElementById("drawer-notification")
+    ?.classList.add("hidden");
 }
 
 /* =====================================================
@@ -158,7 +159,7 @@ async function syncAll(sb, authUser, role) {
 }
 
 /* =====================================================
-   REALTIME
+   REALTIME (ESTABLE)
 ===================================================== */
 async function initRealtime(sb, authUser, role) {
   if (ordersChannel || notificationChannel) return;
@@ -197,7 +198,7 @@ async function initRealtime(sb, authUser, role) {
 }
 
 /* =====================================================
-   PUSH
+   PUSH (UNA SOLA VEZ)
 ===================================================== */
 async function initPush(authUser) {
   if (localStorage.getItem("push_registered") === "1") return;
@@ -218,7 +219,7 @@ function timeAgo(date) {
 }
 
 /* =====================================================
-   🔔 API PÚBLICA (ÚNICA)
+   🔔 API PÚBLICA (ÚNICA Y CORRECTA)
 ===================================================== */
 export async function initNotifications() {
   if (initialized) {
@@ -227,19 +228,13 @@ export async function initNotifications() {
   }
 
   const sb = getSupabase();
-  if (!sb) return;
-
-  // 🔑 FUENTE REAL DE AUTH
-  const { data } = await sb.auth.getSession();
-  const authUser = data?.session?.user;
   const cache = getUserCache();
 
-  if (!authUser || !cache) {
+  if (!sb || !cache?.id || !cache?.rol) {
     if (retryCount >= MAX_RETRIES) {
       console.error("❌ Notificaciones: estado inválido permanente", {
         supabase: !!sb,
-        authUser: !!authUser,
-        cache: !!cache
+        cache
       });
       return;
     }
@@ -251,9 +246,15 @@ export async function initNotifications() {
 
   initialized = true;
 
-  console.log("🔔 notifications.js → INIT (Supabase OK)");
+  const authUser = { id: cache.id };
+  const role = cache.rol;
 
-  await syncAll(sb, authUser, cache.rol);
-  await initRealtime(sb, authUser, cache.rol);
+  console.log("🔔 notifications.js → INIT OK", {
+    user: authUser.id,
+    role
+  });
+
+  await syncAll(sb, authUser, role);
+  await initRealtime(sb, authUser, role);
   await initPush(authUser);
 }
