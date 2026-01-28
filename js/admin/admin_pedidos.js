@@ -1,5 +1,5 @@
 /* ============================================================
-   ADMIN — PEDIDOS | CAFÉ CORTERO (FINAL)
+   ADMIN — PEDIDOS | CAFÉ CORTERO (FINAL REAL)
 ============================================================ */
 
 console.log("🛠️ admin-pedidos.js — INIT");
@@ -21,10 +21,10 @@ let currentStatus = "new";
 let search = "";
 
 /* -----------------------------------------------------------
-   STATUS MAP
+   STATUS MAP (REAL)
 ----------------------------------------------------------- */
 const STATUS_GROUPS = {
-  new: ["payment_review", "cash_on_delivery"],
+  new: ["pending"],
   processing: ["processing"],
   shipped: ["shipped"],
   delivered: ["delivered"],
@@ -32,8 +32,7 @@ const STATUS_GROUPS = {
 };
 
 const STATUS_LABELS = {
-  payment_review: "Pago en revisión",
-  cash_on_delivery: "Pago contra entrega",
+  pending: "Nuevo",
   processing: "En preparación",
   shipped: "Enviado",
   delivered: "Entregado"
@@ -53,15 +52,12 @@ async function init() {
   applyFilters();
   renderCarousel();
 
-  if (filtered.length) {
-    selectOrder(filtered[0].id);
-  } else {
-    showEmpty();
-  }
+  if (filtered.length) selectOrder(filtered[0].id);
+  else showEmpty();
 }
 
 /* -----------------------------------------------------------
-   LOAD ORDERS
+   LOAD ORDERS (REAL JOIN)
 ----------------------------------------------------------- */
 async function loadOrders() {
   const { data, error } = await sb
@@ -71,11 +67,26 @@ async function loadOrders() {
       order_number,
       total,
       status,
-      created_at,
       payment_method,
-      receipt_url,
-      users ( name, email, phone ),
-      addresses ( address, reference )
+      created_at,
+      users (
+        name,
+        email,
+        phone
+      ),
+      addresses (
+        full_name,
+        phone,
+        country,
+        state,
+        city,
+        street,
+        postal_code
+      ),
+      payment_receipts (
+        file_url,
+        review_status
+      )
     `)
     .order("created_at", { ascending: false });
 
@@ -100,6 +111,7 @@ function applyFilters() {
     if (search) {
       const q = search.toLowerCase();
       const u = o.users || {};
+
       return (
         String(o.order_number).includes(q) ||
         u.name?.toLowerCase().includes(q) ||
@@ -134,10 +146,13 @@ function renderCarousel() {
     const card = c.querySelector(".order-card");
 
     card.dataset.id = o.id;
+
     c.querySelector(".o-card-number").textContent =
       `Pedido N.º ${String(o.order_number).padStart(3, "0")}`;
+
     c.querySelector(".o-card-total").textContent =
       `L ${Number(o.total).toFixed(2)}`;
+
     c.querySelector(".o-card-status").textContent =
       STATUS_LABELS[o.status] || o.status;
 
@@ -148,7 +163,7 @@ function renderCarousel() {
 }
 
 /* -----------------------------------------------------------
-   SELECT ORDER → PREVIEW
+   SELECT ORDER → PREVIEW + SCROLL
 ----------------------------------------------------------- */
 function selectOrder(orderId) {
   selectedOrder = orders.find(o => o.id === orderId);
@@ -156,7 +171,6 @@ function selectOrder(orderId) {
 
   renderPreview(selectedOrder);
 
-  // 👉 scroll suave arriba (UX clave)
   window.scrollTo({
     top: 0,
     behavior: "smooth"
@@ -175,6 +189,7 @@ function renderPreview(o) {
 
   const u = o.users || {};
   const a = o.addresses || {};
+  const receipt = o.payment_receipts?.[0];
 
   document.getElementById("o-number").textContent =
     `Pedido N.º ${String(o.order_number).padStart(3, "0")}`;
@@ -195,23 +210,29 @@ function renderPreview(o) {
   document.getElementById("o-email").textContent = u.email || "—";
   document.getElementById("o-phone").textContent = u.phone || "—";
 
-  document.getElementById("o-address").textContent = a.address || "—";
-  document.getElementById("o-reference").textContent = a.reference || "—";
+  document.getElementById("o-address").textContent =
+    `${a.street || ""}, ${a.city || ""}, ${a.state || ""}`;
 
-  // Pago
+  document.getElementById("o-reference").textContent =
+    a.postal_code || "—";
+
+  /* --------- PAGO --------- */
   const cash = document.getElementById("cash-payment");
-  const receipt = document.getElementById("receipt-payment");
+  const receiptBox = document.getElementById("receipt-payment");
+
   cash.classList.add("hidden");
-  receipt.classList.add("hidden");
+  receiptBox.classList.add("hidden");
 
   if (o.payment_method === "cash_on_delivery") {
     cash.classList.remove("hidden");
-  } else if (o.receipt_url) {
-    receipt.classList.remove("hidden");
-    document.getElementById("receipt-img").src = o.receipt_url;
   }
 
-  // Acciones
+  if (receipt?.file_url) {
+    receiptBox.classList.remove("hidden");
+    document.getElementById("receipt-img").src = receipt.file_url;
+  }
+
+  /* --------- ACCIONES --------- */
   document.getElementById("btnShip").onclick =
     () => updateStatus(o.id, "shipped");
 
@@ -237,11 +258,8 @@ async function updateStatus(orderId, status) {
   applyFilters();
   renderCarousel();
 
-  if (filtered.length) {
-    selectOrder(filtered[0].id);
-  } else {
-    showEmpty();
-  }
+  if (filtered.length) selectOrder(filtered[0].id);
+  else showEmpty();
 }
 
 /* -----------------------------------------------------------
@@ -252,18 +270,14 @@ function bindControls() {
     currentStatus = e.target.value;
     applyFilters();
     renderCarousel();
-
-    if (filtered.length) selectOrder(filtered[0].id);
-    else showEmpty();
+    filtered.length ? selectOrder(filtered[0].id) : showEmpty();
   };
 
   document.getElementById("search-orders").oninput = e => {
     search = e.target.value.trim();
     applyFilters();
     renderCarousel();
-
-    if (filtered.length) selectOrder(filtered[0].id);
-    else showEmpty();
+    filtered.length ? selectOrder(filtered[0].id) : showEmpty();
   };
 
   document.getElementById("btnBackOrders").onclick = () => {
