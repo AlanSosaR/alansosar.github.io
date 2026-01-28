@@ -1,33 +1,41 @@
 /* ============================================================
    ADMIN — Pedidos | Café Cortero
-   SOLO ADMIN (filtros + buscador + acciones)
+   SOLO ADMIN
 ============================================================ */
 
-console.log("🛠️ admin/pedidos.js — PANEL ADMIN");
+console.log("🛠️ admin_pedidos.js — PANEL ADMIN");
 
 /* -----------------------------------------------------------
-   Helpers
+   HELPERS
 ----------------------------------------------------------- */
 function getSupabaseClient() {
   return window.supabaseClient || window.supabase || null;
 }
 
+function getUserCache() {
+  try {
+    return JSON.parse(localStorage.getItem("cortero_user"));
+  } catch {
+    return null;
+  }
+}
+
 /* -----------------------------------------------------------
    CONFIG
 ----------------------------------------------------------- */
-const PER_PAGE = 3;
+const PER_PAGE = 5;
 
 let allOrders = [];
 let filteredOrders = [];
 let currentPage = 1;
-let currentStatus = "new";
+let currentStatus = "all";
 let searchTerm = "";
 
 /* -----------------------------------------------------------
-   STATUS MAP
+   STATUS GROUPS (UNIFICADOS)
 ----------------------------------------------------------- */
 const STATUS_GROUPS = {
-  new: ["payment_review", "payment_confirmed", "cash_on_delivery"],
+  new: ["payment_review", "cash_on_delivery"],
   processing: ["processing"],
   shipped: ["shipped"],
   delivered: ["delivered"],
@@ -35,9 +43,17 @@ const STATUS_GROUPS = {
 };
 
 /* -----------------------------------------------------------
-   INIT
+   INIT (AUTO)
 ----------------------------------------------------------- */
-export async function init() {
+document.addEventListener("DOMContentLoaded", init);
+
+async function init() {
+  const user = getUserCache();
+  if (!user || user.rol !== "admin") {
+    console.warn("⛔ Acceso denegado (no admin)");
+    return;
+  }
+
   renderAdminToolbar();
   await loadOrders();
   applyFilters();
@@ -45,7 +61,7 @@ export async function init() {
 }
 
 /* -----------------------------------------------------------
-   LOAD ORDERS (ADMIN)
+   LOAD ORDERS (ADMIN VE TODOS)
 ----------------------------------------------------------- */
 async function loadOrders() {
   const sb = getSupabaseClient();
@@ -54,13 +70,21 @@ async function loadOrders() {
   const { data, error } = await sb
     .from("orders")
     .select(`
-      *,
-      users ( name, email, phone )
+      id,
+      order_number,
+      total,
+      status,
+      created_at,
+      users (
+        name,
+        email,
+        phone
+      )
     `)
     .order("created_at", { ascending: false });
 
   if (error) {
-    console.error("❌ Error cargando pedidos admin:", error);
+    console.error("❌ Error cargando pedidos:", error);
     return;
   }
 
@@ -72,21 +96,22 @@ async function loadOrders() {
 ----------------------------------------------------------- */
 function applyFilters() {
   filteredOrders = allOrders.filter(order => {
-    /* ---- Status ---- */
+    // STATUS
     if (currentStatus !== "all") {
       const allowed = STATUS_GROUPS[currentStatus] || [];
       if (!allowed.includes(order.status)) return false;
     }
 
-    /* ---- Search ---- */
+    // SEARCH
     if (searchTerm) {
       const q = searchTerm.toLowerCase();
+      const user = order.users || {};
 
       const match =
         String(order.order_number).includes(q) ||
-        order.users?.name?.toLowerCase().includes(q) ||
-        order.users?.email?.toLowerCase().includes(q) ||
-        order.users?.phone?.includes(q);
+        user.name?.toLowerCase().includes(q) ||
+        user.email?.toLowerCase().includes(q) ||
+        user.phone?.includes(q);
 
       if (!match) return false;
     }
@@ -121,7 +146,7 @@ function render() {
 /* -----------------------------------------------------------
    RENDER ORDERS
 ----------------------------------------------------------- */
-async function renderOrders() {
+function renderOrders() {
   const lista = document.getElementById("pedidos-lista");
   const template = document.getElementById("pedido-template");
   const emptyState = document.getElementById("empty-state");
@@ -141,86 +166,36 @@ async function renderOrders() {
 
   for (const pedido of items) {
     const clone = template.content.cloneNode(true);
+    const user = pedido.users || {};
 
-    /* ---- Número ---- */
     clone.querySelector(".pedido-numero").textContent =
       `Pedido N.º ${String(pedido.order_number).padStart(3, "0")}`;
 
-    /* ---- Fecha / hora ---- */
     const fecha = new Date(pedido.created_at);
+    const fechas = clone.querySelectorAll(".pedido-fecha-valor");
 
-    clone.querySelectorAll(".pedido-fecha-valor")[0].textContent =
-      fecha.toLocaleDateString("es-HN", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric"
-      });
+    fechas[0].textContent = fecha.toLocaleDateString("es-HN");
+    fechas[1].textContent = fecha.toLocaleTimeString("es-HN", {
+      hour: "2-digit",
+      minute: "2-digit"
+    });
 
-    clone.querySelectorAll(".pedido-fecha-valor")[1].textContent =
-      fecha.toLocaleTimeString("es-HN", {
-        hour: "2-digit",
-        minute: "2-digit"
-      });
-
-    /* ---- Total ---- */
     clone.querySelector(".pedido-total-valor").textContent =
       `L ${Number(pedido.total).toFixed(2)}`;
 
-    /* ---- Cliente ---- */
-    const itemsEl = clone.querySelector(".pedido-items");
-    itemsEl.innerHTML = `
-      <span class="pedido-label">${pedido.users?.name || "Cliente"}</span>
-      <span class="pedido-count">${pedido.users?.phone || ""}</span>
+    clone.querySelector(".pedido-items").innerHTML = `
+      <span class="pedido-label">${user.name || "Cliente"}</span>
+      <span class="pedido-count">${user.phone || ""}</span>
     `;
 
-    /* ---- Estado ---- */
     clone.querySelector(".estado-text").textContent = pedido.status;
-
-    /* ---- Acciones ADMIN ---- */
-    const footer = clone.querySelector(".pedido-footer");
-    footer.innerHTML = "";
-
-    if (pedido.status === "processing") {
-      footer.appendChild(createActionButton("Marcar enviado", async () => {
-        await updateStatus(pedido.id, "shipped");
-      }));
-    }
-
-    if (pedido.status === "shipped") {
-      footer.appendChild(createActionButton("Marcar entregado", async () => {
-        await updateStatus(pedido.id, "delivered");
-      }));
-    }
 
     lista.appendChild(clone);
   }
 }
 
 /* -----------------------------------------------------------
-   UPDATE STATUS
------------------------------------------------------------ */
-async function updateStatus(orderId, status) {
-  const sb = getSupabaseClient();
-  if (!sb) return;
-
-  const { error } = await sb
-    .from("orders")
-    .update({ status })
-    .eq("id", orderId);
-
-  if (error) {
-    alert("Error actualizando pedido");
-    console.error(error);
-    return;
-  }
-
-  await loadOrders();
-  applyFilters();
-  render();
-}
-
-/* -----------------------------------------------------------
-   UI COMPONENTS
+   TOOLBAR
 ----------------------------------------------------------- */
 function renderAdminToolbar() {
   const toolbar = document.getElementById("admin-toolbar");
@@ -229,34 +204,28 @@ function renderAdminToolbar() {
   toolbar.innerHTML = `
     <div class="admin-toolbar">
       <select id="status-filter">
+        <option value="all">Todos</option>
         <option value="new">Nuevos</option>
         <option value="processing">En proceso</option>
         <option value="shipped">Enviados</option>
         <option value="delivered">Entregados</option>
-        <option value="all">Todos</option>
       </select>
 
-      <input
-        type="search"
-        id="order-search"
-        placeholder="Buscar pedido o cliente"
-      />
+      <input id="order-search" type="search" placeholder="Buscar pedido o cliente" />
     </div>
   `;
 
-  toolbar.querySelector("#status-filter")
-    .addEventListener("change", e => {
-      currentStatus = e.target.value;
-      applyFilters();
-      render();
-    });
+  toolbar.querySelector("#status-filter").addEventListener("change", e => {
+    currentStatus = e.target.value;
+    applyFilters();
+    render();
+  });
 
-  toolbar.querySelector("#order-search")
-    .addEventListener("input", e => {
-      searchTerm = e.target.value.trim();
-      applyFilters();
-      render();
-    });
+  toolbar.querySelector("#order-search").addEventListener("input", e => {
+    searchTerm = e.target.value.trim();
+    applyFilters();
+    render();
+  });
 }
 
 /* -----------------------------------------------------------
@@ -290,15 +259,4 @@ function renderPagination() {
     currentPage++;
     render();
   });
-}
-
-/* -----------------------------------------------------------
-   BUTTON FACTORY
------------------------------------------------------------ */
-function createActionButton(text, onClick) {
-  const btn = document.createElement("button");
-  btn.className = "btn-principal";
-  btn.textContent = text;
-  btn.addEventListener("click", onClick);
-  return btn;
 }
