@@ -4,23 +4,39 @@
 
 console.log("🛠️ admin-pedidos.js — INIT");
 
-const sb = window.supabase;
+/* -----------------------------------------------------------
+   SUPABASE
+----------------------------------------------------------- */
+const sb = window.supabaseClient;
 if (!sb) {
-  console.error("❌ Supabase no inicializado");
-  return;
+  console.error("❌ supabaseClient no disponible");
 }
 
+/* -----------------------------------------------------------
+   CONFIG
+----------------------------------------------------------- */
 const PER_PAGE = 5;
 
 let orders = [];
 let filtered = [];
 let page = 1;
-let status = "new";
+let currentStatus = "new";
 let search = "";
 
-/* ============================================================
+/* -----------------------------------------------------------
+   STATUS GROUPS
+----------------------------------------------------------- */
+const STATUS_GROUPS = {
+  new: ["payment_review", "cash_on_delivery"],
+  processing: ["processing"],
+  shipped: ["shipped"],
+  delivered: ["delivered"],
+  all: []
+};
+
+/* -----------------------------------------------------------
    INIT
-============================================================ */
+----------------------------------------------------------- */
 document.addEventListener("DOMContentLoaded", init);
 
 async function init() {
@@ -37,9 +53,9 @@ async function init() {
   render();
 }
 
-/* ============================================================
-   LOAD ORDERS — TABLA REAL `orders`
-============================================================ */
+/* -----------------------------------------------------------
+   LOAD ORDERS (ADMIN)
+----------------------------------------------------------- */
 async function loadOrders() {
   const { data, error } = await sb
     .from("orders")
@@ -62,26 +78,19 @@ async function loadOrders() {
     return;
   }
 
-  console.log("📦 PEDIDOS:", data);
+  console.log("📦 PEDIDOS ADMIN:", data);
   orders = data || [];
 }
 
-/* ============================================================
+/* -----------------------------------------------------------
    FILTERS
-============================================================ */
-const STATUS_GROUPS = {
-  new: ["payment_review", "cash_on_delivery"],
-  processing: ["processing"],
-  shipped: ["shipped"],
-  delivered: ["delivered"],
-  all: []
-};
-
+----------------------------------------------------------- */
 function applyFilters() {
   filtered = orders.filter(o => {
-    if (status !== "all" && !STATUS_GROUPS[status].includes(o.status)) {
-      return false;
-    }
+    if (
+      currentStatus !== "all" &&
+      !STATUS_GROUPS[currentStatus].includes(o.status)
+    ) return false;
 
     if (search) {
       const q = search.toLowerCase();
@@ -100,14 +109,17 @@ function applyFilters() {
   page = 1;
 }
 
-/* ============================================================
+/* -----------------------------------------------------------
    RENDER
-============================================================ */
+----------------------------------------------------------- */
 function render() {
   renderOrders();
   renderPagination();
 }
 
+/* -----------------------------------------------------------
+   RENDER ORDERS (TARJETAS ADMIN)
+----------------------------------------------------------- */
 function renderOrders() {
   const list = document.getElementById("pedidos-lista");
   const tpl = document.getElementById("pedido-template");
@@ -148,6 +160,7 @@ function renderOrders() {
     `;
 
     c.querySelector(".status-text").textContent = o.status;
+
     c.querySelector(".order-summary").innerHTML =
       `<strong>Total: L ${Number(o.total).toFixed(2)}</strong>`;
 
@@ -155,12 +168,12 @@ function renderOrders() {
   }
 }
 
-/* ============================================================
+/* -----------------------------------------------------------
    CONTROLS
-============================================================ */
+----------------------------------------------------------- */
 function bindControls() {
   document.getElementById("status-filter").onchange = e => {
-    status = e.target.value;
+    currentStatus = e.target.value;
     applyFilters();
     render();
   };
@@ -172,14 +185,17 @@ function bindControls() {
   };
 }
 
-/* ============================================================
+/* -----------------------------------------------------------
    PAGINATION
-============================================================ */
+----------------------------------------------------------- */
 function renderPagination() {
   const el = document.getElementById("pagination-container");
   const total = Math.ceil(filtered.length / PER_PAGE);
 
-  if (total <= 1) return (el.innerHTML = "");
+  if (total <= 1) {
+    el.innerHTML = "";
+    return;
+  }
 
   el.innerHTML = `
     <div class="pagination">
@@ -189,6 +205,13 @@ function renderPagination() {
     </div>
   `;
 
-  el.querySelector("#prev").onclick = () => { page--; render(); };
-  el.querySelector("#next").onclick = () => { page++; render(); };
+  el.querySelector("#prev").onclick = () => {
+    page--;
+    render();
+  };
+
+  el.querySelector("#next").onclick = () => {
+    page++;
+    render();
+  };
 }
