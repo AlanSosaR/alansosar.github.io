@@ -1,5 +1,5 @@
 /* ============================================================
-   ADMIN — PEDIDOS | CAFÉ CORTERO (FINAL DEFINITIVO)
+   ADMIN — PEDIDOS | CAFÉ CORTERO (FINAL CON RELACIONES CORRECTAS)
 ============================================================ */
 
 console.log("🛠️ admin-pedidos.js — INIT");
@@ -21,7 +21,7 @@ let currentStatus = "all";
 let search = "";
 
 /* -----------------------------------------------------------
-   STATUS MAP (REAL DB)
+   STATUS MAP
 ----------------------------------------------------------- */
 const STATUS_GROUPS = {
   new: ["pending"],
@@ -45,10 +45,7 @@ document.addEventListener("DOMContentLoaded", init);
 
 async function init() {
   const user = JSON.parse(localStorage.getItem("cortero_user") || "null");
-  if (!user || user.rol !== "admin") {
-    console.warn("⛔ Acceso no autorizado");
-    return;
-  }
+  if (!user || user.rol !== "admin") return;
 
   bindControls();
   await loadOrders();
@@ -57,12 +54,11 @@ async function init() {
 
   applyFilters();
   renderCarousel();
-
   filtered.length ? selectOrder(filtered[0].id) : showEmpty();
 }
 
 /* -----------------------------------------------------------
-   LOAD ORDERS (JOINS CORRECTOS)
+   LOAD ORDERS — RELACIONES CORRECTAS
 ----------------------------------------------------------- */
 async function loadOrders() {
   const { data, error } = await sb
@@ -74,12 +70,14 @@ async function loadOrders() {
       status,
       payment_method,
       created_at,
-      users (
+
+      users:users!orders_user_id_fkey (
         name,
         email,
         phone
       ),
-      addresses (
+
+      address:addresses!orders_address_id_fkey (
         full_name,
         phone,
         country,
@@ -88,7 +86,8 @@ async function loadOrders() {
         street,
         postal_code
       ),
-      payment_receipts (
+
+      receipt:payment_receipts!payment_receipts_order_fk (
         file_url,
         review_status
       )
@@ -117,7 +116,7 @@ function applyFilters() {
     if (!search) return true;
 
     const q = search.toLowerCase();
-    const u = o.users?.[0] || {};
+    const u = o.users || {};
 
     return (
       String(o.order_number).includes(q) ||
@@ -150,130 +149,72 @@ function renderCarousel() {
     const card = c.querySelector(".order-card");
 
     card.dataset.id = o.id;
-
     c.querySelector(".o-card-number").textContent =
       `Pedido N.º ${String(o.order_number).padStart(3, "0")}`;
-
     c.querySelector(".o-card-total").textContent =
       `L ${Number(o.total).toFixed(2)}`;
-
     c.querySelector(".o-card-status").textContent =
       STATUS_LABELS[o.status] || o.status;
 
     card.onclick = () => selectOrder(o.id);
-
     wrap.appendChild(c);
   }
 }
 
 /* -----------------------------------------------------------
-   SELECT ORDER → PREVIEW
+   SELECT ORDER
 ----------------------------------------------------------- */
 function selectOrder(orderId) {
   selectedOrder = orders.find(o => o.id === orderId);
   if (!selectedOrder) return;
 
   renderPreview(selectedOrder);
-
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 /* -----------------------------------------------------------
-   RENDER PREVIEW (FIX CLAVE)
+   RENDER PREVIEW — DATOS REALES
 ----------------------------------------------------------- */
 function renderPreview(o) {
-  const preview = document.getElementById("admin-order-preview");
-  const empty = document.getElementById("admin-empty-state");
+  const u = o.users || {};
+  const a = o.address || {};
+  const r = o.receipt?.[0];
 
-  empty.classList.add("hidden");
-  preview.classList.remove("hidden");
-
-  const u = o.users?.[0] || {};
-  const a = o.addresses?.[0] || {};
-  const receipt = o.payment_receipts?.[0];
-
-  /* HEADER */
   document.getElementById("o-number").textContent =
     `Pedido N.º ${String(o.order_number).padStart(3, "0")}`;
 
   document.getElementById("o-date").textContent =
-    new Date(o.created_at).toLocaleString("es-HN", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit"
-    });
+    new Date(o.created_at).toLocaleString("es-HN");
 
   document.getElementById("o-total").textContent =
     `L ${Number(o.total).toFixed(2)}`;
 
-  /* CLIENTE */
   document.getElementById("o-client-name").textContent =
     u.name || a.full_name || "Cliente";
 
-  document.getElementById("o-email").textContent =
-    u.email || "—";
+  document.getElementById("o-email").textContent = u.email || "—";
+  document.getElementById("o-phone").textContent = u.phone || a.phone || "—";
 
-  document.getElementById("o-phone").textContent =
-    u.phone || a.phone || "—";
-
-  /* DIRECCIÓN */
   document.getElementById("o-address").textContent =
-    [a.street, a.city, a.state, a.country]
-      .filter(Boolean)
-      .join(", ") || "—";
+    [a.street, a.city, a.state, a.country].filter(Boolean).join(", ") || "—";
 
   document.getElementById("o-reference").textContent =
     a.postal_code || "—";
 
-  /* PAGO */
   const cash = document.getElementById("cash-payment");
   const receiptBox = document.getElementById("receipt-payment");
-
   cash.classList.add("hidden");
   receiptBox.classList.add("hidden");
 
-  if (o.payment_method === "cash_on_delivery") {
-    cash.classList.remove("hidden");
-  }
-
-  if (receipt?.file_url) {
+  if (o.payment_method === "cash_on_delivery") cash.classList.remove("hidden");
+  if (r?.file_url) {
     receiptBox.classList.remove("hidden");
-    document.getElementById("receipt-img").src = receipt.file_url;
+    document.getElementById("receipt-img").src = r.file_url;
   }
-
-  /* ACCIONES */
-  document.getElementById("btnShip").onclick =
-    () => updateStatus(o.id, "shipped");
-
-  document.getElementById("btnDeliver").onclick =
-    () => updateStatus(o.id, "delivered");
 }
 
 /* -----------------------------------------------------------
-   UPDATE STATUS
------------------------------------------------------------ */
-async function updateStatus(orderId, status) {
-  const { error } = await sb
-    .from("orders")
-    .update({ status })
-    .eq("id", orderId);
-
-  if (error) {
-    console.error("❌ Error actualizando estado:", error);
-    return;
-  }
-
-  await loadOrders();
-  applyFilters();
-  renderCarousel();
-
-  filtered.length ? selectOrder(filtered[0].id) : showEmpty();
-}
-
-/* -----------------------------------------------------------
-   CONTROLS
+   CONTROLS & EMPTY
 ----------------------------------------------------------- */
 function bindControls() {
   document.getElementById("status-filter").onchange = e => {
@@ -289,15 +230,8 @@ function bindControls() {
     renderCarousel();
     filtered.length ? selectOrder(filtered[0].id) : showEmpty();
   };
-
-  document.getElementById("btnBackOrders").onclick = () => {
-    document.getElementById("admin-order-preview").classList.add("hidden");
-  };
 }
 
-/* -----------------------------------------------------------
-   EMPTY STATE
------------------------------------------------------------ */
 function showEmpty() {
   document.getElementById("admin-order-preview").classList.add("hidden");
   document.getElementById("admin-empty-state").classList.remove("hidden");
