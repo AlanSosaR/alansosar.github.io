@@ -13,14 +13,14 @@ const MAX_RETRIES = 10;
 console.log("🔔 notifications.js cargado (pasivo)");
 
 /* =====================================================
-   HELPERS — SUPABASE (ROBUSTO)
+   HELPERS — SUPABASE
 ===================================================== */
 function getSupabase() {
   return window.supabaseClient || window.supabase || null;
 }
 
 /* =====================================================
-   CACHE UI — FUENTE ÚNICA
+   CACHE — USUARIO
 ===================================================== */
 function getUserCache() {
   try {
@@ -32,7 +32,7 @@ function getUserCache() {
 }
 
 /* =====================================================
-   UI — HEADER HOOKS (PASIVOS)
+   UI — HOOKS HEADER (PASIVOS)
 ===================================================== */
 const setGlobalBadge = show =>
   window.toggleGlobalNotificationDot?.(show);
@@ -63,13 +63,11 @@ function showNotificationUI({ title, message, created_at, role }) {
 }
 
 function hideAllNotificationUI() {
-  document
-    .getElementById("drawer-notification")
-    ?.classList.add("hidden");
+  document.getElementById("drawer-notification")?.classList.add("hidden");
 }
 
 /* =====================================================
-   ESTADOS
+   STATUS
 ===================================================== */
 const ADMIN_ACTIVE_STATUSES = [
   "cash_on_delivery",
@@ -107,16 +105,16 @@ async function syncMyOrdersCount(sb, userId) {
 }
 
 /* =====================================================
-   NOTIFICACIONES UI
+   NOTIFICACIÓN ACTIVA (SOLO 1)
 ===================================================== */
 async function syncNotificationsUI(sb, authUser, role) {
   const { data } = await sb
     .from("notifications")
     .select("*")
+    .eq("user_id", authUser.id)
     .eq("is_read", false)
     .order("created_at", { ascending: false })
-    .limit(1)
-    .then(res => res);
+    .limit(1);
 
   if (!data?.length) {
     hideAllNotificationUI();
@@ -135,6 +133,29 @@ async function syncNotificationsUI(sb, authUser, role) {
     created_at: data[0].created_at,
     role
   });
+}
+
+/* =====================================================
+   MARCAR COMO LEÍDAS (CLICK)
+===================================================== */
+async function markNotificationsAsRead(sb, userId) {
+  try {
+    await sb
+      .from("notifications")
+      .update({ is_read: true })
+      .eq("user_id", userId)
+      .eq("is_read", false);
+
+    // UI inmediata
+    hideAllNotificationUI();
+    setGlobalBadge(false);
+    setAdminCount(0);
+    setMyCount(0);
+
+    console.log("✅ Notificaciones marcadas como leídas");
+  } catch (err) {
+    console.warn("⚠️ Error marcando notificaciones:", err);
+  }
 }
 
 /* =====================================================
@@ -157,7 +178,7 @@ async function syncAll(sb, authUser, role) {
 }
 
 /* =====================================================
-   REALTIME (SEGURO)
+   REALTIME
 ===================================================== */
 async function initRealtime(sb, authUser, role) {
   if (ordersChannel || notificationChannel) return;
@@ -172,17 +193,22 @@ async function initRealtime(sb, authUser, role) {
     .subscribe();
 
   notificationChannel = sb
-    .channel("notifications-global")
+    .channel("notifications-user")
     .on(
       "postgres_changes",
-      { event: "*", schema: "public", table: "notifications" },
+      {
+        event: "*",
+        schema: "public",
+        table: "notifications",
+        filter: `user_id=eq.${authUser.id}`
+      },
       () => syncNotificationsUI(sb, authUser, role)
     )
     .subscribe();
 }
 
 /* =====================================================
-   PUSH (IDEMPOTENTE)
+   PUSH
 ===================================================== */
 async function initPush(authUser) {
   if (localStorage.getItem("push_registered") === "1") return;
@@ -207,7 +233,18 @@ function timeAgo(date) {
 }
 
 /* =====================================================
-   🔔 API PÚBLICA FINAL
+   EVENTO: NOTIFICACIÓN ABIERTA
+===================================================== */
+document.addEventListener("notification:opened", async () => {
+  const sb = getSupabase();
+  const cache = getUserCache();
+  if (!sb || !cache?.id) return;
+
+  await markNotificationsAsRead(sb, cache.id);
+});
+
+/* =====================================================
+   API PÚBLICA
 ===================================================== */
 export async function initNotifications() {
   if (initialized) return;
