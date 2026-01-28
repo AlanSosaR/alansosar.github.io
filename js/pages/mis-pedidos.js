@@ -1,9 +1,15 @@
 /* ============================================================
-   Mis pedidos — Café Cortero 2025
-   SOLO LÓGICA (SIN HEADER / SIN DRAWER)
+   Mis pedidos — Café Cortero 2025 (CLIENTE)
 ============================================================ */
 
-console.log("📦 mis-pedidos.js — PROGRESO AVANZADO + ICONOS MATERIAL 3");
+console.log("📦 mis-pedidos.js — CLIENTE + PAGINACIÓN");
+
+/* -----------------------------------------------------------
+   CONFIG
+----------------------------------------------------------- */
+const PER_PAGE = 3;
+let currentPage = 1;
+let allPedidos = [];
 
 /* -----------------------------------------------------------
    Helpers
@@ -77,12 +83,57 @@ function applyProgressColors(container, etapa) {
 }
 
 /* -----------------------------------------------------------
-   RENDER PEDIDOS
+   INIT
 ----------------------------------------------------------- */
-async function renderPedidos() {
+document.addEventListener("header:ready", init);
+init();
+
+async function init() {
+  await loadPedidos();
+  render();
+}
+
+/* -----------------------------------------------------------
+   CARGAR PEDIDOS (CLIENTE)
+----------------------------------------------------------- */
+async function loadPedidos() {
   const sb = getSupabaseClient();
   if (!sb) return;
 
+  const { data: sessionData } = await sb.auth.getSession();
+  if (!sessionData?.session) {
+    mostrarVacio();
+    return;
+  }
+
+  const userId = sessionData.session.user.id;
+
+  const { data, error } = await sb
+    .from("orders")
+    .select("*")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
+
+  if (error || !data || data.length === 0) {
+    mostrarVacio();
+    return;
+  }
+
+  allPedidos = data;
+}
+
+/* -----------------------------------------------------------
+   RENDER GENERAL
+----------------------------------------------------------- */
+function render() {
+  renderPedidos();
+  renderPagination();
+}
+
+/* -----------------------------------------------------------
+   RENDER PEDIDOS (PAGINADOS)
+----------------------------------------------------------- */
+async function renderPedidos() {
   const lista      = document.getElementById("pedidos-lista");
   const emptyState = document.getElementById("empty-state");
   const seguirBack = document.querySelector(".seguir-comprando");
@@ -92,23 +143,7 @@ async function renderPedidos() {
 
   lista.innerHTML = "";
 
-  /* ---------------- Validar sesión ---------------- */
-  const { data: sessionData } = await sb.auth.getSession();
-  if (!sessionData?.session) {
-    mostrarVacio();
-    return;
-  }
-
-  const userId = sessionData.session.user.id;
-
-  /* ---------------- Consultar pedidos ---------------- */
-  const { data: pedidos, error } = await sb
-    .from("orders")
-    .select("*")
-    .eq("user_id", userId)
-    .order("created_at", { ascending: false });
-
-  if (error || !pedidos || pedidos.length === 0) {
+  if (allPedidos.length === 0) {
     mostrarVacio();
     return;
   }
@@ -116,57 +151,53 @@ async function renderPedidos() {
   emptyState.classList.add("hidden");
   if (seguirBack) seguirBack.style.display = "flex";
 
-  /* ===================================================
-     🔑 FOR...OF (PERMITE AWAIT)
-  =================================================== */
-  for (const pedido of pedidos) {
+  const start = (currentPage - 1) * PER_PAGE;
+  const end   = start + PER_PAGE;
+  const pagePedidos = allPedidos.slice(start, end);
 
+  const sb = getSupabaseClient();
+
+  for (const pedido of pagePedidos) {
     const clone = template.content.cloneNode(true);
 
-    /* -------- Número -------- */
+    /* ---- Número ---- */
     clone.querySelector(".pedido-numero").textContent =
       `Pedido N.º ${String(pedido.order_number).padStart(3, "0")}`;
 
-    /* -------- Fecha y hora -------- */
+    /* ---- Fecha / hora ---- */
     const fecha = new Date(pedido.created_at);
+    const fechas = clone.querySelectorAll(".pedido-fecha-valor");
 
-    clone.querySelector("#fechaPedido").textContent =
-      fecha.toLocaleDateString("es-HN", {
+    if (fechas.length >= 2) {
+      fechas[0].textContent = fecha.toLocaleDateString("es-HN", {
         day: "2-digit",
         month: "short",
         year: "numeric"
       });
 
-    clone.querySelector("#horaPedido").textContent =
-      fecha.toLocaleTimeString("es-HN", {
+      fechas[1].textContent = fecha.toLocaleTimeString("es-HN", {
         hour: "2-digit",
         minute: "2-digit"
       });
+    }
 
-    /* -------- Total de cafés -------- */
-    const { data: items, error: itemsError } = await sb
+    /* ---- Total cafés ---- */
+    const { data: items } = await sb
       .from("order_items")
       .select("quantity")
       .eq("order_id", pedido.id);
 
-    if (itemsError) {
-      console.error("❌ Error cargando cafés:", itemsError);
-    }
-
     const totalCafes =
       items?.reduce((sum, i) => sum + i.quantity, 0) || 0;
 
-    const countEl = clone.querySelector(".pedido-count");
-    if (countEl) {
-      countEl.textContent =
-        `(${totalCafes} café${totalCafes !== 1 ? "s" : ""})`;
-    }
+    clone.querySelector(".pedido-count").textContent =
+      `(${totalCafes} café${totalCafes !== 1 ? "s" : ""})`;
 
-    /* -------- Total -------- */
+    /* ---- Total ---- */
     clone.querySelector(".pedido-total-valor").textContent =
       `L ${Number(pedido.total).toFixed(2)}`;
 
-    /* -------- Estado -------- */
+    /* ---- Estado ---- */
     clone.querySelector(".estado-text").textContent =
       formatStatusLabel(pedido.status);
 
@@ -184,13 +215,47 @@ async function renderPedidos() {
     iconEl.textContent =
       statusIconMap[pedido.status] || statusIconMap.default;
 
-    /* -------- Ver recibo -------- */
-    clone.querySelector(".ver-recibo").addEventListener("click", () => {
-      location.href = `recibo.html?id=${pedido.id}`;
-    });
+    /* ---- Ver recibo ---- */
+    clone.querySelector(".ver-recibo")
+      .addEventListener("click", () => {
+        location.href = `recibo.html?id=${pedido.id}`;
+      });
 
     lista.appendChild(clone);
   }
+}
+
+/* -----------------------------------------------------------
+   PAGINACIÓN UI
+----------------------------------------------------------- */
+function renderPagination() {
+  const container = document.getElementById("pagination-container");
+  if (!container) return;
+
+  const totalPages = Math.ceil(allPedidos.length / PER_PAGE);
+
+  if (totalPages <= 1) {
+    container.innerHTML = "";
+    return;
+  }
+
+  container.innerHTML = `
+    <div class="pagination">
+      <button ${currentPage === 1 ? "disabled" : ""} id="prev">◀</button>
+      <span>${currentPage} / ${totalPages}</span>
+      <button ${currentPage === totalPages ? "disabled" : ""} id="next">▶</button>
+    </div>
+  `;
+
+  container.querySelector("#prev")?.addEventListener("click", () => {
+    currentPage--;
+    render();
+  });
+
+  container.querySelector("#next")?.addEventListener("click", () => {
+    currentPage++;
+    render();
+  });
 }
 
 /* -----------------------------------------------------------
@@ -205,9 +270,3 @@ function mostrarVacio() {
   emptyState?.classList.remove("hidden");
   if (seguirBack) seguirBack.style.display = "none";
 }
-
-/* -----------------------------------------------------------
-   INIT
------------------------------------------------------------ */
-document.addEventListener("header:ready", renderPedidos);
-renderPedidos();
