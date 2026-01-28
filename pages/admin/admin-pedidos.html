@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Pedidos | Administración — Café Cortero</title>
+
+  <!-- Tipografía -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Iconos -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@300;400;500&display=swap"
+  >
+
+  <!-- Estilos -->
+  <link rel="stylesheet" href="css/header.css?v=30">
+  <link rel="stylesheet" href="css/admin-pedidos.css?v=1">
+</head>
+
+<body class="page-admin-pedidos">
+
+<!-- =====================================================
+     HEADER ADMIN (GLOBAL)
+===================================================== -->
+<!-- Se inyecta por layout.js / header.js (modo admin) -->
+
+<main class="admin-container">
+
+  <!-- =================================================
+       CABECERA DEL PANEL
+  ================================================== -->
+  <header class="admin-page-header">
+    <h1>Pedidos</h1>
+    <p>Gestiona y controla los pedidos de los clientes</p>
+  </header>
+
+  <!-- =================================================
+       CONTROLES (FILTRO + BUSCADOR)
+  ================================================== -->
+  <section class="admin-controls">
+
+    <!-- Filtro por estado -->
+    <div class="filter-group">
+      <label for="status-filter">Estado</label>
+      <select id="status-filter">
+        <option value="new">Nuevos</option>
+        <option value="processing">En preparación</option>
+        <option value="shipped">Enviados</option>
+        <option value="delivered">Entregados</option>
+        <option value="all">Todos</option>
+      </select>
+    </div>
+
+    <!-- Buscador -->
+    <div class="search-group">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input
+        type="search"
+        id="admin-orders-search"
+        placeholder="Buscar por pedido, cliente o teléfono"
+        autocomplete="off"
+      />
+    </div>
+
+  </section>
+
+  <!-- =================================================
+       LISTA DE PEDIDOS
+  ================================================== -->
+  <section class="admin-orders-list" id="pedidos-lista">
+
+    <!-- ============ TEMPLATE PEDIDO ADMIN ============ -->
+    <template id="pedido-template">
+      <article class="admin-order-card">
+
+        <!-- Cabecera -->
+        <header class="order-header">
+          <h3 class="pedido-numero">Pedido N.º 000</h3>
+          <span class="order-date">22 ene 2026 · 05:54 p. m.</span>
+        </header>
+
+        <!-- Cliente -->
+        <section class="order-client">
+          <p class="client-name">Alan Rodezno</p>
+          <p class="client-meta">
+            <span><i class="fa-solid fa-envelope"></i> correo@email.com</span>
+            <span><i class="fa-solid fa-phone"></i> 9632-2550</span>
+          </p>
+        </section>
+
+        <!-- Estado -->
+        <section class="order-status">
+          <span class="material-symbols-outlined">autorenew</span>
+          <span class="status-text">En preparación</span>
+        </section>
+
+        <!-- Resumen -->
+        <section class="order-summary">
+          <span>17 cafés</span>
+          <strong>Total: L 5100.00</strong>
+        </section>
+
+        <!-- Acciones -->
+        <footer class="order-actions">
+          <button class="btn-outline">
+            <span class="material-symbols-outlined">local_shipping</span>
+            Marcar enviado
+          </button>
+
+          <button class="btn-outline">
+            <span class="material-symbols-outlined">done_all</span>
+            Marcar entregado
+          </button>
+        </footer>
+
+      </article>
+    </template>
+
+  </section>
+
+  <!-- =================================================
+       PAGINACIÓN
+  ================================================== -->
+  <div id="pagination-container"></div>
+
+  <!-- =================================================
+       EMPTY STATE
+  ================================================== -->
+  <section class="empty-state hidden" id="empty-state">
+    <h2>No hay pedidos</h2>
+    <p>Cuando los clientes realicen pedidos, aparecerán aquí.</p>
+  </section>
+
+</main>
+
+<!-- =====================================================
+     SCRIPTS
+===================================================== -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="js/core/supabase-client-core.js"></script>
+<script src="js/core/supabase-auth.js"></script>
+<script src="js/ui/layout.js"></script>
+<script type="module" src="js/ui/header.js"></script>
+
+<!-- Lógica ADMIN -->
+<script type="module" src="js/admin/admin-pedidos.js"></script>
+
+</body>
+</html>
