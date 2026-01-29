@@ -300,7 +300,7 @@ body {
 
 .order-total span {
   font-size: 0.95rem;
-  color: #5b3a1e; /* café */
+  color: var(--verde); /* verde del sistema */
 }
 
 /* TOTAL EN CAFÉ (no verde) */
