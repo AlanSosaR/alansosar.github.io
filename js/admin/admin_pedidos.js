@@ -63,8 +63,7 @@ async function loadOrdersByStatus(statusKey) {
 
       users (
         name,
-        email,
-        phone
+        email
       ),
 
       address:addresses (
@@ -72,8 +71,9 @@ async function loadOrdersByStatus(statusKey) {
         state,
         city,
         street,
-        phone,
-        full_name
+        postal_code,
+        full_name,
+        phone
       ),
 
       items:order_items (
@@ -104,19 +104,20 @@ async function loadOrdersByStatus(statusKey) {
 }
 
 /* -----------------------------------------------------------
-   FILTER
+   FILTER — SOLO NÚMERO Y NOMBRE
 ----------------------------------------------------------- */
 function applyFilters() {
+  if (!search) {
+    filtered = [...orders];
+    return;
+  }
+
+  const q = search.toLowerCase();
+
   filtered = orders.filter(o => {
-    if (!search) return true;
-    const q = search.toLowerCase();
-    const u = o.users || {};
-    return (
-      String(o.order_number).includes(q) ||
-      u.name?.toLowerCase().includes(q) ||
-      u.email?.toLowerCase().includes(q) ||
-      u.phone?.includes(q)
-    );
+    const orderNum = String(o.order_number || "");
+    const name = (o.users?.name || "").toLowerCase();
+    return orderNum.includes(q) || name.includes(q);
   });
 }
 
@@ -132,10 +133,8 @@ function renderAll() {
   }
 
   activeIndex = Math.min(activeIndex, filtered.length - 1);
-
   renderCarousel();
   selectOrderByIndex(activeIndex);
-  updateArrows();
 }
 
 /* -----------------------------------------------------------
@@ -177,10 +176,10 @@ function renderCarousel() {
       placeholder.classList.remove("hidden");
     }
 
-    card.addEventListener("click", () => {
+    card.onclick = () => {
       activeIndex = index;
       renderAll();
-    });
+    };
 
     wrap.appendChild(node);
   });
@@ -196,8 +195,9 @@ function selectOrderByIndex(index) {
   document.querySelectorAll(".order-card")
     .forEach(c => c.classList.remove("is-selected"));
 
-  const active = document.querySelector(`.order-card[data-index="${index}"]`);
-  if (active) active.classList.add("is-selected");
+  document
+    .querySelector(`.order-card[data-index="${index}"]`)
+    ?.classList.add("is-selected");
 
   document.getElementById("admin-empty-state").classList.add("hidden");
   document.getElementById("admin-order-preview").classList.remove("hidden");
@@ -223,35 +223,34 @@ function renderPreview(o) {
     u.name || a.full_name || "Cliente";
 
   document.getElementById("o-phone").textContent =
-    u.phone || a.phone || "—";
+    a.phone || "—";
 
   document.getElementById("o-email").textContent =
     u.email || "—";
 
-  /* ITEMS */
-  const itemsBox = document.getElementById("o-items");
-  itemsBox.innerHTML = "";
+  /* ---------- PÍLDORAS ---------- */
+  const pills = document.getElementById("order-items-pills");
+  pills.innerHTML = "";
 
-  if (Array.isArray(o.items) && o.items.length) {
-    o.items.forEach(item => {
-      const qty = Number(item.quantity || 0);
-      const price = Number(item.price || 0);
-      const subtotal = qty * price;
+  let total = 0;
 
-      const row = document.createElement("div");
-      row.className = "order-item-row";
-      row.innerHTML = `
-        <span>${item.products?.name || "Café"} (${qty})</span>
-        <strong>L ${subtotal.toFixed(2)}</strong>
-      `;
-      itemsBox.appendChild(row);
-    });
-  } else {
-    itemsBox.textContent = "—";
-  }
+  o.items?.forEach(item => {
+    const qty = Number(item.quantity);
+    const price = Number(item.price);
+    const subtotal = qty * price;
+    total += subtotal;
+
+    const pill = document.createElement("div");
+    pill.className = "order-pill";
+    pill.innerHTML = `
+      <span class="pill-name">☕ ${item.products?.name} · ${qty} bolsas</span>
+      <span class="pill-price">L ${subtotal.toFixed(2)}</span>
+    `;
+    pills.appendChild(pill);
+  });
 
   document.getElementById("o-total").textContent =
-    `L ${Number(o.total).toFixed(2)}`;
+    `L ${total.toFixed(2)}`;
 
   document.getElementById("o-zone").textContent =
     [a.city, a.state].filter(Boolean).join(", ") || "—";
@@ -260,22 +259,23 @@ function renderPreview(o) {
     [a.street, a.city, a.state, a.country].filter(Boolean).join(", ") || "—";
 
   document.getElementById("o-reference").textContent =
-  a.postal_code || "—";
+    a.postal_code || "—";
 
-  const orderMedia = document.getElementById("order-media");
+  /* ---------- MEDIA ---------- */
+  const media = document.getElementById("order-media");
   const cash = document.getElementById("cash-payment");
   const receiptBox = document.getElementById("receipt-payment");
 
-  orderMedia.classList.add("hidden");
+  media.classList.add("hidden");
   cash.classList.add("hidden");
   receiptBox.classList.add("hidden");
 
   if (r?.file_url) {
-    orderMedia.classList.remove("hidden");
+    media.classList.remove("hidden");
     receiptBox.classList.remove("hidden");
     document.getElementById("receipt-img").src = r.file_url;
   } else {
-    orderMedia.classList.remove("hidden");
+    media.classList.remove("hidden");
     cash.classList.remove("hidden");
   }
 
@@ -287,38 +287,44 @@ function renderPreview(o) {
 ----------------------------------------------------------- */
 function renderStatusActions(o) {
   const chip = document.getElementById("o-status");
-  const btnMain = document.getElementById("btnShip");
+
+  const btnAccept = document.getElementById("btnAccept");
+  const btnReject = document.getElementById("btnReject");
+  const btnShip = document.getElementById("btnShip");
   const btnDeliver = document.getElementById("btnDeliver");
 
-  btnMain.classList.add("hidden");
-  btnDeliver.classList.add("hidden");
+  [btnAccept, btnReject, btnShip, btnDeliver].forEach(b => b.classList.add("hidden"));
 
   if (o.status === "pending") {
-    chip.textContent = "Nuevo";
     chip.className = "status-chip pending";
-    btnMain.textContent = "Aceptar pedido";
-    btnMain.classList.remove("hidden");
-    btnMain.onclick = () => updateStatus(o.id, "processing");
+    chip.textContent = "Nuevo";
+
+    btnAccept.classList.remove("hidden");
+    btnReject.classList.remove("hidden");
+
+    btnAccept.onclick = () => updateStatus(o.id, "processing");
+    btnReject.onclick = () => updateStatus(o.id, "cancelled");
   }
 
   if (o.status === "processing") {
-    chip.textContent = "En preparación";
     chip.className = "status-chip preparing";
-    btnMain.textContent = "Marcar como enviado";
-    btnMain.classList.remove("hidden");
-    btnMain.onclick = () => updateStatus(o.id, "shipped");
+    chip.textContent = "En preparación";
+
+    btnShip.classList.remove("hidden");
+    btnShip.onclick = () => updateStatus(o.id, "shipped");
   }
 
   if (o.status === "shipped") {
-    chip.textContent = "Enviado";
     chip.className = "status-chip shipped";
+    chip.textContent = "Enviado";
+
     btnDeliver.classList.remove("hidden");
     btnDeliver.onclick = () => updateStatus(o.id, "delivered");
   }
 
   if (o.status === "delivered") {
-    chip.textContent = "Entregado";
     chip.className = "status-chip delivered";
+    chip.textContent = "Entregado";
   }
 }
 
@@ -342,48 +348,21 @@ async function updateStatus(orderId, newStatus) {
 }
 
 /* -----------------------------------------------------------
-   ARROWS
------------------------------------------------------------ */
-function updateArrows() {
-  const left = document.getElementById("arrow-left");
-  const right = document.getElementById("arrow-right");
-
-  if (!left || !right) return;
-
-  left.disabled = activeIndex === 0;
-  right.disabled = activeIndex === filtered.length - 1;
-
-  left.onclick = () => {
-    if (activeIndex > 0) {
-      activeIndex--;
-      renderAll();
-    }
-  };
-
-  right.onclick = () => {
-    if (activeIndex < filtered.length - 1) {
-      activeIndex++;
-      renderAll();
-    }
-  };
-}
-
-/* -----------------------------------------------------------
    CONTROLS
 ----------------------------------------------------------- */
 function bindControls() {
-  document.getElementById("status-filter").addEventListener("change", async e => {
+  document.getElementById("status-filter").onchange = async e => {
     currentStatus = e.target.value;
     activeIndex = 0;
     await loadOrdersByStatus(currentStatus);
     renderAll();
-  });
+  };
 
-  document.getElementById("search-orders").addEventListener("input", e => {
+  document.getElementById("search-orders").oninput = e => {
     search = e.target.value.trim();
     activeIndex = 0;
     renderAll();
-  });
+  };
 }
 
 /* -----------------------------------------------------------
