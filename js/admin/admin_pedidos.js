@@ -25,7 +25,8 @@ const STATUS_GROUPS = {
   new: ["pending"],
   processing: ["processing"],
   shipped: ["shipped"],
-  delivered: ["delivered"]
+  delivered: ["delivered"],
+  cancelled: ["cancelled"]
 };
 
 const STATUS_LABELS = {
@@ -141,7 +142,7 @@ function renderCarousel() {
       `L ${Number(o.total).toFixed(2)}`;
 
     node.querySelector(".o-card-status").textContent =
-      STATUS_LABELS[o.status];
+      STATUS_LABELS[o.status] || o.status;
 
     const img = node.querySelector(".order-card-img");
     const placeholder = node.querySelector(".order-card-placeholder");
@@ -163,7 +164,6 @@ function renderCarousel() {
     wrap.appendChild(node);
   });
 
-  // 🔑 Reaplicar selección visual + flechas
   requestAnimationFrame(() => {
     applySelection();
     bindCarouselArrows();
@@ -174,6 +174,8 @@ function renderCarousel() {
    SELECT ORDER
 ========================= */
 function selectOrderByIndex(index) {
+  if (!filtered[index]) return;
+
   activeIndex = index;
   applySelection();
 
@@ -184,11 +186,16 @@ function selectOrderByIndex(index) {
   renderPreview(filtered[index]);
 
   if (userSelected) {
-    requestAnimationFrame(() => {
-      preview.scrollIntoView({ behavior: "smooth", block: "start" });
-    });
+    explainScrollToPreview();
     userSelected = false;
   }
+}
+
+function explainScrollToPreview() {
+  const preview = document.getElementById("admin-order-preview");
+  requestAnimationFrame(() => {
+    preview.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
 }
 
 function applySelection() {
@@ -226,12 +233,12 @@ function renderPreview(o) {
     const subtotal = item.quantity * item.price;
     total += subtotal;
 
-pills.insertAdjacentHTML("beforeend", `
-  <div class="order-pill">
-    <span class="pill-name">${item.products?.name} · ${item.quantity} bolsas</span>
-    <span class="pill-price">L ${subtotal.toFixed(2)}</span>
-  </div>
-`);
+    pills.insertAdjacentHTML("beforeend", `
+      <div class="order-pill">
+        <span class="pill-name">${item.products?.name} · ${item.quantity} bolsas</span>
+        <span class="pill-price">L ${subtotal.toFixed(2)}</span>
+      </div>
+    `);
   });
 
   document.getElementById("o-total").textContent = `L ${total.toFixed(2)}`;
@@ -322,10 +329,16 @@ function renderStatusActions(o) {
 ========================= */
 async function updateStatus(orderId, newStatus) {
   await sb.from("orders").update({ status: newStatus }).eq("id", orderId);
+
   await loadOrdersByStatus(currentStatus);
   renderCarousel();
-  activeIndex = 0;
-  selectOrderByIndex(0);
+
+  if (filtered.length) {
+    activeIndex = 0;
+    selectOrderByIndex(0);
+  } else {
+    showEmpty();
+  }
 }
 
 /* =========================
@@ -360,6 +373,7 @@ function bindControls() {
     currentStatus = e.target.value;
     await loadOrdersByStatus(currentStatus);
     renderCarousel();
+
     if (filtered.length) selectOrderByIndex(0);
     else showEmpty();
   };
@@ -367,11 +381,16 @@ function bindControls() {
   document.getElementById("search-orders").oninput = e => {
     search = e.target.value.trim();
     renderCarousel();
+
+    if (filtered.length && !userSelected) {
+      activeIndex = 0;
+      selectOrderByIndex(0);
+    }
   };
 }
 
 /* =========================
-   CAROUSEL ARROWS — FIX
+   CAROUSEL ARROWS
 ========================= */
 function bindCarouselArrows() {
   const list = document.getElementById("orders-carousel");
@@ -380,16 +399,12 @@ function bindCarouselArrows() {
 
   if (!list || !btnPrev || !btnNext) return;
 
-  const STEP = 220;
+  const STEP = list.clientWidth * 0.9;
 
   function update() {
     const max = list.scrollWidth - list.clientWidth;
-
-    const atStart = list.scrollLeft <= 0;
-    const atEnd = list.scrollLeft >= max - 2;
-
-    btnPrev.disabled = atStart;
-    btnNext.disabled = atEnd;
+    const atStart = list.scrollLeft <= 4;
+    const atEnd = list.scrollLeft >= max - 4;
 
     btnPrev.classList.toggle("is-disabled", atStart);
     btnNext.classList.toggle("is-disabled", atEnd);
