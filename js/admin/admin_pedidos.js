@@ -1,5 +1,5 @@
 /* ============================================================
-   ADMIN — PEDIDOS | CAFÉ CORTERO (CORE FINAL)
+   ADMIN — PEDIDOS | CAFÉ CORTERO (CORE DEFINITIVO)
 ============================================================ */
 
 console.log("🛠️ admin-pedidos.js — INIT");
@@ -51,7 +51,7 @@ async function init() {
 }
 
 /* -----------------------------------------------------------
-   LOAD ORDERS BY STATUS
+   LOAD ORDERS
 ----------------------------------------------------------- */
 async function loadOrdersByStatus(statusKey) {
   let query = sb
@@ -71,13 +71,13 @@ async function loadOrdersByStatus(statusKey) {
       ),
 
       address:addresses!orders_address_id_fkey (
-        full_name,
-        phone,
         country,
         state,
         city,
         street,
-        postal_code
+        postal_code,
+        phone,
+        full_name
       ),
 
       receipt:payment_receipts!payment_receipts_order_fk (
@@ -87,9 +87,7 @@ async function loadOrdersByStatus(statusKey) {
     .order("created_at", { ascending: false });
 
   const statuses = STATUS_GROUPS[statusKey];
-  if (statuses?.length) {
-    query = query.in("status", statuses);
-  }
+  if (statuses?.length) query = query.in("status", statuses);
 
   const { data, error } = await query;
   if (error) {
@@ -102,12 +100,11 @@ async function loadOrdersByStatus(statusKey) {
 }
 
 /* -----------------------------------------------------------
-   FILTER SEARCH
+   FILTER
 ----------------------------------------------------------- */
 function applyFilters() {
   filtered = orders.filter(o => {
     if (!search) return true;
-
     const q = search.toLowerCase();
     const u = o.users || {};
 
@@ -161,7 +158,6 @@ function renderCarousel() {
     node.querySelector(".o-card-status").textContent =
       STATUS_LABELS[o.status] || o.status;
 
-    // MEDIA
     const img = node.querySelector(".order-card-img");
     const placeholder = node.querySelector(".order-card-placeholder");
     const receipt = o.receipt?.[0];
@@ -186,20 +182,16 @@ function renderCarousel() {
 function selectOrder(orderId, doScroll = true) {
   selectedOrderId = orderId;
 
-  document
-    .querySelectorAll(".order-card")
+  document.querySelectorAll(".order-card")
     .forEach(c => c.classList.remove("is-selected"));
 
-  const activeCard = document.querySelector(
-    `.order-card[data-id="${orderId}"]`
-  );
-  if (activeCard) activeCard.classList.add("is-selected");
+  const active = document.querySelector(`.order-card[data-id="${orderId}"]`);
+  if (active) active.classList.add("is-selected");
 
   const order = orders.find(o => o.id === orderId);
   if (!order) return;
 
   document.getElementById("admin-empty-state").classList.add("hidden");
-
   const preview = document.getElementById("admin-order-preview");
   preview.classList.remove("hidden");
 
@@ -207,7 +199,7 @@ function selectOrder(orderId, doScroll = true) {
 
   if (doScroll) {
     preview.scrollIntoView({
-      behavior: "auto",
+      behavior: "smooth",
       block: "start"
     });
   }
@@ -227,9 +219,6 @@ function renderPreview(o) {
   document.getElementById("o-date").textContent =
     new Date(o.created_at).toLocaleString("es-HN");
 
-  document.getElementById("o-total").textContent =
-    `L ${Number(o.total).toFixed(2)}`;
-
   document.getElementById("o-client-name").textContent =
     u.name || a.full_name || "Cliente";
 
@@ -239,34 +228,39 @@ function renderPreview(o) {
   document.getElementById("o-email").textContent =
     u.email || "—";
 
+  document.getElementById("o-items").textContent =
+    `☕ ${o.total > 0 ? "bolsas" : "0 bolsas"}`;
+
+  document.getElementById("o-total").textContent =
+    `L ${Number(o.total).toFixed(2)}`;
+
+  document.getElementById("o-zone").textContent =
+    [a.city, a.state].filter(Boolean).join(", ") || "—";
+
   document.getElementById("o-address").textContent =
     [a.street, a.city, a.state, a.country].filter(Boolean).join(", ") || "—";
 
   document.getElementById("o-reference").textContent =
     a.postal_code || "—";
 
-  // MEDIA
   const cash = document.getElementById("cash-payment");
   const receiptBox = document.getElementById("receipt-payment");
 
   cash.classList.add("hidden");
   receiptBox.classList.add("hidden");
 
-  if (o.payment_method === "cash_on_delivery") {
-    cash.classList.remove("hidden");
-  }
-
   if (r?.file_url) {
     receiptBox.classList.remove("hidden");
     document.getElementById("receipt-img").src = r.file_url;
+  } else {
+    cash.classList.remove("hidden");
   }
 
-  // STATUS + ACTIONS
   renderStatusActions(o);
 }
 
 /* -----------------------------------------------------------
-   STATUS & ACTIONS
+   STATUS ACTIONS
 ----------------------------------------------------------- */
 function renderStatusActions(o) {
   const chip = document.getElementById("o-status");
@@ -310,7 +304,6 @@ async function updateStatus(orderId, newStatus) {
     return;
   }
 
-  // 🔄 Recargar según filtro actual
   await loadOrdersByStatus(currentStatus);
   renderAll();
 }
@@ -332,7 +325,7 @@ function bindControls() {
 }
 
 /* -----------------------------------------------------------
-   EMPTY STATE
+   EMPTY
 ----------------------------------------------------------- */
 function showEmpty() {
   document.getElementById("admin-order-preview").classList.add("hidden");
