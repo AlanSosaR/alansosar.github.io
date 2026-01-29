@@ -293,25 +293,26 @@ body {
   object-fit: cover;
 }
 /* =========================================================
-   CARRUSEL — FIX DEFINITIVO (PC + MÓVIL)
+   CARRUSEL — FIX DEFINITIVO SIN DESBORDES
 ========================================================= */
 
-/* Contenedor externo */
+/* Sección carrusel */
 .related {
   position: relative;
-  width: 100%;
-  max-width: none;          /* 🔑 rompe el límite */
-  margin: 0 0 3rem;
+  width: calc(100% + 40px);        /* 🔑 compensa padding padre */
+  margin-left: -20px;
+  margin-right: -20px;
+  margin-bottom: 3rem;
+
+  overflow: hidden;               /* 🔑 corta desbordes */
 }
 
-/* Lista scrolleable */
+/* Lista horizontal */
 .similar-list {
   display: flex;
   gap: 1rem;
 
-  width: 100%;
-  padding: 16px;
-
+  padding: 16px 20px;             /* padding visual controlado */
   overflow-x: auto;
   overflow-y: hidden;
 
@@ -325,7 +326,9 @@ body {
 
 /* Card */
 .similar-card {
-  flex: 0 0 190px;
+  flex: 0 0 180px;                 /* 🔑 un poco más flexible */
+  max-width: 180px;
+
   background: #fff;
   border-radius: 18px;
   padding: 1rem;
@@ -354,8 +357,8 @@ body {
   top: 50%;
   transform: translateY(-50%);
 
-  width: 54px;
-  height: 54px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
 
   background: #fff;
@@ -371,14 +374,14 @@ body {
 }
 
 .carousel-prev-circle {
-  left: 8px;
+  left: 10px;
 }
 
 .carousel-next-circle {
-  right: 8px;
+  right: 10px;
 }
 
-/* MÓVIL: sin flechas, swipe limpio */
+/* MÓVIL: swipe limpio, sin flechas */
 @media (max-width: 900px) {
   .carousel-prev-circle,
   .carousel-next-circle {
