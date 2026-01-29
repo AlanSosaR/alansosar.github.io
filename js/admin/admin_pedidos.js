@@ -46,13 +46,12 @@ async function init() {
   if (!user || user.rol !== "admin") return;
 
   bindControls();
-  bindCarouselArrows();
   bindSnackbar();
 
   await loadOrdersByStatus(currentStatus);
   renderCarousel();
 
-  if (orders.length) {
+  if (filtered.length) {
     selectOrderByIndex(0);
   } else {
     showEmpty();
@@ -163,6 +162,12 @@ function renderCarousel() {
 
     wrap.appendChild(node);
   });
+
+  // 🔑 Reaplicar selección visual + flechas
+  requestAnimationFrame(() => {
+    applySelection();
+    bindCarouselArrows();
+  });
 }
 
 /* =========================
@@ -170,13 +175,7 @@ function renderCarousel() {
 ========================= */
 function selectOrderByIndex(index) {
   activeIndex = index;
-
-  document.querySelectorAll(".order-card")
-    .forEach(c => c.classList.remove("is-selected"));
-
-  document
-    .querySelector(`.order-card[data-index="${index}"]`)
-    ?.classList.add("is-selected");
+  applySelection();
 
   const preview = document.getElementById("admin-order-preview");
   preview.classList.remove("hidden");
@@ -190,6 +189,16 @@ function selectOrderByIndex(index) {
     });
     userSelected = false;
   }
+}
+
+function applySelection() {
+  document.querySelectorAll(".order-card")
+    .forEach(c => c.classList.remove("is-selected"));
+
+  const card = document.querySelector(
+    `.order-card[data-index="${activeIndex}"]`
+  );
+  card?.classList.add("is-selected");
 }
 
 /* =========================
@@ -260,7 +269,6 @@ function renderMedia(o) {
    STATUS ACTIONS
 ========================= */
 function renderStatusActions(o) {
-  const chip = document.getElementById("o-status");
   const btnAccept = document.getElementById("btnAccept");
   const btnReject = document.getElementById("btnReject");
   const btnShip = document.getElementById("btnShip");
@@ -268,9 +276,6 @@ function renderStatusActions(o) {
 
   [btnAccept, btnReject, btnShip, btnDeliver]
     .forEach(b => b.classList.add("hidden"));
-
-  chip.textContent = STATUS_LABELS[o.status];
-  chip.className = `status-chip ${o.status}`;
 
   if (o.status === "pending") {
     btnAccept.classList.remove("hidden");
@@ -319,6 +324,7 @@ async function updateStatus(orderId, newStatus) {
   await sb.from("orders").update({ status: newStatus }).eq("id", orderId);
   await loadOrdersByStatus(currentStatus);
   renderCarousel();
+  activeIndex = 0;
   selectOrderByIndex(0);
 }
 
@@ -365,16 +371,40 @@ function bindControls() {
 }
 
 /* =========================
-   CAROUSEL ARROWS
+   CAROUSEL ARROWS — FIX
 ========================= */
 function bindCarouselArrows() {
   const list = document.getElementById("orders-carousel");
+  const btnPrev = document.getElementById("orders-prev");
+  const btnNext = document.getElementById("orders-next");
 
-  document.getElementById("orders-prev").onclick = () =>
-    list.scrollBy({ left: -300, behavior: "smooth" });
+  if (!list || !btnPrev || !btnNext) return;
 
-  document.getElementById("orders-next").onclick = () =>
-    list.scrollBy({ left: 300, behavior: "smooth" });
+  const STEP = 220;
+
+  function update() {
+    const max = list.scrollWidth - list.clientWidth;
+
+    const atStart = list.scrollLeft <= 0;
+    const atEnd = list.scrollLeft >= max - 2;
+
+    btnPrev.disabled = atStart;
+    btnNext.disabled = atEnd;
+
+    btnPrev.classList.toggle("is-disabled", atStart);
+    btnNext.classList.toggle("is-disabled", atEnd);
+  }
+
+  btnPrev.onclick = () =>
+    list.scrollBy({ left: -STEP, behavior: "smooth" });
+
+  btnNext.onclick = () =>
+    list.scrollBy({ left: STEP, behavior: "smooth" });
+
+  list.addEventListener("scroll", update);
+  window.addEventListener("resize", update);
+
+  requestAnimationFrame(update);
 }
 
 /* =========================
