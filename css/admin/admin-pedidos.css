@@ -220,34 +220,34 @@ body {
 ===================== */
 .order-pills .order-pill {
   display: grid;
-  grid-template-columns: 1fr 110px; /* 👈 columna fija del precio */
+  grid-template-columns: 1fr 110px; /* columna fija del precio */
   align-items: center;
   gap: 1rem;
 
   width: 100%;
   padding: 0.85rem 1rem;
 
-  /* 🟢 Verde suave Material 3 */
-  background: #eef5ef;
-  color: #4a2f1b;
+  /* 🤍 Blanco limpio */
+  background: #ffffff;
+  color: #4a2f1b; /* café */
 
   font-size: 0.95rem;
   font-weight: 500;
 
   border-radius: 20px;
 
-  /* 🌫️ Elevación real */
+  /* 🌫️ Sombra MUY sutil (se siente, no se ve) */
   box-shadow:
-    0 3px 6px rgba(0, 0, 0, 0.07),
-    0 10px 22px rgba(46, 125, 50, 0.18);
+    0 1px 2px rgba(0, 0, 0, 0.05),
+    0 4px 12px rgba(0, 0, 0, 0.06);
 
-  /* 🎨 Borde verde sutil */
-  border: 1px solid rgba(46, 125, 50, 0.22);
+  /* Borde casi invisible */
+  border: 1px solid rgba(0, 0, 0, 0.06);
 
   transition:
-    transform 0.25s cubic-bezier(.2,.9,.3,1),
-    box-shadow 0.25s cubic-bezier(.2,.9,.3,1),
-    background 0.25s ease;
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
 }
 
 /* =====================
@@ -267,25 +267,21 @@ body {
 .order-pills .order-pill .pill-price {
   text-align: right;
   font-weight: 700;
-  color: #2e7d32;
+  color: #4a2f1b; /* café */
 }
 
 /* =====================
-   INTERACCIÓN MATERIAL 3
+   INTERACCIÓN SUAVE
 ===================== */
 .order-pills .order-pill:hover {
-  background: #e6f1e8;
-  transform: translateY(-2px);
+  background: #fafafa;
   box-shadow:
-    0 5px 12px rgba(0, 0, 0, 0.1),
-    0 16px 34px rgba(46, 125, 50, 0.25);
+    0 2px 6px rgba(0, 0, 0, 0.08),
+    0 8px 20px rgba(0, 0, 0, 0.08);
 }
 
 .order-pills .order-pill:active {
   transform: scale(0.985);
-  box-shadow:
-    0 2px 4px rgba(0, 0, 0, 0.1),
-    0 6px 14px rgba(46, 125, 50, 0.3);
 }
 
 /* =====================================================
@@ -293,23 +289,26 @@ body {
 ===================================================== */
 .order-total {
   display: grid;
-  grid-template-columns: 1fr 110px; /* 👈 MISMO VALOR */
+  grid-template-columns: 1fr 110px; /* mismo ancho contable */
   align-items: center;
   padding-top: 1rem;
   margin-top: 1rem;
-  border-top: 2px dashed #d7c9bd;
+
+  /* 🟢 línea punteada verde */
+  border-top: 2px dashed rgba(46, 125, 50, 0.45);
 }
 
 .order-total span {
   font-size: 0.95rem;
-  color: #5b3a1e;
+  color: #5b3a1e; /* café */
 }
 
+/* TOTAL EN CAFÉ (no verde) */
 .order-total strong {
   text-align: right;
   font-size: 1.05rem;
   font-weight: 700;
-  color: #2e7d32;
+  color: #4a2f1b; /* café */
 }
 
 /* =====================================================
