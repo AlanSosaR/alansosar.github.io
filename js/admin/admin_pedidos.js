@@ -12,7 +12,7 @@ if (!sb) throw new Error("❌ Supabase no inicializado");
 ----------------------------------------------------------- */
 let orders = [];
 let filtered = [];
-let selectedOrderId = null;
+let activeIndex = 0;
 let currentStatus = "new";
 let search = "";
 
@@ -59,26 +59,28 @@ async function loadOrdersByStatus(statusKey) {
       order_number,
       total,
       status,
-      payment_method,
       created_at,
 
-      users:users!orders_user_id_fkey (
+      users (
         name,
         email,
         phone
       ),
 
-      address:addresses!orders_address_id_fkey (
+      address:addresses (
         country,
         state,
         city,
         street,
-        postal_code,
         phone,
         full_name
       ),
 
-      receipt:payment_receipts!payment_receipts_order_fk (
+      items:order_items (
+        quantity
+      ),
+
+      receipt:payment_receipts (
         file_url
       )
     `)
@@ -119,14 +121,17 @@ function applyFilters() {
 ----------------------------------------------------------- */
 function renderAll() {
   applyFilters();
-  renderCarousel();
 
   if (!filtered.length) {
     showEmpty();
     return;
   }
 
-  selectOrder(filtered[0].id, false);
+  activeIndex = Math.min(activeIndex, filtered.length - 1);
+
+  renderCarousel();
+  selectOrderByIndex(activeIndex);
+  updateArrows();
 }
 
 /* -----------------------------------------------------------
@@ -140,11 +145,11 @@ function renderCarousel() {
   wrap.innerHTML = "";
   related.classList.remove("hidden");
 
-  for (const o of filtered) {
+  filtered.forEach((o, index) => {
     const node = tpl.content.cloneNode(true);
     const card = node.querySelector(".order-card");
 
-    card.dataset.id = o.id;
+    card.dataset.index = index;
 
     node.querySelector(".o-card-number").textContent =
       `Pedido N.º ${String(o.order_number).padStart(3, "0")}`;
@@ -168,35 +173,33 @@ function renderCarousel() {
       placeholder.classList.remove("hidden");
     }
 
-    card.addEventListener("click", () => selectOrder(o.id, true));
+    card.addEventListener("click", () => {
+      activeIndex = index;
+      renderAll();
+    });
+
     wrap.appendChild(node);
-  }
+  });
 }
 
 /* -----------------------------------------------------------
    SELECT ORDER
 ----------------------------------------------------------- */
-function selectOrder(orderId, doScroll = true) {
-  selectedOrderId = orderId;
+function selectOrderByIndex(index) {
+  const order = filtered[index];
+  if (!order) return;
 
   document.querySelectorAll(".order-card")
     .forEach(c => c.classList.remove("is-selected"));
 
-  const active = document.querySelector(`.order-card[data-id="${orderId}"]`);
+  const active = document.querySelector(`.order-card[data-index="${index}"]`);
   if (active) active.classList.add("is-selected");
-
-  const order = orders.find(o => o.id === orderId);
-  if (!order) return;
 
   document.getElementById("admin-empty-state").classList.add("hidden");
   const preview = document.getElementById("admin-order-preview");
   preview.classList.remove("hidden");
 
   renderPreview(order);
-
-  if (doScroll) {
-    preview.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
 }
 
 /* -----------------------------------------------------------
@@ -206,6 +209,11 @@ function renderPreview(o) {
   const u = o.users || {};
   const a = o.address || {};
   const r = o.receipt?.[0];
+
+  const totalBolsas = o.items?.reduce(
+    (sum, i) => sum + Number(i.quantity || 0),
+    0
+  );
 
   document.getElementById("o-number").textContent =
     `Pedido N.º ${String(o.order_number).padStart(3, "0")}`;
@@ -222,7 +230,9 @@ function renderPreview(o) {
   document.getElementById("o-email").textContent =
     u.email || "—";
 
-  document.getElementById("o-items").textContent = "☕ Bolsas";
+  document.getElementById("o-items").textContent =
+    `☕ ${totalBolsas} bolsa${totalBolsas !== 1 ? "s" : ""}`;
+
   document.getElementById("o-total").textContent =
     `L ${Number(o.total).toFixed(2)}`;
 
@@ -232,10 +242,8 @@ function renderPreview(o) {
   document.getElementById("o-address").textContent =
     [a.street, a.city, a.state, a.country].filter(Boolean).join(", ") || "—";
 
-  document.getElementById("o-reference").textContent =
-    a.postal_code || "—";
+  document.getElementById("o-reference").textContent = "—";
 
-  /* MEDIA */
   const orderMedia = document.getElementById("order-media");
   const cash = document.getElementById("cash-payment");
   const receiptBox = document.getElementById("receipt-payment");
@@ -257,30 +265,30 @@ function renderPreview(o) {
 }
 
 /* -----------------------------------------------------------
-   STATUS ACTIONS (FIX REAL)
+   STATUS ACTIONS
 ----------------------------------------------------------- */
 function renderStatusActions(o) {
   const chip = document.getElementById("o-status");
-  const btnShip = document.getElementById("btnShip");
+  const btnMain = document.getElementById("btnShip");
   const btnDeliver = document.getElementById("btnDeliver");
 
-  btnShip.classList.add("hidden");
+  btnMain.classList.add("hidden");
   btnDeliver.classList.add("hidden");
 
   if (o.status === "pending") {
     chip.textContent = "Nuevo";
     chip.className = "status-chip pending";
-    btnShip.textContent = "Aceptar pedido";
-    btnShip.classList.remove("hidden");
-    btnShip.onclick = () => updateStatus(o.id, "processing");
+    btnMain.textContent = "Aceptar pedido";
+    btnMain.classList.remove("hidden");
+    btnMain.onclick = () => updateStatus(o.id, "processing");
   }
 
   if (o.status === "processing") {
     chip.textContent = "En preparación";
     chip.className = "status-chip preparing";
-    btnShip.textContent = "Marcar como enviado";
-    btnShip.classList.remove("hidden");
-    btnShip.onclick = () => updateStatus(o.id, "shipped");
+    btnMain.textContent = "Marcar como enviado";
+    btnMain.classList.remove("hidden");
+    btnMain.onclick = () => updateStatus(o.id, "shipped");
   }
 
   if (o.status === "shipped") {
@@ -311,7 +319,35 @@ async function updateStatus(orderId, newStatus) {
   }
 
   await loadOrdersByStatus(currentStatus);
+  activeIndex = 0;
   renderAll();
+}
+
+/* -----------------------------------------------------------
+   ARROWS
+----------------------------------------------------------- */
+function updateArrows() {
+  const left = document.getElementById("arrow-left");
+  const right = document.getElementById("arrow-right");
+
+  if (!left || !right) return;
+
+  left.disabled = activeIndex === 0;
+  right.disabled = activeIndex === filtered.length - 1;
+
+  left.onclick = () => {
+    if (activeIndex > 0) {
+      activeIndex--;
+      renderAll();
+    }
+  };
+
+  right.onclick = () => {
+    if (activeIndex < filtered.length - 1) {
+      activeIndex++;
+      renderAll();
+    }
+  };
 }
 
 /* -----------------------------------------------------------
@@ -320,12 +356,14 @@ async function updateStatus(orderId, newStatus) {
 function bindControls() {
   document.getElementById("status-filter").addEventListener("change", async e => {
     currentStatus = e.target.value;
+    activeIndex = 0;
     await loadOrdersByStatus(currentStatus);
     renderAll();
   });
 
   document.getElementById("search-orders").addEventListener("input", e => {
     search = e.target.value.trim();
+    activeIndex = 0;
     renderAll();
   });
 }
