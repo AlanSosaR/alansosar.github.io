@@ -200,26 +200,34 @@
 </main>
 
 <!-- =========================
-     TEMPLATE CARRUSEL
+     TEMPLATE CARRUSEL — ORDER CARD
 ========================= -->
 <template id="tpl-order-card">
   <article class="similar-card order-card" data-id="">
 
-    <!-- MEDIA -->
+    <!-- ================= MEDIA ================= -->
     <div class="order-card-media">
+
+      <!-- RECIBO (TRANSFERENCIA) -->
       <img
         class="order-card-img hidden"
         alt="Recibo del pedido"
         loading="lazy"
       />
 
+      <!-- PAGO CONTRA ENTREGA -->
       <div class="order-card-placeholder hidden">
-        <span class="material-symbols-outlined">payments</span>
+        <img
+          src="imagenes/pago_en_mano.svg"
+          alt="Pago contra entrega"
+          loading="lazy"
+        />
         <p>Pago contra entrega</p>
       </div>
+
     </div>
 
-    <!-- INFO -->
+    <!-- ================= INFO ================= -->
     <div class="order-card-info">
       <h4 class="o-card-number">Pedido N.º 000</h4>
       <p class="o-card-total">L 0.00</p>
