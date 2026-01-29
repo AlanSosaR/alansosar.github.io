@@ -209,25 +209,59 @@ body {
 ===================================================== */
 .order-pills {
   display: flex;
-  flex-direction: column;   /* 👈 una debajo de otra */
-  gap: 0.6rem;
-  margin: 1.2rem 0;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 1.4rem 0;
 }
 
+/* =====================
+   PÍLDORA EXPRESSIVE
+===================== */
 .order-pills .pill {
   display: flex;
   align-items: center;
   justify-content: space-between;
 
-  width: 100%;              /* 👈 ocupa toda la fila */
-  background: #f1f6f1;
+  width: 100%;
+  padding: 0.85rem 1rem;
+
+  background: #f6faf6;
   color: #5b3a1e;
 
-  font-size: 0.9rem;
-  padding: 0.7rem 0.9rem;
-  border-radius: 999px;     /* sigue siendo píldora */
+  font-size: 0.95rem;
+  font-weight: 500;
 
-  white-space: normal;      /* permite texto largo */
+  border-radius: 20px;
+
+  /* 🌫️ Elevación Material 3 */
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.06),
+    0 6px 14px rgba(46, 125, 50, 0.12);
+
+  /* 🎨 Borde suave (no plano) */
+  border: 1px solid rgba(46, 125, 50, 0.18);
+
+  /* ✨ Transición expresiva */
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+
+  white-space: normal;
+}
+
+/* =====================
+   INTERACCIÓN EXPRESSIVE
+===================== */
+.order-pills .pill:active {
+  transform: scale(0.985);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.08),
+    0 3px 8px rgba(46, 125, 50, 0.18);
+}
+
+.order-pills .pill:hover {
+  background: #eef6ef;
 }
 
 /* =====================================================
