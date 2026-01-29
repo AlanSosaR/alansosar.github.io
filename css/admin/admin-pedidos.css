@@ -607,14 +607,19 @@ body {
 }
 @media (max-width: 600px) {
   .similar-list {
-    padding-left: 8px;
-    padding-right: 12px;
-    scroll-padding-left: 8px; /* alineación correcta al hacer snap */
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+
+    padding: 0;
+    overflow: visible;        /* 🔑 mata el scroll */
+    scroll-snap-type: none;   /* 🔑 mata el snap */
   }
 
   .similar-card {
-    flex: 0 0 72vw;   /* ✅ ancho correcto Material 3 */
-    max-width: 72vw;
+    flex: unset;
+    max-width: 100%;
+    width: 100%;
   }
 }
 /* ================= SELECCIONADA — SOLO CONTORNO VERDE ================= */
