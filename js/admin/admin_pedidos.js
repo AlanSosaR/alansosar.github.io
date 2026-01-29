@@ -1,5 +1,5 @@
 /* ============================================================
-   ADMIN — PEDIDOS | CAFÉ CORTERO (CORE FINAL UX CORRECTO)
+   ADMIN — PEDIDOS | CAFÉ CORTERO (FINAL UX RÁPIDO)
 ============================================================ */
 
 console.log("🛠️ admin-pedidos.js — INIT");
@@ -14,15 +14,14 @@ let orders = [];
 let filtered = [];
 let selectedOrderId = null;
 
-/* 🔑 Por defecto: NUEVOS */
 let currentStatus = "new";
 let search = "";
 
 /* -----------------------------------------------------------
-   STATUS MAP (CORRECTO)
+   STATUS MAP
 ----------------------------------------------------------- */
 const STATUS_GROUPS = {
-  new: ["pending", "processing"],   // 🔥 CLAVE
+  new: ["pending", "processing"],
   processing: ["processing"],
   shipped: ["shipped"],
   delivered: ["delivered"]
@@ -53,7 +52,7 @@ async function init() {
 }
 
 /* -----------------------------------------------------------
-   LOAD ORDERS BY STATUS
+   LOAD ORDERS
 ----------------------------------------------------------- */
 async function loadOrdersByStatus(statusKey) {
   let query = sb
@@ -101,7 +100,6 @@ async function loadOrdersByStatus(statusKey) {
   }
 
   orders = data || [];
-  console.log("📦 Pedidos cargados:", orders.length);
 }
 
 /* -----------------------------------------------------------
@@ -135,7 +133,7 @@ function renderAll() {
     return;
   }
 
-  selectOrder(filtered[0].id);
+  selectOrder(filtered[0].id, false); // ⛔ sin scroll inicial
 }
 
 /* -----------------------------------------------------------
@@ -164,15 +162,15 @@ function renderCarousel() {
     node.querySelector(".o-card-status").textContent =
       STATUS_LABELS[o.status] || o.status;
 
-    card.addEventListener("click", () => selectOrder(o.id));
+    card.addEventListener("click", () => selectOrder(o.id, true));
     wrap.appendChild(node);
   }
 }
 
 /* -----------------------------------------------------------
-   SELECT ORDER (SCROLL + ACTIVE)
+   SELECT ORDER (UX RÁPIDO)
 ----------------------------------------------------------- */
-function selectOrder(orderId) {
+function selectOrder(orderId, doScroll = true) {
   selectedOrderId = orderId;
 
   document
@@ -188,11 +186,20 @@ function selectOrder(orderId) {
   if (!order) return;
 
   document.getElementById("admin-empty-state").classList.add("hidden");
+
   const preview = document.getElementById("admin-order-preview");
   preview.classList.remove("hidden");
 
   renderPreview(order);
-  preview.scrollIntoView({ behavior: "smooth", block: "start" });
+
+  // ⚡ SCROLL RÁPIDO (MISMO UX QUE PRODUCTOS)
+  if (doScroll) {
+    preview.scrollIntoView({
+      behavior: "auto",   // 🔥 CLAVE
+      block: "start",
+      inline: "nearest"
+    });
+  }
 }
 
 /* -----------------------------------------------------------
