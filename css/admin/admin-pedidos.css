@@ -216,12 +216,12 @@ body {
 }
 
 /* =====================
-   PÍLDORA
+   PÍLDORA (GRID CONTABLE)
 ===================== */
-.order-pills .pill {
-  display: flex;
+.order-pills .order-pill {
+  display: grid;
+  grid-template-columns: 1fr 110px; /* 👈 columna fija del precio */
   align-items: center;
-  justify-content: space-between;
   gap: 1rem;
 
   width: 100%;
@@ -244,13 +244,10 @@ body {
   /* 🎨 Borde verde sutil */
   border: 1px solid rgba(46, 125, 50, 0.22);
 
-  /* ✨ Movimiento Expressive */
   transition:
     transform 0.25s cubic-bezier(.2,.9,.3,1),
     box-shadow 0.25s cubic-bezier(.2,.9,.3,1),
     background 0.25s ease;
-
-  white-space: nowrap;
 }
 
 /* =====================
@@ -258,19 +255,16 @@ body {
 ===================== */
 
 /* Nombre del producto */
-.order-pills .pill .pill-name {
-  flex: 1;
-  font-weight: 500;
-  color: #4a2f1b;
-
+.order-pills .order-pill .pill-name {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  color: #4a2f1b;
+  font-weight: 500;
 }
 
-/* Precio — alineado como el TOTAL */
-.order-pills .pill .pill-price {
-  min-width: 90px;          /* 👈 misma columna visual */
+/* Precio — MISMA COLUMNA QUE EL TOTAL GLOBAL */
+.order-pills .order-pill .pill-price {
   text-align: right;
   font-weight: 700;
   color: #2e7d32;
@@ -279,7 +273,7 @@ body {
 /* =====================
    INTERACCIÓN MATERIAL 3
 ===================== */
-.order-pills .pill:hover {
+.order-pills .order-pill:hover {
   background: #e6f1e8;
   transform: translateY(-2px);
   box-shadow:
@@ -287,7 +281,7 @@ body {
     0 16px 34px rgba(46, 125, 50, 0.25);
 }
 
-.order-pills .pill:active {
+.order-pills .order-pill:active {
   transform: scale(0.985);
   box-shadow:
     0 2px 4px rgba(0, 0, 0, 0.1),
@@ -295,11 +289,11 @@ body {
 }
 
 /* =====================================================
-   SEPARADOR + TOTAL
+   SEPARADOR + TOTAL (MISMA COLUMNA)
 ===================================================== */
 .order-total {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr 110px; /* 👈 MISMO VALOR */
   align-items: center;
   padding-top: 1rem;
   margin-top: 1rem;
@@ -312,7 +306,9 @@ body {
 }
 
 .order-total strong {
+  text-align: right;
   font-size: 1.05rem;
+  font-weight: 700;
   color: #2e7d32;
 }
 
