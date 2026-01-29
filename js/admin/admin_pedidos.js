@@ -14,7 +14,8 @@ let orders = [];
 let filtered = [];
 let selectedOrder = null;
 
-/* 🔑 Por defecto: NUEVOS */
+/* 🔑 UX CORRECTA: el filtro inicia en "new"
+   pero los datos cargan TODOS */
 let currentStatus = "new";
 let search = "";
 
@@ -45,20 +46,18 @@ async function init() {
   const user = JSON.parse(localStorage.getItem("cortero_user") || "null");
   if (!user || user.rol !== "admin") return;
 
-  // sincroniza select
   document.getElementById("status-filter").value = "new";
 
   bindControls();
-  await loadOrdersByStatus("new");
-
+  await loadAllOrders();     // 🔥 CLAVE
   renderAll();
 }
 
 /* -----------------------------------------------------------
-   LOAD ORDERS BY STATUS (BACKEND)
+   LOAD ALL ORDERS (BACKEND UNA SOLA VEZ)
 ----------------------------------------------------------- */
-async function loadOrdersByStatus(statusKey) {
-  let query = sb
+async function loadAllOrders() {
+  const { data, error } = await sb
     .from("orders")
     .select(`
       id,
@@ -91,12 +90,6 @@ async function loadOrdersByStatus(statusKey) {
     `)
     .order("created_at", { ascending: false });
 
-  if (statusKey !== "all") {
-    query = query.in("status", STATUS_GROUPS[statusKey]);
-  }
-
-  const { data, error } = await query;
-
   if (error) {
     console.error("❌ Error cargando pedidos:", error);
     orders = [];
@@ -104,14 +97,21 @@ async function loadOrdersByStatus(statusKey) {
   }
 
   orders = data || [];
-  console.log("📦 Pedidos cargados:", orders.length);
+  console.log("📦 Total pedidos cargados:", orders.length);
 }
 
 /* -----------------------------------------------------------
-   FILTERS (SEARCH)
+   FILTERS (STATUS + SEARCH)
 ----------------------------------------------------------- */
 function applyFilters() {
   filtered = orders.filter(o => {
+    // FILTRO POR ESTADO
+    if (
+      currentStatus !== "all" &&
+      !STATUS_GROUPS[currentStatus].includes(o.status)
+    ) return false;
+
+    // FILTRO DE BÚSQUEDA
     if (!search) return true;
 
     const q = search.toLowerCase();
@@ -127,7 +127,7 @@ function applyFilters() {
 }
 
 /* -----------------------------------------------------------
-   RENDER ALL (CLAVE)
+   RENDER GLOBAL
 ----------------------------------------------------------- */
 function renderAll() {
   applyFilters();
@@ -205,8 +205,8 @@ function renderPreview(o) {
   document.getElementById("o-client-name").textContent =
     u.name || a.full_name || "Cliente";
 
-  document.getElementById("o-email").textContent = u.email || "—";
-  document.getElementById("o-phone").textContent = u.phone || a.phone || "—";
+  document.getElementById("o-phone").textContent =
+    u.phone || a.phone || "—";
 
   document.getElementById("o-address").textContent =
     [a.street, a.city, a.state, a.country].filter(Boolean).join(", ") || "—";
@@ -234,9 +234,8 @@ function renderPreview(o) {
    CONTROLS
 ----------------------------------------------------------- */
 function bindControls() {
-  document.getElementById("status-filter").addEventListener("change", async e => {
+  document.getElementById("status-filter").addEventListener("change", e => {
     currentStatus = e.target.value;
-    await loadOrdersByStatus(currentStatus);
     renderAll();
   });
 
