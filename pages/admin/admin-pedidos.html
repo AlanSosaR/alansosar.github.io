@@ -64,6 +64,9 @@
     <div class="order-header-text">
       <h2 id="o-number">Pedido N.º —</h2>
       <span id="o-date" class="order-date">—</span>
+
+      <!-- ✅ ESTADO DEL PEDIDO (NECESARIO PARA EL JS) -->
+      <span id="o-status" class="status-chip">—</span>
     </div>
   </header>
 
@@ -145,13 +148,9 @@
         <img id="receipt-img" alt="Recibo de pago" loading="lazy" />
       </div>
 
-      <!-- PAGO CONTRA ENTREGA (IMAGEN + TEXTO) -->
+      <!-- PAGO CONTRA ENTREGA -->
       <div id="cash-payment" class="payment-media placeholder hidden">
-        <img
-          src="/imagenes/pago_en_mano.svg"
-          alt="Pago contra entrega"
-          loading="lazy"
-        />
+        <img src="/imagenes/pago_en_mano.svg" alt="Pago contra entrega" />
         <p>Pago contra entrega</p>
       </div>
 
@@ -189,10 +188,8 @@
 ========================= -->
 <template id="tpl-order-card">
   <article class="similar-card order-card">
-
     <div class="order-card-media">
       <img class="order-card-img hidden" alt="Recibo" loading="lazy" />
-
       <div class="order-card-placeholder hidden">
         <img src="/imagenes/pago_en_mano.svg" alt="Pago contra entrega" />
         <p>Pago contra entrega</p>
@@ -204,12 +201,11 @@
       <p class="o-card-total">L 0.00</p>
       <span class="o-card-status">—</span>
     </div>
-
   </article>
 </template>
 
 <!-- =========================
-     SNACKBAR GLOBAL
+     SNACKBAR
 ========================= -->
 <div id="snackbar-action" class="snackbar-action hidden">
   <div class="snackbar-content">
@@ -219,12 +215,8 @@
     </div>
 
     <div class="snackbar-actions">
-      <button id="snackbar-cancel" class="snackbar-btn cancel">
-        Cancelar
-      </button>
-      <button id="snackbar-confirm" class="snackbar-btn danger">
-        Confirmar
-      </button>
+      <button id="snackbar-cancel" class="snackbar-btn cancel">Cancelar</button>
+      <button id="snackbar-confirm" class="snackbar-btn danger">Confirmar</button>
     </div>
   </div>
 </div>
