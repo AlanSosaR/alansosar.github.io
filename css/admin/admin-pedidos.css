@@ -57,26 +57,56 @@ body {
   gap: 10px;
   padding: 10px 14px;
   border-radius: 999px;
+
   background: #fff;
   border: 1px solid var(--gris-line);
+
+  transition: border-color .2s ease, box-shadow .2s ease;
 }
 
+/* ================= ICONO LUPA ================= */
+.search-box .material-symbols-outlined {
+  color: var(--verde);              /* 🔑 lupa verde */
+  font-size: 22px;
+}
+
+/* ================= INPUT ================= */
 .search-box input {
   flex: 1;
   border: none;
   background: transparent;
+
   font-size: .95rem;
+  color: var(--cafe);               /* 🔑 texto café */
   outline: none;
   min-width: 0;
 }
 
+.search-box input::placeholder {
+  color: var(--gris-text);
+}
+
+/* ================= SELECT ================= */
 .search-box select {
   border: none;
   background: transparent;
+
   font-size: .95rem;
+  color: var(--verde);              /* 🔑 select verde */
+  font-weight: 600;
+
   outline: none;
-  flex-shrink: 0;
   cursor: pointer;
+  flex-shrink: 0;
+
+  appearance: none;
+  padding-right: 16px;
+}
+
+/* ================= FOCUS — MATERIAL 3 ================= */
+.search-box:focus-within {
+  border-color: var(--verde);
+  box-shadow: 0 0 0 3px rgba(51, 103, 59, .18);
 }
 /* ================= TARJETA PRINCIPAL ================= */
 .order-main {
