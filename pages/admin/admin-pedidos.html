@@ -57,22 +57,23 @@
 <section id="admin-order-preview" class="order-main admin-preview hidden">
 
   <!-- HEADER (flecha arriba, pedido abajo) -->
-  <header class="order-preview-header stacked-header">
+ <header class="order-preview-header stacked-header">
 
-    <button class="back-btn" id="btnBackOrders" type="button">
-      <span class="material-symbols-outlined">chevron_left</span>
-    </button>
+  <!-- FLECHA ARRIBA -->
+  <button class="back-btn" id="btnBackOrders" type="button">
+    <span class="material-symbols-outlined">chevron_left</span>
+  </button>
 
-    <div class="order-header-text">
-      <h2 id="o-number">Pedido N.º —</h2>
-      <span id="o-date" class="order-date">—</span>
-    </div>
+  <!-- PEDIDO DEBAJO -->
+  <div class="order-header-text">
+    <h2 id="o-number">Pedido N.º —</h2>
+    <span id="o-date" class="order-date">—</span>
+  </div>
 
-    <!-- estado oculto definitivamente -->
-    <span id="o-status" class="status-chip hidden"></span>
+  <!-- ESTADO OCULTO (solo para JS, no UI) -->
+  <span id="o-status" class="status-chip" hidden></span>
 
-  </header>
-
+</header>
   <!-- CONTENIDO -->
   <div class="order-layout">
 
