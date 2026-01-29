@@ -226,12 +226,12 @@ function renderPreview(o) {
     const subtotal = item.quantity * item.price;
     total += subtotal;
 
-    pills.insertAdjacentHTML("beforeend", `
-      <div class="order-pill">
-        <span class="pill-name">☕ ${item.products?.name} · ${item.quantity} bolsas</span>
-        <span class="pill-price">L ${subtotal.toFixed(2)}</span>
-      </div>
-    `);
+pills.insertAdjacentHTML("beforeend", `
+  <div class="order-pill">
+    <span class="pill-name">${item.products?.name} · ${item.quantity} bolsas</span>
+    <span class="pill-price">L ${subtotal.toFixed(2)}</span>
+  </div>
+`);
   });
 
   document.getElementById("o-total").textContent = `L ${total.toFixed(2)}`;
