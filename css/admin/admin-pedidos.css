@@ -198,7 +198,10 @@ body {
   flex-direction: column;
   overflow: hidden; /* 🔑 */
 }
-
+.similar-card.is-selected {
+  border: 2px solid var(--verde);
+  box-shadow: 0 0 0 3px rgba(51, 103, 59, 0.25);
+}
 /* ================= MEDIA CARD ================= */
 .order-card-media {
   width: 100%;
@@ -259,6 +262,12 @@ body {
   box-shadow: 0 6px 16px rgba(0,0,0,.18);
   cursor: pointer;
   z-index: 10;
+}
+.carousel-prev-circle.is-disabled,
+.carousel-next-circle.is-disabled {
+  opacity: .35;
+  pointer-events: none;
+  box-shadow: none;
 }
 
 .carousel-prev-circle { left: 8px; }
