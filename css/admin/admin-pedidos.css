@@ -1,328 +1,347 @@
-/* =====================================================
-   MATERIAL 3 EXPRESSIVE — ADMIN PEDIDOS
-===================================================== */
+/* =========================================================
+   ADMIN PEDIDOS — MATERIAL 3 EXPRESSIVE
+========================================================= */
 
-/* =====================
-   VARIABLES
-===================== */
 :root {
-  --md-primary: #2f5d46;
-  --md-primary-soft: #e6f0ea;
-  --md-secondary: #6b4b3e;
-
-  --md-surface: #ffffff;
-  --md-background: #f6f7f5;
-  --md-outline: #e0e0e0;
-
-  --md-text: #2b2b2b;
-  --md-text-soft: #6f6f6f;
-
-  --radius-xl: 24px;
-  --radius-lg: 18px;
-  --radius-md: 14px;
-  --radius-sm: 10px;
-
-  --shadow-soft:
-    0 10px 28px rgba(0,0,0,0.08),
-    0 3px 10px rgba(0,0,0,0.06);
+  --verde: #2f5e3f;
+  --verde-soft: #e9f2ec;
+  --marron: #6b4b3e;
+  --bg: #f6f8f5;
+  --card: #ffffff;
+  --radius-lg: 22px;
+  --radius-md: 16px;
+  --shadow-soft: 0 8px 24px rgba(0,0,0,.08);
 }
 
-/* =====================
+/* =========================================================
    BASE
-===================== */
-body.page-admin-pedidos {
-  margin: 0;
-  font-family: "Poppins", system-ui, sans-serif;
-  background: var(--md-background);
-  color: var(--md-text);
+========================================================= */
+
+.page-admin-pedidos {
+  background: var(--bg);
 }
 
 .admin-orders-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 1.5rem 1rem 3rem;
-  overflow: visible; /* 🔴 CRÍTICO para sticky */
+  padding: 1.5rem 1rem 4rem;
 }
 
-/* =====================================================
-   ACTION BAR — STICKY
-===================================================== */
+/* =========================================================
+   BARRA SUPERIOR
+========================================================= */
+
 .orders-actions-bar {
-  position: sticky;
-  top: 64px; /* altura real del header */
-  z-index: 30;
-
-  background: var(--md-background);
-  padding: 0.75rem 1rem;
-
-  border-bottom: 1px solid var(--md-outline);
+  margin-bottom: 1.8rem;
 }
 
-.search-box.has-filter {
-  position: relative;
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 0.75rem;
-  align-items: center;
-
-  max-width: 1100px;
-  margin: 0 auto;
-
-  background: var(--md-surface);
-  padding: 0.6rem 0.8rem;
+.search-box {
+  background: var(--card);
   border-radius: 999px;
+  padding: .6rem .8rem;
+  display: flex;
+  align-items: center;
+  gap: .6rem;
   box-shadow: var(--shadow-soft);
 }
 
-/* icono search */
-.search-icon {
-  position: absolute;
-  left: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 1.2rem;
-  color: var(--md-text-soft);
-  pointer-events: none;
-}
-
-/* input */
 .search-box input {
-  width: 100%;
-  height: 44px;
-
-  padding: 0 1rem 0 2.6rem;
-  border-radius: 999px;
-  border: 1px solid var(--md-outline);
-
-  background: var(--md-surface);
-  font-family: inherit;
-  font-size: 0.9rem;
+  border: none;
+  outline: none;
+  flex: 1;
+  font-size: .95rem;
+  background: transparent;
 }
 
-/* select estado */
 .status-filter {
-  height: 44px;
-  padding: 0 1rem;
-
+  border: none;
   border-radius: 999px;
-  border: 1px solid var(--md-outline);
-
-  background: var(--md-primary-soft);
-  color: var(--md-primary);
-
-  font-family: inherit;
-  font-size: 0.85rem;
-  cursor: pointer;
+  padding: .4rem .8rem;
+  background: var(--verde-soft);
+  color: var(--verde);
+  font-weight: 600;
 }
 
-/* =====================================================
-   EMPTY STATE
-===================================================== */
+/* =========================================================
+   ESTADO VACÍO
+========================================================= */
+
 .admin-empty-state {
   text-align: center;
-  padding: 3rem 1rem;
-  color: var(--md-text-soft);
+  padding: 4rem 1rem;
+  color: #666;
 }
 
-.admin-empty-state.hidden {
-  display: none;
-}
+/* =========================================================
+   TARJETA PRINCIPAL
+========================================================= */
 
-/* =====================================================
-   ORDER PREVIEW
-===================================================== */
 .order-main {
-  position: relative;
-  background: var(--md-surface);
-  border-radius: var(--radius-xl);
+  background: var(--card);
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow-soft);
-  padding: 2rem;
-  margin: 2rem 0;
+  padding: 1.5rem;
+  margin-bottom: 2.5rem;
 }
 
-.order-main.hidden {
-  display: none;
+/* HEADER */
+.order-preview-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.2rem;
 }
 
-/* BACK BUTTON */
 .back-btn {
-  position: absolute;
-  top: 1.2rem;
-  left: 1.2rem;
-
   width: 44px;
   height: 44px;
   border-radius: 50%;
   border: none;
-
-  background: var(--md-surface);
-  box-shadow: var(--shadow-soft);
-
+  background: var(--verde-soft);
+  color: var(--verde);
   display: flex;
   align-items: center;
   justify-content: center;
-
   cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
 }
 
-.back-btn span {
-  font-size: 1.6rem;
-  color: var(--md-primary);
-}
-
-/* =====================================================
-   ORDER TEXT
-===================================================== */
-.order-text {
-  display: grid;
-  gap: 1.5rem;
-}
-
-/* HEADER */
-.order-header h2 {
+.order-header-text h2 {
   margin: 0;
-  font-size: 1.7rem;
-  color: var(--md-primary);
+  font-size: 1.2rem;
 }
 
 .order-date {
-  font-size: 0.85rem;
-  color: var(--md-text-soft);
+  font-size: .85rem;
+  color: #666;
 }
 
-.order-total {
-  font-size: 1.3rem;
-  color: var(--md-secondary);
+/* =========================================================
+   LAYOUT
+========================================================= */
+
+.order-layout {
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 2rem;
 }
 
-/* CLIENT */
-.order-client h3,
-.order-address h3 {
-  margin: 0 0 0.3rem;
-  font-size: 0.95rem;
-  color: var(--md-text-soft);
+@media (max-width: 900px) {
+  .order-layout {
+    grid-template-columns: 1fr;
+  }
 }
 
-.client-meta {
+/* =========================================================
+   TEXTO
+========================================================= */
+
+.order-text section {
+  margin-bottom: 1.4rem;
+}
+
+.client-name {
+  font-weight: 600;
+  margin-bottom: .6rem;
+}
+
+.client-meta-vertical {
   display: flex;
-  gap: 1.2rem;
-  font-size: 0.85rem;
-  color: var(--md-text-soft);
+  flex-direction: column;
+  gap: .4rem;
 }
 
-/* ADDRESS */
-.reference {
-  font-size: 0.85rem;
-  color: var(--md-text-soft);
-}
-
-/* =====================================================
-   PAYMENT
-===================================================== */
-.order-payment {
+.meta-row {
   display: flex;
-  gap: 1rem;
+  align-items: center;
+  gap: .4rem;
+  font-size: .9rem;
+}
+
+.meta-row.price strong {
+  font-size: 1.1rem;
+  color: var(--verde);
+}
+
+.order-actions {
+  display: flex;
+  flex-direction: column;
+  gap: .8rem;
+}
+
+.status-actions {
+  display: flex;
+  gap: .8rem;
   flex-wrap: wrap;
 }
 
-.payment-info {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-
-  background: var(--md-primary-soft);
-  color: var(--md-primary);
-  padding: 0.55rem 0.9rem;
-  border-radius: 999px;
-  font-size: 0.85rem;
-}
-
-.payment-receipt {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-
-  background: #f2f2f2;
-  padding: 0.6rem;
-  border-radius: var(--radius-md);
-}
-
-.payment-receipt img {
-  width: 52px;
-  height: 52px;
-  object-fit: cover;
-  border-radius: var(--radius-sm);
-}
-
-/* =====================================================
-   ACTIONS
-===================================================== */
-.order-actions {
-  display: grid;
-  gap: 1rem;
-}
+/* =========================================================
+   BOTONES
+========================================================= */
 
 .admin-action-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-
   border: none;
   border-radius: 999px;
-  padding: 0.6rem 1rem;
-
-  font-family: inherit;
-  font-size: 0.85rem;
+  padding: .7rem 1rem;
+  font-weight: 600;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+}
 
-  background: var(--md-primary-soft);
-  color: var(--md-primary);
+.admin-action-btn.view-info {
+  background: var(--verde-soft);
+  color: var(--verde);
 }
 
 .admin-action-btn.ship {
-  background: var(--md-primary);
+  background: var(--verde);
   color: #fff;
 }
 
 .admin-action-btn.deliver {
-  background: var(--md-secondary);
+  background: var(--marron);
   color: #fff;
 }
 
-/* =====================================================
+/* =========================================================
+   MEDIA (RECIBO)
+========================================================= */
+
+.order-media {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.payment-media {
+  width: 100%;
+  background: #f0f2f0;
+  border-radius: var(--radius-lg);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.payment-media img {
+  width: 100%;
+  max-height: 420px;
+  object-fit: contain;
+}
+
+.payment-media.placeholder {
+  color: #777;
+  font-weight: 600;
+}
+
+/* =========================================================
    CARRUSEL
-===================================================== */
-.admin-related.hidden {
-  display: none;
+========================================================= */
+
+.related {
+  margin-top: 2.5rem;
+}
+
+.carousel-container {
+  position: relative;
 }
 
 .similar-list {
-  display: grid;
-  grid-auto-flow: column;
+  display: flex;
   gap: 1rem;
   overflow-x: auto;
-  padding-bottom: 0.5rem;
+  scroll-behavior: smooth;
+  padding: 1rem .2rem;
 }
 
+.similar-list::-webkit-scrollbar {
+  display: none;
+}
+
+/* =========================================================
+   TARJETA CARRUSEL
+========================================================= */
+
 .order-card {
-  min-width: 180px;
-  background: var(--md-surface);
-  border-radius: var(--radius-lg);
-  padding: 1rem;
+  min-width: 220px;
+  background: var(--card);
+  border-radius: var(--radius-md);
   box-shadow: var(--shadow-soft);
+  overflow: hidden;
   cursor: pointer;
 }
 
-/* =====================================================
-   RESPONSIVE — MISMO LAYOUT QUE DESKTOP
-===================================================== */
-@media (max-width: 720px) {
-  .order-main {
-    padding: 1.4rem;
-  }
+.order-card-media {
+  height: 140px;
+  background: #f0f2f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-  .order-header h2 {
-    font-size: 1.4rem;
+.order-card-media img {
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.order-card-placeholder {
+  text-align: center;
+  color: #777;
+  font-size: .8rem;
+}
+
+.order-card-info {
+  padding: .8rem;
+}
+
+.o-card-number {
+  font-size: .9rem;
+  margin: 0;
+}
+
+.o-card-total {
+  font-weight: 600;
+  color: var(--verde);
+}
+
+.o-card-status {
+  font-size: .75rem;
+  color: #666;
+}
+
+/* =========================================================
+   FLECHAS CARRUSEL
+========================================================= */
+
+.carousel-prev-circle,
+.carousel-next-circle {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--card);
+  box-shadow: var(--shadow-soft);
+  border: none;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  z-index: 5;
+}
+
+.carousel-prev-circle {
+  left: -26px;
+}
+
+.carousel-next-circle {
+  right: -26px;
+}
+
+/* OCULTAR FLECHAS EN MÓVIL */
+@media (max-width: 900px) {
+  .carousel-prev-circle,
+  .carousel-next-circle {
+    display: none;
   }
 }
