@@ -419,9 +419,9 @@ body {
 /* ================= ACCIONES ================= */
 .order-actions.inline-actions {
   display: flex;
-  gap: 0.8rem;                 /* más aire entre botones */
-  margin-top: 1.6rem;          /* 🔑 respiro respecto a Referencia */
-  padding-top: 0.6rem;         /* separación visual extra */
+  gap: 0.8rem;              /* aire entre botones */
+  margin-top: 1.6rem;       /* respiro respecto a Referencia */
+  padding-top: 0.6rem;
   flex-wrap: nowrap;
 }
 
@@ -430,7 +430,7 @@ body {
   flex: 1 1 0;
   padding: 0.9rem 1rem;
 
-  border-radius: 16px;         /* Material 3 expressive */
+  border-radius: 16px;      /* Material 3 Expressive */
   border: none;
 
   font-size: 0.95rem;
@@ -452,23 +452,58 @@ body {
     background 0.2s ease;
 }
 
-/* ================= BOTÓN VERDE — POSITIVO ================= */
-.admin-action-btn.confirm {
+/* Iconos dentro del botón */
+.admin-action-btn .material-symbols-outlined {
+  font-size: 20px;
+  line-height: 1;
+}
+
+/* ================= ACEPTAR — VERDE ================= */
+.admin-action-btn.accept {
   background: var(--verde);
   box-shadow:
     0 6px 14px rgba(51, 103, 59, 0.35),
     0 2px 4px rgba(0, 0, 0, 0.12);
 }
 
-/* Hover */
-.admin-action-btn.confirm:hover {
+.admin-action-btn.accept:hover {
   transform: translateY(-1px);
   box-shadow:
     0 10px 22px rgba(51, 103, 59, 0.45),
     0 4px 8px rgba(0, 0, 0, 0.14);
 }
 
-/* ================= BOTÓN CAFÉ — DESTRUCTIVO ================= */
+/* ================= ENVIAR — VERDE SUAVE ================= */
+.admin-action-btn.ship {
+  background: color-mix(in srgb, var(--verde) 85%, #ffffff);
+  box-shadow:
+    0 6px 14px rgba(51, 103, 59, 0.28),
+    0 2px 4px rgba(0, 0, 0, 0.12);
+}
+
+.admin-action-btn.ship:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 10px 22px rgba(51, 103, 59, 0.4),
+    0 4px 8px rgba(0, 0, 0, 0.14);
+}
+
+/* ================= ENTREGAR — VERDE OSCURO ================= */
+.admin-action-btn.deliver {
+  background: color-mix(in srgb, var(--verde) 95%, #000);
+  box-shadow:
+    0 6px 14px rgba(51, 103, 59, 0.4),
+    0 2px 4px rgba(0, 0, 0, 0.14);
+}
+
+.admin-action-btn.deliver:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 12px 26px rgba(51, 103, 59, 0.5),
+    0 5px 10px rgba(0, 0, 0, 0.16);
+}
+
+/* ================= CANCELAR — CAFÉ ================= */
 .admin-action-btn.reject {
   background: var(--cafe);
   box-shadow:
@@ -476,7 +511,6 @@ body {
     0 2px 4px rgba(0, 0, 0, 0.12);
 }
 
-/* Hover */
 .admin-action-btn.reject:hover {
   transform: translateY(-1px);
   box-shadow:
@@ -489,6 +523,11 @@ body {
   transform: scale(0.97);
   box-shadow:
     0 3px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* ================= OCULTO ================= */
+.admin-action-btn.hidden {
+  display: none;
 }
 /* =========================================================
    CARRUSEL — MATERIAL 3 (SIN GRIS EN SELECCIÓN)
