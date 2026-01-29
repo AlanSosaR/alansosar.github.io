@@ -605,7 +605,17 @@ body {
     transform .25s ease,
     background .25s ease;
 }
+@media (max-width: 600px) {
+  .similar-list {
+    padding-left: 8px;
+    padding-right: 12px;
+  }
 
+  .similar-card {
+    flex: 0 0 85vw;
+    max-width: 85vw;
+  }
+}
 /* ================= SELECCIONADA — SOLO CONTORNO VERDE ================= */
 .similar-card.is-selected {
   background: #fff; /* 🔒 fondo intacto */
@@ -735,5 +745,12 @@ body {
   .carousel-prev-circle,
   .carousel-next-circle {
     display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .admin-orders-container {
+    padding-left: 12px;
+    padding-right: 12px;
   }
 }
