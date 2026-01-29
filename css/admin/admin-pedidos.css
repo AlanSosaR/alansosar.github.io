@@ -216,26 +216,27 @@ body {
 }
 
 /* =====================
-   PÍLDORA EXPRESSIVE
+   PÍLDORA
 ===================== */
 .order-pills .pill {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 1rem;
 
   width: 100%;
   padding: 0.85rem 1rem;
 
   /* 🟢 Verde suave Material 3 */
   background: #eef5ef;
-  color: #4a2f1b; /* café */
+  color: #4a2f1b;
 
   font-size: 0.95rem;
   font-weight: 500;
 
   border-radius: 20px;
 
-  /* 🌫️ Elevación real (no plana) */
+  /* 🌫️ Elevación real */
   box-shadow:
     0 3px 6px rgba(0, 0, 0, 0.07),
     0 10px 22px rgba(46, 125, 50, 0.18);
@@ -249,7 +250,30 @@ body {
     box-shadow 0.25s cubic-bezier(.2,.9,.3,1),
     background 0.25s ease;
 
-  white-space: normal;
+  white-space: nowrap;
+}
+
+/* =====================
+   CONTENIDO INTERNO
+===================== */
+
+/* Nombre del producto */
+.order-pills .pill .pill-name {
+  flex: 1;
+  font-weight: 500;
+  color: #4a2f1b;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Precio — alineado como el TOTAL */
+.order-pills .pill .pill-price {
+  min-width: 90px;          /* 👈 misma columna visual */
+  text-align: right;
+  font-weight: 700;
+  color: #2e7d32;
 }
 
 /* =====================
