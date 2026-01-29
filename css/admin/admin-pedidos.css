@@ -119,34 +119,50 @@ body {
   overflow: hidden; /* 🔑 evita invasiones */
 }
 
-/* ================= HEADER ================= */
+
+/* ================= HEADER PEDIDO ================= */
 .order-preview-header {
   display: flex;
-  align-items: center;
-  gap: 1rem;
+  flex-direction: column;          /* 🔑 flecha arriba, texto abajo */
+  align-items: flex-start;
+  gap: .6rem;
   margin-bottom: 2rem;
 }
 
+/* ================= BOTÓN VOLVER ================= */
 .back-btn {
   width: 42px;
   height: 42px;
   border-radius: 50%;
   border: none;
   background: #fff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   box-shadow: 0 6px 16px rgba(0,0,0,.18);
   cursor: pointer;
-  flex-shrink: 0;
 }
 
+/* Icono flecha */
+.back-btn .material-symbols-outlined {
+  color: var(--verde);              /* 🔑 flecha verde */
+  font-size: 26px;
+}
+
+/* ================= TEXTO PEDIDO ================= */
 .order-header-text h2 {
   margin: 0;
   font-size: 1.6rem;
   color: var(--verde);
+  line-height: 1.2;
 }
 
+/* Fecha y hora */
 .order-date {
   font-size: .85rem;
-  color: var(--gris-text);
+  color: var(--cafe);               /* 🔑 café */
 }
 
 /* ================= LAYOUT ================= */
