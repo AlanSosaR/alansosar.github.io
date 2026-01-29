@@ -699,74 +699,88 @@ body {
   min-height: 0;
 }
 
-/* ================= FLECHAS ================= */
+/* =========================================================
+   FLECHAS CARRUSEL — MATERIAL 3 (VISIBLE + INTELIGENTE)
+========================================================= */
+
 .carousel-prev-circle,
 .carousel-next-circle {
   position: absolute;
-
-  /* ⬇️ bajadas para no interferir con las cards */
-  top: calc(50% + 36px);
+  top: 50%;
   transform: translateY(-50%);
 
   width: 48px;
   height: 48px;
   border-radius: 50%;
 
-  background: #fff;
+  background: #ffffff; /* 🔑 círculo blanco real */
   border: none;
 
-  /* sombra suave */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.16);
+  /* sombra clara para verse sobre fondo blanco */
+  box-shadow:
+    0 6px 16px rgba(0, 0, 0, 0.22),
+    0 2px 4px rgba(0, 0, 0, 0.12);
 
   cursor: pointer;
-  z-index: 10;
+  z-index: 20;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
   transition:
+    opacity 0.2s ease,
     transform 0.2s ease,
-    box-shadow 0.2s ease,
-    opacity 0.2s ease;
+    box-shadow 0.2s ease;
 }
 
-/* Icono verde del sistema */
+/* ================= ICONO ================= */
 .carousel-prev-circle .material-symbols-outlined,
 .carousel-next-circle .material-symbols-outlined {
   font-size: 26px;
   color: var(--verde);
 }
 
-/* Posición lateral (ligeramente fuera) */
+/* ================= POSICIÓN ================= */
+/* Dentro del carrusel (NO fuera) */
 .carousel-prev-circle {
-  left: -6px;
+  left: 8px;
 }
 
 .carousel-next-circle {
-  right: -6px;
+  right: 8px;
 }
 
-/* Hover solo cuando está activa */
+/* ================= HOVER ================= */
 .carousel-prev-circle:not(.is-disabled):hover,
 .carousel-next-circle:not(.is-disabled):hover {
-  transform: translateY(-50%) scale(1.05);
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.22);
+  transform: translateY(-50%) scale(1.08);
+  box-shadow:
+    0 10px 22px rgba(0, 0, 0, 0.28),
+    0 4px 8px rgba(0, 0, 0, 0.16);
 }
 
-/* Estado deshabilitado */
+/* ================= DESHABILITADA ================= */
+/* Cuando no hay más scroll en esa dirección */
 .carousel-prev-circle.is-disabled,
 .carousel-next-circle.is-disabled {
-  opacity: 0.25;
+  opacity: 0;
   pointer-events: none;
-  box-shadow: none;
+  transform: translateY(-50%) scale(0.9);
 }
 
-/* Mobile: ocultar flechas */
+/* ================= OCULTA COMPLETAMENTE ================= */
+/* Úsala si quieres desaparecerla del layout */
+.carousel-prev-circle.is-hidden,
+.carousel-next-circle.is-hidden {
+  display: none;
+}
+
+/* ================= MOBILE ================= */
 @media (max-width: 900px) {
   .carousel-prev-circle,
   .carousel-next-circle {
-    display: none;
+    display: none; /* swipe manda */
   }
 }
 
