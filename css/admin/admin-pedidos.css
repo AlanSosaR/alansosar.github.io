@@ -550,7 +550,7 @@ body {
   color: var(--cafe); /* ☕ café */
 }
 /* =========================================================
-   CARRUSEL — MATERIAL 3 (SIN GRIS EN SELECCIÓN)
+   CARRUSEL — MATERIAL 3 (DESKTOP + MOBILE)
 ========================================================= */
 
 /* Sección */
@@ -559,23 +559,25 @@ body {
   margin: 0 auto 3rem;
 }
 
-/* Contenedor real del carrusel */
+/* Contenedor del carrusel */
 .carousel-container {
   position: relative;
   width: 100%;
-  overflow: hidden;
+  overflow: hidden; /* desktop */
 }
 
-/* Lista horizontal */
+/* ================= LISTA ================= */
 .similar-list {
   display: flex;
-  gap: 1rem;
+  gap: 16px;
   padding: 16px;
 
   overflow-x: auto;
   overflow-y: hidden;
 
   scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+
   scrollbar-width: none;
 }
 
@@ -602,45 +604,54 @@ body {
 
   transition:
     box-shadow .25s ease,
-    transform .25s ease,
-    background .25s ease;
+    transform .25s ease;
 }
-@media (max-width: 600px) {
-  .similar-list {
-    display: flex;                 /* ✅ carrusel */
-    flex-direction: row;
-    gap: 14px;
 
-    overflow-x: auto;              /* ✅ scroll horizontal */
-    overflow-y: visible;
-
-    scroll-snap-type: x mandatory; /* ✅ snap activo */
-    -webkit-overflow-scrolling: touch;
-
-    padding: 4px 2px 18px;
-  }
-
-  .similar-card {
-    flex: 0 0 85%;                  /* ancho visible tipo app */
-    max-width: 85%;
-
-    scroll-snap-align: start;       /* ✅ snap por card */
-  }
-}
-/* ================= SELECCIONADA — SOLO CONTORNO VERDE ================= */
+/* ================= SELECCIÓN ================= */
 .similar-card.is-selected {
-  background: #fff; /* 🔒 fondo intacto */
+  background: #fff;
 
-  /* contorno verde limpio */
   outline: 2px solid var(--verde);
   outline-offset: 0;
 
-  /* halo verde suave (no gris) */
   box-shadow:
     0 0 0 4px rgba(51, 103, 59, 0.18),
     0 14px 30px rgba(51, 103, 59, 0.22);
 
   transform: translateY(-2px);
+}
+
+/* =========================================================
+   MOBILE — 2 TARJETAS VISIBLES + MÁRGENES
+========================================================= */
+@media (max-width: 600px) {
+
+  /* Permitir sombras */
+  .carousel-container {
+    overflow: visible;
+  }
+
+  .similar-list {
+    gap: 12px;
+
+    padding: 12px 16px 20px; /* 🔑 separación lateral */
+
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    scroll-snap-type: x mandatory;
+
+    /* 🔑 evita que se pegue al borde al hacer snap */
+    scroll-padding-left: 16px;
+    scroll-padding-right: 16px;
+  }
+
+  .similar-card {
+    flex: 0 0 48%;   /* 🔑 2 tarjetas visibles */
+    max-width: 48%;
+
+    scroll-snap-align: start;
+  }
 }
 /* ================= MEDIA CARD ================= */
 .order-card-media {
