@@ -607,19 +607,24 @@ body {
 }
 @media (max-width: 600px) {
   .similar-list {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    display: flex;                 /* ✅ carrusel */
+    flex-direction: row;
     gap: 14px;
 
-    padding: 0;
-    overflow: visible;        /* 🔑 mata el scroll */
-    scroll-snap-type: none;   /* 🔑 mata el snap */
+    overflow-x: auto;              /* ✅ scroll horizontal */
+    overflow-y: visible;
+
+    scroll-snap-type: x mandatory; /* ✅ snap activo */
+    -webkit-overflow-scrolling: touch;
+
+    padding: 4px 2px 18px;
   }
 
   .similar-card {
-    flex: unset;
-    max-width: 100%;
-    width: 100%;
+    flex: 0 0 85%;                  /* ancho visible tipo app */
+    max-width: 85%;
+
+    scroll-snap-align: start;       /* ✅ snap por card */
   }
 }
 /* ================= SELECCIONADA — SOLO CONTORNO VERDE ================= */
