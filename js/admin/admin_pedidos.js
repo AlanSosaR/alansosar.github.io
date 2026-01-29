@@ -229,18 +229,25 @@ function renderPreview(o) {
     u.email || "—";
 
   /* =============================
-     ITEMS — DESGLOSE REAL (SIN TASA)
+     ITEMS — IGUAL QUE EL CLIENTE
   ============================== */
   const itemsBox = document.getElementById("o-items");
   itemsBox.innerHTML = "";
 
-  if (Array.isArray(o.items) && o.items.length) {
-    o.items.forEach(item => {
+  const items = o.items || o.order_items || [];
+
+  if (Array.isArray(items) && items.length) {
+    items.forEach(item => {
+      const name = item.products?.name || "Café";
+      const qty = Number(item.quantity || 0);
+      const price = Number(item.price || 0);
+      const subtotal = qty * price;
+
       const row = document.createElement("div");
       row.className = "order-item-row";
       row.innerHTML = `
-        <span>${item.products?.name || "Producto"}</span>
-        <strong>${item.quantity} bolsa${item.quantity !== 1 ? "s" : ""}</strong>
+        <span>${name} (${qty})</span>
+        <strong>L ${subtotal.toFixed(2)}</strong>
       `;
       itemsBox.appendChild(row);
     });
@@ -249,7 +256,7 @@ function renderPreview(o) {
   }
 
   /* =============================
-     TOTAL (SOLO MONTO, SIN TASA)
+     TOTAL (SOLO MONTO FINAL)
   ============================== */
   document.getElementById("o-total").textContent =
     `L ${Number(o.total).toFixed(2)}`;
@@ -258,6 +265,35 @@ function renderPreview(o) {
      DIRECCIÓN
   ============================== */
   document.getElementById("o-zone").textContent =
+    [a.city, a.state].filter(Boolean).join(", ") || "—";
+
+  document.getElementById("o-address").textContent =
+    [a.street, a.city, a.state, a.country].filter(Boolean).join(", ") || "—";
+
+  document.getElementById("o-reference").textContent = "—";
+
+  /* =============================
+     MEDIA (RECIBO / EFECTIVO)
+  ============================== */
+  const orderMedia = document.getElementById("order-media");
+  const cash = document.getElementById("cash-payment");
+  const receiptBox = document.getElementById("receipt-payment");
+
+  orderMedia.classList.add("hidden");
+  cash.classList.add("hidden");
+  receiptBox.classList.add("hidden");
+
+  if (r?.file_url) {
+    orderMedia.classList.remove("hidden");
+    receiptBox.classList.remove("hidden");
+    document.getElementById("receipt-img").src = r.file_url;
+  } else {
+    orderMedia.classList.remove("hidden");
+    cash.classList.remove("hidden");
+  }
+
+  renderStatusActions(o);
+}
     [a.city, a.state].filter(Boolean).join(", ") || "—";
 
   document.getElementById("o-address").textContent =
