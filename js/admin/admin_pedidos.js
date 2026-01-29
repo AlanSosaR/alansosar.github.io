@@ -1,5 +1,5 @@
 /* ============================================================
-   ADMIN — PEDIDOS | CAFÉ CORTERO (FINAL UX RÁPIDO)
+   ADMIN — PEDIDOS | CAFÉ CORTERO (CORE FINAL)
 ============================================================ */
 
 console.log("🛠️ admin-pedidos.js — INIT");
@@ -43,8 +43,7 @@ async function init() {
   const user = JSON.parse(localStorage.getItem("cortero_user") || "null");
   if (!user || user.rol !== "admin") return;
 
-  const statusSelect = document.getElementById("status-filter");
-  statusSelect.value = "new";
+  document.getElementById("status-filter").value = "new";
 
   bindControls();
   await loadOrdersByStatus("new");
@@ -52,7 +51,7 @@ async function init() {
 }
 
 /* -----------------------------------------------------------
-   LOAD ORDERS
+   LOAD ORDERS BY STATUS
 ----------------------------------------------------------- */
 async function loadOrdersByStatus(statusKey) {
   let query = sb
@@ -133,7 +132,7 @@ function renderAll() {
     return;
   }
 
-  selectOrder(filtered[0].id, false); // ⛔ sin scroll inicial
+  selectOrder(filtered[0].id, false);
 }
 
 /* -----------------------------------------------------------
@@ -162,13 +161,27 @@ function renderCarousel() {
     node.querySelector(".o-card-status").textContent =
       STATUS_LABELS[o.status] || o.status;
 
+    // MEDIA
+    const img = node.querySelector(".order-card-img");
+    const placeholder = node.querySelector(".order-card-placeholder");
+    const receipt = o.receipt?.[0];
+
+    if (receipt?.file_url) {
+      img.src = receipt.file_url;
+      img.classList.remove("hidden");
+      placeholder.classList.add("hidden");
+    } else {
+      img.classList.add("hidden");
+      placeholder.classList.remove("hidden");
+    }
+
     card.addEventListener("click", () => selectOrder(o.id, true));
     wrap.appendChild(node);
   }
 }
 
 /* -----------------------------------------------------------
-   SELECT ORDER (UX RÁPIDO)
+   SELECT ORDER
 ----------------------------------------------------------- */
 function selectOrder(orderId, doScroll = true) {
   selectedOrderId = orderId;
@@ -192,12 +205,10 @@ function selectOrder(orderId, doScroll = true) {
 
   renderPreview(order);
 
-  // ⚡ SCROLL RÁPIDO (MISMO UX QUE PRODUCTOS)
   if (doScroll) {
     preview.scrollIntoView({
-      behavior: "auto",   // 🔥 CLAVE
-      block: "start",
-      inline: "nearest"
+      behavior: "auto",
+      block: "start"
     });
   }
 }
@@ -225,12 +236,16 @@ function renderPreview(o) {
   document.getElementById("o-phone").textContent =
     u.phone || a.phone || "—";
 
+  document.getElementById("o-email").textContent =
+    u.email || "—";
+
   document.getElementById("o-address").textContent =
     [a.street, a.city, a.state, a.country].filter(Boolean).join(", ") || "—";
 
   document.getElementById("o-reference").textContent =
     a.postal_code || "—";
 
+  // MEDIA
   const cash = document.getElementById("cash-payment");
   const receiptBox = document.getElementById("receipt-payment");
 
@@ -245,6 +260,59 @@ function renderPreview(o) {
     receiptBox.classList.remove("hidden");
     document.getElementById("receipt-img").src = r.file_url;
   }
+
+  // STATUS + ACTIONS
+  renderStatusActions(o);
+}
+
+/* -----------------------------------------------------------
+   STATUS & ACTIONS
+----------------------------------------------------------- */
+function renderStatusActions(o) {
+  const chip = document.getElementById("o-status");
+  const btnShip = document.getElementById("btnShip");
+  const btnDeliver = document.getElementById("btnDeliver");
+
+  btnShip.classList.add("hidden");
+  btnDeliver.classList.add("hidden");
+
+  if (o.status === "processing") {
+    chip.textContent = "En preparación";
+    chip.className = "status-chip preparing";
+    btnShip.classList.remove("hidden");
+    btnShip.onclick = () => updateStatus(o.id, "shipped");
+  }
+
+  if (o.status === "shipped") {
+    chip.textContent = "Enviado";
+    chip.className = "status-chip shipped";
+    btnDeliver.classList.remove("hidden");
+    btnDeliver.onclick = () => updateStatus(o.id, "delivered");
+  }
+
+  if (o.status === "delivered") {
+    chip.textContent = "Entregado";
+    chip.className = "status-chip delivered";
+  }
+}
+
+/* -----------------------------------------------------------
+   UPDATE STATUS
+----------------------------------------------------------- */
+async function updateStatus(orderId, newStatus) {
+  const { error } = await sb
+    .from("orders")
+    .update({ status: newStatus })
+    .eq("id", orderId);
+
+  if (error) {
+    console.error("❌ Error actualizando estado:", error);
+    return;
+  }
+
+  // 🔄 Recargar según filtro actual
+  await loadOrdersByStatus(currentStatus);
+  renderAll();
 }
 
 /* -----------------------------------------------------------
@@ -264,9 +332,10 @@ function bindControls() {
 }
 
 /* -----------------------------------------------------------
-   EMPTY
+   EMPTY STATE
 ----------------------------------------------------------- */
 function showEmpty() {
   document.getElementById("admin-order-preview").classList.add("hidden");
+  document.querySelector(".admin-related").classList.add("hidden");
   document.getElementById("admin-empty-state").classList.remove("hidden");
 }
