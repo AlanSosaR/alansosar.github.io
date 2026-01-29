@@ -1,5 +1,5 @@
 /* ============================================================
-   ADMIN — PEDIDOS | CAFÉ CORTERO (CORE FINAL REAL)
+   ADMIN — PEDIDOS | CAFÉ CORTERO
 ============================================================ */
 
 console.log("🛠️ admin-pedidos.js — INIT");
@@ -7,9 +7,9 @@ console.log("🛠️ admin-pedidos.js — INIT");
 const sb = window.supabaseClient;
 if (!sb) throw new Error("❌ Supabase no inicializado");
 
-/* -----------------------------------------------------------
+/* =========================
    STATE
------------------------------------------------------------ */
+========================= */
 let orders = [];
 let filtered = [];
 let activeIndex = 0;
@@ -18,9 +18,9 @@ let search = "";
 let pendingAction = null;
 let userSelected = false;
 
-/* -----------------------------------------------------------
+/* =========================
    STATUS MAP
------------------------------------------------------------ */
+========================= */
 const STATUS_GROUPS = {
   new: ["pending"],
   processing: ["processing"],
@@ -36,9 +36,9 @@ const STATUS_LABELS = {
   cancelled: "Cancelado"
 };
 
-/* -----------------------------------------------------------
+/* =========================
    INIT
------------------------------------------------------------ */
+========================= */
 document.addEventListener("DOMContentLoaded", init);
 
 async function init() {
@@ -49,13 +49,19 @@ async function init() {
   bindCarouselArrows();
   bindSnackbar();
 
-  await loadOrdersByStatus("new");
-  renderAll();
+  await loadOrdersByStatus(currentStatus);
+  renderCarousel();
+
+  if (orders.length) {
+    selectOrderByIndex(0);
+  } else {
+    showEmpty();
+  }
 }
 
-/* -----------------------------------------------------------
+/* =========================
    LOAD ORDERS
------------------------------------------------------------ */
+========================= */
 async function loadOrdersByStatus(statusKey) {
   let query = sb
     .from("orders")
@@ -73,21 +79,23 @@ async function loadOrdersByStatus(statusKey) {
     .order("created_at", { ascending: false });
 
   const statuses = STATUS_GROUPS[statusKey];
-  if (statuses?.length) query = query.in("status", statuses);
+  if (statuses) query = query.in("status", statuses);
 
   const { data, error } = await query;
   if (error) {
     console.error("❌ Error cargando pedidos:", error);
     orders = [];
+    filtered = [];
     return;
   }
 
   orders = data || [];
+  filtered = [...orders];
 }
 
-/* -----------------------------------------------------------
+/* =========================
    FILTER
------------------------------------------------------------ */
+========================= */
 function applyFilters() {
   if (!search) {
     filtered = [...orders];
@@ -101,31 +109,25 @@ function applyFilters() {
   );
 }
 
-/* -----------------------------------------------------------
-   RENDER ALL
------------------------------------------------------------ */
-function renderAll() {
+/* =========================
+   CARRUSEL
+========================= */
+function renderCarousel() {
   applyFilters();
 
+  const wrap = document.getElementById("orders-carousel");
+  const tpl = document.getElementById("tpl-order-card");
+  const related = document.querySelector(".admin-related");
+
+  wrap.innerHTML = "";
+
   if (!filtered.length) {
+    related.classList.add("hidden");
     showEmpty();
     return;
   }
 
-  activeIndex = Math.min(activeIndex, filtered.length - 1);
-  renderCarousel();
-  selectOrderByIndex(activeIndex);
-}
-
-/* -----------------------------------------------------------
-   CARRUSEL
------------------------------------------------------------ */
-function renderCarousel() {
-  const wrap = document.getElementById("orders-carousel");
-  const tpl = document.getElementById("tpl-order-card");
-  document.querySelector(".admin-related").classList.remove("hidden");
-
-  wrap.innerHTML = "";
+  related.classList.remove("hidden");
 
   filtered.forEach((o, index) => {
     const node = tpl.content.cloneNode(true);
@@ -156,18 +158,19 @@ function renderCarousel() {
 
     card.onclick = () => {
       userSelected = true;
-      activeIndex = index;
-      selectOrderByIndex(activeIndex);
+      selectOrderByIndex(index);
     };
 
     wrap.appendChild(node);
   });
 }
 
-/* -----------------------------------------------------------
+/* =========================
    SELECT ORDER
------------------------------------------------------------ */
+========================= */
 function selectOrderByIndex(index) {
+  activeIndex = index;
+
   document.querySelectorAll(".order-card")
     .forEach(c => c.classList.remove("is-selected"));
 
@@ -175,41 +178,34 @@ function selectOrderByIndex(index) {
     .querySelector(`.order-card[data-index="${index}"]`)
     ?.classList.add("is-selected");
 
-  document.getElementById("admin-empty-state").classList.add("hidden");
-
   const preview = document.getElementById("admin-order-preview");
   preview.classList.remove("hidden");
+  document.getElementById("admin-empty-state").classList.add("hidden");
 
   renderPreview(filtered[index]);
 
-  // ✅ Scroll suave SOLO cuando el usuario selecciona
   if (userSelected) {
     requestAnimationFrame(() => {
-      preview.scrollIntoView({
-        behavior: "smooth",
-        block: "start"
-      });
+      preview.scrollIntoView({ behavior: "smooth", block: "start" });
     });
     userSelected = false;
   }
 }
 
-/* -----------------------------------------------------------
+/* =========================
    PREVIEW
------------------------------------------------------------ */
+========================= */
 function renderPreview(o) {
   const u = o.users || {};
   const a = o.address || {};
 
   document.getElementById("o-number").textContent =
     `Pedido N.º ${String(o.order_number).padStart(3, "0")}`;
-
   document.getElementById("o-date").textContent =
     new Date(o.created_at).toLocaleString("es-HN");
 
   document.getElementById("o-client-name").textContent =
     u.name || a.full_name || "Cliente";
-
   document.getElementById("o-phone").textContent = a.phone || "—";
   document.getElementById("o-email").textContent = u.email || "—";
 
@@ -236,29 +232,33 @@ function renderPreview(o) {
     [a.street, a.city, a.state, a.country].filter(Boolean).join(", ") || "—";
   document.getElementById("o-reference").textContent = a.postal_code || "—";
 
+  renderMedia(o);
+  renderStatusActions(o);
+}
+
+/* =========================
+   MEDIA
+========================= */
+function renderMedia(o) {
   const media = document.getElementById("order-media");
   const cash = document.getElementById("cash-payment");
   const receipt = document.getElementById("receipt-payment");
 
-  media.classList.add("hidden");
+  media.classList.remove("hidden");
   cash.classList.add("hidden");
   receipt.classList.add("hidden");
 
   if (o.receipt?.[0]?.file_url) {
     receipt.classList.remove("hidden");
-    media.classList.remove("hidden");
     document.getElementById("receipt-img").src = o.receipt[0].file_url;
   } else {
     cash.classList.remove("hidden");
-    media.classList.remove("hidden");
   }
-
-  renderStatusActions(o);
 }
 
-/* -----------------------------------------------------------
-   STATUS ACTIONS + SNACKBAR
------------------------------------------------------------ */
+/* =========================
+   STATUS ACTIONS
+========================= */
 function renderStatusActions(o) {
   const chip = document.getElementById("o-status");
   const btnAccept = document.getElementById("btnAccept");
@@ -312,18 +312,19 @@ function renderStatusActions(o) {
   }
 }
 
-/* -----------------------------------------------------------
+/* =========================
    UPDATE STATUS
------------------------------------------------------------ */
+========================= */
 async function updateStatus(orderId, newStatus) {
   await sb.from("orders").update({ status: newStatus }).eq("id", orderId);
   await loadOrdersByStatus(currentStatus);
-  renderAll();
+  renderCarousel();
+  selectOrderByIndex(0);
 }
 
-/* -----------------------------------------------------------
+/* =========================
    SNACKBAR
------------------------------------------------------------ */
+========================= */
 function openSnackbar(title, message, onConfirm) {
   const el = document.getElementById("snackbar-action");
   document.getElementById("snackbar-title").textContent = title;
@@ -345,25 +346,27 @@ function bindSnackbar() {
   };
 }
 
-/* -----------------------------------------------------------
+/* =========================
    CONTROLS
------------------------------------------------------------ */
+========================= */
 function bindControls() {
   document.getElementById("status-filter").onchange = async e => {
     currentStatus = e.target.value;
     await loadOrdersByStatus(currentStatus);
-    renderAll();
+    renderCarousel();
+    if (filtered.length) selectOrderByIndex(0);
+    else showEmpty();
   };
 
   document.getElementById("search-orders").oninput = e => {
     search = e.target.value.trim();
-    renderAll();
+    renderCarousel();
   };
 }
 
-/* -----------------------------------------------------------
+/* =========================
    CAROUSEL ARROWS
------------------------------------------------------------ */
+========================= */
 function bindCarouselArrows() {
   const list = document.getElementById("orders-carousel");
 
@@ -374,9 +377,9 @@ function bindCarouselArrows() {
     list.scrollBy({ left: 300, behavior: "smooth" });
 }
 
-/* -----------------------------------------------------------
+/* =========================
    EMPTY
------------------------------------------------------------ */
+========================= */
 function showEmpty() {
   document.getElementById("admin-order-preview").classList.add("hidden");
   document.querySelector(".admin-related").classList.add("hidden");
