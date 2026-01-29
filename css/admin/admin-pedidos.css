@@ -294,21 +294,22 @@ body {
   padding-top: 1rem;
   margin-top: 1rem;
 
-  /* 🟢 línea punteada verde */
+  /* 🟢 separador verde (se queda igual) */
   border-top: 2px dashed rgba(46, 125, 50, 0.45);
 }
 
+/* Texto "Total del pedido" → CAFÉ */
 .order-total span {
   font-size: 0.95rem;
-  color: var(--verde); /* verde del sistema */
+  color: #4a2f1b; /* café */
 }
 
-/* TOTAL EN CAFÉ (no verde) */
+/* Número total → VERDE DEL SISTEMA */
 .order-total strong {
   text-align: right;
   font-size: 1.05rem;
   font-weight: 700;
-  color: #4a2f1b; /* café */
+  color: var(--verde); /* verde del sistema */
 }
 
 /* =====================================================
