@@ -210,11 +210,9 @@ function renderPreview(o) {
   const a = o.address || {};
   const r = o.receipt?.[0];
 
-  const totalBolsas = o.items?.reduce(
-    (sum, i) => sum + Number(i.quantity || 0),
-    0
-  );
-
+  /* =============================
+     HEADER
+  ============================== */
   document.getElementById("o-number").textContent =
     `Pedido N.º ${String(o.order_number).padStart(3, "0")}`;
 
@@ -230,12 +228,35 @@ function renderPreview(o) {
   document.getElementById("o-email").textContent =
     u.email || "—";
 
-  document.getElementById("o-items").textContent =
-    `☕ ${totalBolsas} bolsa${totalBolsas !== 1 ? "s" : ""}`;
+  /* =============================
+     ITEMS — DESGLOSE REAL (SIN TASA)
+  ============================== */
+  const itemsBox = document.getElementById("o-items");
+  itemsBox.innerHTML = "";
 
+  if (Array.isArray(o.items) && o.items.length) {
+    o.items.forEach(item => {
+      const row = document.createElement("div");
+      row.className = "order-item-row";
+      row.innerHTML = `
+        <span>${item.products?.name || "Producto"}</span>
+        <strong>${item.quantity} bolsa${item.quantity !== 1 ? "s" : ""}</strong>
+      `;
+      itemsBox.appendChild(row);
+    });
+  } else {
+    itemsBox.textContent = "—";
+  }
+
+  /* =============================
+     TOTAL (SOLO MONTO, SIN TASA)
+  ============================== */
   document.getElementById("o-total").textContent =
     `L ${Number(o.total).toFixed(2)}`;
 
+  /* =============================
+     DIRECCIÓN
+  ============================== */
   document.getElementById("o-zone").textContent =
     [a.city, a.state].filter(Boolean).join(", ") || "—";
 
@@ -244,6 +265,9 @@ function renderPreview(o) {
 
   document.getElementById("o-reference").textContent = "—";
 
+  /* =============================
+     MEDIA (RECIBO / EFECTIVO)
+  ============================== */
   const orderMedia = document.getElementById("order-media");
   const cash = document.getElementById("cash-payment");
   const receiptBox = document.getElementById("receipt-payment");
