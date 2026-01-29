@@ -52,11 +52,11 @@
 </section>
 
 <!-- =========================
-     TARJETA PRINCIPAL
+     TARJETA PRINCIPAL — ADMIN
 ========================= -->
 <section id="admin-order-preview" class="order-main admin-preview hidden">
 
-  <!-- HEADER DEL PEDIDO -->
+  <!-- ================= HEADER ================= -->
   <header class="order-preview-header">
     <button
       class="back-btn"
@@ -73,14 +73,16 @@
     </div>
   </header>
 
+  <!-- ================= CONTENIDO ================= -->
   <div class="order-layout">
 
-    <!-- ================= TEXTO ================= -->
+    <!-- ============ COLUMNA TEXTO ============ -->
     <div class="order-text">
 
       <!-- CLIENTE -->
       <section class="order-client">
         <h3>Cliente</h3>
+
         <p id="o-client-name" class="client-name">—</p>
 
         <div class="client-meta-vertical">
@@ -89,14 +91,22 @@
             <span id="o-phone">—</span>
           </div>
 
-          <div class="meta-row price">
-            <span class="material-symbols-outlined">payments</span>
-            <strong id="o-total">L 0.00</strong>
+          <div class="meta-row">
+            <span class="material-symbols-outlined">mail</span>
+            <span id="o-email">—</span>
           </div>
         </div>
+
+        <!-- PÍLDORA RESUMEN -->
+        <div class="order-pill">
+          <span id="o-items">☕ 0 bolsas</span>
+          <strong id="o-total">L 0.00</strong>
+        </div>
+
+        <p class="order-zone" id="o-zone">Zona —</p>
       </section>
 
-      <!-- DIRECCIÓN -->
+      <!-- ENTREGA -->
       <section class="order-address">
         <h3>Entrega</h3>
         <p id="o-address">—</p>
@@ -106,31 +116,41 @@
         </p>
       </section>
 
-      <!-- ACCIONES -->
-      <div class="order-actions">
+      <!-- ESTADO (SOLO VISUAL) -->
+      <section class="order-status">
+        <span id="o-status" class="status-chip preparing">
+          En preparación
+        </span>
+      </section>
+
+      <!-- ACCIONES (EN CADENA) -->
+      <section class="order-actions">
+
         <button id="btnViewOrder" class="admin-action-btn view-info">
           <span class="material-symbols-outlined">receipt_long</span>
-          Ver información
+          Ver detalle del pedido
         </button>
 
-        <div class="status-actions">
-          <button id="btnShip" class="admin-action-btn ship">
-            <span class="material-symbols-outlined">local_shipping</span>
-            Marcar enviado
-          </button>
+        <!-- ACTIVO SOLO EN PREPARACIÓN -->
+        <button id="btnShip" class="admin-action-btn ship">
+          <span class="material-symbols-outlined">local_shipping</span>
+          Marcar como enviado
+        </button>
 
-          <button id="btnDeliver" class="admin-action-btn deliver">
-            <span class="material-symbols-outlined">done_all</span>
-            Marcar entregado
-          </button>
-        </div>
-      </div>
+        <!-- ACTIVO SOLO CUANDO YA ESTÁ ENVIADO -->
+        <button id="btnDeliver" class="admin-action-btn deliver hidden">
+          <span class="material-symbols-outlined">done_all</span>
+          Marcar como entregado
+        </button>
+
+      </section>
+
     </div>
 
-    <!-- ================= MEDIA ================= -->
-    <div class="order-media">
+    <!-- ============ COLUMNA MEDIA (DETALLE) ============ -->
+    <div class="order-media hidden" id="order-media">
 
-      <!-- RECIBO -->
+      <!-- RECIBO TRANSFERENCIA -->
       <div id="receipt-payment" class="payment-media hidden">
         <img
           id="receipt-img"
@@ -140,13 +160,18 @@
         />
       </div>
 
-      <!-- PLACEHOLDER PAGO CONTRA ENTREGA -->
+      <!-- PAGO CONTRA ENTREGA -->
       <div id="cash-payment" class="payment-media placeholder hidden">
-        <span class="material-symbols-outlined">payments</span>
+        <img
+          src="imagenes/pago_en_mano.svg"
+          alt="Pago contra entrega"
+          loading="lazy"
+        />
         <p>Pago contra entrega</p>
       </div>
 
     </div>
+
   </div>
 </section>
 
