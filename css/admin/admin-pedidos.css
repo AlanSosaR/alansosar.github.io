@@ -431,7 +431,6 @@ body {
   border-radius: 18px;
   padding: 1rem;
 
-  /* sombra base (solo cuando NO está seleccionada) */
   box-shadow: 0 10px 24px rgba(0,0,0,.08);
 
   scroll-snap-align: start;
@@ -440,17 +439,21 @@ body {
   flex-direction: column;
   overflow: hidden;
 
-  transition: box-shadow .25s ease, transform .25s ease;
+  transition:
+    box-shadow .25s ease,
+    transform .25s ease,
+    background .25s ease;
 }
 
-/* ================= SELECCIONADA ================= */
+/* ================= SELECCIONADA (VERDE REAL) ================= */
 .similar-card.is-selected {
-  border: none; /* ❌ fuera borde */
+  background: color-mix(in srgb, var(--verde) 8%, #ffffff); /* 👈 verde suave */
 
-  /* ❌ anulamos sombra gris */
   box-shadow:
-    0 0 0 3px color-mix(in srgb, var(--verde) 35%, transparent),
-    0 12px 28px color-mix(in srgb, var(--verde) 25%, transparent);
+    0 0 0 3px color-mix(in srgb, var(--verde) 45%, transparent),
+    0 14px 30px color-mix(in srgb, var(--verde) 30%, transparent);
+
+  transform: translateY(-2px);
 }
 /* ================= MEDIA CARD ================= */
 .order-card-media {
