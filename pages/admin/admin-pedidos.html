@@ -8,10 +8,9 @@
   <!-- Material Symbols -->
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 
-
-<!-- Estilos -->
-<link rel="stylesheet" href="../../css/tipografia.css" />
-<link rel="stylesheet" href="../../css/header.css" />
+  <!-- Estilos -->
+  <link rel="stylesheet" href="../../css/tipografia.css" />
+  <link rel="stylesheet" href="../../css/header.css" />
   <link rel="stylesheet" href="../../css/admin/admin-pedidos.css" />
 </head>
 
@@ -52,12 +51,12 @@
 </section>
 
 <!-- =========================
-     TARJETA PRINCIPAL
+     PREVIEW PEDIDO
 ========================= -->
 <section id="admin-order-preview" class="order-main admin-preview hidden">
 
-  <!-- HEADER -->
-  <header class="order-preview-header inline-header">
+  <!-- HEADER (flecha arriba, pedido abajo) -->
+  <header class="order-preview-header stacked-header">
 
     <button class="back-btn" id="btnBackOrders" type="button">
       <span class="material-symbols-outlined">chevron_left</span>
@@ -68,7 +67,7 @@
       <span id="o-date" class="order-date">—</span>
     </div>
 
-    <!-- estado oculto a propósito -->
+    <!-- estado oculto definitivamente -->
     <span id="o-status" class="status-chip hidden"></span>
 
   </header>
@@ -117,7 +116,7 @@
         </p>
       </section>
 
-      <!-- ACCIONES -->
+      <!-- ACCIONES EN LÍNEA -->
       <section class="order-actions inline-actions">
 
         <button id="btnAccept" class="admin-action-btn accept hidden">
@@ -227,7 +226,7 @@
 <script src="../../js/core/supabase-client-core.js"></script>
 
 <!-- MISMO PATRÓN QUE ADMIN-PRODUCTOS -->
-<script type="module" src="js/ui/header.js"></script>
+<script type="module" src="../../js/ui/header.js"></script>
 <script src="../../js/core/auth-ui.js"></script>
 <script src="../../js/ui/layout.js"></script>
 
