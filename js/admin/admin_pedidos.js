@@ -15,6 +15,7 @@ let filtered = [];
 let activeIndex = 0;
 let currentStatus = "new";
 let search = "";
+let pendingAction = null;
 
 /* -----------------------------------------------------------
    STATUS MAP
@@ -30,7 +31,8 @@ const STATUS_LABELS = {
   pending: "Nuevo",
   processing: "En preparación",
   shipped: "Enviado",
-  delivered: "Entregado"
+  delivered: "Entregado",
+  cancelled: "Cancelado"
 };
 
 /* -----------------------------------------------------------
@@ -42,8 +44,10 @@ async function init() {
   const user = JSON.parse(localStorage.getItem("cortero_user") || "null");
   if (!user || user.rol !== "admin") return;
 
-  document.getElementById("status-filter").value = "new";
   bindControls();
+  bindCarouselArrows();
+  bindSnackbar();
+
   await loadOrdersByStatus("new");
   renderAll();
 }
@@ -60,33 +64,10 @@ async function loadOrdersByStatus(statusKey) {
       total,
       status,
       created_at,
-
-      users (
-        name,
-        email
-      ),
-
-      address:addresses (
-        country,
-        state,
-        city,
-        street,
-        postal_code,
-        full_name,
-        phone
-      ),
-
-      items:order_items (
-        quantity,
-        price,
-        products (
-          name
-        )
-      ),
-
-      receipt:payment_receipts (
-        file_url
-      )
+      users ( name, email ),
+      address:addresses ( country, state, city, street, postal_code, phone, full_name ),
+      items:order_items ( quantity, price, products ( name ) ),
+      receipt:payment_receipts ( file_url )
     `)
     .order("created_at", { ascending: false });
 
@@ -104,7 +85,7 @@ async function loadOrdersByStatus(statusKey) {
 }
 
 /* -----------------------------------------------------------
-   FILTER — SOLO NÚMERO Y NOMBRE
+   FILTER
 ----------------------------------------------------------- */
 function applyFilters() {
   if (!search) {
@@ -113,16 +94,14 @@ function applyFilters() {
   }
 
   const q = search.toLowerCase();
-
-  filtered = orders.filter(o => {
-    const orderNum = String(o.order_number || "");
-    const name = (o.users?.name || "").toLowerCase();
-    return orderNum.includes(q) || name.includes(q);
-  });
+  filtered = orders.filter(o =>
+    String(o.order_number).includes(q) ||
+    (o.users?.name || "").toLowerCase().includes(q)
+  );
 }
 
 /* -----------------------------------------------------------
-   RENDER ALL
+   RENDER
 ----------------------------------------------------------- */
 function renderAll() {
   applyFilters();
@@ -143,10 +122,9 @@ function renderAll() {
 function renderCarousel() {
   const wrap = document.getElementById("orders-carousel");
   const tpl = document.getElementById("tpl-order-card");
-  const related = document.querySelector(".admin-related");
+  document.querySelector(".admin-related").classList.remove("hidden");
 
   wrap.innerHTML = "";
-  related.classList.remove("hidden");
 
   filtered.forEach((o, index) => {
     const node = tpl.content.cloneNode(true);
@@ -165,10 +143,9 @@ function renderCarousel() {
 
     const img = node.querySelector(".order-card-img");
     const placeholder = node.querySelector(".order-card-placeholder");
-    const receipt = o.receipt?.[0];
 
-    if (receipt?.file_url) {
-      img.src = receipt.file_url;
+    if (o.receipt?.[0]?.file_url) {
+      img.src = o.receipt[0].file_url;
       img.classList.remove("hidden");
       placeholder.classList.add("hidden");
     } else {
@@ -179,6 +156,9 @@ function renderCarousel() {
     card.onclick = () => {
       activeIndex = index;
       renderAll();
+      document
+        .getElementById("admin-order-preview")
+        .scrollIntoView({ behavior: "smooth", block: "start" });
     };
 
     wrap.appendChild(node);
@@ -186,12 +166,9 @@ function renderCarousel() {
 }
 
 /* -----------------------------------------------------------
-   SELECT ORDER
+   SELECT
 ----------------------------------------------------------- */
 function selectOrderByIndex(index) {
-  const order = filtered[index];
-  if (!order) return;
-
   document.querySelectorAll(".order-card")
     .forEach(c => c.classList.remove("is-selected"));
 
@@ -202,7 +179,7 @@ function selectOrderByIndex(index) {
   document.getElementById("admin-empty-state").classList.add("hidden");
   document.getElementById("admin-order-preview").classList.remove("hidden");
 
-  renderPreview(order);
+  renderPreview(filtered[index]);
 }
 
 /* -----------------------------------------------------------
@@ -211,7 +188,6 @@ function selectOrderByIndex(index) {
 function renderPreview(o) {
   const u = o.users || {};
   const a = o.address || {};
-  const r = o.receipt?.[0];
 
   document.getElementById("o-number").textContent =
     `Pedido N.º ${String(o.order_number).padStart(3, "0")}`;
@@ -222,72 +198,57 @@ function renderPreview(o) {
   document.getElementById("o-client-name").textContent =
     u.name || a.full_name || "Cliente";
 
-  document.getElementById("o-phone").textContent =
-    a.phone || "—";
+  document.getElementById("o-phone").textContent = a.phone || "—";
+  document.getElementById("o-email").textContent = u.email || "—";
 
-  document.getElementById("o-email").textContent =
-    u.email || "—";
-
-  /* ---------- PÍLDORAS ---------- */
   const pills = document.getElementById("order-items-pills");
   pills.innerHTML = "";
 
   let total = 0;
-
   o.items?.forEach(item => {
-    const qty = Number(item.quantity);
-    const price = Number(item.price);
-    const subtotal = qty * price;
+    const subtotal = item.quantity * item.price;
     total += subtotal;
 
-    const pill = document.createElement("div");
-    pill.className = "order-pill";
-    pill.innerHTML = `
-      <span class="pill-name">☕ ${item.products?.name} · ${qty} bolsas</span>
-      <span class="pill-price">L ${subtotal.toFixed(2)}</span>
-    `;
-    pills.appendChild(pill);
+    pills.insertAdjacentHTML("beforeend", `
+      <div class="order-pill">
+        <span class="pill-name">☕ ${item.products?.name} · ${item.quantity} bolsas</span>
+        <span class="pill-price">L ${subtotal.toFixed(2)}</span>
+      </div>
+    `);
   });
 
-  document.getElementById("o-total").textContent =
-    `L ${total.toFixed(2)}`;
-
+  document.getElementById("o-total").textContent = `L ${total.toFixed(2)}`;
   document.getElementById("o-zone").textContent =
     [a.city, a.state].filter(Boolean).join(", ") || "—";
-
   document.getElementById("o-address").textContent =
     [a.street, a.city, a.state, a.country].filter(Boolean).join(", ") || "—";
+  document.getElementById("o-reference").textContent = a.postal_code || "—";
 
-  document.getElementById("o-reference").textContent =
-    a.postal_code || "—";
-
-  /* ---------- MEDIA ---------- */
   const media = document.getElementById("order-media");
   const cash = document.getElementById("cash-payment");
-  const receiptBox = document.getElementById("receipt-payment");
+  const receipt = document.getElementById("receipt-payment");
 
   media.classList.add("hidden");
   cash.classList.add("hidden");
-  receiptBox.classList.add("hidden");
+  receipt.classList.add("hidden");
 
-  if (r?.file_url) {
+  if (o.receipt?.[0]?.file_url) {
+    receipt.classList.remove("hidden");
     media.classList.remove("hidden");
-    receiptBox.classList.remove("hidden");
-    document.getElementById("receipt-img").src = r.file_url;
+    document.getElementById("receipt-img").src = o.receipt[0].file_url;
   } else {
-    media.classList.remove("hidden");
     cash.classList.remove("hidden");
+    media.classList.remove("hidden");
   }
 
   renderStatusActions(o);
 }
 
 /* -----------------------------------------------------------
-   STATUS ACTIONS
+   STATUS ACTIONS + SNACKBAR
 ----------------------------------------------------------- */
 function renderStatusActions(o) {
   const chip = document.getElementById("o-status");
-
   const btnAccept = document.getElementById("btnAccept");
   const btnReject = document.getElementById("btnReject");
   const btnShip = document.getElementById("btnShip");
@@ -295,36 +256,34 @@ function renderStatusActions(o) {
 
   [btnAccept, btnReject, btnShip, btnDeliver].forEach(b => b.classList.add("hidden"));
 
-  if (o.status === "pending") {
-    chip.className = "status-chip pending";
-    chip.textContent = "Nuevo";
+  chip.textContent = STATUS_LABELS[o.status];
+  chip.className = `status-chip ${o.status}`;
 
+  if (o.status === "pending") {
     btnAccept.classList.remove("hidden");
     btnReject.classList.remove("hidden");
 
-    btnAccept.onclick = () => updateStatus(o.id, "processing");
-    btnReject.onclick = () => updateStatus(o.id, "cancelled");
+    btnAccept.onclick = () =>
+      openSnackbar("Pasar a preparación", "¿Deseas marcar este pedido como En preparación?", () =>
+        updateStatus(o.id, "processing"));
+
+    btnReject.onclick = () =>
+      openSnackbar("Cancelar pedido", "Esta acción no se puede deshacer", () =>
+        updateStatus(o.id, "cancelled"));
   }
 
   if (o.status === "processing") {
-    chip.className = "status-chip preparing";
-    chip.textContent = "En preparación";
-
     btnShip.classList.remove("hidden");
-    btnShip.onclick = () => updateStatus(o.id, "shipped");
+    btnShip.onclick = () =>
+      openSnackbar("Marcar como enviado", "Confirma el envío del pedido", () =>
+        updateStatus(o.id, "shipped"));
   }
 
   if (o.status === "shipped") {
-    chip.className = "status-chip shipped";
-    chip.textContent = "Enviado";
-
     btnDeliver.classList.remove("hidden");
-    btnDeliver.onclick = () => updateStatus(o.id, "delivered");
-  }
-
-  if (o.status === "delivered") {
-    chip.className = "status-chip delivered";
-    chip.textContent = "Entregado";
+    btnDeliver.onclick = () =>
+      openSnackbar("Marcar como entregado", "Confirma entrega al cliente", () =>
+        updateStatus(o.id, "delivered"));
   }
 }
 
@@ -332,19 +291,34 @@ function renderStatusActions(o) {
    UPDATE STATUS
 ----------------------------------------------------------- */
 async function updateStatus(orderId, newStatus) {
-  const { error } = await sb
-    .from("orders")
-    .update({ status: newStatus })
-    .eq("id", orderId);
-
-  if (error) {
-    console.error("❌ Error actualizando estado:", error);
-    return;
-  }
-
+  await sb.from("orders").update({ status: newStatus }).eq("id", orderId);
   await loadOrdersByStatus(currentStatus);
-  activeIndex = 0;
   renderAll();
+}
+
+/* -----------------------------------------------------------
+   SNACKBAR
+----------------------------------------------------------- */
+function openSnackbar(title, message, onConfirm) {
+  const sb = document.getElementById("snackbar-action");
+  document.getElementById("snackbar-title").textContent = title;
+  document.getElementById("snackbar-message").textContent = message;
+
+  sb.classList.remove("hidden");
+  pendingAction = onConfirm;
+}
+
+function bindSnackbar() {
+  document.getElementById("snackbar-cancel").onclick = () => {
+    document.getElementById("snackbar-action").classList.add("hidden");
+    pendingAction = null;
+  };
+
+  document.getElementById("snackbar-confirm").onclick = () => {
+    document.getElementById("snackbar-action").classList.add("hidden");
+    pendingAction?.();
+    pendingAction = null;
+  };
 }
 
 /* -----------------------------------------------------------
@@ -353,16 +327,27 @@ async function updateStatus(orderId, newStatus) {
 function bindControls() {
   document.getElementById("status-filter").onchange = async e => {
     currentStatus = e.target.value;
-    activeIndex = 0;
     await loadOrdersByStatus(currentStatus);
     renderAll();
   };
 
   document.getElementById("search-orders").oninput = e => {
     search = e.target.value.trim();
-    activeIndex = 0;
     renderAll();
   };
+}
+
+/* -----------------------------------------------------------
+   CAROUSEL ARROWS
+----------------------------------------------------------- */
+function bindCarouselArrows() {
+  const list = document.getElementById("orders-carousel");
+
+  document.getElementById("orders-prev").onclick = () =>
+    list.scrollBy({ left: -300, behavior: "smooth" });
+
+  document.getElementById("orders-next").onclick = () =>
+    list.scrollBy({ left: 300, behavior: "smooth" });
 }
 
 /* -----------------------------------------------------------
