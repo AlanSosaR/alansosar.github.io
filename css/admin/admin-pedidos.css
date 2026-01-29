@@ -216,15 +216,55 @@ body {
   color: var(--verde);
 }
 
-.order-pill {
+/* CONTENEDOR DE PÍLDORAS */
+.order-pills {
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
   margin-top: .8rem;
+}
+
+/* PÍLDORA INDIVIDUAL */
+.order-pill {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: .7rem 1.2rem;
+  padding: .65rem 1.1rem;
   border-radius: 999px;
   background: rgba(51,103,59,.08);
   color: var(--cafe);
+  font-size: .9rem;
+}
+
+/* NOMBRE */
+.order-pill .pill-name {
+  font-weight: 500;
+}
+
+/* SUBTOTAL */
+.order-pill .pill-price {
+  font-weight: 600;
+  color: var(--verde);
+}
+
+/* TOTAL GENERAL DEL PEDIDO */
+.order-total {
+  margin-top: .9rem;
+  padding-top: .6rem;
+  border-top: 1px dashed var(--gris-line);
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  font-size: 1rem;
+  font-weight: 700;          /* 🔑 énfasis final */
+  color: var(--cafe);
+}
+
+/* MONTO TOTAL */
+.order-total .total-price {
+  color: var(--verde);
 }
 
 .reference {
