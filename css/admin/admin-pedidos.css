@@ -209,18 +209,25 @@ body {
 ===================================================== */
 .order-pills {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
+  flex-direction: column;   /* 👈 una debajo de otra */
+  gap: 0.6rem;
   margin: 1.2rem 0;
 }
 
 .order-pills .pill {
-  background: #f7f2ee;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  width: 100%;              /* 👈 ocupa toda la fila */
+  background: #f1f6f1;
   color: #5b3a1e;
-  font-size: 0.85rem;
-  padding: 0.45rem 0.7rem;
-  border-radius: 999px;
-  white-space: nowrap;
+
+  font-size: 0.9rem;
+  padding: 0.7rem 0.9rem;
+  border-radius: 999px;     /* sigue siendo píldora */
+
+  white-space: normal;      /* permite texto largo */
 }
 
 /* =====================================================
