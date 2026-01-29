@@ -19,10 +19,10 @@ let currentStatus = "new";
 let search = "";
 
 /* -----------------------------------------------------------
-   STATUS MAP
+   STATUS MAP (CORRECTO)
 ----------------------------------------------------------- */
 const STATUS_GROUPS = {
-  new: ["pending"],
+  new: ["pending", "processing"],   // 🔥 CLAVE
   processing: ["processing"],
   shipped: ["shipped"],
   delivered: ["delivered"]
@@ -44,8 +44,8 @@ async function init() {
   const user = JSON.parse(localStorage.getItem("cortero_user") || "null");
   if (!user || user.rol !== "admin") return;
 
-  // Forzar NUEVOS y quitar "todos"
-  document.getElementById("status-filter").value = "new";
+  const statusSelect = document.getElementById("status-filter");
+  statusSelect.value = "new";
 
   bindControls();
   await loadOrdersByStatus("new");
@@ -88,7 +88,10 @@ async function loadOrdersByStatus(statusKey) {
     `)
     .order("created_at", { ascending: false });
 
-  query = query.in("status", STATUS_GROUPS[statusKey]);
+  const statuses = STATUS_GROUPS[statusKey];
+  if (statuses?.length) {
+    query = query.in("status", statuses);
+  }
 
   const { data, error } = await query;
   if (error) {
@@ -98,6 +101,7 @@ async function loadOrdersByStatus(statusKey) {
   }
 
   orders = data || [];
+  console.log("📦 Pedidos cargados:", orders.length);
 }
 
 /* -----------------------------------------------------------
@@ -171,15 +175,14 @@ function renderCarousel() {
 function selectOrder(orderId) {
   selectedOrderId = orderId;
 
-  // Estado activo visual
   document
     .querySelectorAll(".order-card")
-    .forEach(c => c.classList.remove("active"));
+    .forEach(c => c.classList.remove("is-selected"));
 
   const activeCard = document.querySelector(
     `.order-card[data-id="${orderId}"]`
   );
-  if (activeCard) activeCard.classList.add("active");
+  if (activeCard) activeCard.classList.add("is-selected");
 
   const order = orders.find(o => o.id === orderId);
   if (!order) return;
@@ -189,8 +192,6 @@ function selectOrder(orderId) {
   preview.classList.remove("hidden");
 
   renderPreview(order);
-
-  // 🔥 SCROLL SUAVE
   preview.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
