@@ -1,5 +1,5 @@
 /* ============================================================
-   ADMIN — PEDIDOS | CAFÉ CORTERO (CORE FINAL CORRECTO)
+   ADMIN — PEDIDOS | CAFÉ CORTERO (CORE FINAL UX CORRECTO)
 ============================================================ */
 
 console.log("🛠️ admin-pedidos.js — INIT");
@@ -12,10 +12,9 @@ if (!sb) throw new Error("❌ Supabase no inicializado");
 ----------------------------------------------------------- */
 let orders = [];
 let filtered = [];
-let selectedOrder = null;
+let selectedOrderId = null;
 
-/* 🔑 UX CORRECTA: el filtro inicia en "new"
-   pero los datos cargan TODOS */
+/* 🔑 Por defecto: NUEVOS */
 let currentStatus = "new";
 let search = "";
 
@@ -26,8 +25,7 @@ const STATUS_GROUPS = {
   new: ["pending"],
   processing: ["processing"],
   shipped: ["shipped"],
-  delivered: ["delivered"],
-  all: []
+  delivered: ["delivered"]
 };
 
 const STATUS_LABELS = {
@@ -46,18 +44,19 @@ async function init() {
   const user = JSON.parse(localStorage.getItem("cortero_user") || "null");
   if (!user || user.rol !== "admin") return;
 
+  // Forzar NUEVOS y quitar "todos"
   document.getElementById("status-filter").value = "new";
 
   bindControls();
-  await loadAllOrders();     // 🔥 CLAVE
+  await loadOrdersByStatus("new");
   renderAll();
 }
 
 /* -----------------------------------------------------------
-   LOAD ALL ORDERS (BACKEND UNA SOLA VEZ)
+   LOAD ORDERS BY STATUS
 ----------------------------------------------------------- */
-async function loadAllOrders() {
-  const { data, error } = await sb
+async function loadOrdersByStatus(statusKey) {
+  let query = sb
     .from("orders")
     .select(`
       id,
@@ -84,12 +83,14 @@ async function loadAllOrders() {
       ),
 
       receipt:payment_receipts!payment_receipts_order_fk (
-        file_url,
-        review_status
+        file_url
       )
     `)
     .order("created_at", { ascending: false });
 
+  query = query.in("status", STATUS_GROUPS[statusKey]);
+
+  const { data, error } = await query;
   if (error) {
     console.error("❌ Error cargando pedidos:", error);
     orders = [];
@@ -97,21 +98,13 @@ async function loadAllOrders() {
   }
 
   orders = data || [];
-  console.log("📦 Total pedidos cargados:", orders.length);
 }
 
 /* -----------------------------------------------------------
-   FILTERS (STATUS + SEARCH)
+   FILTER SEARCH
 ----------------------------------------------------------- */
 function applyFilters() {
   filtered = orders.filter(o => {
-    // FILTRO POR ESTADO
-    if (
-      currentStatus !== "all" &&
-      !STATUS_GROUPS[currentStatus].includes(o.status)
-    ) return false;
-
-    // FILTRO DE BÚSQUEDA
     if (!search) return true;
 
     const q = search.toLowerCase();
@@ -127,7 +120,7 @@ function applyFilters() {
 }
 
 /* -----------------------------------------------------------
-   RENDER GLOBAL
+   RENDER ALL
 ----------------------------------------------------------- */
 function renderAll() {
   applyFilters();
@@ -173,20 +166,36 @@ function renderCarousel() {
 }
 
 /* -----------------------------------------------------------
-   SELECT ORDER
+   SELECT ORDER (SCROLL + ACTIVE)
 ----------------------------------------------------------- */
 function selectOrder(orderId) {
-  selectedOrder = orders.find(o => o.id === orderId);
-  if (!selectedOrder) return;
+  selectedOrderId = orderId;
+
+  // Estado activo visual
+  document
+    .querySelectorAll(".order-card")
+    .forEach(c => c.classList.remove("active"));
+
+  const activeCard = document.querySelector(
+    `.order-card[data-id="${orderId}"]`
+  );
+  if (activeCard) activeCard.classList.add("active");
+
+  const order = orders.find(o => o.id === orderId);
+  if (!order) return;
 
   document.getElementById("admin-empty-state").classList.add("hidden");
-  document.getElementById("admin-order-preview").classList.remove("hidden");
+  const preview = document.getElementById("admin-order-preview");
+  preview.classList.remove("hidden");
 
-  renderPreview(selectedOrder);
+  renderPreview(order);
+
+  // 🔥 SCROLL SUAVE
+  preview.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 /* -----------------------------------------------------------
-   TARJETA GRANDE
+   PREVIEW
 ----------------------------------------------------------- */
 function renderPreview(o) {
   const u = o.users || {};
@@ -234,8 +243,9 @@ function renderPreview(o) {
    CONTROLS
 ----------------------------------------------------------- */
 function bindControls() {
-  document.getElementById("status-filter").addEventListener("change", e => {
+  document.getElementById("status-filter").addEventListener("change", async e => {
     currentStatus = e.target.value;
+    await loadOrdersByStatus(currentStatus);
     renderAll();
   });
 
