@@ -45,9 +45,9 @@ body {
 /* ================= BARRA SUPERIOR ================= */
 .orders-actions-bar {
   position: sticky;
-  top: calc(var(--header-height, 72px) + 8px);
+  top: calc(var(--header-height, 72px) + 2px); /* antes +8px */
   z-index: 20;
-  margin-bottom: 32px;
+  margin-bottom: 20px; /* antes 32px */
   background: var(--gris-bg);
 }
 
