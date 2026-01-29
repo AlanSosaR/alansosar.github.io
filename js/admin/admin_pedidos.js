@@ -259,7 +259,8 @@ function renderPreview(o) {
   document.getElementById("o-address").textContent =
     [a.street, a.city, a.state, a.country].filter(Boolean).join(", ") || "—";
 
-  document.getElementById("o-reference").textContent = "—";
+  document.getElementById("o-reference").textContent =
+  a.postal_code || "—";
 
   const orderMedia = document.getElementById("order-media");
   const cash = document.getElementById("cash-payment");
