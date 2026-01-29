@@ -1,5 +1,5 @@
 /* =========================================================
-   ADMIN PEDIDOS — DISEÑO UNIFICADO (PRODUCTOS STYLE)
+   ADMIN PEDIDOS — DISEÑO UNIFICADO (ESTABLE)
    Café Cortero
 ========================================================= */
 
@@ -17,17 +17,29 @@
 }
 
 /* =========================================================
-   RESET
+   RESET GLOBAL
 ========================================================= */
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
 }
 
+img,
+svg {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* =========================================================
+   BASE
+========================================================= */
 body {
   margin: 0;
   background: var(--gris-bg);
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+  overflow-x: hidden; /* 🔑 blindaje final */
 }
 
 /* =========================================================
@@ -66,6 +78,7 @@ body {
   background: transparent;
   font-size: .95rem;
   outline: none;
+  min-width: 0;
 }
 
 /* =========================================================
@@ -78,6 +91,7 @@ body {
   border-radius: 24px;
   padding: 2.4rem;
   box-shadow: 0 14px 32px rgba(0,0,0,.08);
+  overflow: hidden; /* 🔑 evita invasión del carrusel */
 }
 
 /* =========================================================
@@ -98,6 +112,7 @@ body {
   background: #fff;
   box-shadow: 0 6px 16px rgba(0,0,0,.18);
   cursor: pointer;
+  flex-shrink: 0;
 }
 
 .order-header-text h2 {
@@ -112,11 +127,11 @@ body {
 }
 
 /* =========================================================
-   LAYOUT
+   LAYOUT INTERNO
 ========================================================= */
 .order-layout {
   display: grid;
-  grid-template-columns: 1.2fr 1fr;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
   gap: 2.4rem;
 }
 
@@ -132,10 +147,11 @@ body {
 .order-actions.inline-actions {
   display: flex;
   gap: .6rem;
+  flex-wrap: nowrap;
 }
 
 .admin-action-btn {
-  flex: 1;
+  flex: 1 1 0;
   padding: .8rem;
   border-radius: 14px;
   border: none;
@@ -144,6 +160,7 @@ body {
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
+  min-width: 0;
 }
 
 .admin-action-btn.reject {
@@ -151,22 +168,20 @@ body {
 }
 
 /* =========================================================
-   CARRUSEL — FIX DEFINITIVO
+   CARRUSEL — ESTABLE Y CONTENIDO
 ========================================================= */
-
-/* Contenedor NO rompe layout */
 .related {
-  position: relative;
   width: 100%;
+  max-width: 1100px;
   margin: 0 auto 3rem;
-  overflow: hidden;
+  position: relative;
+  overflow: hidden; /* 🔑 clave */
 }
 
-/* Lista horizontal */
 .similar-list {
   display: flex;
   gap: 1rem;
-  padding: 16px 0;
+  padding: 16px;
 
   overflow-x: auto;
   overflow-y: hidden;
@@ -179,19 +194,26 @@ body {
   display: none;
 }
 
-/* Card */
+/* =========================================================
+   CARD DEL CARRUSEL
+========================================================= */
 .similar-card {
   flex: 0 0 190px;
+  max-width: 190px;
+
   background: #fff;
   border-radius: 18px;
   padding: 1rem;
-  box-shadow: 0 10px 24px rgba(0,0,0,.08);
 
+  box-shadow: 0 10px 24px rgba(0,0,0,.08);
   scroll-snap-align: start;
+
+  display: flex;
+  flex-direction: column;
 }
 
 /* =========================================================
-   MEDIA DE CARD — CLAVE PARA NO DESBORDAR
+   MEDIA DE CARD — BLINDAJE TOTAL
 ========================================================= */
 .order-card-media {
   width: 100%;
@@ -205,22 +227,29 @@ body {
   justify-content: center;
 
   margin-bottom: .6rem;
+  flex-shrink: 0;
 }
 
-.order-card-img {
+.order-card-img,
+.order-card-placeholder img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: block;
 }
 
 .order-card-placeholder {
   width: 100%;
   height: 100%;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+
+.order-card-placeholder img {
+  max-width: 60%;
+  max-height: 60%;
+  object-fit: contain;
+  opacity: .8;
 }
 
 /* =========================================================
@@ -231,6 +260,7 @@ body {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
+
   width: 52px;
   height: 52px;
   border-radius: 50%;
