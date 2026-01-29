@@ -316,7 +316,7 @@ body {
 ===================================================== */
 .order-zone {
   font-size: 0.9rem;
-  color: #8b7a6b;
+  color: var(--verde); /* verde del sistema */
   margin-bottom: 1.4rem;
 }
 
