@@ -440,7 +440,9 @@ body {
 }
 .similar-card.is-selected {
   border: 2px solid var(--verde);
-  box-shadow: 0 0 0 3px rgba(51, 103, 59, 0.25);
+
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--verde) 25%, transparent);
 }
 /* ================= MEDIA CARD ================= */
 .order-card-media {
