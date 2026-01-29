@@ -377,19 +377,21 @@ if (metodoPago && !IS_READ_ONLY) {
     ========================= */
     if (metodoPago.value === "bank_transfer") {
       bloqueDeposito?.classList.remove("hidden");
-      // botón se habilita solo al subir imagen
+      // btnEnviar se habilita SOLO cuando se sube imagen
+      return;
     }
 
     /* =========================
-       EFECTIVO (NUEVO)
+       PAGO AL RECIBIR (ÚNICO)
     ========================= */
-    if (
-      metodoPago.value === "cash" ||
-      metodoPago.value === "cash_on_delivery"
-    ) {
+    if (metodoPago.value === "cash_on_delivery") {
       bloqueEfectivo?.classList.remove("hidden");
       btnEnviar.disabled = false;
+      return;
     }
+
+    // ⚠️ fallback defensivo
+    console.warn("Método de pago no reconocido:", metodoPago.value);
   });
 }
 
@@ -463,26 +465,36 @@ async function enviarPedido() {
 
     if (numError) throw numError;
 
-    /* =====================================================
-       2️⃣ CREAR PEDIDO
-    ===================================================== */
-    const { data: order, error: insertError } = await sb
-      .from("orders")
-      .insert({
-        user_id: user.id,
-        address_id: selectedAddressId,
-        order_number: orderNumber, // 🔑 CLAVE
-        total,
-        payment_method: metodoPago.value,
-        status:
-          metodoPago.value === "bank_transfer"
-            ? "payment_review"
-            : "cash_on_delivery"
-      })
-      .select("id")
-      .single();
+/* =====================================================
+   2️⃣ CREAR PEDIDO — CORRECTO
+===================================================== */
+const { data: order, error: insertError } = await sb
+  .from("orders")
+  .insert({
+    user_id: user.id,
+    address_id: selectedAddressId,
+    order_number: orderNumber, // 🔑 CLAVE
+    total,
 
-    if (insertError) throw insertError;
+    // 💳 MÉTODO DE PAGO (NORMALIZADO)
+    payment_method:
+      metodoPago.value === "bank_transfer"
+        ? "bank_transfer"
+        : "cash_on_delivery",
+
+    // 🧾 ESTADO DEL PEDIDO (SIEMPRE PARA EL ADMIN)
+    status: "pending",
+
+    // 💰 ESTADO DEL PAGO (SEPARADO)
+    payment_status:
+      metodoPago.value === "bank_transfer"
+        ? "review"
+        : "not_required"
+  })
+  .select("id")
+  .single();
+
+if (insertError) throw insertError;
 
     /* =====================================================
        3️⃣ INSERTAR ITEMS
