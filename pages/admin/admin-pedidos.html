@@ -56,7 +56,8 @@
 <section id="admin-order-preview" class="order-main admin-preview hidden">
 
   <!-- HEADER -->
-  <header class="order-preview-header">
+  <header class="order-preview-header inline-header">
+
     <button class="back-btn" id="btnBackOrders" type="button">
       <span class="material-symbols-outlined">chevron_left</span>
     </button>
@@ -64,10 +65,11 @@
     <div class="order-header-text">
       <h2 id="o-number">Pedido N.º —</h2>
       <span id="o-date" class="order-date">—</span>
-
-      <!-- ✅ ESTADO DEL PEDIDO (NECESARIO PARA EL JS) -->
-      <span id="o-status" class="status-chip">—</span>
     </div>
+
+    <!-- estado oculto a propósito -->
+    <span id="o-status" class="status-chip hidden"></span>
+
   </header>
 
   <!-- CONTENIDO -->
@@ -115,7 +117,7 @@
       </section>
 
       <!-- ACCIONES -->
-      <section class="order-actions">
+      <section class="order-actions inline-actions">
 
         <button id="btnAccept" class="admin-action-btn accept hidden">
           <span class="material-symbols-outlined">hourglass_top</span>
@@ -143,12 +145,10 @@
     <!-- COLUMNA MEDIA -->
     <div id="order-media" class="order-media hidden">
 
-      <!-- RECIBO -->
       <div id="receipt-payment" class="payment-media hidden">
         <img id="receipt-img" alt="Recibo de pago" loading="lazy" />
       </div>
 
-      <!-- PAGO CONTRA ENTREGA -->
       <div id="cash-payment" class="payment-media placeholder hidden">
         <img src="/imagenes/pago_en_mano.svg" alt="Pago contra entrega" />
         <p>Pago contra entrega</p>
@@ -224,9 +224,13 @@
 <!-- SCRIPTS -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../../js/core/supabase-client-core.js"></script>
-<script src="../../js/ui/header.js" type="module"></script>
+
+<!-- MISMO PATRÓN QUE ADMIN-PRODUCTOS -->
+<script type="module" src="js/ui/header.js"></script>
 <script src="../../js/core/auth-ui.js"></script>
 <script src="../../js/ui/layout.js"></script>
+
+<!-- ADMIN -->
 <script src="../../js/admin/admin_pedidos.js"></script>
 
 </body>
