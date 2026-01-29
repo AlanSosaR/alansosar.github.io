@@ -609,7 +609,10 @@ body {
   .similar-list {
     padding-left: 8px;
     padding-right: 12px;
+
+    scroll-padding-left: 8px; /* 🔑 CLAVE */
   }
+}
 
   .similar-card {
     flex: 0 0 85vw;
@@ -752,5 +755,11 @@ body {
   .admin-orders-container {
     padding-left: 12px;
     padding-right: 12px;
+  }
+}
+@media (max-width: 600px) {
+  .order-main {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
   }
 }
