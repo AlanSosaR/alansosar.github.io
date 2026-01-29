@@ -377,20 +377,23 @@ if (metodoPago && !IS_READ_ONLY) {
     ========================= */
     if (metodoPago.value === "bank_transfer") {
       bloqueDeposito?.classList.remove("hidden");
-      // btnEnviar se habilita SOLO cuando se sube imagen
       return;
     }
 
     /* =========================
-       PAGO AL RECIBIR (ÚNICO)
+       PAGO AL RECIBIR (NORMALIZADO)
     ========================= */
-    if (metodoPago.value === "cash_on_delivery") {
+    if (
+      metodoPago.value === "cash_on_delivery" ||
+      metodoPago.value === "cash" // compatibilidad vieja
+    ) {
+      metodoPago.value = "cash_on_delivery"; // 🔑 normaliza
       bloqueEfectivo?.classList.remove("hidden");
       btnEnviar.disabled = false;
       return;
     }
 
-    // ⚠️ fallback defensivo
+    // ⚠️ fallback defensivo real
     console.warn("Método de pago no reconocido:", metodoPago.value);
   });
 }
