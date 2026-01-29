@@ -606,13 +606,18 @@ body {
     background .25s ease;
 }
 
-/* ================= SELECCIONADA (VERDE REAL) ================= */
+/* ================= SELECCIONADA — SOLO CONTORNO VERDE ================= */
 .similar-card.is-selected {
-  background: color-mix(in srgb, var(--verde) 8%, #ffffff); /* 👈 verde suave */
+  background: #fff; /* 🔒 fondo intacto */
 
+  /* contorno verde limpio */
+  outline: 2px solid var(--verde);
+  outline-offset: 0;
+
+  /* halo verde suave (no gris) */
   box-shadow:
-    0 0 0 3px color-mix(in srgb, var(--verde) 45%, transparent),
-    0 14px 30px color-mix(in srgb, var(--verde) 30%, transparent);
+    0 0 0 4px rgba(51, 103, 59, 0.18),
+    0 14px 30px rgba(51, 103, 59, 0.22);
 
   transform: translateY(-2px);
 }
