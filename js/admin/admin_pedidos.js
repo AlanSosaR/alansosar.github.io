@@ -77,7 +77,11 @@ async function loadOrdersByStatus(statusKey) {
       ),
 
       items:order_items (
-        quantity
+        quantity,
+        price,
+        products (
+          name
+        )
       ),
 
       receipt:payment_receipts (
@@ -196,8 +200,7 @@ function selectOrderByIndex(index) {
   if (active) active.classList.add("is-selected");
 
   document.getElementById("admin-empty-state").classList.add("hidden");
-  const preview = document.getElementById("admin-order-preview");
-  preview.classList.remove("hidden");
+  document.getElementById("admin-order-preview").classList.remove("hidden");
 
   renderPreview(order);
 }
@@ -210,9 +213,6 @@ function renderPreview(o) {
   const a = o.address || {};
   const r = o.receipt?.[0];
 
-  /* =============================
-     HEADER
-  ============================== */
   document.getElementById("o-number").textContent =
     `Pedido N.º ${String(o.order_number).padStart(3, "0")}`;
 
@@ -228,17 +228,12 @@ function renderPreview(o) {
   document.getElementById("o-email").textContent =
     u.email || "—";
 
-  /* =============================
-     ITEMS — IGUAL QUE EL CLIENTE
-  ============================== */
+  /* ITEMS */
   const itemsBox = document.getElementById("o-items");
   itemsBox.innerHTML = "";
 
-  const items = o.items || o.order_items || [];
-
-  if (Array.isArray(items) && items.length) {
-    items.forEach(item => {
-      const name = item.products?.name || "Café";
+  if (Array.isArray(o.items) && o.items.length) {
+    o.items.forEach(item => {
       const qty = Number(item.quantity || 0);
       const price = Number(item.price || 0);
       const subtotal = qty * price;
@@ -246,7 +241,7 @@ function renderPreview(o) {
       const row = document.createElement("div");
       row.className = "order-item-row";
       row.innerHTML = `
-        <span>${name} (${qty})</span>
+        <span>${item.products?.name || "Café"} (${qty})</span>
         <strong>L ${subtotal.toFixed(2)}</strong>
       `;
       itemsBox.appendChild(row);
@@ -255,15 +250,9 @@ function renderPreview(o) {
     itemsBox.textContent = "—";
   }
 
-  /* =============================
-     TOTAL (SOLO MONTO FINAL)
-  ============================== */
   document.getElementById("o-total").textContent =
     `L ${Number(o.total).toFixed(2)}`;
 
-  /* =============================
-     DIRECCIÓN
-  ============================== */
   document.getElementById("o-zone").textContent =
     [a.city, a.state].filter(Boolean).join(", ") || "—";
 
@@ -272,38 +261,6 @@ function renderPreview(o) {
 
   document.getElementById("o-reference").textContent = "—";
 
-  /* =============================
-     MEDIA (RECIBO / EFECTIVO)
-  ============================== */
-  const orderMedia = document.getElementById("order-media");
-  const cash = document.getElementById("cash-payment");
-  const receiptBox = document.getElementById("receipt-payment");
-
-  orderMedia.classList.add("hidden");
-  cash.classList.add("hidden");
-  receiptBox.classList.add("hidden");
-
-  if (r?.file_url) {
-    orderMedia.classList.remove("hidden");
-    receiptBox.classList.remove("hidden");
-    document.getElementById("receipt-img").src = r.file_url;
-  } else {
-    orderMedia.classList.remove("hidden");
-    cash.classList.remove("hidden");
-  }
-
-  renderStatusActions(o);
-}
-    [a.city, a.state].filter(Boolean).join(", ") || "—";
-
-  document.getElementById("o-address").textContent =
-    [a.street, a.city, a.state, a.country].filter(Boolean).join(", ") || "—";
-
-  document.getElementById("o-reference").textContent = "—";
-
-  /* =============================
-     MEDIA (RECIBO / EFECTIVO)
-  ============================== */
   const orderMedia = document.getElementById("order-media");
   const cash = document.getElementById("cash-payment");
   const receiptBox = document.getElementById("receipt-payment");
