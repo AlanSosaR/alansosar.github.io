@@ -292,53 +292,88 @@ body {
   height: 100%;
   object-fit: cover;
 }
-
 /* =========================================================
-   CARRUSEL
+   CARRUSEL (CORREGIDO)
 ========================================================= */
+
+/* Contenedor del carrusel */
 .related {
+  position: relative;              /* 🔑 necesario para flechas */
   max-width: 1100px;
   margin: 0 auto 3rem;
 }
 
+/* Lista horizontal */
 .similar-list {
   display: flex;
   gap: 1rem;
+
+  padding: 14px 6px;               /* 🔑 evita corte en móvil */
   overflow-x: auto;
+  overflow-y: hidden;
+
   scrollbar-width: none;
+  scroll-snap-type: x mandatory;   /* 🔑 swipe limpio */
 }
 
 .similar-list::-webkit-scrollbar {
   display: none;
 }
 
+/* Card individual */
 .similar-card {
   flex: 0 0 190px;
   background: #fff;
   border-radius: 18px;
   padding: 1rem;
   box-shadow: 0 10px 24px rgba(0,0,0,.08);
+
+  scroll-snap-align: start;        /* 🔑 encaja al deslizar */
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+
+.similar-card:hover {
+  transform: translateY(-4px);
 }
 
 .similar-card.is-selected {
   border: 2px solid var(--verde);
+  box-shadow: 0 10px 26px rgba(51,103,59,.28);
 }
 
 /* =========================================================
-   FLECHAS PC
+   FLECHAS (SOLO PC)
 ========================================================= */
 .carousel-prev-circle,
 .carousel-next-circle {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
+
   width: 54px;
   height: 54px;
   border-radius: 50%;
   background: #fff;
+  border: none;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   box-shadow: 0 6px 16px rgba(0,0,0,.18);
+  z-index: 5;
 }
 
+.carousel-prev-circle {
+  left: -28px;
+}
+
+.carousel-next-circle {
+  right: -28px;
+}
+
+/* En móvil: swipe limpio, sin flechas */
 @media (max-width: 900px) {
   .carousel-prev-circle,
   .carousel-next-circle {
