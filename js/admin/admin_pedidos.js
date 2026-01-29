@@ -16,6 +16,7 @@ let activeIndex = 0;
 let currentStatus = "new";
 let search = "";
 let pendingAction = null;
+let userSelected = false;
 
 /* -----------------------------------------------------------
    STATUS MAP
@@ -101,7 +102,7 @@ function applyFilters() {
 }
 
 /* -----------------------------------------------------------
-   RENDER
+   RENDER ALL
 ----------------------------------------------------------- */
 function renderAll() {
   applyFilters();
@@ -154,11 +155,9 @@ function renderCarousel() {
     }
 
     card.onclick = () => {
+      userSelected = true;
       activeIndex = index;
-      renderAll();
-      document
-        .getElementById("admin-order-preview")
-        .scrollIntoView({ behavior: "smooth", block: "start" });
+      selectOrderByIndex(activeIndex);
     };
 
     wrap.appendChild(node);
@@ -166,7 +165,7 @@ function renderCarousel() {
 }
 
 /* -----------------------------------------------------------
-   SELECT
+   SELECT ORDER
 ----------------------------------------------------------- */
 function selectOrderByIndex(index) {
   document.querySelectorAll(".order-card")
@@ -177,9 +176,22 @@ function selectOrderByIndex(index) {
     ?.classList.add("is-selected");
 
   document.getElementById("admin-empty-state").classList.add("hidden");
-  document.getElementById("admin-order-preview").classList.remove("hidden");
+
+  const preview = document.getElementById("admin-order-preview");
+  preview.classList.remove("hidden");
 
   renderPreview(filtered[index]);
+
+  // ✅ Scroll suave SOLO cuando el usuario selecciona
+  if (userSelected) {
+    requestAnimationFrame(() => {
+      preview.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    });
+    userSelected = false;
+  }
 }
 
 /* -----------------------------------------------------------
@@ -254,7 +266,8 @@ function renderStatusActions(o) {
   const btnShip = document.getElementById("btnShip");
   const btnDeliver = document.getElementById("btnDeliver");
 
-  [btnAccept, btnReject, btnShip, btnDeliver].forEach(b => b.classList.add("hidden"));
+  [btnAccept, btnReject, btnShip, btnDeliver]
+    .forEach(b => b.classList.add("hidden"));
 
   chip.textContent = STATUS_LABELS[o.status];
   chip.className = `status-chip ${o.status}`;
@@ -264,26 +277,38 @@ function renderStatusActions(o) {
     btnReject.classList.remove("hidden");
 
     btnAccept.onclick = () =>
-      openSnackbar("Pasar a preparación", "¿Deseas marcar este pedido como En preparación?", () =>
-        updateStatus(o.id, "processing"));
+      openSnackbar(
+        "Pasar a preparación",
+        "¿Deseas marcar este pedido como En preparación?",
+        () => updateStatus(o.id, "processing")
+      );
 
     btnReject.onclick = () =>
-      openSnackbar("Cancelar pedido", "Esta acción no se puede deshacer", () =>
-        updateStatus(o.id, "cancelled"));
+      openSnackbar(
+        "Cancelar pedido",
+        "Esta acción no se puede deshacer",
+        () => updateStatus(o.id, "cancelled")
+      );
   }
 
   if (o.status === "processing") {
     btnShip.classList.remove("hidden");
     btnShip.onclick = () =>
-      openSnackbar("Marcar como enviado", "Confirma el envío del pedido", () =>
-        updateStatus(o.id, "shipped"));
+      openSnackbar(
+        "Marcar como enviado",
+        "Confirma el envío del pedido",
+        () => updateStatus(o.id, "shipped")
+      );
   }
 
   if (o.status === "shipped") {
     btnDeliver.classList.remove("hidden");
     btnDeliver.onclick = () =>
-      openSnackbar("Marcar como entregado", "Confirma entrega al cliente", () =>
-        updateStatus(o.id, "delivered"));
+      openSnackbar(
+        "Marcar como entregado",
+        "Confirma entrega al cliente",
+        () => updateStatus(o.id, "delivered")
+      );
   }
 }
 
@@ -300,11 +325,10 @@ async function updateStatus(orderId, newStatus) {
    SNACKBAR
 ----------------------------------------------------------- */
 function openSnackbar(title, message, onConfirm) {
-  const sb = document.getElementById("snackbar-action");
+  const el = document.getElementById("snackbar-action");
   document.getElementById("snackbar-title").textContent = title;
   document.getElementById("snackbar-message").textContent = message;
-
-  sb.classList.remove("hidden");
+  el.classList.remove("hidden");
   pendingAction = onConfirm;
 }
 
