@@ -116,35 +116,32 @@
         </p>
       </section>
 
-      <!-- ESTADO (SOLO VISUAL) -->
-      <section class="order-status">
-        <span id="o-status" class="status-chip preparing">
-          En preparación
-        </span>
-      </section>
+<section class="order-actions">
 
-      <!-- ACCIONES (EN CADENA) -->
-      <section class="order-actions">
+  <!-- NUEVO -->
+  <button id="btnAccept" class="admin-action-btn accept hidden">
+    <span class="material-symbols-outlined">check_circle</span>
+    Aceptar pedido
+  </button>
 
-        <button id="btnViewOrder" class="admin-action-btn view-info">
-          <span class="material-symbols-outlined">receipt_long</span>
-          Ver detalle del pedido
-        </button>
+  <button id="btnReject" class="admin-action-btn reject hidden">
+    <span class="material-symbols-outlined">cancel</span>
+    Rechazar pedido
+  </button>
 
-        <!-- ACTIVO SOLO EN PREPARACIÓN -->
-        <button id="btnShip" class="admin-action-btn ship">
-          <span class="material-symbols-outlined">local_shipping</span>
-          Marcar como enviado
-        </button>
+  <!-- EN PREPARACIÓN -->
+  <button id="btnShip" class="admin-action-btn ship hidden">
+    <span class="material-symbols-outlined">local_shipping</span>
+    Marcar como enviado
+  </button>
 
-        <!-- ACTIVO SOLO CUANDO YA ESTÁ ENVIADO -->
-        <button id="btnDeliver" class="admin-action-btn deliver hidden">
-          <span class="material-symbols-outlined">done_all</span>
-          Marcar como entregado
-        </button>
+  <!-- ENVIADO -->
+  <button id="btnDeliver" class="admin-action-btn deliver hidden">
+    <span class="material-symbols-outlined">done_all</span>
+    Marcar como entregado
+  </button>
 
-      </section>
-
+</section>
     </div>
 
     <!-- ============ COLUMNA MEDIA (DETALLE) ============ -->
