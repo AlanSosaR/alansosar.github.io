@@ -1,5 +1,5 @@
 /* ============================================================
-   ADMIN — PEDIDOS | CAFÉ CORTERO (CORE DEFINITIVO)
+   ADMIN — PEDIDOS | CAFÉ CORTERO (CORE FINAL REAL)
 ============================================================ */
 
 console.log("🛠️ admin-pedidos.js — INIT");
@@ -13,7 +13,6 @@ if (!sb) throw new Error("❌ Supabase no inicializado");
 let orders = [];
 let filtered = [];
 let selectedOrderId = null;
-
 let currentStatus = "new";
 let search = "";
 
@@ -21,7 +20,7 @@ let search = "";
    STATUS MAP
 ----------------------------------------------------------- */
 const STATUS_GROUPS = {
-  new: ["pending", "processing"],
+  new: ["pending"],
   processing: ["processing"],
   shipped: ["shipped"],
   delivered: ["delivered"]
@@ -44,7 +43,6 @@ async function init() {
   if (!user || user.rol !== "admin") return;
 
   document.getElementById("status-filter").value = "new";
-
   bindControls();
   await loadOrdersByStatus("new");
   renderAll();
@@ -107,7 +105,6 @@ function applyFilters() {
     if (!search) return true;
     const q = search.toLowerCase();
     const u = o.users || {};
-
     return (
       String(o.order_number).includes(q) ||
       u.name?.toLowerCase().includes(q) ||
@@ -156,7 +153,7 @@ function renderCarousel() {
       `L ${Number(o.total).toFixed(2)}`;
 
     node.querySelector(".o-card-status").textContent =
-      STATUS_LABELS[o.status] || o.status;
+      STATUS_LABELS[o.status];
 
     const img = node.querySelector(".order-card-img");
     const placeholder = node.querySelector(".order-card-placeholder");
@@ -198,10 +195,7 @@ function selectOrder(orderId, doScroll = true) {
   renderPreview(order);
 
   if (doScroll) {
-    preview.scrollIntoView({
-      behavior: "smooth",
-      block: "start"
-    });
+    preview.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 }
 
@@ -228,9 +222,7 @@ function renderPreview(o) {
   document.getElementById("o-email").textContent =
     u.email || "—";
 
-  document.getElementById("o-items").textContent =
-    `☕ ${o.total > 0 ? "bolsas" : "0 bolsas"}`;
-
+  document.getElementById("o-items").textContent = "☕ Bolsas";
   document.getElementById("o-total").textContent =
     `L ${Number(o.total).toFixed(2)}`;
 
@@ -243,16 +235,21 @@ function renderPreview(o) {
   document.getElementById("o-reference").textContent =
     a.postal_code || "—";
 
+  /* MEDIA */
+  const orderMedia = document.getElementById("order-media");
   const cash = document.getElementById("cash-payment");
   const receiptBox = document.getElementById("receipt-payment");
 
+  orderMedia.classList.add("hidden");
   cash.classList.add("hidden");
   receiptBox.classList.add("hidden");
 
   if (r?.file_url) {
+    orderMedia.classList.remove("hidden");
     receiptBox.classList.remove("hidden");
     document.getElementById("receipt-img").src = r.file_url;
   } else {
+    orderMedia.classList.remove("hidden");
     cash.classList.remove("hidden");
   }
 
@@ -260,7 +257,7 @@ function renderPreview(o) {
 }
 
 /* -----------------------------------------------------------
-   STATUS ACTIONS
+   STATUS ACTIONS (FIX REAL)
 ----------------------------------------------------------- */
 function renderStatusActions(o) {
   const chip = document.getElementById("o-status");
@@ -270,9 +267,18 @@ function renderStatusActions(o) {
   btnShip.classList.add("hidden");
   btnDeliver.classList.add("hidden");
 
+  if (o.status === "pending") {
+    chip.textContent = "Nuevo";
+    chip.className = "status-chip pending";
+    btnShip.textContent = "Aceptar pedido";
+    btnShip.classList.remove("hidden");
+    btnShip.onclick = () => updateStatus(o.id, "processing");
+  }
+
   if (o.status === "processing") {
     chip.textContent = "En preparación";
     chip.className = "status-chip preparing";
+    btnShip.textContent = "Marcar como enviado";
     btnShip.classList.remove("hidden");
     btnShip.onclick = () => updateStatus(o.id, "shipped");
   }
