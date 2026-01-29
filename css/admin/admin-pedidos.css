@@ -50,6 +50,7 @@ body {
   top: calc(var(--header-height, 72px) + 8px);
   z-index: 20;
   margin-bottom: 32px;
+  background: var(--gris-bg);
 }
 
 .search-box {
@@ -67,13 +68,25 @@ body {
   box-shadow: 0 0 0 3px rgba(51,103,59,.15);
 }
 
-.search-box input,
-.search-box select {
+.search-box input {
+  flex: 1;
   border: none;
   background: transparent;
   outline: none;
   font-size: .95rem;
   color: var(--cafe);
+}
+
+/* 🔑 FIX SELECT */
+.search-box select {
+  flex: 0 0 auto;
+  max-width: 140px;
+  padding-left: 6px;
+  border: none;
+  background: transparent;
+  font-size: .9rem;
+  color: var(--cafe);
+  cursor: pointer;
 }
 
 /* =========================================================
@@ -116,7 +129,6 @@ body {
   margin-bottom: 2rem;
 }
 
-/* BOTÓN ATRÁS — EXACTO A PRODUCTOS */
 .back-btn {
   all: unset;
   width: 42px;
@@ -141,7 +153,6 @@ body {
   color: var(--cafe);
 }
 
-/* TEXTO HEADER */
 .order-header-text h2 {
   margin: 0;
   font-size: 1.6rem;
@@ -181,7 +192,6 @@ body {
   font-size: 1.1rem;
 }
 
-/* CLIENTE */
 .client-name {
   font-weight: 600;
   color: var(--cafe);
@@ -201,12 +211,11 @@ body {
   color: var(--cafe);
 }
 
-.meta-row span.material-symbols-outlined {
+.meta-row .material-symbols-outlined {
   font-size: 18px;
   color: var(--verde);
 }
 
-/* PÍLDORA RESUMEN */
 .order-pill {
   margin-top: .8rem;
   display: flex;
@@ -215,12 +224,6 @@ body {
   padding: .7rem 1.2rem;
   border-radius: 999px;
   background: rgba(51,103,59,.08);
-  color: var(--cafe);
-}
-
-/* ENTREGA */
-.order-address p {
-  margin: .3rem 0;
   color: var(--cafe);
 }
 
@@ -281,21 +284,13 @@ body {
   font-weight: 600;
 }
 
-.admin-action-btn span {
-  font-size: 20px;
-}
-
 .admin-action-btn.deliver {
   background: #2e7d32;
 }
 
 /* =========================================================
-   COLUMNA MEDIA (RECIBO / PLACEHOLDER)
+   MEDIA (RECIBO / EFECTIVO)
 ========================================================= */
-.order-media {
-  width: 100%;
-}
-
 .payment-media {
   width: 100%;
   height: 360px;
@@ -314,7 +309,7 @@ body {
 }
 
 /* =========================================================
-   CARRUSEL — IGUAL A PRODUCTOS
+   CARRUSEL
 ========================================================= */
 .related {
   max-width: 1100px;
@@ -335,8 +330,6 @@ body {
 
 .carousel-container {
   position: relative;
-  display: flex;
-  justify-content: center;
 }
 
 .similar-list {
@@ -351,7 +344,9 @@ body {
   display: none;
 }
 
-/* CARD */
+/* =========================================================
+   CARD PEDIDO (FIX DEFINITIVO)
+========================================================= */
 .similar-card {
   flex: 0 0 190px;
   background: #fff;
@@ -366,15 +361,72 @@ body {
   transform: translateY(-4px);
 }
 
-.similar-card.active-card,
 .similar-card.is-selected {
   border: 1.5px solid var(--verde);
   box-shadow: 0 10px 26px rgba(51,103,59,.28);
-  transform: translateY(-6px);
+}
+
+/* MEDIA CARD */
+.order-card-media {
+  width: 100%;
+  height: 150px;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #f4f4f4;
+  margin-bottom: .6rem;
+}
+
+.order-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* PLACEHOLDER */
+.order-card-placeholder {
+  width: 100%;
+  height: 100%;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: .35rem;
+}
+
+.order-card-placeholder img {
+  width: 46px;
+  opacity: .75;
+}
+
+.order-card-placeholder p {
+  font-size: .75rem;
+  color: var(--gris-text);
+}
+
+/* INFO */
+.order-card-info {
+  text-align: center;
+}
+
+.o-card-number {
+  font-size: .9rem;
+  font-weight: 600;
+  color: var(--cafe);
+}
+
+.o-card-total {
+  font-size: .85rem;
+  color: var(--verde);
+}
+
+.o-card-status {
+  font-size: .75rem;
+  color: var(--gris-text);
 }
 
 /* =========================================================
-   FLECHAS CARRUSEL (PC)
+   FLECHAS (PC)
 ========================================================= */
 .carousel-prev-circle,
 .carousel-next-circle {
