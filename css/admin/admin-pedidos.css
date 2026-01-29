@@ -164,7 +164,127 @@ body {
   font-size: .85rem;
   color: var(--cafe);               /* 🔑 café */
 }
+/* =====================================================
+   CLIENTE
+===================================================== */
+.order-client {
+  margin-bottom: 1.6rem;
+}
 
+.order-client h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #5b3a1e; /* café */
+  margin-bottom: 0.4rem;
+}
+
+.client-name {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #2e7d32; /* verde */
+  margin-bottom: 0.8rem;
+}
+
+.client-meta-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.meta-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  color: #5b3a1e;
+}
+
+.meta-row .material-symbols-outlined {
+  font-size: 18px;
+  color: #2e7d32;
+}
+
+/* =====================================================
+   PRODUCTOS — PÍLDORAS
+===================================================== */
+.order-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1.2rem 0;
+}
+
+.order-pills .pill {
+  background: #f7f2ee;
+  color: #5b3a1e;
+  font-size: 0.85rem;
+  padding: 0.45rem 0.7rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+/* =====================================================
+   SEPARADOR + TOTAL
+===================================================== */
+.order-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1rem;
+  margin-top: 1rem;
+  border-top: 2px dashed #d7c9bd;
+}
+
+.order-total span {
+  font-size: 0.95rem;
+  color: #5b3a1e;
+}
+
+.order-total strong {
+  font-size: 1.05rem;
+  color: #2e7d32;
+}
+
+/* =====================================================
+   ZONA
+===================================================== */
+.order-zone {
+  font-size: 0.9rem;
+  color: #8b7a6b;
+  margin-bottom: 1.4rem;
+}
+
+/* =====================================================
+   ENTREGA
+===================================================== */
+.order-address {
+  margin-top: 0.5rem;
+}
+
+.order-address h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #5b3a1e;
+  margin-bottom: 0.4rem;
+}
+
+.order-address p {
+  font-size: 0.95rem;
+  color: #2e7d32;
+  margin-bottom: 0.5rem;
+}
+
+.order-address .reference {
+  font-size: 0.9rem;
+}
+
+.order-address .reference strong {
+  color: #5b3a1e;
+}
+
+.order-address .reference span {
+  color: #2e7d32;
+}
 /* ================= LAYOUT ================= */
 .order-layout {
   display: grid;
