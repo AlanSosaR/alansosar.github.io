@@ -18,31 +18,32 @@
 console.log("🧾 recibo.view.js");
 
 /* =========================================================
-   PROTECCIÓN — SOLO VISTA
-   Si NO hay id en la URL, este archivo no hace nada
+   INIT VIEW — SOLO CUANDO HAY ?id=
 ========================================================= */
-if (!IS_READ_ONLY) {
-  console.log("🛒 recibo.view.js desactivado (modo checkout)");
-  return;
-}
+document.addEventListener("DOMContentLoaded", () => {
 
-/* =========================================================
-   INIT VIEW
-========================================================= */
-(async function initView() {
-  // Esperar Supabase
-  await esperarSupabase();
-
-  // Validar sesión
-  const user = getUserCache();
-  if (!user) {
-    location.href = "login.html";
+  // 🔒 Protección: si NO hay id, este archivo no hace nada
+  if (!IS_READ_ONLY) {
+    console.log("🛒 recibo.view.js desactivado (modo checkout)");
     return;
   }
 
-  // Activar modo solo lectura (oculta botones, inputs, etc.)
-  aplicarModoRecibo();
+  (async function initView() {
+    // Esperar Supabase
+    await esperarSupabase();
 
-  // Cargar y mostrar pedido existente
-  await cargarPedidoExistente(ORDER_ID);
-})();
+    // Validar sesión
+    const user = getUserCache();
+    if (!user) {
+      location.href = "login.html";
+      return;
+    }
+
+    // Activar modo solo lectura (oculta pagos, botones, inputs)
+    aplicarModoRecibo();
+
+    // Cargar y mostrar pedido existente
+    await cargarPedidoExistente(ORDER_ID);
+  })();
+
+});
