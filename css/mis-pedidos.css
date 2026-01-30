@@ -1,500 +1,291 @@
 /* =====================================================
-   MIS PEDIDOS — CAFÉ CORTERO (FINAL)
+   VARIABLES (Material 3 Expressive)
 ===================================================== */
-
 :root {
-  --marron: #512615;
-  --verde: #33673B;
-  --blanco: #ffffff;
+  --primary: #2e7d32;
+  --primary-soft: #e8f5e9;
+  --secondary: #795548;
+  --surface: #ffffff;
+  --surface-variant: #f7f7f7;
+  --outline: #e0e0e0;
+  --text-primary: #1f1f1f;
+  --text-secondary: #6b6b6b;
+  --success: #2e7d32;
+  --warning: #f9a825;
+  --error: #c62828;
 
-  /* contorno café */
-  --border-cafe: rgba(81, 38, 21, 0.55);
-  --sombra-card: 0 14px 34px rgba(0,0,0,0.08);
+  --radius-xl: 28px;
+  --radius-lg: 20px;
+  --radius-md: 14px;
+
+  --shadow-sm: 0 2px 6px rgba(0,0,0,.08);
+  --shadow-md: 0 8px 24px rgba(0,0,0,.12);
 }
 
 /* =====================================================
    BASE
 ===================================================== */
-/* =====================================================
-   AJUSTE HEADER FIJO — RESPIRO SUPERIOR
-===================================================== */
-
 body.page-mis-pedidos {
-  margin: 0;
-  background: var(--blanco); /* fondo blanco real */
-  font-family: "Poppins", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'Poppins', system-ui, sans-serif;
+  background: #f2f3f5;
+  color: var(--text-primary);
+}
 
-  /* 🔑 CLAVE: espacio para el header fijo */
-  padding-top: 92px;
+main.mis-pedidos-layout {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 4rem;
 }
 
 /* =====================================================
-   SEGUIR COMPRANDO (IGUAL A CARRITO)
+   VOLVER
 ===================================================== */
-
 .seguir-comprando {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 14px 16px;
-  font-weight: 600;
-  color: var(--verde);
+  gap: .75rem;
+  padding: 1rem;
 }
 
-.seguir-comprando .icon-back {
+.icon-back {
   width: 42px;
   height: 42px;
   border-radius: 50%;
   border: none;
-  background: #fff;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
   cursor: pointer;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.seguir-comprando .icon-back i {
-  font-size: 1.1rem;
-  color: var(--verde);
 }
 
 /* =====================================================
-   CONTENEDOR
+   CARD GRANDE
 ===================================================== */
-
-.pedidos-container {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 0 16px 48px;
-}
-
-/* =====================================================
-   TARJETA PEDIDO (PRINCIPAL)
-===================================================== */
-
 .pedido-card {
-  background: var(--blanco);
-  border-radius: 26px;
-  padding: 22px;
-  margin-bottom: 26px;
-
-  /* ❌ sin borde */
-  border: none;
-
-  /* ✅ efecto flotante real */
-  box-shadow:
-    0 12px 30px rgba(0, 0, 0, 0.12),
-    0 4px 10px rgba(0, 0, 0, 0.06);
+  background: var(--surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  padding: 1.75rem;
+  margin-bottom: 2rem;
 }
 
-/* =====================================================
-   HEADER PEDIDO
-===================================================== */
+.pedido-header {
+  margin-bottom: 1rem;
+}
 
-.pedido-header h3 {
+.pedido-numero {
   margin: 0;
-  font-size: 1.2rem;
-  color: var(--marron);
-  font-weight: 600;
+  font-size: 1.6rem;
+  color: var(--secondary);
 }
 
 .pedido-fecha {
-  margin: 6px 0 4px;
-  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-size: .9rem;
+}
+
+/* =====================================================
+   PRODUCTOS
+===================================================== */
+.productos-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  margin-bottom: .75rem;
+}
+
+.pill {
+  background: var(--primary-soft);
+  color: var(--primary);
+  padding: .45rem .75rem;
+  border-radius: 999px;
+  font-size: .85rem;
   font-weight: 500;
 }
 
-/* Etiquetas: Fecha / Hora → ☕ café */
-.pedido-fecha-label {
-  color: var(--marron);
-  font-weight: 600;
-}
-
-/* Valores: fecha y hora → 🟢 verde */
-.pedido-fecha-valor {
-  color: var(--verde);
-  font-weight: 600;
-}
-
-/* “Total:” → ☕ café */
-.pedido-total-label {
-  color: var(--marron);
-  font-weight: 700;
-}
-
-/* monto → 🟢 verde */
-.pedido-total-valor {
-  color: var(--verde);
-  font-weight: 700;
-}
-.pedido-items {
-  margin: 6px 0;
-  font-size: 0.95rem;
-}
-
-/* “Tu pedido” → ☕ café */
-.pedido-label {
-  color: var(--marron);
-  font-weight: 600;
-}
-
-/* “(3 cafés)” → 🟢 verde */
-.pedido-count {
-  color: var(--verde);
-  font-weight: 600;
+.pedido-total {
+  font-size: 1.1rem;
+  margin: .25rem 0 1.25rem;
 }
 
 /* =====================================================
-   TARJETA INTERNA — PROGRESO
-   (IGUAL A LA PRINCIPAL, MÁS COMPACTA)
+   ENTREGA
 ===================================================== */
-
-.pedido-progreso {
-  margin-top: 18px;
-  padding: 18px;
-  border-radius: 22px;
-
-  background: var(--blanco);
-  border: 1.8px solid var(--marron); /* ☕ contorno café más marcado */
-  box-shadow: 0 10px 26px rgba(0,0,0,0.08);
+.pedido-entrega {
+  background: var(--surface-variant);
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  font-size: .9rem;
+  margin-bottom: 1.5rem;
 }
 
-.progreso-title {
-  font-weight: 600;
-  margin-bottom: 12px;
-  color: var(--marron);
+.pedido-entrega p {
+  margin: .25rem 0;
 }
 
 /* =====================================================
-   BARRA DE PROGRESO — MIS PEDIDOS
+   ESTADO DEL PEDIDO (VERTICAL)
 ===================================================== */
+.pedido-estado {
+  margin-bottom: 2rem;
+}
 
-.progreso-bar {
+.estado-title {
+  font-weight: 600;
+  margin-bottom: .5rem;
+}
+
+.estado-resumen {
+  font-size: .95rem;
+  margin-bottom: 1rem;
+  color: var(--text-secondary);
+}
+
+.estado-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+}
+
+/* ITEM */
+.estado-item {
   display: flex;
   align-items: center;
-  gap: 6px;
-  margin-bottom: 14px;
+  gap: .75rem;
+  color: var(--text-secondary);
 }
 
-/* ------------------
-   PASOS (CÍRCULOS)
------------------- */
-.step {
-  width: 18px;
-  height: 18px;
+/* DOT */
+.estado-item .dot {
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
-  background: #e0e0e0; /* fondo base visible */
-  position: relative;
-}
-
-/* Estados por etapa */
-.step.pago {
-  background: #7a4a2e; /* ☕ café */
-}
-
-.step.revision {
-  background: #c28b00; /* 🟡 ámbar */
-}
-
-.step.confirmado {
-  background: var(--verde); /* 🟢 verde */
-}
-
-.step.envio {
-  background: #4a6f8a; /* 🚚 azul/gris */
-}
-
-/* ------------------
-   LÍNEAS (TRAMOS)
------------------- */
-.line {
-  flex: 1;
-  height: 4px;
-  border-radius: 4px;
-  background: #e0e0e0; /* fondo base SIEMPRE visible */
-  position: relative;
-  overflow: hidden;
-}
-
-/* Relleno activo */
-.line::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  width: 0%;
-  background: transparent;
-  transition: width .3s ease;
-}
-
-/* Estados de línea */
-.line.pago::after {
-  width: 100%;
-  background: #7a4a2e;
-}
-
-.line.revision::after {
-  width: 100%;
-  background: #c28b00;
-}
-
-.line.confirmado::after {
-  width: 100%;
-  background: var(--verde);
-}
-
-.line.envio::after {
-  width: 100%;
-  background: #4a6f8a;
-}
-.progreso-wrapper {
-  margin-bottom: 10px;
-}
-
-.progreso-labels {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  margin-top: 6px;
-  text-align: center;
-  font-size: 0.8rem;
-  color: #6b6b6b;
-  font-weight: 500;
-}
-
-/* =====================================================
-   ESTADO
-===================================================== */
-
-.estado {
+  border: 2px solid var(--outline);
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  font-size: .85rem;
   font-weight: 600;
-  color: var(--verde);
 }
 
-/* ☕ Pendiente de pago */
-.estado.pago .estado-icon {
-  color: #7a4a2e;
+/* ACTIVO */
+.estado-item.activo {
+  color: var(--primary);
+  font-weight: 600;
 }
 
-/* 🟡 Pago en revisión */
-.estado.revision .estado-icon {
-  color: #c28b00;
+.estado-item.activo .dot {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+  transform: scale(1.15);
 }
 
-/* 🟢 Pago confirmado */
-.estado.confirmado .estado-icon {
-  color: var(--verde);
+/* COMPLETADO */
+.estado-item.completado .dot {
+  background: var(--success);
+  border-color: var(--success);
+  color: #fff;
 }
 
-/* 🚚 Envío */
-.estado.envio .estado-icon {
-  color: #4a6f8a;
+/* CANCELADO */
+.estado-item.estado-cancelado {
+  color: var(--error);
+}
+
+.estado-item.estado-cancelado .dot {
+  border-color: var(--error);
+  color: var(--error);
+}
+
+/* DESCRIPCIÓN */
+.estado-descripcion {
+  font-size: .9rem;
+  color: var(--text-secondary);
+  background: #fafafa;
+  padding: .75rem 1rem;
+  border-radius: var(--radius-md);
 }
 
 /* =====================================================
-   FOOTER
+   RECIBO
 ===================================================== */
-.divider-footer {
-  height: 1.5px;
-  background: linear-gradient(
-    to right,
-    transparent,
-    var(--verde),
-    transparent
-  );
-  margin: 14px 0 10px;
-  opacity: 0.6;
-}
-.pedido-footer {
-  margin-top: 18px;
-  text-align: center;
+.pedido-recibo {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
 }
 
 .ver-recibo {
-  background: none;
-  border: none;
-  color: var(--verde);
-  font-weight: 700;
-  font-size: 1.05rem;
-  cursor: pointer;
-
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 8px;
-
-  padding: 8px 16px;
-  border-radius: 18px;
-
-  transition:
-    background 0.25s ease,
-    transform 0.25s ease;
+  justify-content: center;
+  gap: .5rem;
+  padding: .75rem;
+  border-radius: var(--radius-md);
+  border: none;
+  background: var(--primary);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
 }
 
-/* Flecha Material más gruesa */
-.ver-recibo .arrow {
-  font-size: 1.35rem;
-  font-weight: 700;
-  line-height: 1;
-
-  transition: transform 0.25s ease;
-}
-
-/* Hover elegante */
-.ver-recibo:hover {
-  background: rgba(51, 103, 59, 0.08);
-  transform: translateY(-1px);
-}
-
-/* Flecha animada */
-.ver-recibo:hover .arrow {
-  transform: translateX(5px);
-}
-
-/* Active (tap móvil) */
-.ver-recibo:active {
-  transform: translateY(0);
-  background: rgba(51, 103, 59, 0.14);
+.recibo-preview img {
+  width: 100%;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--outline);
 }
 
 /* =====================================================
-   EMPTY STATE
+   CARRUSEL
 ===================================================== */
+.pedidos-carrusel {
+  margin-top: 2rem;
+}
 
+.carrusel-title {
+  margin-bottom: .75rem;
+  font-size: 1rem;
+}
+
+.carrusel-wrapper {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  padding-bottom: .5rem;
+}
+
+.pedido-mini-card {
+  min-width: 160px;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 1rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.pedido-mini-numero {
+  font-weight: 600;
+}
+
+.pedido-mini-total {
+  color: var(--secondary);
+}
+
+.pedido-mini-status {
+  font-size: .8rem;
+  color: var(--primary);
+}
+
+/* =====================================================
+   EMPTY
+===================================================== */
 .empty-state {
   text-align: center;
-  padding: 90px 20px;
+  padding: 3rem 1rem;
 }
 
-.empty-state h2 {
-  color: var(--marron);
-  margin-bottom: 8px;
-}
-
-.empty-state p {
-  color: #6b6b6b;
-  margin-bottom: 26px;
-}
-
-.btn-principal {
-  border: 2px solid var(--verde);
-  background: transparent;
-  color: var(--verde);
-  padding: 12px 30px;
-  border-radius: 30px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-/* =====================================================
-   RESPONSIVE
-===================================================== */
-
-@media (max-width: 600px) {
-  .pedido-card {
-    padding: 18px;
-  }
-
-  .pedido-progreso {
-    padding: 16px;
-  }
-}
-
-
-/* =========================================================
-   PAGINACIÓN — MATERIAL 3 EXPRESSIVE
-========================================================= */
-
-#pagination-container {
-  margin: 2.5rem 0 1rem;
-  display: flex;
-  justify-content: center;
-}
-
-/* Wrapper */
-.pagination {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.75rem;
-
-  padding: 0.5rem 0.75rem;
-  border-radius: 999px;
-
-  background: #ffffff;
-  box-shadow:
-    0 2px 6px rgba(0,0,0,.12),
-    0 1px 2px rgba(0,0,0,.08);
-}
-
-/* Botones */
-.pagination button {
-  width: 38px;
-  height: 38px;
-
-  border-radius: 50%;
-  border: none;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  font-size: 0.9rem;
-  font-weight: 600;
-
-  background: #f3f5f3;
-  color: #4f6f52;
-
-  cursor: pointer;
-  transition:
-    background 160ms ease,
-    transform 120ms ease,
-    box-shadow 120ms ease;
-}
-
-/* Hover */
-.pagination button:hover:not(:disabled) {
-  background: #e7ebe7;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 6px rgba(0,0,0,.12);
-}
-
-/* Disabled */
-.pagination button:disabled {
-  opacity: 0.35;
-  cursor: default;
-  transform: none;
-  box-shadow: none;
-}
-
-/* Texto página */
-.pagination span {
-  min-width: 64px;
-  text-align: center;
-
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: #5f6368;
-}
-
-/* ---------------------------------------------------------
-   RESPONSIVE
---------------------------------------------------------- */
-@media (max-width: 480px) {
-  .pagination {
-    gap: 0.5rem;
-    padding: 0.4rem 0.6rem;
-  }
-
-  .pagination button {
-    width: 34px;
-    height: 34px;
-    font-size: 0.8rem;
-  }
-
-  .pagination span {
-    font-size: 0.8rem;
-    min-width: 56px;
-  }
+.hidden {
+  display: none;
 }
