@@ -62,16 +62,18 @@ function getUserCache() {
 }
 
 /* =========================================================
-   UI — MODO RECIBO
+   UI — MODO RECIBO (SOLO LECTURA) — CORRECTO
 ========================================================= */
 function aplicarModoRecibo() {
   if (!IS_READ_ONLY) return;
 
-  document.querySelector(".pagos")?.classList.add("hidden");
+  // 🔑 NO ocultar el contenedor de pagos
+  document.querySelector(".pagos")?.classList.remove("hidden");
+
+  // ❌ ocultar solo elementos interactivos
   document.querySelector(".pago-select-label")?.classList.add("hidden");
   document.querySelector(".recibo-botones")?.classList.add("hidden");
 }
-
 /* =========================================================
    PROGRESO DEL PEDIDO
 ========================================================= */
