@@ -1,20 +1,20 @@
 /* ============================================================
-   MIS PEDIDOS — MATERIAL 3 EXPRESSIVE
-   Basado en ADMIN PEDIDOS (Cliente)
+   MIS PEDIDOS — MATERIAL 3 EXPRESSIVE (HTML REAL)
+   Café Cortero
 ============================================================ */
 
-/* ================= TOKENS ================= */
+/* ===== TOKENS ===== */
 :root {
-  --md-primary: #2f6b3f;
-  --md-primary-container: #e6f2ea;
-  --md-secondary: #6f4e37;
+  --primary: #2f6b3f;
+  --primary-container: #e6f2ea;
+  --secondary: #6f4e37;
 
-  --md-surface: #ffffff;
-  --md-surface-variant: #f4f2ef;
-  --md-outline: #dedad4;
+  --surface: #ffffff;
+  --surface-variant: #f4f2ef;
+  --outline: #dedad4;
 
-  --md-on-surface: #2e2a26;
-  --md-on-surface-variant: #6b665f;
+  --on-surface: #2e2a26;
+  --on-surface-variant: #6b665f;
 
   --elev-1: 0 2px 8px rgba(0,0,0,.06);
   --elev-2: 0 14px 40px rgba(0,0,0,.12);
@@ -24,80 +24,62 @@
   --r-md: 16px;
 }
 
-/* ================= BASE ================= */
+/* ===== BASE ===== */
 * { box-sizing: border-box; }
 
 body {
   margin: 0;
   font-family: "Poppins", system-ui, sans-serif;
   background: #f6f5f3;
-  color: var(--md-on-surface);
+  color: var(--on-surface);
 }
 
 .hidden { display: none !important; }
 
-/* ================= CONTAINER ================= */
-.admin-orders-container {
+/* ===== LAYOUT ===== */
+.mis-pedidos-layout {
   max-width: 1100px;
   margin: 0 auto;
   padding: 1.25rem 1rem 3rem;
 }
 
 /* ============================================================
-   PEDIDO ACTIVO (MISMO PESO QUE ADMIN)
+   PEDIDO ACTIVO (CARD PRINCIPAL)
 ============================================================ */
-.order-main {
-  background: var(--md-surface);
+.pedido-card--grande {
+  background: var(--surface);
   border-radius: var(--r-xl);
   box-shadow: var(--elev-2);
-  padding: 1.75rem 1.75rem 2rem;
-  margin-bottom: 2.75rem;
+  padding: 1.75rem;
+  margin-bottom: 2.5rem;
 }
 
-/* ---------- HEADER ---------- */
-.order-preview-header {
-  margin-bottom: 1.5rem;
-}
-
-.order-header-text h2 {
+/* HEADER */
+.pedido-header h2 {
   margin: 0;
-  font-size: 1.65rem;
+  font-size: 1.6rem;
   font-weight: 600;
-  letter-spacing: -.02em;
 }
 
 .pedido-fecha {
-  display: block;
-  margin-top: .35rem;
   font-size: .85rem;
-  color: var(--md-on-surface-variant);
+  color: var(--on-surface-variant);
+  margin-top: .25rem;
 }
 
-/* ---------- LAYOUT ---------- */
-.order-layout {
-  display: grid;
-  grid-template-columns: 1.15fr .85fr;
-  gap: 2rem;
+/* PRODUCTOS */
+.pedido-productos {
+  margin-top: 1.5rem;
 }
 
-/* ============================================================
-   COLUMNA TEXTO
-============================================================ */
-.order-text {
-  display: flex;
-  flex-direction: column;
-  gap: 1.6rem;
-}
-
-/* ---------- PRODUCTOS ---------- */
-.order-pills {
+.productos-pills {
   display: flex;
   flex-direction: column;
   gap: .75rem;
 }
 
-.order-pills .pill {
-  background: var(--md-surface-variant);
+.productos-pills .pill {
+  background: var(--surface-variant);
   border-radius: var(--r-md);
   padding: .85rem 1rem;
   display: flex;
@@ -106,9 +88,10 @@ body {
   font-weight: 500;
 }
 
-/* ---------- TOTAL ---------- */
-.order-total {
-  background: var(--md-primary-container);
+/* TOTAL */
+.pedido-total-row {
+  margin-top: 1rem;
+  background: var(--primary-container);
   border-radius: var(--r-lg);
   padding: 1rem 1.25rem;
   display: flex;
@@ -116,23 +99,29 @@ body {
   font-weight: 600;
 }
 
-/* ---------- ENTREGA ---------- */
-.order-address h3,
-.pedido-estado h3 {
-  margin: 0 0 .4rem;
-  font-size: 1rem;
-  font-weight: 600;
+/* ENTREGA */
+.pedido-entrega {
+  margin-top: 1.5rem;
 }
 
-.order-address p {
-  margin: 0;
+.pedido-entrega p {
+  margin: .25rem 0;
   font-size: .9rem;
-  color: var(--md-on-surface-variant);
+  color: var(--on-surface-variant);
 }
 
 /* ============================================================
-   ESTADO DEL PEDIDO (ADMIN-LIKE)
+   ESTADO DEL PEDIDO
 ============================================================ */
+.pedido-estado {
+  margin-top: 1.75rem;
+}
+
+.estado-title {
+  font-weight: 600;
+  margin-bottom: .25rem;
+}
+
 .estado-resumen {
   font-size: .9rem;
   margin-bottom: .75rem;
@@ -150,187 +139,121 @@ body {
   gap: .75rem;
   padding: .45rem 0;
   font-size: .9rem;
-  color: var(--md-on-surface-variant);
+  color: var(--on-surface-variant);
 }
 
 .estado-item .dot {
   width: 30px;
   height: 30px;
   border-radius: 50%;
+  background: var(--surface-variant);
   display: grid;
   place-items: center;
   font-weight: 600;
-  background: var(--md-surface-variant);
 }
 
 .estado-item.activo .dot {
-  background: var(--md-primary);
+  background: var(--primary);
   color: #fff;
 }
 
 .estado-item.completado .dot {
-  background: var(--md-secondary);
+  background: var(--secondary);
   color: #fff;
 }
 
 /* ============================================================
-   COLUMNA MEDIA (RECIBO / PAGO)
+   RECIBO
 ============================================================ */
-.order-media {
-  background: var(--md-surface-variant);
-  border-radius: var(--r-lg);
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+.pedido-recibo {
+  margin-top: 1.75rem;
 }
 
-.payment-media {
-  background: #fff;
-  border-radius: var(--r-md);
-  padding: .75rem;
-  box-shadow: var(--elev-1);
-  text-align: center;
-}
-
-.payment-media img {
+.recibo-preview img {
   width: 100%;
   border-radius: var(--r-md);
-}
-
-.recibo-label {
-  margin-top: .5rem;
-  font-size: .85rem;
-  color: var(--md-on-surface-variant);
+  box-shadow: var(--elev-1);
 }
 
 .ver-recibo {
-  align-self: flex-end;
+  margin-top: .75rem;
   border: none;
   background: transparent;
-  color: var(--md-primary);
+  color: var(--primary);
   font-weight: 600;
-  cursor: pointer;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: .25rem;
+  cursor: pointer;
 }
 
 /* ============================================================
-   CARRUSEL — MISMO ESTILO ADMIN
+   CARRUSEL
 ============================================================ */
-.related {
+.pedidos-carrusel {
   margin-top: 2.5rem;
 }
 
-.similar-title {
-  font-size: 1.4rem;
+.carrusel-title {
+  font-size: 1.35rem;
   font-weight: 600;
-  margin: 0;
 }
 
-.section-subtitle {
-  margin: .25rem 0 1.1rem;
-  font-size: .9rem;
-  color: var(--md-on-surface-variant);
-}
-
-.carousel-container {
+.carrusel-container {
   position: relative;
+  margin-top: 1rem;
 }
 
-.similar-list {
+.carrusel-wrapper {
   display: flex;
   gap: 1rem;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
-  padding: .75rem 0;
 }
 
-/* ---------- CARD ---------- */
-.similar-card {
-  min-width: 260px;
-  background: var(--md-surface);
+/* MINI CARD */
+.pedido-mini-card {
+  min-width: 240px;
+  background: var(--surface);
   border-radius: var(--r-lg);
   box-shadow: var(--elev-1);
+  padding: 1rem;
   scroll-snap-align: start;
   cursor: pointer;
   transition: transform .2s ease, box-shadow .2s ease;
 }
 
-.similar-card:hover {
+.pedido-mini-card:hover {
   transform: translateY(-4px);
   box-shadow: var(--elev-2);
 }
 
-.similar-card.is-selected {
-  outline: 2px solid var(--md-primary);
+.pedido-mini-card.is-selected {
+  outline: 2px solid var(--primary);
 }
 
-.order-card-info {
-  padding: 1rem;
-}
-
-.pedido-mini-numero {
-  margin: 0;
-  font-weight: 600;
-}
-
-.pedido-mini-total {
-  margin: .25rem 0;
-}
-
-.pedido-mini-status {
-  font-size: .8rem;
-  color: var(--md-on-surface-variant);
-}
-
-/* ---------- FLECHAS ---------- */
-.carousel-prev-circle,
-.carousel-next-circle {
+/* FLECHAS */
+.carrusel-arrow {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 44px;
-  height: 44px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   border: none;
-  background: var(--md-surface);
+  background: var(--surface);
   box-shadow: var(--elev-2);
   cursor: pointer;
 }
 
-.carousel-prev-circle { left: -14px; }
-.carousel-next-circle { right: -14px; }
-
-/* ============================================================
-   EMPTY
-============================================================ */
-.admin-empty-state {
-  text-align: center;
-  padding: 3rem 1rem;
-}
-
-.empty-title {
-  font-size: 1.6rem;
-  font-weight: 600;
-}
-
-.empty-text {
-  margin-top: .5rem;
-  color: var(--md-on-surface-variant);
-}
+.carrusel-arrow.left { left: -12px; }
+.carrusel-arrow.right { right: -12px; }
 
 /* ============================================================
    RESPONSIVE
 ============================================================ */
 @media (max-width: 900px) {
-  .order-layout {
-    grid-template-columns: 1fr;
-  }
-
-  .carousel-prev-circle,
-  .carousel-next-circle {
+  .carrusel-arrow {
     display: none;
   }
 }
