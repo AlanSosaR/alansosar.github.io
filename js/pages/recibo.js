@@ -38,12 +38,51 @@ const IS_READ_ONLY = Boolean(ORDER_ID);
 /* =========================================================
    SNACKBAR
 ========================================================= */
-function showSnack(msg) {
+function showSnack(
+  msg,
+  onAccept = null,          // 👉 acción principal (ENVIAR)
+  actionText = null,        // 👉 texto acción secundaria
+  onAction = null,          // 👉 acción secundaria
+  duration = 6000
+) {
   const bar = $id("snackbar");
   if (!bar) return;
-  bar.innerHTML = `<span>${msg}</span>`;
+
+  bar.innerHTML = `
+    <span class="snack-text">${msg}</span>
+    <div class="snack-actions">
+      ${
+        actionText && onAction
+          ? `<button class="snack-action secondary">${actionText}</button>`
+          : ""
+      }
+      <button class="snack-action primary">Aceptar</button>
+    </div>
+  `;
+
   bar.classList.add("show");
-  setTimeout(() => bar.classList.remove("show"), 3200);
+
+  const timer = setTimeout(() => {
+    bar.classList.remove("show");
+  }, duration);
+
+  // Acción secundaria (Cancelar / Corregir)
+  if (actionText && onAction) {
+    bar.querySelector(".snack-action.secondary")
+      .addEventListener("click", () => {
+        clearTimeout(timer);
+        bar.classList.remove("show");
+        onAction();
+      });
+  }
+
+  // Aceptar = acción principal
+  bar.querySelector(".snack-action.primary")
+    .addEventListener("click", () => {
+      clearTimeout(timer);
+      bar.classList.remove("show");
+      if (onAccept) onAccept();
+    });
 }
 
 /* =========================================================
