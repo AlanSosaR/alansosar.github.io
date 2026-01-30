@@ -269,8 +269,8 @@ async function cargarPedidoExistente(orderId) {
 
   if (!pedido) return showSnack("Pedido no encontrado");
 
-  $id("numeroPedido").textContent =
-    `Pedido N.º ${String(pedido.order_number).padStart(3, "0")}`;
+ $id("numeroPedido").textContent =
+  String(pedido.order_number).padStart(3, "0");
 
   const fecha = new Date(pedido.created_at);
   $id("fechaPedido").textContent = fecha.toLocaleDateString("es-HN", {
