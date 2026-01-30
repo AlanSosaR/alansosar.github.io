@@ -1,9 +1,9 @@
 /* ============================================================
    Mis pedidos — Café Cortero
-   CLIENTE (HTML NUEVO)
+   CLIENTE (HTML FINAL CORREGIDO)
 ============================================================ */
 
-console.log("📦 mis-pedidos.js — FINAL HTML NUEVO");
+console.log("📦 mis-pedidos.js — FINAL CORREGIDO");
 
 /* -----------------------------------------------------------
    STATE
@@ -35,7 +35,7 @@ function formatDateTime(dateStr) {
 }
 
 /* -----------------------------------------------------------
-   ESTADOS
+   ESTADOS (CLIENTE)
 ----------------------------------------------------------- */
 const STATUS_FLOW = ["pagado", "revision", "confirmado", "envio"];
 
@@ -43,28 +43,22 @@ const STATUS_MAP = {
   pending: {
     step: 1,
     label: "Pendiente de pago",
-    description:
-      "Estamos esperando tu comprobante de pago para continuar con tu pedido.",
   },
   payment_review: {
     step: 2,
     label: "Pago en revisión",
-    description: "Estamos verificando tu comprobante de pago.",
   },
   processing: {
     step: 3,
-    label: "Pedido confirmado",
-    description: "Estamos preparando tu pedido.",
+    label: "Confirmado",
   },
   shipped: {
     step: 4,
     label: "Enviado",
-    description: "Tu pedido va en camino.",
   },
   delivered: {
     step: 4,
     label: "Entregado",
-    description: "Tu pedido fue entregado.",
   },
 };
 
@@ -112,22 +106,18 @@ async function loadPedidosCliente() {
 }
 
 /* -----------------------------------------------------------
-   RENDER CLIENTE
+   RENDER GENERAL
 ----------------------------------------------------------- */
 function renderCliente() {
   renderPedidoActivo(pedidoActivo);
   renderCarrusel();
 
-  document
-    .getElementById("pedido-activo")
-    ?.classList.remove("hidden");
-  document
-    .getElementById("mis-pedidos-carrusel")
-    ?.classList.remove("hidden");
+  document.getElementById("pedido-activo")?.classList.remove("hidden");
+  document.getElementById("mis-pedidos-carrusel")?.classList.remove("hidden");
 }
 
 /* -----------------------------------------------------------
-   PEDIDO ACTIVO (PREVIEW)
+   PEDIDO ACTIVO
 ----------------------------------------------------------- */
 async function renderPedidoActivo(pedido) {
   const container = document.getElementById("pedido-activo");
@@ -150,11 +140,9 @@ async function renderPedidoActivo(pedido) {
   node.querySelector(".pedido-total").textContent =
     `L ${Number(pedido.total).toFixed(2)}`;
 
-  /* ENTREGA */
-  node.querySelector(".entrega-text").textContent =
-    pedido.address || "—";
-  node.querySelector(".referencia-text").textContent =
-    pedido.reference || "—";
+  /* ENTREGA / REFERENCIA */
+  node.querySelector(".entrega-text").textContent = pedido.address || "—";
+  node.querySelector(".referencia-text").textContent = pedido.reference || "—";
 
   /* PRODUCTOS */
   const pills = node.querySelector(".productos-pills");
@@ -167,19 +155,20 @@ async function renderPedidoActivo(pedido) {
 
   if (Array.isArray(items) && items.length) {
     const ids = [...new Set(items.map(i => i.product_id))];
+
     const { data: products } = await sb
       .from("products")
       .select("id, name")
       .in("id", ids);
 
-    const map = {};
-    products?.forEach(p => (map[p.id] = p.name));
+    const productMap = {};
+    products?.forEach(p => (productMap[p.id] = p.name));
 
     items.forEach(i => {
       const row = document.createElement("div");
       row.className = "pill";
       row.innerHTML = `
-        <span>${map[i.product_id] || "Producto"} × ${i.quantity}</span>
+        <span>${productMap[i.product_id] || "Producto"} × ${i.quantity}</span>
         <span>L ${(i.quantity * i.price).toFixed(2)}</span>
       `;
       pills.appendChild(row);
@@ -191,8 +180,6 @@ async function renderPedidoActivo(pedido) {
 
   node.querySelector(".estado-paso").textContent = status.step;
   node.querySelector(".estado-nombre").textContent = status.label;
-  node.querySelector(".estado-descripcion").textContent =
-    status.description;
 
   node.querySelectorAll(".estado-item").forEach(li => {
     li.classList.remove("activo", "completado");
@@ -207,22 +194,17 @@ async function renderPedidoActivo(pedido) {
     if (idx + 1 === status.step) li.classList.add("activo");
   });
 
-  /* MEDIA / RECIBO */
-  const receiptBox = node.querySelector(".payment-media.receipt");
-  const cashBox = node.querySelector(".payment-media.placeholder");
+  /* MEDIA / IMAGEN */
   const img = node.querySelector(".recibo-img");
-  const label = node.querySelector(".recibo-label");
   const btn = node.querySelector(".ver-recibo");
 
-  receiptBox?.classList.add("hidden");
-  cashBox?.classList.add("hidden");
-  btn?.classList.add("hidden");
+  btn.classList.add("hidden");
 
   if (
     pedido.payment_method === "cash" ||
     pedido.payment_method === "cash_on_delivery"
   ) {
-    cashBox?.classList.remove("hidden");
+    img.src = "imagenes/pago_en_mano.svg";
   } else {
     const { data: receipt } = await sb
       .from("payment_receipts")
@@ -232,22 +214,18 @@ async function renderPedidoActivo(pedido) {
 
     if (receipt?.file_url) {
       img.src = receipt.file_url;
-      label.textContent = "Comprobante de pago";
-      receiptBox?.classList.remove("hidden");
-      btn?.classList.remove("hidden");
-      btn.onclick = () =>
-        (location.href = `recibo.html?id=${pedido.id}`);
+      btn.classList.remove("hidden");
+      btn.onclick = () => {
+        location.href = `recibo.html?id=${pedido.id}`;
+      };
     } else {
-      cashBox?.classList.remove("hidden");
+      img.src = "imagenes/pago_en_mano.svg";
     }
   }
 
   container.appendChild(node);
 
-  container.scrollIntoView({
-    behavior: "smooth",
-    block: "start",
-  });
+  container.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 /* -----------------------------------------------------------
@@ -260,7 +238,7 @@ function renderCarrusel() {
 
   wrapper.innerHTML = "";
 
-  allPedidos.forEach((pedido, index) => {
+  allPedidos.forEach(pedido => {
     const node = tpl.content.cloneNode(true);
     const card = node.querySelector(".pedido-mini-card");
 
@@ -274,9 +252,14 @@ function renderCarrusel() {
       STATUS_MAP[pedido.status]?.label || "Pendiente";
 
     const img = node.querySelector(".pedido-mini-img");
-    img.src = "imagenes/pago_en_mano.svg";
 
-    if (pedido === pedidoActivo) {
+    img.src =
+      pedido.payment_method === "cash" ||
+      pedido.payment_method === "cash_on_delivery"
+        ? "imagenes/pago_en_mano.svg"
+        : "imagenes/recibo_default.svg";
+
+    if (pedido.id === pedidoActivo.id) {
       card.classList.add("is-selected");
     }
 
@@ -295,7 +278,7 @@ function renderCarrusel() {
 }
 
 /* -----------------------------------------------------------
-   FLECHAS CARRUSEL (DESKTOP)
+   FLECHAS CARRUSEL
 ----------------------------------------------------------- */
 function bindCarruselArrows() {
   if (window.innerWidth < 900) return;
@@ -307,20 +290,15 @@ function bindCarruselArrows() {
 
   const STEP = list.clientWidth * 0.9;
 
-  prev.onclick = () =>
-    list.scrollBy({ left: -STEP, behavior: "smooth" });
-
-  next.onclick = () =>
-    list.scrollBy({ left: STEP, behavior: "smooth" });
+  prev.onclick = () => list.scrollBy({ left: -STEP, behavior: "smooth" });
+  next.onclick = () => list.scrollBy({ left: STEP, behavior: "smooth" });
 }
 
 /* -----------------------------------------------------------
-   EMPTY
+   EMPTY STATE
 ----------------------------------------------------------- */
 function mostrarVacio() {
   document.getElementById("pedido-activo")?.classList.add("hidden");
-  document
-    .getElementById("mis-pedidos-carrusel")
-    ?.classList.add("hidden");
+  document.getElementById("mis-pedidos-carrusel")?.classList.add("hidden");
   document.getElementById("empty-state")?.classList.remove("hidden");
 }
