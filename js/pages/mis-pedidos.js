@@ -102,7 +102,7 @@ async function renderPedidoActivo(pedido) {
   container.innerHTML = "";
   const node = tpl.content.cloneNode(true);
 
-  /* HEADER */
+  /* ================= HEADER ================= */
   node.querySelector(".pedido-numero").textContent =
     `Pedido N.º ${String(pedido.order_number).padStart(3, "0")}`;
 
@@ -110,28 +110,44 @@ async function renderPedidoActivo(pedido) {
   node.querySelector(".fecha").textContent = fecha;
   node.querySelector(".hora").textContent = hora;
 
-  /* TOTAL */
+  /* ================= TOTAL ================= */
   node.querySelector(".pedido-total").textContent =
     `L ${Number(pedido.total).toFixed(2)}`;
 
-  /* ENTREGA / REFERENCIA */
+  /* ================= ENTREGA / REFERENCIA ================= */
+  const entregaEl = node.querySelector(".entrega-text");
+  const referenciaEl = node.querySelector(".referencia-text");
+
   if (pedido.address_id) {
-    const { data: address } = await sb()
+    const { data: address, error } = await sb()
       .from("addresses")
-      .select("*")
+      .select("street, city, state, country, postal_code")
       .eq("id", pedido.address_id)
       .maybeSingle();
 
-    node.querySelector(".entrega-text").textContent =
-      address?.address || "—";
-    node.querySelector(".referencia-text").textContent =
-      address?.reference || "—";
+    if (!error && address) {
+      // Construir dirección completa
+      const entrega = [
+        address.street,
+        address.city,
+        address.state,
+        address.country,
+      ]
+        .filter(Boolean)
+        .join(", ");
+
+      entregaEl.textContent = entrega || "—";
+      referenciaEl.textContent = address.postal_code || "—";
+    } else {
+      entregaEl.textContent = "—";
+      referenciaEl.textContent = "—";
+    }
   } else {
-    node.querySelector(".entrega-text").textContent = "—";
-    node.querySelector(".referencia-text").textContent = "—";
+    entregaEl.textContent = "—";
+    referenciaEl.textContent = "—";
   }
 
-  /* PRODUCTOS */
+  /* ================= PRODUCTOS ================= */
   const pills = node.querySelector(".productos-pills");
   pills.innerHTML = "";
 
@@ -140,11 +156,12 @@ async function renderPedidoActivo(pedido) {
     .select("product_id, quantity, price")
     .eq("order_id", pedido.id);
 
-  if (items?.length) {
+  if (Array.isArray(items) && items.length) {
     const ids = [...new Set(items.map(i => i.product_id))];
+
     const { data: products } = await sb()
       .from("products")
-      .select("id,name")
+      .select("id, name")
       .in("id", ids);
 
     const map = {};
@@ -161,8 +178,9 @@ async function renderPedidoActivo(pedido) {
     });
   }
 
-  /* ESTADO */
+  /* ================= ESTADO ================= */
   const status = STATUS_MAP[pedido.status] || STATUS_MAP.pending;
+
   node.querySelector(".estado-paso").textContent = status.step;
   node.querySelector(".estado-nombre").textContent = status.label;
 
@@ -174,12 +192,13 @@ async function renderPedidoActivo(pedido) {
   STATUS_FLOW.forEach((key, i) => {
     const li = node.querySelector(`[data-estado="${key}"]`);
     if (!li) return;
+
     li.classList.remove("hidden");
     if (i + 1 < status.step) li.classList.add("completado");
     if (i + 1 === status.step) li.classList.add("activo");
   });
 
-  /* MEDIA */
+  /* ================= MEDIA / RECIBO ================= */
   const img = node.querySelector(".recibo-img");
   const btn = node.querySelector(".ver-recibo");
   btn.classList.add("hidden");
@@ -206,11 +225,14 @@ async function renderPedidoActivo(pedido) {
     }
   }
 
+  /* ================= MOUNT ================= */
   container.appendChild(node);
 
-  container.scrollIntoView({ behavior: "smooth", block: "start" });
+  container.scrollIntoView({
+    behavior: "smooth",
+    block: "start",
+  });
 }
-
 /* -----------------------------------------------------------
    CARRUSEL
 ----------------------------------------------------------- */
