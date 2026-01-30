@@ -190,10 +190,10 @@ body {
 /* ================= TOTAL DEL PEDIDO ================= */
 .order-total {
   display: grid;
-  grid-template-columns: 1fr 110px; /* misma columna que pills */
+  grid-template-columns: 1fr 110px; /* EXACTAMENTE igual que pills */
   align-items: center;
 
-  padding: 1rem 0 0;
+  padding: 1rem 1rem 0; /* 🔑 MISMO padding horizontal que .pill */
   margin-top: .5rem;
 
   border-top: 2px dashed rgba(51,103,59,.45);
@@ -211,6 +211,9 @@ body {
   font-size: 1rem;
   font-weight: 700;
   color: var(--verde);
+
+  /* opcional pero recomendado para números */
+  font-variant-numeric: tabular-nums;
 }
 
 /* ================= ENTREGA ================= */
