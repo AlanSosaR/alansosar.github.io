@@ -5,71 +5,81 @@
 
 /* ------------------ TOKENS M3 ------------------ */
 :root {
-  --md-sys-color-primary: #2f6b3f;
-  --md-sys-color-primary-container: #e6f2ea;
-  --md-sys-color-secondary: #6f4e37;
-  --md-sys-color-surface: #ffffff;
-  --md-sys-color-surface-variant: #f3f1ee;
-  --md-sys-color-outline: #d7d3ce;
-  --md-sys-color-on-surface: #2e2a26;
-  --md-sys-color-on-surface-variant: #6b665f;
-  --md-sys-elevation-1: 0 2px 6px rgba(0,0,0,.06);
-  --md-sys-elevation-2: 0 8px 24px rgba(0,0,0,.08);
-  --md-radius-xl: 28px;
-  --md-radius-lg: 20px;
-  --md-radius-md: 14px;
+  --md-primary: #2f6b3f;
+  --md-primary-container: #e6f2ea;
+  --md-secondary: #6f4e37;
+
+  --md-surface: #ffffff;
+  --md-surface-variant: #f4f2ef;
+  --md-outline: #dedad4;
+
+  --md-on-surface: #2e2a26;
+  --md-on-surface-variant: #6b665f;
+
+  --elev-1: 0 2px 6px rgba(0,0,0,.06);
+  --elev-2: 0 12px 32px rgba(0,0,0,.10);
+
+  --radius-xl: 28px;
+  --radius-lg: 22px;
+  --radius-md: 16px;
 }
 
 /* ------------------ BASE ------------------ */
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
 body {
   margin: 0;
   font-family: "Poppins", system-ui, sans-serif;
   background: #f6f5f3;
-  color: var(--md-sys-color-on-surface);
+  color: var(--md-on-surface);
+}
+
+.hidden {
+  display: none !important;
 }
 
 /* ------------------ LAYOUT ------------------ */
 .admin-orders-container {
-  max-width: 1200px;
+  max-width: 1100px;
   margin: 0 auto;
-  padding: 1.5rem 1rem 3rem;
+  padding: 1.25rem 1rem 3rem;
 }
 
 /* ============================================================
    TARJETA PRINCIPAL (PEDIDO ACTIVO)
 ============================================================ */
 .order-main {
-  background: var(--md-sys-color-surface);
-  border-radius: var(--md-radius-xl);
-  box-shadow: var(--md-sys-elevation-2);
-  padding: 1.5rem;
+  background: var(--md-surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--elev-2);
+  padding: 1.75rem 1.5rem;
   margin-bottom: 2.5rem;
 }
 
-.hidden { display: none; }
-
 /* ---------- HEADER ---------- */
 .order-preview-header {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
 }
 
 .order-header-text h2 {
   margin: 0;
-  font-size: 1.5rem;
+  font-size: 1.6rem;
   font-weight: 600;
+  letter-spacing: -.02em;
 }
 
 .pedido-fecha {
   font-size: .85rem;
-  color: var(--md-sys-color-on-surface-variant);
+  color: var(--md-on-surface-variant);
+  margin-top: .25rem;
 }
 
 /* ---------- GRID ---------- */
 .order-layout {
   display: grid;
-  grid-template-columns: 1.1fr .9fr;
+  grid-template-columns: 1.2fr .8fr;
   gap: 2rem;
 }
 
@@ -90,41 +100,46 @@ body {
 }
 
 .order-pills .pill {
-  background: var(--md-sys-color-surface-variant);
-  padding: .75rem 1rem;
-  border-radius: var(--md-radius-md);
+  background: var(--md-surface-variant);
+  padding: .85rem 1rem;
+  border-radius: var(--radius-md);
   display: flex;
   justify-content: space-between;
   font-size: .9rem;
+  font-weight: 500;
 }
 
 /* ---------- TOTAL ---------- */
 .order-total {
-  background: var(--md-sys-color-primary-container);
-  border-radius: var(--md-radius-lg);
+  background: var(--md-primary-container);
+  border-radius: var(--radius-lg);
   padding: 1rem 1.25rem;
   display: flex;
   justify-content: space-between;
+  font-size: 1rem;
   font-weight: 600;
 }
 
 /* ---------- ENTREGA ---------- */
 .order-address h3 {
-  margin: 0 0 .25rem;
+  margin: 0 0 .35rem;
   font-size: 1rem;
+  font-weight: 600;
 }
 
 .order-address p {
   margin: 0;
   font-size: .9rem;
-  color: var(--md-sys-color-on-surface-variant);
+  color: var(--md-on-surface-variant);
 }
 
 /* ============================================================
    ESTADO DEL PEDIDO
 ============================================================ */
 .pedido-estado h3 {
-  margin-bottom: .5rem;
+  margin-bottom: .4rem;
+  font-size: 1rem;
+  font-weight: 600;
 }
 
 .estado-resumen {
@@ -142,27 +157,29 @@ body {
   display: flex;
   align-items: center;
   gap: .75rem;
-  padding: .5rem 0;
-  color: var(--md-sys-color-on-surface-variant);
+  padding: .45rem 0;
+  font-size: .9rem;
+  color: var(--md-on-surface-variant);
 }
 
 .estado-item .dot {
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
-  background: var(--md-sys-color-surface-variant);
+  background: var(--md-surface-variant);
   display: grid;
   place-items: center;
   font-size: .85rem;
+  font-weight: 600;
 }
 
 .estado-item.activo .dot {
-  background: var(--md-sys-color-primary);
+  background: var(--md-primary);
   color: #fff;
 }
 
 .estado-item.completado .dot {
-  background: var(--md-sys-color-secondary);
+  background: var(--md-secondary);
   color: #fff;
 }
 
@@ -170,8 +187,8 @@ body {
    COLUMNA MEDIA (IMAGEN / RECIBO)
 ============================================================ */
 .order-media {
-  background: var(--md-sys-color-surface-variant);
-  border-radius: var(--md-radius-lg);
+  background: var(--md-surface-variant);
+  border-radius: var(--radius-lg);
   padding: 1rem;
   display: flex;
   flex-direction: column;
@@ -179,20 +196,32 @@ body {
 }
 
 .payment-media {
+  background: #fff;
+  border-radius: var(--radius-md);
+  padding: .75rem;
   text-align: center;
+  box-shadow: var(--elev-1);
 }
 
 .payment-media img {
   max-width: 100%;
-  border-radius: var(--md-radius-md);
+  border-radius: var(--radius-md);
 }
 
+.recibo-label {
+  margin-top: .5rem;
+  font-size: .85rem;
+  color: var(--md-on-surface-variant);
+}
+
+/* ---------- BOTÓN RECIBO ---------- */
 .ver-recibo {
   align-self: flex-end;
   border: none;
   background: transparent;
-  color: var(--md-sys-color-primary);
-  font-weight: 500;
+  color: var(--md-primary);
+  font-weight: 600;
+  font-size: .9rem;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -208,12 +237,13 @@ body {
 
 .similar-title {
   margin: 0;
-  font-size: 1.3rem;
+  font-size: 1.35rem;
+  font-weight: 600;
 }
 
 .section-subtitle {
   margin: .25rem 0 1rem;
-  color: var(--md-sys-color-on-surface-variant);
+  color: var(--md-on-surface-variant);
   font-size: .9rem;
 }
 
@@ -226,14 +256,15 @@ body {
   gap: 1rem;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
-  padding: .5rem 0;
+  padding: .75rem 0;
 }
 
+/* ---------- TARJETA MINI ---------- */
 .similar-card {
-  min-width: 220px;
-  background: var(--md-sys-color-surface);
-  border-radius: var(--md-radius-lg);
-  box-shadow: var(--md-sys-elevation-1);
+  min-width: 240px;
+  background: var(--md-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--elev-1);
   scroll-snap-align: start;
   cursor: pointer;
   transition: transform .2s ease, box-shadow .2s ease;
@@ -241,7 +272,11 @@ body {
 
 .similar-card:hover {
   transform: translateY(-4px);
-  box-shadow: var(--md-sys-elevation-2);
+  box-shadow: var(--elev-2);
+}
+
+.similar-card.is-selected {
+  outline: 2px solid var(--md-primary);
 }
 
 .order-card-info {
@@ -255,11 +290,12 @@ body {
 
 .pedido-mini-total {
   margin: .25rem 0;
+  font-weight: 500;
 }
 
 .pedido-mini-status {
   font-size: .8rem;
-  color: var(--md-sys-color-on-surface-variant);
+  color: var(--md-on-surface-variant);
 }
 
 /* ---------- FLECHAS ---------- */
@@ -268,17 +304,17 @@ body {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: var(--md-sys-color-surface);
+  background: var(--md-surface);
   border: none;
   border-radius: 50%;
-  width: 42px;
-  height: 42px;
-  box-shadow: var(--md-sys-elevation-2);
+  width: 44px;
+  height: 44px;
+  box-shadow: var(--elev-2);
   cursor: pointer;
 }
 
-.carousel-prev-circle { left: -12px; }
-.carousel-next-circle { right: -12px; }
+.carousel-prev-circle { left: -14px; }
+.carousel-next-circle { right: -14px; }
 
 /* ============================================================
    EMPTY STATE
@@ -290,11 +326,13 @@ body {
 
 .empty-title {
   margin: 0;
-  font-size: 1.5rem;
+  font-size: 1.6rem;
+  font-weight: 600;
 }
 
 .empty-text {
-  color: var(--md-sys-color-on-surface-variant);
+  margin-top: .5rem;
+  color: var(--md-on-surface-variant);
 }
 
 /* ============================================================
