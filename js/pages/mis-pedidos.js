@@ -11,7 +11,7 @@ console.log("📦 mis-pedidos.js — CLIENTE / ADMIN");
 let allPedidos = [];
 let pedidoActivo = null;
 let isAdmin = false;
-let __misPedidosInit = false; // 🔒 guard anti doble init
+let __misPedidosInit = false;
 
 /* -----------------------------------------------------------
    HELPERS
@@ -36,45 +36,39 @@ function formatDateTime(dateStr) {
 }
 
 /* -----------------------------------------------------------
-   ESTADOS (BACKEND → UI)
+   ESTADOS
 ----------------------------------------------------------- */
 const STATUS_FLOW = ["pagado", "revision", "confirmado", "envio"];
 
 const STATUS_MAP = {
   pending_payment: {
     step: 1,
-    key: "pagado",
     label: "Pendiente de pago",
     description:
       "Estamos esperando tu comprobante de pago para continuar con tu pedido.",
   },
   payment_review: {
     step: 2,
-    key: "revision",
     label: "Pago en revisión",
     description: "Estamos verificando tu comprobante de pago.",
   },
   payment_confirmed: {
     step: 3,
-    key: "confirmado",
     label: "Pago confirmado",
     description: "Tu pedido ha sido confirmado y será preparado.",
   },
   processing: {
     step: 3,
-    key: "confirmado",
     label: "Pedido confirmado",
     description: "Estamos preparando tu pedido.",
   },
   shipped: {
     step: 4,
-    key: "envio",
     label: "Enviado",
     description: "Tu pedido va en camino.",
   },
   delivered: {
     step: 4,
-    key: "envio",
     label: "Entregado",
     description: "Tu pedido fue entregado.",
   },
@@ -86,12 +80,13 @@ const STATUS_MAP = {
 };
 
 /* -----------------------------------------------------------
-   INIT (SOLO UNA VEZ)
+   INIT (DOM + HEADER SAFE)
 ----------------------------------------------------------- */
+document.addEventListener("DOMContentLoaded", init);
 document.addEventListener("header:ready", init);
 
 async function init() {
-  if (__misPedidosInit) return; // ⛔ evita doble render
+  if (__misPedidosInit) return;
   __misPedidosInit = true;
 
   await detectMode();
@@ -103,11 +98,17 @@ async function init() {
   }
 
   await loadPedidosCliente();
+
+  if (!pedidoActivo) {
+    mostrarVacio();
+    return;
+  }
+
   renderCliente();
 }
 
 /* -----------------------------------------------------------
-   DETECTAR MODO ADMIN
+   DETECTAR ADMIN
 ----------------------------------------------------------- */
 async function detectMode() {
   const sb = getSupabaseClient();
@@ -116,68 +117,57 @@ async function detectMode() {
   const params = new URLSearchParams(location.search);
   if (params.get("mode") !== "admin") return;
 
-  const { data: session } = await sb.auth.getSession();
-  if (!session?.session) return;
+  const { data } = await sb.auth.getSession();
+  if (!data?.session) return;
 
   const { data: user } = await sb
     .from("users")
     .select("rol")
-    .eq("id", session.session.user.id)
+    .eq("id", data.session.user.id)
     .single();
 
   isAdmin = user?.rol === "admin";
 }
 
 /* -----------------------------------------------------------
-   LOAD PEDIDOS CLIENTE
+   LOAD PEDIDOS
 ----------------------------------------------------------- */
 async function loadPedidosCliente() {
   const sb = getSupabaseClient();
   if (!sb) return;
 
   const { data: session } = await sb.auth.getSession();
-  if (!session?.session) {
-    mostrarVacio();
-    return;
-  }
+  if (!session?.session) return;
 
-  const { data, error } = await sb
+  const { data } = await sb
     .from("orders")
     .select("*")
     .eq("user_id", session.session.user.id)
     .order("created_at", { ascending: false });
 
-  if (error || !data || data.length === 0) {
-    mostrarVacio();
-    return;
-  }
+  if (!data || data.length === 0) return;
 
   allPedidos = data;
-  pedidoActivo = data[0]; // 🔥 solo UNO activo
+  pedidoActivo = data[0];
 }
 
 /* -----------------------------------------------------------
    RENDER CLIENTE
 ----------------------------------------------------------- */
 function renderCliente() {
-  if (!pedidoActivo) {
-    mostrarVacio();
-    return;
-  }
-
   renderPedidoActivo(pedidoActivo);
   renderCarrusel();
 }
 
 /* -----------------------------------------------------------
-   RENDER PEDIDO ACTIVO (TARJETA GRANDE)
+   PEDIDO ACTIVO
 ----------------------------------------------------------- */
 async function renderPedidoActivo(pedido) {
   const container = document.getElementById("pedido-activo");
   const tpl = document.getElementById("pedido-activo-template");
   if (!container || !tpl) return;
 
-  container.innerHTML = ""; // 🔥 SIEMPRE una sola tarjeta
+  container.innerHTML = "";
 
   const node = tpl.content.cloneNode(true);
 
@@ -209,21 +199,18 @@ async function renderPedidoActivo(pedido) {
   });
 
   /* Estado */
-  const statusInfo = STATUS_MAP[pedido.status] || STATUS_MAP.pending_payment;
+  const status = STATUS_MAP[pedido.status] || STATUS_MAP.pending_payment;
 
   node.querySelector(".estado-paso").textContent =
-    statusInfo.cancelled ? "—" : statusInfo.step;
+    status.cancelled ? "—" : status.step;
 
-  node.querySelector(".estado-nombre").textContent = statusInfo.label;
-  node.querySelector(".estado-descripcion").textContent =
-    statusInfo.description;
+  node.querySelector(".estado-nombre").textContent = status.label;
+  node.querySelector(".estado-descripcion").textContent = status.description;
 
   const estados = node.querySelectorAll(".estado-item");
-  estados.forEach(li =>
-    li.classList.add("hidden", "completado", "activo")
-  );
+  estados.forEach(li => li.classList.add("hidden", "completado", "activo"));
 
-  if (statusInfo.cancelled) {
+  if (status.cancelled) {
     node.querySelector(".estado-cancelado")?.classList.remove("hidden");
   } else {
     STATUS_FLOW.forEach((key, index) => {
@@ -232,8 +219,8 @@ async function renderPedidoActivo(pedido) {
 
       li.classList.remove("hidden");
 
-      if (index + 1 < statusInfo.step) li.classList.add("completado");
-      if (index + 1 === statusInfo.step) li.classList.add("activo");
+      if (index + 1 < status.step) li.classList.add("completado");
+      if (index + 1 === status.step) li.classList.add("activo");
     });
   }
 
@@ -245,7 +232,7 @@ async function renderPedidoActivo(pedido) {
 }
 
 /* -----------------------------------------------------------
-   RENDER CARRUSEL
+   CARRUSEL
 ----------------------------------------------------------- */
 function renderCarrusel() {
   const wrapper = document.getElementById("pedidos-carrusel");
