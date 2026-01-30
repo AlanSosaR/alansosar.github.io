@@ -182,27 +182,40 @@
 
   <!-- SNACKBAR -->
   <div id="snackbar" class="snackbar"></div>
-
-<!-- Supabase core -->
+<!-- ======================================================
+     SUPABASE
+====================================================== -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/core/supabase-client-core.js"></script>
 
-<!-- 🔑 MODO DE PÁGINA (ANTES DE TODO) -->
+<!-- ======================================================
+     MODO DE PÁGINA (ANTES DE CUALQUIER JS PROPIO)
+====================================================== -->
 <script>
   window.PAGE_MODE = "recibo";
 </script>
 
-<!-- HEADER CORE (define initHeader) -->
+<!-- ======================================================
+     HEADER / AUTH / LAYOUT (CORE UI)
+====================================================== -->
 <script type="module" src="js/ui/header.js"></script>
-
-<!-- AUTH UI (define initAuthUI) -->
 <script src="js/core/auth-ui.js"></script>
-
-<!-- LAYOUT (inyecta header y llama initHeader + initAuthUI) -->
 <script src="js/ui/layout.js"></script>
 
-<!-- Lógica propia de la página -->
-<script src="js/pages/recibo.js"></script>
+<!-- ======================================================
+     RECIBO — CORE COMPARTIDO (OBLIGATORIO)
+====================================================== -->
+<script src="js/pages/recibo.core.js"></script>
+
+<!-- ======================================================
+     RECIBO — CHECKOUT (solo si NO hay ?id)
+====================================================== -->
+<script src="js/pages/recibo.checkout.js"></script>
+
+<!-- ======================================================
+     RECIBO — VIEW (solo si HAY ?id)
+====================================================== -->
+<script src="js/pages/recibo.view.js"></script>
 
 </body>
 </html>
