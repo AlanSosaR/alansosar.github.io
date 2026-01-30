@@ -1,50 +1,57 @@
-/* =====================================================
-   VARIABLES (Material 3 Expressive)
-===================================================== */
+/* ============================================================
+   MIS PEDIDOS — MATERIAL 3 EXPRESSIVE
+============================================================ */
+
 :root {
-  --primary: #2e7d32;
-  --primary-soft: #e8f5e9;
-  --secondary: #795548;
-  --surface: #ffffff;
-  --surface-variant: #f7f7f7;
-  --outline: #e0e0e0;
-  --text-primary: #1f1f1f;
-  --text-secondary: #6b6b6b;
-  --success: #2e7d32;
-  --warning: #f9a825;
-  --error: #c62828;
-
-  --radius-xl: 28px;
-  --radius-lg: 20px;
-  --radius-md: 14px;
-
-  --shadow-sm: 0 2px 6px rgba(0,0,0,.08);
-  --shadow-md: 0 8px 24px rgba(0,0,0,.12);
+  --verde: #2e7d32;
+  --verde-soft: #e8f5e9;
+  --cafe: #6f4e37;
+  --gris-text: #6b6b6b;
+  --gris-line: #e0e0e0;
+  --bg: #f6f7f9;
+  --card: #ffffff;
+  --radius-xl: 22px;
+  --radius-lg: 16px;
+  --radius-md: 12px;
+  --shadow-card: 0 10px 28px rgba(0,0,0,.08);
+  --shadow-soft: 0 4px 14px rgba(0,0,0,.08);
 }
 
-/* =====================================================
+/* ------------------------------------------------------------
    BASE
-===================================================== */
+------------------------------------------------------------ */
 body.page-mis-pedidos {
-  font-family: 'Poppins', system-ui, sans-serif;
-  background: #f2f3f5;
-  color: var(--text-primary);
+  font-family: "Poppins", system-ui, sans-serif;
+  background: var(--bg);
+  color: #222;
 }
 
 main.mis-pedidos-layout {
-  max-width: 720px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 1.5rem 1rem 4rem;
+  padding: 1.2rem;
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
 }
 
-/* =====================================================
+/* Mobile */
+@media (max-width: 900px) {
+  main.mis-pedidos-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ------------------------------------------------------------
    VOLVER
-===================================================== */
+------------------------------------------------------------ */
 .seguir-comprando {
   display: flex;
   align-items: center;
-  gap: .75rem;
-  padding: 1rem;
+  gap: .6rem;
+  margin: 1rem auto;
+  max-width: 1200px;
+  padding: 0 1.2rem;
 }
 
 .icon-back {
@@ -52,20 +59,24 @@ main.mis-pedidos-layout {
   height: 42px;
   border-radius: 50%;
   border: none;
-  background: var(--surface);
-  box-shadow: var(--shadow-sm);
+  background: #fff;
+  box-shadow: var(--shadow-soft);
   cursor: pointer;
 }
 
-/* =====================================================
-   CARD GRANDE
-===================================================== */
+.seguir-link {
+  font-weight: 500;
+  color: var(--cafe);
+}
+
+/* ------------------------------------------------------------
+   PEDIDO ACTIVO
+------------------------------------------------------------ */
 .pedido-card {
-  background: var(--surface);
+  background: var(--card);
   border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-md);
-  padding: 1.75rem;
-  margin-bottom: 2rem;
+  box-shadow: var(--shadow-card);
+  padding: 1.6rem;
 }
 
 .pedido-header {
@@ -74,195 +85,236 @@ main.mis-pedidos-layout {
 
 .pedido-numero {
   margin: 0;
-  font-size: 1.6rem;
-  color: var(--secondary);
+  font-size: 1.8rem;
+  color: var(--cafe);
 }
 
 .pedido-fecha {
-  color: var(--text-secondary);
+  margin: .3rem 0 0;
+  color: var(--gris-text);
   font-size: .9rem;
 }
 
-/* =====================================================
+/* ------------------------------------------------------------
    PRODUCTOS
-===================================================== */
+------------------------------------------------------------ */
+.pedido-productos {
+  margin-top: 1.2rem;
+}
+
 .productos-pills {
   display: flex;
-  flex-wrap: wrap;
-  gap: .5rem;
-  margin-bottom: .75rem;
+  flex-direction: column;
+  gap: .6rem;
 }
 
 .pill {
-  background: var(--primary-soft);
-  color: var(--primary);
-  padding: .45rem .75rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: .6rem .9rem;
   border-radius: 999px;
-  font-size: .85rem;
+  background: var(--verde-soft);
+  color: var(--verde);
+  font-size: .9rem;
   font-weight: 500;
 }
 
-.pedido-total {
-  font-size: 1.1rem;
-  margin: .25rem 0 1.25rem;
+.pedido-total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+  padding-top: .8rem;
+  border-top: 1px dashed var(--gris-line);
+  font-size: 1rem;
 }
 
-/* =====================================================
+.pedido-total-row strong {
+  color: var(--verde);
+  font-size: 1.2rem;
+}
+
+/* ------------------------------------------------------------
    ENTREGA
-===================================================== */
+------------------------------------------------------------ */
 .pedido-entrega {
-  background: var(--surface-variant);
-  padding: 1rem;
+  background: #fafafa;
   border-radius: var(--radius-md);
+  padding: 1rem;
+  margin-top: 1.2rem;
   font-size: .9rem;
-  margin-bottom: 1.5rem;
 }
 
-.pedido-entrega p {
-  margin: .25rem 0;
+.pedido-entrega strong {
+  color: #333;
 }
 
-/* =====================================================
-   ESTADO DEL PEDIDO (VERTICAL)
-===================================================== */
+/* ------------------------------------------------------------
+   ESTADO
+------------------------------------------------------------ */
 .pedido-estado {
-  margin-bottom: 2rem;
+  margin-top: 1.4rem;
 }
 
 .estado-title {
   font-weight: 600;
-  margin-bottom: .5rem;
+  margin-bottom: .4rem;
 }
 
 .estado-resumen {
   font-size: .95rem;
-  margin-bottom: 1rem;
-  color: var(--text-secondary);
+  color: var(--gris-text);
+}
+
+.estado-nombre {
+  color: var(--verde);
 }
 
 .estado-list {
   list-style: none;
   padding: 0;
-  margin: 0 0 1rem;
+  margin: 1rem 0;
   display: flex;
   flex-direction: column;
-  gap: .75rem;
+  gap: .6rem;
 }
 
-/* ITEM */
 .estado-item {
   display: flex;
   align-items: center;
-  gap: .75rem;
-  color: var(--text-secondary);
+  gap: .8rem;
+  color: #999;
 }
 
-/* DOT */
 .estado-item .dot {
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  border: 2px solid var(--outline);
+  border: 2px solid #ccc;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: .85rem;
   font-weight: 600;
 }
 
-/* ACTIVO */
 .estado-item.activo {
-  color: var(--primary);
-  font-weight: 600;
+  color: var(--verde);
 }
 
 .estado-item.activo .dot {
-  background: var(--primary);
+  background: var(--verde);
   color: #fff;
-  border-color: var(--primary);
-  transform: scale(1.15);
+  border-color: var(--verde);
 }
 
-/* COMPLETADO */
+.estado-item.completado {
+  color: var(--verde);
+}
+
 .estado-item.completado .dot {
-  background: var(--success);
-  border-color: var(--success);
-  color: #fff;
+  background: var(--verde-soft);
+  border-color: var(--verde);
+  color: var(--verde);
 }
 
-/* CANCELADO */
-.estado-item.estado-cancelado {
-  color: var(--error);
-}
-
-.estado-item.estado-cancelado .dot {
-  border-color: var(--error);
-  color: var(--error);
-}
-
-/* DESCRIPCIÓN */
 .estado-descripcion {
-  font-size: .9rem;
-  color: var(--text-secondary);
-  background: #fafafa;
-  padding: .75rem 1rem;
+  background: #f4f4f4;
   border-radius: var(--radius-md);
+  padding: .8rem 1rem;
+  font-size: .9rem;
+  color: var(--gris-text);
 }
 
-/* =====================================================
+/* ------------------------------------------------------------
    RECIBO
-===================================================== */
+------------------------------------------------------------ */
 .pedido-recibo {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1rem;
+  margin-top: 1.6rem;
 }
 
 .ver-recibo {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: .5rem;
-  padding: .75rem;
-  border-radius: var(--radius-md);
+  width: 100%;
   border: none;
-  background: var(--primary);
+  border-radius: 999px;
+  padding: .9rem 1rem;
+  background: var(--verde);
   color: #fff;
+  font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
+  display: flex;
+  justify-content: center;
+  gap: .4rem;
+  align-items: center;
 }
 
-.recibo-preview img {
-  width: 100%;
+.recibo-preview {
+  margin-top: 1rem;
+  background: #fafafa;
   border-radius: var(--radius-md);
-  border: 1px solid var(--outline);
+  padding: 1rem;
+  display: flex;
+  justify-content: center;
 }
 
-/* =====================================================
+.recibo-img {
+  max-width: 100%;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-soft);
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* ------------------------------------------------------------
    CARRUSEL
-===================================================== */
+------------------------------------------------------------ */
 .pedidos-carrusel {
-  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: .8rem;
 }
 
 .carrusel-title {
-  margin-bottom: .75rem;
-  font-size: 1rem;
+  margin: 0;
+  font-weight: 600;
+}
+
+.carrusel-container {
+  position: relative;
 }
 
 .carrusel-wrapper {
   display: flex;
   gap: 1rem;
   overflow-x: auto;
-  padding-bottom: .5rem;
+  padding: .5rem;
+  scroll-behavior: smooth;
+}
+
+.carrusel-wrapper::-webkit-scrollbar {
+  display: none;
 }
 
 .pedido-mini-card {
-  min-width: 160px;
-  background: var(--surface);
+  min-width: 180px;
+  background: var(--card);
   border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
   padding: 1rem;
-  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: .4rem;
+  cursor: pointer;
+}
+
+.pedido-mini-img {
+  width: 100%;
+  height: 90px;
+  object-fit: contain;
+  margin-bottom: .4rem;
 }
 
 .pedido-mini-numero {
@@ -270,22 +322,61 @@ main.mis-pedidos-layout {
 }
 
 .pedido-mini-total {
-  color: var(--secondary);
+  color: var(--verde);
+  font-weight: 500;
 }
 
 .pedido-mini-status {
   font-size: .8rem;
-  color: var(--primary);
+  color: var(--gris-text);
 }
 
-/* =====================================================
+/* Flechas */
+.carrusel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: none;
+  background: #fff;
+  box-shadow: var(--shadow-soft);
+  cursor: pointer;
+  z-index: 2;
+}
+
+.carrusel-arrow.left {
+  left: -10px;
+}
+
+.carrusel-arrow.right {
+  right: -10px;
+}
+
+/* ------------------------------------------------------------
    EMPTY
-===================================================== */
+------------------------------------------------------------ */
 .empty-state {
+  grid-column: 1 / -1;
+  background: var(--card);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+  padding: 2rem;
   text-align: center;
-  padding: 3rem 1rem;
 }
 
-.hidden {
-  display: none;
+.empty-state h2 {
+  margin-top: 0;
+}
+
+.btn-principal {
+  margin-top: 1rem;
+  border: none;
+  border-radius: 999px;
+  padding: .9rem 1.6rem;
+  background: var(--verde);
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
 }
