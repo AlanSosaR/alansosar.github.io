@@ -3,20 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <title>Mis pedidos | Café Cortero</title>
 
   <!-- Tipografía -->
-  <link
-    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap"
-    rel="stylesheet"
-  />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
 
   <!-- Material Symbols -->
-  <link
-    rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
-  />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
 
   <!-- Estilos -->
   <link rel="stylesheet" href="css/header.css" />
@@ -28,95 +21,97 @@
 <main class="admin-orders-container fade-in">
 
   <!-- =========================
-       PEDIDO ACTIVO (CONTENEDOR LIMPIO)
+       PEDIDO ACTIVO
   ========================== -->
-  <section id="pedido-activo" class="pedido-activo hidden">
-    <!-- JS inyecta AQUÍ la tarjeta -->
-  </section>
+  <section id="pedido-activo" class="pedido-activo hidden"></section>
 
   <!-- =========================
        ESTADO VACÍO
   ========================== -->
   <section id="empty-state" class="admin-empty-state hidden">
     <h2 class="empty-title">No tienes pedidos</h2>
-    <p class="empty-text">
-      Cuando realices un pedido, aparecerá aquí.
-    </p>
+    <p class="empty-text">Cuando realices un pedido, aparecerá aquí.</p>
   </section>
 
   <!-- =========================
-       CARRUSEL — MIS PEDIDOS
+       CARRUSEL
   ========================== -->
   <section class="related admin-related hidden" id="mis-pedidos-carrusel">
-
     <h3 class="similar-title">Mis pedidos</h3>
-    <p class="section-subtitle">
-      Selecciona un pedido para ver su detalle.
-    </p>
+    <p class="section-subtitle">Selecciona un pedido para ver su detalle.</p>
 
-    <div class="carousel-container with-arrows">
-
-      <button
-        class="carousel-prev-circle"
-        id="pedidos-prev"
-        aria-label="Anterior"
-      >
+    <div class="carousel-container">
+      <button class="carousel-prev-circle" id="pedidos-prev" aria-label="Anterior">
         <span class="material-symbols-outlined">chevron_left</span>
       </button>
 
-      <div class="similar-list" id="pedidos-carrusel">
-        <!-- Cards renderizadas por JS -->
-      </div>
+      <div class="similar-list" id="pedidos-carrusel"></div>
 
-      <button
-        class="carousel-next-circle"
-        id="pedidos-next"
-        aria-label="Siguiente"
-      >
+      <button class="carousel-next-circle" id="pedidos-next" aria-label="Siguiente">
         <span class="material-symbols-outlined">chevron_right</span>
       </button>
-
     </div>
   </section>
 
 </main>
 
 <!-- =========================
-     TEMPLATE — PEDIDO ACTIVO (ÚNICA TARJETA)
+     TEMPLATE — PEDIDO ACTIVO
 ========================= -->
 <template id="pedido-activo-template">
   <section class="order-main">
 
+    <!-- HEADER -->
     <header class="order-preview-header">
+
+      <!-- VOLVER / SEGUIR COMPRANDO -->
+      <button
+        class="back-to-shop"
+        onclick="location.href='index.html#productos'"
+        aria-label="Seguir comprando"
+      >
+        <span class="material-symbols-outlined">arrow_back</span>
+        <span>Seguir comprando</span>
+      </button>
+
+      <!-- NÚMERO + FECHA -->
       <div class="order-header-text">
         <h2 class="pedido-numero"></h2>
         <span class="pedido-fecha">
           <span class="fecha"></span> · <span class="hora"></span>
         </span>
       </div>
+
     </header>
 
+    <!-- CONTENIDO -->
     <div class="order-layout">
 
-      <!-- TEXTO -->
+      <!-- COLUMNA TEXTO -->
       <div class="order-text">
 
-        <div class="order-pills productos-pills"></div>
+        <!-- PRODUCTOS -->
+        <div class="productos-pills"></div>
 
+        <!-- TOTAL -->
         <div class="order-total">
           <span>Total del pedido</span>
           <strong class="pedido-total"></strong>
         </div>
 
+        <!-- ENTREGA -->
         <section class="order-address">
           <h3>Entrega</h3>
           <p class="entrega-text"></p>
-          <p class="reference">
-            <strong>Referencia:</strong>
-            <span class="referencia-text"></span>
-          </p>
         </section>
 
+        <!-- REFERENCIA -->
+        <section class="order-address">
+          <h3>Referencia</h3>
+          <p class="referencia-text"></p>
+        </section>
+
+        <!-- ESTADO -->
         <section class="pedido-estado">
           <h3>Estado del pedido</h3>
 
@@ -126,35 +121,32 @@
           </p>
 
           <ul class="estado-list">
-            <li class="estado-item" data-estado="pagado"><span class="dot">1</span><span>Pagado</span></li>
-            <li class="estado-item" data-estado="revision"><span class="dot">2</span><span>Revisión</span></li>
-            <li class="estado-item" data-estado="confirmado"><span class="dot">3</span><span>Confirmado</span></li>
-            <li class="estado-item" data-estado="envio"><span class="dot">4</span><span>Envío</span></li>
+            <li class="estado-item" data-estado="pagado">
+              <span class="dot">1</span><span>Pagado</span>
+            </li>
+            <li class="estado-item" data-estado="revision">
+              <span class="dot">2</span><span>Revisión</span>
+            </li>
+            <li class="estado-item" data-estado="confirmado">
+              <span class="dot">3</span><span>Confirmado</span>
+            </li>
+            <li class="estado-item" data-estado="envio">
+              <span class="dot">4</span><span>Envío</span>
+            </li>
           </ul>
 
+          <!-- ACCIÓN -->
           <button class="ver-recibo">
             Ver recibo
             <span class="material-symbols-outlined">arrow_forward</span>
           </button>
-
-          <p class="estado-descripcion"></p>
         </section>
 
       </div>
 
-      <!-- MEDIA -->
+      <!-- COLUMNA IMAGEN -->
       <div class="order-media">
-
-        <div class="payment-media receipt hidden">
-          <img class="recibo-img" alt="Recibo de pago" />
-          <p class="recibo-label"></p>
-        </div>
-
-        <div class="payment-media placeholder hidden">
-          <img src="imagenes/pago_en_mano.svg" alt="Pago contra entrega" />
-          <p>Pago contra entrega</p>
-        </div>
-
+        <img class="recibo-img" alt="Imagen del pago" />
       </div>
 
     </div>
@@ -181,7 +173,6 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/core/supabase-client-core.js"></script>
 <script src="js/core/supabase-auth.js"></script>
-<script src="js/core/auth-ui.js"></script>
 <script src="js/ui/layout.js"></script>
 <script type="module" src="js/ui/header.js"></script>
 <script type="module" src="js/pages/mis-pedidos.js"></script>
