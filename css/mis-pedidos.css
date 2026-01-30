@@ -1,382 +1,312 @@
 /* ============================================================
    MIS PEDIDOS — MATERIAL 3 EXPRESSIVE
+   Café Cortero (Cliente)
 ============================================================ */
 
+/* ------------------ TOKENS M3 ------------------ */
 :root {
-  --verde: #2e7d32;
-  --verde-soft: #e8f5e9;
-  --cafe: #6f4e37;
-  --gris-text: #6b6b6b;
-  --gris-line: #e0e0e0;
-  --bg: #f6f7f9;
-  --card: #ffffff;
-  --radius-xl: 22px;
-  --radius-lg: 16px;
-  --radius-md: 12px;
-  --shadow-card: 0 10px 28px rgba(0,0,0,.08);
-  --shadow-soft: 0 4px 14px rgba(0,0,0,.08);
+  --md-sys-color-primary: #2f6b3f;
+  --md-sys-color-primary-container: #e6f2ea;
+  --md-sys-color-secondary: #6f4e37;
+  --md-sys-color-surface: #ffffff;
+  --md-sys-color-surface-variant: #f3f1ee;
+  --md-sys-color-outline: #d7d3ce;
+  --md-sys-color-on-surface: #2e2a26;
+  --md-sys-color-on-surface-variant: #6b665f;
+  --md-sys-elevation-1: 0 2px 6px rgba(0,0,0,.06);
+  --md-sys-elevation-2: 0 8px 24px rgba(0,0,0,.08);
+  --md-radius-xl: 28px;
+  --md-radius-lg: 20px;
+  --md-radius-md: 14px;
 }
 
-/* ------------------------------------------------------------
-   BASE
------------------------------------------------------------- */
-body.page-mis-pedidos {
+/* ------------------ BASE ------------------ */
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
   font-family: "Poppins", system-ui, sans-serif;
-  background: var(--bg);
-  color: #222;
+  background: #f6f5f3;
+  color: var(--md-sys-color-on-surface);
 }
 
-main.mis-pedidos-layout {
+/* ------------------ LAYOUT ------------------ */
+.admin-orders-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 1.2rem;
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 2rem;
+  padding: 1.5rem 1rem 3rem;
 }
 
-/* Mobile */
-@media (max-width: 900px) {
-  main.mis-pedidos-layout {
-    grid-template-columns: 1fr;
-  }
+/* ============================================================
+   TARJETA PRINCIPAL (PEDIDO ACTIVO)
+============================================================ */
+.order-main {
+  background: var(--md-sys-color-surface);
+  border-radius: var(--md-radius-xl);
+  box-shadow: var(--md-sys-elevation-2);
+  padding: 1.5rem;
+  margin-bottom: 2.5rem;
 }
 
-/* ------------------------------------------------------------
-   VOLVER
------------------------------------------------------------- */
-.seguir-comprando {
-  display: flex;
-  align-items: center;
-  gap: .6rem;
-  margin: 1rem auto;
-  max-width: 1200px;
-  padding: 0 1.2rem;
+.hidden { display: none; }
+
+/* ---------- HEADER ---------- */
+.order-preview-header {
+  margin-bottom: 1.5rem;
 }
 
-.icon-back {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  border: none;
-  background: #fff;
-  box-shadow: var(--shadow-soft);
-  cursor: pointer;
-}
-
-.seguir-link {
-  font-weight: 500;
-  color: var(--cafe);
-}
-
-/* ------------------------------------------------------------
-   PEDIDO ACTIVO
------------------------------------------------------------- */
-.pedido-card {
-  background: var(--card);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-card);
-  padding: 1.6rem;
-}
-
-.pedido-header {
-  margin-bottom: 1rem;
-}
-
-.pedido-numero {
+.order-header-text h2 {
   margin: 0;
-  font-size: 1.8rem;
-  color: var(--cafe);
+  font-size: 1.5rem;
+  font-weight: 600;
 }
 
 .pedido-fecha {
-  margin: .3rem 0 0;
-  color: var(--gris-text);
-  font-size: .9rem;
+  font-size: .85rem;
+  color: var(--md-sys-color-on-surface-variant);
 }
 
-/* ------------------------------------------------------------
-   PRODUCTOS
------------------------------------------------------------- */
-.pedido-productos {
-  margin-top: 1.2rem;
+/* ---------- GRID ---------- */
+.order-layout {
+  display: grid;
+  grid-template-columns: 1.1fr .9fr;
+  gap: 2rem;
 }
 
-.productos-pills {
+/* ============================================================
+   COLUMNA TEXTO
+============================================================ */
+.order-text {
   display: flex;
   flex-direction: column;
-  gap: .6rem;
+  gap: 1.5rem;
 }
 
-.pill {
+/* ---------- PRODUCTOS ---------- */
+.order-pills {
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+}
+
+.order-pills .pill {
+  background: var(--md-sys-color-surface-variant);
+  padding: .75rem 1rem;
+  border-radius: var(--md-radius-md);
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: .6rem .9rem;
-  border-radius: 999px;
-  background: var(--verde-soft);
-  color: var(--verde);
   font-size: .9rem;
-  font-weight: 500;
 }
 
-.pedido-total-row {
+/* ---------- TOTAL ---------- */
+.order-total {
+  background: var(--md-sys-color-primary-container);
+  border-radius: var(--md-radius-lg);
+  padding: 1rem 1.25rem;
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-top: 1rem;
-  padding-top: .8rem;
-  border-top: 1px dashed var(--gris-line);
+  font-weight: 600;
+}
+
+/* ---------- ENTREGA ---------- */
+.order-address h3 {
+  margin: 0 0 .25rem;
   font-size: 1rem;
 }
 
-.pedido-total-row strong {
-  color: var(--verde);
-  font-size: 1.2rem;
-}
-
-/* ------------------------------------------------------------
-   ENTREGA
------------------------------------------------------------- */
-.pedido-entrega {
-  background: #fafafa;
-  border-radius: var(--radius-md);
-  padding: 1rem;
-  margin-top: 1.2rem;
+.order-address p {
+  margin: 0;
   font-size: .9rem;
+  color: var(--md-sys-color-on-surface-variant);
 }
 
-.pedido-entrega strong {
-  color: #333;
-}
-
-/* ------------------------------------------------------------
-   ESTADO
------------------------------------------------------------- */
-.pedido-estado {
-  margin-top: 1.4rem;
-}
-
-.estado-title {
-  font-weight: 600;
-  margin-bottom: .4rem;
+/* ============================================================
+   ESTADO DEL PEDIDO
+============================================================ */
+.pedido-estado h3 {
+  margin-bottom: .5rem;
 }
 
 .estado-resumen {
-  font-size: .95rem;
-  color: var(--gris-text);
-}
-
-.estado-nombre {
-  color: var(--verde);
+  font-size: .9rem;
+  margin-bottom: .75rem;
 }
 
 .estado-list {
   list-style: none;
   padding: 0;
-  margin: 1rem 0;
-  display: flex;
-  flex-direction: column;
-  gap: .6rem;
+  margin: 0;
 }
 
 .estado-item {
   display: flex;
   align-items: center;
-  gap: .8rem;
-  color: #999;
+  gap: .75rem;
+  padding: .5rem 0;
+  color: var(--md-sys-color-on-surface-variant);
 }
 
 .estado-item .dot {
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
-  border: 2px solid #ccc;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-}
-
-.estado-item.activo {
-  color: var(--verde);
+  background: var(--md-sys-color-surface-variant);
+  display: grid;
+  place-items: center;
+  font-size: .85rem;
 }
 
 .estado-item.activo .dot {
-  background: var(--verde);
+  background: var(--md-sys-color-primary);
   color: #fff;
-  border-color: var(--verde);
-}
-
-.estado-item.completado {
-  color: var(--verde);
 }
 
 .estado-item.completado .dot {
-  background: var(--verde-soft);
-  border-color: var(--verde);
-  color: var(--verde);
+  background: var(--md-sys-color-secondary);
+  color: #fff;
 }
 
-.estado-descripcion {
-  background: #f4f4f4;
-  border-radius: var(--radius-md);
-  padding: .8rem 1rem;
-  font-size: .9rem;
-  color: var(--gris-text);
+/* ============================================================
+   COLUMNA MEDIA (IMAGEN / RECIBO)
+============================================================ */
+.order-media {
+  background: var(--md-sys-color-surface-variant);
+  border-radius: var(--md-radius-lg);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
-/* ------------------------------------------------------------
-   RECIBO
------------------------------------------------------------- */
-.pedido-recibo {
-  margin-top: 1.6rem;
+.payment-media {
+  text-align: center;
+}
+
+.payment-media img {
+  max-width: 100%;
+  border-radius: var(--md-radius-md);
 }
 
 .ver-recibo {
-  width: 100%;
+  align-self: flex-end;
   border: none;
-  border-radius: 999px;
-  padding: .9rem 1rem;
-  background: var(--verde);
-  color: #fff;
-  font-size: 1rem;
-  font-weight: 600;
+  background: transparent;
+  color: var(--md-sys-color-primary);
+  font-weight: 500;
   cursor: pointer;
   display: flex;
-  justify-content: center;
-  gap: .4rem;
   align-items: center;
+  gap: .25rem;
 }
 
-.recibo-preview {
-  margin-top: 1rem;
-  background: #fafafa;
-  border-radius: var(--radius-md);
-  padding: 1rem;
-  display: flex;
-  justify-content: center;
-}
-
-.recibo-img {
-  max-width: 100%;
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-soft);
-}
-
-.hidden {
-  display: none !important;
-}
-
-/* ------------------------------------------------------------
+/* ============================================================
    CARRUSEL
------------------------------------------------------------- */
-.pedidos-carrusel {
-  display: flex;
-  flex-direction: column;
-  gap: .8rem;
+============================================================ */
+.related {
+  margin-top: 2.5rem;
 }
 
-.carrusel-title {
+.similar-title {
+  margin: 0;
+  font-size: 1.3rem;
+}
+
+.section-subtitle {
+  margin: .25rem 0 1rem;
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: .9rem;
+}
+
+.carousel-container {
+  position: relative;
+}
+
+.similar-list {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding: .5rem 0;
+}
+
+.similar-card {
+  min-width: 220px;
+  background: var(--md-sys-color-surface);
+  border-radius: var(--md-radius-lg);
+  box-shadow: var(--md-sys-elevation-1);
+  scroll-snap-align: start;
+  cursor: pointer;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.similar-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--md-sys-elevation-2);
+}
+
+.order-card-info {
+  padding: 1rem;
+}
+
+.pedido-mini-numero {
   margin: 0;
   font-weight: 600;
 }
 
-.carrusel-container {
-  position: relative;
-}
-
-.carrusel-wrapper {
-  display: flex;
-  gap: 1rem;
-  overflow-x: auto;
-  padding: .5rem;
-  scroll-behavior: smooth;
-}
-
-.carrusel-wrapper::-webkit-scrollbar {
-  display: none;
-}
-
-.pedido-mini-card {
-  min-width: 180px;
-  background: var(--card);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-soft);
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: .4rem;
-  cursor: pointer;
-}
-
-.pedido-mini-img {
-  width: 100%;
-  height: 90px;
-  object-fit: contain;
-  margin-bottom: .4rem;
-}
-
-.pedido-mini-numero {
-  font-weight: 600;
-}
-
 .pedido-mini-total {
-  color: var(--verde);
-  font-weight: 500;
+  margin: .25rem 0;
 }
 
 .pedido-mini-status {
   font-size: .8rem;
-  color: var(--gris-text);
+  color: var(--md-sys-color-on-surface-variant);
 }
 
-/* Flechas */
-.carrusel-arrow {
+/* ---------- FLECHAS ---------- */
+.carousel-prev-circle,
+.carousel-next-circle {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 38px;
-  height: 38px;
+  background: var(--md-sys-color-surface);
+  border: none;
   border-radius: 50%;
-  border: none;
-  background: #fff;
-  box-shadow: var(--shadow-soft);
+  width: 42px;
+  height: 42px;
+  box-shadow: var(--md-sys-elevation-2);
   cursor: pointer;
-  z-index: 2;
 }
 
-.carrusel-arrow.left {
-  left: -10px;
-}
+.carousel-prev-circle { left: -12px; }
+.carousel-next-circle { right: -12px; }
 
-.carrusel-arrow.right {
-  right: -10px;
-}
-
-/* ------------------------------------------------------------
-   EMPTY
------------------------------------------------------------- */
-.empty-state {
-  grid-column: 1 / -1;
-  background: var(--card);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-card);
-  padding: 2rem;
+/* ============================================================
+   EMPTY STATE
+============================================================ */
+.admin-empty-state {
   text-align: center;
+  padding: 3rem 1rem;
 }
 
-.empty-state h2 {
-  margin-top: 0;
+.empty-title {
+  margin: 0;
+  font-size: 1.5rem;
 }
 
-.btn-principal {
-  margin-top: 1rem;
-  border: none;
-  border-radius: 999px;
-  padding: .9rem 1.6rem;
-  background: var(--verde);
-  color: #fff;
-  font-size: 1rem;
-  cursor: pointer;
+.empty-text {
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+/* ============================================================
+   RESPONSIVE
+============================================================ */
+@media (max-width: 900px) {
+  .order-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .carousel-prev-circle,
+  .carousel-next-circle {
+    display: none;
+  }
 }
