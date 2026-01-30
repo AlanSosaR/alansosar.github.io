@@ -18,15 +18,15 @@
 
   <!-- Estilos -->
   <link rel="stylesheet" href="css/header.css?v=30">
-  <link rel="stylesheet" href="css/mis-pedidos.css?v=3">
+  <link rel="stylesheet" href="css/mis-pedidos.css?v=5">
 </head>
 
 <body class="page-mis-pedidos header-checkout">
 
-  <!-- Header global (mismo del carrito) -->
-  <!-- Aquí se inyecta el header vía layout.js / header.js -->
+  <!-- Header global -->
+  <!-- Inyectado por layout.js -->
 
-  <!-- Volver a comprar -->
+  <!-- Volver -->
   <div class="seguir-comprando">
     <button class="icon-back" onclick="location.href='index.html#productos'">
       <i class="fa-solid fa-chevron-left"></i>
@@ -34,97 +34,27 @@
     <span class="seguir-link">Seguir comprando</span>
   </div>
 
-  <main>
+  <main class="mis-pedidos-layout">
 
-    <!-- Lista de pedidos -->
-    <div class="pedidos-container" id="pedidos-lista">
+    <!-- =========================
+         PEDIDO ACTIVO (GRANDE)
+    ========================== -->
+    <section id="pedido-activo" class="pedido-activo">
+      <!-- Render JS -->
+    </section>
 
-      <!-- Template de pedido -->
-      <template id="pedido-template">
-        <article class="pedido-card">
+    <!-- =========================
+         CARRUSEL
+    ========================== -->
+    <section class="pedidos-carrusel">
+      <h4 class="carrusel-title">Otros pedidos</h4>
+      <div class="carrusel-wrapper" id="pedidos-carrusel"></div>
+    </section>
 
-          <!-- Encabezado -->
-          <header class="pedido-header">
-            <h3 class="pedido-numero">Pedido N.º 000</h3>
-
-            <p class="pedido-fecha">
-              <span class="pedido-fecha-label">Fecha:</span>
-              <span class="pedido-fecha-valor">—</span><br>
-              <span class="pedido-fecha-label">Hora:</span>
-              <span class="pedido-fecha-valor">—</span>
-            </p>
-
-            <p class="pedido-items">
-              <span class="pedido-label">Tu pedido</span>
-              <span class="pedido-count">(0 cafés)</span>
-            </p>
-
-            <p class="pedido-total">
-              <span class="pedido-total-label">Total:</span>
-              <span class="pedido-total-valor">L 0.00</span>
-            </p>
-          </header>
-
-          <!-- Progreso del pedido -->
-          <section class="pedido-progreso">
-            <p class="progreso-title">Estado del pedido</p>
-
-            <div class="progreso-wrapper">
-              <div class="progreso-bar">
-                <span class="step pago"></span>
-                <span class="line pago"></span>
-
-                <span class="step revision"></span>
-                <span class="line revision"></span>
-
-                <span class="step confirmado"></span>
-                <span class="line confirmado"></span>
-
-                <span class="step envio"></span>
-              </div>
-
-              <div class="progreso-labels">
-                <span>Pag.</span>
-                <span>Rev.</span>
-                <span>Conf.</span>
-                <span>Envío</span>
-              </div>
-            </div>
-
-            <!-- Estado actual -->
-            <div class="estado">
-              <span class="material-symbols-outlined estado-icon">
-                check_circle
-              </span>
-              <span class="estado-text">Pago confirmado</span>
-            </div>
-
-            <div class="divider-footer"></div>
-
-            <!-- Acciones -->
-            <footer class="pedido-footer">
-              <button class="ver-recibo">
-                <span class="ver-text">Ver recibo</span>
-                <span class="arrow material-symbols-outlined">
-                  arrow_forward
-                </span>
-              </button>
-            </footer>
-          </section>
-
-        </article>
-      </template>
-
-    </div>
-
-    <!-- Paginación -->
-    <div id="pagination-container"></div>
-
-    <!-- Estado vacío -->
+    <!-- EMPTY -->
     <section class="empty-state hidden" id="empty-state">
       <h2>Tu lista de pedidos está vacía</h2>
       <p>Agrega tus cafés favoritos para continuar.</p>
-
       <button class="btn-principal" onclick="location.href='index.html#productos'">
         Seguir comprando
       </button>
@@ -132,7 +62,121 @@
 
   </main>
 
-  <!-- Scripts -->
+  <!-- =========================
+       TEMPLATES
+  ========================== -->
+
+  <!-- PEDIDO ACTIVO -->
+  <template id="pedido-activo-template">
+    <article class="pedido-card pedido-card--grande">
+
+      <!-- HEADER -->
+      <header class="pedido-header">
+        <h2 class="pedido-numero">Pedido N.º 013</h2>
+        <p class="pedido-fecha">
+          <span class="fecha">30 ene 2026</span> ·
+          <span class="hora">02:13 p. m.</span>
+        </p>
+      </header>
+
+      <!-- PRODUCTOS -->
+      <section class="pedido-productos">
+        <div class="productos-pills">
+          <!-- dinámico -->
+          <span class="pill">Café tradición × 1</span>
+        </div>
+
+        <p class="pedido-total">
+          Total: <strong>L 300.00</strong>
+        </p>
+      </section>
+
+      <!-- ENTREGA -->
+      <section class="pedido-entrega">
+        <p><strong>Entrega:</strong> Barrio abajo, Danlí, El Paraíso</p>
+        <p><strong>Referencia:</strong> Por la mañana</p>
+      </section>
+
+      <!-- =========================
+           ESTADO DEL PEDIDO
+      ========================== -->
+      <section class="pedido-estado">
+
+        <p class="estado-title">Estado del pedido</p>
+
+        <!-- TEXTO PRINCIPAL -->
+        <p class="estado-resumen">
+          Paso <span class="estado-paso">1</span> de 4 ·
+          <strong class="estado-nombre">Pendiente de pago</strong>
+        </p>
+
+        <!-- LISTA VERTICAL -->
+        <ul class="estado-list">
+
+          <li class="estado-item activo" data-estado="pagado">
+            <span class="dot">1</span>
+            <span class="label">Pagado</span>
+          </li>
+
+          <li class="estado-item" data-estado="revision">
+            <span class="dot">2</span>
+            <span class="label">Revisión</span>
+          </li>
+
+          <li class="estado-item" data-estado="confirmado">
+            <span class="dot">3</span>
+            <span class="label">Confirmado</span>
+          </li>
+
+          <li class="estado-item" data-estado="envio">
+            <span class="dot">4</span>
+            <span class="label">Envío</span>
+          </li>
+
+          <!-- CANCELADO (fuera del flujo) -->
+          <li class="estado-item estado-cancelado hidden" data-estado="cancelado">
+            <span class="dot">×</span>
+            <span class="label">Cancelado</span>
+          </li>
+
+        </ul>
+
+        <!-- DESCRIPCIÓN CONTEXTUAL -->
+        <p class="estado-descripcion">
+          Estamos esperando tu comprobante de pago para continuar con tu pedido.
+        </p>
+
+      </section>
+
+      <!-- =========================
+           RECIBO
+      ========================== -->
+      <section class="pedido-recibo">
+        <button class="ver-recibo">
+          <span>Ver recibo</span>
+          <span class="material-symbols-outlined">arrow_forward</span>
+        </button>
+
+        <div class="recibo-preview">
+          <img src="img/recibo-placeholder.png" alt="Comprobante de pago">
+        </div>
+      </section>
+
+    </article>
+  </template>
+
+  <!-- PEDIDO MINI -->
+  <template id="pedido-carrusel-template">
+    <article class="pedido-mini-card">
+      <p class="pedido-mini-numero">Pedido N.º 012</p>
+      <p class="pedido-mini-total">L 1,400.00</p>
+      <span class="pedido-mini-status">Nuevo</span>
+    </article>
+  </template>
+
+  <!-- =========================
+       SCRIPTS
+  ========================== -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script src="js/core/supabase-client-core.js"></script>
@@ -141,7 +185,7 @@
   <script src="js/ui/layout.js"></script>
   <script type="module" src="js/ui/header.js"></script>
 
-  <!-- Lógica de pedidos (cliente) -->
+  <!-- Lógica cliente -->
   <script type="module" src="js/pages/mis-pedidos.js"></script>
 
 </body>
