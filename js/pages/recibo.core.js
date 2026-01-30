@@ -1,15 +1,15 @@
-console.log("🧾 recibo.core.js");
+console.log("🧾 recibo.core.js — FINAL OK");
 
 /* =========================================================
-   CONSTANTES (GLOBAL CORE)
+   CONSTANTES
 ========================================================= */
-window.CART_KEY = "cafecortero_cart";
-window.RECEIPT_BUCKET = "payment-receipts";
+const CART_KEY = "cafecortero_cart";
+const RECEIPT_BUCKET = "payment-receipts";
 
 /* =========================================================
    HELPERS
 ========================================================= */
-window.$id = (id) => document.getElementById(id);
+const $id = (id) => document.getElementById(id);
 
 /* =========================================================
    CONTEXTO
@@ -18,13 +18,13 @@ function getOrderIdFromURL() {
   return new URLSearchParams(window.location.search).get("id");
 }
 
-window.ORDER_ID = getOrderIdFromURL();
-window.IS_READ_ONLY = Boolean(window.ORDER_ID);
+const ORDER_ID = getOrderIdFromURL();
+const IS_READ_ONLY = Boolean(ORDER_ID);
 
 /* =========================================================
    SNACKBAR (RESPETA MODO RECIBO)
 ========================================================= */
-window.showSnack = function (
+function showSnack(
   msg,
   onAccept = null,
   actionText = null,
@@ -67,12 +67,12 @@ window.showSnack = function (
       bar.classList.remove("show");
       if (onAccept && !IS_READ_ONLY) onAccept();
     });
-};
+}
 
 /* =========================================================
    ESPERAR SUPABASE
 ========================================================= */
-window.esperarSupabase = function () {
+function esperarSupabase() {
   return new Promise((resolve) => {
     if (window.supabaseClient) return resolve();
     const i = setInterval(() => {
@@ -82,49 +82,43 @@ window.esperarSupabase = function () {
       }
     }, 80);
   });
-};
+}
 
 /* =========================================================
    USUARIO CACHE
 ========================================================= */
-window.getUserCache = function () {
+function getUserCache() {
   try {
     if (localStorage.getItem("cortero_logged") !== "1") return null;
     return JSON.parse(localStorage.getItem("cortero_user"));
   } catch {
     return null;
   }
-};
+}
 
 /* =========================================================
-   UI — MODO RECIBO (SOLO LECTURA)
+   UI — MODO RECIBO
 ========================================================= */
-window.aplicarModoRecibo = function () {
+function aplicarModoRecibo() {
   const progreso = $id("pedido-progreso-recibo");
   const pagos = document.querySelector(".pagos");
   const selectPago = document.querySelector(".pago-select-label");
   const botones = document.querySelector(".recibo-botones");
-
-  const metodoPago = $id("metodoPago");
-  const btnEnviar = $id("btnEnviar");
 
   if (IS_READ_ONLY) {
     progreso?.classList.remove("hidden");
     pagos?.classList.add("hidden");
     selectPago?.classList.add("hidden");
     botones?.classList.add("hidden");
-
-    if (metodoPago) metodoPago.disabled = true;
-    if (btnEnviar) btnEnviar.disabled = true;
   } else {
     progreso?.classList.add("hidden");
   }
-};
+}
 
 /* =========================================================
-   PROGRESO DEL PEDIDO
+   PROGRESO DEL PEDIDO (VISUAL)
 ========================================================= */
-window.aplicarProgresoPedido = function (status, paymentMethod) {
+function aplicarProgresoPedido(status, paymentMethod) {
   const container = $id("pedido-progreso-recibo");
   if (!container) return;
 
@@ -136,44 +130,26 @@ window.aplicarProgresoPedido = function (status, paymentMethod) {
 
   const clases = ["pago", "revision", "confirmado", "envio"];
 
-  let etapaMap = {};
-  let labelMap = {};
+  const etapaMap =
+    paymentMethod === "bank_transfer"
+      ? { pending: 0, payment_review: 1, processing: 2, shipped: 3, delivered: 3 }
+      : { pending: 0, processing: 1, shipped: 2, delivered: 3 };
 
-  if (paymentMethod === "bank_transfer") {
-    etapaMap = {
-      pending: 0,
-      pending_payment: 0,
-      payment_review: 1,
-      payment_confirmed: 2,
-      processing: 2,
-      shipped: 3,
-      delivered: 3
-    };
-    labelMap = {
-      pending: "Pendiente de pago",
-      pending_payment: "Pendiente de pago",
-      payment_review: "Pago en revisión",
-      payment_confirmed: "Pago confirmado",
-      processing: "En ejecución",
-      shipped: "Enviado",
-      delivered: "Entregado"
-    };
-  } else {
-    etapaMap = {
-      pending: 0,
-      cash_on_delivery: 0,
-      processing: 1,
-      shipped: 2,
-      delivered: 3
-    };
-    labelMap = {
-      pending: "Pago al recibir",
-      cash_on_delivery: "Pago al recibir",
-      processing: "En ejecución",
-      shipped: "Enviado",
-      delivered: "Entregado"
-    };
-  }
+  const labelMap =
+    paymentMethod === "bank_transfer"
+      ? {
+          pending: "Pendiente de pago",
+          payment_review: "Pago en revisión",
+          processing: "En preparación",
+          shipped: "Enviado",
+          delivered: "Entregado"
+        }
+      : {
+          pending: "Pago al recibir",
+          processing: "En preparación",
+          shipped: "Enviado",
+          delivered: "Entregado"
+        };
 
   const etapa = etapaMap[status] ?? 0;
 
@@ -193,10 +169,7 @@ window.aplicarProgresoPedido = function (status, paymentMethod) {
 
   const iconMap = {
     pending: "payments",
-    pending_payment: "payments",
     payment_review: "fact_check",
-    payment_confirmed: "verified",
-    cash_on_delivery: "payments",
     processing: "autorenew",
     shipped: "local_shipping",
     delivered: "done_all"
@@ -204,42 +177,59 @@ window.aplicarProgresoPedido = function (status, paymentMethod) {
 
   iconEl.textContent = iconMap[status] || "payments";
   container.classList.remove("hidden");
-};
+}
 
 /* =========================================================
-   CARGAR PEDIDO EXISTENTE (🔥 CLAVE DEL BUG)
+   CARGAR PEDIDO EXISTENTE (CORREGIDO)
 ========================================================= */
-window.cargarPedidoExistente = async function (orderId) {
+async function cargarPedidoExistente(orderId) {
   const sb = window.supabaseClient;
 
-  const { data: order, error } = await sb
+  const { data: pedido, error } = await sb
     .from("orders")
     .select(`
-      id,
       order_number,
+      created_at,
       total,
       status,
       payment_method,
-      payment_status,
-      created_at,
-      order_items (
-        quantity,
-        price,
-        products ( name )
-      )
+      users(name,email,phone),
+      addresses(state,city,street,postal_code),
+      order_items(quantity,price,products(name)),
+      payment_receipts(file_url,created_at,review_status)
     `)
     .eq("id", orderId)
     .single();
 
-  if (error || !order) {
-    console.error("❌ Pedido no encontrado", error);
+  if (error || !pedido) {
+    console.error(error);
     showSnack("Pedido no encontrado");
     return;
   }
 
-  // Render básico (ajusta si ya tienes uno más completo)
-  $id("numeroPedido").textContent = order.order_number;
-  $id("totalPedido").textContent = order.total.toFixed(2);
+  // Render básico
+  $id("numeroPedido").textContent = pedido.order_number;
+  $id("totalPedido").textContent = pedido.total.toFixed(2);
 
-  aplicarProgresoPedido(order.status, order.payment_method);
-};
+  // 🔑 Estado visual corregido
+  let statusVisual = pedido.status;
+
+  if (
+    pedido.payment_method === "bank_transfer" &&
+    pedido.payment_receipts?.some(r => r.review_status === "pending")
+  ) {
+    statusVisual = "payment_review";
+  }
+
+  aplicarProgresoPedido(statusVisual, pedido.payment_method);
+}
+
+/* =========================================================
+   EXPONER CORE
+========================================================= */
+window.esperarSupabase = esperarSupabase;
+window.getUserCache = getUserCache;
+window.showSnack = showSnack;
+window.aplicarModoRecibo = aplicarModoRecibo;
+window.aplicarProgresoPedido = aplicarProgresoPedido;
+window.cargarPedidoExistente = cargarPedidoExistente;
