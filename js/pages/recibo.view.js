@@ -22,28 +22,46 @@ console.log("🧾 recibo.view.js");
 ========================================================= */
 document.addEventListener("DOMContentLoaded", () => {
 
-  // 🔒 Protección: si NO hay id, este archivo no hace nada
+  // 🔒 Protección: este archivo SOLO corre en modo vista
   if (!IS_READ_ONLY) {
     console.log("🛒 recibo.view.js desactivado (modo checkout)");
     return;
   }
 
   (async function initView() {
-    // Esperar Supabase
-    await esperarSupabase();
+    try {
+      // ⏳ Esperar a que Supabase esté listo
+      await esperarSupabase();
 
-    // Validar sesión
-    const user = getUserCache();
-    if (!user) {
-      location.href = "login.html";
-      return;
+      // 🔐 Validar sesión
+      const user = getUserCache();
+      if (!user) {
+        console.warn("🔐 Usuario no autenticado, redirigiendo");
+        location.href = "login.html";
+        return;
+      }
+
+      // 👁️ Activar modo solo lectura (UI)
+      if (typeof aplicarModoRecibo === "function") {
+        aplicarModoRecibo();
+      } else {
+        console.warn("⚠️ aplicarModoRecibo no está definido");
+      }
+
+      // 📦 Validar función core
+      if (typeof cargarPedidoExistente !== "function") {
+        console.error("❌ cargarPedidoExistente no está disponible");
+        showSnack?.("Error interno al cargar el pedido");
+        return;
+      }
+
+      // 🧾 Cargar pedido
+      await cargarPedidoExistente(ORDER_ID);
+
+    } catch (err) {
+      console.error("❌ Error en recibo.view.js:", err);
+      showSnack?.("Error al cargar el recibo");
     }
-
-    // Activar modo solo lectura (oculta pagos, botones, inputs)
-    aplicarModoRecibo();
-
-    // Cargar y mostrar pedido existente
-    await cargarPedidoExistente(ORDER_ID);
   })();
 
 });
