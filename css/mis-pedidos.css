@@ -59,37 +59,62 @@ body {
   overflow: hidden;
 }
 
-/* ================= HEADER ================= */
+/* ================= HEADER PEDIDO ================= */
 .order-preview-header {
   display: flex;
-  align-items: center;
+  flex-direction: column; /* ⬇️ stack vertical */
+  align-items: flex-start;
   gap: 1rem;
   margin-bottom: 2rem;
 }
 
-/* Botón volver */
+/* ================= BOTÓN VOLVER ================= */
 .back-to-shop {
   display: inline-flex;
   align-items: center;
-  gap: .4rem;
-  padding: .4rem .75rem .4rem .4rem;
+  gap: .5rem;
+  padding: .45rem .9rem .45rem .5rem;
   border-radius: 999px;
+
   background: #fff;
   border: none;
   box-shadow: var(--elev-1);
+
   cursor: pointer;
   font-size: .85rem;
+  font-weight: 500;
   color: var(--verde);
+
+  transition: transform .15s ease, box-shadow .15s ease;
 }
 
+.back-to-shop:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--elev-2);
+}
+
+/* Icono circular */
 .back-to-shop .material-symbols-outlined {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+
   background: #fff;
   border-radius: 50%;
-  padding: .35rem;
   color: var(--verde);
+
+  box-shadow: 0 2px 6px rgba(0,0,0,.12);
+  font-size: 18px;
 }
 
-/* Texto header */
+/* ================= TEXTO HEADER ================= */
+.order-header-text {
+  display: flex;
+  flex-direction: column;
+  gap: .25rem;
+}
+
 .order-header-text h2 {
   margin: 0;
   font-size: 1.6rem;
@@ -100,7 +125,6 @@ body {
 .pedido-fecha {
   font-size: .85rem;
   color: var(--cafe);
-  display: block;
 }
 
 /* ================= LAYOUT ================= */
