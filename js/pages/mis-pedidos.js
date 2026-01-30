@@ -36,63 +36,48 @@ function formatDateTime(dateStr) {
 }
 
 /* -----------------------------------------------------------
-   ESTADOS (BACKEND → UI) ✅ NORMALIZADOS
+   ESTADOS (BACKEND → UI)
 ----------------------------------------------------------- */
 const STATUS_FLOW = ["pagado", "revision", "confirmado", "envio"];
 
 const STATUS_MAP = {
-  // 🔥 ESTADO REAL DE TU DB
   pending: {
     step: 1,
-    key: "pagado",
     label: "Pendiente de pago",
     description:
       "Estamos esperando tu comprobante de pago para continuar con tu pedido.",
   },
-
   pending_payment: {
     step: 1,
-    key: "pagado",
     label: "Pendiente de pago",
     description:
       "Estamos esperando tu comprobante de pago para continuar con tu pedido.",
   },
-
   payment_review: {
     step: 2,
-    key: "revision",
     label: "Pago en revisión",
     description: "Estamos verificando tu comprobante de pago.",
   },
-
   payment_confirmed: {
     step: 3,
-    key: "confirmado",
     label: "Pago confirmado",
     description: "Tu pedido ha sido confirmado y será preparado.",
   },
-
   processing: {
     step: 3,
-    key: "confirmado",
     label: "Pedido confirmado",
     description: "Estamos preparando tu pedido.",
   },
-
   shipped: {
     step: 4,
-    key: "envio",
     label: "Enviado",
     description: "Tu pedido va en camino.",
   },
-
   delivered: {
     step: 4,
-    key: "envio",
     label: "Entregado",
     description: "Tu pedido fue entregado.",
   },
-
   cancelled: {
     cancelled: true,
     label: "Cancelado",
@@ -101,7 +86,7 @@ const STATUS_MAP = {
 };
 
 /* -----------------------------------------------------------
-   INIT (SEGURO)
+   INIT
 ----------------------------------------------------------- */
 document.addEventListener("header:ready", init);
 
@@ -110,10 +95,7 @@ async function init() {
   __misPedidosInit = true;
 
   const sb = getSupabaseClient();
-  if (!sb) {
-    console.warn("⚠️ Supabase no disponible");
-    return;
-  }
+  if (!sb) return;
 
   await detectMode();
 
@@ -171,7 +153,7 @@ async function loadPedidosCliente() {
     .eq("user_id", session.session.user.id)
     .order("created_at", { ascending: false });
 
-  if (error || !data || data.length === 0) return;
+  if (error || !Array.isArray(data) || data.length === 0) return;
 
   allPedidos = data;
   pedidoActivo = data[0];
@@ -186,7 +168,7 @@ function renderCliente() {
 }
 
 /* -----------------------------------------------------------
-   PEDIDO ACTIVO (TARJETA GRANDE)
+   PEDIDO ACTIVO
 ----------------------------------------------------------- */
 async function renderPedidoActivo(pedido) {
   const container = document.getElementById("pedido-activo");
@@ -206,28 +188,33 @@ async function renderPedidoActivo(pedido) {
   node.querySelector(".pedido-total strong").textContent =
     `L ${Number(pedido.total).toFixed(2)}`;
 
-  /* Productos */
+  /* -------- PRODUCTOS (JOIN REAL) -------- */
   const pills = node.querySelector(".productos-pills");
   pills.innerHTML = "";
 
   const sb = getSupabaseClient();
-  const { data: items = [] } = await sb
+  const { data: items, error } = await sb
     .from("order_items")
-    .select("quantity, product_name")
+    .select(`
+      quantity,
+      products (
+        name
+      )
+    `)
     .eq("order_id", pedido.id);
 
-  items.forEach(i => {
-    const span = document.createElement("span");
-    span.className = "pill";
-    span.textContent = `${i.product_name} × ${i.quantity}`;
-    pills.appendChild(span);
-  });
+  if (!error && Array.isArray(items)) {
+    items.forEach(i => {
+      const span = document.createElement("span");
+      span.className = "pill";
+      span.textContent = `${i.products?.name ?? "Producto"} × ${i.quantity}`;
+      pills.appendChild(span);
+    });
+  }
 
-  /* Estado */
+  /* -------- ESTADO -------- */
   const status =
-    STATUS_MAP[pedido.status] ??
-    STATUS_MAP.pending ??
-    STATUS_MAP.pending_payment;
+    STATUS_MAP[pedido.status] ?? STATUS_MAP.pending;
 
   node.querySelector(".estado-paso").textContent =
     status.cancelled ? "—" : status.step;
@@ -241,13 +228,10 @@ async function renderPedidoActivo(pedido) {
     li.classList.add("hidden");
   });
 
-  if (status.cancelled) {
-    node.querySelector(".estado-cancelado")?.classList.remove("hidden");
-  } else {
+  if (!status.cancelled) {
     STATUS_FLOW.forEach((key, index) => {
       const li = node.querySelector(`[data-estado="${key}"]`);
       if (!li) return;
-
       li.classList.remove("hidden");
       if (index + 1 < status.step) li.classList.add("completado");
       if (index + 1 === status.step) li.classList.add("activo");
