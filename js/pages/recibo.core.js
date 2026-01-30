@@ -22,7 +22,7 @@ const ORDER_ID = getOrderIdFromURL();
 const IS_READ_ONLY = Boolean(ORDER_ID);
 
 /* =========================================================
-   SNACKBAR
+   SNACKBAR (RESPETA MODO RECIBO)
 ========================================================= */
 function showSnack(
   msg,
@@ -38,7 +38,7 @@ function showSnack(
     <span class="snack-text">${msg}</span>
     <div class="snack-actions">
       ${
-        actionText && onAction
+        actionText && onAction && !IS_READ_ONLY
           ? `<button class="snack-action secondary">${actionText}</button>`
           : ""
       }
@@ -50,13 +50,11 @@ function showSnack(
 
   const timer = setTimeout(() => {
     bar.classList.remove("show");
-    const btn = $id("btnEnviar");
-    if (btn) btn.disabled = false;
   }, duration);
 
-  if (actionText && onAction) {
+  if (actionText && onAction && !IS_READ_ONLY) {
     bar.querySelector(".snack-action.secondary")
-      .addEventListener("click", () => {
+      ?.addEventListener("click", () => {
         clearTimeout(timer);
         bar.classList.remove("show");
         onAction();
@@ -64,10 +62,10 @@ function showSnack(
   }
 
   bar.querySelector(".snack-action.primary")
-    .addEventListener("click", () => {
+    ?.addEventListener("click", () => {
       clearTimeout(timer);
       bar.classList.remove("show");
-      if (onAccept) onAccept();
+      if (onAccept && !IS_READ_ONLY) onAccept();
     });
 }
 
@@ -99,21 +97,29 @@ function getUserCache() {
 }
 
 /* =========================================================
-   UI — MODO RECIBO
+   UI — MODO RECIBO (SOLO LECTURA)
 ========================================================= */
 function aplicarModoRecibo() {
   const progreso = $id("pedido-progreso-recibo");
+  const pagos = document.querySelector(".pagos");
   const selectPago = document.querySelector(".pago-select-label");
   const botones = document.querySelector(".recibo-botones");
+
   const metodoPago = $id("metodoPago");
   const btnEnviar = $id("btnEnviar");
 
   if (IS_READ_ONLY) {
+    // Mostrar progreso
     progreso?.classList.remove("hidden");
+
+    // Ocultar TODO checkout
+    pagos?.classList.add("hidden");
     selectPago?.classList.add("hidden");
     botones?.classList.add("hidden");
-    metodoPago && (metodoPago.disabled = true);
-    btnEnviar && (btnEnviar.disabled = true);
+
+    // Bloquear inputs
+    if (metodoPago) metodoPago.disabled = true;
+    if (btnEnviar) btnEnviar.disabled = true;
   } else {
     progreso?.classList.add("hidden");
   }
