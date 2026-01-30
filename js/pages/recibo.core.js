@@ -1,15 +1,15 @@
 console.log("🧾 recibo.core.js");
 
 /* =========================================================
-   CONSTANTES
+   CONSTANTES (GLOBAL CORE)
 ========================================================= */
-const CART_KEY = "cafecortero_cart";
-const RECEIPT_BUCKET = "payment-receipts";
+window.CART_KEY = "cafecortero_cart";
+window.RECEIPT_BUCKET = "payment-receipts";
 
 /* =========================================================
    HELPERS
 ========================================================= */
-const $id = (id) => document.getElementById(id);
+window.$id = (id) => document.getElementById(id);
 
 /* =========================================================
    CONTEXTO
@@ -18,13 +18,13 @@ function getOrderIdFromURL() {
   return new URLSearchParams(window.location.search).get("id");
 }
 
-const ORDER_ID = getOrderIdFromURL();
-const IS_READ_ONLY = Boolean(ORDER_ID);
+window.ORDER_ID = getOrderIdFromURL();
+window.IS_READ_ONLY = Boolean(window.ORDER_ID);
 
 /* =========================================================
    SNACKBAR (RESPETA MODO RECIBO)
 ========================================================= */
-function showSnack(
+window.showSnack = function (
   msg,
   onAccept = null,
   actionText = null,
@@ -67,12 +67,12 @@ function showSnack(
       bar.classList.remove("show");
       if (onAccept && !IS_READ_ONLY) onAccept();
     });
-}
+};
 
 /* =========================================================
    ESPERAR SUPABASE
 ========================================================= */
-function esperarSupabase() {
+window.esperarSupabase = function () {
   return new Promise((resolve) => {
     if (window.supabaseClient) return resolve();
     const i = setInterval(() => {
@@ -82,24 +82,24 @@ function esperarSupabase() {
       }
     }, 80);
   });
-}
+};
 
 /* =========================================================
    USUARIO CACHE
 ========================================================= */
-function getUserCache() {
+window.getUserCache = function () {
   try {
     if (localStorage.getItem("cortero_logged") !== "1") return null;
     return JSON.parse(localStorage.getItem("cortero_user"));
   } catch {
     return null;
   }
-}
+};
 
 /* =========================================================
    UI — MODO RECIBO (SOLO LECTURA)
 ========================================================= */
-function aplicarModoRecibo() {
+window.aplicarModoRecibo = function () {
   const progreso = $id("pedido-progreso-recibo");
   const pagos = document.querySelector(".pagos");
   const selectPago = document.querySelector(".pago-select-label");
@@ -109,26 +109,22 @@ function aplicarModoRecibo() {
   const btnEnviar = $id("btnEnviar");
 
   if (IS_READ_ONLY) {
-    // Mostrar progreso
     progreso?.classList.remove("hidden");
-
-    // Ocultar TODO checkout
     pagos?.classList.add("hidden");
     selectPago?.classList.add("hidden");
     botones?.classList.add("hidden");
 
-    // Bloquear inputs
     if (metodoPago) metodoPago.disabled = true;
     if (btnEnviar) btnEnviar.disabled = true;
   } else {
     progreso?.classList.add("hidden");
   }
-}
+};
 
 /* =========================================================
    PROGRESO DEL PEDIDO
 ========================================================= */
-function aplicarProgresoPedido(status, paymentMethod) {
+window.aplicarProgresoPedido = function (status, paymentMethod) {
   const container = $id("pedido-progreso-recibo");
   if (!container) return;
 
@@ -208,4 +204,42 @@ function aplicarProgresoPedido(status, paymentMethod) {
 
   iconEl.textContent = iconMap[status] || "payments";
   container.classList.remove("hidden");
-}
+};
+
+/* =========================================================
+   CARGAR PEDIDO EXISTENTE (🔥 CLAVE DEL BUG)
+========================================================= */
+window.cargarPedidoExistente = async function (orderId) {
+  const sb = window.supabaseClient;
+
+  const { data: order, error } = await sb
+    .from("orders")
+    .select(`
+      id,
+      order_number,
+      total,
+      status,
+      payment_method,
+      payment_status,
+      created_at,
+      order_items (
+        quantity,
+        price,
+        products ( name )
+      )
+    `)
+    .eq("id", orderId)
+    .single();
+
+  if (error || !order) {
+    console.error("❌ Pedido no encontrado", error);
+    showSnack("Pedido no encontrado");
+    return;
+  }
+
+  // Render básico (ajusta si ya tienes uno más completo)
+  $id("numeroPedido").textContent = order.order_number;
+  $id("totalPedido").textContent = order.total.toFixed(2);
+
+  aplicarProgresoPedido(order.status, order.payment_method);
+};
