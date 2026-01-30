@@ -2,20 +2,38 @@
    MIS PEDIDOS — MATERIAL 3 EXPRESSIVE (CLIENTE)
 ============================================================ */
 
-/* ================= TOKENS ================= */
+/* ============================================================
+   VARIABLES GLOBALES — CAFÉ CORTERO (CORREGIDO)
+============================================================ */
 :root {
+  /* 🎨 Colores de marca */
   --verde: #33673B;
-  --cafe: #512615;
+  --marron: #512615;
+  --blanco: #ffffff;
 
-  --surface: #ffffff;
+  /* 🧱 Fondo */
+  --fondo: #fafafa;
+
+  /* 📐 Layout */
+  --header-height: 72px;
+
+  /* ========================================================
+     ALIASES DE COMPATIBILIDAD (NO USAR EN NUEVO CÓDIGO)
+     Sirven solo para que el CSS actual no se rompa
+  ======================================================== */
+
+  --cafe: var(--marron);
+  --surface: var(--blanco);
   --surface-variant: #f4f2ef;
-  --bg: #f6f5f3;
+  --bg: var(--fondo);
   --line: #e6e2de;
   --text-muted: #777;
 
+  /* Elevaciones */
   --elev-1: 0 4px 12px rgba(0,0,0,.08);
   --elev-2: 0 14px 32px rgba(0,0,0,.12);
 
+  /* Radios */
   --r-xl: 28px;
   --r-lg: 22px;
   --r-md: 16px;
