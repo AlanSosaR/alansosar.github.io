@@ -41,6 +41,7 @@
     <p class="section-subtitle">Selecciona un pedido para ver su detalle.</p>
 
     <div class="carousel-container">
+
       <button class="carousel-prev-circle" id="pedidos-prev" aria-label="Anterior">
         <span class="material-symbols-outlined">chevron_left</span>
       </button>
@@ -50,6 +51,7 @@
       <button class="carousel-next-circle" id="pedidos-next" aria-label="Siguiente">
         <span class="material-symbols-outlined">chevron_right</span>
       </button>
+
     </div>
   </section>
 
@@ -64,7 +66,6 @@
     <!-- HEADER -->
     <header class="order-preview-header">
 
-      <!-- VOLVER / SEGUIR COMPRANDO -->
       <button
         class="back-to-shop"
         onclick="location.href='index.html#productos'"
@@ -74,7 +75,6 @@
         <span>Seguir comprando</span>
       </button>
 
-      <!-- NÚMERO + FECHA -->
       <div class="order-header-text">
         <h2 class="pedido-numero"></h2>
         <span class="pedido-fecha">
@@ -135,11 +135,18 @@
             </li>
           </ul>
 
+          <!-- REFERENCIA DE PAGO -->
+          <p class="estado-pago-ref">
+            <span class="material-symbols-outlined">receipt_long</span>
+            <span class="pago-ref-text"></span>
+          </p>
+
           <!-- ACCIÓN -->
           <button class="ver-recibo">
             Ver recibo
             <span class="material-symbols-outlined">arrow_forward</span>
           </button>
+
         </section>
 
       </div>
