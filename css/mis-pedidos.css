@@ -302,17 +302,21 @@ body {
 }
 
 /* ============================================================
-   COLUMNA MEDIA
+   COLUMNA MEDIA — IGUAL ADMIN
 ============================================================ */
 .order-media {
-  background: var(--surface-variant);
-  border-radius: var(--r-lg);
-  padding: 1rem;
+  background: transparent; /* 🔑 sin fondo */
+  padding: 0;              /* 🔑 sin caja */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .order-media img {
   width: 100%;
+  max-width: 420px;        /* evita que se vea gigante en desktop */
   border-radius: var(--r-md);
+  background: transparent; /* por si el SVG tiene fondo */
 }
 
 /* ============================================================
