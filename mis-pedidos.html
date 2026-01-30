@@ -6,27 +6,20 @@
 
   <title>Mis pedidos | Café Cortero</title>
 
-  <!-- Tipografía -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
-  <!-- Iconos -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link
-    rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@300;400;500&display=swap"
-  >
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@300;400;500&display=swap">
 
-  <!-- Estilos -->
   <link rel="stylesheet" href="css/header.css?v=30">
-  <link rel="stylesheet" href="css/mis-pedidos.css?v=5">
+  <link rel="stylesheet" href="css/mis-pedidos.css?v=6">
 </head>
 
 <body class="page-mis-pedidos header-checkout">
 
-  <!-- Header global -->
-  <!-- Inyectado por layout.js -->
+  <!-- Header inyectado -->
 
-  <!-- Volver -->
   <div class="seguir-comprando">
     <button class="icon-back" onclick="location.href='index.html#productos'">
       <i class="fa-solid fa-chevron-left"></i>
@@ -37,18 +30,27 @@
   <main class="mis-pedidos-layout">
 
     <!-- =========================
-         PEDIDO ACTIVO (GRANDE)
+         PEDIDO ACTIVO
     ========================== -->
-    <section id="pedido-activo" class="pedido-activo">
-      <!-- Render JS -->
-    </section>
+    <section id="pedido-activo" class="pedido-activo"></section>
 
     <!-- =========================
          CARRUSEL
     ========================== -->
     <section class="pedidos-carrusel">
       <h4 class="carrusel-title">Otros pedidos</h4>
-      <div class="carrusel-wrapper" id="pedidos-carrusel"></div>
+
+      <div class="carrusel-container">
+        <button class="carrusel-arrow left" id="pedidos-prev">
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+
+        <div class="carrusel-wrapper" id="pedidos-carrusel"></div>
+
+        <button class="carrusel-arrow right" id="pedidos-next">
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      </div>
     </section>
 
     <!-- EMPTY -->
@@ -70,87 +72,52 @@
   <template id="pedido-activo-template">
     <article class="pedido-card pedido-card--grande">
 
-      <!-- HEADER -->
       <header class="pedido-header">
-        <h2 class="pedido-numero">Pedido N.º 013</h2>
+        <h2 class="pedido-numero"></h2>
         <p class="pedido-fecha">
-          <span class="fecha">30 ene 2026</span> ·
-          <span class="hora">02:13 p. m.</span>
+          <span class="fecha"></span> ·
+          <span class="hora"></span>
         </p>
       </header>
 
       <!-- PRODUCTOS -->
       <section class="pedido-productos">
         <div class="productos-pills">
-          <!-- dinámico -->
-          <span class="pill">Café tradición × 1</span>
+          <!-- JS -->
         </div>
 
-        <p class="pedido-total">
-          Total: <strong>L 300.00</strong>
-        </p>
+        <div class="pedido-total-row">
+          <span>Total del pedido</span>
+          <strong class="pedido-total"></strong>
+        </div>
       </section>
 
       <!-- ENTREGA -->
       <section class="pedido-entrega">
-        <p><strong>Entrega:</strong> Barrio abajo, Danlí, El Paraíso</p>
-        <p><strong>Referencia:</strong> Por la mañana</p>
+        <p><strong>Entrega:</strong> <span class="entrega-text"></span></p>
+        <p><strong>Referencia:</strong> <span class="referencia-text"></span></p>
       </section>
 
-      <!-- =========================
-           ESTADO DEL PEDIDO
-      ========================== -->
+      <!-- ESTADO -->
       <section class="pedido-estado">
-
         <p class="estado-title">Estado del pedido</p>
 
-        <!-- TEXTO PRINCIPAL -->
         <p class="estado-resumen">
-          Paso <span class="estado-paso">1</span> de 4 ·
-          <strong class="estado-nombre">Pendiente de pago</strong>
+          Paso <span class="estado-paso"></span> de 4 ·
+          <strong class="estado-nombre"></strong>
         </p>
 
-        <!-- LISTA VERTICAL -->
         <ul class="estado-list">
-
-          <li class="estado-item activo" data-estado="pagado">
-            <span class="dot">1</span>
-            <span class="label">Pagado</span>
-          </li>
-
-          <li class="estado-item" data-estado="revision">
-            <span class="dot">2</span>
-            <span class="label">Revisión</span>
-          </li>
-
-          <li class="estado-item" data-estado="confirmado">
-            <span class="dot">3</span>
-            <span class="label">Confirmado</span>
-          </li>
-
-          <li class="estado-item" data-estado="envio">
-            <span class="dot">4</span>
-            <span class="label">Envío</span>
-          </li>
-
-          <!-- CANCELADO (fuera del flujo) -->
-          <li class="estado-item estado-cancelado hidden" data-estado="cancelado">
-            <span class="dot">×</span>
-            <span class="label">Cancelado</span>
-          </li>
-
+          <li class="estado-item" data-estado="pagado"><span class="dot">1</span><span class="label">Pagado</span></li>
+          <li class="estado-item" data-estado="revision"><span class="dot">2</span><span class="label">Revisión</span></li>
+          <li class="estado-item" data-estado="confirmado"><span class="dot">3</span><span class="label">Confirmado</span></li>
+          <li class="estado-item" data-estado="envio"><span class="dot">4</span><span class="label">Envío</span></li>
         </ul>
 
-        <!-- DESCRIPCIÓN CONTEXTUAL -->
-        <p class="estado-descripcion">
-          Estamos esperando tu comprobante de pago para continuar con tu pedido.
-        </p>
-
+        <p class="estado-descripcion"></p>
       </section>
 
-      <!-- =========================
-           RECIBO
-      ========================== -->
+      <!-- RECIBO -->
       <section class="pedido-recibo">
         <button class="ver-recibo">
           <span>Ver recibo</span>
@@ -158,8 +125,8 @@
         </button>
 
         <div class="recibo-preview">
-  <img class="recibo-img hidden" alt="Comprobante de pago">
-</div>
+          <img class="recibo-img hidden" alt="Comprobante de pago">
+        </div>
       </section>
 
     </article>
@@ -168,9 +135,10 @@
   <!-- PEDIDO MINI -->
   <template id="pedido-carrusel-template">
     <article class="pedido-mini-card">
-      <p class="pedido-mini-numero">Pedido N.º 012</p>
-      <p class="pedido-mini-total">L 1,400.00</p>
-      <span class="pedido-mini-status">Nuevo</span>
+      <img class="pedido-mini-img" alt="Pago">
+      <p class="pedido-mini-numero"></p>
+      <p class="pedido-mini-total"></p>
+      <span class="pedido-mini-status"></span>
     </article>
   </template>
 
@@ -185,7 +153,6 @@
   <script src="js/ui/layout.js"></script>
   <script type="module" src="js/ui/header.js"></script>
 
-  <!-- Lógica cliente -->
   <script type="module" src="js/pages/mis-pedidos.js"></script>
 
 </body>
