@@ -1,16 +1,15 @@
 /* ============================================================
    Mis pedidos — Café Cortero
-   CLIENTE + ADMIN (MISMO HTML)
+   CLIENTE (HTML ACTUAL)
 ============================================================ */
 
-console.log("📦 mis-pedidos.js — FINAL");
+console.log("📦 mis-pedidos.js — ADAPTADO");
 
 /* -----------------------------------------------------------
    STATE
 ----------------------------------------------------------- */
 let allPedidos = [];
 let pedidoActivo = null;
-let isAdmin = false;
 let __misPedidosInit = false;
 
 /* -----------------------------------------------------------
@@ -36,7 +35,7 @@ function formatDateTime(dateStr) {
 }
 
 /* -----------------------------------------------------------
-   ESTADOS (BACKEND → UI)
+   ESTADOS
 ----------------------------------------------------------- */
 const STATUS_FLOW = ["pagado", "revision", "confirmado", "envio"];
 
@@ -47,21 +46,10 @@ const STATUS_MAP = {
     description:
       "Estamos esperando tu comprobante de pago para continuar con tu pedido.",
   },
-  pending_payment: {
-    step: 1,
-    label: "Pendiente de pago",
-    description:
-      "Estamos esperando tu comprobante de pago para continuar con tu pedido.",
-  },
   payment_review: {
     step: 2,
     label: "Pago en revisión",
     description: "Estamos verificando tu comprobante de pago.",
-  },
-  payment_confirmed: {
-    step: 3,
-    label: "Pago confirmado",
-    description: "Tu pedido ha sido confirmado y será preparado.",
   },
   processing: {
     step: 3,
@@ -72,16 +60,6 @@ const STATUS_MAP = {
     step: 4,
     label: "Enviado",
     description: "Tu pedido va en camino.",
-  },
-  delivered: {
-    step: 4,
-    label: "Entregado",
-    description: "Tu pedido fue entregado.",
-  },
-  cancelled: {
-    cancelled: true,
-    label: "Cancelado",
-    description: "Este pedido fue cancelado.",
   },
 };
 
@@ -97,14 +75,6 @@ async function init() {
   const sb = getSupabaseClient();
   if (!sb) return;
 
-  await detectMode();
-
-  if (isAdmin) {
-    const admin = await import("../admin/admin_pedidos.js");
-    admin.init();
-    return;
-  }
-
   await loadPedidosCliente();
 
   if (!pedidoActivo) {
@@ -113,37 +83,14 @@ async function init() {
   }
 
   renderCliente();
+  bindCarruselArrows();
 }
 
 /* -----------------------------------------------------------
-   DETECTAR ADMIN
------------------------------------------------------------ */
-async function detectMode() {
-  const sb = getSupabaseClient();
-  if (!sb) return;
-
-  const params = new URLSearchParams(location.search);
-  if (params.get("mode") !== "admin") return;
-
-  const { data } = await sb.auth.getSession();
-  if (!data?.session) return;
-
-  const { data: user } = await sb
-    .from("users")
-    .select("rol")
-    .eq("id", data.session.user.id)
-    .single();
-
-  isAdmin = user?.rol === "admin";
-}
-
-/* -----------------------------------------------------------
-   LOAD PEDIDOS CLIENTE
+   LOAD PEDIDOS
 ----------------------------------------------------------- */
 async function loadPedidosCliente() {
   const sb = getSupabaseClient();
-  if (!sb) return;
-
   const { data: session } = await sb.auth.getSession();
   if (!session?.session) return;
 
@@ -153,7 +100,7 @@ async function loadPedidosCliente() {
     .eq("user_id", session.session.user.id)
     .order("created_at", { ascending: false });
 
-  if (!Array.isArray(data) || data.length === 0) return;
+  if (!Array.isArray(data) || !data.length) return;
 
   allPedidos = data;
   pedidoActivo = data[0];
@@ -168,7 +115,7 @@ function renderCliente() {
 }
 
 /* -----------------------------------------------------------
-   RENDER PEDIDO ACTIVO
+   PEDIDO ACTIVO
 ----------------------------------------------------------- */
 async function renderPedidoActivo(pedido) {
   const container = document.getElementById("pedido-activo");
@@ -186,8 +133,14 @@ async function renderPedidoActivo(pedido) {
   node.querySelector(".fecha").textContent = fecha;
   node.querySelector(".hora").textContent = hora;
 
-  node.querySelector(".pedido-total strong").textContent =
+  node.querySelector(".pedido-total").textContent =
     `L ${Number(pedido.total).toFixed(2)}`;
+
+  /* ENTREGA */
+  node.querySelector(".entrega-text").textContent =
+    pedido.address || "—";
+  node.querySelector(".referencia-text").textContent =
+    pedido.reference || "—";
 
   /* PRODUCTOS */
   const pills = node.querySelector(".productos-pills");
@@ -195,95 +148,85 @@ async function renderPedidoActivo(pedido) {
 
   const { data: items } = await sb
     .from("order_items")
-    .select("product_id, quantity")
+    .select("product_id, quantity, price")
     .eq("order_id", pedido.id);
 
-  if (Array.isArray(items) && items.length > 0) {
-    const productIds = [...new Set(items.map(i => i.product_id))];
+  if (items?.length) {
+    const ids = [...new Set(items.map(i => i.product_id))];
     const { data: products } = await sb
       .from("products")
       .select("id, name")
-      .in("id", productIds);
+      .in("id", ids);
 
     const map = {};
-    (products || []).forEach(p => (map[p.id] = p.name));
+    products?.forEach(p => (map[p.id] = p.name));
 
     items.forEach(i => {
-      const span = document.createElement("span");
-      span.className = "pill";
-      span.textContent = `${map[i.product_id] || "Producto"} × ${i.quantity}`;
-      pills.appendChild(span);
+      const div = document.createElement("div");
+      div.className = "pill";
+      div.innerHTML = `
+        <span>${map[i.product_id]} × ${i.quantity}</span>
+        <span>L ${(i.quantity * i.price).toFixed(2)}</span>
+      `;
+      pills.appendChild(div);
     });
   }
 
   /* ESTADO */
   const status = STATUS_MAP[pedido.status] || STATUS_MAP.pending;
 
-  node.querySelector(".estado-paso").textContent =
-    status.cancelled ? "—" : status.step;
-
+  node.querySelector(".estado-paso").textContent = status.step;
   node.querySelector(".estado-nombre").textContent = status.label;
-  node.querySelector(".estado-descripcion").textContent = status.description;
+  node.querySelector(".estado-descripcion").textContent =
+    status.description;
 
-  const estados = node.querySelectorAll(".estado-item");
-  estados.forEach(li => {
+  node.querySelectorAll(".estado-item").forEach(li => {
     li.classList.remove("activo", "completado");
     li.classList.add("hidden");
   });
 
-  if (!status.cancelled) {
-    STATUS_FLOW.forEach((key, index) => {
-      const li = node.querySelector(`[data-estado="${key}"]`);
-      if (!li) return;
-      li.classList.remove("hidden");
-      if (index + 1 < status.step) li.classList.add("completado");
-      if (index + 1 === status.step) li.classList.add("activo");
-    });
-  }
+  STATUS_FLOW.forEach((key, idx) => {
+    const li = node.querySelector(`[data-estado="${key}"]`);
+    if (!li) return;
+    li.classList.remove("hidden");
+    if (idx + 1 < status.step) li.classList.add("completado");
+    if (idx + 1 === status.step) li.classList.add("activo");
+  });
 
-  /* COMPROBANTE */
-  const img = node.querySelector(".comprobante-img");
-  const label = node.querySelector(".comprobante-label");
+  /* RECIBO */
+  const img = node.querySelector(".recibo-img");
   const btn = node.querySelector(".ver-recibo");
 
-  if (img && label && btn) {
+  if (pedido.payment_method === "cash") {
+    img.src = "imagenes/pago_en_mano.svg";
     img.classList.remove("hidden");
+    btn.classList.add("hidden");
+  } else {
+    const { data: receipt } = await sb
+      .from("payment_receipts")
+      .select("file_url")
+      .eq("order_id", pedido.id)
+      .maybeSingle();
 
-    if (
-      pedido.payment_method === "cash" ||
-      pedido.payment_method === "cash_on_delivery"
-    ) {
-      img.src = "imagenes/pago_en_mano.svg";
-      label.textContent = "Pago al recibir";
-      btn.classList.add("hidden");
+    if (receipt?.file_url) {
+      img.src = receipt.file_url;
+      img.classList.remove("hidden");
+      btn.onclick = () =>
+        (location.href = `recibo.html?id=${pedido.id}`);
     } else {
-      const { data: receipt } = await sb
-        .from("payment_receipts")
-        .select("file_url")
-        .eq("order_id", pedido.id)
-        .maybeSingle();
-
-      if (receipt?.file_url) {
-        img.src = receipt.file_url;
-        label.textContent = "Comprobante de pago";
-        btn.classList.remove("hidden");
-      } else {
-        img.src = "imagenes/pago_en_mano.svg";
-        label.textContent = "Pendiente de comprobante";
-        btn.classList.add("hidden");
-      }
+      img.src = "imagenes/pago_en_mano.svg";
+      img.classList.remove("hidden");
+      btn.classList.add("hidden");
     }
   }
 
-  btn?.addEventListener("click", () => {
-    location.href = `recibo.html?id=${pedido.id}`;
-  });
-
   container.appendChild(node);
+
+  container.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 /* -----------------------------------------------------------
-   RENDER CARRUSEL
+   CARRUSEL
 ----------------------------------------------------------- */
 function renderCarrusel() {
   const wrapper = document.getElementById("pedidos-carrusel");
@@ -294,6 +237,7 @@ function renderCarrusel() {
 
   allPedidos.slice(1).forEach(pedido => {
     const node = tpl.content.cloneNode(true);
+    const card = node.querySelector(".pedido-mini-card");
 
     node.querySelector(".pedido-mini-numero").textContent =
       `Pedido N.º ${String(pedido.order_number).padStart(3, "0")}`;
@@ -304,9 +248,14 @@ function renderCarrusel() {
     node.querySelector(".pedido-mini-status").textContent =
       STATUS_MAP[pedido.status]?.label || "Pendiente";
 
-    node.querySelector(".pedido-mini-card").onclick = () => {
+    card.onclick = () => {
+      document
+        .querySelectorAll(".pedido-mini-card")
+        .forEach(c => c.classList.remove("is-selected"));
+
+      card.classList.add("is-selected");
       pedidoActivo = pedido;
-      renderCliente();
+      renderPedidoActivo(pedido);
     };
 
     wrapper.appendChild(node);
@@ -314,7 +263,27 @@ function renderCarrusel() {
 }
 
 /* -----------------------------------------------------------
-   EMPTY STATE
+   FLECHAS CARRUSEL (SOLO PC)
+----------------------------------------------------------- */
+function bindCarruselArrows() {
+  if (window.innerWidth < 900) return;
+
+  const list = document.getElementById("pedidos-carrusel");
+  const prev = document.getElementById("pedidos-prev");
+  const next = document.getElementById("pedidos-next");
+  if (!list || !prev || !next) return;
+
+  const STEP = 280;
+
+  prev.onclick = () =>
+    list.scrollBy({ left: -STEP, behavior: "smooth" });
+
+  next.onclick = () =>
+    list.scrollBy({ left: STEP, behavior: "smooth" });
+}
+
+/* -----------------------------------------------------------
+   EMPTY
 ----------------------------------------------------------- */
 function mostrarVacio() {
   document.getElementById("pedido-activo")?.replaceChildren();
