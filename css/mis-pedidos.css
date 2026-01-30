@@ -52,11 +52,13 @@ body {
    PEDIDO ACTIVO (TARJETA PRINCIPAL)
 ============================================================ */
 .order-main {
-  background: var(--surface);
-  border-radius: var(--r-xl);
-  padding: 2rem;
-  box-shadow: var(--elev-2);
-  margin-bottom: 3rem;
+  max-width: 1100px;
+  margin: 0 auto 3rem;
+  background: #fff;
+  border-radius: 24px;
+  padding: 2.4rem;
+  box-shadow: 0 14px 32px rgba(0,0,0,.08);
+  overflow: hidden; /* 🔑 evita invasiones */
 }
 
 /* ================= HEADER ================= */
