@@ -1,15 +1,7 @@
 /**
- * recibo.checkout.js
+ * recibo.checkout.js — FINAL CORREGIDO
  * ---------------------------------------------------------
- * Crea y envía la orden de café.
- *
- * - Calcula el total del carrito
- * - Permite elegir método de pago
- * - Sube comprobante si es transferencia
- * - Inserta la orden y sus productos
- * - Redirige al recibo en modo solo lectura
- *
- * Solo se ejecuta cuando NO existe un id en la URL.
+ * Checkout de pedidos Café Cortero
  */
 console.log("🧾 recibo.checkout.js");
 
@@ -82,7 +74,6 @@ async function setNumeroPedidoProvisional() {
   const next = (data?.[0]?.order_number || 0) + 1;
 
   $id("numeroPedido").textContent = next;
-
   $id("fechaPedido").textContent = new Date().toLocaleDateString("es-ES", {
     day: "2-digit",
     month: "short",
@@ -106,7 +97,7 @@ const lista = $id("listaProductos");
 const carrito = JSON.parse(localStorage.getItem(CART_KEY)) || [];
 let total = 0;
 
-if (lista) {
+if (lista && !IS_READ_ONLY) {
   lista.innerHTML = "";
   carrito.forEach(it => {
     total += it.qty * it.price;
@@ -122,20 +113,17 @@ if (lista) {
 }
 
 /* =========================================================
-   MÉTODO DE PAGO — CONTROL UI
+   MÉTODO DE PAGO — UI
 ========================================================= */
 function resetMetodoPago() {
   bloqueDeposito?.classList.add("hidden");
   bloqueEfectivo?.classList.add("hidden");
-
   previewBox?.classList.add("hidden");
   imgPreview.src = "";
-
   btnSubirComprobante?.classList.remove("hidden");
   inputFile?.classList.remove("hidden");
-
-  if (btnEnviar) btnEnviar.disabled = true;
-  if (inputFile) inputFile.value = "";
+  btnEnviar.disabled = true;
+  inputFile.value = "";
 }
 
 metodoPago?.addEventListener("change", () => {
@@ -146,39 +134,28 @@ metodoPago?.addEventListener("change", () => {
     return;
   }
 
-  if (
-    metodoPago.value === "cash_on_delivery" ||
-    metodoPago.value === "cash"
-  ) {
+  if (metodoPago.value === "cash" || metodoPago.value === "cash_on_delivery") {
     metodoPago.value = "cash_on_delivery";
     bloqueEfectivo?.classList.remove("hidden");
     btnEnviar.disabled = false;
-    return;
   }
-
-  console.warn("Método de pago no reconocido:", metodoPago.value);
 });
 
 /* =========================================================
-   SUBIR COMPROBANTE — PREVIEW
+   SUBIR COMPROBANTE
 ========================================================= */
-btnSubirComprobante?.addEventListener("click", (e) => {
+btnSubirComprobante?.addEventListener("click", e => {
   e.preventDefault();
   inputFile?.click();
 });
 
 inputFile?.addEventListener("change", () => {
-  if (!inputFile.files.length) {
-    btnEnviar.disabled = true;
-    return;
-  }
+  if (!inputFile.files.length) return;
 
   const file = inputFile.files[0];
-
   if (!file.type.startsWith("image/")) {
     showSnack("Solo se permiten imágenes");
     inputFile.value = "";
-    btnEnviar.disabled = true;
     return;
   }
 
@@ -188,7 +165,7 @@ inputFile?.addEventListener("change", () => {
 });
 
 /* =========================================================
-   ENVIAR PEDIDO
+   ENVIAR PEDIDO — FIX DEFINITIVO
 ========================================================= */
 async function enviarPedido() {
   const sb = window.supabaseClient;
@@ -200,7 +177,7 @@ async function enviarPedido() {
   }
 
   if (metodoPago.value === "bank_transfer" && !inputFile.files.length) {
-    showSnack("Debes subir el comprobante de pago");
+    showSnack("Debes subir el comprobante");
     return;
   }
 
@@ -208,30 +185,38 @@ async function enviarPedido() {
   loader?.classList.remove("hidden");
 
   try {
-    const { data: orderNumber } = await sb.rpc("next_order_number", {
-      p_user_id: user.id
-    });
+    // 1️⃣ Número de pedido
+    const { data: orderNumber, error: numError } =
+      await sb.rpc("next_order_number", { p_user_id: user.id });
+    if (numError) throw numError;
 
-    const { data: order } = await sb
+    // 2️⃣ Insertar pedido (SIN select)
+    const { error: insertError } = await sb.from("orders").insert({
+      user_id: user.id,
+      address_id: selectedAddressId,
+      order_number: orderNumber,
+      total,
+      payment_method:
+        metodoPago.value === "bank_transfer"
+          ? "bank_transfer"
+          : "cash_on_delivery",
+      status: "pending"
+    });
+    if (insertError) throw insertError;
+
+    // 3️⃣ Recuperar pedido creado (SEGURO)
+    const { data: order, error: fetchError } = await sb
       .from("orders")
-      .insert({
-        user_id: user.id,
-        address_id: selectedAddressId,
-        order_number: orderNumber,
-        total,
-        payment_method:
-          metodoPago.value === "bank_transfer"
-            ? "bank_transfer"
-            : "cash_on_delivery",
-        status: "pending",
-        payment_status:
-          metodoPago.value === "bank_transfer"
-            ? "review"
-            : "not_required"
-      })
       .select("id")
+      .eq("user_id", user.id)
+      .eq("order_number", orderNumber)
       .single();
 
+    if (fetchError || !order) {
+      throw new Error("No se pudo recuperar el pedido");
+    }
+
+    // 4️⃣ Insertar items
     await sb.from("order_items").insert(
       carrito.map(it => ({
         order_id: order.id,
@@ -241,23 +226,24 @@ async function enviarPedido() {
       }))
     );
 
+    // 5️⃣ Subir comprobante
     if (metodoPago.value === "bank_transfer") {
       const file = inputFile.files[0];
-      const ext = file.name.split(".").pop().toLowerCase();
+      const ext = file.name.split(".").pop();
       const path = `${user.id}/${order.id}.${ext}`;
 
       await sb.storage
         .from(RECEIPT_BUCKET)
         .upload(path, file, { upsert: true, contentType: file.type });
 
-      const { data: urlData } = sb.storage
+      const { data: url } = sb.storage
         .from(RECEIPT_BUCKET)
         .getPublicUrl(path);
 
       await sb.from("payment_receipts").insert({
         order_id: order.id,
         user_id: user.id,
-        file_url: urlData.publicUrl,
+        file_url: url.publicUrl,
         file_path: path,
         review_status: "pending"
       });
@@ -268,7 +254,7 @@ async function enviarPedido() {
 
   } catch (err) {
     console.error(err);
-    showSnack("Error al enviar el pedido");
+    showSnack(err.message || "Error al enviar pedido");
     btnEnviar.disabled = false;
   } finally {
     loader?.classList.add("hidden");
@@ -278,28 +264,19 @@ async function enviarPedido() {
 /* =========================================================
    CONFIRMACIÓN
 ========================================================= */
-btnEnviar?.addEventListener("click", (e) => {
+btnEnviar?.addEventListener("click", e => {
   e.preventDefault();
-
-  showSnack(
-    "¿Confirmas enviar el pedido?",
-    enviarPedido,
-    "Corregir",
+  showSnack("¿Confirmas enviar el pedido?", enviarPedido, "Corregir",
     () => (btnEnviar.disabled = false)
   );
 });
 
 /* =========================================================
-   INIT CHECKOUT (PROTEGIDO)
+   INIT
 ========================================================= */
 (async function initCheckout() {
   await esperarSupabase();
-
-  if (IS_READ_ONLY) {
-    console.log("🔒 recibo.checkout.js desactivado (modo vista)");
-    return;
-  }
-
+  if (IS_READ_ONLY) return;
   await setNumeroPedidoProvisional();
   await cargarDatosCliente();
   resetMetodoPago();
