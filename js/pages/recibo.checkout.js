@@ -14,14 +14,6 @@
 console.log("🧾 recibo.checkout.js");
 
 /* =========================================================
-   PROTECCIÓN — SOLO CHECKOUT
-========================================================= */
-if (IS_READ_ONLY) {
-  console.log("🔒 recibo.checkout.js desactivado (modo vista)");
-  return;
-}
-
-/* =========================================================
    ELEMENTOS UI — CHECKOUT
 ========================================================= */
 const metodoPago = $id("metodoPago");
@@ -191,9 +183,7 @@ inputFile?.addEventListener("change", () => {
   }
 
   imgPreview.src = URL.createObjectURL(file);
-  imgPreview.style.display = "block";
   previewBox?.classList.remove("hidden");
-
   btnEnviar.disabled = false;
 });
 
@@ -201,8 +191,6 @@ inputFile?.addEventListener("change", () => {
    ENVIAR PEDIDO
 ========================================================= */
 async function enviarPedido() {
-  console.log("🚀 enviarPedido() ejecutado");
-
   const sb = window.supabaseClient;
   const user = getUserCache();
 
@@ -220,8 +208,9 @@ async function enviarPedido() {
   loader?.classList.remove("hidden");
 
   try {
-    const { data: orderNumber } = await sb
-      .rpc("next_order_number", { p_user_id: user.id });
+    const { data: orderNumber } = await sb.rpc("next_order_number", {
+      p_user_id: user.id
+    });
 
     const { data: order } = await sb
       .from("orders")
@@ -243,14 +232,14 @@ async function enviarPedido() {
       .select("id")
       .single();
 
-    const itemsPayload = carrito.map(it => ({
-      order_id: order.id,
-      product_id: it.product_id,
-      quantity: Number(it.qty),
-      price: it.price
-    }));
-
-    await sb.from("order_items").insert(itemsPayload);
+    await sb.from("order_items").insert(
+      carrito.map(it => ({
+        order_id: order.id,
+        product_id: it.product_id,
+        quantity: Number(it.qty),
+        price: it.price
+      }))
+    );
 
     if (metodoPago.value === "bank_transfer") {
       const file = inputFile.files[0];
@@ -287,25 +276,30 @@ async function enviarPedido() {
 }
 
 /* =========================================================
-   CONFIRMACIÓN SNACKBAR
+   CONFIRMACIÓN
 ========================================================= */
 btnEnviar?.addEventListener("click", (e) => {
   e.preventDefault();
-  btnEnviar.disabled = true;
 
   showSnack(
     "¿Confirmas enviar el pedido?",
-    () => enviarPedido(),
+    enviarPedido,
     "Corregir",
     () => (btnEnviar.disabled = false)
   );
 });
 
 /* =========================================================
-   INIT CHECKOUT
+   INIT CHECKOUT (PROTEGIDO)
 ========================================================= */
 (async function initCheckout() {
   await esperarSupabase();
+
+  if (IS_READ_ONLY) {
+    console.log("🔒 recibo.checkout.js desactivado (modo vista)");
+    return;
+  }
+
   await setNumeroPedidoProvisional();
   await cargarDatosCliente();
   resetMetodoPago();
