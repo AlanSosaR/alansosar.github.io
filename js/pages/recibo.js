@@ -112,6 +112,7 @@ function aplicarProgresoPedido(status, paymentMethod) {
 
   if (paymentMethod === "bank_transfer") {
     etapaMap = {
+      pending: 0,
       pending_payment: 0,
       payment_review: 1,
       payment_confirmed: 2,
@@ -120,6 +121,7 @@ function aplicarProgresoPedido(status, paymentMethod) {
       delivered: 3
     };
     labelMap = {
+      pending: "Pendiente de pago",
       pending_payment: "Pendiente de pago",
       payment_review: "Pago en revisión",
       payment_confirmed: "Pago confirmado",
@@ -129,12 +131,14 @@ function aplicarProgresoPedido(status, paymentMethod) {
     };
   } else {
     etapaMap = {
+      pending: 0,
       cash_on_delivery: 0,
       processing: 1,
       shipped: 2,
       delivered: 3
     };
     labelMap = {
+      pending: "Pago al recibir",
       cash_on_delivery: "Pago al recibir",
       processing: "En ejecución",
       shipped: "Enviado",
@@ -159,6 +163,7 @@ function aplicarProgresoPedido(status, paymentMethod) {
   estadoTexto.textContent = labelMap[status] || "Pendiente";
 
   const iconMap = {
+    pending: "payments",
     pending_payment: "payments",
     payment_review: "fact_check",
     payment_confirmed: "verified",
