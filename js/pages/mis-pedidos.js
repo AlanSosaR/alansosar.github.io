@@ -200,7 +200,6 @@ async function renderPedidoActivo(pedido) {
 
   if (Array.isArray(items) && items.length > 0) {
     const productIds = [...new Set(items.map(i => i.product_id))];
-
     const { data: products } = await sb
       .from("products")
       .select("id, name")
@@ -248,12 +247,13 @@ async function renderPedidoActivo(pedido) {
   const btn = node.querySelector(".ver-recibo");
 
   if (img && label && btn) {
+    img.classList.remove("hidden");
+
     if (
       pedido.payment_method === "cash" ||
       pedido.payment_method === "cash_on_delivery"
     ) {
       img.src = "imagenes/pago_en_mano.svg";
-      img.classList.remove("hidden");
       label.textContent = "Pago al recibir";
       btn.classList.add("hidden");
     } else {
@@ -265,12 +265,10 @@ async function renderPedidoActivo(pedido) {
 
       if (receipt?.file_url) {
         img.src = receipt.file_url;
-        img.classList.remove("hidden");
         label.textContent = "Comprobante de pago";
         btn.classList.remove("hidden");
       } else {
         img.src = "imagenes/pago_en_mano.svg";
-        img.classList.remove("hidden");
         label.textContent = "Pendiente de comprobante";
         btn.classList.add("hidden");
       }
