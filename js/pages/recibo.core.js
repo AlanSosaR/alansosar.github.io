@@ -212,60 +212,103 @@ async function cargarPedidoExistente(orderId) {
   =============================== */
   $id("totalPedido").textContent = pedido.total.toFixed(2);
 
-  /* ===============================
-     MÉTODO DE PAGO (SOLO INFORMACIÓN)
-  =============================== */
-  const pagoDeposito = $id("pago-deposito");
-  const pagoEfectivo = $id("pago-efectivo");
-  const preview = $id("previewComprobante");
-  const img = $id("imgComprobante");
+/* ===============================
+   MÉTODO DE PAGO — SOLO INFORMACIÓN (RECIBO)
+=============================== */
+const pagoDeposito = $id("pago-deposito");
+const pagoEfectivo = $id("pago-efectivo");
+const preview = $id("previewComprobante");
+const img = $id("imgComprobante");
+const btnSubir = $id("btnSubirComprobante");
 
-  // Reset defensivo
-  pagoDeposito?.classList.add("hidden");
-  pagoEfectivo?.classList.add("hidden");
-  preview?.classList.add("hidden");
-  if (img) img.src = "";
+/* -------------------------------
+   RESET DEFENSIVO
+-------------------------------- */
+pagoDeposito?.classList.add("hidden");
+pagoEfectivo?.classList.add("hidden");
+preview?.classList.add("hidden");
+btnSubir?.classList.add("hidden");
 
-  /* ---- DEPÓSITO BANCARIO ---- */
-  if (pedido.payment_method === "bank_transfer") {
-    pagoDeposito?.classList.remove("hidden");
+if (img) {
+  img.src = "";
+  img.alt = "";
+}
 
-    if (pedido.payment_receipts?.length && preview && img) {
-      const receipt = pedido.payment_receipts
-        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
+/* =================================================
+   DEPÓSITO BANCARIO (RECIBO)
+================================================= */
+if (pedido.payment_method === "bank_transfer") {
+  pagoDeposito?.classList.remove("hidden");
 
-      if (receipt?.file_url) {
-        preview.classList.remove("hidden");
-        img.src = receipt.file_url;
+  // Cambiar texto a modo recibo (NO checkout)
+  const info = pagoDeposito.querySelector(".comprobante-info");
+  if (info) {
+    info.innerHTML = `
+      <strong>Enviaste el dinero a la siguiente cuenta bancaria:</strong><br>
+      Banco Atlántida — Cuenta <strong>123456789</strong><br>
+      A nombre de <strong>Café Cortero</strong>
+      <br><br>
+      <strong>Este es el comprobante que enviaste:</strong>
+    `;
+  }
 
-        // eliminar texto heredado del checkout
-        preview.querySelector("p")?.remove();
-      }
+  // Mostrar SOLO la imagen del comprobante real
+  if (pedido.payment_receipts?.length && preview && img) {
+    const receipt = pedido.payment_receipts
+      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
+
+    if (receipt?.file_url) {
+      preview.classList.remove("hidden");
+      img.src = receipt.file_url;
+      img.alt = "Comprobante de pago enviado";
+
+      // Eliminar cualquier texto heredado del checkout
+      preview.querySelector("p")?.remove();
     }
   }
-
-  /* ---- PAGO AL RECIBIR ---- */
-  if (
-    pedido.payment_method === "cash_on_delivery" ||
-    pedido.payment_method === "cash"
-  ) {
-    pagoEfectivo?.classList.remove("hidden");
-  }
-
-  /* ===============================
-     ESTADO VISUAL REAL
-  =============================== */
-  let statusVisual = pedido.status;
-
-  if (
-    pedido.payment_method === "bank_transfer" &&
-    pedido.payment_receipts?.some(r => r.review_status === "pending")
-  ) {
-    statusVisual = "payment_review";
-  }
-
-  aplicarProgresoPedido(statusVisual, pedido.payment_method);
 }
+
+/* =================================================
+   PAGO EN EFECTIVO (RECIBO)
+================================================= */
+if (
+  pedido.payment_method === "cash_on_delivery" ||
+  pedido.payment_method === "cash"
+) {
+  pagoEfectivo?.classList.remove("hidden");
+
+  const info = pagoEfectivo.querySelector(".comprobante-info");
+  if (info) {
+    info.innerHTML = `
+      <strong>Elegiste pago en efectivo.</strong><br>
+      El pago se realizará al momento de la
+      <strong>entrega del pedido</strong>.
+    `;
+  }
+
+  // Imagen ilustrativa (NO comprobante)
+  if (preview && img) {
+    preview.classList.remove("hidden");
+    img.src = "imagenes/pago_en_mano.svg";
+    img.alt = "Pago en efectivo al recibir el pedido";
+
+    preview.querySelector("p")?.remove();
+  }
+}
+
+/* ===============================
+   ESTADO VISUAL REAL
+=============================== */
+let statusVisual = pedido.status;
+
+if (
+  pedido.payment_method === "bank_transfer" &&
+  pedido.payment_receipts?.some(r => r.review_status === "pending")
+) {
+  statusVisual = "payment_review";
+}
+
+aplicarProgresoPedido(statusVisual, pedido.payment_method);
 
 /* =========================================================
    EXPONER CORE
