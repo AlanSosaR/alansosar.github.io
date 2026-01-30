@@ -40,9 +40,9 @@ const IS_READ_ONLY = Boolean(ORDER_ID);
 ========================================================= */
 function showSnack(
   msg,
-  onAccept = null,          // 👉 acción principal (ENVIAR)
-  actionText = null,        // 👉 texto acción secundaria
-  onAction = null,          // 👉 acción secundaria
+  onAccept = null,
+  actionText = null,
+  onAction = null,
   duration = 6000
 ) {
   const bar = $id("snackbar");
@@ -64,6 +64,11 @@ function showSnack(
 
   const timer = setTimeout(() => {
     bar.classList.remove("show");
+
+    // 🔑 liberar botón si el usuario no aceptó
+    const btn = $id("btnEnviar");
+    if (btn) btn.disabled = false;
+
   }, duration);
 
   // Acción secundaria (Cancelar / Corregir)
@@ -672,11 +677,26 @@ fetch(
   }
 }
 /* =========================================================
-   BOTÓN ENVIAR PEDIDO — FIX DEFINITIVO
+   BOTÓN ENVIAR PEDIDO — CON CONFIRMACIÓN SNACKBAR
 ========================================================= */
 btnEnviar?.addEventListener("click", (e) => {
   e.preventDefault();
-  enviarPedido();
+
+  // Evitar doble click
+  btnEnviar.disabled = true;
+
+  showSnack(
+    "¿Confirmas enviar el pedido?",
+    () => {
+      // 👉 ACEPTAR = ENVÍA
+      enviarPedido();
+    },
+    "Corregir",
+    () => {
+      // 👉 Cancelar / Corregir
+      btnEnviar.disabled = false;
+    }
+  );
 });
 /* =========================================================
    BOTÓN ATRÁS — FIX DEFINITIVO (RUTAS REALES)
