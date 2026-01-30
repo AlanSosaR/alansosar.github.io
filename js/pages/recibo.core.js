@@ -134,7 +134,7 @@ function aplicarProgresoPedido(status, paymentMethod) {
 }
 
 /* =========================================================
-   CARGAR PEDIDO EXISTENTE — FINAL
+   CARGAR PEDIDO EXISTENTE — FINAL CORREGIDO
 ========================================================= */
 async function cargarPedidoExistente(orderId) {
   const sb = window.supabaseClient;
@@ -161,7 +161,9 @@ async function cargarPedidoExistente(orderId) {
     return;
   }
 
-  /* CABECERA */
+  /* ===============================
+     CABECERA
+  =============================== */
   $id("numeroPedido").textContent = pedido.order_number;
 
   const fecha = new Date(pedido.created_at);
@@ -171,55 +173,88 @@ async function cargarPedidoExistente(orderId) {
     minute: "2-digit"
   });
 
-  /* CLIENTE */
+  /* ===============================
+     CLIENTE
+  =============================== */
   if (pedido.users) {
-    $id("nombreCliente").textContent = pedido.users.name;
-    $id("correoCliente").textContent = pedido.users.email;
-    $id("telefonoCliente").textContent = pedido.users.phone;
+    $id("nombreCliente").textContent = pedido.users.name || "—";
+    $id("correoCliente").textContent = pedido.users.email || "—";
+    $id("telefonoCliente").textContent = pedido.users.phone || "—";
   }
 
   if (pedido.addresses) {
     $id("zonaCliente").textContent =
       `${pedido.addresses.state}, ${pedido.addresses.city}`;
-    $id("direccionCliente").textContent = pedido.addresses.street;
-    $id("notaCliente").textContent = pedido.addresses.postal_code;
+    $id("direccionCliente").textContent = pedido.addresses.street || "—";
+    $id("notaCliente").textContent = pedido.addresses.postal_code || "—";
   }
 
-  /* PRODUCTOS */
+  /* ===============================
+     PRODUCTOS
+  =============================== */
   const lista = $id("listaProductos");
-  lista.innerHTML = "";
-  pedido.order_items.forEach(it => {
-    lista.innerHTML += `
-      <div class="cafe-item">
-        <span>${it.products.name} (${it.quantity})</span>
-        <span>L ${(it.quantity * it.price).toFixed(2)}</span>
-      </div>
-    `;
-  });
+  if (lista) {
+    lista.innerHTML = "";
+    pedido.order_items.forEach(it => {
+      lista.innerHTML += `
+        <div class="cafe-item">
+          <span>${it.products.name} (${it.quantity})</span>
+          <span>L ${(it.quantity * it.price).toFixed(2)}</span>
+        </div>
+      `;
+    });
+  }
 
-  /* TOTAL */
+  /* ===============================
+     TOTAL
+  =============================== */
   $id("totalPedido").textContent = pedido.total.toFixed(2);
 
-  /* COMPROBANTE (SOLO IMAGEN) */
-  if (pedido.payment_method === "bank_transfer" && pedido.payment_receipts?.length) {
-    const receipt = pedido.payment_receipts.sort(
-      (a, b) => new Date(b.created_at) - new Date(a.created_at)
-    )[0];
+  /* ===============================
+     MÉTODO DE PAGO (SOLO INFORMACIÓN)
+  =============================== */
+  const pagoDeposito = $id("pago-deposito");
+  const pagoEfectivo = $id("pago-efectivo");
+  const preview = $id("previewComprobante");
+  const img = $id("imgComprobante");
 
-    const preview = $id("previewComprobante");
-    const img = $id("imgComprobante");
+  // Reset defensivo
+  pagoDeposito?.classList.add("hidden");
+  pagoEfectivo?.classList.add("hidden");
+  preview?.classList.add("hidden");
+  if (img) img.src = "";
 
-    if (preview && img) {
-      preview.classList.remove("hidden");
-      img.src = receipt.file_url;
+  /* ---- DEPÓSITO BANCARIO ---- */
+  if (pedido.payment_method === "bank_transfer") {
+    pagoDeposito?.classList.remove("hidden");
 
-      // ❌ eliminar texto del checkout
-      preview.querySelector("p")?.remove();
+    if (pedido.payment_receipts?.length && preview && img) {
+      const receipt = pedido.payment_receipts
+        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
+
+      if (receipt?.file_url) {
+        preview.classList.remove("hidden");
+        img.src = receipt.file_url;
+
+        // eliminar texto heredado del checkout
+        preview.querySelector("p")?.remove();
+      }
     }
   }
 
-  /* ESTADO */
+  /* ---- PAGO AL RECIBIR ---- */
+  if (
+    pedido.payment_method === "cash_on_delivery" ||
+    pedido.payment_method === "cash"
+  ) {
+    pagoEfectivo?.classList.remove("hidden");
+  }
+
+  /* ===============================
+     ESTADO VISUAL REAL
+  =============================== */
   let statusVisual = pedido.status;
+
   if (
     pedido.payment_method === "bank_transfer" &&
     pedido.payment_receipts?.some(r => r.review_status === "pending")
