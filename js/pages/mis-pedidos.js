@@ -1,9 +1,9 @@
 /* ============================================================
    Mis pedidos — Café Cortero
-   CLIENTE (HTML ACTUAL)
+   CLIENTE (HTML NUEVO)
 ============================================================ */
 
-console.log("📦 mis-pedidos.js — ADAPTADO");
+console.log("📦 mis-pedidos.js — FINAL HTML NUEVO");
 
 /* -----------------------------------------------------------
    STATE
@@ -61,6 +61,11 @@ const STATUS_MAP = {
     label: "Enviado",
     description: "Tu pedido va en camino.",
   },
+  delivered: {
+    step: 4,
+    label: "Entregado",
+    description: "Tu pedido fue entregado.",
+  },
 };
 
 /* -----------------------------------------------------------
@@ -112,10 +117,17 @@ async function loadPedidosCliente() {
 function renderCliente() {
   renderPedidoActivo(pedidoActivo);
   renderCarrusel();
+
+  document
+    .getElementById("pedido-activo")
+    ?.classList.remove("hidden");
+  document
+    .getElementById("mis-pedidos-carrusel")
+    ?.classList.remove("hidden");
 }
 
 /* -----------------------------------------------------------
-   PEDIDO ACTIVO
+   PEDIDO ACTIVO (PREVIEW)
 ----------------------------------------------------------- */
 async function renderPedidoActivo(pedido) {
   const container = document.getElementById("pedido-activo");
@@ -126,6 +138,7 @@ async function renderPedidoActivo(pedido) {
   const node = tpl.content.cloneNode(true);
   const sb = getSupabaseClient();
 
+  /* HEADER */
   node.querySelector(".pedido-numero").textContent =
     `Pedido N.º ${String(pedido.order_number).padStart(3, "0")}`;
 
@@ -133,6 +146,7 @@ async function renderPedidoActivo(pedido) {
   node.querySelector(".fecha").textContent = fecha;
   node.querySelector(".hora").textContent = hora;
 
+  /* TOTAL */
   node.querySelector(".pedido-total").textContent =
     `L ${Number(pedido.total).toFixed(2)}`;
 
@@ -151,7 +165,7 @@ async function renderPedidoActivo(pedido) {
     .select("product_id, quantity, price")
     .eq("order_id", pedido.id);
 
-  if (items?.length) {
+  if (Array.isArray(items) && items.length) {
     const ids = [...new Set(items.map(i => i.product_id))];
     const { data: products } = await sb
       .from("products")
@@ -162,13 +176,13 @@ async function renderPedidoActivo(pedido) {
     products?.forEach(p => (map[p.id] = p.name));
 
     items.forEach(i => {
-      const div = document.createElement("div");
-      div.className = "pill";
-      div.innerHTML = `
-        <span>${map[i.product_id]} × ${i.quantity}</span>
+      const row = document.createElement("div");
+      row.className = "pill";
+      row.innerHTML = `
+        <span>${map[i.product_id] || "Producto"} × ${i.quantity}</span>
         <span>L ${(i.quantity * i.price).toFixed(2)}</span>
       `;
-      pills.appendChild(div);
+      pills.appendChild(row);
     });
   }
 
@@ -193,14 +207,22 @@ async function renderPedidoActivo(pedido) {
     if (idx + 1 === status.step) li.classList.add("activo");
   });
 
-  /* RECIBO */
+  /* MEDIA / RECIBO */
+  const receiptBox = node.querySelector(".payment-media.receipt");
+  const cashBox = node.querySelector(".payment-media.placeholder");
   const img = node.querySelector(".recibo-img");
+  const label = node.querySelector(".recibo-label");
   const btn = node.querySelector(".ver-recibo");
 
-  if (pedido.payment_method === "cash") {
-    img.src = "imagenes/pago_en_mano.svg";
-    img.classList.remove("hidden");
-    btn.classList.add("hidden");
+  receiptBox?.classList.add("hidden");
+  cashBox?.classList.add("hidden");
+  btn?.classList.add("hidden");
+
+  if (
+    pedido.payment_method === "cash" ||
+    pedido.payment_method === "cash_on_delivery"
+  ) {
+    cashBox?.classList.remove("hidden");
   } else {
     const { data: receipt } = await sb
       .from("payment_receipts")
@@ -210,19 +232,22 @@ async function renderPedidoActivo(pedido) {
 
     if (receipt?.file_url) {
       img.src = receipt.file_url;
-      img.classList.remove("hidden");
+      label.textContent = "Comprobante de pago";
+      receiptBox?.classList.remove("hidden");
+      btn?.classList.remove("hidden");
       btn.onclick = () =>
         (location.href = `recibo.html?id=${pedido.id}`);
     } else {
-      img.src = "imagenes/pago_en_mano.svg";
-      img.classList.remove("hidden");
-      btn.classList.add("hidden");
+      cashBox?.classList.remove("hidden");
     }
   }
 
   container.appendChild(node);
 
-  container.scrollIntoView({ behavior: "smooth", block: "start" });
+  container.scrollIntoView({
+    behavior: "smooth",
+    block: "start",
+  });
 }
 
 /* -----------------------------------------------------------
@@ -235,7 +260,7 @@ function renderCarrusel() {
 
   wrapper.innerHTML = "";
 
-  allPedidos.slice(1).forEach(pedido => {
+  allPedidos.forEach((pedido, index) => {
     const node = tpl.content.cloneNode(true);
     const card = node.querySelector(".pedido-mini-card");
 
@@ -247,6 +272,13 @@ function renderCarrusel() {
 
     node.querySelector(".pedido-mini-status").textContent =
       STATUS_MAP[pedido.status]?.label || "Pendiente";
+
+    const img = node.querySelector(".pedido-mini-img");
+    img.src = "imagenes/pago_en_mano.svg";
+
+    if (pedido === pedidoActivo) {
+      card.classList.add("is-selected");
+    }
 
     card.onclick = () => {
       document
@@ -263,7 +295,7 @@ function renderCarrusel() {
 }
 
 /* -----------------------------------------------------------
-   FLECHAS CARRUSEL (SOLO PC)
+   FLECHAS CARRUSEL (DESKTOP)
 ----------------------------------------------------------- */
 function bindCarruselArrows() {
   if (window.innerWidth < 900) return;
@@ -273,7 +305,7 @@ function bindCarruselArrows() {
   const next = document.getElementById("pedidos-next");
   if (!list || !prev || !next) return;
 
-  const STEP = 280;
+  const STEP = list.clientWidth * 0.9;
 
   prev.onclick = () =>
     list.scrollBy({ left: -STEP, behavior: "smooth" });
@@ -286,7 +318,9 @@ function bindCarruselArrows() {
    EMPTY
 ----------------------------------------------------------- */
 function mostrarVacio() {
-  document.getElementById("pedido-activo")?.replaceChildren();
-  document.getElementById("pedidos-carrusel")?.replaceChildren();
+  document.getElementById("pedido-activo")?.classList.add("hidden");
+  document
+    .getElementById("mis-pedidos-carrusel")
+    ?.classList.add("hidden");
   document.getElementById("empty-state")?.classList.remove("hidden");
 }
