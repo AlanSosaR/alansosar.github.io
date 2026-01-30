@@ -1,5 +1,5 @@
 /**
- * recibo.checkout.js — FINAL CORREGIDO
+ * recibo.checkout.js — FINAL DEFINITIVO
  * ---------------------------------------------------------
  * Checkout de pedidos Café Cortero
  */
@@ -18,6 +18,34 @@ const inputFile = $id("inputComprobante");
 const previewBox = $id("previewComprobante");
 const imgPreview = $id("imgComprobante");
 const btnSubirComprobante = $id("btnSubirComprobante");
+
+/* =========================================================
+   SNACKBAR DE CONFIRMACIÓN (SOLO CHECKOUT)
+========================================================= */
+function showConfirmSnack(message, onConfirm, onCancel) {
+  const bar = $id("snackbar");
+  if (!bar) return;
+
+  bar.innerHTML = `
+    <span class="snack-text">${message}</span>
+    <div class="snack-actions">
+      <button class="snack-action secondary">Editar</button>
+      <button class="snack-action primary">Enviar</button>
+    </div>
+  `;
+
+  bar.classList.add("show");
+
+  bar.querySelector(".secondary")?.addEventListener("click", () => {
+    bar.classList.remove("show");
+    onCancel?.();
+  });
+
+  bar.querySelector(".primary")?.addEventListener("click", () => {
+    bar.classList.remove("show");
+    onConfirm?.();
+  });
+}
 
 /* =========================================================
    DATOS CLIENTE
@@ -74,18 +102,13 @@ async function setNumeroPedidoProvisional() {
   const next = (data?.[0]?.order_number || 0) + 1;
 
   $id("numeroPedido").textContent = next;
-  $id("fechaPedido").textContent = new Date().toLocaleDateString("es-ES", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric"
-  });
+  $id("fechaPedido").textContent = new Date().toLocaleDateString("es-ES");
 
   const horaEl = $id("horaPedido");
   if (horaEl) {
     horaEl.textContent = new Date().toLocaleTimeString("es-ES", {
       hour: "2-digit",
-      minute: "2-digit",
-      hour12: true
+      minute: "2-digit"
     });
   }
 }
@@ -108,8 +131,7 @@ if (lista && !IS_READ_ONLY) {
       </div>`;
   });
 
-  const totalEl = $id("totalPedido");
-  if (totalEl) totalEl.textContent = total.toFixed(2);
+  $id("totalPedido").textContent = total.toFixed(2);
 }
 
 /* =========================================================
@@ -121,7 +143,6 @@ function resetMetodoPago() {
   previewBox?.classList.add("hidden");
   imgPreview.src = "";
   btnSubirComprobante?.classList.remove("hidden");
-  inputFile?.classList.remove("hidden");
   btnEnviar.disabled = true;
   inputFile.value = "";
 }
@@ -150,10 +171,8 @@ btnSubirComprobante?.addEventListener("click", e => {
 });
 
 inputFile?.addEventListener("change", () => {
-  if (!inputFile.files.length) return;
-
   const file = inputFile.files[0];
-  if (!file.type.startsWith("image/")) {
+  if (!file || !file.type.startsWith("image/")) {
     showSnack("Solo se permiten imágenes");
     inputFile.value = "";
     return;
@@ -165,7 +184,7 @@ inputFile?.addEventListener("change", () => {
 });
 
 /* =========================================================
-   ENVIAR PEDIDO — FIX DEFINITIVO
+   ENVIAR PEDIDO
 ========================================================= */
 async function enviarPedido() {
   const sb = window.supabaseClient;
@@ -185,13 +204,10 @@ async function enviarPedido() {
   loader?.classList.remove("hidden");
 
   try {
-    // 1️⃣ Número de pedido
-    const { data: orderNumber, error: numError } =
+    const { data: orderNumber } =
       await sb.rpc("next_order_number", { p_user_id: user.id });
-    if (numError) throw numError;
 
-    // 2️⃣ Insertar pedido (SIN select)
-    const { error: insertError } = await sb.from("orders").insert({
+    await sb.from("orders").insert({
       user_id: user.id,
       address_id: selectedAddressId,
       order_number: orderNumber,
@@ -202,39 +218,30 @@ async function enviarPedido() {
           : "cash_on_delivery",
       status: "pending"
     });
-    if (insertError) throw insertError;
 
-    // 3️⃣ Recuperar pedido creado (SEGURO)
-    const { data: order, error: fetchError } = await sb
+    const { data: order } = await sb
       .from("orders")
       .select("id")
       .eq("user_id", user.id)
       .eq("order_number", orderNumber)
       .single();
 
-    if (fetchError || !order) {
-      throw new Error("No se pudo recuperar el pedido");
-    }
-
-    // 4️⃣ Insertar items
     await sb.from("order_items").insert(
       carrito.map(it => ({
         order_id: order.id,
         product_id: it.product_id,
-        quantity: Number(it.qty),
+        quantity: it.qty,
         price: it.price
       }))
     );
 
-    // 5️⃣ Subir comprobante
     if (metodoPago.value === "bank_transfer") {
       const file = inputFile.files[0];
-      const ext = file.name.split(".").pop();
-      const path = `${user.id}/${order.id}.${ext}`;
+      const path = `${user.id}/${order.id}.${file.name.split(".").pop()}`;
 
       await sb.storage
         .from(RECEIPT_BUCKET)
-        .upload(path, file, { upsert: true, contentType: file.type });
+        .upload(path, file, { upsert: true });
 
       const { data: url } = sb.storage
         .from(RECEIPT_BUCKET)
@@ -254,7 +261,7 @@ async function enviarPedido() {
 
   } catch (err) {
     console.error(err);
-    showSnack(err.message || "Error al enviar pedido");
+    showSnack("Error al enviar pedido");
     btnEnviar.disabled = false;
   } finally {
     loader?.classList.add("hidden");
@@ -262,11 +269,14 @@ async function enviarPedido() {
 }
 
 /* =========================================================
-   CONFIRMACIÓN
+   CONFIRMACIÓN (SNACKBAR REAL)
 ========================================================= */
 btnEnviar?.addEventListener("click", e => {
   e.preventDefault();
-  showSnack("¿Confirmas enviar el pedido?", enviarPedido, "Corregir",
+
+  showConfirmSnack(
+    "¿Confirmas enviar el pedido?",
+    enviarPedido,
     () => (btnEnviar.disabled = false)
   );
 });
