@@ -293,10 +293,11 @@ async function cargarDatosCliente() {
     $id("notaCliente").textContent = addr[0].postal_code || "—";
   }
 }
-
 /* =========================================================
-   CARGAR PEDIDO EXISTENTE (MIS PEDIDOS)
+   carga oedido existente
 ========================================================= */
+
+
 async function cargarPedidoExistente(orderId) {
   const sb = window.supabaseClient;
 
@@ -318,17 +319,24 @@ async function cargarPedidoExistente(orderId) {
 
   if (!pedido) return showSnack("Pedido no encontrado");
 
- $id("numeroPedido").textContent =
-  String(pedido.order_number).padStart(3, "0");
+  // Número de pedido
+  $id("numeroPedido").textContent =
+    String(pedido.order_number).padStart(3, "0");
 
+  // Fecha y hora
   const fecha = new Date(pedido.created_at);
   $id("fechaPedido").textContent = fecha.toLocaleDateString("es-HN", {
-    day: "2-digit", month: "short", year: "numeric"
+    day: "2-digit",
+    month: "short",
+    year: "numeric"
   });
   $id("horaPedido").textContent = fecha.toLocaleTimeString("es-HN", {
-    hour: "2-digit", minute: "2-digit", hour12: true
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true
   });
 
+  // Datos del cliente
   if (pedido.users) {
     $id("nombreCliente").textContent = pedido.users.name || "—";
     $id("correoCliente").textContent = pedido.users.email || "—";
@@ -344,6 +352,7 @@ async function cargarPedidoExistente(orderId) {
       pedido.addresses.postal_code || "—";
   }
 
+  // Productos
   const lista = $id("listaProductos");
   lista.innerHTML = "";
 
@@ -355,24 +364,41 @@ async function cargarPedidoExistente(orderId) {
       </div>`;
   });
 
+  // Total
   $id("totalPedido").textContent = pedido.total.toFixed(2);
+
+  // Progreso
   aplicarProgresoPedido(pedido.status, pedido.payment_method);
 
-  if (pedido.payment_method === "bank_transfer") {
+  // ===============================
+  // MÉTODO DE PAGO — SOLO VISUAL
+  // ===============================
+
+  // Limpiar cualquier resto de checkout
+  bloqueDeposito?.classList.add("hidden");
+  previewBox?.classList.add("hidden");
+  imgPreview.src = "";
+  btnSubirComprobante?.classList.add("hidden");
+  inputFile?.classList.add("hidden");
+
+  // Transferencia bancaria → mostrar comprobante (solo visual)
+  if (
+    pedido.payment_method === "bank_transfer" &&
+    pedido.payment_receipts?.length
+  ) {
+    const receipt = pedido.payment_receipts
+      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
+
     bloqueDeposito?.classList.remove("hidden");
+    previewBox.classList.remove("hidden");
+    imgPreview.src = receipt.file_url;
+    imgPreview.style.display = "block";
+  }
 
-    if (pedido.payment_receipts?.length) {
-      const receipt = pedido.payment_receipts.sort(
-        (a, b) => new Date(b.created_at) - new Date(a.created_at)
-      )[0];
-
-      previewBox.classList.remove("hidden");
-      imgPreview.src = receipt.file_url;
-      imgPreview.style.display = "block";
-
-      btnSubirComprobante?.classList.add("hidden");
-      inputFile?.classList.add("hidden");
-    }
+  // Pago al recibir → NO mostrar comprobante ni mensajes de envío
+  if (pedido.payment_method === "cash_on_delivery") {
+    // Solo texto estático ya definido en HTML
+    // “El pago se realizará en efectivo al momento de la entrega.”
   }
 }
 
