@@ -3,7 +3,7 @@
    CLIENTE + ADMIN (MISMO HTML)
 ============================================================ */
 
-console.log("📦 mis-pedidos.js — CLIENTE / ADMIN");
+console.log("📦 mis-pedidos.js — INIT");
 
 /* -----------------------------------------------------------
    STATE
@@ -36,42 +36,63 @@ function formatDateTime(dateStr) {
 }
 
 /* -----------------------------------------------------------
-   ESTADOS (BACKEND → UI)
+   ESTADOS (BACKEND → UI) ✅ NORMALIZADOS
 ----------------------------------------------------------- */
 const STATUS_FLOW = ["pagado", "revision", "confirmado", "envio"];
 
 const STATUS_MAP = {
-  pending_payment: {
+  // 🔥 ESTADO REAL DE TU DB
+  pending: {
     step: 1,
+    key: "pagado",
     label: "Pendiente de pago",
     description:
       "Estamos esperando tu comprobante de pago para continuar con tu pedido.",
   },
+
+  pending_payment: {
+    step: 1,
+    key: "pagado",
+    label: "Pendiente de pago",
+    description:
+      "Estamos esperando tu comprobante de pago para continuar con tu pedido.",
+  },
+
   payment_review: {
     step: 2,
+    key: "revision",
     label: "Pago en revisión",
     description: "Estamos verificando tu comprobante de pago.",
   },
+
   payment_confirmed: {
     step: 3,
+    key: "confirmado",
     label: "Pago confirmado",
     description: "Tu pedido ha sido confirmado y será preparado.",
   },
+
   processing: {
     step: 3,
+    key: "confirmado",
     label: "Pedido confirmado",
     description: "Estamos preparando tu pedido.",
   },
+
   shipped: {
     step: 4,
+    key: "envio",
     label: "Enviado",
     description: "Tu pedido va en camino.",
   },
+
   delivered: {
     step: 4,
+    key: "envio",
     label: "Entregado",
     description: "Tu pedido fue entregado.",
   },
+
   cancelled: {
     cancelled: true,
     label: "Cancelado",
@@ -80,7 +101,7 @@ const STATUS_MAP = {
 };
 
 /* -----------------------------------------------------------
-   INIT (HEADER + DOM SEGUROS)
+   INIT (SEGURO)
 ----------------------------------------------------------- */
 document.addEventListener("header:ready", init);
 
@@ -153,7 +174,7 @@ async function loadPedidosCliente() {
   if (error || !data || data.length === 0) return;
 
   allPedidos = data;
-  pedidoActivo = data[0]; // 🔥 SOLO UNO
+  pedidoActivo = data[0];
 }
 
 /* -----------------------------------------------------------
@@ -165,21 +186,16 @@ function renderCliente() {
 }
 
 /* -----------------------------------------------------------
-   RENDER PEDIDO ACTIVO (TARJETA GRANDE)
+   PEDIDO ACTIVO (TARJETA GRANDE)
 ----------------------------------------------------------- */
 async function renderPedidoActivo(pedido) {
   const container = document.getElementById("pedido-activo");
   const tpl = document.getElementById("pedido-activo-template");
-  if (!container || !tpl) {
-    console.warn("⚠️ Contenedor o template no encontrados");
-    return;
-  }
+  if (!container || !tpl) return;
 
   container.innerHTML = "";
-
   const node = tpl.content.cloneNode(true);
 
-  /* Header */
   node.querySelector(".pedido-numero").textContent =
     `Pedido N.º ${String(pedido.order_number).padStart(3, "0")}`;
 
@@ -192,25 +208,26 @@ async function renderPedidoActivo(pedido) {
 
   /* Productos */
   const pills = node.querySelector(".productos-pills");
-  if (pills) {
-    pills.innerHTML = "";
+  pills.innerHTML = "";
 
-    const sb = getSupabaseClient();
-    const { data: items = [] } = await sb
-      .from("order_items")
-      .select("quantity, product_name")
-      .eq("order_id", pedido.id);
+  const sb = getSupabaseClient();
+  const { data: items = [] } = await sb
+    .from("order_items")
+    .select("quantity, product_name")
+    .eq("order_id", pedido.id);
 
-    items.forEach(i => {
-      const span = document.createElement("span");
-      span.className = "pill";
-      span.textContent = `${i.product_name} × ${i.quantity}`;
-      pills.appendChild(span);
-    });
-  }
+  items.forEach(i => {
+    const span = document.createElement("span");
+    span.className = "pill";
+    span.textContent = `${i.product_name} × ${i.quantity}`;
+    pills.appendChild(span);
+  });
 
   /* Estado */
-  const status = STATUS_MAP[pedido.status] || STATUS_MAP.pending_payment;
+  const status =
+    STATUS_MAP[pedido.status] ??
+    STATUS_MAP.pending ??
+    STATUS_MAP.pending_payment;
 
   node.querySelector(".estado-paso").textContent =
     status.cancelled ? "—" : status.step;
@@ -218,9 +235,9 @@ async function renderPedidoActivo(pedido) {
   node.querySelector(".estado-nombre").textContent = status.label;
   node.querySelector(".estado-descripcion").textContent = status.description;
 
-  const estados = node.querySelectorAll(".estado-item") || [];
+  const estados = node.querySelectorAll(".estado-item");
   estados.forEach(li => {
-    li.classList.remove("hidden", "activo", "completado");
+    li.classList.remove("activo", "completado");
     li.classList.add("hidden");
   });
 
@@ -231,8 +248,7 @@ async function renderPedidoActivo(pedido) {
       const li = node.querySelector(`[data-estado="${key}"]`);
       if (!li) return;
 
-      li.classList.remove("hidden", "activo", "completado");
-
+      li.classList.remove("hidden");
       if (index + 1 < status.step) li.classList.add("completado");
       if (index + 1 === status.step) li.classList.add("activo");
     });
@@ -246,7 +262,7 @@ async function renderPedidoActivo(pedido) {
 }
 
 /* -----------------------------------------------------------
-   RENDER CARRUSEL
+   CARRUSEL
 ----------------------------------------------------------- */
 function renderCarrusel() {
   const wrapper = document.getElementById("pedidos-carrusel");
@@ -267,10 +283,10 @@ function renderCarrusel() {
     node.querySelector(".pedido-mini-status").textContent =
       STATUS_MAP[pedido.status]?.label || "Pendiente";
 
-    node.querySelector(".pedido-mini-card").addEventListener("click", () => {
+    node.querySelector(".pedido-mini-card").onclick = () => {
       pedidoActivo = pedido;
       renderCliente();
-    });
+    };
 
     wrapper.appendChild(node);
   });
