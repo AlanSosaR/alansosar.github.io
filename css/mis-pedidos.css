@@ -320,8 +320,10 @@ body {
 }
 
 /* ============================================================
-   CARRUSEL
+   CARRUSEL — MIS PEDIDOS (BASE ADMIN)
 ============================================================ */
+
+/* Sección */
 .related {
   max-width: 1100px;
   margin: 0 auto 3rem;
@@ -339,36 +341,92 @@ body {
   margin-bottom: 1rem;
 }
 
+/* ------------------------------------------------------------
+   CONTENEDOR
+------------------------------------------------------------ */
 .carousel-container {
   position: relative;
+  width: 100%;
 }
 
-/* Lista */
+/* ------------------------------------------------------------
+   LISTA
+------------------------------------------------------------ */
 .similar-list {
   display: flex;
   gap: 16px;
   padding: 16px;
+
   overflow-x: auto;
+  overflow-y: hidden;
+
   scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+
+  scrollbar-width: none;
 }
 
 .similar-list::-webkit-scrollbar {
   display: none;
 }
 
-/* Card */
+/* ------------------------------------------------------------
+   CARD
+------------------------------------------------------------ */
 .similar-card {
   flex: 0 0 190px;
+  max-width: 190px;
+
   background: #fff;
   border-radius: 18px;
   padding: 1rem;
+
   box-shadow: var(--elev-1);
+
   scroll-snap-align: start;
+
+  cursor: pointer;
+
+  transition:
+    box-shadow .25s ease,
+    transform .25s ease;
 }
 
+/* ------------------------------------------------------------
+   SELECCIONADO (IGUAL ADMIN)
+------------------------------------------------------------ */
 .similar-card.is-selected {
   outline: 2px solid var(--verde);
-  box-shadow: 0 0 0 4px rgba(51,103,59,.18);
+  outline-offset: 0;
+
+  box-shadow:
+    0 0 0 4px rgba(51,103,59,.18),
+    0 14px 30px rgba(51,103,59,.22);
+
+  transform: translateY(-2px);
+}
+
+/* ============================================================
+   MOBILE — 2 TARJETAS VISIBLES
+============================================================ */
+@media (max-width: 600px) {
+
+  .carousel-container {
+    overflow: visible; /* permite sombra */
+  }
+
+  .similar-list {
+    gap: 12px;
+    padding: 12px 16px 20px;
+
+    scroll-padding-left: 16px;
+    scroll-padding-right: 16px;
+  }
+
+  .similar-card {
+    flex: 0 0 48%;
+    max-width: 48%;
+  }
 }
 
 /* Flechas */
