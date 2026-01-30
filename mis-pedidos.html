@@ -28,10 +28,10 @@
 <main class="admin-orders-container fade-in">
 
   <!-- =========================
-       PEDIDO ACTIVO (PREVIEW)
+       PEDIDO ACTIVO (CONTENEDOR LIMPIO)
   ========================== -->
-  <section id="pedido-activo" class="order-main admin-preview hidden">
-    <!-- Renderizado por JS -->
+  <section id="pedido-activo" class="pedido-activo hidden">
+    <!-- JS inyecta AQUÍ la tarjeta -->
   </section>
 
   <!-- =========================
@@ -57,7 +57,7 @@
     <div class="carousel-container with-arrows">
 
       <button
-        class="carousel-prev-circle inside"
+        class="carousel-prev-circle"
         id="pedidos-prev"
         aria-label="Anterior"
       >
@@ -69,7 +69,7 @@
       </div>
 
       <button
-        class="carousel-next-circle inside"
+        class="carousel-next-circle"
         id="pedidos-next"
         aria-label="Siguiente"
       >
@@ -82,13 +82,12 @@
 </main>
 
 <!-- =========================
-     TEMPLATE — PEDIDO ACTIVO
+     TEMPLATE — PEDIDO ACTIVO (ÚNICA TARJETA)
 ========================= -->
 <template id="pedido-activo-template">
-  <section class="order-main admin-preview">
+  <section class="order-main">
 
-    <!-- HEADER -->
-    <header class="order-preview-header stacked-header">
+    <header class="order-preview-header">
       <div class="order-header-text">
         <h2 class="pedido-numero"></h2>
         <span class="pedido-fecha">
@@ -97,24 +96,18 @@
       </div>
     </header>
 
-    <!-- CONTENIDO -->
     <div class="order-layout">
 
-      <!-- COLUMNA TEXTO -->
+      <!-- TEXTO -->
       <div class="order-text">
 
-        <!-- PRODUCTOS -->
-        <div class="order-pills order-summary productos-pills">
-          <!-- JS -->
-        </div>
+        <div class="order-pills productos-pills"></div>
 
-        <!-- TOTAL -->
-        <div class="order-total order-summary">
+        <div class="order-total">
           <span>Total del pedido</span>
           <strong class="pedido-total"></strong>
         </div>
 
-        <!-- ENTREGA -->
         <section class="order-address">
           <h3>Entrega</h3>
           <p class="entrega-text"></p>
@@ -124,7 +117,6 @@
           </p>
         </section>
 
-        <!-- ESTADO -->
         <section class="pedido-estado">
           <h3>Estado del pedido</h3>
 
@@ -134,27 +126,15 @@
           </p>
 
           <ul class="estado-list">
-            <li class="estado-item" data-estado="pagado">
-              <span class="dot">1</span>
-              <span class="label">Pagado</span>
-            </li>
-            <li class="estado-item" data-estado="revision">
-              <span class="dot">2</span>
-              <span class="label">Revisión</span>
-            </li>
-            <li class="estado-item" data-estado="confirmado">
-              <span class="dot">3</span>
-              <span class="label">Confirmado</span>
-            </li>
-            <li class="estado-item" data-estado="envio">
-              <span class="dot">4</span>
-              <span class="label">Envío</span>
-            </li>
+            <li class="estado-item" data-estado="pagado"><span class="dot">1</span><span>Pagado</span></li>
+            <li class="estado-item" data-estado="revision"><span class="dot">2</span><span>Revisión</span></li>
+            <li class="estado-item" data-estado="confirmado"><span class="dot">3</span><span>Confirmado</span></li>
+            <li class="estado-item" data-estado="envio"><span class="dot">4</span><span>Envío</span></li>
           </ul>
 
           <button class="ver-recibo">
-          Ver recibo
-          <span class="material-symbols-outlined">arrow_forward</span>
+            Ver recibo
+            <span class="material-symbols-outlined">arrow_forward</span>
           </button>
 
           <p class="estado-descripcion"></p>
@@ -162,27 +142,18 @@
 
       </div>
 
-      <!-- COLUMNA MEDIA -->
+      <!-- MEDIA -->
       <div class="order-media">
 
         <div class="payment-media receipt hidden">
-          <img
-            class="recibo-img"
-            alt="Recibo de pago"
-            loading="lazy"
-          />
+          <img class="recibo-img" alt="Recibo de pago" />
           <p class="recibo-label"></p>
         </div>
 
         <div class="payment-media placeholder hidden">
-          <img
-            src="imagenes/pago_en_mano.svg"
-            alt="Pago contra entrega"
-          />
+          <img src="imagenes/pago_en_mano.svg" alt="Pago contra entrega" />
           <p>Pago contra entrega</p>
         </div>
-
-        
 
       </div>
 
@@ -195,27 +166,18 @@
 ========================= -->
 <template id="pedido-carrusel-template">
   <article class="similar-card pedido-mini-card">
-
     <div class="order-card-media">
-      <img
-        class="pedido-mini-img"
-        alt="Pago"
-        loading="lazy"
-      />
+      <img class="pedido-mini-img" alt="Pago" />
     </div>
-
     <div class="order-card-info">
       <h4 class="pedido-mini-numero"></h4>
       <p class="pedido-mini-total"></p>
       <span class="pedido-mini-status"></span>
     </div>
-
   </article>
 </template>
 
-<!-- =========================
-     SCRIPTS
-========================= -->
+<!-- SCRIPTS -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/core/supabase-client-core.js"></script>
 <script src="js/core/supabase-auth.js"></script>
