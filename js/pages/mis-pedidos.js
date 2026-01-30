@@ -1,16 +1,15 @@
 /* ============================================================
-   Mis pedidos — Café Cortero 2025
+   Mis pedidos — Café Cortero
    CLIENTE + ADMIN (MISMO HTML)
 ============================================================ */
 
-console.log("📦 mis-pedidos.js — ORQUESTADOR CLIENTE / ADMIN");
+console.log("📦 mis-pedidos.js — CLIENTE / ADMIN");
 
 /* -----------------------------------------------------------
    CONFIG
 ----------------------------------------------------------- */
-const PER_PAGE = 3;
-let currentPage = 1;
 let allPedidos = [];
+let pedidoActivo = null;
 let isAdmin = false;
 
 /* -----------------------------------------------------------
@@ -20,68 +19,69 @@ function getSupabaseClient() {
   return window.supabaseClient || window.supabase || null;
 }
 
-/* -----------------------------------------------------------
-   MAPEO DE STATUS → ETAPAS VISUALES
------------------------------------------------------------ */
-function mapStatusToProgress(status) {
-  switch (status) {
-    case "payment_review":
-      return 1;
-    case "payment_confirmed":
-    case "cash_on_delivery":
-    case "processing":
-      return 2;
-    case "shipped":
-    case "delivered":
-      return 3;
-    default:
-      return 0;
-  }
-}
-
-function formatStatusLabel(status) {
-  const map = {
-    payment_review: "Pago en revisión",
-    payment_confirmed: "Pago confirmado",
-    cash_on_delivery: "Pago contra entrega",
-    processing: "En ejecución",
-    shipped: "Enviado",
-    delivered: "Entregado"
+function formatDateTime(dateStr) {
+  const d = new Date(dateStr);
+  return {
+    fecha: d.toLocaleDateString("es-HN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    }),
+    hora: d.toLocaleTimeString("es-HN", {
+      hour: "2-digit",
+      minute: "2-digit",
+    }),
   };
-  return map[status] || "Pendiente de pago";
 }
 
 /* -----------------------------------------------------------
-   ICONOS MATERIAL 3
+   MAPEO DE ESTADOS (BACKEND → UI)
 ----------------------------------------------------------- */
-const statusIconMap = {
-  payment_review: "fact_check",
-  payment_confirmed: "verified",
-  cash_on_delivery: "payments",
-  processing: "autorenew",
-  shipped: "local_shipping",
-  delivered: "done_all",
-  default: "payments"
+const STATUS_FLOW = ["pagado", "revision", "confirmado", "envio"];
+
+const STATUS_MAP = {
+  pending_payment: {
+    step: 1,
+    key: "pagado",
+    label: "Pendiente de pago",
+    description: "Estamos esperando tu comprobante de pago para continuar con tu pedido.",
+  },
+  payment_review: {
+    step: 2,
+    key: "revision",
+    label: "Pago en revisión",
+    description: "Estamos verificando tu comprobante de pago.",
+  },
+  payment_confirmed: {
+    step: 3,
+    key: "confirmado",
+    label: "Pago confirmado",
+    description: "Tu pedido ha sido confirmado y será preparado.",
+  },
+  processing: {
+    step: 3,
+    key: "confirmado",
+    label: "Pedido confirmado",
+    description: "Estamos preparando tu pedido.",
+  },
+  shipped: {
+    step: 4,
+    key: "envio",
+    label: "Enviado",
+    description: "Tu pedido va en camino.",
+  },
+  delivered: {
+    step: 4,
+    key: "envio",
+    label: "Entregado",
+    description: "Tu pedido fue entregado.",
+  },
+  cancelled: {
+    cancelled: true,
+    label: "Cancelado",
+    description: "Este pedido fue cancelado.",
+  },
 };
-
-/* -----------------------------------------------------------
-   PROGRESO VISUAL
------------------------------------------------------------ */
-function applyProgressColors(container, etapa) {
-  const steps = container.querySelectorAll(".step");
-  const lines = container.querySelectorAll(".line");
-  const clases = ["pago", "revision", "confirmado", "envio"];
-
-  steps.forEach((step, i) => {
-    step.classList.remove(...clases);
-    if (i <= etapa) step.classList.add(clases[i]);
-  });
-
-  lines.forEach((line, i) => {
-    line.classList.remove(...clases);
-    if (i < etapa) line.classList.add(clases[i]);
-  });
-}
 
 /* -----------------------------------------------------------
    INIT
@@ -92,72 +92,55 @@ init();
 async function init() {
   await detectMode();
 
-  // 🛠️ ADMIN → cortar flujo cliente
   if (isAdmin) {
     const admin = await import("../admin/admin_pedidos.js");
     admin.init();
-    return; // ⛔ MUY IMPORTANTE
+    return;
   }
 
-  // 👤 CLIENTE
   await loadPedidosCliente();
   renderCliente();
 }
 
 /* -----------------------------------------------------------
-   DETECTAR MODO (CLIENTE / ADMIN)
+   DETECTAR MODO
 ----------------------------------------------------------- */
 async function detectMode() {
   const sb = getSupabaseClient();
   if (!sb) return;
 
   const params = new URLSearchParams(location.search);
-  const adminParam = params.get("mode") === "admin";
+  if (params.get("mode") !== "admin") return;
 
-  if (!adminParam) {
-    isAdmin = false;
-    return;
-  }
+  const { data: session } = await sb.auth.getSession();
+  if (!session?.session) return;
 
-  const { data: sessionData } = await sb.auth.getSession();
-  if (!sessionData?.session) {
-    isAdmin = false;
-    return;
-  }
-
-  const userId = sessionData.session.user.id;
-
-  // 🔑 EL ROL VIVE EN TU TABLA users
   const { data: user } = await sb
     .from("users")
     .select("rol")
-    .eq("id", userId)
+    .eq("id", session.session.user.id)
     .single();
 
   isAdmin = user?.rol === "admin";
-
-  console.log(isAdmin ? "🛠️ MODO ADMIN" : "👤 MODO CLIENTE");
 }
 
 /* -----------------------------------------------------------
-   CARGAR PEDIDOS (CLIENTE)
+   CARGAR PEDIDOS CLIENTE
 ----------------------------------------------------------- */
 async function loadPedidosCliente() {
   const sb = getSupabaseClient();
   if (!sb) return;
 
-  const { data: sessionData } = await sb.auth.getSession();
-  if (!sessionData?.session) {
+  const { data: session } = await sb.auth.getSession();
+  if (!session?.session) {
     mostrarVacio();
     return;
   }
 
-  const userId = sessionData.session.user.id;
-
   const { data, error } = await sb
     .from("orders")
     .select("*")
-    .eq("user_id", userId)
+    .eq("user_id", session.session.user.id)
     .order("created_at", { ascending: false });
 
   if (error || !data || data.length === 0) {
@@ -166,143 +149,149 @@ async function loadPedidosCliente() {
   }
 
   allPedidos = data;
-  currentPage = 1;
+  pedidoActivo = allPedidos[0]; // 🔥 el más reciente
 }
 
 /* -----------------------------------------------------------
    RENDER CLIENTE
 ----------------------------------------------------------- */
 function renderCliente() {
-  renderPedidosCliente();
-  renderPaginationCliente();
-}
-
-/* -----------------------------------------------------------
-   RENDER PEDIDOS CLIENTE
------------------------------------------------------------ */
-async function renderPedidosCliente() {
-  const lista      = document.getElementById("pedidos-lista");
-  const emptyState = document.getElementById("empty-state");
-  const seguirBack = document.querySelector(".seguir-comprando");
-  const template   = document.getElementById("pedido-template");
-
-  if (!lista || !template) return;
-
-  lista.innerHTML = "";
-
-  if (allPedidos.length === 0) {
+  if (!pedidoActivo) {
     mostrarVacio();
     return;
   }
 
-  emptyState.classList.add("hidden");
-  if (seguirBack) seguirBack.style.display = "flex";
-
-  const start = (currentPage - 1) * PER_PAGE;
-  const end   = start + PER_PAGE;
-  const pagePedidos = allPedidos.slice(start, end);
-
-  const sb = getSupabaseClient();
-
-  for (const pedido of pagePedidos) {
-    const clone = template.content.cloneNode(true);
-
-    /* Número */
-    clone.querySelector(".pedido-numero").textContent =
-      `Pedido N.º ${String(pedido.order_number).padStart(3, "0")}`;
-
-    /* Fecha / Hora */
-    const fecha = new Date(pedido.created_at);
-    const fechas = clone.querySelectorAll(".pedido-fecha-valor");
-
-    fechas[0].textContent = fecha.toLocaleDateString("es-HN", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric"
-    });
-
-    fechas[1].textContent = fecha.toLocaleTimeString("es-HN", {
-      hour: "2-digit",
-      minute: "2-digit"
-    });
-
-    /* Total cafés */
-    const { data: items } = await sb
-      .from("order_items")
-      .select("quantity")
-      .eq("order_id", pedido.id);
-
-    const totalCafes =
-      items?.reduce((sum, i) => sum + i.quantity, 0) || 0;
-
-    clone.querySelector(".pedido-count").textContent =
-      `(${totalCafes} café${totalCafes !== 1 ? "s" : ""})`;
-
-    /* Total */
-    clone.querySelector(".pedido-total-valor").textContent =
-      `L ${Number(pedido.total).toFixed(2)}`;
-
-    /* Estado */
-    clone.querySelector(".estado-text").textContent =
-      formatStatusLabel(pedido.status);
-
-    const etapa = mapStatusToProgress(pedido.status);
-    applyProgressColors(clone, etapa);
-
-    clone.querySelector(".estado-icon").textContent =
-      statusIconMap[pedido.status] || statusIconMap.default;
-
-    /* Ver recibo */
-    clone.querySelector(".ver-recibo").onclick = () => {
-      location.href = `recibo.html?id=${pedido.id}`;
-    };
-
-    lista.appendChild(clone);
-  }
+  renderPedidoActivo(pedidoActivo);
+  renderCarrusel();
 }
 
 /* -----------------------------------------------------------
-   PAGINACIÓN CLIENTE
+   RENDER PEDIDO ACTIVO (TARJETA GRANDE)
 ----------------------------------------------------------- */
-function renderPaginationCliente() {
-  const container = document.getElementById("pagination-container");
-  if (!container) return;
+async function renderPedidoActivo(pedido) {
+  const container = document.getElementById("pedido-activo");
+  const tpl = document.getElementById("pedido-activo-template");
+  if (!container || !tpl) return;
 
-  const totalPages = Math.ceil(allPedidos.length / PER_PAGE);
+  container.innerHTML = "";
+  const node = tpl.content.cloneNode(true);
 
-  if (totalPages <= 1) {
-    container.innerHTML = "";
-    return;
+  /* Número */
+  node.querySelector(".pedido-numero").textContent =
+    `Pedido N.º ${String(pedido.order_number).padStart(3, "0")}`;
+
+  /* Fecha / hora */
+  const { fecha, hora } = formatDateTime(pedido.created_at);
+  node.querySelector(".fecha").textContent = fecha;
+  node.querySelector(".hora").textContent = hora;
+
+  /* Total */
+  node.querySelector(".pedido-total strong").textContent =
+    `L ${Number(pedido.total).toFixed(2)}`;
+
+  /* Productos (píldoras) */
+  const pills = node.querySelector(".productos-pills");
+  pills.innerHTML = "";
+
+  const sb = getSupabaseClient();
+  const { data: items } = await sb
+    .from("order_items")
+    .select("quantity, product_name")
+    .eq("order_id", pedido.id);
+
+  items?.forEach(i => {
+    const span = document.createElement("span");
+    span.className = "pill";
+    span.textContent = `${i.product_name} × ${i.quantity}`;
+    pills.appendChild(span);
+  });
+
+  /* ---------------------------
+     ESTADO VERTICAL
+  --------------------------- */
+  const statusInfo = STATUS_MAP[pedido.status] || STATUS_MAP.pending_payment;
+
+  const pasoEl = node.querySelector(".estado-paso");
+  const nombreEl = node.querySelector(".estado-nombre");
+  const descEl = node.querySelector(".estado-descripcion");
+
+  const itemsEstado = node.querySelectorAll(".estado-item");
+
+  // Reset
+  itemsEstado.forEach(li => {
+    li.classList.remove("activo", "completado");
+    li.classList.add("hidden");
+  });
+
+  if (statusInfo.cancelled) {
+    const cancelado = node.querySelector(".estado-cancelado");
+    cancelado.classList.remove("hidden");
+    nombreEl.textContent = statusInfo.label;
+    pasoEl.textContent = "—";
+    descEl.textContent = statusInfo.description;
+  } else {
+    nombreEl.textContent = statusInfo.label;
+    pasoEl.textContent = statusInfo.step;
+    descEl.textContent = statusInfo.description;
+
+    STATUS_FLOW.forEach((key, index) => {
+      const li = node.querySelector(`[data-estado="${key}"]`);
+      if (!li) return;
+
+      li.classList.remove("hidden");
+
+      if (index + 1 < statusInfo.step) {
+        li.classList.add("completado");
+      } else if (index + 1 === statusInfo.step) {
+        li.classList.add("activo");
+      }
+    });
   }
 
-  container.innerHTML = `
-    <div class="pagination">
-      <button ${currentPage === 1 ? "disabled" : ""} id="prev">◀</button>
-      <span>${currentPage} / ${totalPages}</span>
-      <button ${currentPage === totalPages ? "disabled" : ""} id="next">▶</button>
-    </div>
-  `;
-
-  container.querySelector("#prev").onclick = () => {
-    currentPage--;
-    renderCliente();
+  /* Ver recibo */
+  node.querySelector(".ver-recibo").onclick = () => {
+    location.href = `recibo.html?id=${pedido.id}`;
   };
 
-  container.querySelector("#next").onclick = () => {
-    currentPage++;
-    renderCliente();
-  };
+  container.appendChild(node);
+}
+
+/* -----------------------------------------------------------
+   RENDER CARRUSEL
+----------------------------------------------------------- */
+function renderCarrusel() {
+  const wrapper = document.getElementById("pedidos-carrusel");
+  const tpl = document.getElementById("pedido-carrusel-template");
+  if (!wrapper || !tpl) return;
+
+  wrapper.innerHTML = "";
+
+  allPedidos.slice(1).forEach(pedido => {
+    const node = tpl.content.cloneNode(true);
+
+    node.querySelector(".pedido-mini-numero").textContent =
+      `Pedido N.º ${String(pedido.order_number).padStart(3, "0")}`;
+
+    node.querySelector(".pedido-mini-total").textContent =
+      `L ${Number(pedido.total).toFixed(2)}`;
+
+    node.querySelector(".pedido-mini-status").textContent =
+      STATUS_MAP[pedido.status]?.label || "Pendiente";
+
+    node.querySelector(".pedido-mini-card").onclick = () => {
+      pedidoActivo = pedido;
+      renderCliente();
+    };
+
+    wrapper.appendChild(node);
+  });
 }
 
 /* -----------------------------------------------------------
    EMPTY STATE
 ----------------------------------------------------------- */
 function mostrarVacio() {
-  const lista      = document.getElementById("pedidos-lista");
-  const emptyState = document.getElementById("empty-state");
-  const seguirBack = document.querySelector(".seguir-comprando");
-
-  if (lista) lista.innerHTML = "";
-  emptyState?.classList.remove("hidden");
-  if (seguirBack) seguirBack.style.display = "none";
+  document.getElementById("pedido-activo")?.replaceChildren();
+  document.getElementById("pedidos-carrusel")?.replaceChildren();
+  document.getElementById("empty-state")?.classList.remove("hidden");
 }
