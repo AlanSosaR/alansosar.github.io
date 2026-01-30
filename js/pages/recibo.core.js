@@ -309,6 +309,7 @@ if (
 }
 
 aplicarProgresoPedido(statusVisual, pedido.payment_method);
+} // ✅ CIERRE DE cargarPedidoExistente
 
 /* =========================================================
    EXPONER CORE
