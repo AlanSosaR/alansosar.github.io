@@ -3,7 +3,7 @@
    CLIENTE + ADMIN (MISMO HTML)
 ============================================================ */
 
-console.log("📦 mis-pedidos.js — INIT");
+console.log("📦 mis-pedidos.js — FINAL");
 
 /* -----------------------------------------------------------
    STATE
@@ -156,7 +156,7 @@ async function loadPedidosCliente() {
   if (error || !Array.isArray(data) || data.length === 0) return;
 
   allPedidos = data;
-  pedidoActivo = data[0];
+  pedidoActivo = data[0]; // 🔥 pedido principal
 }
 
 /* -----------------------------------------------------------
@@ -168,7 +168,7 @@ function renderCliente() {
 }
 
 /* -----------------------------------------------------------
-   PEDIDO ACTIVO
+   RENDER PEDIDO ACTIVO (TARJETA GRANDE)
 ----------------------------------------------------------- */
 async function renderPedidoActivo(pedido) {
   const container = document.getElementById("pedido-activo");
@@ -178,6 +178,7 @@ async function renderPedidoActivo(pedido) {
   container.innerHTML = "";
   const node = tpl.content.cloneNode(true);
 
+  /* ---------- HEADER ---------- */
   node.querySelector(".pedido-numero").textContent =
     `Pedido N.º ${String(pedido.order_number).padStart(3, "0")}`;
 
@@ -188,33 +189,41 @@ async function renderPedidoActivo(pedido) {
   node.querySelector(".pedido-total strong").textContent =
     `L ${Number(pedido.total).toFixed(2)}`;
 
-  /* -------- PRODUCTOS (JOIN REAL) -------- */
+  /* ---------- PRODUCTOS (SEGURO) ---------- */
   const pills = node.querySelector(".productos-pills");
   pills.innerHTML = "";
 
   const sb = getSupabaseClient();
-  const { data: items, error } = await sb
+
+  const { data: items } = await sb
     .from("order_items")
-    .select(`
-      quantity,
-      products (
-        name
-      )
-    `)
+    .select("product_id, quantity")
     .eq("order_id", pedido.id);
 
-  if (!error && Array.isArray(items)) {
+  if (Array.isArray(items) && items.length > 0) {
+    const productIds = [...new Set(items.map(i => i.product_id))];
+
+    const { data: products } = await sb
+      .from("products")
+      .select("id, name")
+      .in("id", productIds);
+
+    const productMap = {};
+    (products || []).forEach(p => {
+      productMap[p.id] = p.name;
+    });
+
     items.forEach(i => {
       const span = document.createElement("span");
       span.className = "pill";
-      span.textContent = `${i.products?.name ?? "Producto"} × ${i.quantity}`;
+      span.textContent =
+        `${productMap[i.product_id] || "Producto"} × ${i.quantity}`;
       pills.appendChild(span);
     });
   }
 
-  /* -------- ESTADO -------- */
-  const status =
-    STATUS_MAP[pedido.status] ?? STATUS_MAP.pending;
+  /* ---------- ESTADO ---------- */
+  const status = STATUS_MAP[pedido.status] || STATUS_MAP.pending;
 
   node.querySelector(".estado-paso").textContent =
     status.cancelled ? "—" : status.step;
@@ -232,6 +241,7 @@ async function renderPedidoActivo(pedido) {
     STATUS_FLOW.forEach((key, index) => {
       const li = node.querySelector(`[data-estado="${key}"]`);
       if (!li) return;
+
       li.classList.remove("hidden");
       if (index + 1 < status.step) li.classList.add("completado");
       if (index + 1 === status.step) li.classList.add("activo");
@@ -246,7 +256,7 @@ async function renderPedidoActivo(pedido) {
 }
 
 /* -----------------------------------------------------------
-   CARRUSEL
+   RENDER CARRUSEL (OTROS PEDIDOS)
 ----------------------------------------------------------- */
 function renderCarrusel() {
   const wrapper = document.getElementById("pedidos-carrusel");
