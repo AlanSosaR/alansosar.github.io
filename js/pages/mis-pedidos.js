@@ -147,16 +147,16 @@ async function loadPedidosCliente() {
   const { data: session } = await sb.auth.getSession();
   if (!session?.session) return;
 
-  const { data, error } = await sb
+  const { data } = await sb
     .from("orders")
     .select("*")
     .eq("user_id", session.session.user.id)
     .order("created_at", { ascending: false });
 
-  if (error || !Array.isArray(data) || data.length === 0) return;
+  if (!Array.isArray(data) || data.length === 0) return;
 
   allPedidos = data;
-  pedidoActivo = data[0]; // 🔥 pedido principal
+  pedidoActivo = data[0];
 }
 
 /* -----------------------------------------------------------
@@ -168,7 +168,7 @@ function renderCliente() {
 }
 
 /* -----------------------------------------------------------
-   RENDER PEDIDO ACTIVO (TARJETA GRANDE)
+   RENDER PEDIDO ACTIVO
 ----------------------------------------------------------- */
 async function renderPedidoActivo(pedido) {
   const container = document.getElementById("pedido-activo");
@@ -177,8 +177,8 @@ async function renderPedidoActivo(pedido) {
 
   container.innerHTML = "";
   const node = tpl.content.cloneNode(true);
+  const sb = getSupabaseClient();
 
-  /* ---------- HEADER ---------- */
   node.querySelector(".pedido-numero").textContent =
     `Pedido N.º ${String(pedido.order_number).padStart(3, "0")}`;
 
@@ -189,11 +189,9 @@ async function renderPedidoActivo(pedido) {
   node.querySelector(".pedido-total strong").textContent =
     `L ${Number(pedido.total).toFixed(2)}`;
 
-  /* ---------- PRODUCTOS (SEGURO) ---------- */
+  /* PRODUCTOS */
   const pills = node.querySelector(".productos-pills");
   pills.innerHTML = "";
-
-  const sb = getSupabaseClient();
 
   const { data: items } = await sb
     .from("order_items")
@@ -208,21 +206,18 @@ async function renderPedidoActivo(pedido) {
       .select("id, name")
       .in("id", productIds);
 
-    const productMap = {};
-    (products || []).forEach(p => {
-      productMap[p.id] = p.name;
-    });
+    const map = {};
+    (products || []).forEach(p => (map[p.id] = p.name));
 
     items.forEach(i => {
       const span = document.createElement("span");
       span.className = "pill";
-      span.textContent =
-        `${productMap[i.product_id] || "Producto"} × ${i.quantity}`;
+      span.textContent = `${map[i.product_id] || "Producto"} × ${i.quantity}`;
       pills.appendChild(span);
     });
   }
 
-  /* ---------- ESTADO ---------- */
+  /* ESTADO */
   const status = STATUS_MAP[pedido.status] || STATUS_MAP.pending;
 
   node.querySelector(".estado-paso").textContent =
@@ -241,14 +236,48 @@ async function renderPedidoActivo(pedido) {
     STATUS_FLOW.forEach((key, index) => {
       const li = node.querySelector(`[data-estado="${key}"]`);
       if (!li) return;
-
       li.classList.remove("hidden");
       if (index + 1 < status.step) li.classList.add("completado");
       if (index + 1 === status.step) li.classList.add("activo");
     });
   }
 
-  node.querySelector(".ver-recibo")?.addEventListener("click", () => {
+  /* COMPROBANTE */
+  const img = node.querySelector(".comprobante-img");
+  const label = node.querySelector(".comprobante-label");
+  const btn = node.querySelector(".ver-recibo");
+
+  if (img && label && btn) {
+    if (
+      pedido.payment_method === "cash" ||
+      pedido.payment_method === "cash_on_delivery"
+    ) {
+      img.src = "imagenes/pago_en_mano.svg";
+      img.classList.remove("hidden");
+      label.textContent = "Pago al recibir";
+      btn.classList.add("hidden");
+    } else {
+      const { data: receipt } = await sb
+        .from("payment_receipts")
+        .select("file_url")
+        .eq("order_id", pedido.id)
+        .maybeSingle();
+
+      if (receipt?.file_url) {
+        img.src = receipt.file_url;
+        img.classList.remove("hidden");
+        label.textContent = "Comprobante de pago";
+        btn.classList.remove("hidden");
+      } else {
+        img.src = "imagenes/pago_en_mano.svg";
+        img.classList.remove("hidden");
+        label.textContent = "Pendiente de comprobante";
+        btn.classList.add("hidden");
+      }
+    }
+  }
+
+  btn?.addEventListener("click", () => {
     location.href = `recibo.html?id=${pedido.id}`;
   });
 
@@ -256,7 +285,7 @@ async function renderPedidoActivo(pedido) {
 }
 
 /* -----------------------------------------------------------
-   RENDER CARRUSEL (OTROS PEDIDOS)
+   RENDER CARRUSEL
 ----------------------------------------------------------- */
 function renderCarrusel() {
   const wrapper = document.getElementById("pedidos-carrusel");
