@@ -1,4 +1,4 @@
-console.log("🧾 recibo.core.js — FINAL OK");
+console.log("🧾 recibo.core.js — FINAL DEFINITIVO");
 
 /* =========================================================
    CONSTANTES
@@ -97,7 +97,7 @@ function getUserCache() {
 }
 
 /* =========================================================
-   UI — MODO RECIBO
+   UI — MODO RECIBO (SOLO LECTURA)
 ========================================================= */
 function aplicarModoRecibo() {
   const progreso = $id("pedido-progreso-recibo");
@@ -180,7 +180,7 @@ function aplicarProgresoPedido(status, paymentMethod) {
 }
 
 /* =========================================================
-   CARGAR PEDIDO EXISTENTE (CORREGIDO)
+   CARGAR PEDIDO EXISTENTE — COMPLETO
 ========================================================= */
 async function cargarPedidoExistente(orderId) {
   const sb = window.supabaseClient;
@@ -207,11 +207,65 @@ async function cargarPedidoExistente(orderId) {
     return;
   }
 
-  // Render básico
-  $id("numeroPedido").textContent = pedido.order_number;
+  /* ===============================
+     CABECERA
+  =============================== */
+  $id("numeroPedido").textContent = `Pedido N.º ${pedido.order_number}`;
+
+  const fecha = new Date(pedido.created_at);
+  $id("fechaPedido").textContent = fecha.toLocaleDateString("es-ES", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric"
+  });
+  $id("horaPedido").textContent = fecha.toLocaleTimeString("es-ES", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true
+  });
+
+  /* ===============================
+     CLIENTE
+  =============================== */
+  if (pedido.users) {
+    $id("nombreCliente").textContent = pedido.users.name || "—";
+    $id("correoCliente").textContent = pedido.users.email || "—";
+    $id("telefonoCliente").textContent = pedido.users.phone || "—";
+  }
+
+  if (pedido.addresses) {
+    $id("zonaCliente").textContent =
+      `${pedido.addresses.state}, ${pedido.addresses.city}`;
+    $id("direccionCliente").textContent =
+      pedido.addresses.street || "—";
+    $id("notaCliente").textContent =
+      pedido.addresses.postal_code || "—";
+  }
+
+  /* ===============================
+     PRODUCTOS
+  =============================== */
+  const lista = $id("listaProductos");
+  if (lista) {
+    lista.innerHTML = "";
+    pedido.order_items.forEach(it => {
+      lista.innerHTML += `
+        <div class="cafe-item">
+          <span>${it.products.name} (${it.quantity})</span>
+          <span>L ${(it.quantity * it.price).toFixed(2)}</span>
+        </div>
+      `;
+    });
+  }
+
+  /* ===============================
+     TOTAL
+  =============================== */
   $id("totalPedido").textContent = pedido.total.toFixed(2);
 
-  // 🔑 Estado visual corregido
+  /* ===============================
+     ESTADO VISUAL REAL
+  =============================== */
   let statusVisual = pedido.status;
 
   if (
