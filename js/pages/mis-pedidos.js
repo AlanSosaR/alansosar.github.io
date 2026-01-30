@@ -11,6 +11,7 @@ console.log("📦 mis-pedidos.js — CLIENTE / ADMIN");
 let allPedidos = [];
 let pedidoActivo = null;
 let isAdmin = false;
+let __misPedidosInit = false; // 🔒 guard anti doble init
 
 /* -----------------------------------------------------------
    HELPERS
@@ -35,7 +36,7 @@ function formatDateTime(dateStr) {
 }
 
 /* -----------------------------------------------------------
-   ESTADOS
+   ESTADOS (BACKEND → UI)
 ----------------------------------------------------------- */
 const STATUS_FLOW = ["pagado", "revision", "confirmado", "envio"];
 
@@ -44,7 +45,8 @@ const STATUS_MAP = {
     step: 1,
     key: "pagado",
     label: "Pendiente de pago",
-    description: "Estamos esperando tu comprobante de pago para continuar con tu pedido.",
+    description:
+      "Estamos esperando tu comprobante de pago para continuar con tu pedido.",
   },
   payment_review: {
     step: 2,
@@ -84,11 +86,14 @@ const STATUS_MAP = {
 };
 
 /* -----------------------------------------------------------
-   INIT (UNA SOLA VEZ)
+   INIT (SOLO UNA VEZ)
 ----------------------------------------------------------- */
 document.addEventListener("header:ready", init);
 
 async function init() {
+  if (__misPedidosInit) return; // ⛔ evita doble render
+  __misPedidosInit = true;
+
   await detectMode();
 
   if (isAdmin) {
@@ -102,7 +107,7 @@ async function init() {
 }
 
 /* -----------------------------------------------------------
-   DETECTAR MODO
+   DETECTAR MODO ADMIN
 ----------------------------------------------------------- */
 async function detectMode() {
   const sb = getSupabaseClient();
@@ -124,7 +129,7 @@ async function detectMode() {
 }
 
 /* -----------------------------------------------------------
-   LOAD CLIENTE
+   LOAD PEDIDOS CLIENTE
 ----------------------------------------------------------- */
 async function loadPedidosCliente() {
   const sb = getSupabaseClient();
@@ -148,7 +153,7 @@ async function loadPedidosCliente() {
   }
 
   allPedidos = data;
-  pedidoActivo = data[0];
+  pedidoActivo = data[0]; // 🔥 solo UNO activo
 }
 
 /* -----------------------------------------------------------
@@ -165,14 +170,15 @@ function renderCliente() {
 }
 
 /* -----------------------------------------------------------
-   PEDIDO ACTIVO
+   RENDER PEDIDO ACTIVO (TARJETA GRANDE)
 ----------------------------------------------------------- */
 async function renderPedidoActivo(pedido) {
   const container = document.getElementById("pedido-activo");
   const tpl = document.getElementById("pedido-activo-template");
   if (!container || !tpl) return;
 
-  container.innerHTML = "";
+  container.innerHTML = ""; // 🔥 SIEMPRE una sola tarjeta
+
   const node = tpl.content.cloneNode(true);
 
   node.querySelector(".pedido-numero").textContent =
@@ -209,10 +215,13 @@ async function renderPedidoActivo(pedido) {
     statusInfo.cancelled ? "—" : statusInfo.step;
 
   node.querySelector(".estado-nombre").textContent = statusInfo.label;
-  node.querySelector(".estado-descripcion").textContent = statusInfo.description;
+  node.querySelector(".estado-descripcion").textContent =
+    statusInfo.description;
 
   const estados = node.querySelectorAll(".estado-item");
-  estados.forEach(li => li.classList.add("hidden", "completado", "activo"));
+  estados.forEach(li =>
+    li.classList.add("hidden", "completado", "activo")
+  );
 
   if (statusInfo.cancelled) {
     node.querySelector(".estado-cancelado")?.classList.remove("hidden");
@@ -236,7 +245,7 @@ async function renderPedidoActivo(pedido) {
 }
 
 /* -----------------------------------------------------------
-   CARRUSEL
+   RENDER CARRUSEL
 ----------------------------------------------------------- */
 function renderCarrusel() {
   const wrapper = document.getElementById("pedidos-carrusel");
@@ -267,7 +276,7 @@ function renderCarrusel() {
 }
 
 /* -----------------------------------------------------------
-   EMPTY
+   EMPTY STATE
 ----------------------------------------------------------- */
 function mostrarVacio() {
   document.getElementById("pedido-activo")?.replaceChildren();
