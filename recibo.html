@@ -11,35 +11,6 @@
 
   <link rel="stylesheet" href="css/header.css">
   <link rel="stylesheet" href="css/recibo.css">
-  
-  <style>
-    /* Estilos para la Píldora de Estado y Botón de Cancelar */
-    .status-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 16px;
-      border-radius: 20px;
-      font-weight: 500;
-      font-size: 0.9rem;
-      margin-top: 10px;
-    }
-    .status-pending { background: #fff3e0; color: #ef6c00; }
-    .status-review { background: #e3f2fd; color: #1565c0; }
-    .status-processing { background: #f3e5f5; color: #7b1fa2; }
-    .status-shipped { background: #e8f5e9; color: #2e7d32; }
-    .status-cancelled { background: #ffebee; color: #c62828; }
-    
-    .btn-cancelar {
-      background-color: #f44336 !important;
-      color: white !important;
-    }
-    .btn-cancelar:disabled {
-      background-color: #e0e0e0 !important;
-      color: #9e9e9e !important;
-      cursor: not-allowed;
-    }
-  </style>
 </head>
 
 <body class="page-recibo header-checkout">
@@ -61,20 +32,8 @@
 
         <section id="pedido-progreso-recibo" class="pedido-progreso">
           <p class="progreso-title">Estado del pedido</p>
-          
-          <div id="estado-pildora-container"></div>
-
-          <div class="progreso-wrapper">
-            <div class="progreso-bar">
-              <span class="step pago"></span><span class="line pago"></span>
-              <span class="step revision"></span><span class="line revision"></span>
-              <span class="step confirmado"></span><span class="line confirmado"></span>
-              <span class="step envio"></span>
+          <div id="estado-pildora-container">
             </div>
-            <div class="progreso-labels">
-              <span>Pag.</span><span>Rev.</span><span>Conf.</span><span>Envío</span>
-            </div>
-          </div>
         </section>
 
         <h3>Datos del cliente</h3>
@@ -88,7 +47,8 @@
         </div>
 
         <h3>Selección de cafés</h3>
-        <div id="listaProductos" class="cafes-list"></div>
+        <div id="listaProductos" class="cafes-list">
+          </div>
 
         <p class="recibo-total">
           <span class="material-symbols-outlined total-icon">paid</span>
@@ -108,8 +68,11 @@
           <div id="pago-deposito" class="pago-bloque hidden">
             <p><span class="material-symbols-outlined pago-icon">account_balance</span><strong>Depósito bancario</strong></p>
             <p class="comprobante-info">Banco Atlántida — Cuenta 123456789</p>
-            <button class="comprobante-link" id="btnSubirComprobante"><span class="material-symbols-outlined">upload</span> Subir comprobante</button>
+            <button class="comprobante-link" id="btnSubirComprobante">
+              <span class="material-symbols-outlined">upload</span> Subir comprobante
+            </button>
             <input type="file" id="inputComprobante" accept="image/*" hidden>
+            
             <div id="previewComprobante" class="preview hidden">
               <img id="imgComprobante" alt="Comprobante">
               <p>✔ Comprobante listo</p>
@@ -133,14 +96,15 @@
     </section>
   </main>
 
-  <div id="snackbar" class="snackbar"></div>
+  <div id="snackbar" class="snackbar">
+    <span class="snack-text"></span>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/core/supabase-client-core.js"></script>
 
   <script>
     window.PAGE_MODE = "recibo";
-    // Forzamos que las variables existan para evitar el ReferenceError
     window.ORDER_ID = new URLSearchParams(window.location.search).get("id");
     window.IS_READ_ONLY = Boolean(window.ORDER_ID);
   </script>
@@ -155,14 +119,12 @@
       const text = document.getElementById("btnText");
 
       if (window.IS_READ_ONLY) {
-        // MODO VISTA: Transformar botón en "Cancelar Pedido"
+        // En vista de recibo, transformamos el botón principal en Cancelar
         text.textContent = "Cancelar Pedido";
         btn.classList.add("btn-cancelar");
-        btn.id = "btnCancelarPedido"; // Cambiamos el ID para que lo pesque recibo.view.js
-        
-        // El script recibo.view.js se encargará de ocultarlo si ya no es "pending"
+        btn.id = "btnCancelarPedido";
       } else {
-        // MODO CHECKOUT: Botón enviar normal
+        // En checkout, se mantiene para enviar
         btn.id = "btnEnviar";
         btn.disabled = true;
       }
