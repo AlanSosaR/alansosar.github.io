@@ -1,8 +1,8 @@
 /* ============================================================
-   MIS PEDIDOS — CLIENTE (SCROLL + RENDER SIN FLICKER)
+   MIS PEDIDOS — CLIENTE (SCROLL SUAVE AL BLOQUE + RENDER ESTABLE)
 ============================================================ */
 
-console.log("📦 mis-pedidos.js — Scroll sincronizado + render estable");
+console.log("📦 mis-pedidos.js — Scroll a pedido activo + render estable");
 
 /* -----------------------------------------------------------
    STATE & HELPERS
@@ -31,34 +31,15 @@ function formatDateTime(dateStr) {
 }
 
 /* -----------------------------------------------------------
-   SCROLL SUAVE SINCRONIZADO (CLAVE DEL FIX)
+   SCROLL SUAVE AL PEDIDO ACTIVO (MISMO PATRÓN QUE ADMIN)
 ----------------------------------------------------------- */
-function scrollToTopSmooth() {
-  return new Promise((resolve) => {
-    const startY = window.scrollY;
+function scrollToPedidoActivo() {
+  const section = document.getElementById("pedido-activo");
+  if (!section) return;
 
-    if (startY === 0) {
-      resolve();
-      return;
-    }
-
-    window.scrollTo({ top: 0, behavior: "smooth" });
-
-    let lastY = startY;
-
-    const check = () => {
-      const currentY = window.scrollY;
-
-      if (currentY === 0 || currentY === lastY) {
-        resolve();
-        return;
-      }
-
-      lastY = currentY;
-      requestAnimationFrame(check);
-    };
-
-    requestAnimationFrame(check);
+  section.scrollIntoView({
+    behavior: "smooth",
+    block: "start",
   });
 }
 
@@ -164,7 +145,7 @@ async function renderPedidoActivo(pedido) {
     .eq("order_id", pedido.id);
 
   if (items?.length) {
-    const ids = [...new Set(items.map((i) => i.product_id))];
+    const ids = [...new Set(items.map(i => i.product_id))];
 
     const { data: prods } = await sb()
       .from("products")
@@ -172,9 +153,9 @@ async function renderPedidoActivo(pedido) {
       .in("id", ids);
 
     const map = {};
-    prods?.forEach((p) => (map[p.id] = p.name));
+    prods?.forEach(p => (map[p.id] = p.name));
 
-    items.forEach((i) => {
+    items.forEach(i => {
       const div = document.createElement("div");
       div.className = "pill";
       div.innerHTML = `
@@ -232,7 +213,7 @@ async function renderPedidoActivo(pedido) {
 }
 
 /* -----------------------------------------------------------
-   CARRUSEL (TOTALMENTE SINCRONIZADO)
+   CARRUSEL (SINCRONIZADO Y ESTABLE)
 ----------------------------------------------------------- */
 async function renderCarrusel() {
   const wrapper = document.getElementById("pedidos-carrusel");
@@ -270,18 +251,19 @@ async function renderCarrusel() {
       card.classList.add("is-selected");
     }
 
-    card.onclick = async () => {
+    card.onclick = () => {
       if (pedido.id === pedidoActivo.id) return;
 
       document
         .querySelectorAll(".similar-card")
-        .forEach((c) => c.classList.remove("is-selected"));
+        .forEach(c => c.classList.remove("is-selected"));
       card.classList.add("is-selected");
 
-      await scrollToTopSmooth();
-
       pedidoActivo = pedido;
-      await renderPedidoActivo(pedido);
+      renderPedidoActivo(pedido);
+
+      // 👇 MISMO COMPORTAMIENTO QUE ADMIN
+      scrollToPedidoActivo();
     };
 
     wrapper.appendChild(node);
