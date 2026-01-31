@@ -32,8 +32,7 @@
 
         <section id="pedido-progreso-recibo" class="pedido-progreso">
           <p class="progreso-title">Estado del pedido</p>
-          <div id="estado-pildora-container">
-            </div>
+          <div id="estado-pildora-container"></div>
         </section>
 
         <h3>Datos del cliente</h3>
@@ -47,13 +46,12 @@
         </div>
 
         <h3>Selección de cafés</h3>
-        <div id="listaProductos" class="cafes-list">
-          </div>
+        <div id="listaProductos" class="cafes-list"></div>
 
-        <p class="recibo-total">
-          <span class="material-symbols-outlined total-icon">paid</span>
-          <strong>Total:</strong> L <span id="totalPedido"></span>
-        </p>
+        <div class="recibo-total">
+          <span>Total:</span>
+          <span>L <span id="totalPedido"></span></span>
+        </div>
 
         <div class="pagos">
           <label class="pago-select-label">
@@ -68,6 +66,7 @@
           <div id="pago-deposito" class="pago-bloque hidden">
             <p><span class="material-symbols-outlined pago-icon">account_balance</span><strong>Depósito bancario</strong></p>
             <p class="comprobante-info">Banco Atlántida — Cuenta 123456789</p>
+            
             <button class="comprobante-link" id="btnSubirComprobante">
               <span class="material-symbols-outlined">upload</span> Subir comprobante
             </button>
@@ -119,12 +118,10 @@
       const text = document.getElementById("btnText");
 
       if (window.IS_READ_ONLY) {
-        // En vista de recibo, transformamos el botón principal en Cancelar
         text.textContent = "Cancelar Pedido";
         btn.classList.add("btn-cancelar");
         btn.id = "btnCancelarPedido";
       } else {
-        // En checkout, se mantiene para enviar
         btn.id = "btnEnviar";
         btn.disabled = true;
       }
