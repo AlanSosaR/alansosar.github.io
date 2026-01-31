@@ -1,27 +1,19 @@
 /* ============================================================
    MIS PEDIDOS — MATERIAL 3 EXPRESSIVE (CLIENTE)
+   FIX: Carrusel, Botones y Accesibilidad
 ============================================================ */
 
-/* ============================================================
-   VARIABLES GLOBALES — CAFÉ CORTERO (CORREGIDO)
-============================================================ */
 :root {
   /* 🎨 Colores de marca */
   --verde: #33673B;
   --marron: #512615;
   --blanco: #ffffff;
-
-  /* 🧱 Fondo */
   --fondo: #fafafa;
 
   /* 📐 Layout */
   --header-height: 72px;
 
-  /* ========================================================
-     ALIASES DE COMPATIBILIDAD (NO USAR EN NUEVO CÓDIGO)
-     Sirven solo para que el CSS actual no se rompa
-  ======================================================== */
-
+  /* Aliases */
   --cafe: var(--marron);
   --surface: var(--blanco);
   --surface-variant: #f4f2ef;
@@ -39,11 +31,11 @@
   --r-md: 16px;
 }
 
-/* ================= BASE ================= */
-*,
-*::before,
-*::after {
+/* ================= BASE & RESETS ================= */
+*, *::before, *::after {
   box-sizing: border-box;
+  /* 🚫 ELIMINAR RECUADRO AZUL EN MÓVIL */
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -51,88 +43,55 @@ body {
   background: var(--bg);
   font-family: "Poppins", system-ui, sans-serif;
   color: #2e2a26;
+  overflow-x: hidden; /* Evita scroll horizontal parásito */
 }
 
-.hidden {
-  display: none !important;
-}
+.hidden { display: none !important; }
 
 /* ================= CONTAINER ================= */
 .admin-orders-container {
   max-width: 1100px;
   margin: 0 auto;
-  padding: calc(var(--header-height, 72px) + 16px) 16px 3rem;
+  padding: calc(var(--header-height) + 16px) 16px 3rem;
 }
 
-/* ============================================================
-   TARJETA PRINCIPAL
-============================================================ */
+/* ================= TARJETA PRINCIPAL ================= */
 .order-main {
-  max-width: 1100px;
-  margin: 0 auto 3rem;
   background: var(--surface);
   border-radius: var(--r-xl);
   padding: 2.4rem;
   box-shadow: var(--elev-2);
-  overflow: hidden;
+  margin-bottom: 3rem;
 }
 
-/* ================= HEADER PEDIDO ================= */
 .order-preview-header {
   display: flex;
-  flex-direction: column; /* ⬇️ stack vertical */
+  flex-direction: column;
   align-items: flex-start;
   gap: 1rem;
   margin-bottom: 2rem;
 }
 
-/* ================= BOTÓN VOLVER ================= */
+/* BOTÓN VOLVER */
 .back-to-shop {
   display: inline-flex;
   align-items: center;
   gap: .5rem;
   padding: .45rem .9rem .45rem .5rem;
   border-radius: 999px;
-
   background: #fff;
   border: none;
   box-shadow: var(--elev-1);
-
   cursor: pointer;
   font-size: .85rem;
   font-weight: 500;
   color: var(--verde);
-
-  transition: transform .15s ease, box-shadow .15s ease;
+  transition: transform .15s ease;
 }
 
-.back-to-shop:hover {
-  transform: translateY(-1px);
-  box-shadow: var(--elev-2);
-}
+.back-to-shop:active { transform: scale(0.96); }
 
-/* Icono circular */
-.back-to-shop .material-symbols-outlined {
-  width: 28px;
-  height: 28px;
-  display: grid;
-  place-items: center;
-
-  background: #fff;
-  border-radius: 50%;
-  color: var(--verde);
-
-  box-shadow: 0 2px 6px rgba(0,0,0,.12);
-  font-size: 18px;
-}
-
-/* ================= TEXTO HEADER ================= */
-.order-header-text {
-  display: flex;
-  flex-direction: column;
-  gap: .25rem;
-}
-
+/* TEXTO HEADER */
 .order-header-text h2 {
   margin: 0;
   font-size: 1.6rem;
@@ -140,12 +99,9 @@ body {
   color: var(--verde);
 }
 
-.pedido-fecha {
-  font-size: .85rem;
-  color: var(--cafe);
-}
+.pedido-fecha { font-size: .85rem; color: var(--cafe); }
 
-/* ================= LAYOUT ================= */
+/* LAYOUT COLUMNAS */
 .order-layout {
   display: grid;
   grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
@@ -153,398 +109,165 @@ body {
 }
 
 @media (max-width: 900px) {
-  .order-layout {
-    grid-template-columns: 1fr;
-  }
+  .order-layout { grid-template-columns: 1fr; }
+  .order-main { padding: 1.5rem; }
 }
 
-/* ============================================================
-   COLUMNA TEXTO
-============================================================ */
-.order-text {
-  display: flex;
-  flex-direction: column;
-  gap: 1.6rem;
-}
-
-/* ================= PRODUCTOS ================= */
-.productos-pills {
-  display: flex;
-  flex-direction: column;
-  gap: .75rem;
-}
+/* ================= PRODUCTOS & TOTAL ================= */
+.productos-pills { display: flex; flex-direction: column; gap: .75rem; }
 
 .productos-pills .pill {
   display: grid;
-  grid-template-columns: 1fr 110px;
+  grid-template-columns: 1fr auto;
   align-items: center;
   padding: .85rem 1rem;
   background: #fff;
   border-radius: 20px;
   border: 1px solid rgba(0,0,0,.06);
   font-size: .95rem;
-  color: var(--cafe);
   box-shadow: var(--elev-1);
 }
 
-/* ================= TOTAL DEL PEDIDO ================= */
 .order-total {
   display: grid;
-  grid-template-columns: 1fr 110px; /* EXACTAMENTE igual que pills */
-  align-items: center;
-
-  padding: 1rem 1rem 0; /* 🔑 MISMO padding horizontal que .pill */
+  grid-template-columns: 1fr auto;
+  padding: 1rem 1rem 0;
   margin-top: .5rem;
-
-  border-top: 2px dashed rgba(51,103,59,.45);
-  background: transparent;
+  border-top: 2px dashed rgba(51,103,59,.2);
 }
 
-.order-total span {
-  font-size: .95rem;
-  font-weight: 500;
-  color: var(--cafe);
-}
+.order-total strong { color: var(--verde); font-size: 1.1rem; }
 
-.order-total strong {
-  text-align: right;
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--verde);
-
-  /* opcional pero recomendado para números */
-  font-variant-numeric: tabular-nums;
-}
-
-/* ================= ENTREGA ================= */
-.order-address h3 {
-  margin: 0 0 .4rem;
-  font-size: .95rem;
-  color: var(--cafe);
-}
-
-.order-address p {
-  margin: 0;
-  font-size: .95rem;
-  color: var(--verde);
-}
-
-/* ============================================================
-   ESTADO DEL PEDIDO
-============================================================ */
-.pedido-estado h3 {
-  margin-bottom: .5rem;
-  font-size: 1rem;
-  color: var(--cafe);
-}
-
-.estado-resumen {
-  font-size: .9rem;
-  margin-bottom: .75rem;
-}
-
-.estado-list {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 .75rem;
-}
-
+/* ================= ESTADO DEL PEDIDO ================= */
+.estado-list { list-style: none; padding: 0; margin: 1rem 0; }
 .estado-item {
   display: flex;
   align-items: center;
   gap: .75rem;
-  padding: .35rem 0;
-  font-size: .9rem;
+  padding: .5rem 0;
   color: var(--text-muted);
 }
-
 .estado-item .dot {
-  width: 28px;
-  height: 28px;
+  width: 28px; height: 28px;
   border-radius: 50%;
-  display: grid;
-  place-items: center;
+  display: grid; place-items: center;
   background: var(--surface-variant);
-  font-weight: 600;
+  font-size: .8rem;
 }
+.estado-item.activo { color: var(--verde); font-weight: 600; }
+.estado-item.activo .dot { background: var(--verde); color: #fff; }
+.estado-item.completado .dot { background: var(--cafe); color: #fff; }
 
-.estado-item.activo .dot {
-  background: var(--verde);
-  color: #fff;
-}
-
-.estado-item.completado .dot {
-  background: var(--cafe);
-  color: #fff;
-}
-
-/* Referencia de pago */
-.estado-pago-ref {
-  display: flex;
-  align-items: center;
-  gap: .4rem;
-  font-size: .9rem;
-  color: var(--cafe);
-  margin-bottom: .75rem;
-}
-
-/* ============================================================
-   BOTÓN — VER RECIBO (ICONO + TEXTO + FLECHA)
-   BLINDAJE ANTI CSS GLOBAL
-============================================================ */
-
+/* ================= BOTÓN VER RECIBO (FIXED) ================= */
 .ver-recibo {
-  margin-top: 1rem;
-  align-self: flex-start;
-
-  /* Layout */
+  all: unset; /* Limpiar estilos de botón por defecto */
   display: inline-flex !important;
   align-items: center;
   gap: .6rem;
-
-  /* Box */
-  padding: .5rem .95rem .5rem .7rem;
-  border-radius: 999px;
-
-  /* Visual */
-  background: rgba(51,103,59,.08);
-  border: none !important;
-
-  /* Texto */
-  font-size: .9rem !important;
-  font-weight: 600;
-  font-family: inherit !important;
-  line-height: 1 !important;
+  padding: .6rem 1.2rem;
+  background: rgba(51,103,59,0.1) !important;
   color: var(--verde) !important;
-
-  /* UX */
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: .9rem;
   cursor: pointer;
-
-  /* 🔐 BLINDAJE */
-  appearance: none;
-  -webkit-appearance: none;
-  text-transform: none !important;
-  white-space: nowrap;
-
-  transition:
-    background .2s ease,
-    transform .15s ease;
+  margin-top: 1rem;
+  transition: background .2s ease;
 }
 
-/* 🔐 FORZAR TEXTO E ICONOS */
-.ver-recibo * {
-  display: inline-flex !important;
-  align-items: center;
-  font-size: inherit !important;
-  color: inherit !important;
-}
+.ver-recibo:hover { background: rgba(51,103,59,0.18) !important; }
 
-/* Iconos Material */
-.ver-recibo .material-symbols-outlined {
-  font-size: 20px !important;
-  line-height: 1;
-}
-
-/* Flecha SIEMPRE al final */
-.ver-recibo .material-symbols-outlined:last-child {
-  margin-left: .25rem;
-}
-
-/* Hover (solo desktop real) */
-@media (hover: hover) {
-  .ver-recibo:hover {
-    background: rgba(51,103,59,.14);
-  }
-}
-
-/* Tap */
-.ver-recibo:active {
-  transform: translateY(1px);
-}
-
-/* ============================================================
-   COLUMNA MEDIA — IGUAL ADMIN (FIX DEFINITIVO)
-============================================================ */
-.order-media {
-  background: transparent;
-  padding: 0;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Contenedor visual de la imagen */
-.order-media::before {
-  content: "";
-  display: none;
-}
-
-/* Imagen */
+/* ================= IMAGEN PRINCIPAL ================= */
 .order-media img {
   width: 100%;
   max-width: 420px;
-
-  /* 🔑 CLAVES */
-  aspect-ratio: 4 / 3;     /* MISMO RATIO QUE ADMIN */
-  object-fit: contain;     /* NO deformar SVG */
-  object-position: center;
-
+  aspect-ratio: 4 / 3;
+  object-fit: contain;
   border-radius: var(--r-md);
-  background: transparent;
-
   display: block;
+  margin: 0 auto;
 }
 
-/* ============================================================
-   CARRUSEL — MIS PEDIDOS (BASE ADMIN FINAL)
-============================================================ */
+/* ================= CARRUSEL (CORREGIDO) ================= */
+.related { margin-top: 2rem; }
 
-/* ================= SECCIÓN ================= */
-.related {
-  max-width: 1100px;
-  margin: 0 auto 3rem;
-}
-
-.similar-title {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: var(--verde);
-}
-
-.section-subtitle {
-  font-size: .95rem;
-  color: var(--cafe);
-  margin-bottom: 1rem;
-}
-
-/* ================= CONTENEDOR ================= */
 .carousel-container {
   position: relative;
   width: 100%;
+  /* 🔑 IMPORTANTE: El contenedor no debe cortar la sombra */
+  padding-bottom: 1rem; 
 }
 
-/* ================= LISTA ================= */
 .similar-list {
-  display: flex;
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important; /* 🚫 EVITA QUE SE VAYAN ABAJO */
   gap: 16px;
-  padding: 16px;
-
-  overflow-x: auto;
-  overflow-y: hidden;
-
+  padding: 10px 4px 20px;
+  overflow-x: auto !important; /* 🔑 HABILITA SCROLL */
   scroll-snap-type: x mandatory;
+  scrollbar-width: none; /* Firefox */
   -webkit-overflow-scrolling: touch;
-
-  scrollbar-width: none;
 }
 
-.similar-list::-webkit-scrollbar {
-  display: none;
-}
+.similar-list::-webkit-scrollbar { display: none; } /* Chrome/Safari */
 
-/* ================= CARD ================= */
 .similar-card {
-  flex: 0 0 190px;
-  max-width: 190px;
-
+  flex: 0 0 200px !important; /* 🔑 TAMAÑO FIJO PARA EVITAR ENCOGIMIENTO */
+  min-width: 200px;
   background: var(--surface);
   border-radius: 18px;
   padding: 1rem;
-
   box-shadow: var(--elev-1);
-
   scroll-snap-align: start;
-
   cursor: pointer;
-
-  transition:
-    box-shadow .25s ease,
-    transform .25s ease,
-    outline-color .25s ease;
+  transition: transform .2s ease, box-shadow .2s ease;
+  /* 🚫 ELIMINAR OUTLINE AL HACER CLICK */
+  outline: none !important;
 }
 
-/* ================= SELECCIONADO ================= */
+/* ESTADO SELECCIONADO */
 .similar-card.is-selected {
-  outline: 2px solid var(--verde);
-  outline-offset: 0;
-
-  box-shadow:
-    0 0 0 4px rgba(51,103,59,.18),
-    0 14px 30px rgba(51,103,59,.22);
-
-  transform: translateY(-2px);
-}
-
-/* ================= FLECHAS (DESKTOP) ================= */
-.carousel-prev-circle,
-.carousel-next-circle {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-
-  width: 46px;
-  height: 46px;
-
-  border-radius: 50%;
-  background: var(--surface);
-  border: none;
-
+  border: 2px solid var(--verde);
+  transform: translateY(-4px);
   box-shadow: var(--elev-2);
+}
+
+.pedido-mini-img {
+  width: 100%;
+  height: 100px;
+  object-fit: contain;
+  margin-bottom: .8rem;
+}
+
+.pedido-mini-numero { margin: 0; font-size: .95rem; color: var(--verde); }
+.pedido-mini-total { margin: .2rem 0; font-size: .85rem; font-weight: 600; }
+.pedido-mini-status { font-size: .75rem; color: var(--text-muted); }
+
+/* FLECHAS DESKTOP */
+.carousel-prev-circle, .carousel-next-circle {
+  position: absolute;
+  top: 40%;
+  z-index: 10;
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: #fff;
+  border: none;
+  box-shadow: var(--elev-1);
+  display: grid; place-items: center;
   cursor: pointer;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  z-index: 5;
-}
-
-.carousel-prev-circle {
-  left: 8px;
-}
-
-.carousel-next-circle {
-  right: 8px;
-}
-
-.carousel-prev-circle .material-symbols-outlined,
-.carousel-next-circle .material-symbols-outlined {
-  font-size: 24px;
   color: var(--verde);
 }
 
-/* Ocultables por JS */
-.carousel-prev-circle.is-hidden,
-.carousel-next-circle.is-hidden {
-  display: none;
-}
+.carousel-prev-circle { left: -10px; }
+.carousel-next-circle { right: -10px; }
+.carousel-prev-circle.is-hidden, .carousel-next-circle.is-hidden { display: none; }
 
-/* ============================================================
-   MOBILE — 2 TARJETAS VISIBLES (IGUAL ADMIN)
-============================================================ */
-@media (max-width: 900px) {
-
-  /* Sin flechas en móvil */
-  .carousel-prev-circle,
-  .carousel-next-circle {
-    display: none;
-  }
-
-  .carousel-container {
-    overflow: visible; /* permite sombra */
-  }
-
-  .similar-list {
-    gap: 12px;
-    padding: 12px 16px 20px;
-
-    scroll-padding-left: 16px;
-    scroll-padding-right: 16px;
-  }
-
+/* AJUSTES MÓVIL (2 TARJETAS) */
+@media (max-width: 600px) {
   .similar-card {
-    flex: 0 0 48%;
-    max-width: 48%;
+    flex: 0 0 75% !important; /* Se ven 1.25 tarjetas aprox para invitar al scroll */
+    min-width: 75%;
   }
+  .carousel-prev-circle, .carousel-next-circle { display: none !important; }
 }
