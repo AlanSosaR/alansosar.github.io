@@ -288,17 +288,56 @@ body {
   margin-bottom: .75rem;
 }
 
-/* Botón ver recibo */
+/* ============================================================
+   BOTÓN — VER RECIBO (ICONO + TEXTO + FLECHA)
+============================================================ */
 .ver-recibo {
+  margin-top: 1rem;
   align-self: flex-start;
-  background: transparent;
-  border: none;
-  color: var(--verde);
-  font-weight: 600;
-  cursor: pointer;
+
   display: inline-flex;
   align-items: center;
-  gap: .25rem;
+  gap: .6rem;
+
+  padding: .45rem .85rem .45rem .6rem;
+  border-radius: 999px;
+
+  background: transparent;
+  border: none;
+
+  font-size: .9rem;
+  font-weight: 600;
+  color: var(--verde);
+
+  cursor: pointer;
+
+  transition:
+    background .2s ease,
+    transform .15s ease;
+}
+
+/* Iconos */
+.ver-recibo .material-symbols-outlined {
+  font-size: 20px;
+  line-height: 1;
+  color: var(--verde);
+}
+
+/* Flecha SIEMPRE al final */
+.ver-recibo .material-symbols-outlined:last-child {
+  margin-left: .25rem;
+}
+
+/* Hover */
+@media (hover: hover) {
+  .ver-recibo:hover {
+    background: rgba(51,103,59,.08);
+  }
+}
+
+/* Tap */
+.ver-recibo:active {
+  transform: translateY(1px);
 }
 
 /* ============================================================
