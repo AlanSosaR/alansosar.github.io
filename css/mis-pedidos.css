@@ -341,21 +341,37 @@ body {
 }
 
 /* ============================================================
-   COLUMNA MEDIA — IGUAL ADMIN
+   COLUMNA MEDIA — IGUAL ADMIN (FIX DEFINITIVO)
 ============================================================ */
 .order-media {
-  background: transparent; /* 🔑 sin fondo */
-  padding: 0;              /* 🔑 sin caja */
+  background: transparent;
+  padding: 0;
+
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
+/* Contenedor visual de la imagen */
+.order-media::before {
+  content: "";
+  display: none;
+}
+
+/* Imagen */
 .order-media img {
   width: 100%;
-  max-width: 420px;        /* evita que se vea gigante en desktop */
+  max-width: 420px;
+
+  /* 🔑 CLAVES */
+  aspect-ratio: 4 / 3;     /* MISMO RATIO QUE ADMIN */
+  object-fit: contain;     /* NO deformar SVG */
+  object-position: center;
+
   border-radius: var(--r-md);
-  background: transparent; /* por si el SVG tiene fondo */
+  background: transparent;
+
+  display: block;
 }
 
 /* ============================================================
