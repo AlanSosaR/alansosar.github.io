@@ -1,6 +1,6 @@
 /* ============================================================
-   MIS PEDIDOS — MATERIAL 3 EXPRESSIVE (CLIENTE)
-   FIX: Carrusel, Botones y Accesibilidad
+   MIS PEDIDOS — MATERIAL 3 EXPRESSIVE (CAFÉ CORTERO)
+   REVISIÓN DE COLORES: VERDE (Títulos) & CAFÉ (Textos)
 ============================================================ */
 
 :root {
@@ -34,7 +34,6 @@
 /* ================= BASE & RESETS ================= */
 *, *::before, *::after {
   box-sizing: border-box;
-  /* 🚫 ELIMINAR RECUADRO AZUL EN MÓVIL */
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -43,7 +42,7 @@ body {
   background: var(--bg);
   font-family: "Poppins", system-ui, sans-serif;
   color: #2e2a26;
-  overflow-x: hidden; /* Evita scroll horizontal parásito */
+  overflow-x: hidden;
 }
 
 .hidden { display: none !important; }
@@ -74,13 +73,13 @@ body {
 
 /* BOTÓN VOLVER */
 .back-to-shop {
+  all: unset;
   display: inline-flex;
   align-items: center;
   gap: .5rem;
   padding: .45rem .9rem .45rem .5rem;
   border-radius: 999px;
   background: #fff;
-  border: none;
   box-shadow: var(--elev-1);
   cursor: pointer;
   font-size: .85rem;
@@ -113,7 +112,7 @@ body {
   .order-main { padding: 1.5rem; }
 }
 
-/* ================= PRODUCTOS & TOTAL ================= */
+/* ================= PRODUCTOS & TOTAL (CAMBIOS DE COLOR) ================= */
 .productos-pills { display: flex; flex-direction: column; gap: .75rem; }
 
 .productos-pills .pill {
@@ -126,6 +125,12 @@ body {
   border: 1px solid rgba(0,0,0,.06);
   font-size: .95rem;
   box-shadow: var(--elev-1);
+  color: var(--cafe); /* Texto del producto en Café */
+}
+
+.productos-pills .pill strong {
+  color: var(--verde); /* Precio en Verde */
+  font-weight: 600;
 }
 
 .order-total {
@@ -134,11 +139,43 @@ body {
   padding: 1rem 1rem 0;
   margin-top: .5rem;
   border-top: 2px dashed rgba(51,103,59,.2);
+  color: var(--cafe); /* "Total del pedido" en Café */
 }
 
-.order-total strong { color: var(--verde); font-size: 1.1rem; }
+.order-total strong { 
+  color: var(--verde); /* Monto total en Verde */
+  font-size: 1.1rem; 
+}
 
-/* ================= ESTADO DEL PEDIDO ================= */
+/* ================= SECCIONES (ENTREGA, REFERENCIA, ESTADO) ================= */
+.order-address h3, 
+.pedido-estado h3 {
+  color: var(--verde); /* Títulos en Verde */
+  font-size: 1.1rem;
+  margin-bottom: 0.4rem;
+}
+
+.entrega-text, 
+.referencia-text {
+  color: var(--cafe); /* Textos de abajo en Café */
+  margin: 0 0 1.2rem 0;
+  font-size: 0.95rem;
+}
+
+.estado-resumen {
+  color: var(--cafe); /* Texto general del paso en Café */
+}
+
+.estado-paso {
+  color: var(--verde); /* "Paso 1 de 4" en Verde */
+  font-weight: 600;
+}
+
+.estado-nombre {
+  color: var(--cafe); /* Nombre del estado actual en Café */
+}
+
+/* LISTA DE ESTADOS */
 .estado-list { list-style: none; padding: 0; margin: 1rem 0; }
 .estado-item {
   display: flex;
@@ -158,9 +195,9 @@ body {
 .estado-item.activo .dot { background: var(--verde); color: #fff; }
 .estado-item.completado .dot { background: var(--cafe); color: #fff; }
 
-/* ================= BOTÓN VER RECIBO (FIXED) ================= */
+/* BOTÓN VER RECIBO */
 .ver-recibo {
-  all: unset; /* Limpiar estilos de botón por defecto */
+  all: unset;
   display: inline-flex !important;
   align-items: center;
   gap: .6rem;
@@ -175,45 +212,41 @@ body {
   transition: background .2s ease;
 }
 
-.ver-recibo:hover { background: rgba(51,103,59,0.18) !important; }
+/* ================= CARRUSEL (CAMBIOS DE COLOR) ================= */
+.related { margin-top: 2rem; }
 
-/* ================= IMAGEN PRINCIPAL ================= */
-.order-media img {
-  width: 100%;
-  max-width: 420px;
-  aspect-ratio: 4 / 3;
-  object-fit: contain;
-  border-radius: var(--r-md);
-  display: block;
-  margin: 0 auto;
+.similar-title {
+  color: var(--verde); /* "Mis pedidos" en Verde */
+  margin-bottom: 0.2rem;
 }
 
-/* ================= CARRUSEL (CORREGIDO) ================= */
-.related { margin-top: 2rem; }
+.section-subtitle {
+  color: var(--cafe); /* "Selecciona un pedido..." en Café */
+  margin-top: 0;
+  font-size: 0.9rem;
+}
 
 .carousel-container {
   position: relative;
   width: 100%;
-  /* 🔑 IMPORTANTE: El contenedor no debe cortar la sombra */
   padding-bottom: 1rem; 
 }
 
 .similar-list {
   display: flex !important;
   flex-direction: row !important;
-  flex-wrap: nowrap !important; /* 🚫 EVITA QUE SE VAYAN ABAJO */
+  flex-wrap: nowrap !important;
   gap: 16px;
   padding: 10px 4px 20px;
-  overflow-x: auto !important; /* 🔑 HABILITA SCROLL */
+  overflow-x: auto !important;
   scroll-snap-type: x mandatory;
-  scrollbar-width: none; /* Firefox */
-  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
 }
 
-.similar-list::-webkit-scrollbar { display: none; } /* Chrome/Safari */
+.similar-list::-webkit-scrollbar { display: none; }
 
 .similar-card {
-  flex: 0 0 200px !important; /* 🔑 TAMAÑO FIJO PARA EVITAR ENCOGIMIENTO */
+  flex: 0 0 200px !important;
   min-width: 200px;
   background: var(--surface);
   border-radius: 18px;
@@ -221,12 +254,10 @@ body {
   box-shadow: var(--elev-1);
   scroll-snap-align: start;
   cursor: pointer;
-  transition: transform .2s ease, box-shadow .2s ease;
-  /* 🚫 ELIMINAR OUTLINE AL HACER CLICK */
+  transition: all .2s ease;
   outline: none !important;
 }
 
-/* ESTADO SELECCIONADO */
 .similar-card.is-selected {
   border: 2px solid var(--verde);
   transform: translateY(-4px);
@@ -241,10 +272,10 @@ body {
 }
 
 .pedido-mini-numero { margin: 0; font-size: .95rem; color: var(--verde); }
-.pedido-mini-total { margin: .2rem 0; font-size: .85rem; font-weight: 600; }
+.pedido-mini-total { margin: .2rem 0; font-size: .85rem; font-weight: 600; color: var(--cafe); }
 .pedido-mini-status { font-size: .75rem; color: var(--text-muted); }
 
-/* FLECHAS DESKTOP */
+/* FLECHAS */
 .carousel-prev-circle, .carousel-next-circle {
   position: absolute;
   top: 40%;
@@ -261,13 +292,11 @@ body {
 
 .carousel-prev-circle { left: -10px; }
 .carousel-next-circle { right: -10px; }
-.carousel-prev-circle.is-hidden, .carousel-next-circle.is-hidden { display: none; }
 
-/* AJUSTES MÓVIL (2 TARJETAS) */
+/* AJUSTES MÓVIL */
 @media (max-width: 600px) {
   .similar-card {
-    flex: 0 0 75% !important; /* Se ven 1.25 tarjetas aprox para invitar al scroll */
+    flex: 0 0 75% !important;
     min-width: 75%;
   }
-  .carousel-prev-circle, .carousel-next-circle { display: none !important; }
 }
