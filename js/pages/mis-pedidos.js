@@ -1,8 +1,8 @@
 /* ============================================================
-   📦 mis-pedidos.js — VERSIÓN PRO DINÁMICA
+   📦 mis-pedidos.js — VERSIÓN FINAL DINÁMICA
 ============================================================ */
 
-console.log("🚀 mis-pedidos.js — Cargando Interfaz Pro");
+console.log("🚀 mis-pedidos.js — Sincronizando con información dinámica");
 
 let allPedidos = [];
 let pedidoActivo = null;
@@ -22,13 +22,12 @@ function formatDateTime(dateStr) {
 }
 
 /* -----------------------------------------------------------
-   SCROLL DINÁMICO PRO (Calcula el centro visual)
+   SCROLL DINÁMICO PRO
 ----------------------------------------------------------- */
 function scrollToPedidoActivo() {
   const section = document.getElementById("pedido-activo");
   if (!section) return;
 
-  // Pequeña animación de entrada al contenedor
   section.style.opacity = "0";
   section.style.transform = "translateY(10px)";
   
@@ -40,7 +39,6 @@ function scrollToPedidoActivo() {
     behavior: "smooth"
   });
 
-  // Efecto Fade-in progresivo
   setTimeout(() => {
     section.style.transition = "all 0.5s ease";
     section.style.opacity = "1";
@@ -49,7 +47,7 @@ function scrollToPedidoActivo() {
 }
 
 /* -----------------------------------------------------------
-   LÓGICA DE ESTADOS Y DESCRIPCIONES DINÁMICAS
+   LÓGICA DE ESTADOS Y DESCRIPCIONES (Corregida)
 ----------------------------------------------------------- */
 function getStatusDetails(status, paymentMethod) {
   const isCash = paymentMethod?.includes("cash");
@@ -79,7 +77,7 @@ function getStatusDetails(status, paymentMethod) {
 }
 
 /* -----------------------------------------------------------
-   INIT & LOAD (Con Polling de 30s)
+   INIT & LOAD
 ----------------------------------------------------------- */
 document.addEventListener("header:ready", init);
 
@@ -97,7 +95,6 @@ async function init() {
   document.getElementById("pedido-activo")?.classList.remove("hidden");
   document.getElementById("mis-pedidos-carrusel")?.classList.remove("hidden");
 
-  // Iniciar actualización automática cada 30 segundos
   startAutoRefresh();
 }
 
@@ -113,7 +110,6 @@ async function loadPedidos() {
 
   if (data?.length) {
     allPedidos = data;
-    // Si ya hay un pedido seleccionado, actualizamos su data sin perder la selección
     if (pedidoActivo) {
       pedidoActivo = allPedidos.find(p => p.id === pedidoActivo.id) || allPedidos[0];
     } else {
@@ -125,16 +121,14 @@ async function loadPedidos() {
 function startAutoRefresh() {
   if (autoRefreshInterval) clearInterval(autoRefreshInterval);
   autoRefreshInterval = setInterval(async () => {
-    console.log("🔄 Sincronizando estados...");
     await loadPedidos();
-    // Renderizamos de nuevo el activo para ver cambios de estado sin recargar
     if (pedidoActivo) renderPedidoActivo(pedidoActivo, true);
     renderCarrusel();
-  }, 30000); // 30 segundos
+  }, 30000);
 }
 
 /* -----------------------------------------------------------
-   RENDER PEDIDO ACTIVO
+   RENDER PEDIDO ACTIVO (Integración con HTML dinámico)
 ----------------------------------------------------------- */
 async function renderPedidoActivo(pedido, isAutoRefresh = false) {
   const container = document.getElementById("pedido-activo");
@@ -158,7 +152,7 @@ async function renderPedidoActivo(pedido, isAutoRefresh = false) {
   }
   node.querySelector(".referencia-text").textContent = pedido.order_notes || "Sin referencia adicional";
 
-  // Productos (Pills)
+  // Productos
   const pillsContainer = node.querySelector(".productos-pills");
   const { data: items } = await sb().from("order_items").select("*").eq("order_id", pedido.id);
   
@@ -175,17 +169,24 @@ async function renderPedidoActivo(pedido, isAutoRefresh = false) {
     });
   }
 
-  // Estado Dinámico y Descripción
+  // ESTADO DINÁMICO (Sincronizado con el nuevo HTML)
   node.querySelector(".estado-paso").textContent = statusInfo.step;
   node.querySelector(".estado-nombre").textContent = statusInfo.label;
   
+  // Inyectar el mensaje descriptivo
   const descEl = node.querySelector(".estado-descripcion");
-  if (descEl) descEl.textContent = statusInfo.desc;
+  if (descEl) {
+    descEl.textContent = statusInfo.desc;
+  }
 
+  // Lista visual de los 4 pasos
   const listaPasos = node.querySelectorAll(".estado-item");
   listaPasos.forEach((li, i) => {
     const textSpan = li.querySelector(".step-text");
-    if (textSpan) textSpan.textContent = statusInfo.stepsNames[i];
+    if (textSpan) {
+      // Inyectar nombre dinámico del paso según el método de pago
+      textSpan.textContent = statusInfo.stepsNames[i];
+    }
 
     const currentIdx = i + 1;
     if (currentIdx < statusInfo.step) li.classList.add("completado");
@@ -198,21 +199,19 @@ async function renderPedidoActivo(pedido, isAutoRefresh = false) {
 
   if (pedido.payment_method?.includes("cash")) {
     img.src = "imagenes/pago_en_mano.svg";
-    btnRecibo?.classList.add("hidden");
+    if (btnRecibo) btnRecibo.classList.add("hidden");
   } else {
     const { data: receipt } = await sb().from("payment_receipts").select("file_url").eq("order_id", pedido.id).maybeSingle();
     img.src = receipt?.file_url || "imagenes/recibo_default.svg";
     if (receipt?.file_url && btnRecibo) {
       btnRecibo.classList.remove("hidden");
       btnRecibo.onclick = () => window.location.assign(`recibo.html?id=${pedido.id}`);
-    } else {
-      btnRecibo?.classList.add("hidden");
+    } else if (btnRecibo) {
+      btnRecibo.classList.add("hidden");
     }
   }
 
   container.replaceChildren(node);
-  
-  // Solo hace scroll si es una interacción del usuario, no si es actualización automática
   if (!isAutoRefresh) scrollToPedidoActivo();
 }
 
