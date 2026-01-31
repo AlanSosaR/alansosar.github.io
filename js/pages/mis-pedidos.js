@@ -1,8 +1,8 @@
 /* ============================================================
-   MIS PEDIDOS — CLIENTE (SCROLL SUAVE AL BLOQUE + RENDER ESTABLE)
+   MIS PEDIDOS — CLIENTE (FINAL ESTABLE MOBILE + DESKTOP)
 ============================================================ */
 
-console.log("📦 mis-pedidos.js — Scroll a pedido activo + render estable");
+console.log("📦 mis-pedidos.js — FINAL ESTABLE");
 
 /* -----------------------------------------------------------
    STATE & HELPERS
@@ -31,15 +31,17 @@ function formatDateTime(dateStr) {
 }
 
 /* -----------------------------------------------------------
-   SCROLL SUAVE AL PEDIDO ACTIVO (MISMO PATRÓN QUE ADMIN)
+   SCROLL SUAVE (ROBUSTO PARA MOBILE)
 ----------------------------------------------------------- */
 function scrollToPedidoActivo() {
   const section = document.getElementById("pedido-activo");
   if (!section) return;
 
-  section.scrollIntoView({
+  const top = section.getBoundingClientRect().top + window.scrollY - 12;
+
+  window.scrollTo({
+    top,
     behavior: "smooth",
-    block: "start",
   });
 }
 
@@ -55,7 +57,7 @@ const STATUS_MAP = {
 };
 
 /* -----------------------------------------------------------
-   INIT & LOAD
+   INIT
 ----------------------------------------------------------- */
 document.addEventListener("header:ready", init);
 
@@ -75,11 +77,12 @@ async function init() {
   bindCarruselArrows();
 
   document.getElementById("pedido-activo")?.classList.remove("hidden");
-  document
-    .getElementById("mis-pedidos-carrusel")
-    ?.classList.remove("hidden");
+  document.getElementById("mis-pedidos-carrusel")?.classList.remove("hidden");
 }
 
+/* -----------------------------------------------------------
+   LOAD
+----------------------------------------------------------- */
 async function loadPedidos() {
   const { data: session } = await sb().auth.getSession();
   if (!session?.session) return;
@@ -97,15 +100,14 @@ async function loadPedidos() {
 }
 
 /* -----------------------------------------------------------
-   RENDER PEDIDO ACTIVO
+   RENDER PEDIDO ACTIVO (NO DESTRUYE DOM)
 ----------------------------------------------------------- */
 async function renderPedidoActivo(pedido) {
   const container = document.getElementById("pedido-activo");
   const tpl = document.getElementById("pedido-activo-template");
   if (!container || !tpl) return;
 
-  container.style.opacity = "0.5";
-  container.innerHTML = "";
+  container.style.opacity = "0.85";
 
   const node = tpl.content.cloneNode(true);
 
@@ -120,9 +122,6 @@ async function renderPedidoActivo(pedido) {
     `L ${Number(pedido.total).toFixed(2)}`;
 
   /* Dirección */
-  const entregaEl = node.querySelector(".entrega-text");
-  const referenciaEl = node.querySelector(".referencia-text");
-
   if (pedido.address_id) {
     const { data: addr } = await sb()
       .from("addresses")
@@ -131,8 +130,9 @@ async function renderPedidoActivo(pedido) {
       .maybeSingle();
 
     if (addr) {
-      entregaEl.textContent = `${addr.street}, ${addr.city}`;
-      referenciaEl.textContent =
+      node.querySelector(".entrega-text").textContent =
+        `${addr.street}, ${addr.city}`;
+      node.querySelector(".referencia-text").textContent =
         addr.postal_code || "Sin referencia";
     }
   }
@@ -146,7 +146,6 @@ async function renderPedidoActivo(pedido) {
 
   if (items?.length) {
     const ids = [...new Set(items.map(i => i.product_id))];
-
     const { data: prods } = await sb()
       .from("products")
       .select("id, name")
@@ -166,7 +165,7 @@ async function renderPedidoActivo(pedido) {
     });
   }
 
-  /* Estados */
+  /* Estado */
   const status = STATUS_MAP[pedido.status] || STATUS_MAP.pending;
   node.querySelector(".estado-paso").textContent = status.step;
   node.querySelector(".estado-nombre").textContent = status.label;
@@ -176,7 +175,7 @@ async function renderPedidoActivo(pedido) {
     if (i + 1 === status.step) li.classList.add("activo");
   });
 
-  /* Imagen + Recibo */
+  /* Imagen + botón recibo */
   const img = node.querySelector(".recibo-img");
   const btn = node.querySelector(".ver-recibo");
 
@@ -194,26 +193,28 @@ async function renderPedidoActivo(pedido) {
 
     if (receipt?.file_url && btn) {
       btn.classList.remove("hidden");
-      btn.innerHTML = `
-        <span class="material-symbols-outlined">receipt_long</span>
-        <span>Ver recibo</span>
-        <span class="material-symbols-outlined">arrow_forward</span>
-      `;
-      btn.onclick = (e) => {
+      btn.type = "button";
+
+      btn.addEventListener("click", (e) => {
         e.preventDefault();
-        window.location.href = `recibo.html?id=${pedido.id}`;
-      };
+        e.stopPropagation();
+        window.location.assign(`recibo.html?id=${pedido.id}`);
+      });
     } else {
       btn?.classList.add("hidden");
     }
   }
 
-  container.appendChild(node);
-  requestAnimationFrame(() => (container.style.opacity = "1"));
+  container.replaceChildren(node);
+
+  requestAnimationFrame(() => {
+    container.style.opacity = "1";
+    scrollToPedidoActivo();
+  });
 }
 
 /* -----------------------------------------------------------
-   CARRUSEL (SINCRONIZADO Y ESTABLE)
+   CARRUSEL
 ----------------------------------------------------------- */
 async function renderCarrusel() {
   const wrapper = document.getElementById("pedidos-carrusel");
@@ -254,16 +255,13 @@ async function renderCarrusel() {
     card.onclick = () => {
       if (pedido.id === pedidoActivo.id) return;
 
-      document
-        .querySelectorAll(".similar-card")
+      document.querySelectorAll(".similar-card")
         .forEach(c => c.classList.remove("is-selected"));
+
       card.classList.add("is-selected");
 
       pedidoActivo = pedido;
       renderPedidoActivo(pedido);
-
-      // 👇 MISMO COMPORTAMIENTO QUE ADMIN
-      scrollToPedidoActivo();
     };
 
     wrapper.appendChild(node);
@@ -279,30 +277,26 @@ function bindCarruselArrows() {
   const next = document.getElementById("pedidos-next");
   if (!list || !prev || !next) return;
 
-  prev.onclick = () =>
-    list.scrollBy({ left: -300, behavior: "smooth" });
-  next.onclick = () =>
-    list.scrollBy({ left: 300, behavior: "smooth" });
+  prev.onclick = () => list.scrollBy({ left: -300, behavior: "smooth" });
+  next.onclick = () => list.scrollBy({ left: 300, behavior: "smooth" });
 
-  const toggleArrows = () => {
-    prev.style.display = list.scrollLeft <= 10 ? "none" : "flex";
+  const toggle = () => {
+    prev.style.display = list.scrollLeft > 10 ? "flex" : "none";
     next.style.display =
-      list.scrollLeft + list.clientWidth >= list.scrollWidth - 10
-        ? "none"
-        : "flex";
+      list.scrollLeft + list.clientWidth < list.scrollWidth - 10
+        ? "flex"
+        : "none";
   };
 
-  list.addEventListener("scroll", toggleArrows);
-  setTimeout(toggleArrows, 300);
+  list.addEventListener("scroll", toggle);
+  setTimeout(toggle, 300);
 }
 
 /* -----------------------------------------------------------
-   EMPTY STATE
+   EMPTY
 ----------------------------------------------------------- */
 function mostrarVacio() {
   document.getElementById("pedido-activo")?.classList.add("hidden");
-  document
-    .getElementById("mis-pedidos-carrusel")
-    ?.classList.add("hidden");
+  document.getElementById("mis-pedidos-carrusel")?.classList.add("hidden");
   document.getElementById("empty-state")?.classList.remove("hidden");
 }
