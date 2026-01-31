@@ -47,7 +47,7 @@ function scrollToPedidoActivo() {
 }
 
 /* -----------------------------------------------------------
-   LÓGICA DE ESTADOS Y DESCRIPCIONES (Corregida)
+   LÓGICA DE ESTADOS Y DESCRIPCIONES
 ----------------------------------------------------------- */
 function getStatusDetails(status, paymentMethod) {
   const isCash = paymentMethod?.includes("cash");
@@ -128,7 +128,7 @@ function startAutoRefresh() {
 }
 
 /* -----------------------------------------------------------
-   RENDER PEDIDO ACTIVO (Integración con HTML dinámico)
+   RENDER PEDIDO ACTIVO
 ----------------------------------------------------------- */
 async function renderPedidoActivo(pedido, isAutoRefresh = false) {
   const container = document.getElementById("pedido-activo");
@@ -138,21 +138,18 @@ async function renderPedidoActivo(pedido, isAutoRefresh = false) {
   const node = tpl.content.cloneNode(true);
   const statusInfo = getStatusDetails(pedido.status, pedido.payment_method);
 
-  // Header e IDs
   node.querySelector(".pedido-numero").textContent = `Pedido N.º ${String(pedido.order_number).padStart(3, "0")}`;
   const { fecha, hora } = formatDateTime(pedido.created_at);
   node.querySelector(".fecha").textContent = fecha;
   node.querySelector(".hora").textContent = hora;
   node.querySelector(".pedido-total").textContent = `L ${Number(pedido.total).toFixed(2)}`;
 
-  // Dirección y Referencia (Historical Data)
   if (pedido.address_id) {
     const { data: addr } = await sb().from("addresses").select("street, city").eq("id", pedido.address_id).maybeSingle();
     if (addr) node.querySelector(".entrega-text").textContent = `${addr.street}, ${addr.city}`;
   }
   node.querySelector(".referencia-text").textContent = pedido.order_notes || "Sin referencia adicional";
 
-  // Productos
   const pillsContainer = node.querySelector(".productos-pills");
   const { data: items } = await sb().from("order_items").select("*").eq("order_id", pedido.id);
   
@@ -169,45 +166,38 @@ async function renderPedidoActivo(pedido, isAutoRefresh = false) {
     });
   }
 
-  // ESTADO DINÁMICO (Sincronizado con el nuevo HTML)
   node.querySelector(".estado-paso").textContent = statusInfo.step;
   node.querySelector(".estado-nombre").textContent = statusInfo.label;
   
-  // Inyectar el mensaje descriptivo
   const descEl = node.querySelector(".estado-descripcion");
-  if (descEl) {
-    descEl.textContent = statusInfo.desc;
-  }
+  if (descEl) descEl.textContent = statusInfo.desc;
 
-  // Lista visual de los 4 pasos
   const listaPasos = node.querySelectorAll(".estado-item");
   listaPasos.forEach((li, i) => {
     const textSpan = li.querySelector(".step-text");
-    if (textSpan) {
-      // Inyectar nombre dinámico del paso según el método de pago
-      textSpan.textContent = statusInfo.stepsNames[i];
-    }
+    if (textSpan) textSpan.textContent = statusInfo.stepsNames[i];
 
     const currentIdx = i + 1;
     if (currentIdx < statusInfo.step) li.classList.add("completado");
     if (currentIdx === statusInfo.step) li.classList.add("activo");
   });
 
-  // Media (Recibo o Icono)
   const img = node.querySelector(".recibo-img");
   const btnRecibo = node.querySelector(".ver-recibo");
 
+  // AJUSTE: Mostrar siempre el botón de recibo para ver detalles
   if (pedido.payment_method?.includes("cash")) {
     img.src = "imagenes/pago_en_mano.svg";
-    if (btnRecibo) btnRecibo.classList.add("hidden");
+    if (btnRecibo) {
+      btnRecibo.classList.remove("hidden");
+      btnRecibo.onclick = () => window.location.assign(`recibo.html?id=${pedido.id}`);
+    }
   } else {
     const { data: receipt } = await sb().from("payment_receipts").select("file_url").eq("order_id", pedido.id).maybeSingle();
     img.src = receipt?.file_url || "imagenes/recibo_default.svg";
-    if (receipt?.file_url && btnRecibo) {
+    if (btnRecibo) {
       btnRecibo.classList.remove("hidden");
       btnRecibo.onclick = () => window.location.assign(`recibo.html?id=${pedido.id}`);
-    } else if (btnRecibo) {
-      btnRecibo.classList.add("hidden");
     }
   }
 
