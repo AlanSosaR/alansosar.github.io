@@ -1,8 +1,8 @@
 /* ============================================================
-   MIS PEDIDOS — CLIENTE (CON SCROLL SINCRONIZADO)
+   MIS PEDIDOS — CLIENTE (FIX: REDIRECCIÓN RECIBO)
 ============================================================ */
 
-console.log("📦 mis-pedidos.js — Sincronización de Scroll Activa");
+console.log("📦 mis-pedidos.js — Sincronización y Enlaces Blindados");
 
 /* -----------------------------------------------------------
    STATE & HELPERS
@@ -77,40 +77,38 @@ async function renderPedidoActivo(pedido) {
   const tpl = document.getElementById("pedido-activo-template");
   if (!container || !tpl) return;
 
-  // Pequeño efecto de fade out antes de cambiar
   container.style.opacity = "0.5";
-  
   container.innerHTML = "";
   const node = tpl.content.cloneNode(true);
 
-  // Datos Básicos
+  // HEADER Y DATOS
   node.querySelector(".pedido-numero").textContent = `Pedido N.º ${String(pedido.order_number).padStart(3, "0")}`;
   const { fecha, hora } = formatDateTime(pedido.created_at);
   node.querySelector(".fecha").textContent = fecha;
   node.querySelector(".hora").textContent = hora;
   node.querySelector(".pedido-total").textContent = `L ${Number(pedido.total).toFixed(2)}`;
 
-  // Dirección / Referencia
+  // DIRECCIÓN / REFERENCIA
   const entregaEl = node.querySelector(".entrega-text");
   const referenciaEl = node.querySelector(".referencia-text");
 
   if (pedido.address_id) {
-    const { data: address } = await sb().from("addresses").select("*").eq("id", pedido.address_id).maybeSingle();
-    if (address) {
-      entregaEl.textContent = `${address.street}, ${address.city}`;
-      referenciaEl.textContent = address.postal_code || "Sin referencia";
+    const { data: addr } = await sb().from("addresses").select("*").eq("id", pedido.address_id).maybeSingle();
+    if (addr) {
+      entregaEl.textContent = `${addr.street}, ${addr.city}`;
+      referenciaEl.textContent = addr.postal_code || "Sin referencia";
     }
   }
 
-  // Productos (Pills)
+  // PRODUCTOS (PILLS)
   const pills = node.querySelector(".productos-pills");
   const { data: items } = await sb().from("order_items").select("*").eq("order_id", pedido.id);
 
   if (items?.length) {
     const ids = [...new Set(items.map(i => i.product_id))];
-    const { data: products } = await sb().from("products").select("id, name").in("id", ids);
+    const { data: prods } = await sb().from("products").select("id, name").in("id", ids);
     const map = {};
-    products?.forEach(p => map[p.id] = p.name);
+    prods?.forEach(p => map[p.id] = p.name);
 
     items.forEach(i => {
       const div = document.createElement("div");
@@ -120,41 +118,50 @@ async function renderPedidoActivo(pedido) {
     });
   }
 
-  // Estados
+  // ESTADOS
   const status = STATUS_MAP[pedido.status] || STATUS_MAP.pending;
   node.querySelector(".estado-paso").textContent = status.step;
   node.querySelector(".estado-nombre").textContent = status.label;
-
   node.querySelectorAll(".estado-item").forEach((li, i) => {
     if (i + 1 < status.step) li.classList.add("completado");
     if (i + 1 === status.step) li.classList.add("activo");
   });
 
-  // Imagen y Botón
+  // IMAGEN Y BOTÓN VER RECIBO (FIXED)
   const img = node.querySelector(".recibo-img");
   const btn = node.querySelector(".ver-recibo");
   
   if (pedido.payment_method?.includes("cash")) {
     img.src = "imagenes/pago_en_mano.svg";
-    btn.classList.add("hidden");
+    if (btn) btn.classList.add("hidden");
   } else {
     const { data: receipt } = await sb().from("payment_receipts").select("file_url").eq("order_id", pedido.id).maybeSingle();
     img.src = receipt?.file_url || "imagenes/recibo_default.svg";
-    if (receipt?.file_url) {
+    
+    if (receipt?.file_url && btn) {
       btn.classList.remove("hidden");
-      btn.onclick = () => location.href = `recibo.html?id=${pedido.id}`;
-    } else {
+      // Forzamos el contenido interno para el CSS de píldora
+      btn.innerHTML = `
+        <span class="material-symbols-outlined">receipt_long</span>
+        <span>Ver recibo</span>
+        <span class="material-symbols-outlined">arrow_forward</span>
+      `;
+      // Asignación limpia del evento
+      btn.onclick = (e) => {
+        e.preventDefault();
+        window.location.href = `recibo.html?id=${pedido.id}`;
+      };
+    } else if (btn) {
       btn.classList.add("hidden");
     }
   }
 
   container.appendChild(node);
-  // Fade in suave
   setTimeout(() => container.style.opacity = "1", 50);
 }
 
 /* -----------------------------------------------------------
-   CARRUSEL (Lógica Sincronizada)
+   CARRUSEL (Sincronizado)
 ----------------------------------------------------------- */
 async function renderCarrusel() {
   const wrapper = document.getElementById("pedidos-carrusel");
@@ -182,17 +189,12 @@ async function renderCarrusel() {
     if (pedido.id === pedidoActivo.id) card.classList.add("is-selected");
 
     card.onclick = () => {
-      if (pedido.id === pedidoActivo.id) return; // Ya está seleccionado
-
-      // 1. Feedback visual inmediato en el carrusel
+      if (pedido.id === pedidoActivo.id) return;
       document.querySelectorAll(".similar-card").forEach(c => c.classList.remove("is-selected"));
       card.classList.add("is-selected");
 
-      // 2. Scroll suave sincronizado
       window.scrollTo({ top: 0, behavior: 'smooth' });
 
-      // 3. Esperar un breve momento (150ms) para que el scroll empiece
-      // y la transición de datos no se sienta brusca
       setTimeout(() => {
         pedidoActivo = pedido;
         renderPedidoActivo(pedido);
@@ -204,7 +206,7 @@ async function renderCarrusel() {
 }
 
 /* -----------------------------------------------------------
-   FLECHAS & EMPTY STATE
+   FLECHAS Y AUXILIARES
 ----------------------------------------------------------- */
 function bindCarruselArrows() {
   const list = document.getElementById("pedidos-carrusel");
