@@ -2,27 +2,23 @@
  * 🧾 recibo.core.js — FINAL DEFINITIVO SINCRONIZADO
  * ---------------------------------------------------------
  * Proyecto: Café Cortero — Material 3 Expressive
- * Gestión de estados, carga de datos y UI de recibos.
  */
 
-console.log("🧾 recibo.core.js — Sincronizado");
+console.log("🧾 recibo.core.js — Optimizado");
 
 /* =========================================================
    1. SELECTORES Y CONTEXTO GLOBAL
 ========================================================= */
 const $id = (id) => document.getElementById(id);
 
-// Exponer contexto de solo lectura basado en la URL
+// Exponer contexto
 window.ORDER_ID = new URLSearchParams(window.location.search).get("id");
 window.IS_READ_ONLY = Boolean(window.ORDER_ID);
 
 /* =========================================================
-   2. NÚCLEO DE DATOS Y SESIÓN (Core Helpers)
+   2. NÚCLEO DE DATOS Y SESIÓN
 ========================================================= */
 
-/**
- * Promesa que resuelve cuando el cliente Supabase está inyectado 
- */
 window.esperarSupabase = () => {
   return new Promise((resolve) => {
     if (window.supabaseClient) return resolve();
@@ -35,16 +31,10 @@ window.esperarSupabase = () => {
   });
 };
 
-/**
- * Recupera el usuario desde el caché local con fallback de seguridad
- */
 window.getUserCache = () => {
   try {
-    // Intento 1: LocalStorage directo del proyecto
     const user = localStorage.getItem("cortero_user");
     if (user) return JSON.parse(user);
-    
-    // Intento 2: Persistencia nativa de Supabase Auth
     const sbKey = Object.keys(localStorage).find(k => k.includes("-auth-token"));
     if (sbKey) {
       const session = JSON.parse(localStorage.getItem(sbKey));
@@ -52,37 +42,31 @@ window.getUserCache = () => {
     }
     return null;
   } catch (err) {
-    console.error("Error al recuperar usuario:", err);
     return null;
   }
 };
 
-/**
- * Feedback visual estilo Material 3
- */
 window.showSnack = (msg, duration = 4000) => {
   const bar = $id("snackbar");
   if (!bar) return;
-
   const textEl = bar.querySelector(".snack-text") || bar;
   textEl.textContent = msg;
-  
   bar.classList.add("show");
   setTimeout(() => bar.classList.remove("show"), duration);
 };
 
 /* =========================================================
-   3. GESTIÓN DE INTERFAZ (UI Expressive)
+   3. GESTIÓN DE INTERFAZ (Solo Píldora)
 ========================================================= */
 
-/**
- * Ajusta la interfaz para modo recibo (Solo Lectura)
- */
 window.aplicarModoRecibo = () => {
-  // Ocultar elementos de selección de pago (CheckOut)
+  // Configurar flecha atrás para ir a Mis Pedidos
+  const btnBack = $id("btn-back");
+  if (btnBack) {
+    btnBack.onclick = () => window.location.href = "mis-pedidos.html";
+  }
+
   document.querySelector(".pago-select-label")?.classList.add("hidden");
-  
-  // Filtrar botones: ocultamos el de "Pagar/Enviar" pero no el de "Cancelar"
   const botones = document.querySelectorAll(".btn-primary");
   botones.forEach(btn => {
     if (!btn.id.includes("Cancelar") && !btn.classList.contains("btn-cancelar")) {
@@ -92,55 +76,38 @@ window.aplicarModoRecibo = () => {
 };
 
 /**
- * Actualiza la Píldora de estado y la barra de progreso
+ * Solo actualiza la Píldora (Barra de progreso eliminada)
  */
 window.aplicarProgresoPedido = (status) => {
   const pillContainer = $id("estado-pildora-container");
-  const stepper = document.querySelector(".progreso-bar");
   if (!pillContainer) return;
 
   const config = {
-    pending: { label: "Pendiente", class: "status-pending", icon: "payments", step: 1 },
-    payment_review: { label: "Revisando Pago", class: "status-review", icon: "fact_check", step: 1 },
-    processing: { label: "En Preparación", class: "status-processing", icon: "coffee", step: 2 },
-    shipped: { label: "En Camino", class: "status-shipped", icon: "local_shipping", step: 3 },
-    delivered: { label: "Entregado", class: "status-delivered", icon: "check_circle", step: 4 },
-    cancelled: { label: "Cancelado", class: "status-cancelled", icon: "cancel", step: 0 }
+    pending: { label: "Pendiente", class: "status-pending", icon: "payments" },
+    payment_review: { label: "Revisando Pago", class: "status-review", icon: "fact_check" },
+    processing: { label: "En Preparación", class: "status-processing", icon: "coffee" },
+    shipped: { label: "En Camino", class: "status-shipped", icon: "local_shipping" },
+    delivered: { label: "Entregado", class: "status-delivered", icon: "check_circle" },
+    cancelled: { label: "Cancelado", class: "status-cancelled", icon: "cancel" }
   };
 
   const actual = config[status] || config.pending;
 
-  // Renderizar Píldora
   pillContainer.innerHTML = `
     <div class="status-pill ${actual.class}">
       <span class="material-symbols-outlined">${actual.icon}</span>
       <span>${actual.label}</span>
     </div>
   `;
-
-  // Actualizar Stepper Visual (M3)
-  if (stepper) {
-    const steps = document.querySelectorAll(".step");
-    const lines = document.querySelectorAll(".line");
-    
-    steps.forEach((s, i) => {
-      s.style.background = i < actual.step ? "#33673B" : "#e0e0e0";
-    });
-    lines.forEach((l, i) => {
-      l.style.background = i < actual.step - 1 ? "#33673B" : "#e0e0e0";
-    });
-  }
 };
 
 /* =========================================================
-   4. CARGA DE DATOS DESDE BASE DE DATOS
+   4. CARGA DE DATOS DESDE SUPABASE
 ========================================================= */
 
-/**
- * Obtiene y muestra la información completa del pedido
- */
 window.cargarPedidoExistente = async (orderId) => {
   if (!orderId) return;
+  await window.esperarSupabase();
   const sb = window.supabaseClient;
 
   const { data: pedido, error } = await sb
@@ -148,68 +115,78 @@ window.cargarPedidoExistente = async (orderId) => {
     .select(`
       *,
       users(name, email, phone),
-      addresses(state, city, street),
       order_items(quantity, price, products(name)),
-      payment_receipts(file_url, created_at, review_status)
+      payment_receipts(file_url)
     `)
     .eq("id", orderId)
     .single();
 
   if (error || !pedido) {
-    window.showSnack("Error: No se encontró el registro del pedido");
+    window.showSnack("Error: No se encontró el pedido");
     return;
   }
 
-  // 1. Datos de Cabecera
+  // 1. Cabecera y Colores Verdes (Definidos en CSS)
   if ($id("numeroPedido")) $id("numeroPedido").textContent = pedido.order_number;
   const fecha = new Date(pedido.created_at);
   if ($id("fechaPedido")) $id("fechaPedido").textContent = fecha.toLocaleDateString();
   if ($id("horaPedido")) $id("horaPedido").textContent = fecha.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-  if ($id("totalPedido")) $id("totalPedido").textContent = `L ${pedido.total.toFixed(2)}`;
+  if ($id("totalPedido")) $id("totalPedido").textContent = pedido.total.toFixed(2);
   if ($id("notaCliente")) $id("notaCliente").textContent = pedido.order_notes || "Sin referencia";
 
-  // 2. Información del Cliente
-  if (pedido.users && $id("nombreCliente")) {
-    $id("nombreCliente").textContent = pedido.users.name;
-    $id("correoCliente").textContent = pedido.users.email;
-    $id("telefonoCliente").textContent = pedido.users.phone;
+  // 2. Datos del Cliente
+  if (pedido.users) {
+    if ($id("nombreCliente")) $id("nombreCliente").textContent = pedido.users.name;
+    if ($id("correoCliente")) $id("correoCliente").textContent = pedido.users.email;
+    if ($id("telefonoCliente")) $id("telefonoCliente").textContent = pedido.users.phone;
   }
 
-  // 3. Renderizado de Productos (Material 3 Cards)
+  // 3. Productos
   const lista = $id("listaProductos");
   if (lista) {
     lista.innerHTML = pedido.order_items.map(it => `
       <div class="cafe-item">
-        <div>
-          <span class="cafe-nombre">${it.products.name}</span>
-          <div class="cafe-cantidad">Cant: <span class="cafe-qty">${it.quantity}</span></div>
+        <div class="cafe-info-main">
+          <span class="cafe-nombre">${it.products.name} (${it.quantity})</span>
         </div>
         <span class="cafe-precio">L ${(it.quantity * it.price).toFixed(2)}</span>
       </div>
     `).join("");
   }
 
-  // 4. Gestión de Comprobante (Si aplica)
+  // 4. Imagen de Comprobante o Foto por Defecto
   const preview = $id("previewComprobante");
   const img = $id("imgComprobante");
-  if (pedido.payment_method === "bank_transfer" && pedido.payment_receipts?.length > 0) {
+  const FOTO_POR_DEFECTO = "assets/img/no-receipt.png"; // Ajusta esta ruta según tu proyecto
+
+  if (pedido.payment_method === "bank_transfer") {
     if (preview && img) {
       preview.classList.remove("hidden");
-      img.src = pedido.payment_receipts[0].file_url;
+      // Si tiene recibo usa la URL, si no, usa la foto por defecto
+      const tieneRecibo = pedido.payment_receipts && pedido.payment_receipts.length > 0;
+      img.src = tieneRecibo ? pedido.payment_receipts[0].file_url : FOTO_POR_DEFECTO;
+      
+      if (!tieneRecibo) {
+        console.warn("Pedido sin comprobante físico, cargando imagen por defecto.");
+      }
     }
   }
 
-  // 5. Determinar y aplicar Estado
+  // 5. Estado Visual
   let statusVisual = pedido.status;
   if (pedido.payment_method === "bank_transfer" && pedido.status === "pending" && pedido.payment_receipts?.length > 0) {
     statusVisual = "payment_review";
   }
 
   window.aplicarProgresoPedido(statusVisual);
+  window.aplicarModoRecibo();
 };
 
 /* =========================================================
-   5. FIN DE CORE — ESPERANDO INSTRUCCIÓN DE VISTA
+   5. INICIALIZACIÓN AUTOMÁTICA
 ========================================================= */
-// Nota: La inicialización se maneja en recibo.view.js para 
-// asegurar la persistencia de la sesión de usuario.
+if (window.ORDER_ID) {
+  document.addEventListener("DOMContentLoaded", () => {
+    window.cargarPedidoExistente(window.ORDER_ID);
+  });
+}
