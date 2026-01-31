@@ -1,94 +1,94 @@
 /**
- * 🧾 recibo.view.js — FINAL MATERIAL 3
+ * 🧾 recibo.view.js — FINAL MATERIAL 3 EXPRESSIVE
  * ---------------------------------------------------------
  * Vista de recibo (modo SOLO LECTURA).
  */
 
 console.log("🧾 recibo.view.js — Iniciando");
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+  
+  // 1. Obtener ID de la URL inmediatamente
+  const urlParams = new URLSearchParams(window.location.search);
+  const orderId = urlParams.get("id");
 
-  /**
-   * 🔒 SEGURIDAD DE CONTEXTO
-   * Usamos window para asegurar acceso a las variables definidas en el Core.
-   */
-  const orderId = window.ORDER_ID || new URLSearchParams(window.location.search).get("id");
-  const isReadOnly = window.IS_READ_ONLY || Boolean(orderId);
-
-  if (!isReadOnly) {
-    console.log("🛒 Modo checkout detectado, recibo.view.js en espera.");
-    return;
+  // Si no hay ID, no es un recibo válido, volvemos a mis pedidos
+  if (!orderId) {
+    console.warn("⚠️ No se encontró ID de pedido.");
+    return; 
   }
 
-  (async function initView() {
-    try {
-      // ⏳ 1. Esperar a que Supabase y el Core estén listos
-      if (typeof window.esperarSupabase === "function") {
-        await window.esperarSupabase();
-      }
-
-      // 🔐 2. VALIDACIÓN DE SESIÓN (Con reintentos inteligentes)
-      let user = null;
-      let intentos = 0;
-
-      // Intentamos obtener el usuario hasta 5 veces (pausas de 100ms) 
-      // para dar tiempo a que localStorage se lea correctamente.
-      while (!user && intentos < 5) {
-        if (typeof window.getUserCache === "function") {
-          user = window.getUserCache();
-        }
-        if (user) break;
-        await new Promise(r => setTimeout(r, 100));
-        intentos++;
-      }
-
-      if (!user) {
-        console.warn("🔐 Sesión no válida, redirigiendo a login.");
-        location.href = "login.html";
-        return;
-      }
-
-      // 👁️ 3. UI: Aplicar modo recibo (Ocultar selectores y botones de envío)
-      if (typeof window.aplicarModoRecibo === "function") {
-        window.aplicarModoRecibo();
-      }
-
-      // 🧾 4. CARGAR DATOS: Invocamos la lógica pesada del Core
-      if (typeof window.cargarPedidoExistente === "function") {
-        await window.cargarPedidoExistente(orderId);
-      } else {
-        throw new Error("La función cargarPedidoExistente no está disponible.");
-      }
-
-      // ⚡ 5. ACCIONES: Configurar botón de cancelación si existe
-      configurarAccionCancelar(orderId);
-
-    } catch (err) {
-      console.error("❌ Error en initView:", err);
-      if (typeof window.showSnack === "function") {
-        window.showSnack("Error crítico al cargar el recibo");
-      }
+  try {
+    // ⏳ 2. ESPERA CRÍTICA: Esperar a que Supabase y el Core carguen
+    // Si la función no existe aún, esperamos un poco
+    if (typeof window.esperarSupabase !== "function") {
+      await new Promise(r => {
+        const check = setInterval(() => {
+          if (typeof window.esperarSupabase === "function") {
+            clearInterval(check);
+            r();
+          }
+        }, 50);
+      });
     }
-  })();
+    
+    await window.esperarSupabase();
+
+    // 🔐 3. VALIDACIÓN DE SESIÓN (Evitar falsos negativos)
+    let user = null;
+    if (typeof window.getUserCache === "function") {
+      user = window.getUserCache();
+    }
+
+    // Si después de esperar al Core no hay usuario, entonces sí redirigimos
+    if (!user) {
+      console.warn("🔐 Sesión no válida en View, redirigiendo...");
+      // Solo redirigir si no estamos ya en login para evitar bucles
+      if (!window.location.pathname.includes("login.html")) {
+        window.location.href = "login.html";
+      }
+      return;
+    }
+
+    // 👁️ 4. UI: Preparar interfaz para lectura
+    if (typeof window.aplicarModoRecibo === "function") {
+      window.aplicarModoRecibo();
+    }
+
+    // 🧾 5. CARGAR DATOS
+    if (typeof window.cargarPedidoExistente === "function") {
+      await window.cargarPedidoExistente(orderId);
+    }
+
+    // ⚡ 6. ACCIONES: Botón cancelar
+    configurarAccionCancelar(orderId);
+
+  } catch (err) {
+    console.error("❌ Error en initView:", err);
+    if (window.showSnack) window.showSnack("Error al conectar con el servidor");
+  }
 });
 
 /* =========================================================
-   LÓGICA DE CANCELACIÓN (ESPECÍFICA DE LA VISTA)
+   LÓGICA DE CANCELACIÓN (MEJORADA)
 ========================================================= */
-function configurarAccionCancelar(orderId) {
+async function configurarAccionCancelar(orderId) {
   const btnCancelar = document.getElementById("btnCancelarPedido");
   if (!btnCancelar) return;
 
   btnCancelar.onclick = async () => {
-    // Confirmación nativa (puedes cambiarla por un diálogo M3)
-    if (!confirm("¿Estás seguro de que deseas cancelar este pedido?")) return;
+    // Usar el snackbar para confirmación si es posible, o confirm nativo
+    const confirmar = confirm("¿Deseas cancelar este pedido? Esta acción no se puede deshacer.");
+    if (!confirmar) return;
 
     try {
       const sb = window.supabaseClient;
-      if (!sb) return;
+      if (!sb) throw new Error("Supabase no disponible");
 
+      // UI State: Deshabilitar para evitar doble clic
       btnCancelar.disabled = true;
-      btnCancelar.innerHTML = `<span class="material-symbols-outlined fa-spin">autorenew</span> Cancelando...`;
+      const originalHTML = btnCancelar.innerHTML;
+      btnCancelar.innerHTML = `<span class="material-symbols-outlined fa-spin">autorenew</span> Procesando...`;
 
       const { error } = await sb
         .from("orders")
@@ -97,18 +97,19 @@ function configurarAccionCancelar(orderId) {
 
       if (error) throw error;
 
-      // Éxito: Feedback y recarga de datos visuales
-      if (typeof window.showSnack === "function") {
-        window.showSnack("Pedido cancelado correctamente");
-      }
+      if (window.showSnack) window.showSnack("Pedido cancelado correctamente");
       
-      if (typeof window.cargarPedidoExistente === "function") {
+      // Recargar datos para actualizar la píldora de estado y ocultar el botón
+      if (window.cargarPedidoExistente) {
         await window.cargarPedidoExistente(orderId);
       }
+      
+      // Ocultar el botón después de cancelar
+      btnCancelar.classList.add("hidden");
 
     } catch (err) {
       console.error("Error al cancelar:", err);
-      if (typeof window.showSnack === "function") window.showSnack("No se pudo cancelar");
+      if (window.showSnack) window.showSnack("Error: No se pudo cancelar");
       btnCancelar.disabled = false;
       btnCancelar.innerHTML = `<span class="material-symbols-outlined">cancel</span> Cancelar Pedido`;
     }
