@@ -1,113 +1,116 @@
 /**
- * 🧾 recibo.view.js — FINAL MATERIAL 3 (ESTABLE)
+ * 🧾 recibo.view.js — FINAL MATERIAL 3
  * ---------------------------------------------------------
+ * Vista de recibo (modo SOLO LECTURA).
  */
 
 console.log("🧾 recibo.view.js — Iniciando");
 
 document.addEventListener("DOMContentLoaded", () => {
 
-  // 1. Obtener ID de la URL de forma independiente para evitar fallos del Core
-  const urlParams = new URLSearchParams(window.location.search);
-  const orderId = urlParams.get("id");
+  /**
+   * 🔒 SEGURIDAD DE CONTEXTO
+   * Usamos window para asegurar acceso a las variables definidas en el Core.
+   */
+  const orderId = window.ORDER_ID || new URLSearchParams(window.location.search).get("id");
+  const isReadOnly = window.IS_READ_ONLY || Boolean(orderId);
 
-  // Si no hay ID, estamos en modo Checkout (creación), este script no debe hacer nada.
-  if (!orderId) {
-    console.log("🛒 Modo checkout detectado. recibo.view.js en espera.");
+  if (!isReadOnly) {
+    console.log("🛒 Modo checkout detectado, recibo.view.js en espera.");
     return;
   }
 
   (async function initView() {
     try {
-      // ⏳ Esperar conexión a Supabase
+      // ⏳ 1. Esperar a que Supabase y el Core estén listos
       if (typeof window.esperarSupabase === "function") {
         await window.esperarSupabase();
       }
 
-      /**
-       * 🛠️ VALIDACIÓN DE USUARIO CORREGIDA
-       * Intentamos obtener el usuario desde el Core, si falla, buscamos en localStorage directamente
-       */
+      // 🔐 2. VALIDACIÓN DE SESIÓN (Con reintentos inteligentes)
       let user = null;
-      if (typeof window.getUserCache === "function") {
+      let intentos = 0;
+
+      // Intentamos obtener el usuario hasta 5 veces (pausas de 100ms) 
+      // para dar tiempo a que localStorage se lea correctamente.
+      while (!user && intentos < 5) {
+        if (typeof window.getUserCache === "function") {
           user = window.getUserCache();
-      } else {
-          // Fallback de emergencia si el Core no ha cargado la función
-          const sessionKey = Object.keys(localStorage).find(k => k.startsWith("sb-") && k.endsWith("-auth-token"));
-          const sessionData = sessionKey ? JSON.parse(localStorage.getItem(sessionKey)) : null;
-          user = sessionData?.user || null;
+        }
+        if (user) break;
+        await new Promise(r => setTimeout(r, 100));
+        intentos++;
       }
 
-      // Si después de los intentos no hay usuario, mandamos a login con un pequeño delay
       if (!user) {
-        console.warn("🔐 Usuario no encontrado. Redirigiendo...");
-        setTimeout(() => { location.href = "login.html"; }, 800);
+        console.warn("🔐 Sesión no válida, redirigiendo a login.");
+        location.href = "login.html";
         return;
       }
 
-      // 👁️ UI: Aplicar modo recibo (Ocultar selectores de pago y botón 'Enviar')
-      // Forzamos la ejecución si la función existe en el Core
+      // 👁️ 3. UI: Aplicar modo recibo (Ocultar selectores y botones de envío)
       if (typeof window.aplicarModoRecibo === "function") {
         window.aplicarModoRecibo();
-      } else {
-        // Fallback manual si el Core no tiene la función
-        const btnEnviar = document.querySelector(".recibo-botones");
-        const selectPago = document.querySelector(".pago-select-label");
-        if (btnEnviar) btnEnviar.classList.add("hidden");
-        if (selectPago) selectPago.classList.add("hidden");
       }
 
-      // 🧾 Cargar pedido desde Supabase
+      // 🧾 4. CARGAR DATOS: Invocamos la lógica pesada del Core
       if (typeof window.cargarPedidoExistente === "function") {
         await window.cargarPedidoExistente(orderId);
+      } else {
+        throw new Error("La función cargarPedidoExistente no está disponible.");
       }
 
-      // ⚡ Configurar botón cancelar
+      // ⚡ 5. ACCIONES: Configurar botón de cancelación si existe
       configurarAccionCancelar(orderId);
 
     } catch (err) {
       console.error("❌ Error en initView:", err);
+      if (typeof window.showSnack === "function") {
+        window.showSnack("Error crítico al cargar el recibo");
+      }
     }
   })();
 });
 
 /* =========================================================
-   LÓGICA DE CANCELACIÓN
+   LÓGICA DE CANCELACIÓN (ESPECÍFICA DE LA VISTA)
 ========================================================= */
 function configurarAccionCancelar(orderId) {
   const btnCancelar = document.getElementById("btnCancelarPedido");
   if (!btnCancelar) return;
 
   btnCancelar.onclick = async () => {
-    const confirmar = confirm("¿Estás seguro de que deseas cancelar este pedido?");
-    
-    if (confirmar) {
-      try {
-        const sb = window.supabaseClient;
-        btnCancelar.disabled = true;
-        btnCancelar.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Cancelando...`;
+    // Confirmación nativa (puedes cambiarla por un diálogo M3)
+    if (!confirm("¿Estás seguro de que deseas cancelar este pedido?")) return;
 
-        const { error } = await sb
-          .from("orders")
-          .update({ status: "cancelled" })
-          .eq("id", orderId);
+    try {
+      const sb = window.supabaseClient;
+      if (!sb) return;
 
-        if (error) throw error;
+      btnCancelar.disabled = true;
+      btnCancelar.innerHTML = `<span class="material-symbols-outlined fa-spin">autorenew</span> Cancelando...`;
 
-        // Feedback al usuario y recarga de datos
-        if (typeof window.showSnack === "function") {
-            window.showSnack("Pedido cancelado");
-        }
-        
-        if (typeof window.cargarPedidoExistente === "function") {
-            await window.cargarPedidoExistente(orderId);
-        }
+      const { error } = await sb
+        .from("orders")
+        .update({ status: "cancelled" })
+        .eq("id", orderId);
 
-      } catch (err) {
-        console.error("Error al cancelar:", err);
-        btnCancelar.disabled = false;
-        btnCancelar.innerHTML = `<span class="material-symbols-outlined">cancel</span> Cancelar Pedido`;
+      if (error) throw error;
+
+      // Éxito: Feedback y recarga de datos visuales
+      if (typeof window.showSnack === "function") {
+        window.showSnack("Pedido cancelado correctamente");
       }
+      
+      if (typeof window.cargarPedidoExistente === "function") {
+        await window.cargarPedidoExistente(orderId);
+      }
+
+    } catch (err) {
+      console.error("Error al cancelar:", err);
+      if (typeof window.showSnack === "function") window.showSnack("No se pudo cancelar");
+      btnCancelar.disabled = false;
+      btnCancelar.innerHTML = `<span class="material-symbols-outlined">cancel</span> Cancelar Pedido`;
     }
   };
 }
