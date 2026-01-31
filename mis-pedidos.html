@@ -78,23 +78,27 @@
 
         <section class="pedido-estado">
           <h3>Estado del pedido</h3>
-          <p class="estado-resumen">
-            Paso <span class="estado-paso"></span> de 4 ·
-            <strong class="estado-nombre"></strong>
-          </p>
+          
+          <div class="estado-header-dinamico">
+            <p class="estado-resumen">
+              Paso <span class="estado-paso"></span> de 4 ·
+              <strong class="estado-nombre"></strong>
+            </p>
+            <p class="estado-descripcion"></p>
+          </div>
 
           <ul class="estado-list">
             <li class="estado-item">
-              <span class="dot">1</span><span class="step-text">Pagado</span>
+              <span class="dot">1</span><span class="step-text"></span>
             </li>
             <li class="estado-item">
-              <span class="dot">2</span><span class="step-text">Revisión</span>
+              <span class="dot">2</span><span class="step-text"></span>
             </li>
             <li class="estado-item">
-              <span class="dot">3</span><span class="step-text">Confirmado</span>
+              <span class="dot">3</span><span class="step-text"></span>
             </li>
             <li class="estado-item">
-              <span class="dot">4</span><span class="step-text">Envío</span>
+              <span class="dot">4</span><span class="step-text"></span>
             </li>
           </ul>
 
@@ -107,7 +111,7 @@
       </div>
 
       <div class="order-media">
-        <img class="recibo-img" src="" alt="Comprobante" />
+        <img class="recibo-img" src="" alt="Estado del pago" />
       </div>
     </div>
   </section>
@@ -116,7 +120,7 @@
 <template id="pedido-carrusel-template">
   <article class="similar-card">
     <div class="pedido-mini-img-container">
-      <img class="pedido-mini-img" src="" alt="Miniatura" />
+      <img class="pedido-mini-img" src="" alt="Miniatura pedido" />
     </div>
     <div class="order-card-info">
       <h4 class="pedido-mini-numero"></h4>
