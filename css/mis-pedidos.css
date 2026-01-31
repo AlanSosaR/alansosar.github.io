@@ -1,6 +1,6 @@
 /* ============================================================
    MIS PEDIDOS — MATERIAL 3 EXPRESSIVE (CAFÉ CORTERO)
-   FIX: Fondo Blanco Puro, Blindaje de Imágenes y Tipografía
+   FIX: Botón Volver (Píldora), Fondo Blanco & Blindaje Imagen
 ============================================================ */
 
 :root {
@@ -16,6 +16,7 @@
   /* Aliases */
   --cafe: var(--marron);
   --surface: var(--blanco);
+  --surface-variant: #f4f2ef;
   --bg: var(--fondo);
   --text-muted: #777;
 
@@ -59,18 +60,54 @@ body {
   padding: 2.4rem;
   box-shadow: var(--elev-2);
   margin-bottom: 3rem;
-  overflow: hidden; /* Blindaje para que nada se salga de la tarjeta */
+  overflow: hidden; 
 }
 
-/* HEADER DEL PEDIDO */
 .order-preview-header {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 1rem;
+  gap: 1.5rem;
   margin-bottom: 2rem;
 }
 
+/* BOTÓN VOLVER (PÍLDORA CON CÍRCULO) */
+.back-to-shop {
+  all: unset;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.5rem 1.2rem 0.5rem 0.5rem; /* Menos padding a la izquierda para el círculo */
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: var(--elev-1);
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--verde);
+  transition: all 0.2s ease;
+  border: 1px solid rgba(0,0,0,0.05);
+}
+
+.back-to-shop .arrow-circle {
+  width: 32px;
+  height: 32px;
+  background: var(--verde);
+  color: #fff;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 1rem;
+}
+
+.back-to-shop:hover {
+  transform: translateX(-4px);
+  box-shadow: var(--elev-2);
+}
+
+.back-to-shop:active { transform: scale(0.96); }
+
+/* TEXTO HEADER */
 .order-header-text h2 {
   margin: 0;
   font-size: 1.6rem;
@@ -78,10 +115,7 @@ body {
   color: var(--verde);
 }
 
-.pedido-fecha { 
-  font-size: .85rem; 
-  color: var(--cafe); 
-}
+.pedido-fecha { font-size: .85rem; color: var(--cafe); }
 
 /* LAYOUT COLUMNAS */
 .order-layout {
@@ -96,14 +130,14 @@ body {
   .order-main { padding: 1.5rem; }
 }
 
-/* ================= BLINDAJE DE IMAGEN (ORDEN MEDIA) ================= */
+/* ================= IMAGEN Y MEDIA (BLINDAJE) ================= */
 .order-media {
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: var(--blanco); /* Eliminado fondo gris */
+  background: var(--blanco); 
   border-radius: var(--r-md);
   padding: 1rem;
   min-height: 250px;
@@ -114,34 +148,31 @@ body {
 .order-media img {
   width: 100%;
   height: auto;
-  max-height: 350px; /* Límite de altura para evitar desbordes */
-  object-fit: contain; /* Ajusta la imagen sin deformarla */
+  max-height: 350px; 
+  object-fit: contain; 
   border-radius: var(--r-md);
-  /* Sombra sutil para que el recibo blanco no se pierda en el fondo blanco */
-  filter: drop-shadow(0 2px 10px rgba(0,0,0,0.06));
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.08));
 }
 
 /* ================= PRODUCTOS & TOTAL ================= */
-.productos-pills { 
-  display: flex; 
-  flex-direction: column; 
-  gap: .75rem; 
-}
+.productos-pills { display: flex; flex-direction: column; gap: .75rem; }
 
 .productos-pills .pill {
   display: grid;
   grid-template-columns: 1fr auto;
+  align-items: center;
   padding: .85rem 1rem;
   background: #fff;
   border-radius: 20px;
   border: 1px solid rgba(0,0,0,.06);
   font-size: .95rem;
-  color: var(--cafe);
   box-shadow: var(--elev-1);
+  color: var(--cafe);
 }
 
-.productos-pills .pill strong { 
-  color: var(--verde); 
+.productos-pills .pill strong {
+  color: var(--verde);
+  font-weight: 600;
 }
 
 .order-total {
@@ -158,20 +189,21 @@ body {
   font-size: 1.1rem; 
 }
 
-/* ================= SECCIONES ================= */
-.order-address h3, .pedido-estado h3 {
+/* ================= SECCIONES (ENTREGA, ESTADO) ================= */
+.order-address h3, 
+.pedido-estado h3 {
   color: var(--verde);
   font-size: 1.1rem;
   margin-bottom: 0.4rem;
 }
 
-.entrega-text, .referencia-text {
+.entrega-text, 
+.referencia-text {
   color: var(--cafe);
   margin: 0 0 1.2rem 0;
   font-size: 0.95rem;
 }
 
-/* ESTADOS */
 .estado-paso { color: var(--verde); font-weight: 600; }
 .estado-nombre { color: var(--cafe); }
 
@@ -209,25 +241,18 @@ body {
   font-weight: 600;
   font-size: .9rem;
   cursor: pointer;
-  transition: all .2s ease;
   margin-top: 1rem;
+  transition: all 0.2s ease;
 }
 
-.ver-recibo:hover { 
-  background: rgba(51,103,59,0.2) !important; 
-  transform: translateY(-2px); 
-}
+.ver-recibo:hover { background: rgba(51,103,59,0.2) !important; transform: translateY(-2px); }
 
 /* ================= CARRUSEL ================= */
 .related { margin-top: 2rem; }
 .similar-title { color: var(--verde); margin-bottom: 0.2rem; }
 .section-subtitle { color: var(--cafe); font-size: 0.9rem; margin-top: 0; }
 
-.carousel-container { 
-  position: relative; 
-  width: 100%; 
-  padding-bottom: 1rem; 
-}
+.carousel-container { position: relative; width: 100%; padding-bottom: 1rem; }
 
 .similar-list {
   display: flex !important;
@@ -264,7 +289,6 @@ body {
   height: 80px;
   object-fit: contain;
   margin-bottom: .8rem;
-  background: transparent;
 }
 
 .pedido-mini-numero { color: var(--verde); margin: 0; font-size: .9rem; }
