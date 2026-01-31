@@ -1,10 +1,9 @@
 /**
- * recibo.checkout.js — FINAL DEFINITIVO CORREGIDO
+ * 🧾 recibo.checkout.js — FINAL MATERIAL 3
  * ---------------------------------------------------------
- * Checkout de pedidos Café Cortero con soporte order_notes
- * Versión optimizada para flujo de Efectivo y Transferencia
+ * Gestión de creación de pedidos y lógica de pago.
  */
-console.log("🧾 recibo.checkout.js — Sincronizado");
+console.log("🧾 recibo.checkout.js — Sincronizado con Material 3 Expressive");
 
 /* =========================================================
    ELEMENTOS UI — CHECKOUT
@@ -20,160 +19,118 @@ const previewBox = $id("previewComprobante");
 const imgPreview = $id("imgComprobante");
 const btnSubirComprobante = $id("btnSubirComprobante");
 
+// Variables de estado local
+let selectedAddressId = null;
+let totalPedidoGlobal = 0;
+const carritoCheckout = JSON.parse(localStorage.getItem("cafecortero_cart")) || [];
+
 /* =========================================================
-   SNACKBAR DE CONFIRMACIÓN
+   SNACKBAR DE CONFIRMACIÓN (DISEÑO M3)
 ========================================================= */
 function showConfirmSnack(message, onConfirm, onCancel) {
   const bar = $id("snackbar");
   if (!bar) return;
 
   bar.innerHTML = `
-    <span class="snack-text">${message}</span>
-    <div class="snack-actions">
-      <button class="snack-action secondary">Editar</button>
-      <button class="snack-action primary">Enviar</button>
+    <div class="snack-content">
+      <span class="snack-text">${message}</span>
+      <div class="snack-actions">
+        <button class="snack-btn-text" id="snack-cancel">Editar</button>
+        <button class="snack-btn-filled" id="snack-ok">Enviar</button>
+      </div>
     </div>
   `;
 
   bar.classList.add("show");
 
-  bar.querySelector(".secondary")?.addEventListener("click", () => {
+  $id("snack-cancel").onclick = () => {
     bar.classList.remove("show");
-    onCancel?.();
-  });
+    if (onCancel) onCancel();
+  };
 
-  bar.querySelector(".primary")?.addEventListener("click", () => {
+  $id("snack-ok").onclick = () => {
     bar.classList.remove("show");
-    onConfirm?.();
-  });
+    if (onConfirm) onConfirm();
+  };
 }
 
 /* =========================================================
-   DATOS CLIENTE
+   CARGAR DATOS INICIALES
 ========================================================= */
-let selectedAddressId = null;
-
 async function cargarDatosCliente() {
   const sb = window.supabaseClient;
   const user = getUserCache();
   if (!user) return;
 
-  const { data: userRow } = await sb
-    .from("users")
-    .select("name,email,phone")
-    .eq("id", user.id)
-    .single();
-
+  // 1. Datos de usuario
+  const { data: userRow } = await sb.from("users").select("name,email,phone").eq("id", user.id).single();
   if (userRow) {
     $id("nombreCliente").textContent = userRow.name || "—";
     $id("correoCliente").textContent = userRow.email || "—";
     $id("telefonoCliente").textContent = userRow.phone || "—";
   }
 
-  const { data: addr } = await sb
-    .from("addresses")
-    .select("id,state,city,street")
-    .eq("user_id", user.id)
-    .order("created_at", { ascending: false })
-    .limit(1);
+  // 2. Dirección y Notas
+  const { data: addr } = await sb.from("addresses").select("id,state,city,street").eq("user_id", user.id).order("created_at", { ascending: false }).limit(1);
 
   if (addr?.length) {
     selectedAddressId = addr[0].id;
-    $id("zonaCliente").textContent = `${addr[0].state}, ${addr[0].city}`;
-    $id("direccionCliente").textContent = addr[0].street || "—";
+    // M3 Expressive: Usamos el ID del contenedor de resumen
+    const resumenDir = $id("direccion-resumen");
+    if (resumenDir) resumenDir.textContent = `${addr[0].street}, ${addr[0].city}`;
     
+    // Nota de pedido (sessionStorage es donde guardamos lo que el usuario escribió en carrito)
     const notaActual = sessionStorage.getItem("current_order_notes");
-    $id("notaCliente").textContent = notaActual || "Sin referencia";
+    $id("notaCliente").textContent = notaActual || "Sin referencia adicional";
   }
 }
 
-/* =========================================================
-   NÚMERO PROVISIONAL
-========================================================= */
-async function setNumeroPedidoProvisional() {
-  const sb = window.supabaseClient;
-  const user = getUserCache();
-  if (!user) return;
+async function prepararResumenCarrito() {
+  const lista = $id("listaProductos");
+  if (!lista || IS_READ_ONLY) return;
 
-  const { data } = await sb
-    .from("orders")
-    .select("order_number")
-    .eq("user_id", user.id)
-    .order("order_number", { ascending: false })
-    .limit(1);
-
-  const next = (data?.[0]?.order_number || 0) + 1;
-
-  $id("numeroPedido").textContent = next;
-  $id("fechaPedido").textContent = new Date().toLocaleDateString("es-ES");
-
-  const horaEl = $id("horaPedido");
-  if (horaEl) {
-    horaEl.textContent = new Date().toLocaleTimeString("es-ES", {
-      hour: "2-digit",
-      minute: "2-digit"
-    });
-  }
-}
-
-/* =========================================================
-   CARRITO
-========================================================= */
-const lista = $id("listaProductos");
-const carrito = JSON.parse(localStorage.getItem(CART_KEY)) || [];
-let total = 0;
-
-if (lista && !IS_READ_ONLY) {
   lista.innerHTML = "";
-  carrito.forEach(it => {
-    total += it.qty * it.price;
+  totalPedidoGlobal = 0;
+
+  carritoCheckout.forEach(it => {
+    const subtotal = it.qty * it.price;
+    totalPedidoGlobal += subtotal;
     lista.innerHTML += `
       <div class="cafe-item">
-        <span>${it.name} (${it.qty})</span>
-        <span>L ${(it.qty * it.price).toFixed(2)}</span>
+        <span class="item-info">${it.name} (x${it.qty})</span>
+        <span class="item-subtotal">L ${subtotal.toFixed(2)}</span>
       </div>`;
   });
 
-  $id("totalPedido").textContent = total.toFixed(2);
+  $id("totalPedido").textContent = totalPedidoGlobal.toFixed(2);
 }
 
 /* =========================================================
-   MÉTODO DE PAGO — UI (LOGICA CORREGIDA)
+   LÓGICA DE MÉTODOS DE PAGO
 ========================================================= */
 function resetMetodoPago() {
-  // Ocultamos ambos bloques antes de decidir cual mostrar
   bloqueDeposito?.classList.add("hidden");
   bloqueEfectivo?.classList.add("hidden");
   previewBox?.classList.add("hidden");
-  
-  if (imgPreview) imgPreview.src = "";
-  btnSubirComprobante?.classList.remove("hidden");
-  
-  // Bloqueamos el botón hasta que se cumpla la condición del método
-  btnEnviar.disabled = true; 
+  btnEnviar.disabled = true;
   if (inputFile) inputFile.value = "";
 }
 
 metodoPago?.addEventListener("change", () => {
   resetMetodoPago();
-
   const valor = metodoPago.value;
 
   if (valor === "bank_transfer") {
     bloqueDeposito?.classList.remove("hidden");
-    // El botón permanece disabled hasta que inputFile detecte cambio
-    console.log("Modo transferencia: esperando comprobante.");
-  } 
-  else if (valor === "cash_on_delivery") {
-    // ✅ CORRECCIÓN: Mostramos el bloque de efectivo y habilitamos el envío
+    // El botón se habilita solo cuando suba la imagen
+  } else if (valor === "cash") {
     bloqueEfectivo?.classList.remove("hidden");
     btnEnviar.disabled = false;
-    console.log("Modo efectivo: información desplegada y botón habilitado.");
   }
 });
 
 /* =========================================================
-   SUBIR COMPROBANTE
+   GESTIÓN DE COMPROBANTE (STORAGE)
 ========================================================= */
 btnSubirComprobante?.addEventListener("click", e => {
   e.preventDefault();
@@ -183,29 +140,25 @@ btnSubirComprobante?.addEventListener("click", e => {
 inputFile?.addEventListener("change", () => {
   const file = inputFile.files[0];
   if (!file || !file.type.startsWith("image/")) {
-    showSnack("Solo se permiten imágenes");
-    inputFile.value = "";
-    btnEnviar.disabled = true;
+    showSnack("Solo se permiten imágenes (JPG, PNG)");
     return;
   }
 
   imgPreview.src = URL.createObjectURL(file);
   previewBox?.classList.remove("hidden");
-  
-  // ✅ Habilitar botón tras subir imagen válida en transferencia
-  btnEnviar.disabled = false;
+  btnEnviar.disabled = false; // Habilitar tras cargar comprobante
 });
 
 /* =========================================================
-   ENVIAR PEDIDO
+   PROCESO DE ENVÍO FINAL
 ========================================================= */
-async function enviarPedido() {
+async function ejecutarEnvioPedido() {
   const sb = window.supabaseClient;
   const user = getUserCache();
-  const orderNotes = sessionStorage.getItem("current_order_notes") || "";
+  const notes = sessionStorage.getItem("current_order_notes") || "";
 
   if (!user || !selectedAddressId) {
-    showSnack("Faltan datos del cliente");
+    showSnack("Error: Faltan datos de entrega.");
     return;
   }
 
@@ -213,39 +166,44 @@ async function enviarPedido() {
   if (loader) loader.classList.remove("hidden");
 
   try {
+    // 1. Obtener número de orden
     const { data: orderNumber } = await sb.rpc("next_order_number", { p_user_id: user.id });
 
-    // Insertar Orden Principal
+    // 2. Insertar Orden
     const { data: newOrder, error: orderErr } = await sb.from("orders").insert({
       user_id: user.id,
       address_id: selectedAddressId,
       order_number: orderNumber,
-      total: parseFloat(total), 
+      total: totalPedidoGlobal,
       payment_method: metodoPago.value,
       status: "pending",
-      order_notes: orderNotes 
+      order_notes: notes
     }).select("id").single();
 
     if (orderErr) throw orderErr;
 
-    // Insertar Detalles del Carrito
-    await sb.from("order_items").insert(
-      carrito.map(it => ({
-        order_id: newOrder.id,
-        product_id: it.product_id,
-        quantity: it.qty,
-        price: it.price
-      }))
-    );
+    // 3. Insertar Items
+    const itemsToInsert = carritoCheckout.map(it => ({
+      order_id: newOrder.id,
+      product_id: it.product_id,
+      quantity: it.qty,
+      price: it.price
+    }));
 
-    // Lógica específica para transferencia (Subida de archivo)
+    const { error: itemsErr } = await sb.from("order_items").insert(itemsToInsert);
+    if (itemsErr) throw itemsErr;
+
+    // 4. Subir Comprobante (Si aplica)
     if (metodoPago.value === "bank_transfer") {
       const file = inputFile.files[0];
       const ext = file.name.split(".").pop();
-      const path = `${user.id}/${newOrder.id}_${Date.now()}.${ext}`;
+      const fileName = `${newOrder.id}_${Date.now()}.${ext}`;
+      const path = `${user.id}/${fileName}`;
 
-      await sb.storage.from(RECEIPT_BUCKET).upload(path, file);
-      const { data: urlData } = sb.storage.from(RECEIPT_BUCKET).getPublicUrl(path);
+      const { error: uploadErr } = await sb.storage.from("payment-receipts").upload(path, file);
+      if (uploadErr) throw uploadErr;
+
+      const { data: urlData } = sb.storage.from("payment-receipts").getPublicUrl(path);
 
       await sb.from("payment_receipts").insert({
         order_id: newOrder.id,
@@ -256,16 +214,16 @@ async function enviarPedido() {
       });
     }
 
-    // Finalización exitosa
-    localStorage.setItem(CART_KEY, "[]");
+    // 5. Limpieza
+    localStorage.setItem("cafecortero_cart", "[]");
     sessionStorage.removeItem("current_order_notes");
-    
-    // Redirección al recibo final
-    location.href = `recibo.html?id=${newOrder.id}`;
+
+    // Redirigir a la vista de recibo (Modo Lectura)
+    window.location.href = `recibo.html?id=${newOrder.id}`;
 
   } catch (err) {
-    console.error("Error en checkout:", err);
-    showSnack("No se pudo completar el pedido");
+    console.error("Error Checkout:", err);
+    showSnack("No pudimos procesar tu pedido. Intenta de nuevo.");
     btnEnviar.disabled = false;
   } finally {
     if (loader) loader.classList.add("hidden");
@@ -273,28 +231,23 @@ async function enviarPedido() {
 }
 
 /* =========================================================
-   MANEJO DE CONFIRMACIÓN
+   EVENTO PRINCIPAL
 ========================================================= */
 btnEnviar?.addEventListener("click", e => {
   e.preventDefault();
-  showConfirmSnack("¿Confirmas enviar el pedido?", enviarPedido, () => {
-    // Si el usuario edita, el botón debe quedar activo si ya hay info válida
-    const esEfectivo = metodoPago.value === "cash_on_delivery";
-    const tieneFoto = metodoPago.value === "bank_transfer" && inputFile.files.length > 0;
-    
-    if (esEfectivo || tieneFoto) {
-       btnEnviar.disabled = false;
-    }
+  showConfirmSnack("¿Estás seguro de enviar tu pedido?", ejecutarEnvioPedido, () => {
+    console.log("Envío cancelado por el usuario.");
   });
 });
 
 /* =========================================================
-   INIT
+   INICIALIZACIÓN
 ========================================================= */
-(async function initCheckout() {
+(async function init() {
   await esperarSupabase();
-  if (IS_READ_ONLY) return;
-  await setNumeroPedidoProvisional();
+  if (IS_READ_ONLY) return; // Si hay ?id en URL, el core se encarga
+
   await cargarDatosCliente();
+  await prepararResumenCarrito();
   resetMetodoPago();
 })();
