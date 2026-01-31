@@ -4,7 +4,7 @@
  * Vista de recibo (modo SOLO LECTURA).
  */
 
-console.log("🧾 recibo.view.js — Iniciando");
+console.log("🧾 recibo.view.js — Iniciando vinculación con Core");
 
 document.addEventListener("DOMContentLoaded", async () => {
   
@@ -12,15 +12,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   const urlParams = new URLSearchParams(window.location.search);
   const orderId = urlParams.get("id");
 
-  // Si no hay ID, no es un recibo válido, volvemos a mis pedidos
   if (!orderId) {
     console.warn("⚠️ No se encontró ID de pedido.");
     return; 
   }
 
   try {
-    // ⏳ 2. ESPERA CRÍTICA: Esperar a que Supabase y el Core carguen
-    // Si la función no existe aún, esperamos un poco
+    // ⏳ 2. SINCRONIZACIÓN CON EL CORE: Esperar a que las funciones existan
     if (typeof window.esperarSupabase !== "function") {
       await new Promise(r => {
         const check = setInterval(() => {
@@ -32,60 +30,70 @@ document.addEventListener("DOMContentLoaded", async () => {
       });
     }
     
+    // Esperar a que la instancia de Supabase esté lista
     await window.esperarSupabase();
 
-    // 🔐 3. VALIDACIÓN DE SESIÓN (Evitar falsos negativos)
+    // 🔐 3. VALIDACIÓN DE SESIÓN CON REINTENTOS (Crucial para evitar rebotes)
     let user = null;
-    if (typeof window.getUserCache === "function") {
-      user = window.getUserCache();
+    let intentos = 0;
+    
+    // Le damos hasta 1 segundo (10 intentos de 100ms) para que Supabase recupere el usuario
+    while (!user && intentos < 10) {
+      if (typeof window.getUserCache === "function") {
+        user = window.getUserCache();
+      }
+      if (user) break;
+      await new Promise(r => setTimeout(r, 100));
+      intentos++;
     }
 
-    // Si después de esperar al Core no hay usuario, entonces sí redirigimos
+    // Si tras el tiempo de gracia no hay usuario, redirigimos
     if (!user) {
-      console.warn("🔐 Sesión no válida en View, redirigiendo...");
-      // Solo redirigir si no estamos ya en login para evitar bucles
+      console.warn("🔐 Sesión no detectada tras reintentos, redirigiendo...");
       if (!window.location.pathname.includes("login.html")) {
         window.location.href = "login.html";
       }
       return;
     }
 
-    // 👁️ 4. UI: Preparar interfaz para lectura
+    // ✅ 4. CONEXIÓN CON UI CORE: Aplicar modo lectura
     if (typeof window.aplicarModoRecibo === "function") {
       window.aplicarModoRecibo();
+    } else {
+      console.error("❌ Error: aplicarModoRecibo no encontrada en Core");
     }
 
-    // 🧾 5. CARGAR DATOS
+    // 🧾 5. CARGAR DATOS DESDE EL CORE
     if (typeof window.cargarPedidoExistente === "function") {
       await window.cargarPedidoExistente(orderId);
+    } else {
+      console.error("❌ Error: cargarPedidoExistente no encontrada en Core");
     }
 
-    // ⚡ 6. ACCIONES: Botón cancelar
+    // ⚡ 6. ACCIONES: Configurar botón cancelar
     configurarAccionCancelar(orderId);
 
   } catch (err) {
-    console.error("❌ Error en initView:", err);
-    if (window.showSnack) window.showSnack("Error al conectar con el servidor");
+    console.error("❌ Error en la orquestación de la vista:", err);
+    if (window.showSnack) window.showSnack("Error de conexión con el sistema");
   }
 });
 
 /* =========================================================
-   LÓGICA DE CANCELACIÓN (MEJORADA)
+   LÓGICA DE CANCELACIÓN (Utilizando cliente del Core)
 ========================================================= */
 async function configurarAccionCancelar(orderId) {
   const btnCancelar = document.getElementById("btnCancelarPedido");
   if (!btnCancelar) return;
 
   btnCancelar.onclick = async () => {
-    // Usar el snackbar para confirmación si es posible, o confirm nativo
     const confirmar = confirm("¿Deseas cancelar este pedido? Esta acción no se puede deshacer.");
     if (!confirmar) return;
 
     try {
-      const sb = window.supabaseClient;
+      const sb = window.supabaseClient; // Instancia compartida por el Core
       if (!sb) throw new Error("Supabase no disponible");
 
-      // UI State: Deshabilitar para evitar doble clic
       btnCancelar.disabled = true;
       const originalHTML = btnCancelar.innerHTML;
       btnCancelar.innerHTML = `<span class="material-symbols-outlined fa-spin">autorenew</span> Procesando...`;
@@ -99,12 +107,11 @@ async function configurarAccionCancelar(orderId) {
 
       if (window.showSnack) window.showSnack("Pedido cancelado correctamente");
       
-      // Recargar datos para actualizar la píldora de estado y ocultar el botón
+      // Sincronizar actualización con el Core
       if (window.cargarPedidoExistente) {
         await window.cargarPedidoExistente(orderId);
       }
       
-      // Ocultar el botón después de cancelar
       btnCancelar.classList.add("hidden");
 
     } catch (err) {
