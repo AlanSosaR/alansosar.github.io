@@ -5,13 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Mis pedidos | Café Cortero</title>
 
-  <!-- Tipografía -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
 
-  <!-- Material Symbols -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
 
-  <!-- Estilos -->
   <link rel="stylesheet" href="css/header.css" />
   <link rel="stylesheet" href="css/mis-pedidos.css" />
 </head>
@@ -20,35 +17,26 @@
 
 <main class="admin-orders-container fade-in">
 
-  <!-- =========================
-       PEDIDO ACTIVO
-  ========================== -->
   <section id="pedido-activo" class="pedido-activo hidden"></section>
 
-  <!-- =========================
-       ESTADO VACÍO
-  ========================== -->
   <section id="empty-state" class="admin-empty-state hidden">
     <h2 class="empty-title">No tienes pedidos</h2>
     <p class="empty-text">Cuando realices un pedido, aparecerá aquí.</p>
   </section>
 
-  <!-- =========================
-       CARRUSEL
-  ========================== -->
   <section class="related admin-related hidden" id="mis-pedidos-carrusel">
     <h3 class="similar-title">Mis pedidos</h3>
     <p class="section-subtitle">Selecciona un pedido para ver su detalle.</p>
 
     <div class="carousel-container">
 
-      <button class="carousel-prev-circle" id="pedidos-prev" aria-label="Anterior">
+      <button class="carousel-prev-circle is-hidden" id="pedidos-prev" aria-label="Anterior">
         <span class="material-symbols-outlined">chevron_left</span>
       </button>
 
       <div class="similar-list" id="pedidos-carrusel"></div>
 
-      <button class="carousel-next-circle" id="pedidos-next" aria-label="Siguiente">
+      <button class="carousel-next-circle is-hidden" id="pedidos-next" aria-label="Siguiente">
         <span class="material-symbols-outlined">chevron_right</span>
       </button>
 
@@ -57,13 +45,9 @@
 
 </main>
 
-<!-- =========================
-     TEMPLATE — PEDIDO ACTIVO
-========================= -->
 <template id="pedido-activo-template">
   <section class="order-main">
 
-    <!-- HEADER -->
     <header class="order-preview-header">
 
       <button
@@ -84,34 +68,27 @@
 
     </header>
 
-    <!-- CONTENIDO -->
     <div class="order-layout">
 
-      <!-- COLUMNA TEXTO -->
       <div class="order-text">
 
-        <!-- PRODUCTOS -->
         <div class="productos-pills"></div>
 
-        <!-- TOTAL -->
         <div class="order-total">
           <span>Total del pedido</span>
           <strong class="pedido-total"></strong>
         </div>
 
-        <!-- ENTREGA -->
         <section class="order-address">
           <h3>Entrega</h3>
           <p class="entrega-text"></p>
         </section>
 
-        <!-- REFERENCIA -->
         <section class="order-address">
           <h3>Referencia</h3>
           <p class="referencia-text"></p>
         </section>
 
-        <!-- ESTADO -->
         <section class="pedido-estado">
           <h3>Estado del pedido</h3>
 
@@ -135,15 +112,9 @@
             </li>
           </ul>
 
-          <!-- REFERENCIA DE PAGO -->
-          <p class="estado-pago-ref">
-            <span class="material-symbols-outlined">receipt_long</span>
-            <span class="pago-ref-text"></span>
-          </p>
-
-          <!-- ACCIÓN -->
           <button class="ver-recibo">
-            Ver recibo
+            <span class="material-symbols-outlined">receipt_long</span>
+            <span>Ver recibo</span>
             <span class="material-symbols-outlined">arrow_forward</span>
           </button>
 
@@ -151,7 +122,6 @@
 
       </div>
 
-      <!-- COLUMNA IMAGEN -->
       <div class="order-media">
         <img class="recibo-img" alt="Imagen del pago" />
       </div>
@@ -160,9 +130,6 @@
   </section>
 </template>
 
-<!-- =========================
-     TEMPLATE — CARD CARRUSEL
-========================= -->
 <template id="pedido-carrusel-template">
   <article class="similar-card pedido-mini-card">
     <div class="order-card-media">
@@ -176,7 +143,6 @@
   </article>
 </template>
 
-<!-- SCRIPTS -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/core/supabase-client-core.js"></script>
 <script src="js/core/supabase-auth.js"></script>
