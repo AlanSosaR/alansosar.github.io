@@ -1,6 +1,6 @@
 /* ============================================================
    MIS PEDIDOS — MATERIAL 3 EXPRESSIVE (CAFÉ CORTERO)
-   REVISIÓN DE COLORES: VERDE (Títulos) & CAFÉ (Textos)
+   FIX: Fondo Blanco Puro, Blindaje de Imágenes y Tipografía
 ============================================================ */
 
 :root {
@@ -16,9 +16,7 @@
   /* Aliases */
   --cafe: var(--marron);
   --surface: var(--blanco);
-  --surface-variant: #f4f2ef;
   --bg: var(--fondo);
-  --line: #e6e2de;
   --text-muted: #777;
 
   /* Elevaciones */
@@ -61,8 +59,10 @@ body {
   padding: 2.4rem;
   box-shadow: var(--elev-2);
   margin-bottom: 3rem;
+  overflow: hidden; /* Blindaje para que nada se salga de la tarjeta */
 }
 
+/* HEADER DEL PEDIDO */
 .order-preview-header {
   display: flex;
   flex-direction: column;
@@ -71,26 +71,6 @@ body {
   margin-bottom: 2rem;
 }
 
-/* BOTÓN VOLVER */
-.back-to-shop {
-  all: unset;
-  display: inline-flex;
-  align-items: center;
-  gap: .5rem;
-  padding: .45rem .9rem .45rem .5rem;
-  border-radius: 999px;
-  background: #fff;
-  box-shadow: var(--elev-1);
-  cursor: pointer;
-  font-size: .85rem;
-  font-weight: 500;
-  color: var(--verde);
-  transition: transform .15s ease;
-}
-
-.back-to-shop:active { transform: scale(0.96); }
-
-/* TEXTO HEADER */
 .order-header-text h2 {
   margin: 0;
   font-size: 1.6rem;
@@ -98,39 +78,70 @@ body {
   color: var(--verde);
 }
 
-.pedido-fecha { font-size: .85rem; color: var(--cafe); }
+.pedido-fecha { 
+  font-size: .85rem; 
+  color: var(--cafe); 
+}
 
 /* LAYOUT COLUMNAS */
 .order-layout {
   display: grid;
   grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
   gap: 2.4rem;
+  align-items: start;
 }
 
 @media (max-width: 900px) {
-  .order-layout { grid-template-columns: 1fr; }
+  .order-layout { grid-template-columns: 1fr; gap: 2rem; }
   .order-main { padding: 1.5rem; }
 }
 
-/* ================= PRODUCTOS & TOTAL (CAMBIOS DE COLOR) ================= */
-.productos-pills { display: flex; flex-direction: column; gap: .75rem; }
+/* ================= BLINDAJE DE IMAGEN (ORDEN MEDIA) ================= */
+.order-media {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--blanco); /* Eliminado fondo gris */
+  border-radius: var(--r-md);
+  padding: 1rem;
+  min-height: 250px;
+  max-height: 450px; 
+  overflow: hidden;
+}
+
+.order-media img {
+  width: 100%;
+  height: auto;
+  max-height: 350px; /* Límite de altura para evitar desbordes */
+  object-fit: contain; /* Ajusta la imagen sin deformarla */
+  border-radius: var(--r-md);
+  /* Sombra sutil para que el recibo blanco no se pierda en el fondo blanco */
+  filter: drop-shadow(0 2px 10px rgba(0,0,0,0.06));
+}
+
+/* ================= PRODUCTOS & TOTAL ================= */
+.productos-pills { 
+  display: flex; 
+  flex-direction: column; 
+  gap: .75rem; 
+}
 
 .productos-pills .pill {
   display: grid;
   grid-template-columns: 1fr auto;
-  align-items: center;
   padding: .85rem 1rem;
   background: #fff;
   border-radius: 20px;
   border: 1px solid rgba(0,0,0,.06);
   font-size: .95rem;
+  color: var(--cafe);
   box-shadow: var(--elev-1);
-  color: var(--cafe); /* Texto del producto en Café */
 }
 
-.productos-pills .pill strong {
-  color: var(--verde); /* Precio en Verde */
-  font-weight: 600;
+.productos-pills .pill strong { 
+  color: var(--verde); 
 }
 
 .order-total {
@@ -139,58 +150,48 @@ body {
   padding: 1rem 1rem 0;
   margin-top: .5rem;
   border-top: 2px dashed rgba(51,103,59,.2);
-  color: var(--cafe); /* "Total del pedido" en Café */
+  color: var(--cafe);
 }
 
 .order-total strong { 
-  color: var(--verde); /* Monto total en Verde */
+  color: var(--verde); 
   font-size: 1.1rem; 
 }
 
-/* ================= SECCIONES (ENTREGA, REFERENCIA, ESTADO) ================= */
-.order-address h3, 
-.pedido-estado h3 {
-  color: var(--verde); /* Títulos en Verde */
+/* ================= SECCIONES ================= */
+.order-address h3, .pedido-estado h3 {
+  color: var(--verde);
   font-size: 1.1rem;
   margin-bottom: 0.4rem;
 }
 
-.entrega-text, 
-.referencia-text {
-  color: var(--cafe); /* Textos de abajo en Café */
+.entrega-text, .referencia-text {
+  color: var(--cafe);
   margin: 0 0 1.2rem 0;
   font-size: 0.95rem;
 }
 
-.estado-resumen {
-  color: var(--cafe); /* Texto general del paso en Café */
-}
+/* ESTADOS */
+.estado-paso { color: var(--verde); font-weight: 600; }
+.estado-nombre { color: var(--cafe); }
 
-.estado-paso {
-  color: var(--verde); /* "Paso 1 de 4" en Verde */
-  font-weight: 600;
-}
-
-.estado-nombre {
-  color: var(--cafe); /* Nombre del estado actual en Café */
-}
-
-/* LISTA DE ESTADOS */
 .estado-list { list-style: none; padding: 0; margin: 1rem 0; }
 .estado-item {
   display: flex;
   align-items: center;
   gap: .75rem;
-  padding: .5rem 0;
+  padding: .4rem 0;
   color: var(--text-muted);
 }
+
 .estado-item .dot {
-  width: 28px; height: 28px;
+  width: 24px; height: 24px;
   border-radius: 50%;
   display: grid; place-items: center;
-  background: var(--surface-variant);
-  font-size: .8rem;
+  background: #f0f0f0;
+  font-size: .75rem;
 }
+
 .estado-item.activo { color: var(--verde); font-weight: 600; }
 .estado-item.activo .dot { background: var(--verde); color: #fff; }
 .estado-item.completado .dot { background: var(--cafe); color: #fff; }
@@ -208,34 +209,28 @@ body {
   font-weight: 600;
   font-size: .9rem;
   cursor: pointer;
+  transition: all .2s ease;
   margin-top: 1rem;
-  transition: background .2s ease;
 }
 
-/* ================= CARRUSEL (CAMBIOS DE COLOR) ================= */
+.ver-recibo:hover { 
+  background: rgba(51,103,59,0.2) !important; 
+  transform: translateY(-2px); 
+}
+
+/* ================= CARRUSEL ================= */
 .related { margin-top: 2rem; }
+.similar-title { color: var(--verde); margin-bottom: 0.2rem; }
+.section-subtitle { color: var(--cafe); font-size: 0.9rem; margin-top: 0; }
 
-.similar-title {
-  color: var(--verde); /* "Mis pedidos" en Verde */
-  margin-bottom: 0.2rem;
-}
-
-.section-subtitle {
-  color: var(--cafe); /* "Selecciona un pedido..." en Café */
-  margin-top: 0;
-  font-size: 0.9rem;
-}
-
-.carousel-container {
-  position: relative;
-  width: 100%;
+.carousel-container { 
+  position: relative; 
+  width: 100%; 
   padding-bottom: 1rem; 
 }
 
 .similar-list {
   display: flex !important;
-  flex-direction: row !important;
-  flex-wrap: nowrap !important;
   gap: 16px;
   padding: 10px 4px 20px;
   overflow-x: auto !important;
@@ -254,33 +249,33 @@ body {
   box-shadow: var(--elev-1);
   scroll-snap-align: start;
   cursor: pointer;
+  border: 2px solid transparent;
   transition: all .2s ease;
-  outline: none !important;
 }
 
 .similar-card.is-selected {
-  border: 2px solid var(--verde);
+  border-color: var(--verde);
   transform: translateY(-4px);
   box-shadow: var(--elev-2);
 }
 
 .pedido-mini-img {
   width: 100%;
-  height: 100px;
+  height: 80px;
   object-fit: contain;
   margin-bottom: .8rem;
+  background: transparent;
 }
 
-.pedido-mini-numero { margin: 0; font-size: .95rem; color: var(--verde); }
-.pedido-mini-total { margin: .2rem 0; font-size: .85rem; font-weight: 600; color: var(--cafe); }
-.pedido-mini-status { font-size: .75rem; color: var(--text-muted); }
+.pedido-mini-numero { color: var(--verde); margin: 0; font-size: .9rem; }
+.pedido-mini-total { color: var(--cafe); font-weight: 600; font-size: .85rem; margin: .2rem 0; }
 
 /* FLECHAS */
 .carousel-prev-circle, .carousel-next-circle {
   position: absolute;
-  top: 40%;
+  top: 50%; transform: translateY(-50%);
   z-index: 10;
-  width: 40px; height: 40px;
+  width: 36px; height: 36px;
   border-radius: 50%;
   background: #fff;
   border: none;
@@ -293,10 +288,6 @@ body {
 .carousel-prev-circle { left: -10px; }
 .carousel-next-circle { right: -10px; }
 
-/* AJUSTES MÓVIL */
 @media (max-width: 600px) {
-  .similar-card {
-    flex: 0 0 75% !important;
-    min-width: 75%;
-  }
+  .similar-card { flex: 0 0 75% !important; min-width: 75%; }
 }
