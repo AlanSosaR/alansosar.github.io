@@ -1,9 +1,9 @@
 /**
- * recibo.checkout.js — FINAL DEFINITIVO
+ * recibo.checkout.js — FINAL DEFINITIVO CORREGIDO
  * ---------------------------------------------------------
- * Checkout de pedidos Café Cortero
+ * Checkout de pedidos Café Cortero con soporte order_notes
  */
-console.log("🧾 recibo.checkout.js");
+console.log("🧾 recibo.checkout.js — Sincronizado");
 
 /* =========================================================
    ELEMENTOS UI — CHECKOUT
@@ -20,7 +20,7 @@ const imgPreview = $id("imgComprobante");
 const btnSubirComprobante = $id("btnSubirComprobante");
 
 /* =========================================================
-   SNACKBAR DE CONFIRMACIÓN (SOLO CHECKOUT)
+   SNACKBAR DE CONFIRMACIÓN
 ========================================================= */
 function showConfirmSnack(message, onConfirm, onCancel) {
   const bar = $id("snackbar");
@@ -48,7 +48,7 @@ function showConfirmSnack(message, onConfirm, onCancel) {
 }
 
 /* =========================================================
-   DATOS CLIENTE
+   DATOS CLIENTE (CORREGIDO PARA MOSTRAR NOTA ACTUAL)
 ========================================================= */
 let selectedAddressId = null;
 
@@ -71,7 +71,7 @@ async function cargarDatosCliente() {
 
   const { data: addr } = await sb
     .from("addresses")
-    .select("id,state,city,street,postal_code")
+    .select("id,state,city,street")
     .eq("user_id", user.id)
     .order("created_at", { ascending: false })
     .limit(1);
@@ -80,7 +80,10 @@ async function cargarDatosCliente() {
     selectedAddressId = addr[0].id;
     $id("zonaCliente").textContent = `${addr[0].state}, ${addr[0].city}`;
     $id("direccionCliente").textContent = addr[0].street || "—";
-    $id("notaCliente").textContent = addr[0].postal_code || "—";
+    
+    // 🔑 LEEMOS LA NOTA QUE EL USUARIO ESCRIBIÓ EN EL PASO ANTERIOR
+    const notaActual = sessionStorage.getItem("current_order_notes");
+    $id("notaCliente").textContent = notaActual || "Sin referencia";
   }
 }
 
@@ -155,8 +158,7 @@ metodoPago?.addEventListener("change", () => {
     return;
   }
 
-  if (metodoPago.value === "cash" || metodoPago.value === "cash_on_delivery") {
-    metodoPago.value = "cash_on_delivery";
+  if (metodoPago.value === "cash_on_delivery") {
     bloqueEfectivo?.classList.remove("hidden");
     btnEnviar.disabled = false;
   }
@@ -184,19 +186,17 @@ inputFile?.addEventListener("change", () => {
 });
 
 /* =========================================================
-   ENVIAR PEDIDO
+   ENVIAR PEDIDO (INSERCIÓN EN BASE DE DATOS)
 ========================================================= */
 async function enviarPedido() {
   const sb = window.supabaseClient;
   const user = getUserCache();
+  
+  // 🔑 CAPTURAMOS LA NOTA DESDE EL STORAGE
+  const orderNotes = sessionStorage.getItem("current_order_notes") || "";
 
   if (!user || !selectedAddressId) {
     showSnack("Faltan datos del cliente");
-    return;
-  }
-
-  if (metodoPago.value === "bank_transfer" && !inputFile.files.length) {
-    showSnack("Debes subir el comprobante");
     return;
   }
 
@@ -204,31 +204,24 @@ async function enviarPedido() {
   loader?.classList.remove("hidden");
 
   try {
-    const { data: orderNumber } =
-      await sb.rpc("next_order_number", { p_user_id: user.id });
+    const { data: orderNumber } = await sb.rpc("next_order_number", { p_user_id: user.id });
 
-    await sb.from("orders").insert({
+    // 🔑 INSERCIÓN CON EL NUEVO CAMPO order_notes
+    const { data: newOrder, error: orderErr } = await sb.from("orders").insert({
       user_id: user.id,
       address_id: selectedAddressId,
       order_number: orderNumber,
       total,
-      payment_method:
-        metodoPago.value === "bank_transfer"
-          ? "bank_transfer"
-          : "cash_on_delivery",
-      status: "pending"
-    });
+      payment_method: metodoPago.value,
+      status: "pending",
+      order_notes: orderNotes // <-- AQUÍ SE GUARDA LA NOTA HISTÓRICA
+    }).select("id").single();
 
-    const { data: order } = await sb
-      .from("orders")
-      .select("id")
-      .eq("user_id", user.id)
-      .eq("order_number", orderNumber)
-      .single();
+    if (orderErr) throw orderErr;
 
     await sb.from("order_items").insert(
       carrito.map(it => ({
-        order_id: order.id,
+        order_id: newOrder.id,
         product_id: it.product_id,
         quantity: it.qty,
         price: it.price
@@ -237,18 +230,13 @@ async function enviarPedido() {
 
     if (metodoPago.value === "bank_transfer") {
       const file = inputFile.files[0];
-      const path = `${user.id}/${order.id}.${file.name.split(".").pop()}`;
+      const path = `${user.id}/${newOrder.id}.${file.name.split(".").pop()}`;
 
-      await sb.storage
-        .from(RECEIPT_BUCKET)
-        .upload(path, file, { upsert: true });
-
-      const { data: url } = sb.storage
-        .from(RECEIPT_BUCKET)
-        .getPublicUrl(path);
+      await sb.storage.from(RECEIPT_BUCKET).upload(path, file, { upsert: true });
+      const { data: url } = sb.storage.from(RECEIPT_BUCKET).getPublicUrl(path);
 
       await sb.from("payment_receipts").insert({
-        order_id: order.id,
+        order_id: newOrder.id,
         user_id: user.id,
         file_url: url.publicUrl,
         file_path: path,
@@ -257,7 +245,8 @@ async function enviarPedido() {
     }
 
     localStorage.setItem(CART_KEY, "[]");
-    location.href = `recibo.html?id=${order.id}`;
+    sessionStorage.removeItem("current_order_notes"); // Limpiamos la nota
+    location.href = `recibo.html?id=${newOrder.id}`;
 
   } catch (err) {
     console.error(err);
@@ -269,16 +258,11 @@ async function enviarPedido() {
 }
 
 /* =========================================================
-   CONFIRMACIÓN (SNACKBAR REAL)
+   CONFIRMACIÓN
 ========================================================= */
 btnEnviar?.addEventListener("click", e => {
   e.preventDefault();
-
-  showConfirmSnack(
-    "¿Confirmas enviar el pedido?",
-    enviarPedido,
-    () => (btnEnviar.disabled = false)
-  );
+  showConfirmSnack("¿Confirmas enviar el pedido?", enviarPedido, () => (btnEnviar.disabled = false));
 });
 
 /* =========================================================
