@@ -290,37 +290,59 @@ body {
 
 /* ============================================================
    BOTÓN — VER RECIBO (ICONO + TEXTO + FLECHA)
+   BLINDAJE ANTI CSS GLOBAL
 ============================================================ */
+
 .ver-recibo {
   margin-top: 1rem;
   align-self: flex-start;
 
-  display: inline-flex;
+  /* Layout */
+  display: inline-flex !important;
   align-items: center;
   gap: .6rem;
 
-  padding: .45rem .85rem .45rem .6rem;
+  /* Box */
+  padding: .5rem .95rem .5rem .7rem;
   border-radius: 999px;
 
-  background: transparent;
-  border: none;
+  /* Visual */
+  background: rgba(51,103,59,.08);
+  border: none !important;
 
-  font-size: .9rem;
+  /* Texto */
+  font-size: .9rem !important;
   font-weight: 600;
-  color: var(--verde);
+  font-family: inherit !important;
+  line-height: 1 !important;
+  color: var(--verde) !important;
 
+  /* UX */
   cursor: pointer;
+
+  /* 🔐 BLINDAJE */
+  appearance: none;
+  -webkit-appearance: none;
+  text-transform: none !important;
+  white-space: nowrap;
 
   transition:
     background .2s ease,
     transform .15s ease;
 }
 
-/* Iconos */
+/* 🔐 FORZAR TEXTO E ICONOS */
+.ver-recibo * {
+  display: inline-flex !important;
+  align-items: center;
+  font-size: inherit !important;
+  color: inherit !important;
+}
+
+/* Iconos Material */
 .ver-recibo .material-symbols-outlined {
-  font-size: 20px;
+  font-size: 20px !important;
   line-height: 1;
-  color: var(--verde);
 }
 
 /* Flecha SIEMPRE al final */
@@ -328,10 +350,10 @@ body {
   margin-left: .25rem;
 }
 
-/* Hover */
+/* Hover (solo desktop real) */
 @media (hover: hover) {
   .ver-recibo:hover {
-    background: rgba(51,103,59,.08);
+    background: rgba(51,103,59,.14);
   }
 }
 
