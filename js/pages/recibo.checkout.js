@@ -1,7 +1,7 @@
 /**
- * 🧾 recibo.checkout.js — FINAL MATERIAL 3
+ * 🧾 recibo.checkout.js — FINAL MATERIAL 3 (CORREGIDO)
  * ---------------------------------------------------------
- * Gestión de creación de pedidos y lógica de pago.
+ * Gestión de creación de pedidos y persistencia de comprobante.
  */
 console.log("🧾 recibo.checkout.js — Sincronizado");
 
@@ -25,6 +25,29 @@ let totalPedidoGlobal = 0;
 const carritoCheckout = JSON.parse(localStorage.getItem("cafecortero_cart")) || [];
 
 /* =========================================================
+   PERSISTENCIA DE IMAGEN (PREVENT DATA LOSS ON RELOAD)
+========================================================= */
+// Función para guardar la imagen en sesión y que no se borre al recargar
+function guardarImagenTemporal(file) {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    sessionStorage.setItem("temp_receipt_base64", e.target.result);
+    mostrarPreview(e.target.result);
+  };
+  reader.readAsDataURL(file);
+}
+
+function mostrarPreview(src) {
+  if (!imgPreview || !previewBox) return;
+  imgPreview.src = src;
+  imgPreview.style.maxWidth = "100%";
+  imgPreview.style.borderRadius = "12px";
+  imgPreview.style.display = "block";
+  previewBox.classList.remove("hidden");
+  if (btnEnviar) btnEnviar.disabled = false;
+}
+
+/* =========================================================
    SNACKBAR DE CONFIRMACIÓN (DISEÑO M3 EXPRESSIVE)
 ========================================================= */
 function showConfirmSnack(message, onConfirm) {
@@ -32,11 +55,11 @@ function showConfirmSnack(message, onConfirm) {
   if (!bar) return;
 
   bar.innerHTML = `
-    <div class="snack-content" style="display:flex; justify-content:space-between; align-items:center; width:100%;">
-      <span class="snack-text">${message}</span>
+    <div class="snack-content" style="display:flex; justify-content:space-between; align-items:center; width:100%; gap:12px;">
+      <span class="snack-text" style="font-size:0.9rem;">${message}</span>
       <div class="snack-actions" style="display:flex; gap:8px;">
-        <button class="snack-action secondary" id="snack-cancel" style="background:transparent; color:#fff; border:none; cursor:pointer;">Editar</button>
-        <button class="snack-action primary" id="snack-ok" style="background:#fff; color:var(--verde); border:none; padding:4px 12px; border-radius:8px; cursor:pointer; font-weight:600;">Enviar</button>
+        <button class="snack-action secondary" id="snack-cancel" style="background:transparent; color:#fff; border:none; cursor:pointer; font-size:0.85rem;">Editar</button>
+        <button class="snack-action primary" id="snack-ok" style="background:#fff; color:var(--md-sys-color-primary, #2e7d32); border:none; padding:6px 14px; border-radius:100px; cursor:pointer; font-weight:600; font-size:0.85rem;">Confirmar</button>
       </div>
     </div>
   `;
@@ -50,19 +73,17 @@ function showConfirmSnack(message, onConfirm) {
 }
 
 /* =========================================================
-   CARGAR DATOS INICIALES (FECHA, HORA Y CLIENTE)
+   CARGAR DATOS INICIALES
 ========================================================= */
 async function cargarDatosResumen() {
   const sb = window.supabaseClient;
   const user = window.getUserCache();
   if (!user) return;
 
-  // 1. Mostrar Fecha y Hora actual (para el resumen previo al envío)
   const ahora = new Date();
   if($id("fechaPedido")) $id("fechaPedido").textContent = ahora.toLocaleDateString();
   if($id("horaPedido")) $id("horaPedido").textContent = ahora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-  // 2. Datos de usuario básicos
   const { data: userRow } = await sb.from("users")
     .select("name,email,phone")
     .eq("id", user.id)
@@ -74,7 +95,6 @@ async function cargarDatosResumen() {
     if($id("telefonoCliente")) $id("telefonoCliente").textContent = userRow.phone || "—";
   }
 
-  // 3. Dirección y Nota
   const { data: addr } = await sb.from("addresses")
     .select("id,state,city,street")
     .eq("user_id", user.id)
@@ -89,15 +109,11 @@ async function cargarDatosResumen() {
     const notaActual = sessionStorage.getItem("current_order_notes");
     if($id("notaCliente")) $id("notaCliente").textContent = notaActual || "Sin nota adicional";
   }
-
-  // 4. Ocultar bloque de estado (Solo se usa en vista de seguimiento)
-  const bloqueEstado = document.querySelector(".pedido-progreso");
-  if (bloqueEstado) bloqueEstado.classList.add("hidden");
 }
 
 async function prepararResumenCarrito() {
   const lista = $id("listaProductos");
-  if (!lista || window.IS_READ_ONLY) return;
+  if (!lista) return;
 
   lista.innerHTML = "";
   totalPedidoGlobal = 0;
@@ -111,10 +127,8 @@ async function prepararResumenCarrito() {
     const subtotal = it.qty * it.price;
     totalPedidoGlobal += subtotal;
     lista.innerHTML += `
-      <div class="cafe-item">
-        <div class="cafe-info-main">
-          <span class="cafe-nombre">${it.name} <span class="cafe-qty">(${it.qty})</span></span>
-        </div>
+      <div class="cafe-item" style="display:flex; justify-content:space-between; margin-bottom:8px;">
+        <span class="cafe-nombre">${it.name} <b style="opacity:0.7">x${it.qty}</b></span>
         <span class="cafe-precio">L ${subtotal.toFixed(2)}</span>
       </div>`;
   });
@@ -125,28 +139,29 @@ async function prepararResumenCarrito() {
 /* =========================================================
    LÓGICA DE MÉTODOS DE PAGO
 ========================================================= */
-function resetMetodoPago() {
+function actualizarInterfazPago() {
+  const valor = metodoPago.value;
   bloqueDeposito?.classList.add("hidden");
   bloqueEfectivo?.classList.add("hidden");
-  previewBox?.classList.add("hidden");
-  if(btnEnviar) btnEnviar.disabled = true;
-  if (inputFile) inputFile.value = "";
-}
-
-metodoPago?.addEventListener("change", () => {
-  resetMetodoPago();
-  const valor = metodoPago.value;
 
   if (valor === "bank_transfer") {
     bloqueDeposito?.classList.remove("hidden");
+    // Si ya había una imagen cargada en sesión, mostrarla
+    const storedImg = sessionStorage.getItem("temp_receipt_base64");
+    btnEnviar.disabled = !storedImg;
+    if(storedImg) mostrarPreview(storedImg);
   } else if (valor === "cash") {
     bloqueEfectivo?.classList.remove("hidden");
-    if(btnEnviar) btnEnviar.disabled = false;
+    btnEnviar.disabled = false;
+  } else {
+    btnEnviar.disabled = true;
   }
-});
+}
+
+metodoPago?.addEventListener("change", actualizarInterfazPago);
 
 /* =========================================================
-   GESTIÓN DE COMPROBANTE (AJUSTADO)
+   GESTIÓN DE COMPROBANTE
 ========================================================= */
 btnSubirComprobante?.addEventListener("click", e => {
   e.preventDefault();
@@ -159,15 +174,7 @@ inputFile?.addEventListener("change", () => {
     window.showSnack("Solo se permiten imágenes (JPG, PNG)");
     return;
   }
-  
-  // Preview con CSS inline para asegurar que no se salga del área
-  imgPreview.src = URL.createObjectURL(file);
-  imgPreview.style.maxWidth = "100%";
-  imgPreview.style.borderRadius = "12px";
-  imgPreview.style.display = "block";
-  
-  previewBox?.classList.remove("hidden");
-  if(btnEnviar) btnEnviar.disabled = false; 
+  guardarImagenTemporal(file);
 });
 
 /* =========================================================
@@ -187,15 +194,17 @@ async function ejecutarEnvioPedido() {
   loader?.classList.remove("hidden");
 
   try {
-    // 1. Obtener número de orden secuencial
-    const { data: numData, error: rpcErr } = await sb.rpc("next_order_number");
-    const orderNumber = numData || Math.floor(1000 + Math.random() * 9000);
+    // 1. Obtener número de orden secuencial real
+    const { data: orderNumber, error: rpcErr } = await sb.rpc("next_order_number");
+    if (rpcErr) console.warn("Error RPC correlativo, usando fallback");
+
+    const finalNumber = orderNumber || Math.floor(1000 + Math.random() * 9000);
 
     // 2. Crear Orden
     const { data: newOrder, error: orderErr } = await sb.from("orders").insert({
       user_id: user.id,
       address_id: selectedAddressId,
-      order_number: orderNumber,
+      order_number: finalNumber,
       total: totalPedidoGlobal,
       payment_method: metodoPago.value,
       status: "pending",
@@ -204,7 +213,7 @@ async function ejecutarEnvioPedido() {
 
     if (orderErr) throw orderErr;
 
-    // 3. Insertar Items del Carrito
+    // 3. Insertar Items
     const itemsToInsert = carritoCheckout.map(it => ({
       order_id: newOrder.id,
       product_id: it.product_id,
@@ -215,34 +224,40 @@ async function ejecutarEnvioPedido() {
     const { error: itemsErr } = await sb.from("order_items").insert(itemsToInsert);
     if (itemsErr) throw itemsErr;
 
-    // 4. Subir Imagen si es Transferencia
-    if (metodoPago.value === "bank_transfer" && inputFile.files[0]) {
-      const file = inputFile.files[0];
-      const ext = file.name.split(".").pop();
-      const path = `${user.id}/${newOrder.id}_${Date.now()}.${ext}`;
+    // 4. Subir Imagen (desde el input o desde el base64 de sesión)
+    if (metodoPago.value === "bank_transfer") {
+      const storedBase64 = sessionStorage.getItem("temp_receipt_base64");
+      if (storedBase64) {
+        // Convertir base64 a Blob para subir a Storage
+        const res = await fetch(storedBase64);
+        const blob = await res.blob();
+        const path = `${user.id}/${newOrder.id}_${Date.now()}.png`;
 
-      const { error: uploadErr } = await sb.storage.from("payment-receipts").upload(path, file);
-      if (uploadErr) throw uploadErr;
+        const { error: uploadErr } = await sb.storage.from("payment-receipts").upload(path, blob);
+        if (uploadErr) throw uploadErr;
 
-      const { data: urlData } = sb.storage.from("payment-receipts").getPublicUrl(path);
+        const { data: urlData } = sb.storage.from("payment-receipts").getPublicUrl(path);
 
-      await sb.from("payment_receipts").insert({
-        order_id: newOrder.id,
-        user_id: user.id,
-        file_url: urlData.publicUrl,
-        file_path: path,
-        review_status: "pending"
-      });
+        await sb.from("payment_receipts").insert({
+          order_id: newOrder.id,
+          user_id: user.id,
+          file_url: urlData.publicUrl,
+          file_path: path,
+          review_status: "pending"
+        });
+      }
     }
 
-    // 5. Finalizar y redirigir
+    // 5. Limpieza y Redirección
     localStorage.setItem("cafecortero_cart", "[]");
     sessionStorage.removeItem("current_order_notes");
+    sessionStorage.removeItem("temp_receipt_base64");
+    
     window.location.href = `recibo.html?id=${newOrder.id}`;
 
   } catch (err) {
     console.error("Error Checkout:", err);
-    window.showSnack("No pudimos procesar tu pedido. Intenta de nuevo.");
+    window.showSnack("Error al procesar pedido. Revisa tu conexión.");
     btnEnviar.disabled = false;
   } finally {
     loader?.classList.add("hidden");
@@ -250,32 +265,21 @@ async function ejecutarEnvioPedido() {
 }
 
 /* =========================================================
-   NAVEGACIÓN Y EVENTOS
-========================================================= */
-function configurarBotones() {
-  const btnBack = $id("btn-back");
-  if (btnBack) {
-    btnBack.onclick = (e) => {
-      e.preventDefault();
-      window.location.href = "datos_cliente.html"; 
-    };
-  }
-
-  btnEnviar?.addEventListener("click", e => {
-    e.preventDefault();
-    showConfirmSnack("¿Confirmas el envío de tu pedido?", ejecutarEnvioPedido);
-  });
-}
-
-/* =========================================================
    INICIALIZACIÓN
 ========================================================= */
 (async function init() {
   await window.esperarSupabase();
-  if (window.IS_READ_ONLY) return; 
+  
+  // Configuración de botones
+  $id("btn-back")?.addEventListener("click", () => window.location.href = "datos_cliente.html");
+  btnEnviar?.addEventListener("click", e => {
+    const txt = (metodoPago.value === "cash") ? "¿Confirmas tu pedido con pago en efectivo?" : "¿Confirmas el envío de tu comprobante y pedido?";
+    showConfirmSnack(txt, ejecutarEnvioPedido);
+  });
 
-  configurarBotones();
   await cargarDatosResumen();
   await prepararResumenCarrito();
-  resetMetodoPago();
+  
+  // Restaurar estado si hubo reload
+  actualizarInterfazPago();
 })();
