@@ -1,50 +1,60 @@
 /**
- * 🧾 recibo.view.js — FINAL MATERIAL 3 (CORREGIDO)
+ * 🧾 recibo.view.js — FINAL MATERIAL 3 (ESTABLE)
  * ---------------------------------------------------------
- * Vista de recibo (modo SOLO LECTURA).
  */
 
 console.log("🧾 recibo.view.js — Iniciando");
 
-/* =========================================================
-   INIT VIEW — SOLO CUANDO HAY ?id=
-========================================================= */
 document.addEventListener("DOMContentLoaded", () => {
 
-  // 🔒 Usar window para asegurar que detectamos las variables del Core
-  const isReadOnly = window.IS_READ_ONLY || Boolean(new URLSearchParams(window.location.search).get("id"));
-  const orderId = window.ORDER_ID || new URLSearchParams(window.location.search).get("id");
+  // 1. Obtener ID de la URL de forma independiente para evitar fallos del Core
+  const urlParams = new URLSearchParams(window.location.search);
+  const orderId = urlParams.get("id");
 
-  if (!isReadOnly) {
-    console.log("🛒 Modo checkout detectado, recibo.view.js desactivado.");
+  // Si no hay ID, estamos en modo Checkout (creación), este script no debe hacer nada.
+  if (!orderId) {
+    console.log("🛒 Modo checkout detectado. recibo.view.js en espera.");
     return;
   }
 
   (async function initView() {
     try {
-      // ⏳ Esperar a que Supabase y el Core estén listos
+      // ⏳ Esperar conexión a Supabase
       if (typeof window.esperarSupabase === "function") {
         await window.esperarSupabase();
       }
 
-      // 🛠️ Validación de funciones críticas (Evita el ReferenceError)
-      const _getUserCache = window.getUserCache || (typeof getUserCache !== "undefined" ? getUserCache : null);
-      
-      if (typeof _getUserCache !== "function") {
-        console.error("❌ Error: getUserCache no está definido. Revisa el orden de los scripts.");
-        return;
+      /**
+       * 🛠️ VALIDACIÓN DE USUARIO CORREGIDA
+       * Intentamos obtener el usuario desde el Core, si falla, buscamos en localStorage directamente
+       */
+      let user = null;
+      if (typeof window.getUserCache === "function") {
+          user = window.getUserCache();
+      } else {
+          // Fallback de emergencia si el Core no ha cargado la función
+          const sessionKey = Object.keys(localStorage).find(k => k.startsWith("sb-") && k.endsWith("-auth-token"));
+          const sessionData = sessionKey ? JSON.parse(localStorage.getItem(sessionKey)) : null;
+          user = sessionData?.user || null;
       }
 
-      const user = _getUserCache();
+      // Si después de los intentos no hay usuario, mandamos a login con un pequeño delay
       if (!user) {
-        console.warn("🔐 Usuario no autenticado, redirigiendo...");
-        location.href = "login.html";
+        console.warn("🔐 Usuario no encontrado. Redirigiendo...");
+        setTimeout(() => { location.href = "login.html"; }, 800);
         return;
       }
 
-      // 👁️ UI: Aplicar modo recibo (ocultar elementos de edición)
+      // 👁️ UI: Aplicar modo recibo (Ocultar selectores de pago y botón 'Enviar')
+      // Forzamos la ejecución si la función existe en el Core
       if (typeof window.aplicarModoRecibo === "function") {
         window.aplicarModoRecibo();
+      } else {
+        // Fallback manual si el Core no tiene la función
+        const btnEnviar = document.querySelector(".recibo-botones");
+        const selectPago = document.querySelector(".pago-select-label");
+        if (btnEnviar) btnEnviar.classList.add("hidden");
+        if (selectPago) selectPago.classList.add("hidden");
       }
 
       // 🧾 Cargar pedido desde Supabase
@@ -56,28 +66,24 @@ document.addEventListener("DOMContentLoaded", () => {
       configurarAccionCancelar(orderId);
 
     } catch (err) {
-      console.error("❌ Error crítico en recibo.view.js:", err);
-      if (typeof window.showSnack === "function") window.showSnack("Error al cargar el recibo");
+      console.error("❌ Error en initView:", err);
     }
   })();
 });
 
 /* =========================================================
-   LÓGICA DE CANCELACIÓN (SINCRONIZADA CON CORE)
+   LÓGICA DE CANCELACIÓN
 ========================================================= */
 function configurarAccionCancelar(orderId) {
   const btnCancelar = document.getElementById("btnCancelarPedido");
   if (!btnCancelar) return;
 
   btnCancelar.onclick = async () => {
-    // Confirmación nativa o podrías usar un modal de Material 3
     const confirmar = confirm("¿Estás seguro de que deseas cancelar este pedido?");
     
     if (confirmar) {
       try {
         const sb = window.supabaseClient;
-        if (!sb) throw new Error("Supabase no inicializado");
-
         btnCancelar.disabled = true;
         btnCancelar.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Cancelando...`;
 
@@ -88,9 +94,9 @@ function configurarAccionCancelar(orderId) {
 
         if (error) throw error;
 
-        // 🔄 Refrescar la UI usando las funciones del Core
+        // Feedback al usuario y recarga de datos
         if (typeof window.showSnack === "function") {
-            window.showSnack("Pedido cancelado correctamente");
+            window.showSnack("Pedido cancelado");
         }
         
         if (typeof window.cargarPedidoExistente === "function") {
@@ -99,7 +105,6 @@ function configurarAccionCancelar(orderId) {
 
       } catch (err) {
         console.error("Error al cancelar:", err);
-        if (typeof window.showSnack === "function") window.showSnack("No se pudo cancelar");
         btnCancelar.disabled = false;
         btnCancelar.innerHTML = `<span class="material-symbols-outlined">cancel</span> Cancelar Pedido`;
       }
