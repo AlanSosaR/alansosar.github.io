@@ -11,9 +11,17 @@
   --fondo: #fafafa;
   --marron-suave: rgba(75, 44, 25, 0.7);
   --border-cafe: rgba(81, 38, 21, 0.75);
+  /* Nuevas variables para M3 */
+  --m3-surface: #f7f2fa;
+  --m3-on-surface: #1d1b20;
 }
 
 /* ================= BASE ================= */
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent; /* Eliminamos el click azul en móviles */
+}
+
 body {
   margin: 0;
   background: var(--blanco);
@@ -111,13 +119,13 @@ body.header-checkout .recibo-container {
   text-align: center;
   font-size: 1.45rem;
   margin-bottom: 6px;
-  color: var(--verde); /* Pedido número en verde */
+  color: var(--verde);
 }
 
 h3 {
   margin-top: 24px;
   font-size: 1.1rem;
-  color: var(--verde); /* Títulos de sección en verde */
+  color: var(--verde);
   padding-left: 12px;
   border-left: 4px solid var(--marron);
 }
@@ -130,7 +138,7 @@ h3 {
 .pedido-fecha p {
   margin: 4px 0;
   font-size: 0.95rem;
-  color: var(--verde); /* Fecha y hora en verde */
+  color: var(--verde);
   font-weight: 600;
 }
 
@@ -146,7 +154,7 @@ h3 {
 .progreso-title {
   font-size: 1rem;
   font-weight: 600;
-  color: var(--verde); /* Estado del pedido en verde */
+  color: var(--verde);
   margin-bottom: 12px;
 }
 
@@ -160,7 +168,6 @@ h3 {
   font-size: 0.9rem;
 }
 
-/* Colores de estados según M3 */
 .status-pending { background: #fff3e0; color: #ef6c00; }    
 .status-review { background: #e3f2fd; color: #1565c0; }     
 .status-processing { background: #f3e5f5; color: #7b1fa2; } 
@@ -171,11 +178,11 @@ h3 {
 .cliente-info p {
   margin: 8px 0;
   font-size: 0.95rem;
-  color: var(--verde); /* Datos de cliente en verde */
+  color: var(--verde);
 }
 
 .cliente-info strong {
-  color: var(--marron); /* Los labels se mantienen marrón para contraste */
+  color: var(--marron);
 }
 
 .cafes-list {
@@ -193,7 +200,7 @@ h3 {
   justify-content: space-between;
   align-items: center;
   box-shadow: 0 6px 16px rgba(0,0,0,.08);
-  color: var(--verde); /* Texto de café en verde */
+  color: var(--verde);
 }
 
 .cafe-nombre { font-weight: 600; }
@@ -203,9 +210,9 @@ h3 {
 .recibo-total {
   margin-top: 24px;
   padding-top: 12px;
-  border-top: 2px dotted var(--marron); /* Línea punteada arriba */
+  border-top: 2px dotted var(--marron);
   display: flex;
-  justify-content: space-between; /* Total izquierda, valor derecha */
+  justify-content: space-between;
   align-items: center;
   font-size: 1.25rem;
   font-weight: 700;
@@ -214,7 +221,6 @@ h3 {
 
 #totalPedido {
   color: var(--verde);
-  /* Alineado al precio de los items superiores */
   min-width: 100px;
   text-align: right;
 }
@@ -227,6 +233,7 @@ h3 {
   gap: 18px;
 }
 
+/* Estilo para el contenedor del Selector de Pago */
 .pago-select-label {
   display: flex;
   align-items: center;
@@ -234,9 +241,60 @@ h3 {
   padding: 14px 16px;
   border-radius: 16px;
   border: 1.7px solid var(--border-cafe);
-  background: #fff;
+  background: var(--m3-surface); /* Color M3 */
+  cursor: pointer;
+  transition: border-color 0.2s;
 }
 
+.pago-select-label:focus-within {
+  border-color: var(--verde);
+}
+
+/* Estilo para el <select> interno */
+select.input-m3 {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 1rem;
+  color: var(--m3-on-surface);
+  outline: none;
+  cursor: pointer;
+}
+
+/* Bloque Informativo de Pago (ETA / Instrucciones) */
+.bloque-pago-info {
+  margin: 20px 0;
+  padding: 20px;
+  background: #fdfdfd;
+  border: 1.5px dashed var(--border-cafe);
+  border-radius: 18px;
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Estilo para el botón de Subir Comprobante */
+.btn-upload-m3 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  margin-top: 12px;
+  padding: 14px;
+  background: #fff;
+  color: var(--verde);
+  border: 2px solid var(--verde);
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-upload-m3:hover {
+  background: rgba(51, 103, 59, 0.05);
+}
+
+/* Botón Enviar Pedido y estados */
 .btn-primary {
   width: 100%;
   border-radius: 16px;
@@ -247,10 +305,20 @@ h3 {
   background: var(--verde);
   color: #fff;
   cursor: pointer;
+  transition: opacity 0.3s, background 0.3s;
+  margin-top: 10px; /* Separación del bloque anterior */
+}
+
+.btn-primary:disabled {
+  background: #ccc !important;
+  color: #666 !important;
+  cursor: not-allowed;
+  opacity: 0.7;
 }
 
 .btn-cancelar {
   background: #c62828 !important; 
+  margin-top: 12px;
 }
 
 /* ================= SNACKBAR M3 ================= */
@@ -260,7 +328,7 @@ h3 {
   bottom: 28px;
   transform: translateX(-50%) translateY(120%);
   min-width: 280px;
-  background: #322F35; /* Color oscuro M3 */
+  background: #322F35;
   color: #F4EFF4;
   border-radius: 12px;
   padding: 14px 16px;
@@ -278,3 +346,8 @@ h3 {
 .snack-text { font-size: 0.9rem; }
 
 .hidden { display: none !important; }
+
+@keyframes fadeIn { 
+  from { opacity: 0; transform: translateY(5px); } 
+  to { opacity: 1; transform: translateY(0); } 
+}
