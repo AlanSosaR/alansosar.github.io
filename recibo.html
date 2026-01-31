@@ -3,119 +3,74 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <title>Detalles del pedido | Café Cortero</title>
 
-  <!-- Tipografía -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
-
-  <!-- Material Symbols -->
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
-
-  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-  <!-- CSS -->
   <link rel="stylesheet" href="css/header.css">
   <link rel="stylesheet" href="css/recibo.css">
 </head>
 
 <body class="page-recibo header-checkout">
 
-  <!-- ⚠️ HEADER SE INYECTA POR JS (SIN WRAPPER HEREDADO) -->
-
-  <!-- =========================
-       CONTENIDO
-  ========================= -->
   <main class="recibo-container fade-in">
-
     <section class="recibo-card">
 
-      <!-- BOTÓN VOLVER -->
-<button id="btn-back" class="card-back" aria-label="Volver">
-  <span class="material-symbols-outlined">chevron_left</span>
-</button>
+      <button id="btn-back" class="card-back" aria-label="Volver">
+        <span class="material-symbols-outlined">chevron_left</span>
+      </button>
 
       <div class="inner-card-full">
 
-        <!-- ENCABEZADO TARJETA -->
-<h2>Pedido N.º <span id="numeroPedido"></span></h2>
-
-<div class="pedido-fecha">
-  <p>
-    <span class="pedido-fecha-label">Fecha:</span>
-    <span class="pedido-fecha-valor" id="fechaPedido">—</span>
-  </p>
-  <p>
-    <span class="pedido-fecha-label">Hora:</span>
-    <span class="pedido-fecha-valor" id="horaPedido">—</span>
-  </p>
-</div>
-        <!-- =========================
-     PROGRESO DEL PEDIDO (SOLO LECTURA)
-========================= -->
-<section id="pedido-progreso-recibo" class="pedido-progreso">
-
-  <p class="progreso-title">Estado del pedido</p>
-
-  <div class="progreso-wrapper">
-
-    <div class="progreso-bar">
-      <span class="step pago"></span>
-      <span class="line pago"></span>
-
-      <span class="step revision"></span>
-      <span class="line revision"></span>
-
-      <span class="step confirmado"></span>
-      <span class="line confirmado"></span>
-
-      <span class="step envio"></span>
-    </div>
-
-    <div class="progreso-labels">
-      <span>Pag.</span>
-      <span>Rev.</span>
-      <span>Conf.</span>
-      <span>Envío</span>
-    </div>
-
-  </div>
-
-  <div class="estado">
-    <span class="material-symbols-outlined estado-icon">payments</span>
-    <span class="estado-text" id="estadoPedidoTexto">—</span>
-  </div>
-
-</section>
-
-        <!-- DATOS CLIENTE -->
-        <h3>Datos del cliente</h3>
-        <div class="cliente-info">
-          <p><strong>Nombre:</strong> <span id="nombreCliente"></span></p>
-          <p><strong>Correo:</strong> <span id="correoCliente"></span></p>
-          <p><strong>Teléfono:</strong> <span id="telefonoCliente"></span></p>
-          <p><strong>Zona:</strong> <span id="zonaCliente"></span></p>
-          <p><strong>Dirección:</strong> <span id="direccionCliente"></span></p>
-          <p><strong>Nota:</strong> <span id="notaCliente"></span></p>
+        <div class="pedido-header-main">
+          <h2>Pedido N.º <span id="numeroPedido">---</span></h2>
+          <p class="pedido-fecha-sub">
+            <span id="fechaPedido">-- de --- de ----</span> • <span id="horaPedido">--:-- --</span>
+          </p>
         </div>
 
-        <!-- PRODUCTOS -->
-        <h3>Selección de cafés</h3>
+        <section class="pedido-status-section">
+          <p class="section-label">Estado del pedido</p>
+          <div id="estado-pildora-container" class="pildora-wrapper">
+             </div>
+        </section>
+
+        <h3 class="section-title">Selección de cafés</h3>
         <div id="listaProductos" class="cafes-list"></div>
 
-        <!-- TOTAL -->
-        <p class="recibo-total">
-          <span class="material-symbols-outlined total-icon">paid</span>
-          <strong>Total:</strong> L <span id="totalPedido"></span>
-        </p>
+        <div class="recibo-total-container border-top-dashed">
+          <p class="recibo-total">
+            <span class="total-label">Total del pedido</span>
+            <span class="total-monto">L <span id="totalPedido">0.00</span></span>
+          </p>
+        </div>
 
-        <!-- MÉTODO DE PAGO -->
-        <h3>Método de pago</h3>
+        <div id="container-cancelar" class="cancelar-wrapper">
+          <button id="btnCancelarPedido" class="btn-secondary btn-outline">
+            <span class="material-symbols-outlined">cancel</span>
+            Cancelar Pedido
+          </button>
+        </div>
 
+        <hr class="separator-light">
+
+        <h3 class="section-title">Entrega</h3>
+        <div class="cliente-info">
+          <p id="direccion-resumen" class="text-bold"></p>
+          <p><strong>Referencia:</strong> <span id="notaCliente"></span></p>
+          
+          <details class="datos-adicionales">
+            <summary>Ver datos de contacto</summary>
+            <p><strong>Nombre:</strong> <span id="nombreCliente"></span></p>
+            <p><strong>Correo:</strong> <span id="correoCliente"></span></p>
+            <p><strong>Teléfono:</strong> <span id="telefonoCliente"></span></p>
+          </details>
+        </div>
+
+        <h3 class="section-title">Método de pago</h3>
         <div class="pagos">
-
-          <!-- SELECT -->
           <label class="pago-select-label">
             <span class="material-symbols-outlined">payments</span>
             <select id="metodoPago">
@@ -125,50 +80,29 @@
             </select>
           </label>
 
-          <!-- DEPÓSITO -->
           <div id="pago-deposito" class="pago-bloque hidden">
-            <p>
-              <span class="material-symbols-outlined pago-icon">account_balance</span>
-              <strong>Depósito bancario</strong><br>
-              Banco Atlántida — Cuenta <span>123456789</span><br>
-              A nombre de <span>Café Cortero</span>
-            </p>
-
-            <p class="comprobante-info">
-              Para poder <strong>enviar tu pedido</strong>, debes subir el
-              <strong>comprobante de tu depósito bancario</strong>.<br>
-              El pago será <strong>verificado manualmente</strong> por nuestro equipo.
-            </p>
-
+            <div class="bank-info-card">
+              <span class="material-symbols-outlined">account_balance</span>
+              <p>Banco Atlántida — 123456789<br>A nombre de Café Cortero</p>
+            </div>
             <button class="comprobante-link" id="btnSubirComprobante">
               <span class="material-symbols-outlined">upload</span>
               Subir comprobante
             </button>
-
             <input type="file" id="inputComprobante" accept="image/*" hidden>
-
             <div id="previewComprobante" class="preview hidden">
               <img id="imgComprobante" alt="Comprobante">
-              <p>✔ Comprobante listo para enviar</p>
             </div>
           </div>
 
-          <!-- EFECTIVO -->
           <div id="pago-efectivo" class="pago-bloque hidden">
-            <p>
-              <span class="material-symbols-outlined pago-icon">payments</span>
-              <strong>Pago en efectivo</strong>
-            </p>
-
             <p class="comprobante-info">
-              El pago se realizará <strong>en efectivo</strong> al momento de la
-              <strong>entrega</strong>.
+              <span class="material-symbols-outlined">handshake</span>
+              El pago se realizará en efectivo al momento de la entrega.
             </p>
           </div>
-
         </div>
 
-        <!-- BOTÓN FINAL -->
         <div class="recibo-botones">
           <button id="btnEnviar" class="btn-primary" disabled>
             <span class="btn-text">Enviar pedido</span>
@@ -180,42 +114,16 @@
     </section>
   </main>
 
-  <!-- SNACKBAR -->
   <div id="snackbar" class="snackbar"></div>
-<!-- ======================================================
-     SUPABASE
-====================================================== -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/core/supabase-client-core.js"></script>
 
-<!-- ======================================================
-     MODO DE PÁGINA (ANTES DE CUALQUIER JS PROPIO)
-====================================================== -->
-<script>
-  window.PAGE_MODE = "recibo";
-</script>
-
-<!-- ======================================================
-     HEADER / AUTH / LAYOUT (CORE UI)
-====================================================== -->
-<script type="module" src="js/ui/header.js"></script>
-<script src="js/core/auth-ui.js"></script>
-<script src="js/ui/layout.js"></script>
-
-<!-- ======================================================
-     RECIBO — CORE COMPARTIDO (OBLIGATORIO)
-====================================================== -->
-<script src="js/pages/recibo.core.js"></script>
-
-<!-- ======================================================
-     RECIBO — CHECKOUT (solo si NO hay ?id)
-====================================================== -->
-<script src="js/pages/recibo.checkout.js"></script>
-
-<!-- ======================================================
-     RECIBO — VIEW (solo si HAY ?id)
-====================================================== -->
-<script src="js/pages/recibo.view.js"></script>
-
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/core/supabase-client-core.js"></script>
+  <script>window.PAGE_MODE = "recibo";</script>
+  <script type="module" src="js/ui/header.js"></script>
+  <script src="js/core/auth-ui.js"></script>
+  <script src="js/ui/layout.js"></script>
+  <script src="js/pages/recibo.core.js"></script>
+  <script src="js/pages/recibo.checkout.js"></script>
+  <script src="js/pages/recibo.view.js"></script>
 </body>
 </html>
