@@ -320,10 +320,10 @@ body {
 }
 
 /* ============================================================
-   CARRUSEL — MIS PEDIDOS (BASE ADMIN)
+   CARRUSEL — MIS PEDIDOS (BASE ADMIN FINAL)
 ============================================================ */
 
-/* Sección */
+/* ================= SECCIÓN ================= */
 .related {
   max-width: 1100px;
   margin: 0 auto 3rem;
@@ -341,17 +341,13 @@ body {
   margin-bottom: 1rem;
 }
 
-/* ------------------------------------------------------------
-   CONTENEDOR
------------------------------------------------------------- */
+/* ================= CONTENEDOR ================= */
 .carousel-container {
   position: relative;
   width: 100%;
 }
 
-/* ------------------------------------------------------------
-   LISTA
------------------------------------------------------------- */
+/* ================= LISTA ================= */
 .similar-list {
   display: flex;
   gap: 16px;
@@ -370,14 +366,12 @@ body {
   display: none;
 }
 
-/* ------------------------------------------------------------
-   CARD
------------------------------------------------------------- */
+/* ================= CARD ================= */
 .similar-card {
   flex: 0 0 190px;
   max-width: 190px;
 
-  background: #fff;
+  background: var(--surface);
   border-radius: 18px;
   padding: 1rem;
 
@@ -389,12 +383,11 @@ body {
 
   transition:
     box-shadow .25s ease,
-    transform .25s ease;
+    transform .25s ease,
+    outline-color .25s ease;
 }
 
-/* ------------------------------------------------------------
-   SELECCIONADO (IGUAL ADMIN)
------------------------------------------------------------- */
+/* ================= SELECCIONADO ================= */
 .similar-card.is-selected {
   outline: 2px solid var(--verde);
   outline-offset: 0;
@@ -406,10 +399,60 @@ body {
   transform: translateY(-2px);
 }
 
+/* ================= FLECHAS (DESKTOP) ================= */
+.carousel-prev-circle,
+.carousel-next-circle {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+
+  width: 46px;
+  height: 46px;
+
+  border-radius: 50%;
+  background: var(--surface);
+  border: none;
+
+  box-shadow: var(--elev-2);
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  z-index: 5;
+}
+
+.carousel-prev-circle {
+  left: 8px;
+}
+
+.carousel-next-circle {
+  right: 8px;
+}
+
+.carousel-prev-circle .material-symbols-outlined,
+.carousel-next-circle .material-symbols-outlined {
+  font-size: 24px;
+  color: var(--verde);
+}
+
+/* Ocultables por JS */
+.carousel-prev-circle.is-hidden,
+.carousel-next-circle.is-hidden {
+  display: none;
+}
+
 /* ============================================================
-   MOBILE — 2 TARJETAS VISIBLES
+   MOBILE — 2 TARJETAS VISIBLES (IGUAL ADMIN)
 ============================================================ */
-@media (max-width: 600px) {
+@media (max-width: 900px) {
+
+  /* Sin flechas en móvil */
+  .carousel-prev-circle,
+  .carousel-next-circle {
+    display: none;
+  }
 
   .carousel-container {
     overflow: visible; /* permite sombra */
@@ -426,44 +469,5 @@ body {
   .similar-card {
     flex: 0 0 48%;
     max-width: 48%;
-  }
-}
-
-/* Flechas */
-.carousel-prev-circle,
-.carousel-next-circle {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 46px;
-  height: 46px;
-  border-radius: 50%;
-  background: #fff;
-  border: none;
-  box-shadow: var(--elev-2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
-.carousel-prev-circle { left: 8px; }
-.carousel-next-circle { right: 8px; }
-
-/* Ocultables por JS */
-.carousel-prev-circle.is-hidden,
-.carousel-next-circle.is-hidden {
-  display: none;
-}
-
-/* ================= MÓVIL ================= */
-@media (max-width: 900px) {
-  .carousel-prev-circle,
-  .carousel-next-circle {
-    display: none;
-  }
-
-  .similar-card {
-    flex: 0 0 calc(50% - 8px);
   }
 }
