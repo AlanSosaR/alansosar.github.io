@@ -6,9 +6,7 @@
   <title>Mis pedidos | Café Cortero</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
-
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
-
   <link rel="stylesheet" href="css/header.css" />
   <link rel="stylesheet" href="css/mis-pedidos.css" />
 </head>
@@ -16,7 +14,6 @@
 <body class="page-mis-pedidos header-checkout">
 
 <main class="admin-orders-container fade-in">
-
   <section id="pedido-activo" class="pedido-activo hidden"></section>
 
   <section id="empty-state" class="admin-empty-state hidden">
@@ -29,33 +26,26 @@
     <p class="section-subtitle">Selecciona un pedido para ver su detalle.</p>
 
     <div class="carousel-container">
-
-      <button class="carousel-prev-circle is-hidden" id="pedidos-prev" aria-label="Anterior">
+      <button class="carousel-prev-circle" id="pedidos-prev" aria-label="Anterior">
         <span class="material-symbols-outlined">chevron_left</span>
       </button>
 
       <div class="similar-list" id="pedidos-carrusel"></div>
 
-      <button class="carousel-next-circle is-hidden" id="pedidos-next" aria-label="Siguiente">
+      <button class="carousel-next-circle" id="pedidos-next" aria-label="Siguiente">
         <span class="material-symbols-outlined">chevron_right</span>
       </button>
-
     </div>
   </section>
-
 </main>
 
 <template id="pedido-activo-template">
   <section class="order-main">
-
     <header class="order-preview-header">
-
-      <button
-        class="back-to-shop"
-        onclick="location.href='index.html#productos'"
-        aria-label="Seguir comprando"
-      >
-        <span class="material-symbols-outlined">arrow_back</span>
+      <button class="back-to-shop" onclick="location.href='index.html#productos'">
+        <span class="arrow-circle">
+          <span class="material-symbols-outlined">arrow_back</span>
+        </span>
         <span>Seguir comprando</span>
       </button>
 
@@ -65,13 +55,10 @@
           <span class="fecha"></span> · <span class="hora"></span>
         </span>
       </div>
-
     </header>
 
     <div class="order-layout">
-
       <div class="order-text">
-
         <div class="productos-pills"></div>
 
         <div class="order-total">
@@ -91,24 +78,23 @@
 
         <section class="pedido-estado">
           <h3>Estado del pedido</h3>
-
           <p class="estado-resumen">
             Paso <span class="estado-paso"></span> de 4 ·
             <strong class="estado-nombre"></strong>
           </p>
 
           <ul class="estado-list">
-            <li class="estado-item" data-estado="pagado">
-              <span class="dot">1</span><span>Pagado</span>
+            <li class="estado-item">
+              <span class="dot">1</span><span class="step-text">Pagado</span>
             </li>
-            <li class="estado-item" data-estado="revision">
-              <span class="dot">2</span><span>Revisión</span>
+            <li class="estado-item">
+              <span class="dot">2</span><span class="step-text">Revisión</span>
             </li>
-            <li class="estado-item" data-estado="confirmado">
-              <span class="dot">3</span><span>Confirmado</span>
+            <li class="estado-item">
+              <span class="dot">3</span><span class="step-text">Confirmado</span>
             </li>
-            <li class="estado-item" data-estado="envio">
-              <span class="dot">4</span><span>Envío</span>
+            <li class="estado-item">
+              <span class="dot">4</span><span class="step-text">Envío</span>
             </li>
           </ul>
 
@@ -117,23 +103,20 @@
             <span>Ver recibo</span>
             <span class="material-symbols-outlined">arrow_forward</span>
           </button>
-
         </section>
-
       </div>
 
       <div class="order-media">
-        <img class="recibo-img" alt="Imagen del pago" />
+        <img class="recibo-img" src="" alt="Comprobante" />
       </div>
-
     </div>
   </section>
 </template>
 
 <template id="pedido-carrusel-template">
-  <article class="similar-card pedido-mini-card">
-    <div class="order-card-media">
-      <img class="pedido-mini-img" alt="Pago" />
+  <article class="similar-card">
+    <div class="pedido-mini-img-container">
+      <img class="pedido-mini-img" src="" alt="Miniatura" />
     </div>
     <div class="order-card-info">
       <h4 class="pedido-mini-numero"></h4>
