@@ -11,7 +11,7 @@ console.log("🧾 recibo.checkout.js — Sincronizado");
 const metodoPago = $id("metodoPago");
 const bloqueDeposito = $id("pago-deposito");
 const bloqueEfectivo = $id("pago-efectivo");
-const btnEnviar = $id("btnAccionPrincipal"); // ID corregido según tu HTML
+const btnEnviar = $id("btnAccionPrincipal");
 const loader = $id("loaderAccion");
 
 const inputFile = $id("inputComprobante");
@@ -35,16 +35,14 @@ function showConfirmSnack(message, onConfirm) {
     <div class="snack-content" style="display:flex; justify-content:space-between; align-items:center; width:100%;">
       <span class="snack-text">${message}</span>
       <div class="snack-actions" style="display:flex; gap:8px;">
-        <button class="snack-action secondary" id="snack-cancel">Editar</button>
-        <button class="snack-action primary" id="snack-ok">Enviar</button>
+        <button class="snack-action secondary" id="snack-cancel" style="background:transparent; color:#fff; border:none; cursor:pointer;">Editar</button>
+        <button class="snack-action primary" id="snack-ok" style="background:#fff; color:var(--verde); border:none; padding:4px 12px; border-radius:8px; cursor:pointer; font-weight:600;">Enviar</button>
       </div>
     </div>
   `;
 
   bar.classList.add("show");
-
   $id("snack-cancel").onclick = () => bar.classList.remove("show");
-  
   $id("snack-ok").onclick = () => {
     bar.classList.remove("show");
     onConfirm();
@@ -52,14 +50,19 @@ function showConfirmSnack(message, onConfirm) {
 }
 
 /* =========================================================
-   CARGAR DATOS INICIALES
+   CARGAR DATOS INICIALES (FECHA, HORA Y CLIENTE)
 ========================================================= */
-async function cargarDatosCliente() {
+async function cargarDatosResumen() {
   const sb = window.supabaseClient;
   const user = window.getUserCache();
   if (!user) return;
 
-  // 1. Datos de usuario básicos
+  // 1. Mostrar Fecha y Hora actual (para el resumen previo al envío)
+  const ahora = new Date();
+  if($id("fechaPedido")) $id("fechaPedido").textContent = ahora.toLocaleDateString();
+  if($id("horaPedido")) $id("horaPedido").textContent = ahora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+  // 2. Datos de usuario básicos
   const { data: userRow } = await sb.from("users")
     .select("name,email,phone")
     .eq("id", user.id)
@@ -71,7 +74,7 @@ async function cargarDatosCliente() {
     if($id("telefonoCliente")) $id("telefonoCliente").textContent = userRow.phone || "—";
   }
 
-  // 2. Dirección (Zona y Detalle)
+  // 3. Dirección y Nota
   const { data: addr } = await sb.from("addresses")
     .select("id,state,city,street")
     .eq("user_id", user.id)
@@ -80,14 +83,16 @@ async function cargarDatosCliente() {
 
   if (addr?.length) {
     selectedAddressId = addr[0].id;
-    // Llenar Zona (Estado + Ciudad) y Dirección en el HTML
     if($id("zonaCliente")) $id("zonaCliente").textContent = `${addr[0].state}, ${addr[0].city}`;
     if($id("direccionCliente")) $id("direccionCliente").textContent = addr[0].street;
     
-    // Nota de pedido (Persistida desde datos_cliente.html)
     const notaActual = sessionStorage.getItem("current_order_notes");
     if($id("notaCliente")) $id("notaCliente").textContent = notaActual || "Sin nota adicional";
   }
+
+  // 4. Ocultar bloque de estado (Solo se usa en vista de seguimiento)
+  const bloqueEstado = document.querySelector(".pedido-progreso");
+  if (bloqueEstado) bloqueEstado.classList.add("hidden");
 }
 
 async function prepararResumenCarrito() {
@@ -134,7 +139,6 @@ metodoPago?.addEventListener("change", () => {
 
   if (valor === "bank_transfer") {
     bloqueDeposito?.classList.remove("hidden");
-    // Habilitar solo cuando suba comprobante
   } else if (valor === "cash") {
     bloqueEfectivo?.classList.remove("hidden");
     if(btnEnviar) btnEnviar.disabled = false;
@@ -142,7 +146,7 @@ metodoPago?.addEventListener("change", () => {
 });
 
 /* =========================================================
-   GESTIÓN DE COMPROBANTE
+   GESTIÓN DE COMPROBANTE (AJUSTADO)
 ========================================================= */
 btnSubirComprobante?.addEventListener("click", e => {
   e.preventDefault();
@@ -155,7 +159,13 @@ inputFile?.addEventListener("change", () => {
     window.showSnack("Solo se permiten imágenes (JPG, PNG)");
     return;
   }
+  
+  // Preview con CSS inline para asegurar que no se salga del área
   imgPreview.src = URL.createObjectURL(file);
+  imgPreview.style.maxWidth = "100%";
+  imgPreview.style.borderRadius = "12px";
+  imgPreview.style.display = "block";
+  
   previewBox?.classList.remove("hidden");
   if(btnEnviar) btnEnviar.disabled = false; 
 });
@@ -178,7 +188,8 @@ async function ejecutarEnvioPedido() {
 
   try {
     // 1. Obtener número de orden secuencial
-    const { data: orderNumber } = await sb.rpc("next_order_number", { p_user_id: user.id });
+    const { data: numData, error: rpcErr } = await sb.rpc("next_order_number");
+    const orderNumber = numData || Math.floor(1000 + Math.random() * 9000);
 
     // 2. Crear Orden
     const { data: newOrder, error: orderErr } = await sb.from("orders").insert({
@@ -189,7 +200,7 @@ async function ejecutarEnvioPedido() {
       payment_method: metodoPago.value,
       status: "pending",
       order_notes: notes
-    }).select("id").single();
+    }).select("id, order_number").single();
 
     if (orderErr) throw orderErr;
 
@@ -246,7 +257,6 @@ function configurarBotones() {
   if (btnBack) {
     btnBack.onclick = (e) => {
       e.preventDefault();
-      // Durante el checkout, volver lleva a los datos de entrega
       window.location.href = "datos_cliente.html"; 
     };
   }
@@ -265,7 +275,7 @@ function configurarBotones() {
   if (window.IS_READ_ONLY) return; 
 
   configurarBotones();
-  await cargarDatosCliente();
+  await cargarDatosResumen();
   await prepararResumenCarrito();
   resetMetodoPago();
 })();
