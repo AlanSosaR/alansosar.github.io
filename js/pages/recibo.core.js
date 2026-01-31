@@ -1,4 +1,9 @@
-console.log("🧾 recibo.core.js — FINAL DEFINITIVO");
+/**
+ * 🧾 recibo.core.js — FINAL DEFINITIVO CORREGIDO
+ * ---------------------------------------------------------
+ * Gestión de visualización de pedidos Café Cortero
+ */
+console.log("🧾 recibo.core.js — Sincronizado con order_notes");
 
 /* =========================================================
    CONSTANTES
@@ -62,18 +67,16 @@ function getUserCache() {
 }
 
 /* =========================================================
-   UI — MODO RECIBO (SOLO LECTURA) — CORRECTO
+   UI — MODO RECIBO (SOLO LECTURA)
 ========================================================= */
 function aplicarModoRecibo() {
   if (!IS_READ_ONLY) return;
 
-  // 🔑 NO ocultar el contenedor de pagos
   document.querySelector(".pagos")?.classList.remove("hidden");
-
-  // ❌ ocultar solo elementos interactivos
   document.querySelector(".pago-select-label")?.classList.add("hidden");
   document.querySelector(".recibo-botones")?.classList.add("hidden");
 }
+
 /* =========================================================
    PROGRESO DEL PEDIDO
 ========================================================= */
@@ -136,7 +139,7 @@ function aplicarProgresoPedido(status, paymentMethod) {
 }
 
 /* =========================================================
-   CARGAR PEDIDO EXISTENTE — FINAL CORREGIDO
+   CARGAR PEDIDO EXISTENTE (CORREGIDO: order_notes)
 ========================================================= */
 async function cargarPedidoExistente(orderId) {
   const sb = window.supabaseClient;
@@ -149,8 +152,9 @@ async function cargarPedidoExistente(orderId) {
       total,
       status,
       payment_method,
+      order_notes,
       users(name,email,phone),
-      addresses(state,city,street,postal_code),
+      addresses(state,city,street),
       order_items(quantity,price,products(name)),
       payment_receipts(file_url,created_at,review_status)
     `)
@@ -158,26 +162,19 @@ async function cargarPedidoExistente(orderId) {
     .single();
 
   if (error || !pedido) {
-    console.error(error);
     showSnack("Pedido no encontrado");
     return;
   }
 
-  /* ===============================
-     CABECERA
-  =============================== */
+  /* --- CABECERA --- */
   $id("numeroPedido").textContent = pedido.order_number;
-
   const fecha = new Date(pedido.created_at);
   $id("fechaPedido").textContent = fecha.toLocaleDateString("es-ES");
   $id("horaPedido").textContent = fecha.toLocaleTimeString("es-ES", {
-    hour: "2-digit",
-    minute: "2-digit"
+    hour: "2-digit", minute: "2-digit"
   });
 
-  /* ===============================
-     CLIENTE
-  =============================== */
+  /* --- CLIENTE --- */
   if (pedido.users) {
     $id("nombreCliente").textContent = pedido.users.name || "—";
     $id("correoCliente").textContent = pedido.users.email || "—";
@@ -185,15 +182,14 @@ async function cargarPedidoExistente(orderId) {
   }
 
   if (pedido.addresses) {
-    $id("zonaCliente").textContent =
-      `${pedido.addresses.state}, ${pedido.addresses.city}`;
+    $id("zonaCliente").textContent = `${pedido.addresses.state}, ${pedido.addresses.city}`;
     $id("direccionCliente").textContent = pedido.addresses.street || "—";
-    $id("notaCliente").textContent = pedido.addresses.postal_code || "—";
+    
+    // 🔑 NOTA HISTÓRICA: Cargamos desde order_notes, no desde la dirección.
+    $id("notaCliente").textContent = pedido.order_notes || "Sin referencia";
   }
 
-  /* ===============================
-     PRODUCTOS
-  =============================== */
+  /* --- PRODUCTOS --- */
   const lista = $id("listaProductos");
   if (lista) {
     lista.innerHTML = "";
@@ -202,114 +198,57 @@ async function cargarPedidoExistente(orderId) {
         <div class="cafe-item">
           <span>${it.products.name} (${it.quantity})</span>
           <span>L ${(it.quantity * it.price).toFixed(2)}</span>
-        </div>
-      `;
+        </div>`;
     });
   }
 
-  /* ===============================
-     TOTAL
-  =============================== */
+  /* --- TOTAL --- */
   $id("totalPedido").textContent = pedido.total.toFixed(2);
 
-/* ===============================
-   MÉTODO DE PAGO — SOLO INFORMACIÓN (RECIBO)
-=============================== */
-const pagoDeposito = $id("pago-deposito");
-const pagoEfectivo = $id("pago-efectivo");
-const preview = $id("previewComprobante");
-const img = $id("imgComprobante");
-const btnSubir = $id("btnSubirComprobante");
+  /* --- UI PAGOS --- */
+  const pagoDeposito = $id("pago-deposito");
+  const pagoEfectivo = $id("pago-efectivo");
+  const preview = $id("previewComprobante");
+  const img = $id("imgComprobante");
+  const btnSubir = $id("btnSubirComprobante");
 
-/* -------------------------------
-   RESET DEFENSIVO
--------------------------------- */
-pagoDeposito?.classList.add("hidden");
-pagoEfectivo?.classList.add("hidden");
-preview?.classList.add("hidden");
-btnSubir?.classList.add("hidden");
+  pagoDeposito?.classList.add("hidden");
+  pagoEfectivo?.classList.add("hidden");
+  preview?.classList.add("hidden");
+  btnSubir?.classList.add("hidden");
 
-if (img) {
-  img.src = "";
-  img.alt = "";
-}
-
-/* =================================================
-   DEPÓSITO BANCARIO (RECIBO)
-================================================= */
-if (pedido.payment_method === "bank_transfer") {
-  pagoDeposito?.classList.remove("hidden");
-
-  // Cambiar texto a modo recibo (NO checkout)
-  const info = pagoDeposito.querySelector(".comprobante-info");
-  if (info) {
-    info.innerHTML = `
-      <strong>Enviaste el dinero a la siguiente cuenta bancaria:</strong><br>
-      Banco Atlántida — Cuenta <strong>123456789</strong><br>
-      A nombre de <strong>Café Cortero</strong>
-      <br><br>
-      <strong>Este es el comprobante que enviaste:</strong>
-    `;
-  }
-
-  // Mostrar SOLO la imagen del comprobante real
-  if (pedido.payment_receipts?.length && preview && img) {
-    const receipt = pedido.payment_receipts
-      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
-
-    if (receipt?.file_url) {
+  if (pedido.payment_method === "bank_transfer") {
+    pagoDeposito?.classList.remove("hidden");
+    const info = pagoDeposito.querySelector(".comprobante-info");
+    if (info) {
+      info.innerHTML = `<strong>Enviaste el dinero a:</strong><br>Banco Atlántida — Cuenta 123456789<br>A nombre de Café Cortero<br><br><strong>Tu comprobante:</strong>`;
+    }
+    if (pedido.payment_receipts?.length && preview && img) {
+      const receipt = pedido.payment_receipts.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at))[0];
+      if (receipt?.file_url) {
+        preview.classList.remove("hidden");
+        img.src = receipt.file_url;
+        preview.querySelector("p")?.remove();
+      }
+    }
+  } else {
+    pagoEfectivo?.classList.remove("hidden");
+    const info = pagoEfectivo.querySelector(".comprobante-info");
+    if (info) info.innerHTML = `<strong>Elegiste pago en efectivo.</strong><br>Pagarás al recibir tu pedido.`;
+    if (preview && img) {
       preview.classList.remove("hidden");
-      img.src = receipt.file_url;
-      img.alt = "Comprobante de pago enviado";
-
-      // Eliminar cualquier texto heredado del checkout
+      img.src = "imagenes/pago_en_mano.svg";
       preview.querySelector("p")?.remove();
     }
   }
-}
 
-/* =================================================
-   PAGO EN EFECTIVO (RECIBO)
-================================================= */
-if (
-  pedido.payment_method === "cash_on_delivery" ||
-  pedido.payment_method === "cash"
-) {
-  pagoEfectivo?.classList.remove("hidden");
-
-  const info = pagoEfectivo.querySelector(".comprobante-info");
-  if (info) {
-    info.innerHTML = `
-      <strong>Elegiste pago en efectivo.</strong><br>
-      El pago se realizará al momento de la
-      <strong>entrega del pedido</strong>.
-    `;
+  /* --- ESTADO VISUAL --- */
+  let statusVisual = pedido.status;
+  if (pedido.payment_method === "bank_transfer" && pedido.payment_receipts?.some(r => r.review_status === "pending")) {
+    statusVisual = "payment_review";
   }
-
-  // Imagen ilustrativa (NO comprobante)
-  if (preview && img) {
-    preview.classList.remove("hidden");
-    img.src = "imagenes/pago_en_mano.svg";
-    img.alt = "Pago en efectivo al recibir el pedido";
-
-    preview.querySelector("p")?.remove();
-  }
+  aplicarProgresoPedido(statusVisual, pedido.payment_method);
 }
-
-/* ===============================
-   ESTADO VISUAL REAL
-=============================== */
-let statusVisual = pedido.status;
-
-if (
-  pedido.payment_method === "bank_transfer" &&
-  pedido.payment_receipts?.some(r => r.review_status === "pending")
-) {
-  statusVisual = "payment_review";
-}
-
-aplicarProgresoPedido(statusVisual, pedido.payment_method);
-} // ✅ CIERRE DE cargarPedidoExistente
 
 /* =========================================================
    EXPONER CORE
