@@ -138,29 +138,37 @@ if (lista && !IS_READ_ONLY) {
 }
 
 /* =========================================================
-   MÉTODO DE PAGO — UI (CORREGIDO)
+   MÉTODO DE PAGO — UI (LOGICA CORREGIDA)
 ========================================================= */
 function resetMetodoPago() {
+  // Ocultamos ambos bloques antes de decidir cual mostrar
   bloqueDeposito?.classList.add("hidden");
   bloqueEfectivo?.classList.add("hidden");
   previewBox?.classList.add("hidden");
-  imgPreview.src = "";
+  
+  if (imgPreview) imgPreview.src = "";
   btnSubirComprobante?.classList.remove("hidden");
-  btnEnviar.disabled = true; // Siempre bloqueado al resetear
+  
+  // Bloqueamos el botón hasta que se cumpla la condición del método
+  btnEnviar.disabled = true; 
   if (inputFile) inputFile.value = "";
 }
 
 metodoPago?.addEventListener("change", () => {
   resetMetodoPago();
 
-  if (metodoPago.value === "bank_transfer") {
+  const valor = metodoPago.value;
+
+  if (valor === "bank_transfer") {
     bloqueDeposito?.classList.remove("hidden");
-    // El botón se habilitará en la función inputFile.change
+    // El botón permanece disabled hasta que inputFile detecte cambio
+    console.log("Modo transferencia: esperando comprobante.");
   } 
-  else if (metodoPago.value === "cash_on_delivery") {
+  else if (valor === "cash_on_delivery") {
+    // ✅ CORRECCIÓN: Mostramos el bloque de efectivo y habilitamos el envío
     bloqueEfectivo?.classList.remove("hidden");
-    // ✅ CORRECCIÓN: Habilitar botón inmediatamente para efectivo
     btnEnviar.disabled = false;
+    console.log("Modo efectivo: información desplegada y botón habilitado.");
   }
 });
 
@@ -183,7 +191,8 @@ inputFile?.addEventListener("change", () => {
 
   imgPreview.src = URL.createObjectURL(file);
   previewBox?.classList.remove("hidden");
-  // ✅ CORRECCIÓN: Habilitar botón tras subir imagen
+  
+  // ✅ Habilitar botón tras subir imagen válida en transferencia
   btnEnviar.disabled = false;
 });
 
@@ -201,12 +210,12 @@ async function enviarPedido() {
   }
 
   btnEnviar.disabled = true;
-  loader?.classList.remove("hidden");
+  if (loader) loader.classList.remove("hidden");
 
   try {
     const { data: orderNumber } = await sb.rpc("next_order_number", { p_user_id: user.id });
 
-    // Insertar Orden
+    // Insertar Orden Principal
     const { data: newOrder, error: orderErr } = await sb.from("orders").insert({
       user_id: user.id,
       address_id: selectedAddressId,
@@ -219,7 +228,7 @@ async function enviarPedido() {
 
     if (orderErr) throw orderErr;
 
-    // Insertar Items
+    // Insertar Detalles del Carrito
     await sb.from("order_items").insert(
       carrito.map(it => ({
         order_id: newOrder.id,
@@ -229,46 +238,51 @@ async function enviarPedido() {
       }))
     );
 
-    // Si es transferencia, subir a Storage
+    // Lógica específica para transferencia (Subida de archivo)
     if (metodoPago.value === "bank_transfer") {
       const file = inputFile.files[0];
       const ext = file.name.split(".").pop();
-      const path = `${user.id}/${newOrder.id}.${ext}`;
+      const path = `${user.id}/${newOrder.id}_${Date.now()}.${ext}`;
 
-      await sb.storage.from(RECEIPT_BUCKET).upload(path, file, { upsert: true });
-      const { data: url } = sb.storage.from(RECEIPT_BUCKET).getPublicUrl(path);
+      await sb.storage.from(RECEIPT_BUCKET).upload(path, file);
+      const { data: urlData } = sb.storage.from(RECEIPT_BUCKET).getPublicUrl(path);
 
       await sb.from("payment_receipts").insert({
         order_id: newOrder.id,
         user_id: user.id,
-        file_url: url.publicUrl,
+        file_url: urlData.publicUrl,
         file_path: path,
         review_status: "pending"
       });
     }
 
-    // Limpieza y Redirección
+    // Finalización exitosa
     localStorage.setItem(CART_KEY, "[]");
     sessionStorage.removeItem("current_order_notes");
+    
+    // Redirección al recibo final
     location.href = `recibo.html?id=${newOrder.id}`;
 
   } catch (err) {
-    console.error(err);
-    showSnack("Error al enviar pedido");
+    console.error("Error en checkout:", err);
+    showSnack("No se pudo completar el pedido");
     btnEnviar.disabled = false;
   } finally {
-    loader?.classList.add("hidden");
+    if (loader) loader.classList.add("hidden");
   }
 }
 
 /* =========================================================
-   CONFIRMACIÓN
+   MANEJO DE CONFIRMACIÓN
 ========================================================= */
 btnEnviar?.addEventListener("click", e => {
   e.preventDefault();
   showConfirmSnack("¿Confirmas enviar el pedido?", enviarPedido, () => {
-    // Si cancela, el botón debe seguir habilitado según el método
-    if (metodoPago.value === "cash_on_delivery" || (metodoPago.value === "bank_transfer" && inputFile.files.length > 0)) {
+    // Si el usuario edita, el botón debe quedar activo si ya hay info válida
+    const esEfectivo = metodoPago.value === "cash_on_delivery";
+    const tieneFoto = metodoPago.value === "bank_transfer" && inputFile.files.length > 0;
+    
+    if (esEfectivo || tieneFoto) {
        btnEnviar.disabled = false;
     }
   });
