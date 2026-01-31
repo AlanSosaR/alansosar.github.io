@@ -1,4 +1,8 @@
-console.log("📦 datos_cliente.js — FINAL Material 3");
+/* ============================================================
+   📦 datos_cliente.js — FINAL CORREGIDO (Material 3)
+============================================================ */
+
+console.log("📦 datos_cliente.js — FINAL Sincronizado");
 
 /* ============================================================
    ESPERAR SUPABASE
@@ -44,7 +48,6 @@ function mostrarError(input, mensaje) {
   const box   = field.querySelector(".m3-input");
   const label = field.querySelector(".floating-label");
 
-  // 🔑 CLAVE REAL: forzar estado visual Material 3
   field.classList.add("filled");
 
   let helper = field.querySelector(".helper-text");
@@ -72,7 +75,6 @@ function limpiarError(input) {
   field.classList.remove("error");
   box.classList.remove("error");
 
-  // 🔑 SOLO baja el label si sigue vacío
   if (!input.value.trim()) {
     field.classList.remove("filled");
   }
@@ -80,6 +82,7 @@ function limpiarError(input) {
   if (label) label.style.color = "";
   if (helper) helper.textContent = "";
 }
+
 /* ============================================================
    CHECKOUT CART (VALIDACIÓN)
 ============================================================ */
@@ -95,23 +98,18 @@ function getCheckoutCart() {
 
 function validarCheckoutCart() {
   const cart = getCheckoutCart();
-
   if (!cart.length) {
-    // Ideal: snackbar. Por ahora fallback:
-    // showSnackbar("Tu carrito está vacío. Agrega productos para continuar.");
     window.location.href = "carrito.html";
     return false;
   }
-
   const invalid = cart.some(p => !p.product_id);
   if (invalid) {
-    // showSnackbar("Productos inválidos. Vuelve a agregarlos al carrito.");
     window.location.href = "carrito.html";
     return false;
   }
-
   return true;
 }
+
 /* ============================================================
    CACHE USUARIO
 ============================================================ */
@@ -128,6 +126,9 @@ function getUserCache() {
    ACTIVAR LABEL (Material 3)
 ============================================================ */
 function activarLabel(input) {
+  if (input.value.trim() !== "") {
+    input.closest(".m3-field")?.classList.add("filled");
+  }
   input.dispatchEvent(new Event("input", { bubbles: true }));
 }
 
@@ -136,7 +137,6 @@ function activarLabel(input) {
 ============================================================ */
 function pintarDatosInstantaneos() {
   if (!userCache) return;
-
   nombreInput.value   = userCache.name  || "";
   correoInput.value   = userCache.email || "";
   telefonoInput.value = userCache.phone || "";
@@ -173,7 +173,7 @@ async function cargarDatosRealtime() {
 }
 
 /* ============================================================
-   DIRECCIÓN
+   DIRECCIÓN (CORREGIDO: NOTA NO SE CARGA DE POSTAL_CODE)
 ============================================================ */
 async function cargarDireccion() {
   const { data } = await window.supabaseClient
@@ -191,7 +191,9 @@ async function cargarDireccion() {
   ciudadInput.value    = addr.city || "";
   zonaSelect.value     = addr.state || "";
   direccionInput.value = addr.street || "";
-  notaInput.value      = addr.postal_code || "";
+  
+  // 💡 CLAVE: La nota siempre empieza vacía para un nuevo pedido
+  notaInput.value = ""; 
 
   activarLabel(ciudadInput);
   activarLabel(direccionInput);
@@ -205,37 +207,12 @@ async function cargarDireccion() {
 ============================================================ */
 function validarFormulario() {
   let ok = true;
-
-  if (!nombreInput.value.trim()) {
-    mostrarError(nombreInput, "El nombre es obligatorio");
-    ok = false;
-  }
-
-  if (!correoInput.value.trim()) {
-    mostrarError(correoInput, "El correo es obligatorio");
-    ok = false;
-  }
-
-  if (!telefonoInput.value.trim()) {
-    mostrarError(telefonoInput, "El teléfono es obligatorio");
-    ok = false;
-  }
-
-  if (!ciudadInput.value.trim()) {
-    mostrarError(ciudadInput, "La ciudad es obligatoria");
-    ok = false;
-  }
-
-  if (!zonaSelect.value.trim()) {
-    mostrarError(zonaSelect, "Selecciona un departamento");
-    ok = false;
-  }
-
-  if (!direccionInput.value.trim()) {
-    mostrarError(direccionInput, "La dirección es obligatoria");
-    ok = false;
-  }
-
+  if (!nombreInput.value.trim()) { mostrarError(nombreInput, "El nombre es obligatorio"); ok = false; }
+  if (!correoInput.value.trim()) { mostrarError(correoInput, "El correo es obligatorio"); ok = false; }
+  if (!telefonoInput.value.trim()) { mostrarError(telefonoInput, "El teléfono es obligatorio"); ok = false; }
+  if (!ciudadInput.value.trim()) { mostrarError(ciudadInput, "La ciudad es obligatoria"); ok = false; }
+  if (!zonaSelect.value.trim()) { mostrarError(zonaSelect, "Selecciona un departamento"); ok = false; }
+  if (!direccionInput.value.trim()) { mostrarError(direccionInput, "La dirección es obligatoria"); ok = false; }
   return ok;
 }
 
@@ -245,17 +222,13 @@ function validarFormulario() {
 async function updateUser() {
   const { error } = await window.supabaseClient
     .from("users")
-    .update({
-      name: nombreInput.value.trim(),
-      phone: telefonoInput.value.trim()
-    })
+    .update({ name: nombreInput.value.trim(), phone: telefonoInput.value.trim() })
     .eq("id", userId);
-
   return !error;
 }
 
 /* ============================================================
-   GUARDAR DIRECCIÓN
+   GUARDAR DIRECCIÓN (CORREGIDO: POSTAL_CODE VACÍO)
 ============================================================ */
 async function guardarDireccion() {
   const payload = {
@@ -266,7 +239,7 @@ async function guardarDireccion() {
     state: zonaSelect.value.trim(),
     city: ciudadInput.value.trim(),
     street: direccionInput.value.trim(),
-    postal_code: notaInput.value.trim(),
+    postal_code: "", // Ya no guardamos la nota aquí permanentemente
     is_default: true
   };
 
@@ -278,23 +251,27 @@ async function guardarDireccion() {
 }
 
 /* ============================================================
-   SUBMIT
+   SUBMIT (FINAL BLINDADO)
 ============================================================ */
 form.addEventListener("submit", async e => {
   e.preventDefault();
 
   if (!validarFormulario()) return;
-
-  // ✅ Validar checkout/cart ANTES de guardar y avanzar
-  // (asumiendo que ya tienes validarCheckoutCart() definido)
   if (!validarCheckoutCart()) return;
 
   btnSubmit.classList.add("loading");
 
-  if (!await updateUser() || !await guardarDireccion()) {
+  const userOk = await updateUser();
+  const addrOk = await guardarDireccion();
+
+  if (!userOk || !addrOk) {
     btnSubmit.classList.remove("loading");
+    alert("Error al guardar información.");
     return;
   }
+
+  // 🔑 PERSISTENCIA DE NOTA: Guardar para usarla en el INSERT de la tabla 'orders'
+  sessionStorage.setItem("current_order_notes", notaInput.value.trim());
 
   setTimeout(() => window.location.href = "recibo.html", 600);
 });
@@ -308,7 +285,6 @@ form.addEventListener("submit", async e => {
   userCache = getUserCache();
   if (!userCache) return window.location.href = "login.html";
 
-  // ✅ VALIDAR QUE HAY CHECKOUT (carrito) ANTES DE SEGUIR
   if (!validarCheckoutCart()) return;
 
   userId = userCache.id;
@@ -316,20 +292,12 @@ form.addEventListener("submit", async e => {
   pintarDatosInstantaneos();
   cargarDatosRealtime();
 
-  [
-    nombreInput,
-    telefonoInput,
-    ciudadInput,
-    direccionInput,
-    notaInput
-  ].forEach(el =>
+  [nombreInput, telefonoInput, ciudadInput, direccionInput, notaInput].forEach(el =>
     el.addEventListener("input", () => limpiarError(el))
   );
 
   zonaSelect.addEventListener("change", () => {
     limpiarError(zonaSelect);
-    zonaSelect.value
-      ? zonaSelect.classList.add("filled")
-      : zonaSelect.classList.remove("filled");
+    zonaSelect.value ? zonaSelect.classList.add("filled") : zonaSelect.classList.remove("filled");
   });
 })();
