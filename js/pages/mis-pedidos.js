@@ -1,8 +1,8 @@
 /* ============================================================
-   MIS PEDIDOS — CLIENTE (FINAL DINÁMICO + SCROLL OPTIMIZADO)
+   MIS PEDIDOS — CLIENTE (FINAL CORREGIDO + HISTORIAL DE NOTAS)
 ============================================================ */
 
-console.log("📦 mis-pedidos.js — ACTUALIZADO");
+console.log("📦 mis-pedidos.js — SISTEMA BLINDADO");
 
 let allPedidos = [];
 let pedidoActivo = null;
@@ -21,24 +21,23 @@ function formatDateTime(dateStr) {
 }
 
 /* -----------------------------------------------------------
-   SCROLL OPTIMIZADO (Rápido pero fluido)
+   SCROLL OPTIMIZADO (Suave y con margen superior)
 ----------------------------------------------------------- */
 function scrollToPedidoActivo() {
   const section = document.getElementById("pedido-activo");
   if (!section) return;
 
-  // Calculamos la posición con un pequeño margen superior
-  const offset = 80; 
+  const offset = 100; // Espacio para que no pegue con el header
   const elementPosition = section.getBoundingClientRect().top + window.scrollY;
   
   window.scrollTo({
     top: elementPosition - offset,
-    behavior: "smooth" // Mantiene la fluidez sin ser excesivamente lento
+    behavior: "smooth"
   });
 }
 
 /* -----------------------------------------------------------
-   LÓGICA DE ESTADOS Y NOMBRES DINÁMICOS
+   LÓGICA DE ESTADOS DINÁMICOS
 ----------------------------------------------------------- */
 function getStatusDetails(status, paymentMethod) {
   const isCash = paymentMethod?.includes("cash");
@@ -76,11 +75,17 @@ document.addEventListener("header:ready", init);
 async function init() {
   if (__init || !sb()) return;
   __init = true;
-  await loadPedidos();
-  if (!pedidoActivo) { mostrarVacio(); return; }
 
-  renderPedidoActivo(pedidoActivo);
-  renderCarrusel();
+  await loadPedidos();
+
+  if (!pedidoActivo) {
+    mostrarVacio();
+    return;
+  }
+
+  // Render inicial
+  await renderPedidoActivo(pedidoActivo);
+  await renderCarrusel();
   bindCarruselArrows();
 
   document.getElementById("pedido-activo")?.classList.remove("hidden");
@@ -104,7 +109,7 @@ async function loadPedidos() {
 }
 
 /* -----------------------------------------------------------
-   RENDER PEDIDO ACTIVO
+   RENDER PEDIDO ACTIVO (CON DATA HISTÓRICA)
 ----------------------------------------------------------- */
 async function renderPedidoActivo(pedido) {
   const container = document.getElementById("pedido-activo");
@@ -114,62 +119,83 @@ async function renderPedidoActivo(pedido) {
   const node = tpl.content.cloneNode(true);
   const statusInfo = getStatusDetails(pedido.status, pedido.payment_method);
 
-  // Datos Básicos
+  /* 1. Header e IDs */
   node.querySelector(".pedido-numero").textContent = `Pedido N.º ${String(pedido.order_number).padStart(3, "0")}`;
   const { fecha, hora } = formatDateTime(pedido.created_at);
   node.querySelector(".fecha").textContent = fecha;
   node.querySelector(".hora").textContent = hora;
   node.querySelector(".pedido-total").textContent = `L ${Number(pedido.total).toFixed(2)}`;
 
-  // Dirección y Referencia
+  /* 2. Dirección y Referencia (BLINDADO) */
   if (pedido.address_id) {
-    const { data: addr } = await sb().from("addresses").select("*").eq("id", pedido.address_id).maybeSingle();
+    // Solo traemos calle y ciudad de addresses
+    const { data: addr } = await sb().from("addresses").select("street, city").eq("id", pedido.address_id).maybeSingle();
     if (addr) {
       node.querySelector(".entrega-text").textContent = `${addr.street}, ${addr.city}`;
-      node.querySelector(".referencia-text").textContent = addr.postal_code || "Sin referencia";
     }
   }
+  // La Referencia SIEMPRE viene del pedido (order_notes) para que no cambie nunca
+  node.querySelector(".referencia-text").textContent = pedido.order_notes || "Sin referencia adicional";
 
-  // Estado Dinámico (Título y Pasos)
+  /* 3. Productos */
+  const pillsContainer = node.querySelector(".productos-pills");
+  const { data: items } = await sb().from("order_items").select("*").eq("order_id", pedido.id);
+  
+  if (items?.length) {
+    const productIds = items.map(i => i.product_id);
+    const { data: prods } = await sb().from("products").select("id, name").in("id", productIds);
+    const prodMap = Object.fromEntries(prods.map(p => [p.id, p.name]));
+
+    items.forEach(item => {
+      const p = document.createElement("div");
+      p.className = "pill";
+      p.innerHTML = `<span>${prodMap[item.product_id] || 'Producto'} × ${item.quantity}</span> <strong>L ${(item.quantity * item.price).toFixed(2)}</strong>`;
+      pillsContainer.appendChild(p);
+    });
+  }
+
+  /* 4. Estado Dinámico (Título y Lista) */
   node.querySelector(".estado-paso").textContent = statusInfo.step;
   node.querySelector(".estado-nombre").textContent = statusInfo.label;
 
-  const itemsLista = node.querySelectorAll(".estado-item");
-  itemsLista.forEach((li, i) => {
-    // Cambiamos el texto del paso dinámicamente
+  const listaPasos = node.querySelectorAll(".estado-item");
+  listaPasos.forEach((li, i) => {
+    // Cambiar texto según flujo (Efectivo/Transferencia)
     const textSpan = li.querySelector(".step-text");
     if (textSpan) textSpan.textContent = statusInfo.stepsNames[i];
 
-    const stepIdx = i + 1;
-    if (stepIdx < statusInfo.step) li.classList.add("completado");
-    if (stepIdx === statusInfo.step) li.classList.add("activo");
+    const currentIdx = i + 1;
+    if (currentIdx < statusInfo.step) li.classList.add("completado");
+    if (currentIdx === statusInfo.step) li.classList.add("activo");
   });
 
-  // Imagen y Recibo
+  /* 5. Media (Recibo o Icono Cash) */
   const img = node.querySelector(".recibo-img");
-  const btn = node.querySelector(".ver-recibo");
+  const btnRecibo = node.querySelector(".ver-recibo");
 
   if (pedido.payment_method?.includes("cash")) {
     img.src = "imagenes/pago_en_mano.svg";
-    btn?.classList.add("hidden");
+    btnRecibo?.classList.add("hidden");
   } else {
     const { data: receipt } = await sb().from("payment_receipts").select("file_url").eq("order_id", pedido.id).maybeSingle();
     img.src = receipt?.file_url || "imagenes/recibo_default.svg";
-    if (receipt?.file_url && btn) {
-      btn.classList.remove("hidden");
-      btn.onclick = () => window.location.assign(`recibo.html?id=${pedido.id}`);
-    } else { btn?.classList.add("hidden"); }
+    if (receipt?.file_url && btnRecibo) {
+      btnRecibo.classList.remove("hidden");
+      btnRecibo.onclick = () => window.location.assign(`recibo.html?id=${pedido.id}`);
+    } else {
+      btnRecibo?.classList.add("hidden");
+    }
   }
 
-  // Renderizado Final
+  // Inyectar en el DOM
   container.replaceChildren(node);
   
-  // Ejecutar scroll después de que el DOM se actualice
-  setTimeout(scrollToPedidoActivo, 100);
+  // Scroll suave después de un pequeño respiro para el render
+  setTimeout(scrollToPedidoActivo, 150);
 }
 
 /* -----------------------------------------------------------
-   CARRUSEL
+   CARRUSEL DE PEDIDOS
 ----------------------------------------------------------- */
 async function renderCarrusel() {
   const wrapper = document.getElementById("pedidos-carrusel");
@@ -187,12 +213,12 @@ async function renderCarrusel() {
     node.querySelector(".pedido-mini-total").textContent = `L ${Number(pedido.total).toFixed(2)}`;
     node.querySelector(".pedido-mini-status").textContent = statusInfo.label;
 
-    const img = node.querySelector(".pedido-mini-img");
+    const imgMini = node.querySelector(".pedido-mini-img");
     if (pedido.payment_method?.includes("cash")) {
-      img.src = "imagenes/pago_en_mano.svg";
+      imgMini.src = "imagenes/pago_en_mano.svg";
     } else {
       const { data: rec } = await sb().from("payment_receipts").select("file_url").eq("order_id", pedido.id).maybeSingle();
-      img.src = rec?.file_url || "imagenes/recibo_default.svg";
+      imgMini.src = rec?.file_url || "imagenes/recibo_default.svg";
     }
 
     if (pedido.id === pedidoActivo.id) card.classList.add("is-selected");
