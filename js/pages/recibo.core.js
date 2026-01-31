@@ -1,161 +1,80 @@
 /**
- * 🧾 recibo.core.js — NÚCLEO MATERIAL 3 EXPRESSIVE
- * ---------------------------------------------------------
- * Este archivo establece las funciones maestras para Checkout y View.
+ * 🧾 recibo.view.js — FINAL MATERIAL 3 (CORREGIDO)
  */
-console.log("🧾 recibo.core.js — Sincronizado");
+console.log("🧾 recibo.view.js — Iniciando");
 
-/* =========================================================
-   PROPIEDADES GLOBALES (Disponibles para todos los scripts)
-========================================================= */
-window.$id = (id) => document.getElementById(id);
-window.ORDER_ID = new URLSearchParams(window.location.search).get("id");
-window.IS_READ_ONLY = Boolean(window.ORDER_ID);
+document.addEventListener("DOMContentLoaded", () => {
+    // Si no hay ID en la URL, este script no debe actuar
+    const orderId = new URLSearchParams(window.location.search).get("id");
+    if (!orderId) return;
 
-// Helper para obtener usuario (Evita ReferenceError en View)
-window.getUserCache = () => {
-    const session = localStorage.getItem("sb-pkhnpsvcyndjebqzkfbe-auth-token");
-    try {
-        return session ? JSON.parse(session).user : null;
-    } catch (e) {
-        return null;
-    }
-};
+    (async function initView() {
+        try {
+            // ⏳ Paso 1: Esperar a que Supabase y el Core estén presentes
+            await window.esperarSupabase();
 
-// Promesa de carga para Supabase
-window.esperarSupabase = () => new Promise(r => {
-    if (window.supabaseClient) return r();
-    const i = setInterval(() => { 
-        if (window.supabaseClient) { clearInterval(i); r(); } 
-    }, 100);
+            // ⏳ Paso 2: Pequeña espera de cortesía para que el Core registre sus funciones
+            if (typeof window.getUserCache !== "function") {
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+
+            // 🔐 Paso 3: Validación de usuario segura
+            const user = (typeof window.getUserCache === "function") 
+                ? window.getUserCache() 
+                : null;
+
+            if (!user) {
+                console.warn("🔐 No se detectó sesión activa. Redirigiendo...");
+                // Solo redirigir si realmente confirmamos que no hay usuario tras esperar
+                setTimeout(() => { location.href = "login.html"; }, 300);
+                return;
+            }
+
+            // 👁️ Paso 4: Aplicar interfaz de recibo
+            if (typeof window.aplicarModoRecibo === "function") {
+                window.aplicarModoRecibo();
+            }
+
+            // 🧾 Paso 5: Cargar datos del pedido
+            if (typeof window.cargarPedidoExistente === "function") {
+                await window.cargarPedidoExistente(orderId);
+            }
+
+            configurarAccionCancelar(orderId);
+
+        } catch (err) {
+            console.error("❌ Error crítico en vista:", err);
+        }
+    })();
 });
 
-/* =========================================================
-   UI: MODO LECTURA
-========================================================= */
-window.aplicarModoRecibo = () => {
-    console.log("👁️ Aplicando interfaz de solo lectura");
-    const btnEnviarContainer = document.querySelector(".recibo-botones");
-    const selectorPago = document.querySelector(".pago-select-label");
-    
-    // Ocultar elementos de edición/envío
-    if (btnEnviarContainer) btnEnviarContainer.classList.add("hidden");
-    if (selectorPago) selectorPago.classList.add("hidden");
-    
-    // El botón volver siempre debe estar activo en View
-    configurarBotonVolver();
-};
+function configurarAccionCancelar(id) {
+    const btn = document.getElementById("btnCancelarPedido");
+    if (!btn) return;
 
-/* =========================================================
-   PÍLDORA DE ESTADO DINÁMICA
-========================================================= */
-window.inyectarPildoraEstado = (status, paymentMethod) => {
-    const container = window.$id("estado-pildora-container");
-    if (!container) return;
+    btn.onclick = async () => {
+        if (!confirm("¿Deseas cancelar este pedido?")) return;
+        
+        try {
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Cancelando...`;
+            
+            const { error } = await window.supabaseClient
+                .from("orders")
+                .update({ status: "cancelled" })
+                .eq("id", id);
 
-    const config = {
-        pending: { label: paymentMethod === "bank_transfer" ? "Esperando Pago" : "Pendiente", icon: "schedule", class: "status-pending" },
-        payment_review: { label: "Validando Pago", icon: "fact_check", class: "status-review" },
-        processing: { label: "Preparando", icon: "coffee", class: "status-processing" },
-        shipped: { label: "En camino", icon: "local_shipping", class: "status-shipped" },
-        delivered: { label: "Entregado", icon: "verified", class: "status-delivered" },
-        cancelled: { label: "Cancelado", icon: "block", class: "status-cancelled" }
-    };
+            if (error) throw error;
 
-    const state = config[status] || config.pending;
+            if (typeof window.cargarPedidoExistente === "function") {
+                await window.cargarPedidoExistente(id);
+            }
+            alert("Pedido cancelado correctamente.");
 
-    container.innerHTML = `
-        <div class="status-pill ${state.class}">
-            <span class="material-symbols-outlined">${state.icon}</span>
-            <span class="pill-text">${state.label}</span>
-        </div>
-    `;
-
-    // Gestionar visibilidad del botón cancelar (Solo en pendiente)
-    const containerCancelar = window.$id("container-cancelar");
-    if (containerCancelar) {
-        (status === "pending") ? containerCancelar.classList.remove("hidden") : containerCancelar.classList.add("hidden");
-    }
-};
-
-/* =========================================================
-   CARGAR DATOS DESDE SUPABASE
-========================================================= */
-window.cargarPedidoExistente = async (orderId) => {
-    const sb = window.supabaseClient;
-    if (!sb) return;
-
-    const { data: pedido, error } = await sb
-        .from("orders")
-        .select(`
-            order_number, created_at, total, status, payment_method, order_notes,
-            users(name, email, phone),
-            addresses(state, city, street),
-            order_items(quantity, price, products(name)),
-            payment_receipts(file_url, review_status)
-        `)
-        .eq("id", orderId)
-        .single();
-
-    if (error || !pedido) return console.error("Pedido no encontrado");
-
-    // Llenar UI Básica
-    window.$id("numeroPedido").textContent = pedido.order_number;
-    const fecha = new Date(pedido.created_at);
-    window.$id("fechaPedido").textContent = fecha.toLocaleDateString("es-ES", { day: 'numeric', month: 'long', year: 'numeric' });
-    window.$id("horaPedido").textContent = fecha.toLocaleTimeString("es-ES", { hour: '2-digit', minute: '2-digit', hour12: true });
-
-    // Estado con lógica de transferencia
-    let statusVisual = pedido.status;
-    if (pedido.payment_method === "bank_transfer" && pedido.payment_receipts?.some(r => r.review_status === "pending")) {
-        statusVisual = "payment_review";
-    }
-    window.inyectarPildoraEstado(statusVisual, pedido.payment_method);
-
-    // Dirección y Cliente
-    window.$id("direccion-resumen").textContent = pedido.addresses ? `${pedido.addresses.street}, ${pedido.addresses.city}` : "Retiro en tienda";
-    window.$id("notaCliente").textContent = pedido.order_notes || "Sin notas";
-    window.$id("nombreCliente").textContent = pedido.users?.name || "—";
-    window.$id("telefonoCliente").textContent = pedido.users?.phone || "—";
-
-    // Lista de productos M3
-    const lista = window.$id("listaProductos");
-    lista.innerHTML = pedido.order_items.map(it => `
-        <div class="cafe-item">
-            <span class="item-name">${it.products.name} (x${it.quantity})</span>
-            <span class="item-price">L ${(it.quantity * it.price).toFixed(2)}</span>
-        </div>
-    `).join('');
-
-    window.$id("totalPedido").textContent = pedido.total.toFixed(2);
-    
-    // UI de Comprobante
-    gestionarUIPagosVer(pedido);
-};
-
-function gestionarUIPagosVer(pedido) {
-    const pagoDeposito = window.$id("pago-deposito");
-    const pagoEfectivo = window.$id("pago-efectivo");
-    
-    if (pedido.payment_method === "bank_transfer") {
-        pagoDeposito?.classList.remove("hidden");
-        pagoEfectivo?.classList.add("hidden");
-        if (pedido.payment_receipts?.length > 0) {
-            window.$id("previewComprobante")?.classList.remove("hidden");
-            window.$id("imgComprobante").src = pedido.payment_receipts[0].file_url;
-            window.$id("btnSubirComprobante")?.classList.add("hidden");
+        } catch (err) {
+            console.error(err);
+            btn.disabled = false;
+            btn.innerHTML = `<span class="material-symbols-outlined">cancel</span> Cancelar Pedido`;
         }
-    } else {
-        pagoEfectivo?.classList.remove("hidden");
-        pagoDeposito?.classList.add("hidden");
-    }
+    };
 }
-
-function configurarBotonVolver() {
-    const btnBack = window.$id("btn-back");
-    if (!btnBack) return;
-    btnBack.onclick = () => (window.history.length > 1) ? window.history.back() : (window.location.href = "mis-pedidos.html");
-}
-
-// Inicialización de elementos comunes
-document.addEventListener("DOMContentLoaded", configurarBotonVolver);
