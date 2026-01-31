@@ -1,6 +1,5 @@
 /* ============================================================
-   RECIBO / DETALLES DEL PEDIDO — VERSIÓN FINAL ESTABLE
-   USA HEADER GLOBAL (CHECKOUT)
+   RECIBO / DETALLES DEL PEDIDO — VERSIÓN FINAL M3
    PROYECTO: MATERIAL 3 EXPRESSIVE
 ============================================================ */
 
@@ -18,104 +17,71 @@
 body {
   margin: 0;
   background: var(--blanco);
-  font-family: -apple-system, BlinkMacSystemFont, "Poppins",
-               "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Poppins", sans-serif;
   color: var(--marron);
   min-height: 100vh;
 }
 
-/* ============================================================
-   OFFSET POR HEADER GLOBAL (CHECKOUT)
-============================================================ */
+/* OFFSET POR HEADER GLOBAL */
 body.header-checkout .recibo-container {
-  margin-top: 96px; /* desktop */
-  padding-bottom: 80px; /* 🔑 CORRECCIÓN: Evita que se pegue abajo al hacer scroll */
+  margin-top: 96px;
+  padding-bottom: 80px;
 }
 
 @media (max-width: 900px) {
   body.header-checkout .recibo-container {
-    margin-top: 88px; /* móvil */
-    padding-bottom: 60px; /* 🔑 CORRECCIÓN: Aire en dispositivos móviles */
+    margin-top: 88px;
+    padding-bottom: 60px;
   }
 }
 
 /* ================= CONTENEDOR ================= */
 .recibo-container {
   max-width: 900px;
-  margin: 0 auto;        /* 🔑 centra correctamente */
-  padding: 0 16px;      /* 🔑 aire lateral uniforme (Material 3) */
+  margin: 0 auto;
+  padding: 0 16px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
 }
 
-/* ============================================================
-   TARJETA PRINCIPAL
-============================================================ */
+/* ================= TARJETA PRINCIPAL ================= */
 .recibo-card {
   position: relative;
   width: 100%;
   max-width: 900px;
-
-  margin: 0 auto 40px;           /* 🔑 Agregado margen inferior para que no quede pegada */
-  box-sizing: border-box;        /* 🔑 evita desplazamientos */
-
+  margin: 0 auto 40px;
+  box-sizing: border-box;
   background: #ffffff;
   border-radius: 26px;
-
-  /* Padding vertical fuerte + lateral controlado */
   padding: 6rem 24px 3rem;
-
-  box-shadow:
-    0 18px 44px rgba(0, 0, 0, 0.14),
-    0 6px 16px rgba(0, 0, 0, 0.10);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.14), 0 6px 16px rgba(0, 0, 0, 0.10);
 }
 
-/* ================= MOBILE ================= */
 @media (max-width: 600px) {
   .recibo-card {
-    padding: 4rem 16px 24px;   /* 🔑 reduce alto + mismo aire lateral */
+    padding: 4rem 16px 24px;
     border-radius: 24px;
-    margin-bottom: 30px;
   }
 }
 
-/* =====================================================
-   BOTÓN VOLVER — DENTRO DE LA TARJETA (CORRECTO)
-===================================================== */
+/* ================= BOTÓN VOLVER ================= */
 .card-back {
   position: absolute;
   top: 22px;
   left: 22px;
-
   width: 44px;
   height: 44px;
   border-radius: 50%;
-
   background: #ffffff;
   border: none;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
-  box-shadow:
-    0 6px 16px rgba(0,0,0,0.18),
-    0 2px 6px rgba(0,0,0,0.12);
-
+  box-shadow: 0 6px 16px rgba(0,0,0,0.18), 0 2px 6px rgba(0,0,0,0.12);
   cursor: pointer;
   z-index: 5;
-
-  transition: transform .2s ease, box-shadow .2s ease;
-}
-
-@media (min-width: 901px) {
-  .card-back:hover {
-    transform: translateY(-2px);
-    box-shadow:
-      0 10px 22px rgba(0,0,0,0.22),
-      0 4px 10px rgba(0,0,0,0.14);
-  }
+  transition: transform .2s ease;
 }
 
 .card-back .material-symbols-outlined {
@@ -124,16 +90,12 @@ body.header-checkout .recibo-container {
   color: var(--verde);
 }
 
-/* ============================================================
-   TARJETA INTERNA
-============================================================ */
+/* ================= TARJETA INTERNA (BORDE MARRÓN) ================= */
 .inner-card-full {
   position: relative;
   background: #ffffff;
-
   border-radius: 22px;
   border: 2px solid var(--marron);
-
   padding: 3rem 2rem;
   margin-top: 1.4rem;
 }
@@ -141,54 +103,38 @@ body.header-checkout .recibo-container {
 @media (max-width: 600px) {
   .inner-card-full {
     padding: 20px 16px;
-    border-radius: 20px;
   }
 }
 
-/* ================= TITULOS ================= */
+/* ================= TÍTULOS Y TEXTOS EN VERDE ================= */
 .recibo-card h2 {
   text-align: center;
   font-size: 1.45rem;
   margin-bottom: 6px;
-}
-
-/* ================= FECHA Y HORA — RECIBO ================= */
-
-.pedido-fecha {
-  margin: 12px 0 18px;
-  text-align: left;
-  line-height: 1.6;
-}
-
-.pedido-fecha p {
-  margin: 4px 0;
-  font-size: 0.95rem;
-}
-
-/* Label → ☕ café */
-.pedido-fecha-label {
-  color: var(--marron);
-  font-weight: 600;
-}
-
-/* Valor → 🟢 verde */
-.pedido-fecha-valor {
-  color: var(--verde);
-  font-weight: 600;
+  color: var(--verde); /* Pedido número en verde */
 }
 
 h3 {
   margin-top: 24px;
   font-size: 1.1rem;
-  color: var(--verde);
+  color: var(--verde); /* Títulos de sección en verde */
   padding-left: 12px;
   border-left: 4px solid var(--marron);
 }
 
-/* =====================================================
-   ESTADO DEL PEDIDO (PÍLDORA M3 EXPRESSIVE) 
-===================================================== */
+.pedido-fecha {
+  margin: 12px 0 18px;
+  text-align: left;
+}
 
+.pedido-fecha p {
+  margin: 4px 0;
+  font-size: 0.95rem;
+  color: var(--verde); /* Fecha y hora en verde */
+  font-weight: 600;
+}
+
+/* ================= ESTADO DEL PEDIDO (PÍLDORA) ================= */
 .pedido-progreso {
   margin: 26px 0 18px;
   padding: 22px 20px;
@@ -200,12 +146,8 @@ h3 {
 .progreso-title {
   font-size: 1rem;
   font-weight: 600;
-  color: var(--marron);
+  color: var(--verde); /* Estado del pedido en verde */
   margin-bottom: 12px;
-}
-
-#estado-pildora-container {
-  margin-bottom: 20px;
 }
 
 .status-pill {
@@ -218,87 +160,24 @@ h3 {
   font-size: 0.9rem;
 }
 
+/* Colores de estados según M3 */
 .status-pending { background: #fff3e0; color: #ef6c00; }    
 .status-review { background: #e3f2fd; color: #1565c0; }     
 .status-processing { background: #f3e5f5; color: #7b1fa2; } 
 .status-shipped { background: #e8f5e9; color: #2e7d32; }    
-.status-delivered { background: #e8f5e9; color: #2e7d32; }  
 .status-cancelled { background: #ffebee; color: #c62828; }  
 
-.status-pill .material-symbols-outlined {
-  font-size: 20px;
-}
-
-.progreso-bar {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.step {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: #e0e0e0;
-  flex-shrink: 0;
-}
-
-.step.pago { background: #7a4a2e; }
-.step.revision { background: #c28b00; }
-.step.confirmado { background: var(--verde); }
-.step.envio { background: #4a6f8a; }
-
-.line {
-  flex: 1;
-  height: 4px;
-  border-radius: 4px;
-  background: #e0e0e0;
-  position: relative;
-}
-
-.line.pago::after, .line.revision::after, 
-.line.confirmado::after, .line.envio::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  border-radius: 4px;
-}
-
-.line.pago::after { background: #7a4a2e; }
-.line.revision::after { background: #c28b00; }
-.line.confirmado::after { background: var(--verde); }
-.line.envio::after { background: #4a6f8a; }
-
-.progreso-labels {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  margin-top: 8px;
-}
-
-.progreso-labels span {
-  font-size: 0.75rem;
-  color: #888;
-  text-align: center;
-  font-weight: 500;
-}
-
-/* ================= CLIENTE ================= */
+/* ================= CLIENTE Y CAFÉ ================= */
 .cliente-info p {
   margin: 8px 0;
   font-size: 0.95rem;
+  color: var(--verde); /* Datos de cliente en verde */
 }
 
 .cliente-info strong {
-  font-weight: 600;
+  color: var(--marron); /* Los labels se mantienen marrón para contraste */
 }
 
-.cliente-info span {
-  color: var(--verde);
-  font-weight: 500;
-}
-
-/* ================= CAFÉS ================= */
 .cafes-list {
   display: flex;
   flex-direction: column;
@@ -314,46 +193,35 @@ h3 {
   justify-content: space-between;
   align-items: center;
   box-shadow: 0 6px 16px rgba(0,0,0,.08);
+  color: var(--verde); /* Texto de café en verde */
 }
 
-.cafe-nombre {
-  font-weight: 600;
-}
+.cafe-nombre { font-weight: 600; }
+.cafe-precio { font-weight: 600; color: var(--verde); }
 
-.cafe-cantidad {
-  font-size: .8rem;
-  color: var(--marron-suave);
-}
-
-.cafe-qty {
-  color: var(--verde);
-}
-
-.cafe-precio {
-  font-weight: 600;
-  color: var(--verde);
-}
-
-/* ================= TOTAL ================= */
+/* ================= TOTAL (NUEVA ESTRUCTURA) ================= */
 .recibo-total {
-  margin-top: 18px;
-  text-align: right;
-  font-size: 1.2rem;
-  font-weight: 600;
+  margin-top: 24px;
+  padding-top: 12px;
+  border-top: 2px dotted var(--marron); /* Línea punteada arriba */
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between; /* Total izquierda, valor derecha */
   align-items: center;
-  gap: 6px;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--marron);
 }
 
-.total-icon {
-  font-size: 22px;
+#totalPedido {
   color: var(--verde);
+  /* Alineado al precio de los items superiores */
+  min-width: 100px;
+  text-align: right;
 }
 
-/* ================= PAGOS ================= */
+/* ================= PAGOS Y BOTONES ================= */
 .pagos {
-  margin-top: 12px;
+  margin-top: 18px;
   display: flex;
   flex-direction: column;
   gap: 18px;
@@ -369,175 +237,44 @@ h3 {
   background: #fff;
 }
 
-#metodoPago {
-  flex: 1;
-  border: none;
-  outline: none;
-  background: transparent;
-  font-size: 0.95rem;
-  font-weight: 500;
-  cursor: pointer;
-}
-
-.pago-bloque {
-  padding: 18px;
-  border-radius: 18px;
-  background: #fff;
-  border: 1.6px solid rgba(0,0,0,0.08);
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.pago-bloque.hidden {
-  display: none;
-}
-
-/* ================= COMPROBANTE ================= */
-.comprobante-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: none;
-  border: none;
-  font-size: 0.95rem;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.preview img {
-  max-width: 100%;
-  border-radius: 18px;
-  box-shadow: 0 6px 18px rgba(0,0,0,.15);
-}
-
-.preview p {
-  font-size: 0.85rem;
-  color: var(--verde);
-  text-align: center;
-}
-
-/* ================= BOTONES ================= */
-.recibo-botones {
-  margin-top: 28px;
-}
-
 .btn-primary {
   width: 100%;
   border-radius: 16px;
   padding: 14px 16px;
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: 600;
   border: none;
   background: var(--verde);
   color: #fff;
   cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.btn-primary:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
 }
 
 .btn-cancelar {
   background: #c62828 !important; 
-  color: #fff !important;
 }
 
-.btn-cancelar:hover {
-  background: #b71c1c !important;
-  transform: translateY(-1px);
-}
-
-/* ================= UTIL ================= */
-.hidden {
-  display: none !important;
-}
-
-#previewComprobante {
-  display: block;
-  visibility: visible;
-}
-
-#previewComprobante.hidden {
-  display: none !important;
-}
-
-#imgComprobante {
-  display: block;
-  width: 100%;
-  max-width: 100%;
-  height: auto;
-  border-radius: 18px;
-  box-shadow: 0 6px 18px rgba(0,0,0,.15);
-}
-
-/* ================= SNACKBAR ================= */
+/* ================= SNACKBAR M3 ================= */
 #snackbar {
   position: fixed;
   left: 50%;
   bottom: 28px;
   transform: translateX(-50%) translateY(120%);
   min-width: 280px;
-  max-width: 92vw;
-  background: #ffffff;
-  color: var(--marron);
-  border-radius: 18px;
+  background: #322F35; /* Color oscuro M3 */
+  color: #F4EFF4;
+  border-radius: 12px;
   padding: 14px 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.22), 0 6px 16px rgba(0, 0, 0, 0.14);
-  opacity: 0;
-  pointer-events: none;
+  box-shadow: 0 3px 5px rgba(0,0,0,0.3);
   z-index: 9999;
-  transition: transform .35s cubic-bezier(.2,.8,.2,1), opacity .25s ease;
+  transition: transform .3s ease, opacity .3s ease;
+  opacity: 0;
 }
 
 #snackbar.show {
   transform: translateX(-50%) translateY(0);
   opacity: 1;
-  pointer-events: auto;
 }
 
-.snack-text {
-  font-size: 0.95rem;
-  font-weight: 500;
-  line-height: 1.4;
-  flex: 1;
-}
+.snack-text { font-size: 0.9rem; }
 
-.snack-actions {
-  display: flex;
-  gap: 8px;
-  flex-shrink: 0;
-}
-
-.snack-action {
-  border: none;
-  border-radius: 12px;
-  padding: 8px 12px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background .2s ease, transform .15s ease;
-}
-
-.snack-action.secondary {
-  background: rgba(81, 38, 21, 0.08);
-  color: var(--marron);
-}
-
-.snack-action.primary {
-  background: var(--verde);
-  color: #fff;
-}
-
-@media (max-width: 480px) {
-  #snackbar {
-    bottom: 20px;
-    padding: 12px 14px;
-  }
-}
+.hidden { display: none !important; }
