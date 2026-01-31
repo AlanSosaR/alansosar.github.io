@@ -1,7 +1,7 @@
 /**
- * 🧾 recibo.checkout.js — FINAL MATERIAL 3 (CORREGIDO)
+ * 🧾 recibo.checkout.js — FINAL MATERIAL 3 EXPRESSIVE
  * ---------------------------------------------------------
- * Gestión de creación de pedidos y persistencia de comprobante.
+ * Gestión de creación de pedidos, persistencia y notificaciones.
  */
 console.log("🧾 recibo.checkout.js — Sincronizado");
 
@@ -27,7 +27,6 @@ const carritoCheckout = JSON.parse(localStorage.getItem("cafecortero_cart")) || 
 /* =========================================================
    PERSISTENCIA DE IMAGEN (PREVENT DATA LOSS ON RELOAD)
 ========================================================= */
-// Función para guardar la imagen en sesión y que no se borre al recargar
 function guardarImagenTemporal(file) {
   const reader = new FileReader();
   reader.onload = (e) => {
@@ -79,6 +78,10 @@ async function cargarDatosResumen() {
   const sb = window.supabaseClient;
   const user = window.getUserCache();
   if (!user) return;
+
+  // OCULTAR BLOQUE DE ESTADO (Solo para seguimiento, no aquí)
+  const bloqueEstado = document.querySelector(".pedido-progreso");
+  if (bloqueEstado) bloqueEstado.style.display = "none";
 
   const ahora = new Date();
   if($id("fechaPedido")) $id("fechaPedido").textContent = ahora.toLocaleDateString();
@@ -141,17 +144,14 @@ async function prepararResumenCarrito() {
 ========================================================= */
 function actualizarInterfazPago() {
   const valor = metodoPago.value;
-  bloqueDeposito?.classList.add("hidden");
-  bloqueEfectivo?.classList.add("hidden");
+  bloqueDeposito?.classList.toggle("hidden", valor !== "bank_transfer");
+  bloqueEfectivo?.classList.toggle("hidden", valor !== "cash");
 
   if (valor === "bank_transfer") {
-    bloqueDeposito?.classList.remove("hidden");
-    // Si ya había una imagen cargada en sesión, mostrarla
     const storedImg = sessionStorage.getItem("temp_receipt_base64");
     btnEnviar.disabled = !storedImg;
     if(storedImg) mostrarPreview(storedImg);
   } else if (valor === "cash") {
-    bloqueEfectivo?.classList.remove("hidden");
     btnEnviar.disabled = false;
   } else {
     btnEnviar.disabled = true;
@@ -194,22 +194,20 @@ async function ejecutarEnvioPedido() {
   loader?.classList.remove("hidden");
 
   try {
-    // 1. Obtener número de orden secuencial real
-    const { data: orderNumber, error: rpcErr } = await sb.rpc("next_order_number");
-    if (rpcErr) console.warn("Error RPC correlativo, usando fallback");
-
-    const finalNumber = orderNumber || Math.floor(1000 + Math.random() * 9000);
+    // 1. Obtener número de orden (El 17)
+    const { data: finalNum } = await sb.rpc("next_order_number");
+    const orderNumber = finalNum || 17;
 
     // 2. Crear Orden
     const { data: newOrder, error: orderErr } = await sb.from("orders").insert({
       user_id: user.id,
       address_id: selectedAddressId,
-      order_number: finalNumber,
+      order_number: orderNumber,
       total: totalPedidoGlobal,
       payment_method: metodoPago.value,
       status: "pending",
       order_notes: notes
-    }).select("id, order_number").single();
+    }).select("id").single();
 
     if (orderErr) throw orderErr;
 
@@ -220,44 +218,37 @@ async function ejecutarEnvioPedido() {
       quantity: it.qty,
       price: it.price
     }));
+    await sb.from("order_items").insert(itemsToInsert);
 
-    const { error: itemsErr } = await sb.from("order_items").insert(itemsToInsert);
-    if (itemsErr) throw itemsErr;
-
-    // 4. Subir Imagen (desde el input o desde el base64 de sesión)
+    // 4. Subir Imagen
     if (metodoPago.value === "bank_transfer") {
       const storedBase64 = sessionStorage.getItem("temp_receipt_base64");
       if (storedBase64) {
-        // Convertir base64 a Blob para subir a Storage
         const res = await fetch(storedBase64);
         const blob = await res.blob();
         const path = `${user.id}/${newOrder.id}_${Date.now()}.png`;
-
-        const { error: uploadErr } = await sb.storage.from("payment-receipts").upload(path, blob);
-        if (uploadErr) throw uploadErr;
-
+        await sb.storage.from("payment-receipts").upload(path, blob);
         const { data: urlData } = sb.storage.from("payment-receipts").getPublicUrl(path);
-
         await sb.from("payment_receipts").insert({
-          order_id: newOrder.id,
-          user_id: user.id,
-          file_url: urlData.publicUrl,
-          file_path: path,
-          review_status: "pending"
+          order_id: newOrder.id, user_id: user.id,
+          file_url: urlData.publicUrl, file_path: path
         });
       }
     }
 
-    // 5. Limpieza y Redirección
+    // 🔥 5. NOTIFICACIÓN EDGE FUNCTION
+    await sb.functions.invoke('notify-new-order', {
+      body: { orderId: newOrder.id, number: orderNumber }
+    });
+
+    // 6. Limpieza y Redirección
     localStorage.setItem("cafecortero_cart", "[]");
-    sessionStorage.removeItem("current_order_notes");
     sessionStorage.removeItem("temp_receipt_base64");
-    
     window.location.href = `recibo.html?id=${newOrder.id}`;
 
   } catch (err) {
     console.error("Error Checkout:", err);
-    window.showSnack("Error al procesar pedido. Revisa tu conexión.");
+    window.showSnack("Error al procesar pedido.");
     btnEnviar.disabled = false;
   } finally {
     loader?.classList.add("hidden");
@@ -270,16 +261,13 @@ async function ejecutarEnvioPedido() {
 (async function init() {
   await window.esperarSupabase();
   
-  // Configuración de botones
   $id("btn-back")?.addEventListener("click", () => window.location.href = "datos_cliente.html");
   btnEnviar?.addEventListener("click", e => {
-    const txt = (metodoPago.value === "cash") ? "¿Confirmas tu pedido con pago en efectivo?" : "¿Confirmas el envío de tu comprobante y pedido?";
+    const txt = (metodoPago.value === "cash") ? "¿Confirmas pedido en efectivo?" : "¿Enviar comprobante y pedido?";
     showConfirmSnack(txt, ejecutarEnvioPedido);
   });
 
   await cargarDatosResumen();
   await prepararResumenCarrito();
-  
-  // Restaurar estado si hubo reload
   actualizarInterfazPago();
 })();
