@@ -11,65 +11,90 @@
 
   <link rel="stylesheet" href="css/header.css">
   <link rel="stylesheet" href="css/recibo.css">
+  
+  <style>
+    /* Estilos para la Píldora de Estado y Botón de Cancelar */
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-weight: 500;
+      font-size: 0.9rem;
+      margin-top: 10px;
+    }
+    .status-pending { background: #fff3e0; color: #ef6c00; }
+    .status-review { background: #e3f2fd; color: #1565c0; }
+    .status-processing { background: #f3e5f5; color: #7b1fa2; }
+    .status-shipped { background: #e8f5e9; color: #2e7d32; }
+    .status-cancelled { background: #ffebee; color: #c62828; }
+    
+    .btn-cancelar {
+      background-color: #f44336 !important;
+      color: white !important;
+    }
+    .btn-cancelar:disabled {
+      background-color: #e0e0e0 !important;
+      color: #9e9e9e !important;
+      cursor: not-allowed;
+    }
+  </style>
 </head>
 
 <body class="page-recibo header-checkout">
 
   <main class="recibo-container fade-in">
     <section class="recibo-card">
-
+      
       <button id="btn-back" class="card-back" aria-label="Volver">
         <span class="material-symbols-outlined">chevron_left</span>
       </button>
 
       <div class="inner-card-full">
+        <h2>Pedido N.º <span id="numeroPedido"></span></h2>
 
-        <div class="pedido-header-main">
-          <h2>Pedido N.º <span id="numeroPedido">---</span></h2>
-          <p class="pedido-fecha-sub">
-            <span id="fechaPedido">-- de --- de ----</span> • <span id="horaPedido">--:-- --</span>
-          </p>
+        <div class="pedido-fecha">
+          <p><span class="pedido-fecha-label">Fecha:</span> <span id="fechaPedido">—</span></p>
+          <p><span class="pedido-fecha-label">Hora:</span> <span id="horaPedido">—</span></p>
         </div>
 
-        <section class="pedido-status-section">
-          <p class="section-label">Estado del pedido</p>
-          <div id="estado-pildora-container" class="pildora-wrapper">
-             </div>
+        <section id="pedido-progreso-recibo" class="pedido-progreso">
+          <p class="progreso-title">Estado del pedido</p>
+          
+          <div id="estado-pildora-container"></div>
+
+          <div class="progreso-wrapper">
+            <div class="progreso-bar">
+              <span class="step pago"></span><span class="line pago"></span>
+              <span class="step revision"></span><span class="line revision"></span>
+              <span class="step confirmado"></span><span class="line confirmado"></span>
+              <span class="step envio"></span>
+            </div>
+            <div class="progreso-labels">
+              <span>Pag.</span><span>Rev.</span><span>Conf.</span><span>Envío</span>
+            </div>
+          </div>
         </section>
 
-        <h3 class="section-title">Selección de cafés</h3>
+        <h3>Datos del cliente</h3>
+        <div class="cliente-info">
+          <p><strong>Nombre:</strong> <span id="nombreCliente"></span></p>
+          <p><strong>Correo:</strong> <span id="correoCliente"></span></p>
+          <p><strong>Teléfono:</strong> <span id="telefonoCliente"></span></p>
+          <p><strong>Zona:</strong> <span id="zonaCliente"></span></p>
+          <p><strong>Dirección:</strong> <span id="direccionCliente"></span></p>
+          <p><strong>Nota:</strong> <span id="notaCliente"></span></p>
+        </div>
+
+        <h3>Selección de cafés</h3>
         <div id="listaProductos" class="cafes-list"></div>
 
-        <div class="recibo-total-container border-top-dashed">
-          <p class="recibo-total">
-            <span class="total-label">Total del pedido</span>
-            <span class="total-monto">L <span id="totalPedido">0.00</span></span>
-          </p>
-        </div>
+        <p class="recibo-total">
+          <span class="material-symbols-outlined total-icon">paid</span>
+          <strong>Total:</strong> L <span id="totalPedido"></span>
+        </p>
 
-        <div id="container-cancelar" class="cancelar-wrapper">
-          <button id="btnCancelarPedido" class="btn-secondary btn-outline">
-            <span class="material-symbols-outlined">cancel</span>
-            Cancelar Pedido
-          </button>
-        </div>
-
-        <hr class="separator-light">
-
-        <h3 class="section-title">Entrega</h3>
-        <div class="cliente-info">
-          <p id="direccion-resumen" class="text-bold"></p>
-          <p><strong>Referencia:</strong> <span id="notaCliente"></span></p>
-          
-          <details class="datos-adicionales">
-            <summary>Ver datos de contacto</summary>
-            <p><strong>Nombre:</strong> <span id="nombreCliente"></span></p>
-            <p><strong>Correo:</strong> <span id="correoCliente"></span></p>
-            <p><strong>Teléfono:</strong> <span id="telefonoCliente"></span></p>
-          </details>
-        </div>
-
-        <h3 class="section-title">Método de pago</h3>
         <div class="pagos">
           <label class="pago-select-label">
             <span class="material-symbols-outlined">payments</span>
@@ -81,32 +106,26 @@
           </label>
 
           <div id="pago-deposito" class="pago-bloque hidden">
-            <div class="bank-info-card">
-              <span class="material-symbols-outlined">account_balance</span>
-              <p>Banco Atlántida — 123456789<br>A nombre de Café Cortero</p>
-            </div>
-            <button class="comprobante-link" id="btnSubirComprobante">
-              <span class="material-symbols-outlined">upload</span>
-              Subir comprobante
-            </button>
+            <p><span class="material-symbols-outlined pago-icon">account_balance</span><strong>Depósito bancario</strong></p>
+            <p class="comprobante-info">Banco Atlántida — Cuenta 123456789</p>
+            <button class="comprobante-link" id="btnSubirComprobante"><span class="material-symbols-outlined">upload</span> Subir comprobante</button>
             <input type="file" id="inputComprobante" accept="image/*" hidden>
             <div id="previewComprobante" class="preview hidden">
               <img id="imgComprobante" alt="Comprobante">
+              <p>✔ Comprobante listo</p>
             </div>
           </div>
 
           <div id="pago-efectivo" class="pago-bloque hidden">
-            <p class="comprobante-info">
-              <span class="material-symbols-outlined">handshake</span>
-              El pago se realizará en efectivo al momento de la entrega.
-            </p>
+            <p><span class="material-symbols-outlined pago-icon">payments</span><strong>Pago en efectivo</strong></p>
+            <p class="comprobante-info">Se realizará al momento de la entrega.</p>
           </div>
         </div>
 
         <div class="recibo-botones">
-          <button id="btnEnviar" class="btn-primary" disabled>
-            <span class="btn-text">Enviar pedido</span>
-            <i class="fa-solid fa-circle-notch fa-spin hidden" id="loaderEnviar"></i>
+          <button id="btnAccionPrincipal" class="btn-primary">
+            <span class="btn-text" id="btnText">Enviar pedido</span>
+            <i class="fa-solid fa-circle-notch fa-spin hidden" id="loaderAccion"></i>
           </button>
         </div>
 
@@ -118,12 +137,40 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/core/supabase-client-core.js"></script>
-  <script>window.PAGE_MODE = "recibo";</script>
-  <script type="module" src="js/ui/header.js"></script>
+
+  <script>
+    window.PAGE_MODE = "recibo";
+    // Forzamos que las variables existan para evitar el ReferenceError
+    window.ORDER_ID = new URLSearchParams(window.location.search).get("id");
+    window.IS_READ_ONLY = Boolean(window.ORDER_ID);
+  </script>
+
+  <script src="js/pages/recibo.core.js"></script>
   <script src="js/core/auth-ui.js"></script>
   <script src="js/ui/layout.js"></script>
-  <script src="js/pages/recibo.core.js"></script>
+  
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const btn = document.getElementById("btnAccionPrincipal");
+      const text = document.getElementById("btnText");
+
+      if (window.IS_READ_ONLY) {
+        // MODO VISTA: Transformar botón en "Cancelar Pedido"
+        text.textContent = "Cancelar Pedido";
+        btn.classList.add("btn-cancelar");
+        btn.id = "btnCancelarPedido"; // Cambiamos el ID para que lo pesque recibo.view.js
+        
+        // El script recibo.view.js se encargará de ocultarlo si ya no es "pending"
+      } else {
+        // MODO CHECKOUT: Botón enviar normal
+        btn.id = "btnEnviar";
+        btn.disabled = true;
+      }
+    });
+  </script>
+
   <script src="js/pages/recibo.checkout.js"></script>
   <script src="js/pages/recibo.view.js"></script>
+
 </body>
 </html>
