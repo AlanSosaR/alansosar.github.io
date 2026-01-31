@@ -1,663 +1,294 @@
 /* ============================================================
-   RECIBO / DETALLES DEL PEDIDO — VERSIÓN FINAL ESTABLE
-   USA HEADER GLOBAL (CHECKOUT)
+   RECIBO / DETALLES DEL PEDIDO — MATERIAL 3 EXPRESSIVE
+   Sincronizado con Píldoras y Botón Cancelar
 ============================================================ */
 
-/* ================= ROOT ================= */
 :root {
   --marron: #512615;
   --verde: #33673B;
   --blanco: #ffffff;
-  --fondo: #fafafa;
-  --marron-suave: rgba(75, 44, 25, 0.7);
-  --border-cafe: rgba(81, 38, 21, 0.75);
+  --fondo: #f6f8f6;
+  --error: #ba1a1a;
+  --surface-variant: #e1e3df;
+  --sombra-m3: 0 4px 12px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.12);
 }
 
 /* ================= BASE ================= */
 body {
   margin: 0;
-  background: var(--blanco);
-  font-family: -apple-system, BlinkMacSystemFont, "Poppins",
-               "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+  background: var(--fondo); /* Fondo ligeramente grisáceo para que resalte la card */
+  font-family: 'Poppins', sans-serif;
   color: var(--marron);
+  min-height: 100vh;
 }
 
-/* ============================================================
-   OFFSET POR HEADER GLOBAL (CHECKOUT)
-============================================================ */
+/* OFFSET POR HEADER GLOBAL */
 body.header-checkout .recibo-container {
-  margin-top: 96px; /* desktop */
+  padding-top: 100px;
+  padding-bottom: 60px; /* 🔑 Evita que la tarjeta pegue abajo */
 }
 
-@media (max-width: 900px) {
-  body.header-checkout .recibo-container {
-    margin-top: 88px; /* móvil */
-  }
-}
-
-/* ================= CONTENEDOR ================= */
 .recibo-container {
-  max-width: 900px;
-  margin: 0 auto;        /* 🔑 centra correctamente */
-  padding: 0 16px;      /* 🔑 aire lateral uniforme (Material 3) */
-  box-sizing: border-box;
+  max-width: 650px; /* Un poco más estrecho para look móvil premium */
+  margin: 0 auto;
+  padding: 0 16px;
 }
 
-/* ============================================================
-   TARJETA PRINCIPAL
-============================================================ */
+/* ================= TARJETA PRINCIPAL ================= */
 .recibo-card {
   position: relative;
-  width: 100%;
-  max-width: 900px;
-
-  margin: 0 auto;                /* 🔑 centra la tarjeta */
-  box-sizing: border-box;        /* 🔑 evita desplazamientos */
-
-  background: #ffffff;
-  border-radius: 26px;
-
-  /* Padding vertical fuerte + lateral controlado */
-  padding: 6rem 24px 3rem;
-
-  box-shadow:
-    0 18px 44px rgba(0, 0, 0, 0.14),
-    0 6px 16px rgba(0, 0, 0, 0.10);
+  background: var(--blanco);
+  border-radius: 28px; /* Radio más amplio M3 */
+  padding: 24px;
+  box-shadow: var(--sombra-m3);
+  margin-bottom: 40px; /* 🔑 Espacio de respiración al final */
 }
 
-/* ================= MOBILE ================= */
-@media (max-width: 600px) {
-  .recibo-card {
-    padding: 4rem 16px 24px;   /* 🔑 reduce alto + mismo aire lateral */
-    border-radius: 24px;
-  }
-}
-
-/* =====================================================
-   BOTÓN VOLVER — DENTRO DE LA TARJETA (CORRECTO)
-===================================================== */
+/* BOTÓN VOLVER (Arriba Izquierda) */
 .card-back {
-  position: absolute;
-  top: 22px;
-  left: 22px;
-
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-
-  background: #ffffff;
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
   border: none;
-
+  background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
-
-  box-shadow:
-    0 6px 16px rgba(0,0,0,0.18),
-    0 2px 6px rgba(0,0,0,0.12);
-
   cursor: pointer;
-  z-index: 5;
-
-  transition: transform .2s ease, box-shadow .2s ease;
-}
-
-@media (min-width: 901px) {
-  .card-back:hover {
-    transform: translateY(-2px);
-    box-shadow:
-      0 10px 22px rgba(0,0,0,0.22),
-      0 4px 10px rgba(0,0,0,0.14);
-  }
-}
-
-.card-back .material-symbols-outlined {
-  font-size: 24px;
-  font-weight: 600;
-  color: var(--verde);
-}
-
-/* ============================================================
-   TARJETA INTERNA
-============================================================ */
-.inner-card-full {
-  position: relative;
-  background: #ffffff;
-
-  border-radius: 22px;
-  border: 2px solid var(--marron);
-
-  padding: 3rem 2rem;
-  margin-top: 1.4rem;
-}
-
-@media (max-width: 600px) {
-  .inner-card-full {
-    padding: 20px 16px;
-    border-radius: 20px;
-  }
-}
-
-/* ================= TITULOS ================= */
-.recibo-card h2 {
-  text-align: center;
-  font-size: 1.45rem;
-  margin-bottom: 6px;
-}
-
-/* ================= FECHA Y HORA — RECIBO ================= */
-
-.pedido-fecha {
-  margin: 12px 0 18px;
-  text-align: left;
-  line-height: 1.6;
-}
-
-.pedido-fecha p {
-  margin: 4px 0;
-  font-size: 0.95rem;
-}
-
-/* Label → ☕ café */
-.pedido-fecha-label {
   color: var(--marron);
-  font-weight: 600;
+  transition: background 0.2s;
 }
 
-/* Valor → 🟢 verde */
-.pedido-fecha-valor {
-  color: var(--verde);
-  font-weight: 600;
+.card-back:hover {
+  background: var(--surface-variant);
 }
 
-h3 {
-  margin-top: 24px;
-  font-size: 1.1rem;
-  color: var(--verde);
-  padding-left: 12px;
-  border-left: 4px solid var(--marron);
-}
-/* =====================================================
-   PROGRESO DEL PEDIDO — RECIBO (SOLO LECTURA)
-===================================================== */
-
-.pedido-progreso {
-  margin: 26px 0 18px;
-  padding: 22px 20px;
-
-  background: var(--blanco);
-  border-radius: 22px;
-
-  /* mismo look que mis pedidos */
-  box-shadow: var(--sombra-card);
+/* ================= ENCABEZADO Y FECHA ================= */
+.pedido-header-main {
+  text-align: center;
+  margin-bottom: 24px;
 }
 
-/* ------------------
-   TÍTULO
------------------- */
-.progreso-title {
+.pedido-header-main h2 {
+  font-size: 1.5rem;
+  margin: 0;
+  color: var(--marron);
+}
+
+.pedido-fecha-sub {
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: 4px;
+}
+
+/* ================= SECCIONES (Títulos) ================= */
+.section-title {
   font-size: 1rem;
   font-weight: 600;
-  color: var(--marron);
-  margin-bottom: 16px;
-}
-
-/* ------------------
-   WRAPPER
------------------- */
-.progreso-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-/* =====================================================
-   BARRA DE PROGRESO
-===================================================== */
-
-.progreso-bar {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-/* ------------------
-   PASOS (CÍRCULOS)
------------------- */
-.step {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: #e0e0e0;
-  flex-shrink: 0;
-}
-
-/* Estados activos */
-.step.pago {
-  background: #7a4a2e; /* café */
-}
-
-.step.revision {
-  background: #c28b00; /* ámbar */
-}
-
-.step.confirmado {
-  background: var(--verde); /* verde */
-}
-
-.step.envio {
-  background: #4a6f8a; /* azul/gris */
-}
-
-/* ------------------
-   LÍNEAS
------------------- */
-.line {
-  flex: 1;
-  height: 4px;
-  border-radius: 4px;
-  background: #e0e0e0;
-  position: relative;
-  overflow: hidden;
-}
-
-/* Relleno animado */
-.line::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  width: 0%;
-  background: transparent;
-  transition: width 0.25s ease;
-}
-
-/* Estados de línea */
-.line.pago::after {
-  width: 100%;
-  background: #7a4a2e;
-}
-
-.line.revision::after {
-  width: 100%;
-  background: #c28b00;
-}
-
-.line.confirmado::after {
-  width: 100%;
-  background: var(--verde);
-}
-
-.line.envio::after {
-  width: 100%;
-  background: #4a6f8a;
-}
-
-/* =====================================================
-   LABELS DEBAJO
-===================================================== */
-
-.progreso-labels {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  margin-top: 6px;
-}
-
-.progreso-labels span {
-  font-size: 0.78rem;
-  color: #6b6b6b;
-  text-align: center;
-  font-weight: 500;
-}
-
-/* =====================================================
-   ESTADO ACTUAL (ICONO + TEXTO)
-===================================================== */
-
-.estado {
+  color: var(--verde);
+  margin: 32px 0 16px;
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-top: 14px;
+}
+
+.section-label {
+  font-size: 0.85rem;
   font-weight: 600;
+  color: #777;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
 }
 
-/* TEXTO — SIEMPRE VERDE */
-.estado-text {
-  font-size: 0.95rem;
-  color: var(--verde);
-}
-
-/* ICONO BASE */
-.estado-icon {
-  font-size: 1.25rem;
-}
-
-/* =========================
-   COLORES SOLO PARA ICONO
-========================= */
-
-/* Pago */
-.estado.pago .estado-icon {
-  color: #7a4a2e;
-}
-
-/* Revisión */
-.estado.revision .estado-icon {
-  color: #c28b00;
-}
-
-/* Confirmado */
-.estado.confirmado .estado-icon {
-  color: var(--verde);
-}
-
-/* Envío */
-.estado.envio .estado-icon {
-  color: #4a6f8a;
-}
-
-/* =====================================================
-   RESPONSIVE
-===================================================== */
-
-@media (max-width: 480px) {
-  .pedido-progreso {
-    padding: 18px 16px;
-  }
-
-  .progreso-title {
-    font-size: 0.95rem;
-  }
-}/* ================= CLIENTE ================= */
-.cliente-info p {
-  margin: 8px 0;
-  font-size: 0.95rem;
-}
-
-.cliente-info strong {
-  font-weight: 600;
-}
-
-.cliente-info span {
-  color: var(--verde);
-  font-weight: 500;
-}
-
-/* ================= CAFÉS ================= */
-.cafes-list {
+/* ================= PÍLDORAS DE ESTADO (DINÁMICAS) ================= */
+.pildora-wrapper {
   display: flex;
-  flex-direction: column;
-  gap: 14px;
-  margin-top: 16px;
+  justify-content: center;
+  margin-bottom: 20px;
 }
 
-.cafe-item {
-  background: #fff;
-  border-radius: 18px;
-  padding: 16px 18px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  box-shadow: 0 6px 16px rgba(0,0,0,.08);
-}
-
-.cafe-nombre {
-  font-weight: 600;
-}
-
-.cafe-cantidad {
-  font-size: .8rem;
-  color: var(--marron-suave);
-}
-
-.cafe-qty {
-  color: var(--verde);
-}
-
-.cafe-precio {
-  font-weight: 600;
-  color: var(--verde);
-}
-
-/* ================= TOTAL ================= */
-.recibo-total {
-  margin-top: 18px;
-  text-align: right;
-  font-size: 1.2rem;
-  font-weight: 600;
-
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 6px;
-}
-
-.total-icon {
-  font-size: 22px;
-  color: var(--verde);
-}
-
-/* ================= PAGOS ================= */
-.pagos {
-  margin-top: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-
-.pago-select-label {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
-  padding: 14px 16px;
-  border-radius: 16px;
-  border: 1.7px solid var(--border-cafe);
-  background: #fff;
-}
-
-#metodoPago {
-  flex: 1;
-  border: none;
-  outline: none;
-  background: transparent;
-  font-size: 0.95rem;
-  font-weight: 500;
-  cursor: pointer;
-}
-
-.pago-bloque {
-  padding: 18px;
-  border-radius: 18px;
-  background: #fff;
-  border: 1.6px solid rgba(0,0,0,0.08);
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.pago-bloque.hidden {
-  display: none;
-}
-
-/* ================= COMPROBANTE ================= */
-.comprobante-link {
+.status-pill {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: none;
-  border: none;
+  padding: 8px 20px;
+  border-radius: 100px;
+  font-weight: 500;
   font-size: 0.95rem;
-  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+/* Colores de estados */
+.status-pending { background: #fff3e0; color: #e65100; }
+.status-review { background: #e3f2fd; color: #1565c0; }
+.status-processing { background: #f3e5f5; color: #7b1fa2; }
+.status-shipped { background: #e8f5e9; color: #2e7d32; }
+.status-delivered { background: #2e7d32; color: #ffffff; }
+.status-cancelled { background: #ffebee; color: #c62828; }
+
+.status-pill .material-symbols-outlined {
+  font-size: 20px;
+}
+
+/* ================= LISTA DE CAFÉS ================= */
+.cafes-list {
+  border-top: 1px solid #eee;
+  padding-top: 10px;
+}
+
+.cafe-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  font-size: 1rem;
+}
+
+.item-name { font-weight: 500; }
+.item-price { font-weight: 600; color: var(--verde); }
+
+/* TOTAL CON LÍNEA PUNTEADA */
+.border-top-dashed {
+  border-top: 2px dashed #e0e0e0;
+  margin-top: 10px;
+  padding-top: 15px;
+}
+
+.recibo-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.total-label { font-size: 1.1rem; font-weight: 500; }
+.total-monto { font-size: 1.3rem; font-weight: 700; color: var(--marron); }
+
+/* ================= BOTONES DE ACCIÓN ================= */
+.cancelar-wrapper {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--surface-variant);
+  color: var(--error);
+  padding: 10px 24px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
   cursor: pointer;
+  transition: background 0.2s;
 }
 
-.preview img {
-  max-width: 100%;
-  border-radius: 18px;
-  box-shadow: 0 6px 18px rgba(0,0,0,.15);
+.btn-outline:hover {
+  background: #fff1f1;
+  border-color: #ffcdd2;
 }
 
-.preview p {
-  font-size: 0.85rem;
-  color: var(--verde);
-  text-align: center;
-}
-
-/* ================= BOTONES ================= */
 .recibo-botones {
-  margin-top: 28px;
+  margin-top: 30px;
 }
 
 .btn-primary {
   width: 100%;
-  border-radius: 16px;
-  padding: 14px 16px;
-  font-size: 1rem;
-  font-weight: 500;
-  border: none;
   background: var(--verde);
-  color: #fff;
+  color: white;
+  border: none;
+  padding: 16px;
+  border-radius: 16px;
+  font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 4px 10px rgba(51, 103, 59, 0.2);
 }
 
 .btn-primary:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+  background: #ccc;
+  box-shadow: none;
 }
 
-/* ================= UTIL ================= */
-.hidden {
-  display: none !important;
-}
-/* =====================================================
-   FIX — PREVIEW COMPROBANTE (MIS PEDIDOS)
-===================================================== */
-#previewComprobante {
-  display: block;
-  visibility: visible;
+/* ================= DATOS CLIENTE ================= */
+.cliente-info {
+  background: #f9f9f9;
+  padding: 16px;
+  border-radius: 16px;
+  font-size: 0.95rem;
 }
 
-#previewComprobante.hidden {
-  display: none !important;
+.text-bold { font-weight: 600; display: block; margin-bottom: 4px; }
+
+.datos-adicionales {
+  margin-top: 12px;
+  border-top: 1px solid #eee;
+  padding-top: 8px;
 }
 
-#imgComprobante {
-  display: block;
-  width: 100%;
-  max-width: 100%;
-  height: auto;
-  border-radius: 18px;
-  box-shadow: 0 6px 18px rgba(0,0,0,.15);
+.datos-adicionales summary {
+  font-size: 0.85rem;
+  color: var(--verde);
+  cursor: pointer;
+  font-weight: 500;
 }
 
-/* =====================================================
-   SNACKBAR — ACCIÓN (FIX DEFINITIVO)
-===================================================== */
-
-#snackbar {
-  position: fixed;
-  left: 50%;
-  bottom: 28px;
-  transform: translateX(-50%) translateY(120%);
-
-  min-width: 280px;
-  max-width: 92vw;
-
-  background: #ffffff;
-  color: var(--marron);
-
-  border-radius: 18px;
-  padding: 14px 16px;
-
+/* ================= PAGOS ================= */
+.pago-select-label {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-
-  box-shadow:
-    0 18px 44px rgba(0, 0, 0, 0.22),
-    0 6px 16px rgba(0, 0, 0, 0.14);
-
-  opacity: 0;
-  pointer-events: none;
-  z-index: 9999;
-
-  transition:
-    transform .35s cubic-bezier(.2,.8,.2,1),
-    opacity .25s ease;
-}
-
-/* ===== ACTIVO ===== */
-#snackbar.show {
-  transform: translateX(-50%) translateY(0);
-  opacity: 1;
-  pointer-events: auto;
-}
-
-/* =====================================================
-   CONTENIDO
-===================================================== */
-
-.snack-text {
-  font-size: 0.95rem;
-  font-weight: 500;
-  line-height: 1.4;
-  flex: 1;
-}
-
-/* =====================================================
-   ACCIONES
-===================================================== */
-
-.snack-actions {
-  display: flex;
-  gap: 8px;
-  flex-shrink: 0;
-}
-
-.snack-action {
-  border: none;
+  gap: 12px;
+  background: #fff;
+  border: 1px solid var(--surface-variant);
+  padding: 12px 16px;
   border-radius: 12px;
-  padding: 8px 12px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background .2s ease, transform .15s ease;
 }
 
-/* Secundario — Corregir */
-.snack-action.secondary {
-  background: rgba(81, 38, 21, 0.08);
-  color: var(--marron);
+.pago-bloque {
+  margin-top: 15px;
+  padding: 16px;
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 16px;
 }
 
-.snack-action.secondary:hover {
-  background: rgba(81, 38, 21, 0.15);
+.bank-info-card {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 16px;
 }
 
-/* Primario — Aceptar */
-.snack-action.primary {
-  background: var(--verde);
-  color: #fff;
+.preview img {
+  width: 100%;
+  border-radius: 12px;
+  margin-top: 10px;
 }
 
-.snack-action.primary:hover {
-  transform: translateY(-1px);
-  background: #2e5c35;
+/* ================= SNACKBAR ================= */
+#snackbar {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: #322f2f;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  z-index: 1000;
+  transition: transform 0.3s ease;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
 }
 
-/* =====================================================
-   MOBILE
-===================================================== */
-@media (max-width: 480px) {
-  #snackbar {
-    bottom: 20px;
-    padding: 12px 14px;
-  }
+#snackbar.show { transform: translateX(-50%) translateY(0); }
 
-  .snack-text {
-    font-size: 0.9rem;
-  }
-}
+/* UTILIDADES */
+.hidden { display: none !important; }
