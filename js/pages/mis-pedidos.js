@@ -1,8 +1,8 @@
 /* ============================================================
-   MIS PEDIDOS — CLIENTE (FINAL DEFINITIVO)
+   MIS PEDIDOS — CLIENTE (CORREGIDO)
 ============================================================ */
 
-console.log("📦 mis-pedidos.js — FINAL DEFINITIVO");
+console.log("📦 mis-pedidos.js — Estructura Material 3 Garantizada");
 
 /* -----------------------------------------------------------
    STATE
@@ -64,8 +64,8 @@ async function init() {
     return;
   }
 
-  renderPedidoActivo(pedidoActivo);
-  renderCarrusel();
+  await renderPedidoActivo(pedidoActivo);
+  await renderCarrusel();
   bindCarruselArrows();
 
   document.getElementById("pedido-activo")?.classList.remove("hidden");
@@ -102,7 +102,7 @@ async function renderPedidoActivo(pedido) {
   container.innerHTML = "";
   const node = tpl.content.cloneNode(true);
 
-  /* ================= HEADER ================= */
+  // HEADER
   node.querySelector(".pedido-numero").textContent =
     `Pedido N.º ${String(pedido.order_number).padStart(3, "0")}`;
 
@@ -110,44 +110,28 @@ async function renderPedidoActivo(pedido) {
   node.querySelector(".fecha").textContent = fecha;
   node.querySelector(".hora").textContent = hora;
 
-  /* ================= TOTAL ================= */
+  // TOTAL
   node.querySelector(".pedido-total").textContent =
     `L ${Number(pedido.total).toFixed(2)}`;
 
-  /* ================= ENTREGA / REFERENCIA ================= */
+  // ENTREGA / REFERENCIA
   const entregaEl = node.querySelector(".entrega-text");
   const referenciaEl = node.querySelector(".referencia-text");
 
   if (pedido.address_id) {
-    const { data: address, error } = await sb()
+    const { data: address } = await sb()
       .from("addresses")
       .select("street, city, state, country, postal_code")
       .eq("id", pedido.address_id)
       .maybeSingle();
 
-    if (!error && address) {
-      // Construir dirección completa
-      const entrega = [
-        address.street,
-        address.city,
-        address.state,
-        address.country,
-      ]
-        .filter(Boolean)
-        .join(", ");
-
-      entregaEl.textContent = entrega || "—";
-      referenciaEl.textContent = address.postal_code || "—";
-    } else {
-      entregaEl.textContent = "—";
-      referenciaEl.textContent = "—";
+    if (address) {
+      entregaEl.textContent = `${address.street}, ${address.city}`;
+      referenciaEl.textContent = address.postal_code || "Sin referencia";
     }
-  } else {
-    entregaEl.textContent = "—";
-    referenciaEl.textContent = "—";
   }
 
-  /* ================= PRODUCTOS ================= */
+  // PRODUCTOS (Pills)
   const pills = node.querySelector(".productos-pills");
   pills.innerHTML = "";
 
@@ -156,14 +140,9 @@ async function renderPedidoActivo(pedido) {
     .select("product_id, quantity, price")
     .eq("order_id", pedido.id);
 
-  if (Array.isArray(items) && items.length) {
+  if (items?.length) {
     const ids = [...new Set(items.map(i => i.product_id))];
-
-    const { data: products } = await sb()
-      .from("products")
-      .select("id, name")
-      .in("id", ids);
-
+    const { data: products } = await sb().from("products").select("id, name").in("id", ids);
     const map = {};
     products?.forEach(p => (map[p.id] = p.name));
 
@@ -172,42 +151,31 @@ async function renderPedidoActivo(pedido) {
       div.className = "pill";
       div.innerHTML = `
         <span>${map[i.product_id] || "Producto"} × ${i.quantity}</span>
-        <span>L ${(i.quantity * i.price).toFixed(2)}</span>
+        <strong>L ${(i.quantity * i.price).toFixed(2)}</strong>
       `;
       pills.appendChild(div);
     });
   }
 
-  /* ================= ESTADO ================= */
+  // ESTADO
   const status = STATUS_MAP[pedido.status] || STATUS_MAP.pending;
-
   node.querySelector(".estado-paso").textContent = status.step;
   node.querySelector(".estado-nombre").textContent = status.label;
 
-  node.querySelectorAll(".estado-item").forEach(li => {
-    li.classList.add("hidden");
-    li.classList.remove("activo", "completado");
+  const listItems = node.querySelectorAll(".estado-item");
+  listItems.forEach((li, i) => {
+    const stepIdx = i + 1;
+    if (stepIdx < status.step) li.classList.add("completado");
+    if (stepIdx === status.step) li.classList.add("activo");
   });
 
-  STATUS_FLOW.forEach((key, i) => {
-    const li = node.querySelector(`[data-estado="${key}"]`);
-    if (!li) return;
-
-    li.classList.remove("hidden");
-    if (i + 1 < status.step) li.classList.add("completado");
-    if (i + 1 === status.step) li.classList.add("activo");
-  });
-
-  /* ================= MEDIA / RECIBO ================= */
+  // MEDIA / BOTÓN RECIBO (Blindaje CSS)
   const img = node.querySelector(".recibo-img");
   const btn = node.querySelector(".ver-recibo");
-  btn.classList.add("hidden");
-
-  if (
-    pedido.payment_method === "cash" ||
-    pedido.payment_method === "cash_on_delivery"
-  ) {
+  
+  if (pedido.payment_method?.includes("cash")) {
     img.src = "imagenes/pago_en_mano.svg";
+    btn.classList.add("hidden");
   } else {
     const { data: receipt } = await sb()
       .from("payment_receipts")
@@ -218,21 +186,22 @@ async function renderPedidoActivo(pedido) {
     if (receipt?.file_url) {
       img.src = receipt.file_url;
       btn.classList.remove("hidden");
-      btn.onclick = () =>
-        (location.href = `recibo.html?id=${pedido.id}`);
+      // Forzamos estructura interna para que el CSS de la "píldora" funcione
+      btn.innerHTML = `
+        <span class="material-symbols-outlined">receipt_long</span>
+        <span>Ver recibo</span>
+        <span class="material-symbols-outlined">arrow_forward</span>
+      `;
+      btn.onclick = () => (location.href = `recibo.html?id=${pedido.id}`);
     } else {
       img.src = "imagenes/recibo_default.svg";
+      btn.classList.add("hidden");
     }
   }
 
-  /* ================= MOUNT ================= */
   container.appendChild(node);
-
-  container.scrollIntoView({
-    behavior: "smooth",
-    block: "start",
-  });
 }
+
 /* -----------------------------------------------------------
    CARRUSEL
 ----------------------------------------------------------- */
@@ -245,46 +214,31 @@ async function renderCarrusel() {
 
   for (const pedido of allPedidos) {
     const node = tpl.content.cloneNode(true);
-    const card = node.querySelector(".pedido-mini-card");
+    const card = node.querySelector(".similar-card");
 
-    node.querySelector(".pedido-mini-numero").textContent =
-      `Pedido N.º ${String(pedido.order_number).padStart(3, "0")}`;
+    node.querySelector(".pedido-mini-numero").textContent = `N.º ${String(pedido.order_number).padStart(3, "0")}`;
+    node.querySelector(".pedido-mini-total").textContent = `L ${Number(pedido.total).toFixed(2)}`;
+    
+    const statusEl = node.querySelector(".pedido-mini-status");
+    statusEl.textContent = STATUS_MAP[pedido.status]?.label || "Pendiente";
 
-    node.querySelector(".pedido-mini-total").textContent =
-      `L ${Number(pedido.total).toFixed(2)}`;
-
-    node.querySelector(".pedido-mini-status").textContent =
-      STATUS_MAP[pedido.status]?.label || "Pendiente";
-
+    // Imagen mini
     const img = node.querySelector(".pedido-mini-img");
-
-    if (
-      pedido.payment_method === "cash" ||
-      pedido.payment_method === "cash_on_delivery"
-    ) {
+    if (pedido.payment_method?.includes("cash")) {
       img.src = "imagenes/pago_en_mano.svg";
     } else {
-      const { data: receipt } = await sb()
-        .from("payment_receipts")
-        .select("file_url")
-        .eq("order_id", pedido.id)
-        .maybeSingle();
-
-      img.src = receipt?.file_url || "imagenes/recibo_default.svg";
+      const { data: rec } = await sb().from("payment_receipts").select("file_url").eq("order_id", pedido.id).maybeSingle();
+      img.src = rec?.file_url || "imagenes/recibo_default.svg";
     }
 
-    if (pedido.id === pedidoActivo.id) {
-      card.classList.add("is-selected");
-    }
+    if (pedido.id === pedidoActivo.id) card.classList.add("is-selected");
 
     card.onclick = () => {
-      document
-        .querySelectorAll(".pedido-mini-card")
-        .forEach(c => c.classList.remove("is-selected"));
-
+      document.querySelectorAll(".similar-card").forEach(c => c.classList.remove("is-selected"));
       card.classList.add("is-selected");
       pedidoActivo = pedido;
       renderPedidoActivo(pedido);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     wrapper.appendChild(node);
@@ -292,43 +246,33 @@ async function renderCarrusel() {
 }
 
 /* -----------------------------------------------------------
-   FLECHAS CARRUSEL (DESKTOP ONLY)
+   FLECHAS CARRUSEL
 ----------------------------------------------------------- */
 function bindCarruselArrows() {
-  if (window.innerWidth < 900) return;
-
   const list = document.getElementById("pedidos-carrusel");
   const prev = document.getElementById("pedidos-prev");
   const next = document.getElementById("pedidos-next");
 
   if (!list || !prev || !next) return;
 
-  const STEP = list.clientWidth * 0.9;
+  const scrollAmount = 300;
 
-  function update() {
-    prev.classList.toggle("is-hidden", list.scrollLeft <= 0);
-    next.classList.toggle(
-      "is-hidden",
-      list.scrollLeft + list.clientWidth >= list.scrollWidth - 5
-    );
-  }
+  prev.onclick = () => list.scrollBy({ left: -scrollAmount, behavior: "smooth" });
+  next.onclick = () => list.scrollBy({ left: scrollAmount, behavior: "smooth" });
 
-  prev.onclick = () => {
-    list.scrollBy({ left: -STEP, behavior: "smooth" });
-    setTimeout(update, 300);
+  // Ocultar flechas si no hay scroll (Desktop)
+  const toggleArrows = () => {
+    prev.style.display = list.scrollLeft <= 0 ? "none" : "flex";
+    next.style.display = list.scrollLeft + list.clientWidth >= list.scrollWidth ? "none" : "flex";
   };
 
-  next.onclick = () => {
-    list.scrollBy({ left: STEP, behavior: "smooth" });
-    setTimeout(update, 300);
-  };
-
-  list.addEventListener("scroll", update);
-  update();
+  list.addEventListener("scroll", toggleArrows);
+  window.addEventListener("resize", toggleArrows);
+  setTimeout(toggleArrows, 500);
 }
 
 /* -----------------------------------------------------------
-   EMPTY
+   EMPTY STATE
 ----------------------------------------------------------- */
 function mostrarVacio() {
   document.getElementById("pedido-activo")?.classList.add("hidden");
