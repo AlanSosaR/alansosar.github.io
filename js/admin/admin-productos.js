@@ -18,9 +18,9 @@ function esperarSupabase() {
 /* ============================================================
    DOM (UNA SOLA VEZ)
 ============================================================ */
-const searchInput   = document.getElementById("search-products");
+const searchInput = document.getElementById("search-products");
 const btnAddProduct = document.getElementById("btnAddProduct");
-const emptyState    = document.getElementById("admin-empty-state");
+const emptyState = document.getElementById("admin-empty-state");
 
 const preview = {
   section: document.getElementById("admin-product-preview"),
@@ -34,16 +34,16 @@ const preview = {
   carouselStatus: document.getElementById("carousel-status")
 };
 
-const btnEditProduct   = document.getElementById("btnEditProduct");
+const btnEditProduct = document.getElementById("btnEditProduct");
 const btnDeleteProduct = document.getElementById("btnDeleteProduct");
 
-const relatedSection    = document.querySelector(".admin-related");
+const relatedSection = document.querySelector(".admin-related");
 const carouselContainer = document.getElementById("admin-products-carousel");
-const carouselTemplate  = document.getElementById("tpl-admin-carousel-card");
+const carouselTemplate = document.getElementById("tpl-admin-carousel-card");
 
 /* SNACKBAR ELIMINAR */
-const snackbarDelete   = document.getElementById("snackbar-delete");
-const btnCancelDelete  = document.getElementById("btnCancelDelete");
+const snackbarDelete = document.getElementById("snackbar-delete");
+const btnCancelDelete = document.getElementById("btnCancelDelete");
 const btnConfirmDelete = document.getElementById("btnConfirmDelete");
 
 /* ============================================================
@@ -188,49 +188,49 @@ function renderPreview(product) {
     preview.image.src = "imagenes/no-image.png";
   };
 
-/* =====================================================
-   SLICE — DESTACAR PRODUCTO EN LA TIENDA
-===================================================== */
-const activo = product.featured === true;
-preview.carouselToggle.checked = activo;
-updateCarouselStatus(activo);
+  /* =====================================================
+     SLICE — DESTACAR PRODUCTO EN LA TIENDA
+  ===================================================== */
+  const activo = product.featured === true;
+  preview.carouselToggle.checked = activo;
+  updateCarouselStatus(activo);
 
-// ⚠️ quitar listeners anteriores (CLAVE)
-preview.carouselToggle.onchange = null;
+  // ⚠️ quitar listeners anteriores (CLAVE)
+  preview.carouselToggle.onchange = null;
 
-preview.carouselToggle.onchange = async () => {
-  const nuevoEstado = preview.carouselToggle.checked;
+  preview.carouselToggle.onchange = async () => {
+    const nuevoEstado = preview.carouselToggle.checked;
 
-  // feedback inmediato
-  updateCarouselStatus(nuevoEstado);
+    // feedback inmediato
+    updateCarouselStatus(nuevoEstado);
 
-  const { error } = await window.supabaseClient
-    .from("products")
-    .update({ featured: nuevoEstado })
-    .eq("id", product.id);
+    const { error } = await window.supabaseClient
+      .from("products")
+      .update({ featured: nuevoEstado })
+      .eq("id", product.id);
 
-  if (error) {
-    console.error("❌ Error actualizando featured:", error);
+    if (error) {
+      console.error("❌ Error actualizando featured:", error);
 
-    // rollback visual
-    preview.carouselToggle.checked = !nuevoEstado;
-    updateCarouselStatus(!nuevoEstado);
-    return;
-  }
+      // rollback visual
+      preview.carouselToggle.checked = !nuevoEstado;
+      updateCarouselStatus(!nuevoEstado);
+      return;
+    }
 
-  // ✅ ACTUALIZAR ESTADO LOCAL (CRÍTICO)
-  product.featured = nuevoEstado;
+    // ✅ ACTUALIZAR ESTADO LOCAL (CRÍTICO)
+    product.featured = nuevoEstado;
 
-  const p = products.find(p => p.id === product.id);
-  if (p) p.featured = nuevoEstado;
+    const p = products.find(p => p.id === product.id);
+    if (p) p.featured = nuevoEstado;
 
-  const fp = filteredProducts.find(p => p.id === product.id);
-  if (fp) fp.featured = nuevoEstado;
+    const fp = filteredProducts.find(p => p.id === product.id);
+    if (fp) fp.featured = nuevoEstado;
 
-  console.log("✅ Featured actualizado:", product.name, nuevoEstado);
-};
+    console.log("✅ Featured actualizado:", product.name, nuevoEstado);
+  };
 
-// 🔒 ESTE cierre es el que faltaba: cierra renderPreview(product)
+  // 🔒 ESTE cierre es el que faltaba: cierra renderPreview(product)
 }
 
 /* ============================================================
@@ -329,8 +329,8 @@ function aplicarFiltro() {
   filteredProducts = !q
     ? [...products]
     : products.filter(p =>
-        p.name.toLowerCase().includes(q)
-      );
+      p.name.toLowerCase().includes(q)
+    );
 
   if (!filteredProducts.length) {
     mostrarEstadoVacio();
@@ -431,14 +431,14 @@ async function cargarProductos() {
   await esperarSupabase();
 
   if (localStorage.getItem("cortero_logged") !== "1") {
-    location.href = "login.html";
+    location.href = "/pages/auth/login.html";
     return;
   }
 
   searchInput?.addEventListener("input", aplicarFiltro);
 
   btnAddProduct?.addEventListener("click", () => {
-    location.href = "admin-agregar-producto.html";
+    location.href = "/pages/admin/admin-agregar-producto.html";
   });
 
   btnEditProduct?.addEventListener("click", () => {
@@ -446,7 +446,7 @@ async function cargarProductos() {
       safeSnackbar("Selecciona un café primero", "error");
       return;
     }
-    location.href = `admin-agregar-producto.html?id=${selectedProductId}`;
+    location.href = `/pages/admin/admin-agregar-producto.html?id=${selectedProductId}`;
   });
 
   btnDeleteProduct?.addEventListener("click", () => {

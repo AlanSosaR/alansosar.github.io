@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!user) {
       console.warn("🔐 Sesión no válida, redirigiendo a login");
       if (!location.pathname.includes("login.html")) {
-        location.href = "login.html";
+        location.href = "/pages/auth/login.html";
       }
       return;
     }

@@ -7,15 +7,15 @@
   const newPassInput = document.getElementById("newPassword");
   const confirmInput = document.getElementById("confirmPassword");
 
-  const btn     = form.querySelector(".m3-btn");
+  const btn = form.querySelector(".m3-btn");
   const btnText = btn?.querySelector(".btn-text");
-  const loader  = btn?.querySelector(".loader");
+  const loader = btn?.querySelector(".loader");
 
   /* =====================
      SNACKBAR (NO AUTOCLOSE)
   ===================== */
-  const snack        = document.getElementById("snackbar");
-  const snackMsg     = snack?.querySelector(".snackbar__msg");
+  const snack = document.getElementById("snackbar");
+  const snackMsg = snack?.querySelector(".snackbar__msg");
   const snackActions = snack?.querySelector(".snackbar__actions");
 
   let snackResolver = null;
@@ -35,7 +35,7 @@
     snackActions.style.display = "inline-flex";
 
     const btnConfirm = snackActions.querySelector('[data-action="confirm"]');
-    const btnCancel  = snackActions.querySelector('[data-action="cancel"]');
+    const btnCancel = snackActions.querySelector('[data-action="cancel"]');
 
     if (btnConfirm) btnConfirm.textContent = confirmText;
 
@@ -120,7 +120,7 @@
       );
 
       if (decision === "confirm") {
-        window.location.href = "forgot-password.html";
+        window.location.href = "/pages/auth/forgot-password.html";
       }
       return false;
     }
@@ -207,7 +207,7 @@
     );
 
     if (decision === "confirm") {
-      window.location.href = "login.html";
+      window.location.href = "/pages/auth/login.html";
     }
   });
 

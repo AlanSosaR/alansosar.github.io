@@ -6,10 +6,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Mi Perfil | Café Cortero</title>
 
-  <link rel="stylesheet" href="css/core/tipografia.css">
+  <link rel="stylesheet" href="/css/core/tipografia.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/pages/perfil.css?v=5">
+  <link rel="stylesheet" href="/css/pages/perfil.css?v=5">
 </head>
 
 <body>
@@ -18,14 +18,14 @@
     <section class="profile-card">
 
       <!-- BOTÓN ATRÁS -->
-      <button class="back-btn" onclick="window.location.href='index.html'">
+      <button class="back-btn" onclick="window.location.href="/pages/home/index.html"">
         <span class="material-symbols-outlined">chevron_left</span>
       </button>
 
       <!-- HEADER -->
       <div class="profile-header">
-        <div class="logo-container" onclick="window.location.href='index.html'">
-          <img src="imagenes/logo.png" alt="Café Cortero" class="logo-img">
+        <div class="logo-container" onclick="window.location.href="/pages/home/index.html"">
+          <img src="/imagenes/logo.png" alt="Café Cortero" class="logo-img">
         </div>
         <h2 class="profile-title">Mi perfil</h2>
       </div>
@@ -35,7 +35,7 @@
 
         <!-- FOTO – LA IMAGEN ES EL BOTÓN -->
         <div class="foto-perfil-container">
-          <img id="fotoPerfil" src="imagenes/avatar-default.svg" class="foto-perfil" style="cursor:pointer;">
+          <img id="fotoPerfil" src="/imagenes/avatar-default.svg" class="foto-perfil" style="cursor:pointer;">
           <input type="file" id="inputFoto" accept="image/*" style="display:none;">
         </div>
 
@@ -115,7 +115,7 @@
 
         <!-- SNACKBAR -->
         <div id="snackbar">
-          <img src="imagenes/logo_secundario.png" class="snack-logo">
+          <img src="/imagenes/logo_secundario.png" class="snack-logo">
           <span class="snack-text"></span>
         </div>
 
@@ -124,10 +124,10 @@
   </main>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <!-- Scripts normales SIN anti-cache -->
-  <script src="js/core/supabase-client-core.js"></script>
-  <script src="js/core/supabase-auth.js"></script>
-  <script src="js/core/auth-ui.js"></script>
-  <script src="js/pages/perfil.js"></script>
+  <script src="/js/core/supabase-client-core.js"></script>
+  <script src="/js/core/supabase-auth.js"></script>
+  <script src="/js/core/auth-ui.js"></script>
+  <script src="/js/pages/perfil.js"></script>
 
 </body>
 

@@ -59,7 +59,7 @@ function showNotificationUI({ title, message, created_at, role }) {
   block.href =
     role === "admin"
       ? "/pages/admin/admin-pedidos.html"
-      : "/mis-pedidos.html";
+      : "/pages/profile/mis-pedidos.html";
 }
 
 function hideAllNotificationUI() {

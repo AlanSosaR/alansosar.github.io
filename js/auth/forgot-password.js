@@ -2,15 +2,15 @@
   const sb = window.supabaseClient;
   if (!sb) return;
 
-  const form  = document.getElementById("forgotForm");
+  const form = document.getElementById("forgotForm");
   const input = document.getElementById("recoverInput");
   if (!form || !input) return;
 
-  const btn    = form.querySelector(".m3-btn");
+  const btn = form.querySelector(".m3-btn");
   const loader = btn?.querySelector(".loader");
 
   const field = input.closest(".m3-field");
-  const box   = input.closest(".m3-input");
+  const box = input.closest(".m3-input");
   const msgEl = field?.querySelector(".field-msg");
 
   let sending = false;
@@ -18,8 +18,8 @@
   // =====================
   // SNACKBAR
   // =====================
-  const snackbar     = document.getElementById("snackbar");
-  const snackMsg     = snackbar?.querySelector(".snackbar__msg");
+  const snackbar = document.getElementById("snackbar");
+  const snackMsg = snackbar?.querySelector(".snackbar__msg");
   const snackActions = snackbar?.querySelector(".snackbar__actions");
 
   let snackHandler = null;
@@ -37,7 +37,7 @@
     snackActions.style.display = "inline-flex";
 
     const btnConfirm = snackActions.querySelector('[data-action="confirm"]');
-    const btnCancel  = snackActions.querySelector('[data-action="cancel"]');
+    const btnCancel = snackActions.querySelector('[data-action="cancel"]');
 
     if (btnConfirm) btnConfirm.textContent = confirmText;
     if (btnCancel) btnCancel.style.display = showCancel ? "" : "none";
@@ -131,7 +131,7 @@
     setLoading(true);
 
     try {
-      const redirectTo = `${window.location.origin}/new-password.html`;
+      const redirectTo = `${window.location.origin}/pages/auth/new-password.html`;
 
       const { error } = await sb.auth.resetPasswordForEmail(value, {
         redirectTo,

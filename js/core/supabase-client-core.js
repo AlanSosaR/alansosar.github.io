@@ -22,8 +22,8 @@ const SUPABASE_ANON_KEY =
 // ------------------------------------------------------------
 const storage = {
   getItem: (k) => { try { return localStorage.getItem(k); } catch { return null; } },
-  setItem: (k, v) => { try { localStorage.setItem(k, v); } catch {} },
-  removeItem: (k) => { try { localStorage.removeItem(k); } catch {} }
+  setItem: (k, v) => { try { localStorage.setItem(k, v); } catch { } },
+  removeItem: (k) => { try { localStorage.removeItem(k); } catch { } }
 };
 
 // ------------------------------------------------------------
@@ -84,7 +84,7 @@ async function logoutTotal() {
   document.dispatchEvent(new CustomEvent("userLoggedOut"));
 
   // 4️⃣ Redirección controlada
-  window.location.href = "/index.html";
+  window.location.href = "/pages/home/index.html";
 }
 window.corteroLogout = logoutTotal;
 

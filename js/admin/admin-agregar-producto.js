@@ -27,22 +27,22 @@ const IS_EDIT = Boolean(PRODUCT_ID);
 ============================================================ */
 const form = document.getElementById("producto-form");
 
-const imagenInput  = document.getElementById("imagen");
-const nombreInput  = document.getElementById("nombre");
-const descInput    = document.getElementById("descripcion");
+const imagenInput = document.getElementById("imagen");
+const nombreInput = document.getElementById("nombre");
+const descInput = document.getElementById("descripcion");
 const categoriaSel = document.getElementById("categoria");
-const tipoCafeSel  = document.getElementById("tipoCafe");
+const tipoCafeSel = document.getElementById("tipoCafe");
 const presentacion = document.getElementById("presentacion");
-const precioInput  = document.getElementById("precio");
-const stockInput   = document.getElementById("stock");
+const precioInput = document.getElementById("precio");
+const stockInput = document.getElementById("stock");
 
-const uploadBox    = document.getElementById("uploadBox");
+const uploadBox = document.getElementById("uploadBox");
 const imagePreview = document.getElementById("imagePreview");
 
-const btnSubmit    = document.getElementById("btn-submit");
+const btnSubmit = document.getElementById("btn-submit");
 
 const estadoToggle = document.getElementById("estadoToggle");
-const estadoTexto  = document.getElementById("estadoTexto");
+const estadoTexto = document.getElementById("estadoTexto");
 
 /* ============================================================
    SNACKBAR
@@ -87,13 +87,13 @@ function syncFloatingLabels() {
 ============================================================ */
 function validarFormulario() {
   const campos = [
-    { el: nombreInput,  msg: "El nombre es obligatorio" },
-    { el: descInput,    msg: "La descripción es obligatoria" },
+    { el: nombreInput, msg: "El nombre es obligatorio" },
+    { el: descInput, msg: "La descripción es obligatoria" },
     { el: categoriaSel, msg: "Selecciona una categoría" },
-    { el: tipoCafeSel,  msg: "Selecciona el tipo de café" },
+    { el: tipoCafeSel, msg: "Selecciona el tipo de café" },
     { el: presentacion, msg: "Selecciona la presentación" },
-    { el: precioInput,  msg: "El precio debe ser mayor a 0", numeric: true },
-    { el: stockInput,   msg: "Stock inválido", numeric: true }
+    { el: precioInput, msg: "El precio debe ser mayor a 0", numeric: true },
+    { el: stockInput, msg: "Stock inválido", numeric: true }
   ];
 
   document.querySelectorAll(".m3-field").forEach(f => {
@@ -157,7 +157,7 @@ imagenInput.addEventListener("change", () => {
 ============================================================ */
 async function subirImagenProductoNueva() {
   const file = imagenInput.files[0];
-  const ext  = file.name.split(".").pop().toLowerCase();
+  const ext = file.name.split(".").pop().toLowerCase();
   const path = `products/${PRODUCT_ID}.${ext}`;
 
   await window.supabaseClient.storage
@@ -176,7 +176,7 @@ async function subirImagenProductoNueva() {
 ============================================================ */
 async function subirImagenProductoReemplazo() {
   const file = imagenInput.files[0];
-  const ext  = file.name.split(".").pop().toLowerCase();
+  const ext = file.name.split(".").pop().toLowerCase();
 
   const { data: prod } = await window.supabaseClient
     .from("products")
@@ -312,7 +312,7 @@ form.addEventListener("submit", async (e) => {
     );
 
     if (!IS_EDIT) {
-      setTimeout(() => location.href = "admin-productos.html", 1200);
+      setTimeout(() => location.href = "/pages/admin/admin-productos.html", 1200);
     }
 
   } catch (err) {
@@ -341,7 +341,7 @@ document.querySelector(".back-btn")?.addEventListener("click", (e) => {
   await esperarSupabase();
 
   if (localStorage.getItem("cortero_logged") !== "1") {
-    location.href = "login.html";
+    location.href = "/pages/auth/login.html";
     return;
   }
 

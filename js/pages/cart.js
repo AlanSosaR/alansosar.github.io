@@ -69,11 +69,11 @@ function renderCart() {
 
   updateHeaderCartTitle(cart);
 
-  const container     = document.getElementById("cart-container");
+  const container = document.getElementById("cart-container");
   const subtotalLabel = document.getElementById("subtotal-label");
-  const totalLabel    = document.getElementById("total-label");
-  const resumenBox    = document.querySelector(".resumen-box");
-  const main          = document.querySelector("main");
+  const totalLabel = document.getElementById("total-label");
+  const resumenBox = document.querySelector(".resumen-box");
+  const main = document.querySelector("main");
 
   if (!container) return;
   container.innerHTML = "";
@@ -89,14 +89,14 @@ function renderCart() {
       <div class="empty-container">
         <div class="empty-title">Tu selección está vacía</div>
         <div class="empty-sub">Agrega tu café favorito para continuar.</div>
-        <button class="empty-btn" onclick="location.href='index.html#productos'">
+        <button class="empty-btn" onclick="location.href='/pages/home/index.html#productos'">
           Seguir comprando
         </button>
       </div>
     `;
 
     if (subtotalLabel) subtotalLabel.textContent = "L 0.00";
-    if (totalLabel)    totalLabel.textContent    = "L 0.00";
+    if (totalLabel) totalLabel.textContent = "L 0.00";
 
     syncHeaderCounter();
     return;
@@ -136,7 +136,7 @@ function renderCart() {
   });
 
   if (subtotalLabel) subtotalLabel.textContent = `L ${subtotal.toFixed(2)}`;
-  if (totalLabel)    totalLabel.textContent    = `L ${subtotal.toFixed(2)}`;
+  if (totalLabel) totalLabel.textContent = `L ${subtotal.toFixed(2)}`;
 
   syncHeaderCounter();
 }
@@ -146,9 +146,9 @@ document.getElementById("cart-container")?.addEventListener("click", e => {
   const btn = e.target.closest("button");
   if (!btn) return;
 
-  const index  = Number(btn.dataset.index);
+  const index = Number(btn.dataset.index);
   const action = btn.dataset.action;
-  const cart   = getCart();
+  const cart = getCart();
 
   if (!cart[index]) return;
 
@@ -171,7 +171,7 @@ document.getElementById("proceder-btn")?.addEventListener("click", async () => {
   const sb = getSupabaseClient();
   if (!sb) {
     // Si por alguna razón no cargó Supabase, igual mandamos a login
-    location.href = "login.html?redirect=carrito";
+    location.href = "/pages/auth/login.html?redirect=carrito";
     return;
   }
 
@@ -185,14 +185,14 @@ document.getElementById("proceder-btn")?.addEventListener("click", async () => {
   if (!data?.session) {
     showSnackbar("Necesitas iniciar sesión para continuar con tu pedido.");
     setTimeout(() => {
-      location.href = "login.html?redirect=carrito";
+      location.href = "/pages/auth/login.html?redirect=carrito";
     }, 1500);
     return;
   }
 
   /* 🔐 BLOQUEAR ADMIN (solo clientes compran) */
-  const authUser  = data.session.user;
-  const authId    = authUser.id;
+  const authUser = data.session.user;
+  const authId = authUser.id;
   const authEmail = authUser.email;
 
   let userRow = null;
@@ -269,7 +269,7 @@ document.getElementById("proceder-btn")?.addEventListener("click", async () => {
   localStorage.setItem(CHECKOUT_KEY, JSON.stringify(cart));
 
   /* ➡️ CONTINUAR */
-  location.href = "datos_cliente.html";
+  location.href = "/pages/profile/datos_cliente.html";
 });
 
 /* ================= INIT ================= */

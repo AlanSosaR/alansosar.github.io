@@ -41,20 +41,20 @@ function getStatusDetails(status, paymentMethod) {
 
   const map = isCash
     ? {
-        steps: ["Pedido registrado", "Preparación", "En camino", "Entregado"],
-        pending: { step: 1, label: "Pedido registrado", desc: "Tu pedido fue recibido correctamente." },
-        processing: { step: 2, label: "Preparación", desc: "Estamos preparando tu pedido." },
-        shipped: { step: 3, label: "En camino", desc: "El repartidor lleva tu pedido." },
-        delivered: { step: 4, label: "Entregado", desc: "Pedido entregado." },
-      }
+      steps: ["Pedido registrado", "Preparación", "En camino", "Entregado"],
+      pending: { step: 1, label: "Pedido registrado", desc: "Tu pedido fue recibido correctamente." },
+      processing: { step: 2, label: "Preparación", desc: "Estamos preparando tu pedido." },
+      shipped: { step: 3, label: "En camino", desc: "El repartidor lleva tu pedido." },
+      delivered: { step: 4, label: "Entregado", desc: "Pedido entregado." },
+    }
     : {
-        steps: ["Pago enviado", "Revisión", "Confirmado", "Enviado"],
-        pending: { step: 1, label: "Pago enviado", desc: "Validando comprobante." },
-        payment_review: { step: 2, label: "En revisión", desc: "Revisando el pago." },
-        processing: { step: 3, label: "Confirmado", desc: "Pedido confirmado." },
-        shipped: { step: 4, label: "Enviado", desc: "Pedido en camino." },
-        delivered: { step: 4, label: "Entregado", desc: "Pedido entregado." },
-      };
+      steps: ["Pago enviado", "Revisión", "Confirmado", "Enviado"],
+      pending: { step: 1, label: "Pago enviado", desc: "Validando comprobante." },
+      payment_review: { step: 2, label: "En revisión", desc: "Revisando el pago." },
+      processing: { step: 3, label: "Confirmado", desc: "Pedido confirmado." },
+      shipped: { step: 4, label: "Enviado", desc: "Pedido en camino." },
+      delivered: { step: 4, label: "Entregado", desc: "Pedido entregado." },
+    };
 
   return { ...(map[status] || map.pending), steps: map.steps };
 }
@@ -254,7 +254,7 @@ function renderPedidoActivo(pedido) {
       : pedido.receipt?.[0]?.file_url || IMG_DEFAULT;
 
   node.querySelector(".ver-recibo").onclick =
-    () => (location.href = `recibo.html?id=${pedido.id}`);
+    () => (location.href = `/pages/shop/recibo.html?id=${pedido.id}`);
 
   container.appendChild(node);
 }

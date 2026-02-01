@@ -109,7 +109,7 @@ async function ejecutarCancelacion() {
 window.aplicarModoRecibo = (pedido) => {
   const btnBack = $id("btn-back");
   if (btnBack) btnBack.onclick = () => {
-    window.location.href = "mis-pedidos.html";
+    window.location.href = "/pages/profile/mis-pedidos.html";
   };
 
   document.querySelector(".pago-select-label")?.classList.add("hidden");
@@ -141,12 +141,12 @@ window.aplicarProgresoPedido = (status) => {
   if (!el) return;
 
   const map = {
-    pending:        ["Pendiente", "payments", "status-pending"],
-    payment_review:["Revisando pago", "fact_check", "status-review"],
-    processing:    ["En preparación", "coffee", "status-processing"],
-    shipped:       ["En camino", "local_shipping", "status-shipped"],
-    delivered:     ["Entregado", "check_circle", "status-delivered"],
-    cancelled:     ["Cancelado", "cancel", "status-cancelled"],
+    pending: ["Pendiente", "payments", "status-pending"],
+    payment_review: ["Revisando pago", "fact_check", "status-review"],
+    processing: ["En preparación", "coffee", "status-processing"],
+    shipped: ["En camino", "local_shipping", "status-shipped"],
+    delivered: ["Entregado", "check_circle", "status-delivered"],
+    cancelled: ["Cancelado", "cancel", "status-cancelled"],
   };
 
   const [label, icon, cls] = map[status] || map.pending;
@@ -189,14 +189,14 @@ window.cargarPedidoExistente = async (orderId) => {
   $id("numeroPedido").textContent = pedido.order_number;
   const d = new Date(pedido.created_at);
   $id("fechaPedido").textContent = d.toLocaleDateString();
-  $id("horaPedido").textContent  = d.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"});
+  $id("horaPedido").textContent = d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   $id("totalPedido").textContent = pedido.total.toFixed(2);
   $id("notaCliente").textContent = pedido.order_notes || "Sin nota";
 
   /* CLIENTE */
   if (pedido.users) {
-    $id("nombreCliente").textContent   = pedido.users.name;
-    $id("correoCliente").textContent   = pedido.users.email;
+    $id("nombreCliente").textContent = pedido.users.name;
+    $id("correoCliente").textContent = pedido.users.email;
     $id("telefonoCliente").textContent = pedido.users.phone;
   }
 

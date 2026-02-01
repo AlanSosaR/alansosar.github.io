@@ -31,12 +31,12 @@ if (document.body.dataset.page !== "login") {
 
         const HEADER_PATH =
           window.PAGE_MODE?.startsWith("admin")
-            ? "../../header.html"
-            : "header.html";
+            ? "/pages/shared/header.html"
+            : "/pages/shared/header.html";
 
         const res = await fetch(HEADER_PATH, { cache: "no-store" });
         if (!res.ok) {
-          throw new Error("header.html no encontrado");
+          throw new Error("/pages/shared/header.html no encontrado");
         }
 
         const html = await res.text();

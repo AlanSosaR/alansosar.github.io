@@ -51,11 +51,10 @@ function showSnack(
   bar.innerHTML = `
     <span class="snack-text">${msg}</span>
     <div class="snack-actions">
-      ${
-        actionText && onAction
-          ? `<button class="snack-action secondary">${actionText}</button>`
-          : ""
-      }
+      ${actionText && onAction
+      ? `<button class="snack-action secondary">${actionText}</button>`
+      : ""
+    }
       <button class="snack-action primary">Aceptar</button>
     </div>
   `;
@@ -543,36 +542,36 @@ async function enviarPedido() {
 
     if (numError) throw numError;
 
-/* =====================================================
-   2️⃣ CREAR PEDIDO — CORRECTO
-===================================================== */
-const { data: order, error: insertError } = await sb
-  .from("orders")
-  .insert({
-    user_id: user.id,
-    address_id: selectedAddressId,
-    order_number: orderNumber, // 🔑 CLAVE
-    total,
+    /* =====================================================
+       2️⃣ CREAR PEDIDO — CORRECTO
+    ===================================================== */
+    const { data: order, error: insertError } = await sb
+      .from("orders")
+      .insert({
+        user_id: user.id,
+        address_id: selectedAddressId,
+        order_number: orderNumber, // 🔑 CLAVE
+        total,
 
-    // 💳 MÉTODO DE PAGO (NORMALIZADO)
-    payment_method:
-      metodoPago.value === "bank_transfer"
-        ? "bank_transfer"
-        : "cash_on_delivery",
+        // 💳 MÉTODO DE PAGO (NORMALIZADO)
+        payment_method:
+          metodoPago.value === "bank_transfer"
+            ? "bank_transfer"
+            : "cash_on_delivery",
 
-    // 🧾 ESTADO DEL PEDIDO (SIEMPRE PARA EL ADMIN)
-    status: "pending",
+        // 🧾 ESTADO DEL PEDIDO (SIEMPRE PARA EL ADMIN)
+        status: "pending",
 
-    // 💰 ESTADO DEL PAGO (SEPARADO)
-    payment_status:
-      metodoPago.value === "bank_transfer"
-        ? "review"
-        : "not_required"
-  })
-  .select("id")
-  .single();
+        // 💰 ESTADO DEL PAGO (SEPARADO)
+        payment_status:
+          metodoPago.value === "bank_transfer"
+            ? "review"
+            : "not_required"
+      })
+      .select("id")
+      .single();
 
-if (insertError) throw insertError;
+    if (insertError) throw insertError;
 
     /* =====================================================
        3️⃣ INSERTAR ITEMS
@@ -661,38 +660,38 @@ if (insertError) throw insertError;
       if (receiptError) throw receiptError;
     }
 
-/* =====================================================
-   6️⃣ NOTIFICAR ADMIN (EDGE FUNCTION REAL)
-===================================================== */
-const { data: sessionData } =
-  await window.supabaseClient.auth.getSession();
+    /* =====================================================
+       6️⃣ NOTIFICAR ADMIN (EDGE FUNCTION REAL)
+    ===================================================== */
+    const { data: sessionData } =
+      await window.supabaseClient.auth.getSession();
 
-const accessToken = sessionData?.session?.access_token;
+    const accessToken = sessionData?.session?.access_token;
 
-fetch(
-  "https://eaipcuvvddyrqkbmjmvw.supabase.co/functions/v1/notify-admin",
-  {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      ...(accessToken
-        ? { Authorization: `Bearer ${accessToken}` }
-        : {})
-    },
-    body: JSON.stringify({
-      event: "order_created",
-      order_id: order.id
-    })
-  }
-).catch(err =>
-  console.warn("⚠️ notify-admin falló:", err)
-);
+    fetch(
+      "https://eaipcuvvddyrqkbmjmvw.supabase.co/functions/v1/notify-admin",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(accessToken
+            ? { Authorization: `Bearer ${accessToken}` }
+            : {})
+        },
+        body: JSON.stringify({
+          event: "order_created",
+          order_id: order.id
+        })
+      }
+    ).catch(err =>
+      console.warn("⚠️ notify-admin falló:", err)
+    );
 
     /* =====================================================
        7️⃣ LIMPIAR Y REDIRIGIR
     ===================================================== */
     localStorage.setItem(CART_KEY, "[]");
-    location.href = `recibo.html?id=${order.id}`;
+    location.href = `/pages/shop/recibo.html?id=${order.id}`;
 
   } catch (err) {
     console.error("❌ Error al enviar pedido:", err);
@@ -739,8 +738,8 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault();
 
     location.href = IS_READ_ONLY
-      ? "mis-pedidos.html"
-      : "datos_cliente.html";
+      ? "/pages/profile/mis-pedidos.html"
+      : "/pages/profile/datos_cliente.html";
   });
 });
 
@@ -751,7 +750,7 @@ document.addEventListener("DOMContentLoaded", () => {
   await esperarSupabase();
 
   const user = getUserCache();
-  if (!user) return location.href = "login.html";
+  if (!user) return location.href = "/pages/auth/login.html";
 
   aplicarModoRecibo();
 

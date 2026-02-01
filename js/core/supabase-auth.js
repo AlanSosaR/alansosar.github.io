@@ -28,7 +28,7 @@ window.supabaseAuth.registerUser = async function (
     email,
     password,
     options: {
-      emailRedirectTo: window.location.origin + "/login.html",
+      emailRedirectTo: window.location.origin + "/pages/auth/login.html",
       data: {
         name: fullName,
         phone,
@@ -63,7 +63,7 @@ window.supabaseAuth.loginMagicLink = async function (email) {
   const { data, error } = await sb.auth.signInWithOtp({
     email,
     options: {
-      emailRedirectTo: window.location.origin + "/login.html"
+      emailRedirectTo: window.location.origin + "/pages/auth/login.html"
     }
   });
 

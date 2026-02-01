@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Café Cortero | La esencia de Honduras en cada sorbo</title>
+
+  <!-- Fuentes e iconos -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Playfair+Display:wght@600&family=Material+Symbols+Outlined" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/css/core/main.css?v=1116">
+  <link rel="stylesheet" href="/css/ui/header.css"> <!-- 🔑 HEADER GLOBAL -->
+</head>
+
+<body>
+
+<!-- 🔑 HEADER GLOBAL SE INYECTA AQUÍ (layout.js) -->
+
+<main>
+
+  <!-- HERO -->
+<section class="hero">
+  <div class="hero-text">
+    <h1><span class="verde">La esencia de Honduras en cada sorbo.</span></h1>
+    <p>Café hondureño de altura, tueste medio y esencia familiar.</p>
+  </div>
+
+  <div class="hero-card">
+    <div class="hero-media">
+  <!-- ORIGEN -->
+  <img src="/imagenes/origen1.jpg" class="hero-img active" alt="Origen del café">
+  <img src="/imagenes/origen2.jpg" class="hero-img" alt="Plantación de café">
+  <img src="/imagenes/origen3.jpg" class="hero-img" alt="Región cafetera">
+
+  <!-- COSECHA -->
+  <img src="/imagenes/cosecha1.jpg" class="hero-img" alt="Cosecha de café">
+  <img src="/imagenes/cosecha2.jpg" class="hero-img" alt="Recolección manual">
+  <img src="/imagenes/cosecha3.jpg" class="hero-img" alt="Granos recién cosechados">
+  <img src="/imagenes/cosecha4.jpg" class="hero-img" alt="Selección del grano">
+  <img src="/imagenes/cosecha5.jpg" class="hero-img" alt="Proceso de secado">
+
+  <!-- TOSTADO -->
+  <img src="/imagenes/tostado1.jpg" class="hero-img" alt="Inicio del tostado">
+  <img src="/imagenes/tostado2.jpg" class="hero-img" alt="Tueste medio">
+  <img src="/imagenes/tostado3.jpg" class="hero-img" alt="Tueste oscuro">
+  <img src="/imagenes/tostado4.jpg" class="hero-img" alt="Grano listo para moler">
+</div>
+
+    <div class="hero-pill-group">
+      <button class="pill-segment active" data-state="0">Origen</button>
+      <button class="pill-segment" data-state="1">Cosecha</button>
+      <button class="pill-segment" data-state="2">Tueste</button>
+    </div>
+  </div>
+</section>
+  <!-- mensaje estado vacío -->
+  <section id="empty-catalog" class="empty-catalog hidden">
+  <div class="empty-box">
+
+    <!-- LOGO -->
+    <img
+        src="/imagenes/logo.png"
+      alt="Café Cortero"
+      class="empty-logo"
+    >
+
+    <h3>Estamos preparando nuevos cafés</h3>
+
+    <p>
+      Muy pronto encontrarás aquí nuevas variedades de café,
+      preparadas con el cuidado y la esencia de Café Cortero.
+    </p>
+
+    <small>Vuelve pronto </small>
+  </div>
+</section>
+
+<!-- PRODUCTO PRINCIPAL -->
+<section id="productos" class="product-main hidden">
+
+  <div class="product-text">
+
+    <!-- TÍTULO -->
+    <h2 id="product-name" class="product-title"></h2>
+
+    <!-- DESCRIPCIÓN -->
+    <p id="product-description" class="product-description"></p>
+
+    <!-- PÍLDORA -->
+    <span
+      id="product-badge"
+      class="pill"
+      aria-live="polite"
+    ></span>
+
+    <!-- ESTADO -->
+    <div
+      id="product-status"
+      class="product-status"
+      aria-live="polite"
+    ></div>
+
+    <!-- ACCIÓN -->
+    <div class="product-actions">
+
+      <!-- PRECIO + CARRITO -->
+      <div class="product-split">
+        <span
+          class="price-part"
+          id="product-price"
+        ></span>
+
+        <span
+          class="icon-part"
+          id="product-add"
+          aria-label="Agregar al carrito"
+        >
+          <i class="fa-solid fa-cart-plus"></i>
+        </span>
+      </div>
+
+      <!-- CANTIDAD -->
+      <div class="quantity-container">
+        <button
+          class="qty-btn minus-btn"
+          id="qty-minus"
+          disabled
+        >−</button>
+
+        <span class="qty-number" id="qty-number">1</span>
+
+        <button
+          class="qty-btn plus-btn"
+          id="qty-plus"
+          disabled
+        >+</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- IMAGEN -->
+  <div class="product-img-wrap">
+    <img
+      id="product-image"
+      alt=""
+      loading="lazy"
+    >
+  </div>
+
+</section>
+
+  <!-- SIMILARES -->
+  <section class="related">
+    <h3 class="similar-title">También te puede interesar</h3>
+
+    <div class="carousel-container with-arrows">
+      <button id="similar-prev" class="carousel-prev-circle inside">
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
+
+      <div class="similar-list" id="lista-similares"></div>
+
+      <button id="similar-next" class="carousel-next-circle inside">
+        <i class="fa-solid fa-chevron-right"></i>
+      </button>
+    </div>
+
+    <div class="carousel-nav desktop-only">
+      <div class="carousel-dots">
+        <span class="dot active"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- NOSOTROS -->
+  <section id="nosotros" class="about">
+   <div class="about-text">
+
+  <!-- TÍTULO PRINCIPAL -->
+  <h2 class="about-title">Nuestra historia</h2>
+
+  <!-- SUBTÍTULO -->
+  <h3 class="about-subtitle">Sobre Café Cortero</h3>
+
+  <!-- TEXTO PRINCIPAL -->
+  <p class="about-lead">
+    Café Cortero es un proyecto familiar nacido del amor por la tierra y el café bien hecho.
+    Cada grano refleja nuestro compromiso con la calidad, el respeto al entorno y el orgullo
+    de producir café hondureño.
+  </p>
+
+  <!-- TEXTO DE APOYO -->
+  <p class="about-body">
+    Desde la siembra hasta el tostado, cuidamos cada etapa de forma artesanal,
+    combinando tradición, dedicación y experiencia para que disfrutes en cada taza
+    un café honesto y lleno de sabor.
+  </p>
+
+  <!-- CTA -->
+  <a href="/pages/about/sobre-nosotros.html" class="about-btn">
+  Descubre nuestra historia
+</a>
+
+</div>
+
+    <div class="about-img">
+      <img src="/imagenes/nosotros.jpg" alt="Sobre nosotros">
+    </div>
+  </section>
+
+  <!-- CONTACTO -->
+  <section id="contacto" class="contacto">
+  <h2>Contáctanos</h2>
+  <p>
+    Escríbenos por <strong class="verde">WhatsApp</strong> o síguenos en nuestras
+    redes sociales: <strong class="verde">Facebook</strong> e
+    <strong class="verde">Instagram</strong>.
+  </p>
+</section>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <p class="footer-copy">
+    <img src="/imagenes/logo_secundario.png"
+         class="footer-logo-inline"
+         alt="Café Cortero">
+    2025 Café Cortero. Todos los derechos reservados.
+  </p>
+
+  <nav class="footer-legal">
+    <a href="/pages/legal/privacy.html">Política de Privacidad</a>
+    <span class="footer-sep">•</span>
+    <a href="/pages/legal/terms.html">Términos del Servicio</a>
+  </nav>
+</footer>
+
+<!-- FAB -->
+<div class="fab-container" id="fab">
+  <!-- Botón principal -->
+  <button class="fab-main" id="fab-main" aria-label="Abrir opciones de contacto">
+    <span class="material-symbols-outlined">
+      mark_chat_unread
+    </span>
+  </button>
+
+  <!-- Opciones -->
+  <div class="fab-options">
+    <a href="https://wa.me/50494546047"
+       target="_blank"
+       aria-label="Escribir por WhatsApp">
+      <i class="fa-brands fa-whatsapp"></i>
+    </a>
+
+    <a href="https://www.facebook.com/share/1FsrT4DYrU/"
+       target="_blank"
+       aria-label="Visitar Facebook">
+      <i class="fa-brands fa-facebook-f"></i>
+    </a>
+
+    <a href="https://www.instagram.com/TU_USUARIO"
+       target="_blank"
+       aria-label="Visitar Instagram">
+      <i class="fa-brands fa-instagram"></i>
+    </a>
+  </div>
+</div>
+<!-- SNACKBAR -->
+<div id="snackbar" class="snackbar" aria-live="polite"></div>
+<!-- ===================== SCRIPTS ===================== -->
+<!-- 1️⃣ SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- 2️⃣ Supabase core -->
+<script src="/js/core/supabase-client-core.js"></script>
+<script src="/js/core/supabase-auth.js"></script>
+
+<!-- 3️⃣ Layout (inyecta header en el DOM) -->
+<script src="/js/ui/layout.js"></script>
+
+<!-- 4️⃣ Header (define hooks + UI) -->
+<script type="module" src="/js/ui/header.js"></script>
+
+<!-- 5️⃣ Auth UI (listeners de sesión) -->
+<script src="/js/core/auth-ui.js"></script>
+
+<!-- 7️⃣ Página -->
+<script src="/js/pages/main.js?v=13"></script>
+
+</body>
+</html>

@@ -17,22 +17,22 @@ if (window.IS_READ_ONLY) {
 /* =========================================================
    ELEMENTOS UI
 ========================================================= */
-const metodoPago      = document.getElementById("metodoPago");
-const bloqueDeposito  = document.getElementById("pago-deposito");
-const bloqueEfectivo  = document.getElementById("pago-efectivo");
-const btnEnviar       = document.getElementById("btnEnviar");
-const loader          = document.getElementById("loaderAccion");
+const metodoPago = document.getElementById("metodoPago");
+const bloqueDeposito = document.getElementById("pago-deposito");
+const bloqueEfectivo = document.getElementById("pago-efectivo");
+const btnEnviar = document.getElementById("btnEnviar");
+const loader = document.getElementById("loaderAccion");
 
-const inputFile       = document.getElementById("inputComprobante");
-const previewBox      = document.getElementById("previewComprobante");
-const imgPreview      = document.getElementById("imgComprobante");
-const btnSubir        = document.getElementById("btnSubirComprobante");
+const inputFile = document.getElementById("inputComprobante");
+const previewBox = document.getElementById("previewComprobante");
+const imgPreview = document.getElementById("imgComprobante");
+const btnSubir = document.getElementById("btnSubirComprobante");
 
 /* =========================================================
    STATE
 ========================================================= */
 let selectedAddressId = null;
-let totalPedido       = 0;
+let totalPedido = 0;
 
 const carrito = JSON.parse(
   localStorage.getItem("cafecortero_cart") || "[]"
@@ -90,7 +90,7 @@ function confirmarEnvio(texto, onConfirm) {
    DATOS INICIALES
 ========================================================= */
 async function cargarResumen() {
-  const sb   = window.supabaseClient;
+  const sb = window.supabaseClient;
   const user = window.getUserCache();
   if (!sb || !user) return;
 
@@ -102,8 +102,8 @@ async function cargarResumen() {
     .single();
 
   if (userRow) {
-    document.getElementById("nombreCliente").textContent   = userRow.name || "—";
-    document.getElementById("correoCliente").textContent   = userRow.email || "—";
+    document.getElementById("nombreCliente").textContent = userRow.name || "—";
+    document.getElementById("correoCliente").textContent = userRow.email || "—";
     document.getElementById("telefonoCliente").textContent = userRow.phone || "—";
   }
 
@@ -117,7 +117,7 @@ async function cargarResumen() {
 
   if (addr?.length) {
     selectedAddressId = addr[0].id;
-    document.getElementById("zonaCliente").textContent      = `${addr[0].state}, ${addr[0].city}`;
+    document.getElementById("zonaCliente").textContent = `${addr[0].state}, ${addr[0].city}`;
     document.getElementById("direccionCliente").textContent = addr[0].street;
   }
 
@@ -179,7 +179,7 @@ function actualizarPago() {
    ENVÍO FINAL
 ========================================================= */
 async function enviarPedido() {
-  const sb   = window.supabaseClient;
+  const sb = window.supabaseClient;
   const user = window.getUserCache();
   if (!sb || !user || !selectedAddressId) {
     window.showSnack("Faltan datos del pedido");
@@ -244,7 +244,7 @@ async function enviarPedido() {
     localStorage.setItem("cafecortero_cart", "[]");
     sessionStorage.removeItem("temp_receipt_base64");
 
-    window.location.href = `recibo.html?id=${order.id}`;
+    window.location.href = `/pages/shop/recibo.html?id=${order.id}`;
 
   } catch (err) {
     console.error(err);

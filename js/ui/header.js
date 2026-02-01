@@ -89,7 +89,7 @@ if (!window.__HEADER_CORE_LOADED__) {
     const user = getUserCache();
     const header = document.querySelector(".header-fixed");
     const drawer = $("user-drawer");
-    const notif  = $("drawer-notification");
+    const notif = $("drawer-notification");
 
     if (!header || !drawer) return;
 
@@ -145,7 +145,7 @@ if (!window.__HEADER_CORE_LOADED__) {
     if (notif) {
       notif.href = isAdmin
         ? "/pages/admin/admin-pedidos.html"
-        : "/mis-pedidos.html";
+        : "/pages/profile/mis-pedidos.html";
 
       notif.onclick = () => {
         document.dispatchEvent(
@@ -162,7 +162,7 @@ if (!window.__HEADER_CORE_LOADED__) {
   ===================================================== */
   function openDrawer() {
     const drawer = $("user-drawer");
-    const scrim  = $("user-scrim");
+    const scrim = $("user-scrim");
     if (!drawer || !scrim) return;
 
     if (drawer.classList.contains("open")) return;
@@ -173,7 +173,7 @@ if (!window.__HEADER_CORE_LOADED__) {
 
   function closeDrawer() {
     const drawer = $("user-drawer");
-    const scrim  = $("user-scrim");
+    const scrim = $("user-scrim");
     if (!drawer || !scrim) return;
 
     drawer.classList.remove("open");
@@ -204,7 +204,7 @@ if (!window.__HEADER_CORE_LOADED__) {
     $("user-scrim")?.addEventListener("click", closeDrawer);
 
     $("cart-btn")?.addEventListener("click", () => {
-      location.href = "carrito.html";
+      location.href = "/pages/shop/carrito.html";
     });
 
     $("logout-btn")?.addEventListener("click", async () => {

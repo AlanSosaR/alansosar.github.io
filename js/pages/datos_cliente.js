@@ -24,13 +24,13 @@ function esperarSupabase() {
 ============================================================ */
 const form = document.getElementById("cliente-form");
 
-const nombreInput    = document.getElementById("nombre");
-const correoInput    = document.getElementById("correo");
-const telefonoInput  = document.getElementById("telefono");
-const ciudadInput    = document.getElementById("ciudad");
-const zonaSelect     = document.getElementById("zona");
+const nombreInput = document.getElementById("nombre");
+const correoInput = document.getElementById("correo");
+const telefonoInput = document.getElementById("telefono");
+const ciudadInput = document.getElementById("ciudad");
+const zonaSelect = document.getElementById("zona");
 const direccionInput = document.getElementById("direccion");
-const notaInput      = document.getElementById("nota");
+const notaInput = document.getElementById("nota");
 
 const btnSubmit = document.getElementById("btn-submit");
 
@@ -45,7 +45,7 @@ function mostrarError(input, mensaje) {
   const field = input.closest(".m3-field");
   if (!field) return;
 
-  const box   = field.querySelector(".m3-input");
+  const box = field.querySelector(".m3-input");
   const label = field.querySelector(".floating-label");
 
   field.classList.add("filled");
@@ -68,8 +68,8 @@ function limpiarError(input) {
   const field = input.closest(".m3-field");
   if (!field) return;
 
-  const box    = field.querySelector(".m3-input");
-  const label  = field.querySelector(".floating-label");
+  const box = field.querySelector(".m3-input");
+  const label = field.querySelector(".floating-label");
   const helper = field.querySelector(".helper-text");
 
   field.classList.remove("error");
@@ -99,12 +99,12 @@ function getCheckoutCart() {
 function validarCheckoutCart() {
   const cart = getCheckoutCart();
   if (!cart.length) {
-    window.location.href = "carrito.html";
+    window.location.href = "/pages/shop/carrito.html";
     return false;
   }
   const invalid = cart.some(p => !p.product_id);
   if (invalid) {
-    window.location.href = "carrito.html";
+    window.location.href = "/pages/shop/carrito.html";
     return false;
   }
   return true;
@@ -137,8 +137,8 @@ function activarLabel(input) {
 ============================================================ */
 function pintarDatosInstantaneos() {
   if (!userCache) return;
-  nombreInput.value   = userCache.name  || "";
-  correoInput.value   = userCache.email || "";
+  nombreInput.value = userCache.name || "";
+  correoInput.value = userCache.email || "";
   telefonoInput.value = userCache.phone || "";
 
   activarLabel(nombreInput);
@@ -158,8 +158,8 @@ async function cargarDatosRealtime() {
 
   if (!data) return;
 
-  nombreInput.value   = data.name  || "";
-  correoInput.value   = data.email || "";
+  nombreInput.value = data.name || "";
+  correoInput.value = data.email || "";
   telefonoInput.value = data.phone || "";
 
   activarLabel(nombreInput);
@@ -188,12 +188,12 @@ async function cargarDireccion() {
   const addr = data[0];
   loadedAddressId = addr.id;
 
-  ciudadInput.value    = addr.city || "";
-  zonaSelect.value     = addr.state || "";
+  ciudadInput.value = addr.city || "";
+  zonaSelect.value = addr.state || "";
   direccionInput.value = addr.street || "";
-  
+
   // 💡 CLAVE: La nota siempre empieza vacía para un nuevo pedido
-  notaInput.value = ""; 
+  notaInput.value = "";
 
   activarLabel(ciudadInput);
   activarLabel(direccionInput);
@@ -273,7 +273,7 @@ form.addEventListener("submit", async e => {
   // 🔑 PERSISTENCIA DE NOTA: Guardar para usarla en el INSERT de la tabla 'orders'
   sessionStorage.setItem("current_order_notes", notaInput.value.trim());
 
-  setTimeout(() => window.location.href = "recibo.html", 600);
+  setTimeout(() => window.location.href = "/pages/shop/recibo.html", 600);
 });
 
 /* ============================================================
@@ -283,7 +283,7 @@ form.addEventListener("submit", async e => {
   await esperarSupabase();
 
   userCache = getUserCache();
-  if (!userCache) return window.location.href = "login.html";
+  if (!userCache) return window.location.href = "/pages/auth/login.html";
 
   if (!validarCheckoutCart()) return;
 

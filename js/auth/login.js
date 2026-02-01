@@ -10,17 +10,17 @@
 const loginForm = document.getElementById("loginForm");
 const userInput = document.getElementById("userInput");
 const passInput = document.getElementById("passwordInput");
-const loginBtn  = document.querySelector(".m3-btn");
-const btnText   = loginBtn?.querySelector(".btn-text");
+const loginBtn = document.querySelector(".m3-btn");
+const btnText = loginBtn?.querySelector(".btn-text");
 const btnLoader = loginBtn?.querySelector(".loader");
 
 /* ========================= DOMINIOS ========================= */
 
 const dominiosValidos = [
-  "gmail.com","hotmail.com","outlook.com","yahoo.com","icloud.com",
-  "proton.me","live.com","msn.com",
-  "unah.hn","unah.edu","gmail.es","correo.hn",
-  "googlemail.com","outlook.es","hotmail.es"
+  "gmail.com", "hotmail.com", "outlook.com", "yahoo.com", "icloud.com",
+  "proton.me", "live.com", "msn.com",
+  "unah.hn", "unah.edu", "gmail.es", "correo.hn",
+  "googlemail.com", "outlook.es", "hotmail.es"
 ];
 
 const autocorrecciones = {
@@ -52,7 +52,7 @@ function persistAvatarToLocal(avatarUrl) {
   if (!avatarUrl) return;
   try {
     localStorage.setItem("cortero_avatar", avatarUrl);
-  } catch (_) {}
+  } catch (_) { }
 }
 
 function mergeAvatarIntoCorteroUser(avatarUrl) {
@@ -70,7 +70,7 @@ function mergeAvatarIntoCorteroUser(avatarUrl) {
       perfil.avatar_url = avatarUrl;
       localStorage.setItem("cortero_user", JSON.stringify(perfil));
     }
-  } catch (_) {}
+  } catch (_) { }
 }
 
 async function tryPersistAvatarToDB(sb, user, avatarUrl) {
@@ -114,9 +114,9 @@ async function uploadGoogleAvatarToStorage(sb, user) {
   const contentType = blob.type || "image/jpeg";
 
   const ext = contentType.includes("png") ? "png"
-            : contentType.includes("webp") ? "webp"
-            : contentType.includes("gif") ? "gif"
-            : "jpg";
+    : contentType.includes("webp") ? "webp"
+      : contentType.includes("gif") ? "gif"
+        : "jpg";
 
   const filePath = `avatar_${user.id}.${ext}`;
 
@@ -169,7 +169,7 @@ function validarPassword(valor) {
   return (
     valor.length >= 6 &&
     !valor.includes(" ") &&
-    !["123456","000000","password"].includes(valor.toLowerCase())
+    !["123456", "000000", "password"].includes(valor.toLowerCase())
   );
 }
 
@@ -178,10 +178,10 @@ function validarPassword(valor) {
 function limpiarErroresInput(e) {
   const input = e.target;
   const field = input.closest(".m3-field");
-  const box   = field.querySelector(".m3-input");
-  const msg   = field.querySelector(".field-msg");
+  const box = field.querySelector(".m3-input");
+  const msg = field.querySelector(".field-msg");
 
-  box.classList.remove("error","success");
+  box.classList.remove("error", "success");
   msg.textContent = "";
   msg.style.opacity = "0";
 
@@ -198,8 +198,8 @@ if (passInput) passInput.addEventListener("input", limpiarErroresInput);
 
 function marcarError(input, texto) {
   const field = input.closest(".m3-field");
-  const box   = field.querySelector(".m3-input");
-  const msg   = field.querySelector(".field-msg");
+  const box = field.querySelector(".m3-input");
+  const msg = field.querySelector(".field-msg");
 
   box.classList.add("error");
   msg.textContent = texto;
@@ -303,14 +303,14 @@ document.querySelectorAll(".toggle-pass").forEach(icon => {
   try {
     document.documentElement.classList.add("auth-checking");
     document.body?.classList?.add("auth-checking");
-  } catch (_) {}
+  } catch (_) { }
 })();
 
 function showLoginUI() {
   try {
     document.documentElement.classList.remove("auth-checking");
     document.body?.classList?.remove("auth-checking");
-  } catch (_) {}
+  } catch (_) { }
 }
 
 /* =========================================================
@@ -380,7 +380,7 @@ function showLoginUI() {
       mostrarSnackbarAccion(
         isNew ? "Cuenta creada con Google" : "Inicio de sesión exitoso",
         "Aceptar",
-        () => window.location.replace("index.html"),
+        () => window.location.replace("/pages/home/index.html"),
         "success",
         12000
       );
@@ -405,7 +405,7 @@ function showLoginUI() {
           mergeAvatarIntoCorteroUser(avatarUrl);
           await tryPersistAvatarToDB(sb, user, avatarUrl);
         }
-      } catch (_) {}
+      } catch (_) { }
 
       localStorage.setItem("cortero_logged", "1");
 
@@ -415,7 +415,7 @@ function showLoginUI() {
       mostrarSnackbarAccion(
         "Inicio de sesión exitoso",
         "Aceptar",
-        () => window.location.replace("index.html"),
+        () => window.location.replace("/pages/home/index.html"),
         "success",
         8000
       );
@@ -548,8 +548,8 @@ if (loginForm) {
 
         // Si vienes del carrito → regresa al carrito (no a detalles)
         location.href = (from === "carrito")
-          ? "carrito.html"
-          : "index.html";
+          ? "/pages/shop/carrito.html"
+          : "/pages/home/index.html";
       }, 900);
 
     } catch (err) {
@@ -571,7 +571,7 @@ if (googleBtn) {
       if (!sb) throw new Error("Supabase no está inicializado");
 
       // GitHub Pages: debe ser EXACTO
-      const redirectTo = `${window.location.origin}/login.html`;
+      const redirectTo = `${window.location.origin}/pages/auth/login.html`;
 
       await sb.auth.signInWithOAuth({
         provider: "google",
