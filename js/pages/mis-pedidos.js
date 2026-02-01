@@ -1,13 +1,16 @@
 /* ============================================================
-   📦 MIS PEDIDOS — UX FLUIDA (ROBUSTA)
+   📦 MIS PEDIDOS — UX FLUIDA (FINAL ESTABLE)
 ============================================================ */
 
-console.log("📦 mis-pedidos.js — INIT");
+console.log("📦 mis-pedidos.js — FINAL");
 
 const sb = () => window.supabaseClient;
+
+const IMG_CASH = "imagenes/pago_en_mano.svg";
+const IMG_DEFAULT = "imagenes/recibo_default.svg";
+
 let orders = [];
 let activeIndex = 0;
-let userSelected = false;
 let autoRefresh = null;
 
 /* ============================================================
@@ -36,64 +39,56 @@ function formatDateTime(dateStr) {
 function getStatusDetails(status, paymentMethod) {
   const isCash = paymentMethod === "cash";
 
-  const maps = {
-    cash: {
-      steps: ["Pedido registrado", "Preparación", "En camino", "Entregado"],
-      pending: { step: 1, label: "Pedido registrado", desc: "Tu pedido fue recibido correctamente." },
-      processing: { step: 2, label: "Preparación", desc: "Estamos preparando tu pedido." },
-      shipped: { step: 3, label: "En camino", desc: "El repartidor lleva tu pedido." },
-      delivered: { step: 4, label: "Entregado", desc: "Pedido entregado y pagado." },
-    },
-    transfer: {
-      steps: ["Pago enviado", "Revisión", "Confirmado", "Enviado"],
-      pending: { step: 1, label: "Pago enviado", desc: "Estamos validando tu comprobante." },
-      payment_review: { step: 2, label: "En revisión", desc: "Verificando información del pago." },
-      processing: { step: 3, label: "Pago confirmado", desc: "Pedido confirmado." },
-      shipped: { step: 4, label: "Enviado", desc: "Pedido en camino." },
-      delivered: { step: 4, label: "Entregado", desc: "Pedido entregado." },
-    },
-  };
+  const map = isCash
+    ? {
+        steps: ["Pedido registrado", "Preparación", "En camino", "Entregado"],
+        pending: { step: 1, label: "Pedido registrado", desc: "Tu pedido fue recibido correctamente." },
+        processing: { step: 2, label: "Preparación", desc: "Estamos preparando tu pedido." },
+        shipped: { step: 3, label: "En camino", desc: "El repartidor lleva tu pedido." },
+        delivered: { step: 4, label: "Entregado", desc: "Pedido entregado." },
+      }
+    : {
+        steps: ["Pago enviado", "Revisión", "Confirmado", "Enviado"],
+        pending: { step: 1, label: "Pago enviado", desc: "Validando comprobante." },
+        payment_review: { step: 2, label: "En revisión", desc: "Revisando el pago." },
+        processing: { step: 3, label: "Confirmado", desc: "Pedido confirmado." },
+        shipped: { step: 4, label: "Enviado", desc: "Pedido en camino." },
+        delivered: { step: 4, label: "Entregado", desc: "Pedido entregado." },
+      };
 
-  const map = isCash ? maps.cash : maps.transfer;
   return { ...(map[status] || map.pending), steps: map.steps };
 }
 
 /* ============================================================
-   INIT (FUENTE DE VERDAD)
+   INIT
 ============================================================ */
 document.addEventListener("DOMContentLoaded", init);
 
 async function init() {
-  console.log("📦 mis-pedidos.js → init()");
-
-  // Esperar Supabase
   await esperarSupabase();
 
-  const sbClient = sb();
-  if (!sbClient) return;
-
-  const { data } = await sbClient.auth.getSession();
+  const { data } = await sb().auth.getSession();
   if (!data?.session) {
-    console.warn("🔐 No hay sesión activa");
+    console.warn("🔐 Sin sesión");
     return;
   }
 
-  const userId = data.session.user.id;
-
-  await loadOrders(userId);
+  await loadOrders(data.session.user.id);
 
   if (!orders.length) {
     showEmpty();
     return;
   }
 
+  mostrarCarrusel();
   renderCarousel();
-  selectOrderByIndex(0, false);
-  startAutoRefresh(userId);
+  selectOrder(0);
+
+  startAutoRefresh(data.session.user.id);
 }
 
 /* ============================================================
-   WAIT SUPABASE
+   SUPABASE READY
 ============================================================ */
 function esperarSupabase() {
   return new Promise((resolve) => {
@@ -133,7 +128,7 @@ async function loadOrders(userId) {
     .order("created_at", { ascending: false });
 
   if (error) {
-    console.error("❌ Error cargando pedidos:", error);
+    console.error("❌ Error pedidos", error);
     orders = [];
     return;
   }
@@ -142,15 +137,12 @@ async function loadOrders(userId) {
 }
 
 /* ============================================================
-   AUTO REFRESH
+   UI VISIBILITY
 ============================================================ */
-function startAutoRefresh(userId) {
-  clearInterval(autoRefresh);
-  autoRefresh = setInterval(async () => {
-    await loadOrders(userId);
-    renderCarousel();
-    selectOrderByIndex(activeIndex, true);
-  }, 30000);
+function mostrarCarrusel() {
+  $id("mis-pedidos-carrusel")?.classList.remove("hidden");
+  $id("pedido-activo")?.classList.remove("hidden");
+  $id("empty-state")?.classList.add("hidden");
 }
 
 /* ============================================================
@@ -159,6 +151,8 @@ function startAutoRefresh(userId) {
 function renderCarousel() {
   const wrap = $id("pedidos-carrusel");
   const tpl = $id("pedido-carrusel-template");
+  if (!wrap || !tpl) return;
+
   wrap.innerHTML = "";
 
   orders.forEach((o, index) => {
@@ -168,7 +162,7 @@ function renderCarousel() {
     node.querySelector(".pedido-mini-numero").textContent =
       `N.º ${String(o.order_number).padStart(3, "0")}`;
     node.querySelector(".pedido-mini-total").textContent =
-      `L ${Number(o.total).toFixed(2)}`;
+      `L ${o.total.toFixed(2)}`;
 
     const status = getStatusDetails(o.status, o.payment_method);
     node.querySelector(".pedido-mini-status").textContent = status.label;
@@ -176,15 +170,12 @@ function renderCarousel() {
     const img = node.querySelector(".pedido-mini-img");
     img.src =
       o.payment_method === "cash"
-        ? "imagenes/pago_en_mano.svg"
-        : o.receipt?.[0]?.file_url || "imagenes/recibo_default.svg";
+        ? IMG_CASH
+        : o.receipt?.[0]?.file_url || IMG_DEFAULT;
 
     if (index === activeIndex) card.classList.add("is-selected");
 
-    card.onclick = () => {
-      userSelected = true;
-      selectOrderByIndex(index);
-    };
+    card.onclick = () => selectOrder(index);
 
     wrap.appendChild(node);
   });
@@ -195,27 +186,16 @@ function renderCarousel() {
 /* ============================================================
    SELECCIÓN
 ============================================================ */
-function selectOrderByIndex(index, silent = false) {
+function selectOrder(index) {
   if (!orders[index]) return;
-
   activeIndex = index;
-  applySelection();
+
+  document.querySelectorAll(".similar-card").forEach((c) =>
+    c.classList.remove("is-selected")
+  );
+  document.querySelectorAll(".similar-card")[index]?.classList.add("is-selected");
+
   renderPedidoActivo(orders[index]);
-
-  if (userSelected && !silent) {
-    scrollToPedidoActivo();
-    userSelected = false;
-  }
-}
-
-function applySelection() {
-  document
-    .querySelectorAll(".similar-card")
-    .forEach((c) => c.classList.remove("is-selected"));
-
-  document
-    .querySelectorAll(".similar-card")
-    [activeIndex]?.classList.add("is-selected");
 }
 
 /* ============================================================
@@ -224,18 +204,19 @@ function applySelection() {
 function renderPedidoActivo(pedido) {
   const container = $id("pedido-activo");
   const tpl = $id("pedido-activo-template");
-  container.innerHTML = "";
+  if (!container || !tpl) return;
 
+  container.innerHTML = "";
   const node = tpl.content.cloneNode(true);
+
   const status = getStatusDetails(pedido.status, pedido.payment_method);
   const { fecha, hora } = formatDateTime(pedido.created_at);
 
   node.querySelector(".pedido-numero").textContent =
-    `Pedido N.º ${String(pedido.order_number).padStart(3, "0")}`;
+    `Pedido N.º ${pedido.order_number}`;
   node.querySelector(".fecha").textContent = fecha;
   node.querySelector(".hora").textContent = hora;
-  node.querySelector(".pedido-total").textContent =
-    `L ${Number(pedido.total).toFixed(2)}`;
+  node.querySelector(".pedido-total").textContent = `L ${pedido.total.toFixed(2)}`;
 
   node.querySelector(".entrega-text").textContent =
     pedido.address
@@ -243,7 +224,7 @@ function renderPedidoActivo(pedido) {
       : "—";
 
   node.querySelector(".referencia-text").textContent =
-    pedido.order_notes || "Sin referencia adicional";
+    pedido.order_notes || "Sin referencia";
 
   node.querySelector(".estado-nombre").textContent = status.label;
   node.querySelector(".estado-descripcion").textContent = status.desc;
@@ -261,33 +242,21 @@ function renderPedidoActivo(pedido) {
     const p = document.createElement("div");
     p.className = "pill";
     p.innerHTML = `
-      <span>${item.products?.name} × ${item.quantity}</span>
+      <span>${item.products.name} × ${item.quantity}</span>
       <strong>L ${(item.quantity * item.price).toFixed(2)}</strong>
     `;
     pills.appendChild(p);
   });
 
-  const img = node.querySelector(".recibo-img");
-  img.src =
+  node.querySelector(".recibo-img").src =
     pedido.payment_method === "cash"
-      ? "imagenes/pago_en_mano.svg"
-      : pedido.receipt?.[0]?.file_url || "imagenes/recibo_default.svg";
+      ? IMG_CASH
+      : pedido.receipt?.[0]?.file_url || IMG_DEFAULT;
 
   node.querySelector(".ver-recibo").onclick =
-    () => (window.location.href = `recibo.html?id=${pedido.id}`);
+    () => (location.href = `recibo.html?id=${pedido.id}`);
 
-  container.classList.remove("hidden");
   container.appendChild(node);
-}
-
-/* ============================================================
-   SCROLL
-============================================================ */
-function scrollToPedidoActivo() {
-  const el = $id("pedido-activo");
-  requestAnimationFrame(() => {
-    el.scrollIntoView({ behavior: "smooth", block: "start" });
-  });
 }
 
 /* ============================================================
@@ -299,6 +268,18 @@ function bindCarouselArrows() {
     list.scrollBy({ left: -300, behavior: "smooth" });
   $id("pedidos-next").onclick = () =>
     list.scrollBy({ left: 300, behavior: "smooth" });
+}
+
+/* ============================================================
+   AUTO REFRESH
+============================================================ */
+function startAutoRefresh(userId) {
+  clearInterval(autoRefresh);
+  autoRefresh = setInterval(async () => {
+    await loadOrders(userId);
+    renderCarousel();
+    selectOrder(activeIndex);
+  }, 30000);
 }
 
 /* ============================================================
