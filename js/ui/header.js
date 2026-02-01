@@ -155,6 +155,97 @@ if (!window.__HEADER_CORE_LOADED__) {
         );
       };
     }
+
+    // -----------------------------
+    // 🔍 CONFIGURACIÓN DE BÚSQUEDA ADAPTATIVA
+    // -----------------------------
+    setupHeaderSearch(user);
+    setupDrawerFilters();
+  }
+
+  function setupDrawerFilters() {
+    const filterSection = $("drawer-filters-section");
+    const container = $("drawer-filters-container");
+    const headerFilter = $("header-status-filter");
+
+    if (!filterSection || !container || !headerFilter) return;
+
+    // Solo mostrar si el filtro de cabecera es visible
+    const isVisible = !headerFilter.classList.contains("hidden");
+    filterSection.classList.toggle("hidden", !isVisible);
+
+    if (isVisible) {
+      container.innerHTML = "";
+      const mobileFilter = headerFilter.cloneNode(true);
+      mobileFilter.id = "drawer-status-filter";
+      mobileFilter.classList.remove("hidden");
+      mobileFilter.style.width = "100%";
+      mobileFilter.style.background = "rgba(255,255,255,0.05)";
+      mobileFilter.style.color = "#fff";
+      mobileFilter.style.height = "44px";
+      mobileFilter.style.borderRadius = "8px";
+      mobileFilter.style.margin = "8px 0";
+
+      mobileFilter.onchange = (e) => {
+        headerFilter.value = e.target.value;
+        document.dispatchEvent(new CustomEvent("header:filter", { detail: e.target.value }));
+      };
+
+      container.appendChild(mobileFilter);
+    }
+  }
+
+  /* =====================================================
+     🔍 BÚSQUEDA ADAPTATIVA (PAGE CONTEXT)
+  ===================================================== */
+  function setupHeaderSearch(user) {
+    const searchWrap = $("header-search-container");
+    const searchInput = $("header-search-input");
+    const statusFilter = $("header-status-filter");
+    const addBtn = $("header-add-btn");
+    const staticTitles = $("header-static-titles");
+
+    if (!searchWrap) return;
+
+    const path = window.location.pathname;
+    const isMainAdmin = path.includes("admin-productos.html");
+    const isOrdersAdmin = path.includes("admin-pedidos.html");
+    const isMyOrders = path.includes("mis-pedidos.html");
+
+    // Reset visibility
+    searchWrap.classList.add("hidden");
+    statusFilter.classList.add("hidden");
+    addBtn.classList.add("hidden");
+    staticTitles.classList.remove("hidden");
+
+    if (isMainAdmin || isOrdersAdmin || isMyOrders) {
+      searchWrap.classList.remove("hidden");
+      staticTitles.classList.add("hidden");
+
+      if (isMainAdmin) {
+        searchInput.placeholder = "Buscar café…";
+        addBtn.classList.remove("hidden");
+      } else if (isOrdersAdmin || isMyOrders) {
+        searchInput.placeholder = "Buscar pedido…";
+        statusFilter.classList.remove("hidden");
+        // Default filter logic for orders/my orders
+        if (isOrdersAdmin) statusFilter.value = "new";
+        else statusFilter.value = "all";
+      }
+
+      // Re-bind listeners
+      searchInput.oninput = (e) => {
+        document.dispatchEvent(new CustomEvent("header:search", { detail: e.target.value }));
+      };
+
+      statusFilter.onchange = (e) => {
+        document.dispatchEvent(new CustomEvent("header:filter", { detail: e.target.value }));
+      };
+
+      addBtn.onclick = () => {
+        document.dispatchEvent(new CustomEvent("header:add-click"));
+      };
+    }
   }
 
   /* =====================================================
@@ -207,11 +298,17 @@ if (!window.__HEADER_CORE_LOADED__) {
       location.href = "/pages/shop/carrito.html";
     });
 
-    $("logout-btn")?.addEventListener("click", async () => {
-      if (window.supabaseAuth?.logoutUser) {
-        await window.supabaseAuth.logoutUser();
+    $("logout-btn")?.addEventListener("click", async (e) => {
+      e.preventDefault();
+      console.log("🚪 Logout (desde Header)");
+
+      try {
+        await window.supabaseClient.auth.signOut();
+      } catch (err) {
+        console.error("❌ Error en signOut:", err);
+      } finally {
+        closeDrawer();
       }
-      closeDrawer();
     });
 
     syncUserUI();
@@ -255,6 +352,13 @@ if (!window.__HEADER_CORE_LOADED__) {
   }
 
   window.initHeader = initHeader;
+
+  // Auto-init (Garantía ante inyección diferida)
+  if (document.readyState === "complete" || document.readyState === "interactive") {
+    setTimeout(initHeader, 10);
+  } else {
+    document.addEventListener("DOMContentLoaded", initHeader);
+  }
 }
 
 /* =====================================================

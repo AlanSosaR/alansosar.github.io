@@ -15,11 +15,6 @@ function esperarSupabase() {
   });
 }
 
-/* ============================================================
-   DOM (UNA SOLA VEZ)
-============================================================ */
-const searchInput = document.getElementById("search-products");
-const btnAddProduct = document.getElementById("btnAddProduct");
 const emptyState = document.getElementById("admin-empty-state");
 
 const preview = {
@@ -323,8 +318,8 @@ function actualizarScrollCarrusel() {
 /* ============================================================
    FILTRO
 ============================================================ */
-function aplicarFiltro() {
-  const q = searchInput.value.toLowerCase().trim();
+function aplicarFiltro(query) {
+  const q = (typeof query === "string" ? query : "").toLowerCase().trim();
 
   filteredProducts = !q
     ? [...products]
@@ -435,9 +430,12 @@ async function cargarProductos() {
     return;
   }
 
-  searchInput?.addEventListener("input", aplicarFiltro);
+  // Listen to Global Header Events
+  document.addEventListener("header:search", (e) => {
+    aplicarFiltro(e.detail);
+  });
 
-  btnAddProduct?.addEventListener("click", () => {
+  document.addEventListener("header:add-click", () => {
     location.href = "/pages/admin/admin-agregar-producto.html";
   });
 

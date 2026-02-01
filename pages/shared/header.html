@@ -19,35 +19,50 @@
     <img src="/imagenes/logo.png" alt="Café Cortero" class="header-logo">
   </a>
 
-  <!-- TÍTULOS CENTRALES -->
-  <span id="header-cart-title" class="header-cart-title hidden">
-    Tu selección de café (<span id="count-items">0 cafés</span>)
-  </span>
+  <!-- =====================================================
+       BARRA DE BÚSQUEDA DINÁMICA (M3)
+  ====================================================== -->
+  <div id="header-search-container" class="header-search-wrap hidden">
+    <div class="header-search-box">
+      <span class="material-symbols-outlined search-icon">search</span>
 
-  <span id="header-datos-title" class="header-cart-title hidden">
-    Detalles de entrega
-  </span>
+      <!-- Búsqueda Principal -->
+      <input type="search" id="header-search-input" placeholder="Buscar…" aria-label="Buscar">
 
-  <span id="header-recibo-title" class="header-cart-title hidden">
-    Resumen del pedido
-  </span>
+      <!-- Filtro de Estado (Pedidos / Mis Pedidos) -->
+      <select id="header-status-filter" class="header-status-filter hidden">
+        <option value="all">Filtro: Todos</option>
+        <option value="new">Nuevos</option>
+        <option value="processing">En preparación</option>
+        <option value="shipped">En camino</option>
+        <option value="delivered">Entregados</option>
+        <option value="cancelled">Cancelados</option>
+      </select>
 
-  <span id="header-mis-pedidos-title" class="header-cart-title hidden">
-    Mis pedidos
-  </span>
+      <!-- Botón Acción (Agregar Producto) -->
+      <button id="header-add-btn" class="header-add-btn hidden" aria-label="Agregar">
+        <span class="material-symbols-outlined">add</span>
+      </button>
 
-  <!-- ADMIN CAFÉS -->
-  <span id="header-admin-cafes-title" class="header-cart-title hidden">
-    Cafés
-  </span>
+      <!-- Botón Filtros (Mobile - Hoja/Menú) -->
+      <button id="header-filter-mobile" class="header-filter-mobile-btn mobile-only hidden" aria-label="Filtros">
+        <span class="material-symbols-outlined">filter_list</span>
+      </button>
+    </div>
+  </div>
 
-  <span id="header-admin-add-cafe-title" class="header-cart-title hidden">
-    Agregar café
-  </span>
-
-  <span id="header-admin-edit-cafe-title" class="header-cart-title hidden">
-    Editar café
-  </span>
+  <!-- TÍTULOS CENTRALES (SOLO PARA PÁGINAS SIN BÚSQUEDA) -->
+  <div id="header-static-titles" class="header-titles-wrap">
+    <span id="header-cart-title" class="header-cart-title hidden">
+      Tu selección de café (<span id="count-items">0 cafés</span>)
+    </span>
+    <span id="header-datos-title" class="header-cart-title hidden">
+      Detalles de entrega
+    </span>
+    <span id="header-recibo-title" class="header-cart-title hidden">
+      Resumen del pedido
+    </span>
+  </div>
 
   <!-- DERECHA -->
   <div class="header-right">
@@ -140,6 +155,15 @@
       </p>
     </div>
   </a>
+
+  <!-- SECCIÓN DE FILTROS (MÓVIL — CONTEXTUAL) -->
+  <div id="drawer-filters-section" class="drawer-filters-section hidden">
+    <hr class="user-drawer-divider">
+    <p class="drawer-section-title">Filtros</p>
+
+    <!-- Filtros se inyectan o clonan aquí para móvil -->
+    <div id="drawer-filters-container" class="drawer-filters-container"></div>
+  </div>
   <!-- CLIENTE -->
   <a href="/pages/profile/mis-pedidos.html" class="user-drawer-item logged client-only" id="mis-pedidos-item">
     <span class="material-symbols-outlined">shopping_bag</span>

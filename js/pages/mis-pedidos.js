@@ -10,8 +10,11 @@ const IMG_CASH = "/imagenes/pago_en_mano.svg";
 const IMG_DEFAULT = "/imagenes/recibo_default.svg";
 
 let orders = [];
+let filteredOrders = [];
 let activeIndex = 0;
 let autoRefresh = null;
+let currentSearch = "";
+let currentFilter = "all";
 
 /* ============================================================
    HELPERS
@@ -80,11 +83,65 @@ async function init() {
     return;
   }
 
+  filteredOrders = [...orders];
+  bindHeaderEvents(data.session.user.id);
+
   mostrarCarrusel();
   renderCarousel();
   selectOrder(0);
 
   startAutoRefresh(data.session.user.id);
+}
+
+/* ============================================================
+   HEADER EVENTS
+============================================================ */
+function bindHeaderEvents(userId) {
+  document.addEventListener("header:search", (e) => {
+    currentSearch = e.detail.toLowerCase().trim();
+    applyLocalFilters();
+  });
+
+  document.addEventListener("header:filter", (e) => {
+    currentStatus = e.detail; // Reusing variable name if needed, but let's be careful
+    currentFilter = e.detail;
+    applyLocalFilters();
+  });
+}
+
+function applyLocalFilters() {
+  filteredOrders = orders.filter(o => {
+    // Status Filter
+    let matchStatus = true;
+    if (currentFilter !== "all") {
+      // Mapping filter values to DB status
+      const map = {
+        new: ["pending", "payment_review"],
+        processing: ["processing"],
+        shipped: ["shipped"],
+        delivered: ["delivered"],
+        cancelled: ["cancelled"]
+      };
+      matchStatus = (map[currentFilter] || []).includes(o.status);
+    }
+
+    // Search Filter
+    let matchSearch = true;
+    if (currentSearch) {
+      const numMatch = String(o.order_number).includes(currentSearch);
+      const prodMatch = o.items?.some(i => i.products?.name?.toLowerCase().includes(currentSearch));
+      matchSearch = numMatch || prodMatch;
+    }
+
+    return matchStatus && matchSearch;
+  });
+
+  renderCarousel();
+  if (filteredOrders.length > 0) {
+    selectOrder(0);
+  } else {
+    // Optionally show tiny empty message for search results
+  }
 }
 
 /* ============================================================
@@ -155,7 +212,7 @@ function renderCarousel() {
 
   wrap.innerHTML = "";
 
-  orders.forEach((o, index) => {
+  filteredOrders.forEach((o, index) => {
     const node = tpl.content.cloneNode(true);
     const card = node.querySelector(".similar-card");
 
@@ -187,7 +244,7 @@ function renderCarousel() {
    SELECCIÓN
 ============================================================ */
 function selectOrder(index) {
-  if (!orders[index]) return;
+  if (!filteredOrders[index]) return;
   activeIndex = index;
 
   document.querySelectorAll(".similar-card").forEach((c) =>
@@ -195,7 +252,7 @@ function selectOrder(index) {
   );
   document.querySelectorAll(".similar-card")[index]?.classList.add("is-selected");
 
-  renderPedidoActivo(orders[index]);
+  renderPedidoActivo(filteredOrders[index]);
 }
 
 /* ============================================================

@@ -366,27 +366,27 @@ function bindSnackbar() {
 }
 
 /* =========================
-   CONTROLS
+   CONTROLS (GLOBAL HEADER)
 ========================= */
 function bindControls() {
-  document.getElementById("status-filter").onchange = async e => {
-    currentStatus = e.target.value;
+  document.addEventListener("header:filter", async e => {
+    currentStatus = e.detail;
     await loadOrdersByStatus(currentStatus);
     renderCarousel();
 
     if (filtered.length) selectOrderByIndex(0);
     else showEmpty();
-  };
+  });
 
-  document.getElementById("search-orders").oninput = e => {
-    search = e.target.value.trim();
+  document.addEventListener("header:search", e => {
+    search = e.detail.trim();
     renderCarousel();
 
     if (filtered.length && !userSelected) {
       activeIndex = 0;
       selectOrderByIndex(0);
     }
-  };
+  });
 }
 
 /* =========================
