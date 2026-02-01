@@ -1,138 +1,140 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tu selección de café | Café Cortero</title>
 
   <!-- Tipografía -->
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
-<!-- Font Awesome -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-<!-- Material Symbols (Material 3) -->
-<link rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@300;400;500&display=swap">
+  <!-- Material Symbols (Material 3) -->
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@300;400;500&display=swap">
 
-<!-- CSS GLOBAL (HEADER + DRAWER) -->
-<link rel="stylesheet" href="css/header.css?v=30">
+  <!-- CSS GLOBAL (HEADER + DRAWER) -->
+  <link rel="stylesheet" href="css/ui/header.css?v=30">
 
-<!-- CSS CARRITO -->
-<link rel="stylesheet" href="css/carrito.css?v=30">
+  <!-- CSS CARRITO -->
+  <link rel="stylesheet" href="css/pages/carrito.css?v=30">
 </head>
 
 <body class="page-carrito header-checkout">
 
-<!-- =====================================================
+  <!-- =====================================================
      SEGUIR COMPRANDO
 ====================================================== -->
-<div class="seguir-comprando">
-  <button class="icon-back" onclick="location.href='index.html#productos'">
-    <i class="fa-solid fa-chevron-left"></i>
-  </button>
-  <a href="index.html#productos" class="seguir-link">Seguir Comprando</a>
-</div>
+  <div class="seguir-comprando">
+    <button class="icon-back" onclick="location.href='index.html#productos'">
+      <i class="fa-solid fa-chevron-left"></i>
+    </button>
+    <a href="index.html#productos" class="seguir-link">Seguir Comprando</a>
+  </div>
 
-<!-- =====================================================
+  <!-- =====================================================
      TEMPLATE ITEM CARRITO
 ====================================================== -->
-<template id="template-cart-item">
-  <div class="item">
+  <template id="template-cart-item">
+    <div class="item">
 
-    <div class="item-img-box">
-      <img class="item-image" alt="">
-    </div>
-
-    <div class="item-info">
-      <div class="item-name"></div>
-      <div class="item-price"></div>
-
-      <div class="qty-controls">
-        <button class="qty-btn minus" data-action="minus">
-          <i class="fa-solid fa-minus"></i>
-        </button>
-
-        <span class="qty-number"></span>
-
-        <button class="qty-btn plus" data-action="plus">
-          <i class="fa-solid fa-plus"></i>
-        </button>
-
-        <button class="del-btn" data-action="del">
-          <i class="fa-solid fa-trash"></i>
-        </button>
+      <div class="item-img-box">
+        <img class="item-image" alt="">
       </div>
+
+      <div class="item-info">
+        <div class="item-name"></div>
+        <div class="item-price"></div>
+
+        <div class="qty-controls">
+          <button class="qty-btn minus" data-action="minus">
+            <i class="fa-solid fa-minus"></i>
+          </button>
+
+          <span class="qty-number"></span>
+
+          <button class="qty-btn plus" data-action="plus">
+            <i class="fa-solid fa-plus"></i>
+          </button>
+
+          <button class="del-btn" data-action="del">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
+      </div>
+
     </div>
+  </template>
 
-  </div>
-</template>
-
-<!-- =====================================================
+  <!-- =====================================================
      CONTENIDO PRINCIPAL
 ====================================================== -->
-<main>
-  <div class="grid-carrito">
+  <main>
+    <div class="grid-carrito">
 
-    <!-- PRODUCTOS -->
-    <div class="col-productos">
-      <div id="cart-container"></div>
-    </div>
-
-    <!-- RESUMEN -->
-    <div class="col-resumen">
-      <div class="resumen-box">
-        <h2>Resumen del pedido</h2>
-
-        <div class="resumen-row">
-          <span>Subtotal</span>
-          <span id="subtotal-label">L 0.00</span>
-        </div>
-
-        <div class="resumen-row">
-          <span>Envío</span>
-          <span>L 0.00</span>
-        </div>
-
-        <div class="resumen-row resumen-total">
-          <span>Total a pagar</span>
-          <span id="total-label">L 0.00</span>
-        </div>
-
-        <button id="proceder-btn" class="btn proceder">
-          Proceder al pago
-        </button>
+      <!-- PRODUCTOS -->
+      <div class="col-productos">
+        <div id="cart-container"></div>
       </div>
 
-      <div id="snackbar" class="snackbar hidden"></div>
+      <!-- RESUMEN -->
+      <div class="col-resumen">
+        <div class="resumen-box">
+          <h2>Resumen del pedido</h2>
+
+          <div class="resumen-row">
+            <span>Subtotal</span>
+            <span id="subtotal-label">L 0.00</span>
+          </div>
+
+          <div class="resumen-row">
+            <span>Envío</span>
+            <span>L 0.00</span>
+          </div>
+
+          <div class="resumen-row resumen-total">
+            <span>Total a pagar</span>
+            <span id="total-label">L 0.00</span>
+          </div>
+
+          <button id="proceder-btn" class="btn proceder">
+            Proceder al pago
+          </button>
+        </div>
+
+        <div id="snackbar" class="snackbar hidden"></div>
+      </div>
+
     </div>
+  </main>
 
-  </div>
-</main>
-
-<!-- =====================================================
+  <!-- =====================================================
      LOADER
 ====================================================== -->
-<div id="page-loader" class="page-loader hidden">
-  <div class="loader-circle"></div>
-</div>
+  <div id="page-loader" class="page-loader hidden">
+    <div class="loader-circle"></div>
+  </div>
 
-<!-- SUPABASE -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/core/supabase-client-core.js"></script>
-<script src="js/core/supabase-auth.js"></script>
+  <!-- SUPABASE -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/core/supabase-client-core.js"></script>
+  <script src="js/core/supabase-auth.js"></script>
 
-<!-- UI BASE -->
-<script src="js/core/auth-ui.js"></script>
+  <!-- UI BASE -->
+  <script src="js/core/auth-ui.js"></script>
 
-<!-- LAYOUT (inyecta header + drawer en el DOM) -->
-<script src="js/ui/layout.js"></script>
+  <!-- LAYOUT (inyecta header + drawer en el DOM) -->
+  <script src="js/ui/layout.js"></script>
 
-<!-- HEADER (define badges y hooks UI) -->
-<script type="module" src="js/ui/header.js"></script>
+  <!-- HEADER (define badges y hooks UI) -->
+  <script type="module" src="js/ui/header.js"></script>
 
-<!-- LÓGICA DE LA PÁGINA -->
-<script src="js/pages/cart.js?v=2601"></script>
+  <!-- LÓGICA DE LA PÁGINA -->
+  <script src="js/pages/cart.js?v=2601"></script>
 
 </body>
+
 </html>

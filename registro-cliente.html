@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Crear Cuenta | Café Cortero</title>
 
   <!-- Tipografía global -->
-  <link rel="stylesheet" href="css/tipografia.css">
+  <link rel="stylesheet" href="css/core/tipografia.css">
 
   <!-- Iconos Material Symbols -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
@@ -15,7 +16,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600&display=swap" rel="stylesheet">
 
   <!-- CSS del formulario -->
-  <link rel="stylesheet" href="css/registro-cliente.css?v=7">
+  <link rel="stylesheet" href="css/auth/registro-cliente.css?v=7">
 </head>
 
 <body>
@@ -111,28 +112,20 @@
           </button>
 
         </form>
-<!-- snackbar-->
+        <!-- snackbar-->
         <div id="snackbar" class="snackbar hidden" role="status" aria-live="polite">
-  <span class="snackbar__msg"></span>
+          <span class="snackbar__msg"></span>
 
-  <div class="snackbar__actions">
-    <button
-      type="button"
-      class="snackbar__btn snackbar__btn--text"
-      data-action="cancel"
-    >
-      Cancelar
-    </button>
+          <div class="snackbar__actions">
+            <button type="button" class="snackbar__btn snackbar__btn--text" data-action="cancel">
+              Cancelar
+            </button>
 
-    <button
-      type="button"
-      class="snackbar__btn snackbar__btn--filled"
-      data-action="confirm"
-    >
-      Confirmar
-    </button>
-  </div>
-</div>
+            <button type="button" class="snackbar__btn snackbar__btn--filled" data-action="confirm">
+              Confirmar
+            </button>
+          </div>
+        </div>
 
       </div>
     </section>
@@ -141,13 +134,14 @@
   <!-- ====================================================== -->
   <!-- 🚀 ORDEN CORRECTO DE SCRIPTS                           -->
   <!-- ====================================================== -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<!-- Scripts normales -->
-<script src="js/core/supabase-client-core.js"></script>
-<script src="js/core/supabase-auth.js"></script>
-<script src="js/auth/registro-cliente.js"></script>
-<script src="js/core/auth-ui.js"></script>
+  <!-- Scripts normales -->
+  <script src="js/core/supabase-client-core.js"></script>
+  <script src="js/core/supabase-auth.js"></script>
+  <script src="js/auth/registro-cliente.js"></script>
+  <script src="js/core/auth-ui.js"></script>
 
 </body>
+
 </html>

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8" />
 
@@ -12,13 +13,13 @@
   <title>Iniciar sesión | Café Cortero</title>
 
   <!-- Tipografía -->
-  <link rel="stylesheet" href="css/tipografia.css">
+  <link rel="stylesheet" href="css/core/tipografia.css">
 
   <!-- Material Icons -->
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
 
   <!-- Estilos Login -->
-  <link rel="stylesheet" href="css/login.css?v=5">
+  <link rel="stylesheet" href="css/auth/login.css?v=5">
 
   <link rel="icon" type="image/png" href="imagenes/logo.png">
 </head>
@@ -51,12 +52,7 @@
             <div class="m3-input">
               <span class="material-symbols-outlined">mail</span>
 
-              <input 
-                type="text" 
-                id="userInput" 
-                placeholder=" "
-                autocomplete="username" 
-              />
+              <input type="text" id="userInput" placeholder=" " autocomplete="username" />
 
               <label for="userInput" class="floating-label">Correo o teléfono</label>
             </div>
@@ -68,12 +64,7 @@
             <div class="m3-input">
               <span class="material-symbols-outlined">lock</span>
 
-              <input 
-                type="password" 
-                id="passwordInput" 
-                placeholder=" "
-                autocomplete="current-password" 
-              />
+              <input type="password" id="passwordInput" placeholder=" " autocomplete="current-password" />
 
               <label for="passwordInput" class="floating-label">Contraseña</label>
               <span class="material-symbols-outlined toggle-pass" data-target="passwordInput">visibility</span>
@@ -118,13 +109,14 @@
 
   <!-- Snackbar dentro del flujo y centrado -->
   <div id="snackbar"></div>
-<!-- 1) Supabase SDK -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<!-- Scripts normales -->
-<script src="js/core/supabase-client-core.js"></script>
-<script src="js/core/supabase-auth.js"></script>
-<script src="js/auth/login.js"></script>
-<script src="js/core/auth-ui.js"></script>
+  <!-- 1) Supabase SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Scripts normales -->
+  <script src="js/core/supabase-client-core.js"></script>
+  <script src="js/core/supabase-auth.js"></script>
+  <script src="js/auth/login.js"></script>
+  <script src="js/core/auth-ui.js"></script>
 
 </body>
+
 </html>

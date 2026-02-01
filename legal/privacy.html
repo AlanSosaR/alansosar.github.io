@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,16 +10,13 @@
   <link rel="icon" type="image/png" href="/imagenes/logo.png">
 
   <!-- Tipografía global -->
-  <link rel="stylesheet" href="/css/tipografia.css">
+  <link rel="stylesheet" href="/css/core/tipografia.css">
 
   <!-- Material Symbols -->
-  <link
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
-    rel="stylesheet"
-  >
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
 
   <!-- CSS legal (ruta absoluta, forzar recarga) -->
-  <link rel="stylesheet" href="/css/legal/legal.css?v=6">
+  <link rel="stylesheet" href="/css/pages/legal/legal.css?v=6">
 </head>
 
 <body>
@@ -27,28 +25,14 @@
     <section class="legal-card">
 
       <!-- Botón volver -->
-      <button
-        type="button"
-        class="back-btn"
-        onclick="history.back()"
-        aria-label="Volver"
-      >
+      <button type="button" class="back-btn" onclick="history.back()" aria-label="Volver">
         <span class="material-symbols-outlined">chevron_left</span>
       </button>
 
       <!-- Header -->
       <header class="legal-header">
-        <div
-          class="logo-container"
-          onclick="window.location.href='/'"
-          role="button"
-          aria-label="Ir al inicio"
-        >
-          <img
-            src="/imagenes/logo.png"
-            alt="Café Cortero"
-            class="logo-img"
-          />
+        <div class="logo-container" onclick="window.location.href='/'" role="button" aria-label="Ir al inicio">
+          <img src="/imagenes/logo.png" alt="Café Cortero" class="logo-img" />
         </div>
 
         <h1 class="legal-title">Política de Privacidad</h1>
@@ -103,4 +87,5 @@
   </main>
 
 </body>
+
 </html>

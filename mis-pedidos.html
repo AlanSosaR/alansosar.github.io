@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -10,162 +11,145 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
 
   <!-- Styles -->
-  <link rel="stylesheet" href="css/header.css" />
-  <link rel="stylesheet" href="css/mis-pedidos.css" />
+  <link rel="stylesheet" href="css/ui/header.css" />
+  <link rel="stylesheet" href="css/pages/mis-pedidos.css" />
 </head>
 
 <body class="page-mis-pedidos header-checkout">
 
-<main class="admin-orders-container fade-in" aria-live="polite">
+  <main class="admin-orders-container fade-in" aria-live="polite">
 
-  <!-- PEDIDO ACTIVO (VISIBLE POR DEFECTO) -->
-  <section
-    id="pedido-activo"
-    class="pedido-activo"
-    aria-label="Detalle del pedido seleccionado">
-  </section>
+    <!-- PEDIDO ACTIVO (VISIBLE POR DEFECTO) -->
+    <section id="pedido-activo" class="pedido-activo" aria-label="Detalle del pedido seleccionado">
+    </section>
 
-  <!-- EMPTY STATE (SOLO SI NO HAY PEDIDOS) -->
-  <section
-    id="empty-state"
-    class="admin-empty-state hidden"
-    aria-hidden="true">
-    <h2 class="empty-title">No tienes pedidos</h2>
-    <p class="empty-text">Cuando realices un pedido, aparecerá aquí.</p>
-  </section>
+    <!-- EMPTY STATE (SOLO SI NO HAY PEDIDOS) -->
+    <section id="empty-state" class="admin-empty-state hidden" aria-hidden="true">
+      <h2 class="empty-title">No tienes pedidos</h2>
+      <p class="empty-text">Cuando realices un pedido, aparecerá aquí.</p>
+    </section>
 
-  <!-- CARRUSEL (VISIBLE POR DEFECTO) -->
-  <section
-    class="related admin-related"
-    id="mis-pedidos-carrusel"
-    aria-label="Listado de pedidos">
-    
-    <h3 class="similar-title">Mis pedidos</h3>
-    <p class="section-subtitle">Selecciona un pedido para ver su detalle.</p>
+    <!-- CARRUSEL (VISIBLE POR DEFECTO) -->
+    <section class="related admin-related" id="mis-pedidos-carrusel" aria-label="Listado de pedidos">
 
-    <div class="carousel-container" role="region" aria-roledescription="carousel">
+      <h3 class="similar-title">Mis pedidos</h3>
+      <p class="section-subtitle">Selecciona un pedido para ver su detalle.</p>
 
-      <button
-        class="carousel-prev-circle"
-        id="pedidos-prev"
-        aria-label="Pedido anterior">
-        <span class="material-symbols-outlined">chevron_left</span>
-      </button>
+      <div class="carousel-container" role="region" aria-roledescription="carousel">
 
-      <div
-        class="similar-list"
-        id="pedidos-carrusel"
-        role="list">
-      </div>
+        <button class="carousel-prev-circle" id="pedidos-prev" aria-label="Pedido anterior">
+          <span class="material-symbols-outlined">chevron_left</span>
+        </button>
 
-      <button
-        class="carousel-next-circle"
-        id="pedidos-next"
-        aria-label="Siguiente pedido">
-        <span class="material-symbols-outlined">chevron_right</span>
-      </button>
-    </div>
-  </section>
-</main>
-
-<!-- =========================
-     TEMPLATE — PEDIDO ACTIVO
-========================= -->
-<template id="pedido-activo-template">
-  <section class="order-main">
-    <header class="order-preview-header">
-      <button class="back-to-shop" onclick="location.href='index.html#productos'">
-        <span class="arrow-circle">
-          <span class="material-symbols-outlined">arrow_back</span>
-        </span>
-        <span>Seguir comprando</span>
-      </button>
-
-      <div class="order-header-text">
-        <h2 class="pedido-numero"></h2>
-        <span class="pedido-fecha">
-          <span class="fecha"></span> · <span class="hora"></span>
-        </span>
-      </div>
-    </header>
-
-    <div class="order-layout">
-      <div class="order-text">
-        <div class="productos-pills"></div>
-
-        <div class="order-total">
-          <span>Total del pedido</span>
-          <strong class="pedido-total"></strong>
+        <div class="similar-list" id="pedidos-carrusel" role="list">
         </div>
 
-        <section class="order-address">
-          <h3>Entrega</h3>
-          <p class="entrega-text"></p>
-        </section>
+        <button class="carousel-next-circle" id="pedidos-next" aria-label="Siguiente pedido">
+          <span class="material-symbols-outlined">chevron_right</span>
+        </button>
+      </div>
+    </section>
+  </main>
 
-        <section class="order-address">
-          <h3>Referencia</h3>
-          <p class="referencia-text"></p>
-        </section>
+  <!-- =========================
+     TEMPLATE — PEDIDO ACTIVO
+========================= -->
+  <template id="pedido-activo-template">
+    <section class="order-main">
+      <header class="order-preview-header">
+        <button class="back-to-shop" onclick="location.href='index.html#productos'">
+          <span class="arrow-circle">
+            <span class="material-symbols-outlined">arrow_back</span>
+          </span>
+          <span>Seguir comprando</span>
+        </button>
 
-        <section class="pedido-estado">
-          <h3>Estado del pedido</h3>
+        <div class="order-header-text">
+          <h2 class="pedido-numero"></h2>
+          <span class="pedido-fecha">
+            <span class="fecha"></span> · <span class="hora"></span>
+          </span>
+        </div>
+      </header>
 
-          <div class="estado-header-dinamico">
-            <p class="estado-resumen">
-              Paso <span class="estado-paso"></span> de 4 ·
-              <strong class="estado-nombre"></strong>
-            </p>
-            <p class="estado-descripcion"></p>
+      <div class="order-layout">
+        <div class="order-text">
+          <div class="productos-pills"></div>
+
+          <div class="order-total">
+            <span>Total del pedido</span>
+            <strong class="pedido-total"></strong>
           </div>
 
-          <ul class="estado-list">
-            <li class="estado-item"><span class="dot">1</span><span class="step-text"></span></li>
-            <li class="estado-item"><span class="dot">2</span><span class="step-text"></span></li>
-            <li class="estado-item"><span class="dot">3</span><span class="step-text"></span></li>
-            <li class="estado-item"><span class="dot">4</span><span class="step-text"></span></li>
-          </ul>
+          <section class="order-address">
+            <h3>Entrega</h3>
+            <p class="entrega-text"></p>
+          </section>
 
-          <button class="ver-recibo">
-            <span class="material-symbols-outlined">receipt_long</span>
-            <span>Ver recibo</span>
-            <span class="material-symbols-outlined">arrow_forward</span>
-          </button>
-        </section>
+          <section class="order-address">
+            <h3>Referencia</h3>
+            <p class="referencia-text"></p>
+          </section>
+
+          <section class="pedido-estado">
+            <h3>Estado del pedido</h3>
+
+            <div class="estado-header-dinamico">
+              <p class="estado-resumen">
+                Paso <span class="estado-paso"></span> de 4 ·
+                <strong class="estado-nombre"></strong>
+              </p>
+              <p class="estado-descripcion"></p>
+            </div>
+
+            <ul class="estado-list">
+              <li class="estado-item"><span class="dot">1</span><span class="step-text"></span></li>
+              <li class="estado-item"><span class="dot">2</span><span class="step-text"></span></li>
+              <li class="estado-item"><span class="dot">3</span><span class="step-text"></span></li>
+              <li class="estado-item"><span class="dot">4</span><span class="step-text"></span></li>
+            </ul>
+
+            <button class="ver-recibo">
+              <span class="material-symbols-outlined">receipt_long</span>
+              <span>Ver recibo</span>
+              <span class="material-symbols-outlined">arrow_forward</span>
+            </button>
+          </section>
+        </div>
+
+        <div class="order-media">
+          <img class="recibo-img" src="" alt="Estado del pago" />
+        </div>
       </div>
+    </section>
+  </template>
 
-      <div class="order-media">
-        <img class="recibo-img" src="" alt="Estado del pago" />
-      </div>
-    </div>
-  </section>
-</template>
-
-<!-- =========================
+  <!-- =========================
      TEMPLATE — CARRUSEL
 ========================= -->
-<template id="pedido-carrusel-template">
-  <article class="similar-card" role="listitem">
-    <div class="pedido-mini-img-container">
-      <img class="pedido-mini-img" src="" alt="Miniatura del pedido" />
-    </div>
-    <div class="order-card-info">
-      <h4 class="pedido-mini-numero"></h4>
-      <p class="pedido-mini-total"></p>
-      <span class="pedido-mini-status"></span>
-    </div>
-  </article>
-</template>
+  <template id="pedido-carrusel-template">
+    <article class="similar-card" role="listitem">
+      <div class="pedido-mini-img-container">
+        <img class="pedido-mini-img" src="" alt="Miniatura del pedido" />
+      </div>
+      <div class="order-card-info">
+        <h4 class="pedido-mini-numero"></h4>
+        <p class="pedido-mini-total"></p>
+        <span class="pedido-mini-status"></span>
+      </div>
+    </article>
+  </template>
 
-<!-- =========================
+  <!-- =========================
      SCRIPTS
 ========================= -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/core/supabase-client-core.js"></script>
-<script src="js/core/supabase-auth.js"></script>
-<script src="js/ui/layout.js"></script>
-<script type="module" src="js/ui/header.js"></script>
-<script type="module" src="js/pages/mis-pedidos.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/core/supabase-client-core.js"></script>
+  <script src="js/core/supabase-auth.js"></script>
+  <script src="js/ui/layout.js"></script>
+  <script type="module" src="js/ui/header.js"></script>
+  <script type="module" src="js/pages/mis-pedidos.js"></script>
 
 </body>
+
 </html>
