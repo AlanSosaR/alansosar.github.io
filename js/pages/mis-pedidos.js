@@ -6,8 +6,8 @@ console.log("📦 mis-pedidos.js — FINAL");
 
 const sb = () => window.supabaseClient;
 
-const IMG_CASH = "imagenes/pago_en_mano.svg";
-const IMG_DEFAULT = "imagenes/recibo_default.svg";
+const IMG_CASH = "/imagenes/pago_en_mano.svg";
+const IMG_DEFAULT = "/imagenes/recibo_default.svg";
 
 let orders = [];
 let activeIndex = 0;

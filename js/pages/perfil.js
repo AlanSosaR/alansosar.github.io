@@ -160,7 +160,7 @@ function attachStrength(input) {
   nombre.value = user.name || "";
   correo.value = user.email || "";
   tel.value = user.phone || "";
-  foto.src = user.photo_url || "imagenes/avatar-default.svg";
+  foto.src = user.photo_url || "/imagenes/avatar-default.svg";
 
   foto.onclick = () => archivo.click();
   archivo.onchange = e => {

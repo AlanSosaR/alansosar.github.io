@@ -58,10 +58,10 @@ function getStockStatus(stockBD, qtyInCart) {
 
 /* 🔑 CONTROL DE BOTONES + / − / ADD */
 function updateQtyControls(productId, stockBD) {
-  const qtyEl   = safe("qty-number");
+  const qtyEl = safe("qty-number");
   const btnPlus = safe("qty-plus");
-  const btnMinus= safe("qty-minus");
-  const addBtn  = safe("product-add");
+  const btnMinus = safe("qty-minus");
+  const addBtn = safe("product-add");
 
   if (!qtyEl || !btnPlus || !btnMinus || !addBtn) return;
 
@@ -77,8 +77,8 @@ function updateQtyControls(productId, stockBD) {
   }
 
   btnMinus.disabled = qty <= 1;
-  btnPlus.disabled  = qty >= available;
-  addBtn.disabled   = qty > available;
+  btnPlus.disabled = qty >= available;
+  addBtn.disabled = qty > available;
 }
 
 
@@ -321,7 +321,7 @@ function updateSimilarUI() {
   if (!list) return;
 
   const cards = list.querySelectorAll(".similar-card");
-  const dots  = document.querySelectorAll(".carousel-dots .dot");
+  const dots = document.querySelectorAll(".carousel-dots .dot");
   if (!cards.length) return;
 
   const rect = cards[0].getBoundingClientRect();
@@ -346,7 +346,7 @@ function updateSimilarUI() {
 
 function initHeroCarousel() {
   const images = Array.from(document.querySelectorAll(".hero-img"));
-  const pills  = Array.from(document.querySelectorAll(".pill-segment"));
+  const pills = Array.from(document.querySelectorAll(".pill-segment"));
 
   if (!images.length || !pills.length) return;
 
@@ -483,7 +483,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const qty = parseInt(qtyNumber.textContent, 10) || 1;
 
     const productId = safe("product-add").dataset.id;
-    const stockBD   = Number(safe("product-add").dataset.stock ?? 0);
+    const stockBD = Number(safe("product-add").dataset.stock ?? 0);
     const qtyInCart = getQtyInCart(productId);
     const available = stockBD - qtyInCart;
 
@@ -521,4 +521,4 @@ document.addEventListener("DOMContentLoaded", () => {
   loadSimilarProducts();
 
 });
-      
+

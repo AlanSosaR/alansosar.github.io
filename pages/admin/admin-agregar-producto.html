@@ -1,186 +1,186 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Producto | Café Cortero</title>
 
   <!-- TIPOGRAFÍA -->
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
-<!-- ICONOS -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <!-- ICONOS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-<!-- MATERIAL SYMBOLS -->
-<link rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@300;400;500&display=swap">
+  <!-- MATERIAL SYMBOLS -->
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@300;400;500&display=swap">
 
-<!-- HEADER GLOBAL (NO MOVIDO) -->
-<link rel="stylesheet" href="/css/header.css?v=30">
+  <!-- HEADER GLOBAL (NO MOVIDO) -->
+  <link rel="stylesheet" href="/css/header.css?v=30">
 
-<!-- CSS PROPIO ADMIN (YA MOVIDO) -->
-<link rel="stylesheet" href="/css/admin/admin-agregar-producto.css?v=3">
+  <!-- CSS PROPIO ADMIN (YA MOVIDO) -->
+  <link rel="stylesheet" href="/css/admin/admin-agregar-producto.css?v=3">
 </head>
 
 <body class="page-admin-agregar-cafe header-checkout">
 
-<main class="profile-container">
-  <section class="profile-card">
+  <main class="profile-container">
+    <section class="profile-card">
 
-    <!-- BOTÓN ATRÁS -->
-    <button class="back-btn" data-back="../../index.html" aria-label="Volver">
-  <span class="material-symbols-outlined">chevron_left</span>
-</button>
+      <!-- BOTÓN ATRÁS -->
+      <button class="back-btn" data-back="/pages/home/index.html" aria-label="Volver">
+        <span class="material-symbols-outlined">chevron_left</span>
+      </button>
 
-    <div class="profile-inner-card">
+      <div class="profile-inner-card">
 
-      <!-- ================= FORM ================= -->
-      <form id="producto-form" novalidate>
+        <!-- ================= FORM ================= -->
+        <form id="producto-form" novalidate>
 
-        <!-- ================= IMAGEN ================= -->
-        <div class="m3-field">
-          <div class="upload-box" id="uploadBox">
+          <!-- ================= IMAGEN ================= -->
+          <div class="m3-field">
+            <div class="upload-box" id="uploadBox">
 
-            <img id="imagePreview"
-                 class="upload-preview hidden"
-                 alt="Vista previa del producto">
+              <img id="imagePreview" class="upload-preview hidden" alt="Vista previa del producto">
 
-            <span class="material-symbols-outlined upload-icon">photo_camera</span>
-            <p class="upload-title">Subir imagen</p>
-            <p class="upload-hint">JPG, PNG o WEBP (máx. 2 MB)</p>
+              <span class="material-symbols-outlined upload-icon">photo_camera</span>
+              <p class="upload-title">Subir imagen</p>
+              <p class="upload-hint">JPG, PNG o WEBP (máx. 2 MB)</p>
 
-            <input type="file" id="imagen" accept="image/*">
+              <input type="file" id="imagen" accept="image/*">
+            </div>
+            <small class="field-error"></small>
           </div>
-          <small class="field-error"></small>
-        </div>
 
-        <!-- NOMBRE -->
-        <div class="m3-field">
-          <div class="m3-input">
-            <span class="material-symbols-outlined">inventory_2</span>
-            <input id="nombre" type="text" placeholder=" " required>
-            <label class="floating-label">Nombre del producto *</label>
+          <!-- NOMBRE -->
+          <div class="m3-field">
+            <div class="m3-input">
+              <span class="material-symbols-outlined">inventory_2</span>
+              <input id="nombre" type="text" placeholder=" " required>
+              <label class="floating-label">Nombre del producto *</label>
+            </div>
+            <small class="field-error"></small>
           </div>
-          <small class="field-error"></small>
-        </div>
 
-        <!-- DESCRIPCIÓN -->
-        <div class="m3-field">
-          <div class="m3-input textarea-field">
-            <span class="material-symbols-outlined">description</span>
-            <textarea id="descripcion" rows="3" placeholder=" " required></textarea>
-            <label class="floating-label">Descripción *</label>
+          <!-- DESCRIPCIÓN -->
+          <div class="m3-field">
+            <div class="m3-input textarea-field">
+              <span class="material-symbols-outlined">description</span>
+              <textarea id="descripcion" rows="3" placeholder=" " required></textarea>
+              <label class="floating-label">Descripción *</label>
+            </div>
+            <small class="field-error"></small>
           </div>
-          <small class="field-error"></small>
-        </div>
 
-        <!-- CATEGORÍA -->
-        <div class="m3-field">
-          <div class="m3-input">
-            <span class="material-symbols-outlined">category</span>
-            <select id="categoria" required>
-              <option value="" disabled selected></option>
-              <option value="Tradicional">Tradicional</option>
-              <option value="Premium">Premium</option>
-              <option value="Especial">Edición especial</option>
-            </select>
-            <label class="floating-label">Categoría *</label>
+          <!-- CATEGORÍA -->
+          <div class="m3-field">
+            <div class="m3-input">
+              <span class="material-symbols-outlined">category</span>
+              <select id="categoria" required>
+                <option value="" disabled selected></option>
+                <option value="Tradicional">Tradicional</option>
+                <option value="Premium">Premium</option>
+                <option value="Especial">Edición especial</option>
+              </select>
+              <label class="floating-label">Categoría *</label>
+            </div>
+            <small class="field-error"></small>
           </div>
-          <small class="field-error"></small>
-        </div>
 
-        <!-- TIPO DE CAFÉ -->
-        <div class="m3-field">
-          <div class="m3-input">
-            <span class="material-symbols-outlined">grain</span>
-            <select id="tipoCafe" required>
-              <option value="" disabled selected></option>
-              <option value="Molido">Molido</option>
-              <option value="En grano">En grano</option>
-            </select>
-            <label class="floating-label">Tipo de café *</label>
+          <!-- TIPO DE CAFÉ -->
+          <div class="m3-field">
+            <div class="m3-input">
+              <span class="material-symbols-outlined">grain</span>
+              <select id="tipoCafe" required>
+                <option value="" disabled selected></option>
+                <option value="Molido">Molido</option>
+                <option value="En grano">En grano</option>
+              </select>
+              <label class="floating-label">Tipo de café *</label>
+            </div>
+            <small class="field-error"></small>
           </div>
-          <small class="field-error"></small>
-        </div>
 
-        <!-- PRESENTACIÓN -->
-        <div class="m3-field">
-          <div class="m3-input">
-            <span class="material-symbols-outlined">scale</span>
-            <select id="presentacion" required>
-              <option value="" disabled selected></option>
-              <option value="250g">250 g</option>
-              <option value="500g">500 g</option>
-              <option value="1lb">1 lb</option>
-              <option value="pack">Pack regalo</option>
-            </select>
-            <label class="floating-label">Presentación / Tamaño *</label>
+          <!-- PRESENTACIÓN -->
+          <div class="m3-field">
+            <div class="m3-input">
+              <span class="material-symbols-outlined">scale</span>
+              <select id="presentacion" required>
+                <option value="" disabled selected></option>
+                <option value="250g">250 g</option>
+                <option value="500g">500 g</option>
+                <option value="1lb">1 lb</option>
+                <option value="pack">Pack regalo</option>
+              </select>
+              <label class="floating-label">Presentación / Tamaño *</label>
+            </div>
+            <small class="field-error"></small>
           </div>
-          <small class="field-error"></small>
-        </div>
 
-        <!-- PRECIO -->
-        <div class="m3-field">
-          <div class="m3-input">
-            <span class="material-symbols-outlined">attach_money</span>
-            <input id="precio" type="number" step="0.01" placeholder=" " required>
-            <label class="floating-label">Precio *</label>
+          <!-- PRECIO -->
+          <div class="m3-field">
+            <div class="m3-input">
+              <span class="material-symbols-outlined">attach_money</span>
+              <input id="precio" type="number" step="0.01" placeholder=" " required>
+              <label class="floating-label">Precio *</label>
+            </div>
+            <small class="field-error"></small>
           </div>
-          <small class="field-error"></small>
-        </div>
 
-        <!-- STOCK -->
-        <div class="m3-field">
-          <div class="m3-input">
-            <span class="material-symbols-outlined">warehouse</span>
-            <input id="stock" type="number" min="0" placeholder=" " required>
-            <label class="floating-label">Stock disponible *</label>
+          <!-- STOCK -->
+          <div class="m3-field">
+            <div class="m3-input">
+              <span class="material-symbols-outlined">warehouse</span>
+              <input id="stock" type="number" min="0" placeholder=" " required>
+              <label class="floating-label">Stock disponible *</label>
+            </div>
+            <small class="field-error"></small>
           </div>
-          <small class="field-error"></small>
-        </div>
 
-        <!-- ESTADO -->
-        <div class="m3-field estado-field">
-          <p class="field-title">Estado</p>
-          <div class="estado-switch-wrapper">
-            <label class="switch">
-              <input type="checkbox" id="estadoToggle" checked>
-              <span class="slider"></span>
-            </label>
-            <span id="estadoTexto" class="estado-label activo">Activo</span>
+          <!-- ESTADO -->
+          <div class="m3-field estado-field">
+            <p class="field-title">Estado</p>
+            <div class="estado-switch-wrapper">
+              <label class="switch">
+                <input type="checkbox" id="estadoToggle" checked>
+                <span class="slider"></span>
+              </label>
+              <span id="estadoTexto" class="estado-label activo">Activo</span>
+            </div>
           </div>
-        </div>
 
-        <!-- BOTÓN -->
-        <button type="submit" id="btn-submit" class="m3-btn">
-          <span class="loader"></span>
-          <span class="btn-text">Guardar producto</span>
-        </button>
+          <!-- BOTÓN -->
+          <button type="submit" id="btn-submit" class="m3-btn">
+            <span class="loader"></span>
+            <span class="btn-text">Guardar producto</span>
+          </button>
 
-      </form>
+        </form>
 
-    </div>
-  </section>
-</main>
+      </div>
+    </section>
+  </main>
 
-<!-- SNACKBAR GLOBAL -->
-<div id="snackbar" class="snackbar"></div>
+  <!-- SNACKBAR GLOBAL -->
+  <div id="snackbar" class="snackbar"></div>
 
-<!-- ================= SCRIPTS ================= -->
+  <!-- ================= SCRIPTS ================= -->
 
-<!-- Supabase SDK -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Supabase SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<!-- CORE -->
-<script src="/js/core/supabase-client-core.js"></script>
-<script src="/js/core/supabase-auth.js"></script>
-<script src="/js/core/auth-ui.js"></script>
+  <!-- CORE -->
+  <script src="/js/core/supabase-client-core.js"></script>
+  <script src="/js/core/supabase-auth.js"></script>
+  <script src="/js/core/auth-ui.js"></script>
 
-<!-- UI -->
-<script src="/js/ui/layout.js"></script>
-<script type="module" src="/js/ui/header.js"></script>
-<!-- ADMIN -->
-<script src="/js/admin/admin-agregar-producto.js"></script>
+  <!-- UI -->
+  <script src="/js/ui/layout.js"></script>
+  <script type="module" src="/js/ui/header.js"></script>
+  <!-- ADMIN -->
+  <script src="/js/admin/admin-agregar-producto.js"></script>
 
 </body>
+
 </html>

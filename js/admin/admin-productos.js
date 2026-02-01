@@ -67,7 +67,7 @@ function formatPrice(value, currency = "HNL") {
 }
 
 function getImageUrl(product) {
-  if (!product?.image_url) return "imagenes/no-image.png";
+  if (!product?.image_url) return "/imagenes/no-image.png";
   if (product.image_url.startsWith("http")) return product.image_url;
   return `https://eaipcuvvddyrqkbmjmvw.supabase.co/storage/v1/object/public/product-images/${product.image_url}`;
 }
@@ -182,10 +182,10 @@ function renderPreview(product) {
   const imgUrl = getImageUrl(product);
   preview.image.src = imgUrl
     ? `${imgUrl}?v=${Date.now()}`
-    : "imagenes/no-image.png";
+    : "/imagenes/no-image.png";
 
   preview.image.onerror = () => {
-    preview.image.src = "imagenes/no-image.png";
+    preview.image.src = "/imagenes/no-image.png";
   };
 
   /* =====================================================
@@ -251,10 +251,10 @@ function renderCarousel(list) {
 
     img.src = imgUrl
       ? `${imgUrl}?v=${Date.now()}`
-      : "imagenes/no-image.png";
+      : "/imagenes/no-image.png";
 
     img.onerror = () => {
-      img.src = "imagenes/no-image.png";
+      img.src = "/imagenes/no-image.png";
     };
 
     root.querySelector(".c-name").textContent = product.name;
