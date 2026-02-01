@@ -1,8 +1,8 @@
 /* ============================================================
-   📦 MIS PEDIDOS — UX FLUIDA (MISMA LÓGICA QUE ADMIN)
+   📦 MIS PEDIDOS — UX FLUIDA (ROBUSTA)
 ============================================================ */
 
-console.log("📦 mis-pedidos.js — UX fluida");
+console.log("📦 mis-pedidos.js — INIT");
 
 const sb = () => window.supabaseClient;
 let orders = [];
@@ -18,16 +18,23 @@ const $id = (id) => document.getElementById(id);
 function formatDateTime(dateStr) {
   const d = new Date(dateStr);
   return {
-    fecha: d.toLocaleDateString("es-HN", { day: "2-digit", month: "short", year: "numeric" }),
-    hora: d.toLocaleTimeString("es-HN", { hour: "2-digit", minute: "2-digit" }),
+    fecha: d.toLocaleDateString("es-HN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    }),
+    hora: d.toLocaleTimeString("es-HN", {
+      hour: "2-digit",
+      minute: "2-digit",
+    }),
   };
 }
 
 /* ============================================================
-   STATUS MAP (MIS PEDIDOS)
+   STATUS MAP
 ============================================================ */
 function getStatusDetails(status, paymentMethod) {
-  const isCash = paymentMethod?.includes("cash");
+  const isCash = paymentMethod === "cash";
 
   const maps = {
     cash: {
@@ -35,7 +42,7 @@ function getStatusDetails(status, paymentMethod) {
       pending: { step: 1, label: "Pedido registrado", desc: "Tu pedido fue recibido correctamente." },
       processing: { step: 2, label: "Preparación", desc: "Estamos preparando tu pedido." },
       shipped: { step: 3, label: "En camino", desc: "El repartidor lleva tu pedido." },
-      delivered: { step: 4, label: "Entregado", desc: "Pedido entregado y pagado." }
+      delivered: { step: 4, label: "Entregado", desc: "Pedido entregado y pagado." },
     },
     transfer: {
       steps: ["Pago enviado", "Revisión", "Confirmado", "Enviado"],
@@ -43,8 +50,8 @@ function getStatusDetails(status, paymentMethod) {
       payment_review: { step: 2, label: "En revisión", desc: "Verificando información del pago." },
       processing: { step: 3, label: "Pago confirmado", desc: "Pedido confirmado." },
       shipped: { step: 4, label: "Enviado", desc: "Pedido en camino." },
-      delivered: { step: 4, label: "Entregado", desc: "Pedido entregado." }
-    }
+      delivered: { step: 4, label: "Entregado", desc: "Pedido entregado." },
+    },
   };
 
   const map = isCash ? maps.cash : maps.transfer;
@@ -52,31 +59,59 @@ function getStatusDetails(status, paymentMethod) {
 }
 
 /* ============================================================
-   INIT
+   INIT (FUENTE DE VERDAD)
 ============================================================ */
-document.addEventListener("header:ready", init);
+document.addEventListener("DOMContentLoaded", init);
 
 async function init() {
-  const { data: session } = await sb().auth.getSession();
-  if (!session?.session) return;
+  console.log("📦 mis-pedidos.js → init()");
 
-  await loadOrders(session.session.user.id);
-  renderCarousel();
+  // Esperar Supabase
+  await esperarSupabase();
 
-  if (orders.length) {
-    selectOrderByIndex(0, false);
-  } else {
-    showEmpty();
+  const sbClient = sb();
+  if (!sbClient) return;
+
+  const { data } = await sbClient.auth.getSession();
+  if (!data?.session) {
+    console.warn("🔐 No hay sesión activa");
+    return;
   }
 
-  startAutoRefresh(session.session.user.id);
+  const userId = data.session.user.id;
+
+  await loadOrders(userId);
+
+  if (!orders.length) {
+    showEmpty();
+    return;
+  }
+
+  renderCarousel();
+  selectOrderByIndex(0, false);
+  startAutoRefresh(userId);
 }
 
 /* ============================================================
-   LOAD ORDERS (SOLO UNA QUERY)
+   WAIT SUPABASE
+============================================================ */
+function esperarSupabase() {
+  return new Promise((resolve) => {
+    if (window.supabaseClient) return resolve();
+    const i = setInterval(() => {
+      if (window.supabaseClient) {
+        clearInterval(i);
+        resolve();
+      }
+    }, 50);
+  });
+}
+
+/* ============================================================
+   LOAD ORDERS
 ============================================================ */
 async function loadOrders(userId) {
-  const { data } = await sb()
+  const { data, error } = await sb()
     .from("orders")
     .select(`
       id,
@@ -97,11 +132,17 @@ async function loadOrders(userId) {
     .eq("user_id", userId)
     .order("created_at", { ascending: false });
 
+  if (error) {
+    console.error("❌ Error cargando pedidos:", error);
+    orders = [];
+    return;
+  }
+
   orders = data || [];
 }
 
 /* ============================================================
-   AUTO REFRESH (NO BLOQUEA UI)
+   AUTO REFRESH
 ============================================================ */
 function startAutoRefresh(userId) {
   clearInterval(autoRefresh);
@@ -113,7 +154,7 @@ function startAutoRefresh(userId) {
 }
 
 /* ============================================================
-   CARRUSEL (PRIMERO)
+   CARRUSEL
 ============================================================ */
 function renderCarousel() {
   const wrap = $id("pedidos-carrusel");
@@ -134,7 +175,7 @@ function renderCarousel() {
 
     const img = node.querySelector(".pedido-mini-img");
     img.src =
-      o.payment_method?.includes("cash")
+      o.payment_method === "cash"
         ? "imagenes/pago_en_mano.svg"
         : o.receipt?.[0]?.file_url || "imagenes/recibo_default.svg";
 
@@ -152,7 +193,7 @@ function renderCarousel() {
 }
 
 /* ============================================================
-   SELECT ORDER (IGUAL QUE ADMIN)
+   SELECCIÓN
 ============================================================ */
 function selectOrderByIndex(index, silent = false) {
   if (!orders[index]) return;
@@ -170,7 +211,7 @@ function selectOrderByIndex(index, silent = false) {
 function applySelection() {
   document
     .querySelectorAll(".similar-card")
-    .forEach(c => c.classList.remove("is-selected"));
+    .forEach((c) => c.classList.remove("is-selected"));
 
   document
     .querySelectorAll(".similar-card")
@@ -178,7 +219,7 @@ function applySelection() {
 }
 
 /* ============================================================
-   PEDIDO ACTIVO (NO BLOQUEA)
+   PEDIDO ACTIVO
 ============================================================ */
 function renderPedidoActivo(pedido) {
   const container = $id("pedido-activo");
@@ -216,7 +257,7 @@ function renderPedidoActivo(pedido) {
   });
 
   const pills = node.querySelector(".productos-pills");
-  pedido.items?.forEach(item => {
+  pedido.items?.forEach((item) => {
     const p = document.createElement("div");
     p.className = "pill";
     p.innerHTML = `
@@ -228,18 +269,19 @@ function renderPedidoActivo(pedido) {
 
   const img = node.querySelector(".recibo-img");
   img.src =
-    pedido.payment_method?.includes("cash")
+    pedido.payment_method === "cash"
       ? "imagenes/pago_en_mano.svg"
       : pedido.receipt?.[0]?.file_url || "imagenes/recibo_default.svg";
 
   node.querySelector(".ver-recibo").onclick =
-    () => window.location.href = `recibo.html?id=${pedido.id}`;
+    () => (window.location.href = `recibo.html?id=${pedido.id}`);
 
+  container.classList.remove("hidden");
   container.appendChild(node);
 }
 
 /* ============================================================
-   SCROLL SUAVE (NO BLOQUEA)
+   SCROLL
 ============================================================ */
 function scrollToPedidoActivo() {
   const el = $id("pedido-activo");
@@ -249,7 +291,7 @@ function scrollToPedidoActivo() {
 }
 
 /* ============================================================
-   CARRUSEL ARROWS
+   ARROWS
 ============================================================ */
 function bindCarouselArrows() {
   const list = $id("pedidos-carrusel");
