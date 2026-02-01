@@ -1,13 +1,13 @@
 /**
- * 🧾 recibo.core.js — FINAL DEFINITIVO SINCRONIZADO
+ * 🧾 recibo.core.js — FINAL DEFINITIVO ESTABLE
  * ---------------------------------------------------------
  * Proyecto: Café Cortero — Material 3 Expressive
  */
 
-console.log("🧾 recibo.core.js — Optimizado");
+console.log("🧾 recibo.core.js — READY");
 
 /* =========================================================
-   1. SELECTORES Y CONTEXTO GLOBAL
+   HELPERS & CONTEXTO
 ========================================================= */
 const $id = (id) => document.getElementById(id);
 
@@ -15,78 +15,72 @@ window.ORDER_ID = new URLSearchParams(window.location.search).get("id");
 window.IS_READ_ONLY = Boolean(window.ORDER_ID);
 
 /* =========================================================
-   2. NÚCLEO DE DATOS Y SESIÓN
+   SUPABASE & SESIÓN
 ========================================================= */
-
-window.esperarSupabase = () => {
-  return new Promise((resolve) => {
+window.esperarSupabase = () =>
+  new Promise((resolve) => {
     if (window.supabaseClient) return resolve();
-    const intervalo = setInterval(() => {
+    const i = setInterval(() => {
       if (window.supabaseClient) {
-        clearInterval(intervalo);
+        clearInterval(i);
         resolve();
       }
     }, 50);
   });
-};
 
 window.getUserCache = () => {
   try {
-    const user = localStorage.getItem("cortero_user");
-    if (user) return JSON.parse(user);
-    const sbKey = Object.keys(localStorage).find(k => k.includes("-auth-token"));
-    if (sbKey) {
-      const session = JSON.parse(localStorage.getItem(sbKey));
-      return session?.user || null;
+    const u = localStorage.getItem("cortero_user");
+    if (u) return JSON.parse(u);
+
+    const key = Object.keys(localStorage).find(k => k.includes("-auth-token"));
+    if (key) {
+      const s = JSON.parse(localStorage.getItem(key));
+      return s?.user || null;
     }
     return null;
-  } catch (err) { return null; }
+  } catch {
+    return null;
+  }
 };
 
 window.showSnack = (msg, duration = 4000) => {
   const bar = $id("snackbar");
   if (!bar) return;
-  const textEl = bar.querySelector(".snack-text") || bar;
-  textEl.textContent = msg;
+  const text = bar.querySelector(".snack-text") || bar;
+  text.textContent = msg;
   bar.classList.add("show");
   setTimeout(() => bar.classList.remove("show"), duration);
 };
 
 /* =========================================================
-   3. GESTIÓN DE INTERFAZ (Píldora y Cancelar)
+   CANCELACIÓN — SNACKBAR (ÚNICO FLUJO)
 ========================================================= */
-
-window.aplicarModoRecibo = () => {
-  const btnBack = $id("btn-back");
-  if (btnBack) btnBack.onclick = () => window.location.href = "mis-pedidos.html";
-
-  document.querySelector(".pago-select-label")?.classList.add("hidden");
-  
-  const btnCancelar = $id("btnCancelarPedido") || document.querySelector(".btn-cancelar");
-  if (btnCancelar) {
-    btnCancelar.onclick = (e) => {
-      e.preventDefault();
-      confirmarCancelacionM3();
-    };
-  }
-};
-
-function confirmarCancelacionM3() {
+function mostrarConfirmacionCancelacion() {
   const bar = $id("snackbar");
   if (!bar) return;
 
   bar.innerHTML = `
-    <div style="display:flex; flex-direction:column; gap:12px; width:100%;">
+    <div style="display:flex;flex-direction:column;gap:12px;width:100%;">
       <span class="snack-text">¿Deseas cancelar este pedido?</span>
-      <div style="display:flex; gap:8px; justify-content: flex-end;">
-        <button onclick="$id('snackbar').classList.remove('show')" style="background:none; border:none; color:#fff; font-weight:600; cursor:pointer; padding:8px;">No</button>
-        <button id="confirm-cancel-btn" style="background:#ff4436; border:none; color:#fff; font-weight:600; cursor:pointer; padding:8px 16px; border-radius:8px;">Sí, Cancelar</button>
+      <div style="display:flex;justify-content:flex-end;gap:8px;">
+        <button id="snack-no"
+          style="background:none;border:none;color:#fff;font-weight:600;cursor:pointer;padding:8px;">
+          No
+        </button>
+        <button id="snack-si"
+          style="background:#ff4436;border:none;color:#fff;font-weight:600;
+                 cursor:pointer;padding:8px 16px;border-radius:8px;">
+          Sí, cancelar
+        </button>
       </div>
     </div>
   `;
+
   bar.classList.add("show");
 
-  $id("confirm-cancel-btn").onclick = async () => {
+  $id("snack-no").onclick = () => bar.classList.remove("show");
+  $id("snack-si").onclick = async () => {
     bar.classList.remove("show");
     await ejecutarCancelacion();
   };
@@ -94,44 +88,83 @@ function confirmarCancelacionM3() {
 
 async function ejecutarCancelacion() {
   const sb = window.supabaseClient;
-  const { error } = await sb.from("orders").update({ status: 'cancelled' }).eq("id", window.ORDER_ID);
-  
+  if (!sb || !window.ORDER_ID) return;
+
+  const { error } = await sb
+    .from("orders")
+    .update({ status: "cancelled" })
+    .eq("id", window.ORDER_ID);
+
   if (error) {
     window.showSnack("Error al cancelar el pedido");
   } else {
     window.showSnack("Pedido cancelado correctamente");
-    setTimeout(() => location.reload(), 1500);
+    setTimeout(() => location.reload(), 1200);
   }
 }
 
-window.aplicarProgresoPedido = (status) => {
-  const pillContainer = $id("estado-pildora-container");
-  if (!pillContainer) return;
-
-  const config = {
-    pending: { label: "Pendiente", class: "status-pending", icon: "payments" },
-    payment_review: { label: "Revisando Pago", class: "status-review", icon: "fact_check" },
-    processing: { label: "En Preparación", class: "status-processing", icon: "coffee" },
-    shipped: { label: "En Camino", class: "status-shipped", icon: "local_shipping" },
-    delivered: { label: "Entregado", class: "status-delivered", icon: "check_circle" },
-    cancelled: { label: "Cancelado", class: "status-cancelled", icon: "cancel" }
+/* =========================================================
+   UI — MODO RECIBO
+========================================================= */
+window.aplicarModoRecibo = (pedido) => {
+  const btnBack = $id("btn-back");
+  if (btnBack) btnBack.onclick = () => {
+    window.location.href = "mis-pedidos.html";
   };
 
-  const actual = config[status] || config.pending;
-  pillContainer.innerHTML = `
-    <div class="status-pill ${actual.class}">
-      <span class="material-symbols-outlined">${actual.icon}</span>
-      <span>${actual.label}</span>
+  document.querySelector(".pago-select-label")?.classList.add("hidden");
+
+  const btnCancelar =
+    $id("btnCancelarPedido") || document.querySelector(".btn-cancelar");
+
+  if (!btnCancelar) return;
+
+  const puedeCancelar = pedido.status === "pending";
+
+  if (!puedeCancelar) {
+    btnCancelar.classList.add("hidden");
+    return;
+  }
+
+  btnCancelar.classList.remove("hidden");
+  btnCancelar.onclick = (e) => {
+    e.preventDefault();
+    mostrarConfirmacionCancelacion();
+  };
+};
+
+/* =========================================================
+   ESTADO — PÍLDORA
+========================================================= */
+window.aplicarProgresoPedido = (status) => {
+  const el = $id("estado-pildora-container");
+  if (!el) return;
+
+  const map = {
+    pending:        ["Pendiente", "payments", "status-pending"],
+    payment_review:["Revisando pago", "fact_check", "status-review"],
+    processing:    ["En preparación", "coffee", "status-processing"],
+    shipped:       ["En camino", "local_shipping", "status-shipped"],
+    delivered:     ["Entregado", "check_circle", "status-delivered"],
+    cancelled:     ["Cancelado", "cancel", "status-cancelled"],
+  };
+
+  const [label, icon, cls] = map[status] || map.pending;
+
+  el.innerHTML = `
+    <div class="status-pill ${cls}">
+      <span class="material-symbols-outlined">${icon}</span>
+      <span>${label}</span>
     </div>
   `;
 };
 
 /* =========================================================
-   4. CARGA DE DATOS DESDE SUPABASE
+   CARGA DE PEDIDO
 ========================================================= */
-
 window.cargarPedidoExistente = async (orderId) => {
   if (!orderId) return;
+
   await window.esperarSupabase();
   const sb = window.supabaseClient;
 
@@ -139,73 +172,77 @@ window.cargarPedidoExistente = async (orderId) => {
     .from("orders")
     .select(`
       *,
-      users(name, email, phone),
-      addresses(state, city, street),
-      order_items(quantity, price, products(name)),
+      users(name,email,phone),
+      addresses(state,city,street),
+      order_items(quantity,price,products(name)),
       payment_receipts(file_url)
     `)
     .eq("id", orderId)
     .single();
 
   if (error || !pedido) {
-    window.showSnack("Error: No se encontró el pedido");
+    window.showSnack("No se encontró el pedido");
     return;
   }
 
-  // 1. Cabecera y Tiempos
-  if ($id("numeroPedido")) $id("numeroPedido").textContent = pedido.order_number;
-  const fecha = new Date(pedido.created_at);
-  if ($id("fechaPedido")) $id("fechaPedido").textContent = fecha.toLocaleDateString();
-  if ($id("horaPedido")) $id("horaPedido").textContent = fecha.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-  if ($id("totalPedido")) $id("totalPedido").textContent = pedido.total.toFixed(2);
-  if ($id("notaCliente")) $id("notaCliente").textContent = pedido.order_notes || "Sin referencia";
+  /* CABECERA */
+  $id("numeroPedido").textContent = pedido.order_number;
+  const d = new Date(pedido.created_at);
+  $id("fechaPedido").textContent = d.toLocaleDateString();
+  $id("horaPedido").textContent  = d.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"});
+  $id("totalPedido").textContent = pedido.total.toFixed(2);
+  $id("notaCliente").textContent = pedido.order_notes || "Sin nota";
 
-  // 2. Datos del Cliente y Dirección (Zona y Detalle corregidos)
+  /* CLIENTE */
   if (pedido.users) {
-    if ($id("nombreCliente")) $id("nombreCliente").textContent = pedido.users.name;
-    if ($id("correoCliente")) $id("correoCliente").textContent = pedido.users.email;
-    if ($id("telefonoCliente")) $id("telefonoCliente").textContent = pedido.users.phone;
+    $id("nombreCliente").textContent   = pedido.users.name;
+    $id("correoCliente").textContent   = pedido.users.email;
+    $id("telefonoCliente").textContent = pedido.users.phone;
   }
-  
+
   if (pedido.addresses) {
-    if ($id("zonaCliente")) $id("zonaCliente").textContent = `${pedido.addresses.state}, ${pedido.addresses.city}`;
-    if ($id("direccionCliente")) $id("direccionCliente").textContent = pedido.addresses.street;
+    $id("zonaCliente").textContent =
+      `${pedido.addresses.state}, ${pedido.addresses.city}`;
+    $id("direccionCliente").textContent =
+      pedido.addresses.street;
   }
 
-  // 3. Productos e Imagen
+  /* PRODUCTOS */
   const lista = $id("listaProductos");
-  if (lista) {
-    lista.innerHTML = pedido.order_items.map(it => `
-      <div class="cafe-item">
-        <div class="cafe-info-main"><span class="cafe-nombre">${it.products.name} (${it.quantity})</span></div>
-        <span class="cafe-precio">L ${(it.quantity * it.price).toFixed(2)}</span>
-      </div>`).join("");
+  lista.innerHTML = pedido.order_items.map(it => `
+    <div class="cafe-item">
+      <span>${it.products.name} × ${it.quantity}</span>
+      <strong>L ${(it.quantity * it.price).toFixed(2)}</strong>
+    </div>
+  `).join("");
+
+  /* COMPROBANTE */
+  if (pedido.payment_method === "bank_transfer") {
+    const preview = $id("previewComprobante");
+    const img = $id("imgComprobante");
+    if (preview && img) {
+      preview.classList.remove("hidden");
+      img.src = pedido.payment_receipts?.[0]?.file_url
+        || "assets/img/no-receipt.png";
+    }
   }
 
-  const preview = $id("previewComprobante");
-  const img = $id("imgComprobante");
-  if (pedido.payment_method === "bank_transfer" && preview && img) {
-    preview.classList.remove("hidden");
-    const tieneRecibo = pedido.payment_receipts?.length > 0;
-    img.src = tieneRecibo ? pedido.payment_receipts[0].file_url : "assets/img/no-receipt.png";
-  }
-
-  // 4. Estado y Interfaz
+  /* ESTADO */
   let statusVisual = pedido.status;
-  if (pedido.payment_method === "bank_transfer" && pedido.status === "pending" && pedido.payment_receipts?.length > 0) {
+  if (
+    pedido.payment_method === "bank_transfer" &&
+    pedido.status === "pending" &&
+    pedido.payment_receipts?.length
+  ) {
     statusVisual = "payment_review";
   }
 
   window.aplicarProgresoPedido(statusVisual);
-  window.aplicarModoRecibo();
-  
-  if (pedido.status === 'cancelled' || pedido.status === 'delivered') {
-    document.querySelector(".btn-cancelar")?.classList.add("hidden");
-  }
+  window.aplicarModoRecibo(pedido);
 };
 
 /* =========================================================
-   5. INICIALIZACIÓN AUTOMÁTICA
+   AUTO INIT
 ========================================================= */
 if (window.ORDER_ID) {
   document.addEventListener("DOMContentLoaded", () => {
