@@ -5,10 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Detalles del pedido | Café Cortero</title>
 
+  <!-- Fonts & Icons -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
+  <!-- Styles -->
   <link rel="stylesheet" href="css/header.css">
   <link rel="stylesheet" href="css/recibo.css">
 </head>
@@ -17,43 +19,52 @@
 
   <main class="recibo-container fade-in">
     <section class="recibo-card">
-      
+
+      <!-- Back -->
       <button id="btn-back" class="card-back" aria-label="Volver">
         <span class="material-symbols-outlined">chevron_left</span>
       </button>
 
       <div class="inner-card-full">
-        <h2>Pedido N.º <span id="numeroPedido"></span></h2>
+
+        <!-- Header -->
+        <h2>Pedido N.º <span id="numeroPedido">—</span></h2>
 
         <div class="pedido-fecha">
-          <p><span class="pedido-fecha-label">Fecha:</span> <span id="fechaPedido">—</span></p>
-          <p><span class="pedido-fecha-label">Hora:</span> <span id="horaPedido">—</span></p>
+          <p><strong>Fecha:</strong> <span id="fechaPedido">—</span></p>
+          <p><strong>Hora:</strong> <span id="horaPedido">—</span></p>
         </div>
 
-        <section id="pedido-progreso-recibo" class="pedido-progreso">
+        <!-- Estado -->
+        <section class="pedido-progreso">
           <p class="progreso-title">Estado del pedido</p>
           <div id="estado-pildora-container"></div>
         </section>
 
+        <!-- Cliente -->
         <h3>Datos del cliente</h3>
         <div class="cliente-info">
-          <p><strong>Nombre:</strong> <span id="nombreCliente"></span></p>
-          <p><strong>Correo:</strong> <span id="correoCliente"></span></p>
-          <p><strong>Teléfono:</strong> <span id="telefonoCliente"></span></p>
-          <p><strong>Zona:</strong> <span id="zonaCliente"></span></p>
-          <p><strong>Dirección:</strong> <span id="direccionCliente"></span></p>
-          <p><strong>Nota:</strong> <span id="notaCliente"></span></p>
+          <p><strong>Nombre:</strong> <span id="nombreCliente">—</span></p>
+          <p><strong>Correo:</strong> <span id="correoCliente">—</span></p>
+          <p><strong>Teléfono:</strong> <span id="telefonoCliente">—</span></p>
+          <p><strong>Zona:</strong> <span id="zonaCliente">—</span></p>
+          <p><strong>Dirección:</strong> <span id="direccionCliente">—</span></p>
+          <p><strong>Nota:</strong> <span id="notaCliente">Sin nota adicional</span></p>
         </div>
 
+        <!-- Productos -->
         <h3>Selección de cafés</h3>
         <div id="listaProductos" class="cafes-list"></div>
 
+        <!-- Total -->
         <div class="recibo-total">
           <span>Total:</span>
-          <span>L <span id="totalPedido"></span></span>
+          <span>L <span id="totalPedido">0.00</span></span>
         </div>
 
+        <!-- Métodos de pago -->
         <div class="pagos">
+
           <label class="pago-select-label">
             <span class="material-symbols-outlined">payments</span>
             <select id="metodoPago">
@@ -63,27 +74,65 @@
             </select>
           </label>
 
+          <!-- Depósito -->
           <div id="pago-deposito" class="pago-bloque hidden">
-            <p><span class="material-symbols-outlined pago-icon">account_balance</span><strong>Depósito bancario</strong></p>
-            <p class="comprobante-info">Banco Atlántida — Cuenta 123456789</p>
-            
+            <p class="pago-title">
+              <span class="material-symbols-outlined">account_balance</span>
+              <strong>Depósito bancario</strong>
+            </p>
+
+            <p class="comprobante-info">
+              Realiza el depósito y sube el comprobante para validar tu pedido.
+            </p>
+
+            <ul class="pago-detalle">
+              <li><strong>Banco:</strong> Atlántida</li>
+              <li><strong>Cuenta:</strong> 123456789</li>
+              <li><strong>Tipo:</strong> Cuenta de ahorro</li>
+            </ul>
+
+            <p class="pago-nota">
+              ⏳ El pedido pasará a revisión una vez enviado el comprobante.
+            </p>
+
             <button class="comprobante-link" id="btnSubirComprobante">
-              <span class="material-symbols-outlined">upload</span> Subir comprobante
+              <span class="material-symbols-outlined">upload</span>
+              Subir comprobante
             </button>
+
             <input type="file" id="inputComprobante" accept="image/*" hidden>
-            
+
             <div id="previewComprobante" class="preview hidden">
               <img id="imgComprobante" alt="Comprobante">
-              <p>✔ Comprobante listo</p>
+              <p>✔ Comprobante cargado correctamente</p>
             </div>
           </div>
 
+          <!-- Efectivo -->
           <div id="pago-efectivo" class="pago-bloque hidden">
-            <p><span class="material-symbols-outlined pago-icon">payments</span><strong>Pago en efectivo</strong></p>
-            <p class="comprobante-info">Se realizará al momento de la entrega.</p>
+            <p class="pago-title">
+              <span class="material-symbols-outlined">payments</span>
+              <strong>Pago en efectivo</strong>
+            </p>
+
+            <p class="comprobante-info">
+              El pago se realizará al momento de la entrega del pedido.
+            </p>
+
+            <ul class="pago-detalle">
+              <li>💵 Ten el monto exacto preparado</li>
+              <li>🚚 El repartidor confirmará el pago</li>
+              <li>📦 El pedido se procesa inmediatamente</li>
+            </ul>
+
+            <p class="pago-nota">
+              ✔ No es necesario subir comprobante
+            </p>
           </div>
+
         </div>
 
+        <!-- Acción -->
         <div class="recibo-botones">
           <button id="btnAccionPrincipal" class="btn-primary">
             <span class="btn-text" id="btnText">Enviar pedido</span>
@@ -95,10 +144,12 @@
     </section>
   </main>
 
+  <!-- Snackbar -->
   <div id="snackbar" class="snackbar">
     <span class="snack-text"></span>
   </div>
 
+  <!-- Core -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/core/supabase-client-core.js"></script>
 
@@ -111,14 +162,15 @@
   <script src="js/pages/recibo.core.js"></script>
   <script src="js/core/auth-ui.js"></script>
   <script src="js/ui/layout.js"></script>
-  
+
+  <!-- Configurar botón según modo -->
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       const btn = document.getElementById("btnAccionPrincipal");
       const text = document.getElementById("btnText");
 
       if (window.IS_READ_ONLY) {
-        text.textContent = "Cancelar Pedido";
+        text.textContent = "Cancelar pedido";
         btn.classList.add("btn-cancelar");
         btn.id = "btnCancelarPedido";
       } else {
@@ -128,8 +180,14 @@
     });
   </script>
 
-  <script src="js/pages/recibo.checkout.js"></script>
-  <script src="js/pages/recibo.view.js"></script>
+  <!-- Cargar SOLO el script correcto -->
+  <script>
+    const script = document.createElement("script");
+    script.src = window.IS_READ_ONLY
+      ? "js/pages/recibo.view.js"
+      : "js/pages/recibo.checkout.js";
+    document.body.appendChild(script);
+  </script>
 
 </body>
 </html>
