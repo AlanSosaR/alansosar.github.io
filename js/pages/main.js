@@ -132,8 +132,8 @@ function renderMainProduct(product) {
   void img.offsetWidth;
   img.classList.add("swap");
 
-  img.src = product.image_url || "imagenes/no-image.png";
-  img.onerror = () => img.src = "imagenes/no-image.png";
+  img.src = product.image_url || "/imagenes/no-image.png";
+  img.onerror = () => img.src = "/imagenes/no-image.png";
 
   const addBtn = safe("product-add");
   addBtn.dataset.id = product.id;
@@ -209,15 +209,15 @@ async function loadSimilarProducts() {
       data-id="${p.id}"
       data-name="${p.name}"
       data-price="${p.price}"
-      data-img="${p.image_url || "imagenes/no-image.png"}"
+      data-img="${p.image_url || "/imagenes/no-image.png"}"
       data-description="${p.description || ""}"
       data-category="${p.category || ""}"
       data-grind="${p.grind_type || ""}"
       data-presentation="${p.presentation || ""}"
       data-stock="${p.stock ?? 0}"
     >
-      <img src="${p.image_url || "imagenes/no-image.png"}"
-           onerror="this.src='imagenes/no-image.png'">
+      <img src="${p.image_url || "/imagenes/no-image.png"}"
+           onerror="this.src='/imagenes/no-image.png'">
       <h4>${p.name}</h4>
       <div class="price-sm">L ${p.price}</div>
     </div>

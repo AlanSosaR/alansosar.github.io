@@ -55,7 +55,7 @@ self.addEventListener("notificationclick", event => {
 
   const url =
     event.notification.data?.url ||
-    "/";
+    "/pages/home/index.html";
 
   event.waitUntil(
     clients.matchAll({ type: "window", includeUncontrolled: true })
