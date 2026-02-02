@@ -287,82 +287,84 @@ if (!window.__HEADER_CORE_LOADED__) {
     drawer.classList.contains("open") ? closeDrawer() : openDrawer();
   }
 
-  /* =====================================================
-     INIT HEADER
-  ===================================================== */
-   /* =====================================================
-     INIT HEADER — CORREGIDO (M3 EXPRESSIVE)
-  ===================================================== */
-  let HEADER_INITIALIZED = false;
+ /* =====================================================
+   INIT HEADER — VERIFICADO Y CORREGIDO
+===================================================== */
+let HEADER_INITIALIZED = false;
 
-  function initHeader() {
-    if (HEADER_INITIALIZED) return;
-    HEADER_INITIALIZED = true;
+function initHeader() {
+  if (HEADER_INITIALIZED) return;
+  HEADER_INITIALIZED = true;
 
-    // HAMBURGUESA (Móvil)
-    const btnMenu = $("menu-toggle");
-    if (btnMenu) {
-      btnMenu.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation(); // Evita que el contenedor del buscador bloquee el clic
-        toggleDrawer();
-      });
-    }
-
-    // AVATAR / PERFIL (Desktop/Móvil)
-    const btnUser = $("btn-header-user");
-    if (btnUser) {
-      btnUser.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        toggleDrawer();
-      });
-    }
-
-    // SCRIM (Cerrar al tocar fuera)
-    const scrim = $("user-scrim");
-    if (scrim) {
-      scrim.addEventListener("click", (e) => {
-        e.preventDefault();
-        closeDrawer();
-      });
-    }
-
-    // CARRITO
-    $("cart-btn")?.addEventListener("click", (e) => {
+  // 1. MENU HAMBURGUESA (Móvil)
+  const btnMenu = $("menu-toggle");
+  if (btnMenu) {
+    // Eliminamos listeners previos para evitar duplicidad
+    btnMenu.replaceWith(btnMenu.cloneNode(true)); 
+    const newBtnMenu = $("menu-toggle");
+    newBtnMenu.addEventListener("click", (e) => {
       e.preventDefault();
-      window.location.href = "/pages/shop/carrito.html";
-    });
-
-    // LOGOUT
-    $("logout-btn")?.addEventListener("click", async (e) => {
-      e.preventDefault();
-      try {
-        // Asumimos que supabaseClient ya está disponible globalmente
-        if (window.supabaseClient) {
-          await window.supabaseClient.auth.signOut();
-        }
-      } catch (err) {
-        console.error("Error al cerrar sesión:", err);
-      } finally {
-        closeDrawer();
-        // Redirigir o limpiar estado si es necesario
-        window.location.href = "/pages/home/index.html";
-      }
-    });
-
-    // Sincronización inicial de UI
-    syncUserUI();
-    updateCartCount();
-    updateHeaderCartTitle();
-
-    // Notificaciones (deferido para no bloquear el hilo principal)
-    requestAnimationFrame(() => {
-      if (typeof window.syncNotificationsAll === "function") {
-        window.syncNotificationsAll();
-      }
+      e.stopPropagation(); // 🔑 Crucial: detiene que el buscador capture el click
+      toggleDrawer();
     });
   }
+
+  // 2. AVATAR / PERFIL (PC)
+  const btnUser = $("btn-header-user");
+  if (btnUser) {
+    btnUser.onclick = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      toggleDrawer();
+    };
+  }
+
+  // 3. CARRITO (Universal)
+  const btnCart = $("cart-btn");
+  if (btnCart) {
+    btnCart.onclick = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      window.location.href = "/pages/shop/carrito.html";
+    };
+  }
+
+  // 4. SCRIM (Cierre táctico)
+  const scrim = $("user-scrim");
+  if (scrim) {
+    scrim.onclick = (e) => {
+      e.preventDefault();
+      closeDrawer();
+    };
+  }
+
+  // 5. LOGOUT
+  $("logout-btn")?.addEventListener("click", async (e) => {
+    e.preventDefault();
+    try {
+      if (window.supabaseClient) {
+        await window.supabaseClient.auth.signOut();
+      }
+    } catch (err) {
+      console.error("Error logout:", err);
+    } finally {
+      closeDrawer();
+      window.location.href = "/pages/home/index.html";
+    }
+  });
+
+  // Sincronización de UI
+  syncUserUI();
+  updateCartCount();
+  updateHeaderCartTitle();
+
+  requestAnimationFrame(() => {
+    if (typeof window.syncNotificationsAll === "function") {
+      window.syncNotificationsAll();
+    }
+  });
+}
+
 
 
   /* =====================================================
