@@ -273,69 +273,94 @@ if (!window.__HEADER_CORE_LOADED__) {
   ===================================================== */
   let HEADER_INITIALIZED = false;
 
-  function initHeader() {
-    if (HEADER_INITIALIZED) return;
-    HEADER_INITIALIZED = true;
+/* =====================================================
+   FIX DEFINITIVO — HITBOX HEADER
+   (elimina capas invisibles que bloquean clics)
+===================================================== */
+function fixHeaderHitbox() {
+  document
+    .querySelectorAll(".header-search-wrap, .header-titles-wrap")
+    .forEach((el) => {
+      const style = getComputedStyle(el);
+      if (
+        style.display === "none" ||
+        style.visibility === "hidden"
+      ) {
+        el.remove();
+      }
+    });
+}
 
-    const btnMenu = $("menu-toggle");
-    btnMenu &&
-      btnMenu.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        toggleDrawer();
-      });
+/* =====================================================
+   INIT HEADER — FINAL CORREGIDO
+===================================================== */
+function initHeader() {
+  if (HEADER_INITIALIZED) return;
+  HEADER_INITIALIZED = true;
 
-    const avatarBtn = document.querySelector(
-      "#btn-header-user .header-avatar-button"
-    );
-    avatarBtn &&
-      avatarBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        toggleDrawer();
-      });
+  /* ☰ MENÚ */
+  const btnMenu = $("menu-toggle");
+  if (btnMenu) {
+    btnMenu.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      toggleDrawer();
+    });
+  }
 
-    const btnCart = $("cart-btn");
-    btnCart &&
-      btnCart.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        window.location.href = "/pages/shop/carrito.html";
-      });
+  /* 👤 AVATAR */
+  const avatarBtn = document.querySelector(
+    "#btn-header-user .header-avatar-button"
+  );
+  if (avatarBtn) {
+    avatarBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      toggleDrawer();
+    });
+  }
 
-    const scrim = $("user-scrim");
-    scrim &&
-      scrim.addEventListener("click", (e) => {
-        e.preventDefault();
-        closeDrawer();
-      });
+  /* 🛒 CARRITO */
+  const btnCart = $("cart-btn");
+  if (btnCart) {
+    btnCart.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      window.location.href = "/pages/shop/carrito.html";
+    });
+  }
 
-    const logoutBtn = $("logout-btn");
-    logoutBtn &&
-      logoutBtn.addEventListener("click", async (e) => {
-        e.preventDefault();
-        try {
-          if (window.supabaseClient) {
-            await window.supabaseClient.auth.signOut();
-          }
-        } finally {
-          closeDrawer();
-          window.location.href = "/pages/home/index.html";
+  /* SCRIM */
+  const scrim = $("user-scrim");
+  if (scrim) {
+    scrim.addEventListener("click", (e) => {
+      e.preventDefault();
+      closeDrawer();
+    });
+  }
+
+  /* LOGOUT */
+  const logoutBtn = $("logout-btn");
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", async (e) => {
+      e.preventDefault();
+      try {
+        if (window.supabaseClient) {
+          await window.supabaseClient.auth.signOut();
         }
-      });
+      } finally {
+        closeDrawer();
+        window.location.href = "/pages/home/index.html";
+      }
+    });
+  }
 
-    syncUserUI();
-    updateCartCount();
-    updateHeaderCartTitle();
-  }
-// 🔥 FIX DEFINITIVO — HITBOX HEADER
-document.querySelectorAll(
-  '.header-search-wrap, .header-titles-wrap'
-).forEach(el => {
-  if (getComputedStyle(el).display === 'none') {
-    el.remove();
-  }
-});
+  /* 🔑 ORDEN CORRECTO */
+  syncUserUI();          // decide qué se muestra
+  fixHeaderHitbox();     // elimina overlays muertos
+  updateCartCount();
+  updateHeaderCartTitle();
+}
   /* =====================================================
      EVENTOS GLOBALES
   ===================================================== */
