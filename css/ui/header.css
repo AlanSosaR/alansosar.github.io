@@ -1449,36 +1449,46 @@ body.page-admin-agregar-cafe #header-admin-edit-cafe-title {
 }
 
 /* =====================================================
-   FIX DEFINITIVO — HITBOX HEADER (REAL)
+   FIX HITBOXES (CSS PURO)
+   Esto asegura que los títulos y contenedores vacíos
+   no bloqueen los clics en los botones.
 ===================================================== */
 
-/* 1️⃣ El buscador NO puede existir si no se usa */
-body:not(.page-admin-cafes):not(.page-admin-pedidos):not(.page-mis-pedidos)
-.header-search-wrap {
-  display: none !important;
-}
-
-/* 2️⃣ El contenedor de títulos NO debe ocupar todo */
+/* El contenedor del título deja pasar los clics */
 .header-titles-wrap {
-  position: static !important;
+  pointer-events: none !important;
+  z-index: 0;
 }
 
-/* 3️⃣ Los botones viven en su propio plano */
+/* El contenedor de búsqueda deja pasar clics si es transparente,
+   pero sus hijos (input, botones) sí funcionan */
+.header-search-wrap {
+  pointer-events: none; 
+  z-index: 5;
+}
+
+.header-search-box {
+  pointer-events: auto; /* La caja gris sí recibe clics */
+}
+
+/* BOTONES: Siempre encima y clickeables */
 #menu-toggle,
 #cart-btn,
 #btn-header-user,
 .header-avatar-button {
-  position: relative !important;
-  z-index: 10000 !important;
-  pointer-events: auto !important;
+  position: relative;
+  z-index: 50 !important; /* Capa superior */
+  pointer-events: auto !important; /* Fuerza el click */
+  cursor: pointer;
 }
 
-/* 4️⃣ En móvil NO se permiten transforms en controles */
+/* En móvil, asegurar que el buscador no tape los botones laterales */
 @media (max-width: 900px) {
-  #menu-toggle,
-  #cart-btn,
-  #btn-header-user,
-  .header-avatar-button {
-    transform: none !important;
+  .header-search-wrap {
+    /* Dejar margen a izquierda (menú) y derecha (carrito) */
+    left: 70px !important; 
+    right: 70px !important;
+    width: auto !important;
   }
 }
+
