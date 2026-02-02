@@ -290,41 +290,80 @@ if (!window.__HEADER_CORE_LOADED__) {
   /* =====================================================
      INIT HEADER
   ===================================================== */
+   /* =====================================================
+     INIT HEADER — CORREGIDO (M3 EXPRESSIVE)
+  ===================================================== */
   let HEADER_INITIALIZED = false;
 
   function initHeader() {
     if (HEADER_INITIALIZED) return;
     HEADER_INITIALIZED = true;
 
-    $("menu-toggle")?.addEventListener("click", toggleDrawer);
-    $("btn-header-user")?.addEventListener("click", e => {
-      e.stopPropagation();
-      toggleDrawer();
-    });
-    $("user-scrim")?.addEventListener("click", closeDrawer);
+    // HAMBURGUESA (Móvil)
+    const btnMenu = $("menu-toggle");
+    if (btnMenu) {
+      btnMenu.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation(); // Evita que el contenedor del buscador bloquee el clic
+        toggleDrawer();
+      });
+    }
 
-    $("cart-btn")?.addEventListener("click", () => {
-      location.href = "/pages/shop/carrito.html";
+    // AVATAR / PERFIL (Desktop/Móvil)
+    const btnUser = $("btn-header-user");
+    if (btnUser) {
+      btnUser.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleDrawer();
+      });
+    }
+
+    // SCRIM (Cerrar al tocar fuera)
+    const scrim = $("user-scrim");
+    if (scrim) {
+      scrim.addEventListener("click", (e) => {
+        e.preventDefault();
+        closeDrawer();
+      });
+    }
+
+    // CARRITO
+    $("cart-btn")?.addEventListener("click", (e) => {
+      e.preventDefault();
+      window.location.href = "/pages/shop/carrito.html";
     });
 
+    // LOGOUT
     $("logout-btn")?.addEventListener("click", async (e) => {
       e.preventDefault();
       try {
-        await window.supabaseClient.auth.signOut();
+        // Asumimos que supabaseClient ya está disponible globalmente
+        if (window.supabaseClient) {
+          await window.supabaseClient.auth.signOut();
+        }
+      } catch (err) {
+        console.error("Error al cerrar sesión:", err);
       } finally {
         closeDrawer();
+        // Redirigir o limpiar estado si es necesario
+        window.location.href = "/pages/home/index.html";
       }
     });
 
+    // Sincronización inicial de UI
     syncUserUI();
     updateCartCount();
     updateHeaderCartTitle();
 
+    // Notificaciones (deferido para no bloquear el hilo principal)
     requestAnimationFrame(() => {
-      typeof window.syncNotificationsAll === "function" &&
+      if (typeof window.syncNotificationsAll === "function") {
         window.syncNotificationsAll();
+      }
     });
   }
+
 
   /* =====================================================
      EVENTOS GLOBALES
