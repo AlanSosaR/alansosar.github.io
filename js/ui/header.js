@@ -18,36 +18,35 @@ if (!window.__HEADER_CORE_LOADED__) {
   }
 
   /* =====================================================
-     🔔 BADGE GLOBAL (MENÚ + AVATAR)
+     🔔 BADGE GLOBAL
   ===================================================== */
   function toggleGlobalNotificationDot(show) {
     const menuBadge = $("menu-notification-badge");
     const avatarBadge = $("avatar-notification-badge");
-
     [menuBadge, avatarBadge].forEach((badge) => {
-      if (!badge) return;
-      badge.classList.toggle("hidden", !show);
+      if (badge) badge.classList.toggle("hidden", !show);
     });
   }
   window.toggleGlobalNotificationDot = toggleGlobalNotificationDot;
 
   /* =====================================================
-     📦 BADGES — PEDIDOS (ADMIN / CLIENTE)
+     📦 BADGES — PEDIDOS
   ===================================================== */
   function setAdminOrdersCount(count) {
     const badge = $("admin-orders-count");
-    if (!badge) return;
-    badge.textContent = count;
-    badge.classList.toggle("hidden", count === 0);
+    if (badge) {
+      badge.textContent = count;
+      badge.classList.toggle("hidden", count === 0);
+    }
   }
 
   function setMyOrdersCount(count) {
     const badge = $("my-orders-count");
-    if (!badge) return;
-    badge.textContent = count;
-    badge.classList.toggle("hidden", count === 0);
+    if (badge) {
+      badge.textContent = count;
+      badge.classList.toggle("hidden", count === 0);
+    }
   }
-
   window.setAdminOrdersCount = setAdminOrdersCount;
   window.setMyOrdersCount = setMyOrdersCount;
 
@@ -57,7 +56,6 @@ if (!window.__HEADER_CORE_LOADED__) {
   function updateCartCount() {
     const badge = $("cart-count");
     if (!badge) return;
-
     try {
       const cart = JSON.parse(localStorage.getItem("cafecortero_cart")) || [];
       badge.textContent = cart.reduce((a, i) => a + Number(i.qty || 0), 0);
@@ -69,7 +67,6 @@ if (!window.__HEADER_CORE_LOADED__) {
   function updateHeaderCartTitle() {
     const label = $("count-items");
     if (!label) return;
-
     try {
       const cart = JSON.parse(localStorage.getItem("cafecortero_cart")) || [];
       const total = cart.reduce((a, i) => a + Number(i.qty || 0), 0);
@@ -80,7 +77,7 @@ if (!window.__HEADER_CORE_LOADED__) {
   }
 
   /* =====================================================
-     PERFIL + ROLES + NOTIFICACIÓN CONTEXTUAL
+     PERFIL + ROLES
   ===================================================== */
   function syncUserUI() {
     const user = getUserCache();
@@ -96,15 +93,11 @@ if (!window.__HEADER_CORE_LOADED__) {
       drawer.classList.add("no-user");
       drawer.classList.remove("logged");
 
-      document
-        .querySelectorAll(".admin-only,.client-only")
-        .forEach((el) => el.classList.add("hidden"));
-
+      document.querySelectorAll(".admin-only,.client-only").forEach((el) => el.classList.add("hidden"));
       toggleGlobalNotificationDot(false);
-      setAdminOrdersCount(0);
-      setMyOrdersCount(0);
-
-      notif && notif.classList.add("hidden");
+      
+      if (notif) notif.classList.add("hidden");
+      
       setupHeaderSearch();
       setupDrawerFilters();
       return;
@@ -115,32 +108,19 @@ if (!window.__HEADER_CORE_LOADED__) {
     drawer.classList.add("logged");
     drawer.classList.remove("no-user");
 
-    $("avatar-user") &&
-      ($("avatar-user").src =
-        user.photo_url || "/imagenes/avatar-default.svg");
-    $("avatar-user-drawer") &&
-      ($("avatar-user-drawer").src =
-        user.photo_url || "/imagenes/avatar-default.svg");
-
-    $("drawer-name") &&
-      ($("drawer-name").textContent = user.name || "Usuario");
-    $("drawer-email") &&
-      ($("drawer-email").textContent = user.email || "");
+    const avatarSrc = user.photo_url || "/imagenes/avatar-default.svg";
+    if ($("avatar-user")) $("avatar-user").src = avatarSrc;
+    if ($("avatar-user-drawer")) $("avatar-user-drawer").src = avatarSrc;
+    if ($("drawer-name")) $("drawer-name").textContent = user.name || "Usuario";
+    if ($("drawer-email")) $("drawer-email").textContent = user.email || "";
 
     const isAdmin = user.rol === "admin";
-
-    document
-      .querySelectorAll(".admin-only")
-      .forEach((el) => el.classList.toggle("hidden", !isAdmin));
-    document
-      .querySelectorAll(".client-only")
-      .forEach((el) => el.classList.toggle("hidden", isAdmin));
+    document.querySelectorAll(".admin-only").forEach((el) => el.classList.toggle("hidden", !isAdmin));
+    document.querySelectorAll(".client-only").forEach((el) => el.classList.toggle("hidden", isAdmin));
 
     if (notif) {
       notif.classList.remove("hidden");
-      notif.href = isAdmin
-        ? "/pages/admin/admin-pedidos.html"
-        : "/pages/profile/mis-pedidos.html";
+      notif.href = isAdmin ? "/pages/admin/admin-pedidos.html" : "/pages/profile/mis-pedidos.html";
     }
 
     setupHeaderSearch();
@@ -156,32 +136,32 @@ if (!window.__HEADER_CORE_LOADED__) {
     const headerFilter = $("header-status-filter");
 
     if (!filterSection || !container || !headerFilter) {
-      filterSection && filterSection.classList.add("hidden");
+      if (filterSection) filterSection.classList.add("hidden");
       return;
     }
 
-    const isVisible = !headerFilter.classList.contains("hidden");
+    // Solo mostrar si el filtro del header es visible (estamos en página de pedidos)
+    const isVisible = !headerFilter.classList.contains("hidden") && headerFilter.offsetParent !== null;
+    
     filterSection.classList.toggle("hidden", !isVisible);
     if (!isVisible) return;
 
     container.innerHTML = "";
-
     const mobileFilter = headerFilter.cloneNode(true);
     mobileFilter.id = "drawer-status-filter";
     mobileFilter.classList.remove("hidden");
-
+    mobileFilter.style.display = "block"; // Asegurar visibilidad
+    mobileFilter.style.width = "100%";
+    
     mobileFilter.onchange = (e) => {
       headerFilter.value = e.target.value;
-      document.dispatchEvent(
-        new CustomEvent("header:filter", { detail: e.target.value })
-      );
+      document.dispatchEvent(new CustomEvent("header:filter", { detail: e.target.value }));
     };
-
     container.appendChild(mobileFilter);
   }
 
   /* =====================================================
-     🔍 BÚSQUEDA ADAPTATIVA (HEADER)
+     🔍 BÚSQUEDA ADAPTATIVA
   ===================================================== */
   function setupHeaderSearch() {
     const searchWrap = $("header-search-container");
@@ -190,82 +170,81 @@ if (!window.__HEADER_CORE_LOADED__) {
     const addBtn = $("header-add-btn");
     const staticTitles = $("header-static-titles");
 
+    if (!searchWrap || !searchInput) return;
+
     const path = window.location.pathname;
     const isMainAdmin = path.includes("admin-productos.html");
     const isOrdersAdmin = path.includes("admin-pedidos.html");
     const isMyOrders = path.includes("mis-pedidos.html");
     const shouldShowSearch = isMainAdmin || isOrdersAdmin || isMyOrders;
 
-    if (!searchWrap || !searchInput) {
-      staticTitles && staticTitles.classList.remove("hidden");
-      return;
-    }
+    if (shouldShowSearch) {
+        searchWrap.classList.remove("hidden");
+        if (staticTitles) staticTitles.classList.add("hidden");
+        
+        if (addBtn) addBtn.classList.add("hidden");
+        if (statusFilter) statusFilter.classList.add("hidden");
 
-    searchWrap.classList.toggle("hidden", !shouldShowSearch);
-    staticTitles &&
-      staticTitles.classList.toggle("hidden", shouldShowSearch);
-    statusFilter && statusFilter.classList.add("hidden");
-    addBtn && addBtn.classList.add("hidden");
+        if (isMainAdmin) {
+            searchInput.placeholder = "Buscar café…";
+            if (addBtn) addBtn.classList.remove("hidden");
+        } else {
+            searchInput.placeholder = "Buscar pedido…";
+            if (statusFilter) {
+                statusFilter.classList.remove("hidden");
+                statusFilter.value = isOrdersAdmin ? "new" : "all";
+            }
+        }
 
-    if (!shouldShowSearch) return;
+        searchInput.oninput = (e) => {
+            document.dispatchEvent(new CustomEvent("header:search", { detail: e.target.value }));
+        };
 
-    if (isMainAdmin) {
-      searchInput.placeholder = "Buscar café…";
-      addBtn && addBtn.classList.remove("hidden");
+        if (statusFilter) {
+            statusFilter.onchange = (e) => {
+                document.dispatchEvent(new CustomEvent("header:filter", { detail: e.target.value }));
+            };
+        }
+
+        if (addBtn) {
+            addBtn.onclick = () => {
+                document.dispatchEvent(new CustomEvent("header:add-click"));
+            };
+        }
     } else {
-      searchInput.placeholder = "Buscar pedido…";
-      statusFilter && statusFilter.classList.remove("hidden");
-      statusFilter &&
-        (statusFilter.value = isOrdersAdmin ? "new" : "all");
+        searchWrap.classList.add("hidden");
+        if (staticTitles) staticTitles.classList.remove("hidden");
     }
-
-    searchInput.oninput = (e) => {
-      document.dispatchEvent(
-        new CustomEvent("header:search", { detail: e.target.value })
-      );
-    };
-
-    statusFilter &&
-      (statusFilter.onchange = (e) => {
-        document.dispatchEvent(
-          new CustomEvent("header:filter", { detail: e.target.value })
-        );
-      });
-
-    addBtn &&
-      (addBtn.onclick = () => {
-        document.dispatchEvent(new CustomEvent("header:add-click"));
-      });
   }
 
   /* =====================================================
-     DRAWER
+     DRAWER CONTROL
   ===================================================== */
   function openDrawer() {
     const drawer = $("user-drawer");
     const scrim = $("user-scrim");
-    if (!drawer || !scrim) return;
-
-    if (drawer.classList.contains("open")) return;
-    drawer.classList.add("open");
-    scrim.classList.add("open");
-    document.body.style.overflow = "hidden";
+    if (drawer && scrim) {
+        drawer.classList.add("open");
+        scrim.classList.add("open");
+        document.body.style.overflow = "hidden";
+    }
   }
 
   function closeDrawer() {
     const drawer = $("user-drawer");
     const scrim = $("user-scrim");
-    if (!drawer || !scrim) return;
-
-    drawer.classList.remove("open");
-    scrim.classList.remove("open");
-    document.body.style.overflow = "";
+    if (drawer && scrim) {
+        drawer.classList.remove("open");
+        scrim.classList.remove("open");
+        document.body.style.overflow = "";
+    }
   }
 
   function toggleDrawer() {
     const drawer = $("user-drawer");
-    if (!drawer) return;
-    drawer.classList.contains("open") ? closeDrawer() : openDrawer();
+    if (drawer) {
+        drawer.classList.contains("open") ? closeDrawer() : openDrawer();
+    }
   }
 
   /* =====================================================
@@ -273,140 +252,101 @@ if (!window.__HEADER_CORE_LOADED__) {
   ===================================================== */
   let HEADER_INITIALIZED = false;
 
-/* =====================================================
-   FIX DEFINITIVO — HITBOX HEADER
-   (elimina capas invisibles que bloquean clics)
-===================================================== */
-function fixHeaderHitbox() {
-  document
-    .querySelectorAll(".header-search-wrap, .header-titles-wrap")
-    .forEach((el) => {
-      const style = getComputedStyle(el);
-      if (
-        style.display === "none" ||
-        style.visibility === "hidden"
-      ) {
-        el.remove();
-      }
-    });
-}
+  function initHeader() {
+    if (HEADER_INITIALIZED) return;
+    HEADER_INITIALIZED = true;
 
-/* =====================================================
-   INIT HEADER — FINAL CORREGIDO
-===================================================== */
-function initHeader() {
-  if (HEADER_INITIALIZED) return;
-  HEADER_INITIALIZED = true;
+    /* ☰ MENÚ (Móvil) */
+    const btnMenu = $("menu-toggle");
+    if (btnMenu) {
+      btnMenu.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleDrawer();
+      });
+    }
 
-  /* ☰ MENÚ */
-  const btnMenu = $("menu-toggle");
-  if (btnMenu) {
-    btnMenu.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      toggleDrawer();
-    });
-  }
+    /* 👤 AVATAR (PC) */
+    // Buscamos el botón dentro del contenedor o directamente por clase si es necesario
+    const avatarBtn = document.querySelector("#btn-header-user .header-avatar-button") || document.querySelector(".header-avatar-button");
+    if (avatarBtn) {
+      avatarBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleDrawer();
+      });
+    }
 
-  /* 👤 AVATAR */
-  const avatarBtn = document.querySelector(
-    "#btn-header-user .header-avatar-button"
-  );
-  if (avatarBtn) {
-    avatarBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      toggleDrawer();
-    });
-  }
+    /* 🛒 CARRITO */
+    const btnCart = $("cart-btn");
+    if (btnCart) {
+      btnCart.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation(); // Evita que clicks fantasma cierren cosas
+        window.location.href = "/pages/shop/carrito.html";
+      });
+    }
 
-  /* 🛒 CARRITO */
-  const btnCart = $("cart-btn");
-  if (btnCart) {
-    btnCart.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      window.location.href = "/pages/shop/carrito.html";
-    });
-  }
-
-  /* SCRIM */
-  const scrim = $("user-scrim");
-  if (scrim) {
-    scrim.addEventListener("click", (e) => {
-      e.preventDefault();
-      closeDrawer();
-    });
-  }
-
-  /* LOGOUT */
-  const logoutBtn = $("logout-btn");
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", async (e) => {
-      e.preventDefault();
-      try {
-        if (window.supabaseClient) {
-          await window.supabaseClient.auth.signOut();
-        }
-      } finally {
+    /* SCRIM */
+    const scrim = $("user-scrim");
+    if (scrim) {
+      scrim.addEventListener("click", (e) => {
+        e.preventDefault();
         closeDrawer();
-        window.location.href = "/pages/home/index.html";
-      }
-    });
+      });
+    }
+
+    /* LOGOUT */
+    const logoutBtn = $("logout-btn");
+    if (logoutBtn) {
+      logoutBtn.addEventListener("click", async (e) => {
+        e.preventDefault();
+        try {
+          if (window.supabaseClient) {
+            await window.supabaseClient.auth.signOut();
+          }
+        } finally {
+          closeDrawer();
+          window.location.href = "/pages/home/index.html";
+        }
+      });
+    }
+
+    // Inicializar UI
+    syncUserUI();
+    updateCartCount();
+    updateHeaderCartTitle();
   }
 
-  /* 🔑 ORDEN CORRECTO */
-  syncUserUI();          // decide qué se muestra
-  fixHeaderHitbox();     // elimina overlays muertos
-  updateCartCount();
-  updateHeaderCartTitle();
-}
   /* =====================================================
      EVENTOS GLOBALES
   ===================================================== */
   if (!window.__HEADER_GLOBAL_EVENTS__) {
     window.__HEADER_GLOBAL_EVENTS__ = true;
-
     window.addEventListener("cartUpdated", () => {
       updateCartCount();
       updateHeaderCartTitle();
     });
-
     document.addEventListener("userLoggedIn", () => {
       syncUserUI();
       updateCartCount();
-      updateHeaderCartTitle();
     });
-
     document.addEventListener("userLoggedOut", () => {
       syncUserUI();
       updateCartCount();
-      updateHeaderCartTitle();
-      toggleGlobalNotificationDot(false);
-      setAdminOrdersCount(0);
-      setMyOrdersCount(0);
     });
   }
 
+  // Exponer initHeader y ejecutar
   window.initHeader = initHeader;
 
-  if (
-    document.readyState === "complete" ||
-    document.readyState === "interactive"
-  ) {
+  if (document.readyState === "complete" || document.readyState === "interactive") {
     setTimeout(initHeader, 10);
   } else {
     document.addEventListener("DOMContentLoaded", initHeader);
   }
 
-  /* =====================================================
-     LEGACY (NO TOCAR)
-  ===================================================== */
-  window.syncHeaderCounter = function () {
-    window.dispatchEvent(new Event("cartUpdated"));
-  };
-
-  window.syncHeaderUser = function () {
-    syncUserUI();
-  };
+  /* LEGACY */
+  window.syncHeaderCounter = () => window.dispatchEvent(new Event("cartUpdated"));
+  window.syncHeaderUser = syncUserUI;
 }
