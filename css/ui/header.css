@@ -1237,30 +1237,63 @@ body {
 }
 
 /* =====================================================
-   FIX FINAL — HEADER CLICKEABLE Y ALINEADO
+   FIX FINAL — HEADER CLICKEABLE Y ALINEADO (M3)
 ===================================================== */
 
-/* Contexto del header */
+/* 1. Asegurar que el Header sea la base de todo */
 header.header-fixed {
   position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
   z-index: 1000;
+  display: flex;
+  align-items: center;
 }
 
-/* Capa central (search / títulos)
-   NO debe interceptar clics */
+/* 2. Capas centrales: El secreto es pointer-events: none.
+      Esto permite que los clics "atraviesen" el contenedor 
+      y lleguen a los botones de atrás si es necesario. */
 .header-search-wrap,
 .header-titles-wrap {
   position: relative;
-  z-index: 1;
-  pointer-events: none;
+  z-index: 5;
+  pointer-events: none; /* No intercepta clics */
+  display: flex;
+  justify-content: center;
+  flex: 1;
 }
 
-/* SOLO los elementos interactivos del buscador */
+/* 3. Reactivar clics en los elementos internos.
+      Sin esto, no podrías escribir en el buscador. */
+.header-search-box,
 .header-search-wrap input,
 .header-search-wrap button,
-.header-search-wrap select {
-  pointer-events: auto;
+.header-search-wrap select,
+.header-static-titles {
+  pointer-events: auto; /* Estos SÍ reciben clics */
 }
+
+/* 4. Prioridad absoluta para botones laterales (Hamburguesa y Acciones).
+      Elevamos su z-index y forzamos su interactividad. */
+.menu-toggle,
+.header-logo-link,
+.header-right,
+.header-actions {
+  position: relative;
+  z-index: 1010; /* Por encima de .header-search-wrap */
+  pointer-events: auto !important;
+}
+
+/* 5. Fix para móviles: Evitar que el buscador tape visualmente 
+      los botones si se expande demasiado. */
+@media (max-width: 768px) {
+  .header-search-box {
+    max-width: calc(100vw - 120px); /* Deja espacio para el menú y el carrito */
+    margin: 0 auto;
+  }
+}
+
 
 
 
