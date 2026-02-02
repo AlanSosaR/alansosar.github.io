@@ -224,3 +224,17 @@ function initHeader() {
 document.readyState === "loading"
   ? document.addEventListener("DOMContentLoaded", initHeader)
   : initHeader();
+
+
+
+/* =====================================================
+   LEGACY API (COMPATIBILIDAD)
+===================================================== */
+window.syncHeaderCounter = function () {
+  updateCartCount();
+  updateHeaderCartTitle();
+};
+
+window.syncHeaderUser = function () {
+  syncUserUI();
+};
