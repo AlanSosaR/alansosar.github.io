@@ -145,7 +145,7 @@ if (!window.__HEADER_CORE_LOADED__) {
     if (notif) {
       notif.href = isAdmin
         ? "/pages/admin/admin-pedidos.html"
-        : "/mis-pedidos.html";
+        : "/pages/profile/mis-pedidos.html";
 
       notif.onclick = () => {
         document.dispatchEvent(
@@ -204,7 +204,7 @@ if (!window.__HEADER_CORE_LOADED__) {
     $("user-scrim")?.addEventListener("click", closeDrawer);
 
     $("cart-btn")?.addEventListener("click", () => {
-      location.href = "carrito.html";
+      location.href = "/pages/shop/carrito.html";
     });
 
     $("logout-btn")?.addEventListener("click", async () => {
