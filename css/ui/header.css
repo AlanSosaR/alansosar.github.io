@@ -9,9 +9,7 @@
 /* =====================================================
    UTILIDADES
 ===================================================== */
-.hidden {
-  display: none !important;
-}
+.hidden { display: none !important; }
 
 /* =====================================================
    HEADER — FIJO, ESTABLE
@@ -25,25 +23,22 @@ header.header-fixed {
   display: flex;
   align-items: center;
 
-  background: rgba(255, 255, 255, 0.92);
+  background: rgba(255,255,255,0.92);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 
-  border-bottom: 1.5px solid rgba(0, 0, 0, 0.05);
+  border-bottom: 1.5px solid rgba(0,0,0,0.05);
   z-index: 1000;
   box-sizing: border-box;
 }
-
 /* =====================================================
    MOBILE — OCULTAR LOGO DETRÁS DEL MENÚ
 ===================================================== */
 @media (max-width: 900px) {
   .header-logo-link {
-    display: none;
-    /* Will be shown if needed, but currently keeping it hidden to make room for search as per current code */
+    display: none !important;
   }
 }
-
 /* =====================================================
    TÍTULO CENTRAL — CARRITO
 ===================================================== */
@@ -70,8 +65,7 @@ body.page-carrito .header-cart-title {
   color: var(--marron);
   white-space: nowrap;
 
-  pointer-events: none;
-  /* 🔑 no bloquea clicks */
+  pointer-events: none; /* 🔑 no bloquea clicks */
 }
 
 /* Contador de cafés */
@@ -88,199 +82,24 @@ body.page-carrito .header-cart-title {
     font-size: 0.95rem;
   }
 }
-
 /* LOGO */
 .header-logo-link {
   display: flex;
   align-items: center;
   flex-shrink: 0;
 }
+.header-logo { height: 56px; }
 
-.header-logo {
-  height: 56px;
-}
-
-/* =====================================================
-   BLOQUE DERECHO
-===================================================== */
 /* =====================================================
    BLOQUE DERECHO
 ===================================================== */
 .header-right {
   display: flex;
   align-items: center;
-  gap: 16px;
-  /* Reducido para dar espacio a la búsqueda */
+  gap: 28px;
   margin-left: auto;
-  flex-shrink: 0;
 }
 
-/* =====================================================
-   BARRA DE BÚSQUEDA DINÁMICA — M3 EXPRESSIVE (FINAL)
-   ✔ Sin bloqueo de clics
-   ✔ Sin overlays fantasma
-   ✔ Compatible PC + Móvil
-===================================================== */
-
-/* =========================
-   CONTENEDOR BÚSQUEDA
-========================= */
-.header-search-wrap {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-
-  padding: 0 16px;
-  max-width: 600px;
-  margin: 0 auto;
-
-  position: relative;
-  z-index: 1;
-
-  pointer-events: auto;
-}
-
-/* =========================
-   CAJA BÚSQUEDA
-========================= */
-.header-search-box {
-  width: 100%;
-  height: 48px;
-
-  display: flex;
-  align-items: center;
-
-  padding: 0 8px 0 16px;
-  border-radius: 28px;
-
-  background: #f1f3f4;
-  transition: background .2s ease, box-shadow .2s ease;
-
-  pointer-events: auto;
-}
-
-.header-search-box:focus-within {
-  background: #fff;
-  box-shadow:
-    0 1px 3px rgba(60,64,67,.3),
-    0 4px 8px rgba(60,64,67,.15);
-}
-
-/* Icono decorativo */
-.header-search-box .search-icon {
-  margin-right: 12px;
-  font-size: 22px;
-  color: #5f6368;
-
-  user-select: none;
-  pointer-events: none; /* 🔑 */
-}
-
-/* Input */
-#header-search-input {
-  flex: 1;
-  height: 100%;
-
-  border: none;
-  outline: none;
-  background: transparent;
-
-  font-size: 1rem;
-  color: var(--marron);
-
-  pointer-events: auto;
-}
-
-/* =========================
-   FILTRO
-========================= */
-.header-status-filter {
-  height: 36px;
-  margin-left: 8px;
-  padding: 0 12px;
-
-  border: none;
-  border-radius: 18px;
-
-  font-size: .85rem;
-  background: rgba(0,0,0,.05);
-  cursor: pointer;
-
-  pointer-events: auto;
-}
-
-/* =========================
-   BOTÓN AGREGAR
-========================= */
-.header-add-btn {
-  width: 36px;
-  height: 36px;
-  margin-left: 8px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  border-radius: 50%;
-  background: var(--verde);
-  color: #fff;
-
-  cursor: pointer;
-  pointer-events: auto;
-}
-
-/* =====================================================
-   TÍTULOS CENTRALES (NO INTERACTIVOS)
-===================================================== */
-.header-titles-wrap {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-
-  position: relative;
-  z-index: 0;
-
-  pointer-events: none; /* 🔑 SOLO AQUÍ */
-}
-
-/* =====================================================
-   CONTROLES SUPERIORES — SIEMPRE CLICKEABLES
-===================================================== */
-#menu-toggle,
-#cart-btn,
-#btn-header-user {
-  position: relative;
-  z-index: 10;
-  pointer-events: auto;
-  cursor: pointer;
-}
-
-/* =====================================================
-   MOBILE
-===================================================== */
-@media (max-width: 900px) {
-  .header-search-wrap {
-    position: absolute;
-    left: 72px;
-    right: 72px;
-
-    padding: 0;
-    max-width: none;
-  }
-
-  .header-search-box {
-    height: 40px;
-  }
-
-  .header-status-filter {
-    display: none !important;
-  }
-
-  .header-fixed.no-search .header-search-wrap {
-    display: none !important;
-    pointer-events: none !important;
-  }
-}
 /* =====================================================
    NAV DESKTOP
 ===================================================== */
@@ -289,7 +108,6 @@ body.page-carrito .header-cart-title {
   align-items: center;
   gap: 20px;
 }
-
 .nav-links a {
   text-decoration: none;
   color: var(--marron);
@@ -297,19 +115,11 @@ body.page-carrito .header-cart-title {
   font-size: .95rem;
   white-space: nowrap;
 }
-
-.nav-links a:hover {
-  color: var(--verde);
-}
+.nav-links a:hover { color: var(--verde); }
 
 /* VISIBILIDAD NAV */
-.header-fixed.no-user #public-nav {
-  display: flex;
-}
-
-.header-fixed.logged #public-nav {
-  display: none !important;
-}
+.header-fixed.no-user #public-nav { display: flex; }
+.header-fixed.logged  #public-nav { display: none !important; }
 
 /* =====================================================
    ACCIONES HEADER
@@ -326,10 +136,7 @@ body.page-carrito .header-cart-title {
   color: var(--marron);
   font-weight: 500;
 }
-
-.login-link:hover {
-  color: var(--verde);
-}
+.login-link:hover { color: var(--verde); }
 
 /* =====================================================
    AVATAR HEADER — PREMIUM (BLINDADO)
@@ -353,8 +160,8 @@ body.page-carrito .header-cart-title {
   cursor: pointer;
 
   box-shadow:
-    0 6px 14px rgba(0, 0, 0, .18),
-    0 2px 4px rgba(0, 0, 0, .12);
+    0 6px 14px rgba(0,0,0,.18),
+    0 2px 4px rgba(0,0,0,.12);
 
   transition:
     transform .2s ease,
@@ -368,8 +175,8 @@ body.page-carrito .header-cart-title {
 .header-avatar-button:hover {
   transform: translateY(-2px);
   box-shadow:
-    0 10px 24px rgba(0, 0, 0, .22),
-    0 4px 10px rgba(0, 0, 0, .16);
+    0 10px 24px rgba(0,0,0,.22),
+    0 4px 10px rgba(0,0,0,.16);
 }
 
 /* Imagen */
@@ -380,27 +187,15 @@ body.page-carrito .header-cart-title {
   object-fit: cover;
   object-position: center;
 
-  border-radius: 50% !important;
-  /* 🔑 evita cuadrado */
+  border-radius: 50% !important;   /* 🔑 evita cuadrado */
   display: block;
 }
 
 /* VISIBILIDAD HEADER */
-.header-fixed.no-user #btn-header-user {
-  display: none;
-}
-
-.header-fixed.no-user #login-desktop {
-  display: inline-flex;
-}
-
-.header-fixed.logged #login-desktop {
-  display: none;
-}
-
-.header-fixed.logged #btn-header-user {
-  display: flex;
-}
+.header-fixed.no-user #btn-header-user { display: none; }
+.header-fixed.no-user #login-desktop { display: inline-flex; }
+.header-fixed.logged  #login-desktop { display: none; }
+.header-fixed.logged  #btn-header-user { display: flex; }
 
 /* =====================================================
    CARRITO
@@ -418,15 +213,12 @@ body.page-carrito .header-cart-title {
   position: relative;
 
   cursor: pointer;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, .18);
-  z-index: 10;
+  box-shadow: 0 8px 20px rgba(0,0,0,.18);
 }
-
 #cart-btn i {
   font-size: 1.4rem;
   color: var(--verde);
 }
-
 .cart-count {
   position: absolute;
   top: -4px;
@@ -443,16 +235,13 @@ body.page-carrito .header-cart-title {
   align-items: center;
   justify-content: center;
 }
-
 /* =========================
    CONTENEDORES (ANCLAJE)
 ========================= */
-/* Controles principales (alineados y clickeables) */
 #menu-toggle,
-#cart-btn,
 #btn-header-user {
   position: relative;
-  z-index: 10;
+  overflow: visible;        /* 🔑 CLAVE: no recortar el badge */
 }
 
 /* =========================
@@ -466,12 +255,10 @@ body.page-carrito .header-cart-title {
     transform: scale(0.6);
     opacity: 0;
   }
-
   60% {
     transform: scale(1.15);
     opacity: 1;
   }
-
   100% {
     transform: scale(1);
   }
@@ -479,29 +266,12 @@ body.page-carrito .header-cart-title {
 
 /* Micro-shake de campana (una sola vez) */
 @keyframes bellShake {
-  0% {
-    transform: rotate(0deg);
-  }
-
-  20% {
-    transform: rotate(-12deg);
-  }
-
-  40% {
-    transform: rotate(10deg);
-  }
-
-  60% {
-    transform: rotate(-8deg);
-  }
-
-  80% {
-    transform: rotate(6deg);
-  }
-
-  100% {
-    transform: rotate(0deg);
-  }
+  0%   { transform: rotate(0deg); }
+  20%  { transform: rotate(-12deg); }
+  40%  { transform: rotate(10deg); }
+  60%  { transform: rotate(-8deg); }
+  80%  { transform: rotate(6deg); }
+  100% { transform: rotate(0deg); }
 }
 
 /* Estado base del badge */
@@ -581,37 +351,36 @@ body.page-carrito .header-cart-title {
   }
 
   /* 🍔 MENÚ HAMBURGUESA */
-  .menu-toggle {
-    display: flex !important;
-    position: absolute;
-    left: 16px;
+.menu-toggle {
+  display: flex !important;
+  position: absolute;
+  left: 16px;
 
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
 
-    background: #fff;
-    border: none;
+  background: #fff;
+  border: none;
 
-    align-items: center;
-    justify-content: center;
+  align-items: center;
+  justify-content: center;
 
-    box-shadow: 0 8px 20px rgba(0, 0, 0, .18);
-  }
+  box-shadow: 0 8px 20px rgba(0,0,0,.18);
+}
 
-  .menu-toggle>* {
-    margin: 0;
-    padding: 0;
-    line-height: 1;
-  }
+.menu-toggle > * {
+  margin: 0;
+  padding: 0;
+  line-height: 1;
+}
 
-  /* Icono hamburguesa en verde */
-  .menu-toggle .material-symbols-outlined {
-    color: var(--verde);
-    font-size: 26px;
-    line-height: 1;
-  }
-
+/* Icono hamburguesa en verde */
+.menu-toggle .material-symbols-outlined {
+  color: var(--verde);
+  font-size: 26px;
+  line-height: 1;
+}
   /* 🛒 CARRITO */
   #cart-btn {
     position: absolute;
@@ -632,13 +401,12 @@ body.page-carrito .header-cart-title {
 .user-scrim {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, .45);
+  background: rgba(0,0,0,.45);
   opacity: 0;
   pointer-events: none;
   transition: opacity .2s ease;
   z-index: 90;
 }
-
 .user-scrim.open {
   opacity: 1;
   pointer-events: auto;
@@ -661,8 +429,8 @@ body.page-carrito .header-cart-title {
   overflow: hidden;
 
   box-shadow:
-    0 18px 40px rgba(0, 0, 0, .75),
-    0 0 0 1px rgba(255, 255, 255, .04);
+    0 18px 40px rgba(0,0,0,.75),
+    0 0 0 1px rgba(255,255,255,.04);
 
   contain: layout paint;
   will-change: transform, opacity;
@@ -672,12 +440,11 @@ body.page-carrito .header-cart-title {
   pointer-events: none;
 
   transition:
-    transform .28s cubic-bezier(.2, 0, 0, 1),
+    transform .28s cubic-bezier(.2,0,0,1),
     opacity .2s ease;
 
   z-index: 200;
 }
-
 .user-drawer.open {
   transform: translateX(0);
   opacity: 1;
@@ -692,7 +459,6 @@ body.page-carrito .header-cart-title {
     max-width: none;
   }
 }
-
 /* =====================================================
    🔔 NOTIFICACIÓN CONTEXTUAL — DRAWER (GLOBAL)
 ===================================================== */
@@ -704,24 +470,26 @@ body.page-carrito .header-cart-title {
   padding: 14px 18px;
   margin: 12px 12px;
   border-radius: 18px;
-  background: linear-gradient(180deg,
-      rgba(255, 255, 255, 0.04),
-      rgba(255, 255, 255, 0.02));
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.04),
+    rgba(255, 255, 255, 0.02)
+  );
   color: #fff;
   text-decoration: none;
   cursor: pointer;
   box-shadow:
-    0 10px 28px rgba(0, 0, 0, 0.45),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+    0 10px 28px rgba(0,0,0,0.45),
+    inset 0 0 0 1px rgba(255,255,255,0.05);
   transition:
-    transform .2s cubic-bezier(.2, 0, 0, 1),
+    transform .2s cubic-bezier(.2,0,0,1),
     box-shadow .2s ease,
     background .2s ease;
 }
 
 .drawer-notification:hover {
   transform: translateY(-2px);
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255,255,255,0.06);
 }
 
 .drawer-notification:active {
@@ -744,8 +512,8 @@ body.page-carrito .header-cart-title {
   align-items: center;
   justify-content: center;
   box-shadow:
-    0 6px 18px rgba(215, 38, 56, 0.55),
-    inset 0 0 0 2px rgba(255, 255, 255, 0.18);
+    0 6px 18px rgba(215,38,56,0.55),
+    inset 0 0 0 2px rgba(255,255,255,0.18);
 }
 
 .drawer-notification-icon i {
@@ -779,7 +547,6 @@ body.page-carrito .header-cart-title {
     padding: 12px 14px;
   }
 }
-
 /* =====================================================
    PERFIL — AVATAR PREMIUM FLOTANTE (BLINDADO)
 ===================================================== */
@@ -806,23 +573,21 @@ body.page-carrito .header-cart-title {
   min-width: 52px;
   min-height: 52px;
 
-  border-radius: 50% !important;
-  /* 🔑 blindaje */
-  overflow: hidden !important;
-  /* 🔑 blindaje */
+  border-radius: 50% !important;   /* 🔑 blindaje */
+  overflow: hidden !important;     /* 🔑 blindaje */
 
   background: transparent;
   border: none;
 
   box-shadow:
-    0 10px 26px rgba(0, 0, 0, 0.28),
-    0 4px 12px rgba(0, 0, 0, 0.18);
+    0 10px 26px rgba(0,0,0,0.28),
+    0 4px 12px rgba(0,0,0,0.18);
 
   flex-shrink: 0;
   position: relative;
 
   transition:
-    transform .22s cubic-bezier(.2, 0, 0, 1),
+    transform .22s cubic-bezier(.2,0,0,1),
     box-shadow .22s ease;
 }
 
@@ -832,8 +597,8 @@ body.page-carrito .header-cart-title {
 .user-drawer-profile-link:hover .user-drawer-avatar {
   transform: translateY(-3px) scale(1.03);
   box-shadow:
-    0 16px 36px rgba(0, 0, 0, 0.35),
-    0 6px 18px rgba(0, 0, 0, 0.22);
+    0 16px 36px rgba(0,0,0,0.35),
+    0 6px 18px rgba(0,0,0,0.22);
 }
 
 /* =========================
@@ -846,8 +611,7 @@ body.page-carrito .header-cart-title {
   object-fit: cover;
   object-position: center;
 
-  border-radius: 50% !important;
-  /* 🔑 evita cuadrado */
+  border-radius: 50% !important;   /* 🔑 evita cuadrado */
   display: block;
 
   image-rendering: auto;
@@ -876,29 +640,13 @@ body.page-carrito .header-cart-title {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
-/* Sección Filtros en Drawer */
-.drawer-filters-section {
-  padding: 0 18px 12px;
-}
-
-.drawer-section-title {
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  opacity: 0.5;
-  margin-bottom: 8px;
-  font-weight: 600;
-}
-
 /* =====================================================
    FLECHA PERFIL DRAWER — VERDE
 ===================================================== */
 .user-drawer-arrow {
   margin-left: auto;
   font-size: 22px;
-  color: var(--verde);
-  /* 🔑 VERDE */
+  color: var(--verde);      /* 🔑 VERDE */
   opacity: 0.85;
   flex-shrink: 0;
   transition: transform .2s ease, opacity .2s ease;
@@ -909,7 +657,6 @@ body.page-carrito .header-cart-title {
   transform: translateX(2px);
   opacity: 1;
 }
-
 /* =========================
    BLINDAJE TOTAL DEL DRAWER
 ========================= */
@@ -945,7 +692,6 @@ body.page-carrito .header-cart-title {
 .user-drawer label {
   margin: 0 !important;
 }
-
 /* =====================================================
    ITEMS DRAWER
 ===================================================== */
@@ -960,9 +706,8 @@ body.page-carrito .header-cart-title {
   cursor: pointer;
   font-size: 15px;
 }
-
 .user-drawer-item:hover {
-  background: rgba(255, 255, 255, .06);
+  background: rgba(255,255,255,.06);
 }
 
 .user-drawer-item.login {
@@ -971,8 +716,7 @@ body.page-carrito .header-cart-title {
 }
 
 .user-drawer-item.logout {
-  width: 100%;
-  /* 🔑 ocupa todo el drawer */
+  width: 100%;                 /* 🔑 ocupa todo el drawer */
   padding: 12px 18px;
 
   display: flex;
@@ -999,14 +743,12 @@ body.page-carrito .header-cart-title {
 .user-drawer-item.logout:active {
   background: rgba(255, 75, 75, 0.22);
 }
-
 /* =====================================================
    LINKS PÚBLICOS — SIEMPRE VISIBLES EN DRAWER
 ===================================================== */
 .user-drawer .public-link {
   display: flex;
 }
-
 /* =====================================================
    DRAWER — DIVISORES VERDE LIMPIO (FINAL REAL)
 ===================================================== */
@@ -1014,13 +756,10 @@ body.page-carrito .header-cart-title {
 .user-drawer-divider,
 .user-drawer hr {
   border: 0 !important;
-  border-top: 2px solid var(--verde) !important;
-  /* verde marca */
-  opacity: 0.85;
-  /* elegante, no chillón */
+  border-top: 2px solid var(--verde) !important; /* verde marca */
+  opacity: 0.85;                                /* elegante, no chillón */
   margin: 16px 0;
 }
-
 /* =====================================================
    INDICADOR DE NOTIFICACIÓN — PUNTO
 ===================================================== */
@@ -1044,32 +783,15 @@ body.page-carrito .header-cart-title {
 }
 
 @keyframes pulseDot {
-  0% {
-    transform: scale(1);
-    opacity: 1;
-  }
-
-  50% {
-    transform: scale(1.15);
-    opacity: 0.75;
-  }
-
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
+  0%   { transform: scale(1);   opacity: 1; }
+  50%  { transform: scale(1.15); opacity: 0.75; }
+  100% { transform: scale(1);   opacity: 1; }
 }
-
 /* =====================================================
    VISIBILIDAD DRAWER
 ===================================================== */
-.user-drawer.logged .no-user {
-  display: none;
-}
-
-.user-drawer.no-user .logged {
-  display: none;
-}
+.user-drawer.logged .no-user { display: none; }
+.user-drawer.no-user .logged { display: none; }
 
 /* =====================================================
    OCULTAR CARRITO — CHECKOUT + ADMIN CAFÉS
@@ -1087,7 +809,6 @@ body.page-admin-agregar-cafe #cart-btn,
 body.page-admin-editar-cafe #cart-btn {
   display: none !important;
 }
-
 /* =====================================================
    OCULTAR NAVEGACIÓN PÚBLICA
 ===================================================== */
@@ -1104,13 +825,30 @@ body.page-admin-editar-cafe .nav-links {
   display: none !important;
 }
 
+/* =====================================================
+   ADMIN — FORZAR LOGO VISIBLE
+===================================================== */
 
+body.page-admin-cafes .header-logo-link,
+body.page-admin-agregar-cafe .header-logo-link,
+body.page-admin-editar-cafe .header-logo-link {
+  display: flex !important;
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3001;
+}
 
+body.page-admin-cafes .header-logo,
+body.page-admin-agregar-cafe .header-logo,
+body.page-admin-editar-cafe .header-logo {
+  height: 44px;
+}
 /* =====================================================
    ADMIN — NO ocultar header-actions en PC
 ===================================================== */
 @media (min-width: 901px) {
-
   body.page-admin-cafes .header-actions,
   body.page-admin-agregar-cafe .header-actions,
   body.page-admin-editar-cafe .header-actions {
@@ -1124,7 +862,6 @@ body.page-admin-editar-cafe .nav-links {
     display: none !important;
   }
 }
-
 /* =====================================================
    DESKTOP (PC) — comportamiento normal
 ===================================================== */
@@ -1143,7 +880,6 @@ body.page-carrito.logged .header-avatar-button {
 body.page-carrito.logged #login-desktop {
   display: none !important;
 }
-
 /* =====================================================
    COMPENSACIÓN HEADER FIJO (OBLIGATORIA)
 ===================================================== */
@@ -1157,7 +893,6 @@ body {
     padding-top: 64px;
   }
 }
-
 /* =====================================================
    BADGE — PEDIDOS (MISMO ESTILO QUE CARRITO)
 ===================================================== */
@@ -1174,13 +909,11 @@ body {
   font-weight: 600;
 
   color: #fff;
-  background-color: var(--verde);
-  /* verde como el carrito */
+  background-color: var(--verde); /* verde como el carrito */
 
   border-radius: 50%;
   line-height: 1;
 }
-
 /* =====================================================
    MÓVIL — CARRITO (LOGUEADO O NO)
    ☰  TEXTO CENTRO  LOGO DERECHA
@@ -1202,8 +935,7 @@ body {
       display: flex;
       align-items: center;
       position: relative;
-      width: 100%;
-      /* 🔑 CLAVE */
+      width: 100%; /* 🔑 CLAVE */
     }
 
 
@@ -1240,8 +972,7 @@ body {
 @media (max-width: 900px) {
 
   body.header-checkout header.header-fixed {
-    position: fixed !important;
-    /* ✅ se mantiene fijo */
+    position: fixed !important; /* ✅ se mantiene fijo */
     top: 0;
     left: 0;
     right: 0;
@@ -1270,134 +1001,53 @@ body {
     height: 44px;
   }
 }
-
-
-
 /* =====================================================
-   VISTA MÓVIL — LIMPIEZA TOTAL (SOLO MENÚ Y CARRITO)
+   ADMIN — AVATAR IZQUIERDA + LOGO DERECHA (SOLO PC)
 ===================================================== */
-@media (max-width: 900px) {
-  
-  /* Ocultar avatar, login y elementos desktop */
-  #btn-header-user,
-  .header-avatar-button,
-  .login-link,
-  #login-desktop,
-  .desktop-only,
-  #avatar-notification-badge {
-    display: none !important;
+@media (min-width: 901px) {
+
+  /* Header como contenedor */
+  body.page-admin-cafes header.header-fixed,
+  body.page-admin-agregar-cafe header.header-fixed,
+  body.page-admin-editar-cafe header.header-fixed {
+    position: fixed; /* ya lo tienes, se queda */
   }
 
-  /* Ocultar Logo en móvil para maximizar limpieza */
-  .header-logo-link {
-    display: none !important;
-  }
-
-  /* Ajuste de Header para alineación perfecta */
-  header.header-fixed {
-    height: 64px;
-    padding: 0 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between; /* Hamburguesa a la izq, Carrito a la der */
-  }
-
-  /* Asegurar que la Hamburguesa esté en su sitio */
-  .menu-toggle {
+  /* ✅ Avatar (botón real) a la izquierda cuando está logueado */
+  body.page-admin-cafes.logged #btn-header-user,
+  body.page-admin-agregar-cafe.logged #btn-header-user,
+  body.page-admin-editar-cafe.logged #btn-header-user {
     display: flex !important;
-    position: relative !important;
-    left: 0 !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12); /* Sombra más sutil estilo M3 */
+
+    position: absolute !important;
+    left: 16px !important;
+    right: auto !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    z-index: 3002 !important;
   }
 
-  /* Asegurar que el Carrito esté en su sitio */
-  #cart-btn {
+  /* (Opcional) por si existe .header-avatar-button dentro */
+  body.page-admin-cafes.logged .header-avatar-button,
+  body.page-admin-agregar-cafe.logged .header-avatar-button,
+  body.page-admin-editar-cafe.logged .header-avatar-button {
     display: flex !important;
-    position: relative !important;
-    right: 0 !important;
-    top: 0 !important;
-    transform: none !important;
   }
 
-  /* Ocultar el buscador en la vista inicial de móvil si interfiere con el diseño limpio */
-  .header-search-wrap {
-    display: none !important;
+  /* ✅ Logo SIEMPRE a la derecha */
+  body.page-admin-cafes .header-logo-link,
+  body.page-admin-agregar-cafe .header-logo-link,
+  body.page-admin-editar-cafe .header-logo-link {
+    display: flex !important;
+
+    position: absolute !important;
+    right: 16px !important;
+    left: auto !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    z-index: 3001 !important;
   }
 }
-
-/* =====================================================
-   AJUSTE DE CAPA SCRIM Y DRAWER (Z-INDEX)
-===================================================== */
-.user-scrim {
-  z-index: 1500 !important;
-}
-
-.user-drawer {
-  z-index: 2000 !important;
-}
-
-
-
-/* =====================================================
-   FIX REAL — HEADER CLICKEABLE SIN ROMPER CARRITO
-===================================================== */
-
-/* =====================================================
-   FIX REAL — HEADER CLICKEABLE (CORREGIDO)
-===================================================== */
-
-/* SOLO elementos realmente decorativos */
-.header-titles-wrap,
-.header-cart-title {
-  pointer-events: none;
-}
-
-/* ❌ NUNCA desactivar pointer-events del buscador */
-/* .header-search-wrap QUEDA FUERA */
-
-/* Header siempre interactivo */
-header.header-fixed {
-  pointer-events: auto;
-}
-
-/* CONTROLES REALES — menú, carrito, avatar */
-#menu-toggle,
-#cart-btn,
-#btn-header-user,
-.header-avatar-button {
-  pointer-events: auto !important;
-  position: relative;
-  z-index: 5000;
-}
-
-/* Hijos siempre clickeables */
-#menu-toggle *,
-#cart-btn *,
-#btn-header-user *,
-.header-avatar-button * {
-  pointer-events: auto !important;
-}
-
-/* =====================================================
-   MÓVIL — FIX DEFINITIVO
-===================================================== */
-@media (max-width: 900px) {
-
-  /* El buscador NO debe existir en móvil si no se usa */
-  .header-search-wrap {
-    display: none !important;
-  }
-
-  /* Evita hitbox roto por transforms */
-  #menu-toggle,
-  #cart-btn,
-  #btn-header-user,
-  .header-avatar-button {
-    transform: none !important;
-    z-index: 6000 !important;
-  }
-}
-
 /* =====================================================
    TÍTULOS CENTRALES — VISIBILIDAD POR PÁGINA
 ===================================================== */
@@ -1421,12 +1071,10 @@ body.page-datos-cliente #header-datos-title {
 body.page-recibo #header-recibo-title {
   display: block;
 }
-
 /* MIS PEDIDOS */
 body.page-mis-pedidos #header-mis-pedidos-title {
   display: block;
 }
-
 /* =====================================================
    ADMIN — CAFÉS (LISTADO)
 ===================================================== */
@@ -1447,48 +1095,3 @@ body.page-admin-agregar-cafe #header-admin-add-cafe-title {
 body.page-admin-agregar-cafe #header-admin-edit-cafe-title {
   display: block;
 }
-
-/* =====================================================
-   FIX HITBOXES (CSS PURO)
-   Esto asegura que los títulos y contenedores vacíos
-   no bloqueen los clics en los botones.
-===================================================== */
-
-/* El contenedor del título deja pasar los clics */
-.header-titles-wrap {
-  pointer-events: none !important;
-  z-index: 0;
-}
-
-/* El contenedor de búsqueda deja pasar clics si es transparente,
-   pero sus hijos (input, botones) sí funcionan */
-.header-search-wrap {
-  pointer-events: none; 
-  z-index: 5;
-}
-
-.header-search-box {
-  pointer-events: auto; /* La caja gris sí recibe clics */
-}
-
-/* BOTONES: Siempre encima y clickeables */
-#menu-toggle,
-#cart-btn,
-#btn-header-user,
-.header-avatar-button {
-  position: relative;
-  z-index: 50 !important; /* Capa superior */
-  pointer-events: auto !important; /* Fuerza el click */
-  cursor: pointer;
-}
-
-/* En móvil, asegurar que el buscador no tape los botones laterales */
-@media (max-width: 900px) {
-  .header-search-wrap {
-    /* Dejar margen a izquierda (menú) y derecha (carrito) */
-    left: 70px !important; 
-    right: 70px !important;
-    width: auto !important;
-  }
-}
-
