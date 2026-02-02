@@ -1447,3 +1447,38 @@ body.page-admin-agregar-cafe #header-admin-add-cafe-title {
 body.page-admin-agregar-cafe #header-admin-edit-cafe-title {
   display: block;
 }
+
+/* =====================================================
+   FIX DEFINITIVO — HITBOX HEADER (REAL)
+===================================================== */
+
+/* 1️⃣ El buscador NO puede existir si no se usa */
+body:not(.page-admin-cafes):not(.page-admin-pedidos):not(.page-mis-pedidos)
+.header-search-wrap {
+  display: none !important;
+}
+
+/* 2️⃣ El contenedor de títulos NO debe ocupar todo */
+.header-titles-wrap {
+  position: static !important;
+}
+
+/* 3️⃣ Los botones viven en su propio plano */
+#menu-toggle,
+#cart-btn,
+#btn-header-user,
+.header-avatar-button {
+  position: relative !important;
+  z-index: 10000 !important;
+  pointer-events: auto !important;
+}
+
+/* 4️⃣ En móvil NO se permiten transforms en controles */
+@media (max-width: 900px) {
+  #menu-toggle,
+  #cart-btn,
+  #btn-header-user,
+  .header-avatar-button {
+    transform: none !important;
+  }
+}
