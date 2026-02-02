@@ -413,11 +413,11 @@ body.page-carrito .header-cart-title {
    CONTENEDORES (ANCLAJE)
 ========================= */
 #menu-toggle,
-#btn-header-user {
+#btn-header-user,
+#cart-btn {
   position: relative;
   overflow: visible;
-  /* 🔑 CLAVE: no recortar el badge y estar sobre el centro */
-  z-index: 10;
+  z-index: 20; /* 🔑 más alto que el centro */
 }
 
 /* =========================
