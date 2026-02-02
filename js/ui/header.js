@@ -1,18 +1,13 @@
-console.log("🧭 header.js — CORE FINAL BLINDADO");
+console.log("🧭 header.js — UI CORE LIMPIO (CON HOOKS COMPLETOS)");
 
-/* =====================================================
-   GUARD GLOBAL
-===================================================== */
-if (window.__HEADER_CORE_LOADED__) {
-  console.warn("⚠️ header.js ya cargado, se ignora");
-} else {
+if (!window.__HEADER_CORE_LOADED__) {
   window.__HEADER_CORE_LOADED__ = true;
 
-  /* =====================================================
-     HELPERS
-  ===================================================== */
   const $ = (id) => document.getElementById(id);
 
+  /* =====================================================
+     HELPERS — USUARIO
+  ===================================================== */
   function getUserCache() {
     try {
       if (localStorage.getItem("cortero_logged") !== "1") return null;
@@ -23,38 +18,49 @@ if (window.__HEADER_CORE_LOADED__) {
   }
 
   /* =====================================================
-     BADGES
+     🔔 BADGE GLOBAL (MENÚ + AVATAR)
   ===================================================== */
   function toggleGlobalNotificationDot(show) {
-    ["menu-notification-badge", "avatar-notification-badge"].forEach((id) => {
-      const el = $(id);
-      el && el.classList.toggle("hidden", !show);
+    const menuBadge = $("menu-notification-badge");
+    const avatarBadge = $("avatar-notification-badge");
+
+    [menuBadge, avatarBadge].forEach(badge => {
+      if (!badge) return;
+      badge.classList.toggle("hidden", !show);
     });
   }
+
   window.toggleGlobalNotificationDot = toggleGlobalNotificationDot;
 
+  /* =====================================================
+     📦 BADGES — PEDIDOS (ADMIN / CLIENTE)
+  ===================================================== */
   function setAdminOrdersCount(count) {
-    const el = $("admin-orders-count");
-    if (!el) return;
-    el.textContent = count;
-    el.classList.toggle("hidden", count === 0);
+    const badge = $("admin-orders-count");
+    if (!badge) return;
+
+    badge.textContent = count;
+    badge.classList.toggle("hidden", count === 0);
   }
-  window.setAdminOrdersCount = setAdminOrdersCount;
 
   function setMyOrdersCount(count) {
-    const el = $("my-orders-count");
-    if (!el) return;
-    el.textContent = count;
-    el.classList.toggle("hidden", count === 0);
+    const badge = $("my-orders-count");
+    if (!badge) return;
+
+    badge.textContent = count;
+    badge.classList.toggle("hidden", count === 0);
   }
+
+  window.setAdminOrdersCount = setAdminOrdersCount;
   window.setMyOrdersCount = setMyOrdersCount;
 
   /* =====================================================
-     CART
+     🛒 CARRITO
   ===================================================== */
   function updateCartCount() {
     const badge = $("cart-count");
     if (!badge) return;
+
     try {
       const cart = JSON.parse(localStorage.getItem("cafecortero_cart")) || [];
       badge.textContent = cart.reduce((a, i) => a + Number(i.qty || 0), 0);
@@ -66,6 +72,7 @@ if (window.__HEADER_CORE_LOADED__) {
   function updateHeaderCartTitle() {
     const label = $("count-items");
     if (!label) return;
+
     try {
       const cart = JSON.parse(localStorage.getItem("cafecortero_cart")) || [];
       const total = cart.reduce((a, i) => a + Number(i.qty || 0), 0);
@@ -76,185 +83,183 @@ if (window.__HEADER_CORE_LOADED__) {
   }
 
   /* =====================================================
-     DRAWER
-  ===================================================== */
-  function openDrawer() {
-    $("user-drawer")?.classList.add("open");
-    $("user-scrim")?.classList.add("open");
-    document.body.style.overflow = "hidden";
-  }
-
-  function closeDrawer() {
-    $("user-drawer")?.classList.remove("open");
-    $("user-scrim")?.classList.remove("open");
-    document.body.style.overflow = "";
-  }
-
-  function toggleDrawer() {
-    $("user-drawer")?.classList.contains("open")
-      ? closeDrawer()
-      : openDrawer();
-  }
-
-  window.toggleDrawer = toggleDrawer;
-
-  /* =====================================================
-     USER UI
+     PERFIL + ROLES + NOTIFICACIÓN CONTEXTUAL
   ===================================================== */
   function syncUserUI() {
     const user = getUserCache();
     const header = document.querySelector(".header-fixed");
     const drawer = $("user-drawer");
-    const notif = $("drawer-notification");
+    const notif  = $("drawer-notification");
 
     if (!header || !drawer) return;
 
-    header.classList.toggle("logged", !!user);
-    header.classList.toggle("no-user", !user);
-    drawer.classList.toggle("logged", !!user);
-    drawer.classList.toggle("no-user", !user);
-
+    // -----------------------------
+    // USUARIO NO LOGUEADO
+    // -----------------------------
     if (!user) {
+      header.classList.add("no-user");
+      header.classList.remove("logged");
+      drawer.classList.add("no-user");
+      drawer.classList.remove("logged");
+
+      document
+        .querySelectorAll(".admin-only,.client-only")
+        .forEach(el => el.classList.add("hidden"));
+
       toggleGlobalNotificationDot(false);
       setAdminOrdersCount(0);
       setMyOrdersCount(0);
-      notif && notif.classList.add("hidden");
+
+      if (notif) notif.classList.add("hidden");
       return;
     }
 
-    const avatar = user.photo_url || "/imagenes/avatar-default.svg";
-    $("avatar-user") && ($("avatar-user").src = avatar);
-    $("avatar-user-drawer") && ($("avatar-user-drawer").src = avatar);
+    // -----------------------------
+    // USUARIO LOGUEADO
+    // -----------------------------
+    header.classList.add("logged");
+    header.classList.remove("no-user");
+    drawer.classList.add("logged");
+    drawer.classList.remove("no-user");
+
+    $("avatar-user") &&
+      ($("avatar-user").src = user.photo_url || "/imagenes/avatar-default.svg");
+    $("avatar-user-drawer") &&
+      ($("avatar-user-drawer").src = user.photo_url || "/imagenes/avatar-default.svg");
+
     $("drawer-name") && ($("drawer-name").textContent = user.name || "Usuario");
     $("drawer-email") && ($("drawer-email").textContent = user.email || "");
 
     const isAdmin = user.rol === "admin";
-    document
-      .querySelectorAll(".admin-only")
-      .forEach((el) => el.classList.toggle("hidden", !isAdmin));
-    document
-      .querySelectorAll(".client-only")
-      .forEach((el) => el.classList.toggle("hidden", isAdmin));
 
+    document.querySelectorAll(".admin-only").forEach(el =>
+      el.classList.toggle("hidden", !isAdmin)
+    );
+    document.querySelectorAll(".client-only").forEach(el =>
+      el.classList.toggle("hidden", isAdmin)
+    );
+
+    // -----------------------------
+    // 🔔 NOTIFICACIÓN CONTEXTUAL
+    // -----------------------------
     if (notif) {
-      notif.classList.remove("hidden");
       notif.href = isAdmin
         ? "/pages/admin/admin-pedidos.html"
-        : "/pages/profile/mis-pedidos.html";
-    }
-  }
+        : "/mis-pedidos.html";
 
-  /* =====================================================
-     SEARCH / FILTER (SE RESPETA)
-  ===================================================== */
-  function setupHeaderSearch() {
-    const wrap = $("header-search-container");
-    const input = $("header-search-input");
-    const filter = $("header-status-filter");
-    const addBtn = $("header-add-btn");
-    const titles = $("header-static-titles");
-
-    if (!wrap || !input) return;
-
-    const path = location.pathname;
-    const show =
-      path.includes("admin-productos") ||
-      path.includes("admin-pedidos") ||
-      path.includes("mis-pedidos");
-
-    wrap.classList.toggle("hidden", !show);
-    titles && titles.classList.toggle("hidden", show);
-
-    if (!show) return;
-
-    input.oninput = (e) =>
-      document.dispatchEvent(
-        new CustomEvent("header:search", { detail: e.target.value })
-      );
-
-    if (filter) {
-      filter.classList.toggle("hidden", !path.includes("admin-pedidos"));
-      filter.onchange = (e) =>
+      notif.onclick = () => {
         document.dispatchEvent(
-          new CustomEvent("header:filter", { detail: e.target.value })
+          new CustomEvent("notification:opened", {
+            detail: { role: user.rol }
+          })
         );
+      };
     }
-
-    addBtn &&
-      (addBtn.onclick = () =>
-        document.dispatchEvent(new CustomEvent("header:add-click")));
   }
 
   /* =====================================================
-     EVENT DELEGATION — 🔥 CLAVE 🔥
+     DRAWER
   ===================================================== */
-  document.addEventListener("click", (e) => {
-    if (e.target.closest("#menu-toggle")) {
-      e.preventDefault();
-      toggleDrawer();
-      return;
-    }
+  function openDrawer() {
+    const drawer = $("user-drawer");
+    const scrim  = $("user-scrim");
+    if (!drawer || !scrim) return;
 
-    if (e.target.closest(".header-avatar-button")) {
-      e.preventDefault();
-      toggleDrawer();
-      return;
-    }
+    if (drawer.classList.contains("open")) return;
+    drawer.classList.add("open");
+    scrim.classList.add("open");
+    document.body.style.overflow = "hidden";
+  }
 
-    if (e.target.closest("#cart-btn")) {
-      e.preventDefault();
-      location.href = "/pages/shop/carrito.html";
-      return;
-    }
+  function closeDrawer() {
+    const drawer = $("user-drawer");
+    const scrim  = $("user-scrim");
+    if (!drawer || !scrim) return;
 
-    if (e.target.closest("#user-scrim")) {
-      closeDrawer();
-      return;
-    }
+    drawer.classList.remove("open");
+    scrim.classList.remove("open");
+    document.body.style.overflow = "";
+  }
 
-    if (e.target.closest("#logout-btn")) {
-      e.preventDefault();
-      (async () => {
-        try {
-          await window.supabaseClient?.auth.signOut();
-        } finally {
-          closeDrawer();
-          location.href = "/pages/home/index.html";
-        }
-      })();
-    }
-  });
+  function toggleDrawer() {
+    const drawer = $("user-drawer");
+    if (!drawer) return;
+    drawer.classList.contains("open") ? closeDrawer() : openDrawer();
+  }
 
   /* =====================================================
-     EVENTS
+     INIT HEADER
   ===================================================== */
-  ["cartUpdated", "userLoggedIn", "userLoggedOut"].forEach((evt) =>
-    document.addEventListener(evt, () => {
+  let HEADER_INITIALIZED = false;
+
+  function initHeader() {
+    if (HEADER_INITIALIZED) return;
+    HEADER_INITIALIZED = true;
+
+    $("menu-toggle")?.addEventListener("click", toggleDrawer);
+    $("btn-header-user")?.addEventListener("click", e => {
+      e.stopPropagation();
+      toggleDrawer();
+    });
+    $("user-scrim")?.addEventListener("click", closeDrawer);
+
+    $("cart-btn")?.addEventListener("click", () => {
+      location.href = "carrito.html";
+    });
+
+    $("logout-btn")?.addEventListener("click", async () => {
+      if (window.supabaseAuth?.logoutUser) {
+        await window.supabaseAuth.logoutUser();
+      }
+      closeDrawer();
+    });
+
+    syncUserUI();
+    updateCartCount();
+    updateHeaderCartTitle();
+
+    requestAnimationFrame(() => {
+      if (typeof window.syncNotificationsAll === "function") {
+        window.syncNotificationsAll();
+      }
+    });
+  }
+
+  /* =====================================================
+     EVENTOS GLOBALES
+  ===================================================== */
+  if (!window.__HEADER_GLOBAL_EVENTS__) {
+    window.__HEADER_GLOBAL_EVENTS__ = true;
+
+    window.addEventListener("cartUpdated", () => {
+      updateCartCount();
+      updateHeaderCartTitle();
+    });
+
+    document.addEventListener("userLoggedIn", () => {
       syncUserUI();
       updateCartCount();
       updateHeaderCartTitle();
-    })
-  );
+      document.dispatchEvent(new Event("initNotifications"));
+    });
 
-  /* =====================================================
-     BOOT
-  ===================================================== */
-  function initHeader() {
-    syncUserUI();
-    setupHeaderSearch();
-    updateCartCount();
-    updateHeaderCartTitle();
-    console.log("✅ header.js listo (delegación activa)");
+    document.addEventListener("userLoggedOut", () => {
+      syncUserUI();
+      updateCartCount();
+      updateHeaderCartTitle();
+      toggleGlobalNotificationDot(false);
+      setAdminOrdersCount(0);
+      setMyOrdersCount(0);
+      document.dispatchEvent(new Event("destroyNotifications"));
+    });
   }
 
-  document.readyState === "loading"
-    ? document.addEventListener("DOMContentLoaded", initHeader)
-    : initHeader();
-
-  /* =====================================================
-     LEGACY
-  ===================================================== */
-  window.syncHeaderCounter = () =>
-    window.dispatchEvent(new Event("cartUpdated"));
-  window.syncHeaderUser = syncUserUI;
+  window.initHeader = initHeader;
 }
+
+/* =====================================================
+   LEGACY
+===================================================== */
+window.syncHeaderCounter = function () {
+  window.dispatchEvent(new Event("cartUpdated"));
+};
