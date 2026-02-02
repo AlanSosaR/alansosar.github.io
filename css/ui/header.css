@@ -116,9 +116,9 @@ body.page-carrito .header-cart-title {
 }
 
 /* =====================================================
-   BARRA DE BÚSQUEDA DINÁMICA — M3 EXPRESSIVE (CORREGIDA)
-   ✔ No bloquea clics
-   ✔ No crea overlays fantasma
+   BARRA DE BÚSQUEDA DINÁMICA — M3 EXPRESSIVE (FINAL)
+   ✔ Sin bloqueo de clics
+   ✔ Sin overlays fantasma
    ✔ Compatible PC + Móvil
 ===================================================== */
 
@@ -134,9 +134,10 @@ body.page-carrito .header-cart-title {
   max-width: 600px;
   margin: 0 auto;
 
-  position: relative;       /* 🔑 NO absolute en desktop */
-  z-index: 1;               /* 🔑 Siempre debajo de botones */
-  pointer-events: auto;     /* 🔑 PERMITE interacción */
+  position: relative;
+  z-index: 1;
+
+  pointer-events: auto;
 }
 
 /* =========================
@@ -153,26 +154,26 @@ body.page-carrito .header-cart-title {
   border-radius: 28px;
 
   background: #f1f3f4;
-  box-shadow: none;
-
   transition: background .2s ease, box-shadow .2s ease;
-  pointer-events: auto;     /* 🔑 */
+
+  pointer-events: auto;
 }
 
 .header-search-box:focus-within {
   background: #fff;
   box-shadow:
-    0 1px 3px rgba(60, 64, 67, .3),
-    0 4px 8px rgba(60, 64, 67, .15);
+    0 1px 3px rgba(60,64,67,.3),
+    0 4px 8px rgba(60,64,67,.15);
 }
 
-/* Icono */
+/* Icono decorativo */
 .header-search-box .search-icon {
   margin-right: 12px;
   font-size: 22px;
   color: #5f6368;
+
   user-select: none;
-  pointer-events: none;     /* 🔑 no roba foco */
+  pointer-events: none; /* 🔑 */
 }
 
 /* Input */
@@ -184,19 +185,14 @@ body.page-carrito .header-cart-title {
   outline: none;
   background: transparent;
 
-  font-family: inherit;
   font-size: 1rem;
   color: var(--marron);
 
   pointer-events: auto;
 }
 
-#header-search-input::placeholder {
-  color: #70757a;
-}
-
 /* =========================
-   FILTRO DE ESTADO
+   FILTRO
 ========================= */
 .header-status-filter {
   height: 36px;
@@ -205,20 +201,12 @@ body.page-carrito .header-cart-title {
 
   border: none;
   border-radius: 18px;
-  outline: none;
 
-  font-family: inherit;
   font-size: .85rem;
-  color: var(--marron);
-
-  background: rgba(0, 0, 0, .05);
+  background: rgba(0,0,0,.05);
   cursor: pointer;
 
   pointer-events: auto;
-}
-
-.header-status-filter:hover {
-  background: rgba(0, 0, 0, .08);
 }
 
 /* =========================
@@ -233,29 +221,16 @@ body.page-carrito .header-cart-title {
   align-items: center;
   justify-content: center;
 
-  border: none;
   border-radius: 50%;
-
   background: var(--verde);
   color: #fff;
-  cursor: pointer;
 
-  transition: transform .2s ease, box-shadow .2s ease;
+  cursor: pointer;
   pointer-events: auto;
 }
 
-.header-add-btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 2px 6px rgba(0,0,0,.2);
-}
-
-.header-add-btn .material-symbols-outlined {
-  font-size: 20px;
-}
-
 /* =====================================================
-   TÍTULOS ESTÁTICOS (CENTRO)
-   ⚠️ NO deben capturar clics
+   TÍTULOS CENTRALES (NO INTERACTIVOS)
 ===================================================== */
 .header-titles-wrap {
   flex: 1;
@@ -263,16 +238,27 @@ body.page-carrito .header-cart-title {
   justify-content: center;
 
   position: relative;
-  z-index: 0;               /* 🔑 debajo de botones */
-  pointer-events: none;     /* 🔑 CLAVE */
+  z-index: 0;
+
+  pointer-events: none; /* 🔑 SOLO AQUÍ */
 }
 
 /* =====================================================
-   MOBILE — COMPORTAMIENTO CONTROLADO
+   CONTROLES SUPERIORES — SIEMPRE CLICKEABLES
+===================================================== */
+#menu-toggle,
+#cart-btn,
+#btn-header-user {
+  position: relative;
+  z-index: 10;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+/* =====================================================
+   MOBILE
 ===================================================== */
 @media (max-width: 900px) {
-
-  /* Búsqueda centrada sin bloquear */
   .header-search-wrap {
     position: absolute;
     left: 72px;
@@ -280,105 +266,21 @@ body.page-carrito .header-cart-title {
 
     padding: 0;
     max-width: none;
-
-    z-index: 1;
-    pointer-events: auto;
   }
 
   .header-search-box {
     height: 40px;
   }
 
-  /* Filtro solo en drawer */
   .header-status-filter {
     display: none !important;
   }
 
-  /* Cuando la página NO debe mostrar buscador */
   .header-fixed.no-search .header-search-wrap {
     display: none !important;
     pointer-events: none !important;
   }
 }
-
-/* Filtro de Estado */
-.header-status-filter {
-  height: 36px;
-  border: none;
-  background: rgba(0, 0, 0, 0.05);
-  border-radius: 18px;
-  padding: 0 12px;
-  font-family: inherit;
-  font-size: 0.85rem;
-  color: var(--marron);
-  margin-left: 8px;
-  cursor: pointer;
-  outline: none;
-}
-
-.header-status-filter:hover {
-  background: rgba(0, 0, 0, 0.08);
-}
-
-/* Botón Agregar (M3 FAB-like inside search) */
-.header-add-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: none;
-  background: var(--verde);
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-left: 8px;
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.header-add-btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-}
-
-.header-add-btn .material-symbols-outlined {
-  font-size: 20px;
-}
-
-/* Mobile Ajustes */
-@media (max-width: 900px) {
-  .header-search-wrap {
-    padding: 0;
-    max-width: none;
-    order: 3;
-    /* Move search below logo/menu in mobile if needed, but the prompt says show search */
-    position: absolute;
-    left: 72px;
-    right: 72px;
-  }
-
-  .header-search-box {
-    height: 40px;
-  }
-
-  .header-status-filter {
-    display: none !important;
-    /* Filters in mobile menu as per requirement */
-  }
-
-  .header-fixed.no-search .header-search-wrap {
-    display: none !important;
-  }
-}
-
-/* Títulos estáticos (cuando no hay búsqueda) */
-.header-titles-wrap {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  position: relative;
-}
-
 /* =====================================================
    NAV DESKTOP
 ===================================================== */
@@ -1369,32 +1271,6 @@ body {
   }
 }
 
-/* =====================================================
-   FIX GLOBAL: INTERACTIVIDAD Y VISIBILIDAD MÓVIL
-===================================================== */
-
-/* 🔑 SOLUCIÓN AL BLOQUEO DE CLICS */
-.header-search-wrap, 
-.header-titles-wrap {
-  pointer-events: none; /* Deja pasar los clics a lo que esté atrás */
-}
-
-/* Pero permite clics DENTRO del buscador cuando sea visible */
-.header-search-box, 
-#header-search-input, 
-#header-status-filter, 
-#header-add-btn {
-  pointer-events: auto;
-}
-
-/* Asegurar que los botones laterales siempre estén arriba y sean clickeables */
-#menu-toggle, 
-#cart-btn, 
-#btn-header-user {
-  z-index: 1010 !important;
-  pointer-events: auto !important;
-  cursor: pointer;
-}
 
 
 /* =====================================================
