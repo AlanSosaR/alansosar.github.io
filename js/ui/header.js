@@ -287,8 +287,8 @@ if (!window.__HEADER_CORE_LOADED__) {
     drawer.classList.contains("open") ? closeDrawer() : openDrawer();
   }
 
- /* =====================================================
-   INIT HEADER — VERIFICADO Y CORREGIDO
+/* =====================================================
+   INIT HEADER — DEFINITIVO (EVENTOS ESTABLES)
 ===================================================== */
 let HEADER_INITIALIZED = false;
 
@@ -296,66 +296,72 @@ function initHeader() {
   if (HEADER_INITIALIZED) return;
   HEADER_INITIALIZED = true;
 
-    // 1. MENU HAMBURGUESA (Móvil)
+  console.log("🧭 initHeader → binding eventos");
+
+  /* 1. 🍔 MENÚ HAMBURGUESA (MÓVIL) */
   const btnMenu = $("menu-toggle");
   if (btnMenu) {
-    btnMenu.onclick = (e) => {
+    btnMenu.addEventListener("click", (e) => {
       e.preventDefault();
       e.stopPropagation();
-      console.log("🍔 Click en Hamburguesa"); // Debug
+      console.log("🍔 Click hamburguesa");
       toggleDrawer();
-    };
+    });
   }
 
-  // 2. AVATAR / PERFIL (PC)
-  // Buscamos el ID del contenedor que pusiste en el HTML
-  const btnUser = $("btn-header-user");
-  if (btnUser) {
-    btnUser.onclick = (e) => {
+  /* 2. 👤 AVATAR / PERFIL (PC)
+     ⚠️ Escuchar en el BOTÓN real, no en el div */
+  const avatarBtn = document.querySelector(
+    "#btn-header-user .header-avatar-button"
+  );
+  if (avatarBtn) {
+    avatarBtn.addEventListener("click", (e) => {
       e.preventDefault();
       e.stopPropagation();
-      console.log("👤 Click en Avatar PC"); // Debug
+      console.log("👤 Click avatar");
       toggleDrawer();
-    };
+    });
   }
 
-  // 3. CARRITO (Universal)
+  /* 3. 🛒 CARRITO (UNIVERSAL) */
   const btnCart = $("cart-btn");
   if (btnCart) {
-    btnCart.onclick = (e) => {
+    btnCart.addEventListener("click", (e) => {
       e.preventDefault();
       e.stopPropagation();
-      console.log("🛒 Click en Carrito"); // Debug
+      console.log("🛒 Click carrito");
       window.location.href = "/pages/shop/carrito.html";
-    };
+    });
   }
 
-
-  // 4. SCRIM (Cierre táctico)
+  /* 4. 🫥 SCRIM (CIERRE DRAWER) */
   const scrim = $("user-scrim");
   if (scrim) {
-    scrim.onclick = (e) => {
+    scrim.addEventListener("click", (e) => {
       e.preventDefault();
       closeDrawer();
-    };
+    });
   }
 
-  // 5. LOGOUT
-  $("logout-btn")?.addEventListener("click", async (e) => {
-    e.preventDefault();
-    try {
-      if (window.supabaseClient) {
-        await window.supabaseClient.auth.signOut();
+  /* 5. 🚪 LOGOUT */
+  const logoutBtn = $("logout-btn");
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", async (e) => {
+      e.preventDefault();
+      try {
+        if (window.supabaseClient) {
+          await window.supabaseClient.auth.signOut();
+        }
+      } catch (err) {
+        console.error("❌ Error logout:", err);
+      } finally {
+        closeDrawer();
+        window.location.href = "/pages/home/index.html";
       }
-    } catch (err) {
-      console.error("Error logout:", err);
-    } finally {
-      closeDrawer();
-      window.location.href = "/pages/home/index.html";
-    }
-  });
+    });
+  }
 
-  // Sincronización de UI
+  /* 🔄 SINCRONIZACIÓN UI */
   syncUserUI();
   updateCartCount();
   updateHeaderCartTitle();
@@ -367,44 +373,42 @@ function initHeader() {
   });
 }
 
+/* =====================================================
+   EVENTOS GLOBALES (UNA SOLA VEZ)
+===================================================== */
+if (!window.__HEADER_GLOBAL_EVENTS__) {
+  window.__HEADER_GLOBAL_EVENTS__ = true;
 
+  window.addEventListener("cartUpdated", () => {
+    updateCartCount();
+    updateHeaderCartTitle();
+  });
 
-  /* =====================================================
-     EVENTOS GLOBALES
-  ===================================================== */
-  if (!window.__HEADER_GLOBAL_EVENTS__) {
-    window.__HEADER_GLOBAL_EVENTS__ = true;
+  document.addEventListener("userLoggedIn", () => {
+    syncUserUI();
+    updateCartCount();
+    updateHeaderCartTitle();
+    document.dispatchEvent(new Event("initNotifications"));
+  });
 
-    window.addEventListener("cartUpdated", () => {
-      updateCartCount();
-      updateHeaderCartTitle();
-    });
+  document.addEventListener("userLoggedOut", () => {
+    syncUserUI();
+    updateCartCount();
+    updateHeaderCartTitle();
+    toggleGlobalNotificationDot(false);
+    setAdminOrdersCount(0);
+    setMyOrdersCount(0);
+    document.dispatchEvent(new Event("destroyNotifications"));
+  });
+}
 
-    document.addEventListener("userLoggedIn", () => {
-      syncUserUI();
-      updateCartCount();
-      updateHeaderCartTitle();
-      document.dispatchEvent(new Event("initNotifications"));
-    });
+window.initHeader = initHeader;
 
-    document.addEventListener("userLoggedOut", () => {
-      syncUserUI();
-      updateCartCount();
-      updateHeaderCartTitle();
-      toggleGlobalNotificationDot(false);
-      setAdminOrdersCount(0);
-      setMyOrdersCount(0);
-      document.dispatchEvent(new Event("destroyNotifications"));
-    });
-  }
-
-  window.initHeader = initHeader;
-
-  if (document.readyState === "complete" || document.readyState === "interactive") {
-    setTimeout(initHeader, 10);
-  } else {
-    document.addEventListener("DOMContentLoaded", initHeader);
-  }
+/* Auto-init seguro */
+if (document.readyState === "complete" || document.readyState === "interactive") {
+  setTimeout(initHeader, 10);
+} else {
+  document.addEventListener("DOMContentLoaded", initHeader);
 }
 
 /* =====================================================
@@ -413,3 +417,4 @@ function initHeader() {
 window.syncHeaderCounter = function () {
   window.dispatchEvent(new Event("cartUpdated"));
 };
+   
