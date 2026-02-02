@@ -384,6 +384,7 @@ body.page-carrito .header-cart-title {
 
   cursor: pointer;
   box-shadow: 0 8px 20px rgba(0, 0, 0, .18);
+  z-index: 10;
 }
 
 #cart-btn i {
@@ -415,7 +416,8 @@ body.page-carrito .header-cart-title {
 #btn-header-user {
   position: relative;
   overflow: visible;
-  /* 🔑 CLAVE: no recortar el badge */
+  /* 🔑 CLAVE: no recortar el badge y estar sobre el centro */
+  z-index: 10;
 }
 
 /* =========================
