@@ -328,7 +328,14 @@ if (!window.__HEADER_CORE_LOADED__) {
     updateCartCount();
     updateHeaderCartTitle();
   }
-
+// 🔥 FIX DEFINITIVO — HITBOX HEADER
+document.querySelectorAll(
+  '.header-search-wrap, .header-titles-wrap'
+).forEach(el => {
+  if (getComputedStyle(el).display === 'none') {
+    el.remove();
+  }
+});
   /* =====================================================
      EVENTOS GLOBALES
   ===================================================== */
