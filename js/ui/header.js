@@ -24,12 +24,11 @@ if (!window.__HEADER_CORE_LOADED__) {
     const menuBadge = $("menu-notification-badge");
     const avatarBadge = $("avatar-notification-badge");
 
-    [menuBadge, avatarBadge].forEach(badge => {
+    [menuBadge, avatarBadge].forEach((badge) => {
       if (!badge) return;
       badge.classList.toggle("hidden", !show);
     });
   }
-
   window.toggleGlobalNotificationDot = toggleGlobalNotificationDot;
 
   /* =====================================================
@@ -91,9 +90,6 @@ if (!window.__HEADER_CORE_LOADED__) {
 
     if (!header || !drawer) return;
 
-    // -----------------------------
-    // USUARIO NO LOGUEADO
-    // -----------------------------
     if (!user) {
       header.classList.add("no-user");
       header.classList.remove("logged");
@@ -102,64 +98,57 @@ if (!window.__HEADER_CORE_LOADED__) {
 
       document
         .querySelectorAll(".admin-only,.client-only")
-        .forEach(el => el.classList.add("hidden"));
+        .forEach((el) => el.classList.add("hidden"));
 
       toggleGlobalNotificationDot(false);
       setAdminOrdersCount(0);
       setMyOrdersCount(0);
 
       notif && notif.classList.add("hidden");
-      setupHeaderSearch(null);
+      setupHeaderSearch();
       setupDrawerFilters();
       return;
     }
 
-    // -----------------------------
-    // USUARIO LOGUEADO
-    // -----------------------------
     header.classList.add("logged");
     header.classList.remove("no-user");
     drawer.classList.add("logged");
     drawer.classList.remove("no-user");
 
     $("avatar-user") &&
-      ($("avatar-user").src = user.photo_url || "/imagenes/avatar-default.svg");
+      ($("avatar-user").src =
+        user.photo_url || "/imagenes/avatar-default.svg");
     $("avatar-user-drawer") &&
-      ($("avatar-user-drawer").src = user.photo_url || "/imagenes/avatar-default.svg");
+      ($("avatar-user-drawer").src =
+        user.photo_url || "/imagenes/avatar-default.svg");
 
-    $("drawer-name") && ($("drawer-name").textContent = user.name || "Usuario");
-    $("drawer-email") && ($("drawer-email").textContent = user.email || "");
+    $("drawer-name") &&
+      ($("drawer-name").textContent = user.name || "Usuario");
+    $("drawer-email") &&
+      ($("drawer-email").textContent = user.email || "");
 
     const isAdmin = user.rol === "admin";
 
-    document.querySelectorAll(".admin-only").forEach(el =>
-      el.classList.toggle("hidden", !isAdmin)
-    );
-    document.querySelectorAll(".client-only").forEach(el =>
-      el.classList.toggle("hidden", isAdmin)
-    );
+    document
+      .querySelectorAll(".admin-only")
+      .forEach((el) => el.classList.toggle("hidden", !isAdmin));
+    document
+      .querySelectorAll(".client-only")
+      .forEach((el) => el.classList.toggle("hidden", isAdmin));
 
     if (notif) {
       notif.classList.remove("hidden");
       notif.href = isAdmin
         ? "/pages/admin/admin-pedidos.html"
         : "/pages/profile/mis-pedidos.html";
-
-      notif.onclick = () => {
-        document.dispatchEvent(
-          new CustomEvent("notification:opened", {
-            detail: { role: user.rol }
-          })
-        );
-      };
     }
 
-    setupHeaderSearch(user);
+    setupHeaderSearch();
     setupDrawerFilters();
   }
 
   /* =====================================================
-     🔍 DRAWER FILTERS (MOBILE)
+     🔍 DRAWER FILTERS
   ===================================================== */
   function setupDrawerFilters() {
     const filterSection = $("drawer-filters-section");
@@ -173,7 +162,6 @@ if (!window.__HEADER_CORE_LOADED__) {
 
     const isVisible = !headerFilter.classList.contains("hidden");
     filterSection.classList.toggle("hidden", !isVisible);
-
     if (!isVisible) return;
 
     container.innerHTML = "";
@@ -181,15 +169,6 @@ if (!window.__HEADER_CORE_LOADED__) {
     const mobileFilter = headerFilter.cloneNode(true);
     mobileFilter.id = "drawer-status-filter";
     mobileFilter.classList.remove("hidden");
-
-    Object.assign(mobileFilter.style, {
-      width: "100%",
-      height: "44px",
-      borderRadius: "8px",
-      margin: "8px 0",
-      background: "rgba(255,255,255,0.05)",
-      color: "#fff"
-    });
 
     mobileFilter.onchange = (e) => {
       headerFilter.value = e.target.value;
@@ -217,15 +196,14 @@ if (!window.__HEADER_CORE_LOADED__) {
     const isMyOrders = path.includes("mis-pedidos.html");
     const shouldShowSearch = isMainAdmin || isOrdersAdmin || isMyOrders;
 
-    // Página sin buscador (Home, Shop, etc)
     if (!searchWrap || !searchInput) {
       staticTitles && staticTitles.classList.remove("hidden");
       return;
     }
 
-    // Reset seguro
     searchWrap.classList.toggle("hidden", !shouldShowSearch);
-    staticTitles && staticTitles.classList.toggle("hidden", shouldShowSearch);
+    staticTitles &&
+      staticTitles.classList.toggle("hidden", shouldShowSearch);
     statusFilter && statusFilter.classList.add("hidden");
     addBtn && addBtn.classList.add("hidden");
 
@@ -237,7 +215,8 @@ if (!window.__HEADER_CORE_LOADED__) {
     } else {
       searchInput.placeholder = "Buscar pedido…";
       statusFilter && statusFilter.classList.remove("hidden");
-      statusFilter && (statusFilter.value = isOrdersAdmin ? "new" : "all");
+      statusFilter &&
+        (statusFilter.value = isOrdersAdmin ? "new" : "all");
     }
 
     searchInput.oninput = (e) => {
@@ -246,15 +225,17 @@ if (!window.__HEADER_CORE_LOADED__) {
       );
     };
 
-    statusFilter && (statusFilter.onchange = (e) => {
-      document.dispatchEvent(
-        new CustomEvent("header:filter", { detail: e.target.value })
-      );
-    });
+    statusFilter &&
+      (statusFilter.onchange = (e) => {
+        document.dispatchEvent(
+          new CustomEvent("header:filter", { detail: e.target.value })
+        );
+      });
 
-    addBtn && (addBtn.onclick = () => {
-      document.dispatchEvent(new CustomEvent("header:add-click"));
-    });
+    addBtn &&
+      (addBtn.onclick = () => {
+        document.dispatchEvent(new CustomEvent("header:add-click"));
+      });
   }
 
   /* =====================================================
@@ -287,134 +268,113 @@ if (!window.__HEADER_CORE_LOADED__) {
     drawer.classList.contains("open") ? closeDrawer() : openDrawer();
   }
 
-/* =====================================================
-   INIT HEADER — DEFINITIVO (EVENTOS ESTABLES)
-===================================================== */
-let HEADER_INITIALIZED = false;
+  /* =====================================================
+     INIT HEADER
+  ===================================================== */
+  let HEADER_INITIALIZED = false;
 
-function initHeader() {
-  if (HEADER_INITIALIZED) return;
-  HEADER_INITIALIZED = true;
+  function initHeader() {
+    if (HEADER_INITIALIZED) return;
+    HEADER_INITIALIZED = true;
 
-  console.log("🧭 initHeader → binding eventos");
+    const btnMenu = $("menu-toggle");
+    btnMenu &&
+      btnMenu.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleDrawer();
+      });
 
-  /* 1. 🍔 MENÚ HAMBURGUESA (MÓVIL) */
-  const btnMenu = $("menu-toggle");
-  if (btnMenu) {
-    btnMenu.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      console.log("🍔 Click hamburguesa");
-      toggleDrawer();
-    });
-  }
+    const avatarBtn = document.querySelector(
+      "#btn-header-user .header-avatar-button"
+    );
+    avatarBtn &&
+      avatarBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleDrawer();
+      });
 
-  /* 2. 👤 AVATAR / PERFIL (PC)
-     ⚠️ Escuchar en el BOTÓN real, no en el div */
-  const avatarBtn = document.querySelector(
-    "#btn-header-user .header-avatar-button"
-  );
-  if (avatarBtn) {
-    avatarBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      console.log("👤 Click avatar");
-      toggleDrawer();
-    });
-  }
+    const btnCart = $("cart-btn");
+    btnCart &&
+      btnCart.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        window.location.href = "/pages/shop/carrito.html";
+      });
 
-  /* 3. 🛒 CARRITO (UNIVERSAL) */
-  const btnCart = $("cart-btn");
-  if (btnCart) {
-    btnCart.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      console.log("🛒 Click carrito");
-      window.location.href = "/pages/shop/carrito.html";
-    });
-  }
-
-  /* 4. 🫥 SCRIM (CIERRE DRAWER) */
-  const scrim = $("user-scrim");
-  if (scrim) {
-    scrim.addEventListener("click", (e) => {
-      e.preventDefault();
-      closeDrawer();
-    });
-  }
-
-  /* 5. 🚪 LOGOUT */
-  const logoutBtn = $("logout-btn");
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", async (e) => {
-      e.preventDefault();
-      try {
-        if (window.supabaseClient) {
-          await window.supabaseClient.auth.signOut();
-        }
-      } catch (err) {
-        console.error("❌ Error logout:", err);
-      } finally {
+    const scrim = $("user-scrim");
+    scrim &&
+      scrim.addEventListener("click", (e) => {
+        e.preventDefault();
         closeDrawer();
-        window.location.href = "/pages/home/index.html";
-      }
+      });
+
+    const logoutBtn = $("logout-btn");
+    logoutBtn &&
+      logoutBtn.addEventListener("click", async (e) => {
+        e.preventDefault();
+        try {
+          if (window.supabaseClient) {
+            await window.supabaseClient.auth.signOut();
+          }
+        } finally {
+          closeDrawer();
+          window.location.href = "/pages/home/index.html";
+        }
+      });
+
+    syncUserUI();
+    updateCartCount();
+    updateHeaderCartTitle();
+  }
+
+  /* =====================================================
+     EVENTOS GLOBALES
+  ===================================================== */
+  if (!window.__HEADER_GLOBAL_EVENTS__) {
+    window.__HEADER_GLOBAL_EVENTS__ = true;
+
+    window.addEventListener("cartUpdated", () => {
+      updateCartCount();
+      updateHeaderCartTitle();
+    });
+
+    document.addEventListener("userLoggedIn", () => {
+      syncUserUI();
+      updateCartCount();
+      updateHeaderCartTitle();
+    });
+
+    document.addEventListener("userLoggedOut", () => {
+      syncUserUI();
+      updateCartCount();
+      updateHeaderCartTitle();
+      toggleGlobalNotificationDot(false);
+      setAdminOrdersCount(0);
+      setMyOrdersCount(0);
     });
   }
 
-  /* 🔄 SINCRONIZACIÓN UI */
-  syncUserUI();
-  updateCartCount();
-  updateHeaderCartTitle();
+  window.initHeader = initHeader;
 
-  requestAnimationFrame(() => {
-    if (typeof window.syncNotificationsAll === "function") {
-      window.syncNotificationsAll();
-    }
-  });
-}
+  if (
+    document.readyState === "complete" ||
+    document.readyState === "interactive"
+  ) {
+    setTimeout(initHeader, 10);
+  } else {
+    document.addEventListener("DOMContentLoaded", initHeader);
+  }
 
-/* =====================================================
-   EVENTOS GLOBALES (UNA SOLA VEZ)
-===================================================== */
-if (!window.__HEADER_GLOBAL_EVENTS__) {
-  window.__HEADER_GLOBAL_EVENTS__ = true;
+  /* =====================================================
+     LEGACY (NO TOCAR)
+  ===================================================== */
+  window.syncHeaderCounter = function () {
+    window.dispatchEvent(new Event("cartUpdated"));
+  };
 
-  window.addEventListener("cartUpdated", () => {
-    updateCartCount();
-    updateHeaderCartTitle();
-  });
-
-  document.addEventListener("userLoggedIn", () => {
+  window.syncHeaderUser = function () {
     syncUserUI();
-    updateCartCount();
-    updateHeaderCartTitle();
-    document.dispatchEvent(new Event("initNotifications"));
-  });
-
-  document.addEventListener("userLoggedOut", () => {
-    syncUserUI();
-    updateCartCount();
-    updateHeaderCartTitle();
-    toggleGlobalNotificationDot(false);
-    setAdminOrdersCount(0);
-    setMyOrdersCount(0);
-    document.dispatchEvent(new Event("destroyNotifications"));
-  });
+  };
 }
-
-window.initHeader = initHeader;
-
-/* Auto-init seguro */
-if (document.readyState === "complete" || document.readyState === "interactive") {
-  setTimeout(initHeader, 10);
-} else {
-  document.addEventListener("DOMContentLoaded", initHeader);
-}
-
-/* =====================================================
-   LEGACY
-===================================================== */
-window.syncHeaderCounter = function () {
-  window.dispatchEvent(new Event("cartUpdated"));
-};
-   
