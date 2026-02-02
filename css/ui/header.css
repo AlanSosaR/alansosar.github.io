@@ -1236,6 +1236,31 @@ body {
   }
 }
 
+/* =====================================================
+   FIX CRÍTICO GLOBAL — HEADER CLICKEABLE
+===================================================== */
+
+/* El overlay central NO debe capturar clicks */
+.header-search-wrap {
+  pointer-events: none;
+}
+
+/* SOLO los elementos interactivos del buscador */
+.header-search-wrap input,
+.header-search-wrap button,
+.header-search-wrap select {
+  pointer-events: auto;
+}
+
+/* Blindaje: header y acciones siempre clickeables */
+header.header-fixed,
+.header-left,
+.header-right,
+.menu-toggle,
+#cart-btn,
+#btn-header-user {
+  pointer-events: auto;
+}
 
 
 /* =====================================================
