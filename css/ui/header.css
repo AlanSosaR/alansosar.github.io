@@ -116,56 +116,189 @@ body.page-carrito .header-cart-title {
 }
 
 /* =====================================================
-   BARRA DE BÚSQUEDA DINÁMICA (M3 EXPRESSIVE)
+   BARRA DE BÚSQUEDA DINÁMICA — M3 EXPRESSIVE (CORREGIDA)
+   ✔ No bloquea clics
+   ✔ No crea overlays fantasma
+   ✔ Compatible PC + Móvil
 ===================================================== */
+
+/* =========================
+   CONTENEDOR BÚSQUEDA
+========================= */
 .header-search-wrap {
   flex: 1;
   display: flex;
   justify-content: center;
+
   padding: 0 16px;
   max-width: 600px;
   margin: 0 auto;
+
+  position: relative;       /* 🔑 NO absolute en desktop */
+  z-index: 1;               /* 🔑 Siempre debajo de botones */
+  pointer-events: auto;     /* 🔑 PERMITE interacción */
 }
 
+/* =========================
+   CAJA BÚSQUEDA
+========================= */
 .header-search-box {
   width: 100%;
   height: 48px;
-  background: #f1f3f4;
-  /* M3 surface container */
-  border-radius: 28px;
-  /* M3 extra rounded */
+
   display: flex;
   align-items: center;
+
   padding: 0 8px 0 16px;
-  transition: background 0.2s, box-shadow 0.2s;
+  border-radius: 28px;
+
+  background: #f1f3f4;
   box-shadow: none;
+
+  transition: background .2s ease, box-shadow .2s ease;
+  pointer-events: auto;     /* 🔑 */
 }
 
 .header-search-box:focus-within {
   background: #fff;
-  box-shadow: 0 1px 3px rgba(60, 64, 67, .3), 0 4px 8px 3px rgba(60, 64, 67, .15);
+  box-shadow:
+    0 1px 3px rgba(60, 64, 67, .3),
+    0 4px 8px rgba(60, 64, 67, .15);
 }
 
+/* Icono */
 .header-search-box .search-icon {
-  color: #5f6368;
   margin-right: 12px;
   font-size: 22px;
+  color: #5f6368;
   user-select: none;
+  pointer-events: none;     /* 🔑 no roba foco */
 }
 
+/* Input */
 #header-search-input {
   flex: 1;
+  height: 100%;
+
   border: none;
-  background: transparent;
   outline: none;
+  background: transparent;
+
   font-family: inherit;
   font-size: 1rem;
   color: var(--marron);
-  height: 100%;
+
+  pointer-events: auto;
 }
 
 #header-search-input::placeholder {
   color: #70757a;
+}
+
+/* =========================
+   FILTRO DE ESTADO
+========================= */
+.header-status-filter {
+  height: 36px;
+  margin-left: 8px;
+  padding: 0 12px;
+
+  border: none;
+  border-radius: 18px;
+  outline: none;
+
+  font-family: inherit;
+  font-size: .85rem;
+  color: var(--marron);
+
+  background: rgba(0, 0, 0, .05);
+  cursor: pointer;
+
+  pointer-events: auto;
+}
+
+.header-status-filter:hover {
+  background: rgba(0, 0, 0, .08);
+}
+
+/* =========================
+   BOTÓN AGREGAR
+========================= */
+.header-add-btn {
+  width: 36px;
+  height: 36px;
+  margin-left: 8px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  border-radius: 50%;
+
+  background: var(--verde);
+  color: #fff;
+  cursor: pointer;
+
+  transition: transform .2s ease, box-shadow .2s ease;
+  pointer-events: auto;
+}
+
+.header-add-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 2px 6px rgba(0,0,0,.2);
+}
+
+.header-add-btn .material-symbols-outlined {
+  font-size: 20px;
+}
+
+/* =====================================================
+   TÍTULOS ESTÁTICOS (CENTRO)
+   ⚠️ NO deben capturar clics
+===================================================== */
+.header-titles-wrap {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+
+  position: relative;
+  z-index: 0;               /* 🔑 debajo de botones */
+  pointer-events: none;     /* 🔑 CLAVE */
+}
+
+/* =====================================================
+   MOBILE — COMPORTAMIENTO CONTROLADO
+===================================================== */
+@media (max-width: 900px) {
+
+  /* Búsqueda centrada sin bloquear */
+  .header-search-wrap {
+    position: absolute;
+    left: 72px;
+    right: 72px;
+
+    padding: 0;
+    max-width: none;
+
+    z-index: 1;
+    pointer-events: auto;
+  }
+
+  .header-search-box {
+    height: 40px;
+  }
+
+  /* Filtro solo en drawer */
+  .header-status-filter {
+    display: none !important;
+  }
+
+  /* Cuando la página NO debe mostrar buscador */
+  .header-fixed.no-search .header-search-wrap {
+    display: none !important;
+    pointer-events: none !important;
+  }
 }
 
 /* Filtro de Estado */
