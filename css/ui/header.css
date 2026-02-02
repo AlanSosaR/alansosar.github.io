@@ -1338,7 +1338,50 @@ body {
 
 
 
+/* =====================================================
+   FIX FINAL — HEADER CLICKEABLE (ANTI BLOQUEO REAL)
+   🔒 NO TOCAR JS
+===================================================== */
 
+header.header-fixed {
+  pointer-events: none; /* 🔑 libera todo el header */
+}
+
+/* SOLO los controles reales reciben interacción */
+#menu-toggle,
+#menu-toggle *,
+#cart-btn,
+#cart-btn *,
+#btn-header-user,
+#btn-header-user *,
+.header-avatar-button,
+.header-avatar-button * {
+  pointer-events: auto !important;
+  z-index: 3000 !important;
+  position: relative;
+}
+
+/* Capas decorativas SIEMPRE mudas */
+.header-search-wrap,
+.header-titles-wrap,
+.header-cart-title,
+.header-center,
+.header-logo-link {
+  pointer-events: none !important;
+}
+
+/* Blindaje móvil */
+@media (max-width: 900px) {
+  header.header-fixed {
+    pointer-events: none;
+  }
+
+  .menu-toggle,
+  #cart-btn {
+    pointer-events: auto !important;
+    z-index: 3000 !important;
+  }
+}
 
 /* =====================================================
    TÍTULOS CENTRALES — VISIBILIDAD POR PÁGINA
