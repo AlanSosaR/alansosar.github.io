@@ -1237,61 +1237,96 @@ body {
 }
 
 /* =====================================================
-   FIX FINAL — HEADER CLICKEABLE Y ALINEADO (M3)
+   FIX GLOBAL: INTERACTIVIDAD Y VISIBILIDAD MÓVIL
 ===================================================== */
 
-/* 1. Asegurar que el Header sea la base de todo */
-header.header-fixed {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-}
-
-/* 2. Capas centrales: El secreto es pointer-events: none.
-      Esto permite que los clics "atraviesen" el contenedor 
-      y lleguen a los botones de atrás si es necesario. */
+/* 1. ASEGURAR CLICS (Evitar que el buscador o títulos bloqueen botones) */
 .header-search-wrap,
-.header-titles-wrap {
-  position: relative;
-  z-index: 5;
-  pointer-events: none; /* No intercepta clics */
-  display: flex;
-  justify-content: center;
-  flex: 1;
-}
-
-/* 3. Reactivar clics en los elementos internos.
-      Sin esto, no podrías escribir en el buscador. */
-.header-search-box,
-.header-search-wrap input,
-.header-search-wrap button,
-.header-search-wrap select,
+.header-titles-wrap,
 .header-static-titles {
-  pointer-events: auto; /* Estos SÍ reciben clics */
+  pointer-events: none !important; /* Los clics atraviesan estas capas */
 }
 
-/* 4. Prioridad absoluta para botones laterales (Hamburguesa y Acciones).
-      Elevamos su z-index y forzamos su interactividad. */
-.menu-toggle,
-.header-logo-link,
-.header-right,
-.header-actions {
-  position: relative;
-  z-index: 1010; /* Por encima de .header-search-wrap */
+/* Reactivar clics solo en los inputs y botones reales del buscador */
+.header-search-box,
+#header-search-input,
+.header-status-filter,
+.header-add-btn,
+#header-filter-mobile {
   pointer-events: auto !important;
 }
 
-/* 5. Fix para móviles: Evitar que el buscador tape visualmente 
-      los botones si se expande demasiado. */
-@media (max-width: 768px) {
-  .header-search-box {
-    max-width: calc(100vw - 120px); /* Deja espacio para el menú y el carrito */
-    margin: 0 auto;
+/* 2. PRIORIDAD DE BOTONES LATERALES */
+#menu-toggle,
+#cart-btn,
+.header-logo-link,
+.header-actions {
+  position: relative;
+  z-index: 1010 !important;
+  pointer-events: auto !important; /* Siempre clickeables */
+}
+
+/* =====================================================
+   VISTA MÓVIL — LIMPIEZA TOTAL (SOLO MENÚ Y CARRITO)
+===================================================== */
+@media (max-width: 900px) {
+  
+  /* Ocultar avatar, login y elementos desktop */
+  #btn-header-user,
+  .header-avatar-button,
+  .login-link,
+  #login-desktop,
+  .desktop-only,
+  #avatar-notification-badge {
+    display: none !important;
   }
+
+  /* Ocultar Logo en móvil para maximizar limpieza */
+  .header-logo-link {
+    display: none !important;
+  }
+
+  /* Ajuste de Header para alineación perfecta */
+  header.header-fixed {
+    height: 64px;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Hamburguesa a la izq, Carrito a la der */
+  }
+
+  /* Asegurar que la Hamburguesa esté en su sitio */
+  .menu-toggle {
+    display: flex !important;
+    position: relative !important;
+    left: 0 !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12); /* Sombra más sutil estilo M3 */
+  }
+
+  /* Asegurar que el Carrito esté en su sitio */
+  #cart-btn {
+    display: flex !important;
+    position: relative !important;
+    right: 0 !important;
+    top: 0 !important;
+    transform: none !important;
+  }
+
+  /* Ocultar el buscador en la vista inicial de móvil si interfiere con el diseño limpio */
+  .header-search-wrap {
+    display: none !important;
+  }
+}
+
+/* =====================================================
+   AJUSTE DE CAPA SCRIM Y DRAWER (Z-INDEX)
+===================================================== */
+.user-scrim {
+  z-index: 1500 !important;
+}
+
+.user-drawer {
+  z-index: 2000 !important;
 }
 
 
