@@ -296,25 +296,25 @@ function initHeader() {
   if (HEADER_INITIALIZED) return;
   HEADER_INITIALIZED = true;
 
-  // 1. MENU HAMBURGUESA (Móvil)
+    // 1. MENU HAMBURGUESA (Móvil)
   const btnMenu = $("menu-toggle");
   if (btnMenu) {
-    // Eliminamos listeners previos para evitar duplicidad
-    btnMenu.replaceWith(btnMenu.cloneNode(true)); 
-    const newBtnMenu = $("menu-toggle");
-    newBtnMenu.addEventListener("click", (e) => {
+    btnMenu.onclick = (e) => {
       e.preventDefault();
-      e.stopPropagation(); // 🔑 Crucial: detiene que el buscador capture el click
+      e.stopPropagation();
+      console.log("🍔 Click en Hamburguesa"); // Debug
       toggleDrawer();
-    });
+    };
   }
 
   // 2. AVATAR / PERFIL (PC)
+  // Buscamos el ID del contenedor que pusiste en el HTML
   const btnUser = $("btn-header-user");
   if (btnUser) {
     btnUser.onclick = (e) => {
       e.preventDefault();
       e.stopPropagation();
+      console.log("👤 Click en Avatar PC"); // Debug
       toggleDrawer();
     };
   }
@@ -325,9 +325,11 @@ function initHeader() {
     btnCart.onclick = (e) => {
       e.preventDefault();
       e.stopPropagation();
+      console.log("🛒 Click en Carrito"); // Debug
       window.location.href = "/pages/shop/carrito.html";
     };
   }
+
 
   // 4. SCRIM (Cierre táctico)
   const scrim = $("user-scrim");
