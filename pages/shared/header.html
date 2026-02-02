@@ -4,99 +4,100 @@
 <header class="header-fixed no-user" id="main-header">
 
   <!-- HAMBURGUESA -->
-  <button id="menu-toggle" class="menu-toggle mobile-only" aria-label="Abrir menú">
+<button id="menu-toggle"
+        class="menu-toggle mobile-only"
+        aria-label="Abrir menú">
 
-    <span class="material-symbols-outlined">menu</span>
+  <span class="material-symbols-outlined">menu</span>
 
-    <!-- 🔔 Badge de notificación -->
-    <span id="menu-notification-badge" class="notification-badge hidden" aria-hidden="true">
-      <i class="fa-solid fa-bell"></i>
-    </span>
-  </button>
+  <!-- 🔔 Badge de notificación -->
+  <span id="menu-notification-badge"
+        class="notification-badge hidden"
+        aria-hidden="true">
+    <i class="fa-solid fa-bell"></i>
+  </span>
+</button>
 
   <!-- LOGO -->
-  <a href="/pages/home/index.html" class="header-logo-link">
-    <img src="/imagenes/logo.png" alt="Café Cortero" class="header-logo">
+  <a href="index.html" class="header-logo-link">
+    <img src="/imagenes/logo.png"
+         alt="Café Cortero"
+         class="header-logo">
   </a>
 
-  <!-- =====================================================
-       BARRA DE BÚSQUEDA DINÁMICA (M3)
-  ====================================================== -->
-  <div id="header-search-container" class="header-search-wrap hidden">
-    <div class="header-search-box">
-      <span class="material-symbols-outlined search-icon">search</span>
+  <!-- TÍTULOS CENTRALES -->
+  <span id="header-cart-title" class="header-cart-title hidden">
+    Tu selección de café (<span id="count-items">0 cafés</span>)
+  </span>
 
-      <!-- Búsqueda Principal -->
-      <input type="search" id="header-search-input" placeholder="Buscar…" aria-label="Buscar">
+  <span id="header-datos-title" class="header-cart-title hidden">
+    Detalles de entrega
+  </span>
 
-      <!-- Filtro de Estado (Pedidos / Mis Pedidos) -->
-      <select id="header-status-filter" class="header-status-filter hidden">
-        <option value="all">Filtro: Todos</option>
-        <option value="new">Nuevos</option>
-        <option value="processing">En preparación</option>
-        <option value="shipped">En camino</option>
-        <option value="delivered">Entregados</option>
-        <option value="cancelled">Cancelados</option>
-      </select>
+  <span id="header-recibo-title" class="header-cart-title hidden">
+    Resumen del pedido
+  </span>
 
-      <!-- Botón Acción (Agregar Producto) -->
-      <button id="header-add-btn" class="header-add-btn hidden" aria-label="Agregar">
-        <span class="material-symbols-outlined">add</span>
-      </button>
+  <span id="header-mis-pedidos-title" class="header-cart-title hidden">
+    Mis pedidos
+  </span>
+     
+<!-- ADMIN CAFÉS -->
+<span id="header-admin-cafes-title" class="header-cart-title hidden">
+  Cafés
+</span>
 
-      <!-- Botón Filtros (Mobile - Hoja/Menú) -->
-      <button id="header-filter-mobile" class="header-filter-mobile-btn mobile-only hidden" aria-label="Filtros">
-        <span class="material-symbols-outlined">filter_list</span>
-      </button>
-    </div>
-  </div>
+<span id="header-admin-add-cafe-title" class="header-cart-title hidden">
+  Agregar café
+</span>
 
-  <!-- TÍTULOS CENTRALES (SOLO PARA PÁGINAS SIN BÚSQUEDA) -->
-  <div id="header-static-titles" class="header-titles-wrap">
-    <span id="header-cart-title" class="header-cart-title hidden">
-      Tu selección de café (<span id="count-items">0 cafés</span>)
-    </span>
-    <span id="header-datos-title" class="header-cart-title hidden">
-      Detalles de entrega
-    </span>
-    <span id="header-recibo-title" class="header-cart-title hidden">
-      Resumen del pedido
-    </span>
-  </div>
+<span id="header-admin-edit-cafe-title" class="header-cart-title hidden">
+  Editar café
+</span>
 
   <!-- DERECHA -->
   <div class="header-right">
 
     <!-- NAV PÚBLICO (PC) -->
-    <nav id="public-nav" class="nav-links desktop-only no-user">
-      <a href="/pages/home/index.html#productos">Variedades de café</a>
-      <a href="/pages/home/index.html#nosotros">Quiénes somos</a>
-      <a href="/pages/home/index.html#contacto">Contáctanos</a>
+    <nav id="public-nav"
+         class="nav-links desktop-only no-user">
+      <a href="/index.html#productos">Variedades de café</a>
+      <a href="/index.html#nosotros">Quiénes somos</a>
+      <a href="/index.html#contacto">Contáctanos</a>
     </nav>
 
     <!-- ACCIONES -->
     <div class="header-actions">
 
       <!-- LOGIN -->
-      <a href="/pages/auth/login.html" id="login-desktop" class="login-link desktop-only no-user">
+      <a href="login.html"
+         id="login-desktop"
+         class="login-link desktop-only no-user">
         Iniciar sesión
       </a>
 
       <!-- AVATAR -->
-      <div id="btn-header-user" class="desktop-only logged">
+<div id="btn-header-user" class="desktop-only logged">
 
-        <!-- AVATAR REAL -->
-        <button class="header-avatar-button" aria-label="Perfil">
-          <img id="avatar-user" src="/imagenes/avatar-default.svg" alt="Usuario">
-        </button>
+  <!-- AVATAR REAL -->
+  <button class="header-avatar-button"
+          aria-label="Perfil">
+    <img id="avatar-user"
+         src="/imagenes/avatar-default.svg"
+         alt="Usuario">
+  </button>
 
-        <!-- 🔔 Badge de notificación -->
-        <span id="avatar-notification-badge" class="notification-badge hidden" aria-hidden="true">
-          <i class="fa-solid fa-bell"></i>
-        </span>
+  <!-- 🔔 Badge de notificación -->
+  <span id="avatar-notification-badge"
+        class="notification-badge hidden"
+        aria-hidden="true">
+    <i class="fa-solid fa-bell"></i>
+  </span>
 
-      </div> <!-- CARRITO -->
-      <button id="cart-btn" class="cart-button" aria-label="Ver carrito">
+</div>      <!-- CARRITO -->
+      <button id="cart-btn"
+              class="cart-button"
+              aria-label="Ver carrito">
         <i class="fa-solid fa-cart-shopping"></i>
         <span id="cart-count" class="cart-count">0</span>
       </button>
@@ -116,10 +117,13 @@
 <aside id="user-drawer" class="user-drawer">
 
   <!-- PERFIL -->
-  <a href="/pages/profile/perfil.html" class="user-drawer-profile-link logged">
+  <a href="perfil.html"
+     class="user-drawer-profile-link logged">
 
     <div class="user-drawer-avatar">
-      <img id="avatar-user-drawer" src="/imagenes/avatar-default.svg" alt="Usuario">
+      <img id="avatar-user-drawer"
+           src="/imagenes/avatar-default.svg"
+           alt="Usuario">
     </div>
 
     <div class="user-drawer-profile-texts">
@@ -133,87 +137,93 @@
   </a>
 
   <hr class="user-drawer-divider logged">
+     
+<!-- 🔔 NOTIFICACIÓN CONTEXTUAL (GLOBAL) -->
+<a id="drawer-notification"
+   class="drawer-notification hidden"
+   role="button"
+   aria-live="polite">
 
-  <!-- 🔔 NOTIFICACIÓN CONTEXTUAL (GLOBAL) -->
-  <a id="drawer-notification" class="drawer-notification hidden" role="button" aria-live="polite">
-
-    <div class="drawer-notification-icon">
-      <i class="fa-solid fa-bell"></i>
-    </div>
-
-    <div class="drawer-notification-text">
-      <strong id="drawer-notification-title">
-        Nuevo pedido
-      </strong>
-
-      <span id="drawer-notification-time">
-        hace 5 min
-      </span>
-
-      <p id="drawer-notification-message">
-        Hay 3 pedidos pendientes de revisión.
-      </p>
-    </div>
-  </a>
-
-  <!-- SECCIÓN DE FILTROS (MÓVIL — CONTEXTUAL) -->
-  <div id="drawer-filters-section" class="drawer-filters-section hidden">
-    <hr class="user-drawer-divider">
-    <p class="drawer-section-title">Filtros</p>
-
-    <!-- Filtros se inyectan o clonan aquí para móvil -->
-    <div id="drawer-filters-container" class="drawer-filters-container"></div>
+  <div class="drawer-notification-icon">
+    <i class="fa-solid fa-bell"></i>
   </div>
-  <!-- CLIENTE -->
-  <a href="/pages/profile/mis-pedidos.html" class="user-drawer-item logged client-only" id="mis-pedidos-item">
-    <span class="material-symbols-outlined">shopping_bag</span>
-    <span class="drawer-text">Mis pedidos</span>
-    <span class="drawer-badge hidden" id="my-orders-count">0</span>
-  </a>
 
-  <a href="/pages/profile/historial.html" class="user-drawer-item logged client-only">
+  <div class="drawer-notification-text">
+    <strong id="drawer-notification-title">
+      Nuevo pedido
+    </strong>
+
+    <span id="drawer-notification-time">
+      hace 5 min
+    </span>
+
+    <p id="drawer-notification-message">
+      Hay 3 pedidos pendientes de revisión.
+    </p>
+  </div>
+</a>
+  <!-- CLIENTE -->
+<a href="mis-pedidos.html"
+   class="user-drawer-item logged client-only"
+   id="mis-pedidos-item">
+  <span class="material-symbols-outlined">shopping_bag</span>
+  <span class="drawer-text">Mis pedidos</span>
+  <span class="drawer-badge hidden" id="my-orders-count">0</span>
+</a>
+
+  <a href="historial.html"
+     class="user-drawer-item logged client-only">
     <span class="material-symbols-outlined">history</span>
     Historial
   </a>
 
   <!-- ADMIN -->
 
-  <a href="/pages/admin/admin-pedidos.html" class="user-drawer-item admin-only">
-    <span class="material-symbols-outlined">inventory_2</span>
-    <span>Pedidos</span>
-    <span class="drawer-badge" id="admin-orders-count">0</span>
-  </a>
+<a href="/pages/admin/admin-pedidos.html"
+   class="user-drawer-item admin-only">
+  <span class="material-symbols-outlined">inventory_2</span>
+  <span>Pedidos</span>
+  <span class="drawer-badge" id="admin-orders-count">0</span>
+</a>
 
-  <a href="/pages/admin/admin-clientes.html" class="user-drawer-item admin-only hidden">
+  <a href="admin-clientes.html"
+     class="user-drawer-item admin-only hidden">
     <span class="material-symbols-outlined">groups</span>
     Clientes
   </a>
 
-  <a href="/pages/admin/admin-productos.html" class="user-drawer-item admin-only hidden">
+  <a href="/pages/admin/admin-productos.html"
+     class="user-drawer-item admin-only hidden">
     <span class="material-symbols-outlined">storefront</span>
     Productos
   </a>
 
-  <a href="/pages/admin/admin-usuarios.html" class="user-drawer-item admin-only hidden">
+  <a href="admin-usuarios.html"
+     class="user-drawer-item admin-only hidden">
     <span class="material-symbols-outlined">person</span>
     Usuarios
   </a>
 
-  <a href="/pages/admin/admin-configuracion.html" class="user-drawer-item admin-only hidden">
+  <a href="admin-configuracion.html"
+     class="user-drawer-item admin-only hidden">
     <span class="material-symbols-outlined">settings</span>
     Configuración
   </a>
 
   <!-- CONTENIDO (VISIBLE PARA TODOS) -->
-  <a href="/pages/home/index.html#productos" class="user-drawer-item no-user">
-    <span class="material-symbols-outlined">local_cafe</span>
-    Variedades de café
-  </a>
-  <a href="/pages/home/index.html#nosotros" class="user-drawer-item">
+<a href="/index.html#productos"
+   class="user-drawer-item no-user">
+  <span class="material-symbols-outlined">local_cafe</span>
+  Variedades de café
+</a>
+  <a href="/index.html#nosotros"
+     class="user-drawer-item">
     <span class="material-symbols-outlined">info</span>
     Quiénes somos
   </a>
-  <a href="/pages/home/index.html#contacto" class="user-drawer-item">
+
+  <a href="/index.html#contacto"
+     class="user-drawer-item">
     <span class="material-symbols-outlined">mail</span>
     Contáctanos
   </a>
@@ -221,13 +231,15 @@
   <hr class="user-drawer-divider">
 
   <!-- LOGOUT -->
-  <button id="logout-btn" class="user-drawer-item logout logged">
+  <button id="logout-btn"
+          class="user-drawer-item logout logged">
     <span class="material-symbols-outlined">logout</span>
     Cerrar sesión
   </button>
 
   <!-- LOGIN INVITADO -->
-  <a href="/pages/auth/login.html" class="user-drawer-item login no-user">
+  <a href="login.html"
+     class="user-drawer-item login no-user">
     <span class="material-symbols-outlined">login</span>
     Iniciar sesión
   </a>
