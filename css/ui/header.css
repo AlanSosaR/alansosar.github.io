@@ -412,12 +412,12 @@ body.page-carrito .header-cart-title {
 /* =========================
    CONTENEDORES (ANCLAJE)
 ========================= */
+/* Controles principales (alineados y clickeables) */
 #menu-toggle,
-#btn-header-user,
-#cart-btn {
+#cart-btn,
+#btn-header-user {
   position: relative;
-  overflow: visible;
-  z-index: 20; /* 🔑 más alto que el centro */
+  z-index: 10;
 }
 
 /* =========================
@@ -1237,30 +1237,32 @@ body {
 }
 
 /* =====================================================
-   FIX DEFINITIVO — HEADER CLICKEABLE (STACKING CORRECTO)
+   FIX FINAL — HEADER CLICKEABLE Y ALINEADO
 ===================================================== */
 
-/* El header define el contexto de capas */
+/* Contexto del header */
 header.header-fixed {
   position: fixed;
   z-index: 1000;
 }
 
-/* Capa central del header (search / títulos)
-   Visible pero SIEMPRE por debajo de los controles */
+/* Capa central (search / títulos)
+   NO debe interceptar clics */
 .header-search-wrap,
 .header-titles-wrap {
   position: relative;
   z-index: 1;
+  pointer-events: none;
 }
 
-/* Controles principales (menu ya corregido antes) */
-#cart-btn,
-#btn-header-user {
-  position: relative;
-  overflow: visible;
-  z-index: 20;
+/* SOLO los elementos interactivos del buscador */
+.header-search-wrap input,
+.header-search-wrap button,
+.header-search-wrap select {
+  pointer-events: auto;
 }
+
+
 
 
 /* =====================================================
