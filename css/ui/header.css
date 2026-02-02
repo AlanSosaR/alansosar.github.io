@@ -1237,29 +1237,29 @@ body {
 }
 
 /* =====================================================
-   FIX CRÍTICO GLOBAL — HEADER CLICKEABLE
+   FIX DEFINITIVO — HEADER CLICKEABLE (STACKING CORRECTO)
 ===================================================== */
 
-/* El overlay central NO debe capturar clicks */
-.header-search-wrap {
-  pointer-events: none;
+/* El header define el contexto de capas */
+header.header-fixed {
+  position: fixed;
+  z-index: 1000;
 }
 
-/* SOLO los elementos interactivos del buscador */
-.header-search-wrap input,
-.header-search-wrap button,
-.header-search-wrap select {
-  pointer-events: auto;
+/* Capa central del header (search / títulos)
+   Visible pero SIEMPRE por debajo de los controles */
+.header-search-wrap,
+.header-titles-wrap {
+  position: relative;
+  z-index: 1;
 }
 
-/* Blindaje: header y acciones siempre clickeables */
-header.header-fixed,
-.header-left,
-.header-right,
-.menu-toggle,
+/* Controles principales (menu ya corregido antes) */
 #cart-btn,
 #btn-header-user {
-  pointer-events: auto;
+  position: relative;
+  overflow: visible;
+  z-index: 20;
 }
 
 
