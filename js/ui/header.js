@@ -38,7 +38,6 @@ if (!window.__HEADER_CORE_LOADED__) {
   function setAdminOrdersCount(count) {
     const badge = $("admin-orders-count");
     if (!badge) return;
-
     badge.textContent = count;
     badge.classList.toggle("hidden", count === 0);
   }
@@ -46,7 +45,6 @@ if (!window.__HEADER_CORE_LOADED__) {
   function setMyOrdersCount(count) {
     const badge = $("my-orders-count");
     if (!badge) return;
-
     badge.textContent = count;
     badge.classList.toggle("hidden", count === 0);
   }
@@ -110,7 +108,9 @@ if (!window.__HEADER_CORE_LOADED__) {
       setAdminOrdersCount(0);
       setMyOrdersCount(0);
 
-      if (notif) notif.classList.add("hidden");
+      notif && notif.classList.add("hidden");
+      setupHeaderSearch(null);
+      setupDrawerFilters();
       return;
     }
 
@@ -139,10 +139,8 @@ if (!window.__HEADER_CORE_LOADED__) {
       el.classList.toggle("hidden", isAdmin)
     );
 
-    // -----------------------------
-    // 🔔 NOTIFICACIÓN CONTEXTUAL
-    // -----------------------------
     if (notif) {
+      notif.classList.remove("hidden");
       notif.href = isAdmin
         ? "/pages/admin/admin-pedidos.html"
         : "/pages/profile/mis-pedidos.html";
@@ -156,96 +154,107 @@ if (!window.__HEADER_CORE_LOADED__) {
       };
     }
 
-    // -----------------------------
-    // 🔍 CONFIGURACIÓN DE BÚSQUEDA ADAPTATIVA
-    // -----------------------------
     setupHeaderSearch(user);
     setupDrawerFilters();
   }
 
+  /* =====================================================
+     🔍 DRAWER FILTERS (MOBILE)
+  ===================================================== */
   function setupDrawerFilters() {
     const filterSection = $("drawer-filters-section");
     const container = $("drawer-filters-container");
     const headerFilter = $("header-status-filter");
 
-    if (!filterSection || !container || !headerFilter) return;
+    if (!filterSection || !container || !headerFilter) {
+      filterSection && filterSection.classList.add("hidden");
+      return;
+    }
 
-    // Solo mostrar si el filtro de cabecera es visible
     const isVisible = !headerFilter.classList.contains("hidden");
     filterSection.classList.toggle("hidden", !isVisible);
 
-    if (isVisible) {
-      container.innerHTML = "";
-      const mobileFilter = headerFilter.cloneNode(true);
-      mobileFilter.id = "drawer-status-filter";
-      mobileFilter.classList.remove("hidden");
-      mobileFilter.style.width = "100%";
-      mobileFilter.style.background = "rgba(255,255,255,0.05)";
-      mobileFilter.style.color = "#fff";
-      mobileFilter.style.height = "44px";
-      mobileFilter.style.borderRadius = "8px";
-      mobileFilter.style.margin = "8px 0";
+    if (!isVisible) return;
 
-      mobileFilter.onchange = (e) => {
-        headerFilter.value = e.target.value;
-        document.dispatchEvent(new CustomEvent("header:filter", { detail: e.target.value }));
-      };
+    container.innerHTML = "";
 
-      container.appendChild(mobileFilter);
-    }
+    const mobileFilter = headerFilter.cloneNode(true);
+    mobileFilter.id = "drawer-status-filter";
+    mobileFilter.classList.remove("hidden");
+
+    Object.assign(mobileFilter.style, {
+      width: "100%",
+      height: "44px",
+      borderRadius: "8px",
+      margin: "8px 0",
+      background: "rgba(255,255,255,0.05)",
+      color: "#fff"
+    });
+
+    mobileFilter.onchange = (e) => {
+      headerFilter.value = e.target.value;
+      document.dispatchEvent(
+        new CustomEvent("header:filter", { detail: e.target.value })
+      );
+    };
+
+    container.appendChild(mobileFilter);
   }
 
   /* =====================================================
-     🔍 BÚSQUEDA ADAPTATIVA (PAGE CONTEXT)
+     🔍 BÚSQUEDA ADAPTATIVA (HEADER)
   ===================================================== */
-  function setupHeaderSearch(user) {
+  function setupHeaderSearch() {
     const searchWrap = $("header-search-container");
     const searchInput = $("header-search-input");
     const statusFilter = $("header-status-filter");
     const addBtn = $("header-add-btn");
     const staticTitles = $("header-static-titles");
 
-    if (!searchWrap) return;
-
     const path = window.location.pathname;
     const isMainAdmin = path.includes("admin-productos.html");
     const isOrdersAdmin = path.includes("admin-pedidos.html");
     const isMyOrders = path.includes("mis-pedidos.html");
+    const shouldShowSearch = isMainAdmin || isOrdersAdmin || isMyOrders;
 
-    // Reset visibility
-    searchWrap.classList.add("hidden");
-    statusFilter.classList.add("hidden");
-    addBtn.classList.add("hidden");
-    staticTitles.classList.remove("hidden");
-
-    if (isMainAdmin || isOrdersAdmin || isMyOrders) {
-      searchWrap.classList.remove("hidden");
-      staticTitles.classList.add("hidden");
-
-      if (isMainAdmin) {
-        searchInput.placeholder = "Buscar café…";
-        addBtn.classList.remove("hidden");
-      } else if (isOrdersAdmin || isMyOrders) {
-        searchInput.placeholder = "Buscar pedido…";
-        statusFilter.classList.remove("hidden");
-        // Default filter logic for orders/my orders
-        if (isOrdersAdmin) statusFilter.value = "new";
-        else statusFilter.value = "all";
-      }
-
-      // Re-bind listeners
-      searchInput.oninput = (e) => {
-        document.dispatchEvent(new CustomEvent("header:search", { detail: e.target.value }));
-      };
-
-      statusFilter.onchange = (e) => {
-        document.dispatchEvent(new CustomEvent("header:filter", { detail: e.target.value }));
-      };
-
-      addBtn.onclick = () => {
-        document.dispatchEvent(new CustomEvent("header:add-click"));
-      };
+    // Página sin buscador (Home, Shop, etc)
+    if (!searchWrap || !searchInput) {
+      staticTitles && staticTitles.classList.remove("hidden");
+      return;
     }
+
+    // Reset seguro
+    searchWrap.classList.toggle("hidden", !shouldShowSearch);
+    staticTitles && staticTitles.classList.toggle("hidden", shouldShowSearch);
+    statusFilter && statusFilter.classList.add("hidden");
+    addBtn && addBtn.classList.add("hidden");
+
+    if (!shouldShowSearch) return;
+
+    if (isMainAdmin) {
+      searchInput.placeholder = "Buscar café…";
+      addBtn && addBtn.classList.remove("hidden");
+    } else {
+      searchInput.placeholder = "Buscar pedido…";
+      statusFilter && statusFilter.classList.remove("hidden");
+      statusFilter && (statusFilter.value = isOrdersAdmin ? "new" : "all");
+    }
+
+    searchInput.oninput = (e) => {
+      document.dispatchEvent(
+        new CustomEvent("header:search", { detail: e.target.value })
+      );
+    };
+
+    statusFilter && (statusFilter.onchange = (e) => {
+      document.dispatchEvent(
+        new CustomEvent("header:filter", { detail: e.target.value })
+      );
+    });
+
+    addBtn && (addBtn.onclick = () => {
+      document.dispatchEvent(new CustomEvent("header:add-click"));
+    });
   }
 
   /* =====================================================
@@ -300,12 +309,8 @@ if (!window.__HEADER_CORE_LOADED__) {
 
     $("logout-btn")?.addEventListener("click", async (e) => {
       e.preventDefault();
-      console.log("🚪 Logout (desde Header)");
-
       try {
         await window.supabaseClient.auth.signOut();
-      } catch (err) {
-        console.error("❌ Error en signOut:", err);
       } finally {
         closeDrawer();
       }
@@ -316,9 +321,8 @@ if (!window.__HEADER_CORE_LOADED__) {
     updateHeaderCartTitle();
 
     requestAnimationFrame(() => {
-      if (typeof window.syncNotificationsAll === "function") {
+      typeof window.syncNotificationsAll === "function" &&
         window.syncNotificationsAll();
-      }
     });
   }
 
@@ -353,7 +357,6 @@ if (!window.__HEADER_CORE_LOADED__) {
 
   window.initHeader = initHeader;
 
-  // Auto-init (Garantía ante inyección diferida)
   if (document.readyState === "complete" || document.readyState === "interactive") {
     setTimeout(initHeader, 10);
   } else {
