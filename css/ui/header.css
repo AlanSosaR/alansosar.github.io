@@ -1342,51 +1342,59 @@ body {
    FIX REAL — HEADER CLICKEABLE SIN ROMPER CARRITO
 ===================================================== */
 
-/* Capas decorativas NO capturan clics */
-.header-search-wrap,
+/* =====================================================
+   FIX REAL — HEADER CLICKEABLE (CORREGIDO)
+===================================================== */
+
+/* SOLO elementos realmente decorativos */
 .header-titles-wrap,
-.header-cart-title,
-.header-center {
-  pointer-events: none !important;
+.header-cart-title {
+  pointer-events: none;
 }
 
-/* Header vuelve a ser interactivo */
+/* ❌ NUNCA desactivar pointer-events del buscador */
+/* .header-search-wrap QUEDA FUERA */
+
+/* Header siempre interactivo */
 header.header-fixed {
   pointer-events: auto;
 }
 
-/* Controles reales */
+/* CONTROLES REALES — menú, carrito, avatar */
 #menu-toggle,
 #cart-btn,
-#btn-header-user {
+#btn-header-user,
+.header-avatar-button {
   pointer-events: auto !important;
   position: relative;
-  z-index: 3000;
+  z-index: 5000;
 }
 
-/* Asegura click en hijos */
+/* Hijos siempre clickeables */
 #menu-toggle *,
 #cart-btn *,
 #btn-header-user *,
-.header-avatar-button,
 .header-avatar-button * {
   pointer-events: auto !important;
 }
 
-/* Blindaje móvil */
+/* =====================================================
+   MÓVIL — FIX DEFINITIVO
+===================================================== */
 @media (max-width: 900px) {
 
-  header.header-fixed {
-    pointer-events: auto;
+  /* El buscador NO debe existir en móvil si no se usa */
+  .header-search-wrap {
+    display: none !important;
   }
 
-  .menu-toggle {
-    z-index: 4000 !important;
-  }
-
-  #cart-btn {
-    z-index: 4000 !important;
-    transform: none !important; /* evita deformación */
+  /* Evita hitbox roto por transforms */
+  #menu-toggle,
+  #cart-btn,
+  #btn-header-user,
+  .header-avatar-button {
+    transform: none !important;
+    z-index: 6000 !important;
   }
 }
 
