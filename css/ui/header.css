@@ -1240,31 +1240,29 @@ body {
    FIX GLOBAL: INTERACTIVIDAD Y VISIBILIDAD MÓVIL
 ===================================================== */
 
-/* 1. ASEGURAR CLICS (Evitar que el buscador o títulos bloqueen botones) */
-.header-search-wrap,
-.header-titles-wrap,
-.header-static-titles {
-  pointer-events: none !important; /* Los clics atraviesan estas capas */
+/* 🔑 SOLUCIÓN AL BLOQUEO DE CLICS */
+.header-search-wrap, 
+.header-titles-wrap {
+  pointer-events: none; /* Deja pasar los clics a lo que esté atrás */
 }
 
-/* Reactivar clics solo en los inputs y botones reales del buscador */
-.header-search-box,
-#header-search-input,
-.header-status-filter,
-.header-add-btn,
-#header-filter-mobile {
-  pointer-events: auto !important;
+/* Pero permite clics DENTRO del buscador cuando sea visible */
+.header-search-box, 
+#header-search-input, 
+#header-status-filter, 
+#header-add-btn {
+  pointer-events: auto;
 }
 
-/* 2. PRIORIDAD DE BOTONES LATERALES */
-#menu-toggle,
-#cart-btn,
-.header-logo-link,
-.header-actions {
-  position: relative;
+/* Asegurar que los botones laterales siempre estén arriba y sean clickeables */
+#menu-toggle, 
+#cart-btn, 
+#btn-header-user {
   z-index: 1010 !important;
-  pointer-events: auto !important; /* Siempre clickeables */
+  pointer-events: auto !important;
+  cursor: pointer;
 }
+
 
 /* =====================================================
    VISTA MÓVIL — LIMPIEZA TOTAL (SOLO MENÚ Y CARRITO)
