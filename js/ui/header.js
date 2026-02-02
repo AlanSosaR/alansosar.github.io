@@ -1,13 +1,18 @@
-console.log("🧭 header.js — UI CORE LIMPIO (CON HOOKS COMPLETOS)");
+console.log("🧭 header.js — CORE FINAL BLINDADO");
 
-if (!window.__HEADER_CORE_LOADED__) {
+/* =====================================================
+   GUARD GLOBAL
+===================================================== */
+if (window.__HEADER_CORE_LOADED__) {
+  console.warn("⚠️ header.js ya cargado, se ignora");
+} else {
   window.__HEADER_CORE_LOADED__ = true;
 
+  /* =====================================================
+     HELPERS
+  ===================================================== */
   const $ = (id) => document.getElementById(id);
 
-  /* =====================================================
-     HELPERS — USUARIO
-  ===================================================== */
   function getUserCache() {
     try {
       if (localStorage.getItem("cortero_logged") !== "1") return null;
@@ -18,40 +23,34 @@ if (!window.__HEADER_CORE_LOADED__) {
   }
 
   /* =====================================================
-     🔔 BADGE GLOBAL
+     BADGES
   ===================================================== */
   function toggleGlobalNotificationDot(show) {
-    const menuBadge = $("menu-notification-badge");
-    const avatarBadge = $("avatar-notification-badge");
-    [menuBadge, avatarBadge].forEach((badge) => {
-      if (badge) badge.classList.toggle("hidden", !show);
+    ["menu-notification-badge", "avatar-notification-badge"].forEach((id) => {
+      const el = $(id);
+      el && el.classList.toggle("hidden", !show);
     });
   }
   window.toggleGlobalNotificationDot = toggleGlobalNotificationDot;
 
-  /* =====================================================
-     📦 BADGES — PEDIDOS
-  ===================================================== */
   function setAdminOrdersCount(count) {
-    const badge = $("admin-orders-count");
-    if (badge) {
-      badge.textContent = count;
-      badge.classList.toggle("hidden", count === 0);
-    }
-  }
-
-  function setMyOrdersCount(count) {
-    const badge = $("my-orders-count");
-    if (badge) {
-      badge.textContent = count;
-      badge.classList.toggle("hidden", count === 0);
-    }
+    const el = $("admin-orders-count");
+    if (!el) return;
+    el.textContent = count;
+    el.classList.toggle("hidden", count === 0);
   }
   window.setAdminOrdersCount = setAdminOrdersCount;
+
+  function setMyOrdersCount(count) {
+    const el = $("my-orders-count");
+    if (!el) return;
+    el.textContent = count;
+    el.classList.toggle("hidden", count === 0);
+  }
   window.setMyOrdersCount = setMyOrdersCount;
 
   /* =====================================================
-     🛒 CARRITO
+     CART
   ===================================================== */
   function updateCartCount() {
     const badge = $("cart-count");
@@ -77,7 +76,30 @@ if (!window.__HEADER_CORE_LOADED__) {
   }
 
   /* =====================================================
-     PERFIL + ROLES
+     DRAWER
+  ===================================================== */
+  function openDrawer() {
+    $("user-drawer")?.classList.add("open");
+    $("user-scrim")?.classList.add("open");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeDrawer() {
+    $("user-drawer")?.classList.remove("open");
+    $("user-scrim")?.classList.remove("open");
+    document.body.style.overflow = "";
+  }
+
+  function toggleDrawer() {
+    $("user-drawer")?.classList.contains("open")
+      ? closeDrawer()
+      : openDrawer();
+  }
+
+  window.toggleDrawer = toggleDrawer;
+
+  /* =====================================================
+     USER UI
   ===================================================== */
   function syncUserUI() {
     const user = getUserCache();
@@ -87,266 +109,152 @@ if (!window.__HEADER_CORE_LOADED__) {
 
     if (!header || !drawer) return;
 
-    if (!user) {
-      header.classList.add("no-user");
-      header.classList.remove("logged");
-      drawer.classList.add("no-user");
-      drawer.classList.remove("logged");
+    header.classList.toggle("logged", !!user);
+    header.classList.toggle("no-user", !user);
+    drawer.classList.toggle("logged", !!user);
+    drawer.classList.toggle("no-user", !user);
 
-      document.querySelectorAll(".admin-only,.client-only").forEach((el) => el.classList.add("hidden"));
+    if (!user) {
       toggleGlobalNotificationDot(false);
-      
-      if (notif) notif.classList.add("hidden");
-      
-      setupHeaderSearch();
-      setupDrawerFilters();
+      setAdminOrdersCount(0);
+      setMyOrdersCount(0);
+      notif && notif.classList.add("hidden");
       return;
     }
 
-    header.classList.add("logged");
-    header.classList.remove("no-user");
-    drawer.classList.add("logged");
-    drawer.classList.remove("no-user");
-
-    const avatarSrc = user.photo_url || "/imagenes/avatar-default.svg";
-    if ($("avatar-user")) $("avatar-user").src = avatarSrc;
-    if ($("avatar-user-drawer")) $("avatar-user-drawer").src = avatarSrc;
-    if ($("drawer-name")) $("drawer-name").textContent = user.name || "Usuario";
-    if ($("drawer-email")) $("drawer-email").textContent = user.email || "";
+    const avatar = user.photo_url || "/imagenes/avatar-default.svg";
+    $("avatar-user") && ($("avatar-user").src = avatar);
+    $("avatar-user-drawer") && ($("avatar-user-drawer").src = avatar);
+    $("drawer-name") && ($("drawer-name").textContent = user.name || "Usuario");
+    $("drawer-email") && ($("drawer-email").textContent = user.email || "");
 
     const isAdmin = user.rol === "admin";
-    document.querySelectorAll(".admin-only").forEach((el) => el.classList.toggle("hidden", !isAdmin));
-    document.querySelectorAll(".client-only").forEach((el) => el.classList.toggle("hidden", isAdmin));
+    document
+      .querySelectorAll(".admin-only")
+      .forEach((el) => el.classList.toggle("hidden", !isAdmin));
+    document
+      .querySelectorAll(".client-only")
+      .forEach((el) => el.classList.toggle("hidden", isAdmin));
 
     if (notif) {
       notif.classList.remove("hidden");
-      notif.href = isAdmin ? "/pages/admin/admin-pedidos.html" : "/pages/profile/mis-pedidos.html";
+      notif.href = isAdmin
+        ? "/pages/admin/admin-pedidos.html"
+        : "/pages/profile/mis-pedidos.html";
     }
-
-    setupHeaderSearch();
-    setupDrawerFilters();
   }
 
   /* =====================================================
-     🔍 DRAWER FILTERS
+     SEARCH / FILTER (SE RESPETA)
   ===================================================== */
-  function setupDrawerFilters() {
-    const filterSection = $("drawer-filters-section");
-    const container = $("drawer-filters-container");
-    const headerFilter = $("header-status-filter");
+  function setupHeaderSearch() {
+    const wrap = $("header-search-container");
+    const input = $("header-search-input");
+    const filter = $("header-status-filter");
+    const addBtn = $("header-add-btn");
+    const titles = $("header-static-titles");
 
-    if (!filterSection || !container || !headerFilter) {
-      if (filterSection) filterSection.classList.add("hidden");
+    if (!wrap || !input) return;
+
+    const path = location.pathname;
+    const show =
+      path.includes("admin-productos") ||
+      path.includes("admin-pedidos") ||
+      path.includes("mis-pedidos");
+
+    wrap.classList.toggle("hidden", !show);
+    titles && titles.classList.toggle("hidden", show);
+
+    if (!show) return;
+
+    input.oninput = (e) =>
+      document.dispatchEvent(
+        new CustomEvent("header:search", { detail: e.target.value })
+      );
+
+    if (filter) {
+      filter.classList.toggle("hidden", !path.includes("admin-pedidos"));
+      filter.onchange = (e) =>
+        document.dispatchEvent(
+          new CustomEvent("header:filter", { detail: e.target.value })
+        );
+    }
+
+    addBtn &&
+      (addBtn.onclick = () =>
+        document.dispatchEvent(new CustomEvent("header:add-click")));
+  }
+
+  /* =====================================================
+     EVENT DELEGATION — 🔥 CLAVE 🔥
+  ===================================================== */
+  document.addEventListener("click", (e) => {
+    if (e.target.closest("#menu-toggle")) {
+      e.preventDefault();
+      toggleDrawer();
       return;
     }
 
-    // Solo mostrar si el filtro del header es visible (estamos en página de pedidos)
-    const isVisible = !headerFilter.classList.contains("hidden") && headerFilter.offsetParent !== null;
-    
-    filterSection.classList.toggle("hidden", !isVisible);
-    if (!isVisible) return;
-
-    container.innerHTML = "";
-    const mobileFilter = headerFilter.cloneNode(true);
-    mobileFilter.id = "drawer-status-filter";
-    mobileFilter.classList.remove("hidden");
-    mobileFilter.style.display = "block"; // Asegurar visibilidad
-    mobileFilter.style.width = "100%";
-    
-    mobileFilter.onchange = (e) => {
-      headerFilter.value = e.target.value;
-      document.dispatchEvent(new CustomEvent("header:filter", { detail: e.target.value }));
-    };
-    container.appendChild(mobileFilter);
-  }
-
-  /* =====================================================
-     🔍 BÚSQUEDA ADAPTATIVA
-  ===================================================== */
-  function setupHeaderSearch() {
-    const searchWrap = $("header-search-container");
-    const searchInput = $("header-search-input");
-    const statusFilter = $("header-status-filter");
-    const addBtn = $("header-add-btn");
-    const staticTitles = $("header-static-titles");
-
-    if (!searchWrap || !searchInput) return;
-
-    const path = window.location.pathname;
-    const isMainAdmin = path.includes("admin-productos.html");
-    const isOrdersAdmin = path.includes("admin-pedidos.html");
-    const isMyOrders = path.includes("mis-pedidos.html");
-    const shouldShowSearch = isMainAdmin || isOrdersAdmin || isMyOrders;
-
-    if (shouldShowSearch) {
-        searchWrap.classList.remove("hidden");
-        if (staticTitles) staticTitles.classList.add("hidden");
-        
-        if (addBtn) addBtn.classList.add("hidden");
-        if (statusFilter) statusFilter.classList.add("hidden");
-
-        if (isMainAdmin) {
-            searchInput.placeholder = "Buscar café…";
-            if (addBtn) addBtn.classList.remove("hidden");
-        } else {
-            searchInput.placeholder = "Buscar pedido…";
-            if (statusFilter) {
-                statusFilter.classList.remove("hidden");
-                statusFilter.value = isOrdersAdmin ? "new" : "all";
-            }
-        }
-
-        searchInput.oninput = (e) => {
-            document.dispatchEvent(new CustomEvent("header:search", { detail: e.target.value }));
-        };
-
-        if (statusFilter) {
-            statusFilter.onchange = (e) => {
-                document.dispatchEvent(new CustomEvent("header:filter", { detail: e.target.value }));
-            };
-        }
-
-        if (addBtn) {
-            addBtn.onclick = () => {
-                document.dispatchEvent(new CustomEvent("header:add-click"));
-            };
-        }
-    } else {
-        searchWrap.classList.add("hidden");
-        if (staticTitles) staticTitles.classList.remove("hidden");
-    }
-  }
-
-  /* =====================================================
-     DRAWER CONTROL
-  ===================================================== */
-  function openDrawer() {
-    const drawer = $("user-drawer");
-    const scrim = $("user-scrim");
-    if (drawer && scrim) {
-        drawer.classList.add("open");
-        scrim.classList.add("open");
-        document.body.style.overflow = "hidden";
-    }
-  }
-
-  function closeDrawer() {
-    const drawer = $("user-drawer");
-    const scrim = $("user-scrim");
-    if (drawer && scrim) {
-        drawer.classList.remove("open");
-        scrim.classList.remove("open");
-        document.body.style.overflow = "";
-    }
-  }
-
-  function toggleDrawer() {
-    const drawer = $("user-drawer");
-    if (drawer) {
-        drawer.classList.contains("open") ? closeDrawer() : openDrawer();
-    }
-  }
-
-  /* =====================================================
-     INIT HEADER
-  ===================================================== */
-  let HEADER_INITIALIZED = false;
-
-  function initHeader() {
-    if (HEADER_INITIALIZED) return;
-    HEADER_INITIALIZED = true;
-
-    /* ☰ MENÚ (Móvil) */
-    const btnMenu = $("menu-toggle");
-    if (btnMenu) {
-      btnMenu.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        toggleDrawer();
-      });
+    if (e.target.closest(".header-avatar-button")) {
+      e.preventDefault();
+      toggleDrawer();
+      return;
     }
 
-    /* 👤 AVATAR (PC) */
-    // Buscamos el botón dentro del contenedor o directamente por clase si es necesario
-    const avatarBtn = document.querySelector("#btn-header-user .header-avatar-button") || document.querySelector(".header-avatar-button");
-    if (avatarBtn) {
-      avatarBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        toggleDrawer();
-      });
+    if (e.target.closest("#cart-btn")) {
+      e.preventDefault();
+      location.href = "/pages/shop/carrito.html";
+      return;
     }
 
-    /* 🛒 CARRITO */
-    const btnCart = $("cart-btn");
-    if (btnCart) {
-      btnCart.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation(); // Evita que clicks fantasma cierren cosas
-        window.location.href = "/pages/shop/carrito.html";
-      });
+    if (e.target.closest("#user-scrim")) {
+      closeDrawer();
+      return;
     }
 
-    /* SCRIM */
-    const scrim = $("user-scrim");
-    if (scrim) {
-      scrim.addEventListener("click", (e) => {
-        e.preventDefault();
-        closeDrawer();
-      });
-    }
-
-    /* LOGOUT */
-    const logoutBtn = $("logout-btn");
-    if (logoutBtn) {
-      logoutBtn.addEventListener("click", async (e) => {
-        e.preventDefault();
+    if (e.target.closest("#logout-btn")) {
+      e.preventDefault();
+      (async () => {
         try {
-          if (window.supabaseClient) {
-            await window.supabaseClient.auth.signOut();
-          }
+          await window.supabaseClient?.auth.signOut();
         } finally {
           closeDrawer();
-          window.location.href = "/pages/home/index.html";
+          location.href = "/pages/home/index.html";
         }
-      });
+      })();
     }
-
-    // Inicializar UI
-    syncUserUI();
-    updateCartCount();
-    updateHeaderCartTitle();
-  }
+  });
 
   /* =====================================================
-     EVENTOS GLOBALES
+     EVENTS
   ===================================================== */
-  if (!window.__HEADER_GLOBAL_EVENTS__) {
-    window.__HEADER_GLOBAL_EVENTS__ = true;
-    window.addEventListener("cartUpdated", () => {
+  ["cartUpdated", "userLoggedIn", "userLoggedOut"].forEach((evt) =>
+    document.addEventListener(evt, () => {
+      syncUserUI();
       updateCartCount();
       updateHeaderCartTitle();
-    });
-    document.addEventListener("userLoggedIn", () => {
-      syncUserUI();
-      updateCartCount();
-    });
-    document.addEventListener("userLoggedOut", () => {
-      syncUserUI();
-      updateCartCount();
-    });
+    })
+  );
+
+  /* =====================================================
+     BOOT
+  ===================================================== */
+  function initHeader() {
+    syncUserUI();
+    setupHeaderSearch();
+    updateCartCount();
+    updateHeaderCartTitle();
+    console.log("✅ header.js listo (delegación activa)");
   }
 
-  // Exponer initHeader y ejecutar
-  window.initHeader = initHeader;
+  document.readyState === "loading"
+    ? document.addEventListener("DOMContentLoaded", initHeader)
+    : initHeader();
 
-  if (document.readyState === "complete" || document.readyState === "interactive") {
-    setTimeout(initHeader, 10);
-  } else {
-    document.addEventListener("DOMContentLoaded", initHeader);
-  }
-
-  /* LEGACY */
-  window.syncHeaderCounter = () => window.dispatchEvent(new Event("cartUpdated"));
+  /* =====================================================
+     LEGACY
+  ===================================================== */
+  window.syncHeaderCounter = () =>
+    window.dispatchEvent(new Event("cartUpdated"));
   window.syncHeaderUser = syncUserUI;
 }
