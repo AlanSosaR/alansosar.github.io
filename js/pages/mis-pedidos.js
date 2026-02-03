@@ -1,8 +1,8 @@
 /* ============================================================
-   📦 MIS PEDIDOS — UX FLUIDA (FINAL ESTABLE)
+   📦 MIS PEDIDOS — UX FLUIDA (FINAL DEFINITIVO)
 ============================================================ */
 
-console.log("📦 mis-pedidos.js — FINAL");
+console.log("📦 mis-pedidos.js — FINAL DEFINITIVO");
 
 const sb = () => window.supabaseClient;
 
@@ -35,6 +35,11 @@ function formatDateTime(dateStr) {
       minute: "2-digit",
     }),
   };
+}
+
+function normalizeOrderNumber(num) {
+  // 1 → 001 | 10 → 010
+  return String(num).padStart(3, "0");
 }
 
 /* ============================================================
@@ -72,24 +77,17 @@ async function init() {
   await esperarSupabase();
 
   const { data } = await sb().auth.getSession();
-  if (!data?.session) {
-    console.warn("🔐 Sin sesión");
-    return;
-  }
+  if (!data?.session) return;
 
   await loadOrders(data.session.user.id);
 
   if (!orders.length) {
-    showEmpty();
+    showGlobalEmpty();
     return;
   }
 
   bindHeaderEvents();
-
-  applyLocalFilters();      // ← filtro inicial (pending)
-  mostrarCarrusel();
-  selectOrder(0);
-
+  applyLocalFilters();
   startAutoRefresh(data.session.user.id);
 }
 
@@ -121,26 +119,37 @@ const STATUS_FILTER_MAP = {
 
 function applyLocalFilters() {
   filteredOrders = orders.filter((o) => {
+    /* STATUS */
     const matchStatus =
       STATUS_FILTER_MAP[currentFilter]?.includes(o.status) ?? true;
 
+    /* SEARCH */
     let matchSearch = true;
     if (currentSearch) {
-      const byNumber = String(o.order_number).includes(currentSearch);
+      const search = currentSearch;
+
+      const byNumber =
+        normalizeOrderNumber(o.order_number).includes(search) ||
+        String(o.order_number).includes(search);
+
       const byProduct = o.items?.some((i) =>
-        i.products?.name?.toLowerCase().includes(currentSearch)
+        i.products?.name?.toLowerCase().includes(search)
       );
+
       matchSearch = byNumber || byProduct;
     }
 
     return matchStatus && matchSearch;
   });
 
-  renderCarousel();
-
-  if (filteredOrders.length) {
-    selectOrder(0);
+  if (!filteredOrders.length) {
+    showFilteredEmpty();
+    return;
   }
+
+  hideFilteredEmpty();
+  renderCarousel();
+  selectOrder(0);
 }
 
 /* ============================================================
@@ -183,22 +192,46 @@ async function loadOrders(userId) {
     .eq("user_id", userId)
     .order("created_at", { ascending: false });
 
-  if (error) {
-    console.error("❌ Error pedidos", error);
-    orders = [];
-    return;
-  }
-
-  orders = data || [];
+  if (!error) orders = data || [];
 }
 
 /* ============================================================
-   UI VISIBILITY
+   EMPTY STATES
 ============================================================ */
-function mostrarCarrusel() {
-  $id("mis-pedidos-carrusel")?.classList.remove("hidden");
-  $id("pedido-activo")?.classList.remove("hidden");
+function showFilteredEmpty() {
+  $id("pedido-activo")?.classList.add("hidden");
+  $id("mis-pedidos-carrusel")?.classList.add("hidden");
+
+  const empty = $id("empty-state");
+  if (!empty) return;
+
+  const title = empty.querySelector(".empty-title");
+  const text = empty.querySelector(".empty-text");
+
+  const labels = {
+    pending: "No tienes pedidos pendientes",
+    processing: "No tienes pedidos en preparación",
+    shipped: "No tienes pedidos en camino",
+    delivered: "No tienes pedidos entregados",
+    cancelled: "No tienes pedidos cancelados",
+  };
+
+  title.textContent = labels[currentFilter] || "No hay pedidos";
+  text.textContent = currentSearch
+    ? "No se encontraron pedidos con ese criterio."
+    : "Cuando tengas pedidos en este estado, aparecerán aquí.";
+
+  empty.classList.remove("hidden");
+}
+
+function hideFilteredEmpty() {
   $id("empty-state")?.classList.add("hidden");
+  $id("pedido-activo")?.classList.remove("hidden");
+  $id("mis-pedidos-carrusel")?.classList.remove("hidden");
+}
+
+function showGlobalEmpty() {
+  showFilteredEmpty();
 }
 
 /* ============================================================
@@ -216,15 +249,14 @@ function renderCarousel() {
     const card = node.querySelector(".similar-card");
 
     node.querySelector(".pedido-mini-numero").textContent =
-      `N.º ${String(o.order_number).padStart(3, "0")}`;
+      `N.º ${normalizeOrderNumber(o.order_number)}`;
     node.querySelector(".pedido-mini-total").textContent =
       `L ${o.total.toFixed(2)}`;
 
-    const status = getStatusDetails(o.status, o.payment_method);
-    node.querySelector(".pedido-mini-status").textContent = status.label;
+    node.querySelector(".pedido-mini-status").textContent =
+      getStatusDetails(o.status, o.payment_method).label;
 
-    const img = node.querySelector(".pedido-mini-img");
-    img.src =
+    node.querySelector(".pedido-mini-img").src =
       o.payment_method === "cash"
         ? IMG_CASH
         : o.receipt?.[0]?.file_url || IMG_DEFAULT;
@@ -267,49 +299,13 @@ function renderPedidoActivo(pedido) {
   const status = getStatusDetails(pedido.status, pedido.payment_method);
   const { fecha, hora } = formatDateTime(pedido.created_at);
 
-  node.querySelector(".pedido-numero").textContent =
-    `Pedido N.º ${pedido.order_number}`;
+  node.querySelector(".pedido-numero").textContent = `Pedido N.º ${pedido.order_number}`;
   node.querySelector(".fecha").textContent = fecha;
   node.querySelector(".hora").textContent = hora;
   node.querySelector(".pedido-total").textContent = `L ${pedido.total.toFixed(2)}`;
-
-  node.querySelector(".entrega-text").textContent =
-    pedido.address
-      ? `${pedido.address.street}, ${pedido.address.city}`
-      : "—";
-
-  node.querySelector(".referencia-text").textContent =
-    pedido.order_notes || "Sin referencia";
-
   node.querySelector(".estado-nombre").textContent = status.label;
   node.querySelector(".estado-descripcion").textContent = status.desc;
   node.querySelector(".estado-paso").textContent = status.step;
-
-  const pasos = node.querySelectorAll(".estado-item");
-  pasos.forEach((li, i) => {
-    li.querySelector(".step-text").textContent = status.steps[i];
-    if (i + 1 < status.step) li.classList.add("completado");
-    if (i + 1 === status.step) li.classList.add("activo");
-  });
-
-  const pills = node.querySelector(".productos-pills");
-  pedido.items?.forEach((item) => {
-    const p = document.createElement("div");
-    p.className = "pill";
-    p.innerHTML = `
-      <span>${item.products.name} × ${item.quantity}</span>
-      <strong>L ${(item.quantity * item.price).toFixed(2)}</strong>
-    `;
-    pills.appendChild(p);
-  });
-
-  node.querySelector(".recibo-img").src =
-    pedido.payment_method === "cash"
-      ? IMG_CASH
-      : pedido.receipt?.[0]?.file_url || IMG_DEFAULT;
-
-  node.querySelector(".ver-recibo").onclick =
-    () => (location.href = `/pages/shop/recibo.html?id=${pedido.id}`);
 
   container.appendChild(node);
 }
@@ -333,15 +329,5 @@ function startAutoRefresh(userId) {
   autoRefresh = setInterval(async () => {
     await loadOrders(userId);
     applyLocalFilters();
-    selectOrder(activeIndex);
   }, 30000);
-}
-
-/* ============================================================
-   EMPTY
-============================================================ */
-function showEmpty() {
-  $id("pedido-activo")?.classList.add("hidden");
-  $id("mis-pedidos-carrusel")?.classList.add("hidden");
-  $id("empty-state")?.classList.remove("hidden");
 }
