@@ -1,8 +1,8 @@
 /* ============================================================
-   📦 MIS PEDIDOS — UX FLUIDA (FINAL DEFINITIVO)
+   📦 MIS PEDIDOS — UX FLUIDA (FINAL BLINDADO)
 ============================================================ */
 
-console.log("📦 mis-pedidos.js — FINAL DEFINITIVO");
+console.log("📦 mis-pedidos.js — FINAL BLINDADO");
 
 const sb = () => window.supabaseClient;
 
@@ -23,23 +23,27 @@ let currentFilter = "pending";
 const $id = (id) => document.getElementById(id);
 
 function formatDateTime(dateStr) {
-  const d = new Date(dateStr);
-  return {
-    fecha: d.toLocaleDateString("es-HN", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    }),
-    hora: d.toLocaleTimeString("es-HN", {
-      hour: "2-digit",
-      minute: "2-digit",
-    }),
-  };
+  try {
+    const d = new Date(dateStr);
+    if (isNaN(d)) throw new Error("Fecha inválida");
+    return {
+      fecha: d.toLocaleDateString("es-HN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      }),
+      hora: d.toLocaleTimeString("es-HN", {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+    };
+  } catch {
+    return { fecha: "--", hora: "--" };
+  }
 }
 
 function normalizeOrderNumber(num) {
-  // 1 → 001 | 10 → 010
-  return String(num).padStart(3, "0");
+  return String(num ?? "").padStart(3, "0");
 }
 
 /* ============================================================
@@ -74,21 +78,25 @@ function getStatusDetails(status, paymentMethod) {
 document.addEventListener("DOMContentLoaded", init);
 
 async function init() {
-  await esperarSupabase();
+  try {
+    await esperarSupabase();
 
-  const { data } = await sb().auth.getSession();
-  if (!data?.session) return;
+    const { data, error } = await sb().auth.getSession();
+    if (error || !data?.session) return;
 
-  await loadOrders(data.session.user.id);
+    await loadOrders(data.session.user.id);
 
-  if (!orders.length) {
-    showGlobalEmpty();
-    return;
+    if (!orders.length) {
+      showGlobalEmpty();
+      return;
+    }
+
+    bindHeaderEvents();
+    applyLocalFilters();
+    startAutoRefresh(data.session.user.id);
+  } catch (err) {
+    console.error("❌ Error init mis-pedidos:", err);
   }
-
-  bindHeaderEvents();
-  applyLocalFilters();
-  startAutoRefresh(data.session.user.id);
 }
 
 /* ============================================================
@@ -96,7 +104,7 @@ async function init() {
 ============================================================ */
 function bindHeaderEvents() {
   document.addEventListener("header:search", (e) => {
-    currentSearch = (e.detail || "").toLowerCase().trim();
+    currentSearch = String(e.detail || "").toLowerCase().trim();
     applyLocalFilters();
   });
 
@@ -110,7 +118,7 @@ function bindHeaderEvents() {
    FILTERS
 ============================================================ */
 const STATUS_FILTER_MAP = {
-  pending: ["pending", "payment_review"],
+  pending: ["pending", "payment_review", "paid"],
   processing: ["processing"],
   shipped: ["shipped"],
   delivered: ["delivered"],
@@ -118,38 +126,37 @@ const STATUS_FILTER_MAP = {
 };
 
 function applyLocalFilters() {
-  filteredOrders = orders.filter((o) => {
-    /* STATUS */
-    const matchStatus =
-      STATUS_FILTER_MAP[currentFilter]?.includes(o.status) ?? true;
+  try {
+    filteredOrders = orders.filter((o) => {
+      const matchStatus =
+        STATUS_FILTER_MAP[currentFilter]?.includes(o.status) ?? true;
 
-    /* SEARCH */
-    let matchSearch = true;
-    if (currentSearch) {
-      const search = currentSearch;
+      let matchSearch = true;
+      if (currentSearch) {
+        const byNumber =
+          normalizeOrderNumber(o.order_number).includes(currentSearch);
 
-      const byNumber =
-        normalizeOrderNumber(o.order_number).includes(search) ||
-        String(o.order_number).includes(search);
+        const byProduct = o.items?.some((i) =>
+          i.products?.name?.toLowerCase().includes(currentSearch)
+        );
 
-      const byProduct = o.items?.some((i) =>
-        i.products?.name?.toLowerCase().includes(search)
-      );
+        matchSearch = byNumber || byProduct;
+      }
 
-      matchSearch = byNumber || byProduct;
+      return matchStatus && matchSearch;
+    });
+
+    if (!filteredOrders.length) {
+      showFilteredEmpty();
+      return;
     }
 
-    return matchStatus && matchSearch;
-  });
-
-  if (!filteredOrders.length) {
-    showFilteredEmpty();
-    return;
+    hideFilteredEmpty();
+    renderCarousel();
+    selectOrder(0);
+  } catch (err) {
+    console.error("❌ Error filtros:", err);
   }
-
-  hideFilteredEmpty();
-  renderCarousel();
-  selectOrder(0);
 }
 
 /* ============================================================
@@ -171,28 +178,33 @@ function esperarSupabase() {
    LOAD ORDERS
 ============================================================ */
 async function loadOrders(userId) {
-  const { data, error } = await sb()
-    .from("orders")
-    .select(`
-      id,
-      order_number,
-      total,
-      status,
-      payment_method,
-      created_at,
-      order_notes,
-      address:addresses ( street, city ),
-      receipt:payment_receipts ( file_url ),
-      items:order_items (
-        quantity,
-        price,
-        products ( name )
+  try {
+    const { data, error } = await sb()
+      .from("orders")
+      .select(`
+        id,
+        order_number,
+        total,
+        status,
+        payment_method,
+        created_at,
+        order_notes,
+        receipt:payment_receipts ( file_url ),
+        items:order_items (
+          quantity,
+          price,
+          products ( name )
+        )
       )
-    `)
-    .eq("user_id", userId)
-    .order("created_at", { ascending: false });
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false });
 
-  if (!error) orders = data || [];
+    if (error) throw error;
+    orders = data || [];
+  } catch (err) {
+    console.error("❌ Error cargando pedidos:", err);
+    orders = [];
+  }
 }
 
 /* ============================================================
@@ -201,27 +213,7 @@ async function loadOrders(userId) {
 function showFilteredEmpty() {
   $id("pedido-activo")?.classList.add("hidden");
   $id("mis-pedidos-carrusel")?.classList.add("hidden");
-
-  const empty = $id("empty-state");
-  if (!empty) return;
-
-  const title = empty.querySelector(".empty-title");
-  const text = empty.querySelector(".empty-text");
-
-  const labels = {
-    pending: "No tienes pedidos pendientes",
-    processing: "No tienes pedidos en preparación",
-    shipped: "No tienes pedidos en camino",
-    delivered: "No tienes pedidos entregados",
-    cancelled: "No tienes pedidos cancelados",
-  };
-
-  title.textContent = labels[currentFilter] || "No hay pedidos";
-  text.textContent = currentSearch
-    ? "No se encontraron pedidos con ese criterio."
-    : "Cuando tengas pedidos en este estado, aparecerán aquí.";
-
-  empty.classList.remove("hidden");
+  $id("empty-state")?.classList.remove("hidden");
 }
 
 function hideFilteredEmpty() {
@@ -245,33 +237,35 @@ function renderCarousel() {
   wrap.innerHTML = "";
 
   filteredOrders.forEach((o, index) => {
-    const node = tpl.content.cloneNode(true);
-    const card = node.querySelector(".similar-card");
+    try {
+      const node = tpl.content.cloneNode(true);
+      const card = node.querySelector(".similar-card");
 
-    node.querySelector(".pedido-mini-numero").textContent =
-      `N.º ${normalizeOrderNumber(o.order_number)}`;
-    node.querySelector(".pedido-mini-total").textContent =
-      `L ${o.total.toFixed(2)}`;
+      node.querySelector(".pedido-mini-numero").textContent =
+        `N.º ${normalizeOrderNumber(o.order_number)}`;
+      node.querySelector(".pedido-mini-total").textContent =
+        `L ${Number(o.total).toFixed(2)}`;
 
-    node.querySelector(".pedido-mini-status").textContent =
-      getStatusDetails(o.status, o.payment_method).label;
+      node.querySelector(".pedido-mini-status").textContent =
+        getStatusDetails(o.status, o.payment_method).label;
 
-    node.querySelector(".pedido-mini-img").src =
-      o.payment_method === "cash"
-        ? IMG_CASH
-        : o.receipt?.[0]?.file_url || IMG_DEFAULT;
+      node.querySelector(".pedido-mini-img").src =
+        o.payment_method === "cash"
+          ? IMG_CASH
+          : o.receipt?.[0]?.file_url || IMG_DEFAULT;
 
-    if (index === activeIndex) card.classList.add("is-selected");
-    card.onclick = () => selectOrder(index);
-
-    wrap.appendChild(node);
+      card.onclick = () => selectOrder(index);
+      wrap.appendChild(node);
+    } catch (err) {
+      console.warn("⚠️ Error render card:", err);
+    }
   });
 
   bindCarouselArrows();
 }
 
 /* ============================================================
-   SELECCIÓN
+   SELECCIÓN + SCROLL
 ============================================================ */
 function selectOrder(index) {
   if (!filteredOrders[index]) return;
@@ -283,31 +277,53 @@ function selectOrder(index) {
   document.querySelectorAll(".similar-card")[index]?.classList.add("is-selected");
 
   renderPedidoActivo(filteredOrders[index]);
+
+  requestAnimationFrame(() => {
+    $id("pedido-activo")?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  });
 }
 
 /* ============================================================
    PEDIDO ACTIVO
 ============================================================ */
 function renderPedidoActivo(pedido) {
-  const container = $id("pedido-activo");
-  const tpl = $id("pedido-activo-template");
-  if (!container || !tpl) return;
+  try {
+    const container = $id("pedido-activo");
+    const tpl = $id("pedido-activo-template");
+    if (!container || !tpl) return;
 
-  container.innerHTML = "";
-  const node = tpl.content.cloneNode(true);
+    container.innerHTML = "";
+    const node = tpl.content.cloneNode(true);
 
-  const status = getStatusDetails(pedido.status, pedido.payment_method);
-  const { fecha, hora } = formatDateTime(pedido.created_at);
+    const status = getStatusDetails(pedido.status, pedido.payment_method);
+    const { fecha, hora } = formatDateTime(pedido.created_at);
 
-  node.querySelector(".pedido-numero").textContent = `Pedido N.º ${pedido.order_number}`;
-  node.querySelector(".fecha").textContent = fecha;
-  node.querySelector(".hora").textContent = hora;
-  node.querySelector(".pedido-total").textContent = `L ${pedido.total.toFixed(2)}`;
-  node.querySelector(".estado-nombre").textContent = status.label;
-  node.querySelector(".estado-descripcion").textContent = status.desc;
-  node.querySelector(".estado-paso").textContent = status.step;
+    node.querySelector(".pedido-numero").textContent = `Pedido N.º ${pedido.order_number}`;
+    node.querySelector(".fecha").textContent = fecha;
+    node.querySelector(".hora").textContent = hora;
+    node.querySelector(".pedido-total").textContent = `L ${Number(pedido.total).toFixed(2)}`;
+    node.querySelector(".estado-nombre").textContent = status.label;
+    node.querySelector(".estado-descripcion").textContent = status.desc;
 
-  container.appendChild(node);
+    const stepsWrap = node.querySelector(".estado-steps");
+    if (stepsWrap) {
+      stepsWrap.innerHTML = "";
+      status.steps.forEach((_, i) => {
+        const s = document.createElement("span");
+        s.className = "estado-step";
+        if (i + 1 <= status.step) s.classList.add("active");
+        s.textContent = i + 1;
+        stepsWrap.appendChild(s);
+      });
+    }
+
+    container.appendChild(node);
+  } catch (err) {
+    console.error("❌ Error render pedido activo:", err);
+  }
 }
 
 /* ============================================================
@@ -315,10 +331,12 @@ function renderPedidoActivo(pedido) {
 ============================================================ */
 function bindCarouselArrows() {
   const list = $id("pedidos-carrusel");
-  $id("pedidos-prev").onclick = () =>
-    list.scrollBy({ left: -300, behavior: "smooth" });
-  $id("pedidos-next").onclick = () =>
-    list.scrollBy({ left: 300, behavior: "smooth" });
+  $id("pedidos-prev")?.addEventListener("click", () =>
+    list?.scrollBy({ left: -300, behavior: "smooth" })
+  );
+  $id("pedidos-next")?.addEventListener("click", () =>
+    list?.scrollBy({ left: 300, behavior: "smooth" })
+  );
 }
 
 /* ============================================================
