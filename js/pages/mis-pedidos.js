@@ -154,6 +154,7 @@ function applyLocalFilters() {
   /* -------- EMPTY RESULT -------- */
   if (!filteredOrders.length) {
     ocultarTodoPorFiltro();
+    mostrarEmptyPorFiltro(); // 👈 ESTA LÍNEA ES LA CLAVE
     return;
   }
 
@@ -362,10 +363,61 @@ function startAutoRefresh(userId) {
 }
 
 /* ============================================================
-   EMPTY
+   EMPTY GLOBAL (SIN PEDIDOS)
 ============================================================ */
 function showEmpty() {
   $id("pedido-activo")?.classList.add("hidden");
   $id("mis-pedidos-carrusel")?.classList.add("hidden");
   $id("empty-state")?.classList.remove("hidden");
+}
+
+/* ============================================================
+   EMPTY POR FILTRO (DINÁMICO SEGÚN ESTADO)
+============================================================ */
+function mostrarEmptyPorFiltro() {
+  const empty = $id("empty-state");
+  if (!empty) return;
+
+  const title = empty.querySelector(".empty-title");
+  const text = empty.querySelector(".empty-text");
+  if (!title || !text) return;
+
+  const filter = String(currentFilter || "pending").toLowerCase();
+
+  const config = {
+    pending: {
+      t: "Todo está al día por aquí",
+      d: "No tienes pedidos pendientes de revisión en este momento."
+    },
+    new: {
+      t: "Todo está al día por aquí",
+      d: "No tienes pedidos nuevos esperando aprobación."
+    },
+    processing: {
+      t: "Nada en preparación",
+      d: "En cuanto empecemos a trabajar en un pedido, aparecerá aquí."
+    },
+    shipped: {
+      t: "Sin envíos en camino",
+      d: "Tus paquetes llegarán pronto. Te avisaremos cuando salgan."
+    },
+    delivered: {
+      t: "¿Aún no hay entregas?",
+      d: "Aquí podrás ver el historial de todos tus pedidos completados."
+    },
+    cancelled: {
+      t: "Sin pedidos cancelados",
+      d: "¡Excelente! No tienes registros de compras canceladas."
+    }
+  };
+
+  const state = config[filter] || {
+    t: "No hay pedidos",
+    d: "Prueba con otro estado o revisa más tarde."
+  };
+
+  title.textContent = state.t;
+  text.textContent = state.d;
+
+  empty.classList.remove("hidden");
 }
