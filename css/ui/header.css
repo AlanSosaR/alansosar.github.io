@@ -1224,19 +1224,22 @@ body.page-admin-agregar-cafe #header-admin-edit-cafe-title {
 }
 
 /* =====================================================
-   MOBILE — SEPARACIÓN MENÚ ↔ BUSCADOR
+   MOBILE — SEPARACIÓN MENÚ ↔ BUSCADOR (FIX REAL)
 ===================================================== */
 @media (max-width: 900px) {
 
+  /* Menú fijo, no se encoge */
   #menu-toggle {
-    margin-right: 10px; /* 🔑 separación real */
     flex-shrink: 0;
   }
 
+  /* 🔑 El buscador se separa del menú */
   #header-search-slot {
+    margin-left: 12px;          /* ← CLAVE */
     justify-content: stretch;
   }
 
+  /* El buscador ocupa todo su espacio */
   .header-search-wrap {
     max-width: 100%;
     padding-left: 0;
