@@ -155,11 +155,11 @@
 <!-- Header core -->
 <script type="module" src="/js/ui/header.js"></script>
 
-<!-- 🔍 Buscador global del header (MIS PEDIDOS) -->
+<!-- 🔍 Buscador global del header — MIS PEDIDOS (CORE FINAL) -->
 <script type="module">
   import { renderHeaderSearch } from "/js/ui/header.search.js";
 
-  // ⚠️ CLAVE: esperar a que el header ya esté inyectado
+  // ⚠️ ESPERAR a que layout.js inyecte el header
   document.addEventListener("header:ready", () => {
     const slot = document.getElementById("header-search-slot");
 
@@ -168,31 +168,60 @@
       return;
     }
 
-    // Inyectar buscador
+    /* =====================================================
+       INYECTAR BUSCADOR
+    ===================================================== */
     slot.innerHTML = renderHeaderSearch({
       showFilter: true,
       showAdd: false
     });
 
-    // 🔍 Evento de búsqueda
-    const input = document.getElementById("header-search-input");
-    input?.addEventListener("input", (e) => {
-      document.dispatchEvent(
-        new CustomEvent("header:search", {
-          detail: e.target.value
-        })
-      );
-    });
+    /* =====================================================
+       ESTADO INICIAL → PENDIENTES
+    ===================================================== */
+    const DEFAULT_STATUS = "pending";
 
-    // 🎯 Evento de filtro por estado
+    document.dispatchEvent(
+      new CustomEvent("header:filter", {
+        detail: DEFAULT_STATUS
+      })
+    );
+
+    /* =====================================================
+       🔍 BÚSQUEDA POR NÚMERO DE PEDIDO / TEXTO
+    ===================================================== */
+    const input = document.getElementById("header-search-input");
+
+    if (input) {
+      input.addEventListener("input", (e) => {
+        const value = e.target.value.trim();
+
+        // Emitir SIEMPRE (incluso vacío)
+        document.dispatchEvent(
+          new CustomEvent("header:search", {
+            detail: value
+          })
+        );
+      });
+    }
+
+    /* =====================================================
+       🎯 FILTRO POR ESTADO
+    ===================================================== */
     const filter = document.getElementById("header-status-filter");
-    filter?.addEventListener("change", (e) => {
-      document.dispatchEvent(
-        new CustomEvent("header:filter", {
-          detail: e.target.value
-        })
-      );
-    });
+
+    if (filter) {
+      // Fijar valor inicial
+      filter.value = DEFAULT_STATUS;
+
+      filter.addEventListener("change", (e) => {
+        document.dispatchEvent(
+          new CustomEvent("header:filter", {
+            detail: e.target.value
+          })
+        );
+      });
+    }
 
     console.log("🔍 Buscador del header listo (Mis pedidos)");
   });
