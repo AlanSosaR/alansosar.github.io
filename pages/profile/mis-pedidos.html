@@ -155,11 +155,11 @@
 <!-- Header core -->
 <script type="module" src="/js/ui/header.js"></script>
 
-<!-- 🔍 Buscador global del header — MIS PEDIDOS -->
+<!-- 🔍 Buscador global del header — MIS PEDIDOS (CORE FINAL DEFINITIVO) -->
 <script type="module">
   import { renderHeaderSearch } from "/js/ui/header.search.js";
 
-  // ⚠️ Esperar a que layout.js inyecte el header
+  // ⚠️ Esperar a que layout.js termine de inyectar el header
   document.addEventListener("header:ready", () => {
     const slot = document.getElementById("header-search-slot");
 
@@ -181,7 +181,7 @@
     ===================================================== */
     const DEFAULT_STATUS = "pending";
 
-    // Disparar filtro inicial
+    // Forzar estado inicial
     document.dispatchEvent(
       new CustomEvent("header:filter", {
         detail: DEFAULT_STATUS
@@ -189,7 +189,7 @@
     );
 
     /* =====================================================
-       🔍 BÚSQUEDA (NÚMERO / TEXTO)
+       🔍 BÚSQUEDA (NÚMERO DE PEDIDO / TEXTO)
     ===================================================== */
     const input = document.getElementById("header-search-input");
 
@@ -197,7 +197,7 @@
       input.addEventListener("input", (e) => {
         const value = e.target.value.trim();
 
-        // Emitir siempre (vacío incluido)
+        // Emitir SIEMPRE, incluso vacío (reset)
         document.dispatchEvent(
           new CustomEvent("header:search", {
             detail: value
@@ -212,7 +212,7 @@
     const filter = document.getElementById("header-status-filter");
 
     if (filter) {
-      // Valor inicial visible
+      // Mostrar Pendientes por defecto
       filter.value = DEFAULT_STATUS;
 
       filter.addEventListener("change", (e) => {
