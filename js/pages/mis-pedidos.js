@@ -13,8 +13,9 @@ let orders = [];
 let filteredOrders = [];
 let activeIndex = 0;
 let autoRefresh = null;
+
 let currentSearch = "";
-let currentFilter = "all";
+let currentFilter = "pending";
 
 /* ============================================================
    HELPERS
@@ -37,27 +38,27 @@ function formatDateTime(dateStr) {
 }
 
 /* ============================================================
-   STATUS MAP
+   STATUS MAP (VISUAL)
 ============================================================ */
 function getStatusDetails(status, paymentMethod) {
   const isCash = paymentMethod === "cash";
 
   const map = isCash
     ? {
-      steps: ["Pedido registrado", "Preparación", "En camino", "Entregado"],
-      pending: { step: 1, label: "Pedido registrado", desc: "Tu pedido fue recibido correctamente." },
-      processing: { step: 2, label: "Preparación", desc: "Estamos preparando tu pedido." },
-      shipped: { step: 3, label: "En camino", desc: "El repartidor lleva tu pedido." },
-      delivered: { step: 4, label: "Entregado", desc: "Pedido entregado." },
-    }
+        steps: ["Pedido registrado", "Preparación", "En camino", "Entregado"],
+        pending: { step: 1, label: "Pedido registrado", desc: "Tu pedido fue recibido correctamente." },
+        processing: { step: 2, label: "Preparación", desc: "Estamos preparando tu pedido." },
+        shipped: { step: 3, label: "En camino", desc: "El repartidor lleva tu pedido." },
+        delivered: { step: 4, label: "Entregado", desc: "Pedido entregado." },
+      }
     : {
-      steps: ["Pago enviado", "Revisión", "Confirmado", "Enviado"],
-      pending: { step: 1, label: "Pago enviado", desc: "Validando comprobante." },
-      payment_review: { step: 2, label: "En revisión", desc: "Revisando el pago." },
-      processing: { step: 3, label: "Confirmado", desc: "Pedido confirmado." },
-      shipped: { step: 4, label: "Enviado", desc: "Pedido en camino." },
-      delivered: { step: 4, label: "Entregado", desc: "Pedido entregado." },
-    };
+        steps: ["Pago enviado", "Revisión", "Confirmado", "Enviado"],
+        pending: { step: 1, label: "Pago enviado", desc: "Validando comprobante." },
+        payment_review: { step: 2, label: "En revisión", desc: "Revisando el pago." },
+        processing: { step: 3, label: "Confirmado", desc: "Pedido confirmado." },
+        shipped: { step: 4, label: "Enviado", desc: "Pedido en camino." },
+        delivered: { step: 4, label: "Entregado", desc: "Pedido entregado." },
+      };
 
   return { ...(map[status] || map.pending), steps: map.steps };
 }
@@ -83,11 +84,10 @@ async function init() {
     return;
   }
 
-  filteredOrders = [...orders];
-  bindHeaderEvents(data.session.user.id);
+  bindHeaderEvents();
 
+  applyLocalFilters();      // ← filtro inicial (pending)
   mostrarCarrusel();
-  renderCarousel();
   selectOrder(0);
 
   startAutoRefresh(data.session.user.id);
@@ -96,51 +96,50 @@ async function init() {
 /* ============================================================
    HEADER EVENTS
 ============================================================ */
-function bindHeaderEvents(userId) {
+function bindHeaderEvents() {
   document.addEventListener("header:search", (e) => {
-    currentSearch = e.detail.toLowerCase().trim();
+    currentSearch = (e.detail || "").toLowerCase().trim();
     applyLocalFilters();
   });
 
   document.addEventListener("header:filter", (e) => {
-    currentStatus = e.detail; // Reusing variable name if needed, but let's be careful
-    currentFilter = e.detail;
+    currentFilter = e.detail || "pending";
     applyLocalFilters();
   });
 }
 
-function applyLocalFilters() {
-  filteredOrders = orders.filter(o => {
-    // Status Filter
-    let matchStatus = true;
-    if (currentFilter !== "all") {
-      // Mapping filter values to DB status
-      const map = {
-        new: ["pending", "payment_review"],
-        processing: ["processing"],
-        shipped: ["shipped"],
-        delivered: ["delivered"],
-        cancelled: ["cancelled"]
-      };
-      matchStatus = (map[currentFilter] || []).includes(o.status);
-    }
+/* ============================================================
+   FILTERS
+============================================================ */
+const STATUS_FILTER_MAP = {
+  pending: ["pending", "payment_review"],
+  processing: ["processing"],
+  shipped: ["shipped"],
+  delivered: ["delivered"],
+  cancelled: ["cancelled"],
+};
 
-    // Search Filter
+function applyLocalFilters() {
+  filteredOrders = orders.filter((o) => {
+    const matchStatus =
+      STATUS_FILTER_MAP[currentFilter]?.includes(o.status) ?? true;
+
     let matchSearch = true;
     if (currentSearch) {
-      const numMatch = String(o.order_number).includes(currentSearch);
-      const prodMatch = o.items?.some(i => i.products?.name?.toLowerCase().includes(currentSearch));
-      matchSearch = numMatch || prodMatch;
+      const byNumber = String(o.order_number).includes(currentSearch);
+      const byProduct = o.items?.some((i) =>
+        i.products?.name?.toLowerCase().includes(currentSearch)
+      );
+      matchSearch = byNumber || byProduct;
     }
 
     return matchStatus && matchSearch;
   });
 
   renderCarousel();
-  if (filteredOrders.length > 0) {
+
+  if (filteredOrders.length) {
     selectOrder(0);
-  } else {
-    // Optionally show tiny empty message for search results
   }
 }
 
@@ -231,7 +230,6 @@ function renderCarousel() {
         : o.receipt?.[0]?.file_url || IMG_DEFAULT;
 
     if (index === activeIndex) card.classList.add("is-selected");
-
     card.onclick = () => selectOrder(index);
 
     wrap.appendChild(node);
@@ -334,7 +332,7 @@ function startAutoRefresh(userId) {
   clearInterval(autoRefresh);
   autoRefresh = setInterval(async () => {
     await loadOrders(userId);
-    renderCarousel();
+    applyLocalFilters();
     selectOrder(activeIndex);
   }, 30000);
 }
