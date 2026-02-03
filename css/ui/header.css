@@ -1128,7 +1128,6 @@ body.page-admin-agregar-cafe #header-admin-edit-cafe-title {
 #header-search-slot {
   flex: 1;
   display: flex;
-  justify-content: center;
   align-items: center;
   min-width: 0;
 }
@@ -1140,26 +1139,33 @@ body.page-admin-agregar-cafe #header-admin-edit-cafe-title {
   padding: 0 12px;
 }
 
-/* Caja */
+/* Caja del buscador */
 .header-search-box {
   display: flex;
   align-items: center;
   gap: 8px;
 
   height: 44px;
-  padding: 0 14px;
+  padding: 0 16px;
 
   background: #fff;
   border-radius: 999px;
   border: 1px solid var(--gris-line);
 
-  box-shadow: 0 4px 14px rgba(0,0,0,.06);
+  /* 🔑 Elevación tipo Material */
+  box-shadow: 0 6px 16px rgba(0,0,0,.12);
+
+  transition: box-shadow .2s ease;
 }
 
-/* Icono lupa */
+.header-search-box:focus-within {
+  box-shadow: 0 8px 22px rgba(0,0,0,.16);
+}
+
+/* Icono lupa — VERDE */
 .header-search-box .search-icon {
   font-size: 22px;
-  color: var(--gris-text);
+  color: var(--verde);
   flex-shrink: 0;
 }
 
@@ -1177,7 +1183,13 @@ body.page-admin-agregar-cafe #header-admin-edit-cafe-title {
   min-width: 0;
 }
 
-/* Select */
+/* Placeholder — CAFÉ */
+#header-search-input::placeholder {
+  color: var(--cafe, #7a4a2e);
+  opacity: .9;
+}
+
+/* Select de estados */
 .header-status-filter {
   border: none;
   outline: none;
@@ -1211,13 +1223,22 @@ body.page-admin-agregar-cafe #header-admin-edit-cafe-title {
   background: var(--verde-oscuro);
 }
 
-/* Mobile */
+/* =====================================================
+   MOBILE — SEPARACIÓN MENÚ ↔ BUSCADOR
+===================================================== */
 @media (max-width: 900px) {
+
+  #menu-toggle {
+    margin-right: 10px; /* 🔑 separación real */
+    flex-shrink: 0;
+  }
+
   #header-search-slot {
     justify-content: stretch;
   }
 
   .header-search-wrap {
     max-width: 100%;
+    padding-left: 0;
   }
 }
