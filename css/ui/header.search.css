@@ -1,0 +1,114 @@
+/* =====================================================
+   HEADER SEARCH — AISLADO
+===================================================== */
+
+#header-search-slot {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  flex: 1;
+}
+
+/* Wrapper */
+.header-search-wrap {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 12px;
+}
+
+/* Caja */
+.header-search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  height: 44px;
+  padding: 0 16px;
+
+  background: #fff;
+  border-radius: 999px;
+  border: 1px solid var(--gris-line);
+
+  box-shadow: 0 6px 16px rgba(0,0,0,.12);
+  transition: box-shadow .2s ease;
+}
+
+.header-search-box:focus-within {
+  box-shadow: 0 8px 22px rgba(0,0,0,.16);
+}
+
+/* Icono */
+.search-icon {
+  font-size: 22px;
+  color: var(--verde);
+  flex-shrink: 0;
+}
+
+/* Input */
+#header-search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: .95rem;
+  color: var(--negro);
+  min-width: 0;
+}
+
+#header-search-input::placeholder {
+  color: var(--cafe, #7a4a2e);
+}
+
+/* Select */
+.header-status-filter {
+  border: none;
+  background: transparent;
+  font-size: .85rem;
+  font-weight: 600;
+  color: var(--verde);
+  cursor: pointer;
+}
+
+/* =====================================================
+   DESKTOP — CENTRADO REAL
+===================================================== */
+@media (min-width: 901px) {
+  #header-search-slot {
+    margin: 0 auto;
+    flex: 0 1 auto;
+  }
+}
+
+/* =====================================================
+   MOBILE — EL BUSCADOR MANDA
+===================================================== */
+@media (max-width: 900px) {
+
+  header.header-fixed {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  /* Ocultar TODO lo que no es buscador */
+  .header-logo-link,
+  .header-cart-title,
+  .header-titles-wrap {
+    display: none !important;
+  }
+
+  #menu-toggle {
+    flex-shrink: 0;
+  }
+
+  #header-search-slot {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .header-search-wrap {
+    max-width: 100%;
+    padding: 0;
+  }
+}
