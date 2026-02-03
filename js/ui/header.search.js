@@ -51,3 +51,38 @@ export function renderHeaderSearch({ showFilter = false, showAdd = false }) {
     </div>
   `;
 }
+
+/* =====================================================
+   INIT HOOKS — BUSCADOR GLOBAL
+===================================================== */
+export function initHeaderSearchHooks() {
+  const input = document.getElementById("header-search-input");
+  const filter = document.getElementById("header-status-filter");
+  const addBtn = document.getElementById("header-add-btn");
+
+  if (input) {
+    input.addEventListener("input", (e) => {
+      document.dispatchEvent(
+        new CustomEvent("header:search", {
+          detail: e.target.value || ""
+        })
+      );
+    });
+  }
+
+  if (filter) {
+    filter.addEventListener("change", (e) => {
+      document.dispatchEvent(
+        new CustomEvent("header:filter", {
+          detail: e.target.value
+        })
+      );
+    });
+  }
+
+  if (addBtn) {
+    addBtn.addEventListener("click", () => {
+      document.dispatchEvent(new Event("header:add-click"));
+    });
+  }
+}
