@@ -1048,6 +1048,35 @@ body {
     z-index: 3001 !important;
   }
 }
+
+/* =====================================================
+   FIX FINAL — HEADER MIS PEDIDOS (MOBILE)
+===================================================== */
+@media (max-width: 900px) {
+
+  /* 🔥 NUNCA mostrar logo en Mis Pedidos */
+  body.page-mis-pedidos .header-logo-link {
+    display: none !important;
+  }
+
+  /* 🔥 Header NO centrado (evita compresión visual) */
+  body.page-mis-pedidos header.header-fixed {
+    justify-content: flex-start !important;
+  }
+
+  /* 🍔 Menú hamburguesa — fijo a la izquierda */
+  body.page-mis-pedidos #menu-toggle {
+    position: relative;
+    margin-right: 12px; /* ⬅️ separación real del buscador */
+  }
+
+  /* 🔍 Buscador respira */
+  body.page-mis-pedidos #header-search-slot {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+}
+
 /* =====================================================
    TÍTULOS CENTRALES — VISIBILIDAD POR PÁGINA
 ===================================================== */
