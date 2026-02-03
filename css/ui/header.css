@@ -1095,7 +1095,32 @@ body.page-admin-agregar-cafe #header-admin-add-cafe-title {
 body.page-admin-agregar-cafe #header-admin-edit-cafe-title {
   display: block;
 }
+/* =====================================================
+   HEADER — MOBILE: BUSCADOR TIENE PRIORIDAD
+===================================================== */
+@media (max-width: 768px) {
 
+  /* Cuando el buscador está activo */
+  .header-fixed:has(.header-search-wrap:not(.hidden)) {
+
+    /* Ocultar logo */
+    .header-logo-link {
+      display: none !important;
+    }
+
+    /* Ocultar títulos centrales */
+    .header-cart-title,
+    .header-titles-wrap {
+      display: none !important;
+    }
+
+    /* Ajustar buscador */
+    .header-search-wrap {
+      flex: 1;
+      margin-left: 0;
+    }
+  }
+}
 /* =====================================================
    HEADER — BUSCADOR GLOBAL (SEARCH + FILTER + ADD)
 ===================================================== */
