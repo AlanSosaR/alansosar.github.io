@@ -1,8 +1,8 @@
 /* ============================================================
-   📦 MIS PEDIDOS — FINAL ALINEADO CON HTML
+   📦 MIS PEDIDOS — FINAL ALINEADO CON HTML (FIX REAL)
 ============================================================ */
 
-console.log("📦 mis-pedidos.js — FINAL ALINEADO");
+console.log("📦 mis-pedidos.js — FINAL ALINEADO OK");
 
 const sb = () => window.supabaseClient;
 
@@ -167,7 +167,7 @@ function esperarSupabase() {
 }
 
 /* ============================================================
-   LOAD ORDERS
+   LOAD ORDERS (🔥 FIX REAL AQUÍ)
 ============================================================ */
 async function loadOrders(userId) {
   const { data } = await sb()
@@ -179,7 +179,7 @@ async function loadOrders(userId) {
       status,
       payment_method,
       created_at,
-      reference,
+      order_notes,
       address:addresses ( street, city ),
       receipt:payment_receipts ( file_url ),
       items:order_items (
@@ -265,7 +265,7 @@ function selectOrder(index) {
 }
 
 /* ============================================================
-   PEDIDO ACTIVO — DETALLE COMPLETO
+   PEDIDO ACTIVO — DETALLE COMPLETO (HTML MATCH)
 ============================================================ */
 function renderPedidoActivo(pedido) {
   const container = $id("pedido-activo");
@@ -294,9 +294,9 @@ function renderPedidoActivo(pedido) {
       ? `${pedido.address.street}, ${pedido.address.city}`
       : "Entrega pendiente";
 
-  /* Referencia */
+  /* Referencia (FIX REAL) */
   node.querySelector(".referencia-text").textContent =
-    pedido.reference || "Sin referencia";
+    pedido.order_notes || "Sin referencia";
 
   /* Estado */
   node.querySelector(".estado-paso").textContent = status.step;
@@ -307,14 +307,14 @@ function renderPedidoActivo(pedido) {
   const stepItems = node.querySelectorAll(".estado-item");
   stepItems.forEach((li, i) => {
     li.querySelector(".step-text").textContent = status.steps[i] || "";
-    if (i + 1 <= status.step) li.classList.add("active");
-    else li.classList.remove("active");
+    li.classList.toggle("active", i + 1 <= status.step);
   });
 
-  /* Recibo */
+  /* Botón recibo */
   const btnRecibo = node.querySelector(".ver-recibo");
   if (pedido.receipt?.[0]?.file_url) {
-    btnRecibo.onclick = () => window.open(pedido.receipt[0].file_url, "_blank");
+    btnRecibo.onclick = () =>
+      window.open(pedido.receipt[0].file_url, "_blank");
     btnRecibo.classList.remove("hidden");
   } else {
     btnRecibo.classList.add("hidden");
