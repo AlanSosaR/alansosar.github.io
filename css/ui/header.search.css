@@ -1,20 +1,20 @@
 /* =====================================================
-   HEADER SEARCH — MATERIAL 3 EXPRESSIVE (FIX FINAL)
+   HEADER SEARCH — MATERIAL 3 EXPRESSIVE (FINAL REAL)
 ===================================================== */
 
-/* SLOT */
+/* SLOT GENERAL */
 #header-search-slot {
   display: flex;
   align-items: center;
   flex: 1;
   min-width: 0;
-  padding: 0 8px;
+  padding: 0 12px;
 }
 
 /* WRAPPER */
 .header-search-wrap {
   width: 100%;
-  max-width: 860px; /* ⬅️ más presencia desktop */
+  max-width: 920px;
   margin: 0 auto;
 }
 
@@ -22,9 +22,9 @@
 .header-search-box {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 
-  height: 46px;
+  height: 48px;
   padding: 0 18px;
 
   background: #fff;
@@ -35,14 +35,11 @@
     0 1px 2px rgba(0,0,0,.08),
     0 4px 14px rgba(0,0,0,.12);
 
-  transition:
-    box-shadow .25s ease,
-    transform .15s ease;
+  transition: box-shadow .25s ease;
 }
 
 .header-search-box:focus-within {
-  box-shadow:
-    0 6px 22px rgba(0,0,0,.18);
+  box-shadow: 0 6px 22px rgba(0,0,0,.18);
 }
 
 /* ICON */
@@ -67,31 +64,43 @@
 
 #header-search-input::placeholder {
   color: var(--cafe, #7a4a2e);
-  opacity: .8;
+  opacity: .75;
 }
 
-/* SELECT */
+/* SELECT — LIMPIO (SIN BORDE NEGRO) */
 .header-status-filter {
-  border: none;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+
   background: transparent;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
   font-size: .85rem;
   font-weight: 600;
   color: var(--verde);
   cursor: pointer;
-  padding-left: 6px;
+
+  padding-right: 18px; /* espacio para flecha */
+}
+
+/* Flecha custom opcional (si usas ::after en HTML, ignora esto) */
+.header-status-filter:focus {
+  outline: none;
 }
 
 /* =====================================================
-   DESKTOP — CENTRADO Y EXPRESIVO
+   DESKTOP — CENTRADO Y SEPARADO
 ===================================================== */
 @media (min-width: 901px) {
   #header-search-slot {
-    flex: 1;
-    margin: 0 24px; /* ⬅️ aire respecto logo/avatar */
+    margin: 0 32px; /* separación real del logo y avatar */
   }
 
   .header-search-wrap {
-    max-width: 920px;
+    max-width: 960px;
   }
 }
 
@@ -103,11 +112,11 @@
   header.header-fixed {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 0 10px;
+    gap: 16px; /* ⬅️ SEPARA del hamburguesa */
+    padding: 0 12px;
   }
 
-  /* OCULTAR ELEMENTOS NO CRÍTICOS */
+  /* OCULTAR LOGO Y TEXTO */
   .header-logo-link,
   .header-cart-title,
   .header-titles-wrap {
@@ -123,7 +132,7 @@
   #header-search-slot {
     flex: 1;
     min-width: 0;
-    padding: 0 6px;
+    padding: 0 4px;
   }
 
   .header-search-wrap {
@@ -131,7 +140,7 @@
   }
 
   .header-search-box {
-    height: 48px; /* ⬅️ más táctil */
+    height: 48px;
     padding: 0 16px;
   }
 }
