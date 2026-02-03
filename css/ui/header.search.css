@@ -1,66 +1,76 @@
 /* =====================================================
-   HEADER SEARCH — AISLADO
+   HEADER SEARCH — MATERIAL 3 EXPRESSIVE (FIX FINAL)
 ===================================================== */
 
+/* SLOT */
 #header-search-slot {
   display: flex;
   align-items: center;
-  min-width: 0;
   flex: 1;
+  min-width: 0;
+  padding: 0 8px;
 }
 
-/* Wrapper */
+/* WRAPPER */
 .header-search-wrap {
   width: 100%;
-  max-width: 720px;
+  max-width: 860px; /* ⬅️ más presencia desktop */
   margin: 0 auto;
-  padding: 0 12px;
 }
 
-/* Caja */
+/* SEARCH BOX */
 .header-search-box {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 
-  height: 44px;
-  padding: 0 16px;
+  height: 46px;
+  padding: 0 18px;
 
   background: #fff;
   border-radius: 999px;
   border: 1px solid var(--gris-line);
 
-  box-shadow: 0 6px 16px rgba(0,0,0,.12);
-  transition: box-shadow .2s ease;
+  box-shadow:
+    0 1px 2px rgba(0,0,0,.08),
+    0 4px 14px rgba(0,0,0,.12);
+
+  transition:
+    box-shadow .25s ease,
+    transform .15s ease;
 }
 
 .header-search-box:focus-within {
-  box-shadow: 0 8px 22px rgba(0,0,0,.16);
+  box-shadow:
+    0 6px 22px rgba(0,0,0,.18);
 }
 
-/* Icono */
+/* ICON */
 .search-icon {
   font-size: 22px;
   color: var(--verde);
   flex-shrink: 0;
 }
 
-/* Input */
+/* INPUT */
 #header-search-input {
   flex: 1;
+  min-width: 0;
   border: none;
   outline: none;
   background: transparent;
+
   font-size: .95rem;
+  font-weight: 500;
   color: var(--negro);
-  min-width: 0;
 }
 
 #header-search-input::placeholder {
   color: var(--cafe, #7a4a2e);
+  opacity: .8;
 }
 
-/* Select */
+/* SELECT */
 .header-status-filter {
   border: none;
   background: transparent;
@@ -68,47 +78,60 @@
   font-weight: 600;
   color: var(--verde);
   cursor: pointer;
+  padding-left: 6px;
 }
 
 /* =====================================================
-   DESKTOP — CENTRADO REAL
+   DESKTOP — CENTRADO Y EXPRESIVO
 ===================================================== */
 @media (min-width: 901px) {
   #header-search-slot {
-    margin: 0 auto;
-    flex: 0 1 auto;
+    flex: 1;
+    margin: 0 24px; /* ⬅️ aire respecto logo/avatar */
+  }
+
+  .header-search-wrap {
+    max-width: 920px;
   }
 }
 
 /* =====================================================
-   MOBILE — EL BUSCADOR MANDA
+   MOBILE — BUSCADOR DOMINANTE
 ===================================================== */
 @media (max-width: 900px) {
 
   header.header-fixed {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 12px;
+    padding: 0 10px;
   }
 
-  /* Ocultar TODO lo que no es buscador */
+  /* OCULTAR ELEMENTOS NO CRÍTICOS */
   .header-logo-link,
   .header-cart-title,
   .header-titles-wrap {
     display: none !important;
   }
 
+  /* HAMBURGUESA */
   #menu-toggle {
     flex-shrink: 0;
   }
 
+  /* BUSCADOR */
   #header-search-slot {
     flex: 1;
     min-width: 0;
+    padding: 0 6px;
   }
 
   .header-search-wrap {
-    max-width: 100%;
-    padding: 0;
+    width: 100%;
+  }
+
+  .header-search-box {
+    height: 48px; /* ⬅️ más táctil */
+    padding: 0 16px;
   }
 }
