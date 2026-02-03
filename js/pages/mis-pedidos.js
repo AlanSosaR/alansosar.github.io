@@ -1,8 +1,8 @@
 /* ============================================================
-   📦 MIS PEDIDOS — UX FLUIDA (FINAL DEFINITIVO)
+   📦 MIS PEDIDOS — FINAL ALINEADO CON HTML
 ============================================================ */
 
-console.log("📦 mis-pedidos.js — FINAL DEFINITIVO");
+console.log("📦 mis-pedidos.js — FINAL ALINEADO");
 
 const sb = () => window.supabaseClient;
 
@@ -50,38 +50,29 @@ function normalizeOrderNumber(num) {
 }
 
 /* ============================================================
-   STATUS MAP (CON TEXTOS)
+   STATUS MAP (TEXTO + PASOS)
 ============================================================ */
 function getStatusDetails(status, paymentMethod) {
   const isCash = paymentMethod === "cash";
 
-  const map = isCash
-    ? {
-        steps: [
-          "Pedido registrado",
-          "Preparación",
-          "En camino",
-          "Entregado",
-        ],
-        pending: { step: 1, label: "Pedido registrado", desc: "Tu pedido fue recibido correctamente." },
-        processing: { step: 2, label: "En preparación", desc: "Estamos preparando tu pedido." },
-        shipped: { step: 3, label: "En camino", desc: "El repartidor lleva tu pedido." },
-        delivered: { step: 4, label: "Entregado", desc: "Pedido entregado." },
-      }
-    : {
-        steps: [
-          "Pago enviado",
-          "En revisión",
-          "Confirmado",
-          "Enviado",
-        ],
-        pending: { step: 1, label: "Pago enviado", desc: "Validando comprobante." },
-        payment_review: { step: 2, label: "En revisión", desc: "Revisando el pago." },
-        processing: { step: 3, label: "Confirmado", desc: "Pedido confirmado." },
-        shipped: { step: 4, label: "Enviado", desc: "Pedido en camino." },
-        delivered: { step: 4, label: "Entregado", desc: "Pedido entregado." },
-      };
+  const cashMap = {
+    steps: ["Pedido registrado", "Preparación", "En camino", "Entregado"],
+    pending: { step: 1, label: "Pedido registrado", desc: "Tu pedido fue recibido correctamente." },
+    processing: { step: 2, label: "En preparación", desc: "Estamos preparando tu pedido." },
+    shipped: { step: 3, label: "En camino", desc: "El repartidor lleva tu pedido." },
+    delivered: { step: 4, label: "Entregado", desc: "Pedido entregado." },
+  };
 
+  const cardMap = {
+    steps: ["Pago enviado", "En revisión", "Confirmado", "Enviado"],
+    pending: { step: 1, label: "Pago enviado", desc: "Validando comprobante." },
+    payment_review: { step: 2, label: "En revisión", desc: "Revisando el pago." },
+    processing: { step: 3, label: "Confirmado", desc: "Pedido confirmado." },
+    shipped: { step: 4, label: "Enviado", desc: "Pedido en camino." },
+    delivered: { step: 4, label: "Entregado", desc: "Pedido entregado." },
+  };
+
+  const map = isCash ? cashMap : cardMap;
   return { ...(map[status] || map.pending), steps: map.steps };
 }
 
@@ -269,12 +260,12 @@ function selectOrder(index) {
   renderPedidoActivo(filteredOrders[index]);
 
   requestAnimationFrame(() => {
-    $id("pedido-activo")?.scrollIntoView({ behavior: "smooth" });
+    $id("pedido-activo")?.scrollIntoView({ behavior: "smooth", block: "start" });
   });
 }
 
 /* ============================================================
-   PEDIDO ACTIVO (DETALLE COMPLETO)
+   PEDIDO ACTIVO — DETALLE COMPLETO
 ============================================================ */
 function renderPedidoActivo(pedido) {
   const container = $id("pedido-activo");
@@ -287,51 +278,53 @@ function renderPedidoActivo(pedido) {
   const status = getStatusDetails(pedido.status, pedido.payment_method);
   const { fecha, hora } = formatDateTime(pedido.created_at);
 
+  /* Header */
   node.querySelector(".pedido-numero").textContent =
     `Pedido N. ${pedido.order_number}`;
-
   node.querySelector(".fecha").textContent = fecha;
   node.querySelector(".hora").textContent = hora;
-  node.querySelector(".pedido-total").textContent = `L ${pedido.total.toFixed(2)}`;
+
+  /* Total */
+  node.querySelector(".pedido-total").textContent =
+    `L ${Number(pedido.total).toFixed(2)}`;
 
   /* Entrega */
-  node.querySelector(".entrega").textContent =
+  node.querySelector(".entrega-text").textContent =
     pedido.address
       ? `${pedido.address.street}, ${pedido.address.city}`
       : "Entrega pendiente";
 
   /* Referencia */
-  node.querySelector(".referencia").textContent =
+  node.querySelector(".referencia-text").textContent =
     pedido.reference || "Sin referencia";
 
   /* Estado */
+  node.querySelector(".estado-paso").textContent = status.step;
   node.querySelector(".estado-nombre").textContent = status.label;
   node.querySelector(".estado-descripcion").textContent = status.desc;
 
-  /* Píldoras */
-  const stepsWrap = node.querySelector(".estado-steps");
-  stepsWrap.innerHTML = "";
-  status.steps.forEach((label, i) => {
-    const s = document.createElement("div");
-    s.className = "estado-step";
-    if (i + 1 <= status.step) s.classList.add("active");
-    s.innerHTML = `<span>${i + 1}</span><small>${label}</small>`;
-    stepsWrap.appendChild(s);
+  /* Lista de pasos */
+  const stepItems = node.querySelectorAll(".estado-item");
+  stepItems.forEach((li, i) => {
+    li.querySelector(".step-text").textContent = status.steps[i] || "";
+    if (i + 1 <= status.step) li.classList.add("active");
+    else li.classList.remove("active");
   });
 
   /* Recibo */
   const btnRecibo = node.querySelector(".ver-recibo");
   if (pedido.receipt?.[0]?.file_url) {
-    btnRecibo.href = pedido.receipt[0].file_url;
+    btnRecibo.onclick = () => window.open(pedido.receipt[0].file_url, "_blank");
     btnRecibo.classList.remove("hidden");
   } else {
     btnRecibo.classList.add("hidden");
   }
 
   /* Imagen */
-  const img = node.querySelector(".pedido-imagen");
+  const img = node.querySelector(".recibo-img");
   img.src =
     pedido.items?.[0]?.products?.image_url ||
+    pedido.receipt?.[0]?.file_url ||
     (pedido.payment_method === "cash" ? IMG_CASH : IMG_DEFAULT);
 
   container.appendChild(node);
