@@ -1,14 +1,17 @@
 /* ============================================================
-   📦 MIS PEDIDOS — UX FLUIDA (FINAL SEGURO)
+   📦 MIS PEDIDOS — UX FLUIDA (FINAL DEFINITIVO)
 ============================================================ */
 
-console.log("📦 mis-pedidos.js — FINAL SEGURO");
+console.log("📦 mis-pedidos.js — FINAL DEFINITIVO");
 
 const sb = () => window.supabaseClient;
 
 const IMG_CASH = "/imagenes/pago_en_mano.svg";
 const IMG_DEFAULT = "/imagenes/recibo_default.svg";
 
+/* ============================================================
+   STATE
+============================================================ */
 let orders = [];
 let filteredOrders = [];
 let activeIndex = 0;
@@ -25,7 +28,7 @@ const $id = (id) => document.getElementById(id);
 function formatDateTime(dateStr) {
   try {
     const d = new Date(dateStr);
-    if (isNaN(d)) throw new Error("Invalid date");
+    if (isNaN(d)) throw new Error();
     return {
       fecha: d.toLocaleDateString("es-HN", {
         day: "2-digit",
@@ -47,21 +50,31 @@ function normalizeOrderNumber(num) {
 }
 
 /* ============================================================
-   STATUS MAP
+   STATUS MAP (CON TEXTOS)
 ============================================================ */
 function getStatusDetails(status, paymentMethod) {
   const isCash = paymentMethod === "cash";
 
   const map = isCash
     ? {
-        steps: ["Pedido registrado", "Preparación", "En camino", "Entregado"],
+        steps: [
+          "Pedido registrado",
+          "Preparación",
+          "En camino",
+          "Entregado",
+        ],
         pending: { step: 1, label: "Pedido registrado", desc: "Tu pedido fue recibido correctamente." },
-        processing: { step: 2, label: "Preparación", desc: "Estamos preparando tu pedido." },
+        processing: { step: 2, label: "En preparación", desc: "Estamos preparando tu pedido." },
         shipped: { step: 3, label: "En camino", desc: "El repartidor lleva tu pedido." },
         delivered: { step: 4, label: "Entregado", desc: "Pedido entregado." },
       }
     : {
-        steps: ["Pago enviado", "Revisión", "Confirmado", "Enviado"],
+        steps: [
+          "Pago enviado",
+          "En revisión",
+          "Confirmado",
+          "Enviado",
+        ],
         pending: { step: 1, label: "Pago enviado", desc: "Validando comprobante." },
         payment_review: { step: 2, label: "En revisión", desc: "Revisando el pago." },
         processing: { step: 3, label: "Confirmado", desc: "Pedido confirmado." },
@@ -78,25 +91,21 @@ function getStatusDetails(status, paymentMethod) {
 document.addEventListener("DOMContentLoaded", init);
 
 async function init() {
-  try {
-    await esperarSupabase();
+  await esperarSupabase();
 
-    const { data, error } = await sb().auth.getSession();
-    if (error || !data?.session) return;
+  const { data } = await sb().auth.getSession();
+  if (!data?.session) return;
 
-    await loadOrders(data.session.user.id);
+  await loadOrders(data.session.user.id);
 
-    if (!orders.length) {
-      showGlobalEmpty();
-      return;
-    }
-
-    bindHeaderEvents();
-    applyLocalFilters();
-    startAutoRefresh(data.session.user.id);
-  } catch (err) {
-    console.error("❌ init mis-pedidos:", err);
+  if (!orders.length) {
+    showGlobalEmpty();
+    return;
   }
+
+  bindHeaderEvents();
+  applyLocalFilters();
+  startAutoRefresh(data.session.user.id);
 }
 
 /* ============================================================
@@ -122,38 +131,33 @@ const STATUS_FILTER_MAP = {
   processing: ["processing"],
   shipped: ["shipped"],
   delivered: ["delivered"],
-  cancelled: ["cancelled"],
 };
 
 function applyLocalFilters() {
-  try {
-    filteredOrders = orders.filter((o) => {
-      const matchStatus =
-        STATUS_FILTER_MAP[currentFilter]?.includes(o.status) ?? true;
+  filteredOrders = orders.filter((o) => {
+    const matchStatus =
+      STATUS_FILTER_MAP[currentFilter]?.includes(o.status) ?? true;
 
-      let matchSearch = true;
-      if (currentSearch) {
-        const byNumber = normalizeOrderNumber(o.order_number).includes(currentSearch);
-        const byProduct = o.items?.some((i) =>
-          i.products?.name?.toLowerCase().includes(currentSearch)
-        );
-        matchSearch = byNumber || byProduct;
-      }
-
-      return matchStatus && matchSearch;
-    });
-
-    if (!filteredOrders.length) {
-      showFilteredEmpty();
-      return;
+    let matchSearch = true;
+    if (currentSearch) {
+      const byNumber = normalizeOrderNumber(o.order_number).includes(currentSearch);
+      const byProduct = o.items?.some((i) =>
+        i.products?.name?.toLowerCase().includes(currentSearch)
+      );
+      matchSearch = byNumber || byProduct;
     }
 
-    hideFilteredEmpty();
-    renderCarousel();
-    selectOrder(0);
-  } catch (err) {
-    console.error("❌ filtros:", err);
+    return matchStatus && matchSearch;
+  });
+
+  if (!filteredOrders.length) {
+    showFilteredEmpty();
+    return;
   }
+
+  hideFilteredEmpty();
+  renderCarousel();
+  selectOrder(0);
 }
 
 /* ============================================================
@@ -175,32 +179,28 @@ function esperarSupabase() {
    LOAD ORDERS
 ============================================================ */
 async function loadOrders(userId) {
-  try {
-    const { data, error } = await sb()
-      .from("orders")
-      .select(`
-        id,
-        order_number,
-        total,
-        status,
-        payment_method,
-        created_at,
-        receipt:payment_receipts ( file_url ),
-        items:order_items (
-          quantity,
-          price,
-          products ( name )
-        )
-      `)
-      .eq("user_id", userId)
-      .order("created_at", { ascending: false });
+  const { data } = await sb()
+    .from("orders")
+    .select(`
+      id,
+      order_number,
+      total,
+      status,
+      payment_method,
+      created_at,
+      reference,
+      address:addresses ( street, city ),
+      receipt:payment_receipts ( file_url ),
+      items:order_items (
+        quantity,
+        price,
+        products ( name, image_url )
+      )
+    `)
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
 
-    if (error) throw error;
-    orders = data || [];
-  } catch (err) {
-    console.error("❌ loadOrders:", err);
-    orders = [];
-  }
+  orders = data || [];
 }
 
 /* ============================================================
@@ -234,10 +234,9 @@ function renderCarousel() {
 
   filteredOrders.forEach((o, index) => {
     const node = tpl.content.cloneNode(true);
-    const card = node.querySelector(".similar-card");
 
     node.querySelector(".pedido-mini-numero").textContent =
-      `#${normalizeOrderNumber(o.order_number)}`;
+      `Pedido N. ${normalizeOrderNumber(o.order_number)}`;
 
     node.querySelector(".pedido-mini-total").textContent =
       `L ${Number(o.total).toFixed(2)}`;
@@ -246,19 +245,17 @@ function renderCarousel() {
       getStatusDetails(o.status, o.payment_method).label;
 
     node.querySelector(".pedido-mini-img").src =
-      o.payment_method === "cash"
-        ? IMG_CASH
-        : o.receipt?.[0]?.file_url || IMG_DEFAULT;
+      o.items?.[0]?.products?.image_url ||
+      (o.payment_method === "cash" ? IMG_CASH : IMG_DEFAULT);
 
-    card.onclick = () => selectOrder(index);
+    node.querySelector(".similar-card").onclick = () => selectOrder(index);
+
     wrap.appendChild(node);
   });
-
-  bindCarouselArrows();
 }
 
 /* ============================================================
-   SELECCION + SCROLL
+   SELECCIÓN + SCROLL
 ============================================================ */
 function selectOrder(index) {
   if (!filteredOrders[index]) return;
@@ -272,15 +269,12 @@ function selectOrder(index) {
   renderPedidoActivo(filteredOrders[index]);
 
   requestAnimationFrame(() => {
-    $id("pedido-activo")?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
+    $id("pedido-activo")?.scrollIntoView({ behavior: "smooth" });
   });
 }
 
 /* ============================================================
-   PEDIDO ACTIVO
+   PEDIDO ACTIVO (DETALLE COMPLETO)
 ============================================================ */
 function renderPedidoActivo(pedido) {
   const container = $id("pedido-activo");
@@ -293,39 +287,54 @@ function renderPedidoActivo(pedido) {
   const status = getStatusDetails(pedido.status, pedido.payment_method);
   const { fecha, hora } = formatDateTime(pedido.created_at);
 
-  node.querySelector(".pedido-numero").textContent = `Pedido #${pedido.order_number}`;
+  node.querySelector(".pedido-numero").textContent =
+    `Pedido N. ${pedido.order_number}`;
+
   node.querySelector(".fecha").textContent = fecha;
   node.querySelector(".hora").textContent = hora;
-  node.querySelector(".pedido-total").textContent = `L ${Number(pedido.total).toFixed(2)}`;
+  node.querySelector(".pedido-total").textContent = `L ${pedido.total.toFixed(2)}`;
+
+  /* Entrega */
+  node.querySelector(".entrega").textContent =
+    pedido.address
+      ? `${pedido.address.street}, ${pedido.address.city}`
+      : "Entrega pendiente";
+
+  /* Referencia */
+  node.querySelector(".referencia").textContent =
+    pedido.reference || "Sin referencia";
+
+  /* Estado */
   node.querySelector(".estado-nombre").textContent = status.label;
   node.querySelector(".estado-descripcion").textContent = status.desc;
 
+  /* Píldoras */
   const stepsWrap = node.querySelector(".estado-steps");
-  if (stepsWrap) {
-    stepsWrap.innerHTML = "";
-    status.steps.forEach((_, i) => {
-      const s = document.createElement("span");
-      s.className = "estado-step";
-      if (i + 1 <= status.step) s.classList.add("active");
-      s.textContent = i + 1;
-      stepsWrap.appendChild(s);
-    });
+  stepsWrap.innerHTML = "";
+  status.steps.forEach((label, i) => {
+    const s = document.createElement("div");
+    s.className = "estado-step";
+    if (i + 1 <= status.step) s.classList.add("active");
+    s.innerHTML = `<span>${i + 1}</span><small>${label}</small>`;
+    stepsWrap.appendChild(s);
+  });
+
+  /* Recibo */
+  const btnRecibo = node.querySelector(".ver-recibo");
+  if (pedido.receipt?.[0]?.file_url) {
+    btnRecibo.href = pedido.receipt[0].file_url;
+    btnRecibo.classList.remove("hidden");
+  } else {
+    btnRecibo.classList.add("hidden");
   }
 
-  container.appendChild(node);
-}
+  /* Imagen */
+  const img = node.querySelector(".pedido-imagen");
+  img.src =
+    pedido.items?.[0]?.products?.image_url ||
+    (pedido.payment_method === "cash" ? IMG_CASH : IMG_DEFAULT);
 
-/* ============================================================
-   ARROWS
-============================================================ */
-function bindCarouselArrows() {
-  const list = $id("pedidos-carrusel");
-  $id("pedidos-prev")?.addEventListener("click", () =>
-    list?.scrollBy({ left: -300, behavior: "smooth" })
-  );
-  $id("pedidos-next")?.addEventListener("click", () =>
-    list?.scrollBy({ left: 300, behavior: "smooth" })
-  );
+  container.appendChild(node);
 }
 
 /* ============================================================
