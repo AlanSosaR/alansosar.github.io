@@ -374,7 +374,7 @@ function showEmpty() {
    EMPTY POR FILTRO (TEXTO + IMAGEN SEGÚN ESTADO)
 ============================================================ */
 function mostrarEmptyPorFiltro() {
-  const empty = $id("empty-state");
+  const empty = document.getElementById("empty-state");
   if (!empty) return;
 
   const title = empty.querySelector(".empty-title");
@@ -384,7 +384,9 @@ function mostrarEmptyPorFiltro() {
   if (!title || !text || !img) return;
 
   const filter = String(currentFilter || "pending").toLowerCase();
-  const BASE = "../imagenes/empty/"; // ✅ RUTA CORRECTA
+
+  // 🔒 BASE ABSOLUTA REAL (funciona en /pages, subcarpetas, admin, etc.)
+  const BASE = window.location.origin + "/imagenes/empty/";
 
   const config = {
     pending: {
