@@ -1,7 +1,5 @@
 /**
- * 🧾 recibo.checkout.js — FINAL MATERIAL 3 EXPRESSIVE (FIXED)
- * ---------------------------------------------------------
- * Checkout ONLY (no vista, no lectura)
+ * 🧾 recibo.checkout.js — FINAL MATERIAL 3 EXPRESSIVE (SNACKBAR MASTER)
  */
 
 console.log("🧾 recibo.checkout.js — INIT");
@@ -10,15 +8,17 @@ console.log("🧾 recibo.checkout.js — INIT");
    GUARD
 ========================================================= */
 if (window.IS_READ_ONLY) {
-  console.warn("⛔ Checkout abortado (modo READ_ONLY)");
   throw new Error("Checkout bloqueado");
 }
 
 /* =========================================================
-   ELEMENTOS UI
+   HELPERS
 ========================================================= */
 const $ = (id) => document.getElementById(id);
 
+/* =========================================================
+   ELEMENTOS UI
+========================================================= */
 const metodoPago = $("metodoPago");
 const bloqueDeposito = $("pago-deposito");
 const bloqueEfectivo = $("pago-efectivo");
@@ -35,60 +35,50 @@ const btnSubir = $("btnSubirComprobante");
 ========================================================= */
 let selectedAddressId = null;
 let totalPedido = 0;
+let tempFile = null;
 
-const carrito = JSON.parse(localStorage.getItem("cafecortero_cart") || "[]");
+const CART_KEY = "cafecortero_cart";
+const carrito = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
 
 /* =========================================================
-   NÚMERO / FECHA / HORA — PROVISIONAL (CLAVE)
+   NÚMERO PROVISIONAL (SOLO VISUAL)
 ========================================================= */
 async function pintarDatosProvisionales() {
   const sb = window.supabaseClient;
-  const user = window.getUserCache?.();
+  const user = window.getUserCache();
   if (!sb || !user) return;
 
-  try {
-    const { data } = await sb
-      .from("orders")
-      .select("order_number")
-      .eq("user_id", user.id)
-      .order("order_number", { ascending: false })
-      .limit(1);
+  const { data } = await sb
+    .from("orders")
+    .select("order_number")
+    .eq("user_id", user.id)
+    .order("order_number", { ascending: false })
+    .limit(1);
 
-    const next = (data?.[0]?.order_number || 0) + 1;
-    const now = new Date();
+  const next = (data?.[0]?.order_number || 0) + 1;
+  const now = new Date();
 
-    $("numeroPedido").textContent = String(next).padStart(3, "0");
-    $("fechaPedido").textContent = now.toLocaleDateString("es-HN", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric"
-    });
-    $("horaPedido").textContent = now.toLocaleTimeString("es-HN", {
-      hour: "2-digit",
-      minute: "2-digit"
-    });
-
-  } catch (e) {
-    console.warn("No se pudo generar número provisional");
-  }
+  $("numeroPedido").textContent = String(next).padStart(3, "0");
+  $("fechaPedido").textContent = now.toLocaleDateString("es-HN", {
+    day: "2-digit", month: "short", year: "numeric"
+  });
+  $("horaPedido").textContent = now.toLocaleTimeString("es-HN", {
+    hour: "2-digit", minute: "2-digit"
+  });
 }
 
 /* =========================================================
-   IMAGEN — PREVIEW
+   PREVIEW COMPROBANTE
 ========================================================= */
-function guardarImagenTemporal(file) {
-  const reader = new FileReader();
-  reader.onload = e => {
-    sessionStorage.setItem("temp_receipt_base64", e.target.result);
-    imgPreview.src = e.target.result;
-    previewBox.classList.remove("hidden");
-    btnEnviar.disabled = false;
-  };
-  reader.readAsDataURL(file);
+function mostrarPreview(file) {
+  tempFile = file;
+  imgPreview.src = URL.createObjectURL(file);
+  previewBox.classList.remove("hidden");
+  btnEnviar.disabled = false;
 }
 
 /* =========================================================
-   DATOS INICIALES
+   DATOS CLIENTE
 ========================================================= */
 async function cargarResumen() {
   const sb = window.supabaseClient;
@@ -102,9 +92,9 @@ async function cargarResumen() {
     .single();
 
   if (userRow) {
-    $("nombreCliente").textContent = userRow.name || "—";
-    $("correoCliente").textContent = userRow.email || "—";
-    $("telefonoCliente").textContent = userRow.phone || "—";
+    $("nombreCliente").textContent = userRow.name;
+    $("correoCliente").textContent = userRow.email;
+    $("telefonoCliente").textContent = userRow.phone;
   }
 
   const { data: addr } = await sb
@@ -129,21 +119,17 @@ async function cargarResumen() {
 ========================================================= */
 function renderCarrito() {
   const lista = $("listaProductos");
-  if (!lista) return;
-
   lista.innerHTML = "";
   totalPedido = 0;
 
   carrito.forEach(it => {
-    const subtotal = it.qty * it.price;
-    totalPedido += subtotal;
-
-    lista.insertAdjacentHTML("beforeend", `
+    const sub = it.qty * it.price;
+    totalPedido += sub;
+    lista.innerHTML += `
       <div class="cafe-item">
         <span>${it.name} × ${it.qty}</span>
-        <strong>L ${subtotal.toFixed(2)}</strong>
-      </div>
-    `);
+        <strong>L ${sub.toFixed(2)}</strong>
+      </div>`;
   });
 
   $("totalPedido").textContent = totalPedido.toFixed(2);
@@ -153,67 +139,85 @@ function renderCarrito() {
    MÉTODO DE PAGO
 ========================================================= */
 function actualizarPago() {
-  const val = metodoPago.value;
+  const v = metodoPago.value;
 
-  bloqueDeposito.classList.toggle("hidden", val !== "bank_transfer");
-  bloqueEfectivo.classList.toggle("hidden", val !== "cash");
+  bloqueDeposito.classList.toggle("hidden", v !== "bank_transfer");
+  bloqueEfectivo.classList.toggle("hidden", v !== "cash");
 
-  if (val === "bank_transfer") {
-    btnEnviar.disabled = !sessionStorage.getItem("temp_receipt_base64");
+  if (v === "bank_transfer") {
+    btnEnviar.disabled = !tempFile;
   } else {
     btnEnviar.disabled = false;
   }
 }
 
 /* =========================================================
-   ENVÍO FINAL
+   SNACKBAR — ÚNICO DISPARADOR
+========================================================= */
+function confirmarEnvio() {
+  if (metodoPago.value === "bank_transfer" && !tempFile) {
+    window.showSnack("Debes subir el comprobante");
+    return;
+  }
+
+  window.showSnack(
+    "¿Confirmar envío del pedido?",
+    enviarPedido,      // ✅ SOLO AQUÍ se crea el pedido
+    "Editar",
+    () => {}            // Solo cerrar
+  );
+}
+
+/* =========================================================
+   ENVÍO FINAL (ÚNICO)
 ========================================================= */
 async function enviarPedido() {
   const sb = window.supabaseClient;
   const user = window.getUserCache();
-
-  if (!user || !selectedAddressId) {
-    window.showSnack("Faltan datos del pedido");
-    return;
-  }
+  if (!user || !selectedAddressId) return;
 
   btnEnviar.disabled = true;
   loader.classList.remove("hidden");
 
   try {
+    /* 1️⃣ Número REAL */
+    const { data: orderNumber, error: numErr } =
+      await sb.rpc("next_order_number", { p_user_id: user.id });
+
+    if (numErr || !orderNumber) {
+      throw new Error("No se pudo generar número de pedido");
+    }
+
+    /* 2️⃣ Crear pedido */
     const { data: order, error } = await sb
       .from("orders")
       .insert({
         user_id: user.id,
         address_id: selectedAddressId,
+        order_number: orderNumber,
         total: totalPedido,
-        payment_method: metodoPago.value,
-        status: "pending",
-        order_notes: sessionStorage.getItem("current_order_notes") || ""
+        payment_method:
+          metodoPago.value === "bank_transfer"
+            ? "bank_transfer"
+            : "cash_on_delivery",
+        status: "pending"
       })
       .select("id, order_number, created_at")
       .single();
 
     if (error) throw error;
 
-    // 🔑 PINTAR DATOS REALES
-    const fecha = new Date(order.created_at);
-
-    $("numeroPedido").textContent =
-      String(order.order_number).padStart(3, "0");
-
-    $("fechaPedido").textContent = fecha.toLocaleDateString("es-HN", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric"
+    /* 3️⃣ Pintar datos reales */
+    const f = new Date(order.created_at);
+    $("numeroPedido").textContent = String(order.order_number).padStart(3, "0");
+    $("fechaPedido").textContent = f.toLocaleDateString("es-HN", {
+      day: "2-digit", month: "short", year: "numeric"
+    });
+    $("horaPedido").textContent = f.toLocaleTimeString("es-HN", {
+      hour: "2-digit", minute: "2-digit"
     });
 
-    $("horaPedido").textContent = fecha.toLocaleTimeString("es-HN", {
-      hour: "2-digit",
-      minute: "2-digit"
-    });
-
-    // Insertar items
+    /* 4️⃣ Items */
     await sb.from("order_items").insert(
       carrito.map(it => ({
         order_id: order.id,
@@ -223,15 +227,36 @@ async function enviarPedido() {
       }))
     );
 
-    localStorage.setItem("cafecortero_cart", "[]");
+    /* 5️⃣ Comprobante */
+    if (tempFile) {
+      const ext = tempFile.name.split(".").pop();
+      const path = `${user.id}/${order.id}.${ext}`;
+
+      await sb.storage
+        .from("payment-receipts")
+        .upload(path, tempFile, { upsert: true });
+
+      const { data } = sb.storage
+        .from("payment-receipts")
+        .getPublicUrl(path);
+
+      await sb.from("payment_receipts").insert({
+        order_id: order.id,
+        user_id: user.id,
+        file_url: data.publicUrl,
+        file_path: path
+      });
+    }
+
+    localStorage.setItem(CART_KEY, "[]");
 
     setTimeout(() => {
       location.href = `/pages/shop/recibo.html?id=${order.id}`;
-    }, 2000);
+    }, 1800);
 
-  } catch (err) {
-    console.error(err);
-    window.showSnack("Error al procesar pedido");
+  } catch (e) {
+    console.error(e);
+    window.showSnack("Error al enviar pedido");
     btnEnviar.disabled = false;
   } finally {
     loader.classList.add("hidden");
@@ -244,7 +269,6 @@ async function enviarPedido() {
 (async function init() {
   await window.esperarSupabase();
 
-  // Ocultar progreso en checkout
   document.querySelector(".pedido-progreso")?.classList.add("hidden");
 
   await pintarDatosProvisionales();
@@ -252,17 +276,13 @@ async function enviarPedido() {
   renderCarrito();
   actualizarPago();
 
-  metodoPago.addEventListener("change", actualizarPago);
-  btnSubir.addEventListener("click", e => {
-    e.preventDefault();
-    inputFile.click();
-  });
+  metodoPago.onchange = actualizarPago;
+  btnSubir.onclick = () => inputFile.click();
 
-  inputFile.addEventListener("change", () => {
+  inputFile.onchange = () => {
     const f = inputFile.files[0];
-    if (!f || !f.type.startsWith("image/")) return;
-    guardarImagenTemporal(f);
-  });
+    if (f && f.type.startsWith("image/")) mostrarPreview(f);
+  };
 
-  btnEnviar.addEventListener("click", enviarPedido);
+  btnEnviar.onclick = confirmarEnvio;
 })();
