@@ -1,5 +1,5 @@
 /**
- * 🧾 recibo.checkout.js — FINAL MATERIAL 3 EXPRESSIVE (SNACKBAR FLOW FIXED)
+ * 🧾 recibo.checkout.js — FINAL MATERIAL 3 EXPRESSIVE (SNACKBAR REAL)
  */
 
 console.log("🧾 recibo.checkout.js — INIT");
@@ -41,12 +41,12 @@ const CART_KEY = "cafecortero_cart";
 const carrito = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
 
 /* =========================================================
-   ESTADO INICIAL DEL BOTÓN
+   ESTADO INICIAL
 ========================================================= */
 btnEnviar.disabled = true;
 
 /* =========================================================
-   PROVISIONAL (UI ONLY)
+   PROVISIONAL (SOLO UI)
 ========================================================= */
 async function pintarDatosProvisionales() {
   const sb = window.supabaseClient;
@@ -65,10 +65,13 @@ async function pintarDatosProvisionales() {
 
   $("numeroPedido").textContent = String(next).padStart(3, "0");
   $("fechaPedido").textContent = now.toLocaleDateString("es-HN", {
-    day: "2-digit", month: "short", year: "numeric"
+    day: "2-digit",
+    month: "short",
+    year: "numeric"
   });
   $("horaPedido").textContent = now.toLocaleTimeString("es-HN", {
-    hour: "2-digit", minute: "2-digit"
+    hour: "2-digit",
+    minute: "2-digit"
   });
 }
 
@@ -83,7 +86,7 @@ function mostrarPreview(file) {
 }
 
 /* =========================================================
-   VALIDACIÓN CENTRAL DEL BOTÓN
+   VALIDACIÓN BOTÓN
 ========================================================= */
 function validarBoton() {
   if (metodoPago.value === "cash") {
@@ -170,7 +173,40 @@ function actualizarPago() {
 }
 
 /* =========================================================
-   SNACKBAR — ÚNICO CONTROL
+   SNACKBAR CONFIRMACIÓN REAL
+========================================================= */
+function mostrarConfirmacionEnvio() {
+  const bar = $("snackbar");
+  if (!bar) return;
+
+  bar.innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:12px;width:100%;">
+      <span class="snack-text">¿Confirmar envío del pedido?</span>
+      <div style="display:flex;justify-content:flex-end;gap:8px;">
+        <button id="snack-editar"
+          style="background:none;border:none;color:#fff;font-weight:600;cursor:pointer;">
+          Editar
+        </button>
+        <button id="snack-confirmar"
+          style="background:#2e7d32;border:none;color:#fff;font-weight:600;
+                 cursor:pointer;padding:8px 16px;border-radius:8px;">
+          Confirmar
+        </button>
+      </div>
+    </div>
+  `;
+
+  bar.classList.add("show");
+
+  $("snack-editar").onclick = () => bar.classList.remove("show");
+  $("snack-confirmar").onclick = () => {
+    bar.classList.remove("show");
+    enviarPedido();
+  };
+}
+
+/* =========================================================
+   CLICK EN ENVIAR
 ========================================================= */
 function confirmarEnvio() {
   if (btnEnviar.disabled) return;
@@ -180,12 +216,7 @@ function confirmarEnvio() {
     return;
   }
 
-  window.showSnack(
-    "¿Confirmar envío del pedido?",
-    enviarPedido,
-    "Editar",
-    () => {}
-  );
+  mostrarConfirmacionEnvio();
 }
 
 /* =========================================================
