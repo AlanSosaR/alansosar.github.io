@@ -53,7 +53,7 @@ window.showSnack = (msg, duration = 4000) => {
 };
 
 /* =========================================================
-   CANCELACIÓN — SNACKBAR CONFIRMACIÓN (ÚNICO FLUJO)
+   CANCELACIÓN — CONFIRMACIÓN
 ========================================================= */
 function mostrarConfirmacionCancelacion() {
   const bar = $id("snackbar");
@@ -64,7 +64,7 @@ function mostrarConfirmacionCancelacion() {
       <span class="snack-text">¿Deseas cancelar este pedido?</span>
       <div style="display:flex;justify-content:flex-end;gap:8px;">
         <button id="snack-no"
-          style="background:none;border:none;color:#fff;font-weight:600;cursor:pointer;padding:8px;">
+          style="background:none;border:none;color:#fff;font-weight:600;cursor:pointer;">
           No
         </button>
         <button id="snack-si"
@@ -100,30 +100,6 @@ async function ejecutarCancelacion() {
     return;
   }
 
-  /* 🔔 NOTIFICAR ADMIN */
-  try {
-    const { data: session } = await sb.auth.getSession();
-    const token = session?.session?.access_token;
-
-    fetch(
-      "https://eaipcuvvddyrqkbmjmvw.supabase.co/functions/v1/notify-admin",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {})
-        },
-        body: JSON.stringify({
-          event: "order_cancelled",
-          order_id: window.ORDER_ID,
-          user_id: user.id
-        })
-      }
-    );
-  } catch (e) {
-    console.warn("⚠️ No se pudo notificar al admin", e);
-  }
-
   window.showSnack("Pedido cancelado correctamente");
   setTimeout(() => location.reload(), 1200);
 }
@@ -139,7 +115,9 @@ window.aplicarModoRecibo = (pedido) => {
     };
   }
 
-  document.querySelector(".pago-select-label")?.classList.add("hidden");
+  // ⚠️ ESTE ELEMENTO NO EXISTE EN RECIBO → PROTEGER
+  const pagoLabel = document.querySelector(".pago-select-label");
+  if (pagoLabel) pagoLabel.classList.add("hidden");
 
   const btnCancelar =
     $id("btnCancelarPedido") || document.querySelector(".btn-cancelar");
@@ -151,7 +129,9 @@ window.aplicarModoRecibo = (pedido) => {
     return;
   }
 
+  btnCancelar.disabled = false;
   btnCancelar.classList.remove("hidden");
+
   btnCancelar.onclick = (e) => {
     e.preventDefault();
     mostrarConfirmacionCancelacion();
@@ -235,28 +215,34 @@ window.cargarPedidoExistente = async (orderId) => {
   }
 
   /* PRODUCTOS */
-  const lista = $id("listaProductos");
-  lista.innerHTML = pedido.order_items.map(it => `
+  $id("listaProductos").innerHTML = pedido.order_items.map(it => `
     <div class="cafe-item">
       <span>${it.products.name} × ${it.quantity}</span>
       <strong>L ${(it.quantity * it.price).toFixed(2)}</strong>
     </div>
   `).join("");
 
-  /* COMPROBANTE */
+  /* COMPROBANTE — SIEMPRE MOSTRAR */
   const preview = $id("previewComprobante");
   const img = $id("imgComprobante");
 
-  if (preview && img && pedido.payment_method === "bank_transfer") {
+  if (preview && img) {
     preview.classList.remove("hidden");
-    img.src =
-      pedido.payment_receipts?.[0]?.file_url ||
-      "/assets/img/receipt-placeholder.svg";
-    img.alt = "Comprobante de pago";
+
+    if (pedido.payment_method === "bank_transfer") {
+      img.src =
+        pedido.payment_receipts?.[0]?.file_url ||
+        "/assets/img/receipt-placeholder.svg";
+      img.alt = "Comprobante de pago";
+    } else {
+      img.src = "/assets/img/receipt-cash.svg";
+      img.alt = "Pago en efectivo";
+    }
   }
 
   /* ESTADO */
   let statusVisual = pedido.status;
+
   if (
     pedido.payment_method === "bank_transfer" &&
     pedido.status === "pending" &&
