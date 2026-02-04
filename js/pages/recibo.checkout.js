@@ -206,7 +206,33 @@ async function enviarPedido() {
 
     if (error) throw error;
 
-    // ITEMS
+    /* =====================================================
+       ✅ NUEVO — MOSTRAR CONFIRMACIÓN INMEDIATA
+    ===================================================== */
+    const ahora = new Date();
+
+    document.getElementById("numeroPedido").textContent =
+      order.order_number;
+
+    document.getElementById("fechaPedido").textContent =
+      ahora.toLocaleDateString("es-HN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      });
+
+    document.getElementById("horaPedido").textContent =
+      ahora.toLocaleTimeString("es-HN", {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+
+    // Ocultar estado del pedido en primera emisión
+    document.getElementById("estadoPedido")?.classList.add("hidden");
+
+    /* =====================================================
+       ITEMS
+    ===================================================== */
     await sb.from("order_items").insert(
       carrito.map(it => ({
         order_id: order.id,
@@ -216,7 +242,9 @@ async function enviarPedido() {
       }))
     );
 
-    // COMPROBANTE
+    /* =====================================================
+       COMPROBANTE
+    ===================================================== */
     if (metodoPago.value === "bank_transfer") {
       const base64 = sessionStorage.getItem("temp_receipt_base64");
       if (base64) {
@@ -235,16 +263,25 @@ async function enviarPedido() {
       }
     }
 
-    // NOTIFICACIÓN
+    /* =====================================================
+       NOTIFICACIÓN
+    ===================================================== */
     await sb.functions.invoke("notify-new-order", {
       body: { orderId: order.id, number: order.order_number }
     });
 
-    // LIMPIEZA
+    /* =====================================================
+       LIMPIEZA
+    ===================================================== */
     localStorage.setItem("cafecortero_cart", "[]");
     sessionStorage.removeItem("temp_receipt_base64");
 
-    window.location.href = `/pages/shop/recibo.html?id=${order.id}`;
+    /* =====================================================
+       ✅ NUEVO — REDIRECCIÓN CON DELAY (UX)
+    ===================================================== */
+    setTimeout(() => {
+      window.location.href = `/pages/shop/recibo.html?id=${order.id}`;
+    }, 2500);
 
   } catch (err) {
     console.error(err);
@@ -260,6 +297,9 @@ async function enviarPedido() {
 ========================================================= */
 (async function init() {
   await window.esperarSupabase();
+
+  // Ocultar estado desde el inicio (checkout)
+  document.getElementById("estadoPedido")?.classList.add("hidden");
 
   metodoPago?.addEventListener("change", actualizarPago);
   btnSubir?.addEventListener("click", e => {
