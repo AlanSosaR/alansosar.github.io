@@ -370,7 +370,6 @@ function showEmpty() {
   $id("mis-pedidos-carrusel")?.classList.add("hidden");
   $id("empty-state")?.classList.remove("hidden");
 }
-
 /* ============================================================
    EMPTY POR FILTRO (TEXTO + IMAGEN SEGÚN ESTADO)
 ============================================================ */
@@ -385,7 +384,7 @@ function mostrarEmptyPorFiltro() {
   if (!title || !text || !img) return;
 
   const filter = String(currentFilter || "pending").toLowerCase();
-  const BASE = "../assets/empty/"; // 🔑 CLAVE REAL
+  const BASE = "../imagenes/empty/"; // ✅ RUTA CORRECTA
 
   const config = {
     pending: {
@@ -429,5 +428,3 @@ function mostrarEmptyPorFiltro() {
 
   empty.classList.remove("hidden");
 }
-
-
