@@ -1,5 +1,5 @@
 /**
- * 🧾 recibo.checkout.js — FINAL MATERIAL 3 EXPRESSIVE (STABLE)
+ * 🧾 recibo.checkout.js — FINAL MATERIAL 3 EXPRESSIVE (FIXED)
  * ---------------------------------------------------------
  * Checkout ONLY (no vista, no lectura)
  */
@@ -7,26 +7,28 @@
 console.log("🧾 recibo.checkout.js — INIT");
 
 /* =========================================================
-   GUARD: NO EJECUTAR EN MODO SOLO LECTURA
+   GUARD
 ========================================================= */
 if (window.IS_READ_ONLY) {
-  console.warn("⛔ recibo.checkout.js abortado (modo READ_ONLY)");
-  throw new Error("Checkout bloqueado en modo solo lectura");
+  console.warn("⛔ Checkout abortado (modo READ_ONLY)");
+  throw new Error("Checkout bloqueado");
 }
 
 /* =========================================================
    ELEMENTOS UI
 ========================================================= */
-const metodoPago = document.getElementById("metodoPago");
-const bloqueDeposito = document.getElementById("pago-deposito");
-const bloqueEfectivo = document.getElementById("pago-efectivo");
-const btnEnviar = document.getElementById("btnEnviar");
-const loader = document.getElementById("loaderAccion");
+const $ = (id) => document.getElementById(id);
 
-const inputFile = document.getElementById("inputComprobante");
-const previewBox = document.getElementById("previewComprobante");
-const imgPreview = document.getElementById("imgComprobante");
-const btnSubir = document.getElementById("btnSubirComprobante");
+const metodoPago = $("metodoPago");
+const bloqueDeposito = $("pago-deposito");
+const bloqueEfectivo = $("pago-efectivo");
+const btnEnviar = $("btnEnviar");
+const loader = $("loaderAccion");
+
+const inputFile = $("inputComprobante");
+const previewBox = $("previewComprobante");
+const imgPreview = $("imgComprobante");
+const btnSubir = $("btnSubirComprobante");
 
 /* =========================================================
    STATE
@@ -34,56 +36,55 @@ const btnSubir = document.getElementById("btnSubirComprobante");
 let selectedAddressId = null;
 let totalPedido = 0;
 
-const carrito = JSON.parse(
-  localStorage.getItem("cafecortero_cart") || "[]"
-);
+const carrito = JSON.parse(localStorage.getItem("cafecortero_cart") || "[]");
 
 /* =========================================================
-   IMAGEN — PERSISTENCIA
+   NÚMERO / FECHA / HORA — PROVISIONAL (CLAVE)
+========================================================= */
+async function pintarDatosProvisionales() {
+  const sb = window.supabaseClient;
+  const user = window.getUserCache?.();
+  if (!sb || !user) return;
+
+  try {
+    const { data } = await sb
+      .from("orders")
+      .select("order_number")
+      .eq("user_id", user.id)
+      .order("order_number", { ascending: false })
+      .limit(1);
+
+    const next = (data?.[0]?.order_number || 0) + 1;
+    const now = new Date();
+
+    $("numeroPedido").textContent = String(next).padStart(3, "0");
+    $("fechaPedido").textContent = now.toLocaleDateString("es-HN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric"
+    });
+    $("horaPedido").textContent = now.toLocaleTimeString("es-HN", {
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+
+  } catch (e) {
+    console.warn("No se pudo generar número provisional");
+  }
+}
+
+/* =========================================================
+   IMAGEN — PREVIEW
 ========================================================= */
 function guardarImagenTemporal(file) {
   const reader = new FileReader();
   reader.onload = e => {
     sessionStorage.setItem("temp_receipt_base64", e.target.result);
-    mostrarPreview(e.target.result);
+    imgPreview.src = e.target.result;
+    previewBox.classList.remove("hidden");
+    btnEnviar.disabled = false;
   };
   reader.readAsDataURL(file);
-}
-
-function mostrarPreview(src) {
-  if (!imgPreview || !previewBox) return;
-
-  imgPreview.src = src;
-  previewBox.classList.remove("hidden");
-  btnEnviar.disabled = false;
-}
-
-/* =========================================================
-   SNACKBAR CONFIRMACIÓN
-========================================================= */
-function confirmarEnvio(texto, onConfirm) {
-  const bar = document.getElementById("snackbar");
-  if (!bar) return;
-
-  bar.innerHTML = `
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
-      <span class="snack-text">${texto}</span>
-      <div style="display:flex;gap:8px;">
-        <button id="snack-cancel" class="snack-action secondary">Editar</button>
-        <button id="snack-ok" class="snack-action primary">Confirmar</button>
-      </div>
-    </div>
-  `;
-
-  bar.classList.add("show");
-
-  document.getElementById("snack-cancel").onclick = () =>
-    bar.classList.remove("show");
-
-  document.getElementById("snack-ok").onclick = () => {
-    bar.classList.remove("show");
-    onConfirm();
-  };
 }
 
 /* =========================================================
@@ -94,7 +95,6 @@ async function cargarResumen() {
   const user = window.getUserCache();
   if (!sb || !user) return;
 
-  // Cliente
   const { data: userRow } = await sb
     .from("users")
     .select("name,email,phone")
@@ -102,12 +102,11 @@ async function cargarResumen() {
     .single();
 
   if (userRow) {
-    document.getElementById("nombreCliente").textContent = userRow.name || "—";
-    document.getElementById("correoCliente").textContent = userRow.email || "—";
-    document.getElementById("telefonoCliente").textContent = userRow.phone || "—";
+    $("nombreCliente").textContent = userRow.name || "—";
+    $("correoCliente").textContent = userRow.email || "—";
+    $("telefonoCliente").textContent = userRow.phone || "—";
   }
 
-  // Dirección
   const { data: addr } = await sb
     .from("addresses")
     .select("id,state,city,street")
@@ -117,29 +116,23 @@ async function cargarResumen() {
 
   if (addr?.length) {
     selectedAddressId = addr[0].id;
-    document.getElementById("zonaCliente").textContent = `${addr[0].state}, ${addr[0].city}`;
-    document.getElementById("direccionCliente").textContent = addr[0].street;
+    $("zonaCliente").textContent = `${addr[0].state}, ${addr[0].city}`;
+    $("direccionCliente").textContent = addr[0].street;
   }
 
-  // Nota
-  document.getElementById("notaCliente").textContent =
+  $("notaCliente").textContent =
     sessionStorage.getItem("current_order_notes") || "Sin nota adicional";
 }
 
 /* =========================================================
-   RESUMEN DE CARRITO
+   CARRITO
 ========================================================= */
 function renderCarrito() {
-  const lista = document.getElementById("listaProductos");
+  const lista = $("listaProductos");
   if (!lista) return;
 
   lista.innerHTML = "";
   totalPedido = 0;
-
-  if (!carrito.length) {
-    lista.innerHTML = "<p class='empty-msg'>Tu carrito está vacío</p>";
-    return;
-  }
 
   carrito.forEach(it => {
     const subtotal = it.qty * it.price;
@@ -153,8 +146,7 @@ function renderCarrito() {
     `);
   });
 
-  document.getElementById("totalPedido").textContent =
-    totalPedido.toFixed(2);
+  $("totalPedido").textContent = totalPedido.toFixed(2);
 }
 
 /* =========================================================
@@ -163,13 +155,11 @@ function renderCarrito() {
 function actualizarPago() {
   const val = metodoPago.value;
 
-  bloqueDeposito?.classList.toggle("hidden", val !== "bank_transfer");
-  bloqueEfectivo?.classList.toggle("hidden", val !== "cash");
+  bloqueDeposito.classList.toggle("hidden", val !== "bank_transfer");
+  bloqueEfectivo.classList.toggle("hidden", val !== "cash");
 
   if (val === "bank_transfer") {
-    const img = sessionStorage.getItem("temp_receipt_base64");
-    btnEnviar.disabled = !img;
-    if (img) mostrarPreview(img);
+    btnEnviar.disabled = !sessionStorage.getItem("temp_receipt_base64");
   } else {
     btnEnviar.disabled = false;
   }
@@ -181,7 +171,8 @@ function actualizarPago() {
 async function enviarPedido() {
   const sb = window.supabaseClient;
   const user = window.getUserCache();
-  if (!sb || !user || !selectedAddressId) {
+
+  if (!user || !selectedAddressId) {
     window.showSnack("Faltan datos del pedido");
     return;
   }
@@ -190,7 +181,6 @@ async function enviarPedido() {
   loader.classList.remove("hidden");
 
   try {
-    // ORDEN
     const { data: order, error } = await sb
       .from("orders")
       .insert({
@@ -201,38 +191,29 @@ async function enviarPedido() {
         status: "pending",
         order_notes: sessionStorage.getItem("current_order_notes") || ""
       })
-      .select("id, order_number")
+      .select("id, order_number, created_at")
       .single();
 
     if (error) throw error;
 
-    /* =====================================================
-       ✅ NUEVO — MOSTRAR CONFIRMACIÓN INMEDIATA
-    ===================================================== */
-    const ahora = new Date();
+    // 🔑 PINTAR DATOS REALES
+    const fecha = new Date(order.created_at);
 
-    document.getElementById("numeroPedido").textContent =
-      order.order_number;
+    $("numeroPedido").textContent =
+      String(order.order_number).padStart(3, "0");
 
-    document.getElementById("fechaPedido").textContent =
-      ahora.toLocaleDateString("es-HN", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-      });
+    $("fechaPedido").textContent = fecha.toLocaleDateString("es-HN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric"
+    });
 
-    document.getElementById("horaPedido").textContent =
-      ahora.toLocaleTimeString("es-HN", {
-        hour: "2-digit",
-        minute: "2-digit",
-      });
+    $("horaPedido").textContent = fecha.toLocaleTimeString("es-HN", {
+      hour: "2-digit",
+      minute: "2-digit"
+    });
 
-    // Ocultar estado del pedido en primera emisión
-    document.getElementById("estadoPedido")?.classList.add("hidden");
-
-    /* =====================================================
-       ITEMS
-    ===================================================== */
+    // Insertar items
     await sb.from("order_items").insert(
       carrito.map(it => ({
         order_id: order.id,
@@ -242,46 +223,11 @@ async function enviarPedido() {
       }))
     );
 
-    /* =====================================================
-       COMPROBANTE
-    ===================================================== */
-    if (metodoPago.value === "bank_transfer") {
-      const base64 = sessionStorage.getItem("temp_receipt_base64");
-      if (base64) {
-        const blob = await (await fetch(base64)).blob();
-        const path = `${user.id}/${order.id}_${Date.now()}.png`;
-
-        await sb.storage.from("payment-receipts").upload(path, blob);
-        const { data } = sb.storage.from("payment-receipts").getPublicUrl(path);
-
-        await sb.from("payment_receipts").insert({
-          order_id: order.id,
-          user_id: user.id,
-          file_url: data.publicUrl,
-          file_path: path
-        });
-      }
-    }
-
-    /* =====================================================
-       NOTIFICACIÓN
-    ===================================================== */
-    await sb.functions.invoke("notify-new-order", {
-      body: { orderId: order.id, number: order.order_number }
-    });
-
-    /* =====================================================
-       LIMPIEZA
-    ===================================================== */
     localStorage.setItem("cafecortero_cart", "[]");
-    sessionStorage.removeItem("temp_receipt_base64");
 
-    /* =====================================================
-       ✅ NUEVO — REDIRECCIÓN CON DELAY (UX)
-    ===================================================== */
     setTimeout(() => {
-      window.location.href = `/pages/shop/recibo.html?id=${order.id}`;
-    }, 2500);
+      location.href = `/pages/shop/recibo.html?id=${order.id}`;
+    }, 2000);
 
   } catch (err) {
     console.error(err);
@@ -298,32 +244,25 @@ async function enviarPedido() {
 (async function init() {
   await window.esperarSupabase();
 
-  // Ocultar estado desde el inicio (checkout)
-  document.getElementById("estadoPedido")?.classList.add("hidden");
+  // Ocultar progreso en checkout
+  document.querySelector(".pedido-progreso")?.classList.add("hidden");
 
-  metodoPago?.addEventListener("change", actualizarPago);
-  btnSubir?.addEventListener("click", e => {
-    e.preventDefault();
-    inputFile?.click();
-  });
-
-  inputFile?.addEventListener("change", () => {
-    const f = inputFile.files[0];
-    if (!f || !f.type.startsWith("image/")) {
-      window.showSnack("Solo imágenes JPG o PNG");
-      return;
-    }
-    guardarImagenTemporal(f);
-  });
-
-  btnEnviar?.addEventListener("click", () => {
-    const txt = metodoPago.value === "cash"
-      ? "¿Confirmar pedido en efectivo?"
-      : "¿Enviar comprobante y pedido?";
-    confirmarEnvio(txt, enviarPedido);
-  });
-
+  await pintarDatosProvisionales();
   await cargarResumen();
   renderCarrito();
   actualizarPago();
+
+  metodoPago.addEventListener("change", actualizarPago);
+  btnSubir.addEventListener("click", e => {
+    e.preventDefault();
+    inputFile.click();
+  });
+
+  inputFile.addEventListener("change", () => {
+    const f = inputFile.files[0];
+    if (!f || !f.type.startsWith("image/")) return;
+    guardarImagenTemporal(f);
+  });
+
+  btnEnviar.addEventListener("click", enviarPedido);
 })();
