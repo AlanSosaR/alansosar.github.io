@@ -64,84 +64,113 @@
         </div>
 
         <!-- Métodos de pago -->
-        <div class="pagos">
+        <!-- Métodos de pago -->
+<div class="pagos">
 
-          <label class="pago-select-label">
-            <span class="material-symbols-outlined">payments</span>
-            <select id="metodoPago">
-              <option value="" selected disabled>Selecciona un método de pago</option>
-              <option value="bank_transfer">Depósito bancario</option>
-              <option value="cash">Pago en efectivo</option>
-            </select>
-          </label>
+  <!-- SELECT PAGO -->
+  <label class="pago-select-label">
+    <span class="material-symbols-outlined icon-left">payments</span>
 
-          <!-- Depósito -->
-          <div id="pago-deposito" class="pago-bloque hidden">
-            <p class="pago-title">
-              <span class="material-symbols-outlined">account_balance</span>
-              <strong>Depósito bancario</strong>
-            </p>
+    <select id="metodoPago" class="pago-select">
+      <option value="" selected disabled>Selecciona un método de pago</option>
+      <option value="bank_transfer">Depósito bancario</option>
+      <option value="cash">Pago en efectivo</option>
+    </select>
 
-            <p class="comprobante-info">
-              Realiza el depósito y sube el comprobante para validar tu pedido.
-            </p>
+    <!-- Flecha custom (solo desktop) -->
+    <span class="material-symbols-outlined icon-arrow">expand_more</span>
+  </label>
 
-            <ul class="pago-detalle">
-              <li><strong>Banco:</strong> Atlántida</li>
-              <li><strong>Cuenta:</strong> 123456789</li>
-              <li><strong>Tipo:</strong> Cuenta de ahorro</li>
-            </ul>
+  <!-- ================= DEPÓSITO ================= -->
+  <div id="pago-deposito" class="pago-bloque hidden">
 
-            <p class="pago-nota">
-              ⏳ El pedido pasará a revisión una vez enviado el comprobante.
-            </p>
+    <p class="pago-title">
+      <span class="material-symbols-outlined">account_balance</span>
+      <strong>Depósito bancario</strong>
+    </p>
 
-            <button class="comprobante-link" id="btnSubirComprobante">
-              <span class="material-symbols-outlined">upload</span>
-              Subir comprobante
-            </button>
+    <p class="comprobante-info">
+      Realiza el depósito y sube el comprobante para validar tu pedido.
+    </p>
 
-            <input type="file" id="inputComprobante" accept="image/*" hidden>
+    <ul class="pago-detalle">
+      <li>
+        <span class="material-symbols-outlined">account_balance</span>
+        <strong>Banco:</strong> Atlántida
+      </li>
+      <li>
+        <span class="material-symbols-outlined">numbers</span>
+        <strong>Cuenta:</strong> 123456789
+      </li>
+      <li>
+        <span class="material-symbols-outlined">savings</span>
+        <strong>Tipo:</strong> Cuenta de ahorro
+      </li>
+    </ul>
 
-            <div id="previewComprobante" class="preview hidden">
-              <img id="imgComprobante" alt="Comprobante">
-              <p>✔ Comprobante cargado correctamente</p>
-            </div>
-          </div>
+    <p class="pago-nota">
+      <span class="material-symbols-outlined">hourglass_top</span>
+      El pedido pasará a revisión una vez enviado el comprobante.
+    </p>
 
-          <!-- Efectivo -->
-          <div id="pago-efectivo" class="pago-bloque hidden">
-            <p class="pago-title">
-              <span class="material-symbols-outlined">payments</span>
-              <strong>Pago en efectivo</strong>
-            </p>
+    <button class="comprobante-link" id="btnSubirComprobante">
+      <span class="material-symbols-outlined">upload</span>
+      Subir comprobante
+    </button>
 
-            <p class="comprobante-info">
-              El pago se realizará al momento de la entrega del pedido.
-            </p>
+    <input type="file" id="inputComprobante" accept="image/*" hidden>
 
-            <ul class="pago-detalle">
-              <li>💵 Ten el monto exacto preparado</li>
-              <li>🚚 El repartidor confirmará el pago</li>
-              <li>📦 El pedido se procesa inmediatamente</li>
-            </ul>
+    <div id="previewComprobante" class="preview hidden">
+      <img id="imgComprobante" alt="Comprobante">
+      <p>
+        <span class="material-symbols-outlined">check_circle</span>
+        Comprobante cargado correctamente
+      </p>
+    </div>
+  </div>
 
-            <p class="pago-nota">
-              ✔ No es necesario subir comprobante
-            </p>
-          </div>
+  <!-- ================= EFECTIVO ================= -->
+  <div id="pago-efectivo" class="pago-bloque hidden">
 
-        </div>
+    <p class="pago-title">
+      <span class="material-symbols-outlined">payments</span>
+      <strong>Pago en efectivo</strong>
+    </p>
 
-        <!-- Acción -->
-        <div class="recibo-botones">
-          <button id="btnAccionPrincipal" class="btn-primary">
-            <span class="btn-text" id="btnText">Enviar pedido</span>
-            <i class="fa-solid fa-circle-notch fa-spin hidden" id="loaderAccion"></i>
-          </button>
-        </div>
+    <p class="comprobante-info">
+      El pago se realizará al momento de la entrega del pedido.
+    </p>
 
-      </div>
+    <ul class="pago-detalle">
+      <li>
+        <span class="material-symbols-outlined">request_quote</span>
+        Ten el monto exacto preparado
+      </li>
+      <li>
+        <span class="material-symbols-outlined">local_shipping</span>
+        El repartidor confirmará el pago
+      </li>
+      <li>
+        <span class="material-symbols-outlined">bolt</span>
+        El pedido se procesa inmediatamente
+      </li>
+    </ul>
+
+    <p class="pago-nota">
+      <span class="material-symbols-outlined">check_circle</span>
+      No es necesario subir comprobante
+    </p>
+  </div>
+
+</div>
+
+<!-- Acción -->
+<div class="recibo-botones">
+  <button id="btnAccionPrincipal" class="btn-primary">
+    <span class="btn-text" id="btnText">Enviar pedido</span>
+    <i class="fa-solid fa-circle-notch fa-spin hidden" id="loaderAccion"></i>
+  </button>
+</div> 
     </section>
   </main>
 
