@@ -379,55 +379,51 @@ function mostrarEmptyPorFiltro() {
   if (!empty) return;
 
   const title = empty.querySelector(".empty-title");
-  const text = empty.querySelector(".empty-text");
-  const img  = empty.querySelector(".empty-illustration");
+  const text  = empty.querySelector(".empty-text");
+  const img   = empty.querySelector(".empty-illustration");
 
   if (!title || !text || !img) return;
 
   const filter = String(currentFilter || "pending").toLowerCase();
+  const BASE = "../assets/empty/"; // 🔑 CLAVE REAL
 
   const config = {
     pending: {
       t: "Todo está al día por aquí",
       d: "No tienes pedidos pendientes de revisión en este momento.",
-      img: "/assets/empty/pending.svg"
+      img: BASE + "pending.svg"
     },
     new: {
       t: "Todo está al día por aquí",
       d: "No tienes pedidos nuevos esperando aprobación.",
-      img: "/assets/empty/pending.svg"
+      img: BASE + "pending.svg"
     },
     processing: {
       t: "Nada en preparación",
       d: "En cuanto empecemos a trabajar en un pedido, aparecerá aquí.",
-      img: "/assets/empty/processing.svg"
+      img: BASE + "processing.svg"
     },
     shipped: {
       t: "Sin envíos en camino",
       d: "Tus paquetes llegarán pronto. Te avisaremos cuando salgan.",
-      img: "/assets/empty/shipped.svg"
+      img: BASE + "shipped.svg"
     },
     delivered: {
       t: "¿Aún no hay entregas?",
       d: "Aquí podrás ver el historial de todos tus pedidos completados.",
-      img: "/assets/empty/delivered.svg"
+      img: BASE + "delivered.svg"
     },
     cancelled: {
       t: "Sin pedidos cancelados",
       d: "¡Excelente! No tienes registros de compras canceladas.",
-      img: "/assets/empty/cancelled.svg"
+      img: BASE + "cancelled.svg"
     }
   };
 
-  const state = config[filter] || {
-    t: "No hay pedidos",
-    d: "Prueba con otro estado o revisa más tarde.",
-    img: "/assets/empty/pending.svg"
-  };
+  const state = config[filter] || config.pending;
 
   title.textContent = state.t;
   text.textContent  = state.d;
-
   img.src = state.img;
   img.alt = state.t;
 
