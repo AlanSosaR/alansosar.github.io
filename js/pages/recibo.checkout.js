@@ -1,5 +1,5 @@
 /**
- * 🧾 recibo.checkout.js — FINAL MATERIAL 3 EXPRESSIVE (SNACKBAR REAL)
+ * 🧾 recibo.checkout.js — FINAL MATERIAL 3 EXPRESSIVE (SNACKBAR REAL FIXED)
  */
 
 console.log("🧾 recibo.checkout.js — INIT");
@@ -17,12 +17,11 @@ if (window.IS_READ_ONLY) {
 const $ = (id) => document.getElementById(id);
 
 /* =========================================================
-   UI
+   UI (referencias seguras)
 ========================================================= */
 const metodoPago = $("metodoPago");
 const bloqueDeposito = $("pago-deposito");
 const bloqueEfectivo = $("pago-efectivo");
-const btnEnviar = $("btnEnviar");
 const loader = $("loaderAccion");
 
 const inputFile = $("inputComprobante");
@@ -33,17 +32,13 @@ const btnSubir = $("btnSubirComprobante");
 /* =========================================================
    STATE
 ========================================================= */
+let btnEnviar = null;
 let selectedAddressId = null;
 let totalPedido = 0;
 let tempFile = null;
 
 const CART_KEY = "cafecortero_cart";
 const carrito = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
-
-/* =========================================================
-   ESTADO INICIAL
-========================================================= */
-btnEnviar.disabled = true;
 
 /* =========================================================
    PROVISIONAL (SOLO UI)
@@ -86,9 +81,11 @@ function mostrarPreview(file) {
 }
 
 /* =========================================================
-   VALIDACIÓN BOTÓN
+   VALIDACIÓN CENTRAL DEL BOTÓN
 ========================================================= */
 function validarBoton() {
+  if (!btnEnviar) return;
+
   if (metodoPago.value === "cash") {
     btnEnviar.disabled = false;
     return;
@@ -173,7 +170,7 @@ function actualizarPago() {
 }
 
 /* =========================================================
-   SNACKBAR CONFIRMACIÓN REAL
+   SNACKBAR DE CONFIRMACIÓN (ACCIÓN)
 ========================================================= */
 function mostrarConfirmacionEnvio() {
   const bar = $("snackbar");
@@ -209,10 +206,15 @@ function mostrarConfirmacionEnvio() {
    CLICK EN ENVIAR
 ========================================================= */
 function confirmarEnvio() {
-  if (btnEnviar.disabled) return;
+  if (!btnEnviar || btnEnviar.disabled) return;
+
+  if (!metodoPago.value) {
+    window.showSnack("Selecciona un método de pago");
+    return;
+  }
 
   if (metodoPago.value === "bank_transfer" && !tempFile) {
-    window.showSnack("Debes subir el comprobante");
+    window.showSnack("Debes subir el comprobante de pago");
     return;
   }
 
@@ -225,16 +227,23 @@ function confirmarEnvio() {
 async function enviarPedido() {
   const sb = window.supabaseClient;
   const user = window.getUserCache();
-  if (!user || !selectedAddressId) return;
+  if (!user || !selectedAddressId) {
+    window.showSnack("Faltan datos del pedido");
+    return;
+  }
 
   btnEnviar.disabled = true;
   loader.classList.remove("hidden");
 
   try {
-    const { data: orderNumber } =
+    const { data: orderNumber, error: numErr } =
       await sb.rpc("next_order_number", { p_user_id: user.id });
 
-    const { data: order } = await sb
+    if (numErr || !orderNumber) {
+      throw new Error("No se pudo generar el número de pedido");
+    }
+
+    const { data: order, error } = await sb
       .from("orders")
       .insert({
         user_id: user.id,
@@ -249,6 +258,10 @@ async function enviarPedido() {
       })
       .select("id")
       .single();
+
+    if (error || !order) {
+      throw new Error("No se pudo crear el pedido");
+    }
 
     await sb.from("order_items").insert(
       carrito.map(it => ({
@@ -287,7 +300,7 @@ async function enviarPedido() {
 
   } catch (e) {
     console.error(e);
-    window.showSnack("Error al enviar pedido");
+    window.showSnack("Error al enviar el pedido");
     btnEnviar.disabled = false;
   } finally {
     loader.classList.add("hidden");
@@ -302,6 +315,15 @@ async function enviarPedido() {
 
   document.querySelector(".pedido-progreso")?.classList.add("hidden");
 
+  btnEnviar = $("btnEnviar");
+  if (!btnEnviar) {
+    console.warn("⚠️ btnEnviar no existe todavía");
+    return;
+  }
+
+  btnEnviar.disabled = true;
+  btnEnviar.onclick = confirmarEnvio;
+
   await pintarDatosProvisionales();
   await cargarResumen();
   renderCarrito();
@@ -314,6 +336,4 @@ async function enviarPedido() {
     const f = inputFile.files[0];
     if (f && f.type.startsWith("image/")) mostrarPreview(f);
   };
-
-  btnEnviar.onclick = confirmarEnvio;
 })();
