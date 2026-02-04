@@ -1,5 +1,5 @@
 /**
- * 🧾 recibo.checkout.js — FINAL MATERIAL 3 EXPRESSIVE (SNACKBAR MASTER FIXED)
+ * 🧾 recibo.checkout.js — FINAL MATERIAL 3 EXPRESSIVE (SNACKBAR FLOW FIXED)
  */
 
 console.log("🧾 recibo.checkout.js — INIT");
@@ -41,6 +41,11 @@ const CART_KEY = "cafecortero_cart";
 const carrito = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
 
 /* =========================================================
+   ESTADO INICIAL DEL BOTÓN
+========================================================= */
+btnEnviar.disabled = true;
+
+/* =========================================================
    PROVISIONAL (UI ONLY)
 ========================================================= */
 async function pintarDatosProvisionales() {
@@ -74,7 +79,24 @@ function mostrarPreview(file) {
   tempFile = file;
   imgPreview.src = URL.createObjectURL(file);
   previewBox.classList.remove("hidden");
-  btnEnviar.disabled = false;
+  validarBoton();
+}
+
+/* =========================================================
+   VALIDACIÓN CENTRAL DEL BOTÓN
+========================================================= */
+function validarBoton() {
+  if (metodoPago.value === "cash") {
+    btnEnviar.disabled = false;
+    return;
+  }
+
+  if (metodoPago.value === "bank_transfer") {
+    btnEnviar.disabled = !tempFile;
+    return;
+  }
+
+  btnEnviar.disabled = true;
 }
 
 /* =========================================================
@@ -140,15 +162,19 @@ function renderCarrito() {
 ========================================================= */
 function actualizarPago() {
   const v = metodoPago.value;
+
   bloqueDeposito.classList.toggle("hidden", v !== "bank_transfer");
   bloqueEfectivo.classList.toggle("hidden", v !== "cash");
-  btnEnviar.disabled = v === "bank_transfer" && !tempFile;
+
+  validarBoton();
 }
 
 /* =========================================================
    SNACKBAR — ÚNICO CONTROL
 ========================================================= */
 function confirmarEnvio() {
+  if (btnEnviar.disabled) return;
+
   if (metodoPago.value === "bank_transfer" && !tempFile) {
     window.showSnack("Debes subir el comprobante");
     return;
@@ -156,14 +182,14 @@ function confirmarEnvio() {
 
   window.showSnack(
     "¿Confirmar envío del pedido?",
-    enviarPedido,   // ✅ único punto de creación
+    enviarPedido,
     "Editar",
     () => {}
   );
 }
 
 /* =========================================================
-   ENVÍO FINAL — BLINDADO
+   ENVÍO FINAL
 ========================================================= */
 async function enviarPedido() {
   const sb = window.supabaseClient;
@@ -174,16 +200,10 @@ async function enviarPedido() {
   loader.classList.remove("hidden");
 
   try {
-    /* 1️⃣ Número REAL */
-    const { data: orderNumber, error: numErr } =
+    const { data: orderNumber } =
       await sb.rpc("next_order_number", { p_user_id: user.id });
 
-    if (numErr || !orderNumber) {
-      throw new Error("No se pudo generar número de pedido");
-    }
-
-    /* 2️⃣ Pedido */
-    const { data: order, error } = await sb
+    const { data: order } = await sb
       .from("orders")
       .insert({
         user_id: user.id,
@@ -196,12 +216,9 @@ async function enviarPedido() {
             : "cash_on_delivery",
         status: "pending"
       })
-      .select("id, order_number, created_at")
+      .select("id")
       .single();
 
-    if (error) throw error;
-
-    /* 3️⃣ Items */
     await sb.from("order_items").insert(
       carrito.map(it => ({
         order_id: order.id,
@@ -211,7 +228,6 @@ async function enviarPedido() {
       }))
     );
 
-    /* 4️⃣ Comprobante */
     if (tempFile) {
       const ext = tempFile.name.split(".").pop();
       const path = `${user.id}/${order.id}.${ext}`;
@@ -236,7 +252,7 @@ async function enviarPedido() {
 
     setTimeout(() => {
       location.href = `/pages/shop/recibo.html?id=${order.id}`;
-    }, 1500);
+    }, 1200);
 
   } catch (e) {
     console.error(e);
@@ -258,7 +274,7 @@ async function enviarPedido() {
   await pintarDatosProvisionales();
   await cargarResumen();
   renderCarrito();
-  actualizarPago();
+  validarBoton();
 
   metodoPago.onchange = actualizarPago;
   btnSubir.onclick = () => inputFile.click();
