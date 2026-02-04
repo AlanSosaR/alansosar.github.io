@@ -235,6 +235,8 @@ h3 {
 
 /* ---------- SELECTOR DE MÉTODO DE PAGO ---------- */
 .pago-select-label {
+  position: relative;
+
   display: flex;
   align-items: center;
   gap: 12px;
@@ -255,14 +257,17 @@ h3 {
   box-shadow: 0 8px 22px rgba(0,0,0,.12);
 }
 
-.pago-select-label span.material-symbols-outlined {
+/* Icono izquierdo */
+.pago-select-label > .material-symbols-outlined {
   color: var(--verde);
   font-size: 22px;
+  flex-shrink: 0;
 }
 
-/* Quitar estilo nativo feo del select */
+/* SELECT */
 .pago-select-label select {
-  width: 100%;
+  flex: 1;
+
   border: none;
   background: transparent;
 
@@ -274,18 +279,36 @@ h3 {
   outline: none;
   cursor: pointer;
 
+  /* espacio para la flecha */
+  padding-right: 32px;
+
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
 }
 
-/* Flecha custom (mejor visual) */
+/* Flecha Material (NO interactiva) */
 .pago-select-label::after {
   content: "expand_more";
   font-family: "Material Symbols Outlined";
   font-size: 22px;
   color: var(--verde);
-  margin-left: auto;
+
+  position: absolute;
+  right: 16px;
+  pointer-events: none; /* 🔑 CLAVE */
+}
+
+/* ================= MÓVIL ================= */
+@media (max-width: 768px) {
+  .pago-select-label select {
+    appearance: auto;
+    -webkit-appearance: auto;
+  }
+
+  .pago-select-label::after {
+    display: none;
+  }
 }
 
 /* ---------- BLOQUES DE INFORMACIÓN (DEPÓSITO / EFECTIVO) ---------- */
