@@ -119,17 +119,19 @@ function bindHeaderEvents() {
 function applyLocalFilters() {
   filteredOrders = orders.filter((o) => {
     /* -------- STATUS -------- */
-    let matchStatus = true;
-    if (currentFilter !== "all") {
-      const map = {
-        new: ["pending", "payment_review"],
-        processing: ["processing"],
-        shipped: ["shipped"],
-        delivered: ["delivered"],
-        cancelled: ["cancelled"],
-      };
-      matchStatus = (map[currentFilter] || []).includes(o.status);
-    }
+let matchStatus = true;
+if (currentFilter !== "all") {
+  const map = {
+    pending: ["pending"],              // ✅ FIX CLAVE
+    new: ["pending", "payment_review"],
+    processing: ["processing"],
+    shipped: ["shipped"],
+    delivered: ["delivered"],
+    cancelled: ["cancelled"],
+  };
+
+  matchStatus = (map[currentFilter] || []).includes(o.status);
+}
 
     /* -------- SEARCH -------- */
     let matchSearch = true;
