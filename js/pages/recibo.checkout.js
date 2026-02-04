@@ -1,5 +1,5 @@
 /**
- * 🧾 recibo.checkout.js — FINAL MATERIAL 3 EXPRESSIVE (SNACKBAR MASTER)
+ * 🧾 recibo.checkout.js — FINAL MATERIAL 3 EXPRESSIVE (SNACKBAR MASTER FIXED)
  */
 
 console.log("🧾 recibo.checkout.js — INIT");
@@ -17,7 +17,7 @@ if (window.IS_READ_ONLY) {
 const $ = (id) => document.getElementById(id);
 
 /* =========================================================
-   ELEMENTOS UI
+   UI
 ========================================================= */
 const metodoPago = $("metodoPago");
 const bloqueDeposito = $("pago-deposito");
@@ -41,7 +41,7 @@ const CART_KEY = "cafecortero_cart";
 const carrito = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
 
 /* =========================================================
-   NÚMERO PROVISIONAL (SOLO VISUAL)
+   PROVISIONAL (UI ONLY)
 ========================================================= */
 async function pintarDatosProvisionales() {
   const sb = window.supabaseClient;
@@ -140,19 +140,13 @@ function renderCarrito() {
 ========================================================= */
 function actualizarPago() {
   const v = metodoPago.value;
-
   bloqueDeposito.classList.toggle("hidden", v !== "bank_transfer");
   bloqueEfectivo.classList.toggle("hidden", v !== "cash");
-
-  if (v === "bank_transfer") {
-    btnEnviar.disabled = !tempFile;
-  } else {
-    btnEnviar.disabled = false;
-  }
+  btnEnviar.disabled = v === "bank_transfer" && !tempFile;
 }
 
 /* =========================================================
-   SNACKBAR — ÚNICO DISPARADOR
+   SNACKBAR — ÚNICO CONTROL
 ========================================================= */
 function confirmarEnvio() {
   if (metodoPago.value === "bank_transfer" && !tempFile) {
@@ -162,14 +156,14 @@ function confirmarEnvio() {
 
   window.showSnack(
     "¿Confirmar envío del pedido?",
-    enviarPedido,      // ✅ SOLO AQUÍ se crea el pedido
+    enviarPedido,   // ✅ único punto de creación
     "Editar",
-    () => {}            // Solo cerrar
+    () => {}
   );
 }
 
 /* =========================================================
-   ENVÍO FINAL (ÚNICO)
+   ENVÍO FINAL — BLINDADO
 ========================================================= */
 async function enviarPedido() {
   const sb = window.supabaseClient;
@@ -188,7 +182,7 @@ async function enviarPedido() {
       throw new Error("No se pudo generar número de pedido");
     }
 
-    /* 2️⃣ Crear pedido */
+    /* 2️⃣ Pedido */
     const { data: order, error } = await sb
       .from("orders")
       .insert({
@@ -207,17 +201,7 @@ async function enviarPedido() {
 
     if (error) throw error;
 
-    /* 3️⃣ Pintar datos reales */
-    const f = new Date(order.created_at);
-    $("numeroPedido").textContent = String(order.order_number).padStart(3, "0");
-    $("fechaPedido").textContent = f.toLocaleDateString("es-HN", {
-      day: "2-digit", month: "short", year: "numeric"
-    });
-    $("horaPedido").textContent = f.toLocaleTimeString("es-HN", {
-      hour: "2-digit", minute: "2-digit"
-    });
-
-    /* 4️⃣ Items */
+    /* 3️⃣ Items */
     await sb.from("order_items").insert(
       carrito.map(it => ({
         order_id: order.id,
@@ -227,7 +211,7 @@ async function enviarPedido() {
       }))
     );
 
-    /* 5️⃣ Comprobante */
+    /* 4️⃣ Comprobante */
     if (tempFile) {
       const ext = tempFile.name.split(".").pop();
       const path = `${user.id}/${order.id}.${ext}`;
@@ -252,7 +236,7 @@ async function enviarPedido() {
 
     setTimeout(() => {
       location.href = `/pages/shop/recibo.html?id=${order.id}`;
-    }, 1800);
+    }, 1500);
 
   } catch (e) {
     console.error(e);
