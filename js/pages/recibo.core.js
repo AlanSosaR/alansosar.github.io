@@ -1,6 +1,5 @@
 /**
  * 🧾 recibo.core.js — FINAL DEFINITIVO ESTABLE
- * ---------------------------------------------------------
  * Proyecto: Café Cortero — Material 3 Expressive
  */
 
@@ -54,7 +53,7 @@ window.showSnack = (msg, duration = 4000) => {
 };
 
 /* =========================================================
-   CANCELACIÓN — SNACKBAR (ÚNICO FLUJO)
+   CANCELACIÓN — SNACKBAR CONFIRMACIÓN (ÚNICO FLUJO)
 ========================================================= */
 function mostrarConfirmacionCancelacion() {
   const bar = $id("snackbar");
@@ -88,7 +87,8 @@ function mostrarConfirmacionCancelacion() {
 
 async function ejecutarCancelacion() {
   const sb = window.supabaseClient;
-  if (!sb || !window.ORDER_ID) return;
+  const user = window.getUserCache();
+  if (!sb || !window.ORDER_ID || !user) return;
 
   const { error } = await sb
     .from("orders")
@@ -97,10 +97,35 @@ async function ejecutarCancelacion() {
 
   if (error) {
     window.showSnack("Error al cancelar el pedido");
-  } else {
-    window.showSnack("Pedido cancelado correctamente");
-    setTimeout(() => location.reload(), 1200);
+    return;
   }
+
+  /* 🔔 NOTIFICAR ADMIN */
+  try {
+    const { data: session } = await sb.auth.getSession();
+    const token = session?.session?.access_token;
+
+    fetch(
+      "https://eaipcuvvddyrqkbmjmvw.supabase.co/functions/v1/notify-admin",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify({
+          event: "order_cancelled",
+          order_id: window.ORDER_ID,
+          user_id: user.id
+        })
+      }
+    );
+  } catch (e) {
+    console.warn("⚠️ No se pudo notificar al admin", e);
+  }
+
+  window.showSnack("Pedido cancelado correctamente");
+  setTimeout(() => location.reload(), 1200);
 }
 
 /* =========================================================
@@ -108,9 +133,11 @@ async function ejecutarCancelacion() {
 ========================================================= */
 window.aplicarModoRecibo = (pedido) => {
   const btnBack = $id("btn-back");
-  if (btnBack) btnBack.onclick = () => {
-    window.location.href = "/pages/profile/mis-pedidos.html";
-  };
+  if (btnBack) {
+    btnBack.onclick = () => {
+      window.location.href = "/pages/profile/mis-pedidos.html";
+    };
+  }
 
   document.querySelector(".pago-select-label")?.classList.add("hidden");
 
@@ -119,9 +146,7 @@ window.aplicarModoRecibo = (pedido) => {
 
   if (!btnCancelar) return;
 
-  const puedeCancelar = pedido.status === "pending";
-
-  if (!puedeCancelar) {
+  if (pedido.status !== "pending") {
     btnCancelar.classList.add("hidden");
     return;
   }
@@ -189,7 +214,10 @@ window.cargarPedidoExistente = async (orderId) => {
   $id("numeroPedido").textContent = pedido.order_number;
   const d = new Date(pedido.created_at);
   $id("fechaPedido").textContent = d.toLocaleDateString();
-  $id("horaPedido").textContent = d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  $id("horaPedido").textContent = d.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit"
+  });
   $id("totalPedido").textContent = pedido.total.toFixed(2);
   $id("notaCliente").textContent = pedido.order_notes || "Sin nota";
 
@@ -203,8 +231,7 @@ window.cargarPedidoExistente = async (orderId) => {
   if (pedido.addresses) {
     $id("zonaCliente").textContent =
       `${pedido.addresses.state}, ${pedido.addresses.city}`;
-    $id("direccionCliente").textContent =
-      pedido.addresses.street;
+    $id("direccionCliente").textContent = pedido.addresses.street;
   }
 
   /* PRODUCTOS */
@@ -217,14 +244,15 @@ window.cargarPedidoExistente = async (orderId) => {
   `).join("");
 
   /* COMPROBANTE */
-  if (pedido.payment_method === "bank_transfer") {
-    const preview = $id("previewComprobante");
-    const img = $id("imgComprobante");
-    if (preview && img) {
-      preview.classList.remove("hidden");
-      img.src = pedido.payment_receipts?.[0]?.file_url
-        || "assets/img/no-receipt.png";
-    }
+  const preview = $id("previewComprobante");
+  const img = $id("imgComprobante");
+
+  if (preview && img && pedido.payment_method === "bank_transfer") {
+    preview.classList.remove("hidden");
+    img.src =
+      pedido.payment_receipts?.[0]?.file_url ||
+      "/assets/img/receipt-placeholder.svg";
+    img.alt = "Comprobante de pago";
   }
 
   /* ESTADO */
