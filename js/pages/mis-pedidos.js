@@ -372,7 +372,7 @@ function showEmpty() {
 }
 
 /* ============================================================
-   EMPTY POR FILTRO (DINÁMICO SEGÚN ESTADO)
+   EMPTY POR FILTRO (TEXTO + IMAGEN SEGÚN ESTADO)
 ============================================================ */
 function mostrarEmptyPorFiltro() {
   const empty = $id("empty-state");
@@ -380,44 +380,58 @@ function mostrarEmptyPorFiltro() {
 
   const title = empty.querySelector(".empty-title");
   const text = empty.querySelector(".empty-text");
-  if (!title || !text) return;
+  const img  = empty.querySelector(".empty-illustration");
+
+  if (!title || !text || !img) return;
 
   const filter = String(currentFilter || "pending").toLowerCase();
 
   const config = {
     pending: {
       t: "Todo está al día por aquí",
-      d: "No tienes pedidos pendientes de revisión en este momento."
+      d: "No tienes pedidos pendientes de revisión en este momento.",
+      img: "/assets/empty/pending.svg"
     },
     new: {
       t: "Todo está al día por aquí",
-      d: "No tienes pedidos nuevos esperando aprobación."
+      d: "No tienes pedidos nuevos esperando aprobación.",
+      img: "/assets/empty/pending.svg"
     },
     processing: {
       t: "Nada en preparación",
-      d: "En cuanto empecemos a trabajar en un pedido, aparecerá aquí."
+      d: "En cuanto empecemos a trabajar en un pedido, aparecerá aquí.",
+      img: "/assets/empty/processing.svg"
     },
     shipped: {
       t: "Sin envíos en camino",
-      d: "Tus paquetes llegarán pronto. Te avisaremos cuando salgan."
+      d: "Tus paquetes llegarán pronto. Te avisaremos cuando salgan.",
+      img: "/assets/empty/shipped.svg"
     },
     delivered: {
       t: "¿Aún no hay entregas?",
-      d: "Aquí podrás ver el historial de todos tus pedidos completados."
+      d: "Aquí podrás ver el historial de todos tus pedidos completados.",
+      img: "/assets/empty/delivered.svg"
     },
     cancelled: {
       t: "Sin pedidos cancelados",
-      d: "¡Excelente! No tienes registros de compras canceladas."
+      d: "¡Excelente! No tienes registros de compras canceladas.",
+      img: "/assets/empty/cancelled.svg"
     }
   };
 
   const state = config[filter] || {
     t: "No hay pedidos",
-    d: "Prueba con otro estado o revisa más tarde."
+    d: "Prueba con otro estado o revisa más tarde.",
+    img: "/assets/empty/pending.svg"
   };
 
   title.textContent = state.t;
-  text.textContent = state.d;
+  text.textContent  = state.d;
+
+  img.src = state.img;
+  img.alt = state.t;
 
   empty.classList.remove("hidden");
 }
+
+
