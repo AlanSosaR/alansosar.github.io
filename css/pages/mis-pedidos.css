@@ -289,3 +289,15 @@ body {
     flex: 0 0 30%;
   }
 }
+
+.admin-empty-state {
+  text-align: center;
+  padding: 3rem 1.5rem;
+}
+
+.admin-empty-state .empty-illustration {
+  margin-top: 2rem;
+  max-width: 260px;
+  width: 100%;
+  opacity: 0.95;
+}
