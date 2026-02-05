@@ -6,8 +6,12 @@ console.log("📦 mis-pedidos.js — FINAL ESTABLE");
 
 const sb = () => window.supabaseClient;
 
+/* ============================================================
+   IMÁGENES
+============================================================ */
 const IMG_CASH = "/imagenes/pago_en_mano.svg";
 const IMG_DEFAULT = "/imagenes/recibo_default.svg";
+const EMPTY_BASE = window.location.origin + "/imagenes/empty/";
 
 /* ============================================================
    STATE
@@ -24,6 +28,10 @@ let currentFilter = "all";
    HELPERS
 ============================================================ */
 const $id = (id) => document.getElementById(id);
+
+function isCashPayment(method) {
+  return method === "cash_on_delivery" || method === "cash";
+}
 
 function formatDateTime(dateStr) {
   const d = new Date(dateStr);
@@ -48,7 +56,7 @@ function normalizeOrderNumber(num) {
    STATUS MAP
 ============================================================ */
 function getStatusDetails(status, paymentMethod) {
-  const isCash = paymentMethod === "cash";
+  const isCash = isCashPayment(paymentMethod);
 
   const map = isCash
     ? {
@@ -83,14 +91,14 @@ async function init() {
 
   await loadOrders(data.session.user.id);
 
+  bindHeaderEvents();
+
   if (!orders.length) {
-    showEmpty();
+    renderEmpty("pending");
     return;
   }
 
   filteredOrders = [...orders];
-  bindHeaderEvents();
-
   mostrarCarrusel();
   renderCarousel();
   selectOrder(0);
@@ -99,7 +107,7 @@ async function init() {
 }
 
 /* ============================================================
-   HEADER EVENTS (🔍 BUSCADOR LIMPIO)
+   HEADER EVENTS
 ============================================================ */
 function bindHeaderEvents() {
   document.addEventListener("header:search", (e) => {
@@ -118,30 +126,25 @@ function bindHeaderEvents() {
 ============================================================ */
 function applyLocalFilters() {
   filteredOrders = orders.filter((o) => {
-    /* -------- STATUS -------- */
-let matchStatus = true;
-if (currentFilter !== "all") {
-  const map = {
-    pending: ["pending"],              // ✅ FIX CLAVE
-    new: ["pending", "payment_review"],
-    processing: ["processing"],
-    shipped: ["shipped"],
-    delivered: ["delivered"],
-    cancelled: ["cancelled"],
-  };
+    let matchStatus = true;
 
-  matchStatus = (map[currentFilter] || []).includes(o.status);
-}
+    if (currentFilter !== "all") {
+      const map = {
+        pending: ["pending"],
+        new: ["pending", "payment_review"],
+        processing: ["processing"],
+        shipped: ["shipped"],
+        delivered: ["delivered"],
+        cancelled: ["cancelled"],
+      };
+      matchStatus = (map[currentFilter] || []).includes(o.status);
+    }
 
-    /* -------- SEARCH -------- */
     let matchSearch = true;
     if (currentSearch) {
-      const orderNumRaw = String(o.order_number);
-      const orderNumNorm = normalizeOrderNumber(o.order_number);
-
       const byNumber =
-        orderNumRaw.includes(currentSearch) ||
-        orderNumNorm.includes(currentSearch);
+        String(o.order_number).includes(currentSearch) ||
+        normalizeOrderNumber(o.order_number).includes(currentSearch);
 
       const byProduct = o.items?.some((i) =>
         i.products?.name?.toLowerCase().includes(currentSearch)
@@ -153,17 +156,47 @@ if (currentFilter !== "all") {
     return matchStatus && matchSearch;
   });
 
-  /* -------- EMPTY RESULT -------- */
   if (!filteredOrders.length) {
     ocultarTodoPorFiltro();
-    mostrarEmptyPorFiltro(); // 👈 ESTA LÍNEA ES LA CLAVE
+    renderEmpty(currentFilter);
     return;
   }
 
-  /* -------- RESTORE UI -------- */
   mostrarCarrusel();
   renderCarousel();
   selectOrder(0);
+}
+
+/* ============================================================
+   EMPTY STATE (GLOBAL PARA TODOS LOS FILTROS)
+============================================================ */
+function renderEmpty(filter = "pending") {
+  ocultarTodoPorFiltro();
+
+  const empty = $id("empty-state");
+  if (!empty) return;
+
+  const title = empty.querySelector(".empty-title");
+  const text  = empty.querySelector(".empty-text");
+  const img   = empty.querySelector(".empty-illustration");
+
+  const config = {
+    pending: ["Todo está al día por aquí", "No tienes pedidos pendientes.", "pending.svg"],
+    new: ["Todo está al día por aquí", "No tienes pedidos nuevos.", "pending.svg"],
+    processing: ["Nada en preparación", "Cuando empecemos a trabajar en un pedido, aparecerá aquí.", "processing.svg"],
+    shipped: ["Sin envíos en camino", "Te avisaremos cuando un pedido salga.", "shipped.svg"],
+    delivered: ["Sin entregas aún", "Aquí verás tu historial de pedidos.", "delivered.svg"],
+    cancelled: ["Sin pedidos cancelados", "¡Excelente! No tienes compras canceladas.", "cancelled.svg"],
+  };
+
+  const [t, d, imgName] = config[filter] || config.pending;
+
+  title.textContent = t;
+  text.textContent  = d;
+  img.src = EMPTY_BASE + imgName;
+  img.alt = t;
+
+  empty.classList.remove("hidden");
 }
 
 /* ============================================================
@@ -182,7 +215,7 @@ function esperarSupabase() {
 }
 
 /* ============================================================
-   LOAD ORDERS (NO TOCADO)
+   LOAD ORDERS
 ============================================================ */
 async function loadOrders(userId) {
   const { data } = await sb()
@@ -224,7 +257,7 @@ function ocultarTodoPorFiltro() {
 }
 
 /* ============================================================
-   CARRUSEL (NO TOCADO)
+   CARRUSEL
 ============================================================ */
 function renderCarousel() {
   const wrap = $id("pedidos-carrusel");
@@ -235,24 +268,20 @@ function renderCarousel() {
 
   filteredOrders.forEach((o, index) => {
     const node = tpl.content.cloneNode(true);
-    const card = node.querySelector(".similar-card");
+    const img = node.querySelector(".pedido-mini-img");
+
+    img.src = isCashPayment(o.payment_method)
+      ? IMG_CASH
+      : o.receipt?.[0]?.file_url || IMG_DEFAULT;
 
     node.querySelector(".pedido-mini-numero").textContent =
       `N.º ${normalizeOrderNumber(o.order_number)}`;
-
     node.querySelector(".pedido-mini-total").textContent =
       `L ${o.total.toFixed(2)}`;
+    node.querySelector(".pedido-mini-status").textContent =
+      getStatusDetails(o.status, o.payment_method).label;
 
-    const status = getStatusDetails(o.status, o.payment_method);
-    node.querySelector(".pedido-mini-status").textContent = status.label;
-
-    const img = node.querySelector(".pedido-mini-img");
-    img.src =
-      o.payment_method === "cash"
-        ? IMG_CASH
-        : o.receipt?.[0]?.file_url || IMG_DEFAULT;
-
-    card.onclick = () => selectOrder(index);
+    node.querySelector(".similar-card").onclick = () => selectOrder(index);
     wrap.appendChild(node);
   });
 
@@ -260,30 +289,13 @@ function renderCarousel() {
 }
 
 /* ============================================================
-   SELECCIÓN + SCROLL SUAVE
+   PEDIDO ACTIVO
 ============================================================ */
 function selectOrder(index) {
-  if (!filteredOrders[index]) return;
   activeIndex = index;
-
-  document.querySelectorAll(".similar-card").forEach((c) =>
-    c.classList.remove("is-selected")
-  );
-  document.querySelectorAll(".similar-card")[index]?.classList.add("is-selected");
-
   renderPedidoActivo(filteredOrders[index]);
-
-  requestAnimationFrame(() => {
-    $id("pedido-activo")?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-  });
 }
 
-/* ============================================================
-   PEDIDO ACTIVO (NO TOCADO)
-============================================================ */
 function renderPedidoActivo(pedido) {
   const container = $id("pedido-activo");
   const tpl = $id("pedido-activo-template");
@@ -292,20 +304,16 @@ function renderPedidoActivo(pedido) {
   container.innerHTML = "";
   const node = tpl.content.cloneNode(true);
 
-  const status = getStatusDetails(pedido.status, pedido.payment_method);
   const { fecha, hora } = formatDateTime(pedido.created_at);
+  const status = getStatusDetails(pedido.status, pedido.payment_method);
 
-  node.querySelector(".pedido-numero").textContent =
-    `Pedido N.º ${pedido.order_number}`;
+  node.querySelector(".pedido-numero").textContent = `Pedido N.º ${pedido.order_number}`;
   node.querySelector(".fecha").textContent = fecha;
   node.querySelector(".hora").textContent = hora;
   node.querySelector(".pedido-total").textContent = `L ${pedido.total.toFixed(2)}`;
 
   node.querySelector(".entrega-text").textContent =
-    pedido.address
-      ? `${pedido.address.street}, ${pedido.address.city}`
-      : "—";
-
+    pedido.address ? `${pedido.address.street}, ${pedido.address.city}` : "—";
   node.querySelector(".referencia-text").textContent =
     pedido.order_notes || "Sin referencia";
 
@@ -313,28 +321,9 @@ function renderPedidoActivo(pedido) {
   node.querySelector(".estado-descripcion").textContent = status.desc;
   node.querySelector(".estado-paso").textContent = status.step;
 
-  const pasos = node.querySelectorAll(".estado-item");
-  pasos.forEach((li, i) => {
-    li.querySelector(".step-text").textContent = status.steps[i];
-    li.classList.toggle("activo", i + 1 === status.step);
-    li.classList.toggle("completado", i + 1 < status.step);
-  });
-
-  const pills = node.querySelector(".productos-pills");
-  pedido.items?.forEach((item) => {
-    const p = document.createElement("div");
-    p.className = "pill";
-    p.innerHTML = `
-      <span>${item.products.name} × ${item.quantity}</span>
-      <strong>L ${(item.quantity * item.price).toFixed(2)}</strong>
-    `;
-    pills.appendChild(p);
-  });
-
-  node.querySelector(".recibo-img").src =
-    pedido.payment_method === "cash"
-      ? IMG_CASH
-      : pedido.receipt?.[0]?.file_url || IMG_DEFAULT;
+  node.querySelector(".recibo-img").src = isCashPayment(pedido.payment_method)
+    ? IMG_CASH
+    : pedido.receipt?.[0]?.file_url || IMG_DEFAULT;
 
   node.querySelector(".ver-recibo").onclick =
     () => (location.href = `/pages/shop/recibo.html?id=${pedido.id}`);
@@ -343,7 +332,7 @@ function renderPedidoActivo(pedido) {
 }
 
 /* ============================================================
-   ARROWS
+   ARROWS + AUTO REFRESH
 ============================================================ */
 function bindCarouselArrows() {
   const list = $id("pedidos-carrusel");
@@ -353,82 +342,10 @@ function bindCarouselArrows() {
     list.scrollBy({ left: 300, behavior: "smooth" });
 }
 
-/* ============================================================
-   AUTO REFRESH
-============================================================ */
 function startAutoRefresh(userId) {
   clearInterval(autoRefresh);
   autoRefresh = setInterval(async () => {
     await loadOrders(userId);
     applyLocalFilters();
   }, 30000);
-}
-
-/* ============================================================
-   EMPTY GLOBAL (SIN PEDIDOS)
-============================================================ */
-function showEmpty() {
-  $id("pedido-activo")?.classList.add("hidden");
-  $id("mis-pedidos-carrusel")?.classList.add("hidden");
-  $id("empty-state")?.classList.remove("hidden");
-}
-/* ============================================================
-   EMPTY POR FILTRO (TEXTO + IMAGEN SEGÚN ESTADO)
-============================================================ */
-function mostrarEmptyPorFiltro() {
-  const empty = document.getElementById("empty-state");
-  if (!empty) return;
-
-  const title = empty.querySelector(".empty-title");
-  const text  = empty.querySelector(".empty-text");
-  const img   = empty.querySelector(".empty-illustration");
-
-  if (!title || !text || !img) return;
-
-  const filter = String(currentFilter || "pending").toLowerCase();
-
-  // 🔒 BASE ABSOLUTA REAL (funciona en /pages, subcarpetas, admin, etc.)
-  const BASE = window.location.origin + "/imagenes/empty/";
-
-  const config = {
-    pending: {
-      t: "Todo está al día por aquí",
-      d: "No tienes pedidos pendientes de revisión en este momento.",
-      img: BASE + "pending.svg"
-    },
-    new: {
-      t: "Todo está al día por aquí",
-      d: "No tienes pedidos nuevos esperando aprobación.",
-      img: BASE + "pending.svg"
-    },
-    processing: {
-      t: "Nada en preparación",
-      d: "En cuanto empecemos a trabajar en un pedido, aparecerá aquí.",
-      img: BASE + "processing.svg"
-    },
-    shipped: {
-      t: "Sin envíos en camino",
-      d: "Tus paquetes llegarán pronto. Te avisaremos cuando salgan.",
-      img: BASE + "shipped.svg"
-    },
-    delivered: {
-      t: "¿Aún no hay entregas?",
-      d: "Aquí podrás ver el historial de todos tus pedidos completados.",
-      img: BASE + "delivered.svg"
-    },
-    cancelled: {
-      t: "Sin pedidos cancelados",
-      d: "¡Excelente! No tienes registros de compras canceladas.",
-      img: BASE + "cancelled.svg"
-    }
-  };
-
-  const state = config[filter] || config.pending;
-
-  title.textContent = state.t;
-  text.textContent  = state.d;
-  img.src = state.img;
-  img.alt = state.t;
-
-  empty.classList.remove("hidden");
 }
