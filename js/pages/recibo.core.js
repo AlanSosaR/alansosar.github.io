@@ -285,11 +285,14 @@ let texto = "Comprobante pendiente de validación.";
 
 if (isCash) {
   src = "/imagenes/pago_en_mano.svg";
-  texto = "El pago se realizará al momento de la entrega.";
+  // Tono relajado: solo informa la modalidad sin pedir nada a cambio
+  texto = "Tu pedido está confirmado. **Pagarás al recibirlo**, así que no te preocupes por nada más hasta que lleguemos.";
 } else if (receiptList.length && receiptList[0].file_url) {
   src = receiptList[0].file_url;
-  texto = "Este es el comprobante asociado a tu pedido.";
+  // Tono de acompañamiento: confirma que el proceso sigue su curso natural
+  texto = "Ya tenemos tu comprobante. **Estamos revisando los detalles** para que tu pedido empiece a prepararse pronto.";
 }
+
 
 // asignar imagen
 img.src = src;
