@@ -248,76 +248,65 @@ window.cargarPedidoExistente = async (orderId) => {
 
 /* ===============================
    COMPROBANTE — SOLO IMAGEN + INFO
-   (VISTA RECIBO LIMPIA Y REAL)
+   (RECIBO REAL)
 ================================ */
 
-// ❌ eliminar cualquier resto de checkout
+// eliminar bloques de checkout
 ["pago-deposito", "pago-efectivo"].forEach(id => {
   $id(id)?.remove();
 });
 document.querySelector(".pago-select-label")?.remove();
 
-/* ===============================
-   NORMALIZACIÓN REAL DE RECIBOS
-================================ */
+// normalizar recibos
 const receiptList = Array.isArray(pedido.payment_receipts)
   ? pedido.payment_receipts
   : [];
 
-/* ===============================
-   PREVIEW (FORZADO A MOSTRAR)
-================================ */
-const preview = $id("previewComprobante");
-const img = $id("imgComprobante");
+// usar preview correcto
+const preview = $id("previewComprobanteRecibo");
+const img = $id("imgComprobanteRecibo");
 
 if (!preview || !img) {
-  console.warn("⚠️ previewComprobante o imgComprobante no existen");
+  console.warn("⚠️ previewComprobanteRecibo no existe");
   return;
 }
 
-// 🔓 forzar visibilidad (CSS blindaje)
+// forzar visibilidad
 preview.classList.remove("hidden");
 preview.style.display = "flex";
-preview.style.visibility = "visible";
 
 img.style.display = "block";
-img.style.visibility = "visible";
 img.style.pointerEvents = "none";
 
 const isCash = pedido.payment_method === "cash_on_delivery";
 
 let src = "/imagenes/recibo_default.svg";
-let alt = "Estado del pago";
 let texto = "Comprobante pendiente de validación.";
 
 if (isCash) {
   src = "/imagenes/pago_en_mano.svg";
-  alt = "Pago en efectivo";
   texto = "El pago se realizará al momento de la entrega.";
-} 
-else if (receiptList.length && receiptList[0]?.file_url) {
+} else if (receiptList.length && receiptList[0].file_url) {
   src = receiptList[0].file_url;
-  alt = "Comprobante de pago";
   texto = "Este es el comprobante asociado a tu pedido.";
 }
 
-// 🖼️ asignación FINAL
+// asignar imagen
 img.src = src;
-img.alt = alt;
+img.alt = "Comprobante de pago";
 img.loading = "lazy";
 
-// 📝 texto (único)
-let text = preview.querySelector(".preview-text");
-if (!text) {
-  text = document.createElement("p");
-  text.className = "preview-text";
-  preview.appendChild(text);
+// texto
+let p = preview.querySelector(".preview-text");
+if (!p) {
+  p = document.createElement("p");
+  p.className = "preview-text";
+  preview.appendChild(p);
 }
-text.textContent = texto;
+p.textContent = texto;
 
-// 🛡️ fallback seguro
+// fallback
 img.onerror = () => {
-  img.onerror = null;
   img.src = "/imagenes/recibo_default.svg";
 };
 
