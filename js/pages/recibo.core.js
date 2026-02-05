@@ -92,22 +92,36 @@ async function ejecutarCancelacion(pedido) {
   const user = window.getUserCache();
   if (!sb || !pedido || !user) return;
 
-  const { error } = await sb
+  /* 🔒 UPDATE REAL + CONFIRMACIÓN */
+  const { data, error } = await sb
     .from("orders")
     .update({ status: "cancelled" })
-    .eq("id", pedido.id);
+    .eq("id", pedido.id)
+    .select("id,status")
+    .single();
 
-  if (error) {
-    window.showSnack("Error al cancelar el pedido");
+  if (error || !data) {
+    window.showSnack("No se pudo cancelar el pedido");
     return;
   }
 
-  // 🔔 Snackbar SOLO informativo
-  window.showSnack("Pedido cancelado correctamente");
+  /* 🔔 NOTIFICACIÓN AL ADMIN */
+  await sb.from("notifications").insert({
+    user_id: null,
+    title: "Pedido cancelado",
+    body: `El cliente ${pedido.users?.name || "Cliente"} canceló el pedido #${pedido.order_number}`,
+    type: "order_cancelled",
+    metadata: {
+      order_id: pedido.id,
+      order_number: pedido.order_number,
+      customer_name: pedido.users?.name || null
+    }
+  });
 
-  // 🔄 Actualizar estado en UI SIN recargar
+  /* ✅ UI ACTUALIZADA */
   pedido.status = "cancelled";
   window.aplicarProgresoPedido("cancelled");
+  window.showSnack("Pedido cancelado correctamente");
 
   const btn = $id("btnCancelarPedido") || document.querySelector(".btn-cancelar");
   if (btn) btn.remove();
@@ -238,6 +252,7 @@ window.cargarPedidoExistente = async (orderId) => {
 
   if (preview && img) {
     preview.classList.remove("hidden");
+    preview.style.display = "flex";
 
     const isCash =
       pedido.payment_method === "cash" ||
