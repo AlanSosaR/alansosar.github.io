@@ -38,9 +38,9 @@
 
         <!-- Estado -->
         <section id="estadoPedido" class="pedido-progreso">
-  <p class="progreso-title">Estado del pedido</p>
-  <div id="estado-pildora-container"></div>
-</section>
+          <p class="progreso-title">Estado del pedido</p>
+          <div id="estado-pildora-container"></div>
+        </section>
 
         <!-- Cliente -->
         <h3>Datos del cliente</h3>
@@ -63,120 +63,87 @@
           <span>L <span id="totalPedido">0.00</span></span>
         </div>
 
-        <!-- Métodos de pago -->
-        <!-- Métodos de pago -->
-<div class="pagos">
+        <!-- ================= COMPROBANTE — VISTA RECIBO ================= -->
+        <!-- ESTE ES EL BLOQUE CLAVE (NO TOCAR EN CHECKOUT) -->
+        <div id="previewComprobanteRecibo" class="preview hidden">
+          <img id="imgComprobanteRecibo" alt="Comprobante de pago">
+        </div>
 
-  <!-- SELECT PAGO -->
-  <label class="pago-select-label">
-    <span class="material-symbols-outlined icon-left">payments</span>
+        <!-- ================= MÉTODOS DE PAGO ================= -->
+        <div class="pagos">
 
-    <select id="metodoPago" class="pago-select">
-      <option value="" selected disabled>Selecciona un método de pago</option>
-      <option value="bank_transfer">Depósito bancario</option>
-      <option value="cash">Pago en efectivo</option>
-    </select>
+          <!-- SELECT PAGO -->
+          <label class="pago-select-label">
+            <span class="material-symbols-outlined icon-left">payments</span>
 
-    <!-- Flecha custom (solo desktop) -->
-    <span class="material-symbols-outlined icon-arrow">expand_more</span>
-  </label>
+            <select id="metodoPago" class="pago-select">
+              <option value="" selected disabled>Selecciona un método de pago</option>
+              <option value="bank_transfer">Depósito bancario</option>
+              <option value="cash">Pago en efectivo</option>
+            </select>
 
-  <!-- ================= DEPÓSITO ================= -->
-  <div id="pago-deposito" class="pago-bloque hidden">
+            <span class="material-symbols-outlined icon-arrow">expand_more</span>
+          </label>
 
-    <p class="pago-title">
-      <span class="material-symbols-outlined">account_balance</span>
-      <strong>Depósito bancario</strong>
-    </p>
+          <!-- ================= DEPÓSITO ================= -->
+          <div id="pago-deposito" class="pago-bloque hidden">
 
-    <p class="comprobante-info">
-      Realiza el depósito y sube el comprobante para validar tu pedido.
-    </p>
+            <p class="pago-title">
+              <span class="material-symbols-outlined">account_balance</span>
+              <strong>Depósito bancario</strong>
+            </p>
 
-    <ul class="pago-detalle">
-      <li>
-        <span class="material-symbols-outlined">account_balance</span>
-        <strong>Banco:</strong> Atlántida
-      </li>
-      <li>
-        <span class="material-symbols-outlined">numbers</span>
-        <strong>Cuenta:</strong> 123456789
-      </li>
-      <li>
-        <span class="material-symbols-outlined">savings</span>
-        <strong>Tipo:</strong> Cuenta de ahorro
-      </li>
-    </ul>
+            <p class="comprobante-info">
+              Realiza el depósito y sube el comprobante para validar tu pedido.
+            </p>
 
-    <p class="pago-nota">
-      <span class="material-symbols-outlined">hourglass_top</span>
-      El pedido pasará a revisión una vez enviado el comprobante.
-    </p>
+            <ul class="pago-detalle">
+              <li><strong>Banco:</strong> Atlántida</li>
+              <li><strong>Cuenta:</strong> 123456789</li>
+              <li><strong>Tipo:</strong> Cuenta de ahorro</li>
+            </ul>
 
-    <button class="comprobante-link" id="btnSubirComprobante">
-      <span class="material-symbols-outlined">upload</span>
-      Subir comprobante
-    </button>
+            <button class="comprobante-link" id="btnSubirComprobante">
+              <span class="material-symbols-outlined">upload</span>
+              Subir comprobante
+            </button>
 
-    <input type="file" id="inputComprobante" accept="image/*" hidden>
+            <input type="file" id="inputComprobante" accept="image/*" hidden>
 
-    <div id="previewComprobante" class="preview hidden">
-      <img id="imgComprobante" alt="Comprobante">
-      <p>
-        <span class="material-symbols-outlined">check_circle</span>
-        Comprobante cargado correctamente
-      </p>
-    </div>
-  </div>
+            <!-- PREVIEW SOLO CHECKOUT -->
+            <div id="previewComprobante" class="preview hidden">
+              <img id="imgComprobante" alt="Comprobante">
+            </div>
+          </div>
 
-  <!-- ================= EFECTIVO ================= -->
-  <div id="pago-efectivo" class="pago-bloque hidden">
+          <!-- ================= EFECTIVO ================= -->
+          <div id="pago-efectivo" class="pago-bloque hidden">
+            <p class="pago-title">
+              <span class="material-symbols-outlined">payments</span>
+              <strong>Pago en efectivo</strong>
+            </p>
 
-    <p class="pago-title">
-      <span class="material-symbols-outlined">payments</span>
-      <strong>Pago en efectivo</strong>
-    </p>
+            <p class="comprobante-info">
+              El pago se realizará al momento de la entrega del pedido.
+            </p>
+          </div>
 
-    <p class="comprobante-info">
-      El pago se realizará al momento de la entrega del pedido.
-    </p>
+        </div>
 
-    <ul class="pago-detalle">
-      <li>
-        <span class="material-symbols-outlined">request_quote</span>
-        Ten el monto exacto preparado
-      </li>
-      <li>
-        <span class="material-symbols-outlined">local_shipping</span>
-        El repartidor confirmará el pago
-      </li>
-      <li>
-        <span class="material-symbols-outlined">bolt</span>
-        El pedido se procesa inmediatamente
-      </li>
-    </ul>
+        <!-- Acción -->
+        <div class="recibo-botones">
+          <button id="btnEnviar" class="btn-primary" disabled>
+            <span class="btn-text" id="btnText">Enviar pedido</span>
+            <i class="fa-solid fa-circle-notch fa-spin hidden" id="loaderAccion"></i>
+          </button>
+        </div>
 
-    <p class="pago-nota">
-      <span class="material-symbols-outlined">check_circle</span>
-      No es necesario subir comprobante
-    </p>
-  </div>
+      </div>
+    </section>
+  </main>
 
-</div>
-
-
-<!-- Acción -->
-<div class="recibo-botones">
-  <button id="btnEnviar" class="btn-primary" disabled>
-    <span class="btn-text" id="btnText">Enviar pedido</span>
-    <i class="fa-solid fa-circle-notch fa-spin hidden" id="loaderAccion"></i>
-  </button>
-</div>
-
-<!-- Snackbar -->
-<div id="snackbar" class="snackbar">
-  <span class="snack-text"></span>
-</div>
+  <!-- Snackbar -->
+  <div id="snackbar" class="snackbar"></div>
 
   <!-- Core -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -192,26 +159,24 @@
   <script src="/js/core/auth-ui.js"></script>
   <script src="/js/ui/layout.js"></script>
 
-  <!-- Configurar botón según modo -->
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const btn = document.getElementById("btnEnviar");
-    const text = document.getElementById("btnText");
+  <!-- Botón según modo -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const btn = document.getElementById("btnEnviar");
+      const text = document.getElementById("btnText");
 
-    if (!btn || !text) return;
+      if (!btn || !text) return;
 
-    if (window.IS_READ_ONLY) {
-      text.textContent = "Cancelar pedido";
-      btn.classList.add("btn-cancelar");
-      btn.id = "btnCancelarPedido";
-      btn.disabled = false;
-    } else {
-      btn.disabled = true;
-    }
-  });
-</script>
+      if (window.IS_READ_ONLY) {
+        text.textContent = "Cancelar pedido";
+        btn.classList.add("btn-cancelar");
+        btn.id = "btnCancelarPedido";
+        btn.disabled = false;
+      }
+    });
+  </script>
 
-  <!-- Cargar SOLO el script correcto -->
+  <!-- Script dinámico -->
   <script>
     const script = document.createElement("script");
     script.src = window.IS_READ_ONLY
@@ -221,5 +186,4 @@
   </script>
 
 </body>
-
 </html>
