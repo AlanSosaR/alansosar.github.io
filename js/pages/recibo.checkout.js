@@ -37,6 +37,9 @@ let selectedAddressId = null;
 let totalPedido = 0;
 let tempFile = null;
 
+// ✅ FIX: cache estable de la nota del pedido
+let orderNotesCache = null;
+
 const CART_KEY = "cafecortero_cart";
 const carrito = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
 
@@ -133,7 +136,7 @@ async function cargarResumen() {
   }
 
   $("notaCliente").textContent =
-    sessionStorage.getItem("current_order_notes") || "Sin nota adicional";
+    orderNotesCache || "Sin nota adicional";
 }
 
 /* =========================================================
@@ -243,25 +246,25 @@ async function enviarPedido() {
       throw new Error("No se pudo generar el número de pedido");
     }
 
-  const orderNotes =
-  sessionStorage.getItem("current_order_notes")?.trim() || null;
+    // ✅ FIX: usar la nota congelada
+    const orderNotes = orderNotesCache;
 
-const { data: order, error } = await sb
-  .from("orders")
-  .insert({
-    user_id: user.id,
-    address_id: selectedAddressId,
-    order_number: orderNumber,
-    total: totalPedido,
-    payment_method:
-      metodoPago.value === "bank_transfer"
-        ? "bank_transfer"
-        : "cash_on_delivery",
-    status: "pending",
-    order_notes: orderNotes
-  })
-  .select("id")
-  .single();
+    const { data: order, error } = await sb
+      .from("orders")
+      .insert({
+        user_id: user.id,
+        address_id: selectedAddressId,
+        order_number: orderNumber,
+        total: totalPedido,
+        payment_method:
+          metodoPago.value === "bank_transfer"
+            ? "bank_transfer"
+            : "cash_on_delivery",
+        status: "pending",
+        order_notes: orderNotes
+      })
+      .select("id")
+      .single();
 
     if (error || !order) {
       throw new Error("No se pudo crear el pedido");
@@ -297,6 +300,7 @@ const { data: order, error } = await sb
     }
 
     localStorage.setItem(CART_KEY, "[]");
+    sessionStorage.removeItem("current_order_notes"); // limpieza correcta
 
     setTimeout(() => {
       location.href = `/pages/shop/recibo.html?id=${order.id}`;
@@ -316,6 +320,12 @@ const { data: order, error } = await sb
 ========================================================= */
 (async function init() {
   await window.esperarSupabase();
+
+  // ✅ FIX: capturar la nota UNA VEZ al iniciar
+  orderNotesCache =
+    sessionStorage.getItem("current_order_notes")?.trim() || null;
+
+  console.log("📝 Nota del pedido:", orderNotesCache);
 
   document.querySelector(".pedido-progreso")?.classList.add("hidden");
 
