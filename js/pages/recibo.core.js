@@ -55,21 +55,23 @@ window.showSnack = (msg, duration = 4000) => {
 /* =========================================================
    CANCELACIÓN — CONFIRMACIÓN
 ========================================================= */
-function mostrarConfirmacionCancelacion() {
+function mostrarConfirmacionCancelacion(pedido) {
   const bar = $id("snackbar");
   if (!bar) return;
 
   bar.innerHTML = `
     <div style="display:flex;flex-direction:column;gap:12px;width:100%;">
-      <span class="snack-text">¿Deseas cancelar este pedido?</span>
-      <div style="display:flex;justify-content:flex-end;gap:8px;">
+      <span class="snack-text">
+        ¿Deseas cancelar el pedido <strong>#${pedido.order_number}</strong>?
+      </span>
+      <div style="display:flex;justify-content:flex-end;gap:10px;">
         <button id="snack-no"
-          style="background:none;border:none;color:#fff;font-weight:600;cursor:pointer;">
+          style="background:none;border:none;color:#fff;font-weight:600;">
           No
         </button>
         <button id="snack-si"
-          style="background:#ff4436;border:none;color:#fff;font-weight:600;
-                 cursor:pointer;padding:8px 16px;border-radius:8px;">
+          style="background:#ff4436;border:none;color:#fff;
+                 font-weight:600;padding:8px 16px;border-radius:8px;">
           Sí, cancelar
         </button>
       </div>
@@ -81,24 +83,37 @@ function mostrarConfirmacionCancelacion() {
   $id("snack-no").onclick = () => bar.classList.remove("show");
   $id("snack-si").onclick = async () => {
     bar.classList.remove("show");
-    await ejecutarCancelacion();
+    await ejecutarCancelacion(pedido);
   };
 }
 
-async function ejecutarCancelacion() {
+async function ejecutarCancelacion(pedido) {
   const sb = window.supabaseClient;
   const user = window.getUserCache();
-  if (!sb || !window.ORDER_ID || !user) return;
+  if (!sb || !pedido || !user) return;
 
+  // 1️⃣ Cancelar pedido
   const { error } = await sb
     .from("orders")
     .update({ status: "cancelled" })
-    .eq("id", window.ORDER_ID);
+    .eq("id", pedido.id);
 
   if (error) {
     window.showSnack("Error al cancelar el pedido");
     return;
   }
+
+  // 2️⃣ Notificación al admin
+  await sb.from("notifications").insert({
+    user_id: null,
+    title: "Pedido cancelado",
+    body: `El pedido #${pedido.order_number} fue cancelado por el cliente`,
+    type: "order_cancelled",
+    metadata: {
+      order_id: pedido.id,
+      order_number: pedido.order_number
+    }
+  });
 
   window.showSnack("Pedido cancelado correctamente");
   setTimeout(() => location.reload(), 1200);
@@ -115,7 +130,6 @@ window.aplicarModoRecibo = (pedido) => {
     };
   }
 
-  // ⚠️ ESTE ELEMENTO NO EXISTE EN RECIBO → PROTEGER
   const pagoLabel = document.querySelector(".pago-select-label");
   if (pagoLabel) pagoLabel.classList.add("hidden");
 
@@ -124,17 +138,19 @@ window.aplicarModoRecibo = (pedido) => {
 
   if (!btnCancelar) return;
 
+  // ❌ No pendiente → eliminar botón
   if (pedido.status !== "pending") {
-    btnCancelar.classList.add("hidden");
+    btnCancelar.remove();
     return;
   }
 
+  // ✅ Pendiente → habilitar
   btnCancelar.disabled = false;
   btnCancelar.classList.remove("hidden");
 
   btnCancelar.onclick = (e) => {
     e.preventDefault();
-    mostrarConfirmacionCancelacion();
+    mostrarConfirmacionCancelacion(pedido);
   };
 };
 
@@ -222,7 +238,7 @@ window.cargarPedidoExistente = async (orderId) => {
     </div>
   `).join("");
 
-  /* COMPROBANTE — SIEMPRE MOSTRAR */
+  /* COMPROBANTE */
   const preview = $id("previewComprobante");
   const img = $id("imgComprobante");
 
