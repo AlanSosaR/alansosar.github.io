@@ -267,11 +267,22 @@ if (window.IS_READ_ONLY) {
   }
 }
 
+/* ===============================
+   NORMALIZACIÓN DE RECIBOS
+   (MISMO CRITERIO QUE MIS PEDIDOS)
+================================ */
+const receiptList =
+  pedido.payment_receipts ||
+  pedido.receipt ||
+  [];
+
+/* ===============================
+   PREVIEW
+================================ */
 const preview = $id("previewComprobante");
 const img = $id("imgComprobante");
 
 if (preview && img) {
-  // Mostrar contenedor
   preview.classList.remove("hidden");
   preview.style.display = "flex";
 
@@ -280,39 +291,41 @@ if (preview && img) {
     pedido.payment_method === "cash_on_delivery";
 
   if (isCash) {
-    // 💵 Pago en efectivo → imagen local
+    // 💵 Pago en efectivo
     img.src = "/imagenes/pago_en_mano.svg";
     img.alt = "Pago en efectivo al recibir";
 
-  } else if (pedido.payment_receipts?.length) {
-    // 🧾 Transferencia con comprobante
-    img.src = pedido.payment_receipts[0].file_url;
-    img.alt = "Comprobante de pago";
-
   } else {
-    // 📄 Transferencia sin comprobante
-    img.src = "/imagenes/recibo_default.svg";
-    img.alt = "Comprobante pendiente";
+    // 🧾 Transferencia
+    img.src =
+      receiptList?.[0]?.file_url ||
+      "/imagenes/recibo_default.svg";
+
+    img.alt = receiptList.length
+      ? "Comprobante de pago"
+      : "Comprobante pendiente";
   }
 
   // Blindaje visual
   img.style.display = "block";
   img.loading = "lazy";
 
-  // Fallback seguro (sin loop)
+  // Fallback seguro
   img.onerror = () => {
     img.onerror = null;
     img.src = "/imagenes/recibo_default.svg";
   };
 }
 
-/* ESTADO */
+/* ===============================
+   ESTADO VISUAL
+================================ */
 let statusVisual = pedido.status;
 
 if (
   pedido.payment_method === "bank_transfer" &&
   pedido.status === "pending" &&
-  pedido.payment_receipts?.length
+  receiptList.length
 ) {
   statusVisual = "payment_review";
 }
