@@ -46,8 +46,8 @@ window.getUserCache = () => {
 window.showSnack = (msg, duration = 4000) => {
   const bar = $id("snackbar");
   if (!bar) return;
-  const text = bar.querySelector(".snack-text") || bar;
-  text.textContent = msg;
+
+  bar.innerHTML = `<span class="snack-text">${msg}</span>`;
   bar.classList.add("show");
   setTimeout(() => bar.classList.remove("show"), duration);
 };
@@ -102,19 +102,15 @@ async function ejecutarCancelacion(pedido) {
     return;
   }
 
-  await sb.from("notifications").insert({
-    user_id: null,
-    title: "Pedido cancelado",
-    body: `El pedido #${pedido.order_number} fue cancelado por el cliente`,
-    type: "order_cancelled",
-    metadata: {
-      order_id: pedido.id,
-      order_number: pedido.order_number
-    }
-  });
-
+  // 🔔 Snackbar SOLO informativo
   window.showSnack("Pedido cancelado correctamente");
-  setTimeout(() => location.reload(), 1200);
+
+  // 🔄 Actualizar estado en UI SIN recargar
+  pedido.status = "cancelled";
+  window.aplicarProgresoPedido("cancelled");
+
+  const btn = $id("btnCancelarPedido") || document.querySelector(".btn-cancelar");
+  if (btn) btn.remove();
 }
 
 /* =========================================================
@@ -136,13 +132,11 @@ window.aplicarModoRecibo = (pedido) => {
 
   if (!btnCancelar) return;
 
-  // ❌ No pendiente → eliminar botón
   if (pedido.status !== "pending") {
     btnCancelar.remove();
     return;
   }
 
-  // ✅ FIX: habilitar REALMENTE el botón
   btnCancelar.disabled = false;
   btnCancelar.removeAttribute("disabled");
   btnCancelar.style.pointerEvents = "auto";
@@ -238,23 +232,25 @@ window.cargarPedidoExistente = async (orderId) => {
     </div>
   `).join("");
 
-  /* COMPROBANTE */
+  /* COMPROBANTE / MÉTODO DE PAGO */
   const preview = $id("previewComprobante");
   const img = $id("imgComprobante");
 
   if (preview && img) {
     preview.classList.remove("hidden");
 
-    if (pedido.payment_method === "bank_transfer") {
+    const isCash =
+      pedido.payment_method === "cash" ||
+      pedido.payment_method === "cash_on_delivery";
+
+    if (isCash) {
+      img.src = "/imagenes/pago_en_mano.svg";
+      img.alt = "Pago en efectivo al recibir";
+    } else {
       img.src =
         pedido.payment_receipts?.[0]?.file_url ||
-        "/imagenes/recibo_default.svg"; // ✅ FIX ruta
+        "/imagenes/recibo_default.svg";
       img.alt = "Comprobante de pago";
-    }
-
-    if (pedido.payment_method === "cash_on_delivery") { // ✅ FIX método real
-      img.src = "/imagenes/pago_en_mano.svg"; // ✅ FIX ruta absoluta
-      img.alt = "Pago en efectivo al recibir";
     }
   }
 
