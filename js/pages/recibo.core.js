@@ -246,28 +246,45 @@ window.cargarPedidoExistente = async (orderId) => {
     </div>
   `).join("");
 
-  /* COMPROBANTE / MÉTODO DE PAGO */
-  const preview = $id("previewComprobante");
-  const img = $id("imgComprobante");
+/* COMPROBANTE / MÉTODO DE PAGO */
+const preview = $id("previewComprobante");
+const img = $id("imgComprobante");
 
-  if (preview && img) {
-    preview.classList.remove("hidden");
-    preview.style.display = "flex";
+if (preview && img) {
+  // Asegurar visibilidad del contenedor
+  preview.classList.remove("hidden");
+  preview.style.display = "flex";
 
-    const isCash =
-      pedido.payment_method === "cash" ||
-      pedido.payment_method === "cash_on_delivery";
+  // Normalizar método de pago
+  const isCash =
+    pedido.payment_method === "cash" ||
+    pedido.payment_method === "cash_on_delivery";
 
-    if (isCash) {
-      img.src = "/imagenes/pago_en_mano.svg";
-      img.alt = "Pago en efectivo al recibir";
-    } else {
-      img.src =
-        pedido.payment_receipts?.[0]?.file_url ||
-        "/imagenes/recibo_default.svg";
-      img.alt = "Comprobante de pago";
-    }
+  if (isCash) {
+    // 💵 Pago en efectivo (imagen local)
+    img.src = "../imagenes/pago_en_mano.svg";
+    img.alt = "Pago en efectivo al recibir";
+
+  } else if (pedido.payment_receipts && pedido.payment_receipts.length) {
+    // 🧾 Comprobante real desde BD
+    img.src = pedido.payment_receipts[0].file_url;
+    img.alt = "Comprobante de pago";
+
+  } else {
+    // 📄 Default cuando NO hay comprobante
+    img.src = "../imagenes/recibo_default.svg";
+    img.alt = "Comprobante pendiente";
   }
+
+  // 🔒 Blindaje visual (CLAVE)
+  img.style.display = "block";
+  img.loading = "lazy";
+
+  // Fallback si la imagen falla
+  img.onerror = () => {
+    img.src = "../imagenes/recibo_default.svg";
+  };
+}
 
   /* ESTADO */
   let statusVisual = pedido.status;
