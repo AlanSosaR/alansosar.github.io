@@ -131,12 +131,13 @@ function applyLocalFilters() {
     if (currentFilter !== "all") {
       const map = {
         pending: ["pending"],
-        new: ["pending", "payment_review"],
+        payment_review: ["payment_review"],
         processing: ["processing"],
         shipped: ["shipped"],
         delivered: ["delivered"],
         cancelled: ["cancelled"],
       };
+
       matchStatus = (map[currentFilter] || []).includes(o.status);
     }
 
