@@ -247,76 +247,81 @@ window.cargarPedidoExistente = async (orderId) => {
   `).join("");
 
 /* ===============================
-   COMPROBANTE / MÉTODO DE PAGO
-   (SOLO VISTA RECIBO)
+   COMPROBANTE — VISTA RECIBO (LIMPIO Y HUMANO)
 ================================ */
 
-// 🔓 LIBERAR BLOQUES PADRE (OBLIGATORIO)
-if (window.IS_READ_ONLY) {
-  const bloqueDeposito = $id("pago-deposito");
-  const bloqueEfectivo = $id("pago-efectivo");
+if (window.IS_READ_ONLY && typeof pedido === "object") {
 
-  if (bloqueDeposito) {
-    bloqueDeposito.classList.remove("hidden");
-    bloqueDeposito.style.display = "block";
-  }
+  // 🧹 Eliminar cualquier rastro de checkout
+  ["pago-deposito", "pago-efectivo"].forEach(id => {
+    $id(id)?.remove();
+  });
+  document.querySelector(".pago-select-label")?.remove();
 
-  if (bloqueEfectivo) {
-    bloqueEfectivo.classList.remove("hidden");
-    bloqueEfectivo.style.display = "block";
-  }
-}
+  /* ===============================
+     NORMALIZACIÓN DE RECIBOS
+  ================================ */
+  const receiptList =
+    Array.isArray(pedido.payment_receipts)
+      ? pedido.payment_receipts
+      : Array.isArray(pedido.receipt)
+      ? pedido.receipt
+      : [];
 
-/* ===============================
-   NORMALIZACIÓN DE RECIBOS
-   (MISMO CRITERIO QUE MIS PEDIDOS)
-================================ */
-const receiptList =
-  pedido.payment_receipts ||
-  pedido.receipt ||
-  [];
+  /* ===============================
+     PREVIEW
+  ================================ */
+  const preview = $id("previewComprobante");
+  const img = $id("imgComprobante");
 
-/* ===============================
-   PREVIEW
-================================ */
-const preview = $id("previewComprobante");
-const img = $id("imgComprobante");
+  if (!preview || !img) return;
 
-if (preview && img) {
   preview.classList.remove("hidden");
   preview.style.display = "flex";
 
-  const isCash =
-    pedido.payment_method === "cash" ||
-    pedido.payment_method === "cash_on_delivery";
+  const isCash = ["cash", "cash_on_delivery"].includes(pedido.payment_method);
+
+  let config = {
+    src: "/imagenes/recibo_default.svg",
+    alt: "Estado del pago",
+    texto: "Aún no se ha registrado un comprobante para este pedido."
+  };
 
   if (isCash) {
-    // 💵 Pago en efectivo
-    img.src = "/imagenes/pago_en_mano.svg";
-    img.alt = "Pago en efectivo al recibir";
-
-  } else {
-    // 🧾 Transferencia
-    img.src =
-      receiptList?.[0]?.file_url ||
-      "/imagenes/recibo_default.svg";
-
-    img.alt = receiptList.length
-      ? "Comprobante de pago"
-      : "Comprobante pendiente";
+    config = {
+      src: "/imagenes/pago_en_mano.svg",
+      alt: "Pago contra entrega",
+      texto: "El pago se realizará al momento de la entrega del pedido."
+    };
+  } else if (receiptList.length) {
+    config = {
+      src: receiptList[0].file_url,
+      alt: "Comprobante de pago",
+      texto: "Esta es la información del comprobante que enviaste para este pedido."
+    };
   }
 
-  // Blindaje visual
-  img.style.display = "block";
+  // 🖼️ Imagen
+  img.src = config.src;
+  img.alt = config.alt;
   img.loading = "lazy";
+  img.style.display = "block";
 
-  // Fallback seguro
+  // 📝 Texto descriptivo (uno solo, controlado)
+  let text = preview.querySelector(".preview-text");
+  if (!text) {
+    text = document.createElement("p");
+    text.className = "preview-text";
+    preview.appendChild(text);
+  }
+  text.textContent = config.texto;
+
+  // 🛡️ Fallback seguro
   img.onerror = () => {
     img.onerror = null;
     img.src = "/imagenes/recibo_default.svg";
   };
 }
-
 /* ===============================
    ESTADO VISUAL
 ================================ */
