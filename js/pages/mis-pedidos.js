@@ -359,8 +359,13 @@ function renderPedidoActivo(pedido) {
 }
 
 /* ============================================================
-   ARROWS + AUTO REFRESH
+   ARROWS + AUTO REFRESH (FINAL CORREGIDO)
 ============================================================ */
+
+/**
+ * Flechas del carrusel
+ * Blindadas para evitar errores cuando el DOM cambia
+ */
 function bindCarouselArrows() {
   const list = $id("pedidos-carrusel");
   const prev = $id("pedidos-prev");
@@ -368,9 +373,31 @@ function bindCarouselArrows() {
 
   if (!list || !prev || !next) return;
 
-  prev.onclick = () =>
+  prev.onclick = () => {
     list.scrollBy({ left: -300, behavior: "smooth" });
+  };
 
-  next.onclick = () =>
+  next.onclick = () => {
     list.scrollBy({ left: 300, behavior: "smooth" });
+  };
+}
+
+/**
+ * Auto refresh REAL
+ * 🔑 Resetea estado UI antes de re-aplicar filtros
+ */
+function startAutoRefresh(userId) {
+  clearInterval(autoRefresh);
+
+  autoRefresh = setInterval(async () => {
+    await loadOrders(userId);
+
+    // 🔥 CLAVE ABSOLUTA
+    // Evita que pedidos que ya cambiaron de estado
+    // sigan mostrándose como pendientes
+    activeIndex = 0;
+    filteredOrders = [];
+
+    applyLocalFilters();
+  }, 30000);
 }
