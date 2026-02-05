@@ -243,21 +243,25 @@ async function enviarPedido() {
       throw new Error("No se pudo generar el número de pedido");
     }
 
-    const { data: order, error } = await sb
-      .from("orders")
-      .insert({
-        user_id: user.id,
-        address_id: selectedAddressId,
-        order_number: orderNumber,
-        total: totalPedido,
-        payment_method:
-          metodoPago.value === "bank_transfer"
-            ? "bank_transfer"
-            : "cash_on_delivery",
-        status: "pending"
-      })
-      .select("id")
-      .single();
+  const orderNotes =
+  sessionStorage.getItem("current_order_notes")?.trim() || null;
+
+const { data: order, error } = await sb
+  .from("orders")
+  .insert({
+    user_id: user.id,
+    address_id: selectedAddressId,
+    order_number: orderNumber,
+    total: totalPedido,
+    payment_method:
+      metodoPago.value === "bank_transfer"
+        ? "bank_transfer"
+        : "cash_on_delivery",
+    status: "pending",
+    order_notes: orderNotes
+  })
+  .select("id")
+  .single();
 
     if (error || !order) {
       throw new Error("No se pudo crear el pedido");
