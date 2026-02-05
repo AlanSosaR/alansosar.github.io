@@ -333,6 +333,8 @@ if (
 window.aplicarProgresoPedido(statusVisual);
 window.aplicarModoRecibo(pedido);
 
+}; // ✅ CIERRE CORRECTO DE cargarPedidoExistente
+
 /* =========================================================
    AUTO INIT
 ========================================================= */
