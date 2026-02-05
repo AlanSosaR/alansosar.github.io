@@ -1,8 +1,8 @@
 /* ============================================================
-   📦 MIS PEDIDOS — UX FLUIDA (FINAL ESTABLE + SEARCH FIX)
+   📦 MIS PEDIDOS — UX FLUIDA (FINAL DEFINITIVO ESTABLE)
 ============================================================ */
 
-console.log("📦 mis-pedidos.js — FINAL ESTABLE");
+console.log("📦 mis-pedidos.js — FINAL DEFINITIVO");
 
 const sb = () => window.supabaseClient;
 
@@ -69,7 +69,7 @@ function getStatusDetails(status, paymentMethod) {
     : {
         steps: ["Pago enviado", "Revisión", "Confirmado", "Enviado"],
         pending: { step: 1, label: "Pago enviado", desc: "Validando comprobante." },
-        payment_review: { step: 2, label: "En revisión", desc: "Revisando el pago." },
+        payment_review: { step: 2, label: "Revisión", desc: "Revisando el pago." },
         processing: { step: 3, label: "Confirmado", desc: "Pedido confirmado." },
         shipped: { step: 4, label: "Enviado", desc: "Pedido en camino." },
         delivered: { step: 4, label: "Entregado", desc: "Pedido entregado." },
@@ -168,7 +168,7 @@ function applyLocalFilters() {
 }
 
 /* ============================================================
-   EMPTY STATE (GLOBAL PARA TODOS LOS FILTROS)
+   EMPTY STATE (GLOBAL)
 ============================================================ */
 function renderEmpty(filter = "pending") {
   ocultarTodoPorFiltro();
@@ -268,8 +268,9 @@ function renderCarousel() {
 
   filteredOrders.forEach((o, index) => {
     const node = tpl.content.cloneNode(true);
-    const img = node.querySelector(".pedido-mini-img");
+    const card = node.querySelector(".similar-card");
 
+    const img = node.querySelector(".pedido-mini-img");
     img.src = isCashPayment(o.payment_method)
       ? IMG_CASH
       : o.receipt?.[0]?.file_url || IMG_DEFAULT;
@@ -281,7 +282,7 @@ function renderCarousel() {
     node.querySelector(".pedido-mini-status").textContent =
       getStatusDetails(o.status, o.payment_method).label;
 
-    node.querySelector(".similar-card").onclick = () => selectOrder(index);
+    card.onclick = () => selectOrder(index);
     wrap.appendChild(node);
   });
 
@@ -289,13 +290,31 @@ function renderCarousel() {
 }
 
 /* ============================================================
-   PEDIDO ACTIVO
+   SELECCIÓN + SCROLL SUAVE
 ============================================================ */
 function selectOrder(index) {
+  if (!filteredOrders[index]) return;
   activeIndex = index;
+
+  document.querySelectorAll(".similar-card").forEach((c) =>
+    c.classList.remove("is-selected")
+  );
+  document.querySelectorAll(".similar-card")[index]
+    ?.classList.add("is-selected");
+
   renderPedidoActivo(filteredOrders[index]);
+
+  requestAnimationFrame(() => {
+    $id("pedido-activo")?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  });
 }
 
+/* ============================================================
+   PEDIDO ACTIVO
+============================================================ */
 function renderPedidoActivo(pedido) {
   const container = $id("pedido-activo");
   const tpl = $id("pedido-activo-template");
@@ -320,6 +339,16 @@ function renderPedidoActivo(pedido) {
   node.querySelector(".estado-nombre").textContent = status.label;
   node.querySelector(".estado-descripcion").textContent = status.desc;
   node.querySelector(".estado-paso").textContent = status.step;
+
+  /* ===== MARCADO DE PASOS ===== */
+  const pasos = node.querySelectorAll(".estado-item");
+  pasos.forEach((li, i) => {
+    li.querySelector(".step-text").textContent = status.steps[i];
+    li.classList.remove("activo", "completado");
+
+    if (i + 1 === status.step) li.classList.add("activo");
+    else if (i + 1 < status.step) li.classList.add("completado");
+  });
 
   node.querySelector(".recibo-img").src = isCashPayment(pedido.payment_method)
     ? IMG_CASH
