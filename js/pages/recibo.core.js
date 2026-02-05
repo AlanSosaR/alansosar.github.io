@@ -251,6 +251,22 @@ window.cargarPedidoExistente = async (orderId) => {
    (SOLO VISTA RECIBO)
 ================================ */
 
+// 🔓 LIBERAR BLOQUES PADRE (OBLIGATORIO)
+if (window.IS_READ_ONLY) {
+  const bloqueDeposito = $id("pago-deposito");
+  const bloqueEfectivo = $id("pago-efectivo");
+
+  if (bloqueDeposito) {
+    bloqueDeposito.classList.remove("hidden");
+    bloqueDeposito.style.display = "block";
+  }
+
+  if (bloqueEfectivo) {
+    bloqueEfectivo.classList.remove("hidden");
+    bloqueEfectivo.style.display = "block";
+  }
+}
+
 const preview = $id("previewComprobante");
 const img = $id("imgComprobante");
 
@@ -290,20 +306,19 @@ if (preview && img) {
   };
 }
 
-  /* ESTADO */
-  let statusVisual = pedido.status;
+/* ESTADO */
+let statusVisual = pedido.status;
 
-  if (
-    pedido.payment_method === "bank_transfer" &&
-    pedido.status === "pending" &&
-    pedido.payment_receipts?.length
-  ) {
-    statusVisual = "payment_review";
-  }
+if (
+  pedido.payment_method === "bank_transfer" &&
+  pedido.status === "pending" &&
+  pedido.payment_receipts?.length
+) {
+  statusVisual = "payment_review";
+}
 
-  window.aplicarProgresoPedido(statusVisual);
-  window.aplicarModoRecibo(pedido);
-};
+window.aplicarProgresoPedido(statusVisual);
+window.aplicarModoRecibo(pedido);
 
 /* =========================================================
    AUTO INIT
