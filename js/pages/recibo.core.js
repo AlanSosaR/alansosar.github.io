@@ -251,7 +251,7 @@ window.cargarPedidoExistente = async (orderId) => {
         "/assets/img/receipt-placeholder.svg";
       img.alt = "Comprobante de pago";
     } else {
-      img.src = "/assets/img/pago_en_mano.svg";
+      img.src = "./imagenes/pago_en_mano.svg";
       img.alt = "Pago en efectivo";
     }
   }
