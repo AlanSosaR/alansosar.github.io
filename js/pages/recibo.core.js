@@ -92,7 +92,6 @@ async function ejecutarCancelacion(pedido) {
   const user = window.getUserCache();
   if (!sb || !pedido || !user) return;
 
-  // 1️⃣ Cancelar pedido
   const { error } = await sb
     .from("orders")
     .update({ status: "cancelled" })
@@ -103,7 +102,6 @@ async function ejecutarCancelacion(pedido) {
     return;
   }
 
-  // 2️⃣ Notificación al admin
   await sb.from("notifications").insert({
     user_id: null,
     title: "Pedido cancelado",
@@ -144,9 +142,11 @@ window.aplicarModoRecibo = (pedido) => {
     return;
   }
 
-  // ✅ Pendiente → habilitar
+  // ✅ FIX: habilitar REALMENTE el botón
   btnCancelar.disabled = false;
-  btnCancelar.classList.remove("hidden");
+  btnCancelar.removeAttribute("disabled");
+  btnCancelar.style.pointerEvents = "auto";
+  btnCancelar.classList.remove("hidden", "disabled");
 
   btnCancelar.onclick = (e) => {
     e.preventDefault();
@@ -248,11 +248,13 @@ window.cargarPedidoExistente = async (orderId) => {
     if (pedido.payment_method === "bank_transfer") {
       img.src =
         pedido.payment_receipts?.[0]?.file_url ||
-        "/assets/img/receipt-placeholder.svg";
+        "/imagenes/recibo_default.svg"; // ✅ FIX ruta
       img.alt = "Comprobante de pago";
-    } else {
-      img.src = "./imagenes/pago_en_mano.svg";
-      img.alt = "Pago en efectivo";
+    }
+
+    if (pedido.payment_method === "cash_on_delivery") { // ✅ FIX método real
+      img.src = "/imagenes/pago_en_mano.svg"; // ✅ FIX ruta absoluta
+      img.alt = "Pago en efectivo al recibir";
     }
   }
 
