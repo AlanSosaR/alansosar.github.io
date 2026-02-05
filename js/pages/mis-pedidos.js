@@ -338,6 +338,18 @@ function renderPedidoActivo(pedido) {
   node.querySelector(".estado-descripcion").textContent = status.desc;
   node.querySelector(".estado-paso").textContent = status.step;
 
+  /* ===== PRODUCTOS PILLS (BOLSAS DE CAFÉ) ===== */
+  const pillsContainer = node.querySelector(".productos-pills");
+  if (pillsContainer && pedido.items) {
+    pillsContainer.innerHTML = "";
+    pedido.items.forEach((item) => {
+      const pill = document.createElement("span");
+      pill.className = "producto-pill";
+      pill.textContent = `${item.products.name} × ${item.quantity}`;
+      pillsContainer.appendChild(pill);
+    });
+  }
+
   /* ===== MARCADO DE PASOS ===== */
   const pasos = node.querySelectorAll(".estado-item");
   pasos.forEach((li, i) => {
