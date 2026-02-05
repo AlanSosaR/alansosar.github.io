@@ -193,21 +193,23 @@
   <script src="/js/ui/layout.js"></script>
 
   <!-- Configurar botón según modo -->
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const btn = document.getElementById("btnAccionPrincipal");
-      const text = document.getElementById("btnText");
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const btn = document.getElementById("btnEnviar");
+    const text = document.getElementById("btnText");
 
-      if (window.IS_READ_ONLY) {
-        text.textContent = "Cancelar pedido";
-        btn.classList.add("btn-cancelar");
-        btn.id = "btnCancelarPedido";
-      } else {
-        btn.id = "btnEnviar";
-        btn.disabled = true;
-      }
-    });
-  </script>
+    if (!btn || !text) return;
+
+    if (window.IS_READ_ONLY) {
+      text.textContent = "Cancelar pedido";
+      btn.classList.add("btn-cancelar");
+      btn.id = "btnCancelarPedido";
+      btn.disabled = false;
+    } else {
+      btn.disabled = true;
+    }
+  });
+</script>
 
   <!-- Cargar SOLO el script correcto -->
   <script>
