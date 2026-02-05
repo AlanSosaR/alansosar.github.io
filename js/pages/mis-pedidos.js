@@ -22,7 +22,7 @@ let activeIndex = 0;
 let autoRefresh = null;
 
 let currentSearch = "";
-let currentFilter = "all";
+let currentFilter = "pending";
 
 /* ============================================================
    HELPERS
