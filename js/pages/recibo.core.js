@@ -248,72 +248,78 @@ window.cargarPedidoExistente = async (orderId) => {
 
 /* ===============================
    COMPROBANTE — SOLO IMAGEN + INFO
-   (VISTA RECIBO LIMPIA)
+   (VISTA RECIBO LIMPIA Y REAL)
 ================================ */
 
-// ❌ ELIMINAR BLOQUES DE CHECKOUT
+// ❌ eliminar cualquier resto de checkout
 ["pago-deposito", "pago-efectivo"].forEach(id => {
   $id(id)?.remove();
 });
 document.querySelector(".pago-select-label")?.remove();
 
 /* ===============================
-   NORMALIZACIÓN DE RECIBOS
+   NORMALIZACIÓN REAL DE RECIBOS
 ================================ */
 const receiptList = Array.isArray(pedido.payment_receipts)
   ? pedido.payment_receipts
-  : Array.isArray(pedido.receipt)
-  ? pedido.receipt
   : [];
 
 /* ===============================
-   PREVIEW (SOLO VISUAL)
+   PREVIEW (FORZADO A MOSTRAR)
 ================================ */
 const preview = $id("previewComprobante");
 const img = $id("imgComprobante");
 
-if (preview && img) {
-  preview.classList.remove("hidden");
-  preview.style.display = "flex";
-
-  const isCash = ["cash", "cash_on_delivery"].includes(pedido.payment_method);
-
-  let src = "/imagenes/recibo_default.svg";
-  let alt = "Estado del pago";
-  let texto = "Comprobante pendiente de validación.";
-
-  if (isCash) {
-    src = "/imagenes/pago_en_mano.svg";
-    alt = "Pago en efectivo";
-    texto = "El pago se realizará al momento de la entrega.";
-  } else if (receiptList.length) {
-    src = receiptList[0].file_url;
-    alt = "Comprobante de pago";
-    texto = "Este es el comprobante asociado a tu pedido.";
-  }
-
-  // 🖼️ Imagen (NO interactiva)
-  img.src = src;
-  img.alt = alt;
-  img.loading = "lazy";
-  img.style.display = "block";
-  img.style.pointerEvents = "none";
-
-  // 📝 Texto breve (uno solo)
-  let text = preview.querySelector(".preview-text");
-  if (!text) {
-    text = document.createElement("p");
-    text.className = "preview-text";
-    preview.appendChild(text);
-  }
-  text.textContent = texto;
-
-  // 🛡️ Fallback seguro
-  img.onerror = () => {
-    img.onerror = null;
-    img.src = "/imagenes/recibo_default.svg";
-  };
+if (!preview || !img) {
+  console.warn("⚠️ previewComprobante o imgComprobante no existen");
+  return;
 }
+
+// 🔓 forzar visibilidad (CSS blindaje)
+preview.classList.remove("hidden");
+preview.style.display = "flex";
+preview.style.visibility = "visible";
+
+img.style.display = "block";
+img.style.visibility = "visible";
+img.style.pointerEvents = "none";
+
+const isCash = pedido.payment_method === "cash_on_delivery";
+
+let src = "/imagenes/recibo_default.svg";
+let alt = "Estado del pago";
+let texto = "Comprobante pendiente de validación.";
+
+if (isCash) {
+  src = "/imagenes/pago_en_mano.svg";
+  alt = "Pago en efectivo";
+  texto = "El pago se realizará al momento de la entrega.";
+} 
+else if (receiptList.length && receiptList[0]?.file_url) {
+  src = receiptList[0].file_url;
+  alt = "Comprobante de pago";
+  texto = "Este es el comprobante asociado a tu pedido.";
+}
+
+// 🖼️ asignación FINAL
+img.src = src;
+img.alt = alt;
+img.loading = "lazy";
+
+// 📝 texto (único)
+let text = preview.querySelector(".preview-text");
+if (!text) {
+  text = document.createElement("p");
+  text.className = "preview-text";
+  preview.appendChild(text);
+}
+text.textContent = texto;
+
+// 🛡️ fallback seguro
+img.onerror = () => {
+  img.onerror = null;
+  img.src = "/imagenes/recibo_default.svg";
+};
 
 /* ===============================
    ESTADO VISUAL
