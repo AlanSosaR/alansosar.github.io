@@ -247,37 +247,27 @@ window.cargarPedidoExistente = async (orderId) => {
   `).join("");
 
 /* ===============================
-   COMPROBANTE / MÉTODO DE PAGO
-   (SOLO VISTA RECIBO)
+   COMPROBANTE — SOLO IMAGEN + INFO
+   (VISTA RECIBO LIMPIA)
 ================================ */
 
-// 🔓 LIBERAR BLOQUES PADRE (OBLIGATORIO)
-if (window.IS_READ_ONLY) {
-  const bloqueDeposito = $id("pago-deposito");
-  const bloqueEfectivo = $id("pago-efectivo");
-
-  if (bloqueDeposito) {
-    bloqueDeposito.classList.remove("hidden");
-    bloqueDeposito.style.display = "block";
-  }
-
-  if (bloqueEfectivo) {
-    bloqueEfectivo.classList.remove("hidden");
-    bloqueEfectivo.style.display = "block";
-  }
-}
+// ❌ ELIMINAR BLOQUES DE CHECKOUT
+["pago-deposito", "pago-efectivo"].forEach(id => {
+  $id(id)?.remove();
+});
+document.querySelector(".pago-select-label")?.remove();
 
 /* ===============================
    NORMALIZACIÓN DE RECIBOS
-   (MISMO CRITERIO QUE MIS PEDIDOS)
 ================================ */
-const receiptList =
-  pedido.payment_receipts ||
-  pedido.receipt ||
-  [];
+const receiptList = Array.isArray(pedido.payment_receipts)
+  ? pedido.payment_receipts
+  : Array.isArray(pedido.receipt)
+  ? pedido.receipt
+  : [];
 
 /* ===============================
-   PREVIEW
+   PREVIEW (SOLO VISUAL)
 ================================ */
 const preview = $id("previewComprobante");
 const img = $id("imgComprobante");
@@ -286,31 +276,39 @@ if (preview && img) {
   preview.classList.remove("hidden");
   preview.style.display = "flex";
 
-  const isCash =
-    pedido.payment_method === "cash" ||
-    pedido.payment_method === "cash_on_delivery";
+  const isCash = ["cash", "cash_on_delivery"].includes(pedido.payment_method);
+
+  let src = "/imagenes/recibo_default.svg";
+  let alt = "Estado del pago";
+  let texto = "Comprobante pendiente de validación.";
 
   if (isCash) {
-    // 💵 Pago en efectivo
-    img.src = "/imagenes/pago_en_mano.svg";
-    img.alt = "Pago en efectivo al recibir";
-
-  } else {
-    // 🧾 Transferencia
-    img.src =
-      receiptList?.[0]?.file_url ||
-      "/imagenes/recibo_default.svg";
-
-    img.alt = receiptList.length
-      ? "Comprobante de pago"
-      : "Comprobante pendiente";
+    src = "/imagenes/pago_en_mano.svg";
+    alt = "Pago en efectivo";
+    texto = "El pago se realizará al momento de la entrega.";
+  } else if (receiptList.length) {
+    src = receiptList[0].file_url;
+    alt = "Comprobante de pago";
+    texto = "Este es el comprobante asociado a tu pedido.";
   }
 
-  // Blindaje visual
-  img.style.display = "block";
+  // 🖼️ Imagen (NO interactiva)
+  img.src = src;
+  img.alt = alt;
   img.loading = "lazy";
+  img.style.display = "block";
+  img.style.pointerEvents = "none";
 
-  // Fallback seguro
+  // 📝 Texto breve (uno solo)
+  let text = preview.querySelector(".preview-text");
+  if (!text) {
+    text = document.createElement("p");
+    text.className = "preview-text";
+    preview.appendChild(text);
+  }
+  text.textContent = texto;
+
+  // 🛡️ Fallback seguro
   img.onerror = () => {
     img.onerror = null;
     img.src = "/imagenes/recibo_default.svg";
