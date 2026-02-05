@@ -270,6 +270,8 @@ async function enviarPedido() {
       throw new Error("No se pudo crear el pedido");
     }
 
+    console.log("✅ Pedido creado:", order.id, "- Trigger debería insertar notificación");
+
     await sb.from("order_items").insert(
       carrito.map(it => ({
         order_id: order.id,

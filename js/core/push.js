@@ -74,6 +74,8 @@ export async function registerPushToken(userId) {
       return;
     }
 
+    console.log("🔑 Token FCM generado:", token.substring(0, 30) + "...");
+
     // -----------------------------
     // Supabase
     // -----------------------------
@@ -105,7 +107,7 @@ export async function registerPushToken(userId) {
       return;
     }
 
-    console.log("✅ Push token registrado / actualizado correctamente");
+    console.log("✅ Push token guardado en Supabase para user_id:", userId);
   } catch (err) {
     console.error("🔥 Error crítico en registerPushToken:", err);
   }
@@ -122,8 +124,16 @@ onMessage(messaging, payload => {
   console.log("📩 Push recibido en foreground:", payload);
 
   // Seguridad básica
-  if (!payload?.notification) return;
-  if (Notification.permission !== "granted") return;
+  if (!payload?.notification) {
+    console.warn("⚠️ Push sin notification payload");
+    return;
+  }
+  if (Notification.permission !== "granted") {
+    console.warn("⚠️ Permisos de notificación no otorgados");
+    return;
+  }
+
+  console.log("🔔 Mostrando notificación:", payload.notification.title);
 
   new Notification(payload.notification.title, {
     body: payload.notification.body,
