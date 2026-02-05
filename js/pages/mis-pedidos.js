@@ -60,20 +60,20 @@ function getStatusDetails(status, paymentMethod) {
 
   const map = isCash
     ? {
-        steps: ["Pedido registrado", "Preparación", "En camino", "Entregado"],
-        pending: { step: 1, label: "Pedido registrado", desc: "Tu pedido fue recibido correctamente." },
-        processing: { step: 2, label: "Preparación", desc: "Estamos preparando tu pedido." },
-        shipped: { step: 3, label: "En camino", desc: "El repartidor lleva tu pedido." },
-        delivered: { step: 4, label: "Entregado", desc: "Pedido entregado." },
-      }
+      steps: ["Pedido registrado", "Preparación", "En camino", "Entregado"],
+      pending: { step: 1, label: "Pedido registrado", desc: "Tu pedido fue recibido correctamente." },
+      processing: { step: 2, label: "Preparación", desc: "Estamos preparando tu pedido." },
+      shipped: { step: 3, label: "En camino", desc: "El repartidor lleva tu pedido." },
+      delivered: { step: 4, label: "Entregado", desc: "Pedido entregado." },
+    }
     : {
-        steps: ["Pago enviado", "Revisión", "Confirmado", "Enviado"],
-        pending: { step: 1, label: "Pago enviado", desc: "Validando comprobante." },
-        payment_review: { step: 2, label: "Revisión", desc: "Revisando el pago." },
-        processing: { step: 3, label: "Confirmado", desc: "Pedido confirmado." },
-        shipped: { step: 4, label: "Enviado", desc: "Pedido en camino." },
-        delivered: { step: 4, label: "Entregado", desc: "Pedido entregado." },
-      };
+      steps: ["Pago enviado", "Revisión", "Confirmado", "Enviado"],
+      pending: { step: 1, label: "Pago enviado", desc: "Validando comprobante." },
+      payment_review: { step: 2, label: "Revisión", desc: "Revisando el pago." },
+      processing: { step: 3, label: "Confirmado", desc: "Pedido confirmado." },
+      shipped: { step: 4, label: "Enviado", desc: "Pedido en camino." },
+      delivered: { step: 4, label: "Entregado", desc: "Pedido entregado." },
+    };
 
   return { ...(map[status] || map.pending), steps: map.steps };
 }
@@ -98,10 +98,7 @@ async function init() {
     return;
   }
 
-  filteredOrders = [...orders];
-  mostrarCarrusel();
-  renderCarousel();
-  selectOrder(0);
+  applyLocalFilters();
 
   startAutoRefresh(data.session.user.id);
 }
@@ -178,8 +175,8 @@ function renderEmpty(filter = "pending") {
   if (!empty) return;
 
   const title = empty.querySelector(".empty-title");
-  const text  = empty.querySelector(".empty-text");
-  const img   = empty.querySelector(".empty-illustration");
+  const text = empty.querySelector(".empty-text");
+  const img = empty.querySelector(".empty-illustration");
 
   const config = {
     pending: ["Todo está al día por aquí", "No tienes pedidos pendientes.", "pending.svg"],
@@ -193,7 +190,7 @@ function renderEmpty(filter = "pending") {
   const [t, d, imgName] = config[filter] || config.pending;
 
   title.textContent = t;
-  text.textContent  = d;
+  text.textContent = d;
   img.src = EMPTY_BASE + imgName;
   img.alt = t;
 
