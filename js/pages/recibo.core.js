@@ -32,9 +32,7 @@ window.getUserCache = () => {
     const u = localStorage.getItem("cortero_user");
     if (u) return JSON.parse(u);
 
-    const key = Object.keys(localStorage).find((k) =>
-      k.includes("-auth-token")
-    );
+    const key = Object.keys(localStorage).find(k => k.includes("-auth-token"));
     if (key) {
       const s = JSON.parse(localStorage.getItem(key));
       return s?.user || null;
@@ -55,20 +53,25 @@ window.showSnack = (msg, duration = 4000) => {
 };
 
 /* =========================================================
-   CANCELACIÓN
+   CANCELACIÓN — CONFIRMACIÓN
 ========================================================= */
 function mostrarConfirmacionCancelacion(pedido) {
   const bar = $id("snackbar");
   if (!bar) return;
 
   bar.innerHTML = `
-    <div style="display:flex;flex-direction:column;gap:12px">
+    <div style="display:flex;flex-direction:column;gap:12px;width:100%;">
       <span class="snack-text">
         ¿Deseas cancelar el pedido <strong>#${pedido.order_number}</strong>?
       </span>
-      <div style="display:flex;justify-content:flex-end;gap:10px">
-        <button id="snack-no">No</button>
-        <button id="snack-si" style="background:#ff4436;color:#fff">
+      <div style="display:flex;justify-content:flex-end;gap:10px;">
+        <button id="snack-no"
+          style="background:none;border:none;color:#fff;font-weight:600;">
+          No
+        </button>
+        <button id="snack-si"
+          style="background:#ff4436;border:none;color:#fff;
+                 font-weight:600;padding:8px 16px;border-radius:8px;">
           Sí, cancelar
         </button>
       </div>
@@ -89,36 +92,74 @@ async function ejecutarCancelacion(pedido) {
   const user = window.getUserCache();
   if (!sb || !pedido || !user) return;
 
-  const { error } = await sb
+  /* 🔒 UPDATE REAL + CONFIRMACIÓN */
+  const { data, error } = await sb
     .from("orders")
     .update({ status: "cancelled" })
-    .eq("id", pedido.id);
+    .eq("id", pedido.id)
+    .select("id,status")
+    .single();
 
-  if (error) {
-    showSnack("No se pudo cancelar el pedido");
+  if (error || !data) {
+    window.showSnack("No se pudo cancelar el pedido");
     return;
   }
 
-  pedido.status = "cancelled";
-  aplicarProgresoPedido("cancelled");
-  showSnack("Pedido cancelado correctamente");
+  /* 🔔 NOTIFICACIÓN AL ADMIN */
+  await sb.from("notifications").insert({
+    user_id: null,
+    title: "Pedido cancelado",
+    body: `El cliente ${pedido.users?.name || "Cliente"} canceló el pedido #${pedido.order_number}`,
+    type: "order_cancelled",
+    metadata: {
+      order_id: pedido.id,
+      order_number: pedido.order_number,
+      customer_name: pedido.users?.name || null
+    }
+  });
 
-  document.querySelector(".btn-cancelar")?.remove();
+  /* ✅ UI ACTUALIZADA */
+  pedido.status = "cancelled";
+  window.aplicarProgresoPedido("cancelled");
+  window.showSnack("Pedido cancelado correctamente");
+
+  const btn = $id("btnCancelarPedido") || document.querySelector(".btn-cancelar");
+  if (btn) btn.remove();
 }
 
 /* =========================================================
-   UI — RECIBO
+   UI — MODO RECIBO
 ========================================================= */
 window.aplicarModoRecibo = (pedido) => {
-  document.querySelector(".pago-select-label")?.remove();
-  document.querySelector(".btn-cancelar")?.remove();
-
-  if (pedido.status === "pending") {
-    const btn = $id("btnCancelarPedido");
-    if (btn) {
-      btn.onclick = () => mostrarConfirmacionCancelacion(pedido);
-    }
+  const btnBack = $id("btn-back");
+  if (btnBack) {
+    btnBack.onclick = () => {
+      window.location.href = "/pages/profile/mis-pedidos.html";
+    };
   }
+
+  const pagoLabel = document.querySelector(".pago-select-label");
+  if (pagoLabel) pagoLabel.classList.add("hidden");
+
+  const btnCancelar =
+    $id("btnCancelarPedido") || document.querySelector(".btn-cancelar");
+
+  if (!btnCancelar) return;
+
+  if (pedido.status !== "pending") {
+    btnCancelar.remove();
+    return;
+  }
+
+  btnCancelar.disabled = false;
+  btnCancelar.removeAttribute("disabled");
+  btnCancelar.style.pointerEvents = "auto";
+  btnCancelar.classList.remove("hidden", "disabled");
+
+  btnCancelar.onclick = (e) => {
+    e.preventDefault();
+    mostrarConfirmacionCancelacion(pedido);
+  };
 };
 
 /* =========================================================
@@ -129,18 +170,18 @@ window.aplicarProgresoPedido = (status) => {
   if (!el) return;
 
   const map = {
-    pending: ["Pendiente", "payments"],
-    payment_review: ["Revisando pago", "fact_check"],
-    processing: ["En preparación", "coffee"],
-    shipped: ["En camino", "local_shipping"],
-    delivered: ["Entregado", "check_circle"],
-    cancelled: ["Cancelado", "cancel"],
+    pending: ["Pendiente", "payments", "status-pending"],
+    payment_review: ["Revisando pago", "fact_check", "status-review"],
+    processing: ["En preparación", "coffee", "status-processing"],
+    shipped: ["En camino", "local_shipping", "status-shipped"],
+    delivered: ["Entregado", "check_circle", "status-delivered"],
+    cancelled: ["Cancelado", "cancel", "status-cancelled"],
   };
 
-  const [label, icon] = map[status] || map.pending;
+  const [label, icon, cls] = map[status] || map.pending;
 
   el.innerHTML = `
-    <div class="status-pill">
+    <div class="status-pill ${cls}">
       <span class="material-symbols-outlined">${icon}</span>
       <span>${label}</span>
     </div>
@@ -151,56 +192,154 @@ window.aplicarProgresoPedido = (status) => {
    CARGA DE PEDIDO
 ========================================================= */
 window.cargarPedidoExistente = async (orderId) => {
-  await esperarSupabase();
+  if (!orderId) return;
+
+  await window.esperarSupabase();
   const sb = window.supabaseClient;
 
   const { data: pedido, error } = await sb
     .from("orders")
-    .select(
-      `*, users(name,email,phone),
-       addresses(state,city,street),
-       order_items(quantity,price,products(name)),
-       payment_receipts(file_url)`
-    )
+    .select(`
+      *,
+      users(name,email,phone),
+      addresses(state,city,street),
+      order_items(quantity,price,products(name)),
+      payment_receipts(file_url)
+    `)
     .eq("id", orderId)
     .single();
 
   if (error || !pedido) {
-    showSnack("Pedido no encontrado");
+    window.showSnack("No se encontró el pedido");
     return;
   }
 
+  /* CABECERA */
   $id("numeroPedido").textContent = pedido.order_number;
+  const d = new Date(pedido.created_at);
+  $id("fechaPedido").textContent = d.toLocaleDateString();
+  $id("horaPedido").textContent = d.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit"
+  });
   $id("totalPedido").textContent = pedido.total.toFixed(2);
+  $id("notaCliente").textContent = pedido.order_notes || "Sin nota";
 
-  /* ===============================
-     COMPROBANTE
-  ================================ */
-  if (window.IS_READ_ONLY) {
-    const img = $id("imgComprobante");
-    const preview = $id("previewComprobante");
-
-    const receipt = pedido.payment_receipts?.[0]?.file_url;
-    const isCash = ["cash", "cash_on_delivery"].includes(
-      pedido.payment_method
-    );
-
-    img.src = isCash
-      ? "/imagenes/pago_en_mano.svg"
-      : receipt || "/imagenes/recibo_default.svg";
-
-    preview.classList.remove("hidden");
+  /* CLIENTE */
+  if (pedido.users) {
+    $id("nombreCliente").textContent = pedido.users.name;
+    $id("correoCliente").textContent = pedido.users.email;
+    $id("telefonoCliente").textContent = pedido.users.phone;
   }
 
-  aplicarProgresoPedido(pedido.status);
-  aplicarModoRecibo(pedido);
-};
+  if (pedido.addresses) {
+    $id("zonaCliente").textContent =
+      `${pedido.addresses.state}, ${pedido.addresses.city}`;
+    $id("direccionCliente").textContent = pedido.addresses.street;
+  }
+
+  /* PRODUCTOS */
+  $id("listaProductos").innerHTML = pedido.order_items.map(it => `
+    <div class="cafe-item">
+      <span>${it.products.name} × ${it.quantity}</span>
+      <strong>L ${(it.quantity * it.price).toFixed(2)}</strong>
+    </div>
+  `).join("");
+
+/* ===============================
+   COMPROBANTE / MÉTODO DE PAGO
+   (SOLO VISTA RECIBO)
+================================ */
+
+// 🔓 LIBERAR BLOQUES PADRE (OBLIGATORIO)
+if (window.IS_READ_ONLY) {
+  const bloqueDeposito = $id("pago-deposito");
+  const bloqueEfectivo = $id("pago-efectivo");
+
+  if (bloqueDeposito) {
+    bloqueDeposito.classList.remove("hidden");
+    bloqueDeposito.style.display = "block";
+  }
+
+  if (bloqueEfectivo) {
+    bloqueEfectivo.classList.remove("hidden");
+    bloqueEfectivo.style.display = "block";
+  }
+}
+
+/* ===============================
+   NORMALIZACIÓN DE RECIBOS
+   (MISMO CRITERIO QUE MIS PEDIDOS)
+================================ */
+const receiptList =
+  pedido.payment_receipts ||
+  pedido.receipt ||
+  [];
+
+/* ===============================
+   PREVIEW
+================================ */
+const preview = $id("previewComprobante");
+const img = $id("imgComprobante");
+
+if (preview && img) {
+  preview.classList.remove("hidden");
+  preview.style.display = "flex";
+
+  const isCash =
+    pedido.payment_method === "cash" ||
+    pedido.payment_method === "cash_on_delivery";
+
+  if (isCash) {
+    // 💵 Pago en efectivo
+    img.src = "/imagenes/pago_en_mano.svg";
+    img.alt = "Pago en efectivo al recibir";
+
+  } else {
+    // 🧾 Transferencia
+    img.src =
+      receiptList?.[0]?.file_url ||
+      "/imagenes/recibo_default.svg";
+
+    img.alt = receiptList.length
+      ? "Comprobante de pago"
+      : "Comprobante pendiente";
+  }
+
+  // Blindaje visual
+  img.style.display = "block";
+  img.loading = "lazy";
+
+  // Fallback seguro
+  img.onerror = () => {
+    img.onerror = null;
+    img.src = "/imagenes/recibo_default.svg";
+  };
+}
+
+/* ===============================
+   ESTADO VISUAL
+================================ */
+let statusVisual = pedido.status;
+
+if (
+  pedido.payment_method === "bank_transfer" &&
+  pedido.status === "pending" &&
+  receiptList.length
+) {
+  statusVisual = "payment_review";
+}
+
+window.aplicarProgresoPedido(statusVisual);
+window.aplicarModoRecibo(pedido);
+
+}; // ✅ CIERRE CORRECTO DE cargarPedidoExistente
 
 /* =========================================================
-   INIT
+   AUTO INIT
 ========================================================= */
 if (window.ORDER_ID) {
   document.addEventListener("DOMContentLoaded", () => {
-    cargarPedidoExistente(window.ORDER_ID);
+    window.cargarPedidoExistente(window.ORDER_ID);
   });
 }
