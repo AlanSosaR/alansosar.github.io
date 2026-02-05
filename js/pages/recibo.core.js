@@ -246,20 +246,16 @@ window.cargarPedidoExistente = async (orderId) => {
     </div>
   `).join("");
 
-/* COMPROBANTE / MÉTODO DE PAGO */
+/* ===============================
+   COMPROBANTE / MÉTODO DE PAGO
+   (SOLO VISTA RECIBO)
+================================ */
 
-// 🔓 LIBERAR BLOQUES PADRE (ESTO ES LO QUE FALTABA)
-const bloqueDeposito = $id("pago-deposito");
-const bloqueEfectivo = $id("pago-efectivo");
-
-if (bloqueDeposito) bloqueDeposito.classList.remove("hidden");
-if (bloqueEfectivo) bloqueEfectivo.classList.remove("hidden");
-
-// Ahora sí: preview e imagen
 const preview = $id("previewComprobante");
 const img = $id("imgComprobante");
 
 if (preview && img) {
+  // Mostrar contenedor
   preview.classList.remove("hidden");
   preview.style.display = "flex";
 
@@ -268,15 +264,18 @@ if (preview && img) {
     pedido.payment_method === "cash_on_delivery";
 
   if (isCash) {
-    img.src = "../imagenes/pago_en_mano.svg";
+    // 💵 Pago en efectivo → imagen local
+    img.src = "/imagenes/pago_en_mano.svg";
     img.alt = "Pago en efectivo al recibir";
 
   } else if (pedido.payment_receipts?.length) {
+    // 🧾 Transferencia con comprobante
     img.src = pedido.payment_receipts[0].file_url;
     img.alt = "Comprobante de pago";
 
   } else {
-    img.src = "../imagenes/recibo_default.svg";
+    // 📄 Transferencia sin comprobante
+    img.src = "/imagenes/recibo_default.svg";
     img.alt = "Comprobante pendiente";
   }
 
@@ -284,8 +283,10 @@ if (preview && img) {
   img.style.display = "block";
   img.loading = "lazy";
 
+  // Fallback seguro (sin loop)
   img.onerror = () => {
-    img.src = "../imagenes/recibo_default.svg";
+    img.onerror = null;
+    img.src = "/imagenes/recibo_default.svg";
   };
 }
 
