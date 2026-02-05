@@ -363,16 +363,14 @@ function renderPedidoActivo(pedido) {
 ============================================================ */
 function bindCarouselArrows() {
   const list = $id("pedidos-carrusel");
-  $id("pedidos-prev").onclick = () =>
-    list.scrollBy({ left: -300, behavior: "smooth" });
-  $id("pedidos-next").onclick = () =>
-    list.scrollBy({ left: 300, behavior: "smooth" });
-}
+  const prev = $id("pedidos-prev");
+  const next = $id("pedidos-next");
 
-function startAutoRefresh(userId) {
-  clearInterval(autoRefresh);
-  autoRefresh = setInterval(async () => {
-    await loadOrders(userId);
-    applyLocalFilters();
-  }, 30000);
+  if (!list || !prev || !next) return;
+
+  prev.onclick = () =>
+    list.scrollBy({ left: -300, behavior: "smooth" });
+
+  next.onclick = () =>
+    list.scrollBy({ left: 300, behavior: "smooth" });
 }
