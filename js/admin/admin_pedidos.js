@@ -342,27 +342,39 @@ async function updateStatus(orderId, newStatus) {
 }
 
 /* =========================
-   SNACKBAR
+   SNACKBAR (FIX DEFINITIVO)
 ========================= */
 function openSnackbar(title, message, onConfirm) {
-  const el = document.getElementById("snackbar-action");
+  const box = document.getElementById("snackbar-action");
+  const btnConfirm = document.getElementById("snackbar-confirm");
+  const btnCancel = document.getElementById("snackbar-cancel");
+
   document.getElementById("snackbar-title").textContent = title;
   document.getElementById("snackbar-message").textContent = message;
-  el.classList.remove("hidden");
+
+  // Limpia handlers anteriores (CRÍTICO)
+  btnConfirm.onclick = null;
+  btnCancel.onclick = null;
+
   pendingAction = onConfirm;
-}
 
-function bindSnackbar() {
-  document.getElementById("snackbar-cancel").onclick = () => {
-    document.getElementById("snackbar-action").classList.add("hidden");
+  btnConfirm.onclick = async () => {
+    box.classList.add("hidden");
+
+    const action = pendingAction;
     pendingAction = null;
+
+    if (typeof action === "function") {
+      await action();
+    }
   };
 
-  document.getElementById("snackbar-confirm").onclick = () => {
-    document.getElementById("snackbar-action").classList.add("hidden");
-    pendingAction?.();
+  btnCancel.onclick = () => {
     pendingAction = null;
+    box.classList.add("hidden");
   };
+
+  box.classList.remove("hidden");
 }
 
 /* =========================
