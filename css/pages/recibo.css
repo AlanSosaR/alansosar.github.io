@@ -392,18 +392,29 @@ h3 {
   transform: scale(.98);
 }
 
-/* ---------- PREVIEW COMPROBANTE ---------- */
+/* ---------- PREVIEW COMPROBANTE (FIX DEFINITIVO) ---------- */
 .preview {
   margin-top: 12px;
   text-align: center;
+
+  /* 🔑 fuerza layout estable */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
+/* 🔑 garantiza que SVG / JPG / PNG SIEMPRE rendericen */
 .preview img {
+  display: block;          /* evita colapso */
+  width: 100%;             /* ocupa espacio real */
   max-width: 180px;
+  height: auto;            /* corrige SVG */
   border-radius: 12px;
   margin-bottom: 6px;
+  object-fit: contain;     /* seguridad extra */
 }
 
+/* Texto debajo del preview */
 .preview p {
   color: var(--verde);
   font-weight: 600;
