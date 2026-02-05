@@ -94,26 +94,39 @@ async function loadOrdersByStatus(statusKey) {
 }
 
 /* =========================
-   FILTER
+   GLOBAL SEARCH (HEADER)
 ========================= */
-function applyFilters() {
-  if (!search) {
+function applyGlobalSearch(query) {
+  if (!query) {
     filtered = [...orders];
     return;
   }
 
-  const q = search.toLowerCase();
-  filtered = orders.filter(o =>
-    String(o.order_number).includes(q) ||
-    (o.users?.name || "").toLowerCase().includes(q)
-  );
+  const q = query.toLowerCase();
+
+  filtered = orders.filter(o => {
+    return (
+      String(o.order_number).includes(q) ||
+
+      (o.users?.name || "").toLowerCase().includes(q) ||
+      (o.users?.email || "").toLowerCase().includes(q) ||
+
+      (o.address?.phone || "").includes(q) ||
+      (o.address?.city || "").toLowerCase().includes(q) ||
+      (o.address?.state || "").toLowerCase().includes(q) ||
+
+      (STATUS_LABELS[o.status] || "")
+        .toLowerCase()
+        .includes(q)
+    );
+  });
 }
 
 /* =========================
    CARRUSEL
 ========================= */
 function renderCarousel() {
-  applyFilters();
+  applyGlobalSearch(search);
 
   const wrap = document.getElementById("orders-carousel");
   const tpl = document.getElementById("tpl-order-card");
@@ -378,25 +391,37 @@ function openSnackbar(title, message, onConfirm) {
 }
 
 /* =========================
-   CONTROLS (GLOBAL HEADER)
+   CONTROLS (GLOBAL HEADER) — FIX REAL
 ========================= */
 function bindControls() {
+  /* ---------- FILTRO POR ESTADO ---------- */
   document.addEventListener("header:filter", async e => {
     currentStatus = e.detail;
+    userSelected = false;
+
     await loadOrdersByStatus(currentStatus);
     renderCarousel();
 
-    if (filtered.length) selectOrderByIndex(0);
-    else showEmpty();
-  });
-
-  document.addEventListener("header:search", e => {
-    search = e.detail.trim();
-    renderCarousel();
-
-    if (filtered.length && !userSelected) {
+    if (filtered.length) {
       activeIndex = 0;
       selectOrderByIndex(0);
+    } else {
+      showEmpty();
+    }
+  });
+
+  /* ---------- BUSCADOR GLOBAL ---------- */
+  document.addEventListener("header:search", e => {
+    search = (e.detail || "").trim();
+    userSelected = false;
+
+    renderCarousel();
+
+    if (filtered.length) {
+      activeIndex = 0;
+      selectOrderByIndex(0);
+    } else {
+      showEmpty();
     }
   });
 }
