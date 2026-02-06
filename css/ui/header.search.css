@@ -69,7 +69,7 @@
   opacity: .75;
 }
 /* =====================================================
-   HEADER STATUS FILTER — SOLO TEXTO (FINAL DEFINITIVO)
+   HEADER STATUS FILTER — SOLO TEXTO (ADMIN & MIS PEDIDOS)
 ===================================================== */
 
 .header-status-filter {
@@ -84,10 +84,10 @@
 
   font-size: .9rem;
   font-weight: 600;
-  color: #2f2f2f;          /* 🔑 visible en PC */
-  cursor: pointer;
+  color: #2f2f2f; /* 🔑 siempre visible */
 
-  padding-right: 24px;
+  cursor: pointer;
+  padding-right: 22px;
 
   /* Flecha discreta */
   background-image:
@@ -105,24 +105,6 @@
 
 /* Opciones del dropdown */
 .header-status-filter option {
-  background: #fff;
-  color: #2f2f2f;
-}
-/* =====================================================
-   FIX VISIBILIDAD SELECT — ADMIN PEDIDOS (MOBILE + DESKTOP)
-===================================================== */
-
-.page-admin-pedidos .header-status-filter {
-  color: #2f2f2f !important;   /* 🔑 texto visible */
-}
-
-/* Cuando hay valor seleccionado */
-.page-admin-pedidos .header-status-filter:not([value=""]) {
-  color: #2f2f2f !important;
-}
-
-/* Dropdown nativo */
-.page-admin-pedidos .header-status-filter option {
   background: #fff;
   color: #2f2f2f;
 }
