@@ -1,8 +1,9 @@
 (() => {
   const sb = window.supabaseClient || window.supabase || null;
+  if (!sb) return;
 
   const form = document.getElementById("newPassForm");
-  if (!form || !sb) return;
+  if (!form) return;
 
   const newPassInput = document.getElementById("newPassword");
   const confirmInput = document.getElementById("confirmPassword");
@@ -12,21 +13,20 @@
   const loader = btn?.querySelector(".loader");
 
   /* =====================
-     SNACKBAR (NO AUTOCLOSE)
+     SNACKBAR
   ===================== */
   const snack = document.getElementById("snackbar");
   const snackMsg = snack?.querySelector(".snackbar__msg");
   const snackActions = snack?.querySelector(".snackbar__actions");
 
-  let snackResolver = null;
-  let snackClickHandler = null;
+  let snackHandler = null;
 
-  function openSnack(message, type = "info", {
-    confirmText = "Confirmar",
-    cancelText = "",
-    showCancel = false,
-  } = {}) {
-    if (!snack) return;
+  function openSnack(
+    message,
+    type = "info",
+    { confirmText = "Confirmar", cancelText = "", showCancel = false } = {}
+  ) {
+    if (!snack) return Promise.resolve("confirm");
 
     snack.classList.remove("hidden", "is-error", "is-warn", "is-success");
     snack.classList.add("show", `is-${type}`);
@@ -38,43 +38,35 @@
     const btnCancel = snackActions.querySelector('[data-action="cancel"]');
 
     if (btnConfirm) btnConfirm.textContent = confirmText;
-
     if (btnCancel) {
       btnCancel.textContent = cancelText;
       btnCancel.style.display = showCancel ? "" : "none";
     }
 
     return new Promise((resolve) => {
-      snackResolver = resolve;
-
-      if (snackClickHandler) {
-        snackActions.removeEventListener("click", snackClickHandler);
+      if (snackHandler) {
+        snackActions.removeEventListener("click", snackHandler);
       }
 
-      snackClickHandler = (e) => {
+      snackHandler = (e) => {
         const b = e.target.closest("button");
         if (!b) return;
-
-        const action = b.dataset.action;
 
         snack.classList.remove("show");
         snack.classList.add("hidden");
 
-        snackActions.removeEventListener("click", snackClickHandler);
-        snackClickHandler = null;
+        snackActions.removeEventListener("click", snackHandler);
+        snackHandler = null;
 
-        const r = snackResolver;
-        snackResolver = null;
-
-        if (r) r(action === "confirm" ? "confirm" : "cancel");
+        resolve(b.dataset.action === "confirm" ? "confirm" : "cancel");
       };
 
-      snackActions.addEventListener("click", snackClickHandler);
+      snackActions.addEventListener("click", snackHandler);
     });
   }
 
   /* =====================
-     ERRORES POR CAMPO
+     ERRORES DE CAMPO
   ===================== */
   function fieldParts(inputEl) {
     const field = inputEl.closest(".m3-field");
@@ -107,12 +99,12 @@
   }
 
   /* =====================
-     VALIDAR SESIÓN RECOVERY
+     VALIDAR SESIÓN RECOVERY (CLAVE)
   ===================== */
   async function asegurarSesionRecovery() {
-    const { data } = await sb.auth.getSession();
+    const { data, error } = await sb.auth.getSession();
 
-    if (!data?.session) {
+    if (error || !data?.session) {
       const decision = await openSnack(
         "Tu enlace de recuperación ha expirado. Solicita uno nuevo.",
         "error",
@@ -124,29 +116,32 @@
       }
       return false;
     }
+
+    // 🔐 VALIDACIÓN REAL DE RECOVERY
+    if (!data.session.user?.recovery_sent_at) {
+      window.location.href = "/pages/auth/login.html";
+      return false;
+    }
+
     return true;
   }
 
+  /* =====================
+     VALIDACIÓN INICIAL (UNA SOLA VEZ)
+  ===================== */
   (async () => {
-    await asegurarSesionRecovery();
+    const ok = await asegurarSesionRecovery();
+    if (!ok) return;
   })();
 
   /* =====================
-     VALIDACIÓN PASSWORD (REAL)
+     VALIDACIÓN PASSWORD
   ===================== */
   function validarPassword(pw) {
-    if (pw.length < 8)
-      return "Debe tener al menos 8 caracteres.";
-
-    if (pw.includes(" "))
-      return "No debe contener espacios.";
-
-    if (!/[A-Za-z]/.test(pw))
-      return "Debe incluir al menos una letra.";
-
-    if (!/[0-9]/.test(pw))
-      return "Debe incluir al menos un número.";
-
+    if (pw.length < 8) return "Debe tener al menos 8 caracteres.";
+    if (pw.includes(" ")) return "No debe contener espacios.";
+    if (!/[A-Za-z]/.test(pw)) return "Debe incluir al menos una letra.";
+    if (!/[0-9]/.test(pw)) return "Debe incluir al menos un número.";
     return null;
   }
 
