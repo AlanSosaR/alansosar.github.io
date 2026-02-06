@@ -1076,6 +1076,16 @@ body {
     padding-right: 0 !important;
   }
 }
+/* =========================
+   HEADER — ADMIN (SIN CARRITO)
+========================= */
+
+.page-admin-pedidos #cart-btn,
+.page-admin-pedidos #cart-btn *,
+.page-admin-pedidos .header-cart,
+.page-admin-pedidos .header-cart-badge {
+  display: none !important;
+}
 
 /* =====================================================
    TÍTULOS CENTRALES — VISIBILIDAD POR PÁGINA
