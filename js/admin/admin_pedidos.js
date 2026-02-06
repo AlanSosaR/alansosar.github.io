@@ -46,8 +46,7 @@ async function init() {
   const user = JSON.parse(localStorage.getItem("cortero_user") || "null");
   if (!user || user.rol !== "admin") return;
 
-  bindControls();
-  bindSnackbar();
+  bindControls(); // ✅ header:search y header:filter
 
   await loadOrdersByStatus(currentStatus);
   renderCarousel();
