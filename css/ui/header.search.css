@@ -108,7 +108,24 @@
   background: #fff;
   color: #2f2f2f;
 }
+/* =====================================================
+   FIX VISIBILIDAD SELECT — ADMIN PEDIDOS (MOBILE + DESKTOP)
+===================================================== */
 
+.page-admin-pedidos .header-status-filter {
+  color: #2f2f2f !important;   /* 🔑 texto visible */
+}
+
+/* Cuando hay valor seleccionado */
+.page-admin-pedidos .header-status-filter:not([value=""]) {
+  color: #2f2f2f !important;
+}
+
+/* Dropdown nativo */
+.page-admin-pedidos .header-status-filter option {
+  background: #fff;
+  color: #2f2f2f;
+}
 /* =====================================================
    DESKTOP — CENTRADO REAL
 ===================================================== */
