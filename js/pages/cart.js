@@ -288,12 +288,12 @@ document.getElementById("proceder-btn")?.addEventListener("click", async () => {
     return;
   }
 
-  /* 🔎 VALIDAR IDs EN SUPABASE (que existan en products) */
+  /* 🔎 VALIDAR IDs Y STOCK EN SUPABASE (que existan y tengan stock) */
   const ids = [...new Set(cart.map(i => String(i.product_id)))];
 
   const { data: products, error: productsError } = await sb
     .from("products")
-    .select("id")
+    .select("id, stock, name")
     .in("id", ids);
 
   if (productsError) {
@@ -301,12 +301,22 @@ document.getElementById("proceder-btn")?.addEventListener("click", async () => {
     return;
   }
 
-  const found = new Set((products || []).map(p => String(p.id)));
-  const missing = ids.filter(id => !found.has(id));
+  const stockMap = {};
+  (products || []).forEach(p => stockMap[String(p.id)] = { stock: p.stock, name: p.name });
 
+  const missing = ids.filter(id => !stockMap[id]);
   if (missing.length) {
-    showSnackbar("Algunos productos ya no existen o cambiaron. Vuelve a agregarlos.");
+    showSnackbar("Algunos productos ya no están disponibles. Vuelve a agregarlos.");
     return;
+  }
+
+  // Validar stock real final
+  for (const item of cart) {
+    const meta = stockMap[String(item.product_id)];
+    if (item.qty > meta.stock) {
+      showSnackbar(`Lo sentimos, solo quedan ${meta.stock} unidades de ${meta.name}.`);
+      return;
+    }
   }
 
   /* 📦 GUARDAR CHECKOUT */

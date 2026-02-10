@@ -204,6 +204,7 @@ async function loadSimilarProducts() {
     .select("*")
     .eq("featured", true)
     .eq("status", "activo")
+    .gt("stock", 0)
     .order("created_at", { ascending: false });
 
   if (error || !data || !data.length) {
