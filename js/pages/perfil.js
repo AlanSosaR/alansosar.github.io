@@ -269,10 +269,21 @@ function attachStrength(input) {
   async function subirFoto() {
     if (!window._newPhoto) return user.photo_url || null;
 
-    const name = `avatar_${user.id}_${Date.now()}.jpg`;
-    const { error } = await sb.storage.from("avatars").upload(name, window._newPhoto, { upsert: true });
+    // 🔑 USAR NOMBRE FIJO (SIN EXTENSIÓN) PARA REEMPLAZAR SIEMPRE
+    const name = `avatar_${user.id}`;
+
+    const { error } = await sb.storage
+      .from("avatars")
+      .upload(name, window._newPhoto, {
+        upsert: true,
+        contentType: window._newPhoto.type
+      });
+
     if (error) throw error;
-    return sb.storage.from("avatars").getPublicUrl(name).data.publicUrl;
+
+    // 🔑 AGREGAR TIMESTAMP (?v=...) PARA EVITAR CACHÉ DEL NAVEGADOR
+    const { data } = sb.storage.from("avatars").getPublicUrl(name);
+    return `${data.publicUrl}?v=${Date.now()}`;
   }
 
   // -----------------------  

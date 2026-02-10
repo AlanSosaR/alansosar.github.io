@@ -113,12 +113,7 @@ async function uploadGoogleAvatarToStorage(sb, user) {
   const blob = await res.blob();
   const contentType = blob.type || "image/jpeg";
 
-  const ext = contentType.includes("png") ? "png"
-    : contentType.includes("webp") ? "webp"
-      : contentType.includes("gif") ? "gif"
-        : "jpg";
-
-  const filePath = `avatar_${user.id}.${ext}`;
+  const filePath = `avatar_${user.id}`;
 
   const { error: upErr } = await sb.storage
     .from(AVATAR_BUCKET)
@@ -136,7 +131,8 @@ async function uploadGoogleAvatarToStorage(sb, user) {
   const { data: pub } = sb.storage.from(AVATAR_BUCKET).getPublicUrl(filePath);
   const publicUrl = pub?.publicUrl || null;
 
-  return publicUrl;
+  // 🔑 AGREGAR TIMESTAMP PARA EVITAR CACHÉ
+  return publicUrl ? `${publicUrl}?v=${Date.now()}` : null;
 }
 
 /* ========================= VALIDACIONES ========================= */
@@ -362,11 +358,32 @@ function showLoginUI() {
       const googleUrl = getGoogleAvatarUrl(user);
       const avatarUrl = storageUrl || googleUrl || DEFAULT_AVATAR;
 
-      persistAvatarToLocal(avatarUrl);
-      mergeAvatarIntoCorteroUser(avatarUrl);
-      await tryPersistAvatarToDB(sb, user, avatarUrl);
+      // 🔑 CARGAR PERFIL REAL DESDE public.users (PARA TENER photo_url ACTUALIZADA)
+      const { data: profile } = await sb
+        .from("users")
+        .select("*")
+        .eq("id", user.id)
+        .maybeSingle();
 
-      localStorage.setItem("cortero_logged", "1");
+      if (profile) {
+        // Combinar datos: preferir lo de la BD
+        const finalUser = {
+          ...user,
+          ...profile,
+          // Asegurar campos críticos
+          id: user.id,
+          email: user.email,
+          rol: profile.rol || "cliente",
+          photo_url: profile.photo_url || avatarUrl
+        };
+        localStorage.setItem("cortero_user", JSON.stringify(finalUser));
+        localStorage.setItem("cortero_logged", "1");
+      } else {
+        // Fallback si no hay registro aún
+        persistAvatarToLocal(avatarUrl);
+        mergeAvatarIntoCorteroUser(avatarUrl);
+        localStorage.setItem("cortero_logged", "1");
+      }
 
       // Detectar si es "primera vez"
       const createdAt = user?.created_at ? new Date(user.created_at).getTime() : 0;
@@ -393,21 +410,20 @@ function showLoginUI() {
     if (!sesErr && sesData?.session?.user) {
       const user = sesData.session.user;
 
-      // Intentar avatar (por si no se guardó antes)
-      // OJO: esto puede tardar y causar flash. Solo lo hacemos "best-effort".
-      try {
-        const storageUrl = await uploadGoogleAvatarToStorage(sb, user);
-        const googleUrl = getGoogleAvatarUrl(user);
-        const avatarUrl = storageUrl || googleUrl || null;
+      // 🔑 CARGAR PERFIL REAL DESDE public.users
+      const { data: profile } = await sb
+        .from("users")
+        .select("*")
+        .eq("id", user.id)
+        .maybeSingle();
 
-        if (avatarUrl) {
-          persistAvatarToLocal(avatarUrl);
-          mergeAvatarIntoCorteroUser(avatarUrl);
-          await tryPersistAvatarToDB(sb, user, avatarUrl);
-        }
-      } catch (_) { }
-
-      localStorage.setItem("cortero_logged", "1");
+      if (profile) {
+        const finalUser = { ...user, ...profile, rol: profile.rol || "cliente" };
+        localStorage.setItem("cortero_user", JSON.stringify(finalUser));
+        localStorage.setItem("cortero_logged", "1");
+      } else {
+        localStorage.setItem("cortero_logged", "1");
+      }
 
       showLoginUI();
 
