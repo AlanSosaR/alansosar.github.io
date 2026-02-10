@@ -22,6 +22,7 @@ function getSupabase() {
 // CORE — registrar push token (IDEMPOTENTE)
 // =====================================================
 export async function registerPushToken(userId) {
+  console.log("🚀 registerPushToken para:", userId);
   try {
     // -----------------------------
     // Validaciones base

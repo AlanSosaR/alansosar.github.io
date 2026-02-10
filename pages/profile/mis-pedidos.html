@@ -12,8 +12,8 @@
 
   <!-- Styles -->
   <link rel="stylesheet" href="/css/ui/header.css">
-<link rel="stylesheet" href="/css/ui/header.search.css">
-  
+  <link rel="stylesheet" href="/css/ui/header.search.css">
+
   <link rel="stylesheet" href="/css/pages/mis-pedidos.css" />
 </head>
 
@@ -26,22 +26,13 @@
     </section>
 
     <!-- EMPTY STATE (SOLO SI NO HAY PEDIDOS) -->
-<section
-  id="empty-state"
-  class="admin-empty-state hidden"
-  aria-hidden="true"
->
-  <h2 class="empty-title">No tienes pedidos</h2>
-  <p class="empty-text">Cuando realices un pedido, aparecerá aquí.</p>
+    <section id="empty-state" class="admin-empty-state hidden" aria-hidden="true">
+      <h2 class="empty-title">No tienes pedidos</h2>
+      <p class="empty-text">Cuando realices un pedido, aparecerá aquí.</p>
 
-  <!-- Imagen dinámica según estado -->
-  <img
-    class="empty-illustration"
-    src=""
-    alt=""
-    aria-hidden="true"
-  />
-</section>
+      <!-- Imagen dinámica según estado -->
+      <img class="empty-illustration" src="" alt="" aria-hidden="true" />
+    </section>
 
     <!-- CARRUSEL (VISIBLE POR DEFECTO) -->
     <section class="related admin-related" id="mis-pedidos-carrusel" aria-label="Listado de pedidos">
@@ -154,96 +145,99 @@
     </article>
   </template>
 
-<!-- =========================
+  <!-- =========================
      SCRIPTS
 ========================= -->
 
-<!-- Supabase -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="/js/core/supabase-client-core.js"></script>
-<script src="/js/core/supabase-auth.js"></script>
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/js/core/supabase-client-core.js"></script>
+  <script src="/js/core/supabase-auth.js"></script>
 
-<!-- Layout (inyecta el header) -->
-<script src="/js/ui/layout.js"></script>
+  <!-- Auth UI (necesario para disparar auth:ready) -->
+  <script src="/js/core/auth-ui.js"></script>
 
-<!-- Header core -->
-<script type="module" src="/js/ui/header.js"></script>
+  <!-- Layout (inyecta el header) -->
+  <script src="/js/ui/layout.js"></script>
 
-<!-- 🔍 Buscador global del header — MIS PEDIDOS (CORE FINAL DEFINITIVO) -->
-<script type="module">
-  import { renderHeaderSearch } from "/js/ui/header.search.js";
+  <!-- Header core -->
+  <script type="module" src="/js/ui/header.js"></script>
 
-  // ⚠️ Esperar a que layout.js termine de inyectar el header
-  document.addEventListener("header:ready", () => {
-    const slot = document.getElementById("header-search-slot");
+  <!-- 🔍 Buscador global del header — MIS PEDIDOS (CORE FINAL DEFINITIVO) -->
+  <script type="module">
+    import { renderHeaderSearch } from "/js/ui/header.search.js";
 
-    if (!slot) {
-      console.warn("❌ header-search-slot no encontrado");
-      return;
-    }
+    // ⚠️ Esperar a que layout.js termine de inyectar el header
+    document.addEventListener("header:ready", () => {
+      const slot = document.getElementById("header-search-slot");
 
-    /* =====================================================
-       INYECTAR BUSCADOR
-    ===================================================== */
-    slot.innerHTML = renderHeaderSearch({
-      showFilter: true,
-      showAdd: false
+      if (!slot) {
+        console.warn("❌ header-search-slot no encontrado");
+        return;
+      }
+
+      /* =====================================================
+         INYECTAR BUSCADOR
+      ===================================================== */
+      slot.innerHTML = renderHeaderSearch({
+        showFilter: true,
+        showAdd: false
+      });
+
+      /* =====================================================
+         ESTADO INICIAL → PENDIENTES
+      ===================================================== */
+      const DEFAULT_STATUS = "pending";
+
+      // Forzar estado inicial
+      document.dispatchEvent(
+        new CustomEvent("header:filter", {
+          detail: DEFAULT_STATUS
+        })
+      );
+
+      /* =====================================================
+         🔍 BÚSQUEDA (NÚMERO DE PEDIDO / TEXTO)
+      ===================================================== */
+      const input = document.getElementById("header-search-input");
+
+      if (input) {
+        input.addEventListener("input", (e) => {
+          const value = e.target.value.trim();
+
+          // Emitir SIEMPRE, incluso vacío (reset)
+          document.dispatchEvent(
+            new CustomEvent("header:search", {
+              detail: value
+            })
+          );
+        });
+      }
+
+      /* =====================================================
+         🎯 FILTRO POR ESTADO
+      ===================================================== */
+      const filter = document.getElementById("header-status-filter");
+
+      if (filter) {
+        // Mostrar Pendientes por defecto
+        filter.value = DEFAULT_STATUS;
+
+        filter.addEventListener("change", (e) => {
+          document.dispatchEvent(
+            new CustomEvent("header:filter", {
+              detail: e.target.value
+            })
+          );
+        });
+      }
+
+      console.log("🔍 Buscador del header listo (Mis pedidos)");
     });
+  </script>
 
-    /* =====================================================
-       ESTADO INICIAL → PENDIENTES
-    ===================================================== */
-    const DEFAULT_STATUS = "pending";
-
-    // Forzar estado inicial
-    document.dispatchEvent(
-      new CustomEvent("header:filter", {
-        detail: DEFAULT_STATUS
-      })
-    );
-
-    /* =====================================================
-       🔍 BÚSQUEDA (NÚMERO DE PEDIDO / TEXTO)
-    ===================================================== */
-    const input = document.getElementById("header-search-input");
-
-    if (input) {
-      input.addEventListener("input", (e) => {
-        const value = e.target.value.trim();
-
-        // Emitir SIEMPRE, incluso vacío (reset)
-        document.dispatchEvent(
-          new CustomEvent("header:search", {
-            detail: value
-          })
-        );
-      });
-    }
-
-    /* =====================================================
-       🎯 FILTRO POR ESTADO
-    ===================================================== */
-    const filter = document.getElementById("header-status-filter");
-
-    if (filter) {
-      // Mostrar Pendientes por defecto
-      filter.value = DEFAULT_STATUS;
-
-      filter.addEventListener("change", (e) => {
-        document.dispatchEvent(
-          new CustomEvent("header:filter", {
-            detail: e.target.value
-          })
-        );
-      });
-    }
-
-    console.log("🔍 Buscador del header listo (Mis pedidos)");
-  });
-</script>
-
-<!-- Página Mis Pedidos -->
-<script type="module" src="/js/pages/mis-pedidos.js"></script>
+  <!-- Página Mis Pedidos -->
+  <script type="module" src="/js/pages/mis-pedidos.js"></script>
 
 </body>
 

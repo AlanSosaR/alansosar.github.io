@@ -211,11 +211,12 @@ async function initRealtime(sb, authUser, role) {
    PUSH
 ===================================================== */
 async function initPush(authUser) {
-  if (localStorage.getItem("push_registered") === "1") return;
+  const PUSH_VERSION = "20250210_v1"; // Forzar actualización por cambio de credenciales
+  if (localStorage.getItem("push_v") === PUSH_VERSION) return;
 
   try {
     await registerPushToken(authUser.id);
-    localStorage.setItem("push_registered", "1");
+    localStorage.setItem("push_v", PUSH_VERSION);
   } catch (err) {
     console.warn("⚠️ Push init falló:", err);
   }
