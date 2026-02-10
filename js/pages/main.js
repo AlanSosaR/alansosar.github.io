@@ -46,6 +46,7 @@ function getQtyInCart(productId) {
 /* 🔑 estado visual de stock */
 function getStockStatus(stockBD, qtyInCart) {
   const available = stockBD - qtyInCart;
+  console.log(`📦 Stock BD: ${stockBD}, En Carrito: ${qtyInCart}, Disponible: ${available}`);
 
   if (available <= 0) {
     return { label: "No disponible", className: "out" };
@@ -69,6 +70,7 @@ function updateQtyControls(productId, stockBD) {
   const qtyInCart = getQtyInCart(productId);
   const available = stockBD - qtyInCart;
 
+  // Bloqueo total si no hay nada
   if (available <= 0) {
     btnPlus.disabled = true;
     btnMinus.disabled = true;
@@ -77,7 +79,14 @@ function updateQtyControls(productId, stockBD) {
   }
 
   btnMinus.disabled = qty <= 1;
-  btnPlus.disabled = qty >= available;
+
+  // 🔑 Si el usuario intenta subir más allá de lo disponible
+  if (qty >= available) {
+    btnPlus.disabled = true;
+  } else {
+    btnPlus.disabled = false;
+  }
+
   addBtn.disabled = qty > available;
 }
 
@@ -146,6 +155,7 @@ function renderMainProduct(product) {
   if (statusEl) {
     statusEl.classList.remove("available", "low", "out");
     const status = getStockStatus(stockBD, qtyInCart);
+    console.log(`🔍 Cargando producto: ${product.name}, Stock: ${stockBD}, Status detectado: ${status.label}`);
     statusEl.textContent = status.label;
     statusEl.classList.add(status.className);
   }

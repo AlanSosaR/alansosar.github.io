@@ -64,8 +64,25 @@ function updateHeaderCartTitle(cart) {
 }
 
 /* ================= RENDER ================= */
-function renderCart() {
+let stocksCache = {};
+
+async function fetchStocks(ids) {
+  if (!ids.length) return;
+  const sb = getSupabaseClient();
+  if (!sb) return;
+
+  const { data } = await sb.from("products").select("id, stock").in("id", ids);
+  if (data) {
+    data.forEach(p => stocksCache[p.id] = p.stock);
+  }
+}
+
+async function renderCart() {
   const cart = getCart();
+  const ids = [...new Set(cart.map(i => i.product_id))];
+
+  // 🔑 Sync stocks before rendering to know limits
+  await fetchStocks(ids);
 
   updateHeaderCartTitle(cart);
 
@@ -127,6 +144,26 @@ function renderCart() {
     const qtyEl = clone.querySelector(".qty-number");
     if (qtyEl) qtyEl.textContent = item.qty || 1;
 
+    // 🔑 Validar stock para el botón PLUS
+    const stock = stocksCache[item.product_id] ?? 999;
+    const btnPlus = clone.querySelector('[data-action="plus"]');
+
+    if (btnPlus && item.qty >= stock) {
+      btnPlus.disabled = true;
+      btnPlus.title = "Stock máximo alcanzado";
+    }
+
+    // 🔑 Alerta visual si el stock es bajo o excedido
+    if (item.qty >= stock) {
+      const warning = document.createElement("div");
+      warning.style.color = "#f6c343";
+      warning.style.fontSize = "0.8rem";
+      warning.style.fontWeight = "600";
+      warning.style.marginTop = "0.4rem";
+      warning.textContent = item.qty > stock ? "⚠ Cantidad supera el stock" : "Máximo disponible alcanzado";
+      clone.querySelector(".item-info").appendChild(warning);
+    }
+
     clone.querySelectorAll("button").forEach(btn => {
       btn.dataset.index = index;
     });
@@ -142,7 +179,7 @@ function renderCart() {
 }
 
 /* ================= CONTROLES +/-/DELETE ================= */
-document.getElementById("cart-container")?.addEventListener("click", e => {
+document.getElementById("cart-container")?.addEventListener("click", async e => {
   const btn = e.target.closest("button");
   if (!btn) return;
 
@@ -152,7 +189,14 @@ document.getElementById("cart-container")?.addEventListener("click", e => {
 
   if (!cart[index]) return;
 
-  if (action === "plus") cart[index].qty++;
+  if (action === "plus") {
+    const stock = stocksCache[cart[index].product_id];
+    if (cart[index].qty < stock) {
+      cart[index].qty++;
+    } else {
+      showSnackbar("Stock máximo alcanzado para este producto");
+    }
+  }
   if (action === "minus") {
     cart[index].qty--;
     if (cart[index].qty <= 0) cart.splice(index, 1);
@@ -160,7 +204,7 @@ document.getElementById("cart-container")?.addEventListener("click", e => {
   if (action === "del") cart.splice(index, 1);
 
   saveCart(cart);
-  renderCart();
+  await renderCart();
 });
 
 /* ================= CHECKOUT ================= */
