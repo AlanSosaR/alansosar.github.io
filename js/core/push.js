@@ -52,14 +52,14 @@ export async function registerPushToken(userId) {
     // Service Worker (único)
     // -----------------------------
     let registration = await navigator.serviceWorker.getRegistration("/");
-    if (!registration) {
-      registration = await navigator.serviceWorker.register(
-        "/firebase-messaging-sw.js",
-        { scope: "/" }
-      );
-      console.log("PWA: service worker registered");
+    if (registration) {
+      // Forzar actualización si ya existe
+      await registration.update();
     }
 
+    // Registro con cache-bust para asegurar que toma las nuevas credenciales de Firebase
+    const swUrl = `/firebase-messaging-sw.js?v=${Date.now()}`;
+    registration = await navigator.serviceWorker.register(swUrl, { scope: "/" });
     await navigator.serviceWorker.ready;
 
     // -----------------------------
