@@ -97,44 +97,41 @@ async function uploadGoogleAvatarToStorage(sb, user) {
   const googleUrl = getGoogleAvatarUrl(user);
   if (!googleUrl) return null;
 
-  let res;
   try {
-    res = await fetch(googleUrl, { mode: "cors" });
+    const res = await fetch(googleUrl, { mode: "cors" });
+    if (!res.ok) return null;
+
+    const blob = await res.blob();
+    const contentType = blob.type || "image/jpeg";
+
+    // 1. Limpieza preventiva
+    const { data: oldFiles } = await sb.storage
+      .from(AVATAR_BUCKET)
+      .list("", { search: `avatar_${user.id}` });
+
+    if (oldFiles?.length > 0) {
+      await sb.storage.from(AVATAR_BUCKET).remove(oldFiles.map(f => f.name));
+    }
+
+    // 2. Nuevo nombre con timestamp
+    const filePath = `avatar_${user.id}_${Date.now()}.jpg`;
+
+    const { error: upErr } = await sb.storage
+      .from(AVATAR_BUCKET)
+      .upload(filePath, blob, {
+        contentType,
+        upsert: true,
+        cacheControl: "3600"
+      });
+
+    if (upErr) throw upErr;
+
+    const { data: pub } = sb.storage.from(AVATAR_BUCKET).getPublicUrl(filePath);
+    return pub?.publicUrl || null;
   } catch (e) {
-    console.warn("No se pudo descargar avatar de Google (fetch):", e);
+    console.warn("Error sincronizando avatar de Google:", e);
     return null;
   }
-
-  if (!res.ok) {
-    console.warn("Descarga avatar no OK:", res.status);
-    return null;
-  }
-
-  const blob = await res.blob();
-  const contentType = blob.type || "image/jpeg";
-
-  // 🔑 USAR SIEMPRE EL MISMO NOMBRE (avatar_ID.jpg) PARA QUE UPSERT REEMPLACE
-  // No importa si es PNG o WebP, lo guardamos como .jpg para que el path sea estable.
-  const filePath = `avatar_${user.id}.jpg`;
-
-  const { error: upErr } = await sb.storage
-    .from(AVATAR_BUCKET)
-    .upload(filePath, blob, {
-      contentType,
-      upsert: true,
-      cacheControl: "3600"
-    });
-
-  if (upErr) {
-    console.warn("No se pudo subir avatar a Storage:", upErr);
-    return null;
-  }
-
-  const { data: pub } = sb.storage.from(AVATAR_BUCKET).getPublicUrl(filePath);
-  const publicUrl = pub?.publicUrl || null;
-
-  // 🔑 AGREGAR TIMESTAMP PARA EVITAR CACHÉ
-  return publicUrl ? `${publicUrl}?v=${Date.now()}` : null;
 }
 
 /* ========================= VALIDACIONES ========================= */

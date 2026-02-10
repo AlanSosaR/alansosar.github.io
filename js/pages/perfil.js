@@ -269,22 +269,38 @@ function attachStrength(input) {
   async function subirFoto() {
     if (!window._newPhoto) return user.photo_url || null;
 
-    // 🔑 USAR SIEMPRE EL MISMO NOMBRE (avatar_ID.jpg) PARA QUE UPSERT REEMPLACE
-    // No importa si es PNG o WebP, lo guardamos como .jpg para que el path sea estable.
-    const name = `avatar_${user.id}.jpg`;
+    try {
+      // 1. Limpiar versiones anteriores para evitar basura y duplicados
+      // Buscamos cualquier archivo que empiece con el ID del usuario
+      const { data: oldFiles } = await sb.storage
+        .from("avatars")
+        .list("", { search: `avatar_${user.id}` });
 
-    const { error } = await sb.storage
-      .from("avatars")
-      .upload(name, window._newPhoto, {
-        upsert: true,
-        contentType: window._newPhoto.type
-      });
+      if (oldFiles && oldFiles.length > 0) {
+        const toDelete = oldFiles.map(f => f.name);
+        await sb.storage.from("avatars").remove(toDelete);
+      }
 
-    if (error) throw error;
+      // 2. Generar nombre único con tiempo (para que el PATH sí se actualice en la BD)
+      // Esto evita problemas de caché de CDN y satisface que el path cambie.
+      const name = `avatar_${user.id}_${Date.now()}.jpg`;
 
-    // 🔑 AGREGAR TIMESTAMP (?v=...) PARA EVITAR CACHÉ DEL NAVEGADOR
-    const { data } = sb.storage.from("avatars").getPublicUrl(name);
-    return `${data.publicUrl}?v=${Date.now()}`;
+      const { error: upErr } = await sb.storage
+        .from("avatars")
+        .upload(name, window._newPhoto, {
+          upsert: true,
+          contentType: window._newPhoto.type
+        });
+
+      if (upErr) throw upErr;
+
+      // 3. Obtener URL pública definitiva
+      const { data } = sb.storage.from("avatars").getPublicUrl(name);
+      return data.publicUrl;
+    } catch (err) {
+      console.error("Error en subirFoto:", err);
+      throw new Error("No se pudo procesar la imagen");
+    }
   }
 
   // -----------------------  
