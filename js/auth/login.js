@@ -113,7 +113,9 @@ async function uploadGoogleAvatarToStorage(sb, user) {
   const blob = await res.blob();
   const contentType = blob.type || "image/jpeg";
 
-  const filePath = `avatar_${user.id}`;
+  // 🔑 USAR SIEMPRE EL MISMO NOMBRE (avatar_ID.jpg) PARA QUE UPSERT REEMPLACE
+  // No importa si es PNG o WebP, lo guardamos como .jpg para que el path sea estable.
+  const filePath = `avatar_${user.id}.jpg`;
 
   const { error: upErr } = await sb.storage
     .from(AVATAR_BUCKET)
@@ -351,13 +353,6 @@ function showLoginUI() {
         console.warn("RPC ensure_user_profile falló (opcional):", e);
       }
 
-      // Intentar guardar imagen en Storage
-      const storageUrl = await uploadGoogleAvatarToStorage(sb, user);
-
-      // Elegir avatar final
-      const googleUrl = getGoogleAvatarUrl(user);
-      const avatarUrl = storageUrl || googleUrl || DEFAULT_AVATAR;
-
       // 🔑 CARGAR PERFIL REAL DESDE public.users (PARA TENER photo_url ACTUALIZADA)
       const { data: profile } = await sb
         .from("users")
@@ -365,23 +360,40 @@ function showLoginUI() {
         .eq("id", user.id)
         .maybeSingle();
 
+      // Preparar fallback (Google) si no hay récord en BD o no tiene foto
+      const googleUrl = getGoogleAvatarUrl(user);
+      const fallbackUrl = googleUrl || DEFAULT_AVATAR;
+
+      // Si ya tiene una foto personalizada (que no sea el default), NO sobreescribir con Google
+      const hasCustomPhoto = profile?.photo_url &&
+        !profile.photo_url.includes("avatar-default") &&
+        !profile.photo_url.includes("googleusercontent");
+
+      let finalPhoto = profile?.photo_url || fallbackUrl;
+
+      if (!hasCustomPhoto && googleUrl) {
+        // Solo intentamos sincronizar con Google si no hay foto propia y sí hay de Google
+        const storageUrl = await uploadGoogleAvatarToStorage(sb, user);
+        if (storageUrl) finalPhoto = storageUrl;
+      }
+
       if (profile) {
-        // Combinar datos: preferir lo de la BD
         const finalUser = {
           ...user,
           ...profile,
-          // Asegurar campos críticos
           id: user.id,
           email: user.email,
           rol: profile.rol || "cliente",
-          photo_url: profile.photo_url || avatarUrl
+          photo_url: finalPhoto
         };
         localStorage.setItem("cortero_user", JSON.stringify(finalUser));
         localStorage.setItem("cortero_logged", "1");
+
+        // Actualizar en DB si conseguimos la de Google y no tenía nada
+        if (!hasCustomPhoto && finalPhoto !== profile.photo_url) {
+          await tryPersistAvatarToDB(sb, user, finalPhoto);
+        }
       } else {
-        // Fallback si no hay registro aún
-        persistAvatarToLocal(avatarUrl);
-        mergeAvatarIntoCorteroUser(avatarUrl);
         localStorage.setItem("cortero_logged", "1");
       }
 

@@ -269,8 +269,9 @@ function attachStrength(input) {
   async function subirFoto() {
     if (!window._newPhoto) return user.photo_url || null;
 
-    // 🔑 USAR NOMBRE FIJO (SIN EXTENSIÓN) PARA REEMPLAZAR SIEMPRE
-    const name = `avatar_${user.id}`;
+    // 🔑 USAR SIEMPRE EL MISMO NOMBRE (avatar_ID.jpg) PARA QUE UPSERT REEMPLACE
+    // No importa si es PNG o WebP, lo guardamos como .jpg para que el path sea estable.
+    const name = `avatar_${user.id}.jpg`;
 
     const { error } = await sb.storage
       .from("avatars")
