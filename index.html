@@ -1,10 +1,24 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta http-equiv="refresh" content="0; url=/pages/home/index.html">
-    <title>Redirigiendo...</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <title>Café Cortero</title>
+    <script>
+      console.log("PWA: manifest linked");
+      window.addEventListener('beforeinstallprompt', () => { console.log("PWA: app installable"); });
+
+      // Preserve hash for redirects (Crucial for Supabase Auth)
+      const hash = window.location.hash;
+      if (hash.includes("type=recovery") || hash.includes("access_token=")) {
+        window.location.href = "/pages/auth/new-password.html" + hash;
+      } else {
+        window.location.href = "/pages/home/index.html" + hash;
+      }
+    </script>
   </head>
   <body>
-    <p>Redireccionando a <a href="/pages/home/index.html">/pages/home/index.html</a>…</p>
+    <p>Redirigiendo...</p>
   </body>
 </html>

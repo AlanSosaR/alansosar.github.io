@@ -57,6 +57,7 @@ export async function registerPushToken(userId) {
         "/firebase-messaging-sw.js",
         { scope: "/" }
       );
+      console.log("PWA: service worker registered");
     }
 
     await navigator.serviceWorker.ready;
