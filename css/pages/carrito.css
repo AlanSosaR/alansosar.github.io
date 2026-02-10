@@ -39,8 +39,8 @@ body {
   height: 42px;
   border-radius: 50%;
   background: var(--blanco);
-  border: 1.4px solid rgba(0,0,0,0.08);
-  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+  border: 1.4px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
 
   display: flex;
   align-items: center;
@@ -58,19 +58,23 @@ body {
   color: var(--verde);
   text-decoration: none;
 }
+
 /* =====================================================
    AJUSTE — SEGUIR COMPRANDO CON HEADER FIJO
 ===================================================== */
 body.page-carrito .seguir-comprando {
-  margin-top: calc(72px + 0.75rem); /* altura del header */
+  margin-top: calc(72px + 0.75rem);
+  /* altura del header */
   position: relative;
   z-index: 5;
 }
+
 @media (max-width: 900px) {
   body.page-carrito .seguir-comprando {
     margin-top: calc(72px + 0.5rem);
   }
 }
+
 /* =====================================================
    GRID PRINCIPAL
 ===================================================== */
@@ -100,8 +104,8 @@ body.page-carrito .seguir-comprando {
   padding: 1.2rem;
 
   background: #fff;
-  border: 1.8px solid rgba(0,0,0,0.08);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+  border: 1.8px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
 
   border-radius: 18px;
   margin-bottom: 1.2rem;
@@ -116,16 +120,18 @@ body.page-carrito .seguir-comprando {
   width: 95px;
   height: 95px;
 
-  border-radius: 20px;      /* 🔑 MISMO RADIO */
+  border-radius: 20px;
+  /* 🔑 MISMO RADIO */
   overflow: hidden;
 
   background: #ffffff;
 
-/* 🌿 Sombra Material 3 — NEUTRA (recomendada) */
-box-shadow:
-  0 10px 24px rgba(0, 0, 0, 0.12),
-  0 4px 8px rgba(0, 0, 0, 0.08),
-  0 0 0 1px rgba(46, 125, 50, 0.06); /* acento verde mínimo */
+  /* 🌿 Sombra Material 3 — NEUTRA (recomendada) */
+  box-shadow:
+    0 10px 24px rgba(0, 0, 0, 0.12),
+    0 4px 8px rgba(0, 0, 0, 0.08),
+    0 0 0 1px rgba(46, 125, 50, 0.06);
+  /* acento verde mínimo */
   display: block;
 }
 
@@ -133,7 +139,8 @@ box-shadow:
   width: 100%;
   height: 100%;
 
-  object-fit: cover;        /* 🔑 IGUAL QUE INDEX */
+  object-fit: cover;
+  /* 🔑 IGUAL QUE INDEX */
   object-position: center;
   display: block;
 }
@@ -179,7 +186,7 @@ box-shadow:
   min-height: 34px;
 
   background: #fff;
-  border: 1.5px solid rgba(0,0,0,0.12);
+  border: 1.5px solid rgba(0, 0, 0, 0.12);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -212,8 +219,8 @@ box-shadow:
   background: #fff;
   padding: 1.8rem;
   border-radius: 20px;
-  border: 1.6px solid rgba(0,0,0,0.06);
-  box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+  border: 1.6px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
 }
 
 .resumen-box h2 {
@@ -254,9 +261,22 @@ box-shadow:
 .empty-container {
   text-align: center;
   margin-top: 2.5rem;
+  padding: 0 1rem;
   opacity: 0;
   transform: translateY(14px);
   animation: emptyFadeIn .45s ease forwards;
+}
+
+.empty-img-box {
+  margin: 1.5rem auto 2.5rem;
+  width: 100%;
+  max-width: 380px;
+}
+
+.empty-img {
+  width: 100%;
+  height: auto;
+  display: block;
 }
 
 @keyframes emptyFadeIn {
@@ -264,6 +284,7 @@ box-shadow:
     opacity: 0;
     transform: translateY(18px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -279,7 +300,7 @@ box-shadow:
 
 .empty-sub {
   font-size: 1rem;
-  color: rgba(0,0,0,0.55);
+  color: rgba(0, 0, 0, 0.55);
   margin-bottom: 1.5rem;
 }
 
@@ -323,9 +344,9 @@ box-shadow:
   letter-spacing: 0.1px;
 
   box-shadow:
-    0 18px 44px rgba(0,0,0,.55),
-    0 6px 16px rgba(0,0,0,.35),
-    0 0 0 1px rgba(255,255,255,.08);
+    0 18px 44px rgba(0, 0, 0, .55),
+    0 6px 16px rgba(0, 0, 0, .35),
+    0 0 0 1px rgba(255, 255, 255, .08);
 
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -341,7 +362,7 @@ box-shadow:
 
   transition:
     opacity .22s ease,
-    transform .22s cubic-bezier(.2,0,0,1);
+    transform .22s cubic-bezier(.2, 0, 0, 1);
 }
 
 /* Barra accent */
@@ -368,8 +389,13 @@ box-shadow:
 }
 
 /* Variantes opcionales */
-#snackbar.snackbar.is-error::before { background: #ff4b4b; }
-#snackbar.snackbar.is-warn::before  { background: #f6c343; }
+#snackbar.snackbar.is-error::before {
+  background: #ff4b4b;
+}
+
+#snackbar.snackbar.is-warn::before {
+  background: #f6c343;
+}
 
 @media (max-width: 900px) {
   #snackbar.snackbar {
@@ -408,12 +434,14 @@ box-shadow:
     transform: none;
   }
 }
+
 /* =====================================================
    OCULTAR "SEGUIR COMPRANDO" CUANDO EL CARRITO ESTÁ VACÍO
 ===================================================== */
 body.page-carrito.carrito-vacio .seguir-comprando {
   display: none !important;
 }
+
 /* =====================================================
    COMPENSAR ESPACIO CUANDO SE OCULTA "SEGUIR COMPRANDO"
 ===================================================== */

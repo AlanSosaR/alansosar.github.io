@@ -106,6 +106,11 @@ async function renderCart() {
       <div class="empty-container">
         <div class="empty-title">Tu selección está vacía</div>
         <div class="empty-sub">Agrega tu café favorito para continuar.</div>
+        
+        <div class="empty-img-box">
+          <img src="/imagenes/empty/empty-cart.svg" alt="Carrito vacio" class="empty-img">
+        </div>
+
         <button class="empty-btn" onclick="location.href='/pages/home/index.html#productos'">
           Seguir comprando
         </button>
