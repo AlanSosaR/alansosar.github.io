@@ -10,11 +10,11 @@ importScripts("https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-comp
    🔑 CONFIG FIREBASE (MISMA QUE firebase.js)
 ===================================================== */
 firebase.initializeApp({
-  apiKey: "AIzaSyA5B3a30g6cun08vQUGl1o2AHuTPvoZLcI4",
+  apiKey: "AIzaSyA5Ba3Qs6cunO8vQUGi1e2AHuTPvozLcI4",
   authDomain: "cafecortero-eb674.firebaseapp.com",
   projectId: "cafecortero-eb674",
   messagingSenderId: "412829554061",
-  appId: "1:412829554061:web:61a29b4f59881858f899c4"
+  appId: "1:412829554061:web:61a29b4f59881858f599c4"
 });
 
 /* =====================================================

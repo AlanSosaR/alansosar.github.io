@@ -9,12 +9,13 @@ const supabase = createClient(
 Deno.serve(async (req) => {
   try {
     const payload = await req.json();
-    const notificationRecord = payload.record;
+    console.log('📦 FCM Payload received:', JSON.stringify(payload, null, 2));
 
-    console.log('📩 Push trigger:', notificationRecord);
+    const notificationRecord = payload.record || payload; // Handle direct record or enveloped record
 
     if (!notificationRecord?.user_id) {
-      return new Response(JSON.stringify({ error: 'Missing user_id' }), { status: 400 });
+      console.error('⚠️ Missing user_id in record:', notificationRecord);
+      return new Response(JSON.stringify({ error: 'Missing user_id', received: notificationRecord }), { status: 400 });
     }
 
     // Fetch all push tokens for this user
@@ -25,16 +26,25 @@ Deno.serve(async (req) => {
 
     if (tokenError || !tokens || tokens.length === 0) {
       console.log('⚠️ No tokens found for user:', notificationRecord.user_id);
-      return new Response(JSON.stringify({ message: 'No tokens found' }), { status: 200 });
+      return new Response(JSON.stringify({ message: 'No tokens found', user_id: notificationRecord.user_id }), { status: 200 });
     }
 
-    console.log(`✅ Found ${tokens.length} token(s) for user`);
+    console.log(`✅ Found ${tokens.length} token(s) for user ${notificationRecord.user_id}`);
 
     // Get Firebase service account from secrets
-    const sa = JSON.parse(Deno.env.get("FCM_SERVICE_ACCOUNT")!);
-    const privateKey = sa.private_key.replace(/\\\\n/g, '\n');
+    const fcmSecret = Deno.env.get("FCM_SERVICE_ACCOUNT");
+    if (!fcmSecret) {
+      throw new Error("Missing FCM_SERVICE_ACCOUNT environment variable");
+    }
+
+    const sa = JSON.parse(fcmSecret);
+    // Robust private key handling: handle both already formatted and escaped keys
+    const privateKey = sa.private_key.includes('\n')
+      ? sa.private_key
+      : sa.private_key.replace(/\\n/g, '\n');
+
     const now = getNumericDate(0);
-    
+
     // Create JWT for OAuth
     const jwt = await create(
       { alg: "RS256", typ: "JWT" },
@@ -95,10 +105,12 @@ Deno.serve(async (req) => {
     }
 
     // Mark notification as push_sent
-    await supabase
-      .from('notifications')
-      .update({ push_sent: true })
-      .eq('id', notificationRecord.id);
+    if (notificationRecord.id) {
+      await supabase
+        .from('notifications')
+        .update({ push_sent: true })
+        .eq('id', notificationRecord.id);
+    }
 
     return new Response(
       JSON.stringify({ success: true, sent: results.length, results }),
@@ -108,7 +120,7 @@ Deno.serve(async (req) => {
   } catch (error) {
     console.error('❌ Push error:', error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: error.message, stack: error.stack }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }
