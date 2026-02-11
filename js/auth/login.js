@@ -407,14 +407,43 @@ function showLoginUI() {
       // Mostrar UI (pero no el login "feo", solo para que se vea el snackbar)
       showLoginUI();
 
-      // Snackbar con acción -> redirección al aceptar
-      mostrarSnackbarAccion(
-        isNew ? "Cuenta creada con Google" : "Inicio de sesión exitoso",
-        "Aceptar",
-        () => window.location.replace("/pages/home/index.html"),
-        "success",
-        12000
-      );
+      if (isNew) {
+        // FLUJO DE REGISTRO NUEVO: Marcamos estado de registro pendiente
+        localStorage.setItem("google_registration_pending", "1");
+
+        // Precargamos los campos visualmente
+        if (userInput) {
+          userInput.value = user.email;
+          userInput.classList.add("has-text");
+          userInput.closest(".m3-input")?.classList.add("success");
+        }
+        if (passInput) {
+          passInput.value = "••••••••"; // Password simbólico
+          passInput.classList.add("has-text");
+          passInput.closest(".m3-input")?.classList.add("success");
+        }
+
+        mostrarSnackbarAccion(
+          "¡Registro exitoso! Haz clic en 'Acceder' para entrar a tu nueva cuenta",
+          "Acceder ahora",
+          () => {
+            // Al hacer clic en el botón del snackbar también podemos entrar directo
+            localStorage.removeItem("google_registration_pending");
+            window.location.replace("/pages/home/index.html");
+          },
+          "success",
+          15000
+        );
+      } else {
+        // INICIO DE SESIÓN NORMAL: Redirección mediante snackbar como estaba
+        mostrarSnackbarAccion(
+          "Inicio de sesión exitoso",
+          "Aceptar",
+          () => window.location.replace("/pages/home/index.html"),
+          "success",
+          12000
+        );
+      }
 
       return;
     }
@@ -484,6 +513,16 @@ if (loginForm) {
 
     if (!validarPassword(passValue))
       return marcarError(passInput, "Contraseña no válida");
+
+    // 🔑 VERIFICAR SI ES REDIRECCIÓN PENDIENTE DE GOOGLE
+    if (localStorage.getItem("google_registration_pending") === "1") {
+      activarLoading();
+      localStorage.removeItem("google_registration_pending");
+      setTimeout(() => {
+        location.href = "/pages/home/index.html";
+      }, 500);
+      return;
+    }
 
     activarLoading();
 
