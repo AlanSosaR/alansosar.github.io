@@ -368,4 +368,12 @@ async function enviarPedido() {
     const f = inputFile.files[0];
     if (f && f.type.startsWith("image/")) mostrarPreview(f);
   };
+
+  /* 🔙 BOTÓN ATRÁS (Checkout) */
+  const btnBack = $("btn-back");
+  if (btnBack) {
+    btnBack.onclick = () => {
+      window.location.href = "/pages/profile/datos_cliente.html";
+    };
+  }
 })();
