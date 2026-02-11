@@ -55,22 +55,33 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ message: 'No tokens found' }), { status: 200 });
     }
 
-    console.log(`✅ Found ${tokens.length} token(s) for user ${notificationRecord.user_id}`);
+    console.log(`✅ Found ${tokens.length} token(s) to notify.`);
 
     // Get Firebase service account from secrets
     const fcmSecret = Deno.env.get("FCM_SERVICE_ACCOUNT");
     if (!fcmSecret) {
+      console.error("❌ Missing FCM_SERVICE_ACCOUNT");
       throw new Error("Missing FCM_SERVICE_ACCOUNT environment variable");
     }
 
-    const sa = JSON.parse(fcmSecret);
-    // Robust private key handling: handle both already formatted and escaped keys
+    console.log("🔑 Parsing FCM secret...");
+    let sa;
+    try {
+      sa = JSON.parse(fcmSecret);
+    } catch (e: any) {
+      const snippet = typeof fcmSecret === 'string' ? fcmSecret.substring(0, 30) : 'not a string';
+      console.error(`❌ JSON Parse Error. Secret starts with: [${snippet}]. Error: ${e.message}`);
+      throw new Error(`JSON Parse Error. Secret starts with: [${snippet}]. Error: ${e.message}`);
+    }
+
+    console.log("🔑 Preparing Private Key...");
     const privateKey = sa.private_key.includes('\n')
       ? sa.private_key
       : sa.private_key.replace(/\\n/g, '\n');
 
     const now = getNumericDate(0);
 
+    console.log("🔑 Creating JWT...");
     // Create JWT for OAuth
     const jwt = await create(
       { alg: "RS256", typ: "JWT" },
@@ -84,6 +95,7 @@ Deno.serve(async (req) => {
       privateKey
     );
 
+    console.log("🔑 Fetching OAuth token...");
     // Get OAuth access token
     const authRes = await fetch("https://oauth2.googleapis.com/token", {
       method: "POST",
@@ -92,13 +104,20 @@ Deno.serve(async (req) => {
         assertion: jwt
       })
     });
-    const { access_token } = await authRes.json();
 
-    console.log('🔑 OAuth token obtained');
+    const authData = await authRes.json();
+    if (!authData.access_token) {
+      console.error("❌ OAuth failed:", JSON.stringify(authData));
+      throw new Error("OAuth failed: " + JSON.stringify(authData));
+    }
+    const { access_token } = authData;
+
+    console.log('🔑 OAuth token obtained successfully');
 
     // Send push to all tokens
     const results = [];
     for (const tokenRow of tokens) {
+      console.log(`📤 Sending to token: ${tokenRow.token.substring(0, 15)}...`);
       const fcmPayload = {
         message: {
           token: tokenRow.token,
@@ -108,7 +127,7 @@ Deno.serve(async (req) => {
           },
           data: {
             type: notificationRecord.type || 'info',
-            notification_id: notificationRecord.id
+            notification_id: String(notificationRecord.id || '')
           }
         }
       };
@@ -127,15 +146,18 @@ Deno.serve(async (req) => {
 
       const result = await res.json();
       results.push({ token: tokenRow.token.substring(0, 20) + '...', result });
-      console.log('📤 Push sent:', result);
+      console.log('📤 FCM Response:', JSON.stringify(result));
     }
 
     // Mark notification as push_sent
     if (notificationRecord.id) {
-      await supabase
+      console.log(`✅ Updating push_sent for ID: ${notificationRecord.id}`);
+      const { error: updateErr } = await supabase
         .from('notifications')
         .update({ push_sent: true })
         .eq('id', notificationRecord.id);
+
+      if (updateErr) console.error("❌ Update push_sent error:", updateErr);
     }
 
     return new Response(
