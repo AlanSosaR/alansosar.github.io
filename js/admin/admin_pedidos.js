@@ -11,7 +11,7 @@ const EMPTY_BASE = window.location.origin + "/imagenes/empty/";
 let orders = [];
 let filtered = [];
 let activeIndex = 0;
-let currentStatus = "new";
+let currentStatus = "pending";
 let search = "";
 let pendingAction = null;
 let userSelected = false;
@@ -20,7 +20,7 @@ let userSelected = false;
    STATUS MAP
 ========================= */
 const STATUS_GROUPS = {
-  new: ["pending"],
+  pending: ["pending"],
   processing: ["processing"],
   shipped: ["shipped"],
   delivered: ["delivered"],

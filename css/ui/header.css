@@ -9,7 +9,9 @@
 /* =====================================================
    UTILIDADES
 ===================================================== */
-.hidden { display: none !important; }
+.hidden {
+  display: none !important;
+}
 
 /* =====================================================
    HEADER — FIJO, ESTABLE
@@ -23,14 +25,15 @@ header.header-fixed {
   display: flex;
   align-items: center;
 
-  background: rgba(255,255,255,0.92);
+  background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 
-  border-bottom: 1.5px solid rgba(0,0,0,0.05);
+  border-bottom: 1.5px solid rgba(0, 0, 0, 0.05);
   z-index: 1000;
   box-sizing: border-box;
 }
+
 /* =====================================================
    MOBILE — OCULTAR LOGO DETRÁS DEL MENÚ
 ===================================================== */
@@ -39,6 +42,7 @@ header.header-fixed {
     display: none !important;
   }
 }
+
 /* =====================================================
    TÍTULO CENTRAL — CARRITO
 ===================================================== */
@@ -65,7 +69,8 @@ body.page-carrito .header-cart-title {
   color: var(--marron);
   white-space: nowrap;
 
-  pointer-events: none; /* 🔑 no bloquea clicks */
+  pointer-events: none;
+  /* 🔑 no bloquea clicks */
 }
 
 /* Contador de cafés */
@@ -82,13 +87,17 @@ body.page-carrito .header-cart-title {
     font-size: 0.95rem;
   }
 }
+
 /* LOGO */
 .header-logo-link {
   display: flex;
   align-items: center;
   flex-shrink: 0;
 }
-.header-logo { height: 56px; }
+
+.header-logo {
+  height: 56px;
+}
 
 /* =====================================================
    BLOQUE DERECHO
@@ -108,6 +117,7 @@ body.page-carrito .header-cart-title {
   align-items: center;
   gap: 20px;
 }
+
 .nav-links a {
   text-decoration: none;
   color: var(--marron);
@@ -115,11 +125,19 @@ body.page-carrito .header-cart-title {
   font-size: .95rem;
   white-space: nowrap;
 }
-.nav-links a:hover { color: var(--verde); }
+
+.nav-links a:hover {
+  color: var(--verde);
+}
 
 /* VISIBILIDAD NAV */
-.header-fixed.no-user #public-nav { display: flex; }
-.header-fixed.logged  #public-nav { display: none !important; }
+.header-fixed.no-user #public-nav {
+  display: flex;
+}
+
+.header-fixed.logged #public-nav {
+  display: none !important;
+}
 
 /* =====================================================
    ACCIONES HEADER
@@ -136,7 +154,10 @@ body.page-carrito .header-cart-title {
   color: var(--marron);
   font-weight: 500;
 }
-.login-link:hover { color: var(--verde); }
+
+.login-link:hover {
+  color: var(--verde);
+}
 
 /* =====================================================
    AVATAR HEADER — PREMIUM (BLINDADO)
@@ -160,8 +181,8 @@ body.page-carrito .header-cart-title {
   cursor: pointer;
 
   box-shadow:
-    0 6px 14px rgba(0,0,0,.18),
-    0 2px 4px rgba(0,0,0,.12);
+    0 6px 14px rgba(0, 0, 0, .18),
+    0 2px 4px rgba(0, 0, 0, .12);
 
   transition:
     transform .2s ease,
@@ -175,8 +196,8 @@ body.page-carrito .header-cart-title {
 .header-avatar-button:hover {
   transform: translateY(-2px);
   box-shadow:
-    0 10px 24px rgba(0,0,0,.22),
-    0 4px 10px rgba(0,0,0,.16);
+    0 10px 24px rgba(0, 0, 0, .22),
+    0 4px 10px rgba(0, 0, 0, .16);
 }
 
 /* Imagen */
@@ -187,15 +208,27 @@ body.page-carrito .header-cart-title {
   object-fit: cover;
   object-position: center;
 
-  border-radius: 50% !important;   /* 🔑 evita cuadrado */
+  border-radius: 50% !important;
+  /* 🔑 evita cuadrado */
   display: block;
 }
 
 /* VISIBILIDAD HEADER */
-.header-fixed.no-user #btn-header-user { display: none; }
-.header-fixed.no-user #login-desktop { display: inline-flex; }
-.header-fixed.logged  #login-desktop { display: none; }
-.header-fixed.logged  #btn-header-user { display: flex; }
+.header-fixed.no-user #btn-header-user {
+  display: none;
+}
+
+.header-fixed.no-user #login-desktop {
+  display: inline-flex;
+}
+
+.header-fixed.logged #login-desktop {
+  display: none;
+}
+
+.header-fixed.logged #btn-header-user {
+  display: flex;
+}
 
 /* =====================================================
    CARRITO
@@ -213,12 +246,14 @@ body.page-carrito .header-cart-title {
   position: relative;
 
   cursor: pointer;
-  box-shadow: 0 8px 20px rgba(0,0,0,.18);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, .18);
 }
+
 #cart-btn i {
   font-size: 1.4rem;
   color: var(--verde);
 }
+
 .cart-count {
   position: absolute;
   top: -4px;
@@ -235,13 +270,15 @@ body.page-carrito .header-cart-title {
   align-items: center;
   justify-content: center;
 }
+
 /* =========================
    CONTENEDORES (ANCLAJE)
 ========================= */
 #menu-toggle,
 #btn-header-user {
   position: relative;
-  overflow: visible;        /* 🔑 CLAVE: no recortar el badge */
+  overflow: visible;
+  /* 🔑 CLAVE: no recortar el badge */
 }
 
 /* =========================
@@ -255,10 +292,12 @@ body.page-carrito .header-cart-title {
     transform: scale(0.6);
     opacity: 0;
   }
+
   60% {
     transform: scale(1.15);
     opacity: 1;
   }
+
   100% {
     transform: scale(1);
   }
@@ -266,12 +305,29 @@ body.page-carrito .header-cart-title {
 
 /* Micro-shake de campana (una sola vez) */
 @keyframes bellShake {
-  0%   { transform: rotate(0deg); }
-  20%  { transform: rotate(-12deg); }
-  40%  { transform: rotate(10deg); }
-  60%  { transform: rotate(-8deg); }
-  80%  { transform: rotate(6deg); }
-  100% { transform: rotate(0deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  20% {
+    transform: rotate(-12deg);
+  }
+
+  40% {
+    transform: rotate(10deg);
+  }
+
+  60% {
+    transform: rotate(-8deg);
+  }
+
+  80% {
+    transform: rotate(6deg);
+  }
+
+  100% {
+    transform: rotate(0deg);
+  }
 }
 
 /* Estado base del badge */
@@ -351,36 +407,37 @@ body.page-carrito .header-cart-title {
   }
 
   /* 🍔 MENÚ HAMBURGUESA */
-.menu-toggle {
-  display: flex !important;
-  position: absolute;
-  left: 16px;
+  .menu-toggle {
+    display: flex !important;
+    position: absolute;
+    left: 16px;
 
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
 
-  background: #fff;
-  border: none;
+    background: #fff;
+    border: none;
 
-  align-items: center;
-  justify-content: center;
+    align-items: center;
+    justify-content: center;
 
-  box-shadow: 0 8px 20px rgba(0,0,0,.18);
-}
+    box-shadow: 0 8px 20px rgba(0, 0, 0, .18);
+  }
 
-.menu-toggle > * {
-  margin: 0;
-  padding: 0;
-  line-height: 1;
-}
+  .menu-toggle>* {
+    margin: 0;
+    padding: 0;
+    line-height: 1;
+  }
 
-/* Icono hamburguesa en verde */
-.menu-toggle .material-symbols-outlined {
-  color: var(--verde);
-  font-size: 26px;
-  line-height: 1;
-}
+  /* Icono hamburguesa en verde */
+  .menu-toggle .material-symbols-outlined {
+    color: var(--verde);
+    font-size: 26px;
+    line-height: 1;
+  }
+
   /* 🛒 CARRITO */
   #cart-btn {
     position: absolute;
@@ -401,12 +458,13 @@ body.page-carrito .header-cart-title {
 .user-scrim {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,.45);
+  background: rgba(0, 0, 0, .45);
   opacity: 0;
   pointer-events: none;
   transition: opacity .2s ease;
   z-index: 90;
 }
+
 .user-scrim.open {
   opacity: 1;
   pointer-events: auto;
@@ -429,8 +487,8 @@ body.page-carrito .header-cart-title {
   overflow: hidden;
 
   box-shadow:
-    0 18px 40px rgba(0,0,0,.75),
-    0 0 0 1px rgba(255,255,255,.04);
+    0 18px 40px rgba(0, 0, 0, .75),
+    0 0 0 1px rgba(255, 255, 255, .04);
 
   contain: layout paint;
   will-change: transform, opacity;
@@ -440,11 +498,12 @@ body.page-carrito .header-cart-title {
   pointer-events: none;
 
   transition:
-    transform .28s cubic-bezier(.2,0,0,1),
+    transform .28s cubic-bezier(.2, 0, 0, 1),
     opacity .2s ease;
 
   z-index: 200;
 }
+
 .user-drawer.open {
   transform: translateX(0);
   opacity: 1;
@@ -459,6 +518,7 @@ body.page-carrito .header-cart-title {
     max-width: none;
   }
 }
+
 /* =====================================================
    🔔 NOTIFICACIÓN CONTEXTUAL — DRAWER (GLOBAL)
 ===================================================== */
@@ -470,26 +530,24 @@ body.page-carrito .header-cart-title {
   padding: 14px 18px;
   margin: 12px 12px;
   border-radius: 18px;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.04),
-    rgba(255, 255, 255, 0.02)
-  );
+  background: linear-gradient(180deg,
+      rgba(255, 255, 255, 0.04),
+      rgba(255, 255, 255, 0.02));
   color: #fff;
   text-decoration: none;
   cursor: pointer;
   box-shadow:
-    0 10px 28px rgba(0,0,0,0.45),
-    inset 0 0 0 1px rgba(255,255,255,0.05);
+    0 10px 28px rgba(0, 0, 0, 0.45),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05);
   transition:
-    transform .2s cubic-bezier(.2,0,0,1),
+    transform .2s cubic-bezier(.2, 0, 0, 1),
     box-shadow .2s ease,
     background .2s ease;
 }
 
 .drawer-notification:hover {
   transform: translateY(-2px);
-  background: rgba(255,255,255,0.06);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .drawer-notification:active {
@@ -512,8 +570,8 @@ body.page-carrito .header-cart-title {
   align-items: center;
   justify-content: center;
   box-shadow:
-    0 6px 18px rgba(215,38,56,0.55),
-    inset 0 0 0 2px rgba(255,255,255,0.18);
+    0 6px 18px rgba(215, 38, 56, 0.55),
+    inset 0 0 0 2px rgba(255, 255, 255, 0.18);
 }
 
 .drawer-notification-icon i {
@@ -547,6 +605,7 @@ body.page-carrito .header-cart-title {
     padding: 12px 14px;
   }
 }
+
 /* =====================================================
    PERFIL — AVATAR PREMIUM FLOTANTE (BLINDADO)
 ===================================================== */
@@ -573,21 +632,23 @@ body.page-carrito .header-cart-title {
   min-width: 52px;
   min-height: 52px;
 
-  border-radius: 50% !important;   /* 🔑 blindaje */
-  overflow: hidden !important;     /* 🔑 blindaje */
+  border-radius: 50% !important;
+  /* 🔑 blindaje */
+  overflow: hidden !important;
+  /* 🔑 blindaje */
 
   background: transparent;
   border: none;
 
   box-shadow:
-    0 10px 26px rgba(0,0,0,0.28),
-    0 4px 12px rgba(0,0,0,0.18);
+    0 10px 26px rgba(0, 0, 0, 0.28),
+    0 4px 12px rgba(0, 0, 0, 0.18);
 
   flex-shrink: 0;
   position: relative;
 
   transition:
-    transform .22s cubic-bezier(.2,0,0,1),
+    transform .22s cubic-bezier(.2, 0, 0, 1),
     box-shadow .22s ease;
 }
 
@@ -597,8 +658,8 @@ body.page-carrito .header-cart-title {
 .user-drawer-profile-link:hover .user-drawer-avatar {
   transform: translateY(-3px) scale(1.03);
   box-shadow:
-    0 16px 36px rgba(0,0,0,0.35),
-    0 6px 18px rgba(0,0,0,0.22);
+    0 16px 36px rgba(0, 0, 0, 0.35),
+    0 6px 18px rgba(0, 0, 0, 0.22);
 }
 
 /* =========================
@@ -611,7 +672,8 @@ body.page-carrito .header-cart-title {
   object-fit: cover;
   object-position: center;
 
-  border-radius: 50% !important;   /* 🔑 evita cuadrado */
+  border-radius: 50% !important;
+  /* 🔑 evita cuadrado */
   display: block;
 
   image-rendering: auto;
@@ -640,13 +702,15 @@ body.page-carrito .header-cart-title {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 /* =====================================================
    FLECHA PERFIL DRAWER — VERDE
 ===================================================== */
 .user-drawer-arrow {
   margin-left: auto;
   font-size: 22px;
-  color: var(--verde);      /* 🔑 VERDE */
+  color: var(--verde);
+  /* 🔑 VERDE */
   opacity: 0.85;
   flex-shrink: 0;
   transition: transform .2s ease, opacity .2s ease;
@@ -657,6 +721,7 @@ body.page-carrito .header-cart-title {
   transform: translateX(2px);
   opacity: 1;
 }
+
 /* =========================
    BLINDAJE TOTAL DEL DRAWER
 ========================= */
@@ -692,6 +757,7 @@ body.page-carrito .header-cart-title {
 .user-drawer label {
   margin: 0 !important;
 }
+
 /* =====================================================
    ITEMS DRAWER
 ===================================================== */
@@ -706,8 +772,9 @@ body.page-carrito .header-cart-title {
   cursor: pointer;
   font-size: 15px;
 }
+
 .user-drawer-item:hover {
-  background: rgba(255,255,255,.06);
+  background: rgba(255, 255, 255, .06);
 }
 
 .user-drawer-item.login {
@@ -716,7 +783,8 @@ body.page-carrito .header-cart-title {
 }
 
 .user-drawer-item.logout {
-  width: 100%;                 /* 🔑 ocupa todo el drawer */
+  width: 100%;
+  /* 🔑 ocupa todo el drawer */
   padding: 12px 18px;
 
   display: flex;
@@ -743,12 +811,14 @@ body.page-carrito .header-cart-title {
 .user-drawer-item.logout:active {
   background: rgba(255, 75, 75, 0.22);
 }
+
 /* =====================================================
    LINKS PÚBLICOS — SIEMPRE VISIBLES EN DRAWER
 ===================================================== */
 .user-drawer .public-link {
   display: flex;
 }
+
 /* =====================================================
    DRAWER — DIVISORES VERDE LIMPIO (FINAL REAL)
 ===================================================== */
@@ -756,10 +826,13 @@ body.page-carrito .header-cart-title {
 .user-drawer-divider,
 .user-drawer hr {
   border: 0 !important;
-  border-top: 2px solid var(--verde) !important; /* verde marca */
-  opacity: 0.85;                                /* elegante, no chillón */
+  border-top: 2px solid var(--verde) !important;
+  /* verde marca */
+  opacity: 0.85;
+  /* elegante, no chillón */
   margin: 16px 0;
 }
+
 /* =====================================================
    INDICADOR DE NOTIFICACIÓN — PUNTO
 ===================================================== */
@@ -783,15 +856,32 @@ body.page-carrito .header-cart-title {
 }
 
 @keyframes pulseDot {
-  0%   { transform: scale(1);   opacity: 1; }
-  50%  { transform: scale(1.15); opacity: 0.75; }
-  100% { transform: scale(1);   opacity: 1; }
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.15);
+    opacity: 0.75;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
+
 /* =====================================================
    VISIBILIDAD DRAWER
 ===================================================== */
-.user-drawer.logged .no-user { display: none; }
-.user-drawer.no-user .logged { display: none; }
+.user-drawer.logged .no-user {
+  display: none;
+}
+
+.user-drawer.no-user .logged {
+  display: none;
+}
 
 /* =====================================================
    OCULTAR CARRITO — CHECKOUT + ADMIN CAFÉS
@@ -809,6 +899,7 @@ body.page-admin-agregar-cafe #cart-btn,
 body.page-admin-editar-cafe #cart-btn {
   display: none !important;
 }
+
 /* =====================================================
    OCULTAR NAVEGACIÓN PÚBLICA
 ===================================================== */
@@ -845,10 +936,12 @@ body.page-admin-agregar-cafe .header-logo,
 body.page-admin-editar-cafe .header-logo {
   height: 44px;
 }
+
 /* =====================================================
    ADMIN — NO ocultar header-actions en PC
 ===================================================== */
 @media (min-width: 901px) {
+
   body.page-admin-cafes .header-actions,
   body.page-admin-agregar-cafe .header-actions,
   body.page-admin-editar-cafe .header-actions {
@@ -862,6 +955,7 @@ body.page-admin-editar-cafe .header-logo {
     display: none !important;
   }
 }
+
 /* =====================================================
    DESKTOP (PC) — comportamiento normal
 ===================================================== */
@@ -880,6 +974,7 @@ body.page-carrito.logged .header-avatar-button {
 body.page-carrito.logged #login-desktop {
   display: none !important;
 }
+
 /* =====================================================
    COMPENSACIÓN HEADER FIJO (OBLIGATORIA)
 ===================================================== */
@@ -893,6 +988,7 @@ body {
     padding-top: 64px;
   }
 }
+
 /* =====================================================
    BADGE — PEDIDOS (MISMO ESTILO QUE CARRITO)
 ===================================================== */
@@ -909,11 +1005,13 @@ body {
   font-weight: 600;
 
   color: #fff;
-  background-color: var(--verde); /* verde como el carrito */
+  background-color: var(--verde);
+  /* verde como el carrito */
 
   border-radius: 50%;
   line-height: 1;
 }
+
 /* =====================================================
    MÓVIL — CARRITO (LOGUEADO O NO)
    ☰  TEXTO CENTRO  LOGO DERECHA
@@ -935,7 +1033,8 @@ body {
       display: flex;
       align-items: center;
       position: relative;
-      width: 100%; /* 🔑 CLAVE */
+      width: 100%;
+      /* 🔑 CLAVE */
     }
 
 
@@ -972,7 +1071,8 @@ body {
 @media (max-width: 900px) {
 
   body.header-checkout header.header-fixed {
-    position: fixed !important; /* ✅ se mantiene fijo */
+    position: fixed !important;
+    /* ✅ se mantiene fijo */
     top: 0;
     left: 0;
     right: 0;
@@ -1001,6 +1101,7 @@ body {
     height: 44px;
   }
 }
+
 /* =====================================================
    ADMIN — AVATAR IZQUIERDA + LOGO DERECHA (SOLO PC)
 ===================================================== */
@@ -1010,7 +1111,8 @@ body {
   body.page-admin-cafes header.header-fixed,
   body.page-admin-agregar-cafe header.header-fixed,
   body.page-admin-editar-cafe header.header-fixed {
-    position: fixed; /* ya lo tienes, se queda */
+    position: fixed;
+    /* ya lo tienes, se queda */
   }
 
   /* ✅ Avatar (botón real) a la izquierda cuando está logueado */
@@ -1054,28 +1156,38 @@ body {
 ===================================================== */
 @media (max-width: 900px) {
 
-  /* 🔥 NUNCA mostrar logo en Mis Pedidos */
-  body.page-mis-pedidos .header-logo-link {
+  /* 🔥 NUNCA mostrar logo en Mis Pedidos y Admin */
+  body.page-mis-pedidos .header-logo-link,
+  body.page-admin-pedidos .header-logo-link,
+  body.page-admin-cafes .header-logo-link {
     display: none !important;
   }
 
   /* 🔥 Header NO centrado (evita compresión visual) */
-  body.page-mis-pedidos header.header-fixed {
+  body.page-mis-pedidos header.header-fixed,
+  body.page-admin-pedidos header.header-fixed,
+  body.page-admin-cafes header.header-fixed {
     justify-content: flex-start !important;
   }
 
   /* 🍔 Menú hamburguesa — fijo a la izquierda */
-  body.page-mis-pedidos #menu-toggle {
+  body.page-mis-pedidos #menu-toggle,
+  body.page-admin-pedidos #menu-toggle,
+  body.page-admin-cafes #menu-toggle {
     position: relative;
-    margin-right: 12px; /* ⬅️ separación real del buscador */
+    margin-right: 12px;
+    /* ⬅️ separación real del buscador */
   }
 
   /* 🔍 Buscador respira */
-  body.page-mis-pedidos #header-search-slot {
+  body.page-mis-pedidos #header-search-slot,
+  body.page-admin-pedidos #header-search-slot,
+  body.page-admin-cafes #header-search-slot {
     padding-left: 0 !important;
     padding-right: 0 !important;
   }
 }
+
 /* =========================
    HEADER — ADMIN (SIN CARRITO)
 ========================= */
@@ -1110,10 +1222,12 @@ body.page-datos-cliente #header-datos-title {
 body.page-recibo #header-recibo-title {
   display: block;
 }
+
 /* MIS PEDIDOS */
 body.page-mis-pedidos #header-mis-pedidos-title {
   display: block;
 }
+
 /* =====================================================
    ADMIN — CAFÉS (LISTADO)
 ===================================================== */
