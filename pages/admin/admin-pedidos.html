@@ -33,6 +33,7 @@
       <p class="empty-text">
         Cuando los clientes realicen pedidos, aparecerán aquí.
       </p>
+      <img src="" alt="" class="empty-illustration hidden">
     </section>
 
     <!-- =========================
@@ -211,90 +212,90 @@
      SCRIPTS CORE
 ========================= -->
 
-<!-- Supabase -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="/js/core/supabase-client-core.js"></script>
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/js/core/supabase-client-core.js"></script>
 
-<!-- Modo de página (ANTES del layout) -->
-<script>
-  window.PAGE_MODE = "admin-pedidos";
-</script>
+  <!-- Modo de página (ANTES del layout) -->
+  <script>
+    window.PAGE_MODE = "admin-pedidos";
+  </script>
 
-<!-- Layout (inyecta el HEADER en #app-header) -->
-<script src="/js/ui/layout.js"></script>
+  <!-- Layout (inyecta el HEADER en #app-header) -->
+  <script src="/js/ui/layout.js"></script>
 
-<!-- Header core -->
-<script type="module" src="/js/ui/header.js"></script>
+  <!-- Header core -->
+  <script type="module" src="/js/ui/header.js"></script>
 
-<!-- 🔍 Buscador global del header — ADMIN PEDIDOS -->
-<script type="module">
-  import { renderHeaderSearch } from "/js/ui/header.search.js";
+  <!-- 🔍 Buscador global del header — ADMIN PEDIDOS -->
+  <script type="module">
+    import { renderHeaderSearch } from "/js/ui/header.search.js";
 
-  document.addEventListener("header:ready", () => {
-    const slot = document.getElementById("header-search-slot");
+    document.addEventListener("header:ready", () => {
+      const slot = document.getElementById("header-search-slot");
 
-    if (!slot) {
-      console.warn("❌ header-search-slot no encontrado");
-      return;
-    }
+      if (!slot) {
+        console.warn("❌ header-search-slot no encontrado");
+        return;
+      }
 
-    /* ===============================
-       INYECTAR BUSCADOR
-    =============================== */
-    slot.innerHTML = renderHeaderSearch({
-      showFilter: true,
-      showAdd: false
+      /* ===============================
+         INYECTAR BUSCADOR
+      =============================== */
+      slot.innerHTML = renderHeaderSearch({
+        showFilter: true,
+        showAdd: false
+      });
+
+      /* ===============================
+         ESTADO INICIAL → NUEVOS
+      =============================== */
+      const DEFAULT_STATUS = "new";
+
+      document.dispatchEvent(
+        new CustomEvent("header:filter", {
+          detail: DEFAULT_STATUS
+        })
+      );
+
+      /* ===============================
+         🔍 BÚSQUEDA GLOBAL
+      =============================== */
+      const input = document.getElementById("header-search-input");
+      if (input) {
+        input.addEventListener("input", (e) => {
+          document.dispatchEvent(
+            new CustomEvent("header:search", {
+              detail: e.target.value.trim()
+            })
+          );
+        });
+      }
+
+      /* ===============================
+         🎯 FILTRO POR ESTADO
+      =============================== */
+      const filter = document.getElementById("header-status-filter");
+      if (filter) {
+        filter.value = DEFAULT_STATUS;
+        filter.addEventListener("change", (e) => {
+          document.dispatchEvent(
+            new CustomEvent("header:filter", {
+              detail: e.target.value
+            })
+          );
+        });
+      }
+
+      console.log("🔍 Buscador del header listo (Admin pedidos)");
     });
+  </script>
 
-    /* ===============================
-       ESTADO INICIAL → NUEVOS
-    =============================== */
-    const DEFAULT_STATUS = "new";
+  <!-- Auth UI (opcional pero correcto aquí) -->
+  <script src="/js/core/auth-ui.js"></script>
 
-    document.dispatchEvent(
-      new CustomEvent("header:filter", {
-        detail: DEFAULT_STATUS
-      })
-    );
-
-    /* ===============================
-       🔍 BÚSQUEDA GLOBAL
-    =============================== */
-    const input = document.getElementById("header-search-input");
-    if (input) {
-      input.addEventListener("input", (e) => {
-        document.dispatchEvent(
-          new CustomEvent("header:search", {
-            detail: e.target.value.trim()
-          })
-        );
-      });
-    }
-
-    /* ===============================
-       🎯 FILTRO POR ESTADO
-    =============================== */
-    const filter = document.getElementById("header-status-filter");
-    if (filter) {
-      filter.value = DEFAULT_STATUS;
-      filter.addEventListener("change", (e) => {
-        document.dispatchEvent(
-          new CustomEvent("header:filter", {
-            detail: e.target.value
-          })
-        );
-      });
-    }
-
-    console.log("🔍 Buscador del header listo (Admin pedidos)");
-  });
-</script>
-
-<!-- Auth UI (opcional pero correcto aquí) -->
-<script src="/js/core/auth-ui.js"></script>
-
-<!-- ADMIN PEDIDOS (AL FINAL SIEMPRE) -->
-<script src="/js/admin/admin_pedidos.js"></script>
+  <!-- ADMIN PEDIDOS (AL FINAL SIEMPRE) -->
+  <script src="/js/admin/admin_pedidos.js"></script>
 </body>
 
 </html>

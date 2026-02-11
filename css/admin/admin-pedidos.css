@@ -32,7 +32,8 @@ body {
   margin: 0;
   background: var(--gris-bg);
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
-  overflow-x: hidden; /* 🔒 blindaje */
+  overflow-x: hidden;
+  /* 🔒 blindaje */
 }
 
 /* ================= CONTENEDOR ================= */
@@ -45,9 +46,11 @@ body {
 /* ================= BARRA SUPERIOR ================= */
 .orders-actions-bar {
   position: sticky;
-  top: calc(var(--header-height, 72px) + 2px); /* antes +8px */
+  top: calc(var(--header-height, 72px) + 2px);
+  /* antes +8px */
   z-index: 20;
-  margin-bottom: 20px; /* antes 32px */
+  margin-bottom: 20px;
+  /* antes 32px */
   background: var(--gris-bg);
 }
 
@@ -66,7 +69,8 @@ body {
 
 /* ================= ICONO LUPA ================= */
 .search-box .material-symbols-outlined {
-  color: var(--verde);              /* 🔑 lupa verde */
+  color: var(--verde);
+  /* 🔑 lupa verde */
   font-size: 22px;
 }
 
@@ -77,7 +81,8 @@ body {
   background: transparent;
 
   font-size: .95rem;
-  color: var(--cafe);               /* 🔑 texto café */
+  color: var(--cafe);
+  /* 🔑 texto café */
   outline: none;
   min-width: 0;
 }
@@ -92,7 +97,8 @@ body {
   background: transparent;
 
   font-size: .95rem;
-  color: var(--verde);              /* 🔑 select verde */
+  color: var(--verde);
+  /* 🔑 select verde */
   font-weight: 600;
 
   outline: none;
@@ -108,6 +114,7 @@ body {
   border-color: var(--verde);
   box-shadow: 0 0 0 3px rgba(51, 103, 59, .18);
 }
+
 /* ================= TARJETA PRINCIPAL ================= */
 .order-main {
   max-width: 1100px;
@@ -115,15 +122,17 @@ body {
   background: #fff;
   border-radius: 24px;
   padding: 2.4rem;
-  box-shadow: 0 14px 32px rgba(0,0,0,.08);
-  overflow: hidden; /* 🔑 evita invasiones */
+  box-shadow: 0 14px 32px rgba(0, 0, 0, .08);
+  overflow: hidden;
+  /* 🔑 evita invasiones */
 }
 
 
 /* ================= HEADER PEDIDO ================= */
 .order-preview-header {
   display: flex;
-  flex-direction: column;          /* 🔑 flecha arriba, texto abajo */
+  flex-direction: column;
+  /* 🔑 flecha arriba, texto abajo */
   align-items: flex-start;
   gap: .6rem;
   margin-bottom: 2rem;
@@ -141,13 +150,14 @@ body {
   align-items: center;
   justify-content: center;
 
-  box-shadow: 0 6px 16px rgba(0,0,0,.18);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, .18);
   cursor: pointer;
 }
 
 /* Icono flecha */
 .back-btn .material-symbols-outlined {
-  color: var(--verde);              /* 🔑 flecha verde */
+  color: var(--verde);
+  /* 🔑 flecha verde */
   font-size: 26px;
 }
 
@@ -162,8 +172,10 @@ body {
 /* Fecha y hora */
 .order-date {
   font-size: .85rem;
-  color: var(--cafe);               /* 🔑 café */
+  color: var(--cafe);
+  /* 🔑 café */
 }
+
 /* =====================================================
    CLIENTE
 ===================================================== */
@@ -174,14 +186,16 @@ body {
 .order-client h3 {
   font-size: 1rem;
   font-weight: 600;
-  color: #5b3a1e; /* café */
+  color: #5b3a1e;
+  /* café */
   margin-bottom: 0.4rem;
 }
 
 .client-name {
   font-size: 1.2rem;
   font-weight: 600;
-  color: #2e7d32; /* verde */
+  color: #2e7d32;
+  /* verde */
   margin-bottom: 0.8rem;
 }
 
@@ -220,7 +234,8 @@ body {
 ===================== */
 .order-pills .order-pill {
   display: grid;
-  grid-template-columns: 1fr 110px; /* columna fija del precio */
+  grid-template-columns: 1fr 110px;
+  /* columna fija del precio */
   align-items: center;
   gap: 1rem;
 
@@ -229,7 +244,8 @@ body {
 
   /* 🤍 Blanco limpio */
   background: #ffffff;
-  color: #4a2f1b; /* café */
+  color: #4a2f1b;
+  /* café */
 
   font-size: 0.95rem;
   font-weight: 500;
@@ -267,7 +283,8 @@ body {
 .order-pills .order-pill .pill-price {
   text-align: right;
   font-weight: 700;
-  color: #4a2f1b; /* café */
+  color: #4a2f1b;
+  /* café */
 }
 
 /* =====================
@@ -289,7 +306,8 @@ body {
 ===================================================== */
 .order-total {
   display: grid;
-  grid-template-columns: 1fr 110px; /* mismo ancho contable */
+  grid-template-columns: 1fr 110px;
+  /* mismo ancho contable */
   align-items: center;
   padding-top: 1rem;
   margin-top: 1rem;
@@ -301,7 +319,8 @@ body {
 /* Texto "Total del pedido" → CAFÉ */
 .order-total span {
   font-size: 0.95rem;
-  color: #4a2f1b; /* café */
+  color: #4a2f1b;
+  /* café */
 }
 
 /* Número total → VERDE DEL SISTEMA */
@@ -309,7 +328,8 @@ body {
   text-align: right;
   font-size: 1.05rem;
   font-weight: 700;
-  color: var(--verde); /* verde del sistema */
+  color: var(--verde);
+  /* verde del sistema */
 }
 
 /* =====================================================
@@ -317,7 +337,8 @@ body {
 ===================================================== */
 .order-zone {
   font-size: 0.9rem;
-  color: var(--verde); /* verde del sistema */
+  color: var(--verde);
+  /* verde del sistema */
   margin-bottom: 1.4rem;
 }
 
@@ -403,6 +424,7 @@ body {
     0 10px 22px rgba(0, 0, 0, 0.12),
     0 4px 8px rgba(0, 0, 0, 0.08);
 }
+
 /* ================= LAYOUT ================= */
 .order-layout {
   display: grid;
@@ -419,8 +441,10 @@ body {
 /* ================= ACCIONES ================= */
 .order-actions.inline-actions {
   display: flex;
-  gap: 0.8rem;              /* aire entre botones */
-  margin-top: 1.6rem;       /* respiro respecto a Referencia */
+  gap: 0.8rem;
+  /* aire entre botones */
+  margin-top: 1.6rem;
+  /* respiro respecto a Referencia */
   padding-top: 0.6rem;
   flex-wrap: nowrap;
 }
@@ -430,7 +454,8 @@ body {
   flex: 1 1 0;
   padding: 0.9rem 1rem;
 
-  border-radius: 16px;      /* Material 3 Expressive */
+  border-radius: 16px;
+  /* Material 3 Expressive */
   border: none;
 
   font-size: 0.95rem;
@@ -537,7 +562,8 @@ body {
   font-size: 1.2rem;
   font-weight: 700;
 
-  color: var(--verde); /* 🟢 verde del sistema */
+  color: var(--verde);
+  /* 🟢 verde del sistema */
 }
 
 /* ================= SUBTÍTULO ================= */
@@ -547,8 +573,10 @@ body {
   font-size: 0.95rem;
   font-weight: 400;
 
-  color: var(--cafe); /* ☕ café */
+  color: var(--cafe);
+  /* ☕ café */
 }
+
 /* =========================================================
    CARRUSEL — MATERIAL 3 (DESKTOP + MOBILE)
 ========================================================= */
@@ -563,7 +591,8 @@ body {
 .carousel-container {
   position: relative;
   width: 100%;
-  overflow: hidden; /* desktop */
+  overflow: hidden;
+  /* desktop */
 }
 
 /* ================= LISTA ================= */
@@ -594,7 +623,7 @@ body {
   border-radius: 18px;
   padding: 1rem;
 
-  box-shadow: 0 10px 24px rgba(0,0,0,.08);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, .08);
 
   scroll-snap-align: start;
 
@@ -634,7 +663,8 @@ body {
   .similar-list {
     gap: 12px;
 
-    padding: 12px 16px 20px; /* 🔑 separación lateral */
+    padding: 12px 16px 20px;
+    /* 🔑 separación lateral */
 
     overflow-x: auto;
     overflow-y: hidden;
@@ -647,12 +677,14 @@ body {
   }
 
   .similar-card {
-    flex: 0 0 48%;   /* 🔑 2 tarjetas visibles */
+    flex: 0 0 48%;
+    /* 🔑 2 tarjetas visibles */
     max-width: 48%;
 
     scroll-snap-align: start;
   }
 }
+
 /* ================= MEDIA CARD ================= */
 .order-card-media {
   width: 100%;
@@ -713,7 +745,8 @@ body {
   height: 48px;
   border-radius: 50%;
 
-  background: #ffffff; /* 🔑 círculo blanco real */
+  background: #ffffff;
+  /* 🔑 círculo blanco real */
   border: none;
 
   /* sombra clara para verse sobre fondo blanco */
@@ -778,9 +811,11 @@ body {
 
 /* ================= MOBILE ================= */
 @media (max-width: 900px) {
+
   .carousel-prev-circle,
   .carousel-next-circle {
-    display: none; /* swipe manda */
+    display: none;
+    /* swipe manda */
   }
 }
 
@@ -790,9 +825,30 @@ body {
     padding-right: 12px;
   }
 }
+
 @media (max-width: 600px) {
   .order-main {
     padding-left: 1.25rem;
     padding-right: 1.25rem;
   }
+}
+
+.admin-empty-state {
+  text-align: center;
+  padding: 3rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.admin-empty-state .empty-illustration {
+  margin-top: 2rem;
+  max-width: 260px;
+  width: 100%;
+  opacity: 0.95;
+  display: block;
+}
+
+.admin-empty-state .empty-illustration.hidden {
+  display: none;
 }

@@ -7,9 +7,7 @@ console.log("🛠️ admin-pedidos.js — INIT");
 const sb = window.supabaseClient;
 if (!sb) throw new Error("❌ Supabase no inicializado");
 
-/* =========================
-   STATE
-========================= */
+const EMPTY_BASE = window.location.origin + "/imagenes/empty/";
 let orders = [];
 let filtered = [];
 let activeIndex = 0;
@@ -104,20 +102,26 @@ function applyGlobalSearch(query) {
   const q = query.toLowerCase();
 
   filtered = orders.filter(o => {
-    return (
-      String(o.order_number).includes(q) ||
+    // Buscar en número de pedido
+    const matchNum = String(o.order_number).includes(q) ||
+      String(o.order_number).padStart(3, "0").includes(q);
 
-      (o.users?.name || "").toLowerCase().includes(q) ||
-      (o.users?.email || "").toLowerCase().includes(q) ||
+    // Buscar en cliente (email o nombre de tabla users)
+    const matchUser = (o.users?.name || "").toLowerCase().includes(q) ||
+      (o.users?.email || "").toLowerCase().includes(q);
 
-      (o.address?.phone || "").includes(q) ||
+    // Buscar en dirección (teléfono, nombre completo, ciudad, etc)
+    const matchAddress = (o.address?.phone || "").includes(q) ||
+      (o.address?.full_name || "").toLowerCase().includes(q) ||
       (o.address?.city || "").toLowerCase().includes(q) ||
-      (o.address?.state || "").toLowerCase().includes(q) ||
+      (o.address?.street || "").toLowerCase().includes(q);
 
-      (STATUS_LABELS[o.status] || "")
-        .toLowerCase()
-        .includes(q)
+    // Buscar en productos
+    const matchProducts = o.items?.some(i =>
+      (i.products?.name || "").toLowerCase().includes(q)
     );
+
+    return matchNum || matchUser || matchAddress || matchProducts;
   });
 }
 
@@ -464,5 +468,35 @@ function bindCarouselArrows() {
 function showEmpty() {
   document.getElementById("admin-order-preview").classList.add("hidden");
   document.querySelector(".admin-related").classList.add("hidden");
-  document.getElementById("admin-empty-state").classList.remove("hidden");
+
+  const empty = document.getElementById("admin-empty-state");
+  if (!empty) return;
+
+  const title = empty.querySelector(".empty-title");
+  const text = empty.querySelector(".empty-text");
+  const img = empty.querySelector(".empty-illustration");
+
+  const config = {
+    new: ["Todo está al día por aquí", "No hay nuevos pedidos pendientes de revisión.", "pending.svg"],
+    processing: ["Nada en preparación", "No tienes pedidos que se estén preparando ahora mismo.", "processing.svg"],
+    shipped: ["Sin envíos activos", "Todos los pedidos enviados han sido gestionados.", "shipped.svg"],
+    delivered: ["Historial vacío", "Aquí aparecerán los pedidos que ya han sido entregados.", "delivered.svg"],
+    cancelled: ["Sin cancelaciones", "No hay pedidos cancelados en esta sección.", "cancelled.svg"],
+    search: ["No hay resultados", `No encontramos nada para "${search}". Prueba con otro término.`, "pending.svg"]
+  };
+
+  // Si hay búsqueda activa y no hay resultados, priorizamos mensaje de búsqueda
+  const key = (search && filtered.length === 0) ? "search" : currentStatus;
+  const [t, d, imgName] = config[key] || config.new;
+
+  title.textContent = t;
+  text.textContent = d;
+
+  if (img) {
+    img.src = EMPTY_BASE + imgName;
+    img.alt = t;
+    img.classList.remove("hidden");
+  }
+
+  empty.classList.remove("hidden");
 }
