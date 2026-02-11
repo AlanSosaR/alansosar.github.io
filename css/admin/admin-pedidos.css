@@ -852,3 +852,128 @@ body {
 .admin-empty-state .empty-illustration.hidden {
   display: none;
 }
+
+/* =========================================================
+   SNACKBAR DE ACCIÓN (FIX FINAL)
+========================================================= */
+.snackbar-action {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  /* asegurar que está sobre todo */
+
+  width: 90%;
+  max-width: 420px;
+
+  background: #1e1e1e;
+  /* Dark Material Surface */
+  color: #fff;
+
+  padding: 16px 20px;
+  border-radius: 12px;
+
+  box-shadow:
+    0 4px 8px rgba(0, 0, 0, 0.2),
+    0 8px 16px rgba(0, 0, 0, 0.14);
+
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  animation: snackSlideUp 0.3s cubic-bezier(0.2, 0, 0, 1) forwards;
+}
+
+.snackbar-action.hidden {
+  display: none;
+  animation: none;
+}
+
+@keyframes snackSlideUp {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 20px) scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+.snackbar-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.snackbar-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.snackbar-text strong {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.snackbar-text span {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.4;
+}
+
+.snackbar-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.snackbar-btn {
+  background: transparent;
+  border: none;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.snackbar-btn.cancel {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.snackbar-btn.cancel:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.snackbar-btn.danger {
+  color: #ffb4ab;
+  /* Rojo claro para dark mode */
+  background: rgba(255, 180, 171, 0.1);
+}
+
+.snackbar-btn.danger:hover {
+  background: rgba(255, 180, 171, 0.2);
+}
+
+/* Ajuste móvil para botones */
+@media (max-width: 400px) {
+  .snackbar-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .snackbar-btn {
+    text-align: right;
+    padding: 12px;
+  }
+}

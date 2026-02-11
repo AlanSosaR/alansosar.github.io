@@ -65,6 +65,7 @@ console.log("🛠️ admin-pedidos.js — INIT");
       .from("orders")
       .select(`
         id,
+        user_id,
         order_number,
         total,
         status,
@@ -345,8 +346,39 @@ console.log("🛠️ admin-pedidos.js — INIT");
      UPDATE STATUS
   ========================= */
   async function updateStatus(orderId, newStatus) {
-    await sb.from("orders").update({ status: newStatus }).eq("id", orderId);
+    // 1. Obtener datos del pedido para la notificación
+    const orderToUpdate = orders.find(o => o.id === orderId);
+    if (!orderToUpdate) return;
 
+    // 2. Actualizar estado
+    const { error } = await sb
+      .from("orders")
+      .update({ status: newStatus })
+      .eq("id", orderId);
+
+    if (error) {
+      console.error("❌ Error actualizando estado:", error);
+      alert("No se pudo actualizar el estado. Revisa la consola.");
+      return;
+    }
+
+    // 3. Enviar notificación al usuario (si corresponde)
+    if (orderToUpdate.users?.id || orderToUpdate.user_id) {
+      const userId = orderToUpdate.users?.id || orderToUpdate.user_id; // Ajuste según tu estructura (join vs raw)
+      // Nota: En tu select original tienes `users ( name, email )`, pero no el ID anidado si no lo pides explícitamente.
+      // Sin embargo, `user_id` suele estar en la tabla `orders` base.
+      // Vamos a confiar en `orderToUpdate.user_id` si está disponible, o modificar el select.
+
+      // Revisando `loadOrdersByStatus`, NO estamos seleccionando user_id explícitamente,
+      // pero Supabase a veces lo devuelve si es columna.
+      // Para estar seguros, usaremos el `user_id` de la orden (columna FK).
+      // Si `orders` no tiene `user_id` cargado, fallará.
+      // VOY A MODIFICAR `loadOrdersByStatus` TAMBIÉN para asegurar `user_id`.
+
+      await sendNotification(userId, newStatus, orderToUpdate);
+    }
+
+    // 4. Refrescar UI
     await loadOrdersByStatus(currentStatus);
     renderCarousel();
 
@@ -355,6 +387,56 @@ console.log("🛠️ admin-pedidos.js — INIT");
       selectOrderByIndex(0);
     } else {
       showEmpty();
+    }
+  }
+
+  /* =========================
+     NOTIFICACIONES
+  ========================= */
+  async function sendNotification(userId, status, order) {
+    if (!userId) return;
+
+    const config = {
+      processing: {
+        title: "Pedido en preparación ☕",
+        body: `¡Tu pedido #${order.order_number} se está preparando! Pronto estará listo.`
+      },
+      shipped: {
+        title: "Pedido en camino 🚚",
+        body: `¡Tu pedido #${order.order_number} ha sido enviado! Espéralo pronto.`
+      },
+      delivered: {
+        title: "Pedido entregado ✅",
+        body: `¡Tu pedido #${order.order_number} ha sido entregado! Gracias por tu compra.`
+      },
+      cancelled: {
+        title: "Pedido cancelado ❌",
+        body: `Tu pedido #${order.order_number} ha sido cancelado.`
+      }
+    };
+
+    const msg = config[status];
+    if (!msg) return;
+
+    console.log(`🔔 Enviando notificación a ${userId} (${status})`);
+
+    const { error } = await sb.from("notifications").insert({
+      user_id: userId,
+      title: msg.title,
+      body: msg.body,
+      type: "order_status",
+      is_read: false,
+      metadata: {
+        order_id: order.id,
+        order_number: order.order_number,
+        new_status: status
+      }
+    });
+
+    if (error) {
+      console.error("❌ Error enviando notificación:", error);
+    } else {
+      console.log("✅ Notificación enviada correctamente");
     }
   }
 
