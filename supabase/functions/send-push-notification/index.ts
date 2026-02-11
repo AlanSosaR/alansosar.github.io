@@ -13,10 +13,7 @@ Deno.serve(async (req) => {
 
     const notificationRecord = payload.record || payload; // Handle direct record or enveloped record
 
-    if (!notificationRecord?.user_id) {
-      console.error('⚠️ Missing user_id in record:', notificationRecord);
-      return new Response(JSON.stringify({ error: 'Missing user_id', received: notificationRecord }), { status: 400 });
-    }
+
 
     // Fetch push tokens
     let tokens = [];
@@ -41,7 +38,7 @@ Deno.serve(async (req) => {
         .eq('rol', 'admin');
 
       if (!adminErr && admins && admins.length > 0) {
-        const adminIds = admins.map(a => a.id);
+        const adminIds = admins.map((a: { id: string }) => a.id);
 
         // 2. Obtener tokens de esos admins
         const { data: adminTokens, error: tokenErr } = await supabase
