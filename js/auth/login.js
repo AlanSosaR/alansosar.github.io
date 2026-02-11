@@ -357,46 +357,43 @@ function showLoginUI() {
         .eq("id", user.id)
         .maybeSingle();
 
-      if (profile) {
-        // Preparar fallback (Google) si no hay récord en BD o no tiene foto
-        const googleUrl = getGoogleAvatarUrl(user);
+      let finalPhoto = googleUrl || DEFAULT_AVATAR;
+      let profileData = profile || {};
 
+      if (profile) {
         // Si ya tiene una foto personalizada (que no sea el default y no sea de Google), NO sobreescribir
         const hasCustomPhoto = profile.photo_url &&
           !profile.photo_url.includes("avatar-default") &&
           !profile.photo_url.includes("googleusercontent");
 
-        let finalPhoto = profile.photo_url || googleUrl || DEFAULT_AVATAR;
-
-        if (!hasCustomPhoto && googleUrl) {
-          // Intentamos subir a Storage para tener copia propia, pero si falla seguiremos usando googleUrl
+        if (hasCustomPhoto) {
+          finalPhoto = profile.photo_url;
+        } else if (googleUrl) {
+          // Intentamos subir a Storage para tener copia propia
           const storageUrl = await uploadGoogleAvatarToStorage(sb, user);
-          if (storageUrl) {
-            finalPhoto = storageUrl;
-          } else {
-            // Si falló el upload (CORS etc), usamos la URL directa de Google
-            finalPhoto = googleUrl;
-          }
+          finalPhoto = storageUrl || googleUrl;
         }
+      } else if (googleUrl) {
+        // Nuevo usuario, intentar Storage
+        const storageUrl = await uploadGoogleAvatarToStorage(sb, user);
+        finalPhoto = storageUrl || googleUrl;
+      }
 
-        const finalUser = {
-          ...user,
-          ...profile,
-          id: user.id,
-          email: user.email,
-          rol: profile.rol || "cliente",
-          photo_url: finalPhoto
-        };
-        localStorage.setItem("cortero_user", JSON.stringify(finalUser));
-        localStorage.setItem("cortero_logged", "1");
+      const finalUser = {
+        ...user,
+        ...profileData,
+        id: user.id,
+        email: user.email,
+        rol: profileData.rol || "cliente",
+        photo_url: finalPhoto
+      };
 
-        // Actualizar en DB si conseguimos algo mejor que lo que había
-        if (!hasCustomPhoto && finalPhoto !== profile.photo_url) {
-          await tryPersistAvatarToDB(sb, user, finalPhoto);
-        }
-      } else {
-        // Si no hay perfil aún, el RPC ensure_user_profile se encargará en el siguiente paso o recarga
-        localStorage.setItem("cortero_logged", "1");
+      localStorage.setItem("cortero_user", JSON.stringify(finalUser));
+      localStorage.setItem("cortero_logged", "1");
+
+      // 🔑 ASEGURAR QUE SE GUARDE EN LA BD (SI NO TENÍA FOTO O ERA LA DE GOOGLE)
+      if (finalPhoto && (!profile || profile.photo_url !== finalPhoto)) {
+        await tryPersistAvatarToDB(sb, user, finalPhoto);
       }
 
       // Detectar si es "primera vez"
@@ -404,44 +401,46 @@ function showLoginUI() {
       const lastSignIn = user?.last_sign_in_at ? new Date(user.last_sign_in_at).getTime() : 0;
       const isNew = createdAt && lastSignIn && Math.abs(lastSignIn - createdAt) < 15000; // 15s
 
-      // Mostrar UI (pero no el login "feo", solo para que se vea el snackbar)
+      // Mostrar UI
       showLoginUI();
 
       if (isNew) {
-        // FLUJO DE REGISTRO NUEVO: Marcamos estado de registro pendiente
+        // FLUJO DE REGISTRO NUEVO: Rellenar campos y esperar
         localStorage.setItem("google_registration_pending", "1");
 
-        // Precargamos los campos visualmente
+        // No marcamos como logueado aún en el estado real para que tenga que dar click
+        localStorage.removeItem("cortero_logged");
+
         if (userInput) {
           userInput.value = user.email;
           userInput.classList.add("has-text");
           userInput.closest(".m3-input")?.classList.add("success");
         }
         if (passInput) {
-          passInput.value = "••••••••"; // Password simbólico
+          passInput.value = "google-auth-sync"; // Password simbólico
           passInput.classList.add("has-text");
           passInput.closest(".m3-input")?.classList.add("success");
         }
 
         mostrarSnackbarAccion(
-          "¡Registro exitoso! Haz clic en 'Acceder' para entrar a tu nueva cuenta",
+          "¡Información de Google cargada! Pulsa 'Acceder' para completar tu registro.",
           "Acceder ahora",
           () => {
-            // Al hacer clic en el botón del snackbar también podemos entrar directo
+            localStorage.setItem("cortero_logged", "1");
             localStorage.removeItem("google_registration_pending");
             window.location.replace("/pages/home/index.html");
           },
           "success",
-          15000
+          20000
         );
       } else {
-        // INICIO DE SESIÓN NORMAL: Redirección mediante snackbar como estaba
+        // INICIO DE SESIÓN NORMAL
         mostrarSnackbarAccion(
-          "Inicio de sesión exitoso",
-          "Aceptar",
+          "Bienvenido de nuevo, " + (finalUser.name || "Cortero"),
+          "Ir al Inicio",
           () => window.location.replace("/pages/home/index.html"),
           "success",
-          12000
+          10000
         );
       }
 
