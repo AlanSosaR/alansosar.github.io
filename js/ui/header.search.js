@@ -1,6 +1,10 @@
 // js/ui/header.search.js
 
-export function renderHeaderSearch({ showFilter = false, showAdd = false }) {
+export function renderHeaderSearch({
+  showFilter = false,
+  showAdd = false,
+  placeholder = "Buscar…"
+}) {
   return `
     <div class="header-search-wrap">
       <div class="header-search-box">
@@ -10,13 +14,12 @@ export function renderHeaderSearch({ showFilter = false, showAdd = false }) {
         <input
           type="search"
           id="header-search-input"
-          placeholder="Buscar…"
-          aria-label="Buscar"
+          placeholder="${placeholder}"
+          aria-label="${placeholder}"
         />
 
-        ${
-          showFilter
-            ? `
+        ${showFilter
+      ? `
             <select
               id="header-status-filter"
               class="header-status-filter"
@@ -29,12 +32,11 @@ export function renderHeaderSearch({ showFilter = false, showAdd = false }) {
               <option value="cancelled">Cancelados</option>
             </select>
           `
-            : ""
-        }
+      : ""
+    }
 
-        ${
-          showAdd
-            ? `
+        ${showAdd
+      ? `
             <button
               id="header-add-btn"
               class="header-add-btn"
@@ -44,8 +46,8 @@ export function renderHeaderSearch({ showFilter = false, showAdd = false }) {
               <span class="material-symbols-outlined">add</span>
             </button>
           `
-            : ""
-        }
+      : ""
+    }
 
       </div>
     </div>
