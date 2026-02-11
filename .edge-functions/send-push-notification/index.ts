@@ -78,7 +78,7 @@ Deno.serve(async (req) => {
           token: tokenRow.token,
           notification: {
             title: notificationRecord.title || 'Nueva notificación',
-            body: notificationRecord.message || ''
+            body: notificationRecord.body || notificationRecord.message || ''
           },
           data: {
             type: notificationRecord.type || 'info',
