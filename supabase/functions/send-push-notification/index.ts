@@ -81,6 +81,33 @@ Deno.serve(async (req) => {
 
     const now = getNumericDate(0);
 
+    console.log("🔑 Importing Private Key for RS256...");
+    // Convert PEM to CryptoKey
+    const pemHeader = "-----BEGIN PRIVATE KEY-----";
+    const pemFooter = "-----END PRIVATE KEY-----";
+    const pemContents = privateKey
+      .replace(pemHeader, "")
+      .replace(pemFooter, "")
+      .replace(/\s/g, "");
+
+    // Decode base64 to array buffer
+    const binaryDerString = atob(pemContents);
+    const binaryDer = new Uint8Array(binaryDerString.length);
+    for (let i = 0; i < binaryDerString.length; i++) {
+      binaryDer[i] = binaryDerString.charCodeAt(i);
+    }
+
+    const signingKey = await crypto.subtle.importKey(
+      "pkcs8",
+      binaryDer.buffer,
+      {
+        name: "RSASSA-PKCS1-v1_5",
+        hash: "SHA-256",
+      },
+      true,
+      ["sign"]
+    );
+
     console.log("🔑 Creating JWT...");
     // Create JWT for OAuth
     const jwt = await create(
@@ -92,7 +119,7 @@ Deno.serve(async (req) => {
         iat: now,
         exp: now + 3600
       },
-      privateKey
+      signingKey
     );
 
     console.log("🔑 Fetching OAuth token...");
