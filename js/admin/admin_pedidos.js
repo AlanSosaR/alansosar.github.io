@@ -423,7 +423,7 @@ console.log("🛠️ admin-pedidos.js — INIT");
     const { error } = await sb.from("notifications").insert({
       user_id: userId,
       title: msg.title,
-      body: msg.body,
+      message: msg.body, // Corregido: 'body' -> 'message' según schema
       type: "order_status",
       is_read: false,
       metadata: {

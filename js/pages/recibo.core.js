@@ -109,7 +109,7 @@ async function ejecutarCancelacion(pedido) {
   await sb.from("notifications").insert({
     user_id: null,
     title: "Pedido cancelado",
-    body: `El cliente ${pedido.users?.name || "Cliente"} canceló el pedido #${pedido.order_number}`,
+    message: `El cliente ${pedido.users?.name || "Cliente"} canceló el pedido #${pedido.order_number}`, // Corregido: 'body' -> 'message'
     type: "order_cancelled",
     metadata: {
       order_id: pedido.id,
@@ -246,88 +246,88 @@ window.cargarPedidoExistente = async (orderId) => {
     </div>
   `).join("");
 
-/* ===============================
-   COMPROBANTE — SOLO IMAGEN + INFO
-   (RECIBO REAL)
-================================ */
+  /* ===============================
+     COMPROBANTE — SOLO IMAGEN + INFO
+     (RECIBO REAL)
+  ================================ */
 
-// eliminar bloques de checkout
-["pago-deposito", "pago-efectivo"].forEach(id => {
-  $id(id)?.remove();
-});
-document.querySelector(".pago-select-label")?.remove();
+  // eliminar bloques de checkout
+  ["pago-deposito", "pago-efectivo"].forEach(id => {
+    $id(id)?.remove();
+  });
+  document.querySelector(".pago-select-label")?.remove();
 
-// normalizar recibos
-const receiptList = Array.isArray(pedido.payment_receipts)
-  ? pedido.payment_receipts
-  : [];
+  // normalizar recibos
+  const receiptList = Array.isArray(pedido.payment_receipts)
+    ? pedido.payment_receipts
+    : [];
 
-// usar preview correcto
-const preview = $id("previewComprobanteRecibo");
-const img = $id("imgComprobanteRecibo");
+  // usar preview correcto
+  const preview = $id("previewComprobanteRecibo");
+  const img = $id("imgComprobanteRecibo");
 
-if (!preview || !img) {
-  console.warn("⚠️ previewComprobanteRecibo no existe");
-  return;
-}
+  if (!preview || !img) {
+    console.warn("⚠️ previewComprobanteRecibo no existe");
+    return;
+  }
 
-// forzar visibilidad
-preview.classList.remove("hidden");
-preview.style.display = "flex";
+  // forzar visibilidad
+  preview.classList.remove("hidden");
+  preview.style.display = "flex";
 
-img.style.display = "block";
-img.style.pointerEvents = "none";
+  img.style.display = "block";
+  img.style.pointerEvents = "none";
 
-const isCash = pedido.payment_method === "cash_on_delivery";
+  const isCash = pedido.payment_method === "cash_on_delivery";
 
-let src = "/imagenes/recibo_default.svg";
-let texto = "Comprobante pendiente de validación.";
+  let src = "/imagenes/recibo_default.svg";
+  let texto = "Comprobante pendiente de validación.";
 
-if (isCash) {
-  src = "/imagenes/pago_en_mano.svg";
-  // Tono relajado: solo informa la modalidad sin pedir nada a cambio
-  texto = "Tu pedido está confirmado. **Pagarás al recibirlo**, así que no te preocupes por nada más hasta que lleguemos.";
-} else if (receiptList.length && receiptList[0].file_url) {
-  src = receiptList[0].file_url;
-  // Tono de acompañamiento: confirma que el proceso sigue su curso natural
-  texto = "Ya tenemos tu comprobante. **Estamos revisando los detalles** para que tu pedido empiece a prepararse pronto.";
-}
+  if (isCash) {
+    src = "/imagenes/pago_en_mano.svg";
+    // Tono relajado: solo informa la modalidad sin pedir nada a cambio
+    texto = "Tu pedido está confirmado. **Pagarás al recibirlo**, así que no te preocupes por nada más hasta que lleguemos.";
+  } else if (receiptList.length && receiptList[0].file_url) {
+    src = receiptList[0].file_url;
+    // Tono de acompañamiento: confirma que el proceso sigue su curso natural
+    texto = "Ya tenemos tu comprobante. **Estamos revisando los detalles** para que tu pedido empiece a prepararse pronto.";
+  }
 
 
-// asignar imagen
-img.src = src;
-img.alt = "Comprobante de pago";
-img.loading = "lazy";
+  // asignar imagen
+  img.src = src;
+  img.alt = "Comprobante de pago";
+  img.loading = "lazy";
 
-// texto
-let p = preview.querySelector(".preview-text");
-if (!p) {
-  p = document.createElement("p");
-  p.className = "preview-text";
-  preview.appendChild(p);
-}
-p.textContent = texto;
+  // texto
+  let p = preview.querySelector(".preview-text");
+  if (!p) {
+    p = document.createElement("p");
+    p.className = "preview-text";
+    preview.appendChild(p);
+  }
+  p.textContent = texto;
 
-// fallback
-img.onerror = () => {
-  img.src = "/imagenes/recibo_default.svg";
-};
+  // fallback
+  img.onerror = () => {
+    img.src = "/imagenes/recibo_default.svg";
+  };
 
-/* ===============================
-   ESTADO VISUAL
-================================ */
-let statusVisual = pedido.status;
+  /* ===============================
+     ESTADO VISUAL
+  ================================ */
+  let statusVisual = pedido.status;
 
-if (
-  pedido.payment_method === "bank_transfer" &&
-  pedido.status === "pending" &&
-  receiptList.length
-) {
-  statusVisual = "payment_review";
-}
+  if (
+    pedido.payment_method === "bank_transfer" &&
+    pedido.status === "pending" &&
+    receiptList.length
+  ) {
+    statusVisual = "payment_review";
+  }
 
-window.aplicarProgresoPedido(statusVisual);
-window.aplicarModoRecibo(pedido);
+  window.aplicarProgresoPedido(statusVisual);
+  window.aplicarModoRecibo(pedido);
 
 }; // ✅ CIERRE CORRECTO DE cargarPedidoExistente
 

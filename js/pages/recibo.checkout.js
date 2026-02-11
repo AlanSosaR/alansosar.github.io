@@ -308,7 +308,7 @@ async function enviarPedido() {
     await sb.from("notifications").insert({
       user_id: null, // <--- CLAVE PARA ADMIN
       title: "Nuevo pedido recibido 🛍️",
-      body: `El cliente ${user.name || "Cliente"} ha realizado el pedido #${orderNumber}.`,
+      message: `El cliente ${user.name || "Cliente"} ha realizado el pedido #${orderNumber}.`, // Corregido: 'body' -> 'message'
       type: "new_order",
       is_read: false,
       metadata: {
