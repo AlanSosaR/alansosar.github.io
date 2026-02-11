@@ -18,15 +18,44 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ error: 'Missing user_id', received: notificationRecord }), { status: 400 });
     }
 
-    // Fetch all push tokens for this user
-    const { data: tokens, error: tokenError } = await supabase
-      .from('push_tokens')
-      .select('token')
-      .eq('user_id', notificationRecord.user_id);
+    // Fetch push tokens
+    let tokens = [];
 
-    if (tokenError || !tokens || tokens.length === 0) {
-      console.log('⚠️ No tokens found for user:', notificationRecord.user_id);
-      return new Response(JSON.stringify({ message: 'No tokens found', user_id: notificationRecord.user_id }), { status: 200 });
+    // CASO 1: Notificación específica a un usuario
+    if (notificationRecord.user_id) {
+      const { data, error } = await supabase
+        .from('push_tokens')
+        .select('token')
+        .eq('user_id', notificationRecord.user_id);
+
+      if (!error && data) tokens = data;
+    }
+    // CASO 2: Notificación para el ADMINISTRADOR (user_id null)
+    else {
+      console.log('📢 Notification for ADMIN (user_id is null/missing) - Broadcasting to admins...');
+
+      // 1. Obtener IDs de admins
+      const { data: admins, error: adminErr } = await supabase
+        .from('users')
+        .select('id')
+        .eq('rol', 'admin');
+
+      if (!adminErr && admins && admins.length > 0) {
+        const adminIds = admins.map(a => a.id);
+
+        // 2. Obtener tokens de esos admins
+        const { data: adminTokens, error: tokenErr } = await supabase
+          .from('push_tokens')
+          .select('token')
+          .in('user_id', adminIds);
+
+        if (!tokenErr && adminTokens) tokens = adminTokens;
+      }
+    }
+
+    if (!tokens || tokens.length === 0) {
+      console.log('⚠️ No tokens found for target');
+      return new Response(JSON.stringify({ message: 'No tokens found' }), { status: 200 });
     }
 
     console.log(`✅ Found ${tokens.length} token(s) for user ${notificationRecord.user_id}`);

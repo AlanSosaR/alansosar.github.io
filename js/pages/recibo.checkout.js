@@ -208,7 +208,9 @@ function mostrarConfirmacionEnvio() {
 /* =========================================================
    CLICK EN ENVIAR
 ========================================================= */
-function confirmarEnvio() {
+function confirmarEnvio(e) {
+  if (e && e.preventDefault) e.preventDefault(); // 🛡️ Evitar recarga
+
   if (!btnEnviar || btnEnviar.disabled) return;
 
   if (!metodoPago.value) {
@@ -301,36 +303,19 @@ async function enviarPedido() {
       });
     }
 
-    /* 🔔 NOTIFICAR AL ADMIN */
-    // Insertamos notificación para el usuario 'admin' (o un rol, pero aquí es por user_id).
-    // SI no tienes un user_id fijo de admin, tendrás que obtenerlo o insertar con user_id=null si tu lógica lo soporta.
-    // Asumiendo que hay un admin escuchando, o que el admin filtra por todas.
-    // PERO `notifications` suele tener `user_id`.
-    // ESTRATEGIA: Obtener ID del admin o insertar notificación "global" si tu esquema lo permite.
-    // DADO QUE `notifications.js` filtra por `user_id=eq.${authUser.id}`, necesitamos saber el ID del admin.
-    // COMO FALLBACK rápido: No podemos saber el ID del admin sin query.
-    // VOY A HACER UN QUERY para buscar al admin (rol='admin').
-
-    const { data: adminUser } = await sb
-      .from("users")
-      .select("id")
-      .eq("rol", "admin")
-      .limit(1)
-      .single();
-
-    if (adminUser) {
-      await sb.from("notifications").insert({
-        user_id: adminUser.id,
-        title: "Nuevo pedido recibido 🛍️",
-        body: `El cliente ${user.name || "Cliente"} ha realizado el pedido #${orderNumber}.`,
-        type: "new_order",
-        is_read: false,
-        metadata: {
-          order_id: order.id,
-          order_number: orderNumber
-        }
-      });
-    }
+    /* 🔔 NOTIFICAR AL ADMIN (Simplificado) */
+    // Usamos user_id: null para que la Edge Function detecte y haga broadcast a admins.
+    await sb.from("notifications").insert({
+      user_id: null, // <--- CLAVE PARA ADMIN
+      title: "Nuevo pedido recibido 🛍️",
+      body: `El cliente ${user.name || "Cliente"} ha realizado el pedido #${orderNumber}.`,
+      type: "new_order",
+      is_read: false,
+      metadata: {
+        order_id: order.id,
+        order_number: orderNumber
+      }
+    });
 
     localStorage.setItem(CART_KEY, "[]");
     sessionStorage.removeItem("current_order_notes"); // limpieza correcta
