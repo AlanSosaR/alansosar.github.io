@@ -105,10 +105,12 @@
     const { data, error } = await sb.auth.getSession();
 
     if (error || !data?.session) {
+      console.warn("Sesión de recuperación no válida o expirada:", error);
+
       const decision = await openSnack(
-        "Tu enlace de recuperación ha expirado. Solicita uno nuevo.",
+        "Tu enlace de recuperación ha expirado o ya fue utilizado. Solicita uno nuevo.",
         "error",
-        { confirmText: "Recuperar", cancelText: "Cerrar", showCancel: true }
+        { confirmText: "Solicitar nuevo", cancelText: "Cerrar", showCancel: true }
       );
 
       if (decision === "confirm") {
@@ -117,12 +119,7 @@
       return false;
     }
 
-    // 🔐 VALIDACIÓN REAL DE RECOVERY
-    if (!data.session.user?.recovery_sent_at) {
-      window.location.href = "/pages/auth/login.html";
-      return false;
-    }
-
+    // El enlace es válido si existe una sesión activa tras el intercambio de código (Supabase lo hace automático al llegar con el hash)
     return true;
   }
 
