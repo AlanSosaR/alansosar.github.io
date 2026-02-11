@@ -357,24 +357,28 @@ function showLoginUI() {
         .eq("id", user.id)
         .maybeSingle();
 
-      // Preparar fallback (Google) si no hay récord en BD o no tiene foto
-      const googleUrl = getGoogleAvatarUrl(user);
-      const fallbackUrl = googleUrl || DEFAULT_AVATAR;
-
-      // Si ya tiene una foto personalizada (que no sea el default), NO sobreescribir con Google
-      const hasCustomPhoto = profile?.photo_url &&
-        !profile.photo_url.includes("avatar-default") &&
-        !profile.photo_url.includes("googleusercontent");
-
-      let finalPhoto = profile?.photo_url || fallbackUrl;
-
-      if (!hasCustomPhoto && googleUrl) {
-        // Solo intentamos sincronizar con Google si no hay foto propia y sí hay de Google
-        const storageUrl = await uploadGoogleAvatarToStorage(sb, user);
-        if (storageUrl) finalPhoto = storageUrl;
-      }
-
       if (profile) {
+        // Preparar fallback (Google) si no hay récord en BD o no tiene foto
+        const googleUrl = getGoogleAvatarUrl(user);
+
+        // Si ya tiene una foto personalizada (que no sea el default y no sea de Google), NO sobreescribir
+        const hasCustomPhoto = profile.photo_url &&
+          !profile.photo_url.includes("avatar-default") &&
+          !profile.photo_url.includes("googleusercontent");
+
+        let finalPhoto = profile.photo_url || googleUrl || DEFAULT_AVATAR;
+
+        if (!hasCustomPhoto && googleUrl) {
+          // Intentamos subir a Storage para tener copia propia, pero si falla seguiremos usando googleUrl
+          const storageUrl = await uploadGoogleAvatarToStorage(sb, user);
+          if (storageUrl) {
+            finalPhoto = storageUrl;
+          } else {
+            // Si falló el upload (CORS etc), usamos la URL directa de Google
+            finalPhoto = googleUrl;
+          }
+        }
+
         const finalUser = {
           ...user,
           ...profile,
@@ -386,11 +390,12 @@ function showLoginUI() {
         localStorage.setItem("cortero_user", JSON.stringify(finalUser));
         localStorage.setItem("cortero_logged", "1");
 
-        // Actualizar en DB si conseguimos la de Google y no tenía nada
+        // Actualizar en DB si conseguimos algo mejor que lo que había
         if (!hasCustomPhoto && finalPhoto !== profile.photo_url) {
           await tryPersistAvatarToDB(sb, user, finalPhoto);
         }
       } else {
+        // Si no hay perfil aún, el RPC ensure_user_profile se encargará en el siguiente paso o recarga
         localStorage.setItem("cortero_logged", "1");
       }
 
