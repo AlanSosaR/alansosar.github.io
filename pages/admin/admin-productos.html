@@ -12,6 +12,7 @@
   <!-- Estilos -->
   <link rel="stylesheet" href="/css/core/tipografia.css" />
   <link rel="stylesheet" href="/css/ui/header.css" />
+  <link rel="stylesheet" href="/css/ui/header.search.css">
   <link rel="stylesheet" href="/css/admin/admin-productos.css" />
 </head>
 
@@ -32,6 +33,7 @@
       <p class="empty-text">
         Agrega un café para que los clientes puedan verlo y comprarlo en la tienda.
       </p>
+      <img src="" alt="Sin resultados" class="empty-illustration hidden">
     </section>
     <!-- =========================
        TARJETA PRINCIPAL (PREVIEW ADMIN)
@@ -182,6 +184,44 @@
   <script type="module" src="/js/ui/header.js"></script>
   <script src="/js/core/auth-ui.js"></script>
   <script src="/js/ui/layout.js"></script>
+
+  <!-- 🔍 Buscador global del header — ADMIN PRODUCTOS -->
+  <script type="module">
+    import { renderHeaderSearch } from "/js/ui/header.search.js";
+
+    document.addEventListener("header:ready", () => {
+      const slot = document.getElementById("header-search-slot");
+      if (!slot) return;
+
+      /* ===============================
+         INYECTAR BUSCADOR CON BOTÓN ADD
+      =============================== */
+      slot.innerHTML = renderHeaderSearch({
+        showFilter: false,
+        showAdd: true
+      });
+
+      const input = document.getElementById("header-search-input");
+      if (input) {
+        input.addEventListener("input", (e) => {
+          document.dispatchEvent(
+            new CustomEvent("header:search", {
+              detail: e.target.value.trim()
+            })
+          );
+        });
+      }
+
+      const addBtn = document.getElementById("header-add-btn");
+      if (addBtn) {
+        addBtn.addEventListener("click", () => {
+          document.dispatchEvent(new Event("header:add-click"));
+        });
+      }
+
+      console.log("🔍 Buscador listo (Admin productos)");
+    });
+  </script>
 
   <!-- ADMIN -->
   <script src="/js/admin/admin-productos.js"></script>

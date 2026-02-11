@@ -16,6 +16,7 @@ function esperarSupabase() {
 }
 
 const emptyState = document.getElementById("admin-empty-state");
+const EMPTY_BASE = window.location.origin + "/imagenes/empty/";
 
 const preview = {
   section: document.getElementById("admin-product-preview"),
@@ -49,6 +50,7 @@ let filteredProducts = [];
 let selectedProductId = null;
 let carouselIndex = 0;
 let productToDelete = null;
+let searchActive = "";
 
 /* ============================================================
    HELPERS
@@ -78,9 +80,33 @@ function updateCarouselStatus(active) {
    ESTADO VACÍO
 ============================================================ */
 function mostrarEstadoVacio() {
-  emptyState?.classList.remove("hidden");
   preview.section?.classList.add("hidden");
   relatedSection?.classList.add("hidden");
+
+  if (!emptyState) return;
+  emptyState.classList.remove("hidden");
+
+  const title = emptyState.querySelector(".empty-title");
+  const text = emptyState.querySelector(".empty-text");
+  const img = emptyState.querySelector(".empty-illustration");
+
+  const isSearch = searchActive && filteredProducts.length === 0;
+
+  if (isSearch) {
+    title.textContent = "Sin resultados";
+    text.textContent = `No encontramos ningún café que coincida con "${searchActive}".`;
+    if (img) {
+      img.src = EMPTY_BASE + "pending.svg";
+      img.classList.remove("hidden");
+    }
+  } else {
+    title.textContent = "No hay cafés registrados";
+    text.textContent = "Agrega un café para que los clientes puedan verlo y comprarlo en la tienda.";
+    if (img) {
+      img.src = EMPTY_BASE + "processing.svg"; // O una imagen que represente "vacio"
+      img.classList.remove("hidden");
+    }
+  }
 }
 
 function ocultarEstadoVacio() {
@@ -319,13 +345,18 @@ function actualizarScrollCarrusel() {
    FILTRO
 ============================================================ */
 function aplicarFiltro(query) {
-  const q = (typeof query === "string" ? query : "").toLowerCase().trim();
+  searchActive = (typeof query === "string" ? query : "").toLowerCase().trim();
 
-  filteredProducts = !q
+  filteredProducts = !searchActive
     ? [...products]
-    : products.filter(p =>
-      p.name.toLowerCase().includes(q)
-    );
+    : products.filter(p => {
+      const nameMatch = (p.name || "").toLowerCase().includes(searchActive);
+      const descMatch = (p.description || "").toLowerCase().includes(searchActive);
+      const catMatch = (p.category || "").toLowerCase().includes(searchActive);
+      const grindMatch = (p.grind_type || "").toLowerCase().includes(searchActive);
+
+      return nameMatch || descMatch || catMatch || grindMatch;
+    });
 
   if (!filteredProducts.length) {
     mostrarEstadoVacio();
