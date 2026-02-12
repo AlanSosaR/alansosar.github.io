@@ -309,9 +309,10 @@ body {
   border-radius: 24px;
   box-shadow: var(--sombra);
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-  padding: 2rem;
+  grid-template-columns: 0.9fr 1.1fr;
+  /* Más espacio para la imagen */
+  gap: 3rem;
+  padding: 3rem 2.5rem;
   align-items: center;
 }
 
@@ -485,12 +486,12 @@ body {
 
 .product-img-wrap {
   width: 100%;
-  height: 480px;
-  /* Altura ideal para la bolsa */
+  height: 580px;
+  /* Más grande e impactante */
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 0.8rem;
+  margin-top: 0;
   background: transparent;
 }
 
@@ -501,9 +502,9 @@ body {
   /* Muestra la bolsa completa */
   display: block;
 
-  /* ✨ Efecto flotante con sombra suave */
-  filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.15));
-  transition: transform 0.4s ease, filter 0.4s ease;
+  /* ✨ Efecto flotante con sombra profunda y suave */
+  filter: drop-shadow(0 25px 50px rgba(0, 0, 0, 0.18));
+  transition: transform 0.5s cubic-bezier(0.17, 0.67, 0.83, 0.67), filter 0.5s ease;
 }
 
 .product-img-wrap img:hover {
