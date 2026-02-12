@@ -21,14 +21,7 @@
 
   <main class="admin-orders-container fade-in" aria-live="polite">
 
-    <div style="max-width: 900px; margin: 1rem auto 0; padding: 0 16px;">
-      <a href="/pages/home/index.html#productos" class="btn-volver-premium">
-        <div class="circle-icon">
-          <span class="material-symbols-outlined">arrow_back</span>
-        </div>
-        <span class="text">Seguir comprando</span>
-      </a>
-    </div>
+    <!-- El botón "Seguir comprando" ahora se maneja dentro del detalle del pedido o vía drawer -->
 
     <!-- PEDIDO ACTIVO (VISIBLE POR DEFECTO) -->
     <section id="pedido-activo" class="pedido-activo hidden" aria-label="Detalle del pedido seleccionado">
@@ -71,12 +64,13 @@
   <template id="pedido-activo-template">
     <section class="order-main">
       <header class="order-preview-header">
-        <button class="back-to-shop" onclick="location.href='/pages/home/index.html#productos'">
-          <span class="arrow-circle">
+        <a href="/pages/home/index.html#productos" class="btn-volver-premium variant-white"
+          style="margin-bottom: 1.5rem;">
+          <div class="circle-icon">
             <span class="material-symbols-outlined">arrow_back</span>
-          </span>
-          <span>Seguir comprando</span>
-        </button>
+          </div>
+          <span class="text" style="color: var(--verde) !important;">Seguir comprando</span>
+        </a>
 
         <div class="order-header-text">
           <h2 class="pedido-numero"></h2>

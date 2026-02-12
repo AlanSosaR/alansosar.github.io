@@ -89,7 +89,7 @@ if (!window.__HEADER_CORE_LOADED__) {
     const user = getUserCache();
     const header = document.querySelector(".header-fixed");
     const drawer = $("user-drawer");
-    const notif  = $("drawer-notification");
+    const notif = $("drawer-notification");
 
     if (!header || !drawer) return;
 
@@ -162,7 +162,7 @@ if (!window.__HEADER_CORE_LOADED__) {
   ===================================================== */
   function openDrawer() {
     const drawer = $("user-drawer");
-    const scrim  = $("user-scrim");
+    const scrim = $("user-scrim");
     if (!drawer || !scrim) return;
 
     if (drawer.classList.contains("open")) return;
@@ -173,7 +173,7 @@ if (!window.__HEADER_CORE_LOADED__) {
 
   function closeDrawer() {
     const drawer = $("user-drawer");
-    const scrim  = $("user-scrim");
+    const scrim = $("user-scrim");
     if (!drawer || !scrim) return;
 
     drawer.classList.remove("open");
@@ -202,6 +202,15 @@ if (!window.__HEADER_CORE_LOADED__) {
       toggleDrawer();
     });
     $("user-scrim")?.addEventListener("click", closeDrawer);
+
+    // Cierre automático al pulsar cualquier link del drawer
+    $("user-drawer")?.addEventListener("click", (e) => {
+      const item = e.target.closest(".user-drawer-item, .user-drawer-profile-link, .drawer-notification");
+      if (item) {
+        // Un ligero retardo permite que el enlace se procese antes de ocultar
+        setTimeout(closeDrawer, 150);
+      }
+    });
 
     $("cart-btn")?.addEventListener("click", () => {
       location.href = "/pages/shop/carrito.html";

@@ -789,11 +789,18 @@ body.page-carrito .header-cart-title {
 }
 
 #seguir-comprando-item {
-  color: var(--verde);
-  /* Resalta en verde según pedido del usuario */
+  color: #fff;
 }
 
-#seguir-comprando-item span {
+.user-drawer-item .material-symbols-outlined {
+  color: var(--verde);
+}
+
+.user-drawer-item.logout .material-symbols-outlined {
+  color: #ff4b4b;
+}
+
+.user-drawer-item.login .material-symbols-outlined {
   color: var(--verde);
 }
 
