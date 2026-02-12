@@ -838,9 +838,7 @@ body {
 }
 
 /* ESTADO ACTIVO / HOVER */
-.similar-card:hover .similar-img-cont {
-  transform: translateY(-8px);
-}
+/* ESTADO ACTIVO (SOLO CLICK) */
 
 .similar-card.active-card .similar-info {
   box-shadow: 0 15px 40px rgba(51, 103, 59, 0.08);
