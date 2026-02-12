@@ -430,3 +430,89 @@ main.carrito-vacio-activo {
     padding-top: calc(72px + 1rem);
   }
 }
+
+/* =====================================================
+   BOTÓN VOLVER PREMIUM (Píldora Blanca)
+   ===================================================== */
+.btn-volver-premium {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  background: transparent;
+  padding: 8px 12px;
+  border-radius: 999px;
+  width: fit-content;
+  user-select: none;
+}
+
+.btn-volver-premium .circle-icon {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  border-radius: 50%;
+  background: var(--verde);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(51, 103, 59, 0.2);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-volver-premium .circle-icon span,
+.btn-volver-premium .circle-icon i {
+  color: #fff;
+  font-size: 20px;
+  font-weight: 700;
+  transition: transform 0.25s ease;
+}
+
+.btn-volver-premium .text {
+  color: var(--verde);
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: -0.2px;
+}
+
+/* Variante con fondo blanco (Píldora blanca con círculo verde) */
+.btn-volver-premium.variant-white {
+  background: #ffffff;
+  padding: 6px 18px 6px 6px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.btn-volver-premium.variant-white .circle-icon {
+  background: var(--verde);
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  box-shadow: none;
+}
+
+.btn-volver-premium.variant-white .circle-icon span,
+.btn-volver-premium.variant-white .circle-icon i {
+  color: #fff;
+  font-size: 18px;
+}
+
+.btn-volver-premium.variant-white .text {
+  color: var(--verde);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+@media (hover: hover) {
+  .btn-volver-premium.variant-white:hover {
+    background: #fdfdfd;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    transform: translateY(-1px);
+  }
+}
+
+.btn-volver-premium:active {
+  transform: scale(0.96);
+}
