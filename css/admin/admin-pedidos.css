@@ -688,7 +688,7 @@ body {
 /* ================= MEDIA CARD ================= */
 .order-card-media {
   width: 100%;
-  height: 150px;
+  height: 190px;
   border-radius: 14px;
   overflow: hidden;
   background: #f4f4f4;
@@ -741,18 +741,18 @@ body {
   top: 50%;
   transform: translateY(-50%);
 
-  width: 48px;
-  height: 48px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
 
   background: #ffffff;
   /* 🔑 círculo blanco real */
   border: none;
 
-  /* sombra clara para verse sobre fondo blanco */
+  /* sombra Material unificada */
   box-shadow:
-    0 6px 16px rgba(0, 0, 0, 0.22),
-    0 2px 4px rgba(0, 0, 0, 0.12);
+    0 6px 16px rgba(0, 0, 0, 0.18),
+    0 2px 6px rgba(0, 0, 0, 0.12);
 
   cursor: pointer;
   z-index: 20;
@@ -777,11 +777,11 @@ body {
 /* ================= POSICIÓN ================= */
 /* Dentro del carrusel (NO fuera) */
 .carousel-prev-circle {
-  left: 8px;
+  left: -32px;
 }
 
 .carousel-next-circle {
-  right: 8px;
+  right: -32px;
 }
 
 /* ================= HOVER ================= */
