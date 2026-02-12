@@ -12,14 +12,16 @@
   --cafe: var(--marron);
   --surface: var(--blanco);
   --text-muted: #777;
-  --elev-1: 0 4px 12px rgba(0,0,0,.08);
-  --elev-2: 0 14px 32px rgba(0,0,0,.12);
+  --elev-1: 0 4px 12px rgba(0, 0, 0, .08);
+  --elev-2: 0 14px 32px rgba(0, 0, 0, .12);
   --r-xl: 28px;
   --r-lg: 22px;
   --r-md: 16px;
 }
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
 }
@@ -32,7 +34,9 @@ body {
   overflow-x: hidden;
 }
 
-.hidden { display: none !important; }
+.hidden {
+  display: none !important;
+}
 
 /* ================= CONTAINER ================= */
 .admin-orders-container {
@@ -48,7 +52,7 @@ body {
   padding: 2.4rem;
   box-shadow: var(--elev-2);
   margin-bottom: 3rem;
-  overflow: hidden; 
+  overflow: hidden;
 }
 
 .order-preview-header {
@@ -73,15 +77,17 @@ body {
   font-weight: 600;
   color: var(--verde);
   transition: all 0.2s ease;
-  border: 1px solid rgba(0,0,0,0.05);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .back-to-shop .arrow-circle {
-  width: 32px; height: 32px;
+  width: 32px;
+  height: 32px;
   background: var(--verde);
   color: #fff;
   border-radius: 50%;
-  display: grid; place-items: center;
+  display: grid;
+  place-items: center;
 }
 
 .order-header-text h2 {
@@ -91,7 +97,10 @@ body {
   color: var(--verde);
 }
 
-.pedido-fecha { font-size: .85rem; color: var(--cafe); }
+.pedido-fecha {
+  font-size: .85rem;
+  color: var(--cafe);
+}
 
 .order-layout {
   display: grid;
@@ -103,7 +112,7 @@ body {
 /* ================= IMAGEN PRINCIPAL ================= */
 .order-media {
   width: 100%;
-  background: var(--blanco); 
+  background: var(--blanco);
   border-radius: var(--r-md);
   padding: 1rem;
   display: flex;
@@ -117,18 +126,23 @@ body {
   max-width: 100%;
   max-height: 380px;
   object-fit: contain;
-  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
 }
 
 /* ================= PRODUCTOS & ESTADOS ================= */
-.productos-pills { display: flex; flex-direction: column; gap: .75rem; }
+.productos-pills {
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+}
+
 .productos-pills .pill {
   display: flex;
   justify-content: space-between;
   padding: .85rem 1rem;
   background: #fff;
   border-radius: 16px;
-  border: 1px solid rgba(0,0,0,.06);
+  border: 1px solid rgba(0, 0, 0, .06);
   box-shadow: var(--elev-1);
 }
 
@@ -137,7 +151,7 @@ body {
   justify-content: space-between;
   padding-top: 1rem;
   margin-top: 1rem;
-  border-top: 2px dashed rgba(51,103,59,.2);
+  border-top: 2px dashed rgba(51, 103, 59, .2);
 }
 
 .estado-item {
@@ -149,16 +163,29 @@ body {
 }
 
 .estado-item .dot {
-  width: 24px; height: 24px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
-  display: grid; place-items: center;
+  display: grid;
+  place-items: center;
   background: #eee;
   font-size: .7rem;
 }
 
-.estado-item.activo { color: var(--verde); font-weight: 600; }
-.estado-item.activo .dot { background: var(--verde); color: #fff; }
-.estado-item.completado .dot { background: var(--cafe); color: #fff; }
+.estado-item.activo {
+  color: var(--verde);
+  font-weight: 600;
+}
+
+.estado-item.activo .dot {
+  background: var(--verde);
+  color: #fff;
+}
+
+.estado-item.completado .dot {
+  background: var(--cafe);
+  color: #fff;
+}
 
 .ver-recibo {
   all: unset;
@@ -166,7 +193,7 @@ body {
   align-items: center;
   gap: .6rem;
   padding: .6rem 1.2rem;
-  background: rgba(51,103,59,0.08);
+  background: rgba(51, 103, 59, 0.08);
   color: var(--verde);
   border-radius: 999px;
   font-weight: 600;
@@ -175,29 +202,38 @@ body {
 }
 
 /* ================= CARRUSEL (CORREGIDO) ================= */
-.related { margin-top: 2rem; }
+.related {
+  margin-top: 2rem;
+}
 
-.carousel-container { 
-  position: relative; 
-  width: 100%; 
-  overflow: visible; /* Para que las sombras no se corten */
+.carousel-container {
+  position: relative;
+  width: 100%;
+  overflow: visible;
+  /* Para que las sombras no se corten */
 }
 
 .similar-list {
   display: flex;
-  gap: 12px; /* Espaciado entre tarjetas */
+  gap: 12px;
+  /* Espaciado entre tarjetas */
   padding: 10px 0 20px;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
-  scrollbar-width: none; /* Ocultar scroll en Firefox */
+  scrollbar-width: none;
+  /* Ocultar scroll en Firefox */
   -webkit-overflow-scrolling: touch;
 }
 
-.similar-list::-webkit-scrollbar { display: none; } /* Ocultar scroll en Chrome */
+.similar-list::-webkit-scrollbar {
+  display: none;
+}
+
+/* Ocultar scroll en Chrome */
 
 .similar-card {
   /* En escritorio por defecto */
-  flex: 0 0 220px; 
+  flex: 0 0 220px;
   background: var(--surface);
   border-radius: 18px;
   padding: 1rem;
@@ -219,7 +255,8 @@ body {
 /* IMAGEN DEL MINI-CARRUSEL (ADAPTADA) */
 .pedido-mini-img-container {
   width: 100%;
-  height: 100px; /* Altura fija para consistencia */
+  height: 100px;
+  /* Altura fija para consistencia */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -232,59 +269,107 @@ body {
 .pedido-mini-img {
   max-width: 90%;
   max-height: 90%;
-  object-fit: contain; /* No se estira, se adapta */
+  object-fit: contain;
+  /* No se estira, se adapta */
 }
 
-.pedido-mini-numero { color: var(--verde); font-size: .85rem; margin: 0; }
-.pedido-mini-total { color: var(--cafe); font-weight: 700; font-size: .9rem; margin: .2rem 0; }
-.pedido-mini-status { font-size: 0.75rem; color: var(--text-muted); }
+.pedido-mini-numero {
+  color: var(--verde);
+  font-size: .85rem;
+  margin: 0;
+}
+
+.pedido-mini-total {
+  color: var(--cafe);
+  font-weight: 700;
+  font-size: .9rem;
+  margin: .2rem 0;
+}
+
+.pedido-mini-status {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
 
 /* FLECHAS (SOLO ESCRITORIO) */
-.carousel-prev-circle, .carousel-next-circle {
+.carousel-prev-circle,
+.carousel-next-circle {
   position: absolute;
-  top: 50%; transform: translateY(-50%);
+  top: 50%;
+  transform: translateY(-50%);
   z-index: 10;
-  width: 40px; height: 40px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   background: #fff;
   border: none;
   box-shadow: var(--elev-1);
-  display: grid; place-items: center;
+  display: grid;
+  place-items: center;
   cursor: pointer;
-  color: var(--verde);
+  color: var(--verde) !important;
+  transition:
+    transform .18s ease,
+    box-shadow .18s ease,
+    opacity .25s ease,
+    visibility .25s ease;
 }
 
-.carousel-prev-circle { left: -20px; }
-.carousel-next-circle { right: -20px; }
+.carousel-prev-circle.hidden,
+.carousel-next-circle.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  display: flex !important;
+  /* Sobrescribir el .hidden global de display:none */
+}
+
+.carousel-prev-circle {
+  left: -20px;
+}
+
+.carousel-next-circle {
+  right: -20px;
+}
 
 /* ================= RESPONSIVE ================= */
 
 /* MÓVIL (Menos de 600px) */
 @media (max-width: 600px) {
-  .order-layout { grid-template-columns: 1fr; }
-  .order-main { padding: 1.5rem; }
+  .order-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .order-main {
+    padding: 1.5rem;
+  }
 
   /* FLECHAS OCULTAS EN MÓVIL */
-  .carousel-prev-circle, .carousel-next-circle {
+  .carousel-prev-circle,
+  .carousel-next-circle {
     display: none !important;
   }
 
   /* 2 TARJETAS EN MÓVIL EXACTAS */
   .similar-card {
     /* (100% / 2) - (gap / 2) */
-    flex: 0 0 calc(50% - 6px) !important; 
+    flex: 0 0 calc(50% - 6px) !important;
     min-width: calc(50% - 6px);
     padding: 0.8rem;
   }
-  
+
   .pedido-mini-img-container {
-    height: 80px; /* Un poco más pequeña en móvil */
+    height: 80px;
+    /* Un poco más pequeña en móvil */
   }
 }
 
 /* TABLET (900px) */
 @media (max-width: 900px) and (min-width: 601px) {
-  .order-layout { grid-template-columns: 1fr; }
+  .order-layout {
+    grid-template-columns: 1fr;
+  }
+
   .similar-card {
     flex: 0 0 30%;
   }
@@ -296,7 +381,8 @@ body {
 
   display: flex;
   flex-direction: column;
-  align-items: center; /* 🔑 centra todo */
+  align-items: center;
+  /* 🔑 centra todo */
 }
 
 .admin-empty-state .empty-illustration {

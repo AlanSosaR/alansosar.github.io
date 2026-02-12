@@ -793,11 +793,11 @@ body {
     0 4px 8px rgba(0, 0, 0, 0.16);
 }
 
-/* ================= DESHABILITADA ================= */
-/* Cuando no hay más scroll en esa dirección */
-.carousel-prev-circle.is-disabled,
-.carousel-next-circle.is-disabled {
+/* ================= VISIBILIDAD INTELIGENTE ================= */
+.carousel-prev-circle.hidden,
+.carousel-next-circle.hidden {
   opacity: 0;
+  visibility: hidden;
   pointer-events: none;
   transform: translateY(-50%) scale(0.9);
 }

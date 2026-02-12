@@ -339,6 +339,12 @@ function actualizarScrollCarrusel() {
     left: width * carouselIndex,
     behavior: "smooth"
   });
+
+  // 🔑 VISIBILIDAD DE FLECHAS
+  const prev = document.getElementById("admin-prev");
+  const next = document.getElementById("admin-next");
+  if (prev) prev.classList.toggle("hidden", carouselIndex === 0);
+  if (next) next.classList.toggle("hidden", carouselIndex === filteredProducts.length - 1);
 }
 
 /* ============================================================
@@ -485,6 +491,21 @@ async function cargarProductos() {
     }
     const product = products.find(p => p.id === selectedProductId);
     if (product) showDeleteConfirm(product);
+  });
+
+  /* ============================================================
+     EVENTOS DE FLECHAS (ADMIN)
+  ============================================================ */
+  document.getElementById("admin-prev")?.addEventListener("click", () => {
+    if (carouselIndex > 0) {
+      seleccionarProducto(carouselIndex - 1);
+    }
+  });
+
+  document.getElementById("admin-next")?.addEventListener("click", () => {
+    if (carouselIndex < filteredProducts.length - 1) {
+      seleccionarProducto(carouselIndex + 1);
+    }
   });
 
   await cargarProductos();

@@ -134,7 +134,8 @@ a {
 .search-box .search-action-btn span {
   font-size: 22px;
   line-height: 1;
-  color: #ffffff; /* 🔑 BLANCO */
+  color: #ffffff;
+  /* 🔑 BLANCO */
 }
 
 /* Hover — flota */
@@ -169,7 +170,8 @@ a {
 ========================================================= */
 .products-actions-bar {
   position: sticky;
-  top: calc(var(--header-height, 72px) + 8px); /* desktop */
+  top: calc(var(--header-height, 72px) + 8px);
+  /* desktop */
   z-index: 20;
 
   background: var(--gris-bg, #fafafa);
@@ -181,7 +183,8 @@ a {
 ========================================================= */
 @media (max-width: 600px) {
   .products-actions-bar {
-    top: calc(var(--header-height, 64px) + 8px); /* móvil */
+    top: calc(var(--header-height, 64px) + 8px);
+    /* móvil */
   }
 }
 
@@ -215,9 +218,10 @@ a {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 2.2rem;
-  padding: 2.6rem 2.2rem 2.2rem; /* 🔑 espacio arriba para botón */
+  padding: 2.6rem 2.2rem 2.2rem;
+  /* 🔑 espacio arriba para botón */
   align-items: center;
-  box-shadow: 0 14px 32px rgba(0,0,0,.08);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, .08);
   position: relative;
 }
 
@@ -236,8 +240,10 @@ a {
   all: unset;
 
   position: absolute;
-  top: 28px;      /* ⬆️ más separación vertical */
-  left: 24px;     /* ⬅️ más separación horizontal */
+  top: 28px;
+  /* ⬆️ más separación vertical */
+  left: 24px;
+  /* ⬅️ más separación horizontal */
 
   width: 42px !important;
   height: 42px !important;
@@ -254,13 +260,13 @@ a {
   cursor: pointer;
   z-index: 10;
 
-  box-shadow: 0 6px 16px rgba(0,0,0,.18);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, .18);
   transition: transform .15s ease, box-shadow .15s ease;
 }
 
 .back-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 10px 24px rgba(0,0,0,.22);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, .22);
 }
 
 .back-btn .material-symbols-outlined {
@@ -275,8 +281,10 @@ a {
     width: 48px !important;
     height: 48px !important;
 
-    top: 32px;   /* más separación del contenido */
-    left: 22px;  /* más aire lateral */
+    top: 32px;
+    /* más separación del contenido */
+    left: 22px;
+    /* más aire lateral */
   }
 }
 
@@ -291,9 +299,12 @@ a {
   margin-bottom: 0.6rem;
   color: var(--verde);
 }
+
 .product-text {
-  margin-top: 2.4rem; /* ⬅️ aire entre botón y texto */
+  margin-top: 2.4rem;
+  /* ⬅️ aire entre botón y texto */
 }
+
 @media (max-width: 900px) {
   .product-text {
     margin-top: 3rem;
@@ -357,7 +368,8 @@ a {
   gap: 14px;
   font-size: 0.9rem;
   margin-bottom: 1rem;
-  color: var(--cafe); /* 👈 texto en café */
+  color: var(--cafe);
+  /* 👈 texto en café */
 }
 
 .carousel-status {
@@ -405,11 +417,11 @@ a {
   transition: transform .25s ease;
 }
 
-.switch input:checked + .slider {
+.switch input:checked+.slider {
   background: var(--verde);
 }
 
-.switch input:checked + .slider::before {
+.switch input:checked+.slider::before {
   transform: translateX(20px);
 }
 
@@ -432,13 +444,13 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 8px 22px rgba(0,0,0,.18);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, .18);
   transition: transform .15s ease, box-shadow .15s ease;
 }
 
 .admin-action-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 14px 30px rgba(0,0,0,.22);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, .22);
 }
 
 .admin-action-btn .material-symbols-outlined {
@@ -458,9 +470,11 @@ a {
 ========================================================= */
 .product-img-wrap {
   width: 100%;
-  height: 360px;                 /* controla el alto visual */
+  height: 360px;
+  /* controla el alto visual */
   border-radius: 20px;
-  overflow: hidden;              /* recorte limpio */
+  overflow: hidden;
+  /* recorte limpio */
 
   background: #ffffff;
 
@@ -475,7 +489,8 @@ a {
 .product-img-wrap img {
   width: 100%;
   height: 100%;
-  object-fit: cover;             /* 🔑 llena TODO el contenedor */
+  object-fit: cover;
+  /* 🔑 llena TODO el contenedor */
   border-radius: 20px;
   display: block;
 }
@@ -513,6 +528,7 @@ a {
   max-width: 520px;
   line-height: 1.45;
 }
+
 /* =========================================================
    — ADMIN CARRUSEL
 ========================================================= */
@@ -541,7 +557,7 @@ a {
   flex: 0 0 190px;
   background: #fff;
   border-radius: 18px;
-  box-shadow: 0 10px 24px rgba(0,0,0,.08);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, .08);
   padding: 1rem;
   cursor: pointer;
   transition: transform .25s ease, box-shadow .25s ease;
@@ -561,7 +577,7 @@ a {
 
 .similar-card.active-card {
   border: 1.5px solid var(--verde);
-  box-shadow: 0 10px 26px rgba(51,103,59,.28);
+  box-shadow: 0 10px 26px rgba(51, 103, 59, .28);
   transform: translateY(-6px);
 }
 
@@ -579,16 +595,38 @@ a {
   background: #fff;
   border: none;
   cursor: pointer;
-  box-shadow: 0 6px 16px rgba(0,0,0,.18);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, .18);
   display: flex;
   align-items: center;
   justify-content: center;
+  color: var(--verde) !important;
+  /* 🔑 ICONO SIEMPRE VERDE */
+  transition:
+    transform .18s ease,
+    box-shadow .18s ease,
+    opacity .25s ease,
+    visibility .25s ease;
 }
 
-.carousel-prev-circle { left: -28px; }
-.carousel-next-circle { right: -28px; }
+/* Ocultar flechas con transición */
+.carousel-prev-circle.hidden,
+.carousel-next-circle.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.carousel-prev-circle {
+  left: -32px;
+}
+
+/* Ajustado para consistencia */
+.carousel-next-circle {
+  right: -32px;
+}
 
 @media (max-width: 900px) {
+
   .carousel-prev-circle,
   .carousel-next-circle {
     display: none;
@@ -597,8 +635,10 @@ a {
 
 .snackbar.show {
   opacity: 1;
-  pointer-events: auto; /* ✅ CLAVE */
+  pointer-events: auto;
+  /* ✅ CLAVE */
 }
+
 /* =========================================================
    SNACKBAR — CONFIRMACIÓN ELIMINAR (ACTION)
 ========================================================= */
@@ -617,8 +657,8 @@ a {
 
   border-radius: 16px;
   box-shadow:
-    0 12px 30px rgba(0,0,0,.18),
-    0 4px 12px rgba(0,0,0,.12);
+    0 12px 30px rgba(0, 0, 0, .18),
+    0 4px 12px rgba(0, 0, 0, .12);
 
   opacity: 0;
   pointer-events: none;
@@ -626,7 +666,7 @@ a {
 
   transition:
     opacity .25s ease,
-    transform .25s cubic-bezier(.2,.8,.2,1);
+    transform .25s cubic-bezier(.2, .8, .2, 1);
 }
 
 /* Estado visible */
@@ -695,7 +735,7 @@ a {
 }
 
 .snackbar-btn.cancel:hover {
-  background: rgba(0,0,0,.06);
+  background: rgba(0, 0, 0, .06);
 }
 
 /* Eliminar (danger) */
@@ -704,7 +744,7 @@ a {
 }
 
 .snackbar-btn.danger:hover {
-  background: rgba(192,57,43,.12);
+  background: rgba(192, 57, 43, .12);
 }
 
 /* Active */
@@ -728,17 +768,20 @@ a {
     justify-content: flex-end;
   }
 }
+
 /* =========================
    EMPTY STATES — GLOBAL
 ========================= */
 
 .empty-title {
-  color: var(--cafe); /* 🔑 mismo color del carrito */
+  color: var(--cafe);
+  /* 🔑 mismo color del carrito */
   font-weight: 700;
 }
 
 .empty-text {
-  color: #6f6f6f; /* mismo gris del carrito */
+  color: #6f6f6f;
+  /* mismo gris del carrito */
   font-size: 15px;
   line-height: 1.4;
 }

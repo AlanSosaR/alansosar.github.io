@@ -353,6 +353,12 @@ function updateSimilarUI() {
   dots.forEach((d, i) =>
     d.classList.toggle("active", i === similarIndex)
   );
+
+  // 🔑 VISIBILIDAD DE FLECHAS
+  const prev = safe("similar-prev");
+  const next = safe("similar-next");
+  if (prev) prev.classList.toggle("hidden", similarIndex === 0);
+  if (next) next.classList.toggle("hidden", similarIndex === cards.length - 1);
 }
 
 function initHeroCarousel() {

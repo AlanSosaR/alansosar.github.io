@@ -385,6 +385,15 @@ function bindCarouselArrows() {
 
   if (!list || !prev || !next) return;
 
+  function update() {
+    const max = list.scrollWidth - list.clientWidth;
+    const atStart = list.scrollLeft <= 4;
+    const atEnd = list.scrollLeft >= max - 4;
+
+    prev.classList.toggle("hidden", atStart);
+    next.classList.toggle("hidden", atEnd);
+  }
+
   prev.onclick = () => {
     list.scrollBy({ left: -300, behavior: "smooth" });
   };
@@ -392,6 +401,13 @@ function bindCarouselArrows() {
   next.onclick = () => {
     list.scrollBy({ left: 300, behavior: "smooth" });
   };
+
+  // 🔑 ESCUCHA DE SCROLL PARA VISIBILIDAD
+  list.addEventListener("scroll", update);
+  window.addEventListener("resize", update);
+
+  // Estado inicial
+  requestAnimationFrame(update);
 }
 
 /**

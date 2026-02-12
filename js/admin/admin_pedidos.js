@@ -529,8 +529,8 @@ console.log("🛠️ admin-pedidos.js — INIT");
       const atStart = list.scrollLeft <= 4;
       const atEnd = list.scrollLeft >= max - 4;
 
-      btnPrev.classList.toggle("is-disabled", atStart);
-      btnNext.classList.toggle("is-disabled", atEnd);
+      btnPrev.classList.toggle("hidden", atStart);
+      btnNext.classList.toggle("hidden", atEnd);
     }
 
     btnPrev.onclick = () =>
