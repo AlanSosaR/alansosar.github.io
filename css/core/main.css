@@ -309,10 +309,9 @@ body {
   border-radius: 24px;
   box-shadow: var(--sombra);
   display: grid;
-  grid-template-columns: 0.9fr 1.1fr;
-  /* Más espacio para la imagen */
+  grid-template-columns: 1fr 1fr;
   gap: 3rem;
-  padding: 3rem 2.5rem;
+  padding: 2.5rem;
   align-items: center;
 }
 
@@ -486,12 +485,11 @@ body {
 
 .product-img-wrap {
   width: 100%;
-  height: 650px;
-  /* Altura máxima para impacto total */
+  height: 550px;
+  /* Altura premium equilibrada */
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 0;
   background: transparent;
 }
 
@@ -499,19 +497,16 @@ body {
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
-  /* Muestra la bolsa completa */
   display: block;
 
-  /* ✨ Imagen más grande y con sombra dramática */
-  transform: scale(1.18);
-  /* Forzamos un tamaño más imponente */
-  filter: drop-shadow(0 30px 60px rgba(0, 0, 0, 0.22));
-  transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1), filter 0.6s ease;
+  /* ✨ Sombra elegante sin afectar el layout */
+  filter: drop-shadow(0 15px 35px rgba(0, 0, 0, 0.12));
+  transition: transform 0.4s ease, filter 0.4s ease;
 }
 
 .product-img-wrap img:hover {
-  transform: scale(1.25) translateY(-15px);
-  filter: drop-shadow(0 45px 70px rgba(0, 0, 0, 0.28));
+  transform: translateY(-8px);
+  filter: drop-shadow(0 25px 45px rgba(0, 0, 0, 0.18));
 }
 
 /* 📱 Ajuste para mobile */
