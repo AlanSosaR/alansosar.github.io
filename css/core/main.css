@@ -1464,14 +1464,38 @@ footer p {
   transform: scale(0.96);
 }
 
-/* Variante con fondo blanco (para fondos oscuros o tarjetas) */
+/* Variante con fondo blanco (Píldora blanca con círculo verde) */
+.btn-volver-premium.variant-white {
+  background: #ffffff;
+  padding: 6px 18px 6px 6px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
 .btn-volver-premium.variant-white .circle-icon {
-  background: #fff;
-  border: 1.5px solid var(--verde);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background: var(--verde);
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  box-shadow: none;
 }
 
 .btn-volver-premium.variant-white .circle-icon span,
 .btn-volver-premium.variant-white .circle-icon i {
+  color: #fff;
+  font-size: 18px;
+}
+
+.btn-volver-premium.variant-white .text {
   color: var(--verde);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+@media (hover: hover) {
+  .btn-volver-premium.variant-white:hover {
+    background: #fdfdfd;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    transform: translateY(-1px);
+  }
 }
