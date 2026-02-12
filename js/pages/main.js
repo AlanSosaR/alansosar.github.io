@@ -537,5 +537,14 @@ document.addEventListener("DOMContentLoaded", () => {
   /* ===== CARGA INICIAL ===== */
   loadSimilarProducts();
 
+  /* ===== SCROLL SUAVE A PRODUCTOS (SI HAY HASH) ===== */
+  if (window.location.hash === "#productos") {
+    setTimeout(() => {
+      document.getElementById("productos")?.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    }, 800);
+  }
 });
 

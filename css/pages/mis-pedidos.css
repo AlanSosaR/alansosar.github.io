@@ -19,6 +19,16 @@
   --r-md: 16px;
 }
 
+/* =====================================================
+   LAYOUT & BOTÓN GLOBAL
+   ===================================================== */
+.header-back-action {
+  width: 100%;
+  margin: 1.5rem 0 2rem 1.5rem;
+  display: flex;
+  justify-content: flex-start;
+}
+
 *,
 *::before,
 *::after {
