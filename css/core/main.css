@@ -847,8 +847,8 @@ body {
 }
 
 .similar-card.active-card .similar-img-cont {
-  transform: translateY(-15px) scale(1.08);
-  /* elevación extra */
+  transform: translateY(-45px) scale(1.1);
+  /* elevación fuerte (mita afuera) */
 }
 
 .similar-card.active-card .similar-img-cont img {
