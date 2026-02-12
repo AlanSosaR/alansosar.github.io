@@ -206,6 +206,16 @@ body {
   margin-top: 2rem;
 }
 
+.similar-title {
+  color: var(--verde) !important;
+  margin-bottom: 0.25rem;
+}
+
+.section-subtitle {
+  color: var(--marron) !important;
+  margin-bottom: 1.5rem;
+}
+
 .carousel-container {
   position: relative;
   width: 100%;
@@ -267,10 +277,9 @@ body {
 }
 
 .pedido-mini-img {
-  max-width: 90%;
-  max-height: 90%;
-  object-fit: contain;
-  /* No se estira, se adapta */
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .pedido-mini-numero {
