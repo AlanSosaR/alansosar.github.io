@@ -31,33 +31,9 @@ body {
 
   display: flex;
   align-items: center;
-  gap: 0.55rem;
 }
 
-.icon-back {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  background: var(--blanco);
-  border: 1.4px solid rgba(0, 0, 0, 0.08);
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
-.icon-back i {
-  font-size: 20px;
-  color: var(--verde);
-}
-
-.seguir-link {
-  font-weight: 600;
-  color: var(--verde);
-  text-decoration: none;
-}
+/* El estilo base viene de main.css (.btn-volver-premium) */
 
 /* =====================================================
    AJUSTE — SEGUIR COMPRANDO CON HEADER FIJO

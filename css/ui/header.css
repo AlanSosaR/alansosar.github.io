@@ -788,6 +788,15 @@ body.page-carrito .header-cart-title {
   font-weight: 600;
 }
 
+#seguir-comprando-item {
+  color: var(--verde);
+  /* Resalta en verde según pedido del usuario */
+}
+
+#seguir-comprando-item span {
+  color: var(--verde);
+}
+
 .user-drawer-item.logout {
   width: 100%;
   /* 🔑 ocupa todo el drawer */

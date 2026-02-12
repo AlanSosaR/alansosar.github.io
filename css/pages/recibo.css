@@ -19,7 +19,8 @@
 /* ================= BASE ================= */
 * {
   box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent; /* Eliminamos el click azul en móviles */
+  -webkit-tap-highlight-color: transparent;
+  /* Eliminamos el click azul en móviles */
 }
 
 body {
@@ -78,25 +79,10 @@ body.header-checkout .recibo-container {
   position: absolute;
   top: 22px;
   left: 22px;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: #ffffff;
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.18), 0 2px 6px rgba(0,0,0,0.12);
-  cursor: pointer;
-  z-index: 5;
-  transition: transform .2s ease;
+  z-index: 10;
 }
 
-.card-back .material-symbols-outlined {
-  font-size: 24px;
-  font-weight: 600;
-  color: var(--verde);
-}
+/* El resto de estilos vienen de .btn-volver-premium en main.css */
 
 /* ================= TARJETA INTERNA (BORDE MARRÓN) ================= */
 .inner-card-full {
@@ -148,7 +134,7 @@ h3 {
   padding: 22px 20px;
   background: var(--blanco);
   border-radius: 22px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05); 
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .progreso-title {
@@ -163,16 +149,35 @@ h3 {
   align-items: center;
   gap: 8px;
   padding: 8px 16px;
-  border-radius: 100px; 
+  border-radius: 100px;
   font-weight: 600;
   font-size: 0.9rem;
 }
 
-.status-pending { background: #fff3e0; color: #ef6c00; }    
-.status-review { background: #e3f2fd; color: #1565c0; }     
-.status-processing { background: #f3e5f5; color: #7b1fa2; } 
-.status-shipped { background: #e8f5e9; color: #2e7d32; }    
-.status-cancelled { background: #ffebee; color: #c62828; }  
+.status-pending {
+  background: #fff3e0;
+  color: #ef6c00;
+}
+
+.status-review {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.status-processing {
+  background: #f3e5f5;
+  color: #7b1fa2;
+}
+
+.status-shipped {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.status-cancelled {
+  background: #ffebee;
+  color: #c62828;
+}
 
 /* ================= CLIENTE Y CAFÉ ================= */
 .cliente-info p {
@@ -199,12 +204,18 @@ h3 {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 6px 16px rgba(0,0,0,.08);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, .08);
   color: var(--verde);
 }
 
-.cafe-nombre { font-weight: 600; }
-.cafe-precio { font-weight: 600; color: var(--verde); }
+.cafe-nombre {
+  font-weight: 600;
+}
+
+.cafe-precio {
+  font-weight: 600;
+  color: var(--verde);
+}
 
 /* ================= TOTAL (NUEVA ESTRUCTURA) ================= */
 .recibo-total {
@@ -224,6 +235,7 @@ h3 {
   min-width: 100px;
   text-align: right;
 }
+
 /* ================= PAGOS Y BOTONES — MATERIAL 3 ================= */
 
 .pagos {
@@ -247,18 +259,18 @@ h3 {
   background: #fff;
   border: 2px solid var(--verde);
 
-  box-shadow: 0 6px 18px rgba(0,0,0,.08);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, .08);
 
   cursor: pointer;
   transition: box-shadow .2s ease, border-color .2s ease;
 }
 
 .pago-select-label:hover {
-  box-shadow: 0 8px 22px rgba(0,0,0,.12);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, .12);
 }
 
 /* Icono izquierdo */
-.pago-select-label > .material-symbols-outlined {
+.pago-select-label>.material-symbols-outlined {
   color: var(--verde);
   font-size: 22px;
   flex-shrink: 0;
@@ -296,7 +308,8 @@ h3 {
 
   position: absolute;
   right: 16px;
-  pointer-events: none; /* 🔑 CLAVE */
+  pointer-events: none;
+  /* 🔑 CLAVE */
 }
 
 /* ================= MÓVIL ================= */
@@ -317,9 +330,9 @@ h3 {
   border-radius: 18px;
 
   background: #fff;
-  border: 2px solid rgba(51,103,59,.25);
+  border: 2px solid rgba(51, 103, 59, .25);
 
-  box-shadow: 0 8px 24px rgba(0,0,0,.08);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .08);
 
   animation: fadeIn .25s ease-out;
 }
@@ -385,7 +398,7 @@ h3 {
 }
 
 .comprobante-link:hover {
-  background: rgba(51,103,59,.06);
+  background: rgba(51, 103, 59, .06);
 }
 
 .comprobante-link:active {
@@ -405,13 +418,17 @@ h3 {
 
 /* 🔑 garantiza que SVG / JPG / PNG SIEMPRE rendericen */
 .preview img {
-  display: block;          /* evita colapso */
-  width: 100%;             /* ocupa espacio real */
+  display: block;
+  /* evita colapso */
+  width: 100%;
+  /* ocupa espacio real */
   max-width: 180px;
-  height: auto;            /* corrige SVG */
+  height: auto;
+  /* corrige SVG */
   border-radius: 12px;
   margin-bottom: 6px;
-  object-fit: contain;     /* seguridad extra */
+  object-fit: contain;
+  /* seguridad extra */
 }
 
 /* Texto debajo del preview */
@@ -476,7 +493,7 @@ h3 {
   color: #F4EFF4;
   border-radius: 12px;
   padding: 14px 16px;
-  box-shadow: 0 3px 5px rgba(0,0,0,0.3);
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
   z-index: 9999;
   transition: transform .3s ease, opacity .3s ease;
   opacity: 0;
@@ -487,11 +504,22 @@ h3 {
   opacity: 1;
 }
 
-.snack-text { font-size: 0.9rem; }
+.snack-text {
+  font-size: 0.9rem;
+}
 
-.hidden { display: none !important; }
+.hidden {
+  display: none !important;
+}
 
-@keyframes fadeIn { 
-  from { opacity: 0; transform: translateY(5px); } 
-  to { opacity: 1; transform: translateY(0); } 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
