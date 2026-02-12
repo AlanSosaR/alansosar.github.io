@@ -227,10 +227,14 @@ async function loadSimilarProducts() {
       data-presentation="${p.presentation || ""}"
       data-stock="${p.stock ?? 0}"
     >
-      <img src="${p.image_url || "/imagenes/no-image.png"}"
-           onerror="this.src='/imagenes/no-image.png'">
-      <h4>${p.name}</h4>
-      <div class="price-sm">L ${p.price}</div>
+      <div class="similar-img-cont">
+        <img src="${p.image_url || "/imagenes/no-image.png"}"
+             onerror="this.src='/imagenes/no-image.png'">
+      </div>
+      <div class="similar-info">
+        <h4>${p.name}</h4>
+        <div class="price-sm">L ${p.price}</div>
+      </div>
     </div>
   `).join("");
 
