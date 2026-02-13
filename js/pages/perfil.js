@@ -128,7 +128,7 @@ function attachStrength(input) {
       label.textContent = "Contraseña media";
     } else {
       fill.style.width = "100%";
-      fill.style.background = "#33673B";
+      fill.style.background = "#377b4c";
       label.textContent = "Contraseña fuerte";
     }
   });
@@ -214,7 +214,7 @@ function attachStrength(input) {
       return false;
     }
 
-    labelMsg(oldP, "Contraseña actual confirmada", "#33673B");
+    labelMsg(oldP, "Contraseña actual confirmada", "#377b4c");
     oldValid = true;
     return true;
   }
@@ -227,7 +227,7 @@ function attachStrength(input) {
     if (!newP.value) return labelMsg(conf, "", "");
 
     if (conf.value === newP.value) {
-      labelMsg(conf, "Coinciden ✔", "#33673B");
+      labelMsg(conf, "Coinciden ✔", "#377b4c");
     } else {
       labelMsg(conf, "Las contraseñas no coinciden", "#B3261E");
     }

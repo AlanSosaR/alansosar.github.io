@@ -229,7 +229,7 @@ body {
   height: 42px;
   border-radius: 50%;
   background: #ffffff;
-  color: #33673B;
+  color: #377b4c;
   border: none;
   box-shadow: 0 4px 12px rgba(0,0,0,0.14);
   display: flex;
@@ -369,7 +369,7 @@ body {
   font-size: 0.78rem;
   background: #ffffff;
   padding: 0 4px;
-  color: #33673B;
+  color: #377b4c;
 }
 
 /* ===============================
@@ -393,12 +393,12 @@ body {
    SUCCESS
 =============================== */
 .m3-input.success {
-  border-color: #33673B !important;
+  border-color: #377b4c !important;
   box-shadow: 0 0 0 2px rgba(51,103,59,0.18);
 }
 
 .m3-input.success .floating-label {
-  color: #33673B !important;
+  color: #377b4c !important;
 }
 
 /* ===============================
@@ -408,7 +408,7 @@ body {
   cursor: pointer;
   font-size: 22px;
   margin-left: 8px;
-  color: #33673B;
+  color: #377b4c;
 }
 
 /* ===============================
@@ -417,7 +417,7 @@ body {
 
 .m3-btn {
   width: 100%;
-  background-color: #33673B;
+  background-color: #377b4c;
   color: #ffffff;
   border: none;
   border-radius: 12px;
@@ -484,7 +484,7 @@ body {
 }
 
 .registrate-link {
-  color: #33673B;
+  color: #377b4c;
   font-weight: 600;
   text-decoration: none;
 }

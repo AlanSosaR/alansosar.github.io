@@ -6,7 +6,7 @@
 /* ================= VARIABLES ================= */
 :root {
   --cafe: #512615;
-  --verde: #33673B;
+  --verde: #377b4c;
   --rojo: #c0392b;
 
   --gris-bg: #fafafa;
@@ -194,7 +194,7 @@ body {
 .client-name {
   font-size: 1.2rem;
   font-weight: 600;
-  color: #2e7d32;
+  color: #377b4c;
   /* verde */
   margin-bottom: 0.8rem;
 }
@@ -215,7 +215,7 @@ body {
 
 .meta-row .material-symbols-outlined {
   font-size: 18px;
-  color: #2e7d32;
+  color: #377b4c;
 }
 
 /* =====================================================
@@ -358,7 +358,7 @@ body {
 
 .order-address p {
   font-size: 0.95rem;
-  color: #2e7d32;
+  color: #377b4c;
   margin-bottom: 0.5rem;
 }
 
@@ -371,7 +371,7 @@ body {
 }
 
 .order-address .reference span {
-  color: #2e7d32;
+  color: #377b4c;
 }
 
 /* ================= MEDIA — PAGO / RECIBO ================= */

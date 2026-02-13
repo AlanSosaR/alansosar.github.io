@@ -154,7 +154,7 @@ Evitar:
 7. PALETA OFICIAL
 
 Principal:
-#2E7D32
+#377b4c
 
 Secundario:
 #4CAF50

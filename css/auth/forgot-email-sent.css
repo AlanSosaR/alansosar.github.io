@@ -69,7 +69,7 @@ body {
 /* ===== BOTÓN ===== */
 .m3-btn {
   width: 100%;
-  background-color: #33673B;
+  background-color: #377b4c;
   color: #fff;
   border: none;
   border-radius: 12px;
@@ -91,7 +91,7 @@ body {
 }
 
 .links a {
-  color: #33673B;
+  color: #377b4c;
   font-size: 0.9rem;
   text-decoration: none;
 }

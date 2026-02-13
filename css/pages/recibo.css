@@ -6,7 +6,7 @@
 /* ================= ROOT ================= */
 :root {
   --marron: #512615;
-  --verde: #33673B;
+  --verde: #377b4c;
   --blanco: #ffffff;
   --fondo: #fafafa;
   --marron-suave: rgba(75, 44, 25, 0.7);
@@ -256,7 +256,7 @@ h3 {
 
 .status-shipped {
   background: #e8f5e9;
-  color: #2e7d32;
+  color: #377b4c;
 }
 
 .status-cancelled {
