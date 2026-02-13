@@ -806,16 +806,21 @@ body {
   z-index: 2;
   /* encima de la base */
   transition: transform 0.4s ease;
-  margin-top: -30px;
-  /* Para que la bolsa salga un pelín o se centre */
+  margin-top: 0;
+  /* YA NO SUBIMOS, dejamos que baje */
+  padding-bottom: 5px;
+  /* peq espacio */
 }
 
 .similar-img-cont img {
-  max-width: 90%;
+  max-width: 100%;
+  /* Ocupar más ancho */
   max-height: 100%;
   object-fit: contain;
   filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.15));
   transition: transform 0.4s ease;
+  transform: scale(1.05);
+  /* Un pelín más grande por defecto */
 }
 
 /* Base blanca inferior */
@@ -823,8 +828,8 @@ body {
   width: 100%;
   background: transparent;
   /* ya no tiene fondo propio */
-  padding: 10px 12px 24px;
-  /* ajuste de padding */
+  padding: 0 12px 20px;
+  /* Menos padding arriba para acercar texto */
   text-align: center;
   z-index: 1;
   box-shadow: none;
@@ -864,8 +869,8 @@ body {
 }
 
 .similar-card.active-card .similar-img-cont {
-  transform: translateY(-45px) scale(1.1);
-  /* Pop-up fuerte */
+  transform: translateY(-55px) scale(1.15);
+  /* Pop-up más fuerte pq ahora está más abajo la base */
 }
 
 .similar-card.active-card .similar-img-cont img {
