@@ -336,3 +336,5 @@ Escalar al Arquitecto.
 Consistencia > creatividad
 Sistema > decisiones individuales
 Producción > pruebas rápidas
+
+los reportes que me des de lo que se hara que sea en espanol
