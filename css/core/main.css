@@ -505,8 +505,8 @@ body {
 @media (min-width: 901px) {
   .product-img-wrap {
     height: 520px;
-    margin-top: -80px;
-    /* Bolsa hacia arriba */
+    margin-top: -40px;
+    /* (Bajar la bolsa para centrar verticalmente) */
   }
 
   /* Solo en PC: Escala masiva (Llega hasta abajo) */
