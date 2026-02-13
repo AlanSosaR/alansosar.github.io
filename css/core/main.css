@@ -782,8 +782,14 @@ body {
   overflow: visible;
   /* 🔑 permite que la bolsa sobresalga */
   position: relative;
-  margin-top: 20px;
-  /* aire para que la bolsa no se corte arriba */
+  /* Estilo de tarjeta en el contenedor PADRE */
+  background: #ffffff;
+  border-radius: 20px;
+  border: 1.5px solid transparent;
+  /* reserva espacio pal borde */
+  margin-top: 40px;
+  /* espacio para cuando salte */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
 }
 
 /* Contenedor de la bolsa */
@@ -796,6 +802,8 @@ body {
   z-index: 2;
   /* encima de la base */
   transition: transform 0.4s ease;
+  margin-top: -30px;
+  /* Para que la bolsa salga un pelín o se centre */
 }
 
 .similar-img-cont img {
@@ -809,15 +817,14 @@ body {
 /* Base blanca inferior */
 .similar-info {
   width: 100%;
-  background: #ffffff;
-  border-radius: 20px;
-  padding: 50px 12px 16px;
-  /* espacio para la bolsa que baja */
-  margin-top: -60px;
-  /* sube la base debajo de la bolsa */
+  background: transparent;
+  /* ya no tiene fondo propio */
+  padding: 10px 12px 24px;
+  /* ajuste de padding */
   text-align: center;
   z-index: 1;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+  box-shadow: none;
+  /* sin sombra propia */
   transition: all 0.4s ease;
 }
 
@@ -840,15 +847,21 @@ body {
 /* ESTADO ACTIVO / HOVER */
 /* ESTADO ACTIVO (SOLO CLICK) */
 
-.similar-card.active-card .similar-info {
-  box-shadow: 0 15px 40px rgba(51, 103, 59, 0.08);
-  border: 1.5px solid var(--verde);
+.similar-card.active-card {
+  box-shadow: 0 15px 40px rgba(51, 103, 59, 0.15);
+  border-color: var(--verde);
   background: #fdfdfd;
+}
+
+.similar-card.active-card .similar-info {
+  background: transparent;
+  box-shadow: none;
+  border: none;
 }
 
 .similar-card.active-card .similar-img-cont {
   transform: translateY(-45px) scale(1.1);
-  /* elevación fuerte (mita afuera) */
+  /* Pop-up fuerte */
 }
 
 .similar-card.active-card .similar-img-cont img {
