@@ -504,10 +504,14 @@ body {
 /* El efecto de bolsa que "sale" del contenedor */
 @media (min-width: 901px) {
   .product-img-wrap {
-    height: 580px;
-    /* Más altura para impacto */
-    margin-top: -100px;
-    /* Más "salida" hacia arriba */
+    height: 520px;
+    margin-top: -80px;
+    /* Bolsa hacia arriba */
+  }
+
+  /* Solo en PC: Escala masiva */
+  .product-img-wrap img {
+    transform: scale(1.4);
   }
 }
 
@@ -518,9 +522,9 @@ body {
   display: block;
 
   /* ✨ Sombra elegante y ESCALA MAYOR */
-  filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.2));
-  transform: scale(1.15);
-  /* Zoom por defecto */
+  filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.22));
+  transform: scale(1.25);
+  /* Zoom base (Móvil) */
   transition: transform 0.4s ease, filter 0.4s ease;
 }
 
@@ -532,8 +536,7 @@ body {
 /* 📱 Ajuste para mobile */
 @media (max-width: 480px) {
   .product-img-wrap {
-    height: 380px;
-    /* Más grande en móvil */
+    height: 300px;
   }
 }
 
