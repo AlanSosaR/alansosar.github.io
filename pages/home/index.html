@@ -32,38 +32,82 @@
     <!-- HERO (Material 3 Carousel) -->
     <section class="hero-m3-container" aria-label="Promociones Principales">
       <div class="hero-carousel" id="heroCarousel">
-        
+
         <!-- Slides -->
         <div class="hero-slides-wrapper">
-           <!-- Slide 1: Finca -->
-           <div class="hero-slide active">
-             <img src="/imagenes/origen1.jpg" alt="Finca de café en Honduras" loading="eager">
-             <div class="hero-overlay-gradient"></div>
-           </div>
-           <!-- Slide 2: Cosecha/Estilo de vida -->
-           <div class="hero-slide">
-             <img src="/imagenes/cosecha1.jpg" alt="Cosecha de café artesanal" loading="lazy">
-             <div class="hero-overlay-gradient"></div>
-           </div>
+          <!-- ORIGEN (0-2) -->
+          <div class="hero-slide active">
+            <img src="/imagenes/origen1.jpg" alt="Finca de café en Honduras" loading="eager">
+            <div class="hero-overlay-gradient"></div>
+          </div>
+          <div class="hero-slide">
+            <img src="/imagenes/origen2.jpg" alt="Plantación de café" loading="lazy">
+            <div class="hero-overlay-gradient"></div>
+          </div>
+          <div class="hero-slide">
+            <img src="/imagenes/origen3.jpg" alt="Región cafetera" loading="lazy">
+            <div class="hero-overlay-gradient"></div>
+          </div>
+
+          <!-- COSECHA (3-7) -->
+          <div class="hero-slide">
+            <img src="/imagenes/cosecha1.jpg" alt="Cosecha de café" loading="lazy">
+            <div class="hero-overlay-gradient"></div>
+          </div>
+          <div class="hero-slide">
+            <img src="/imagenes/cosecha2.jpg" alt="Recolección manual" loading="lazy">
+            <div class="hero-overlay-gradient"></div>
+          </div>
+          <div class="hero-slide">
+            <img src="/imagenes/cosecha3.jpg" alt="Granos recién cosechados" loading="lazy">
+            <div class="hero-overlay-gradient"></div>
+          </div>
+          <div class="hero-slide">
+            <img src="/imagenes/cosecha4.jpg" alt="Selección del grano" loading="lazy">
+            <div class="hero-overlay-gradient"></div>
+          </div>
+          <div class="hero-slide">
+            <img src="/imagenes/cosecha5.jpg" alt="Proceso de secado" loading="lazy">
+            <div class="hero-overlay-gradient"></div>
+          </div>
+
+          <!-- TOSTADO (8-11) -->
+          <div class="hero-slide">
+            <img src="/imagenes/tostado1.jpg" alt="Inicio del tostado" loading="lazy">
+            <div class="hero-overlay-gradient"></div>
+          </div>
+          <div class="hero-slide">
+            <img src="/imagenes/tostado2.jpg" alt="Tueste medio" loading="lazy">
+            <div class="hero-overlay-gradient"></div>
+          </div>
+          <div class="hero-slide">
+            <img src="/imagenes/tostado3.jpg" alt="Tueste oscuro" loading="lazy">
+            <div class="hero-overlay-gradient"></div>
+          </div>
+          <div class="hero-slide">
+            <img src="/imagenes/tostado4.jpg" alt="Grano listo para moler" loading="lazy">
+            <div class="hero-overlay-gradient"></div>
+          </div>
         </div>
-        
+
         <!-- Contenido Centrado (Sobrepuesto) -->
         <div class="hero-content">
-           <h1 class="display-large">La esencia de Honduras en cada sorbo</h1>
-           <p class="headline-small">Café de altura cultivado a 1100 msnm, fresco y directo de la finca.</p>
-           
-           <!-- Discount Card (M3 Surface) -->
-           <div class="discount-card-m3">
-             <span class="label-large">🎉 15% OFF en tu primer pedido</span>
-             <span class="body-medium">Código: <strong>CORTERO15</strong></span>
-           </div>
-           
-           <!-- Primary Action -->
-           <button class="btn-filled-m3" onclick="document.getElementById('productos')?.scrollIntoView({behavior: 'smooth'})">
-             Comprar ahora
-           </button>
+          <h1 class="display-large">La esencia de Honduras en cada sorbo</h1>
+          <p class="headline-small">Café de altura cultivado a 1100 msnm, fresco y directo de la finca.</p>
+
+          <!-- Discount Card (M3 Surface) -->
+          <div class="discount-card-m3">
+            <span class="label-large">🎉 15% OFF en tu primer pedido</span>
+            <span class="body-medium">Código: <strong>CORTERO15</strong></span>
+          </div>
+
+          <!-- Primary Action -->
+          <button class="btn-filled-m3"
+            onclick="document.getElementById('productos')?.scrollIntoView({behavior: 'smooth'})">
+            Comprar ahora
+          </button>
         </div>
-        
+
         <!-- Indicadores -->
         <div class="carousel-indicators"></div>
       </div>

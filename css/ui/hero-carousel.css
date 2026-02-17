@@ -29,7 +29,8 @@
 .hero-m3-container {
     width: 100%;
     position: relative;
-    margin-bottom: 2rem;
+    /* Espacio extra abajo porque el banner "cuelga" 50% fuera */
+    margin-bottom: 5rem;
     background-color: var(--md-sys-color-surface);
 }
 
@@ -41,9 +42,8 @@
     width: 100%;
     height: 65vh;
     /* Mobile First */
-    overflow: hidden;
-    /* Round bottom corners for "Expressive" feel on container if desired, 
-     but usually full width heroes are square. Keeping square for hero. */
+    overflow: visible;
+    /* Permitir que el banner cuelgue */
 }
 
 @media (min-width: 1024px) {
@@ -59,8 +59,16 @@
 .hero-slides-wrapper {
     width: 100%;
     height: 100%;
-    position: relative;
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    /* Cortar imágenes */
+    border-radius: 0 0 24px 24px;
+    /* Opcional: redondear abajo si se desea */
 }
+
+/* En mobile, maybe we want rounded corners? User didn't specify, but "Material 3 Expressive" often uses them. 
+   For now, full width usually means square corners, but let's keep it square to fit screen. */
 
 .hero-slide {
     position: absolute;
@@ -81,6 +89,7 @@
     height: 100%;
     object-fit: cover;
     object-position: center;
+    /* Centrado */
 }
 
 /* Scrim / Overlay Gradient */
@@ -88,9 +97,9 @@
     position: absolute;
     inset: 0;
     background: linear-gradient(to bottom,
-            rgba(0, 0, 0, 0.4) 0%,
-            rgba(0, 0, 0, 0.2) 40%,
-            rgba(0, 0, 0, 0.6) 100%);
+            rgba(0, 0, 0, 0.3) 0%,
+            rgba(0, 0, 0, 0.2) 50%,
+            rgba(0, 0, 0, 0.7) 100%);
     z-index: 2;
 }
 
@@ -103,11 +112,20 @@
     z-index: 10;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    /* ALINEAR ABAJO ("letras abajo") pero dejando espacio para el banner colgado */
+    justify-content: flex-end;
     align-items: center;
     text-align: center;
-    padding: 0 24px;
+    padding: 0 24px 70px 24px;
+    /* Padding inferior para separar del borde */
     color: #ffffff;
+    pointer-events: none;
+    /* Dejar pasar clic a la imagen/swipe */
+}
+
+/* Permitir clicks en botones y banner */
+.hero-content>* {
+    pointer-events: auto;
 }
 
 /* Tipografía M3 */
@@ -128,7 +146,7 @@
     font-family: 'Poppins', sans-serif;
     font-size: clamp(1rem, 2vw, 1.5rem);
     font-weight: 400;
-    margin-bottom: 32px;
+    margin-bottom: 24px;
     max-width: 700px;
     text-wrap: balance;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
@@ -138,59 +156,71 @@
 }
 
 /* =========================================
-   DISCOUNT CARD (Surface Container)
+   DISCOUNT CARD (Overlapping Bottom)
    ========================================= */
 .discount-card-m3 {
-    background-color: rgba(255, 255, 255, 0.95);
-    /* Casi sólido */
-    backdrop-filter: blur(10px);
-    color: #2B2B2B;
-    /* Dark text on light surface */
-    padding: 16px 24px;
-    border-radius: var(--md-sys-shape-corner-extra-large);
-    box-shadow: var(--md-sys-elevation-level1);
-    margin-bottom: 32px;
+    background-color: #377b4c;
+    /* BRAND COLOR background as seen in screenshot */
+    /* Screenshot shows Dark Green Background, White Text */
+
+    color: #ffffff;
+    padding: 12px 32px;
+    border-radius: 50px;
+    /* Pill shape completo */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+
+    /* POSICIONAMIENTO ABSOLUTO "HALF-OUT" */
+    position: absolute;
+    bottom: 0;
+    transform: translateY(50%);
+    /* Bajar el 50% de su altura */
+    z-index: 20;
+
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 4px;
 
-    opacity: 0;
-    transform: translateY(20px);
-    animation: fadeUp 0.8s cubic-bezier(0.2, 0.0, 0, 1.0) forwards 0.6s;
+    border: 1px solid rgba(255, 255, 255, 0.2);
 
-    border: 1px solid rgba(255, 255, 255, 0.5);
+    opacity: 0;
+    animation: fadeUp 0.8s cubic-bezier(0.2, 0.0, 0, 1.0) forwards 0.6s;
 }
 
 .discount-card-m3 .label-large {
-    color: var(--md-sys-color-primary);
-    /* Verde Marca */
-    font-weight: 600;
-    font-size: 1.1rem;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 1.15rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .discount-card-m3 .body-medium {
-    font-size: 0.9rem;
-    color: #555;
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.9);
+    font-family: 'Poppins', sans-serif;
 }
 
 /* =========================================
    BUTTON (Filled M3)
    ========================================= */
 .btn-filled-m3 {
-    background-color: var(--md-sys-color-primary);
-    /* #377b4c */
+    background-color: var(--md-comp-btn-primary);
+    /* #2E7D32 */
     color: var(--md-sys-color-on-primary);
     font-family: 'Poppins', sans-serif;
-    font-weight: 500;
+    font-weight: 600;
     font-size: 1.125rem;
-    padding: 18px 48px;
-    /* Generous padding */
+    padding: 16px 48px;
     border-radius: var(--md-sys-shape-corner-full);
     border: none;
     cursor: pointer;
-    box-shadow: var(--md-sys-elevation-level1);
+    box-shadow: 0 4px 15px rgba(46, 125, 50, 0.4);
     transition: all 0.3s cubic-bezier(0.2, 0.0, 0, 1.0);
+
+    margin-bottom: 50px;
+    /* Separar del borde inferior para dejar espacio al banner */
 
     opacity: 0;
     transform: translateY(20px);
@@ -198,8 +228,7 @@
 }
 
 .btn-filled-m3:hover {
-    background-color: var(--md-comp-btn-primary);
-    /* #2E7D32 */
+    background-color: #1b5e20;
     box-shadow: var(--md-sys-elevation-level2);
     transform: scale(1.02) translateY(0);
 }
@@ -213,33 +242,53 @@
    ========================================= */
 .carousel-indicators {
     position: absolute;
-    bottom: 24px;
+    bottom: 80px;
+    /* Subir los dots por encima del banner */
     left: 50%;
     transform: translateX(-50%);
     display: flex;
     gap: 12px;
     z-index: 20;
+    pointer-events: auto;
 }
 
 .indicator-dot {
-    width: 12px;
-    height: 12px;
-    background-color: rgba(255, 255, 255, 0.4);
+    width: 10px;
+    height: 10px;
+    background-color: rgba(255, 255, 255, 0.5);
     border-radius: 50%;
     cursor: pointer;
     transition: all 0.3s ease;
 }
 
 .indicator-dot.active {
-    width: 12px;
-    /* M3 usually keeps dots same size or expands to pill */
+    width: 10px;
     background-color: #ffffff;
-    transform: scale(1.2);
+    transform: scale(1.3);
 }
 
 @keyframes fadeUp {
     to {
         opacity: 1;
         transform: translateY(0);
+        /* Note: For the banner that expects 50% translate, we might need a custom animation or remove transform from animation final state if it conflicts. 
+           Actually, fadeUp sets translate to 0. The banner needs translateY(50%). 
+           Let's fix animation for banner. */
+    }
+}
+
+.discount-card-m3 {
+    animation-name: fadeUpBanner;
+}
+
+@keyframes fadeUpBanner {
+    from {
+        opacity: 0;
+        transform: translateY(70%);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(50%);
     }
 }
