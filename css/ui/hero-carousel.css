@@ -62,13 +62,9 @@
     position: absolute;
     inset: 0;
     overflow: hidden;
-    /* Cortar imágenes */
-    border-radius: 0 0 24px 24px;
-    /* Opcional: redondear abajo si se desea */
+    border-radius: 0;
+    /* CORNERS SHARP (Requested: "no deseo la esquina redondeadas") */
 }
-
-/* En mobile, maybe we want rounded corners? User didn't specify, but "Material 3 Expressive" often uses them. 
-   For now, full width usually means square corners, but let's keep it square to fit screen. */
 
 .hero-slide {
     position: absolute;
@@ -88,8 +84,8 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: center;
-    /* Centrado */
+    /* Ajuste "Super Premium": Centrado estándar */
+    object-position: center center;
 }
 
 /* Scrim / Overlay Gradient */
@@ -116,7 +112,7 @@
     justify-content: flex-end;
     align-items: center;
     text-align: center;
-    padding: 0 24px 70px 24px;
+    padding: 0 24px 80px 24px;
     /* Padding inferior para separar del borde */
     color: #ffffff;
     pointer-events: none;
@@ -144,10 +140,11 @@
 
 .headline-small {
     font-family: 'Poppins', sans-serif;
-    font-size: clamp(1rem, 2vw, 1.5rem);
+    font-size: clamp(1rem, 2vw, 1.25rem);
     font-weight: 400;
     margin-bottom: 24px;
     max-width: 700px;
+    /* Default for mobile/tablet to ensure readable width */
     text-wrap: balance;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
     opacity: 0;
@@ -155,25 +152,31 @@
     animation: fadeUp 0.8s cubic-bezier(0.2, 0.0, 0, 1.0) forwards 0.4s;
 }
 
+@media (min-width: 1024px) {
+    .headline-small {
+        max-width: 100%;
+        white-space: nowrap;
+        /* FORZAR UNA SOLA LINEA EN PC */
+        font-size: 1.5rem;
+    }
+}
+
 /* =========================================
    DISCOUNT CARD (Overlapping Bottom)
    ========================================= */
 .discount-card-m3 {
     background-color: #377b4c;
-    /* BRAND COLOR background as seen in screenshot */
-    /* Screenshot shows Dark Green Background, White Text */
-
+    /* BRAND COLOR background */
     color: #ffffff;
     padding: 12px 32px;
-    border-radius: 50px;
-    /* Pill shape completo */
+    border-radius: 4px;
+    /* CUADRADO (Rectangle with slight soften for polish) */
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
 
     /* POSICIONAMIENTO ABSOLUTO "HALF-OUT" */
     position: absolute;
     bottom: 0;
     transform: translateY(50%);
-    /* Bajar el 50% de su altura */
     z-index: 20;
 
     display: flex;
@@ -242,7 +245,7 @@
    ========================================= */
 .carousel-indicators {
     position: absolute;
-    bottom: 80px;
+    bottom: 90px;
     /* Subir los dots por encima del banner */
     left: 50%;
     transform: translateX(-50%);
@@ -271,9 +274,6 @@
     to {
         opacity: 1;
         transform: translateY(0);
-        /* Note: For the banner that expects 50% translate, we might need a custom animation or remove transform from animation final state if it conflicts. 
-           Actually, fadeUp sets translate to 0. The banner needs translateY(50%). 
-           Let's fix animation for banner. */
     }
 }
 
