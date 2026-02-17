@@ -739,7 +739,8 @@ body {
 
 .similar-title {
   font-size: 1.4rem;
-  margin-bottom: 1rem;
+  margin-bottom: 3.5rem;
+  /* Más espacio para evitar que la bolsa pegue al subir */
   font-weight: 600;
   color: var(--marron);
 }
@@ -758,9 +759,10 @@ body {
 
 .similar-list {
   display: flex;
-  gap: 1rem;
-  /* 16px */
-  padding: 14px 0;
+  gap: 1.5rem;
+  /* Un poco más de aire entre tarjetas */
+  padding: 14px 0 60px;
+  /* 60px abajo para que la píldora (-48px) se vea completa */
 
   scroll-behavior: smooth;
   scroll-snap-type: x mandatory;
@@ -803,8 +805,8 @@ body {
   border-radius: 20px;
   border: 1.5px solid transparent;
   /* reserva espacio pal borde */
-  margin-top: 40px;
-  /* espacio para cuando salte */
+  margin-top: 60px;
+  /* (Más espacio arriba para el pop-up) */
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
 }
 
