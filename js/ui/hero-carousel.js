@@ -1,93 +1,134 @@
 /* =========================================
-   HERO CAROUSEL — Logic (Vanilla JS)
+   HERO CAROUSEL — Logic (Premium)
    ========================================= */
 
 document.addEventListener("DOMContentLoaded", () => {
-  initM3HeroCarousel();
-});
+  const carousel = document.getElementById("heroCarousel");
+  if (!carousel) return;
 
-function initM3HeroCarousel() {
-  const carousel = document.getElementById('heroCarousel');
-  const slides = document.querySelectorAll('.hero-slide');
-  const indicatorsContainer = document.querySelector('.carousel-indicators');
+  const slides = Array.from(carousel.querySelectorAll(".hero-slide"));
 
-  if (!carousel || !slides.length) return;
+  // New Controls
+  const prevBtn = carousel.querySelector(".nav-arrow.prev");
+  const nextBtn = carousel.querySelector(".nav-arrow.next");
+  const currentSlideEl = carousel.querySelector(".current-slide");
+  const totalSlidesEl = carousel.querySelector(".total-slides");
+  const progressFill = carousel.querySelector(".progress-fill");
 
+  if (!slides.length) return;
+
+  // Config
   const INTERVAL_MS = 6000;
   let currentIndex = 0;
   let timerId = null;
   let isPaused = false;
 
-  // 1. Build Indicators
-  if (indicatorsContainer) {
-    indicatorsContainer.innerHTML = '';
-    slides.forEach((_, i) => {
-      const dot = document.createElement('div');
-      dot.className = `indicator-dot ${i === 0 ? 'active' : ''}`;
-      dot.setAttribute('aria-label', `Ir a slide ${i + 1}`);
-      dot.onclick = () => goToSlide(i);
-      indicatorsContainer.appendChild(dot);
+  // Init Logic
+  function init() {
+    // Set Total Slides Count
+    if (totalSlidesEl) {
+      totalSlidesEl.textContent = formatNumber(slides.length);
+    }
+
+    // Show first slide
+    showSlide(0);
+
+    // Start AutoPlay
+    startAutoPlay();
+
+    // Listeners for Arrows
+    if (nextBtn) nextBtn.addEventListener("click", () => {
+      stopAutoPlay(); // Pause interaction
+      nextSlide();
+      startAutoPlay(); // Restart
     });
+
+    if (prevBtn) prevBtn.addEventListener("click", () => {
+      stopAutoPlay();
+      prevSlide();
+      startAutoPlay();
+    });
+
+    // Pause on Hover / Touch
+    carousel.addEventListener("mouseenter", () => isPaused = true);
+    carousel.addEventListener("mouseleave", () => isPaused = false);
+    carousel.addEventListener("touchstart", () => isPaused = true, { passive: true });
+    carousel.addEventListener("touchend", () => isPaused = false);
   }
 
-  const dots = document.querySelectorAll('.indicator-dot');
+  // Helper: 01, 02...
+  function formatNumber(num) {
+    return num < 10 ? `0${num}` : num;
+  }
 
-  // 2. Navigation Logic
-  function goToSlide(index) {
-    // Loop
-    if (index < 0) index = slides.length - 1;
+  function showSlide(index) {
+    // Wrap index
     if (index >= slides.length) index = 0;
+    if (index < 0) index = slides.length - 1;
 
-    // Update UI
-    slides.forEach(s => s.classList.remove('active'));
-    dots.forEach(d => d.classList.remove('active'));
-
-    slides[index].classList.add('active');
-    if (dots[index]) dots[index].classList.add('active');
-
+    // Update State
     currentIndex = index;
-    resetAutoPlay();
+
+    // Visual Update (Slides)
+    slides.forEach((slide, i) => {
+      if (i === currentIndex) {
+        slide.classList.add("active");
+      } else {
+        slide.classList.remove("active");
+      }
+    });
+
+    // Visual Update (Controls)
+    updateControls();
+  }
+
+  function updateControls() {
+    const realIndex = currentIndex + 1; // 1-based
+
+    // 1. Update Number "01"
+    if (currentSlideEl) {
+      currentSlideEl.textContent = formatNumber(realIndex);
+    }
+
+    // 2. Update Progress Bar Width
+    if (progressFill) {
+      const percentage = (realIndex / slides.length) * 100;
+      progressFill.style.width = `${percentage}%`;
+    }
   }
 
   function nextSlide() {
-    goToSlide(currentIndex + 1);
+    showSlide(currentIndex + 1);
   }
 
-  // 3. Auto Play with Pause
+  function prevSlide() {
+    showSlide(currentIndex - 1);
+  }
+
+  // Auto Play Logic
   function startAutoPlay() {
     if (timerId) clearInterval(timerId);
     timerId = setInterval(() => {
-      if (!isPaused) nextSlide();
+      if (!isPaused) {
+        nextSlide();
+      }
     }, INTERVAL_MS);
   }
 
   function stopAutoPlay() {
     if (timerId) clearInterval(timerId);
+    timerId = null;
   }
 
-  function resetAutoPlay() {
-    stopAutoPlay();
-    startAutoPlay();
-  }
-
-  // Interaction Pause
-  carousel.addEventListener('mouseenter', () => isPaused = true);
-  carousel.addEventListener('mouseleave', () => isPaused = false);
-  carousel.addEventListener('touchstart', () => isPaused = true, { passive: true });
-  carousel.addEventListener('touchend', () => {
-    isPaused = false;
-    resetAutoPlay();
-  }, { passive: true });
-
-  // 4. Mobile Swipe Support
+  // --- SWIPE SUPPORT (Touch) ---
   let touchStartX = 0;
   let touchEndX = 0;
 
-  carousel.addEventListener('touchstart', (e) => {
+  carousel.addEventListener("touchstart", (e) => {
     touchStartX = e.changedTouches[0].screenX;
   }, { passive: true });
 
-  carousel.addEventListener('touchend', (e) => {
+  carousel.addEventListener("touchend", (e) => {
     touchEndX = e.changedTouches[0].screenX;
     handleSwipe();
   }, { passive: true });
@@ -95,12 +136,19 @@ function initM3HeroCarousel() {
   function handleSwipe() {
     const threshold = 50;
     if (touchEndX < touchStartX - threshold) {
-      nextSlide(); // Left swipe -> Next
-    } else if (touchEndX > touchStartX + threshold) {
-      goToSlide(currentIndex - 1); // Right swipe -> Prev
+      // Swipe Left -> Next
+      stopAutoPlay();
+      nextSlide();
+      startAutoPlay();
+    }
+    if (touchEndX > touchStartX + threshold) {
+      // Swipe Right -> Prev
+      stopAutoPlay();
+      prevSlide();
+      startAutoPlay();
     }
   }
 
-  // Start
-  startAutoPlay();
-}
+  // Run
+  init();
+});
