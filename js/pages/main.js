@@ -166,6 +166,33 @@ function renderMainProduct(product) {
   ].filter(Boolean).join(" · ");
 
   safe("product-badge").textContent = badge;
+
+  // FICHA TÉCNICA DINÁMICA
+  const specsContainer = safe("product-specs");
+  if (specsContainer) {
+    const specs = [
+      { label: "Finca", value: product.finca, icon: "potted_plant" },
+      { label: "Altitud", value: product.altitud, icon: "landscape" },
+      { label: "Productor", value: product.productor, icon: "person" },
+      { label: "Origen", value: product.origen, icon: "location_on" },
+      { label: "Proceso", value: product.proceso, icon: "settings_suggest" },
+      { label: "Perfil", value: product.perfil, icon: "palette" },
+      { label: "Variedad", value: product.variedad, icon: "psychiatry" }
+    ];
+
+    specsContainer.innerHTML = specs
+      .filter(s => s.value) // Solo mostrar si tiene valor
+      .map(s => `
+        <div class="spec-item">
+          <span class="material-symbols-outlined">${s.icon}</span>
+          <div class="spec-info">
+            <span class="spec-label">${s.label}</span>
+            <span class="spec-value">${s.value}</span>
+          </div>
+        </div>
+      `).join("");
+  }
+
   safe("product-price").textContent = `L ${product.price}`;
 
   const img = safe("product-image");

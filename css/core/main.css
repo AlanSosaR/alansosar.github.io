@@ -413,6 +413,59 @@ body {
   /* café */
 }
 
+/* FICHA TÉCNICA */
+.product-specs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 0.8rem;
+  margin: 0.2rem 0;
+  padding: 1rem;
+  background: #fdfdfd;
+  border-radius: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.spec-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.spec-item .material-symbols-outlined {
+  color: var(--verde);
+  font-size: 1.3rem;
+  opacity: 0.85;
+}
+
+.spec-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.spec-label {
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--marron);
+  opacity: 0.5;
+  font-weight: 700;
+}
+
+.spec-value {
+  font-size: 0.82rem;
+  color: var(--marron);
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+@media (max-width: 600px) {
+  .product-specs {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.7rem;
+    padding: 0.75rem;
+  }
+}
+
 /* PÍLDORA: borde verde + texto café + leve elevación */
 .pill {
   background: #fff;
