@@ -107,12 +107,13 @@
     z-index: 10;
     display: flex;
     flex-direction: column;
-    /* ALINEAR ABAJO ("letras abajo") pero dejando espacio para el banner colgado */
+    /* ALINEAR ABAJO ("letras abajo") y bajarlo más */
     justify-content: flex-end;
     align-items: center;
     text-align: center;
-    padding: 0 24px 80px 24px;
-    /* Padding inferior para separar del borde */
+    /* Reducimos el padding inferior para que el texto baje más, 
+       casi tocando el banner de abajo */
+    padding: 0 24px 60px 24px;
     color: #ffffff;
     pointer-events: none;
     /* Dejar pasar clic a la imagen/swipe */
@@ -163,11 +164,15 @@
 /* =========================================
    DISCOUNT CARD (Overlapping Bottom)
    ========================================= */
+/* =========================================
+   CTA CARD (Previously Discount Card)
+   ========================================= */
 .discount-card-m3 {
     background-color: #377b4c;
     /* BRAND COLOR background */
     color: #ffffff;
-    padding: 12px 32px;
+    padding: 16px 48px;
+    /* Más padding para parecer botón */
     border-radius: 4px;
     /* CUADRADO */
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
@@ -184,9 +189,23 @@
     gap: 4px;
 
     border: 1px solid rgba(255, 255, 255, 0.2);
+    cursor: pointer;
+    /* Clickable */
+    transition: all 0.3s cubic-bezier(0.2, 0.0, 0, 1.0);
 
     opacity: 0;
     animation: fadeUp 0.8s cubic-bezier(0.2, 0.0, 0, 1.0) forwards 0.6s;
+}
+
+.discount-card-m3:hover {
+    background-color: #2E7D32;
+    transform: translateY(45%) scale(1.02);
+    /* Slight lift */
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+}
+
+.discount-card-m3:active {
+    transform: translateY(50%) scale(0.98);
 }
 
 .discount-card-m3 .label-large {

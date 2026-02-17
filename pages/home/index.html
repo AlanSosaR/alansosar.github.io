@@ -95,16 +95,16 @@
           <h1 class="display-large">La esencia de Honduras en cada sorbo</h1>
           <p class="headline-small">Café de altura cultivado a 1100 msnm, fresco y directo de la finca.</p>
 
-          <!-- Discount Card (M3 Surface) -->
-          <div class="discount-card-m3">
-            <span class="label-large">🎉 15% OFF en tu primer pedido</span>
-          </div>
-
-          <!-- Primary Action -->
-          <button class="btn-filled-m3"
+          <!-- Discount Card (M3 Surface) -> Now PRIMARY CTA -->
+          <button class="discount-card-m3"
             onclick="document.getElementById('productos')?.scrollIntoView({behavior: 'smooth'})">
-            Comprar ahora
+            <span class="label-large">
+              Comprar ahora
+              <span class="material-symbols-outlined" style="font-size: 1.2rem;">shopping_bag</span>
+            </span>
           </button>
+
+          <!-- Primary Action REMOVED (Moved to bottom banner) -->
         </div>
 
         <!-- Indicadores -->
