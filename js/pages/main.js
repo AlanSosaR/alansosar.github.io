@@ -365,81 +365,7 @@ function updateSimilarUI() {
   if (next) next.classList.toggle("hidden", similarIndex === cards.length - 1);
 }
 
-function initHeroCarousel() {
-  const images = Array.from(document.querySelectorAll(".hero-img"));
-  const pills = Array.from(document.querySelectorAll(".pill-segment"));
 
-  if (!images.length || !pills.length) return;
-
-  const STATES = [
-    [0, 1, 2],
-    [3, 4, 5, 6, 7],
-    [8, 9, 10, 11]
-  ];
-
-  let mode = "all";
-  let stateIndex = 0;
-  let globalIndex = 0;
-  let localIndex = 0;
-  let timer = null;
-
-  const INTERVAL = 8000;
-
-  function showImage(i) {
-    images.forEach(img => img.classList.remove("active"));
-    images[i]?.classList.add("active");
-  }
-
-  function syncPillsByImage(i) {
-    pills.forEach(p => p.classList.remove("active"));
-    if (i <= 2) pills[0].classList.add("active");
-    else if (i <= 7) pills[1].classList.add("active");
-    else pills[2].classList.add("active");
-  }
-
-  function next() {
-    if (mode === "all") {
-      globalIndex = (globalIndex + 1) % images.length;
-      showImage(globalIndex);
-      syncPillsByImage(globalIndex);
-    } else {
-      const group = STATES[stateIndex];
-      localIndex = (localIndex + 1) % group.length;
-      globalIndex = group[localIndex];
-      showImage(globalIndex);
-    }
-  }
-
-  function start() {
-    stop();
-    timer = setInterval(next, INTERVAL);
-  }
-
-  function stop() {
-    if (timer) clearInterval(timer);
-    timer = null;
-  }
-
-  pills.forEach((pill, i) => {
-    pill.addEventListener("click", () => {
-      mode = "state";
-      stateIndex = i;
-      localIndex = 0;
-      globalIndex = STATES[i][0];
-
-      pills.forEach(p => p.classList.remove("active"));
-      pill.classList.add("active");
-
-      showImage(globalIndex);
-      start();
-    });
-  });
-
-  // INIT REAL
-  showImage(0);
-  syncPillsByImage(0);
-  start();
-}
 
 /* =========================
    FAB — BOTÓN FLOTANTE DE CONTACTO
@@ -473,7 +399,7 @@ function initContactFAB() {
 document.addEventListener("DOMContentLoaded", () => {
 
   syncHeaderCounter();
-  initHeroCarousel();
+  // initHeroCarousel(); // REMOVED: Replaced by hero-carousel.js
   initContactFAB();
 
   const qtyNumber = safe("qty-number");

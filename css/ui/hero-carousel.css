@@ -1,0 +1,245 @@
+/* =========================================
+   HERO CAROUSEL — Material 3 Expressive
+   ========================================= */
+
+:root {
+    /* TOKENS OFICIALES (Reglas Generales) */
+    --md-sys-color-primary: #377b4c;
+    /* Brand Color */
+    --md-sys-color-on-primary: #ffffff;
+    --md-sys-color-primary-container: #ffffff;
+    /* Surface para tarjeta descuento */
+    --md-sys-color-on-primary-container: #2B2B2B;
+
+    --md-sys-color-surface: #F8F6F2;
+    --md-sys-color-outline: rgba(255, 255, 255, 0.2);
+
+    --md-comp-btn-primary: #2E7D32;
+    /* Botón Principal */
+
+    /* SHAPES (Expressive) */
+    --md-sys-shape-corner-extra-large: 28px;
+    --md-sys-shape-corner-full: 999px;
+
+    /* ELEVATION (Soft) */
+    --md-sys-elevation-level1: 0 4px 8px 3px rgba(0, 0, 0, 0.15);
+    --md-sys-elevation-level2: 0 8px 12px 6px rgba(0, 0, 0, 0.15);
+}
+
+.hero-m3-container {
+    width: 100%;
+    position: relative;
+    margin-bottom: 2rem;
+    background-color: var(--md-sys-color-surface);
+}
+
+/* =========================================
+   CAROUSEL WRAPPER
+   ========================================= */
+.hero-carousel {
+    position: relative;
+    width: 100%;
+    height: 65vh;
+    /* Mobile First */
+    overflow: hidden;
+    /* Round bottom corners for "Expressive" feel on container if desired, 
+     but usually full width heroes are square. Keeping square for hero. */
+}
+
+@media (min-width: 1024px) {
+    .hero-carousel {
+        height: 80vh;
+        /* Desktop */
+    }
+}
+
+/* =========================================
+   SLIDES
+   ========================================= */
+.hero-slides-wrapper {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.hero-slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 600ms cubic-bezier(0.2, 0.0, 0, 1.0);
+    /* M3 emphasized easing */
+    z-index: 1;
+}
+
+.hero-slide.active {
+    opacity: 1;
+    z-index: 2;
+}
+
+.hero-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+/* Scrim / Overlay Gradient */
+.hero-overlay-gradient {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom,
+            rgba(0, 0, 0, 0.4) 0%,
+            rgba(0, 0, 0, 0.2) 40%,
+            rgba(0, 0, 0, 0.6) 100%);
+    z-index: 2;
+}
+
+/* =========================================
+   CONTENIDO CENTRADO
+   ========================================= */
+.hero-content {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 0 24px;
+    color: #ffffff;
+}
+
+/* Tipografía M3 */
+.display-large {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    /* Responsive typography */
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 16px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeUp 0.8s cubic-bezier(0.2, 0.0, 0, 1.0) forwards 0.2s;
+}
+
+.headline-small {
+    font-family: 'Poppins', sans-serif;
+    font-size: clamp(1rem, 2vw, 1.5rem);
+    font-weight: 400;
+    margin-bottom: 32px;
+    max-width: 700px;
+    text-wrap: balance;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeUp 0.8s cubic-bezier(0.2, 0.0, 0, 1.0) forwards 0.4s;
+}
+
+/* =========================================
+   DISCOUNT CARD (Surface Container)
+   ========================================= */
+.discount-card-m3 {
+    background-color: rgba(255, 255, 255, 0.95);
+    /* Casi sólido */
+    backdrop-filter: blur(10px);
+    color: #2B2B2B;
+    /* Dark text on light surface */
+    padding: 16px 24px;
+    border-radius: var(--md-sys-shape-corner-extra-large);
+    box-shadow: var(--md-sys-elevation-level1);
+    margin-bottom: 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeUp 0.8s cubic-bezier(0.2, 0.0, 0, 1.0) forwards 0.6s;
+
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.discount-card-m3 .label-large {
+    color: var(--md-sys-color-primary);
+    /* Verde Marca */
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.discount-card-m3 .body-medium {
+    font-size: 0.9rem;
+    color: #555;
+}
+
+/* =========================================
+   BUTTON (Filled M3)
+   ========================================= */
+.btn-filled-m3 {
+    background-color: var(--md-sys-color-primary);
+    /* #377b4c */
+    color: var(--md-sys-color-on-primary);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 1.125rem;
+    padding: 18px 48px;
+    /* Generous padding */
+    border-radius: var(--md-sys-shape-corner-full);
+    border: none;
+    cursor: pointer;
+    box-shadow: var(--md-sys-elevation-level1);
+    transition: all 0.3s cubic-bezier(0.2, 0.0, 0, 1.0);
+
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeUp 0.8s cubic-bezier(0.2, 0.0, 0, 1.0) forwards 0.8s;
+}
+
+.btn-filled-m3:hover {
+    background-color: var(--md-comp-btn-primary);
+    /* #2E7D32 */
+    box-shadow: var(--md-sys-elevation-level2);
+    transform: scale(1.02) translateY(0);
+}
+
+.btn-filled-m3:active {
+    transform: scale(0.98);
+}
+
+/* =========================================
+   INDICATORS
+   ========================================= */
+.carousel-indicators {
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 12px;
+    z-index: 20;
+}
+
+.indicator-dot {
+    width: 12px;
+    height: 12px;
+    background-color: rgba(255, 255, 255, 0.4);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.indicator-dot.active {
+    width: 12px;
+    /* M3 usually keeps dots same size or expands to pill */
+    background-color: #ffffff;
+    transform: scale(1.2);
+}
+
+@keyframes fadeUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

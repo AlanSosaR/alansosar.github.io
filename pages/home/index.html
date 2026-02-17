@@ -15,6 +15,7 @@
   <!-- CSS -->
   <link rel="stylesheet" href="/css/core/main.css?v=1116">
   <link rel="stylesheet" href="/css/ui/header.css"> <!-- 🔑 HEADER GLOBAL -->
+  <link rel="stylesheet" href="/css/ui/hero-carousel.css"> <!-- 🆕 HERO CAROUSEL -->
   <link rel="manifest" href="/manifest.webmanifest">
   <script>
     console.log("PWA: manifest linked");
@@ -28,39 +29,43 @@
 
   <main>
 
-    <!-- HERO -->
-    <section class="hero">
-      <div class="hero-text">
-        <h1><span class="verde">La esencia de Honduras en cada sorbo.</span></h1>
-        <p>Café hondureño de altura, tueste medio y esencia familiar.</p>
-      </div>
-
-      <div class="hero-card">
-        <div class="hero-media">
-          <!-- ORIGEN -->
-          <img src="/imagenes/origen1.jpg" class="hero-img active" alt="Origen del café">
-          <img src="/imagenes/origen2.jpg" class="hero-img" alt="Plantación de café">
-          <img src="/imagenes/origen3.jpg" class="hero-img" alt="Región cafetera">
-
-          <!-- COSECHA -->
-          <img src="/imagenes/cosecha1.jpg" class="hero-img" alt="Cosecha de café">
-          <img src="/imagenes/cosecha2.jpg" class="hero-img" alt="Recolección manual">
-          <img src="/imagenes/cosecha3.jpg" class="hero-img" alt="Granos recién cosechados">
-          <img src="/imagenes/cosecha4.jpg" class="hero-img" alt="Selección del grano">
-          <img src="/imagenes/cosecha5.jpg" class="hero-img" alt="Proceso de secado">
-
-          <!-- TOSTADO -->
-          <img src="/imagenes/tostado1.jpg" class="hero-img" alt="Inicio del tostado">
-          <img src="/imagenes/tostado2.jpg" class="hero-img" alt="Tueste medio">
-          <img src="/imagenes/tostado3.jpg" class="hero-img" alt="Tueste oscuro">
-          <img src="/imagenes/tostado4.jpg" class="hero-img" alt="Grano listo para moler">
+    <!-- HERO (Material 3 Carousel) -->
+    <section class="hero-m3-container" aria-label="Promociones Principales">
+      <div class="hero-carousel" id="heroCarousel">
+        
+        <!-- Slides -->
+        <div class="hero-slides-wrapper">
+           <!-- Slide 1: Finca -->
+           <div class="hero-slide active">
+             <img src="/imagenes/origen1.jpg" alt="Finca de café en Honduras" loading="eager">
+             <div class="hero-overlay-gradient"></div>
+           </div>
+           <!-- Slide 2: Cosecha/Estilo de vida -->
+           <div class="hero-slide">
+             <img src="/imagenes/cosecha1.jpg" alt="Cosecha de café artesanal" loading="lazy">
+             <div class="hero-overlay-gradient"></div>
+           </div>
         </div>
-
-        <div class="hero-pill-group">
-          <button class="pill-segment active" data-state="0">Origen</button>
-          <button class="pill-segment" data-state="1">Cosecha</button>
-          <button class="pill-segment" data-state="2">Tueste</button>
+        
+        <!-- Contenido Centrado (Sobrepuesto) -->
+        <div class="hero-content">
+           <h1 class="display-large">La esencia de Honduras en cada sorbo</h1>
+           <p class="headline-small">Café de altura cultivado a 1100 msnm, fresco y directo de la finca.</p>
+           
+           <!-- Discount Card (M3 Surface) -->
+           <div class="discount-card-m3">
+             <span class="label-large">🎉 15% OFF en tu primer pedido</span>
+             <span class="body-medium">Código: <strong>CORTERO15</strong></span>
+           </div>
+           
+           <!-- Primary Action -->
+           <button class="btn-filled-m3" onclick="document.getElementById('productos')?.scrollIntoView({behavior: 'smooth'})">
+             Comprar ahora
+           </button>
         </div>
+        
+        <!-- Indicadores -->
+        <div class="carousel-indicators"></div>
       </div>
     </section>
     <!-- mensaje estado vacío -->
@@ -255,6 +260,9 @@
 
   <!-- 4️⃣ Header (define hooks + UI) -->
   <script type="module" src="/js/ui/header.js"></script>
+
+  <!-- 🆕 Hero Carousel Logic -->
+  <script src="/js/ui/hero-carousel.js"></script>
 
   <!-- 5️⃣ Auth UI (listeners de sesión) -->
   <script src="/js/core/auth-ui.js"></script>
