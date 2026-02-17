@@ -299,6 +299,14 @@ async function loadSimilarProducts() {
       data-grind="${p.grind_type || ""}"
       data-presentation="${p.presentation || ""}"
       data-stock="${p.stock ?? 0}"
+      data-finca="${p.finca || ""}"
+      data-altitud="${p.altitud || ""}"
+      data-productor="${p.productor || ""}"
+      data-origen="${p.origen || ""}"
+      data-proceso="${p.proceso || ""}"
+      data-perfil="${p.perfil || ""}"
+      data-variedad="${p.variedad || ""}"
+      data-discount="${p.discount || 0}"
     >
       <div class="similar-img-cont">
         <img src="${p.image_url || "/imagenes/no-image.png"}"
@@ -343,7 +351,15 @@ function initDefaultProduct() {
     presentation: firstCard.dataset.presentation,
     price: Number(firstCard.dataset.price),
     stock: Number(firstCard.dataset.stock || 0),
-    image_url: firstCard.dataset.img
+    image_url: firstCard.dataset.img,
+    finca: firstCard.dataset.finca,
+    altitud: firstCard.dataset.altitud,
+    productor: firstCard.dataset.productor,
+    origen: firstCard.dataset.origen,
+    proceso: firstCard.dataset.proceso,
+    perfil: firstCard.dataset.perfil,
+    variedad: firstCard.dataset.variedad,
+    discount: Number(firstCard.dataset.discount || 0)
   });
 
   document.querySelectorAll(".similar-card")
@@ -378,7 +394,15 @@ function bindSimilarCardEvents() {
         presentation: card.dataset.presentation,
         price: Number(card.dataset.price),
         stock: Number(card.dataset.stock || 0),
-        image_url: card.dataset.img
+        image_url: card.dataset.img,
+        finca: card.dataset.finca,
+        altitud: card.dataset.altitud,
+        productor: card.dataset.productor,
+        origen: card.dataset.origen,
+        proceso: card.dataset.proceso,
+        perfil: card.dataset.perfil,
+        variedad: card.dataset.variedad,
+        discount: Number(card.dataset.discount || 0)
       });
 
       productSection?.scrollIntoView({ behavior: "smooth" });
