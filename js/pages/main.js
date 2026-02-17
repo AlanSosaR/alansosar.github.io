@@ -21,8 +21,36 @@ function hideEmptyCatalog() {
   document.querySelector(".related")?.classList.remove("hidden");
 }
 
-/* ========================= CARRITO ========================= */
+/* ========================= CARRITO = :root ========================= */
 const CART_KEY = "cafecortero_cart";
+const FAV_KEY = "cafecortero_favs";
+
+function getFavorites() {
+  try {
+    return JSON.parse(localStorage.getItem(FAV_KEY)) || [];
+  } catch {
+    return [];
+  }
+}
+
+function saveFavorites(favs) {
+  localStorage.setItem(FAV_KEY, JSON.stringify(favs));
+}
+
+function isFavorite(productId) {
+  return getFavorites().includes(productId);
+}
+
+function toggleFavorite(productId) {
+  let favs = getFavorites();
+  if (favs.includes(productId)) {
+    favs = favs.filter(id => id !== productId);
+  } else {
+    favs.push(productId);
+  }
+  saveFavorites(favs);
+  loadSimilarProducts(); // Recargar para reordenar
+}
 
 function getCart() {
   try {
@@ -215,7 +243,21 @@ async function loadSimilarProducts() {
 
   hideEmptyCatalog();
 
-  cont.innerHTML = data.map(p => `
+  const favs = getFavorites();
+  // Ordenar: Favoritos primero
+  data.sort((a, b) => {
+    const isA = favs.includes(a.id);
+    const isB = favs.includes(b.id);
+    if (isA && !isB) return -1;
+    if (!isA && isB) return 1;
+    return 0;
+  });
+
+  cont.innerHTML = data.map(p => {
+    const activeFav = isFavorite(p.id) ? 'active' : '';
+    const heartIcon = isFavorite(p.id) ? 'fa-solid fa-heart' : 'fa-regular fa-heart';
+
+    return `
     <div class="similar-card"
       data-id="${p.id}"
       data-name="${p.name}"
@@ -233,10 +275,20 @@ async function loadSimilarProducts() {
       </div>
       <div class="similar-info">
         <h4>${p.name}</h4>
-        <div class="price-sm">L ${p.price}</div>
+        
+        <div class="card-footer-3col">
+          <span class="weight-label">1 lb</span>
+          
+          <button class="fav-btn ${activeFav}" onclick="event.stopPropagation(); toggleFavorite('${p.id}')">
+            <i class="${heartIcon}"></i>
+          </button>
+
+          <div class="price-pill">L ${p.price}</div>
+        </div>
       </div>
     </div>
-  `).join("");
+  `;
+  }).join("");
 
   renderCarouselDots(data.length);
   bindSimilarCardEvents();

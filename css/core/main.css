@@ -732,7 +732,8 @@ body {
 
 .related {
   max-width: 1100px;
-  margin: 0 auto 4rem;
+  /* Aumentamos margen superior para dar respiro vs imagen principal escale */
+  margin: 6rem auto 4rem;
   padding: 0 1rem;
 }
 
@@ -850,19 +851,71 @@ body {
 
 .similar-info h4 {
   font-size: 0.95rem;
-  margin-bottom: 4px;
+  margin-bottom: 12px;
   color: var(--marron);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   font-family: 'Poppins', sans-serif;
+  text-align: left;
+  padding: 0 4px;
 }
 
-.similar-info .price-sm {
-  font-weight: 700;
-  color: var(--verde);
-  font-size: 0.9rem;
+/* Footer de la tarjeta con 3 áreas */
+.card-footer-3col {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  width: 100%;
+  padding-top: 8px;
 }
+
+.weight-label {
+  font-size: 0.85rem;
+  color: #a78c7c;
+  font-weight: 500;
+}
+
+.fav-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #d1d1d1;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+  padding: 4px;
+}
+
+.fav-btn.active {
+  color: #e63946;
+  /* Corazón rojo */
+  transform: scale(1.1);
+}
+
+.fav-btn:hover {
+  transform: scale(1.2);
+}
+
+/* Píldora de precio al borde inferior */
+.price-pill {
+  position: absolute;
+  bottom: -48px;
+  /* Ajustado para quedar al borde de la tarjeta */
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1a1a1a;
+  /* Píldora negra elegante */
+  color: #ffffff;
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
+  z-index: 10;
+}
+
 
 /* ESTADO ACTIVO / HOVER */
 /* ESTADO ACTIVO (SOLO CLICK) */
