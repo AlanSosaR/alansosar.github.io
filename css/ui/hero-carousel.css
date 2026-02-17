@@ -111,9 +111,9 @@
     justify-content: flex-end;
     align-items: center;
     text-align: center;
-    /* Reducimos el padding inferior para que el texto baje más, 
-       casi tocando el banner de abajo */
-    padding: 0 24px 60px 24px;
+    /* Aumentamos el padding inferior para asegurar que el texto no esté muy pegado 
+       a las flechas de navegación y que el diseño "respire" mejor */
+    padding: 0 24px 90px 24px;
     color: #ffffff;
     pointer-events: none;
     /* Dejar pasar clic a la imagen/swipe */
