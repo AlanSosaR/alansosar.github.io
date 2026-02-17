@@ -43,11 +43,15 @@ function isFavorite(productId) {
 
 function toggleFavorite(productId) {
   let favs = getFavorites();
+
+  // Si ya es favorito, lo quitamos.
+  // Si no lo es, reemplazamos lo que haya por este nuevo (Single Favorite)
   if (favs.includes(productId)) {
-    favs = favs.filter(id => id !== productId);
+    favs = [];
   } else {
-    favs.push(productId);
+    favs = [productId];
   }
+
   saveFavorites(favs);
   loadSimilarProducts(); // Recargar para reordenar
 }
