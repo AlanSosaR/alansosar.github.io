@@ -35,6 +35,15 @@ const tipoCafeSel = document.getElementById("tipoCafe");
 const presentacion = document.getElementById("presentacion");
 const precioInput = document.getElementById("precio");
 const stockInput = document.getElementById("stock");
+const descuentoInput = document.getElementById("descuento");
+
+const fincaInput = document.getElementById("finca");
+const altitudInput = document.getElementById("altitud");
+const productorInput = document.getElementById("productor");
+const origenInput = document.getElementById("origen");
+const procesoInput = document.getElementById("proceso");
+const perfilInput = document.getElementById("perfil");
+const variedadInput = document.getElementById("variedad");
 
 const uploadBox = document.getElementById("uploadBox");
 const imagePreview = document.getElementById("imagePreview");
@@ -93,7 +102,14 @@ function validarFormulario() {
     { el: tipoCafeSel, msg: "Selecciona el tipo de café" },
     { el: presentacion, msg: "Selecciona la presentación" },
     { el: precioInput, msg: "El precio debe ser mayor a 0", numeric: true },
-    { el: stockInput, msg: "Stock inválido", numeric: true }
+    { el: stockInput, msg: "Stock inválido", numeric: true },
+    { el: fincaInput, msg: "La finca es obligatoria" },
+    { el: altitudInput, msg: "La altitud es obligatoria" },
+    { el: productorInput, msg: "El productor es obligatorio" },
+    { el: origenInput, msg: "El origen es obligatorio" },
+    { el: procesoInput, msg: "El proceso es obligatorio" },
+    { el: perfilInput, msg: "El perfil es obligatorio" },
+    { el: variedadInput, msg: "La variedad es obligatoria" }
   ];
 
   document.querySelectorAll(".m3-field").forEach(f => {
@@ -223,6 +239,14 @@ async function guardarProducto() {
     price: Number(precioInput.value),
     currency: "HNL",
     stock: Number(stockInput.value),
+    discount: Number(descuentoInput.value || 0),
+    finca: fincaInput.value.trim(),
+    altitud: altitudInput.value.trim(),
+    productor: productorInput.value.trim(),
+    origen: origenInput.value.trim(),
+    proceso: procesoInput.value.trim(),
+    perfil: perfilInput.value.trim(),
+    variedad: variedadInput.value.trim(),
     status: estadoToggle.checked ? "activo" : "inactivo"
   };
 
@@ -281,6 +305,15 @@ async function cargarProducto() {
   presentacion.value = data.presentation || "";
   precioInput.value = data.price ?? "";
   stockInput.value = data.stock ?? "";
+  descuentoInput.value = data.discount ?? 0;
+
+  fincaInput.value = data.finca || "La Rosa";
+  altitudInput.value = data.altitud || "1100-1150 msnm";
+  productorInput.value = data.productor || "Leonardo Antonio Sosa";
+  origenInput.value = data.origen || "San Ramon, Santa María, Departamento del Paraíso, Honduras.";
+  procesoInput.value = data.proceso || "Lavado, seco";
+  perfilInput.value = data.perfil || "Miel, cítrico, chocolate";
+  variedadInput.value = data.variedad || "Parainema";
 
   estadoToggle.checked = data.status === "activo";
   estadoTexto.textContent = estadoToggle.checked ? "Activo" : "Inactivo";
