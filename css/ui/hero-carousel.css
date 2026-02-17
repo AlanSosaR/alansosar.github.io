@@ -330,12 +330,14 @@
 }
 
 /* Ajuste Mobile: Centrar abajo para no tapar */
+/* Ajuste Mobile: Centrar abajo para no tapar */
 @media (max-width: 768px) {
     .carousel-controls {
         right: auto;
         left: 50%;
         transform: translateX(-50%);
-        bottom: 20px;
+        /* Move up to avoid CTA button */
+        bottom: 70px;
         gap: 16px;
     }
 
