@@ -38,8 +38,22 @@ header.header-fixed {
    MOBILE — OCULTAR LOGO DETRÁS DEL MENÚ
 ===================================================== */
 @media (max-width: 900px) {
+
+  /* No ocultar logo, solo reordenar */
   .header-logo-link {
-    display: none !important;
+    display: flex !important;
+    order: 3;
+    margin-left: auto;
+  }
+
+  #menu-toggle {
+    order: 1;
+    margin-right: auto;
+  }
+
+  /* El slot de búsqueda o el título central pueden ir en medio */
+  #header-search-slot {
+    order: 2;
   }
 }
 
@@ -140,10 +154,12 @@ body.page-carrito .header-cart-title {
 
 @media (max-width: 768px) {
   .header-cart-title {
-    position: static;
-    transform: none;
-    margin: 0 auto;
-    padding: 10px 0;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    margin: 0;
+    padding: 0;
+    order: 2;
   }
 }
 

@@ -37,11 +37,27 @@ function syncHeaderCounter() {
 }
 
 /* ================= SNACKBAR ================= */
-function showSnackbar(message, duration = 1800) {
+function showSnackbar(message, duration = 3000, action = null) {
   const el = document.getElementById("snackbar");
   if (!el) return;
 
-  el.textContent = message;
+  // Limpiar contenido previo y establecer mensaje
+  el.innerHTML = `<span>${message}</span>`;
+
+  if (action && action.text && action.callback) {
+    const btn = document.createElement("button");
+    btn.textContent = action.text;
+    btn.className = "snackbar-action-btn";
+    btn.onclick = () => {
+      action.callback();
+      el.classList.remove("show");
+      el.classList.add("hidden");
+    };
+    el.appendChild(btn);
+    // Extender duración si hay acción
+    duration = 6000;
+  }
+
   el.classList.remove("hidden");
   el.classList.add("show");
 
@@ -311,10 +327,12 @@ document.getElementById("proceder-btn")?.addEventListener("click", async () => {
   }
 
   if (!data?.session) {
-    showSnackbar("Necesitas iniciar sesión para continuar con tu pedido.");
-    setTimeout(() => {
-      location.href = "/pages/auth/login.html?redirect=carrito";
-    }, 1500);
+    showSnackbar("Debes iniciar sesión para procesar tu pedido. Serás redireccionado al login.", 5000, {
+      text: "Aceptar",
+      callback: () => {
+        location.href = "/pages/auth/login.html?redirect=carrito";
+      }
+    });
     return;
   }
 

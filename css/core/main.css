@@ -214,6 +214,44 @@ body {
   z-index: 0;
 }
 
+/* SNACKBAR */
+.snackbar {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: #323232;
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 8px;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: transform 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.snackbar.show {
+  transform: translateX(-50%) translateY(0);
+}
+
+.snackbar-action-btn {
+  background: var(--verde);
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background 0.2s;
+}
+
+.snackbar-action-btn:hover {
+  background: #2e7d32;
+}
+
 /* =========================================================
    PÍLDORAS — MATERIAL 3 EXPRESSIVE
 ========================================================= */
