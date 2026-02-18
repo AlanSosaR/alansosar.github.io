@@ -501,6 +501,7 @@ form.addEventListener("submit", async e => {
   // ── AUTOCOMPLETADO DE DIRECCIÓN ──────────────────────────────
   const direccionEl = document.getElementById("direccion");
   const suggestionsList = document.getElementById("direccion-suggestions");
+  let isSelecting = false; // flag para evitar fetch al seleccionar
 
   function hideSuggestions() {
     if (suggestionsList) suggestionsList.classList.add("hidden");
@@ -517,14 +518,12 @@ form.addEventListener("submit", async e => {
 
     results.forEach(item => {
       const addr = item.address || {};
-      // Parte principal: calle o nombre del lugar
       const mainParts = [
         item.name || addr.road || addr.pedestrian || addr.amenity || addr.building,
         addr.house_number
       ].filter(Boolean);
       const main = mainParts.join(" ") || item.display_name.split(",")[0];
 
-      // Parte secundaria: barrio, ciudad
       const subParts = [
         addr.neighbourhood || addr.suburb || addr.quarter,
         addr.city || addr.town || addr.village || addr.municipality
@@ -541,15 +540,15 @@ form.addEventListener("submit", async e => {
       `;
 
       li.addEventListener("mousedown", (e) => {
-        // mousedown antes del blur para capturar el clic
         e.preventDefault();
+        isSelecting = true; // bloquear el fetch del input
+
         const lat = parseFloat(item.lat);
         const lon = parseFloat(item.lon);
-
-        // Llenar el campo con la dirección limpia
         const fullAddr = [main, sub].filter(Boolean).join(", ");
+
+        // Llenar el campo SIN disparar fetchSuggestions
         direccionEl.value = fullAddr;
-        direccionEl.dispatchEvent(new Event("input", { bubbles: true }));
 
         // Mover el mapa
         map.flyTo([lat, lon], 17, { animate: true, duration: 1.2 });
@@ -557,11 +556,13 @@ form.addEventListener("submit", async e => {
         setStatus("✅ Dirección seleccionada");
         setTimeout(() => setStatus(""), 3000);
 
-        // Guardar coordenadas
         sessionStorage.setItem("delivery_lat", lat);
         sessionStorage.setItem("delivery_lng", lon);
 
         hideSuggestions();
+
+        // Restaurar flag después del ciclo de eventos
+        setTimeout(() => { isSelecting = false; }, 300);
       });
 
       suggestionsList.appendChild(li);
@@ -571,6 +572,7 @@ form.addEventListener("submit", async e => {
   }
 
   async function fetchSuggestions(query) {
+    if (isSelecting) return; // no buscar si se acaba de seleccionar
     if (!query || query.length < 4) { hideSuggestions(); return; }
     const ciudadVal = ciudadEl ? ciudadEl.value.trim() : "";
     const q = encodeURIComponent(query + (ciudadVal ? `, ${ciudadVal}` : "") + ", Honduras");
@@ -580,7 +582,10 @@ form.addEventListener("submit", async e => {
         { headers: { "Accept-Language": "es" } }
       );
       const data = await res.json();
-      showSuggestions(data);
+      // Solo mostrar si el campo sigue activo y tiene texto
+      if (direccionEl === document.activeElement && direccionEl.value.trim().length >= 4) {
+        showSuggestions(data);
+      }
     } catch {
       hideSuggestions();
     }
@@ -588,6 +593,7 @@ form.addEventListener("submit", async e => {
 
   if (direccionEl) {
     direccionEl.addEventListener("input", () => {
+      if (isSelecting) return; // ignorar el input disparado por la selección
       clearTimeout(debounceTimer);
       const val = direccionEl.value.trim();
       if (val.length >= 4) {
@@ -597,9 +603,20 @@ form.addEventListener("submit", async e => {
       }
     });
 
-    // Cerrar al perder el foco (con pequeño delay para permitir el clic)
+    // Al recuperar el foco y ya hay texto → mostrar sugerencias de nuevo
+    direccionEl.addEventListener("focus", () => {
+      const val = direccionEl.value.trim();
+      if (val.length >= 4 && !isSelecting) {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => fetchSuggestions(val), 400);
+      }
+    });
+
+    // Cerrar al perder el foco (delay para permitir el mousedown de la sugerencia)
     direccionEl.addEventListener("blur", () => {
-      setTimeout(hideSuggestions, 200);
+      setTimeout(() => {
+        if (!isSelecting) hideSuggestions();
+      }, 250);
     });
 
     // Cerrar con Escape
@@ -608,10 +625,11 @@ form.addEventListener("submit", async e => {
     });
   }
 
-  // Cerrar al hacer clic fuera
+  // Cerrar al hacer clic fuera del campo
   document.addEventListener("click", (e) => {
     if (!e.target.closest(".m3-field")) hideSuggestions();
   });
+
 
   // Botón GPS
   const btnGps = document.getElementById("btn-gps");
