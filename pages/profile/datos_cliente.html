@@ -94,37 +94,12 @@
                 <h2>Detalles de Envío</h2>
               </div>
 
-              <div class="fields-row">
-                <div class="m3-field full">
-                  <div class="m3-input-wrapper">
-                    <span class="material-symbols-outlined input-icon">map</span>
-                    <input id="direccion" type="text" placeholder=" " required autocomplete="off">
-                    <label class="field-label">Dirección exacta</label>
-                  </div>
-                </div>
-              </div>
-
-              <!-- MAPA INTERACTIVO -->
-              <div class="map-wrapper">
-                <div class="map-toolbar">
-                  <span class="map-hint">
-                    <span class="material-symbols-outlined">info</span>
-                    Haz clic en el mapa o escribe tu dirección arriba
-                  </span>
-                  <button type="button" id="btn-gps" class="gps-btn" title="Usar mi ubicación actual">
-                    <span class="material-symbols-outlined">my_location</span>
-                    Mi ubicación
-                  </button>
-                </div>
-                <div id="delivery-map"></div>
-                <div id="map-status" class="map-status hidden"></div>
-              </div>
-
+              <!-- 1. CIUDAD Y DEPARTAMENTO -->
               <div class="fields-row split">
                 <div class="m3-field">
                   <div class="m3-input-wrapper">
                     <span class="material-symbols-outlined input-icon">location_city</span>
-                    <input id="ciudad" type="text" placeholder=" " required>
+                    <input id="ciudad" type="text" placeholder=" " required autocomplete="off">
                     <label class="field-label">Ciudad</label>
                   </div>
                 </div>
@@ -147,12 +122,40 @@
                 </div>
               </div>
 
+              <!-- 2. DIRECCIÓN EXACTA -->
               <div class="fields-row">
+                <div class="m3-field full">
+                  <div class="m3-input-wrapper">
+                    <span class="material-symbols-outlined input-icon">map</span>
+                    <input id="direccion" type="text" placeholder=" " required autocomplete="off">
+                    <label class="field-label">Dirección exacta</label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 3. MAPA INTERACTIVO -->
+              <div class="map-wrapper">
+                <div class="map-toolbar">
+                  <span class="map-hint">
+                    <span class="material-symbols-outlined">info</span>
+                    Escribe tu ciudad o dirección, o haz clic en el mapa
+                  </span>
+                  <button type="button" id="btn-gps" class="gps-btn" title="Usar mi ubicación actual">
+                    <span class="material-symbols-outlined">my_location</span>
+                    Mi ubicación
+                  </button>
+                </div>
+                <div id="delivery-map"></div>
+                <div id="map-status" class="map-status hidden"></div>
+              </div>
+
+              <!-- 4. REFERENCIAS (OPCIONAL) -->
+              <div class="fields-row" style="margin-top: 1.5rem;">
                 <div class="m3-field full">
                   <div class="m3-input-wrapper">
                     <span class="material-symbols-outlined input-icon">comment</span>
                     <textarea id="nota" rows="2" placeholder=" "></textarea>
-                    <label class="field-label">Referencias</label>
+                    <label class="field-label">Referencias (opcional)</label>
                   </div>
                 </div>
               </div>

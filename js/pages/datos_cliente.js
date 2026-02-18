@@ -216,6 +216,14 @@ async function cargarDireccion() {
   activarLabel(ciudadInput);
   activarLabel(direccionInput);
   activarLabel(zonaSelect);
+
+  // Notificar al mapa para que se posicione en la ciudad/dirección cargada
+  window.dispatchEvent(new CustomEvent("cortero:direccionCargada", {
+    detail: {
+      ciudad: addr.city || "",
+      direccion: addr.street || ""
+    }
+  }));
 }
 
 async function guardarTodo() {
@@ -432,15 +440,72 @@ form.addEventListener("submit", async e => {
     await reverseGeocode(lat, lng);
   });
 
-  // Debounce: al escribir en el campo de dirección → geocodificar
+  // ── Debounce compartido ──────────────────────────────────────
   let debounceTimer = null;
+
+  // Función para construir la query combinando ciudad + dirección
+  function buildQuery() {
+    const ciudadEl = document.getElementById("ciudad");
+    const dirEl = document.getElementById("direccion");
+    const ciudad = ciudadEl ? ciudadEl.value.trim() : "";
+    const dir = dirEl ? dirEl.value.trim() : "";
+
+    if (dir.length >= 4 && ciudad.length >= 2) {
+      return { query: `${dir}, ${ciudad}, Honduras`, zoom: 16 };
+    } else if (ciudad.length >= 3) {
+      return { query: `${ciudad}, Honduras`, zoom: 13 };
+    }
+    return null;
+  }
+
+  // Geocodificación con zoom específico
+  async function geocodeQuery(query, zoom) {
+    if (!query) return;
+    setStatus("🔍 Buscando en el mapa...", "searching");
+    try {
+      const q = encodeURIComponent(query);
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/search?q=${q}&format=json&limit=1&countrycodes=hn`,
+        { headers: { "Accept-Language": "es" } }
+      );
+      const data = await res.json();
+      if (data && data.length > 0) {
+        const latNum = parseFloat(data[0].lat);
+        const lonNum = parseFloat(data[0].lon);
+        map.flyTo([latNum, lonNum], zoom, { animate: true, duration: 1.2 });
+        setMarker(latNum, lonNum, data[0].display_name);
+        setStatus("✅ Ubicación encontrada");
+        setTimeout(() => setStatus(""), 3000);
+      } else {
+        setStatus("⚠️ No se encontró. Intenta ser más específico.", "error");
+        setTimeout(() => setStatus(""), 4000);
+      }
+    } catch {
+      setStatus("⚠️ Error al buscar. Verifica tu conexión.", "error");
+      setTimeout(() => setStatus(""), 4000);
+    }
+  }
+
+  // Listener: campo Ciudad
+  const ciudadEl = document.getElementById("ciudad");
+  if (ciudadEl) {
+    ciudadEl.addEventListener("input", () => {
+      clearTimeout(debounceTimer);
+      const result = buildQuery();
+      if (result) {
+        debounceTimer = setTimeout(() => geocodeQuery(result.query, result.zoom), 900);
+      }
+    });
+  }
+
+  // Listener: campo Dirección
   const direccionEl = document.getElementById("direccion");
   if (direccionEl) {
     direccionEl.addEventListener("input", () => {
       clearTimeout(debounceTimer);
-      const val = direccionEl.value.trim();
-      if (val.length >= 5) {
-        debounceTimer = setTimeout(() => geocodeAddress(val), 900);
+      const result = buildQuery();
+      if (result) {
+        debounceTimer = setTimeout(() => geocodeQuery(result.query, result.zoom), 900);
       }
     });
   }
@@ -453,7 +518,6 @@ form.addEventListener("submit", async e => {
         setStatus("⚠️ Tu navegador no soporta geolocalización.", "error");
         return;
       }
-
       btnGps.classList.add("loading-gps");
       btnGps.querySelector(".material-symbols-outlined").textContent = "sync";
       setStatus("📡 Obteniendo tu ubicación...", "searching");
@@ -478,11 +542,18 @@ form.addEventListener("submit", async e => {
     });
   }
 
-  // Si ya hay una dirección cargada (desde Supabase), geocodificarla
+  // Si ya hay datos cargados desde Supabase, posicionar el mapa
   window.addEventListener("cortero:direccionCargada", (e) => {
-    if (e.detail && e.detail.direccion) {
-      setTimeout(() => geocodeAddress(e.detail.direccion), 500);
+    if (e.detail) {
+      const { ciudad, direccion } = e.detail;
+      const query = direccion && ciudad
+        ? `${direccion}, ${ciudad}, Honduras`
+        : ciudad
+          ? `${ciudad}, Honduras`
+          : direccion;
+      if (query) setTimeout(() => geocodeQuery(query, direccion ? 16 : 13), 600);
     }
   });
 })();
+
 
