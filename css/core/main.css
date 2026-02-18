@@ -627,11 +627,11 @@ body {
   opacity: 0.9;
 }
 
-/* Badge Principal (Más grande y llamativo) */
+/* Badge Principal (Más grande y llamativo - Proporcional) */
 .discount-badge.main-badge {
-  font-size: 1.35rem;
-  padding: 15px 20px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  font-size: 1.5rem;
+  padding: 18px 24px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
   transition: transform 0.4s ease, top 0.4s ease, right 0.4s ease;
 }
 
