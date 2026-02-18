@@ -498,17 +498,120 @@ form.addEventListener("submit", async e => {
     });
   }
 
-  // Listener: campo Dirección
+  // ── AUTOCOMPLETADO DE DIRECCIÓN ──────────────────────────────
   const direccionEl = document.getElementById("direccion");
+  const suggestionsList = document.getElementById("direccion-suggestions");
+
+  function hideSuggestions() {
+    if (suggestionsList) suggestionsList.classList.add("hidden");
+  }
+
+  function showSuggestions(results) {
+    if (!suggestionsList) return;
+    suggestionsList.innerHTML = "";
+
+    if (!results || results.length === 0) {
+      hideSuggestions();
+      return;
+    }
+
+    results.forEach(item => {
+      const addr = item.address || {};
+      // Parte principal: calle o nombre del lugar
+      const mainParts = [
+        item.name || addr.road || addr.pedestrian || addr.amenity || addr.building,
+        addr.house_number
+      ].filter(Boolean);
+      const main = mainParts.join(" ") || item.display_name.split(",")[0];
+
+      // Parte secundaria: barrio, ciudad
+      const subParts = [
+        addr.neighbourhood || addr.suburb || addr.quarter,
+        addr.city || addr.town || addr.village || addr.municipality
+      ].filter(Boolean);
+      const sub = subParts.join(", ") || "";
+
+      const li = document.createElement("li");
+      li.innerHTML = `
+        <span class="material-symbols-outlined sug-icon">location_on</span>
+        <div class="sug-text">
+          <div class="sug-main">${main}</div>
+          ${sub ? `<div class="sug-sub">${sub}</div>` : ""}
+        </div>
+      `;
+
+      li.addEventListener("mousedown", (e) => {
+        // mousedown antes del blur para capturar el clic
+        e.preventDefault();
+        const lat = parseFloat(item.lat);
+        const lon = parseFloat(item.lon);
+
+        // Llenar el campo con la dirección limpia
+        const fullAddr = [main, sub].filter(Boolean).join(", ");
+        direccionEl.value = fullAddr;
+        direccionEl.dispatchEvent(new Event("input", { bubbles: true }));
+
+        // Mover el mapa
+        map.flyTo([lat, lon], 17, { animate: true, duration: 1.2 });
+        setMarker(lat, lon, fullAddr);
+        setStatus("✅ Dirección seleccionada");
+        setTimeout(() => setStatus(""), 3000);
+
+        // Guardar coordenadas
+        sessionStorage.setItem("delivery_lat", lat);
+        sessionStorage.setItem("delivery_lng", lon);
+
+        hideSuggestions();
+      });
+
+      suggestionsList.appendChild(li);
+    });
+
+    suggestionsList.classList.remove("hidden");
+  }
+
+  async function fetchSuggestions(query) {
+    if (!query || query.length < 4) { hideSuggestions(); return; }
+    const ciudadVal = ciudadEl ? ciudadEl.value.trim() : "";
+    const q = encodeURIComponent(query + (ciudadVal ? `, ${ciudadVal}` : "") + ", Honduras");
+    try {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/search?q=${q}&format=json&limit=5&countrycodes=hn&addressdetails=1`,
+        { headers: { "Accept-Language": "es" } }
+      );
+      const data = await res.json();
+      showSuggestions(data);
+    } catch {
+      hideSuggestions();
+    }
+  }
+
   if (direccionEl) {
     direccionEl.addEventListener("input", () => {
       clearTimeout(debounceTimer);
-      const result = buildQuery();
-      if (result) {
-        debounceTimer = setTimeout(() => geocodeQuery(result.query, result.zoom), 900);
+      const val = direccionEl.value.trim();
+      if (val.length >= 4) {
+        debounceTimer = setTimeout(() => fetchSuggestions(val), 600);
+      } else {
+        hideSuggestions();
       }
     });
+
+    // Cerrar al perder el foco (con pequeño delay para permitir el clic)
+    direccionEl.addEventListener("blur", () => {
+      setTimeout(hideSuggestions, 200);
+    });
+
+    // Cerrar con Escape
+    direccionEl.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") hideSuggestions();
+    });
   }
+
+  // Cerrar al hacer clic fuera
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest(".m3-field")) hideSuggestions();
+  });
 
   // Botón GPS
   const btnGps = document.getElementById("btn-gps");

@@ -124,12 +124,14 @@
 
               <!-- 2. DIRECCIÓN EXACTA -->
               <div class="fields-row">
-                <div class="m3-field full">
+                <div class="m3-field full" style="position: relative;">
                   <div class="m3-input-wrapper">
                     <span class="material-symbols-outlined input-icon">map</span>
                     <input id="direccion" type="text" placeholder=" " required autocomplete="off">
                     <label class="field-label">Dirección exacta</label>
                   </div>
+                  <!-- SUGERENCIAS AUTOCOMPLETE -->
+                  <ul id="direccion-suggestions" class="suggestions-list hidden"></ul>
                 </div>
               </div>
 
