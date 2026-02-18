@@ -203,28 +203,35 @@ async function renderCart() {
   const subtotalParaCupon = totalConDescuentoItems;
 
   let discountFromCoupon = 0;
-  let couponLabel = "";
 
   if (appliedCoupon) {
     discountFromCoupon = subtotalParaCupon * (appliedCoupon.percent / 100);
-    couponLabel = `${appliedCoupon.code} (-${appliedCoupon.percent}%)`;
   }
 
-  const totalDiscount = discountFromItems + discountFromCoupon;
-  const totalFinal = subtotalOriginal - totalDiscount;
+  const totalFinal = subtotalOriginal - discountFromItems - discountFromCoupon;
 
   if (subtotalLabel) subtotalLabel.textContent = `L ${subtotalOriginal.toFixed(2)}`;
 
-  if (totalDiscount > 0) {
-    discountRow?.classList.remove("hidden");
-    if (discountLabel) discountLabel.textContent = `-L ${totalDiscount.toFixed(2)}`;
-
-    // Prioridad de etiqueta: Cupón si existe, sino genérico
-    if (discountDesc) {
-      discountDesc.textContent = appliedCoupon ? couponLabel : "Descuento aplicado";
-    }
+  // Fila de Ahorro por productos
+  const itemsRow = document.getElementById("items-discount-row");
+  const itemsAmount = document.getElementById("items-discount-amount");
+  if (discountFromItems > 0) {
+    itemsRow?.classList.remove("hidden");
+    if (itemsAmount) itemsAmount.textContent = `-L ${discountFromItems.toFixed(2)}`;
   } else {
-    discountRow?.classList.add("hidden");
+    itemsRow?.classList.add("hidden");
+  }
+
+  // Fila de Cupón
+  const couponRow = document.getElementById("coupon-discount-row");
+  const couponAmount = document.getElementById("coupon-discount-amount");
+  const couponDesc = document.getElementById("coupon-discount-description");
+  if (discountFromCoupon > 0 && appliedCoupon) {
+    couponRow?.classList.remove("hidden");
+    if (couponDesc) couponDesc.textContent = `${appliedCoupon.code} (-${appliedCoupon.percent}%)`;
+    if (couponAmount) couponAmount.textContent = `-L ${discountFromCoupon.toFixed(2)}`;
+  } else {
+    couponRow?.classList.add("hidden");
   }
 
   if (totalLabel) totalLabel.textContent = `L ${totalFinal.toFixed(2)}`;
