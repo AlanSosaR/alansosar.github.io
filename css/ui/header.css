@@ -38,38 +38,104 @@ header.header-fixed,
 /* =====================================================
    MOBILE — REORDENAR SOLO EN CARRITO Y DATOS
 ===================================================== */
-@media (max-width: 900px) {
+/* =====================================================
+   MÓVIL (< 768px) — DISEÑO RADICAL MINIMALISTA
+===================================================== */
+@media (max-width: 768px) {
 
-  /* ❌ Ocultar Iniciar sesión en móvil */
+  /* 📏 Altura fija y Layout Base */
+  header.header-fixed,
+  #main-header.header-fixed {
+    height: 60px !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 0 16px !important;
+  }
+
+  /* ❌ Ocultar Todo lo innecesario globalmente en móvil */
   #login-desktop,
-  .header-actions a[href*="login"],
-  #btn-header-user+a {
+  #public-nav,
+  #header-search-slot,
+  .header-actions>*:not(#cart-btn),
+  .header-cart-title .main-title {
     display: none !important;
   }
 
-  /* ☰ Menú SIEMPRE a la izquierda */
+  /* ☰ Menú Hamburguesa — Siempre a la izquierda */
   .menu-toggle,
   #menu-toggle {
     display: flex !important;
+    position: relative !important;
+    left: auto !important;
     order: 1 !important;
-    margin-right: auto !important;
-    margin-left: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
   }
 
-  /* ☕ Logo a la derecha en checkout, centrado/derecha en general */
+  /* ===================== VISTA: HOME (GENERAL) ===================== */
+  /* Requisito: [ ☰ ] [   ] [ 🛒 ] */
+
+  /* Ocultar Logo y Títulos en Home */
+  body:not(.page-carrito):not(.page-datos-cliente) .header-logo-link,
+  body:not(.page-carrito):not(.page-datos-cliente) .header-cart-title {
+    display: none !important;
+  }
+
+  /* Carrito a la derecha en Home */
+  body:not(.page-carrito):not(.page-datos-cliente) #cart-btn {
+    display: flex !important;
+    position: relative !important;
+    right: auto !important;
+    top: auto !important;
+    transform: none !important;
+    order: 3 !important;
+    margin: 0 !important;
+  }
+
+  /* ===================== VISTA: CARRITO / CHECKOUT ===================== */
+  /* Requisito: [ ☰ ] [ Info Bag ] [ Logo ] */
+
+  /* Ocultar Icono de Carrito en Carrito */
+  body.page-carrito #cart-btn,
+  body.page-datos-cliente #cart-btn {
+    display: none !important;
+  }
+
+  /* Info Bag en el centro */
+  body.page-carrito .header-cart-title,
+  body.page-datos-cliente .header-cart-title {
+    display: flex !important;
+    position: relative !important;
+    left: auto !important;
+    top: auto !important;
+    transform: none !important;
+    order: 2 !important;
+    flex: 1 !important;
+    justify-content: center !important;
+    margin: 0 !important;
+  }
+
+  /* Logo a la derecha */
   body.page-carrito .header-logo-link,
   body.page-datos-cliente .header-logo-link {
     display: flex !important;
+    position: relative !important;
     order: 3 !important;
-    margin-left: auto !important;
+    margin-left: 0 !important;
   }
 
-  /* 🔍 Slot de búsqueda/título en medio */
-  body.page-carrito #header-search-slot,
-  body.page-datos-cliente #header-search-slot,
-  body.page-carrito .header-cart-title,
-  body.page-datos-cliente .header-cart-title {
-    order: 2 !important;
+  body.page-carrito .header-logo,
+  body.page-datos-cliente .header-logo {
+    height: 48px !important;
+  }
+
+  /* Ajuste de subtítulo center */
+  .header-cart-content .sub-title {
+    font-size: 0.8rem !important;
+    text-align: center !important;
+    max-width: 160px;
+    white-space: normal !important;
   }
 }
 
@@ -122,63 +188,6 @@ body.page-carrito .header-cart-title {
   font-weight: 600;
   color: var(--verde);
   white-space: nowrap;
-}
-
-/* =====================================================
-   MOBILE — AJUSTE FINO
-===================================================== */
-@media (max-width: 900px) {
-  .header-cart-title {
-    font-size: 0.95rem;
-  }
-
-  /* 🔥 Mostrar solo el título que corresponde a cada página */
-  body.page-carrito #header-cart-title,
-  body.page-datos-cliente #header-datos-title {
-    display: block !important;
-  }
-
-  /* Asegurarse que el otro esté oculto */
-  body.page-carrito #header-datos-title,
-  body.page-datos-cliente #header-cart-title {
-    display: none !important;
-  }
-
-  /* El avatar se mantiene */
-  body.page-carrito #btn-header-user,
-  body.page-datos-cliente #btn-header-user {
-    display: flex !important;
-  }
-
-  /* Hamburguesa SIEMPRE visible en mobile */
-  body.page-carrito .menu-toggle,
-  body.page-datos-cliente .menu-toggle,
-  body.page-carrito #menu-toggle,
-  body.page-datos-cliente #menu-toggle {
-    display: flex !important;
-  }
-}
-
-/* Ajuste de posición central para no solapar si hay logo */
-.header-cart-title {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  text-align: center;
-  width: auto;
-  min-width: 200px;
-  z-index: 10;
-}
-
-@media (max-width: 768px) {
-  .header-cart-title {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    margin: 0;
-    padding: 0;
-    order: 2;
-  }
 }
 
 /* LOGO */
@@ -494,78 +503,7 @@ body.page-datos-cliente #login-desktop {
   display: none;
 }
 
-@media (max-width: 900px) {
-
-  header.header-fixed {
-    height: 64px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  /* ❌ ocultar elementos desktop */
-  .nav-links,
-  #login-desktop,
-  #btn-header-user,
-  .header-avatar-button {
-    display: none !important;
-  }
-
-  /* 🔔 solo el menú muestra notificaciones */
-  #avatar-notification-badge {
-    display: none !important;
-  }
-
-  /* 🍔 MENÚ HAMBURGUESA */
-  .menu-toggle {
-    display: flex !important;
-    position: absolute;
-    left: 16px;
-
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-
-    background: #fff;
-    border: none;
-
-    align-items: center;
-    justify-content: center;
-
-    box-shadow: 0 8px 20px rgba(0, 0, 0, .18);
-  }
-
-  .menu-toggle>* {
-    margin: 0;
-    padding: 0;
-    line-height: 1;
-  }
-
-  /* Icono hamburguesa en verde */
-  .menu-toggle .material-symbols-outlined {
-    color: var(--verde);
-    font-size: 26px;
-    line-height: 1;
-  }
-
-  /* 🔥 Ocultar hamburguesa en carrito para dar espacio al título central */
-  body.page-carrito .menu-toggle {
-    display: none !important;
-  }
-
-  /* 🛒 CARRITO */
-  #cart-btn {
-    position: absolute;
-    right: 16px;
-    top: 50%;
-    transform: translateY(-50%);
-
-    width: 44px;
-    height: 44px;
-    background: #fff;
-    border-radius: 50%;
-  }
-}
+/* Media query redundante eliminada */
 
 /* =====================================================
    SCRIM
