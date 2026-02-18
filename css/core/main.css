@@ -416,7 +416,7 @@ body {
 /* FICHA TÉCNICA */
 .product-specs {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 0.8rem;
   margin: 0.2rem 0;
   padding: 1rem;
