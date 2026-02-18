@@ -36,6 +36,7 @@ let btnEnviar = null;
 let selectedAddressId = null;
 let totalPedido = 0;
 let tempFile = null;
+let isFirstOrder = false;
 
 // ✅ FIX: cache estable de la nota del pedido
 let orderNotesCache = null;
@@ -158,6 +159,36 @@ function renderCarrito() {
   });
 
   $("totalPedido").textContent = totalPedido.toFixed(2);
+
+  // Mensaje de primer descuento
+  const noteContainer = $("listaProductos");
+  if (isFirstOrder) {
+    const hasDiscountedItems = carrito.some(it => {
+      // Podríamos comparar it.price con un precio base, pero simplifiquemos:
+      // El usuario pidió que dijéramos esto en el primer pedido.
+      return true;
+    });
+
+    if (hasDiscountedItems) {
+      noteContainer.innerHTML += `
+            <div class="first-order-badge" style="
+                margin-top: 15px;
+                padding: 12px;
+                background: rgba(55, 123, 76, 0.1);
+                border: 1px dashed var(--verde);
+                border-radius: 12px;
+                color: var(--verde);
+                font-size: 0.85rem;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            ">
+                <span class="material-symbols-outlined" style="font-size: 1.2rem;">auto_awesome</span>
+                <span>¡Felicidades! Al ser tu <b>primera vez</b>, hemos aplicado descuentos especiales en tus productos.</span>
+            </div>
+        `;
+    }
+  }
 }
 
 /* =========================================================
@@ -357,6 +388,18 @@ async function enviarPedido() {
   btnEnviar.onclick = confirmarEnvio;
 
   await pintarDatosProvisionales();
+
+  // 🔑 Determinar si es primer pedido
+  const sb = window.supabaseClient;
+  const user = window.getUserCache();
+  if (sb && user) {
+    const { count } = await sb
+      .from("orders")
+      .select("*", { count: 'exact', head: true })
+      .eq("user_id", user.id);
+    isFirstOrder = (count === 0);
+  }
+
   await cargarResumen();
   renderCarrito();
   validarBoton();

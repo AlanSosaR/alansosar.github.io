@@ -3,6 +3,7 @@
    UI + CARRITO + CARRUSELES + SUPABASE
 ============================================================ */
 let currentProduct = null;
+let lastOrderDate = null; // 🔑 Fecha del último pedido
 /* ========================= SAFE ========================= */
 function safe(id) {
   return document.getElementById(id);
@@ -86,7 +87,58 @@ function getStockStatus(stockBD, qtyInCart) {
   if (available <= 5) {
     return { label: `Últimas ${available} bolsas`, className: "low" };
   }
-  return { label: "Disponible", className: "available" };
+  // Si hay más de 5, no mostrar texto de estado para diseño más limpio
+  return { label: "", className: "available" };
+}
+
+/* 🔑 Lógica de Descuento (Primera Compra / Nueva Promoción) */
+async function checkUserLastOrder() {
+  const sb = window.supabaseClient;
+  const user = window.getUserCache();
+  if (!sb || !user) {
+    lastOrderDate = null;
+    return;
+  }
+
+  try {
+    const { data, error } = await sb
+      .from("orders")
+      .select("created_at")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(1);
+
+    if (data && data.length > 0) {
+      lastOrderDate = new Date(data[0].created_at);
+    } else {
+      lastOrderDate = null; // Primerizo
+    }
+
+    // 🔑 Aviso informativo si ya compró (una vez por sesión)
+    if (lastOrderDate && !sessionStorage.getItem("cortero_discount_notice")) {
+      setTimeout(() => {
+        showSnack("Los descuentos de bienvenida ya fueron aplicados en tu primer pedido. ¡Sigue atento a nuevas promociones!");
+        sessionStorage.setItem("cortero_discount_notice", "true");
+      }, 2000);
+    }
+  } catch (e) {
+    console.warn("⚠️ No se pudo obtener el historial de pedidos:", e);
+  }
+}
+
+function getActiveDiscount(product) {
+  if (!product.discount || product.discount <= 0) return 0;
+
+  // Si no está logueado o es primerizo -> Mostrar descuento
+  if (!lastOrderDate) return product.discount;
+
+  // Si tiene pedidos, solo mostrar si el producto se actualizó DESPUÉS del pedido
+  const productUpdate = product.updated_at ? new Date(product.updated_at) : new Date(product.created_at || 0);
+  if (productUpdate > lastOrderDate) {
+    return product.discount;
+  }
+
+  return 0; // Descuento agotado para este usuario
 }
 
 /* 🔑 CONTROL DE BOTONES + / − / ADD */
@@ -203,7 +255,10 @@ function renderMainProduct(product) {
     `;
   }
 
-  safe("product-price").textContent = `L ${product.price}`;
+  const activeDiscount = getActiveDiscount(product);
+
+  const priceEl = safe("product-price");
+  priceEl.innerHTML = `L ${product.price}${activeDiscount > 0 ? ' <small class="price-discount-note">(con descuento)</small>' : ''}`;
 
   const img = safe("product-image");
   img.classList.remove("swap");
@@ -212,6 +267,20 @@ function renderMainProduct(product) {
 
   img.src = product.image_url || "/imagenes/no-image.png";
   img.onerror = () => img.src = "/imagenes/no-image.png";
+
+  // Badge de descuento
+  const imgWrap = document.querySelector(".product-img-wrap");
+  if (imgWrap) {
+    const oldBadge = imgWrap.querySelector(".discount-badge");
+    if (oldBadge) oldBadge.remove();
+
+    if (activeDiscount > 0) {
+      const badge = document.createElement("div");
+      badge.className = "discount-badge";
+      badge.innerHTML = `${activeDiscount}% <span>OFF</span>`;
+      imgWrap.appendChild(badge);
+    }
+  }
 
   const addBtn = safe("product-add");
   addBtn.dataset.id = product.id;
@@ -297,6 +366,7 @@ async function loadSimilarProducts() {
   cont.innerHTML = data.map(p => {
     const activeFav = isFavorite(p.id) ? 'active' : '';
     const heartIcon = isFavorite(p.id) ? 'fa-solid fa-heart' : 'fa-regular fa-heart';
+    const activeDiscount = getActiveDiscount(p);
 
     return `
     <div class="similar-card"
@@ -316,11 +386,12 @@ async function loadSimilarProducts() {
       data-proceso="${p.proceso || ""}"
       data-perfil="${p.perfil || ""}"
       data-variedad="${p.variedad || ""}"
-      data-discount="${p.discount || 0}"
+      data-discount="${activeDiscount}"
     >
       <div class="similar-img-cont">
         <img src="${p.image_url || "/imagenes/no-image.png"}"
              onerror="this.src='/imagenes/no-image.png'">
+        ${activeDiscount > 0 ? `<div class="discount-badge">${activeDiscount}% <span>OFF</span></div>` : ""}
       </div>
       <div class="similar-info">
         <h4>${p.name}</h4>
@@ -560,10 +631,15 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    const activeDiscount = getActiveDiscount(currentProduct);
+    const finalPrice = activeDiscount > 0
+      ? currentProduct.price * (1 - (activeDiscount / 100))
+      : currentProduct.price;
+
     addToCart({
       product_id: productId,
       name: currentProduct.name,
-      price: currentProduct.price,
+      price: finalPrice,
       img: currentProduct.image_url,
       qty
     });
@@ -582,7 +658,10 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   /* ===== CARGA INICIAL ===== */
-  loadSimilarProducts();
+  (async () => {
+    await checkUserLastOrder();
+    loadSimilarProducts();
+  })();
 
   /* ===== SCROLL SUAVE A PRODUCTOS (SI HAY HASH) ===== */
   if (window.location.hash === "#productos") {

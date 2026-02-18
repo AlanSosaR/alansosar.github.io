@@ -530,9 +530,25 @@ body {
 /* ámbar (pocas unidades) */
 .product-status.out {
   color: #b91c1c;
+  /* rojo (agotado) */
 }
 
-/* rojo (agotado) */
+.product-slogan {
+  font-size: 0.95rem;
+  color: var(--marron);
+  opacity: 0.8;
+  font-style: italic;
+  margin: 0.2rem 0 1.2rem 0;
+  font-weight: 500;
+}
+
+.price-discount-note {
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--marron);
+  opacity: 0.7;
+  margin-left: 4px;
+}
 
 /* Separación extra antes de acciones (precio + cantidad) */
 .product-actions {
@@ -582,6 +598,33 @@ body {
   justify-content: center;
   background: transparent;
   position: relative;
+  /* Para el badge de descuento */
+}
+
+/* Badge de Descuento */
+.discount-badge {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background-color: var(--marron);
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 50% 10% 50% 10%;
+  /* Forma orgánica */
+  font-weight: 700;
+  font-size: 0.85rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.discount-badge span {
+  font-size: 0.65rem;
+  opacity: 0.9;
 }
 
 /* El efecto de bolsa que "sale" del contenedor */
@@ -901,6 +944,8 @@ body {
   align-items: center;
   justify-content: center;
   z-index: 2;
+  position: relative;
+  /* Para badge de descuento */
   /* encima de la base */
   transition: transform 0.4s ease;
   margin-top: 10px;
