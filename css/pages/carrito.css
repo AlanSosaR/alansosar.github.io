@@ -117,8 +117,10 @@ body.page-carrito {
   }
 
   .seguir-comprando-inline {
-    justify-content: center;
+    justify-content: flex-start !important;
+    /* ⬅️ Siempre a la izquierda */
     margin-top: 1rem;
+    padding-left: 0;
   }
 
   .page-title {

@@ -40,26 +40,36 @@ header.header-fixed,
 ===================================================== */
 @media (max-width: 900px) {
 
-  /* 🔥 El reordenamiento SOLO aplica en carrito y datos cliente */
+  /* ❌ Ocultar Iniciar sesión en móvil */
+  #login-desktop,
+  .header-actions a[href*="login"],
+  #btn-header-user+a {
+    display: none !important;
+  }
+
+  /* ☰ Menú SIEMPRE a la izquierda */
+  .menu-toggle,
+  #menu-toggle {
+    display: flex !important;
+    order: 1 !important;
+    margin-right: auto !important;
+    margin-left: 0 !important;
+  }
+
+  /* ☕ Logo a la derecha en checkout, centrado/derecha en general */
   body.page-carrito .header-logo-link,
   body.page-datos-cliente .header-logo-link {
     display: flex !important;
-    order: 3;
-    margin-left: auto;
+    order: 3 !important;
+    margin-left: auto !important;
   }
 
-  body.page-carrito .menu-toggle,
-  body.page-datos-cliente .menu-toggle,
-  body.page-carrito #menu-toggle,
-  body.page-datos-cliente #menu-toggle {
-    display: flex !important;
-    order: 1;
-    margin-right: auto;
-  }
-
+  /* 🔍 Slot de búsqueda/título en medio */
   body.page-carrito #header-search-slot,
-  body.page-datos-cliente #header-search-slot {
-    order: 2;
+  body.page-datos-cliente #header-search-slot,
+  body.page-carrito .header-cart-title,
+  body.page-datos-cliente .header-cart-title {
+    order: 2 !important;
   }
 }
 
@@ -92,6 +102,7 @@ body.page-carrito .header-cart-title {
   transform: translate(-50%, -50%);
   text-align: center;
   pointer-events: none;
+  width: auto;
 }
 
 .header-cart-content {
@@ -102,16 +113,15 @@ body.page-carrito .header-cart-title {
 }
 
 .header-cart-content .main-title {
-  font-size: 1.1rem;
-  font-weight: 800;
-  color: var(--marron);
-  letter-spacing: -0.5px;
+  display: none !important;
+  /* ❌ Ocultar "Tu Carrito" */
 }
 
 .header-cart-content .sub-title {
-  font-size: 0.8rem;
-  font-weight: 500;
+  font-size: 0.85rem;
+  font-weight: 600;
   color: var(--verde);
+  white-space: nowrap;
 }
 
 /* =====================================================
