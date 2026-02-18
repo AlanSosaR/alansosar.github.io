@@ -63,19 +63,27 @@ body.page-carrito .header-cart-title {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-
-  font-size: 1.05rem;
-  font-weight: 600;
-  color: var(--marron);
-  white-space: nowrap;
-
+  text-align: center;
   pointer-events: none;
-  /* 🔑 no bloquea clicks */
 }
 
-/* Contador de cafés */
-.header-cart-title span {
-  font-weight: 600;
+.header-cart-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.1;
+}
+
+.header-cart-content .main-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--marron);
+  letter-spacing: -0.5px;
+}
+
+.header-cart-content .sub-title {
+  font-size: 0.8rem;
+  font-weight: 500;
   color: var(--verde);
 }
 

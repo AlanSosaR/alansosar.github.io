@@ -76,9 +76,9 @@ if (!window.__HEADER_CORE_LOADED__) {
     try {
       const cart = JSON.parse(localStorage.getItem("cafecortero_cart")) || [];
       const total = cart.reduce((a, i) => a + Number(i.qty || 0), 0);
-      label.textContent = `${total} ${total === 1 ? "café" : "cafés"}`;
+      label.textContent = `Tienes ${total} ${total === 1 ? "café agregado" : "cafés agregados"} a tu pedido`;
     } catch {
-      label.textContent = "0 cafés";
+      label.textContent = "Tienes 0 cafés agregados a tu pedido";
     }
   }
 

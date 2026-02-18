@@ -55,17 +55,10 @@ function showSnackbar(message, duration = 1800) {
 /* ================= HEADER (TÍTULO) ================= */
 function updateHeaderCartTitle(cart) {
   const label = document.getElementById("count-items");
-  const subtitle = document.getElementById("cart-subtitle");
+  if (!label) return;
 
   const total = cart.reduce((sum, i) => sum + Number(i.qty || 0), 0);
-
-  if (label) {
-    label.textContent = `${total} ${total === 1 ? "café" : "cafés"}`;
-  }
-
-  if (subtitle) {
-    subtitle.textContent = `Tienes ${total} ${total === 1 ? "café agregado" : "cafés agregados"} a tu pedido.`;
-  }
+  label.textContent = `Tienes ${total} ${total === 1 ? "café agregado" : "cafés agregados"} a tu pedido`;
 }
 
 /* ================= RENDER ================= */
