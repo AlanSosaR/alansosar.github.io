@@ -482,14 +482,17 @@ body {
 
 @media (max-width: 600px) {
   .product-specs {
-    grid-template-columns: 1fr 1fr;
-    column-gap: 1rem;
+    display: flex;
+    /* Aseguramos flex para mantener las 2 columnas */
+    gap: 1rem;
     padding: 1rem;
   }
 
   .product-specs::after {
-    display: none;
-    /* Quitamos línea en móviles para evitar amontonamiento */
+    display: block;
+    /* Habilitamos la línea en móviles */
+    border-left-width: 1px;
+    /* Línea más fina para móvil */
   }
 }
 
