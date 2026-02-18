@@ -294,8 +294,8 @@ function renderMainProduct(product) {
       badge.innerHTML = `${activeDiscount}% <span>OFF</span> <small>en tu primer pedido</small>`;
 
       // Estilo para posicionar sobre la bolsa (ajuste fino - pegado a la bolsa)
-      badge.style.top = "15px";
-      badge.style.right = "32%";
+      badge.style.top = "20px";
+      badge.style.right = "31%";
 
       imgInner.appendChild(badge);
     }
