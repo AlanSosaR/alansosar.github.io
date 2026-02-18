@@ -77,14 +77,10 @@ async function fetchStocks(ids) {
   }
 }
 
-syncHeaderCounter();
-}
-
 /* ================= LÓGICA DE CUPONES ================= */
 let appliedCoupon = null;
 
 function calculateDiscount(subtotal, cart) {
-  // 1. Ver si hay cupón aplicado (descuento relámpago)
   if (appliedCoupon) {
     return {
       percent: appliedCoupon.percent,
@@ -93,9 +89,6 @@ function calculateDiscount(subtotal, cart) {
     };
   }
 
-  // 2. Si no hay cupón, ver si hay descuento de primera compra (basado en el primer ítem por simplicidad o global)
-  // Nota: En main.js usamos detectFirstPurchaseOffer. Aquí simplificamos o replicamos lógica.
-  // Para ser consistentes con la petición, si hay ítems con descuento base, los sumamos.
   let discountTotal = 0;
   cart.forEach(item => {
     if (item.discount > 0) {
@@ -104,7 +97,7 @@ function calculateDiscount(subtotal, cart) {
   });
 
   return {
-    percent: 0, // No mostramos un % global si son varios ítems
+    percent: 0,
     amount: discountTotal,
     label: "Descuento aplicado"
   };
