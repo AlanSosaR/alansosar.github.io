@@ -294,8 +294,8 @@ function renderMainProduct(product) {
       badge.innerHTML = `${activeDiscount}% <span>OFF</span>`;
 
       // Estilo para posicionar sobre la bolsa (ajuste fino)
-      badge.style.top = "10%";
-      badge.style.right = "10%";
+      badge.style.top = "15px";
+      badge.style.right = "25%";
 
       imgInner.appendChild(badge);
     }
