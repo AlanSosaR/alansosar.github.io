@@ -33,13 +33,14 @@ body {
 }
 
 /* Offset Header */
-body.header-checkout {
+body.page-datos-cliente {
   padding-top: 100px;
 }
 
+
 .checkout-container {
   max-width: 1200px;
-  margin: 0.5rem auto;
+  margin: 0.2rem auto;
   padding: 0 20px;
 }
 

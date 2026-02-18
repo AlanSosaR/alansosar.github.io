@@ -129,6 +129,8 @@ async function renderCart() {
   if (!cart.length) {
     main?.classList.add("carrito-vacio-activo");
     document.body.classList.add("carrito-vacio");
+    const headerNav = document.getElementById("cart-header-nav");
+    if (headerNav) headerNav.style.display = "none";
     if (resumenBox) resumenBox.style.display = "none";
     container.innerHTML = `
       <div class="empty-container">
