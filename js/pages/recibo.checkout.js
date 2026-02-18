@@ -49,7 +49,7 @@ const carrito = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
 ========================================================= */
 async function pintarDatosProvisionales() {
   const sb = window.supabaseClient;
-  const user = window.getUserCache();
+  const user = window.supabaseAuth.getCurrentUser();
   if (!sb || !user) return;
 
   const { data } = await sb
@@ -108,7 +108,7 @@ function validarBoton() {
 ========================================================= */
 async function cargarResumen() {
   const sb = window.supabaseClient;
-  const user = window.getUserCache();
+  const user = window.supabaseAuth.getCurrentUser();
   if (!sb || !user) return;
 
   const { data: userRow } = await sb
@@ -262,7 +262,7 @@ function confirmarEnvio(e) {
 ========================================================= */
 async function enviarPedido() {
   const sb = window.supabaseClient;
-  const user = window.getUserCache();
+  const user = window.supabaseAuth.getCurrentUser();
   if (!user || !selectedAddressId) {
     window.showSnack("Faltan datos del pedido");
     return;
@@ -391,7 +391,7 @@ async function enviarPedido() {
 
   // 🔑 Determinar si es primer pedido
   const sb = window.supabaseClient;
-  const user = window.getUserCache();
+  const user = window.supabaseAuth.getCurrentUser();
   if (sb && user) {
     const { count } = await sb
       .from("orders")

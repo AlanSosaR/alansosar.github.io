@@ -94,7 +94,7 @@ function getStockStatus(stockBD, qtyInCart) {
 /* 🔑 Lógica de Descuento (Primera Compra / Nueva Promoción) */
 async function checkUserLastOrder() {
   const sb = window.supabaseClient;
-  const user = window.getUserCache();
+  const user = window.supabaseAuth.getCurrentUser();
   if (!sb || !user) {
     lastOrderDate = null;
     return;
