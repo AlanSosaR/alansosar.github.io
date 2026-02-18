@@ -136,8 +136,8 @@ body.header-checkout {
 
 .section-divider {
   border: none;
-  border-top: 2px dotted #2e7d32;
-  /* Punteada y verde */
+  border-top: 2px dotted #377b4c;
+  /* Verde Principal de reglas generales */
   margin-bottom: 3rem;
   opacity: 0.4;
 }
@@ -396,7 +396,8 @@ body.header-checkout {
 .item-price {
   font-size: 0.95rem;
   font-weight: 800;
-  color: var(--marron);
+  color: #377b4c;
+  /* Verde principal */
   margin-top: 4px;
 }
 
@@ -441,23 +442,36 @@ body.header-checkout {
   margin-bottom: 0.8rem;
   font-size: 1rem;
   font-weight: 600;
-  color: var(--texto-secundario);
+  color: #8D6E63;
+  /* Acento café Oficial */
+}
+
+.total-row span:last-child {
+  font-weight: 700;
+}
+
+#sum-subtotal {
+  color: #377b4c;
+  /* Verde Principal para el valor del subtotal */
 }
 
 .total-row.discount-text {
-  color: var(--verde);
+  color: #377b4c;
 }
 
 .summary-totals hr {
   border: none;
-  border-top: 2px solid var(--gris-suave);
+  border-top: 2px dotted #377b4c;
+  /* Línea verde principal punteada */
   margin: 1.2rem 0;
+  opacity: 0.5;
 }
 
 .final-total {
   font-size: 1.6rem;
   font-weight: 900;
-  color: var(--marron);
+  color: #8D6E63;
+  /* Total en color café */
   margin-top: 1rem;
 }
 

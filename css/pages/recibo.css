@@ -299,24 +299,28 @@ h3 {
 
 .cafe-precio {
   font-weight: 600;
-  color: var(--verde);
+  color: #377b4c;
 }
 
 /* ================= TOTAL (NUEVA ESTRUCTURA) ================= */
 .recibo-total {
   margin-top: 24px;
   padding-top: 12px;
-  border-top: 2px dotted var(--marron);
+  border-top: 2px dotted #377b4c;
+  /* Verde Principal de reglas generales */
+  opacity: 0.8;
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-size: 1.25rem;
   font-weight: 700;
-  color: var(--marron);
+  color: #8D6E63;
+  /* Total en café */
 }
 
 #totalPedido {
-  color: var(--verde);
+  color: #8D6E63;
+  /* Valor total en café */
   min-width: 100px;
   text-align: right;
 }

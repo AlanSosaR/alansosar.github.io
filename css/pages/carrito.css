@@ -327,9 +327,11 @@ body.page-carrito .seguir-comprando {
 
 /* DESGLOSE RESUMEN */
 .resumen-details {
-  border-bottom: 1px solid rgba(55, 123, 76, 0.1);
+  border-bottom: 2px dotted #377b4c;
+  /* Verde Principal de reglas generales */
   padding-bottom: 1.5rem;
   margin-bottom: 1.5rem;
+  opacity: 0.5;
 }
 
 .resumen-row {
@@ -338,7 +340,8 @@ body.page-carrito .seguir-comprando {
   margin-bottom: 1rem;
   font-size: 1.05rem;
   font-weight: 500;
-  color: #8d6e63;
+  color: #8D6E63;
+  /* Café para etiquetas */
 }
 
 .discount-row {
@@ -376,13 +379,14 @@ body.page-carrito .seguir-comprando {
 .total-text {
   font-size: 1.5rem;
   font-weight: 800;
-  color: var(--marron);
+  color: #8D6E63;
 }
 
 .total-amount {
   font-size: 1.8rem;
   font-weight: 800;
-  color: var(--verde);
+  color: #8D6E63;
+  /* Total en café según diseño */
   letter-spacing: -1px;
 }
 
