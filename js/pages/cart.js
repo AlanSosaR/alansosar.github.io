@@ -30,20 +30,18 @@ function getSupabaseClient() {
 }
 
 /* ================= HEADER (BADGE) ================= */
-/* 🔑 El header.js es el dueño del badge */
 function syncHeaderCounter() {
   if (typeof window.updateHeaderCartCount === "function") {
     window.updateHeaderCartCount();
   }
 }
 
-/* ================= SNACKBAR (GENÉRICO) ================= */
+/* ================= SNACKBAR ================= */
 function showSnackbar(message, duration = 1800) {
   const el = document.getElementById("snackbar");
   if (!el) return;
 
   el.textContent = message;
-
   el.classList.remove("hidden");
   el.classList.add("show");
 
@@ -171,7 +169,6 @@ async function renderCart() {
     container.appendChild(clone);
   });
 
-  // Cálculo de Descuento
   const discount = calculateDiscount(subtotal, cart);
   const total = subtotal - discount.amount;
 
@@ -198,13 +195,13 @@ document.getElementById("apply-coupon-btn")?.addEventListener("click", () => {
 
   if (!code) return;
 
-  // Simulación de validación (CORTERO15 es el ejemplo)
   if (code === "CORTERO15") {
     appliedCoupon = { code: "CORTERO15", percent: 15 };
     msgBox.classList.remove("hidden");
     msgText.textContent = `Cupón ${code} aplicado (-15%)`;
     input.disabled = true;
-    document.getElementById("apply-coupon-btn").disabled = true;
+    const btn = document.getElementById("apply-coupon-btn");
+    if (btn) btn.disabled = true;
     renderCart();
     showSnackbar("¡Cupón aplicado con éxito!");
   } else {
@@ -249,7 +246,6 @@ document.getElementById("proceder-btn")?.addEventListener("click", async () => {
 
   const sb = getSupabaseClient();
   if (!sb) {
-    // Si por alguna razón no cargó Supabase, igual mandamos a login
     location.href = "/pages/auth/login.html?redirect=carrito";
     return;
   }
@@ -260,7 +256,6 @@ document.getElementById("proceder-btn")?.addEventListener("click", async () => {
     return;
   }
 
-  /* 🔐 NO LOGUEADO */
   if (!data?.session) {
     showSnackbar("Necesitas iniciar sesión para continuar con tu pedido.");
     setTimeout(() => {
@@ -269,14 +264,12 @@ document.getElementById("proceder-btn")?.addEventListener("click", async () => {
     return;
   }
 
-  /* 🔐 BLOQUEAR ADMIN (solo clientes compran) */
   const authUser = data.session.user;
   const authId = authUser.id;
   const authEmail = authUser.email;
 
   let userRow = null;
 
-  // 1) Intentar por ID (si public.users.id = auth.uid())
   const { data: byId, error: errById } = await sb
     .from("users")
     .select("rol")
@@ -290,7 +283,6 @@ document.getElementById("proceder-btn")?.addEventListener("click", async () => {
 
   userRow = byId;
 
-  // 2) Fallback por email (si tu tabla users no usa auth.uid() como id)
   if (!userRow && authEmail) {
     const { data: byEmail, error: errByEmail } = await sb
       .from("users")
@@ -316,16 +308,13 @@ document.getElementById("proceder-btn")?.addEventListener("click", async () => {
     return;
   }
 
-  /* 🔒 VALIDAR product_id (solo aquí, antes de checkout) */
   const invalid = cart.some(p => !p.product_id);
   if (invalid) {
     showSnackbar("Algunos productos necesitan actualizarse. Vuelve a agregarlos.");
     return;
   }
 
-  /* 🔎 VALIDAR IDs Y STOCK EN SUPABASE (que existan y tengan stock) */
   const ids = [...new Set(cart.map(i => String(i.product_id)))];
-
   const { data: products, error: productsError } = await sb
     .from("products")
     .select("id, stock, name")
@@ -345,7 +334,6 @@ document.getElementById("proceder-btn")?.addEventListener("click", async () => {
     return;
   }
 
-  // Validar stock real final
   for (const item of cart) {
     const meta = stockMap[String(item.product_id)];
     if (item.qty > meta.stock) {
@@ -354,15 +342,12 @@ document.getElementById("proceder-btn")?.addEventListener("click", async () => {
     }
   }
 
-  /* 📦 GUARDAR CHECKOUT */
   localStorage.setItem(CHECKOUT_KEY, JSON.stringify(cart));
-
-  /* ➡️ CONTINUAR */
   location.href = "/pages/profile/datos_cliente.html";
 });
 
 /* ================= INIT ================= */
-renderCart(); // ✅ SIEMPRE renderiza aunque no esté logueado
+renderCart();
 
 document.addEventListener("header:ready", () => {
   syncHeaderCounter();

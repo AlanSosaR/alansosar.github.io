@@ -192,11 +192,12 @@ body.page-carrito .seguir-comprando {
    RESUMEN DEL PEDIDO — PREMIUM REDESIGN
 ===================================================== */
 .resumen-box {
-  background: #fff;
+  background: #fdfdfd;
+  /* Un crema muy ligero, casi blanco pero con matiz */
   padding: 2rem;
   border-radius: 32px;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(55, 123, 76, 0.1);
+  box-shadow: 0 10px 40px rgba(55, 123, 76, 0.05);
   position: sticky;
   top: 100px;
 }
@@ -255,7 +256,7 @@ body.page-carrito .seguir-comprando {
 
 .input-with-icon input:focus {
   outline: none;
-  background: #fff;
+  background: #f5f7f6;
   border-color: var(--verde);
   box-shadow: 0 0 0 4px rgba(55, 123, 76, 0.1);
 }
@@ -361,8 +362,8 @@ body.page-carrito .seguir-comprando {
   padding: 1.1rem;
   border-radius: 999px;
   border: none;
-  background: #3e7d54;
-  color: #fff;
+  background: #377b4c;
+  color: #f5f7f6;
   font-size: 1.15rem;
   font-weight: 700;
   display: flex;
@@ -499,8 +500,9 @@ body.page-carrito .seguir-comprando {
   padding: 14px 16px;
 
   border-radius: 18px;
-  background: rgba(20, 22, 24, 0.92);
-  color: #fff;
+  background: rgba(43, 43, 43, 0.95);
+  /* Café oscuro */
+  color: #f5f7f6;
 
   font-size: 14.5px;
   line-height: 1.25;
@@ -508,9 +510,9 @@ body.page-carrito .seguir-comprando {
   letter-spacing: 0.1px;
 
   box-shadow:
-    0 18px 44px rgba(0, 0, 0, .55),
-    0 6px 16px rgba(0, 0, 0, .35),
-    0 0 0 1px rgba(255, 255, 255, .08);
+    0 18px 44px rgba(0, 0, 0, .4),
+    0 6px 16px rgba(0, 0, 0, .25),
+    0 0 0 1px rgba(55, 123, 76, .1);
 
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -652,7 +654,7 @@ main.carrito-vacio-activo {
 
 .btn-volver-premium .circle-icon span,
 .btn-volver-premium .circle-icon i {
-  color: #fff;
+  color: #f5f7f6;
   font-size: 20px;
   font-weight: 700;
   transition: transform 0.25s ease;
@@ -667,10 +669,10 @@ main.carrito-vacio-activo {
 
 /* Variante con fondo blanco (Píldora blanca con círculo verde) */
 .btn-volver-premium.variant-white {
-  background: #ffffff;
+  background: #f5f7f6;
   padding: 6px 18px 6px 6px;
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(55, 123, 76, 0.1);
+  box-shadow: 0 4px 12px rgba(55, 123, 76, 0.1);
 }
 
 .btn-volver-premium.variant-white .circle-icon {
@@ -683,7 +685,7 @@ main.carrito-vacio-activo {
 
 .btn-volver-premium.variant-white .circle-icon span,
 .btn-volver-premium.variant-white .circle-icon i {
-  color: #fff;
+  color: #f5f7f6;
   font-size: 18px;
 }
 
@@ -696,7 +698,7 @@ main.carrito-vacio-activo {
 @media (hover: hover) {
   .btn-volver-premium.variant-white:hover {
     background: #fdfdfd;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 6px 16px rgba(55, 123, 76, 0.15);
     transform: translateY(-1px);
   }
 }
