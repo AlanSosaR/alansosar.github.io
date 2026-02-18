@@ -170,27 +170,37 @@ function renderMainProduct(product) {
   // FICHA TÉCNICA DINÁMICA
   const specsContainer = safe("product-specs");
   if (specsContainer) {
-    const specs = [
+    const leftSpecs = [
       { label: "Finca", value: product.finca, icon: "potted_plant" },
-      { label: "Altitud", value: product.altitud, icon: "landscape" },
       { label: "Productor", value: product.productor, icon: "person" },
-      { label: "Origen", value: product.origen, icon: "location_on" },
-      { label: "Proceso", value: product.proceso, icon: "settings_suggest" },
-      { label: "Perfil", value: product.perfil, icon: "palette" },
-      { label: "Variedad", value: product.variedad, icon: "psychiatry" }
+      { label: "Origen", value: product.origen, icon: "location_on" }
     ];
 
-    specsContainer.innerHTML = specs
-      .filter(s => s.value) // Solo mostrar si tiene valor
-      .map(s => `
-        <div class="spec-item">
-          <span class="material-symbols-outlined">${s.icon}</span>
-          <div class="spec-info">
-            <span class="spec-label">${s.label}</span>
-            <span class="spec-value">${s.value}</span>
-          </div>
+    const rightSpecs = [
+      { label: "Altitud", value: product.altitud, icon: "landscape" },
+      { label: "Variedad", value: product.variedad, icon: "psychiatry" },
+      { label: "Proceso", value: product.proceso, icon: "settings_suggest" },
+      { label: "Perfil", value: product.perfil, icon: "palette" }
+    ];
+
+    const renderSpec = s => `
+      <div class="spec-item">
+        <span class="material-symbols-outlined">${s.icon}</span>
+        <div class="spec-info">
+          <span class="spec-label">${s.label}</span>
+          <span class="spec-value">${s.value}</span>
         </div>
-      `).join("");
+      </div>
+    `;
+
+    specsContainer.innerHTML = `
+      <div class="specs-col">
+        ${leftSpecs.filter(s => s.value).map(renderSpec).join("")}
+      </div>
+      <div class="specs-col">
+        ${rightSpecs.filter(s => s.value).map(renderSpec).join("")}
+      </div>
+    `;
   }
 
   safe("product-price").textContent = `L ${product.price}`;
