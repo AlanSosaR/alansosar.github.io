@@ -149,8 +149,24 @@ body.header-checkout {
   margin-bottom: 1.8rem;
 }
 
+/* Campos en fila dividida: cada uno toma la mitad */
 .fields-row.split>div {
   flex: 1;
+}
+
+/* Campo solo: ocupa todo el ancho */
+.m3-field.full {
+  width: 100%;
+  flex: 1 1 100%;
+}
+
+/* Fila sin split: el hijo ocupa todo */
+.fields-row:not(.split) {
+  flex-direction: column;
+}
+
+.fields-row:not(.split)>.m3-field {
+  width: 100%;
 }
 
 .m3-field {
@@ -555,4 +571,126 @@ body.header-checkout {
 
 .loading .material-symbols-outlined {
   display: none;
+}
+
+/* ============================================================
+   MAPA INTERACTIVO DE DIRECCIÓN
+============================================================ */
+.map-wrapper {
+  margin-top: 1.2rem;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1.5px solid #d8ead9;
+  box-shadow: 0 4px 20px rgba(46, 125, 50, 0.08);
+  background: #f8fdf8;
+}
+
+.map-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.7rem 1rem;
+  background: #f1f8f3;
+  border-bottom: 1px solid #d8ead9;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.map-hint {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  color: #4a7a52;
+  font-weight: 500;
+}
+
+.map-hint .material-symbols-outlined {
+  font-size: 1rem;
+  color: #2e7d32;
+}
+
+.gps-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #2e7d32;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 0.45rem 1rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  font-family: 'Poppins', sans-serif;
+  white-space: nowrap;
+}
+
+.gps-btn:hover {
+  background: #256328;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+}
+
+.gps-btn .material-symbols-outlined {
+  font-size: 1.1rem;
+}
+
+.gps-btn.loading-gps {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+#delivery-map {
+  height: 260px;
+  width: 100%;
+  z-index: 0;
+}
+
+.map-status {
+  padding: 0.6rem 1rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #2e7d32;
+  background: #f1f8f3;
+  border-top: 1px solid #d8ead9;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.map-status.hidden {
+  display: none;
+}
+
+.map-status.searching {
+  color: #f9a825;
+}
+
+.map-status.error {
+  color: #c62828;
+}
+
+/* Asegurar que Leaflet no quede debajo de otros elementos */
+.leaflet-container {
+  font-family: 'Poppins', sans-serif;
+}
+
+.leaflet-popup-content-wrapper {
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 768px) {
+  #delivery-map {
+    height: 200px;
+  }
+
+  .map-toolbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }

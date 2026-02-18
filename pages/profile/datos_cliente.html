@@ -19,8 +19,11 @@
   <!-- ================= CSS GLOBAL HEADER ================= -->
   <link rel="stylesheet" href="/css/ui/header.css?v=30">
 
+  <!-- ================= LEAFLET MAPA ================= -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
   <!-- ================= CSS PANTALLA ================= -->
-  <link rel="stylesheet" href="/css/pages/datos_cliente.css?v=10">
+  <link rel="stylesheet" href="/css/pages/datos_cliente.css?v=11">
 </head>
 
 <body class="page-datos-cliente header-checkout">
@@ -95,10 +98,26 @@
                 <div class="m3-field full">
                   <div class="m3-input-wrapper">
                     <span class="material-symbols-outlined input-icon">map</span>
-                    <input id="direccion" type="text" placeholder=" " required>
+                    <input id="direccion" type="text" placeholder=" " required autocomplete="off">
                     <label class="field-label">Dirección exacta</label>
                   </div>
                 </div>
+              </div>
+
+              <!-- MAPA INTERACTIVO -->
+              <div class="map-wrapper">
+                <div class="map-toolbar">
+                  <span class="map-hint">
+                    <span class="material-symbols-outlined">info</span>
+                    Haz clic en el mapa o escribe tu dirección arriba
+                  </span>
+                  <button type="button" id="btn-gps" class="gps-btn" title="Usar mi ubicación actual">
+                    <span class="material-symbols-outlined">my_location</span>
+                    Mi ubicación
+                  </button>
+                </div>
+                <div id="delivery-map"></div>
+                <div id="map-status" class="map-status hidden"></div>
               </div>
 
               <div class="fields-row split">
@@ -203,7 +222,8 @@
   <script src="/js/core/auth-ui.js"></script>
   <script src="/js/ui/layout.js"></script>
   <script type="module" src="/js/ui/header.js"></script>
-  <script src="/js/pages/datos_cliente.js?v=10"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="/js/pages/datos_cliente.js?v=11"></script>
 
 </body>
 

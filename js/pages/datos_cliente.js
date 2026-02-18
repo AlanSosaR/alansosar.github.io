@@ -283,3 +283,206 @@ form.addEventListener("submit", async e => {
     el.addEventListener("input", () => limpiarError(el));
   });
 })();
+
+/* ============================================================
+   MAPA INTERACTIVO — LEAFLET + NOMINATIM
+============================================================ */
+(function initMap() {
+  // Esperar a que Leaflet esté disponible
+  if (typeof L === "undefined") {
+    window.addEventListener("load", initMap);
+    return;
+  }
+
+  // Coordenadas iniciales: Honduras (Danlí, El Paraíso)
+  const HONDURAS_CENTER = [14.0, -86.58];
+  const INITIAL_ZOOM = 7;
+
+  // Inicializar mapa
+  const map = L.map("delivery-map", {
+    center: HONDURAS_CENTER,
+    zoom: INITIAL_ZOOM,
+    zoomControl: true,
+    scrollWheelZoom: false // Evitar scroll accidental en móvil
+  });
+
+  // Tiles de OpenStreetMap
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    maxZoom: 19
+  }).addTo(map);
+
+  // Ícono personalizado verde
+  const greenIcon = L.divIcon({
+    className: "",
+    html: `<div style="
+      width: 32px; height: 32px;
+      background: #2e7d32;
+      border: 3px solid #fff;
+      border-radius: 50% 50% 50% 0;
+      transform: rotate(-45deg);
+      box-shadow: 0 3px 12px rgba(46,125,50,0.4);
+    "></div>`,
+    iconSize: [32, 32],
+    iconAnchor: [16, 32],
+    popupAnchor: [0, -36]
+  });
+
+  let marker = null;
+  const statusEl = document.getElementById("map-status");
+
+  function setStatus(msg, type = "") {
+    statusEl.textContent = msg;
+    statusEl.className = "map-status" + (type ? ` ${type}` : "");
+    if (!msg) statusEl.classList.add("hidden");
+  }
+
+  function setMarker(lat, lng, popupText) {
+    if (marker) {
+      marker.setLatLng([lat, lng]);
+    } else {
+      marker = L.marker([lat, lng], { icon: greenIcon, draggable: true }).addTo(map);
+
+      // Al arrastrar el pin → geocodificación inversa
+      marker.on("dragend", async () => {
+        const pos = marker.getLatLng();
+        await reverseGeocode(pos.lat, pos.lng);
+      });
+    }
+
+    if (popupText) {
+      marker.bindPopup(`<b>📍 Punto de entrega</b><br>${popupText}`).openPopup();
+    }
+
+    // Guardar coordenadas
+    sessionStorage.setItem("delivery_lat", lat);
+    sessionStorage.setItem("delivery_lng", lng);
+  }
+
+  // Geocodificación: dirección → coordenadas
+  async function geocodeAddress(address) {
+    if (!address || address.length < 5) return;
+    setStatus("🔍 Buscando dirección...", "searching");
+
+    try {
+      const query = encodeURIComponent(address + ", Honduras");
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/search?q=${query}&format=json&limit=1&countrycodes=hn`,
+        { headers: { "Accept-Language": "es" } }
+      );
+      const data = await res.json();
+
+      if (data && data.length > 0) {
+        const { lat, lon, display_name } = data[0];
+        const latNum = parseFloat(lat);
+        const lonNum = parseFloat(lon);
+
+        map.flyTo([latNum, lonNum], 15, { animate: true, duration: 1.2 });
+        setMarker(latNum, lonNum, display_name);
+        setStatus("✅ Ubicación encontrada en el mapa");
+        setTimeout(() => setStatus(""), 3000);
+      } else {
+        setStatus("⚠️ No se encontró la dirección. Intenta ser más específico.", "error");
+        setTimeout(() => setStatus(""), 4000);
+      }
+    } catch {
+      setStatus("⚠️ Error al buscar. Verifica tu conexión.", "error");
+      setTimeout(() => setStatus(""), 4000);
+    }
+  }
+
+  // Geocodificación inversa: coordenadas → dirección
+  async function reverseGeocode(lat, lng) {
+    setStatus("🔍 Obteniendo dirección...", "searching");
+    try {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`,
+        { headers: { "Accept-Language": "es" } }
+      );
+      const data = await res.json();
+
+      if (data && data.display_name) {
+        // Extraer la parte útil de la dirección
+        const addr = data.address;
+        const parts = [
+          addr.road || addr.pedestrian || addr.footway,
+          addr.house_number,
+          addr.neighbourhood || addr.suburb,
+          addr.city || addr.town || addr.village
+        ].filter(Boolean);
+
+        const shortAddr = parts.length > 0 ? parts.join(", ") : data.display_name;
+        direccionInput.value = shortAddr;
+        direccionInput.dispatchEvent(new Event("input", { bubbles: true }));
+        setMarker(lat, lng, shortAddr);
+        setStatus("✅ Dirección actualizada");
+        setTimeout(() => setStatus(""), 3000);
+      }
+    } catch {
+      setStatus("⚠️ No se pudo obtener la dirección.", "error");
+      setTimeout(() => setStatus(""), 4000);
+    }
+  }
+
+  // Clic en el mapa → geocodificación inversa
+  map.on("click", async (e) => {
+    const { lat, lng } = e.latlng;
+    setMarker(lat, lng, null);
+    map.flyTo([lat, lng], Math.max(map.getZoom(), 15));
+    await reverseGeocode(lat, lng);
+  });
+
+  // Debounce: al escribir en el campo de dirección → geocodificar
+  let debounceTimer = null;
+  const direccionEl = document.getElementById("direccion");
+  if (direccionEl) {
+    direccionEl.addEventListener("input", () => {
+      clearTimeout(debounceTimer);
+      const val = direccionEl.value.trim();
+      if (val.length >= 5) {
+        debounceTimer = setTimeout(() => geocodeAddress(val), 900);
+      }
+    });
+  }
+
+  // Botón GPS
+  const btnGps = document.getElementById("btn-gps");
+  if (btnGps) {
+    btnGps.addEventListener("click", () => {
+      if (!navigator.geolocation) {
+        setStatus("⚠️ Tu navegador no soporta geolocalización.", "error");
+        return;
+      }
+
+      btnGps.classList.add("loading-gps");
+      btnGps.querySelector(".material-symbols-outlined").textContent = "sync";
+      setStatus("📡 Obteniendo tu ubicación...", "searching");
+
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          const { latitude, longitude } = pos.coords;
+          map.flyTo([latitude, longitude], 16, { animate: true, duration: 1.5 });
+          setMarker(latitude, longitude, null);
+          await reverseGeocode(latitude, longitude);
+          btnGps.classList.remove("loading-gps");
+          btnGps.querySelector(".material-symbols-outlined").textContent = "my_location";
+        },
+        () => {
+          setStatus("⚠️ No se pudo obtener tu ubicación. Activa el GPS.", "error");
+          setTimeout(() => setStatus(""), 4000);
+          btnGps.classList.remove("loading-gps");
+          btnGps.querySelector(".material-symbols-outlined").textContent = "my_location";
+        },
+        { timeout: 10000, enableHighAccuracy: true }
+      );
+    });
+  }
+
+  // Si ya hay una dirección cargada (desde Supabase), geocodificarla
+  window.addEventListener("cortero:direccionCargada", (e) => {
+    if (e.detail && e.detail.direccion) {
+      setTimeout(() => geocodeAddress(e.detail.direccion), 500);
+    }
+  });
+})();
+
