@@ -28,102 +28,184 @@
   <!-- =====================================================
      CONTENIDO PRINCIPAL
 ====================================================== -->
-  <main class="profile-container">
-    <section class="profile-card">
+  <main class="checkout-container">
+    <div class="checkout-grid">
 
-      <!-- BOTÓN ATRÁS -->
-      <button class="back-btn" onclick="window.location.href='/pages/shop/carrito.html'">
-        <span class="material-symbols-outlined">chevron_left</span>
-      </button>
+      <!-- COLUMNA IZQUIERDA: FORMULARIO -->
+      <section class="form-section">
+        <div class="checkout-header-text">
+          <h1>Datos de entrega</h1>
+          <p>Casi listo para disfrutar del mejor café de Honduras.</p>
+        </div>
 
-      <div class="profile-inner-card">
-
-        <!-- FORMULARIO -->
-        <form id="cliente-form" novalidate>
-
-          <!-- NOMBRE -->
-          <div class="m3-field">
-            <div class="m3-input">
-              <span class="material-symbols-outlined">person</span>
-              <input id="nombre" type="text" placeholder=" " required>
-              <label class="floating-label">Nombre completo *</label>
-            </div>
-          </div>
-
-          <!-- CORREO -->
-          <div class="m3-field">
-            <div class="m3-input no-edit">
-              <span class="material-symbols-outlined">mail</span>
-              <input id="correo" type="email" placeholder=" " readonly required>
-              <label class="floating-label">Correo electrónico *</label>
-            </div>
-          </div>
-
-          <!-- TELÉFONO -->
-          <div class="m3-field">
-            <div class="m3-input">
-              <span class="material-symbols-outlined">call</span>
-              <input id="telefono" type="tel" placeholder=" " required>
-              <label class="floating-label">Teléfono *</label>
-            </div>
-          </div>
-
-          <!-- CIUDAD -->
-          <div class="m3-field">
-            <div class="m3-input">
-              <span class="material-symbols-outlined">location_city</span>
-              <input id="ciudad" type="text" placeholder=" " required>
-              <label class="floating-label">Ciudad *</label>
-            </div>
-          </div>
-
-          <!-- DEPARTAMENTO -->
-          <div class="m3-field">
-            <div class="m3-input">
-              <span class="material-symbols-outlined">map</span>
-              <select id="zona" class="m3-select" required>
-                <option value="" disabled selected></option>
-                <option value="El Paraíso">El Paraíso</option>
-                <option value="Francisco Morazán">Francisco Morazán</option>
-                <option value="Choluteca">Choluteca</option>
-                <option value="Cortés">Cortés</option>
-                <option value="Comayagua">Comayagua</option>
-                <option value="La Paz">La Paz</option>
-                <option value="Olancho">Olancho</option>
-                <option value="Yoro">Yoro</option>
-              </select>
-              <label class="floating-label">Departamento *</label>
-            </div>
-          </div>
-
-          <!-- DIRECCIÓN -->
-          <div class="m3-field">
-            <div class="m3-input textarea-field">
-              <span class="material-symbols-outlined">home</span>
-              <textarea id="direccion" rows="3" placeholder=" " required></textarea>
-              <label class="floating-label">Dirección de entrega *</label>
-            </div>
-          </div>
-
-          <!-- NOTA -->
-          <div class="m3-field">
-            <div class="m3-input textarea-field">
-              <span class="material-symbols-outlined">note</span>
-              <textarea id="nota" rows="2" placeholder=" "></textarea>
-              <label class="floating-label">Nota adicional</label>
-            </div>
-          </div>
-
-          <!-- BOTÓN -->
-          <button type="submit" id="btn-submit" class="m3-btn">
-            <span class="loader"></span>
-            <span class="btn-text">Proceder con el pedido</span>
+        <div class="unipro-card">
+          <!-- BOTÓN ATRÁS -->
+          <button class="back-btn-alt" onclick="window.location.href='/pages/shop/carrito.html'">
+            <span class="material-symbols-outlined">arrow_back</span>
           </button>
 
-        </form>
+          <form id="cliente-form" novalidate>
 
-      </div>
-    </section>
+            <!-- SECCIÓN: INFORMACIÓN PERSONAL -->
+            <div class="form-group-section">
+              <div class="section-title">
+                <span class="material-symbols-outlined">person</span>
+                <h2>Información Personal</h2>
+              </div>
+
+              <div class="fields-row">
+                <div class="m3-field full">
+                  <div class="m3-input-wrapper">
+                    <input id="nombre" type="text" placeholder=" " required>
+                    <label class="field-label">NOMBRE COMPLETO</label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="fields-row split">
+                <div class="m3-field">
+                  <div class="m3-input-wrapper">
+                    <input id="telefono" type="tel" placeholder=" " required>
+                    <label class="field-label">TELÉFONO</label>
+                  </div>
+                </div>
+                <div class="m3-field">
+                  <div class="m3-input-wrapper">
+                    <input id="correo" type="email" placeholder=" " required readonly>
+                    <label class="field-label">CORREO ELECTRÓNICO</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <hr class="section-divider">
+
+            <!-- SECCIÓN: DETALLES DE ENVÍO -->
+            <div class="form-group-section">
+              <div class="section-title">
+                <span class="material-symbols-outlined">local_shipping</span>
+                <h2>Detalles de Envío</h2>
+              </div>
+
+              <div class="shipping-methods">
+                <label class="method-card">
+                  <input type="radio" name="envio" value="express" checked>
+                  <div class="method-info">
+                    <span class="material-symbols-outlined">bolt</span>
+                    <span>Express (Hoy)</span>
+                  </div>
+                </label>
+                <label class="method-card">
+                  <input type="radio" name="envio" value="estandar">
+                  <div class="method-info">
+                    <span class="material-symbols-outlined">schedule</span>
+                    <span>Estándar (24-48h)</span>
+                  </div>
+                </label>
+              </div>
+
+              <div class="fields-row">
+                <div class="m3-field full">
+                  <div class="m3-input-wrapper">
+                    <input id="direccion" type="text" placeholder=" " required>
+                    <label class="field-label">DIRECCIÓN EXACTA</label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="fields-row split">
+                <div class="m3-field">
+                  <div class="m3-input-wrapper">
+                    <input id="ciudad" type="text" placeholder=" " required>
+                    <label class="field-label">CIUDAD</label>
+                  </div>
+                </div>
+                <div class="m3-field">
+                  <div class="m3-input-wrapper">
+                    <select id="zona" required>
+                      <option value="" disabled selected></option>
+                      <option value="El Paraíso">El Paraíso</option>
+                      <option value="Francisco Morazán">Francisco Morazán</option>
+                      <option value="Choluteca">Choluteca</option>
+                      <option value="Cortés">Cortés</option>
+                      <option value="Comayagua">Comayagua</option>
+                      <option value="La Paz">La Paz</option>
+                      <option value="Olancho">Olancho</option>
+                      <option value="Yoro">Yoro</option>
+                    </select>
+                    <label class="field-label">DEPARTAMENTO</label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="fields-row">
+                <div class="m3-field full">
+                  <div class="m3-input-wrapper">
+                    <textarea id="nota" rows="2" placeholder=" "></textarea>
+                    <label class="field-label">REFERENCIAS</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <button type="submit" id="btn-submit" class="primary-checkout-btn">
+              <span class="loader"></span>
+              <span class="btn-text">Proceder con el pedido</span>
+              <span class="material-symbols-outlined">arrow_forward</span>
+            </button>
+
+          </form>
+        </div>
+      </section>
+
+      <!-- COLUMNA DERECHA: RESUMEN -->
+      <aside class="summary-section">
+        <div class="summary-card">
+          <h3>Resumen del pedido</h3>
+
+          <div id="summary-items" class="summary-items-list">
+            <!-- Dinámico desde JS -->
+            <div class="summary-loading">Cargando productos...</div>
+          </div>
+
+          <div id="summary-coupon" class="applied-coupon-box hidden">
+            <div class="coupon-tag">
+              <span class="material-symbols-outlined">sell</span>
+              <span id="coupon-code-text">CORTERO15</span>
+            </div>
+            <span class="coupon-status">Aplicado</span>
+          </div>
+
+          <div class="summary-totals">
+            <div class="total-row">
+              <span>Subtotal</span>
+              <span id="sum-subtotal">L 0.00</span>
+            </div>
+            <div class="total-row">
+              <span>Envío</span>
+              <span id="sum-shipping">L 60.00</span>
+            </div>
+            <div id="sum-discount-row" class="total-row discount-text hidden">
+              <span id="sum-discount-label">Descuento</span>
+              <span id="sum-discount-amount">- L 0.00</span>
+            </div>
+            <hr>
+            <div class="total-row final-total">
+              <span>Total</span>
+              <span id="sum-total">L 0.00</span>
+            </div>
+          </div>
+
+          <a href="/pages/shop/carrito.html" class="back-link">Volver al carrito</a>
+
+          <div class="payment-methods-icons">
+            <i class="fa-brands fa-cc-visa"></i>
+            <i class="fa-brands fa-cc-mastercard"></i>
+          </div>
+        </div>
+      </aside>
+
+    </div>
   </main>
 
   <!-- =====================================================
