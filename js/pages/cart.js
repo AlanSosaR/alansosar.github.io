@@ -64,7 +64,7 @@ function updateHeaderCartTitle(cart) {
   }
 
   if (subtitle) {
-    subtitle.textContent = `Tienes ${total} ${total === 1 ? "artículo seleccionado" : "artículos seleccionados"} de Honduras.`;
+    subtitle.textContent = `Tienes ${total} ${total === 1 ? "café agregado" : "cafés agregados"} a tu pedido.`;
   }
 }
 

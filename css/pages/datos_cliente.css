@@ -136,10 +136,9 @@ body.header-checkout {
 
 .section-divider {
   border: none;
-  border-top: 2px dotted #377b4c;
-  /* Verde Principal de reglas generales */
+  border-top: 1.5px dotted #377b4c;
+  /* Verde Principal sólido */
   margin-bottom: 3rem;
-  opacity: 0.4;
 }
 
 /* FLOATING LABELS & INPUTS */
@@ -461,10 +460,9 @@ body.header-checkout {
 
 .summary-totals hr {
   border: none;
-  border-top: 2px dotted #377b4c;
-  /* Línea verde principal punteada */
+  border-top: 1.5px dotted #377b4c;
+  /* Línea verde principal sólida */
   margin: 1.2rem 0;
-  opacity: 0.5;
 }
 
 .final-total {

@@ -306,9 +306,8 @@ h3 {
 .recibo-total {
   margin-top: 24px;
   padding-top: 12px;
-  border-top: 2px dotted #377b4c;
-  /* Verde Principal de reglas generales */
-  opacity: 0.8;
+  border-top: 1.5px dotted #377b4c;
+  /* Verde Principal sólido */
   display: flex;
   justify-content: space-between;
   align-items: center;
