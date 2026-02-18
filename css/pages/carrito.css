@@ -38,8 +38,8 @@ body {
 /* =====================================================
    AJUSTE — SEGUIR COMPRANDO CON HEADER FIJO
 ===================================================== */
-/* Ocultar el botón antiguo ya que ahora tenemos breadcrumbs */
-body.page-carrito .seguir-comprando {
+/* Ocultar el botón antiguo o cualquier contenedor residual */
+.seguir-comprando {
   display: none !important;
 }
 
@@ -68,39 +68,15 @@ body.page-carrito .seguir-comprando {
 ===================================================== */
 .cart-header-container {
   max-width: 1100px;
-  margin: 100px auto 2.5rem;
+  margin: 110px auto 2.5rem;
   padding: 0 1rem;
-}
-
-.breadcrumbs {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.9rem;
-  color: #6B6B6B;
-  margin-bottom: 2rem;
-}
-
-.breadcrumbs a {
-  text-decoration: none;
-  color: #6B6B6B;
-  transition: color 0.2s;
-}
-
-.breadcrumbs a:hover {
-  color: var(--verde);
-}
-
-.breadcrumbs .current {
-  color: var(--verde);
-  font-weight: 600;
 }
 
 .page-title {
   font-size: 2.5rem;
   font-weight: 800;
   color: #2B2B2B;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.2rem;
   letter-spacing: -1px;
 }
 
@@ -108,6 +84,21 @@ body.page-carrito .seguir-comprando {
   font-size: 1.1rem;
   color: #377b4c;
   font-weight: 500;
+  margin-bottom: 1.5rem;
+}
+
+.seguir-comprando-inline {
+  display: flex;
+  justify-content: flex-start;
+}
+
+/* Reutilizamos el estilo premium con ajustes para que se integre bien */
+.seguir-comprando-inline .btn-volver-premium.variant-white {
+  background: #FFFFFF;
+  padding: 4px 14px 4px 4px;
+  border-radius: 50px;
+  border: 1px solid rgba(55, 123, 76, 0.1);
+  font-size: 0.9rem;
 }
 
 @media (max-width: 760px) {
@@ -117,22 +108,25 @@ body.page-carrito .seguir-comprando {
   }
 
   .cart-header-container {
-    margin-top: 80px;
+    margin-top: 90px;
     margin-bottom: 1.5rem;
-    text-align: center;
+    text-align: left;
+    padding: 0 1.5rem;
   }
 
-  .breadcrumbs {
+  .seguir-comprando-inline {
     justify-content: center;
-    margin-bottom: 1rem;
+    margin-top: 1rem;
   }
 
   .page-title {
-    font-size: 1.8rem;
+    font-size: 2rem;
+    text-align: center;
   }
 
   .page-subtitle {
-    font-size: 0.95rem;
+    font-size: 1rem;
+    text-align: center;
   }
 }
 
