@@ -145,11 +145,11 @@ function renderResumen() {
   }
 
   const totalAhorro = ahorroItems + couponDiscount;
-  const shipping = 60; // Fijo según diseño
+  const shipping = 0; // Envío Gratis solicitado
   const finalTotal = totalConDescuentoItems - couponDiscount + shipping;
 
   sumSubtotalEl.textContent = `L ${subtotalOriginal.toFixed(2)}`;
-  sumShippingEl.textContent = `L ${shipping.toFixed(2)}`;
+  sumShippingEl.textContent = `Gratis`;
 
   if (totalAhorro > 0) {
     sumDiscountRow.classList.remove("hidden");
@@ -263,9 +263,8 @@ form.addEventListener("submit", async e => {
   }
 
   sessionStorage.setItem("current_order_notes", notaInput.value.trim());
-  // Guardar método de envío seleccionado
-  const selectedShipping = document.querySelector('input[name="envio"]:checked')?.value || "express";
-  sessionStorage.setItem("checkout_shipping_method", selectedShipping);
+  // El método de envío ahora es fijo (gratis/estándar) tras la simplificación
+  sessionStorage.setItem("checkout_shipping_method", "gratis");
 
   setTimeout(() => window.location.href = "/pages/shop/recibo.html", 800);
 });

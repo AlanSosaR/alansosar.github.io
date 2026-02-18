@@ -64,8 +64,10 @@ body.header-checkout {
 }
 
 .checkout-header-text p {
-  color: var(--texto-secundario);
+  color: #2e7d32;
+  /* Verde esmeralda sugerido */
   font-size: 1.1rem;
+  font-weight: 500;
 }
 
 /* UNIPRO CARD (SOLO UNA) */
@@ -134,8 +136,10 @@ body.header-checkout {
 
 .section-divider {
   border: none;
-  border-top: 2px solid var(--gris-suave);
+  border-top: 2px dotted #2e7d32;
+  /* Punteada y verde */
   margin-bottom: 3rem;
+  opacity: 0.4;
 }
 
 /* FLOATING LABELS & INPUTS */
@@ -286,7 +290,8 @@ body.header-checkout {
 /* SUBMIT BUTTON */
 .primary-checkout-btn {
   width: 100%;
-  background: var(--marron);
+  background: #2e7d32;
+  /* Verde principal solicitado */
   color: #fff;
   border: none;
   border-radius: 20px;
@@ -300,13 +305,13 @@ body.header-checkout {
   gap: 12px;
   transition: all 0.3s ease;
   margin-top: 1rem;
-  box-shadow: 0 10px 25px rgba(81, 38, 21, 0.12);
+  box-shadow: 0 10px 25px rgba(46, 125, 50, 0.15);
 }
 
 .primary-checkout-btn:hover {
-  background: #3e1d10;
+  background: #256328;
   transform: translateY(-3px);
-  box-shadow: 0 12px 30px rgba(81, 38, 21, 0.2);
+  box-shadow: 0 12px 30px rgba(46, 125, 50, 0.25);
 }
 
 .primary-checkout-btn span.material-symbols-outlined {
@@ -355,9 +360,10 @@ body.header-checkout {
 .item-img {
   width: 65px;
   height: 65px;
-  border-radius: 15px;
-  object-fit: cover;
-  background: var(--crema-fondo);
+  object-fit: contain;
+  /* Para que la bolsa se vea completa */
+  background: transparent;
+  /* Quitamos el círculo/fondo anterior */
 }
 
 .item-name {
@@ -442,16 +448,18 @@ body.header-checkout {
 .back-link {
   display: block;
   text-align: center;
-  color: var(--texto-secundario);
-  text-decoration: underline;
-  font-size: 0.9rem;
+  color: #2e7d32;
+  /* Verde solicitado */
+  text-decoration: none;
+  font-size: 0.95rem;
   font-weight: 700;
   margin-bottom: 2rem;
-  transition: color 0.2s;
+  transition: all 0.2s;
 }
 
 .back-link:hover {
-  color: var(--marron);
+  color: #256328;
+  text-decoration: underline;
 }
 
 .payment-methods-icons {
