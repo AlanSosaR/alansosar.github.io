@@ -16,9 +16,10 @@
 /* =====================================================
    HEADER — FIJO, ESTABLE
 ===================================================== */
-header.header-fixed {
-  position: fixed;
-  inset: 0 0 auto 0;
+header.header-fixed,
+#main-header.header-fixed {
+  position: fixed !important;
+  inset: 0 0 auto 0 !important;
   height: 72px;
   padding: 0 16px;
 
@@ -30,29 +31,34 @@ header.header-fixed {
   -webkit-backdrop-filter: blur(10px);
 
   border-bottom: 1.5px solid rgba(0, 0, 0, 0.05);
-  z-index: 1000;
+  z-index: 5000;
   box-sizing: border-box;
 }
 
 /* =====================================================
-   MOBILE — OCULTAR LOGO DETRÁS DEL MENÚ
+   MOBILE — REORDENAR SOLO EN CARRITO Y DATOS
 ===================================================== */
 @media (max-width: 900px) {
 
-  /* No ocultar logo, solo reordenar */
-  .header-logo-link {
+  /* 🔥 El reordenamiento SOLO aplica en carrito y datos cliente */
+  body.page-carrito .header-logo-link,
+  body.page-datos-cliente .header-logo-link {
     display: flex !important;
     order: 3;
     margin-left: auto;
   }
 
-  #menu-toggle {
+  body.page-carrito .menu-toggle,
+  body.page-datos-cliente .menu-toggle,
+  body.page-carrito #menu-toggle,
+  body.page-datos-cliente #menu-toggle {
+    display: flex !important;
     order: 1;
     margin-right: auto;
   }
 
-  /* El slot de búsqueda o el título central pueden ir en medio */
-  #header-search-slot {
+  body.page-carrito #header-search-slot,
+  body.page-datos-cliente #header-search-slot {
     order: 2;
   }
 }
@@ -136,7 +142,9 @@ body.page-carrito .header-cart-title {
 
   /* Hamburguesa SIEMPRE visible en mobile */
   body.page-carrito .menu-toggle,
-  body.page-datos-cliente .menu-toggle {
+  body.page-datos-cliente .menu-toggle,
+  body.page-carrito #menu-toggle,
+  body.page-datos-cliente #menu-toggle {
     display: flex !important;
   }
 }
@@ -1127,43 +1135,7 @@ body {
   line-height: 1;
 }
 
-/* =====================================================
-   MÓVIL — CARRITO (LOGUEADO O NO)
-   ☰  TEXTO CENTRO  LOGO DERECHA
-===================================================== */
-@media (max-width: 900px) {
-
-  body.page-carrito {
-
-    /* ❌ apagar TODAS las acciones de usuario */
-    .header-actions,
-    #login-desktop,
-    #btn-header-user,
-    .header-avatar-button {
-      display: none !important;
-    }
-
-    /* ✅ header ocupa TODO el ancho */
-    .header-fixed {
-      display: flex;
-      align-items: center;
-      position: relative;
-      width: 100%;
-      /* 🔑 CLAVE */
-    }
-
-
-
-    /* ✅ título centrado real */
-    .header-title {
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      white-space: nowrap;
-      pointer-events: none;
-    }
-  }
-}
+/* Bloque de reordenamiento avanzado eliminado por redundancia con el bloque inicial */
 
 /* =====================================================
    HEADER — MODO CHECKOUT
@@ -1182,40 +1154,7 @@ body {
 
 }
 
-/* ===================== MÓVIL ===================== */
-@media (max-width: 900px) {
-
-  body.header-checkout header.header-fixed {
-    position: fixed !important;
-    /* ✅ se mantiene fijo */
-    top: 0;
-    left: 0;
-    right: 0;
-    justify-content: center;
-  }
-
-  /* Texto centrado */
-  body.header-checkout .header-cart-title {
-    z-index: 1;
-    pointer-events: none;
-    top: 50%;
-    transform: translate(-50%, -50%);
-  }
-
-  /* Logo a la derecha */
-  body.header-checkout .header-logo-link {
-    display: flex !important;
-    position: absolute;
-    right: 16px;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 3001;
-  }
-
-  body.header-checkout .header-logo {
-    height: 44px;
-  }
-}
+/* Bloque de reordenamiento checkout eliminado por redundancia con el bloque inicial */
 
 /* =====================================================
    ADMIN — AVATAR IZQUIERDA + LOGO DERECHA (SOLO PC)
