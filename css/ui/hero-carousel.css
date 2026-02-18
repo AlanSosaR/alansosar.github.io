@@ -322,21 +322,21 @@
     left: 0;
     top: 0;
     height: 100%;
-    background: #ffffff;
+    background: var(--verde);
     width: 0%;
     /* JS lo actualizará */
     transition: width 0.4s ease;
     border-radius: 2px;
 }
 
-/* Ajuste Mobile: Centrar controles entre texto y botón */
+/* Ajuste Mobile: Controles a la derecha (igual que PC) */
 @media (max-width: 768px) {
     .carousel-controls {
-        right: auto;
-        left: 50%;
-        transform: translateX(-50%);
-        /* Centrado en el hueco entre el texto y el botón inferior */
-        bottom: 42px;
+        right: 5%;
+        left: auto;
+        transform: none;
+        bottom: 52px;
+        /* Subimos un poco para despejar del botón */
         gap: 16px;
     }
 
