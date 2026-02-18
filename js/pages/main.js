@@ -270,9 +270,10 @@ function renderMainProduct(product) {
   }
 
   const activeDiscount = getActiveDiscount(product);
+  const finalPrice = activeDiscount > 0 ? Math.floor(product.price * (1 - activeDiscount / 100)) : product.price;
 
   const priceEl = safe("product-price");
-  priceEl.innerHTML = `L ${product.price}${activeDiscount > 0 ? ' <small class="price-discount-note">(con descuento)</small>' : ''}`;
+  priceEl.innerHTML = `L ${finalPrice}${activeDiscount > 0 ? ' <small class="price-discount-note">(con descuento)</small>' : ''}`;
 
   const img = safe("product-image");
   img.classList.remove("swap");
@@ -293,9 +294,9 @@ function renderMainProduct(product) {
       badge.className = "discount-badge main-badge";
       badge.innerHTML = `${activeDiscount}% <span>OFF</span> <small>en tu primer pedido</small>`;
 
-      // Estilo para posicionar sobre la bolsa (replicando carrusel)
-      badge.style.top = "0px";
-      badge.style.right = "10%";
+      // Estilo para posicionar sobre la bolsa (replicando carrusel corregido)
+      badge.style.top = "60px";
+      badge.style.right = "22%";
 
       imgInner.appendChild(badge);
     }
