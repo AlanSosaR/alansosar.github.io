@@ -155,18 +155,27 @@ body.header-checkout {
 
 .m3-input-wrapper {
   position: relative;
-  background: var(--crema-fondo);
+  background: var(--blanco);
   border-radius: var(--input-radius);
-  padding: 1.2rem 1rem 0.6rem 1rem;
-  /* Más espacio arriba para el label */
-  border: 2px solid transparent;
-  transition: all 0.25s ease;
+  padding: 1rem 1.2rem;
+  border: 1px solid #d0d0ce;
+  /* Teclado gris suave como en la imagen */
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
 }
 
 .m3-input-wrapper:focus-within {
   border-color: var(--verde);
-  background: var(--blanco);
-  box-shadow: 0 0 0 4px rgba(55, 123, 76, 0.1);
+  border-width: 2px;
+  box-shadow: 0 0 0 1px var(--verde);
+}
+
+.input-icon {
+  color: var(--verde);
+  font-size: 1.4rem;
+  flex-shrink: 0;
 }
 
 .m3-input-wrapper input,
@@ -175,11 +184,12 @@ body.header-checkout {
   width: 100%;
   border: none;
   background: transparent;
-  font-size: 1rem;
+  font-size: 1.05rem;
   font-family: inherit;
   color: var(--marron);
   outline: none;
   font-weight: 500;
+  padding: 0.2rem 0;
 }
 
 /* El placeholder se oculta hasta que el label sube */
@@ -191,28 +201,28 @@ body.header-checkout {
 
 .m3-input-wrapper input:focus::placeholder,
 .m3-input-wrapper textarea:focus::placeholder {
-  color: #a0a09e;
+  color: #c0c0be;
 }
 
 .m3-input-wrapper select {
   cursor: pointer;
   appearance: none;
-  padding-top: 4px;
 }
 
-/* LABEL FLOATING LOGIC */
+/* LABEL FLOATING LOGIC (OUTLINED) */
 .field-label {
   position: absolute;
-  left: 1rem;
+  left: 3.2rem;
+  /* Alineado después del icono */
   top: 50%;
   transform: translateY(-50%);
-  font-size: 0.95rem;
-  font-weight: 500;
+  font-size: 1rem;
+  font-weight: 400;
   color: var(--texto-secundario);
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   pointer-events: none;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  background: transparent;
+  padding: 0 4px;
 }
 
 /* Estado Activo (Foco o Texto presente) */
@@ -221,11 +231,15 @@ body.header-checkout {
 .m3-input-wrapper textarea:not(:placeholder-shown)+.field-label,
 .m3-input-wrapper select:valid+.field-label,
 .m3-input-wrapper select:not([value=""])+.field-label {
-  top: 14px;
-  font-size: 0.65rem;
-  font-weight: 800;
-  color: var(--verde);
-  letter-spacing: 1px;
+  top: 0;
+  left: 1rem;
+  /* Se mueve un poco a la izquierda al subir */
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #2e7d32;
+  /* Un verde más oscuro y legible */
+  background: var(--blanco);
+  transform: translateY(-50%);
 }
 
 /* SHIPPING METHODS */
