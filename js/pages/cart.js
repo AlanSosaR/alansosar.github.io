@@ -89,8 +89,14 @@ function calculateDiscount(subtotal, cart) {
 
   let discountTotal = 0;
   cart.forEach(item => {
-    if (item.discount > 0) {
-      discountTotal += (item.qty * item.price) * (item.discount / 100);
+    // Si el item tiene descuento por producto (ej: primera compra)
+    if (item.discount_percent > 0) {
+      const original = Number(item.price_original || 0);
+      const current = Number(item.price || 0);
+      const diff = original - current;
+      if (diff > 0) {
+        discountTotal += (diff * item.qty);
+      }
     }
   });
 
@@ -144,13 +150,31 @@ async function renderCart() {
   if (resumenBox) resumenBox.style.display = "block";
 
   const template = document.getElementById("template-cart-item");
-  let subtotal = 0;
+  let subtotalOriginal = 0;
+  let totalConDescuentoItems = 0;
 
   cart.forEach((item, index) => {
     const clone = template.content.cloneNode(true);
     clone.querySelector(".item-image").src = item.img || "";
     clone.querySelector(".item-name").textContent = item.name || "Producto";
-    clone.querySelector(".item-price").textContent = `L ${Number(item.price || 0).toFixed(2)} / unidad`;
+
+    // Desglose de precios por ítem
+    const priceOldEl = clone.querySelector(".item-price-old");
+    const discountBadgeEl = clone.querySelector(".item-discount-badge");
+    const currentPriceEl = clone.querySelector(".item-price");
+
+    if (item.discount_percent > 0) {
+      if (priceOldEl) {
+        priceOldEl.textContent = `L ${Number(item.price_original || 0).toFixed(2)}`;
+        priceOldEl.classList.remove("hidden");
+      }
+      if (discountBadgeEl) {
+        discountBadgeEl.textContent = `${item.discount_percent}% OFF`;
+        discountBadgeEl.classList.remove("hidden");
+      }
+    }
+
+    currentPriceEl.textContent = `L ${Number(item.price || 0).toFixed(2)} / unidad`;
     clone.querySelector(".qty-number").textContent = item.qty || 1;
 
     const stock = stocksCache[item.product_id] ?? 999;
@@ -165,24 +189,45 @@ async function renderCart() {
     }
 
     clone.querySelectorAll("button").forEach(btn => btn.dataset.index = index);
-    subtotal += Number(item.qty || 0) * Number(item.price || 0);
+
+    const original = Number(item.price_original || item.price || 0);
+    const current = Number(item.price || 0);
+
+    subtotalOriginal += original * item.qty;
+    totalConDescuentoItems += current * item.qty;
+
     container.appendChild(clone);
   });
 
-  const discount = calculateDiscount(subtotal, cart);
-  const total = subtotal - discount.amount;
+  const discountFromItems = subtotalOriginal - totalConDescuentoItems;
+  const subtotalParaCupon = totalConDescuentoItems;
 
-  if (subtotalLabel) subtotalLabel.textContent = `L ${subtotal.toFixed(2)}`;
+  let discountFromCoupon = 0;
+  let couponLabel = "";
 
-  if (discount.amount > 0) {
+  if (appliedCoupon) {
+    discountFromCoupon = subtotalParaCupon * (appliedCoupon.percent / 100);
+    couponLabel = `${appliedCoupon.code} (-${appliedCoupon.percent}%)`;
+  }
+
+  const totalDiscount = discountFromItems + discountFromCoupon;
+  const totalFinal = subtotalOriginal - totalDiscount;
+
+  if (subtotalLabel) subtotalLabel.textContent = `L ${subtotalOriginal.toFixed(2)}`;
+
+  if (totalDiscount > 0) {
     discountRow?.classList.remove("hidden");
-    if (discountLabel) discountLabel.textContent = `-L ${discount.amount.toFixed(2)}`;
-    if (discountDesc) discountDesc.textContent = discount.label;
+    if (discountLabel) discountLabel.textContent = `-L ${totalDiscount.toFixed(2)}`;
+
+    // Prioridad de etiqueta: Cupón si existe, sino genérico
+    if (discountDesc) {
+      discountDesc.textContent = appliedCoupon ? couponLabel : "Descuento aplicado";
+    }
   } else {
     discountRow?.classList.add("hidden");
   }
 
-  if (totalLabel) totalLabel.textContent = `L ${total.toFixed(2)}`;
+  if (totalLabel) totalLabel.textContent = `L ${totalFinal.toFixed(2)}`;
   syncHeaderCounter();
 }
 

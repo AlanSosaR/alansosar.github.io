@@ -660,6 +660,8 @@ document.addEventListener("DOMContentLoaded", () => {
       product_id: productId,
       name: currentProduct.name,
       price: finalPrice,
+      price_original: currentProduct.price,
+      discount_percent: activeDiscount,
       img: currentProduct.image_url,
       qty
     });

@@ -55,13 +55,14 @@ body.page-carrito .seguir-comprando {
    GRID PRINCIPAL
 ===================================================== */
 .grid-carrito {
-  max-width: 1100px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 0 1rem 3rem;
 
   display: grid;
-  grid-template-columns: 1fr 350px;
-  gap: 2rem;
+  grid-template-columns: 1fr 340px;
+  gap: 2.5rem;
+  align-items: start;
 }
 
 @media (max-width: 760px) {
@@ -79,9 +80,9 @@ body.page-carrito .seguir-comprando {
   gap: 1.3rem;
   padding: 1.2rem;
 
-  background: #fff;
-  border: 1.8px solid rgba(0, 0, 0, 0.08);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  background: #fdfdfd;
+  border: 1.5px solid rgba(55, 123, 76, 0.1);
+  box-shadow: 0 4px 12px rgba(55, 123, 76, 0.04);
 
   border-radius: 18px;
   margin-bottom: 1.2rem;
@@ -100,13 +101,13 @@ body.page-carrito .seguir-comprando {
   /* 🔑 MISMO RADIO */
   overflow: hidden;
 
-  background: #ffffff;
+  background: #f5f7f6;
 
   /* 🌿 Sombra Material 3 — NEUTRA (recomendada) */
   box-shadow:
-    0 10px 24px rgba(0, 0, 0, 0.12),
-    0 4px 8px rgba(0, 0, 0, 0.08),
-    0 0 0 1px rgba(46, 125, 50, 0.06);
+    0 10px 24px rgba(55, 123, 76, 0.08),
+    0 4px 8px rgba(55, 123, 76, 0.05),
+    0 0 0 1px rgba(55, 123, 76, 0.06);
   /* acento verde mínimo */
   display: block;
 }
@@ -140,10 +141,38 @@ body.page-carrito .seguir-comprando {
   margin-bottom: 0.25rem;
 }
 
-.item-price {
-  font-size: 0.9rem;
-  opacity: 0.85;
+/* Precios y Descuentos en Item */
+.item-price-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
   margin-bottom: 0.6rem;
+}
+
+.item-price-old {
+  font-size: 0.85rem;
+  color: #8D6E63;
+  /* Acento café */
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+.item-discount-badge {
+  background: #e8ede9;
+  color: #377b4c;
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.item-price {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--verde);
 }
 
 /* Controles */
@@ -193,19 +222,19 @@ body.page-carrito .seguir-comprando {
 ===================================================== */
 .resumen-box {
   background: #fdfdfd;
-  /* Un crema muy ligero, casi blanco pero con matiz */
-  padding: 2rem;
-  border-radius: 32px;
+  padding: 1.5rem;
+  border-radius: 24px;
   border: 1px solid rgba(55, 123, 76, 0.1);
   box-shadow: 0 10px 40px rgba(55, 123, 76, 0.05);
   position: sticky;
   top: 100px;
+  max-width: 100%;
 }
 
 .resumen-title {
   font-size: 1.8rem;
   font-weight: 800;
-  color: #2b2b2b;
+  color: var(--marron);
   margin-bottom: 2rem;
   letter-spacing: -0.5px;
 }
@@ -238,7 +267,7 @@ body.page-carrito .seguir-comprando {
 .input-with-icon span {
   position: absolute;
   left: 14px;
-  color: #a0a0a0;
+  color: #8d6e63;
   font-size: 20px;
 }
 
@@ -309,11 +338,21 @@ body.page-carrito .seguir-comprando {
   margin-bottom: 1rem;
   font-size: 1.05rem;
   font-weight: 500;
-  color: #6b6b6b;
+  color: #8d6e63;
 }
 
 .discount-row {
   color: var(--verde);
+  font-size: 0.8rem;
+  /* Más pequeño para que quepa en una línea */
+  font-weight: 700;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.discount-row span:last-child {
+  white-space: nowrap;
 }
 
 .free-shipping {
@@ -337,11 +376,11 @@ body.page-carrito .seguir-comprando {
 .total-text {
   font-size: 1.5rem;
   font-weight: 800;
-  color: #2b2b2b;
+  color: var(--marron);
 }
 
 .total-amount {
-  font-size: 2rem;
+  font-size: 1.8rem;
   font-weight: 800;
   color: var(--verde);
   letter-spacing: -1px;
@@ -415,7 +454,7 @@ body.page-carrito .seguir-comprando {
 .trust-item span:last-child {
   font-size: 0.65rem;
   font-weight: 700;
-  color: #6b6b6b;
+  color: #8d6e63;
   /* Texto secundario oficial */
   white-space: nowrap;
 }
@@ -705,4 +744,35 @@ main.carrito-vacio-activo {
 
 .btn-volver-premium:active {
   transform: scale(0.96);
+}
+
+/* =====================================================
+   RESPONSIVIDAD EXTRA
+===================================================== */
+@media (max-width: 1024px) {
+  .grid-carrito {
+    grid-template-columns: 1fr 300px;
+    gap: 1.5rem;
+  }
+
+  .resumen-title {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 900px) {
+  .grid-carrito {
+    grid-template-columns: 1fr;
+    max-width: 700px;
+  }
+
+  .resumen-box {
+    position: static;
+    margin-top: 1rem;
+    padding: 1.25rem;
+  }
+
+  .resumen-title {
+    margin-bottom: 1.5rem;
+  }
 }
