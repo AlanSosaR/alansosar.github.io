@@ -38,11 +38,9 @@ body {
 /* =====================================================
    AJUSTE — SEGUIR COMPRANDO CON HEADER FIJO
 ===================================================== */
+/* Ocultar el botón antiguo ya que ahora tenemos breadcrumbs */
 body.page-carrito .seguir-comprando {
-  margin-top: calc(72px + 0.75rem);
-  /* altura del header */
-  position: relative;
-  z-index: 5;
+  display: none !important;
 }
 
 @media (max-width: 900px) {
@@ -60,15 +58,81 @@ body.page-carrito .seguir-comprando {
   padding: 0 1rem 3rem;
 
   display: grid;
-  grid-template-columns: 1fr 340px;
+  grid-template-columns: 1fr 380px;
   gap: 2.5rem;
   align-items: start;
+}
+
+/* =====================================================
+   HEADER CARRITO (NUEVO)
+===================================================== */
+.cart-header-container {
+  max-width: 1100px;
+  margin: 100px auto 2.5rem;
+  padding: 0 1rem;
+}
+
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: #6B6B6B;
+  margin-bottom: 2rem;
+}
+
+.breadcrumbs a {
+  text-decoration: none;
+  color: #6B6B6B;
+  transition: color 0.2s;
+}
+
+.breadcrumbs a:hover {
+  color: var(--verde);
+}
+
+.breadcrumbs .current {
+  color: var(--verde);
+  font-weight: 600;
+}
+
+.page-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #2B2B2B;
+  margin-bottom: 0.5rem;
+  letter-spacing: -1px;
+}
+
+.page-subtitle {
+  font-size: 1.1rem;
+  color: #377b4c;
+  font-weight: 500;
 }
 
 @media (max-width: 760px) {
   .grid-carrito {
     display: flex;
     flex-direction: column;
+  }
+
+  .cart-header-container {
+    margin-top: 80px;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+
+  .breadcrumbs {
+    justify-content: center;
+    margin-bottom: 1rem;
+  }
+
+  .page-title {
+    font-size: 1.8rem;
+  }
+
+  .page-subtitle {
+    font-size: 0.95rem;
   }
 }
 
@@ -77,15 +141,15 @@ body.page-carrito .seguir-comprando {
 ===================================================== */
 .item {
   display: flex;
-  gap: 1.3rem;
-  padding: 1.2rem;
+  gap: 1.5rem;
+  padding: 1.5rem;
 
-  background: #fdfdfd;
-  border: 1.5px solid rgba(55, 123, 76, 0.1);
-  box-shadow: 0 4px 12px rgba(55, 123, 76, 0.04);
+  background: #FFFFFF;
+  border-radius: 24px;
+  border: 1px solid rgba(55, 123, 76, 0.08);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
 
-  border-radius: 18px;
-  margin-bottom: 1.2rem;
+  margin-bottom: 1.5rem;
   align-items: center;
 }
 
@@ -94,31 +158,21 @@ body.page-carrito .seguir-comprando {
 ===================================================== */
 
 .item-img-box {
-  width: 95px;
-  height: 95px;
-
-  border-radius: 20px;
-  /* 🔑 MISMO RADIO */
-  overflow: hidden;
-
-  background: #f5f7f6;
-
-  /* 🌿 Sombra Material 3 — NEUTRA (recomendada) */
-  box-shadow:
-    0 10px 24px rgba(55, 123, 76, 0.08),
-    0 4px 8px rgba(55, 123, 76, 0.05),
-    0 0 0 1px rgba(55, 123, 76, 0.06);
-  /* acento verde mínimo */
-  display: block;
+  width: 110px;
+  height: 110px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  /* Eliminamos el fondo y la sombra para que se vea premium */
 }
 
 .item-img-box img {
   width: 100%;
   height: 100%;
-
-  object-fit: cover;
-  /* 🔑 IGUAL QUE INDEX */
-  object-position: center;
+  object-fit: contain;
+  /* Cambiado a contain para mostrar la bolsa completa */
   display: block;
 }
 

@@ -55,10 +55,17 @@ function showSnackbar(message, duration = 1800) {
 /* ================= HEADER (TÍTULO) ================= */
 function updateHeaderCartTitle(cart) {
   const label = document.getElementById("count-items");
-  if (!label) return;
+  const subtitle = document.getElementById("cart-subtitle");
 
   const total = cart.reduce((sum, i) => sum + Number(i.qty || 0), 0);
-  label.textContent = `${total} ${total === 1 ? "café" : "cafés"}`;
+
+  if (label) {
+    label.textContent = `${total} ${total === 1 ? "café" : "cafés"}`;
+  }
+
+  if (subtitle) {
+    subtitle.textContent = `Tienes ${total} ${total === 1 ? "artículo seleccionado" : "artículos seleccionados"} de Honduras.`;
+  }
 }
 
 /* ================= RENDER ================= */
