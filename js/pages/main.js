@@ -9,6 +9,15 @@ function safe(id) {
   return document.getElementById(id);
 }
 
+/* ========================= NOTIFICACIONES ========================= */
+function showSnack(msg, duration = 3000) {
+  const snack = safe("snackbar");
+  if (!snack) return;
+  snack.textContent = msg;
+  snack.classList.add("show");
+  setTimeout(() => snack.classList.remove("show"), duration);
+}
+
 /* ========================= EMPTY CATALOG ========================= */
 function showEmptyCatalog() {
   safe("empty-catalog")?.classList.remove("hidden");
@@ -121,6 +130,7 @@ async function checkUserLastOrder() {
         sessionStorage.setItem("cortero_discount_notice", "true");
       }, 2000);
     }
+    console.log("📅 Fecha último pedido establecida:", lastOrderDate);
   } catch (e) {
     console.warn("⚠️ No se pudo obtener el historial de pedidos:", e);
   }
@@ -137,6 +147,10 @@ function getActiveDiscount(product) {
   if (productUpdate > lastOrderDate) {
     return product.discount;
   }
+
+  // 🔑 ADMIN EXCLUSION: Los administradores siempre ven descuentos para previsualizar
+  const user = window.supabaseAuth.getCurrentUser();
+  if (user && user.rol === "admin") return product.discount;
 
   return 0; // Descuento agotado para este usuario
 }
@@ -268,17 +282,22 @@ function renderMainProduct(product) {
   img.src = product.image_url || "/imagenes/no-image.png";
   img.onerror = () => img.src = "/imagenes/no-image.png";
 
-  // Badge de descuento
-  const imgWrap = document.querySelector(".product-img-wrap");
-  if (imgWrap) {
-    const oldBadge = imgWrap.querySelector(".discount-badge");
+  // Badge de descuento (ajustado a product-img-inner)
+  const imgInner = document.querySelector(".product-img-inner");
+  if (imgInner) {
+    const oldBadge = imgInner.querySelector(".discount-badge");
     if (oldBadge) oldBadge.remove();
 
     if (activeDiscount > 0) {
       const badge = document.createElement("div");
-      badge.className = "discount-badge";
+      badge.className = "discount-badge main-badge";
       badge.innerHTML = `${activeDiscount}% <span>OFF</span>`;
-      imgWrap.appendChild(badge);
+
+      // Estilo para posicionar sobre la bolsa (ajuste fino)
+      badge.style.top = "10%";
+      badge.style.right = "10%";
+
+      imgInner.appendChild(badge);
     }
   }
 
