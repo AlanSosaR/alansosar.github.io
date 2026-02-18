@@ -51,32 +51,41 @@ header.header-fixed,
     justify-content: space-between !important;
     align-items: center !important;
     padding: 0 16px !important;
+    gap: 0 !important;
   }
 
-  /* ❌ Ocultar elementos globales innecesarios en todo móvil */
+  /* ❌ OCULTACIÓN DE NAVEGACIÓN Y ACCIONES */
   #login-desktop,
+  .login-link,
+  #btn-header-user,
   #public-nav,
   #header-search-slot,
-  .header-actions>*:not(#cart-btn),
+  .desktop-only,
   .header-cart-title .main-title {
     display: none !important;
   }
 
   /* ☰ Menú Hamburguesa — Siempre a la IZQUIERDA */
-  .menu-toggle,
   #menu-toggle {
     display: flex !important;
     position: relative !important;
-    left: auto !important;
-    order: 1 !important;
+    order: -1 !important;
+    /* Blindaje de posición */
     margin: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
     box-shadow: none !important;
+    z-index: 10 !important;
+  }
+
+  #menu-toggle .material-symbols-outlined {
+    color: var(--verde) !important;
+    font-size: 30px !important;
   }
 
   /* ===================== VISTA: HOME (INDEX) ===================== */
-  /* Requisito: [ ☰ ] [   ] [ 🛒 ] */
 
-  /* OCULTAR LOGO EN HOME (Si no es carrito ni datos cliente) */
   body:not(.page-carrito):not(.page-datos-cliente) .header-logo-link {
     display: none !important;
   }
@@ -84,18 +93,14 @@ header.header-fixed,
   /* Carrito a la DERECHA en Home */
   body:not(.page-carrito):not(.page-datos-cliente) #cart-btn {
     display: flex !important;
+    margin-left: auto !important;
+    color: var(--verde) !important;
     position: relative !important;
-    right: auto !important;
-    top: auto !important;
-    transform: none !important;
-    order: 3 !important;
-    margin: 0 !important;
+    order: 99 !important;
   }
 
   /* ===================== VISTA: CARRITO / CHECKOUT ===================== */
-  /* Requisito: [ ☰ ] [ Info Bag ] [ Logo ] */
 
-  /* Ocultar Icono de Carrito */
   body.page-carrito #cart-btn,
   body.page-datos-cliente #cart-btn {
     display: none !important;
@@ -109,27 +114,31 @@ header.header-fixed,
     left: 50% !important;
     top: 50% !important;
     transform: translate(-50%, -50%) !important;
-    order: 2 !important;
+    width: auto !important;
     margin: 0 !important;
+    z-index: 1 !important;
+    pointer-events: none !important;
   }
 
-  /* Logo a la DERECHA */
+  /* Logo a la DERECHA en Carrito */
   body.page-carrito .header-logo-link,
   body.page-datos-cliente .header-logo-link {
     display: flex !important;
-    position: relative !important;
-    order: 3 !important;
     margin-left: auto !important;
+    position: relative !important;
+    z-index: 5 !important;
+    order: 99 !important;
   }
 
   body.page-carrito .header-logo,
   body.page-datos-cliente .header-logo {
-    height: 42px !important;
-    /* Un poco más pequeño para dejar espacio */
+    height: 38px !important;
   }
 
   .header-cart-content .sub-title {
-    font-size: 0.75rem !important;
+    font-size: 0.72rem !important;
+    color: var(--verde) !important;
+    font-weight: 700 !important;
     text-align: center !important;
     white-space: nowrap !important;
   }
