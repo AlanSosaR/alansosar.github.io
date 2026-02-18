@@ -85,26 +85,69 @@
       <!-- RESUMEN -->
       <div class="col-resumen">
         <div class="resumen-box">
-          <h2>Resumen del pedido</h2>
+          <h2 class="resumen-title">Resumen de pedido</h2>
 
-          <div class="resumen-row">
-            <span>Subtotal</span>
-            <span id="subtotal-label">L 0.00</span>
+          <!-- CUPÓN -->
+          <div class="coupon-section">
+            <label for="coupon-input">Cupón de descuento</label>
+            <div class="coupon-group">
+              <div class="input-with-icon">
+                <span class="material-symbols-outlined">confirmation_number</span>
+                <input type="text" id="coupon-input" placeholder="Código">
+              </div>
+              <button id="apply-coupon-btn" class="btn-apply">Aplicar</button>
+            </div>
+            <div id="coupon-message" class="coupon-message hidden">
+              <span class="material-symbols-outlined">check_circle</span>
+              <span id="coupon-text"></span>
+            </div>
           </div>
 
-          <div class="resumen-row">
-            <span>Envío</span>
-            <span>L 0.00</span>
+          <div class="resumen-details">
+            <div class="resumen-row">
+              <span>Subtotal</span>
+              <span id="subtotal-label">L 0.00</span>
+            </div>
+
+            <div id="discount-row" class="resumen-row discount-row hidden">
+              <span id="discount-description">Descuento (0%)</span>
+              <span id="discount-amount">-L 0.00</span>
+            </div>
+
+            <div class="resumen-row">
+              <span>Envío</span>
+              <span class="free-shipping">GRATIS</span>
+            </div>
           </div>
 
-          <div class="resumen-row resumen-total">
-            <span>Total a pagar</span>
-            <span id="total-label">L 0.00</span>
+          <div class="resumen-total-box">
+            <div class="total-line">
+              <span class="total-text">Total</span>
+              <span id="total-label" class="total-amount">L 0.00</span>
+            </div>
+            <small class="tax-note">IVA INCLUIDO</small>
           </div>
 
-          <button id="proceder-btn" class="btn proceder">
-            Proceder al pago
+          <button id="proceder-btn" class="btn-checkout">
+            <span>Ir a pagar</span>
+            <span class="material-symbols-outlined">arrow_forward</span>
           </button>
+
+          <!-- DISTINTIVOS DE CONFIANZA -->
+          <div class="trust-badges">
+            <div class="trust-item">
+              <span class="material-symbols-outlined">verified_user</span>
+              <span>COMPRA SEGURA</span>
+            </div>
+            <div class="trust-item">
+              <span class="material-symbols-outlined">workspace_premium</span>
+              <span>ORIGEN DIRECTO</span>
+            </div>
+            <div class="trust-item">
+              <span class="material-symbols-outlined">eco</span>
+              <span>SOSTENIBLE</span>
+            </div>
+          </div>
         </div>
 
         <div id="snackbar" class="snackbar hidden"></div>

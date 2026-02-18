@@ -77,111 +77,148 @@ async function fetchStocks(ids) {
   }
 }
 
+syncHeaderCounter();
+}
+
+/* ================= LÓGICA DE CUPONES ================= */
+let appliedCoupon = null;
+
+function calculateDiscount(subtotal, cart) {
+  // 1. Ver si hay cupón aplicado (descuento relámpago)
+  if (appliedCoupon) {
+    return {
+      percent: appliedCoupon.percent,
+      amount: subtotal * (appliedCoupon.percent / 100),
+      label: `Cupón ${appliedCoupon.code} (-${appliedCoupon.percent}%)`
+    };
+  }
+
+  // 2. Si no hay cupón, ver si hay descuento de primera compra (basado en el primer ítem por simplicidad o global)
+  // Nota: En main.js usamos detectFirstPurchaseOffer. Aquí simplificamos o replicamos lógica.
+  // Para ser consistentes con la petición, si hay ítems con descuento base, los sumamos.
+  let discountTotal = 0;
+  cart.forEach(item => {
+    if (item.discount > 0) {
+      discountTotal += (item.qty * item.price) * (item.discount / 100);
+    }
+  });
+
+  return {
+    percent: 0, // No mostramos un % global si son varios ítems
+    amount: discountTotal,
+    label: "Descuento aplicado"
+  };
+}
+
 async function renderCart() {
   const cart = getCart();
   const ids = [...new Set(cart.map(i => i.product_id))];
 
-  // 🔑 Sync stocks before rendering to know limits
   await fetchStocks(ids);
-
   updateHeaderCartTitle(cart);
 
   const container = document.getElementById("cart-container");
   const subtotalLabel = document.getElementById("subtotal-label");
   const totalLabel = document.getElementById("total-label");
+  const discountRow = document.getElementById("discount-row");
+  const discountLabel = document.getElementById("discount-amount");
+  const discountDesc = document.getElementById("discount-description");
   const resumenBox = document.querySelector(".resumen-box");
   const main = document.querySelector("main");
 
   if (!container) return;
   container.innerHTML = "";
 
-  /* ================= CARRITO VACÍO ================= */
   if (!cart.length) {
     main?.classList.add("carrito-vacio-activo");
     document.body.classList.add("carrito-vacio");
-
     if (resumenBox) resumenBox.style.display = "none";
-
     container.innerHTML = `
       <div class="empty-container">
         <div class="empty-title">Tu selección está vacía</div>
         <div class="empty-sub">Agrega tu café favorito para continuar.</div>
-        
         <div class="empty-img-box">
           <img src="/imagenes/empty/empty-cart.svg" alt="Carrito vacio" class="empty-img">
         </div>
-
         <button class="empty-btn" onclick="location.href='/pages/home/index.html#productos'">
           Seguir comprando
         </button>
       </div>
     `;
-
-    if (subtotalLabel) subtotalLabel.textContent = "L 0.00";
-    if (totalLabel) totalLabel.textContent = "L 0.00";
-
-    syncHeaderCounter();
     return;
   }
 
-  /* ================= CON PRODUCTOS ================= */
   main?.classList.remove("carrito-vacio-activo");
   document.body.classList.remove("carrito-vacio");
   if (resumenBox) resumenBox.style.display = "block";
 
   const template = document.getElementById("template-cart-item");
-  if (!template) return;
-
   let subtotal = 0;
 
   cart.forEach((item, index) => {
     const clone = template.content.cloneNode(true);
+    clone.querySelector(".item-image").src = item.img || "";
+    clone.querySelector(".item-name").textContent = item.name || "Producto";
+    clone.querySelector(".item-price").textContent = `L ${Number(item.price || 0).toFixed(2)} / unidad`;
+    clone.querySelector(".qty-number").textContent = item.qty || 1;
 
-    const imgEl = clone.querySelector(".item-image");
-    if (imgEl) imgEl.src = item.img || "";
-
-    const nameEl = clone.querySelector(".item-name");
-    if (nameEl) nameEl.textContent = item.name || "Producto";
-
-    const priceEl = clone.querySelector(".item-price");
-    if (priceEl) priceEl.textContent = `L ${Number(item.price || 0).toFixed(2)} / unidad`;
-
-    const qtyEl = clone.querySelector(".qty-number");
-    if (qtyEl) qtyEl.textContent = item.qty || 1;
-
-    // 🔑 Validar stock para el botón PLUS
     const stock = stocksCache[item.product_id] ?? 999;
     const btnPlus = clone.querySelector('[data-action="plus"]');
+    if (btnPlus && item.qty >= stock) btnPlus.disabled = true;
 
-    if (btnPlus && item.qty >= stock) {
-      btnPlus.disabled = true;
-      btnPlus.title = "Stock máximo alcanzado";
-    }
-
-    // 🔑 Alerta visual si el stock es bajo o excedido
     if (item.qty >= stock) {
       const warning = document.createElement("div");
-      warning.style.color = "#f6c343";
-      warning.style.fontSize = "0.8rem";
-      warning.style.fontWeight = "600";
-      warning.style.marginTop = "0.4rem";
+      warning.className = "stock-warning";
       warning.textContent = item.qty > stock ? "⚠ Cantidad supera el stock" : "Máximo disponible alcanzado";
       clone.querySelector(".item-info").appendChild(warning);
     }
 
-    clone.querySelectorAll("button").forEach(btn => {
-      btn.dataset.index = index;
-    });
-
+    clone.querySelectorAll("button").forEach(btn => btn.dataset.index = index);
     subtotal += Number(item.qty || 0) * Number(item.price || 0);
     container.appendChild(clone);
   });
 
-  if (subtotalLabel) subtotalLabel.textContent = `L ${subtotal.toFixed(2)}`;
-  if (totalLabel) totalLabel.textContent = `L ${subtotal.toFixed(2)}`;
+  // Cálculo de Descuento
+  const discount = calculateDiscount(subtotal, cart);
+  const total = subtotal - discount.amount;
 
+  if (subtotalLabel) subtotalLabel.textContent = `L ${subtotal.toFixed(2)}`;
+
+  if (discount.amount > 0) {
+    discountRow?.classList.remove("hidden");
+    if (discountLabel) discountLabel.textContent = `-L ${discount.amount.toFixed(2)}`;
+    if (discountDesc) discountDesc.textContent = discount.label;
+  } else {
+    discountRow?.classList.add("hidden");
+  }
+
+  if (totalLabel) totalLabel.textContent = `L ${total.toFixed(2)}`;
   syncHeaderCounter();
 }
+
+// Lógica de aplicar cupón
+document.getElementById("apply-coupon-btn")?.addEventListener("click", () => {
+  const input = document.getElementById("coupon-input");
+  const code = input.value.trim().toUpperCase();
+  const msgBox = document.getElementById("coupon-message");
+  const msgText = document.getElementById("coupon-text");
+
+  if (!code) return;
+
+  // Simulación de validación (CORTERO15 es el ejemplo)
+  if (code === "CORTERO15") {
+    appliedCoupon = { code: "CORTERO15", percent: 15 };
+    msgBox.classList.remove("hidden");
+    msgText.textContent = `Cupón ${code} aplicado (-15%)`;
+    input.disabled = true;
+    document.getElementById("apply-coupon-btn").disabled = true;
+    renderCart();
+    showSnackbar("¡Cupón aplicado con éxito!");
+  } else {
+    showSnackbar("El cupón ingresado no es válido.");
+    input.value = "";
+  }
+});
 
 /* ================= CONTROLES +/-/DELETE ================= */
 document.getElementById("cart-container")?.addEventListener("click", async e => {

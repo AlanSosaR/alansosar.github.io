@@ -189,46 +189,232 @@ body.page-carrito .seguir-comprando {
 }
 
 /* =====================================================
-   RESUMEN DEL PEDIDO
+   RESUMEN DEL PEDIDO — PREMIUM REDESIGN
 ===================================================== */
 .resumen-box {
   background: #fff;
-  padding: 1.8rem;
-  border-radius: 20px;
-  border: 1.6px solid rgba(0, 0, 0, 0.06);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+  padding: 2rem;
+  border-radius: 32px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
+  position: sticky;
+  top: 100px;
 }
 
-.resumen-box h2 {
-  font-size: 1.28rem;
+.resumen-title {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #1a1a1a;
+  margin-bottom: 2rem;
+  letter-spacing: -0.5px;
+}
+
+/* SECCIÓN CUPÓN */
+.coupon-section {
+  margin-bottom: 2.5rem;
+}
+
+.coupon-section label {
+  display: block;
+  font-size: 0.95rem;
   font-weight: 700;
-  margin-bottom: 1.2rem;
+  color: var(--verde);
+  margin-bottom: 0.8rem;
+}
+
+.coupon-group {
+  display: flex;
+  gap: 10px;
+}
+
+.input-with-icon {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-with-icon span {
+  position: absolute;
+  left: 14px;
+  color: #a0a0a0;
+  font-size: 20px;
+}
+
+.input-with-icon input {
+  width: 100%;
+  padding: 12px 14px 12px 42px;
+  border-radius: 999px;
+  border: 1px solid #f0f0f0;
+  background: #f8f9fa;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.input-with-icon input:focus {
+  outline: none;
+  background: #fff;
+  border-color: var(--verde);
+  box-shadow: 0 0 0 4px rgba(55, 123, 76, 0.1);
+}
+
+.btn-apply {
+  padding: 0 24px;
+  border-radius: 999px;
+  border: none;
+  background: #e8ede9;
+  color: #377b4c;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-apply:hover {
+  background: #dde5de;
+}
+
+/* Mensaje de cupón aplicado */
+.coupon-message {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  color: var(--verde);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.coupon-message.hidden {
+  display: none;
+}
+
+.coupon-message span:first-child {
+  font-size: 18px;
+}
+
+/* DESGLOSE RESUMEN */
+.resumen-details {
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 1.5rem;
+  margin-bottom: 1.5rem;
 }
 
 .resumen-row {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 0.75rem;
+  margin-bottom: 1rem;
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: #7a7a7a;
 }
 
-/* Línea superior del total en verde */
-.resumen-total {
+.discount-row {
+  color: var(--verde);
+}
+
+.free-shipping {
   font-weight: 700;
-  border-top: 1.4px solid var(--verde);
-  padding-top: .7rem;
+  color: var(--verde);
+  letter-spacing: 0.5px;
 }
 
-.btn.proceder {
+/* TOTAL */
+.resumen-total-box {
+  margin-bottom: 2rem;
+}
+
+.total-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 4px;
+}
+
+.total-text {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #1a1a1a;
+}
+
+.total-amount {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--verde);
+  letter-spacing: -1px;
+}
+
+.tax-note {
+  display: block;
+  text-align: right;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #b0b0b0;
+}
+
+/* BOTÓN IR A PAGAR */
+.btn-checkout {
   width: 100%;
-  margin-top: 1.2rem;
-  padding: 0.95rem;
-  background: var(--verde);
-  color: #fff;
-  border-radius: 14px;
+  padding: 1.1rem;
+  border-radius: 999px;
   border: none;
+  background: #3e7d54;
+  color: #fff;
+  font-size: 1.15rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
   cursor: pointer;
-  font-weight: 600;
-  font-size: 1rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 8px 24px rgba(62, 125, 84, 0.25);
+  margin-bottom: 2.5rem;
+}
+
+.btn-checkout:hover {
+  background: #356b48;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(62, 125, 84, 0.35);
+}
+
+.btn-checkout span:last-child {
+  font-size: 20px;
+  transition: transform 0.2s ease;
+}
+
+.btn-checkout:hover span:last-child {
+  transform: translateX(4px);
+}
+
+/* DISTINTIVOS DE CONFIANZA */
+.trust-badges {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.trust-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.trust-item span:first-child {
+  font-size: 24px;
+  color: #8D6E63;
+  /* Acento café */
+}
+
+.trust-item span:last-child {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #a0a0a0;
+  white-space: nowrap;
 }
 
 /* =====================================================
