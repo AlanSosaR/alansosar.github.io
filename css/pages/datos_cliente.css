@@ -79,32 +79,34 @@ body.header-checkout {
 }
 
 .back-btn-alt {
-  position: absolute;
-  top: 1.5rem;
-  left: 1.5rem;
-  background: var(--crema-fondo);
+  position: relative;
+  /* Cambiamos a relative para que empuje el contenido */
+  margin-bottom: 2rem;
+  /* "Respiro" para que no se pegue al texto de abajo */
+  background: var(--blanco);
   border: none;
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
   z-index: 10;
 }
 
 .back-btn-alt:hover {
-  transform: translateX(-3px);
+  transform: scale(1.05);
   background: var(--verde-light);
-  box-shadow: 0 4px 12px rgba(55, 123, 76, 0.1);
+  box-shadow: 0 6px 15px rgba(55, 123, 76, 0.15);
 }
 
 .back-btn-alt span {
   color: var(--verde);
-  font-weight: 700;
+  font-weight: 800;
+  font-size: 1.4rem;
 }
 
 /* SECTIONS WITHIN CARD */
@@ -464,7 +466,17 @@ body.header-checkout {
 @media (max-width: 1050px) {
   .checkout-grid {
     grid-template-columns: 1fr;
-    gap: 2rem;
+    gap: 2.5rem;
+  }
+
+  .form-section {
+    order: 2;
+    /* Formulario abajo en móviles */
+  }
+
+  .summary-section {
+    order: 1;
+    /* Resumen arriba en móviles */
   }
 
   .summary-card {
