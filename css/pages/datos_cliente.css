@@ -39,7 +39,7 @@ body.header-checkout {
 
 .checkout-container {
   max-width: 1200px;
-  margin: 2rem auto;
+  margin: 0.5rem auto;
   padding: 0 20px;
 }
 
@@ -348,6 +348,8 @@ body.header-checkout {
   font-weight: 800;
   margin-bottom: 2rem;
   letter-spacing: -0.5px;
+  color: #8D6E63;
+  /* Acento café Oficial */
 }
 
 .summary-items-list {
@@ -449,9 +451,10 @@ body.header-checkout {
   font-weight: 700;
 }
 
-#sum-subtotal {
+#sum-subtotal,
+#sum-shipping {
   color: #377b4c;
-  /* Verde Principal para el valor del subtotal */
+  /* Valores en Verde Principal */
 }
 
 .total-row.discount-text {
@@ -469,8 +472,13 @@ body.header-checkout {
   font-size: 1.6rem;
   font-weight: 900;
   color: #8D6E63;
-  /* Total en color café */
+  /* La etiqueta 'Total' en café */
   margin-top: 1rem;
+}
+
+#sum-total {
+  color: #377b4c !important;
+  /* El precio del Total en verde */
 }
 
 .back-link {

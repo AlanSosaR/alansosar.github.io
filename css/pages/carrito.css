@@ -280,6 +280,15 @@ body {
   max-width: 100%;
 }
 
+.summary-title {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #8D6E63;
+  /* Acento café Oficial */
+  margin-bottom: 2rem;
+  letter-spacing: -0.5px;
+}
+
 .resumen-title {
   font-size: 1.8rem;
   font-weight: 800;
@@ -433,8 +442,8 @@ body {
 .total-amount {
   font-size: 1.8rem;
   font-weight: 800;
-  color: #8D6E63;
-  /* Total en café según diseño */
+  color: #377b4c;
+  /* Total en Verde Principal */
   letter-spacing: -1px;
 }
 

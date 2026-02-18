@@ -43,6 +43,12 @@ header.header-fixed {
   }
 }
 
+/* 🔥 Ocultar logo en PC solo para carrito y datos para que el título no choque */
+body.page-carrito .header-logo-link,
+body.page-datos-cliente .header-logo-link {
+  display: none !important;
+}
+
 /* =====================================================
    TÍTULO CENTRAL — CARRITO
 ===================================================== */
@@ -94,6 +100,24 @@ body.page-carrito .header-cart-title {
   .header-cart-title {
     font-size: 0.95rem;
   }
+
+  /* 🔥 Forzar visibilidad en mobile */
+  body.page-carrito .header-cart-title,
+  body.page-datos-cliente .header-cart-title {
+    display: block !important;
+  }
+
+  /* Ocultar avatar si choca */
+  body.page-carrito #btn-header-user,
+  body.page-datos-cliente #btn-header-user {
+    display: none !important;
+  }
+
+  /* Ocultar hamburguesa en carrito y datos para dar espacio al título central */
+  body.page-carrito .menu-toggle,
+  body.page-datos-cliente .menu-toggle {
+    display: none !important;
+  }
 }
 
 /* LOGO */
@@ -144,6 +168,12 @@ body.page-carrito .header-cart-title {
 }
 
 .header-fixed.logged #public-nav {
+  display: none !important;
+}
+
+/* 🔥 Ocultar nav público en carrito y datos incluso si no está logueado */
+body.page-carrito #public-nav,
+body.page-datos-cliente #public-nav {
   display: none !important;
 }
 
@@ -240,6 +270,12 @@ body.page-carrito .header-cart-title {
 
 .header-fixed.logged #btn-header-user {
   display: flex;
+}
+
+/* 🔥 Ocultar login desktop en carrito y datos */
+body.page-carrito #login-desktop,
+body.page-datos-cliente #login-desktop {
+  display: none !important;
 }
 
 /* =====================================================
@@ -448,6 +484,11 @@ body.page-carrito .header-cart-title {
     color: var(--verde);
     font-size: 26px;
     line-height: 1;
+  }
+
+  /* 🔥 Ocultar hamburguesa en carrito para dar espacio al título central */
+  body.page-carrito .menu-toggle {
+    display: none !important;
   }
 
   /* 🛒 CARRITO */
@@ -1240,12 +1281,12 @@ body {
 
 /* CARRITO */
 body.page-carrito #header-cart-title {
-  display: block;
+  display: block !important;
 }
 
 /* DATOS DEL CLIENTE */
 body.page-datos-cliente #header-datos-title {
-  display: block;
+  display: block !important;
 }
 
 /* RECIBO */
