@@ -627,6 +627,32 @@ body {
   opacity: 0.9;
 }
 
+/* Badge Principal (Más grande y llamativo) */
+.discount-badge.main-badge {
+  font-size: 1.35rem;
+  padding: 15px 20px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  transition: transform 0.4s ease, top 0.4s ease, right 0.4s ease;
+}
+
+.discount-badge.main-badge span {
+  font-size: 0.9rem;
+}
+
+.discount-badge.main-badge small {
+  font-size: 0.55rem;
+  font-weight: 500;
+  text-transform: none;
+  margin-top: 4px;
+  opacity: 0.85;
+  display: block;
+}
+
+/* Sincronización del badge con el hover de la bolsa */
+.product-img-inner:hover .discount-badge.main-badge {
+  transform: translateY(-10px) scale(1.05);
+}
+
 /* El efecto de bolsa que "sale" del contenedor */
 @media (min-width: 901px) {
   .product-img-wrap {

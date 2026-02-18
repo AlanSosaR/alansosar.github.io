@@ -291,11 +291,11 @@ function renderMainProduct(product) {
     if (activeDiscount > 0) {
       const badge = document.createElement("div");
       badge.className = "discount-badge main-badge";
-      badge.innerHTML = `${activeDiscount}% <span>OFF</span>`;
+      badge.innerHTML = `${activeDiscount}% <span>OFF</span> <small>en tu primer pedido</small>`;
 
-      // Estilo para posicionar sobre la bolsa (ajuste fino)
+      // Estilo para posicionar sobre la bolsa (ajuste fino - pegado a la bolsa)
       badge.style.top = "15px";
-      badge.style.right = "25%";
+      badge.style.right = "32%";
 
       imgInner.appendChild(badge);
     }
