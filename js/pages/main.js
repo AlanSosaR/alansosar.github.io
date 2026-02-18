@@ -320,6 +320,25 @@ function renderMainProduct(product) {
 
   safe("qty-number").textContent = "1";
   updateQtyControls(product.id, stockBD);
+  syncProductPrice();
+}
+
+/**
+ * 🔑 Sincroniza el precio mostrado con la cantidad seleccionada
+ */
+function syncProductPrice() {
+  if (!currentProduct) return;
+  const qty = parseInt(safe("qty-number")?.textContent || "1", 10);
+  const activeDiscount = getActiveDiscount(currentProduct);
+  const unitPrice = activeDiscount > 0
+    ? Math.floor(currentProduct.price * (1 - activeDiscount / 100))
+    : currentProduct.price;
+
+  const totalPrice = unitPrice * qty;
+  const priceEl = safe("product-price");
+  if (priceEl) {
+    priceEl.innerHTML = `L ${totalPrice}${activeDiscount > 0 ? ' <small class="price-discount-note">(con descuento)</small>' : ''}`;
+  }
 }
 
 /* =========================
@@ -621,6 +640,7 @@ document.addEventListener("DOMContentLoaded", () => {
       safe("product-add").dataset.id,
       Number(safe("product-add").dataset.stock)
     );
+    syncProductPrice();
   });
 
   /* ===== BOTÓN MÁS ===== */
@@ -631,6 +651,7 @@ document.addEventListener("DOMContentLoaded", () => {
       safe("product-add").dataset.id,
       Number(safe("product-add").dataset.stock)
     );
+    syncProductPrice();
   });
 
   /* ===== ADD TO CART (VALIDADO) ===== */
