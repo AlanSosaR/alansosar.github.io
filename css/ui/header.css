@@ -53,7 +53,7 @@ header.header-fixed,
     padding: 0 16px !important;
   }
 
-  /* ❌ Ocultar Todo lo innecesario globalmente en móvil */
+  /* ❌ Ocultar elementos globales innecesarios en todo móvil */
   #login-desktop,
   #public-nav,
   #header-search-slot,
@@ -62,7 +62,7 @@ header.header-fixed,
     display: none !important;
   }
 
-  /* ☰ Menú Hamburguesa — Siempre a la izquierda */
+  /* ☰ Menú Hamburguesa — Siempre a la IZQUIERDA */
   .menu-toggle,
   #menu-toggle {
     display: flex !important;
@@ -73,16 +73,15 @@ header.header-fixed,
     box-shadow: none !important;
   }
 
-  /* ===================== VISTA: HOME (GENERAL) ===================== */
+  /* ===================== VISTA: HOME (INDEX) ===================== */
   /* Requisito: [ ☰ ] [   ] [ 🛒 ] */
 
-  /* Ocultar Logo y Títulos en Home */
-  body:not(.page-carrito):not(.page-datos-cliente) .header-logo-link,
-  body:not(.page-carrito):not(.page-datos-cliente) .header-cart-title {
+  /* OCULTAR LOGO EN HOME (Si no es carrito ni datos cliente) */
+  body:not(.page-carrito):not(.page-datos-cliente) .header-logo-link {
     display: none !important;
   }
 
-  /* Carrito a la derecha en Home */
+  /* Carrito a la DERECHA en Home */
   body:not(.page-carrito):not(.page-datos-cliente) #cart-btn {
     display: flex !important;
     position: relative !important;
@@ -96,46 +95,43 @@ header.header-fixed,
   /* ===================== VISTA: CARRITO / CHECKOUT ===================== */
   /* Requisito: [ ☰ ] [ Info Bag ] [ Logo ] */
 
-  /* Ocultar Icono de Carrito en Carrito */
+  /* Ocultar Icono de Carrito */
   body.page-carrito #cart-btn,
   body.page-datos-cliente #cart-btn {
     display: none !important;
   }
 
-  /* Info Bag en el centro */
+  /* Info Bag en el CENTRO */
   body.page-carrito .header-cart-title,
   body.page-datos-cliente .header-cart-title {
     display: flex !important;
-    position: relative !important;
-    left: auto !important;
-    top: auto !important;
-    transform: none !important;
+    position: absolute !important;
+    left: 50% !important;
+    top: 50% !important;
+    transform: translate(-50%, -50%) !important;
     order: 2 !important;
-    flex: 1 !important;
-    justify-content: center !important;
     margin: 0 !important;
   }
 
-  /* Logo a la derecha */
+  /* Logo a la DERECHA */
   body.page-carrito .header-logo-link,
   body.page-datos-cliente .header-logo-link {
     display: flex !important;
     position: relative !important;
     order: 3 !important;
-    margin-left: 0 !important;
+    margin-left: auto !important;
   }
 
   body.page-carrito .header-logo,
   body.page-datos-cliente .header-logo {
-    height: 48px !important;
+    height: 42px !important;
+    /* Un poco más pequeño para dejar espacio */
   }
 
-  /* Ajuste de subtítulo center */
   .header-cart-content .sub-title {
-    font-size: 0.8rem !important;
+    font-size: 0.75rem !important;
     text-align: center !important;
-    max-width: 160px;
-    white-space: normal !important;
+    white-space: nowrap !important;
   }
 }
 
