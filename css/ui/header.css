@@ -52,16 +52,21 @@ header.header-fixed,
     align-items: center !important;
     padding: 0 16px !important;
     gap: 0 !important;
+    border-bottom: none !important;
+    /* ❌ Eliminar línea inferior */
+    box-shadow: none !important;
+    /* ❌ Eliminar sombra residual */
   }
 
-  /* ❌ OCULTACIÓN DE NAVEGACIÓN Y ACCIONES */
+  /* ❌ OCULTACIÓN AGRESIVA (LOGIN, NAVEGACIÓN, AVATAR, ACCIONES) */
   #login-desktop,
   .login-link,
   #btn-header-user,
+  .header-avatar-button,
   #public-nav,
   #header-search-slot,
   .desktop-only,
-  .header-cart-title .main-title {
+  .header-actions>*:not(#cart-btn) {
     display: none !important;
   }
 
@@ -84,31 +89,21 @@ header.header-fixed,
     font-size: 30px !important;
   }
 
-  /* ===================== VISTA: HOME (INDEX) ===================== */
+  /* ===================== TÍTULOS CENTRALES (SOLUCIÓN AL SOLAPAMIENTO) ===================== */
 
-  body:not(.page-carrito):not(.page-datos-cliente) .header-logo-link {
+  /* Ocultamos TODOS los contenedores de título por defecto en móvil */
+  .header-cart-title {
     display: none !important;
   }
 
-  /* Carrito a la DERECHA en Home */
-  body:not(.page-carrito):not(.page-datos-cliente) #cart-btn {
-    display: flex !important;
-    margin-left: auto !important;
-    color: var(--verde) !important;
-    position: relative !important;
-    order: 99 !important;
-  }
-
-  /* ===================== VISTA: CARRITO / CHECKOUT ===================== */
-
-  body.page-carrito #cart-btn,
-  body.page-datos-cliente #cart-btn {
-    display: none !important;
-  }
-
-  /* Info Bag en el CENTRO */
-  body.page-carrito .header-cart-title,
-  body.page-datos-cliente .header-cart-title {
+  /* Solo mostramos el que corresponde a la página actual, centrado absoluto */
+  body.page-carrito #header-cart-title,
+  body.page-datos-cliente #header-datos-title,
+  body.page-recibo #header-recibo-title,
+  body.page-mis-pedidos #header-mis-pedidos-title,
+  body.page-admin-cafes #header-admin-cafes-title,
+  body.page-admin-agregar-cafe #header-admin-add-cafe-title,
+  body.page-admin-editar-cafe #header-admin-edit-cafe-title {
     display: flex !important;
     position: absolute !important;
     left: 50% !important;
@@ -118,21 +113,12 @@ header.header-fixed,
     margin: 0 !important;
     z-index: 1 !important;
     pointer-events: none !important;
+    background: transparent !important;
   }
 
-  /* Logo a la DERECHA en Carrito */
-  body.page-carrito .header-logo-link,
-  body.page-datos-cliente .header-logo-link {
-    display: flex !important;
-    margin-left: auto !important;
-    position: relative !important;
-    z-index: 5 !important;
-    order: 99 !important;
-  }
-
-  body.page-carrito .header-logo,
-  body.page-datos-cliente .header-logo {
-    height: 38px !important;
+  /* Limpieza de textos internos */
+  .header-cart-title .main-title {
+    display: none !important;
   }
 
   .header-cart-content .sub-title {
@@ -141,6 +127,59 @@ header.header-fixed,
     font-weight: 700 !important;
     text-align: center !important;
     white-space: nowrap !important;
+    margin: 0 !important;
+  }
+
+  /* ===================== VISTA: HOME (INDEX) ===================== */
+
+  body:not(.page-carrito):not(.page-datos-cliente):not(.page-recibo) .header-logo-link {
+    display: none !important;
+  }
+
+  /* Mostrar Carrito a la DERECHA en Home */
+  body:not(.page-carrito):not(.page-datos-cliente):not(.page-recibo) #cart-btn {
+    display: flex !important;
+    margin-left: auto !important;
+    color: var(--verde) !important;
+    position: relative !important;
+    order: 99 !important;
+    background: transparent !important;
+    /* ❌ Eliminar círculo blanco */
+    border: none !important;
+    /* ❌ Eliminar borde */
+    box-shadow: none !important;
+    /* ❌ Eliminar sombra */
+    padding: 0 !important;
+    /* ❌ Eliminar padding */
+  }
+
+  /* ===================== VISTA: CHECKOUT / ADMIN ===================== */
+
+  /* Ocultar Carrito en estas vistas */
+  body.page-carrito #cart-btn,
+  body.page-datos-cliente #cart-btn,
+  body.page-recibo #cart-btn,
+  body.page-admin-cafes #cart-btn {
+    display: none !important;
+  }
+
+  /* Logo a la DERECHA en estas vistas */
+  body.page-carrito .header-logo-link,
+  body.page-datos-cliente .header-logo-link,
+  body.page-recibo .header-logo-link,
+  body.page-admin-cafes .header-logo-link {
+    display: flex !important;
+    margin-left: auto !important;
+    position: relative !important;
+    z-index: 5 !important;
+    order: 99 !important;
+  }
+
+  body.page-carrito .header-logo,
+  body.page-datos-cliente .header-logo,
+  body.page-recibo .header-logo,
+  body.page-admin-cafes .header-logo {
+    height: 38px !important;
   }
 }
 
