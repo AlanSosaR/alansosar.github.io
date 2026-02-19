@@ -202,7 +202,7 @@ async function renderCart() {
     if (item.qty >= stock) {
       const warning = document.createElement("div");
       warning.className = "stock-warning";
-      warning.textContent = item.qty > stock ? "⚠ Cantidad supera el stock" : "Máximo disponible alcanzado";
+      warning.textContent = item.qty > stock ? "⚠ Cantidad supera el stock" : "No nos quedan más bolsas de café en inventario";
       clone.querySelector(".item-info").appendChild(warning);
     }
 
