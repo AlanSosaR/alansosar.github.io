@@ -125,15 +125,7 @@
 /* =====================================================
    MOBILE — BUSCADOR DOMINANTE
 ===================================================== */
-/* Desactivado para no interferir con header.css
 @media (max-width: 900px) {
-
-  header.header-fixed {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 0 12px;
-  }
 
   .header-logo-link,
   .header-cart-title,
@@ -141,14 +133,11 @@
     display: none !important;
   }
 
-  #menu-toggle {
-    flex-shrink: 0;
-  }
-
   #header-search-slot {
     flex: 1;
     min-width: 0;
     padding: 0 4px;
+    display: flex !important;
   }
 
   .header-search-wrap {
@@ -158,9 +147,15 @@
   .header-search-box {
     height: 48px;
     padding: 0 16px;
+    gap: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
+
+  #header-search-input {
+    font-size: 0.9rem;
   }
 }
-*/
 
 /* =====================================================
    EMPTY STATE — MIS PEDIDOS (MATERIAL 3)

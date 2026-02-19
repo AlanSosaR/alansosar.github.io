@@ -67,7 +67,6 @@ header.header-fixed,
   #btn-header-user,
   .header-avatar-button,
   #public-nav,
-  #header-search-slot,
   .desktop-only,
   .header-actions>*:not(#cart-btn) {
     display: none !important;
@@ -76,6 +75,34 @@ header.header-fixed,
     pointer-events: none !important;
     position: absolute !important;
     left: -9999px !important;
+  }
+
+  /* 🔍 BUSCADOR MÓVIL (Slot Especial) */
+  #header-search-slot {
+    display: none !important;
+    /* Oculto por defecto en tienda normal */
+  }
+
+  /* Habilitar solo en Admin / Mis Pedidos */
+  body.page-mis-pedidos #header-search-slot,
+  body.page-admin-cafes #header-search-slot,
+  body.page-admin-pedidos #header-search-slot {
+    display: flex !important;
+    flex: 1 !important;
+    position: relative !important;
+    left: auto !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    z-index: 10 !important;
+    padding: 0 8px !important;
+  }
+
+  /* Ocultar títulos centrales cuando el buscador existe para evitar solapamiento */
+  body.page-mis-pedidos #header-mis-pedidos-title,
+  body.page-admin-cafes #header-admin-cafes-title,
+  body.page-admin-pedidos #header-admin-pedidos-title {
+    display: none !important;
   }
 
   /* ⚪ BOTONES CIRCULARES (Móvil) — Menú y Carrito */
