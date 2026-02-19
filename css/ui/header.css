@@ -61,6 +61,9 @@ header.header-fixed,
   /* ❌ OCULTACIÓN AGRESIVA (LOGIN, NAVEGACIÓN, AVATAR, ACCIONES) */
   #login-desktop,
   .login-link,
+  .login-btn,
+  #header-login,
+  .header-login-container,
   #btn-header-user,
   .header-avatar-button,
   #public-nav,
@@ -68,25 +71,36 @@ header.header-fixed,
   .desktop-only,
   .header-actions>*:not(#cart-btn) {
     display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    position: absolute !important;
+    left: -9999px !important;
   }
 
-  /* ☰ Menú Hamburguesa — Siempre a la IZQUIERDA */
-  #menu-toggle {
-    display: flex !important;
-    position: relative !important;
-    order: -1 !important;
-    /* Blindaje de posición */
-    margin: 0 !important;
-    background: transparent !important;
+  /* ⚪ BOTONES CIRCULARES (Móvil) — Menú y Carrito */
+  #cart-btn,
+  #menu-toggle,
+  .header-actions button:not(.login-link),
+  .btn-header-action {
+    background: #FFFFFF !important;
     border: none !important;
-    padding: 0 !important;
-    box-shadow: none !important;
-    z-index: 10 !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12) !important;
+    padding: 8px !important;
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  #menu-toggle .material-symbols-outlined {
+  #menu-toggle .material-symbols-outlined,
+  #cart-btn .material-symbols-outlined {
     color: var(--verde) !important;
-    font-size: 30px !important;
+    font-size: 26px !important;
+    /* Ajuste para mejor balance en 44px */
   }
 
   /* ===================== TÍTULOS CENTRALES (SOLUCIÓN AL SOLAPAMIENTO) ===================== */
