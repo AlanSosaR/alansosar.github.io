@@ -400,9 +400,8 @@ body.page-carrito {
   margin-bottom: 1rem;
   font-size: 1.05rem;
   font-weight: 600;
-  /* Un poco más de peso para que resalte el color original */
-  color: #8D6E63;
-  /* Acento café Oficial sólido */
+  color: var(--marron);
+  /* Café Principal */
 }
 
 .discount-row {
@@ -440,7 +439,8 @@ body.page-carrito {
 .total-text {
   font-size: 1.5rem;
   font-weight: 800;
-  color: #8D6E63;
+  color: var(--marron);
+  /* Café Principal */
 }
 
 .total-amount {
@@ -456,8 +456,8 @@ body.page-carrito {
   text-align: right;
   font-size: 0.75rem;
   font-weight: 700;
-  color: #8d6e63;
-  /* Acento café */
+  color: var(--marron);
+  /* Café Principal */
 }
 
 /* BOTÓN IR A PAGAR */
