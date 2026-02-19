@@ -157,14 +157,6 @@ header.header-fixed,
     color: var(--verde) !important;
     position: relative !important;
     order: 99 !important;
-    background: transparent !important;
-    /* ❌ Eliminar círculo blanco */
-    border: none !important;
-    /* ❌ Eliminar borde */
-    box-shadow: none !important;
-    /* ❌ Eliminar sombra */
-    padding: 0 !important;
-    /* ❌ Eliminar padding */
   }
 
   /* ===================== VISTA: CHECKOUT / ADMIN ===================== */
