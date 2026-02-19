@@ -313,13 +313,13 @@ h3 {
   align-items: center;
   font-size: 1.25rem;
   font-weight: 700;
-  color: #8D6E63;
-  /* Total en café */
+  color: var(--marron);
+  /* Café Principal */
 }
 
 #totalPedido {
-  color: #8D6E63;
-  /* Valor total en café */
+  color: var(--marron);
+  /* Café Principal */
   min-width: 100px;
   text-align: right;
 }
