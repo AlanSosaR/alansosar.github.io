@@ -44,6 +44,7 @@ const origenInput = document.getElementById("origen");
 const procesoInput = document.getElementById("proceso");
 const perfilInput = document.getElementById("perfil");
 const variedadInput = document.getElementById("variedad");
+const fechaTuesteInput = document.getElementById("fecha_tueste");
 
 const uploadBox = document.getElementById("uploadBox");
 const imagePreview = document.getElementById("imagePreview");
@@ -109,7 +110,8 @@ function validarFormulario() {
     { el: origenInput, msg: "El origen es obligatorio" },
     { el: procesoInput, msg: "El proceso es obligatorio" },
     { el: perfilInput, msg: "El perfil es obligatorio" },
-    { el: variedadInput, msg: "La variedad es obligatoria" }
+    { el: variedadInput, msg: "La variedad es obligatoria" },
+    { el: fechaTuesteInput, msg: "La fecha de tueste es obligatoria" }
   ];
 
   document.querySelectorAll(".m3-field").forEach(f => {
@@ -247,6 +249,7 @@ async function guardarProducto() {
     proceso: procesoInput.value.trim(),
     perfil: perfilInput.value.trim(),
     variedad: variedadInput.value.trim(),
+    fecha_tueste: fechaTuesteInput.value,
     status: estadoToggle.checked ? "activo" : "inactivo"
   };
 
@@ -314,6 +317,7 @@ async function cargarProducto() {
   procesoInput.value = data.proceso || "Lavado, seco";
   perfilInput.value = data.perfil || "Miel, cítrico, chocolate";
   variedadInput.value = data.variedad || "Parainema";
+  fechaTuesteInput.value = data.fecha_tueste || "";
 
   estadoToggle.checked = data.status === "activo";
   estadoTexto.textContent = estadoToggle.checked ? "Activo" : "Inactivo";

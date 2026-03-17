@@ -246,7 +246,8 @@ function renderMainProduct(product) {
       { label: "Altitud", value: product.altitud, icon: "landscape" },
       { label: "Variedad", value: product.variedad, icon: "psychiatry" },
       { label: "Proceso", value: product.proceso, icon: "settings_suggest" },
-      { label: "Perfil", value: product.perfil, icon: "palette" }
+      { label: "Perfil", value: product.perfil, icon: "palette" },
+      { label: "Fecha de tueste", value: product.fecha_tueste, icon: "calendar_today" }
     ];
 
     const renderSpec = s => `
@@ -425,6 +426,7 @@ async function loadSimilarProducts() {
       data-proceso="${p.proceso || ""}"
       data-perfil="${p.perfil || ""}"
       data-variedad="${p.variedad || ""}"
+      data-tueste="${p.fecha_tueste || ""}"
       data-discount="${activeDiscount}"
     >
       <div class="similar-img-cont">
@@ -479,6 +481,7 @@ function initDefaultProduct() {
     proceso: firstCard.dataset.proceso,
     perfil: firstCard.dataset.perfil,
     variedad: firstCard.dataset.variedad,
+    fecha_tueste: firstCard.dataset.tueste,
     discount: Number(firstCard.dataset.discount || 0)
   });
 
@@ -522,6 +525,7 @@ function bindSimilarCardEvents() {
         proceso: card.dataset.proceso,
         perfil: card.dataset.perfil,
         variedad: card.dataset.variedad,
+        fecha_tueste: card.dataset.tueste,
         discount: Number(card.dataset.discount || 0)
       });
 

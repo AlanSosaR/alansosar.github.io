@@ -25,6 +25,7 @@ const preview = {
   badge: document.getElementById("p-badge"),
   price: document.getElementById("p-price"),
   stock: document.getElementById("p-stock"),
+  tueste: document.getElementById("p-tueste"),
   image: document.getElementById("p-image"),
   carouselToggle: document.getElementById("p-carousel-toggle"),
   carouselStatus: document.getElementById("carousel-status")
@@ -199,6 +200,9 @@ function renderPreview(product) {
     formatPrice(product.price, product.currency);
 
   preview.stock.textContent = product.stock ?? "—";
+  if (preview.tueste) {
+    preview.tueste.textContent = product.fecha_tueste || "No especificada";
+  }
 
   const imgUrl = getImageUrl(product);
   preview.image.src = imgUrl
