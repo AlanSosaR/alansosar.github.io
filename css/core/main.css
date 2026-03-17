@@ -531,14 +531,13 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.4px;
   color: var(--marron);
-  opacity: 0.5;
   font-weight: 700;
 }
 
 .spec-value {
   font-size: 0.82rem;
-  color: var(--marron);
-  font-weight: 500;
+  color: var(--verde);
+  font-weight: 600;
   line-height: 1.2;
 }
 
