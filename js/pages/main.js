@@ -247,14 +247,15 @@ function renderMainProduct(product) {
       { label: "Altitud", value: product.altitud, icon: "/imagenes/mountain.png" },
       { label: "Variedad", value: product.variedad, icon: "/imagenes/sprouts.png" },
       { label: "Proceso", value: product.proceso, icon: "/imagenes/smart-factory.png" },
-      { label: "Perfil", value: product.perfil, icon: "/imagenes/contact-mail.png" } // Se mantiene el icono pero se ocultará si está vacío
+      { label: "Perfil", value: product.perfil, icon: "palette" } 
     ];
 
     const renderSpec = s => {
       if (!s.value || s.value.trim() === "") return "";
+      const isPng = s.icon.includes(".png");
       return `
         <div class="spec-item">
-          <img src="${s.icon}" class="spec-icon-png" alt="${s.label}">
+          ${isPng ? `<img src="${s.icon}" class="spec-icon-png" alt="${s.label}">` : `<span class="material-symbols-outlined">${s.icon}</span>`}
           <div class="spec-info">
             <span class="spec-label">${s.label}</span>
             <span class="spec-value">${s.value}</span>
@@ -269,6 +270,13 @@ function renderMainProduct(product) {
       </div>
       <div class="specs-col">
         ${rightSpecs.filter(s => s.value).map(renderSpec).join("")}
+      </div>
+      <div class="spec-contact">
+        <img src="/imagenes/contact-mail.png" class="spec-icon-png" alt="Contacto">
+        <div class="spec-info">
+          <span class="spec-label">Contacto:</span>
+          <span class="spec-value">+504 9667-0613 / 9867-5101</span>
+        </div>
       </div>
     `;
   }
