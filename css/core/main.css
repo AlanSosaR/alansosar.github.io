@@ -98,7 +98,7 @@ body {
   font-size: clamp(2rem, 4vw, 2.6rem);
   font-weight: 600;
   line-height: 1.15;
-  color: var(--marron);
+  color: var(--verde);
   margin: 0;
 }
 
@@ -457,7 +457,7 @@ body {
 .product-text h2 {
   font-family: "Playfair Display", serif;
   font-size: 2.2rem;
-  color: var(--marron);
+  color: var(--verde);
   margin: 0;
   line-height: 1.15;
 }
