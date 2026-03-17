@@ -275,7 +275,10 @@ function renderMainProduct(product) {
         <img src="/imagenes/contact-mail.png" class="spec-icon-png" alt="Contacto">
         <div class="spec-info">
           <span class="spec-label">Contacto:</span>
-          <span class="spec-value">+504 9667-0613 / 9867-5101</span>
+          <span class="spec-value">
+            <a href="https://wa.me/50496670613" target="_blank" class="contact-link">+504 9667-0613</a> / 
+            <a href="https://wa.me/50498675101" target="_blank" class="contact-link">9867-5101</a>
+          </span>
         </div>
       </div>
     `;

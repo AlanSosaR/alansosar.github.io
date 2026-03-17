@@ -546,6 +546,17 @@ body {
   line-height: 1.2;
 }
 
+.contact-link {
+  color: inherit;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.contact-link:hover {
+  text-decoration: underline;
+  opacity: 0.8;
+}
+
 @media (max-width: 600px) {
   .product-specs {
     display: flex;
