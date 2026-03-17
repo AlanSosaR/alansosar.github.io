@@ -237,22 +237,22 @@ function renderMainProduct(product) {
   const specsContainer = safe("product-specs");
   if (specsContainer) {
     const leftSpecs = [
-      { label: "Finca", value: product.finca, icon: "potted_plant" },
-      { label: "Productor", value: product.productor, icon: "person" },
-      { label: "Origen", value: product.origen, icon: "location_on" }
+      { label: "Finca", value: product.finca, icon: "/imagenes/field.png" },
+      { label: "Productor", value: product.productor, icon: "/imagenes/farmer.png" },
+      { label: "Origen", value: product.origen, icon: "/imagenes/map.png" },
+      { label: "Fecha de tueste", value: product.fecha_tueste, icon: "/imagenes/calendar.png" }
     ];
 
     const rightSpecs = [
-      { label: "Altitud", value: product.altitud, icon: "landscape" },
-      { label: "Variedad", value: product.variedad, icon: "psychiatry" },
-      { label: "Proceso", value: product.proceso, icon: "settings_suggest" },
-      { label: "Perfil", value: product.perfil, icon: "palette" },
-      { label: "Fecha de tueste", value: product.fecha_tueste, icon: "calendar_today" }
+      { label: "Altitud", value: product.altitud, icon: "/imagenes/mountain.png" },
+      { label: "Variedad", value: product.variedad, icon: "/imagenes/sprouts.png" },
+      { label: "Proceso", value: product.proceso, icon: "/imagenes/machine.png" },
+      { label: "Perfil", value: product.perfil, icon: "/imagenes/contact-mail.png" }
     ];
 
     const renderSpec = s => `
       <div class="spec-item">
-        <span class="material-symbols-outlined">${s.icon}</span>
+        <img src="${s.icon}" class="spec-icon-png" alt="${s.label}">
         <div class="spec-info">
           <span class="spec-label">${s.label}</span>
           <span class="spec-value">${s.value}</span>
