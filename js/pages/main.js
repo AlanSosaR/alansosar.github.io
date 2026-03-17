@@ -246,19 +246,22 @@ function renderMainProduct(product) {
     const rightSpecs = [
       { label: "Altitud", value: product.altitud, icon: "/imagenes/mountain.png" },
       { label: "Variedad", value: product.variedad, icon: "/imagenes/sprouts.png" },
-      { label: "Proceso", value: product.proceso, icon: "/imagenes/machine.png" },
-      { label: "Perfil", value: product.perfil, icon: "/imagenes/contact-mail.png" }
+      { label: "Proceso", value: product.proceso, icon: "/imagenes/smart-factory.png" },
+      { label: "Perfil", value: product.perfil, icon: "/imagenes/contact-mail.png" } // Se mantiene el icono pero se ocultará si está vacío
     ];
 
-    const renderSpec = s => `
-      <div class="spec-item">
-        <img src="${s.icon}" class="spec-icon-png" alt="${s.label}">
-        <div class="spec-info">
-          <span class="spec-label">${s.label}</span>
-          <span class="spec-value">${s.value}</span>
+    const renderSpec = s => {
+      if (!s.value || s.value.trim() === "") return "";
+      return `
+        <div class="spec-item">
+          <img src="${s.icon}" class="spec-icon-png" alt="${s.label}">
+          <div class="spec-info">
+            <span class="spec-label">${s.label}</span>
+            <span class="spec-value">${s.value}</span>
+          </div>
         </div>
-      </div>
-    `;
+      `;
+    };
 
     specsContainer.innerHTML = `
       <div class="specs-col">

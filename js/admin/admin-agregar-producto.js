@@ -109,7 +109,6 @@ function validarFormulario() {
     { el: productorInput, msg: "El productor es obligatorio" },
     { el: origenInput, msg: "El origen es obligatorio" },
     { el: procesoInput, msg: "El proceso es obligatorio" },
-    { el: perfilInput, msg: "El perfil es obligatorio" },
     { el: variedadInput, msg: "La variedad es obligatoria" },
     { el: fechaTuesteInput, msg: "La fecha de tueste es obligatoria" }
   ];
