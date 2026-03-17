@@ -509,11 +509,16 @@ body {
   gap: 0.8rem;
 }
 
-.spec-item .material-symbols-outlined {
+.spec-item .material-symbols-outlined,
+.spec-icon-png {
   color: var(--verde);
   font-size: 1.4rem;
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
   opacity: 0.9;
   margin-top: 2px;
+  flex-shrink: 0;
 }
 
 .spec-info {
