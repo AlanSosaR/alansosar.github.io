@@ -652,24 +652,28 @@ body {
   z-index: 2;
 }
 
-/* Ajuste móvil para mayor visibilidad a la izquierda */
+/* Ajuste móvil para mayor visibilidad a la izquierda y sin solapar texto */
 @media (max-width: 600px) {
+  .spec-contact {
+    padding-bottom: 7rem;
+  }
   .arabica-seal {
-    width: 110px;
-    height: 110px;
+    width: 135px;
+    height: 135px;
     left: -15px;
     right: auto;
-    top: 90%;
-    transform: translateY(-50%);
+    top: auto;
+    bottom: -15px;
+    transform: none;
     pointer-events: none;
   }
 }
 
 @media (max-width: 480px) {
   .arabica-seal {
-    width: 120px;
-    left: -10px;
-    top: 105%;
+    width: 140px;
+    left: -15px;
+    bottom: -20px;
   }
 }
 
