@@ -646,7 +646,7 @@ body {
   opacity: 1;
   position: absolute;
   right: -5px;
-  top: 60%;
+  top: 80%;
   transform: translateY(-50%);
   pointer-events: none;
   z-index: 2;
