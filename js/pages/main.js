@@ -307,22 +307,20 @@ function renderMainProduct(product) {
   img.src = product.image_url || "/imagenes/no-image.png";
   img.onerror = () => img.src = "/imagenes/no-image.png";
 
-  // Badge de descuento (ajustado a product-img-inner)
-  const imgInner = document.querySelector(".product-img-inner");
-  if (imgInner) {
-    const oldBadge = imgInner.querySelector(".discount-badge");
-    if (oldBadge) oldBadge.remove();
+  // Mover Badge de descuento al inicio de la columna de texto (no sobre la bolsa)
+  const productText = document.querySelector(".product-text");
+  if (productText) {
+    const oldPill = productText.querySelector(".discount-pill");
+    if (oldPill) oldPill.remove();
 
     if (activeDiscount > 0) {
-      const badge = document.createElement("div");
-      badge.className = "discount-badge main-badge";
-      badge.innerHTML = `${activeDiscount}% <span>OFF</span> <small>en tu primer pedido</small>`;
-
-      // Estilo para posicionar sobre la bolsa (replicando carrusel corregido)
-      badge.style.top = "60px";
-      badge.style.right = "22%";
-
-      imgInner.appendChild(badge);
+      const pill = document.createElement("div");
+      pill.className = "discount-pill main-pill";
+      pill.innerHTML = `
+        <span class="pill-off">${activeDiscount}% OFF</span>
+        <span class="pill-label">en tu primer pedido</span>
+      `;
+      productText.prepend(pill);
     }
   }
 

@@ -759,25 +759,19 @@ body {
   /* Para el badge de descuento */
 }
 
-/* Badge de Descuento */
+/* Badge de Descuento (Miniaturas) */
 .discount-badge {
   position: absolute;
-  top: 15px;
-  right: 15px;
-  background-color: var(--marron);
+  top: 10px;
+  right: 10px;
+  background: var(--acento);
   color: #fff;
-  padding: 8px 12px;
-  border-radius: 50% 10% 50% 10%;
-  /* Forma orgánica */
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
   font-weight: 700;
-  font-size: 0.85rem;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   z-index: 5;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  line-height: 1;
-  text-transform: uppercase;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
 }
 
 .discount-badge span {
@@ -785,25 +779,40 @@ body {
   opacity: 0.9;
 }
 
-/* Badge Principal (Ajustado a tamaño más discreto) */
-.discount-badge.main-badge {
-  font-size: 1.15rem;
-  padding: 10px 14px;
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
-  transition: transform 0.4s ease, top 0.4s ease, right 0.4s ease;
+/* Badge Principal (Píldora Premium) */
+.discount-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  background: #2B2B2B;
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 8px;
+  margin-bottom: 1.2rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  border-left: 4px solid var(--principal);
+  font-family: var(--fuente-texto);
+  animation: fadeInDown 0.5s ease-out;
 }
 
-.discount-badge.main-badge span {
-  font-size: 0.9rem;
+.discount-pill .pill-off {
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: #fff;
+  white-space: nowrap;
 }
 
-.discount-badge.main-badge small {
-  font-size: 0.55rem;
-  font-weight: 500;
-  text-transform: none;
-  margin-top: 4px;
-  opacity: 0.85;
-  display: block;
+.discount-pill .pill-label {
+  font-size: 0.75rem;
+  opacity: 0.9;
+  border-left: 1px solid rgba(255,255,255,0.2);
+  padding-left: 0.8rem;
+  line-height: 1.2;
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* Sincronización del badge con el hover de la bolsa */
