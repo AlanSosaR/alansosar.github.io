@@ -270,6 +270,7 @@ function renderMainProduct(product) {
       </div>
       <div class="specs-col">
         ${rightSpecs.filter(s => s.value).map(renderSpec).join("")}
+        <img src="/imagenes/arabica.svg" class="arabica-seal" alt="100% Arábica">
       </div>
       <div class="spec-contact">
         <img src="/imagenes/contact-mail.png" class="spec-icon-png" alt="Contacto">
@@ -282,7 +283,6 @@ function renderMainProduct(product) {
         </div>
       </div>
       <div class="product-footer-sheet">
-        <img src="/imagenes/arabica.svg" class="arabica-seal" alt="100% Arábica">
         <div class="footer-text">
           <p class="enjoy-msg">¡Disfrútalo y Compártelo!</p>
           <p class="product-weight">1 lb (454 g)</p>

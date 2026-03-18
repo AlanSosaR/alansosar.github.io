@@ -631,10 +631,12 @@ body {
 }
 
 .arabica-seal {
-  width: 60px;
-  height: 60px;
+  width: 100px;
+  height: 100px;
   object-fit: contain;
-  opacity: 0.9;
+  opacity: 1;
+  margin-top: 1.5rem;
+  align-self: center;
 }
 
 .footer-text {
