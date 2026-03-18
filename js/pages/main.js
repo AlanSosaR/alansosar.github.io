@@ -123,13 +123,8 @@ async function checkUserLastOrder() {
       lastOrderDate = null; // Primerizo
     }
 
-    // 🔑 Aviso informativo si ya compró (una vez por sesión)
-    if (lastOrderDate && !sessionStorage.getItem("cortero_discount_notice")) {
-      setTimeout(() => {
-        showSnack("Los descuentos de bienvenida ya fueron aplicados en tu primer pedido. ¡Sigue atento a nuevas promociones!");
-        sessionStorage.setItem("cortero_discount_notice", "true");
-      }, 2000);
-    }
+    // Ya no mostramos el mensaje de "descuentos aplicados" para reducir ruido visual,
+    // simplemente las píldoras dejarán de aparecer automáticamente.
     console.log("📅 Fecha último pedido establecida:", lastOrderDate);
   } catch (e) {
     console.warn("⚠️ No se pudo obtener el historial de pedidos:", e);
