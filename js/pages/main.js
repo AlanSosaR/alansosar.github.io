@@ -270,7 +270,6 @@ function renderMainProduct(product) {
       </div>
       <div class="specs-col">
         ${rightSpecs.filter(s => s.value).map(renderSpec).join("")}
-        <img src="/imagenes/arabica.svg" class="arabica-seal" alt="100% Arábica">
       </div>
       <div class="spec-contact">
         <img src="/imagenes/contact-mail.png" class="spec-icon-png" alt="Contacto">
@@ -281,6 +280,7 @@ function renderMainProduct(product) {
             <a href="https://wa.me/50498675101" target="_blank" class="contact-link">9867-5101</a>
           </span>
         </div>
+        <img src="/imagenes/arabica.svg" class="arabica-seal" alt="100% Arábica">
       </div>
       <div class="product-footer-sheet">
         <div class="footer-text">
