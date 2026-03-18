@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin · WhatsApp | Café Cortero</title>
+
+  <!-- Material Symbols (Material 3) -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+
+  <!-- Estilos -->
+  <link rel="stylesheet" href="/css/core/tipografia.css" />
+  <link rel="stylesheet" href="/css/ui/header.css" />
+  <link rel="stylesheet" href="/css/admin/admin-whatsapp.css" />
+</head>
+
+<body class="page-admin-whatsapp">
+
+  <main class="admin-whatsapp-container fade-in">
+
+    <section class="whatsapp-dashboard">
+      
+      <div class="whatsapp-header-info">
+        <h2 class="title">Conexión de WhatsApp</h2>
+        <p class="subtitle">Vincula tu número móvil para el envío automático de notificaciones de pedidos de Café Cortero.</p>
+      </div>
+
+      <div class="whatsapp-status-card" id="whatsapp-status-card">
+        
+        <!-- INDICADOR ESTADO -->
+        <div class="status-indicator" id="status-indicator">
+          <span class="material-symbols-outlined" id="status-icon">hourglass_empty</span>
+          <h3 id="status-title">Iniciando conexión...</h3>
+        </div>
+        
+        <p id="status-message" class="status-message">Comunicando con Evolution API en puerto 8080.</p>
+
+        <!-- CONTENEDOR CÓDIGO QR -->
+        <div id="qr-container" class="qr-container hidden">
+          <div class="qr-wrapper">
+            <img id="qr-image" src="" alt="Código QR de WhatsApp" />
+          </div>
+          <div class="qr-instructions">
+            <ol>
+              <li>Abre <strong>WhatsApp</strong> en tu celular.</li>
+              <li>Toca el menú <span class="material-symbols-outlined inline-icon">more_vert</span> o <strong>Configuración</strong> y selecciona <strong>Dispositivos vinculados</strong>.</li>
+              <li>Apunta tu cámara a esta pantalla para escanear el código.</li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- ACCIONES -->
+        <div class="whatsapp-actions">
+           <button id="btn-disconnect" class="admin-btn danger hidden" type="button">
+             <span class="material-symbols-outlined">link_off</span> Desvincular Cuenta
+           </button>
+           <button id="btn-retry" class="admin-btn secondary hidden" type="button">
+             <span class="material-symbols-outlined">refresh</span> Reintentar Conexión
+           </button>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <div id="snackbar" class="snackbar"></div>
+
+  <!-- =========================
+     SCRIPTS
+  ========================= -->
+
+  <!-- Supabase SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- CORE -->
+  <script src="/js/core/supabase-client-core.js"></script>
+  <script src="/js/core/supabase-auth.js"></script>
+
+  <script>
+    window.PAGE_MODE = "admin-whatsapp";
+  </script>
+
+  <!-- UI -->
+  <script type="module" src="/js/ui/header.js"></script>
+  <script src="/js/core/auth-ui.js"></script>
+  <script src="/js/ui/layout.js"></script>
+
+  <!-- ADMIN WHATSAPP LOGIC -->
+  <script src="/js/admin/admin-whatsapp.js"></script>
+
+</body>
+
+</html>
