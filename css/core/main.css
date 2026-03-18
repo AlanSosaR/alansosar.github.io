@@ -790,7 +790,7 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 0.8rem;
-  background: #2B2B2B;
+  background: var(--acento); /* Marrón café oficial */
   color: #fff;
   padding: 8px 16px;
   border-radius: 8px;
