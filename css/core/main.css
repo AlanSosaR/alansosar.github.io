@@ -652,22 +652,24 @@ body {
   z-index: 2;
 }
 
-/* Ajuste móvil para evitar solapamiento */
+/* Ajuste móvil para mayor visibilidad a la izquierda */
 @media (max-width: 600px) {
   .arabica-seal {
-    width: 90px;
-    height: 90px;
-    right: -10px;
+    width: 110px;
+    height: 110px;
+    left: -15px;
+    right: auto;
+    top: 90%;
+    transform: translateY(-50%);
+    pointer-events: none;
   }
 }
 
 @media (max-width: 480px) {
   .arabica-seal {
-    position: static;
-    transform: none;
-    width: 70px;
-    height: 70px;
-    margin-left: auto;
+    width: 120px;
+    left: -10px;
+    top: 105%;
   }
 }
 
