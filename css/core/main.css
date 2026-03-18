@@ -513,6 +513,14 @@ body {
   padding-top: 0.6rem;
   border-top: 1px dashed rgba(55, 123, 76, 0.15);
   width: 100%;
+  position: relative;
+  overflow: visible;
+}
+
+.contact-info-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
 }
 
 .spec-item .material-symbols-outlined,
@@ -632,11 +640,35 @@ body {
 }
 
 .arabica-seal {
-  width: 80px;
-  height: 80px;
+  width: 120px;
+  height: 120px;
   object-fit: contain;
   opacity: 1;
-  align-self: center;
+  position: absolute;
+  right: -5px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Ajuste móvil para evitar solapamiento */
+@media (max-width: 600px) {
+  .arabica-seal {
+    width: 90px;
+    height: 90px;
+    right: -10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .arabica-seal {
+    position: static;
+    transform: none;
+    width: 70px;
+    height: 70px;
+    margin-left: auto;
+  }
 }
 
 .footer-text {
