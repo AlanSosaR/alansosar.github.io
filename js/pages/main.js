@@ -282,7 +282,7 @@ function renderMainProduct(product) {
         </div>
       </div>
       <div class="product-footer-sheet">
-        <img src="/imagenes/arabica.png" class="arabica-seal" alt="100% Arábica">
+        <img src="/imagenes/arabica.svg" class="arabica-seal" alt="100% Arábica">
         <div class="footer-text">
           <p class="enjoy-msg">¡Disfrútalo y Compártelo!</p>
           <p class="product-weight">1 lb (454 g)</p>
