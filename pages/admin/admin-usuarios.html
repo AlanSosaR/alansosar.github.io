@@ -4,170 +4,105 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin · Usuarios | Café Cortero</title>
-
-  <!-- Material Symbols -->
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-
-  <!-- Estilos -->
-  <link rel="stylesheet" href="/css/core/tipografia.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="stylesheet" href="/css/ui/header.css" />
-  <link rel="stylesheet" href="/css/ui/header.search.css" />
-  <link rel="stylesheet" href="/css/admin/admin-usuarios.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;900&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/core/tipografia.css">
+  <link rel="stylesheet" href="/css/ui/header.css">
+  <link rel="stylesheet" href="/css/ui/header.search.css">
+  <link rel="stylesheet" href="/css/admin/admin-usuarios.css">
   <link rel="icon" type="image/png" href="/imagenes/logo.png">
 </head>
-
 <body class="bg-gray-50">
-  <!-- Header Inyectado -->
   <div id="header-placeholder"></div>
-
   <main class="admin-users-container">
     <header class="page-header">
-        <h1 class="page-title">Directorio de Personal y Usuarios</h1>
-        <p class="page-subtitle">Gestiona los accesos, roles y perfiles de los colaboradores.</p>
-        
-        <div class="header-actions">
-            <button class="btn-primary" id="btnNewUser">
-                <span class="material-symbols-outlined">person_add</span>
-                Nuevo Colaborador
-            </button>
-        </div>
+      <h1 class="page-title">Directorio de Personal y Usuarios</h1>
+      <p class="page-subtitle">Gestiona los accesos, roles y perfiles de los colaboradores.</p>
+      <div class="header-actions">
+        <button class="btn-primary" id="btnNewUser">
+          <span class="material-symbols-outlined">person_add</span>
+          Nuevo Colaborador
+        </button>
+      </div>
     </header>
-
-    <!-- Stats Grid -->
     <section class="users-stats-grid">
-        <div class="stat-card">
-            <span class="stat-label">TOTAL USUARIOS</span>
-            <span class="stat-value" id="stat-total">0</span>
-        </div>
-        <div class="stat-card">
-            <span class="stat-label">COLABORADORES</span>
-            <span class="stat-value" id="stat-admins">0</span>
-        </div>
-        <div class="stat-card">
-            <span class="stat-label">CUENTAS ACTIVAS</span>
-            <span class="stat-value" id="stat-active">0</span>
-        </div>
+      <div class="stat-card"><span class="stat-label">TOTAL USUARIOS</span><span class="stat-value" id="stat-total">0</span></div>
+      <div class="stat-card"><span class="stat-label">COLABORADORES</span><span class="stat-value" id="stat-admins">0</span></div>
+      <div class="stat-card"><span class="stat-label">CUENTAS ACTIVAS</span><span class="stat-value" id="stat-active">0</span></div>
     </section>
-
-    <!-- Search & Filter Bar -->
     <section class="users-filters-bar">
-        <div class="search-wrapper">
-            <span class="material-symbols-outlined search-icon">search</span>
-            <input type="text" id="search-user" placeholder="Buscar por nombre o correo..." class="search-input">
-        </div>
-        <div class="filter-group">
-            <select id="filter-role" class="filter-select">
-                <option value="all">TODOS LOS ROLES</option>
-                <option value="admin">ADMINISTRADORES</option>
-                <option value="moderator">MODERADORES</option>
-                <option value="user">USUARIOS</option>
-            </select>
-        </div>
-    </section>
-
-    <!-- Contenedor Principal de Datos -->
-    <section class="users-content-area">
-        <h2 class="section-label">Listado de Personal</h2>
-        
-        <div class="data-container">
-            <!-- Vista de Escritorio (Tabla) -->
-            <table class="users-table">
-                <thead>
-                    <tr>
-                        <th>USUARIO</th>
-                        <th>EMAIL</th>
-                        <th>ROL ASIGNADO</th>
-                        <th>UBICACIÓN / PAÍS</th>
-                        <th class="text-right">ACCIONES</th>
-                    </tr>
-                </thead>
-                <tbody id="users-tbody">
-                    <!-- Dinámico -->
-                </tbody>
-            </table>
-
-            <!-- Vista Móvil (Tarjetas Stitch Style) -->
-            <div id="users-mobile-list" class="users-mobile-list">
-                <!-- Dinámico -->
-            </div>
-
-            <!-- Empty State -->
-            <div id="empty-state" class="empty-state hidden">
-                <span class="material-symbols-outlined">person_off</span>
-                <p>No se encontraron usuarios con esos filtros.</p>
-            </div>
-
-            <!-- Paginación -->
-            <footer class="pagination-footer">
-                <div class="pagination-controls">
-                    <button class="page-btn" id="prev-page" title="Anterior">
-                        <span class="material-symbols-outlined">chevron_left</span>
-                    </button>
-                    <div id="page-numbers" class="page-numbers">
-                        <!-- Botones vía JS -->
-                    </div>
-                    <button class="page-btn" id="next-page" title="Siguiente">
-                        <span class="material-symbols-outlined">chevron_right</span>
-                    </button>
-                </div>
-                <p id="page-info" class="page-info">MOSTRANDO 0 DE 0 REGISTROS</p>
-            </footer>
-        </div>
-    </section>
-  </main>
-
-  <!-- FAB para Nuevo Usuario (Solo Móvil) -->
-  <button class="fab-btn" id="fabNewUser" onclick="const btn = document.getElementById('btnNewUser'); if(btn) btn.click();" title="Nuevo Colaborador">
-     <span class="material-symbols-outlined">person_add</span>
-  </button>
-
-  <!-- Scripts Core -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="/js/core/supabase-client-core.js"></script>
-  <script src="/js/ui/layout.js"></script>
-  <script type="module" src="/js/ui/header.js"></script>
-
-  <!-- Inyección del Buscador en Header -->
-  <script type="module">
-    import { renderHeaderSearch } from "/js/ui/header.search.js";
-
-    document.addEventListener("header:ready", () => {
-      const slot = document.getElementById("header-search-slot");
-      if (!slot) return;
-
-      slot.innerHTML = renderHeaderSearch({
-        showFilter: true,
-        showAdd: false,
-        placeholder: "Nombre, email o cargo..."
-      });
-      
-      const filter = document.getElementById("header-status-filter");
-      if (filter) {
-        filter.innerHTML = `
+      <div class="search-wrapper">
+        <span class="material-symbols-outlined search-icon">search</span>
+        <input type="text" id="search-user" placeholder="Buscar por nombre o correo..." class="search-input">
+      </div>
+      <div class="filter-group">
+        <select id="filter-role" class="filter-select">
           <option value="all">TODOS LOS ROLES</option>
           <option value="admin">ADMINISTRADORES</option>
           <option value="moderator">MODERADORES</option>
           <option value="user">USUARIOS</option>
-        `;
-        filter.addEventListener("change", (e) => {
-          const pageFilter = document.getElementById("filter-role");
-          if (pageFilter) pageFilter.value = e.target.value;
+        </select>
+      </div>
+    </section>
+    <section class="users-content-area">
+      <h2 class="section-label">Listado de Personal</h2>
+      <div class="data-container">
+        <table class="users-table">
+          <thead>
+            <tr>
+              <th>USUARIO</th>
+              <th>EMAIL</th>
+              <th>ROL ASIGNADO</th>
+              <th>UBICACIÓN / PAÍS</th>
+              <th class="text-right">ACCIONES</th>
+            </tr>
+          </thead>
+          <tbody id="users-tbody"></tbody>
+        </table>
+        <div id="users-mobile-list" class="users-mobile-list"></div>
+        <div id="empty-state" class="empty-state hidden">
+          <span class="material-symbols-outlined">person_off</span>
+          <p>No se encontraron usuarios con esos filtros.</p>
+        </div>
+        <footer class="pagination-footer">
+          <div class="pagination-controls">
+            <button class="page-btn" id="prev-page"><span class="material-symbols-outlined">chevron_left</span></button>
+            <div id="page-numbers" class="page-numbers"></div>
+            <button class="page-btn" id="next-page"><span class="material-symbols-outlined">chevron_right</span></button>
+          </div>
+          <p id="page-info" class="page-info">MOSTRANDO 0 DE 0 REGISTROS</p>
+        </footer>
+      </div>
+    </section>
+  </main>
+  <button class="fab-btn" id="fabNewUser" onclick="const b=document.getElementById('btnNewUser'); if(b) b.click();"><span class="material-symbols-outlined">person_add</span></button>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/js/core/supabase-client-core.js"></script>
+  <script src="/js/ui/layout.js"></script>
+  <script type="module" src="/js/ui/header.js"></script>
+  <script type="module">
+    import { renderHeaderSearch } from "/js/ui/header.search.js";
+    document.addEventListener("header:ready", () => {
+      const slot = document.getElementById("header-search-slot");
+      if (!slot) return;
+      slot.innerHTML = renderHeaderSearch({ showFilter: true, showAdd: false, placeholder: "Nombre, email o cargo..." });
+      const f = document.getElementById("header-status-filter");
+      if (f) {
+        f.innerHTML = `<option value="all">TODOS LOS ROLES</option><option value="admin">ADMINISTRADORES</option><option value="moderator">MODERADORES</option><option value="user">USUARIOS</option>`;
+        f.addEventListener("change", (e) => {
+          const pf = document.getElementById("filter-role");
+          if (pf) pf.value = e.target.value;
           document.dispatchEvent(new CustomEvent("user:filter", { detail: e.target.value }));
         });
       }
-
-      const headerInput = document.getElementById("header-search-input");
-      if (headerInput) {
-        headerInput.addEventListener("input", (e) => {
+      const hi = document.getElementById("header-search-input");
+      if (hi) {
+        hi.addEventListener("input", (e) => {
           document.dispatchEvent(new CustomEvent("user:search", { detail: e.target.value.trim() }));
         });
       }
     });
   </script>
-
-  <!-- Lógica de la Página -->
   <script src="/js/admin/admin-usuarios.js" type="module"></script>
 </body>
 </html>
