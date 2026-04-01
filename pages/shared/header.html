@@ -3,98 +3,49 @@
 ====================================================== -->
 <header class="header-fixed no-user" id="main-header">
 
-  <!-- HAMBURGUESA -->
+  <!-- IZQUIERDA: AVATAR (Ahora prominente a la izquierda) -->
+  <div id="btn-header-user" class="logged header-user-left">
+    <button class="header-avatar-button" aria-label="Perfil">
+      <img id="avatar-user" src="/imagenes/avatar-default.svg" alt="Usuario">
+    </button>
+    <a href="/pages/auth/login.html" id="login-desktop" class="login-link desktop-only no-user">
+      Iniciar sesión
+    </a>
+    <span id="avatar-notification-badge" class="notification-badge hidden" aria-hidden="true">
+      <i class="fa-solid fa-bell"></i>
+    </span>
+  </div>
+
+  <!-- HAMBURGUESA (Móvil) -->
   <button id="menu-toggle" class="menu-toggle mobile-only" aria-label="Abrir menú">
-
     <span class="material-symbols-outlined">menu</span>
-
-    <!-- 🔔 Badge de notificación -->
     <span id="menu-notification-badge" class="notification-badge hidden" aria-hidden="true">
       <i class="fa-solid fa-bell"></i>
     </span>
   </button>
 
-  <!-- LOGO -->
-  <a href="/pages/home/index.html" class="header-logo-link">
-    <img src="/imagenes/logo.png" alt="Café Cortero" class="header-logo">
-  </a>
-
-  <!-- TÍTULOS CENTRALES -->
-  <div id="header-cart-title" class="header-cart-title hidden">
-    <div class="header-cart-content">
-      <span class="main-title">Tu Carrito</span>
-      <span id="count-items" class="sub-title">Tienes 0 cafés agregados a tu pedido</span>
-    </div>
+  <!-- LOGO (CENTRO-DERECHA DEPENDIENDO DE ESPACIO) -->
+  <div class="header-middle">
+    <div id="header-search-slot"></div>
+    <!-- Títulos dinámicos pueden ir aquí -->
   </div>
 
-  <div id="header-datos-title" class="header-cart-title hidden">
-    <div class="header-cart-content">
-      <span class="main-title">Datos de entrega</span>
-      <span class="sub-title">Casi listo para disfrutar del mejor café de Honduras</span>
-    </div>
+  <!-- DERECHA: LOGO + CARRITO -->
+  <div class="header-right-new">
+    
+    <!-- CARRITO -->
+    <button id="cart-btn" class="cart-button" aria-label="Ver carrito">
+      <i class="fa-solid fa-cart-shopping"></i>
+      <span id="cart-count" class="cart-count">0</span>
+    </button>
+
+    <!-- LOGO PRINCIPAL -->
+    <a href="/pages/home/index.html" class="header-logo-link">
+      <img src="/imagenes/logo.png" alt="Café Cortero" class="header-logo">
+    </a>
+
   </div>
 
-  <span id="header-recibo-title" class="header-cart-title hidden">
-    Resumen del pedido
-  </span>
-
-  <span id="header-mis-pedidos-title" class="header-cart-title hidden">
-    Mis pedidos
-  </span>
-
-  <!-- ADMIN CAFÉS -->
-  <span id="header-admin-cafes-title" class="header-cart-title hidden">
-    Cafés
-  </span>
-
-  <span id="header-admin-add-cafe-title" class="header-cart-title hidden">
-    Agregar café
-  </span>
-
-  <span id="header-admin-edit-cafe-title" class="header-cart-title hidden">
-    Editar café
-  </span>
-  <!-- SLOT BUSCADOR GLOBAL (inyectado por JS) -->
-  <div id="header-search-slot"></div>
-  <!-- DERECHA -->
-  <div class="header-right">
-
-    <!-- NAV PÚBLICO (PC) -->
-    <nav id="public-nav" class="nav-links desktop-only no-user">
-      <a href="/pages/home/index.html#productos">Variedades de café</a>
-      <a href="/pages/home/index.html#nosotros">Quiénes somos</a>
-      <a href="/pages/home/index.html#contacto">Contáctanos</a>
-    </nav>
-
-    <!-- ACCIONES -->
-    <div class="header-actions">
-
-      <!-- LOGIN -->
-      <a href="/pages/auth/login.html" id="login-desktop" class="login-link desktop-only no-user">
-        Iniciar sesión
-      </a>
-
-      <!-- AVATAR -->
-      <div id="btn-header-user" class="desktop-only logged">
-
-        <!-- AVATAR REAL -->
-        <button class="header-avatar-button" aria-label="Perfil">
-          <img id="avatar-user" src="/imagenes/avatar-default.svg" alt="Usuario">
-        </button>
-
-        <!-- 🔔 Badge de notificación -->
-        <span id="avatar-notification-badge" class="notification-badge hidden" aria-hidden="true">
-          <i class="fa-solid fa-bell"></i>
-        </span>
-
-      </div> <!-- CARRITO -->
-      <button id="cart-btn" class="cart-button" aria-label="Ver carrito">
-        <i class="fa-solid fa-cart-shopping"></i>
-        <span id="cart-count" class="cart-count">0</span>
-      </button>
-
-    </div>
-  </div>
 </header>
 
 <!-- =====================================================

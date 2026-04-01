@@ -21,9 +21,10 @@ header.header-fixed,
   position: fixed !important;
   inset: 0 0 auto 0 !important;
   height: 72px;
-  padding: 0 16px;
+  padding: 0 24px;
 
   display: flex;
+  justify-content: space-between;
   align-items: center;
 
   background: rgba(255, 255, 255, 0.92);
@@ -281,11 +282,29 @@ body.page-carrito .header-cart-title {
 /* =====================================================
    BLOQUE DERECHO
 ===================================================== */
-.header-right {
+/* IZQUIERDA: AVATAR */
+.header-user-left {
   display: flex;
   align-items: center;
-  gap: 28px;
-  margin-left: auto;
+  gap: 12px;
+  min-width: 150px;
+}
+
+/* CENTRO: BUSCADOR */
+.header-middle {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  max-width: 600px;
+}
+
+/* DERECHA: NUEVO BLOQUE */
+.header-right-new {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  min-width: 150px;
+  justify-content: flex-end;
 }
 
 /* =====================================================
