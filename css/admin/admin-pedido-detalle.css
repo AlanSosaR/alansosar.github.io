@@ -721,9 +721,13 @@ body.page-admin-pedido-detalle {
         border-bottom: 1px solid var(--border-soft);
         z-index: 100;
         display: flex !important;
-        align-items: center;
+        flex-direction: row !important;
+        justify-content: space-between !important;
+        align-items: center !important;
         padding: 0 16px;
         box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+        box-sizing: border-box;
+        gap: 12px;
     }
     
     .btn-back-mobile {
@@ -747,8 +751,10 @@ body.page-admin-pedido-detalle {
         font-size: 18px;
         letter-spacing: -0.5px;
         color: #512615;
-        margin: 0 0 0 8px;
-        flex: 1;
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
     
     .mobile-header-actions {
