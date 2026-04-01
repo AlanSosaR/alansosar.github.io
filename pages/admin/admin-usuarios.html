@@ -66,6 +66,11 @@
                     <!-- Se llena vía JavaScript -->
                 </tbody>
             </table>
+
+            <!-- Vista Móvil (Tarjetas Editoriales) -->
+            <div id="users-mobile-list" class="users-mobile-list hidden">
+                <!-- Se llena vía JavaScript -->
+            </div>
             
             <!-- Loading State -->
             <div id="loading-users" class="loading-state">
@@ -98,6 +103,11 @@
     </section>
 
   </main>
+ 
+  <!-- FAB para Nuevo Usuario (Solo Móvil) -->
+  <button class="fab-btn" id="fabNewUser" title="Nuevo Colaborador" onclick="document.getElementById('btnNewUser')?.click()">
+     <span class="material-symbols-outlined">person_add</span>
+  </button>
 
   <!-- Scripts Core -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

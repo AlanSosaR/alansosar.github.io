@@ -52,48 +52,79 @@ function updateStats(usersList) {
 
 function renderUsers(usersList) {
     const tableBody = document.getElementById('users-tbody');
+    const mobileList = document.getElementById('users-mobile-list');
     const emptyState = document.getElementById('empty-state');
     
-    if (!tableBody) return;
-    tableBody.innerHTML = '';
+    if (tableBody) tableBody.innerHTML = '';
+    if (mobileList) mobileList.innerHTML = '';
 
     if (usersList.length === 0) {
         if (emptyState) emptyState.classList.remove('hidden');
+        if (mobileList) mobileList.classList.add('hidden');
         return;
     }
 
     if (emptyState) emptyState.classList.add('hidden');
+    if (mobileList) mobileList.classList.remove('hidden');
 
     usersList.forEach(user => {
-        const tr = document.createElement('tr');
-        tr.className = 'fade-in';
-        
         const photo = user.photo_url || '/imagenes/avatar-default.svg';
         const roleClass = getRoleClass(user.rol);
         const roleLabel = getRoleLabel(user.rol);
+        const isSuspended = user.rol === 'suspendido';
         
-        tr.innerHTML = `
-            <td>
-                <div class="user-profile">
-                    <img src="${photo}" class="avatar" alt="${user.name}">
-                    <div class="user-info">
-                        <span class="user-name">${user.name || 'Sin nombre'}</span>
-                        <span class="user-id">ID: CC-${user.id.substring(0, 4)}</span>
+        // --- 1. RENDER DESKTOP (TABLE) ---
+        if (tableBody) {
+            const tr = document.createElement('tr');
+            tr.className = 'fade-in';
+            tr.innerHTML = `
+                <td>
+                    <div class="user-profile">
+                        <img src="${photo}" class="avatar" alt="${user.name}">
+                        <div class="user-info">
+                            <span class="user-name">${user.name || 'Sin nombre'}</span>
+                            <span class="user-id">ID: CC-${user.id.substring(0, 4)}</span>
+                        </div>
+                    </div>
+                </td>
+                <td>${user.email}</td>
+                <td>
+                    <span class="badge-role ${roleClass}">${roleLabel}</span>
+                </td>
+                <td>${user.country || 'Honduras'}</td>
+                <td class="actions-col text-right">
+                    <button class="action-btn" onclick="openUserMenu('${user.id}')" title="Más opciones">
+                        <span class="material-symbols-outlined">more_vert</span>
+                    </button>
+                </td>
+            `;
+            tableBody.appendChild(tr);
+        }
+
+        // --- 2. RENDER MOBILE (CARDS - STITCH STYLE) ---
+        if (mobileList) {
+            const card = document.createElement('div');
+            card.className = `user-card fade-in ${isSuspended ? 'status-suspended' : ''}`;
+            card.innerHTML = `
+                <div class="card-avatar-wrap">
+                    <img src="${photo}" class="card-avatar" alt="${user.name}">
+                    ${!isSuspended ? '<div class="card-status-dot"></div>' : ''}
+                </div>
+                <div class="card-content">
+                    <h3 class="card-name ${isSuspended ? 'italic' : ''}">${user.name || 'Sin nombre'}</h3>
+                    <span class="card-email ${isSuspended ? 'line-through' : ''}">${user.email}</span>
+                    <div class="card-footer">
+                        <span class="badge-role ${roleClass}">${roleLabel}</span>
+                        <span class="font-label text-[10px] text-muted">${user.country || 'Honduras'}</span>
                     </div>
                 </div>
-            </td>
-            <td>${user.email}</td>
-            <td>
-                <span class="badge-role ${roleClass}">${roleLabel}</span>
-            </td>
-            <td>${user.country || 'Honduras'}</td>
-            <td class="actions-col text-right">
-                <button class="action-btn" onclick="openUserMenu('${user.id}')" title="Más opciones">
-                    <span class="material-symbols-outlined">more_vert</span>
-                </button>
-            </td>
-        `;
-        tableBody.appendChild(tr);
+                <span class="material-symbols-outlined card-icon">
+                    ${isSuspended ? 'lock' : 'chevron_right'}
+                </span>
+            `;
+            card.onclick = () => openUserMenu(user.id);
+            mobileList.appendChild(card);
+        }
     });
 }
 
