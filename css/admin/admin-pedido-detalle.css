@@ -751,14 +751,16 @@ body.page-admin-pedido-detalle {
         flex: 1;
     }
     
-    .header-actions {
-        display: flex !important; /* Sobrescribir posibles hiddens */
+    .mobile-header-actions {
+        display: flex !important;
         gap: 8px;
         align-items: center;
+        flex-shrink: 0;
+        position: relative;
+        z-index: 5;
     }
 
-    /* Sobrescribir la ocultación agresiva de header.css */
-    .pedido-mobile-header .header-actions > * {
+    .mobile-header-actions > * {
         display: flex !important;
         visibility: visible !important;
         opacity: 1 !important;
