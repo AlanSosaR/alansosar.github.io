@@ -50,6 +50,28 @@ function updateStats(usersList) {
     if (uiAdmins) uiAdmins.textContent = admins;
 }
 
+function getAvatarHtml(user, imgClass) {
+    const photo = user.photo_url;
+    const name = user.name || 'Sin nombre';
+    
+    if (photo && photo.trim() !== "") {
+        return `<img src="${photo}" class="${imgClass}" alt="${name}" onerror="this.parentElement.innerHTML='${getInitialsDiv(name, imgClass)}'">`;
+    }
+    
+    return getInitialsDiv(name, imgClass);
+}
+
+function getInitialsDiv(name, className) {
+    const initials = name
+        .split(' ')
+        .map(n => n[0])
+        .slice(0, 2)
+        .join('')
+        .toUpperCase();
+        
+    return `<div class="${className} initials-avatar">${initials}</div>`;
+}
+
 function renderUsers(usersList) {
     const tableBody = document.getElementById('users-tbody');
     const mobileList = document.getElementById('users-mobile-list');
@@ -68,7 +90,6 @@ function renderUsers(usersList) {
     if (mobileList) mobileList.classList.remove('hidden');
 
     usersList.forEach(user => {
-        const photo = user.photo_url || '/imagenes/avatar-default.svg';
         const roleClass = getRoleClass(user.rol);
         const roleLabel = getRoleLabel(user.rol);
         const isSuspended = user.rol === 'suspendido';
@@ -80,10 +101,9 @@ function renderUsers(usersList) {
             tr.innerHTML = `
                 <td>
                     <div class="user-profile">
-                        <img src="${photo}" class="avatar" alt="${user.name}">
+                        ${getAvatarHtml(user, 'avatar')}
                         <div class="user-info">
                             <span class="user-name">${user.name || 'Sin nombre'}</span>
-                            <span class="user-id">ID: CC-${user.id.substring(0, 4)}</span>
                         </div>
                     </div>
                 </td>
@@ -101,13 +121,13 @@ function renderUsers(usersList) {
             tableBody.appendChild(tr);
         }
 
-        // --- 2. RENDER MOBILE (CARDS - STITCH STYLE) ---
+        // --- 2. RENDER MOBILE (CARDS) ---
         if (mobileList) {
             const card = document.createElement('div');
             card.className = `user-card fade-in ${isSuspended ? 'status-suspended' : ''}`;
             card.innerHTML = `
                 <div class="card-avatar-wrap">
-                    <img src="${photo}" class="card-avatar" alt="${user.name}">
+                    ${getAvatarHtml(user, 'card-avatar')}
                     ${!isSuspended ? '<div class="card-status-dot"></div>' : ''}
                 </div>
                 <div class="card-content">
@@ -122,7 +142,9 @@ function renderUsers(usersList) {
                     ${isSuspended ? 'lock' : 'chevron_right'}
                 </span>
             `;
-            card.onclick = () => openUserMenu(user.id);
+            card.onclick = () => {
+                if (typeof openUserMenu === 'function') openUserMenu(user.id);
+            };
             mobileList.appendChild(card);
         }
     });

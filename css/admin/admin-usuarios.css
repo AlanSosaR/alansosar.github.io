@@ -247,6 +247,23 @@
 
 .user-info { display: flex; flex-direction: column; }
 .user-name { font-weight: 600; color: var(--coffee-deep); font-size: 16px; margin-bottom: 2px; }
+
+/* --- AVATARES POR INICIALES --- */
+.initials-avatar {
+    background: #F1F3F2; /* Gris/Verde muy tenue */
+    color: var(--primary-green);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 16px;
+    letter-spacing: 0.05em;
+    border: 1px solid rgba(55, 123, 76, 0.1);
+}
+
+.card-avatar.initials-avatar {
+    font-size: 20px;
+}
 .user-email { color: var(--text-muted); font-size: 14px; }
 
 /* Sección Label (Stitch Style) */
