@@ -287,7 +287,7 @@ body.page-carrito .header-cart-title {
   display: flex;
   align-items: center;
   gap: 12px;
-  min-width: 150px;
+  min-width: 80px;
 }
 
 /* CENTRO: BUSCADOR */
@@ -303,7 +303,7 @@ body.page-carrito .header-cart-title {
   display: flex;
   align-items: center;
   gap: 20px;
-  min-width: 150px;
+  min-width: 80px;
   justify-content: flex-end;
 }
 
@@ -316,8 +316,8 @@ body[class*="page-admin-"] #cart-btn {
 }
 
 body[class*="page-admin-"] .header-middle {
-  max-width: 900px !important;
-  margin: 0 40px;
+  max-width: 1200px !important;
+  margin: 0 20px;
 }
 
 @media (max-width: 768px) {
