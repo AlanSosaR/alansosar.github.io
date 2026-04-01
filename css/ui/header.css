@@ -65,177 +65,73 @@ header.header-fixed,
    MÓVIL (< 768px) — DISEÑO RADICAL MINIMALISTA
 ===================================================== */
 @media (max-width: 768px) {
-
-  /* 📏 Altura fija y Layout Base */
+  /* 📏 Altura y Layout Unificado */
   header.header-fixed,
   #main-header.header-fixed {
-    height: 60px !important;
+    height: 64px !important;
+    padding: 0 16px !important;
     display: flex !important;
     justify-content: space-between !important;
     align-items: center !important;
-    padding: 0 16px !important;
-    gap: 0 !important;
-    border-bottom: none !important;
-    /* ❌ Eliminar línea inferior */
-    box-shadow: none !important;
-    /* ❌ Eliminar sombra residual */
-  }
-
-  /* ❌ OCULTACIÓN AGRESIVA (LOGIN, NAVEGACIÓN, AVATAR, ACCIONES) */
-  #login-desktop,
-  .login-link,
-  .login-btn,
-  #header-login,
-  .header-login-container,
-  #btn-header-user,
-  .header-avatar-button,
-  #public-nav,
-  .desktop-only,
-  .header-actions>*:not(#cart-btn) {
-    display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
-    position: absolute !important;
-    left: -9999px !important;
-  }
-
-  /* 🔍 BUSCADOR MÓVIL (Slot Especial) */
-  #header-search-slot {
-    display: none !important;
-    /* Oculto por defecto en tienda normal */
-  }
-
-  /* Habilitar solo en Admin / Mis Pedidos */
-  body.page-mis-pedidos #header-search-slot,
-  body.page-admin-cafes #header-search-slot,
-  body.page-admin-pedidos #header-search-slot {
-    display: flex !important;
-    flex: 1 !important;
-    position: relative !important;
-    left: auto !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    pointer-events: auto !important;
-    z-index: 10 !important;
-    padding: 0 8px !important;
-  }
-
-  /* Ocultar títulos centrales cuando el buscador existe para evitar solapamiento */
-  body.page-mis-pedidos #header-mis-pedidos-title,
-  body.page-admin-cafes #header-admin-cafes-title,
-  body.page-admin-pedidos #header-admin-pedidos-title {
-    display: none !important;
-  }
-
-  /* ⚪ BOTONES CIRCULARES (Móvil) — Menú y Carrito */
-  #cart-btn,
-  #menu-toggle,
-  .header-actions button:not(.login-link),
-  .btn-header-action {
     background: #FFFFFF !important;
-    border: none !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12) !important;
-    padding: 8px !important;
-    width: 44px !important;
-    height: 44px !important;
+    border-bottom: 1px solid rgba(0,0,0,0.05) !important;
+  }
+
+  /* IZQUIERDA: Menú + Logo */
+  .header-left-stitch {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    flex: 1 !important;
+  }
+
+  /* DERECHA: Carrito + Auth */
+  .header-right-stitch {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    justify-content: flex-end !important;
+    flex: 1 !important;
+  }
+
+  /* BOTONES CIRCULARES PREMIUM */
+  #cart-btn,
+  #menu-toggle {
+    width: 42px !important;
+    height: 42px !important;
     border-radius: 50% !important;
+    background: #FFFFFF !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    -webkit-tap-highlight-color: transparent;
+    border: none !important;
+    color: #377b4c !important;
+    padding: 0 !important;
   }
 
   #menu-toggle .material-symbols-outlined,
   #cart-btn .material-symbols-outlined {
-    color: var(--verde) !important;
     font-size: 26px !important;
-    /* Ajuste para mejor balance en 44px */
   }
 
-  /* ===================== TÍTULOS CENTRALES (SOLUCIÓN AL SOLAPAMIENTO) ===================== */
-
-  /* Ocultamos TODOS los contenedores de título por defecto en móvil */
-  .header-cart-title {
-    display: none !important;
-  }
-
-  /* Solo mostramos el que corresponde a la página actual, centrado absoluto */
-  body.page-carrito #header-cart-title,
-  body.page-datos-cliente #header-datos-title,
-  body.page-recibo #header-recibo-title,
-  body.page-mis-pedidos #header-mis-pedidos-title,
-  body.page-admin-cafes #header-admin-cafes-title,
-  body.page-admin-agregar-cafe #header-admin-add-cafe-title,
-  body.page-admin-editar-cafe #header-admin-edit-cafe-title {
-    display: flex !important;
-    position: absolute !important;
-    left: 50% !important;
-    top: 50% !important;
-    transform: translate(-50%, -50%) !important;
+  /* LOGO MÓVIL */
+  .header-logo {
+    height: 36px !important;
     width: auto !important;
-    margin: 0 !important;
-    z-index: 1 !important;
-    pointer-events: none !important;
-    background: transparent !important;
   }
 
-  /* Limpieza de textos internos */
-  .header-cart-title .main-title {
+  /* OCULTAR ELEMENTOS INNECESARIOS EN MÓVIL */
+  .desktop-only,
+  .auth-buttons.no-user,
+  #header-search-slot,
+  .header-middle-stitch {
     display: none !important;
   }
 
-  .header-cart-content .sub-title {
-    font-size: 0.72rem !important;
-    color: var(--verde) !important;
-    font-weight: 700 !important;
-    text-align: center !important;
-    white-space: nowrap !important;
-    margin: 0 !important;
-  }
-
-  /* ===================== VISTA: HOME (INDEX) ===================== */
-
-  body:not(.page-carrito):not(.page-datos-cliente):not(.page-recibo) .header-logo-link {
-    display: none !important;
-  }
-
-  /* Mostrar Carrito a la DERECHA en Home */
-  body:not(.page-carrito):not(.page-datos-cliente):not(.page-recibo) #cart-btn {
+  /* EXCEPCIÓN: Mostrar Carrito siempre */
+  #cart-btn {
     display: flex !important;
-    margin-left: auto !important;
-    color: var(--verde) !important;
-    position: relative !important;
-    order: 99 !important;
-  }
-
-  /* ===================== VISTA: CHECKOUT / ADMIN ===================== */
-
-  /* Ocultar Carrito en estas vistas */
-  body.page-carrito #cart-btn,
-  body.page-datos-cliente #cart-btn,
-  body.page-recibo #cart-btn,
-  body.page-admin-cafes #cart-btn {
-    display: none !important;
-  }
-
-  /* Logo a la DERECHA en estas vistas */
-  body.page-carrito .header-logo-link,
-  body.page-datos-cliente .header-logo-link,
-  body.page-recibo .header-logo-link,
-  body.page-admin-cafes .header-logo-link {
-    display: flex !important;
-    margin-left: auto !important;
-    position: relative !important;
-    z-index: 5 !important;
-    order: 99 !important;
-  }
-
-  body.page-carrito .header-logo,
-  body.page-datos-cliente .header-logo,
-  body.page-recibo .header-logo,
-  body.page-admin-cafes .header-logo {
-    height: 38px !important;
   }
 }
 
@@ -710,7 +606,22 @@ body.page-datos-cliente #login-desktop {
 ===================================================== */
 
 .menu-toggle {
-  display: none;
+  display: flex;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: #377b4c;
+  position: relative;
+}
+
+@media (min-width: 769px) {
+  .mobile-only {
+    display: none !important;
+  }
+  .desktop-only-flex {
+    display: flex !important;
+  }
 }
 
 /* Media query redundante eliminada */

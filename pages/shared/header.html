@@ -1,18 +1,25 @@
 <!-- =====================================================
-     HEADER — FINAL DEFINITIVO (STITCH 2025)
+     HEADER — FINAL DEFINITIVO (ERGONOMÍA MÓVIL)
+     Hamburguesa: Izquierda | Carrito: Derecha
 ====================================================== -->
 <header class="header-fixed no-user" id="main-header">
 
-  <!-- IZQUIERDA: LOGO -->
+  <!-- IZQUIERDA: MENÚ (MÓVIL) + LOGO -->
   <div class="header-left-stitch">
+    <!-- Menú Hamburguesa (Mobile - AHORA A LA IZQUIERDA) -->
+    <button id="menu-toggle" class="menu-toggle mobile-only" aria-label="Menú">
+      <span class="material-symbols-outlined">menu</span>
+      <span id="menu-notification-badge" class="notification-badge hidden"><i class="fa-solid fa-bell"></i></span>
+    </button>
+
     <a href="/pages/home/index.html" class="header-logo-link">
       <img src="/imagenes/logo.png" alt="Café Cortero" class="header-logo">
     </a>
   </div>
 
-  <!-- CENTRO: NAVEGACIÓN Y BÚSQUEDA -->
-  <div class="header-middle-stitch">
-    <nav class="header-nav-links desktop-only" id="public-nav">
+  <!-- CENTRO: NAVEGACIÓN DESKTOP -->
+  <div class="header-middle-stitch desktop-only-flex">
+    <nav class="header-nav-links" id="public-nav">
       <a href="/pages/home/index.html" class="nav-link">Inicio</a>
       <a href="/pages/home/index.html#productos" class="nav-link">Variedades</a>
       <a href="https://alansosar.github.io/pages/about/sobre-nosotros.html" class="nav-link">Nosotros</a>
@@ -20,10 +27,10 @@
     <div id="header-search-slot"></div>
   </div>
 
-  <!-- DERECHA: ACCIONES -->
+  <!-- DERECHA: ACCIONES (CARRITO + PERFIL) -->
   <div class="header-right-stitch">
     
-    <!-- Carrito -->
+    <!-- Carrito (A LA DERECHA) -->
     <button class="header-icon-btn" id="cart-btn" aria-label="Ver carrito">
       <span class="material-symbols-outlined">shopping_cart</span>
       <span id="cart-count" class="cart-badge hidden">0</span>
@@ -41,12 +48,6 @@
         <span id="avatar-notification-badge" class="notification-badge hidden"><i class="fa-solid fa-bell"></i></span>
       </button>
     </div>
-
-    <!-- Móvil Toggle -->
-    <button id="menu-toggle" class="menu-toggle mobile-only" aria-label="Menú">
-      <span class="material-symbols-outlined">menu</span>
-      <span id="menu-notification-badge" class="notification-badge hidden"><i class="fa-solid fa-bell"></i></span>
-    </button>
   </div>
 
 </header>
@@ -54,11 +55,10 @@
 <div id="user-scrim" class="user-scrim"></div>
 
 <!-- =====================================================
-     DRAWER — MATERIAL 3 (RESTAURADO)
+     DRAWER — MATERIAL 3 (PÚBLICO + PRIVADO)
 ====================================================== -->
 <aside id="user-drawer" class="user-drawer">
   
-  <!-- CABECERA PERFIL -->
   <div class="drawer-header logged hidden">
      <a href="/pages/profile/perfil.html" class="user-drawer-profile-link">
         <div class="user-drawer-avatar">
@@ -74,7 +74,6 @@
 
   <hr class="user-drawer-divider logged hidden">
 
-  <!-- SECCIÓN: CLIENTE (LOGUEADO) -->
   <div class="drawer-nav-section client-only logged hidden">
       <a href="/pages/profile/mis-pedidos.html" class="user-drawer-item">
         <span class="material-symbols-outlined">shopping_bag</span>
@@ -87,7 +86,6 @@
       </a>
   </div>
 
-  <!-- SECCIÓN: ADMIN (LOGUEADO) -->
   <div class="drawer-nav-section admin-only logged hidden">
       <a href="/pages/admin/admin-pedidos.html" class="user-drawer-item">
         <span class="material-symbols-outlined">inventory_2</span>
@@ -104,7 +102,6 @@
       </a>
   </div>
 
-  <!-- SECCIÓN: PÚBLICO (SIEMPRE VISIBLE) -->
   <div class="drawer-nav-section">
       <a href="/pages/home/index.html#productos" class="user-drawer-item">
         <span class="material-symbols-outlined">local_cafe</span>
@@ -122,7 +119,6 @@
 
   <hr class="user-drawer-divider">
 
-  <!-- FOOTER: LOGIN / LOGOUT -->
   <div class="drawer-footer">
       <a href="/pages/auth/login.html" class="user-drawer-item no-user">
         <span class="material-symbols-outlined">login</span>
