@@ -36,15 +36,24 @@ header.header-fixed,
   box-sizing: border-box;
 }
 
-/* ESTRUCTURA DOS BLOQUES STITCH */
+/* ESTRUCTURA TRES BLOQUES STITCH (RESTAURADO) */
 .header-left-stitch {
-  flex: 0 0 auto;
+  flex: 1; /* Ocupa espacio proporcional para permitir centrado del title */
   display: flex !important;
   align-items: center !important;
 }
 
-.header-right-stitch {
+.header-middle-stitch {
   flex: 1;
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.header-right-stitch {
+  flex: 1; /* Ocupa espacio proporcional para equilibrar el centro */
   display: flex !important;
   align-items: center !important;
   gap: 20px;
