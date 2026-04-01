@@ -297,6 +297,14 @@ body.page-admin-customers {
     cursor: pointer;
     transition: opacity 0.2s;
     border: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-primary .material-symbols-outlined,
+.btn-secondary .material-symbols-outlined {
+    font-size: 20px;
 }
 
 .btn-primary {
