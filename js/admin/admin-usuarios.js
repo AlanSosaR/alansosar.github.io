@@ -159,7 +159,12 @@ function getFormattedRole(role) {
 function updatePaginationUI() {
     const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
     const info = document.getElementById('page-info');
-    if (info) info.textContent = `Mostrando ${filteredUsers.length} de 152 registros`; // Placeholder exacto de la imagen
+    
+    if (info) {
+        const start = filteredUsers.length > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0;
+        const end = Math.min(currentPage * itemsPerPage, filteredUsers.length);
+        info.textContent = `Mostrando ${start}-${end} de ${filteredUsers.length} registros`;
+    }
     
     const prev = document.getElementById('prev-page');
     const next = document.getElementById('next-page');
