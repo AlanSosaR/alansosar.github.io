@@ -102,9 +102,8 @@ if (!window.__HEADER_CORE_LOADED__) {
       drawer.classList.add("no-user");
       drawer.classList.remove("logged");
 
-      document
-        .querySelectorAll(".admin-only,.client-only")
-        .forEach(el => el.classList.add("hidden"));
+      document.querySelectorAll(".logged").forEach(el => el.classList.add("hidden"));
+      document.querySelectorAll(".no-user").forEach(el => el.classList.remove("hidden"));
 
       toggleGlobalNotificationDot(false);
       setAdminOrdersCount(0);
@@ -121,6 +120,9 @@ if (!window.__HEADER_CORE_LOADED__) {
     header.classList.remove("no-user");
     drawer.classList.add("logged");
     drawer.classList.remove("no-user");
+
+    document.querySelectorAll(".logged").forEach(el => el.classList.remove("hidden"));
+    document.querySelectorAll(".no-user").forEach(el => el.classList.add("hidden"));
 
     $("avatar-user") &&
       ($("avatar-user").src = user.photo_url || "/imagenes/avatar-default.svg");
