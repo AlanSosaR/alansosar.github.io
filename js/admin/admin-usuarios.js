@@ -110,7 +110,6 @@ function renderUsers(usersList) {
                         ${getAvatarHtml(user, 'avatar')}
                         <div class="user-info">
                             <h4 class="user-name">${user.name || 'Sin nombre'}</h4>
-                            <span class="user-id">${userId}</span>
                         </div>
                     </div>
                 </td>
