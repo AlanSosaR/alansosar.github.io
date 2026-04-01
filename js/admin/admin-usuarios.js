@@ -126,22 +126,40 @@ function setupInteractions() {
     const searchInput = document.getElementById('user-search');
     const roleFilter = document.getElementById('filter-role');
 
-    searchInput.addEventListener('input', (e) => {
-        const term = e.target.value.toLowerCase();
-        const filtered = allUsers.filter(u => 
-            u.name?.toLowerCase().includes(term) || 
-            u.email?.toLowerCase().includes(term)
-        );
+    // --- 1. Lógica de Filtrado Centralizada ---
+    const applyFilters = () => {
+        const searchTerm = searchInput?.value.toLowerCase().trim() || "";
+        const roleTerm = roleFilter?.value || "all";
+
+        const filtered = allUsers.filter(u => {
+            const matchesSearch = !searchTerm || 
+                u.name?.toLowerCase().includes(searchTerm) || 
+                u.email?.toLowerCase().includes(searchTerm);
+            
+            const matchesRole = roleTerm === "all" || u.rol === roleTerm;
+
+            return matchesSearch && matchesRole;
+        });
+
         renderUsers(filtered);
+    };
+
+    // --- 2. Eventos Locales (Inputs de la página) ---
+    searchInput?.addEventListener('input', applyFilters);
+    roleFilter?.addEventListener('change', applyFilters);
+
+    // --- 3. EVENTOS GLOBALES (Desde el Header) ---
+    document.addEventListener('user:search', (e) => {
+        if (searchInput) {
+            searchInput.value = e.detail;
+            applyFilters();
+        }
     });
 
-    roleFilter.addEventListener('change', (e) => {
-        const role = e.target.value;
-        if (role === 'all') {
-            renderUsers(allUsers);
-        } else {
-            const filtered = allUsers.filter(u => u.rol === role);
-            renderUsers(filtered);
+    document.addEventListener('user:filter', (e) => {
+        if (roleFilter) {
+            roleFilter.value = e.detail;
+            applyFilters();
         }
     });
 }
