@@ -396,3 +396,44 @@ input:checked + .slider-stitch:before { transform: translateX(24px); }
 .hidden { display: none !important; }
 .fade-in { animation: fadeIn 0.4s ease-out; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ESTADO DE SELECCIÓN VACÍO (ESTILO CLIENTES) */
+.no-selection-section-stitch {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.empty-state-stitch {
+    background: var(--white);
+    border-radius: var(--radius-16);
+    padding: 60px 40px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    border: 1px solid var(--border-soft);
+    max-width: 500px;
+    width: 90%;
+}
+
+.empty-state-stitch .large-icon {
+    font-size: 64px;
+    color: #E0E4E2;
+    margin-bottom: 20px;
+    display: block;
+}
+
+.empty-state-stitch h3 {
+    margin: 0 0 12px;
+    color: var(--coffee-deep);
+    font-size: 20px;
+    font-family: 'Fraunces', serif;
+}
+
+.empty-state-stitch p {
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0;
+}
