@@ -379,3 +379,34 @@
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+/* --- BOTONES DE ACCIÓN (ESTILO STITCH MINIMALISTA) --- */
+.action-btn {
+    background: transparent !important;
+    border: none !important;
+    color: var(--primary-green, #377B4C) !important;
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background 0.2s ease, transform 0.1s ease;
+    padding: 0 !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.action-btn:hover {
+    background: rgba(55, 123, 76, 0.08) !important;
+}
+
+.action-btn:active {
+    transform: scale(0.9);
+}
+
+.action-btn .material-symbols-outlined {
+    font-size: 22px !important;
+    font-weight: 500;
+}
