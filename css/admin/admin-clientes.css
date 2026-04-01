@@ -502,6 +502,9 @@ body.page-admin-customers {
     }
 }
 
+/* Helpers */
+.hidden { display: none !important; }
+
 /* =========================
    HEADER OVERRIDES (ADMIN)
    Ocultar carrito y ampliar buscador
