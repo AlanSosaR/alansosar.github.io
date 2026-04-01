@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin · Clientes | Café Cortero</title>
+
+  <!-- Material Symbols -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+
+  <!-- Estilos -->
+  <link rel="stylesheet" href="/css/core/tipografia.css" />
+  <link rel="stylesheet" href="/css/ui/header.css" />
+  <link rel="stylesheet" href="/css/ui/header.search.css">
+  <link rel="stylesheet" href="/css/admin/admin-clientes.css" />
+  <link rel="icon" type="image/png" href="/imagenes/logo.png">
+</head>
+
+<body class="page-admin-customers">
+  <main class="admin-customers-container fade-in">
+
+    <!-- =========================
+         LAYOUT DE LAS DOS COLUMNAS
+    ========================= -->
+    <div class="customers-layout">
+
+        <!-- SECCIÓN IZQUIERDA: LISTA DE CLIENTES -->
+        <aside class="customers-list-section">
+            <header class="list-header">
+                <h2 class="section-title">Clientes</h2>
+                <div id="customers-count" class="count-badge">0</div>
+            </header>
+
+            <div id="customers-list" class="customers-list">
+                <!-- Se llena con JS -->
+                <div class="loading-state">Cargando clientes...</div>
+            </div>
+        </aside>
+
+        <!-- SECCIÓN DERECHA: DETALLE DEL CLIENTE -->
+        <section id="customer-detail" class="customer-detail-section hidden">
+            <!-- Header del Cliente -->
+            <header class="detail-header">
+                <div class="client-profile">
+                    <img id="c-photo" src="/imagenes/avatar-default.svg" alt="Foto de perfil" class="profile-img">
+                    <div class="profile-text">
+                        <h1 id="c-name" class="client-name">—</h1>
+                        <p id="c-location" class="client-location">
+                            <span class="material-symbols-outlined">location_on</span>
+                            <span>—</span>
+                        </p>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-secondary" id="btnEditCustomer">Editar</button>
+                    <button class="btn-primary" id="btnSendMessage">Mensaje</button>
+                </div>
+            </header>
+
+            <!-- Grid de Estadísticas -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-label">TOTAL GASTADO</span>
+                    <strong id="c-total-spent" class="stat-value">L 0.00</strong>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">PEDIDOS REALIZADOS</span>
+                    <strong id="c-total-orders" class="stat-value">0</strong>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">REGISTRADO DESDE</span>
+                    <strong id="c-reg-date" class="stat-value">—</strong>
+                </div>
+            </div>
+
+            <!-- Historial de Compras -->
+            <section class="history-section">
+                <div class="history-header">
+                    <h3>Historial de Compras</h3>
+                </div>
+
+                <div class="history-table-container">
+                    <table class="history-table">
+                        <thead>
+                            <tr>
+                                <th>Pedido</th>
+                                <th>Fecha</th>
+                                <th>Estado</th>
+                                <th class="text-right">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-body">
+                            <!-- Se llena con JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Paginación -->
+                <footer class="pagination-footer">
+                    <div id="history-pagination" class="pagination-controls">
+                        <button class="page-btn" id="prev-page">
+                            <span class="material-symbols-outlined">chevron_left</span>
+                        </button>
+                        <div id="page-numbers" class="page-numbers">
+                            <!-- Botones de página -->
+                        </div>
+                        <button class="page-btn" id="next-page">
+                            <span class="material-symbols-outlined">chevron_right</span>
+                        </button>
+                    </div>
+                    <p id="page-info" class="page-info">Página 1 de 1</p>
+                </footer>
+            </section>
+        </section>
+
+        <!-- ESTADO DE SELECCIÓN VACÍO -->
+        <section id="no-selection" class="no-selection-section">
+            <div class="empty-state">
+                <span class="material-symbols-outlined large-icon">group</span>
+                <h3>Selecciona un cliente</h3>
+                <p>Elige un cliente de la lista para ver su información detallada e historial de compras.</p>
+            </div>
+        </section>
+
+    </div>
+
+  </main>
+
+  <!-- =========================
+       TEMPLATES
+  ========================= -->
+  <template id="tpl-customer-card">
+    <div class="customer-card">
+        <img class="card-img" src="/imagenes/avatar-default.svg" alt="Avatar">
+        <div class="card-info">
+            <h4 class="card-name">—</h4>
+            <p class="card-email">—</p>
+        </div>
+        <span class="material-symbols-outlined arrow">chevron_right</span>
+    </div>
+  </template>
+
+  <!-- =========================
+       SCRIPTS CORE
+  ========================= -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/js/core/supabase-client-core.js"></script>
+  <script src="/js/core/supabase-auth.js"></script>
+
+  <!-- Modo de página -->
+  <script>
+    window.PAGE_MODE = "admin-clientes";
+  </script>
+
+  <script src="/js/ui/layout.js"></script>
+  <script type="module" src="/js/ui/header.js"></script>
+
+  <!-- Buscador global -->
+  <script type="module">
+    import { renderHeaderSearch } from "/js/ui/header.search.js";
+
+    document.addEventListener("header:ready", () => {
+      const slot = document.getElementById("header-search-slot");
+      if (!slot) return;
+
+      slot.innerHTML = renderHeaderSearch({
+        showFilter: true,
+        showAdd: false,
+        placeholder: "Nombre, email o teléfono..."
+      });
+
+      // Configurar Filtro por Rol
+      const filter = document.getElementById("header-status-filter");
+      if (filter) {
+        filter.innerHTML = `
+            <option value="todos">Todos los Roles</option>
+            <option value="admin">Administradores</option>
+            <option value="usuario">Clientes</option>
+        `;
+        filter.addEventListener("change", (e) => {
+            document.dispatchEvent(new CustomEvent("customer:filter", { detail: e.target.value }));
+        });
+      }
+
+      // Configurar Búsqueda
+      const input = document.getElementById("header-search-input");
+      if (input) {
+        input.addEventListener("input", (e) => {
+          document.dispatchEvent(new CustomEvent("customer:search", { detail: e.target.value.trim() }));
+        });
+      }
+    });
+  </script>
+
+  <!-- Lógica de Clientes -->
+  <script src="/js/admin/admin_clientes.js"></script>
+</body>
+
+</html>

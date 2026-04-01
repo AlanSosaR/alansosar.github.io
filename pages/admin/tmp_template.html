@@ -1,0 +1,283 @@
+<!DOCTYPE html><html lang="en" data-lt-installed="true"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Café Cortero Admin | Customer Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-primary": "#ffffff",
+              "inverse-on-surface": "#eff1f0",
+              "outline": "#707a70",
+              "on-secondary-fixed-variant": "#005312",
+              "secondary-fixed": "#a3f69c",
+              "primary-container": "#377b4c",
+              "primary-fixed": "#abf3b9",
+              "tertiary-fixed": "#ffdbce",
+              "on-surface": "#191c1c",
+              "primary-fixed-dim": "#90d69f",
+              "error-container": "#ffdad6",
+              "inverse-primary": "#90d69f",
+              "surface-container-highest": "#e1e3e2",
+              "tertiary-container": "#85675c",
+              "surface-bright": "#f8faf9",
+              "on-primary-container": "#c7ffd0",
+              "tertiary-fixed-dim": "#e4beb2",
+              "secondary": "#1b6d24",
+              "on-background": "#191c1c",
+              "secondary-container": "#a0f399",
+              "inverse-surface": "#2e3131",
+              "on-tertiary-fixed": "#2b160f",
+              "on-tertiary-fixed-variant": "#5b4137",
+              "on-secondary-container": "#217128",
+              "on-primary-fixed": "#00210c",
+              "primary": "#1b6236",
+              "tertiary": "#6b4f45",
+              "on-tertiary": "#ffffff",
+              "on-secondary": "#ffffff",
+              "on-error": "#ffffff",
+              "surface-tint": "#266b3e",
+              "error": "#ba1a1a",
+              "on-secondary-fixed": "#002204",
+              "surface-container-high": "#e6e9e8",
+              "surface-container": "#eceeed",
+              "on-surface-variant": "#404940",
+              "surface-container-low": "#f2f4f3",
+              "surface-container-lowest": "#ffffff",
+              "surface-dim": "#d8dad9",
+              "outline-variant": "#c0c9be",
+              "secondary-fixed-dim": "#88d982",
+              "on-tertiary-container": "#ffeee8",
+              "surface-variant": "#e1e3e2",
+              "on-error-container": "#93000a",
+              "surface": "#f8faf9",
+              "on-primary-fixed-variant": "#035228",
+              "background": "#f8faf9"
+            },
+            fontFamily: {
+              "sans": ["Roboto", "sans-serif"],
+              "headline": ["Roboto", "sans-serif"],
+              "body": ["Roboto", "sans-serif"],
+              "label": ["Roboto", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Roboto', sans-serif; background-color: #f8faf9; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    </style>
+</head>
+<body class="text-on-surface">
+<!-- TopNavBar -->
+<nav class="flex justify-between items-center w-full px-8 py-4 max-w-screen-2xl mx-auto sticky top-0 z-50 backdrop-blur-md bg-[#f8faf9]/80">
+<div class="flex items-center gap-12">
+<span class="text-2xl font-bold tracking-tight text-[#1b6236] dark:text-[#377b4c]" style="">Café Cortero</span>
+<div class="hidden md:flex gap-8">
+<a class="text-[#191c1c]/70 dark:text-stone-400 font-normal hover:text-[#1b6236] transition-colors duration-200" href="#" style="">Dashboard</a>
+<a class="text-[#1b6236] dark:text-[#377b4c] font-medium border-b-2 border-[#1b6236] pb-1" href="#" style="">Customers</a>
+<a class="text-[#191c1c]/70 dark:text-stone-400 font-normal hover:text-[#1b6236] transition-colors duration-200" href="#" style="">Orders</a>
+<a class="text-[#191c1c]/70 dark:text-stone-400 font-normal hover:text-[#1b6236] transition-colors duration-200" href="#" style="">Inventory</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative hidden lg:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline" style="">search</span>
+<input class="bg-surface-container-low border-none rounded-full py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-primary-container w-64" placeholder="Buscar en archivos..." type="text">
+</div>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container rounded-full transition-colors" style="">
+<span class="material-symbols-outlined" data-icon="notifications" style="">notifications</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container rounded-full transition-colors" style="">
+<span class="material-symbols-outlined" data-icon="settings" style="">settings</span>
+</button>
+<img alt="Admin Profile" class="w-10 h-10 rounded-full border-2 border-primary-container/20 object-cover" data-alt="professional portrait of a person in business attire with a warm smile and neutral background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCi3awXflwPi1G3ktx4rymSRFLyqGocYXd-LOq3vWGJ5DjW7S_92_RYDSZdNd0xRXcLSuJfM95bBZl8ljRGq_WVFBXwiI_OLCOSR-jX0MhhR8jbp_AJksj-uO8ihw6obuyv1TuoHRlmfZPbH0tBj-0-FORwWmTFUG7iQJiaUIhmI5nRkjCl2bQi2s5r9YvsDpWGDV-_mD9Qc_4OwFVlKXqxLkpjjPZipmYFbtjJPLUXm_iyfu8zhUoRCw1zyrJNtVq30szS5gg9xJo" style="">
+</div>
+</nav>
+<main class="max-w-screen-2xl mx-auto px-8 py-10 grid grid-cols-12 gap-8">
+<!-- Section 1: Customer List (Left Column) -->
+<section class="col-span-12 lg:col-span-4 space-y-6">
+<div class="flex justify-between items-center">
+<h2 class="text-2xl font-bold text-on-surface tracking-tight" style="">Clientes</h2>
+<div class="relative flex items-center gap-2 mr-2">
+<select class="bg-surface-container-low border-none rounded-lg py-1 pl-3 pr-8 text-xs font-medium text-on-surface-variant focus:ring-1 focus:ring-primary appearance-none cursor-pointer">
+<option>Filtrar por Rol</option>
+<option>Senior Archivist</option>
+<option>Junior Archivist</option>
+<option>Field Collector</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 pointer-events-none text-sm text-on-surface-variant" style="">expand_more</span>
+</div><button class="flex items-center gap-2 text-primary font-medium text-sm hover:underline" style=""><span class="material-symbols-outlined text-sm" data-icon="add" style="">add</span>
+                    Nueva Entrada</button>
+</div>
+<div class="space-y-4">
+<!-- Customer Card 1 (Active) -->
+<div class="bg-surface-container-lowest rounded-[12px] p-5 shadow-sm border-l-4 border-primary ring-1 ring-black/5 flex items-center gap-4 cursor-pointer">
+<img class="w-12 h-12 rounded-full object-cover" data-alt="close up headshot of a smiling woman with long brown hair and soft natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCKu0gt0OKrkX_t2qg6IZKfNFl3ztDMIKdV2uV3nmLo5HzKf2tjm9fHv3r-04x6-3QRK2CLTa05pz6090SEv4Pt8_gMbYOqDFMN4zyMnWhlfwxyZXp7XpvyFlqfzcz0M-LK5txmYrBoorGpiIRqVSpWZneKIeiNguZwA4gNW7yXPzYAe7kmBwfAgwCuPEZV0CGGCF1250ucUBNY_f4cu-NHfWt-icCJYi-bLHJ-R6xK_iFY5dfiwhaEbaFDy2YgyRrOjgg9t237MA4" style="">
+<div class="flex-1">
+<h4 class="font-bold text-on-surface" style="">Elena Rodriguez</h4>
+<p class="text-sm text-on-surface-variant font-normal" style="">elena.ro@botanical.com</p>
+</div>
+<span class="material-symbols-outlined text-outline text-sm" data-icon="chevron_right" style="">chevron_right</span>
+</div>
+<!-- Customer Card 2 -->
+<div class="bg-surface-container-low rounded-[12px] p-5 hover:bg-surface-container transition-colors flex items-center gap-4 cursor-pointer">
+<img class="w-12 h-12 rounded-full object-cover" data-alt="portrait of a man with spectacles in a professional studio setting with gentle shadows" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDUGfFvsUroMw8jHsZdD9oyqkN6q4w8xug0Tr7fjKvl8dTTsfnCSNTKC3nq-Dvbv3LnNDZ7cAeWGZILWtUzeCYP0pXd8N9ZcJ6Zwy5yakHJ3Ax_Im8m1VqTdvuypmdduNg4qeyq9K5vloanz2yXkFl2j8QCsOeFGWZz-6g_Ol6KpzlYaRmIlMxL0TWTWnxC2y_wGuf7RaPskhSswLfCzURjv6PzlQ5HKnfubewgrD-oVPQ0ARaq6STikjXXxcn0y4F-VJCRhI8Gtdw" style="">
+<div class="flex-1">
+<h4 class="font-medium text-on-surface" style="">Julian Thorne</h4>
+<p class="text-sm text-on-surface-variant font-normal" style="">j.thorne@harvest.org</p>
+</div>
+</div>
+<!-- Customer Card 3 -->
+<div class="bg-surface-container-low rounded-[12px] p-5 hover:bg-surface-container transition-colors flex items-center gap-4 cursor-pointer">
+<img class="w-12 h-12 rounded-full object-cover" data-alt="confident professional woman with dark hair and thoughtful expression looking toward the camera" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAkoaey35eBVHtVve0jHbphFcd2sk_1D9xpww_4MLz30U5LCqXf5H5cFA75IZNj-lrn5257ToMVVCqNMjfMcQprdwIxmbF14QHu-txUJpkJ9NBmnh--L-D025xbU2miU49nR8SB8FCITQ7MPqpd_CBerF9fziqP03dDymkUKidf2H-o2PqkB93KgsXdSBypwE0HE-gbRil_kkzPQX6ONN8dZ0f3YrK0-ZLiOEcmpV8y0gZ8af6holn_D5KbI5ar2g5LYT3Efb9W5Uo" style="">
+<div class="flex-1">
+<h4 class="font-medium text-on-surface" style="">Amara Okafor</h4>
+<p class="text-sm text-on-surface-variant font-normal" style="">amara.o@estate.io</p>
+</div>
+</div>
+<!-- Customer Card 4 -->
+<div class="bg-surface-container-low rounded-[12px] p-5 hover:bg-surface-container transition-colors flex items-center gap-4 cursor-pointer">
+<img class="w-12 h-12 rounded-full object-cover" data-alt="middle aged man with short hair and friendly eyes in clean minimal professional lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYupho3c2TX2YNTSiNxfubSd2WoCdPtKSbF9JEnrLIsW1m-lptL5R1MXrHjiZzKm-4EIBHMTPp56-jsaKGmIxLIRQuklEeHLqJuRFLhc-6S8-5NKEQUgDSrCuSQYUclU7LzCZjpHsLsbGx7EuQHdbn0Xna2vH86efZFJjAvnJRCLuAi4Q4sx0AIQfL2vNZjcVLxePDCpJwuJJm22GIrFS8GtmS-D4yg6HCxX27Edyw-_HfgIDR_oB2fiQXS7dYomM06ct8EGW_uqk" style="">
+<div class="flex-1">
+<h4 class="font-medium text-on-surface" style="">Markus Jensen</h4>
+<p class="text-sm text-on-surface-variant font-normal" style="">markus.j@beans.com</p>
+</div>
+</div>
+</div><div class="flex items-center justify-between pt-4 border-t border-surface-container-high">
+<div class="flex items-center gap-1">
+<button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-container text-on-surface-variant" style="">
+<span class="material-symbols-outlined text-lg" style="">chevron_left</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg bg-primary text-on-primary text-sm font-bold shadow-sm" style="">1</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-container text-on-surface text-sm font-medium transition-colors" style="">2</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-container text-on-surface-variant" style="">
+<span class="material-symbols-outlined text-lg" style="">chevron_right</span>
+</button>
+</div>
+<p class="text-xs text-on-surface-variant font-medium" style="">Página 1 de 2</p>
+</div>
+</section>
+<!-- Section 2 & 3: Expanded Detail View (Right Column) -->
+<div class="col-span-12 lg:col-span-8 space-y-8">
+<!-- Customer Detail Header & Stats -->
+<section class="bg-surface-container-lowest rounded-[12px] p-8 shadow-sm">
+<div class="flex flex-col md:flex-row gap-8 items-start">
+<img class="w-32 h-32 rounded-[12px] object-cover ring-4 ring-primary-container/10" data-alt="high quality portrait of Elena Rodriguez with warm skin tones and natural soft lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBCCRArOZl26kBZ-o4qtakVNTpJqNbmVGy3L7gc33lSxU9TsKo5Rxxl1__aQ19VsX1xAs-eGccxzyfdL0rd0O0puz59_KI4B2BGDxxeguEZ0ZQ_wz4D7SMbPCTl_xZhDfS26-RUf-TTGyTxUtsj5trAz1d6ZToZFMT2EXxHTHCQEz9eqrzxjRzbo6bb1xwkHSk1ExLS3bUjzZ3zX3rPbLo-Ka8yPnjNzJ05NP8Yii878xCIYwTiJjOATiDKW1RiUWoQSs6AB3twxyc" style="">
+<div class="flex-1 w-full">
+<div class="flex justify-between items-start">
+<div>
+<h1 class="text-3xl font-bold text-on-surface" style="">Elena Rodriguez</h1>
+<p class="text-on-surface-variant font-normal flex items-center gap-2 mt-1" style="">
+<span class="material-symbols-outlined text-sm" data-icon="location_on" style="">location_on</span> 
+                                    San José, Costa Rica
+                                </p>
+</div>
+<div class="flex gap-3">
+<button class="px-4 py-2 bg-surface-container-high text-on-surface font-medium rounded-[12px] hover:bg-surface-container-highest transition-colors text-sm" style="">Editar Registro</button>
+<button class="px-4 py-2 bg-primary-container text-on-primary font-medium rounded-[12px] hover:opacity-90 transition-opacity text-sm" style="">Enviar Mensaje</button>
+</div>
+</div>
+<!-- Stats Grid -->
+<div class="grid grid-cols-3 gap-6 mt-10 pt-8 border-t border-surface-container-high">
+<div class="space-y-1">
+<p class="text-xs font-bold uppercase tracking-widest text-outline" style="">Total Gastado</p>
+<p class="text-2xl font-bold text-primary" style="">$1,452.80</p>
+</div>
+<div class="space-y-1">
+<p class="text-xs font-bold uppercase tracking-widest text-outline" style="">Total de Pedidos</p>
+<p class="text-2xl font-bold text-on-surface" style="">32</p>
+</div>
+<div class="space-y-1">
+<p class="text-xs font-bold uppercase tracking-widest text-outline" style="">Registrado desde</p>
+<p class="text-2xl font-bold text-on-surface" style="">Oct 2022</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 3: Purchase History -->
+<section class="bg-surface-container-lowest rounded-[12px] p-8 shadow-sm">
+<div class="flex justify-between items-center mb-8">
+<h3 class="text-xl font-bold text-on-surface" style="">Historial de Compras</h3>
+<button class="text-sm font-medium text-tertiary flex items-center gap-1 hover:underline" style="">Ver Auditoría Detallada <span class="material-symbols-outlined text-sm" data-icon="open_in_new" style="">open_in_new</span></button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="text-xs font-bold uppercase tracking-widest text-outline border-b border-surface-container-high">
+<th class="pb-4 font-bold" style="">N.º de Pedido</th>
+<th class="pb-4 font-bold" style="">Fecha de Cosecha</th>
+<th class="pb-4 font-bold" style="">Estado</th>
+<th class="pb-4 font-bold text-right" style="">Total</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container-high">
+<tr class="group hover:bg-surface-container-low transition-colors">
+<td class="py-5 font-medium text-on-surface" style="">#CC-8942</td>
+<td class="py-5 text-on-surface-variant font-normal" style="">May 14, 2024</td>
+<td class="py-5" style="">
+<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-[#a0f399] text-[#217128]" style="">Entregado</span>
+</td>
+<td class="py-5 font-bold text-on-surface text-right" style="">$124.50</td>
+</tr>
+<tr class="group hover:bg-surface-container-low transition-colors">
+<td class="py-5 font-medium text-on-surface" style="">#CC-9011</td>
+<td class="py-5 text-on-surface-variant font-normal" style="">May 10, 2024</td>
+<td class="py-5" style="">
+<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-[#1976D2]/15 text-[#1976D2]" style="">Enviado</span>
+</td>
+<td class="py-5 font-bold text-on-surface text-right" style="">$88.20</td>
+</tr>
+<tr class="group hover:bg-surface-container-low transition-colors">
+<td class="py-5 font-medium text-on-surface" style="">#CC-9154</td>
+<td class="py-5 text-on-surface-variant font-normal" style="">May 08, 2024</td>
+<td class="py-5" style="">
+<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-[#F9A825]/15 text-[#F9A825]" style="">Preparando</span>
+</td>
+<td class="py-5 font-bold text-on-surface text-right" style="">$215.00</td>
+</tr>
+<tr class="group hover:bg-surface-container-low transition-colors">
+<td class="py-5 font-medium text-on-surface" style="">#CC-9201</td>
+<td class="py-5 text-on-surface-variant font-normal" style="">May 02, 2024</td>
+<td class="py-5" style="">
+<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-surface-container-high text-[#757575]" style="">Pendiente</span>
+</td>
+<td class="py-5 font-bold text-on-surface text-right" style="">$42.30</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="flex items-center justify-between pt-6 mt-6 border-t border-surface-container-high">
+<div class="flex items-center gap-1">
+<button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-container text-on-surface-variant" style="">
+<span class="material-symbols-outlined text-lg" style="">chevron_left</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg bg-primary text-on-primary text-sm font-bold shadow-sm" style="">1</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-container text-on-surface text-sm font-medium transition-colors" style="">2</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-container text-on-surface-variant" style="">
+<span class="material-symbols-outlined text-lg" style="">chevron_right</span>
+</button>
+</div>
+<p class="text-xs text-on-surface-variant font-medium" style="">Página 1 de 2</p>
+</div></section>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full px-8 py-12 flex flex-col md:flex-row justify-between items-center opacity-60 bg-[#f8faf9] dark:bg-stone-950 font-['Roboto'] text-sm tracking-wide">
+<p class="text-[#6b4f45]" style="">© 2024 Café Cortero. Botanical Archivist System.</p>
+<div class="flex gap-8 mt-4 md:mt-0">
+<a class="text-[#6b4f45] hover:underline transition-colors" href="#" style="">Política de Privacidad</a>
+<a class="text-[#6b4f45] hover:underline transition-colors" href="#" style="">Términos de Servicio</a>
+<a class="text-[#6b4f45] hover:underline transition-colors" href="#" style="">Soporte</a>
+</div>
+</footer>
+</body></html>
