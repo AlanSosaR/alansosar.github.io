@@ -78,7 +78,7 @@ function renderUsers(usersList) {
                     <img src="${photo}" class="avatar" alt="${user.name}">
                     <div class="user-info">
                         <span class="user-name">${user.name || 'Sin nombre'}</span>
-                        <span class="user-id">CC-${user.id.substring(0, 4)}</span>
+                        <span class="user-id">ID: CC-${user.id.substring(0, 4)}</span>
                     </div>
                 </div>
             </td>
@@ -87,9 +87,6 @@ function renderUsers(usersList) {
                 <span class="badge-role ${roleClass}">${roleLabel}</span>
             </td>
             <td>${user.country || 'Honduras'}</td>
-            <td>
-                <div class="status-active">Activo</div>
-            </td>
             <td class="actions-col text-right">
                 <button class="action-btn" onclick="openUserMenu('${user.id}')" title="Más opciones">
                     <span class="material-symbols-outlined">more_vert</span>
