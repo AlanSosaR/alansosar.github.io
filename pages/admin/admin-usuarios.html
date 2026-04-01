@@ -69,21 +69,8 @@
 
     <!-- Matriz de Usuarios -->
     <section class="users-matrix-wrapper">
-        <div class="matrix-filters">
-            <div class="search-box">
-                <span class="material-symbols-outlined">search</span>
-                <input type="text" id="user-search" placeholder="Buscar por nombre o email...">
-            </div>
-            <div class="filter-options">
-                <select id="filter-role" class="premium-select">
-                    <option value="all">Todos los Roles</option>
-                    <option value="admin">Administradores</option>
-                    <option value="moderator">Moderadores</option>
-                    <option value="user">Usuarios</option>
-                </select>
-            </div>
-        </div>
-
+    <!-- Matriz de Usuarios -->
+    <section class="users-matrix-wrapper">
         <div class="users-table-container">
             <table class="users-table" id="users-table">
                 <thead>
@@ -112,6 +99,22 @@
                 <span class="material-symbols-outlined">group_off</span>
                 <p>No se encontraron usuarios con esos criterios.</p>
             </div>
+
+            <!-- Footer de Paginación (Pied de página de la tabla) -->
+            <footer class="matrix-footer">
+                <div class="pagination-controls">
+                    <button class="page-btn" id="prev-page" title="Anterior">
+                        <span class="material-symbols-outlined">chevron_left</span>
+                    </button>
+                    <div id="page-numbers" class="page-numbers">
+                        <!-- Generado vía JS -->
+                    </div>
+                    <button class="page-btn" id="next-page" title="Siguiente">
+                        <span class="material-symbols-outlined">chevron_right</span>
+                    </button>
+                </div>
+                <p id="page-info" class="page-info">Mostrando página 1 de 1</p>
+            </footer>
         </div>
     </section>
 
