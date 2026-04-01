@@ -83,6 +83,7 @@ body.page-admin-customers {
         display: flex;
         flex-direction: column-reverse;
         gap: 32px;
+        align-items: stretch; /* Permite que las columnas abarquen el ancho completo y no se compriman dejando espacio */
     }
 
     .no-selection-section {
@@ -540,7 +541,9 @@ body.page-admin-customers {
     }
 
     .detail-cover {
-        height: 100px;
+        height: auto;
+        min-height: 100px;
+        padding-bottom: 24px;
         margin-bottom: 0;
     }
 
@@ -548,36 +551,35 @@ body.page-admin-customers {
         position: relative;
         bottom: auto;
         left: auto;
-        margin-top: -30px;
         display: flex;
         flex-direction: row;
         align-items: center;
         gap: 16px;
-        padding: 0 16px;
+        padding: 24px 16px 0 16px;
         width: 100%;
         box-sizing: border-box;
     }
 
     .profile-img {
-        width: 80px;
-        height: 80px;
-        min-width: 80px;
-        min-height: 80px;
-        flex-shrink: 0; /* Evita que la foto se haga ovalada */
-        object-fit: cover;
+        width: 80px !important;
+        height: 80px !important;
+        min-width: 80px !important;
+        min-height: 80px !important;
+        flex-shrink: 0 !important;
+        object-fit: cover !important;
         border-width: 3px;
     }
 
     .profile-text {
         flex: 1;
-        min-width: 0; /* Permite wrap en flex child */
+        min-width: 0;
     }
 
     .client-name {
         font-size: 20px;
         line-height: 1.25;
         white-space: normal;
-        word-wrap: break-word; /* Para nombres súper largos "Alan Fabricio Sosa Rodezno" */
+        word-wrap: break-word; /* Prevents long names from breaking flex layout */
     }
 
     .header-actions {
