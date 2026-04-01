@@ -218,6 +218,46 @@
 
   <!-- Lógica de Clientes -->
   <script src="/js/admin/admin_clientes.js"></script>
+
+  <!-- Modal de Contacto / Push -->
+  <div id="modal-push" class="modal-overlay">
+    <div class="modal-content">
+      <header class="modal-header">
+        <h3>Enviar Notificación</h3>
+        <button class="btn-close-modal" id="close-push-modal">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </header>
+      <div class="modal-body">
+        <div class="push-info-banner">
+          <span class="material-symbols-outlined">info</span>
+          <p>El cliente recibirá una notificación push en su dispositivo si tiene los permisos activados.</p>
+        </div>
+        <div class="form-group">
+          <label for="push-title">Título</label>
+          <input type="text" id="push-title" placeholder="Ej: ¡Tu pedido está listo!" maxlength="50">
+        </div>
+        <div class="form-group">
+          <label for="push-message">Mensaje</label>
+          <textarea id="push-message" placeholder="Escribe el mensaje que verá el cliente..." maxlength="200"></textarea>
+        </div>
+      </div>
+      <footer class="modal-footer">
+        <button class="btn-cancel" id="cancel-push">Cancelar</button>
+        <button class="btn-send" id="send-push">
+          <span class="material-symbols-outlined">send</span>
+          <span>Enviar Notificación</span>
+        </button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Snackbar Global -->
+  <div id="admin-snackbar" class="snackbar">
+    <span class="material-symbols-outlined" id="snack-icon">info</span>
+    <span id="snack-text">Mensaje</span>
+  </div>
+
 </body>
 
 </html>

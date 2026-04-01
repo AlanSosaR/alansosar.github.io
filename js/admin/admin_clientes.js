@@ -16,6 +16,15 @@ const initAdminClientes = () => {
     const cRegDate = document.getElementById("c-reg-date");
     const historyBody = document.getElementById("history-body");
     const pageInfo = document.getElementById("page-info");
+    const btnContact = document.getElementById("btnSendMessage");
+
+    // Modal Push
+    const modalPush = document.getElementById("modal-push");
+    const closePush = document.getElementById("close-push-modal");
+    const cancelPush = document.getElementById("cancel-push");
+    const sendPush = document.getElementById("send-push");
+    const inputTitle = document.getElementById("push-title");
+    const inputMessage = document.getElementById("push-message");
 
     // 2. ESTADO GLOBAL
     let allCustomers = [];
@@ -282,6 +291,83 @@ const initAdminClientes = () => {
             renderHistory(customer.fetchedOrders);
         }
     };
+
+    // 7. NOTIFICACIONES PUSH
+    const openPushModal = () => {
+        if (!selectedCustomerId) return;
+        const customer = allCustomers.find(c => c.id === selectedCustomerId);
+        if (!customer) return;
+
+        inputTitle.value = "";
+        inputMessage.value = "";
+        modalPush.classList.add("active");
+    };
+
+    const closePushModal = () => {
+        modalPush.classList.remove("active");
+    };
+
+    const showSnack = (text, type = "info") => {
+        const snack = document.getElementById("admin-snackbar");
+        const snackMsg = document.getElementById("snack-text");
+        const snackIcon = document.getElementById("snack-icon");
+
+        snackMsg.textContent = text;
+        snack.className = `snackbar active ${type}`;
+        snackIcon.textContent = type === "success" ? "check_circle" : (type === "error" ? "error" : "info");
+
+        setTimeout(() => snack.classList.remove("active"), 3500);
+    };
+
+    const handleSendPush = async () => {
+        const title = inputTitle.value.trim();
+        const message = inputMessage.value.trim();
+
+        if (!title || !message) {
+            showSnack("Por favor completa el título y el mensaje", "error");
+            return;
+        }
+
+        if (!selectedCustomerId) {
+            showSnack("No hay un cliente seleccionado", "error");
+            return;
+        }
+
+        try {
+            sendPush.disabled = true;
+            sendPush.innerHTML = `<span class="material-symbols-outlined rotating">sync</span><span>Enviando...</span>`;
+
+            const { error } = await window.supabase
+                .from("notifications")
+                .insert([
+                    {
+                        user_id: selectedCustomerId,
+                        title: title,
+                        message: message,
+                        type: "push_admin",
+                        is_read: false,
+                        push_sent: false
+                    }
+                ]);
+
+            if (error) throw error;
+
+            showSnack("Notificación enviada con éxito", "success");
+            closePushModal();
+        } catch (err) {
+            console.error("❌ Error enviando push:", err);
+            showSnack("Error: " + (err.message || "No se pudo enviar la notificación"), "error");
+        } finally {
+            sendPush.disabled = false;
+            sendPush.innerHTML = `<span class="material-symbols-outlined">send</span><span>Enviar Notificación</span>`;
+        }
+    };
+
+    // Eventos del Modal
+    if (btnContact) btnContact.onclick = openPushModal;
+    if (closePush) closePush.onclick = closePushModal;
+    if (cancelPush) cancelPush.onclick = closePushModal;
+    if (sendPush) sendPush.onclick = handleSendPush;
 
     init();
 };
