@@ -21,6 +21,14 @@
 <body class="page-admin-users">
   <div id="header-placeholder"></div>
 
+  <!-- TopAppBar Móvil (Estilo Elena Rodriguez) -->
+  <header class="mobile-top-bar-stitch" id="mobile-detail-header">
+    <button class="material-symbols-outlined back-btn-stitch" id="btnBackToList">
+      arrow_back
+    </button>
+    <h1 class="mobile-header-title">Perfil de Personal</h1>
+  </header>
+
   <main class="admin-users-container fade-in">
     <!-- Header Institucional con Botón Nuevo -->
     <header class="page-title-section-stitch">
@@ -37,10 +45,10 @@
     <!-- =========================
          LAYOUT DE PANEL DUAL STITCH
     ========================= -->
-    <div class="users-layout-stitch">
+    <div class="users-layout-stitch" id="main-layout-stitch">
 
         <!-- SECCIÓN IZQUIERDA: LISTADO RECIENTE -->
-        <aside class="users-list-section-stitch">
+        <aside class="users-list-section-stitch" id="mobile-list-view">
             <header class="list-header-stitch">
                 <h2 class="section-title">Usuarios</h2>
                 <div id="users-count-stitch" class="count-badge-stitch">0</div>
@@ -204,6 +212,26 @@
         <span class="material-symbols-outlined arrow-stitch">chevron_right</span>
     </div>
   </template>
+  
+  <!-- BottomNavBar Móvil (Estilo Elena Rodriguez) -->
+  <nav class="mobile-bottom-nav">
+    <a href="/pages/home/index.html" class="nav-item-stitch">
+      <span class="material-symbols-outlined">home</span>
+      <span>Home</span>
+    </a>
+    <a href="/pages/admin/admin-pedidos.html" class="nav-item-stitch">
+      <span class="material-symbols-outlined">inventory_2</span>
+      <span>Pedidos</span>
+    </a>
+    <a href="/pages/admin/admin-usuarios.html" class="nav-item-stitch active">
+      <span class="material-symbols-outlined">groups</span>
+      <span>Personal</span>
+    </a>
+    <a href="/pages/admin/admin-clientes.html" class="nav-item-stitch">
+      <span class="material-symbols-outlined">settings</span>
+      <span>Clientes</span>
+    </a>
+  </nav>
 
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

@@ -437,3 +437,73 @@ input:checked + .slider-stitch:before { transform: translateX(24px); }
     line-height: 1.6;
     margin: 0;
 }
+
+/* =====================================================
+   RESPONSIVE: MOBILE PREMIUM (ESTILO ELENA RODRIGUEZ)
+===================================================== */
+.mobile-top-bar-stitch { display: none; }
+.mobile-bottom-nav { display: none; }
+
+@media (max-width: 768px) {
+    /* Layout & Container */
+    .admin-users-container { margin: 0; padding: 24px 16px 120px; max-width: 100%; width: 100%; box-sizing: border-box; }
+    .page-title-section-stitch { flex-direction: column; align-items: flex-start; gap: 16px; margin-bottom: 24px; padding-top: 20px; }
+    .page-title { font-size: 28px; }
+    
+    .users-layout-stitch { display: block; position: relative; }
+
+    /* Top & Bottom Bars (Visible solo en móvil) */
+    .mobile-top-bar-stitch {
+        display: flex; position: fixed; top: 0; left: 0; width: 100%; height: 64px;
+        background: rgba(248, 250, 249, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+        z-index: 1000; align-items: center; padding: 0 16px; border-bottom: 1px solid var(--border-soft); box-shadow: 0 1px 5px rgba(0,0,0,0.02);
+    }
+    
+    .back-btn-stitch { color: var(--primary-green); cursor: pointer; padding: 8px; border-radius: 50%; transition: scale 0.2s; }
+    .back-btn-stitch:active { scale: 0.9; background: var(--surface-low); }
+    .mobile-header-title { font-size: 16px; color: var(--primary-green); font-weight: 700; margin-left: 12px; font-family: 'Fraunces', serif; }
+
+    .mobile-bottom-nav {
+        display: flex; position: fixed; bottom: 0; left: 0; width: 100%; height: 72px;
+        background: rgba(248, 250, 249, 0.85); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+        z-index: 1000; justify-content: space-around; align-items: center; border-top: 1px solid var(--border-soft); padding-bottom: env(safe-area-inset-bottom);
+        box-shadow: 0 -4px 15px rgba(0,0,0,0.05);
+    }
+
+    .nav-item-stitch {
+        display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-muted); text-decoration: none; font-size: 11px; font-weight: 600; padding: 8px 12px;
+    }
+    .nav-item-stitch.active { color: var(--primary-green); }
+    .nav-item-stitch .material-symbols-outlined { font-size: 24px; }
+
+    /* Master-Detail Logic (Mobile Only) */
+    .users-list-section-stitch.mobile-hidden { display: none; }
+    .user-detail-section-stitch { margin-top: 64px; border: none; box-shadow: none; background: transparent; padding: 0; }
+    .user-detail-section-stitch.active { display: block !important; }
+    
+    /* Perfil Centrado (Estilo Elena) */
+    .detail-header-stitch { height: auto; margin-bottom: 32px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+    .header-overlay-green { display: none; }
+    .detail-profile-wrapper-stitch { position: static; flex-direction: column; align-items: center; gap: 16px; padding-top: 20px; }
+    .avatar-large-wrapper img, .avatar-init-large { width: 120px; height: 120px; border-width: 4px; }
+    .user-display-name-stitch { font-size: 28px; }
+    .header-actions-stitch { position: static; margin-top: 24px; justify-content: center; width: 100%; padding: 0 16px; box-sizing: border-box; }
+    
+    /* Bento Stats (Elena Grid) */
+    .stats-grid-stitch { grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 0 16px 24px; }
+    .stat-card-stitch { padding: 16px 8px; text-align: center; background: var(--white); border-radius: var(--radius-16); }
+    .stat-label { font-size: 9px; }
+    .stat-value { font-size: 16px; }
+
+    /* Cards de Control & Info */
+    .detail-content-stitch { padding: 0 16px 40px; }
+    .security-panel-stitch { padding: 24px 20px; background: var(--white); border-radius: 20px; }
+    .info-group-stitch { gap: 20px; }
+    .info-item-stitch { gap: 12px; }
+    .info-texts p { font-size: 14px; }
+    .role-select-stitch { font-size: 16px; }
+    
+    .security-control-center { margin-top: 24px; }
+    .control-box { background: var(--surface-low); padding: 20px; border-radius: 16px; margin-bottom: 20px; }
+    .btn-reset-stitch { padding: 16px; font-size: 13px; }
+}
