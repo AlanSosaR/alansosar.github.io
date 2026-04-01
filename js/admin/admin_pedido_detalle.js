@@ -20,15 +20,15 @@ console.log("🛠️ admin_pedido_detalle.js — INIT");
 
     // DOM Elements
     const DOM = {
-        orderNumber: document.getElementById("detail-order-number"),
+        orderNumbers: document.querySelectorAll(".pedido-number, .pedido-number-mobile"),
         statusBadge: document.getElementById("detail-status"),
         date: document.getElementById("detail-date"),
         
-        avatar: document.getElementById("detail-avatar"),
-        clientName: document.getElementById("detail-client-name"),
-        clientEmail: document.getElementById("detail-client-email"),
-        clientPhone: document.getElementById("detail-client-phone"),
-        shippingAddress: document.getElementById("detail-shipping-address"),
+        avatars: document.querySelectorAll("#detail-avatar, #detail-avatar-mobile"),
+        clientNames: document.querySelectorAll("#detail-client-name, #detail-client-name-mobile"),
+        clientEmails: document.querySelectorAll("#detail-client-email, #detail-client-email-mobile"),
+        clientPhones: document.querySelectorAll("#detail-client-phone, #detail-client-phone-mobile"),
+        shippingAddresses: document.querySelectorAll("#detail-shipping-address, #detail-shipping-address-mobile"),
         
         itemsBody: document.getElementById("detail-items-body"),
         
@@ -43,7 +43,7 @@ console.log("🛠️ admin_pedido_detalle.js — INIT");
         
         statusActionsBox: document.getElementById("status-action-buttons"),
         timelineProgress: document.getElementById("timeline-progress"),
-        btnContactClient: document.getElementById("btn-contact-client")
+        btnContactClients: document.querySelectorAll("#btn-contact-client, #btn-contact-client-mobile")
     };
 
     let pendingAction = null;
@@ -152,29 +152,36 @@ console.log("🛠️ admin_pedido_detalle.js — INIT");
         const a = o.address || {};
 
         // 1. Header Info
-        DOM.orderNumber.textContent = `Pedido #${String(o.order_number).padStart(4, "0")}`;
+        DOM.orderNumbers.forEach(el => {
+            el.textContent = `Pedido #${String(o.order_number).padStart(4, "0")}`;
+        });
+        
         DOM.date.textContent = `Realizado el ${new Date(o.created_at).toLocaleString("es-HN", {
             day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute:'2-digit'
         })}`;
         
-        DOM.statusBadge.textContent = STATUS_LABELS[o.status] || o.status;
-        DOM.statusBadge.className = `status-pill ${o.status}`; // Set specific color class
+        // Mantener material symbol icon
+        DOM.statusBadge.innerHTML = `<span class="material-symbols-outlined">check_circle</span> ${STATUS_LABELS[o.status] || o.status}`;
+        DOM.statusBadge.className = `status-pill status-badge ${o.status}`; // Set specific color class
 
         // 2. Client Info
         const cName = a.full_name || u.name || "Cliente";
-        DOM.clientName.textContent = cName;
-        DOM.clientEmail.textContent = u.email || "—";
-        DOM.clientPhone.textContent = a.phone || u.phone || "—";
+        
+        DOM.clientNames.forEach(el => el.textContent = cName);
+        DOM.clientEmails.forEach(el => el.textContent = u.email || "—");
+        DOM.clientPhones.forEach(el => el.textContent = a.phone || u.phone || "—");
         
         // Initials Avatar
         const initials = cName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-        DOM.avatar.textContent = initials;
+        DOM.avatars.forEach(el => el.textContent = initials);
         
         // Dirección Completa
         const addressParts = [a.street, a.city, a.state, a.country, a.postal_code].filter(Boolean);
-        DOM.shippingAddress.innerHTML = addressParts.join("<br>") || "—";
+        DOM.shippingAddresses.forEach(el => {
+            el.innerHTML = addressParts.join("<br>") || "—";
+        });
 
-        // 3. Productos (Items)
+        // 3. Productos (Items) - Now rendering as Mobile Cards naturally
         DOM.itemsBody.innerHTML = "";
         let subtotalFloat = 0;
 
@@ -192,29 +199,29 @@ console.log("🛠️ admin_pedido_detalle.js — INIT");
 
                 const imgHtml = prod.image_url 
                     ? `<img src="${prod.image_url}" alt="${name}">`
-                    : `<span class="material-symbols-outlined pb-icon">coffee</span>`;
+                    : `<span class="material-symbols-outlined pb-icon text-4xl opacity-30">coffee</span>`;
 
-                const tr = document.createElement("tr");
-                tr.innerHTML = `
-                    <td>
-                        <div class="product-cell">
-                            <div class="product-img-wrapper flex justify-center items-center">
-                                ${imgHtml}
-                            </div>
+                const cardHtml = `
+                    <div class="product-mobile-card">
+                        <div class="pmc-img-wrapper">
+                            ${imgHtml}
+                        </div>
+                        <div class="pmc-details">
                             <div>
-                                <p class="product-name">${name}</p>
-                                <p class="product-meta">${metaStr}</p>
+                                <h3 class="pmc-name">${name}</h3>
+                                <p class="pmc-meta">${metaStr}</p>
+                            </div>
+                            <div class="pmc-bottom">
+                                <span class="pmc-qty">Qty: ${item.quantity}</span>
+                                <span class="pmc-subtotal">$${lineTotal.toFixed(2)}</span>
                             </div>
                         </div>
-                    </td>
-                    <td class="price-text">L ${parseFloat(item.price).toFixed(2)}</td>
-                    <td class="qty-text">x${item.quantity}</td>
-                    <td class="subtotal-text">L ${lineTotal.toFixed(2)}</td>
+                    </div>
                 `;
-                DOM.itemsBody.appendChild(tr);
+                DOM.itemsBody.insertAdjacentHTML('beforeend', cardHtml);
             });
         } else {
-            DOM.itemsBody.innerHTML = `<tr><td colspan="4" class="text-center p-8">No hay productos en este pedido.</td></tr>`;
+            DOM.itemsBody.innerHTML = `<div class="text-center p-8 text-sm opacity-60">No hay productos en este pedido.</div>`;
         }
 
         // 4. Pago y Totales
@@ -237,24 +244,26 @@ console.log("🛠️ admin_pedido_detalle.js — INIT");
 
         // 5. Order Notes
         if (o.order_notes) {
-            DOM.orderNotes.textContent = `"${o.order_notes}"`;
+            DOM.orderNotes.textContent = o.order_notes;
             DOM.orderNotes.style.opacity = "1";
         } else {
-            DOM.orderNotes.textContent = '"Sin notas adicionales"';
-            DOM.orderNotes.style.opacity = "0.5";
+            DOM.orderNotes.textContent = 'El cliente no dejó notas.';
+            DOM.orderNotes.style.opacity = "0.7";
         }
 
         // WhatsApp Action
-        DOM.btnContactClient.onclick = () => {
-             const phone = a.phone || u.phone;
-             if (!phone) { 
-                 openSnackbar("Atención", "El cliente no tiene teléfono registrado.", null, false);
-                 return;
-             }
-             const cleanPhone = phone.replace(/\D/g, "");
-             const msg = encodeURIComponent(`Hola ${cName}, te contactamos de Café Cortero sobre tu pedido #${o.order_number}...`);
-             window.open(`https://wa.me/${cleanPhone}?text=${msg}`, "_blank");
-        };
+        DOM.btnContactClients.forEach(btn => {
+            btn.onclick = () => {
+                 const phone = a.phone || u.phone;
+                 if (!phone) { 
+                     openSnackbar("Atención", "El cliente no tiene teléfono registrado.", null, false);
+                     return;
+                 }
+                 const cleanPhone = phone.replace(/\D/g, "");
+                 const msg = encodeURIComponent(`Hola ${cName}, te contactamos de Café Cortero sobre tu pedido #${o.order_number}...`);
+                 window.open(`https://wa.me/${cleanPhone}?text=${msg}`, "_blank");
+            };
+        });
 
         // Render Action Buttons & Timeline
         renderTimeline(o.status);
