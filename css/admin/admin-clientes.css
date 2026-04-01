@@ -80,8 +80,13 @@ body.page-admin-customers {
 
 @media (max-width: 1024px) {
     .customers-layout {
-        grid-template-columns: 1fr;
-        height: auto;
+        display: flex;
+        flex-direction: column-reverse;
+        gap: 32px;
+    }
+
+    .no-selection-section {
+        display: none !important;
     }
 }
 
@@ -526,6 +531,51 @@ body.page-admin-customers {
     }
 }
 
+/* =========================
+   MOBILE RESPONSIVE
+========================= */
+@media (max-width: 768px) {
+    .admin-customers-container {
+        padding: 20px 16px;
+    }
+
+    .detail-profile-wrapper {
+        left: 16px;
+        gap: 16px;
+    }
+
+    .profile-img {
+        width: 80px;
+        height: 80px;
+        border-width: 3px;
+    }
+
+    .client-name {
+        font-size: 24px;
+    }
+
+    .header-actions {
+        position: static;
+        margin-top: 16px;
+        padding: 0 16px;
+        justify-content: flex-start;
+    }
+
+    .detail-content {
+        padding: 0 16px 24px;
+        gap: 24px;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .history-table th, .history-table td {
+        padding: 12px 8px;
+    }
+}
+
 /* Helpers */
 .hidden { display: none !important; }
 
@@ -533,3 +583,4 @@ body.page-admin-customers {
 #customer-detail {
     transition: opacity 0.3s ease;
 }
+
