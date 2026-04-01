@@ -539,19 +539,45 @@ body.page-admin-customers {
         padding: 20px 16px;
     }
 
+    .detail-cover {
+        height: 100px;
+        margin-bottom: 0;
+    }
+
     .detail-profile-wrapper {
-        left: 16px;
+        position: relative;
+        bottom: auto;
+        left: auto;
+        margin-top: -30px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
         gap: 16px;
+        padding: 0 16px;
+        width: 100%;
+        box-sizing: border-box;
     }
 
     .profile-img {
         width: 80px;
         height: 80px;
+        min-width: 80px;
+        min-height: 80px;
+        flex-shrink: 0; /* Evita que la foto se haga ovalada */
+        object-fit: cover;
         border-width: 3px;
     }
 
+    .profile-text {
+        flex: 1;
+        min-width: 0; /* Permite wrap en flex child */
+    }
+
     .client-name {
-        font-size: 24px;
+        font-size: 20px;
+        line-height: 1.25;
+        white-space: normal;
+        word-wrap: break-word; /* Para nombres súper largos "Alan Fabricio Sosa Rodezno" */
     }
 
     .header-actions {
@@ -559,11 +585,14 @@ body.page-admin-customers {
         margin-top: 16px;
         padding: 0 16px;
         justify-content: flex-start;
+        flex-wrap: wrap; /* Permitir que los botones envuelvan si no caben */
+        gap: 8px;
     }
 
     .detail-content {
         padding: 0 16px 24px;
         gap: 24px;
+        margin-top: 16px;
     }
 
     .stats-grid {

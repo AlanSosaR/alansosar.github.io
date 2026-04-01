@@ -152,8 +152,20 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   }
 
+  .header-status-filter {
+    max-width: 90px !important; /* Limita el texto del filtro ("Todos los roles") */
+    text-overflow: ellipsis;
+    overflow: hidden;
+    padding-left: 6px !important;
+    padding-right: 18px !important; /* Espacio para flecha */
+    margin-left: 4px !important;
+    font-size: 0.8rem !important;
+    background-position: right 2px center !important;
+  }
+
   #header-search-input {
     font-size: 0.9rem;
+    min-width: 60px; /* Asegura un mínimo espacio para el texto */
   }
 }
 
