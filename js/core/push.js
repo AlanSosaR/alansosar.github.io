@@ -50,17 +50,23 @@ export async function registerPushToken(userId) {
     }
 
     // -----------------------------
-    // Service Worker (único)
+    // Service Worker — limpiar registros viejos y registrar el correcto
     // -----------------------------
-    let registration = await navigator.serviceWorker.getRegistration("/");
-    if (registration) {
-      // Forzar actualización si ya existe
-      await registration.update();
+    const SW_SCRIPT = "/firebase-messaging-sw.js";
+
+    // Obtener todos los SWs registrados y desregistrar los que no sean el nuestro
+    const allRegistrations = await navigator.serviceWorker.getRegistrations();
+    for (const reg of allRegistrations) {
+      const scriptUrl = reg.active?.scriptURL || reg.installing?.scriptURL || reg.waiting?.scriptURL || "";
+      if (scriptUrl && !scriptUrl.includes("firebase-messaging-sw.js")) {
+        console.log("🧹 Desregistrando SW obsoleto:", scriptUrl);
+        await reg.unregister();
+      }
     }
 
-    // Registro con cache-bust para asegurar que toma las nuevas credenciales de Firebase
-    const swUrl = `/firebase-messaging-sw.js?v=${Date.now()}`;
-    registration = await navigator.serviceWorker.register(swUrl, { scope: "/" });
+    // Registrar con cache-bust para asegurar que toma las nuevas credenciales de Firebase
+    const swUrl = `${SW_SCRIPT}?v=${Date.now()}`;
+    const registration = await navigator.serviceWorker.register(swUrl, { scope: "/" });
     await navigator.serviceWorker.ready;
 
     // -----------------------------
