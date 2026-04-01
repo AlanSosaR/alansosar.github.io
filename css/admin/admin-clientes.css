@@ -430,40 +430,53 @@ body.page-admin-customers {
     gap: 8px;
 }
 
+.page-numbers {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
 .page-btn {
-    width: 32px;
-    height: 32px;
+    width: 40px;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: var(--radius-8);
-    background: transparent;
+    border-radius: 50%;
+    background: #F5F7F6;
+    color: var(--texto-principal);
     border: none;
     cursor: pointer;
-    transition: background 0.2s;
+    font-size: 15px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.page-btn .material-symbols-outlined {
+    font-size: 20px;
 }
 
 .page-btn:hover:not(:disabled) {
-    background: var(--fondo-general);
+    background: #EAEAEA;
 }
 
 .page-btn:disabled {
-    opacity: 0.3;
+    opacity: 0.4;
     cursor: default;
 }
 
 .page-btn.active {
     background: var(--principal);
     color: white;
-    font-weight: 700;
-    font-size: 13px;
+    font-weight: 600;
 }
 
 .page-info {
-    font-size: 12px;
+    font-size: 13px;
     color: var(--texto-secundario);
     margin: 0;
 }
+
 
 /* =========================
    FOOTER (Botanical Archivist)
