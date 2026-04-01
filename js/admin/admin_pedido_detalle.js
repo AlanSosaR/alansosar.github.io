@@ -46,6 +46,47 @@ console.log("🛠️ admin_pedido_detalle.js — INIT");
         btnContactClient: document.getElementById("btn-contact-client")
     };
 
+    let pendingAction = null;
+
+    /* =========================
+       SNACKBAR
+    ========================= */
+    function openSnackbar(title, message, onConfirm, showCancel = true) {
+        const box = document.getElementById("snackbar-action");
+        const btnConfirm = document.getElementById("snackbar-confirm");
+        const btnCancel = document.getElementById("snackbar-cancel");
+
+        document.getElementById("snackbar-title").textContent = title;
+        document.getElementById("snackbar-message").textContent = message;
+
+        btnConfirm.onclick = null;
+        btnCancel.onclick = null;
+
+        if (showCancel) {
+            btnCancel.classList.remove("hidden");
+            btnConfirm.textContent = "Confirmar";
+        } else {
+            btnCancel.classList.add("hidden");
+            btnConfirm.textContent = "Aceptar";
+        }
+
+        pendingAction = onConfirm;
+
+        btnConfirm.onclick = async () => {
+            box.classList.add("hidden");
+            const action = pendingAction;
+            pendingAction = null;
+            if (typeof action === "function") await action();
+        };
+
+        btnCancel.onclick = () => {
+            pendingAction = null;
+            box.classList.add("hidden");
+        };
+
+        box.classList.remove("hidden");
+    }
+
     /* =========================
        INIT
     ========================= */
@@ -58,13 +99,11 @@ console.log("🛠️ admin_pedido_detalle.js — INIT");
             return;
         }
 
-        // Obtener el ID de la URL
         const params = new URLSearchParams(window.location.search);
         const orderId = params.get("id");
 
-        if (!orderId) {
-            alert("No se proporcionó un ID de pedido.");
-            history.back();
+        if (!orderId || orderId === "undefined") {
+            openSnackbar("Error de navegación", "No se proporcionó un ID de pedido válido.", () => history.back(), false);
             return;
         }
 
@@ -101,8 +140,7 @@ console.log("🛠️ admin_pedido_detalle.js — INIT");
             renderOrderData(orderData);
         } catch (err) {
             console.error("❌ Error cargando el detalle del pedido:", err);
-            alert("Error cargando el pedido.");
-            history.back();
+            openSnackbar("Error", "Ocurrió un error cargando los detalles del pedido.", () => history.back(), false);
         }
     }
 
@@ -180,7 +218,6 @@ console.log("🛠️ admin_pedido_detalle.js — INIT");
         }
 
         // 4. Pago y Totales
-        // En Café Cortero de momento envío es gratis en muchos casos, pero pongamos que el subtotal es el total.
         DOM.subtotal.textContent = `L ${subtotalFloat.toFixed(2)}`;
         DOM.total.textContent = `L ${parseFloat(o.total || subtotalFloat).toFixed(2)}`;
 
@@ -210,8 +247,11 @@ console.log("🛠️ admin_pedido_detalle.js — INIT");
         // WhatsApp Action
         DOM.btnContactClient.onclick = () => {
              const phone = a.phone || u.phone;
-             if (!phone) { alert("El cliente no tiene teléfono."); return;}
-             const cleanPhone = phone.replace(/\\D/g, "");
+             if (!phone) { 
+                 openSnackbar("Atención", "El cliente no tiene teléfono registrado.", null, false);
+                 return;
+             }
+             const cleanPhone = phone.replace(/\D/g, "");
              const msg = encodeURIComponent(`Hola ${cName}, te contactamos de Café Cortero sobre tu pedido #${o.order_number}...`);
              window.open(`https://wa.me/${cleanPhone}?text=${msg}`, "_blank");
         };
@@ -235,26 +275,25 @@ console.log("🛠️ admin_pedido_detalle.js — INIT");
             if(el) el.classList.remove("active");
         });
 
-        // Caso cancelado corta la linea y detiene
         if (status === "cancelled") {
             DOM.timelineProgress.style.width = "0%";
-            DOM.timelineProgress.style.backgroundColor = "#ba1a1a"; // rojo error
-            document.getElementById("step-pending").classList.add("active");
-            document.querySelector("#step-pending .step-icon span").textContent = "cancel";
+            DOM.timelineProgress.style.backgroundColor = "#ba1a1a";
+            document.getElementById("step-pending")?.classList.add("active");
+            if (document.querySelector("#step-pending .step-icon span")) {
+                document.querySelector("#step-pending .step-icon span").textContent = "cancel";
+            }
             return;
         }
 
-        if (currentIndex === 0) progressPercent = 0; // pending
-        if (currentIndex === 1) progressPercent = 50; // processing (en la UI map "Confirmed->Preparing") - Lo simplificaré a la mitad
-        if (currentIndex === 2) progressPercent = 75; // shipped
-        if (currentIndex === 3) progressPercent = 100; // delivered
+        if (currentIndex === 0) progressPercent = 0; 
+        if (currentIndex === 1) progressPercent = 50; 
+        if (currentIndex === 2) progressPercent = 75; 
+        if (currentIndex === 3) progressPercent = 100; 
 
         DOM.timelineProgress.style.width = `${progressPercent}%`;
 
-        // Activar iconos hasta current
         for (let i = 0; i <= currentIndex; i++) {
             let sId = flow[i];
-            // Mapeo processing a preparing en UI
             if (sId === "processing") {
                 document.getElementById("step-confirmed")?.classList.add("active");
                 document.getElementById("step-preparing")?.classList.add("active");
@@ -287,10 +326,10 @@ console.log("🛠️ admin_pedido_detalle.js — INIT");
         btn.className = `status-btn ${extraClass}`;
         btn.innerHTML = `<span class="material-symbols-outlined">${icon}</span> ${label}`;
         
-        btn.onclick = async () => {
-            if (confirm(`¿Seguro que deseas: ${label}?`)) {
+        btn.onclick = () => {
+            openSnackbar("Confirmación requerida", `¿Seguro que deseas: ${label}?`, async () => {
                 await onClick();
-            }
+            });
         };
         DOM.statusActionsBox.appendChild(btn);
     }
@@ -309,7 +348,7 @@ console.log("🛠️ admin_pedido_detalle.js — INIT");
 
         if (error) {
             console.error("❌ Error actualizando estado:", error);
-            alert("Error al actualizar el estado");
+            openSnackbar("Error", "Error al actualizar el estado", null, false);
             renderActionButtons(orderData); // Restore buttons
             return;
         }
@@ -318,6 +357,8 @@ console.log("🛠️ admin_pedido_detalle.js — INIT");
         if (orderData.user_id) {
             await sendNotification(orderData.user_id, newStatus, orderData);
         }
+
+        openSnackbar("¡Éxito!", "Estado actualizado correctamente.", null, false);
 
         // 3. Reload Data natively to reflect changes perfectly
         await fetchOrderData(orderId);

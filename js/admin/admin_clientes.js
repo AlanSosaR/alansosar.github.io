@@ -77,7 +77,7 @@ const initAdminClientes = () => {
         try {
             const { data: orders, error } = await window.supabase
                 .from("orders")
-                .select("total, status, order_number, created_at")
+                .select("id, total, status, order_number, created_at")
                 .eq("user_id", userId)
                 .order("created_at", { ascending: false });
 

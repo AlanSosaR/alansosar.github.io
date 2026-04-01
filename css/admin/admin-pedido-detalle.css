@@ -637,3 +637,89 @@ body.page-admin-pedido-detalle {
         flex: 1;
     }
 }
+
+/* =========================================================================
+   SNACKBAR (Para reemplazar alertas)
+   ========================================================================= */
+.snackbar-action {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #202124;
+    color: white;
+    padding: 16px 24px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 320px;
+    max-width: 90vw;
+    animation: slideUpSnack 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.snackbar-action.hidden {
+    display: none !important;
+}
+
+@keyframes slideUpSnack {
+    from { opacity: 0; transform: translate(-50%, 20px); }
+    to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+.snackbar-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.snackbar-text strong {
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+    font-family: 'Epilogue', sans-serif;
+}
+
+.snackbar-text span {
+    font-size: 14px;
+    color: #ccc;
+    font-family: 'Manrope', sans-serif;
+}
+
+.snackbar-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.snackbar-btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+    font-family: 'Manrope', sans-serif;
+}
+
+.snackbar-btn.cancel {
+    background: transparent;
+    color: #bbb;
+}
+
+.snackbar-btn.cancel:hover {
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+}
+
+.snackbar-btn.danger {
+    background: var(--bg-primary);
+    color: white;
+}
+
+.snackbar-btn.danger:hover {
+    opacity: 0.9;
+}
