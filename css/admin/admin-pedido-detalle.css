@@ -670,6 +670,14 @@ body.page-admin-pedido-detalle {
     display: none;
 }
 
+/* Ocultar el header global en la página de detalle de pedido (móvil usa header propio) */
+@media (max-width: 768px) {
+    body.page-admin-pedido-detalle header.header-fixed,
+    body.page-admin-pedido-detalle #main-header.header-fixed {
+        display: none !important;
+    }
+}
+
 @media (min-width: 1024px) {
     .pedido-bento-grid {
         grid-template-columns: 2fr 1fr;
@@ -687,6 +695,11 @@ body.page-admin-pedido-detalle {
     }
     
     .hidden-desktop {
+        display: block !important;
+    }
+
+    /* El header mobile sí necesita flex */
+    .pedido-mobile-header.hidden-desktop {
         display: flex !important;
     }
     
