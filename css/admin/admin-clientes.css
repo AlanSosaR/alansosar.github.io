@@ -125,6 +125,16 @@ body.page-admin-customers {
     padding: 12px;
 }
 
+.list-pagination-footer {
+    padding: 16px;
+    border-top: 1px solid var(--borde);
+    background: var(--fondo-card);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
 /* Tarjetas de Cliente */
 .customer-card {
     display: flex;

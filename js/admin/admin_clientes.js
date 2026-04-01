@@ -30,6 +30,10 @@ document.addEventListener("DOMContentLoaded", () => {
     let historyPage = 1;
     const historyPerPage = 5;
 
+    // Paginación de Lista de Clientes
+    let custCurrentPage = 1;
+    const custItemsPerPage = 8;
+
     // 3. INICIO
     const init = async () => {
         await fetchCustomers();
@@ -85,7 +89,13 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        filteredCustomers.forEach(customer => {
+        // Paginación de Clientes
+        const totalPages = Math.ceil(filteredCustomers.length / custItemsPerPage);
+        const start = (custCurrentPage - 1) * custItemsPerPage;
+        const end = start + custItemsPerPage;
+        const pageItems = filteredCustomers.slice(start, end);
+
+        pageItems.forEach(customer => {
             const clone = tplCard.content.cloneNode(true);
             const card = clone.querySelector(".customer-card");
             const img = clone.querySelector(".card-img");
@@ -101,6 +111,58 @@ document.addEventListener("DOMContentLoaded", () => {
             card.onclick = () => selectCustomer(customer);
             listContainer.appendChild(clone);
         });
+
+        renderCustPagination(totalPages);
+    };
+
+    const renderCustPagination = (totalPages) => {
+        const prevBtn = document.getElementById("cust-prev");
+        const nextBtn = document.getElementById("cust-next");
+        const numbersDiv = document.getElementById("cust-page-numbers");
+
+        if (!prevBtn || !nextBtn || !numbersDiv) return;
+
+        numbersDiv.innerHTML = "";
+        
+        // Crear botones numéricos (máximo 3 por simplicidad)
+        for(let i=1; i<=totalPages; i++) {
+            if (i > 3 && i < totalPages) {
+                if (i === 4) {
+                    const span = document.createElement("span");
+                    span.textContent = "...";
+                    numbersDiv.appendChild(span);
+                }
+                continue;
+            }
+            const btn = document.createElement("button");
+            btn.className = `page-btn ${i === custCurrentPage ? 'active' : ''}`;
+            btn.textContent = i;
+            btn.onclick = () => {
+                custCurrentPage = i;
+                renderCustomerList();
+                listContainer.scrollTop = 0;
+            };
+            numbersDiv.appendChild(btn);
+        }
+
+        prevBtn.disabled = custCurrentPage === 1;
+        nextBtn.disabled = custCurrentPage === totalPages || totalPages === 0;
+
+        prevBtn.onclick = () => {
+            if (custCurrentPage > 1) {
+                custCurrentPage--;
+                renderCustomerList();
+                listContainer.scrollTop = 0;
+            }
+        };
+
+        nextBtn.onclick = () => {
+            if (custCurrentPage < totalPages) {
+                custCurrentPage++;
+                renderCustomerList();
+                listContainer.scrollTop = 0;
+            }
+        };
     };
 
     const selectCustomer = async (customer) => {
@@ -171,6 +233,7 @@ document.addEventListener("DOMContentLoaded", () => {
             (c.email && c.email.toLowerCase().includes(query)) ||
             (c.phone && c.phone.includes(query))
         );
+        custCurrentPage = 1; // RESET PAGINACION
         renderCustomerList();
     });
 
@@ -181,6 +244,7 @@ document.addEventListener("DOMContentLoaded", () => {
         } else {
             filteredCustomers = allCustomers.filter(c => c.rol === role);
         }
+        custCurrentPage = 1; // RESET PAGINACION
         renderCustomerList();
     });
 
