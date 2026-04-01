@@ -15,7 +15,7 @@ let filteredUsers = [];
 let currentSearch = "";
 let currentRole = "all";
 let currentPage = 1;
-const itemsPerPage = 5;
+const itemsPerPage = 4; // Ajustado según imagen
 
 // --- FUNCIONES DE RENDERIZADO (MOVIDAS AL PRINCIPIO PARA EVITAR HOISTING ISSUES) ---
 
@@ -31,11 +31,11 @@ function getRoleClass(role) {
 
 function getRoleLabel(role) {
     switch (role?.toLowerCase()) {
-        case 'admin': return 'Administrador';
-        case 'moderator': return 'Logística';
-        case 'tostador': return 'Tostador Senior';
-        case 'suspendido': return 'Suspendido';
-        default: return 'Colaborador';
+        case 'admin': return 'ADMINISTRADOR';
+        case 'moderator': return 'LOGÍSTICA';
+        case 'tostador': return 'TOSTADOR SENIOR';
+        case 'suspendido': return 'SUSPENDIDO';
+        default: return 'COLABORADOR';
     }
 }
 
@@ -104,12 +104,11 @@ function updatePaginationUI() {
     const pageInfo = document.getElementById('page-info');
     const pageNumbers = document.getElementById('page-numbers');
 
-    const start = filteredUsers.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1;
     const end = Math.min(currentPage * itemsPerPage, filteredUsers.length);
 
     if (prevBtn) prevBtn.disabled = (currentPage === 1);
     if (nextBtn) nextBtn.disabled = (currentPage === totalPages);
-    if (pageInfo) pageInfo.textContent = `Mostrando ${start} - ${end} de ${filteredUsers.length} registros`;
+    if (pageInfo) pageInfo.textContent = `MOSTRANDO ${end} DE ${filteredUsers.length} REGISTROS`;
 
     if (pageNumbers) {
         pageNumbers.innerHTML = '';
