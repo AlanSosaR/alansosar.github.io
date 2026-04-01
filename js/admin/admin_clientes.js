@@ -35,7 +35,7 @@ const initAdminClientes = () => {
 
     // Paginación de Lista de Clientes
     let custCurrentPage = 1;
-    const custItemsPerPage = 4;
+    const custItemsPerPage = 5;
 
     // 3. INICIO
     const init = async () => {

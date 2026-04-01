@@ -120,12 +120,12 @@ body.page-admin-users {
 .user-card-item-stitch {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 14px 16px;
+    gap: 8px;
+    padding: 8px 12px;
     border-radius: var(--radius-12);
     cursor: pointer;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    margin-bottom: 8px;
+    margin-bottom: 4px;
     border: 1px solid transparent;
 }
 
@@ -139,8 +139,8 @@ body.page-admin-users {
 }
 
 .card-avatar-placeholder img, .avatar-init-small {
-    width: 44px;
-    height: 44px;
+    width: 34px;
+    height: 34px;
     border-radius: var(--radius-circle);
     object-fit: cover;
 }
