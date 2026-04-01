@@ -320,6 +320,12 @@ body[class*="page-admin-"] .header-middle {
   margin: 0 40px;
 }
 
+@media (max-width: 768px) {
+  body[class*="page-admin-"] .header-middle {
+    margin: 0 12px;
+  }
+}
+
 body[class*="page-admin-"] .header-user-left,
 body[class*="page-admin-"] .header-right-new {
   min-width: auto !important;

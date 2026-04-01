@@ -221,9 +221,10 @@ const initAdminClientes = () => {
 
         paginated.forEach(order => {
             const row = document.createElement("tr");
+            row.className = `status-row-${order.status}`;
             row.innerHTML = `
-                <td><strong>#${order.order_number || "—"}</strong></td>
-                <td>${new Date(order.created_at).toLocaleDateString("es-ES")}</td>
+                <td><strong>Pedido #${order.order_number || "—"}</strong></td>
+                <td>${new Date(order.created_at).toLocaleDateString("es-ES", { day: '2-digit', month: 'short', year: 'numeric' })}</td>
                 <td><span class="status-badge status-${order.status}">${order.status}</span></td>
                 <td class="text-right"><strong>L ${parseFloat(order.total).toFixed(2)}</strong></td>
             `;
