@@ -220,7 +220,7 @@
   <script type="module">
     import { renderHeaderSearch } from "/js/ui/header.search.js";
     document.addEventListener("header:ready", () => {
-      const slot = document.getElementById("header-search-slot");
+      const slot = document.getElementById("header-middle-slot");
       if (!slot) return;
       slot.innerHTML = renderHeaderSearch({ showFilter: true, showAdd: false, placeholder: "Nombre, email o cargo..." });
 
