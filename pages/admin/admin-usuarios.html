@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin · Usuarios | Café Cortero</title>
 
   <!-- Material Symbols -->
@@ -105,7 +104,7 @@
   </main>
  
   <!-- FAB para Nuevo Usuario (Solo Móvil) -->
-  <button class="fab-btn" id="fabNewUser" title="Nuevo Colaborador" onclick="document.getElementById('btnNewUser')?.click()">
+  <button class="fab-btn" id="fabNewUser" onclick="const btn = document.getElementById('btnNewUser'); if(btn) btn.click();" title="Nuevo Colaborador">
      <span class="material-symbols-outlined">person_add</span>
   </button>
 
@@ -121,40 +120,34 @@
 
     document.addEventListener("header:ready", () => {
       const slot = document.getElementById("header-search-slot");
-      if (slot) {
-        slot.innerHTML = renderHeaderSearch({
-          showFilter: true,
-          showAdd: false,
-          placeholder: "Nombre, email o cargo..."
-        });
-        
-        // --- 1. Configurar Filtro por Rol (Drop-down del Header) ---
-        const filter = document.getElementById("header-status-filter");
-        if (filter) {
-            filter.innerHTML = `
-                <option value="all">Todos los Roles</option>
-                <option value="admin">Administradores</option>
-                <option value="moderator">Moderadores</option>
-                <option value="user">Usuarios</option>
-            `;
-            filter.addEventListener("change", (e) => {
-                // Sincronizar con el select nativo de la página (opcional pero bueno para consistencia)
-                const pageFilter = document.getElementById("filter-role");
-                if (pageFilter) {
-                    pageFilter.value = e.target.value;
-                }
-                // Disparar evento para que admin-usuarios.js reaccione
-                document.dispatchEvent(new CustomEvent("user:filter", { detail: e.target.value }));
-            });
-        }
+      if (!slot) return;
 
-        // --- 2. Sincronizar Búsqueda (Input del Header) ---
-        const headerInput = document.getElementById("header-search-input");
-        if (headerInput) {
-          headerInput.addEventListener("input", (e) => {
-            document.dispatchEvent(new CustomEvent("user:search", { detail: e.target.value.trim() }));
-          });
-        }
+      slot.innerHTML = renderHeaderSearch({
+        showFilter: true,
+        showAdd: false,
+        placeholder: "Nombre, email o cargo..."
+      });
+      
+      const filter = document.getElementById("header-status-filter");
+      if (filter) {
+        filter.innerHTML = `
+          <option value="all">Todos los Roles</option>
+          <option value="admin">Administradores</option>
+          <option value="moderator">Moderadores</option>
+          <option value="user">Usuarios</option>
+        `;
+        filter.addEventListener("change", (e) => {
+          const pageFilter = document.getElementById("filter-role");
+          if (pageFilter) pageFilter.value = e.target.value;
+          document.dispatchEvent(new CustomEvent("user:filter", { detail: e.target.value }));
+        });
+      }
+
+      const headerInput = document.getElementById("header-search-input");
+      if (headerInput) {
+        headerInput.addEventListener("input", (e) => {
+          document.dispatchEvent(new CustomEvent("user:search", { detail: e.target.value.trim() }));
+        });
       }
     });
   </script>
