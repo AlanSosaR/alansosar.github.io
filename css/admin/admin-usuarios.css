@@ -55,24 +55,23 @@ body {
     overflow: hidden;
 }
 
+.section-header-institucional {
+    margin-bottom: 24px;
+}
+
 .section-title-institucional {
     font-family: 'Fraunces', serif;
     font-size: 24px;
     font-weight: 700;
     color: var(--coffee-deep);
-    padding: 32px 32px 8px 32px;
-    margin: 0;
-    position: relative;
+    margin: 0 0 8px 0;
 }
 
-.section-title-institucional::after {
-    content: '';
-    display: block;
+.green-line-stitch {
     width: 48px;
     height: 4px;
-    background: var(--primary-green);
+    background-color: var(--primary-green);
     border-radius: 2px;
-    margin-top: 8px;
 }
 
 /* --- TABLA INSTITUCIONAL --- */
@@ -194,12 +193,15 @@ body {
 .action-btn {
     background: none;
     border: none;
-    color: rgba(81, 38, 21, 0.4);
+    color: var(--primary-green); /* VERDE OFICIAL */
     cursor: pointer;
-    transition: color 0.2s;
+    transition: transform 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.action-btn:hover { color: var(--primary-green); }
+.action-btn:hover { transform: scale(1.1); }
 
 /* --- PAGINACIÓN INSTITUCIONAL --- */
 .pagination-institucional {
