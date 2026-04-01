@@ -20,6 +20,12 @@
 <body class="page-admin-customers">
   <main class="admin-customers-container fade-in">
 
+    <!-- Títulos Intenso -->
+    <header class="page-title-section">
+        <h1 class="page-title">Gestión de Clientes</h1>
+        <p class="page-subtitle">Visualiza y gestiona la base de datos de tus clientes más fieles.</p>
+    </header>
+
     <!-- =========================
          LAYOUT DE LAS DOS COLUMNAS
     ========================= -->
@@ -40,12 +46,12 @@
 
         <!-- SECCIÓN DERECHA: DETALLE DEL CLIENTE -->
         <section id="customer-detail" class="customer-detail-section hidden">
-            <!-- Header del Cliente -->
-            <header class="detail-header">
-                <div class="client-profile">
+            <!-- Portada y Perfil (Intenso) -->
+            <header class="detail-cover">
+                <div class="detail-profile-wrapper">
                     <img id="c-photo" src="/imagenes/avatar-default.svg" alt="Foto de perfil" class="profile-img">
                     <div class="profile-text">
-                        <h1 id="c-name" class="client-name">—</h1>
+                        <h2 id="c-name" class="client-name">—</h2>
                         <p id="c-location" class="client-location">
                             <span class="material-symbols-outlined">location_on</span>
                             <span>—</span>
@@ -53,65 +59,68 @@
                     </div>
                 </div>
                 <div class="header-actions">
-                    <button class="btn-secondary" id="btnEditCustomer">Editar</button>
-                    <button class="btn-primary" id="btnSendMessage">Mensaje</button>
+                    <button class="btn-secondary" id="btnEditCustomer">Editar Perfil</button>
+                    <button class="btn-primary" id="btnSendMessage">Contactar</button>
                 </div>
             </header>
 
-            <!-- Grid de Estadísticas -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <span class="stat-label">TOTAL GASTADO</span>
-                    <strong id="c-total-spent" class="stat-value">L 0.00</strong>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-label">PEDIDOS REALIZADOS</span>
-                    <strong id="c-total-orders" class="stat-value">0</strong>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-label">REGISTRADO DESDE</span>
-                    <strong id="c-reg-date" class="stat-value">—</strong>
-                </div>
-            </div>
-
-            <!-- Historial de Compras -->
-            <section class="history-section">
-                <div class="history-header">
-                    <h3>Historial de Compras</h3>
-                </div>
-
-                <div class="history-table-container">
-                    <table class="history-table">
-                        <thead>
-                            <tr>
-                                <th>Pedido</th>
-                                <th>Fecha</th>
-                                <th>Estado</th>
-                                <th class="text-right">Total</th>
-                            </tr>
-                        </thead>
-                        <tbody id="history-body">
-                            <!-- Se llena con JS -->
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Paginación -->
-                <footer class="pagination-footer">
-                    <div id="history-pagination" class="pagination-controls">
-                        <button class="page-btn" id="prev-page">
-                            <span class="material-symbols-outlined">chevron_left</span>
-                        </button>
-                        <div id="page-numbers" class="page-numbers">
-                            <!-- Botones de página -->
-                        </div>
-                        <button class="page-btn" id="next-page">
-                            <span class="material-symbols-outlined">chevron_right</span>
-                        </button>
+            <!-- Contenido del Detalle -->
+            <div class="detail-content">
+                <!-- Grid de Estadísticas -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-label">GASTO TOTAL</span>
+                        <strong id="c-total-spent" class="stat-value">L 0.00</strong>
                     </div>
-                    <p id="page-info" class="page-info">Página 1 de 1</p>
-                </footer>
-            </section>
+                    <div class="stat-card">
+                        <span class="stat-label">PEDIDOS TOTALES</span>
+                        <strong id="c-total-orders" class="stat-value">0</strong>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">MIEMBRO DESDE</span>
+                        <strong id="c-reg-date" class="stat-value">—</strong>
+                    </div>
+                </div>
+
+                <!-- Historial de Compras -->
+                <section class="history-section">
+                    <div class="history-header">
+                        <h3>Historial de Compras</h3>
+                    </div>
+
+                    <div class="history-table-container">
+                        <table class="history-table">
+                            <thead>
+                                <tr>
+                                    <th>Pedido #</th>
+                                    <th>Fecha</th>
+                                    <th>Estado</th>
+                                    <th class="text-right">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody id="history-body">
+                                <!-- Se llena con JS -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Paginación -->
+                    <footer class="pagination-footer">
+                        <div id="history-pagination" class="pagination-controls">
+                            <button class="page-btn" id="prev-page">
+                                <span class="material-symbols-outlined">chevron_left</span>
+                            </button>
+                            <div id="page-numbers" class="page-numbers">
+                                <!-- Botones de página -->
+                            </div>
+                            <button class="page-btn" id="next-page">
+                                <span class="material-symbols-outlined">chevron_right</span>
+                            </button>
+                        </div>
+                        <p id="page-info" class="page-info">Página 1 de 1</p>
+                    </footer>
+                </section>
+            </div>
         </section>
 
         <!-- ESTADO DE SELECCIÓN VACÍO -->
