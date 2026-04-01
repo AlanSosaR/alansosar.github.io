@@ -4,84 +4,211 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin · Usuarios | Café Cortero</title>
+  
+  <!-- Material Symbols -->
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;900&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  
+  <!-- Estilos Core -->
   <link rel="stylesheet" href="/css/core/tipografia.css">
   <link rel="stylesheet" href="/css/ui/header.css">
   <link rel="stylesheet" href="/css/ui/header.search.css">
   <link rel="stylesheet" href="/css/admin/admin-usuarios.css">
   <link rel="icon" type="image/png" href="/imagenes/logo.png">
 </head>
-<body class="bg-[#F8FAF9]">
+
+<body class="page-admin-users">
   <div id="header-placeholder"></div>
 
-  <main class="admin-users-container">
-    <header class="page-header-institucional">
-      <h1 class="page-title-institucional">Directorio de Personal y Usuarios</h1>
-      <p class="page-subtitle-institucional">Gestión centralizada de Usuarios, roles y permisos.</p>
+  <main class="admin-users-container fade-in">
+    <!-- Header Institucional -->
+    <header class="page-title-section">
+        <h1 class="page-title">Gestión de Usuarios</h1>
+        <p class="page-subtitle">Administra roles, permisos y accesos de seguridad del personal.</p>
     </header>
 
-    <div class="section-header-institucional">
-        <h2 class="section-title-institucional">Gestion de Usuarios</h2>
-        <div class="green-line-stitch"></div>
-    </div>
+    <!-- =========================
+         LAYOUT DE PANEL DUAL
+    ========================= -->
+    <div class="users-layout">
 
-    <div class="main-card">
-        <div class="data-container">
-            <table class="users-table">
-                <thead>
-                    <tr>
-                        <th>USUARIO</th>
-                        <th>EMAIL</th>
-                        <th>ROL ASIGNADO</th>
-                        <th>UBICACIÓN / PAÍS</th>
-                        <th class="text-right"></th>
-                    </tr>
-                </thead>
-                <tbody id="users-tbody"></tbody>
-            </table>
-            
-            <div id="users-mobile-list" class="users-mobile-list"></div>
+        <!-- SECCIÓN IZQUIERDA: LISTA DE USUARIOS -->
+        <aside class="users-list-section">
+            <header class="list-header">
+                <h2 class="section-title">Usuarios</h2>
+                <div id="users-count" class="count-badge">0</div>
+            </header>
 
-            <footer class="pagination-institucional">
-                <p id="page-info" class="page-info">MOSTRANDO 0 DE 0 REGISTROS</p>
-                <div class="pagination-controls-institucional">
-                    <button class="page-btn-icon" id="prev-page"><span class="material-symbols-outlined">chevron_left</span></button>
-                    <div id="page-numbers" class="page-numbers-institucional"></div>
-                    <button class="page-btn-icon" id="next-page"><span class="material-symbols-outlined">chevron_right</span></button>
-                </div>
+            <div id="users-list" class="users-list">
+                <div class="loading-state">Cargando directorio...</div>
+            </div>
+
+            <!-- Paginación SideBar -->
+            <footer class="list-pagination-footer">
+                <button class="page-btn" id="list-prev">
+                    <span class="material-symbols-outlined">chevron_left</span>
+                </button>
+                <div id="list-page-numbers" class="page-numbers"></div>
+                <button class="page-btn" id="list-next">
+                    <span class="material-symbols-outlined">chevron_right</span>
+                </button>
             </footer>
-        </div>
+        </aside>
+
+        <!-- SECCIÓN DERECHA: FICHA MAESTRA DE ACCESO -->
+        <section id="user-detail" class="user-detail-section hidden">
+            <!-- Cabecera de Ficha -->
+            <header class="detail-cover">
+                <div class="detail-profile-wrapper">
+                    <div id="u-avatar-placeholder"></div>
+                    <div class="profile-text">
+                        <h2 id="u-name" class="user-display-name">—</h2>
+                        <p id="u-email" class="user-display-email">—</p>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-secondary" id="btnResetPass">
+                        <span class="material-symbols-outlined">lock_reset</span>
+                        Resetear Clave
+                    </button>
+                    <button class="btn-primary" id="btnSaveChanges">
+                        <span class="material-symbols-outlined">save</span>
+                        Guardar Cambios
+                    </button>
+                </div>
+            </header>
+
+            <!-- Contenido de la Ficha -->
+            <div class="detail-content">
+                <!-- Grid de Configuración Rápida -->
+                <div class="config-grid">
+                    <div class="config-card">
+                        <label class="config-label">ROL ASIGNADO</label>
+                        <select id="u-role-select" class="config-select">
+                            <option value="user">Cliente / Usuario</option>
+                            <option value="moderator">Moderador</option>
+                            <option value="admin">Administrador</option>
+                            <option value="suspendido">Suspendido / Bloqueado</option>
+                        </select>
+                    </div>
+                    <div class="config-card">
+                        <label class="config-label">PAÍS / REGIÓN</label>
+                        <strong id="u-country" class="config-value">—</strong>
+                    </div>
+                    <div class="config-card">
+                        <label class="config-label">ÚLTIMO ACCESO</label>
+                        <strong id="u-last-login" class="config-value">—</strong>
+                    </div>
+                </div>
+
+                <!-- Detalles de Seguridad -->
+                <section class="security-section">
+                    <h3>Seguridad y Auditoría</h3>
+                    <div class="info-table-container">
+                        <table class="info-table">
+                            <tbody>
+                                <tr>
+                                    <td><strong>ID de Sistema:</strong></td>
+                                    <td id="u-full-id">—</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Teléfono:</strong></td>
+                                    <td id="u-phone">—</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Fecha Registro:</strong></td>
+                                    <td id="u-created-at">—</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </section>
+
+        <!-- ESTADO DE SELECCIÓN VACÍO -->
+        <section id="no-selection" class="no-selection-section">
+            <div class="empty-state">
+                <span class="material-symbols-outlined large-icon">shield_person</span>
+                <h3>Selecciona un usuario</h3>
+                <p>Elige un miembro del directorio para gestionar sus permisos y seguridad.</p>
+            </div>
+        </section>
+
     </div>
   </main>
-  <button class="fab-btn" id="fabNewUser" onclick="const b=document.getElementById('btnNewUser'); if(b) b.click();"><span class="material-symbols-outlined">person_add</span></button>
+
+  <button class="fab-btn" id="fabNewUser"><span class="material-symbols-outlined">person_add</span></button>
+
+  <!-- Templates -->
+  <template id="tpl-user-card">
+    <div class="user-card-item">
+        <div class="card-avatar-placeholder"></div>
+        <div class="card-info">
+            <h4 class="card-name">—</h4>
+            <p class="card-role-text">—</p>
+        </div>
+        <span class="material-symbols-outlined arrow">chevron_right</span>
+    </div>
+  </template>
+
+  <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/js/core/supabase-client-core.js"></script>
+  <script src="/js/core/supabase-auth.js"></script>
+  
+  <script>
+    window.PAGE_MODE = "admin-usuarios";
+  </script>
+
   <script src="/js/ui/layout.js"></script>
   <script type="module" src="/js/ui/header.js"></script>
+
+  <!-- Buscador e Integración Header -->
   <script type="module">
     import { renderHeaderSearch } from "/js/ui/header.search.js";
+
     document.addEventListener("header:ready", () => {
       const slot = document.getElementById("header-search-slot");
       if (!slot) return;
-      slot.innerHTML = renderHeaderSearch({ showFilter: true, showAdd: false, placeholder: "Nombre, email o cargo..." });
-      const f = document.getElementById("header-status-filter");
-      if (f) {
-        f.innerHTML = `<option value="all">TODOS LOS ROLES</option><option value="admin">ADMINISTRADORES</option><option value="moderator">MODERADORES</option><option value="user">USUARIOS</option>`;
-        f.addEventListener("change", (e) => {
-          const pf = document.getElementById("filter-role");
-          if (pf) pf.value = e.target.value;
-          document.dispatchEvent(new CustomEvent("user:filter", { detail: e.target.value }));
+
+      slot.innerHTML = renderHeaderSearch({
+        showFilter: true,
+        showAdd: false,
+        placeholder: "Buscar por nombre, email o cargo..."
+      });
+
+      const filter = document.getElementById("header-status-filter");
+      if (filter) {
+        filter.innerHTML = `
+            <option value="all">Todos los Roles</option>
+            <option value="admin">Administradores</option>
+            <option value="moderator">Moderadores</option>
+            <option value="user">Usuarios</option>
+            <option value="suspendido">Suspendidos</option>
+        `;
+        filter.addEventListener("change", (e) => {
+            document.dispatchEvent(new CustomEvent("user:filter", { detail: e.target.value }));
         });
       }
-      const hi = document.getElementById("header-search-input");
-      if (hi) {
-        hi.addEventListener("input", (e) => {
+
+      const input = document.getElementById("header-search-input");
+      if (input) {
+        input.addEventListener("input", (e) => {
           document.dispatchEvent(new CustomEvent("user:search", { detail: e.target.value.trim() }));
         });
       }
     });
   </script>
+
   <script src="/js/admin/admin-usuarios.js" type="module"></script>
+
+  <!-- Snackbar Global -->
+  <div id="admin-snackbar" class="snackbar">
+    <span class="material-symbols-outlined" id="snack-icon">info</span>
+    <span id="snack-text">Mensaje</span>
+  </div>
+
 </body>
 </html>
