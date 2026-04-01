@@ -1,7 +1,7 @@
 /**
  * ==========================================================
- * CAFÉ CORTERO - ADMIN USUARIOS (MASTER-DETAIL)
- * Gestión de Personal y Seguridad
+ * CAFÉ CORTERO - ADMIN USUARIOS (STITCH HIGH-FIDELITY)
+ * Gestión de Personal y Seguridad Avanzada
  * ==========================================================
  */
 
@@ -12,9 +12,9 @@ let allUsers = [];
 let filteredUsers = [];
 let selectedUser = null;
 
-// Paginación
+// Paginación (Regla de 5 solicitada)
 let currentPage = 1;
-const itemsPerPage = 8;
+const itemsPerPage = 5;
 
 // --- INICIALIZACIÓN ---
 document.addEventListener('DOMContentLoaded', async () => {
@@ -23,11 +23,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 function initEventListeners() {
-    // Escuchar eventos del Header (Buscador Global)
+    // Escuchar eventos del Header
     document.addEventListener('user:search', (e) => handleSearch(e.detail));
     document.addEventListener('user:filter', (e) => handleFilter(e.detail));
 
-    // Botones de Paginación
+    // Flechas de Paginación
     document.getElementById('list-prev')?.addEventListener('click', () => {
         if (currentPage > 1) {
             currentPage--;
@@ -43,9 +43,18 @@ function initEventListeners() {
         }
     });
 
-    // Acciones de Ficha
+    // Acciones de Seguridad
     document.getElementById('btnResetPass')?.addEventListener('click', handleResetPassword);
     document.getElementById('btnSaveChanges')?.addEventListener('click', handleSaveChanges);
+    
+    // Toggle de Estado UI Feedback
+    const toggle = document.getElementById('u-status-toggle');
+    if(toggle) {
+        toggle.addEventListener('change', (e) => {
+            const label = document.querySelector('.status-label-stitch');
+            if(label) label.textContent = e.target.checked ? "ACTIVO" : "INACTIVO";
+        });
+    }
 }
 
 // --- CARGA DE DATOS ---
@@ -64,21 +73,21 @@ async function loadUsers() {
         renderUsersList();
     } catch (err) {
         console.error("Error cargando usuarios:", err);
-        showSnackbar("Error al conectar con la base de datos", "error");
+        showSnackbar("Error al conectar con el servidor", "error");
     }
 }
 
-// --- RENDERIZADO (SIDEBAR) ---
+// --- RENDERIZADO (LISTADO RECIENTE) ---
 function renderUsersList() {
     const container = document.getElementById('users-list');
-    const badge = document.getElementById('users-count');
+    const badge = document.getElementById('users-count-stitch');
     const tpl = document.getElementById('tpl-user-card');
 
     if (!container || !tpl) return;
     container.innerHTML = '';
     
-    // Actualizar Contador
-    if (badge) badge.textContent = filteredUsers.length;
+    // Actualizar Contador Stitch
+    if (badge) badge.textContent = `${filteredUsers.length} USUARIOS`;
 
     // Calcular Paginación
     const start = (currentPage - 1) * itemsPerPage;
@@ -86,24 +95,29 @@ function renderUsersList() {
     const pageItems = filteredUsers.slice(start, end);
 
     if (pageItems.length === 0) {
-        container.innerHTML = '<div class="loading-state">No se encontraron usuarios</div>';
+        container.innerHTML = '<div class="loading-state">No se encontraron resultados</div>';
         updatePaginationUI(0);
         return;
     }
 
     pageItems.forEach(u => {
         const clone = tpl.content.cloneNode(true);
-        const card = clone.querySelector('.user-card-item');
+        const card = clone.querySelector('.user-card-item-stitch');
         
         // Info Básica
-        card.querySelector('.card-name').textContent = u.name || 'Sin nombre';
-        card.querySelector('.card-role-text').textContent = getFormattedRole(u.rol);
+        card.querySelector('.card-name-stitch').textContent = u.name || 'Sin nombre';
+        card.querySelector('.card-email-stitch').textContent = u.email;
         
+        // Rol Badge
+        const badgeEl = card.querySelector('.card-badge-stitch');
+        badgeEl.textContent = getShortRoleName(u.rol);
+        if(u.rol === 'admin') badgeEl.style.backgroundColor = '#E8F5E9'; // Tinte verde para admin
+
         // Avatar
         const avatarPlaceholder = card.querySelector('.card-avatar-placeholder');
-        avatarPlaceholder.innerHTML = getAvatarHtml(u, 'avatar-img-small', 'initials-avatar-small');
+        avatarPlaceholder.innerHTML = getAvatarHtml(u, 'avatar-img-small', 'avatar-init-small');
 
-        // Estado Activo
+        // Estado Activo UI
         if (selectedUser && selectedUser.id === u.id) {
             card.classList.add('active');
         }
@@ -117,37 +131,44 @@ function renderUsersList() {
     updatePaginationUI(Math.ceil(filteredUsers.length / itemsPerPage));
 }
 
-// --- SELECCIÓN Y DETALLE (FICHA) ---
+// --- SELECCIÓN Y FICHA (DETALLE STITCH) ---
 function selectUser(user) {
     selectedUser = user;
     
     // UI Feedback en Sidebar
-    document.querySelectorAll('.user-card-item').forEach(c => c.classList.remove('active'));
-    renderUsersList(); // Re-render para marcar el activo
+    renderUsersList();
 
     // Mostrar Sección Detalle
     const detailSection = document.getElementById('user-detail');
     const emptyState = document.getElementById('no-selection');
 
-    if (detailSection) detailSection.classList.remove('hidden', 'fade-in');
-    setTimeout(() => detailSection?.classList.add('fade-in'), 10);
-    
+    if (detailSection) detailSection.classList.remove('hidden');
     if (emptyState) emptyState.classList.add('hidden');
 
-    // Llenar Datos
+    // Llenar Datos Principales
     document.getElementById('u-name').textContent = user.name || 'Sin nombre';
-    document.getElementById('u-email').textContent = user.email;
-    document.getElementById('u-avatar-placeholder').innerHTML = getAvatarHtml(user, 'profile-img-large', 'initials-avatar-large');
+    document.getElementById('u-email-text').textContent = user.email;
+    document.getElementById('u-country-text').textContent = user.country || 'Honduras';
+    document.getElementById('u-avatar-placeholder').innerHTML = getAvatarHtml(user, 'avatar-img-large', 'avatar-init-large');
     
-    // Configuración
+    // Estadísticas
+    const regDate = new Date(user.created_at);
+    const months = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+    document.getElementById('u-reg-date-stat').textContent = `${months[regDate.getMonth()]} ${regDate.getFullYear()}`;
+    
+    // Panel de Seguridad
     document.getElementById('u-role-select').value = user.rol || 'user';
-    document.getElementById('u-country').textContent = user.country || 'Honduras';
-    document.getElementById('u-last-login').textContent = user.last_login ? new Date(user.last_login).toLocaleDateString() : 'Desconocido';
-    
-    // Auditoría
+    document.getElementById('u-phone-text').textContent = user.phone || 'No registrado';
     document.getElementById('u-full-id').textContent = user.id;
-    document.getElementById('u-phone').textContent = user.phone || 'No registrado';
-    document.getElementById('u-created-at').textContent = new Date(user.created_at).toLocaleDateString();
+    document.getElementById('u-created-at').textContent = regDate.toLocaleDateString();
+
+    // Estado Toggle (Supuesto de columna 'status' o 'active' en BD, si no existe lo seteamos a true por defecto)
+    const toggle = document.getElementById('u-status-toggle');
+    const statusLabel = document.querySelector('.status-label-stitch');
+    
+    const isActive = user.status !== 'inactivo'; // Lógica basada en tu tabla oficial
+    if(toggle) toggle.checked = isActive;
+    if(statusLabel) statusLabel.textContent = isActive ? "ACTIVO" : "INACTIVO";
 }
 
 // --- FILTROS Y BÚSQUEDA ---
@@ -176,34 +197,41 @@ async function handleSaveChanges() {
     if (!selectedUser) return;
 
     const newRole = document.getElementById('u-role-select').value;
+    const isActive = document.getElementById('u-status-toggle').checked;
+    const newStatus = isActive ? 'activo' : 'inactivo';
     
     try {
         const { error } = await _supabase
             .from('users')
-            .update({ rol: newRole })
+            .update({ 
+                rol: newRole,
+                status: newStatus 
+            })
             .eq('id', selectedUser.id);
 
         if (error) throw error;
 
-        showSnackbar(`Rol actualizado a ${getFormattedRole(newRole)} correctamente`);
+        showSnackbar(`Configuración de ${selectedUser.name} actualizada`);
         
         // Actualizar datos locales
         selectedUser.rol = newRole;
+        selectedUser.status = newStatus;
         const idx = allUsers.findIndex(u => u.id === selectedUser.id);
-        if (idx !== -1) allUsers[idx].rol = newRole;
+        if (idx !== -1) {
+            allUsers[idx].rol = newRole;
+            allUsers[idx].status = newStatus;
+        }
         
         renderUsersList();
     } catch (err) {
         console.error("Error guardando cambios:", err);
-        showSnackbar("No se pudieron guardar los cambios", "error");
+        showSnackbar("Error al actualizar seguridad", "error");
     }
 }
 
 async function handleResetPassword() {
     if (!selectedUser) return;
-    
     showSnackbar(`Enlace de recuperación enviado a ${selectedUser.email}`);
-    // Aquí iría la lógica de Auth para reset-password si se requiere
 }
 
 // --- UTILS UI ---
@@ -217,14 +245,9 @@ function getAvatarHtml(user, imgClass, initialClass) {
     return `<div class="${initialClass}">${initials}</div>`;
 }
 
-function getFormattedRole(role) {
-    const map = {
-        'admin': 'Administrador',
-        'moderator': 'Moderador',
-        'user': 'Cliente / Usuario',
-        'suspendido': 'Suspendido'
-    };
-    return map[role] || 'Usuario';
+function getShortRoleName(role) {
+    const map = { 'admin': 'ADMIN', 'moderator': 'MOD', 'user': 'SOCIO', 'suspendido': 'BLOQ' };
+    return map[role] || 'SOCIO';
 }
 
 function updatePaginationUI(totalPages) {
@@ -253,7 +276,7 @@ function showSnackbar(msg, type = "success") {
 
     text.textContent = msg;
     icon.textContent = type === "success" ? "check_circle" : "error";
-    snackbar.style.backgroundColor = type === "success" ? "#191C1C" : "#BA1A1A";
+    snackbar.style.backgroundColor = type === "success" ? "#377B4C" : "#BA1A1A";
     
     snackbar.classList.add('active');
     setTimeout(() => snackbar.classList.remove('active'), 3000);
