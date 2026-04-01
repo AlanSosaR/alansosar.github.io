@@ -131,9 +131,9 @@
       const slot = document.getElementById("header-search-slot");
       if (slot) {
         slot.innerHTML = renderHeaderSearch({
-          showFilter: true,
+          showFilter: false,
           showAdd: false,
-          placeholder: "Buscar usuarios..."
+          placeholder: "Buscar por nombre o email..."
         });
         
         // Sincronizar busqueda con la tabla

@@ -31,6 +31,24 @@
     padding: 40px;
 }
 
+/* Ocultar elementos innecesarios en Admin */
+#cart-btn {
+    display: none !important;
+}
+
+/* Forzar Buscador en Header */
+.header-middle {
+    display: flex !important;
+    flex: 1;
+    margin: 0 15px;
+    justify-content: center;
+}
+
+#header-search-slot {
+    width: 100%;
+    max-width: 500px; /* Tamaño ideal en escritorio */
+}
+
 /* Header */
 .page-title-section {
     display: flex;
