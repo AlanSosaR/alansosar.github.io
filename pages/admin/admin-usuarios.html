@@ -117,9 +117,41 @@
 
   </main>
 
-  <!-- Scripts -->
+  <!-- Scripts Core -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/js/core/supabase-client-core.js"></script>
+  <script src="/js/ui/layout.js"></script>
+  <script type="module" src="/js/ui/header.js"></script>
+
+  <!-- Inyección del Buscador en Header -->
+  <script type="module">
+    import { renderHeaderSearch } from "/js/ui/header.search.js";
+
+    document.addEventListener("header:ready", () => {
+      const slot = document.getElementById("header-search-slot");
+      if (slot) {
+        slot.innerHTML = renderHeaderSearch({
+          showFilter: true,
+          showAdd: false,
+          placeholder: "Buscar usuarios..."
+        });
+        
+        // Sincronizar busqueda con la tabla
+        const headerInput = document.getElementById("header-search-input");
+        if (headerInput) {
+          headerInput.addEventListener("input", (e) => {
+            const pageSearch = document.getElementById("user-search");
+            if (pageSearch) {
+              pageSearch.value = e.target.value;
+              pageSearch.dispatchEvent(new Event("input"));
+            }
+          });
+        }
+      }
+    });
+  </script>
+
+  <!-- Lógica de la Página -->
   <script src="/js/admin/admin-usuarios.js" type="module"></script>
 </body>
 
