@@ -361,17 +361,18 @@ body[class*="page-admin-"] .header-right-new {
 }
 
 .header-nav-links .nav-link {
-  text-decoration: none;
+  text-decoration: none !important;
   font-size: 14px;
-  font-weight: 600;
-  color: var(--marron);
+  font-weight: 700;
+  color: #512615;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  transition: color 0.2s;
+  letter-spacing: 1px;
+  transition: all 0.2s ease;
+  position: relative;
 }
 
 .header-nav-links .nav-link:hover {
-  color: var(--verde);
+  color: #377b4c;
 }
 
 /* BOTONES DE ACCION STITCH */
@@ -383,9 +384,14 @@ body[class*="page-admin-"] .header-right-new {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  color: var(--verde);
+  width: 44px;
+  height: 44px;
+  color: #377b4c;
+  transition: transform 0.2s;
+}
+
+.header-icon-btn:hover {
+  transform: translateY(-2px);
 }
 
 .header-icon-btn .material-symbols-outlined {
@@ -395,8 +401,8 @@ body[class*="page-admin-"] .header-right-new {
 /* BADGES */
 .cart-badge, .count-badge {
   position: absolute;
-  top: 0;
-  right: 0;
+  top: 2px;
+  right: 2px;
   background: #C62828;
   color: white;
   font-size: 10px;
@@ -414,34 +420,42 @@ body[class*="page-admin-"] .header-right-new {
 .header-auth-group {
   display: flex;
   align-items: center;
+  margin-left: 8px;
 }
 
 .auth-buttons {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
 }
 
 .btn-auth-link {
-  text-decoration: none;
-  color: var(--marron);
+  text-decoration: none !important;
+  color: #512615;
   font-size: 14px;
   font-weight: 700;
+  transition: color 0.2s;
+}
+
+.btn-auth-link:hover {
+  color: #377b4c;
 }
 
 .btn-auth-primary {
-  text-decoration: none;
-  background: var(--verde);
-  color: white;
-  padding: 8px 20px;
-  border-radius: 8px;
+  text-decoration: none !important;
+  background: #377b4c;
+  color: white !important;
+  padding: 8px 24px;
+  border-radius: 12px;
   font-size: 14px;
   font-weight: 700;
-  transition: opacity 0.2s;
+  box-shadow: 0 4px 12px rgba(55, 123, 76, 0.15);
+  transition: all 0.2s;
 }
 
 .btn-auth-primary:hover {
   opacity: 0.9;
+  transform: translateY(-1px);
 }
 
 /* =====================================================
