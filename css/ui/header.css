@@ -308,6 +308,24 @@ body.page-carrito .header-cart-title {
 }
 
 /* =====================================================
+   ADMIN OVERRIDE: BUSCADOR AMPLIO Y SIN CARRITO
+   (Aplica a cualquier página con clase page-admin-...)
+===================================================== */
+body[class*="page-admin-"] #cart-btn {
+  display: none !important;
+}
+
+body[class*="page-admin-"] .header-middle {
+  max-width: 900px !important;
+  margin: 0 40px;
+}
+
+body[class*="page-admin-"] .header-user-left,
+body[class*="page-admin-"] .header-right-new {
+  min-width: auto !important;
+}
+
+/* =====================================================
    NAV DESKTOP
 ===================================================== */
 .nav-links {

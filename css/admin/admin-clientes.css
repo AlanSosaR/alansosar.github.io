@@ -505,24 +505,6 @@ body.page-admin-customers {
 /* Helpers */
 .hidden { display: none !important; }
 
-/* =========================
-   HEADER OVERRIDES (ADMIN)
-   Ocultar carrito y ampliar buscador
-   ========================= */
-body.page-admin-customers #cart-btn {
-    display: none !important;
-}
-
-body.page-admin-customers .header-middle {
-    max-width: 900px !important;
-    margin: 0 40px;
-}
-
-body.page-admin-customers .header-user-left,
-body.page-admin-customers .header-right-new {
-    min-width: auto !important;
-}
-
 /* Transiciones */
 #customer-detail {
     transition: opacity 0.3s ease;
