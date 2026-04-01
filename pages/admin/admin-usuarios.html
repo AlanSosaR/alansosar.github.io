@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin · Usuarios | Café Cortero</title>
+
+  <!-- Material Symbols -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <!-- Estilos -->
+  <link rel="stylesheet" href="/css/core/tipografia.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="/css/ui/header.css" />
+  <link rel="stylesheet" href="/css/admin/admin-usuarios.css" />
+  <link rel="icon" type="image/png" href="/imagenes/logo.png">
+</head>
+
+<body class="page-admin-users">
+  <main class="admin-users-container fade-in">
+
+    <!-- Encabezado Editorial (Stitch Style) -->
+    <header class="page-title-section">
+        <div class="title-content">
+            <h1 class="page-title">Directorio de Accesos</h1>
+            <p class="page-subtitle">Gestiona el personal, roles y permisos de seguridad del sistema.</p>
+        </div>
+        <div class="header-actions">
+            <button class="btn-primary" id="btnNewUser">
+                <span class="material-symbols-outlined">person_add</span>
+                Nuevo Usuario
+            </button>
+        </div>
+    </header>
+
+    <!-- Estadísticas Rápidas (Tonal Layering) -->
+    <section class="users-stats-grid">
+        <div class="user-stat-card">
+            <span class="stat-label">Usuarios Totales</span>
+            <div class="stat-main">
+                <strong id="stat-total-users" class="stat-value">0</strong>
+                <span class="stat-trend positive">+3 hoy</span>
+            </div>
+        </div>
+        <div class="user-stat-card highlight">
+            <span class="stat-label">Administradores</span>
+            <div class="stat-main">
+                <strong id="stat-admins" class="stat-value">0</strong>
+                <span class="stat-tag">Acceso Total</span>
+            </div>
+        </div>
+        <div class="user-stat-card alert">
+            <span class="stat-label">Cuentas Suspendidas</span>
+            <div class="stat-main">
+                <strong id="stat-suspended" class="stat-value">0</strong>
+                <span class="stat-tag-alert">Requiere Atención</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Matriz de Usuarios -->
+    <section class="users-matrix-wrapper">
+        <div class="matrix-filters">
+            <div class="search-box">
+                <span class="material-symbols-outlined">search</span>
+                <input type="text" id="user-search" placeholder="Buscar por nombre o email...">
+            </div>
+            <div class="filter-options">
+                <select id="filter-role" class="premium-select">
+                    <option value="all">Todos los Roles</option>
+                    <option value="admin">Administradores</option>
+                    <option value="moderator">Moderadores</option>
+                    <option value="user">Usuarios</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="users-table-container">
+            <table class="users-table" id="users-table">
+                <thead>
+                    <tr>
+                        <th>Colaborador</th>
+                        <th>Email de Acceso</th>
+                        <th>Rol</th>
+                        <th>País</th>
+                        <th>Estado</th>
+                        <th class="actions-col"></th>
+                    </tr>
+                </thead>
+                <tbody id="users-tbody">
+                    <!-- Se llena vía JavaScript -->
+                </tbody>
+            </table>
+            
+            <!-- Loading State -->
+            <div id="loading-users" class="loading-state">
+                <div class="spinner"></div>
+                <p>Consultando el libro de registros...</p>
+            </div>
+
+            <!-- Empty State -->
+            <div id="empty-state" class="empty-state hidden">
+                <span class="material-symbols-outlined">group_off</span>
+                <p>No se encontraron usuarios con esos criterios.</p>
+            </div>
+        </div>
+    </section>
+
+  </main>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/js/admin/admin-usuarios.js" type="module"></script>
+</body>
+
+</html>
