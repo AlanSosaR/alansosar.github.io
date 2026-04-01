@@ -326,9 +326,17 @@
 
     /* Esconder Tabla / Mostrar Lista */
     .users-table { display: none; }
-    #users-mobile-list { display: flex; flex-direction: column; gap: 16px; margin-bottom: 24px; }
+    .users-mobile-list { display: flex !important; flex-direction: column; gap: 16px; margin-bottom: 24px; }
     
     .section-label { margin-top: 32px; }
+}
+
+.users-mobile-list {
+    display: none;
+}
+
+.avatar-wrapper {
+    flex-shrink: 0;
 }
 
 /* --- TARJETAS MÓVILES (STITCH STYLE) --- */

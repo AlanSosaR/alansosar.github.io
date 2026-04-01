@@ -54,11 +54,16 @@ function getAvatarHtml(user, imgClass) {
     const photo = user.photo_url;
     const name = user.name || 'Sin nombre';
     
+    // Wrapper para que el onerror solo afecte al avatar y no a los datos hermanos
     if (photo && photo.trim() !== "") {
-        return `<img src="${photo}" class="${imgClass}" alt="${name}" onerror="this.parentElement.innerHTML='${getInitialsDiv(name, imgClass)}'">`;
+        return `
+            <div class="avatar-wrapper">
+                <img src="${photo}" class="${imgClass}" alt="${name}" onerror="this.outerHTML='${getInitialsDiv(name, imgClass)}'">
+            </div>
+        `;
     }
     
-    return getInitialsDiv(name, imgClass);
+    return `<div class="avatar-wrapper">${getInitialsDiv(name, imgClass)}</div>`;
 }
 
 function getInitialsDiv(name, className) {
@@ -82,12 +87,10 @@ function renderUsers(usersList) {
 
     if (usersList.length === 0) {
         if (emptyState) emptyState.classList.remove('hidden');
-        if (mobileList) mobileList.classList.add('hidden');
         return;
     }
 
     if (emptyState) emptyState.classList.add('hidden');
-    if (mobileList) mobileList.classList.remove('hidden');
 
     usersList.forEach(user => {
         const roleClass = getRoleClass(user.rol);
