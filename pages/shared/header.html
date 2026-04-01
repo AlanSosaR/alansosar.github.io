@@ -1,12 +1,11 @@
 <!-- =====================================================
-     HEADER — FINAL DEFINITIVO (ERGONOMÍA MÓVIL)
-     Hamburguesa: Izquierda | Carrito: Derecha
+     HEADER — RESTAURACIÓN ORIGINAL FIEL
+     Variedades + Nosotros + Carrito + Iniciar Sesión
 ====================================================== -->
 <header class="header-fixed no-user" id="main-header">
 
-  <!-- IZQUIERDA: MENÚ (MÓVIL) + LOGO -->
+  <!-- BLOQUE IZQUIERDA: LOGO -->
   <div class="header-left-stitch">
-    <!-- Menú Hamburguesa (Mobile - AHORA A LA IZQUIERDA) -->
     <button id="menu-toggle" class="menu-toggle mobile-only" aria-label="Menú">
       <span class="material-symbols-outlined">menu</span>
       <span id="menu-notification-badge" class="notification-badge hidden"><i class="fa-solid fa-bell"></i></span>
@@ -17,30 +16,25 @@
     </a>
   </div>
 
-  <!-- CENTRO: NAVEGACIÓN DESKTOP -->
-  <div class="header-middle-stitch desktop-only-flex">
-    <nav class="header-nav-links" id="public-nav">
-      <a href="/pages/home/index.html" class="nav-link">Inicio</a>
+  <!-- BLOQUE DERECHA: NAV + ACCIONES -->
+  <div class="header-right-stitch">
+    
+    <!-- Enlaces de Navegación (Pegados a la derecha) -->
+    <nav class="header-nav-links desktop-only" id="public-nav">
       <a href="/pages/home/index.html#productos" class="nav-link">Variedades</a>
       <a href="https://alansosar.github.io/pages/about/sobre-nosotros.html" class="nav-link">Nosotros</a>
     </nav>
-    <div id="header-search-slot"></div>
-  </div>
 
-  <!-- DERECHA: ACCIONES (CARRITO + PERFIL) -->
-  <div class="header-right-stitch">
-    
-    <!-- Carrito (A LA DERECHA) -->
+    <!-- Carrito con Contador Rojo -->
     <button class="header-icon-btn" id="cart-btn" aria-label="Ver carrito">
       <span class="material-symbols-outlined">shopping_cart</span>
-      <span id="cart-count" class="cart-badge hidden">0</span>
+      <span id="cart-count" class="cart-badge-red">0</span>
     </button>
 
-    <!-- Auth / Perfil -->
+    <!-- Autenticación -->
     <div class="header-auth-group">
       <div class="auth-buttons no-user">
         <a href="/pages/auth/login.html" class="btn-auth-link" id="login-desktop">Iniciar Sesión</a>
-        <a href="/pages/auth/registro.html" class="btn-auth-primary desktop-only">Unirse</a>
       </div>
 
       <button class="header-avatar-button logged hidden" id="btn-header-user" aria-label="Mi Perfil">
@@ -48,6 +42,7 @@
         <span id="avatar-notification-badge" class="notification-badge hidden"><i class="fa-solid fa-bell"></i></span>
       </button>
     </div>
+
   </div>
 
 </header>
@@ -55,7 +50,7 @@
 <div id="user-scrim" class="user-scrim"></div>
 
 <!-- =====================================================
-     DRAWER — MATERIAL 3 (PÚBLICO + PRIVADO)
+     DRAWER — MATERIAL 3 (FUNCIONALIDAD COMPLETA)
 ====================================================== -->
 <aside id="user-drawer" class="user-drawer">
   
@@ -74,6 +69,7 @@
 
   <hr class="user-drawer-divider logged hidden">
 
+  <!-- PRIVADO: CLIENTE -->
   <div class="drawer-nav-section client-only logged hidden">
       <a href="/pages/profile/mis-pedidos.html" class="user-drawer-item">
         <span class="material-symbols-outlined">shopping_bag</span>
@@ -86,6 +82,7 @@
       </a>
   </div>
 
+  <!-- PRIVADO: ADMIN -->
   <div class="drawer-nav-section admin-only logged hidden">
       <a href="/pages/admin/admin-pedidos.html" class="user-drawer-item">
         <span class="material-symbols-outlined">inventory_2</span>
@@ -102,6 +99,7 @@
       </a>
   </div>
 
+  <!-- PÚBLICO -->
   <div class="drawer-nav-section">
       <a href="/pages/home/index.html#productos" class="user-drawer-item">
         <span class="material-symbols-outlined">local_cafe</span>
