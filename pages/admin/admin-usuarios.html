@@ -31,54 +31,33 @@
     <!-- Encabezado Editorial (Stitch Style) -->
     <header class="page-title-section">
         <div class="title-content">
-            <h1 class="page-title">Directorio de Accesos</h1>
-            <p class="page-subtitle">Gestiona el personal, roles y permisos de seguridad del sistema.</p>
+            <h1 class="page-title">Directorio de Personal y Accesos</h1>
+            <p class="page-subtitle">Gestión centralizada de colaboradores, roles y permisos para las fincas y centros de tostado de Café Cortero.</p>
         </div>
         <div class="header-actions">
             <button class="btn-primary" id="btnNewUser">
                 <span class="material-symbols-outlined">person_add</span>
-                Nuevo Usuario
+                Nuevo Colaborador
             </button>
         </div>
     </header>
 
-    <!-- Estadísticas Rápidas (Tonal Layering) -->
-    <section class="users-stats-grid">
-        <div class="user-stat-card">
-            <span class="stat-label">Usuarios Totales</span>
-            <div class="stat-main">
-                <strong id="stat-total-users" class="stat-value">0</strong>
-                <span class="stat-trend positive">+3 hoy</span>
-            </div>
-        </div>
-        <div class="user-stat-card highlight">
-            <span class="stat-label">Administradores</span>
-            <div class="stat-main">
-                <strong id="stat-admins" class="stat-value">0</strong>
-                <span class="stat-tag">Acceso Total</span>
-            </div>
-        </div>
-        <div class="user-stat-card alert">
-            <span class="stat-label">Cuentas Suspendidas</span>
-            <div class="stat-main">
-                <strong id="stat-suspended" class="stat-value">0</strong>
-                <span class="stat-tag-alert">Requiere Atención</span>
-            </div>
-        </div>
-    </section>
+    <!-- Lista de Personal (Label Decorativa) -->
+    <div class="section-label">
+        <h2 class="label-text">Lista de Personal</h2>
+        <div class="label-underline"></div>
+    </div>
 
-    <!-- Matriz de Usuarios -->
-    <section class="users-matrix-wrapper">
-    <!-- Matriz de Usuarios -->
+    <!-- Matriz de Usuarios (Directorio) -->
     <section class="users-matrix-wrapper">
         <div class="users-table-container">
             <table class="users-table" id="users-table">
                 <thead>
                     <tr>
                         <th>Colaborador</th>
-                        <th>Email de Acceso</th>
-                        <th>Rol</th>
-                        <th>País</th>
+                        <th>Email Corporativo</th>
+                        <th>Rol Asignado</th>
+                        <th>Ubicación / País</th>
                         <th>Estado</th>
                         <th class="actions-col"></th>
                     </tr>

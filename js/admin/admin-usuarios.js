@@ -22,8 +22,20 @@ const itemsPerPage = 5;
 function getRoleClass(role) {
     switch (role?.toLowerCase()) {
         case 'admin': return 'badge-admin';
-        case 'moderator': return 'badge-mod';
+        case 'moderator': return 'badge-logistica';
+        case 'tostador': return 'badge-tostador';
+        case 'suspendido': return 'badge-suspendido';
         default: return 'badge-user';
+    }
+}
+
+function getRoleLabel(role) {
+    switch (role?.toLowerCase()) {
+        case 'admin': return 'Administrador';
+        case 'moderator': return 'Logística';
+        case 'tostador': return 'Tostador Senior';
+        case 'suspendido': return 'Suspendido';
+        default: return 'Colaborador';
     }
 }
 
@@ -58,6 +70,7 @@ function renderUsers(usersList) {
         
         const photo = user.photo_url || '/imagenes/avatar-default.svg';
         const roleClass = getRoleClass(user.rol);
+        const roleLabel = getRoleLabel(user.rol);
         
         tr.innerHTML = `
             <td>
@@ -65,20 +78,20 @@ function renderUsers(usersList) {
                     <img src="${photo}" class="avatar" alt="${user.name}">
                     <div class="user-info">
                         <span class="user-name">${user.name || 'Sin nombre'}</span>
-                        <span class="user-email">${user.email}</span>
+                        <span class="user-id">CC-${user.id.substring(0, 4)}</span>
                     </div>
                 </div>
             </td>
             <td>${user.email}</td>
             <td>
-                <span class="badge-role ${roleClass}">${user.rol || 'user'}</span>
+                <span class="badge-role ${roleClass}">${roleLabel}</span>
             </td>
-            <td>${user.country || 'No especificado'}</td>
+            <td>${user.country || 'Honduras'}</td>
             <td>
                 <div class="status-active">Activo</div>
             </td>
-            <td class="actions-col">
-                <button class="action-btn" onclick="openUserMenu('${user.id}')">
+            <td class="actions-col text-right">
+                <button class="action-btn" onclick="openUserMenu('${user.id}')" title="Más opciones">
                     <span class="material-symbols-outlined">more_vert</span>
                 </button>
             </td>
@@ -94,9 +107,12 @@ function updatePaginationUI() {
     const pageInfo = document.getElementById('page-info');
     const pageNumbers = document.getElementById('page-numbers');
 
+    const start = filteredUsers.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1;
+    const end = Math.min(currentPage * itemsPerPage, filteredUsers.length);
+
     if (prevBtn) prevBtn.disabled = (currentPage === 1);
     if (nextBtn) nextBtn.disabled = (currentPage === totalPages);
-    if (pageInfo) pageInfo.textContent = `Página ${currentPage} de ${totalPages}`;
+    if (pageInfo) pageInfo.textContent = `Mostrando ${start} - ${end} de ${filteredUsers.length} registros`;
 
     if (pageNumbers) {
         pageNumbers.innerHTML = '';

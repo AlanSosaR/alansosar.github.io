@@ -249,31 +249,64 @@
 .user-name { font-weight: 600; color: var(--coffee-deep); font-size: 16px; margin-bottom: 2px; }
 .user-email { color: var(--text-muted); font-size: 14px; }
 
-/* Badges */
-.badge-role {
-    font-size: 12px;
-    font-weight: 700;
-    padding: 6px 14px;
-    border-radius: 100px;
-    text-transform: uppercase;
-    display: inline-block;
+/* Sección Label (Stitch Style) */
+.section-label {
+    margin: 48px 0 32px;
 }
 
-.badge-admin { background: #361F1A; color: #FFF; }
-.badge-mod { background: var(--accent); color: #FFF; }
-.badge-user { background: var(--border-soft); color: var(--text-muted); }
+.label-text {
+    font-family: 'Fraunces', serif;
+    font-size: 24px;
+    color: var(--coffee-deep);
+    margin: 0;
+}
 
-.status-active { color: var(--success); display: flex; align-items: center; gap: 6px; font-weight: 600; font-size: 14px; }
-.status-active::before { content: ''; width: 8px; height: 8px; background: var(--success); border-radius: 50%; }
+.label-underline {
+    width: 48px;
+    height: 4px;
+    background: var(--primary-green);
+    margin-top: 8px;
+    border-radius: 2px;
+}
+
+/* Badges (New Design Colors) */
+.badge-role {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 6px; /* Bordes más cuadrados según nuevo diseño */
+    text-transform: uppercase;
+    display: inline-block;
+    letter-spacing: 0.05em;
+}
+
+.badge-admin { 
+    background: #361F1A; 
+    color: #FFF; 
+}
+
+.badge-tostador, .badge-logistica { 
+    background: #F1F3F2; 
+    color: var(--text-muted); 
+}
+
+.badge-suspendido { 
+    background: #FFEBEE; 
+    color: var(--alert); 
+}
+
+.badge-user { 
+    background: #F8FAF9; 
+    border: 1px solid var(--border-soft);
+    color: var(--text-muted); 
+}
 
 /* Mobile Adaptability */
 @media (max-width: 768px) {
-    .admin-users-container { padding: 40px 20px; }
-    .page-title { font-size: 32px; }
+    .admin-users-container { padding: 32px 16px; }
+    .page-title { font-size: 30px; }
+    .section-label { margin-top: 32px; }
     .users-stats-grid { grid-template-columns: 1fr; gap: 16px; }
-    .search-box { width: 100%; margin-bottom: 16px; }
-    .matrix-filters { flex-direction: column; align-items: flex-start; }
-    .page-title-section { flex-direction: column; gap: 24px; }
     
     .users-table th:nth-child(4), .users-table th:nth-child(5),
     .users-table td:nth-child(4), .users-table td:nth-child(5) {
