@@ -32,10 +32,19 @@ const initAdminClientes = () => {
     const init = async () => {
         console.log("🚀 Iniciando Admin Clientes...");
         if (!window.supabase) {
-            console.error("❌ Error: Supabase no detectado");
-            if(listContainer) listContainer.innerHTML = `<div class="error-state">Error: Cliente de base de datos no inicializado.</div>`;
+            console.error("❌ Error: Supabase no detectado en render");
+            if(listContainer) listContainer.innerHTML = `<div class="error-state">Error: Cliente no inicializado.</div>`;
             return;
         }
+
+        // Verificamos sesión para depurar problemas de RLS
+        const { data: { session } } = await window.supabase.auth.getSession();
+        if (session) {
+            console.log(`👤 Sesión activa: ${session.user.email} (ID: ${session.user.id})`);
+        } else {
+            console.warn("⚠️ No hay sesión activa. Posible causa de lista vacía por RLS.");
+        }
+
         await fetchCustomers();
         renderCustomerList();
     };
@@ -43,10 +52,11 @@ const initAdminClientes = () => {
     // 4. FUNCIONES DE DATOS
     const fetchCustomers = async () => {
         try {
-            console.log("📥 Consultando clientes...");
+            console.log("📥 Consultando clientes (v. columns)...");
+            // Pedimos columnas específicas para evitar bloqueos por RLS en columnas sensibles si no se es admin
             const { data, error } = await window.supabase
                 .from("users")
-                .select("*")
+                .select("id, name, email, rol, country, photo_url, created_at")
                 .order("name", { ascending: true });
 
             if (error) {
