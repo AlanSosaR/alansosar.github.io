@@ -1,11 +1,5 @@
-/**
- * ============================================================
- * ADMIN CLIENTES - LÓGICA
- * Café Cortero - Premium & Minimalist
- * ============================================================
- */
-
-document.addEventListener("DOMContentLoaded", () => {
+// Lógica de Admin Clientes
+const initAdminClientes = () => {
     // 1. SELECTORES
     const listContainer = document.getElementById("customers-list");
     const customersCount = document.getElementById("customers-count");
@@ -36,6 +30,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 3. INICIO
     const init = async () => {
+        console.log("🚀 Iniciando Admin Clientes...");
+        if (!window.supabase) {
+            console.error("❌ Error: Supabase no detectado");
+            if(listContainer) listContainer.innerHTML = `<div class="error-state">Error: Cliente de base de datos no inicializado.</div>`;
+            return;
+        }
         await fetchCustomers();
         renderCustomerList();
     };
@@ -43,23 +43,29 @@ document.addEventListener("DOMContentLoaded", () => {
     // 4. FUNCIONES DE DATOS
     const fetchCustomers = async () => {
         try {
-            const { data, error } = await supabase
+            console.log("📥 Consultando clientes...");
+            const { data, error } = await window.supabase
                 .from("users")
                 .select("*")
                 .order("name", { ascending: true });
 
-            if (error) throw error;
+            if (error) {
+                console.error("❌ Error de Supabase:", error);
+                throw error;
+            }
+            
+            console.log(`✅ Clientes cargados: ${data?.length || 0}`);
             allCustomers = data || [];
             filteredCustomers = [...allCustomers];
         } catch (err) {
-            console.error("Error fetching customers:", err);
-            listContainer.innerHTML = `<div class="error-state">Error al cargar clientes.</div>`;
+            console.error("❌ Error fetchCustomers:", err);
+            if(listContainer) listContainer.innerHTML = `<div class="error-state">Error al cargar clientes: ${err.message || 'Error desconocido'}</div>`;
         }
     };
 
     const fetchCustomerStats = async (userId) => {
         try {
-            const { data: orders, error } = await supabase
+            const { data: orders, error } = await window.supabase
                 .from("orders")
                 .select("total, status, order_number, created_at")
                 .eq("user_id", userId)
@@ -74,13 +80,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 orders: orders
             };
         } catch (err) {
-            console.error("Error fetching stats:", err);
+            console.error("❌ Error fetching stats:", err);
             return { totalSpent: "L 0.00", totalOrders: 0, orders: [] };
         }
     };
 
     // 5. RENDERIZADO
     const renderCustomerList = () => {
+        if (!listContainer) return;
+
         listContainer.innerHTML = "";
         customersCount.textContent = filteredCustomers.length;
 
@@ -89,7 +97,6 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        // Paginación de Clientes
         const totalPages = Math.ceil(filteredCustomers.length / custItemsPerPage);
         const start = (custCurrentPage - 1) * custItemsPerPage;
         const end = start + custItemsPerPage;
@@ -124,7 +131,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         numbersDiv.innerHTML = "";
         
-        // Crear botones numéricos (máximo 3 por simplicidad)
         for(let i=1; i<=totalPages; i++) {
             if (i > 3 && i < totalPages) {
                 if (i === 4) {
@@ -167,33 +173,30 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const selectCustomer = async (customer) => {
         selectedCustomerId = customer.id;
-        renderCustomerList(); // Refrescar para marcar el activo
+        renderCustomerList();
 
-        // Mostrar detalle / Ocultar vacío
         noSelection.classList.add("hidden");
         customerDetail.classList.remove("hidden");
-        customerDetail.style.opacity = "0.5"; // Efecto de carga visual
+        customerDetail.style.opacity = "0.5";
 
-        // Datos básicos
         cPhoto.src = customer.photo_url || "/imagenes/avatar-default.svg";
         cName.textContent = customer.name;
         cLocation.innerHTML = `<span class="material-symbols-outlined">location_on</span><span>${customer.country || "Ubicación desconocida"}</span>`;
         cRegDate.textContent = new Date(customer.created_at).toLocaleDateString("es-ES", { month: "short", year: "numeric" });
 
-        // Cargar stats y órdenes
         const stats = await fetchCustomerStats(customer.id);
         cTotalSpent.textContent = stats.totalSpent;
         cTotalOrders.textContent = stats.totalOrders;
 
-        // Reset historial
         historyPage = 1;
-        customer.fetchedOrders = stats.orders; // Guardar temporalmente en el objeto
+        customer.fetchedOrders = stats.orders;
         renderHistory(stats.orders);
 
         customerDetail.style.opacity = "1";
     };
 
     const renderHistory = (orders) => {
+        if (!historyBody) return;
         historyBody.innerHTML = "";
         
         const start = (historyPage - 1) * historyPerPage;
@@ -220,12 +223,11 @@ document.addEventListener("DOMContentLoaded", () => {
         const totalPages = Math.ceil(orders.length / historyPerPage);
         pageInfo.textContent = `Página ${historyPage} de ${totalPages || 1}`;
         
-        // Paginación UI (Habilitar/Deshabilitar botones)
         document.getElementById("prev-page").disabled = historyPage === 1;
         document.getElementById("next-page").disabled = historyPage === totalPages || totalPages === 0;
     };
 
-    // 6. FILTROS Y EVENTOS
+    // 6. EVENTOS DIRECTOS
     document.addEventListener("customer:search", (e) => {
         const query = e.detail.toLowerCase();
         filteredCustomers = allCustomers.filter(c => 
@@ -233,7 +235,7 @@ document.addEventListener("DOMContentLoaded", () => {
             (c.email && c.email.toLowerCase().includes(query)) ||
             (c.phone && c.phone.includes(query))
         );
-        custCurrentPage = 1; // RESET PAGINACION
+        custCurrentPage = 1;
         renderCustomerList();
     });
 
@@ -244,11 +246,10 @@ document.addEventListener("DOMContentLoaded", () => {
         } else {
             filteredCustomers = allCustomers.filter(c => c.rol === role);
         }
-        custCurrentPage = 1; // RESET PAGINACION
+        custCurrentPage = 1;
         renderCustomerList();
     });
 
-    // Paginación del historial
     document.getElementById("prev-page").onclick = () => {
         if (historyPage > 1) {
             historyPage--;
@@ -259,6 +260,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.getElementById("next-page").onclick = () => {
         const customer = allCustomers.find(c => c.id === selectedCustomerId);
+        if (!customer || !customer.fetchedOrders) return;
         const totalPages = Math.ceil(customer.fetchedOrders.length / historyPerPage);
         if (historyPage < totalPages) {
             historyPage++;
@@ -266,6 +268,12 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 
-    // Ejecutar
     init();
-});
+};
+
+// Carga Robusta
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initAdminClientes);
+} else {
+    initAdminClientes();
+}
