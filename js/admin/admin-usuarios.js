@@ -86,8 +86,8 @@ function renderUsersList() {
     if (!container || !tpl) return;
     container.innerHTML = '';
     
-    // Actualizar Contador Stitch
-    if (badge) badge.textContent = `${filteredUsers.length} USUARIOS`;
+    // Actualizar Contador (Sincronizado con Clientes)
+    if (badge) badge.textContent = filteredUsers.length;
 
     // Calcular Paginación
     const start = (currentPage - 1) * itemsPerPage;
@@ -108,10 +108,7 @@ function renderUsersList() {
         card.querySelector('.card-name-stitch').textContent = u.name || 'Sin nombre';
         card.querySelector('.card-email-stitch').textContent = u.email;
         
-        // Rol Badge
-        const badgeEl = card.querySelector('.card-badge-stitch');
-        badgeEl.textContent = getShortRoleName(u.rol);
-        if(u.rol === 'admin') badgeEl.style.backgroundColor = '#E8F5E9'; // Tinte verde para admin
+        // La flecha chevron_right ya está en el template, no necesita lógica adicional
 
         // Avatar
         const avatarPlaceholder = card.querySelector('.card-avatar-placeholder');

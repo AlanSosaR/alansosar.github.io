@@ -104,10 +104,12 @@ body.page-admin-users {
 }
 
 .count-badge-stitch {
-    font-size: 11px;
-    font-weight: 800;
-    color: var(--primary-green);
-    letter-spacing: 0.05em;
+    background: var(--surface-low);
+    color: var(--text-muted);
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
 }
 
 .users-list-stitch {
@@ -125,7 +127,7 @@ body.page-admin-users {
     border-radius: var(--radius-12);
     cursor: pointer;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    margin-bottom: 4px;
+    margin-bottom: 2px;
     border: 1px solid transparent;
 }
 
@@ -158,19 +160,14 @@ body.page-admin-users {
 .card-name-stitch { margin: 0; font-size: 15px; font-weight: 700; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .card-email-stitch { margin: 0; font-size: 12px; color: var(--text-muted); }
 
-.card-badge-stitch {
-    padding: 4px 10px;
-    background: #f1f3f2;
-    border-radius: 4px;
-    font-size: 10px;
-    font-weight: 800;
-    color: var(--text-muted);
-    text-transform: uppercase;
+.arrow-stitch {
+    color: var(--border-soft);
+    font-size: 18px;
 }
 
-.user-card-item-stitch.active .card-badge-stitch {
-    background: #fff;
-    color: var(--coffee-deep);
+/* El badge ya no se usa en lista, pero se mantiene para detalle si es necesario */
+.card-badge-stitch {
+    display: none;
 }
 
 /* PAGINACIÓN CIRCULAR */
