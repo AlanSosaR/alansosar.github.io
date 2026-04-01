@@ -1,176 +1,138 @@
 <!-- =====================================================
      HEADER — FINAL DEFINITIVO (PC + MÓVIL)
+     Sincronizado con Stitch 2025 + Soporte Notificaciones
 ====================================================== -->
 <header class="header-fixed no-user" id="main-header">
 
-  <!-- IZQUIERDA: AVATAR (Ahora prominente a la izquierda) -->
-  <div id="btn-header-user" class="logged header-user-left">
-    <button class="header-avatar-button" aria-label="Perfil">
-      <img id="avatar-user" src="/imagenes/avatar-default.svg" alt="Usuario">
-    </button>
-    <a href="/pages/auth/login.html" id="login-desktop" class="login-link desktop-only no-user">
-      Iniciar sesión
-    </a>
-    <span id="avatar-notification-badge" class="notification-badge hidden" aria-hidden="true">
-      <i class="fa-solid fa-bell"></i>
-    </span>
-  </div>
-
-  <!-- HAMBURGUESA (Móvil) -->
-  <button id="menu-toggle" class="menu-toggle mobile-only" aria-label="Abrir menú">
-    <span class="material-symbols-outlined">menu</span>
-    <span id="menu-notification-badge" class="notification-badge hidden" aria-hidden="true">
-      <i class="fa-solid fa-bell"></i>
-    </span>
-  </button>
-
-  <!-- LOGO (CENTRO-DERECHA DEPENDIENDO DE ESPACIO) -->
-  <div class="header-middle">
-    <div id="header-search-slot"></div>
-    <!-- Títulos dinámicos pueden ir aquí -->
-  </div>
-
-  <!-- DERECHA: LOGO + CARRITO -->
-  <div class="header-right-new">
-    
-    <!-- LOGO PRINCIPAL -->
+  <!-- =========================
+       BLOQUE IZQUIERDA: LOGO
+  ========================= -->
+  <div class="header-left-new">
     <a href="/pages/home/index.html" class="header-logo-link">
       <img src="/imagenes/logo.png" alt="Café Cortero" class="header-logo">
     </a>
+  </div>
+
+  <!-- =========================
+       BLOQUE CENTRO: NAV + BUSQUEDA
+  ========================= -->
+  <div class="header-middle-stitch">
+    <!-- Enlaces de Navegación Desktop -->
+    <nav class="header-nav-links desktop-only">
+      <a href="/pages/home/index.html" class="nav-link">Inicio</a>
+      <a href="/pages/home/index.html#productos" class="nav-link">Variedades</a>
+      <a href="https://alansosar.github.io/pages/about/sobre-nosotros.html" class="nav-link">Nosotros</a>
+    </nav>
+    
+    <!-- Espacio para Buscador Dinámico (Admin/Cliente) -->
+    <div id="header-search-slot"></div>
+  </div>
+
+  <!-- =========================
+       BLOQUE DERECHA: ACCIONES
+  ========================= -->
+  <div class="header-right-stitch">
+    
+    <!-- Icono Carrito -->
+    <button class="header-icon-btn" id="cart-btn" aria-label="Ver carrito">
+      <span class="material-symbols-outlined">shopping_cart</span>
+      <span id="cart-count" class="cart-badge hidden">0</span>
+    </button>
+
+    <!-- Autenticación / Perfil -->
+    <div class="header-auth-group">
+      <!-- Caso No Logueado -->
+      <div class="auth-buttons no-user">
+        <a href="/pages/auth/login.html" class="btn-auth-link" id="login-desktop">Iniciar Sesión</a>
+        <a href="/pages/auth/registro.html" class="btn-auth-primary desktop-only">Unirse</a>
+      </div>
+
+      <!-- Caso Logueado (Avatar con Badge de Notificación) -->
+      <button class="header-avatar-button logged hidden" id="btn-header-user" aria-label="Mi Perfil">
+        <img id="avatar-user" src="/imagenes/avatar-default.svg" alt="Usuario">
+        <!-- Badge de Notificación Perfil (Enganchado a header.js) -->
+        <span id="avatar-notification-badge" class="notification-badge hidden" aria-hidden="true">
+            <i class="fa-solid fa-bell"></i>
+        </span>
+      </button>
+    </div>
+
+    <!-- Menú Hamburguesa (Mobile con Badge de Notificación) -->
+    <button id="menu-toggle" class="menu-toggle mobile-only" aria-label="Menú">
+      <span class="material-symbols-outlined">menu</span>
+      <span id="menu-notification-badge" class="notification-badge hidden" aria-hidden="true">
+        <i class="fa-solid fa-bell"></i>
+      </span>
+    </button>
 
   </div>
 
 </header>
 
-<!-- =====================================================
-     SCRIM
-====================================================== -->
+<!-- SCREENS SECUNDARIOS -->
 <div id="user-scrim" class="user-scrim"></div>
 
 <!-- =====================================================
-     DRAWER — MATERIAL 3 (CLIENTE + ADMIN) LIMPIO
+     DRAWER — MATERIAL 3 (CONSTRUIDO DINÁMICAMENTE)
 ====================================================== -->
 <aside id="user-drawer" class="user-drawer">
-
-  <!-- PERFIL -->
-  <a href="/pages/profile/perfil.html" class="user-drawer-profile-link logged">
-
-    <div class="user-drawer-avatar">
-      <img id="avatar-user-drawer" src="/imagenes/avatar-default.svg" alt="Usuario">
-    </div>
-
-    <div class="user-drawer-profile-texts">
-      <p id="drawer-name">Usuario</p>
-      <p id="drawer-email">correo@ejemplo.com</p>
-    </div>
-
-    <span class="material-symbols-outlined user-drawer-arrow">
-      chevron_right
-    </span>
-  </a>
+  <div class="drawer-header">
+     <a href="/pages/profile/perfil.html" class="user-drawer-profile-link logged">
+        <div class="user-drawer-avatar">
+          <img id="avatar-user-drawer" src="/imagenes/avatar-default.svg" alt="Usuario">
+        </div>
+        <div class="user-drawer-profile-texts">
+          <p id="drawer-name">Usuario</p>
+          <p id="drawer-email">correo@ejemplo.com</p>
+        </div>
+        <span class="material-symbols-outlined">chevron_right</span>
+     </a>
+  </div>
 
   <hr class="user-drawer-divider logged">
 
-  <!-- 🔔 NOTIFICACIÓN CONTEXTUAL (GLOBAL) -->
-  <a id="drawer-notification" class="drawer-notification hidden" role="button" aria-live="polite">
+  <div class="drawer-nav-section client-only logged">
+      <a href="/pages/profile/mis-pedidos.html" class="user-drawer-item">
+        <span class="material-symbols-outlined">shopping_bag</span>
+        <span>Mis pedidos</span>
+        <span class="drawer-badge hidden" id="my-orders-count">0</span>
+      </a>
+      <a href="/pages/profile/historial.html" class="user-drawer-item">
+        <span class="material-symbols-outlined">history</span>
+        Historial
+      </a>
+  </div>
 
-    <div class="drawer-notification-icon">
-      <i class="fa-solid fa-bell"></i>
-    </div>
+  <div class="drawer-nav-section admin-only logged">
+      <a href="/pages/admin/admin-pedidos.html" class="user-drawer-item">
+        <span class="material-symbols-outlined">inventory_2</span>
+        <span>Pedidos</span>
+        <span class="drawer-badge hidden" id="admin-orders-count">0</span>
+      </a>
+      <a href="/pages/admin/admin-clientes.html" class="user-drawer-item">
+        <span class="material-symbols-outlined">groups</span>
+        Clientes
+      </a>
+      <a href="/pages/admin/admin-productos.html" class="user-drawer-item">
+        <span class="material-symbols-outlined">storefront</span>
+        Productos
+      </a>
+      <a href="/pages/admin/admin-usuarios.html" class="user-drawer-item">
+        <span class="material-symbols-outlined">person</span>
+        Usuarios
+      </a>
+  </div>
 
-    <div class="drawer-notification-text">
-      <strong id="drawer-notification-title">
-        Nuevo pedido
-      </strong>
-
-      <span id="drawer-notification-time">
-        hace 5 min
-      </span>
-
-      <p id="drawer-notification-message">
-        Hay 3 pedidos pendientes de revisión.
-      </p>
-    </div>
-  </a>
-  <!-- CLIENTE -->
-  <a href="/pages/home/index.html#productos" class="user-drawer-item logged client-only" id="seguir-comprando-item">
-    <span class="material-symbols-outlined">arrow_back</span>
-    <span class="drawer-text" style="font-weight: 600;">Seguir comprando</span>
-  </a>
-
-  <a href="/pages/profile/mis-pedidos.html" class="user-drawer-item logged client-only" id="mis-pedidos-item">
-    <span class="material-symbols-outlined">shopping_bag</span>
-    <span class="drawer-text">Mis pedidos</span>
-    <span class="drawer-badge hidden" id="my-orders-count">0</span>
-  </a>
-
-  <a href="/pages/profile/historial.html" class="user-drawer-item logged client-only">
-    <span class="material-symbols-outlined">history</span>
-    Historial
-  </a>
-
-  <!-- ADMIN -->
-
-  <a href="/pages/admin/admin-pedidos.html" class="user-drawer-item admin-only">
-    <span class="material-symbols-outlined">inventory_2</span>
-    <span>Pedidos</span>
-    <span class="drawer-badge" id="admin-orders-count">0</span>
-  </a>
-
-  <a href="/pages/admin/admin-whatsapp.html" class="user-drawer-item admin-only">
-    <span class="material-symbols-outlined">forum</span>
-    WhatsApp
-  </a>
-
-  <a href="/pages/admin/admin-clientes.html" class="user-drawer-item admin-only hidden">
-    <span class="material-symbols-outlined">groups</span>
-    Clientes
-  </a>
-
-  <a href="/pages/admin/admin-productos.html" class="user-drawer-item admin-only hidden">
-    <span class="material-symbols-outlined">storefront</span>
-    Productos
-  </a>
-
-  <a href="/pages/admin/admin-usuarios.html" class="user-drawer-item admin-only hidden">
-    <span class="material-symbols-outlined">person</span>
-    Usuarios
-  </a>
-
-  <a href="/pages/admin/admin-configuracion.html" class="user-drawer-item admin-only hidden">
-    <span class="material-symbols-outlined">settings</span>
-    Configuración
-  </a>
-
-  <!-- CONTENIDO (VISIBLE PARA TODOS) -->
-  <a href="/pages/home/index.html#productos" class="user-drawer-item no-user">
-    <span class="material-symbols-outlined">local_cafe</span>
-    Variedades de café
-  </a>
-  <a href="https://alansosar.github.io/pages/about/sobre-nosotros.html" class="user-drawer-item">
-    <span class="material-symbols-outlined">info</span>
-    Quiénes somos
-  </a>
-
-  <a href="/pages/home/index.html#contacto" class="user-drawer-item">
-    <span class="material-symbols-outlined">mail</span>
-    Contáctanos
-  </a>
-
-  <hr class="user-drawer-divider">
-
-  <!-- LOGOUT -->
-  <button id="logout-btn" class="user-drawer-item logout logged">
-    <span class="material-symbols-outlined">logout</span>
-    Cerrar sesión
-  </button>
-
-  <!-- LOGIN INVITADO -->
-  <a href="/pages/auth/login.html" class="user-drawer-item login no-user">
-    <span class="material-symbols-outlined">login</span>
-    Iniciar sesión
-  </a>
-
+  <div class="drawer-footer">
+      <a href="/pages/auth/login.html" class="user-drawer-item no-user">
+        <span class="material-symbols-outlined">login</span>
+        Iniciar Sesión
+      </a>
+      <button id="logout-btn" class="user-drawer-item logout logged">
+        <span class="material-symbols-outlined">logout</span>
+        Cerrar sesión
+      </button>
+  </div>
 </aside>
-<!-- CORE HEADER (UI, drawer, carrito, sesión) -->
+
 <script type="module" src="/js/ui/header.js"></script>

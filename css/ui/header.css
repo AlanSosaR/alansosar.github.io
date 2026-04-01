@@ -21,19 +21,41 @@ header.header-fixed,
   position: fixed !important;
   inset: 0 0 auto 0 !important;
   height: 72px;
-  padding: 0 24px;
+  padding: 0 32px;
 
   display: flex;
   justify-content: space-between;
   align-items: center;
 
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 
-  border-bottom: 1.5px solid rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
   z-index: 5000;
   box-sizing: border-box;
+}
+
+/* ESTRUCTURA TRES BLOQUES */
+.header-left-new {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+}
+
+.header-middle-stitch {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.header-right-stitch {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
 
 /* =====================================================
@@ -331,41 +353,95 @@ body[class*="page-admin-"] .header-right-new {
   min-width: auto !important;
 }
 
-/* =====================================================
-   NAV DESKTOP
-===================================================== */
-.nav-links {
+/* NAVEGACION CENTRAL STITCH */
+.header-nav-links {
   display: flex;
+  gap: 24px;
   align-items: center;
-  gap: 20px;
 }
 
-.nav-links a {
+.header-nav-links .nav-link {
   text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
   color: var(--marron);
-  font-weight: 500;
-  font-size: .95rem;
-  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: color 0.2s;
 }
 
-.nav-links a:hover {
+.header-nav-links .nav-link:hover {
   color: var(--verde);
 }
 
-/* VISIBILIDAD NAV */
-.header-fixed.no-user #public-nav {
+/* BOTONES DE ACCION STITCH */
+.header-icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: relative;
   display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  color: var(--verde);
 }
 
-.header-fixed.logged #public-nav {
-  display: none !important;
+.header-icon-btn .material-symbols-outlined {
+  font-size: 28px;
 }
 
-/* 🔥 Mostrar nav público solo si no choca, o manejar visibilidad */
-body.page-carrito #public-nav,
-body.page-datos-cliente #public-nav {
-  display: none !important;
-  /* Lo mantenemos oculto en PC para centrar el título, pero el logo sí vuelve */
+/* BADGES */
+.cart-badge, .count-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: #C62828;
+  color: white;
+  font-size: 10px;
+  font-weight: 900;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid white;
+}
+
+/* AUTH GROUP STITCH */
+.header-auth-group {
+  display: flex;
+  align-items: center;
+}
+
+.auth-buttons {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-auth-link {
+  text-decoration: none;
+  color: var(--marron);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.btn-auth-primary {
+  text-decoration: none;
+  background: var(--verde);
+  color: white;
+  padding: 8px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  transition: opacity 0.2s;
+}
+
+.btn-auth-primary:hover {
+  opacity: 0.9;
 }
 
 /* =====================================================
