@@ -1,0 +1,639 @@
+/* =========================================================================
+   VARIABLES & GLOBALES
+   ========================================================================= */
+:root {
+    --bg-surface-lowest: #ffffff;
+    --bg-surface-low: #f2f4f3;
+    --bg-surface-high: #e6e9e8;
+    --bg-primary: var(--principal, #377b4c);
+    --bg-primary-hover: #2e6840;
+    --bg-secondary-container: #91f78e;
+    --text-primary: #1b6236;
+    --text-tertiary: #6b4f45;
+    --text-on-secondary: #00731e;
+    --text-on-surface: #191c1c;
+    --text-muted: #575757;
+    --border-soft: #eceeed;
+}
+
+body.page-admin-pedido-detalle {
+    background-color: var(--fondo-general);
+    font-family: 'Manrope', 'Roboto', sans-serif;
+}
+
+/* =========================================================================
+   CONTENEDOR PRINCIPAL
+   ========================================================================= */
+.admin-pedido-container {
+    max-width: 1280px;
+    margin: 80px auto 40px;
+    padding: 0 32px;
+}
+
+/* =========================================================================
+   HEADER DEL PEDIDO
+   ========================================================================= */
+.pedido-header {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin-bottom: 48px;
+}
+
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 8px;
+}
+
+.btn-back {
+    color: var(--text-primary);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 24px;
+    display: flex;
+    transition: transform 0.2s;
+}
+
+.btn-back:hover {
+    transform: translateX(-4px);
+}
+
+.breadcrumb-text {
+    font-family: 'Epilogue', sans-serif;
+    color: var(--text-tertiary);
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+.pedido-number {
+    font-family: 'Epilogue', sans-serif;
+    font-size: 40px;
+    font-weight: 900;
+    color: var(--text-on-surface);
+    margin: 0 0 8px;
+    letter-spacing: -1px;
+}
+
+.pedido-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.status-pill {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: var(--bg-surface-high);
+    color: var(--text-muted);
+}
+
+.status-pill.confirmed { background: #E3F2FD; color: #1976D2; }
+.status-pill.preparing { background: #FFF3E0; color: #F57C00; }
+.status-pill.shipped { background: #EDE7F6; color: #5E35B1; }
+.status-pill.delivered { background: var(--bg-secondary-container); color: var(--text-on-secondary); }
+.status-pill.cancelled { background: #FFEBEE; color: #C62828; }
+
+.meta-date {
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+.pedido-actions-col {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.pedido-actions-col button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Manrope', sans-serif;
+}
+
+.btn-outline {
+    background: var(--bg-surface-low);
+    color: var(--text-on-surface);
+    border: none;
+}
+
+.btn-outline:hover {
+    background: var(--bg-surface-high);
+}
+
+.btn-primary {
+    background: var(--bg-primary);
+    color: white;
+    border: none;
+    box-shadow: 0 8px 16px rgba(55, 123, 76, 0.2);
+}
+
+.btn-primary:hover {
+    background: var(--bg-primary-hover);
+    opacity: 0.95;
+    box-shadow: 0 12px 20px rgba(55, 123, 76, 0.3);
+}
+
+
+/* =========================================================================
+   BENTO GRID
+   ========================================================================= */
+.pedido-bento-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 32px;
+}
+
+.bento-col-left, .bento-col-right {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+/* Tarjetas base */
+.bento-card {
+    background: var(--bg-surface-lowest);
+    border-radius: 16px;
+    padding: 32px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+}
+
+.card-title {
+    font-family: 'Epilogue', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 24px;
+}
+
+.icon-primary {
+    color: var(--text-primary);
+}
+
+
+/* =========================================================================
+   LÍNEA DE TIEMPO (TIMELINE)
+   ========================================================================= */
+.timeline-card {
+    position: relative;
+}
+
+.timeline-container {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 24px;
+}
+
+/* Línea Gris */
+.timeline-track-background {
+    position: absolute;
+    top: 20px;   /* Center of icons */
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--bg-surface-high);
+    z-index: 1;
+}
+
+/* Línea Verde de progreso */
+.timeline-track-progress {
+    position: absolute;
+    top: 20px;
+    left: 0;
+    width: 0%;
+    height: 2px;
+    background: var(--bg-primary);
+    z-index: 2;
+    transition: width 0.5s ease;
+}
+
+/* Paso Individual */
+.timeline-step {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    width: 20%; /* 5 status steps */
+}
+
+.step-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--bg-surface-high);
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+    transition: all 0.3s;
+}
+
+.timeline-step.active .step-icon {
+    background: var(--bg-primary);
+    color: white;
+    box-shadow: 0 4px 10px rgba(55, 123, 76, 0.3);
+}
+
+.step-info strong {
+    display: block;
+    font-size: 14px;
+    color: var(--text-on-surface);
+}
+
+.step-info span {
+    display: block;
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-top: 4px;
+}
+
+
+/* =========================================================================
+   TABLA DE PRODUCTOS
+   ========================================================================= */
+.card-header-bordered {
+    padding: 32px;
+    border-bottom: 1px solid var(--border-soft);
+}
+
+.card-header-bordered .card-title { margin: 0; }
+
+.table-responsive {
+    overflow-x: auto;
+}
+
+.productos-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.productos-table th {
+    background: var(--bg-surface-low);
+    padding: 16px 32px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.productos-table td {
+    padding: 24px 32px;
+    border-bottom: 1px solid var(--border-soft);
+    vertical-align: middle;
+}
+
+.productos-table tr:hover {
+    background: rgba(242, 244, 243, 0.3); /* bg-surface-low con opacidad */
+}
+
+/* Contenido de Producto */
+.product-cell {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.product-img-wrapper {
+    width: 64px;
+    height: 64px;
+    border-radius: 8px;
+    background: var(--bg-surface-high);
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.product-img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.product-name {
+    font-weight: 700;
+    color: var(--text-on-surface);
+    margin: 0;
+}
+
+.product-meta {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    margin: 4px 0 0;
+}
+
+.price-text {
+    color: var(--text-muted);
+}
+
+.qty-text {
+    font-weight: 600;
+    color: var(--text-on-surface);
+}
+
+.subtotal-text {
+    font-weight: 700;
+    color: var(--text-primary);
+    text-align: right;
+}
+
+/* =========================================================================
+   ACCIONES DE ESTADO
+   ========================================================================= */
+.change-status-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    color: var(--text-primary);
+}
+
+.change-status-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.status-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.status-btn {
+    padding: 12px 20px;
+    border: 1px solid var(--border-soft);
+    border-radius: 8px;
+    background: var(--fondo-card);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--text-on-surface);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.status-btn.accent {
+    background: var(--bg-primary);
+    color: white;
+    border-color: var(--bg-primary);
+}
+
+/* =========================================================================
+   INFORMACIÓN DEL CLIENTE
+   ========================================================================= */
+.client-info-flex {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.client-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #ffdbce; /* tertiary-fixed de Stitch */
+    color: #5b4137;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.client-avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.client-data strong {
+    display: block;
+    color: var(--text-on-surface);
+    font-size: 16px;
+    margin-bottom: 4px;
+}
+
+.client-data span {
+    display: block;
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 2px;
+}
+
+.shipping-info {
+    padding-top: 24px;
+    border-top: 1px solid var(--border-soft);
+}
+
+.section-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+}
+
+.shipping-address-flex {
+    display: flex;
+    gap: 12px;
+}
+
+.icon-faded {
+    color: var(--text-muted);
+    font-size: 20px;
+    margin-top: 2px;
+}
+
+.shipping-address-flex p {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* =========================================================================
+   RESUMEN DE PAGO (Tarjeta Primaria Oscura)
+   ========================================================================= */
+.card-dark {
+    background: var(--bg-primary);
+    color: white;
+    box-shadow: 0 16px 32px rgba(27, 98, 54, 0.15);
+}
+
+.card-dark .card-title {
+    color: white;
+    margin-bottom: 24px;
+}
+
+.card-dark .material-symbols-outlined {
+    color: white;
+}
+
+.payment-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.payment-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    opacity: 0.9;
+    font-size: 14px;
+}
+
+.total-row {
+    padding-top: 16px;
+    border-top: 1px solid rgba(255,255,255, 0.2);
+    opacity: 1;
+}
+
+.total-row span {
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.total-row strong {
+    font-size: 28px;
+    font-weight: 900;
+}
+
+.payment-verification {
+    margin-top: 32px;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.verification-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0;
+}
+
+.verification-desc {
+    font-size: 12px;
+    opacity: 0.8;
+    margin: 2px 0 0;
+}
+
+/* =========================================================================
+   NOTAS INTERNAS
+   ========================================================================= */
+.note-card {
+    background: var(--bg-surface-low);
+}
+
+.note-content {
+    font-size: 14px;
+    color: var(--text-muted);
+    font-style: italic;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* =========================================================================
+   MEDIA QUERIES
+   ========================================================================= */
+@media (min-width: 1024px) {
+    .pedido-bento-grid {
+        grid-template-columns: 2fr 1fr;
+    }
+    
+    .pedido-header {
+        flex-direction: row;
+        align-items: flex-end;
+        justify-content: space-between;
+    }
+}
+
+@media (max-width: 768px) {
+    .admin-pedido-container {
+        padding: 16px;
+        margin-top: 60px;
+    }
+
+    .pedido-number {
+        font-size: 32px;
+    }
+
+    .bento-card {
+        padding: 24px;
+    }
+
+    .card-header-bordered {
+        padding: 24px;
+    }
+
+    .productos-table th, .productos-table td {
+        padding: 16px;
+    }
+
+    .timeline-container {
+        flex-direction: column;
+        gap: 24px;
+        margin-top: 24px;
+    }
+
+    .timeline-track-background {
+        width: 2px;
+        height: 100%;
+        top: 0;
+        left: 20px;
+    }
+
+    .timeline-track-progress {
+        width: 2px !important;
+        top: 0;
+        left: 20px;
+    }
+
+    .timeline-step {
+        width: 100%;
+        flex-direction: row;
+        text-align: left;
+        gap: 16px;
+    }
+
+    .step-icon {
+        margin-bottom: 0;
+    }
+
+    .step-info {
+        flex: 1;
+    }
+}

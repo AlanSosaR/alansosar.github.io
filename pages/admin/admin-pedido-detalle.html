@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Detalle del Pedido | Café Cortero</title>
+    <!-- Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="/css/core/tipografia.css" />
+    <link rel="stylesheet" href="/css/ui/header.css" />
+    <!-- Specific CSS -->
+    <link rel="stylesheet" href="/css/admin/admin-pedido-detalle.css" />
+    <link rel="icon" type="image/png" href="/imagenes/logo.png">
+</head>
+
+<body class="page-admin-pedido-detalle">
+    <main class="admin-pedido-container fade-in">
+        
+        <!-- Header del Pedido -->
+        <header class="pedido-header">
+            <div class="pedido-title-col">
+                <div class="breadcrumb">
+                    <button class="btn-back" onclick="history.back()" title="Volver">
+                        <span class="material-symbols-outlined">arrow_back</span>
+                    </button>
+                    <span class="breadcrumb-text">Gestión de Pedidos</span>
+                </div>
+                <h1 class="pedido-number" id="detail-order-number">Pedido #—</h1>
+                <div class="pedido-meta">
+                    <span class="status-badge status-pill" id="detail-status">Cargando...</span>
+                    <span class="meta-date" id="detail-date">Realizado el —</span>
+                </div>
+            </div>
+            
+            <div class="pedido-actions-col">
+                <button class="btn-outline">
+                    <span class="material-symbols-outlined">print</span>
+                    Imprimir Factura
+                </button>
+                <button class="btn-primary" id="btn-contact-client">
+                    <span class="material-symbols-outlined">mail</span>
+                    Contactar Cliente
+                </button>
+            </div>
+        </header>
+
+        <!-- Bento Grid Principal -->
+        <div class="pedido-bento-grid">
+            
+            <!-- ====== COLUMNA IZQUIERDA (2/3) ====== -->
+            <div class="bento-col-left">
+                
+                <!-- Historial del Pedido (Timeline) -->
+                <section class="bento-card timeline-card">
+                    <h2 class="card-title">
+                        <span class="material-symbols-outlined icon-primary">history</span>
+                        Historial del Pedido
+                    </h2>
+                    
+                    <div class="timeline-container">
+                        <div class="timeline-track-background"></div>
+                        <div class="timeline-track-progress" id="timeline-progress" style="width: 25%;"></div>
+                        
+                        <!-- Steps -->
+                        <div class="timeline-step" id="step-pending">
+                            <div class="step-icon"><span class="material-symbols-outlined fill">check_circle</span></div>
+                            <div class="step-info">
+                                <strong>Pedido Nuevo</strong>
+                                <span>1/1/2026</span>
+                            </div>
+                        </div>
+                        <div class="timeline-step" id="step-confirmed">
+                            <div class="step-icon"><span class="material-symbols-outlined fill">check_circle</span></div>
+                            <div class="step-info">
+                                <strong>Confirmado</strong>
+                                <span>—</span>
+                            </div>
+                        </div>
+                        <div class="timeline-step" id="step-preparing">
+                            <div class="step-icon"><span class="material-symbols-outlined fill">check_circle</span></div>
+                            <div class="step-info">
+                                <strong>Preparando</strong>
+                                <span>—</span>
+                            </div>
+                        </div>
+                        <div class="timeline-step" id="step-shipped">
+                            <div class="step-icon"><span class="material-symbols-outlined fill">check_circle</span></div>
+                            <div class="step-info">
+                                <strong>Enviado</strong>
+                                <span>—</span>
+                            </div>
+                        </div>
+                        <div class="timeline-step" id="step-delivered">
+                            <div class="step-icon"><span class="material-symbols-outlined fill">check_circle</span></div>
+                            <div class="step-info">
+                                <strong>Entregado</strong>
+                                <span>—</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Productos Comprados -->
+                <section class="bento-card pt-0 pb-0">
+                    <div class="card-header-bordered">
+                        <h2 class="card-title m-0">
+                            <span class="material-symbols-outlined icon-primary">shopping_basket</span>
+                            Productos Comprados
+                        </h2>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="productos-table">
+                            <thead>
+                                <tr>
+                                    <th>Producto</th>
+                                    <th>Precio</th>
+                                    <th>Cantidad</th>
+                                    <th class="text-right">Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody id="detail-items-body">
+                                <tr>
+                                    <td colspan="4" class="loading-state">Cargando productos...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Área de Acciones de Estado -->
+                <section class="bento-card actions-card">
+                    <div class="change-status-header">
+                        <span class="material-symbols-outlined">edit_square</span>
+                        <h3>Actualizar estado del pedido</h3>
+                    </div>
+                    <div class="status-actions" id="status-action-buttons">
+                        <!-- Llenados dinámicamente -->
+                        Cargando acciones...
+                    </div>
+                </section>
+            </div>
+
+
+            <!-- ====== COLUMNA DERECHA (1/3) ====== -->
+            <div class="bento-col-right">
+                
+                <!-- Info del Cliente -->
+                <section class="bento-card">
+                    <h2 class="card-title">
+                        <span class="material-symbols-outlined icon-primary">person</span>
+                        Información del Cliente
+                    </h2>
+                    
+                    <div class="client-info-flex">
+                        <div class="client-avatar" id="detail-avatar">
+                            US
+                        </div>
+                        <div class="client-data">
+                            <strong id="detail-client-name">Cliente</strong>
+                            <span id="detail-client-email">email@...</span>
+                            <span id="detail-client-phone">+000</span>
+                        </div>
+                    </div>
+
+                    <div class="shipping-info">
+                        <p class="section-label">Dirección de Envío</p>
+                        <div class="shipping-address-flex">
+                            <span class="material-symbols-outlined icon-faded">location_on</span>
+                            <p id="detail-shipping-address">Cargando dirección...</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Resumen de Pago -->
+                <section class="bento-card card-dark">
+                    <h2 class="card-title text-white">
+                        <span class="material-symbols-outlined text-white">receipt_long</span>
+                        Resumen de Pago
+                    </h2>
+                    
+                    <div class="payment-rows">
+                        <div class="payment-row">
+                            <span>Subtotal</span>
+                            <span id="detail-subtotal">L 0.00</span>
+                        </div>
+                        <div class="payment-row">
+                            <span>Envío</span>
+                            <span>Gratis</span>
+                        </div>
+                        <!-- Pago Contra Entrega info si aplica -->
+                        <div class="payment-row total-row">
+                            <span>Total</span>
+                            <strong id="detail-total-amount">L 0.00</strong>
+                        </div>
+                    </div>
+                    
+                    <div class="payment-verification" id="detail-payment-method-box">
+                        <span class="material-symbols-outlined" id="payment-icon">verified_user</span>
+                        <div>
+                            <p class="verification-title" id="payment-title">Pago Verificado</p>
+                            <p class="verification-desc" id="payment-desc">Método cargando...</p>
+                            <a id="payment-receipt-link" href="#" target="_blank" class="hidden text-xs mt-1 underline">Ver Comprobante</a>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Notas Internas -->
+                <section class="bento-card note-card">
+                    <p class="section-label">Notas del Cliente</p>
+                    <p class="note-content" id="detail-order-notes">
+                        "Sin notas adicionales"
+                    </p>
+                </section>
+
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/js/core/supabase-client-core.js"></script>
+    <script src="/js/core/supabase-auth.js"></script>
+    
+    <script>
+      window.PAGE_MODE = "admin-pedido-detalle";
+    </script>
+    
+    <script src="/js/ui/layout.js"></script>
+    <script type="module" src="/js/ui/header.js"></script>
+    <script type="module" src="/js/admin/admin_pedido_detalle.js"></script>
+</body>
+
+</html>

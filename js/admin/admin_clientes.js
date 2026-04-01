@@ -222,6 +222,10 @@ const initAdminClientes = () => {
         paginated.forEach(order => {
             const row = document.createElement("tr");
             row.className = `status-row-${order.status}`;
+            row.style.cursor = "pointer";
+            row.onclick = () => {
+                window.location.href = `/pages/admin/admin-pedido-detalle.html?id=${order.id}`;
+            };
             row.innerHTML = `
                 <td><strong>Pedido #${order.order_number || "—"}</strong></td>
                 <td>${new Date(order.created_at).toLocaleDateString("es-ES", { day: '2-digit', month: 'short', year: 'numeric' })}</td>
