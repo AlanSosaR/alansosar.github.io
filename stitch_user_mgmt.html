@@ -1,0 +1,246 @@
+<!DOCTYPE html><html class="light" lang="es" data-lt-installed="true"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Café Cortero - Directorio de Personal y Accesos</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,700;9..144,900&amp;family=Roboto:wght@400;500&amp;family=Manrope:wght@400;600;800&amp;family=Newsreader:opsz,wght@6..72,400;6..72,700&amp;family=Work+Sans:wght@400;500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "inverse-primary": "#90d69f",
+              "surface-container-high": "#e6e9e8",
+              "primary": "#1b6236",
+              "primary-fixed": "#abf3b9",
+              "on-secondary-fixed-variant": "#6a3a27",
+              "on-primary": "#ffffff",
+              "error": "#ba1a1a",
+              "inverse-surface": "#2e3131",
+              "on-primary-fixed-variant": "#035228",
+              "tertiary": "#883d4e",
+              "on-secondary-fixed": "#351003",
+              "on-tertiary": "#ffffff",
+              "tertiary-fixed-dim": "#ffb2bf",
+              "surface-container-lowest": "#ffffff",
+              "surface-container-highest": "#e1e3e2",
+              "on-secondary": "#ffffff",
+              "on-tertiary-fixed-variant": "#762f40",
+              "error-container": "#ffdad6",
+              "secondary-container": "#ffb9a0",
+              "tertiary-container": "#a55566",
+              "on-error-container": "#93000a",
+              "on-tertiary-container": "#ffedee",
+              "on-primary-container": "#c7ffd0",
+              "on-surface": "#191c1c",
+              "inverse-on-surface": "#eff1f0",
+              "on-background": "#191c1c",
+              "surface-variant": "#e1e3e2",
+              "on-secondary-container": "#7a4734",
+              "surface-dim": "#d8dada",
+              "outline": "#707a70",
+              "on-tertiary-fixed": "#3d0316",
+              "primary-container": "#377b4c",
+              "secondary-fixed": "#ffdbcf",
+              "secondary-fixed-dim": "#fcb69d",
+              "outline-variant": "#c0c9be",
+              "background": "#f8faf9",
+              "on-primary-fixed": "#00210c",
+              "primary-fixed-dim": "#90d69f",
+              "surface-container": "#eceeed",
+              "on-error": "#ffffff",
+              "surface-tint": "#266b3e",
+              "secondary": "#86513d",
+              "tertiary-fixed": "#ffd9de",
+              "surface": "#f8faf9",
+              "surface-container-low": "#f2f4f3",
+              "surface-bright": "#f8faf9",
+              "on-surface-variant": "#404940"
+            },
+            fontFamily: {
+              "fraunces": ["Fraunces"],
+              "roboto": ["Roboto"],
+              "manrope": ["Manrope"],
+              "headline": ["Newsreader"],
+              "body": ["Work Sans"],
+              "label": ["Manrope"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .editorial-shadow {
+            box-shadow: 0 24px 48px -12px rgba(81, 38, 21, 0.06);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-roboto min-h-screen">
+<!-- TopNavBar -->
+<nav class="bg-[#F8FAF9] dark:bg-[#1A1C1B] flex justify-between items-center w-full px-12 py-6 max-w-[1920px] mx-auto sticky top-0 z-50">
+<div class="flex items-center gap-8">
+<span class="text-2xl font-fraunces font-black text-[#512615] dark:text-[#F8FAF9]" style="">Café Cortero</span>
+<div class="hidden md:flex gap-6">
+<a class="text-[#377B4C] font-bold border-b-2 border-[#377B4C] pb-1 font-manrope uppercase tracking-widest text-xs" href="#" style="">Personal</a>
+<a class="text-[#512615]/70 dark:text-[#F8FAF9]/70 font-medium hover:bg-[#377B4C]/10 transition-colors duration-300 font-manrope uppercase tracking-widest text-xs px-2" href="#" style="">Dashboard</a>
+<a class="text-[#512615]/70 dark:text-[#F8FAF9]/70 font-medium hover:bg-[#377B4C]/10 transition-colors duration-300 font-manrope uppercase tracking-widest text-xs px-2" href="#" style="">Seguridad</a>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative hidden lg:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline" style="">search</span>
+<input class="bg-surface-container-high border-none rounded-full py-2 pl-10 pr-4 text-sm font-manrope focus:ring-2 focus:ring-primary w-64" placeholder="Buscar personal..." type="text">
+</div>
+<button class="hover:bg-[#377B4C]/10 p-2 rounded-full transition-colors duration-300" style="">
+<span class="material-symbols-outlined text-[#377B4C]" style="">filter_list</span>
+</button>
+<div class="flex items-center gap-3 border-l border-outline-variant pl-6">
+<img alt="Avatar del administrador" class="w-10 h-10 rounded-full object-cover" data-alt="close-up portrait of a professional woman in a bright office with soft morning sunlight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJIb-zhRUbNMSzeTsgiHJ6QkFRw-cY1KcXuCR8kV1uT17mV2zrrROOiZZtDUZV8GYWjRXRMiBsBTDPzC86JA7isqWtCYb6DlLXnhOqZt9jzdmNO-9p_qRa5fl2AODGdsAhm125zs3NuT_jsajVlkCbU8Cbo3wJ75Y8xPKm8D5s01rDFnT7AYybr70IbInJySYTocJgYzawRy2Z704R7mzG7_mtppU3xged_nijaA_RRI7h8XM-_umO0eb5_eY4sd5RbdVoE_Zgrac" style="">
+</div>
+</div>
+</nav>
+<main class="max-w-[1920px] mx-auto px-12 py-12">
+<!-- Header Section -->
+<header class="mb-16">
+<h1 class="text-6xl font-fraunces tracking-tight font-bold mb-4 text-[#377B4C]" style="">Directorio de Personal y Usuarios</h1>
+<p class="text-lg text-on-surface-variant max-w-2xl leading-relaxed" style="">Gestión centralizada de Usuarios, roles y permisos.</p>
+</header>
+<!-- Top Stats Bento Grid -->
+<!-- Search & Filter Bar (Mobile/Table View) -->
+<div class="mb-8">
+<h2 class="text-2xl font-fraunces font-bold text-[#512615] mb-2" style="">Gestion de Usuarios</h2>
+<div class="h-1 w-12 bg-primary rounded-full"></div>
+</div>
+<!-- Directory Table Section -->
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden editorial-shadow">
+<div class="overflow-x-auto">
+<table class="w-full border-collapse text-left">
+<thead>
+<tr class="bg-surface-container-low">
+<th class="px-8 py-5 font-manrope text-xs font-extrabold uppercase tracking-widest text-on-surface-variant" style="">Usuario</th>
+<th class="px-8 py-5 font-manrope text-xs font-extrabold uppercase tracking-widest text-on-surface-variant" style="">Email&nbsp;<br></th>
+<th class="px-8 py-5 font-manrope text-xs font-extrabold uppercase tracking-widest text-on-surface-variant" style="">Rol Asignado</th>
+<th class="px-8 py-5 font-manrope text-xs font-extrabold uppercase tracking-widest text-on-surface-variant" style="">Ubicación / País</th>
+<th class="px-8 py-5 font-manrope text-xs font-extrabold uppercase tracking-widest text-on-surface-variant" style=""></th>
+</tr>
+</thead>
+<tbody class="divide-y-0">
+<!-- Row 1 -->
+<tr class="group hover:bg-[#edebe9] transition-colors duration-200">
+<td class="px-8 py-6" style="">
+<div class="flex items-center gap-4">
+<img alt="Profile of Mateo Valdés" class="w-12 h-12 rounded-full object-cover" data-alt="portrait of a confident man with a short beard wearing a neutral linen shirt in a garden setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBa0g0bfvJ78TjXEk5Robqg1M5ZaB8SWGGm7PXd9O8vu-PE_MB6YFa0abLeChxo_bbCsiiKcZiitGADeH1JoskHqoFJGFuASOVMx8WRaMKwYzCKZ_Jb3QPx5WWEyj5pwkAEJM0pUANudEJi4fQsFia_Jvv4En36HyF3sZyuQFhFH_-t5tW6jxTcSUPV05ey0JkLBbLjcDKrs5KbUSu93j8hiAzAEkRUiJT4LNjk95qUxBnjuxqQf_h1FzqVevkYXUhBwXmJq0irrLY" style="">
+<div>
+<div class="font-fraunces font-bold text-[#512615] text-lg" style="">Mateo Valdés</div>
+<div class="font-manrope text-xs font-semibold text-on-surface-variant uppercase tracking-tight" style="">ID: CC-2091</div>
+</div>
+</div>
+</td>
+<td class="px-8 py-6 font-manrope font-semibold text-on-surface-variant" style="">mateo.v@cafecortero.com</td>
+<td class="px-8 py-6" style="">
+<span class="bg-[#512615] text-[#F8FAF9] px-3 py-1 rounded text-[10px] font-manrope font-extrabold uppercase tracking-wider" style="">Administrador</span>
+</td>
+<td class="px-8 py-6 font-manrope font-semibold text-on-surface-variant" style="">Colombia</td>
+<td class="px-8 py-6 text-right" style="">
+<button class="text-[#512615]/40 hover:text-primary transition-colors" style="">
+<span class="material-symbols-outlined" style="">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="group hover:bg-[#edebe9] transition-colors duration-200">
+<td class="px-8 py-6" style="">
+<div class="flex items-center gap-4">
+<img alt="Profile of Elena Santos" class="w-12 h-12 rounded-full object-cover" data-alt="close portrait of a woman with curly hair wearing glasses, smiling in a bright naturally lit studio" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCLJjOx5KkQ3HdecMQvzEViM2tDGd0PPp5GRCciM00FDt32nDSjDCvSDu_LqbpePPkhjOYQMKLuVYZcfuwDLcvYy9zj4_8G-9YNYgchL3viRAmneQHrrVA75L79qqsokbQFOogCvjLAZKbhj6r61ImZ63h4UVF6R2R7u6I0WulQcO9cWOugd3UMtzxLGIFdZTCTv_wUBb6X3rbeMqncLKyKjzpTMbyeBTb2cdhHRVm6uZzmpJ0tTKa03PDD-XVToNOtMfxyKyO_-fk" style="">
+<div>
+<div class="font-fraunces font-bold text-[#512615] text-lg" style="">Elena Santos</div>
+<div class="font-manrope text-xs font-semibold text-on-surface-variant uppercase tracking-tight" style="">ID: CC-4432</div>
+</div>
+</div>
+</td>
+<td class="px-8 py-6 font-manrope font-semibold text-on-surface-variant" style="">elena.s@cafecortero.com</td>
+<td class="px-8 py-6" style="">
+<span class="bg-[#F1F3F2] text-[#512615] px-3 py-1 rounded text-[10px] font-manrope font-extrabold uppercase tracking-wider" style="">Tostador Senior</span>
+</td>
+<td class="px-8 py-6 font-manrope font-semibold text-on-surface-variant" style="">Costa Rica</td>
+<td class="px-8 py-6 text-right" style="">
+<button class="text-[#512615]/40 hover:text-primary transition-colors" style="">
+<span class="material-symbols-outlined" style="">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="group hover:bg-[#edebe9] transition-colors duration-200">
+<td class="px-8 py-6" style="">
+<div class="flex items-center gap-4">
+<img alt="Profile of Julian Rocha" class="w-12 h-12 rounded-full object-cover" data-alt="mature man with kind eyes and salt and pepper hair in a professional outdoor setting with soft bokeh" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB6p2v51e-R5umeJmY9m5696yy_6HCVeT0lvFR8SGfShTk2uJELX1WIiIlpOcbQCFI1VtFfP7ksCGrRFdeHIzMSsmjU9oiMJiCM0FcEiwmrfmaXgq-C5J8F21D-GlhW_JjrGH6gH8r0TCWoWYfsPFbHrhSe0i3aFk-TSZ_b3hoO7TihZgxZ07d7KyynHmqj2UtYIM45j1cfmdy5Gz4USOx0VVih-CTvbtQqp6nj8CT2bJJQzo4u-9O_z0D13xNw_CP0xxzMm5aOSP4" style="">
+<div>
+<div class="font-fraunces font-bold text-[#512615] text-lg" style="">Julian Rocha</div>
+<div class="font-manrope text-xs font-semibold text-on-surface-variant uppercase tracking-tight" style="">ID: CC-1022</div>
+</div>
+</div>
+</td>
+<td class="px-8 py-6 font-manrope font-semibold text-on-surface-variant" style="">j.rocha@cafecortero.com</td>
+<td class="px-8 py-6" style="">
+<span class="bg-[#F1F3F2] text-[#512615] px-3 py-1 rounded text-[10px] font-manrope font-extrabold uppercase tracking-wider" style="">Logística</span>
+</td>
+<td class="px-8 py-6 font-manrope font-semibold text-on-surface-variant" style="">Brasil</td>
+<td class="px-8 py-6 text-right" style="">
+<button class="text-[#512615]/40 hover:text-primary transition-colors" style="">
+<span class="material-symbols-outlined" style="">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 4 (Suspended Example) -->
+<tr class="group hover:bg-[#edebe9] transition-colors duration-200">
+<td class="px-8 py-6 opacity-60" style="">
+<div class="flex items-center gap-4">
+<img alt="Profile of Sofia Mendez" class="w-12 h-12 rounded-full object-cover grayscale" data-alt="headshot of a young professional woman with a minimalist aesthetic and soft cinematic lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCwWuuKQok0AIAsndGL14sEn7TIumzdXrWtbrQ4CyCNRSju6ag09IalBUt-K-oHTjhqLM2LN9CBPGW_SYX9oZWtmxLzj25FWUsl1YxLOs_HJJImjsm5mI2KUcoXrmhY26HXoWzYFtEeD7WInrs6UBJxwtG8LtViCpeXpt4nYIXYzsPXYbnC4OyEymvZ0BgCSvg1Ba_ni4fnilhC2oAf-iaF_4w3jhmxBS6KJgTiaEbSQQmqbSqSXnbECOJ_EOryET50n0kSj9pispQ" style="">
+<div>
+<div class="font-fraunces font-bold text-[#512615] text-lg" style="">Sofia Mendez</div>
+<div class="font-manrope text-xs font-semibold text-on-surface-variant uppercase tracking-tight text-error" style="">Acceso Restringido</div>
+</div>
+</div>
+</td>
+<td class="px-8 py-6 font-manrope font-semibold text-on-surface-variant opacity-60" style="">s.mendez@cafecortero.com</td>
+<td class="px-8 py-6" style="">
+<span class="bg-error/10 text-error px-3 py-1 rounded text-[10px] font-manrope font-extrabold uppercase tracking-wider" style="">Suspendido</span>
+</td>
+<td class="px-8 py-6 font-manrope font-semibold text-on-surface-variant opacity-60" style="">Panamá</td>
+<td class="px-8 py-6 text-right" style="">
+<button class="text-[#512615]/40 hover:text-primary transition-colors" style="">
+<span class="material-symbols-outlined" style="">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination Editorial Style -->
+<div class="bg-surface-container-low px-8 py-4 flex justify-between items-center">
+<span class="font-manrope text-xs font-bold text-on-surface-variant uppercase tracking-widest" style="">Mostrando 4 de 152 registros</span>
+<div class="flex gap-4">
+<button class="hover:bg-[#377B4C]/10 p-2 rounded-full transition-colors" style="">
+<span class="material-symbols-outlined text-primary" style="">chevron_left</span>
+</button>
+<div class="flex items-center gap-2">
+<span class="w-8 h-8 flex items-center justify-center font-manrope font-bold text-xs bg-primary text-on-primary rounded" style="">1</span>
+<span class="w-8 h-8 flex items-center justify-center font-manrope font-bold text-xs text-on-surface-variant hover:bg-[#377B4C]/10 cursor-pointer rounded" style="">2</span>
+<span class="w-8 h-8 flex items-center justify-center font-manrope font-bold text-xs text-on-surface-variant hover:bg-[#377B4C]/10 cursor-pointer rounded" style="">3</span>
+</div>
+<button class="hover:bg-[#377B4C]/10 p-2 rounded-full transition-colors" style="">
+<span class="material-symbols-outlined text-primary" style="">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer Aesthetic -->
+</body></html>
