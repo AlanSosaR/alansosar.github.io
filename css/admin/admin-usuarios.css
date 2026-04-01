@@ -408,26 +408,26 @@ input:checked + .slider-stitch:before { transform: translateX(24px); }
 
 .empty-state-stitch {
     background: var(--white);
-    border-radius: var(--radius-16);
-    padding: 60px 40px;
+    border-radius: var(--radius-24);
+    padding: 80px 60px;
     text-align: center;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.06);
     border: 1px solid var(--border-soft);
-    max-width: 500px;
-    width: 90%;
+    width: 100%;
+    margin: 40px;
 }
 
 .empty-state-stitch .large-icon {
-    font-size: 64px;
+    font-size: 80px;
     color: #E0E4E2;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
     display: block;
 }
 
 .empty-state-stitch h3 {
-    margin: 0 0 12px;
+    margin: 0 0 16px;
     color: var(--coffee-deep);
-    font-size: 20px;
+    font-size: 28px;
     font-family: 'Fraunces', serif;
 }
 
