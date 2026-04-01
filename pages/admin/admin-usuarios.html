@@ -16,24 +16,17 @@
   <link rel="stylesheet" href="/css/ui/header.search.css" />
   <link rel="stylesheet" href="/css/admin/admin-usuarios.css" />
   <link rel="icon" type="image/png" href="/imagenes/logo.png">
-
-  <!-- Configuración de UI -->
-  <script>
-    window.PAGE_MODE = "admin-usuarios";
-  </script>
 </head>
 
-<body class="page-admin-users">
-  <!-- El header se inyecta dinámicamente aquí por layout.js -->
+<body class="bg-gray-50">
+  <!-- Header Inyectado -->
+  <div id="header-placeholder"></div>
 
-  <main class="admin-users-container fade-in">
-
-    <!-- Encabezado Editorial (Stitch Style) -->
-    <header class="page-title-section">
-        <div class="title-content">
-            <h1 class="page-title">Directorio de Personal y Usuarios</h1>
-            <p class="page-subtitle">Gestión centralizada de Usuarios, roles y permisos.</p>
-        </div>
+  <main class="admin-users-container">
+    <header class="page-header">
+        <h1 class="page-title">Directorio de Personal y Usuarios</h1>
+        <p class="page-subtitle">Gestiona los accesos, roles y perfiles de los colaboradores.</p>
+        
         <div class="header-actions">
             <button class="btn-primary" id="btnNewUser">
                 <span class="material-symbols-outlined">person_add</span>
@@ -42,67 +35,89 @@
         </div>
     </header>
 
-    <!-- Lista de Personal (Label Decorativa) -->
-    <div class="section-label">
-        <h2 class="label-text">Gestion de Usuarios</h2>
-        <div class="label-underline"></div>
-    </div>
+    <!-- Stats Grid -->
+    <section class="users-stats-grid">
+        <div class="stat-card">
+            <span class="stat-label">TOTAL USUARIOS</span>
+            <span class="stat-value" id="stat-total">0</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-label">COLABORADORES</span>
+            <span class="stat-value" id="stat-admins">0</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-label">CUENTAS ACTIVAS</span>
+            <span class="stat-value" id="stat-active">0</span>
+        </div>
+    </section>
 
-    <!-- Matriz de Usuarios (Directorio) -->
-    <section class="users-matrix-wrapper">
-        <div class="users-table-container">
-            <table class="users-table" id="users-table">
+    <!-- Search & Filter Bar -->
+    <section class="users-filters-bar">
+        <div class="search-wrapper">
+            <span class="material-symbols-outlined search-icon">search</span>
+            <input type="text" id="search-user" placeholder="Buscar por nombre o correo..." class="search-input">
+        </div>
+        <div class="filter-group">
+            <select id="filter-role" class="filter-select">
+                <option value="all">TODOS LOS ROLES</option>
+                <option value="admin">ADMINISTRADORES</option>
+                <option value="moderator">MODERADORES</option>
+                <option value="user">USUARIOS</option>
+            </select>
+        </div>
+    </section>
+
+    <!-- Contenedor Principal de Datos -->
+    <section class="users-content-area">
+        <h2 class="section-label">Listado de Personal</h2>
+        
+        <div class="data-container">
+            <!-- Vista de Escritorio (Tabla) -->
+            <table class="users-table">
                 <thead>
                     <tr>
                         <th>USUARIO</th>
                         <th>EMAIL</th>
                         <th>ROL ASIGNADO</th>
                         <th>UBICACIÓN / PAÍS</th>
-                        <th class="actions-col"></th>
+                        <th class="text-right">ACCIONES</th>
                     </tr>
                 </thead>
                 <tbody id="users-tbody">
-                    <!-- Se llena vía JavaScript -->
+                    <!-- Dinámico -->
                 </tbody>
             </table>
 
-            <!-- Vista Móvil (Tarjetas Editoriales) -->
-            <div id="users-mobile-list" class="users-mobile-list hidden">
-                <!-- Se llena vía JavaScript -->
-            </div>
-            
-            <!-- Loading State -->
-            <div id="loading-users" class="loading-state">
-                <div class="spinner"></div>
-                <p>Consultando el libro de registros...</p>
+            <!-- Vista Móvil (Tarjetas Stitch Style) -->
+            <div id="users-mobile-list" class="users-mobile-list">
+                <!-- Dinámico -->
             </div>
 
             <!-- Empty State -->
             <div id="empty-state" class="empty-state hidden">
-                <span class="material-symbols-outlined">group_off</span>
-                <p>No se encontraron usuarios con esos criterios.</p>
+                <span class="material-symbols-outlined">person_off</span>
+                <p>No se encontraron usuarios con esos filtros.</p>
             </div>
 
-            <!-- Footer de Paginación (Pied de página de la tabla) -->
-            <footer class="matrix-footer">
+            <!-- Paginación -->
+            <footer class="pagination-footer">
                 <div class="pagination-controls">
                     <button class="page-btn" id="prev-page" title="Anterior">
                         <span class="material-symbols-outlined">chevron_left</span>
                     </button>
                     <div id="page-numbers" class="page-numbers">
-                        <!-- Generado vía JS -->
+                        <!-- Botones vía JS -->
                     </div>
                     <button class="page-btn" id="next-page" title="Siguiente">
                         <span class="material-symbols-outlined">chevron_right</span>
                     </button>
                 </div>
-                <p id="page-info" class="page-info">Mostrando página 1 de 1</p>
+                <p id="page-info" class="page-info">MOSTRANDO 0 DE 0 REGISTROS</p>
             </footer>
         </div>
     </section>
-
   </main>
- 
+
   <!-- FAB para Nuevo Usuario (Solo Móvil) -->
   <button class="fab-btn" id="fabNewUser" onclick="const btn = document.getElementById('btnNewUser'); if(btn) btn.click();" title="Nuevo Colaborador">
      <span class="material-symbols-outlined">person_add</span>
@@ -131,10 +146,10 @@
       const filter = document.getElementById("header-status-filter");
       if (filter) {
         filter.innerHTML = `
-          <option value="all">Todos los Roles</option>
-          <option value="admin">Administradores</option>
-          <option value="moderator">Moderadores</option>
-          <option value="user">Usuarios</option>
+          <option value="all">TODOS LOS ROLES</option>
+          <option value="admin">ADMINISTRADORES</option>
+          <option value="moderator">MODERADORES</option>
+          <option value="user">USUARIOS</option>
         `;
         filter.addEventListener("change", (e) => {
           const pageFilter = document.getElementById("filter-role");
@@ -155,5 +170,4 @@
   <!-- Lógica de la Página -->
   <script src="/js/admin/admin-usuarios.js" type="module"></script>
 </body>
-
 </html>
