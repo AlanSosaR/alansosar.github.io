@@ -5,8 +5,7 @@
  * ==========================================================
  */
 
-const { createClient } = supabase;
-const _supabase = createClient(window.SB_URL, window.SB_KEY);
+const _supabase = window.supabase;
 
 // --- ESTADO GLOBAL ---
 let allUsers = [];
