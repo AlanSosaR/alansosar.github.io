@@ -129,6 +129,13 @@ header.header-fixed,
     z-index: 10 !important;
   }
 
+  /* OCULTAR ELEMENTOS INNECESARIOS (MÓVIL) */
+  .header-avatar-button,
+  .header-auth-group,
+  .desktop-only {
+    display: none !important;
+  }
+
   /* VISTA HOME: Ocultar Logo en Móvil */
   body:not([class*="page-"]) .header-logo-link {
     display: none !important;
