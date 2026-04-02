@@ -1,304 +1,321 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-    <meta charset="utf-8" />
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Gestión de Usuarios | Café Cortero</title>
-
-    <!-- Google Fonts - FIXED URL -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;700;800&family=Manrope:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;700;900&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
-
-    <link rel="icon" type="image/png" href="/imagenes/logo.png">
-
-    <!-- CSS Propios (Material 3 Expressive) -->
-    <link rel="stylesheet" href="/css/admin/admin-usuarios.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin · Usuarios | Café Cortero</title>
+  
+  <!-- Material Symbols & Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;900&family=Roboto:wght@400;500;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  
+  <!-- Estilos Core -->
+  <link rel="stylesheet" href="/css/core/tipografia.css">
+  <link rel="stylesheet" href="/css/ui/header.css">
+  <link rel="stylesheet" href="/css/ui/header.search.css">
+  <link rel="stylesheet" href="/css/admin/admin-usuarios.css">
+  <link rel="icon" type="image/png" href="/imagenes/logo.png">
 </head>
 
-<body class="m3-expressive-layout admin-usuarios-page font-body">
+<body class="page-admin-users">
+  <div id="header-placeholder"></div>
 
-    <!-- Header Holder (Inyectado por layout.js) -->
-    <div id="app-header"></div>
-
-    <!-- Page Content -->
-    <div class="admin-main-wrapper">
-        
-        <!-- Header de Sección -->
-        <header class="section-header">
-            <h2 class="headline-large fraunces">Gestión de Usuarios</h2>
-            <p class="body-medium text-on-surface-variant">Administra el directorio de usuarios, asigna roles y gestiona accesos de seguridad.</p>
-        </header>
-
-        <!-- Layout de dos columnas (Maestro-Detalle) -->
-        <main class="maestro-detalle-container">
-
-            <!-- Columna Izquierda: Listado -->
-            <aside class="sidebar-list">
-                <header class="list-header border-b">
-                    <span class="title-small font-bold">DIRECTORIO</span>
-                    <span id="users-count-stitch" class="badge-pill status-badge-pending">0 USUARIOS</span>
-                </header>
-
-                <div id="users-list" class="orders-scroll-list custom-scroll">
-                    <div class="loading-status">Cargando directorio...</div>
-                </div>
-
-                <!-- Paginación -->
-                <nav class="pagination-bar surface-low">
-                    <button id="list-prev" class="icon-button" aria-label="Anterior">
-                        <span class="material-symbols-outlined">chevron_left</span>
-                    </button>
-                    <div id="list-page-numbers" class="page-numbers label-medium">Página 1 de 1</div>
-                    <button id="list-next" class="icon-button" aria-label="Siguiente">
-                        <span class="material-symbols-outlined">chevron_right</span>
-                    </button>
-                </nav>
-            </aside>
-
-            <!-- Panel Derecho: Detalle -->
-            <section id="user-detail" class="detail-panel shadow-elevation-2 hidden">
-                
-                <!-- Cabecera Perfil -->
-                <header class="profile-masthead">
-                    <div id="u-avatar-placeholder" class="avatar-extra-large shadow-elevation-2"></div>
-                    <div class="profile-info-block">
-                        <h2 id="u-name" class="headline-medium fraunces">Nombre del Usuario</h2>
-                        <div class="header-actions mt-4">
-                            <button id="btnContact" class="btn-primary">
-                                <span class="material-symbols-outlined">mail</span>
-                                Contactar Usuario
-                            </button>
-                        </div>
-                    </div>
-                </header>
-
-                <!-- Cuerpo Detalle (Scrollable) -->
-                <div class="detail-body custom-scroll p-8">
-                    
-                    <!-- Stats Rápidas -->
-                    <div class="stats-grid-users">
-                        <div class="stat-card surface-low">
-                            <span class="label-medium text-on-surface-variant">VALOR POR VIDA (LTV)</span>
-                            <strong class="headline-small text-primary">L 0.00</strong>
-                        </div>
-                        <div class="stat-card surface-low">
-                            <span class="label-medium text-on-surface-variant">ORDENES TOTALES</span>
-                            <strong class="headline-small text-primary">0</strong>
-                        </div>
-                        <div class="stat-card surface-low">
-                            <span class="label-medium text-on-surface-variant">DIAS COMO MIEMBRO</span>
-                            <strong class="headline-small text-primary" id="u-member-days">—</strong>
-                        </div>
-                    </div>
-
-                    <div class="info-grid mt-12">
-                        <!-- Card Información General -->
-                        <div class="info-card surface-low">
-                            <h3 class="title-large fraunces text-on-surface">
-                                <span class="material-symbols-outlined text-primary">person</span>
-                                Información Personal
-                            </h3>
-                            <div class="property-list mt-6">
-                                <div class="prop-item">
-                                    <span class="label">Correo Electrónico</span> 
-                                    <span id="u-email-text" class="value font-bold">—</span>
-                                </div>
-                                <div class="prop-item">
-                                    <span class="label">Teléfono / WhatsApp</span> 
-                                    <span id="u-phone-text" class="value font-bold">—</span>
-                                </div>
-                                <div class="prop-item vertical">
-                                    <span class="label">Ubicación y Dirección</span> 
-                                    <span id="u-address-text" class="value">—</span>
-                                </div>
-                                <div class="prop-item">
-                                    <span class="label">Fecha de Registro</span> 
-                                    <span id="u-created-at" class="value">—</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Card Seguridad y Roles -->
-                        <div class="info-card surface-tonal security-card">
-                            <h3 class="title-large fraunces text-on-surface">
-                                <span class="material-symbols-outlined text-primary">admin_panel_settings</span>
-                                Seguridad y Acceso
-                            </h3>
-                            <div class="security-controls mt-6">
-                                <div class="control-item">
-                                    <label class="label-large">ROL DEL USUARIO</label>
-                                    <select id="u-role-select" class="m3-select mt-2 w-full">
-                                        <option value="user">Cliente Estándar</option>
-                                        <option value="admin">Administrador del Sistema</option>
-                                    </select>
-                                </div>
-                                
-                                <div class="control-item mt-6 password-reset-area">
-                                    <label class="label-large">AUTENTICACIÓN</label>
-                                    <button id="btnResetPass" class="btn-tonal mt-2 w-full">
-                                        <span class="material-symbols-outlined">lock_reset</span>
-                                        Resetear Contraseña
-                                    </button>
-                                    <p class="body-xsmall mt-2 text-on-surface-variant italic">Se enviará un enlace de recuperación al correo registrado.</p>
-                                </div>
-
-                                <div class="control-item mt-8 status-toggle-row">
-                                    <div class="status-meta">
-                                        <strong>Estado de la Cuenta</strong>
-                                        <span class="body-small block opacity-70">Permitir acceso al sistema</span>
-                                    </div>
-                                    <label class="m3-switch">
-                                        <input type="checkbox" id="u-status-toggle" checked>
-                                        <span class="m3-slider"></span>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Footer de Acciones de Detalle -->
-                    <div class="sticky-footer-actions mt-12 pt-6 border-t">
-                        <button id="btnSaveChanges" class="btn-primary w-full">
-                            <span class="material-symbols-outlined">save</span>
-                            Guardar Cambios de Perfil
-                        </button>
-                    </div>
-
-                </div>
-            </section>
-
-            <!-- Estado Vacío -->
-            <section id="no-selection" class="empty-layout">
-                <div class="empty-content text-center">
-                    <span class="material-symbols-outlined text-outline-variant" style="font-size: 80px;">shield_person</span>
-                    <h2 class="headline-medium fraunces mt-4">Gestión de Seguridad</h2>
-                    <p class="body-large empty-text mt-2">Selecciona un usuario del directorio para administrar sus permisos y datos operacionales.</p>
-                </div>
-            </section>
-
-        </main>
-    </div>
-
-    <!-- Template Tarjeta Usuario -->
-    <template id="tpl-user-card">
-        <div class="user-card-item surface-low interactive">
-            <div class="card-avatar-mini"></div>
-            <div class="card-info-content">
-                <h4 class="card-name-stitch title-medium">—</h4>
-                <p class="card-email-stitch body-small opacity-70">—</p>
-            </div>
-            <span class="material-symbols-outlined text-outline-variant">chevron_right</span>
+  <main class="admin-users-container fade-in">
+    <!-- Header Institucional con Botón Nuevo -->
+    <header class="page-title-section-stitch">
+        <div class="title-group">
+            <h1 class="page-title">Gestión de Usuarios</h1>
+            <p class="page-subtitle">Administra roles, permisos y accesos de seguridad del personal.</p>
         </div>
-    </template>
+    </header>
 
-    <!-- Modal Multicanal de Contacto -->
-    <div id="modal-contact" class="modal-overlay hidden">
-        <div class="modal-surface shadow-elevation-5 p-8 rounded-[28px] max-w-[440px] w-full mx-4">
-            <header class="modal-header flex justify-between items-start mb-6">
-                <div>
-                    <h3 class="headline-small fraunces">Contactar a Usuario</h3>
-                    <p class="body-medium text-on-surface-variant mt-1" id="contact-user-name">Usuario Seleccionado</p>
-                </div>
-                <button id="close-contact-modal" class="icon-button" aria-label="Cerrar">
-                    <span class="material-symbols-outlined">close</span>
-                </button>
+    <!-- =========================
+         LAYOUT DE PANEL DUAL STITCH
+    ========================= -->
+    <div class="users-layout-stitch" id="main-layout-stitch">
+
+        <!-- SECCIÓN IZQUIERDA: LISTADO RECIENTE -->
+        <aside class="users-list-section-stitch" id="mobile-list-view">
+            <header class="list-header-stitch">
+                <h2 class="section-title">Usuarios</h2>
+                <div id="users-count-stitch" class="count-badge-stitch">0</div>
             </header>
 
-            <div class="contact-methods-grid">
-                <button id="opt-whatsapp" class="method-btn whatsapp-theme">
-                    <span class="material-symbols-outlined">chat</span>
-                    <div class="method-text">
-                        <strong>WhatsApp</strong>
-                        <span>Chat directo al móvil</span>
-                    </div>
-                </button>
-                <button id="opt-email" class="method-btn email-theme">
-                    <span class="material-symbols-outlined">mail</span>
-                    <div class="method-text">
-                        <strong>Email</strong>
-                        <span>Correo corporativo</span>
-                    </div>
-                </button>
-                <button id="opt-push" class="method-btn push-theme">
-                    <span class="material-symbols-outlined">notifications_active</span>
-                    <div class="method-text">
-                        <strong>Notificación Push</strong>
-                        <span>Alerta instantánea App</span>
-                    </div>
-                </button>
+            <div id="users-list" class="users-list-stitch">
+                <div class="loading-state">Cargando directorio...</div>
             </div>
-        </div>
-    </div>
 
-    <!-- Modal Push -->
-    <div id="modal-push" class="modal-overlay hidden">
-        <div class="modal-surface shadow-elevation-5 p-8 rounded-[28px] max-w-[440px] w-full mx-4">
-            <header class="modal-header mb-6">
-                <h3 class="headline-small fraunces">Enviar Alerta Push</h3>
-            </header>
-            <div class="modal-body space-y-4">
-                <div class="m3-input-group">
-                    <label class="label-medium">Título de Notificación</label>
-                    <input type="text" id="push-title" class="m3-input mt-2" placeholder="Ej: Actualización de Cuenta" maxlength="50">
-                </div>
-                <div class="m3-input-group mt-6">
-                    <label class="label-medium">Cuerpo del Mensaje</label>
-                    <textarea id="push-message" class="m3-textarea mt-2" placeholder="Escribe el mensaje..." maxlength="200"></textarea>
-                </div>
-            </div>
-            <footer class="modal-actions mt-8 flex justify-end gap-3">
-                <button id="close-push-modal" class="btn-text">Cancelar</button>
-                <button id="send-push" class="btn-filled">
-                    <span class="material-symbols-outlined">send</span>
-                    Enviar Notificación
+            <!-- Paginación Circular Stitch -->
+            <footer class="list-pagination-footer-stitch">
+                <button class="page-btn-icon" id="list-prev">
+                    <span class="material-symbols-outlined">chevron_left</span>
+                </button>
+                <div id="list-page-numbers" class="page-numbers-stitch"></div>
+                <button class="page-btn-icon" id="list-next">
+                    <span class="material-symbols-outlined">chevron_right</span>
                 </button>
             </footer>
+        </aside>
+
+        <!-- SECCIÓN DERECHA: FICHA MAESTRA STITCH -->
+        <section id="user-detail" class="user-detail-section-stitch hidden">
+            <!-- Portada y Avatar Flotante -->
+            <header class="detail-header-stitch">
+                <div class="header-overlay-green"></div>
+                <div class="detail-profile-wrapper-stitch">
+                    <div id="u-avatar-placeholder" class="avatar-large-wrapper"></div>
+                    <div class="profile-text-stitch">
+                        <h2 id="u-name" class="user-display-name-stitch">—</h2>
+                    </div>
+                </div>
+                <div class="header-actions-stitch">
+                    <button class="btn-stitch-secondary" id="btnContact">
+                        <span class="material-symbols-outlined">mail</span>
+                        Contactar
+                    </button>
+                </div>
+            </header>
+
+            <!-- Grid de Estadísticas Rápidas -->
+            <div class="stats-grid-stitch">
+                <div class="stat-card-stitch">
+                    <span class="stat-label">GASTO TOTAL</span>
+                    <strong class="stat-value">L 0.00</strong>
+                </div>
+                <div class="stat-card-stitch">
+                    <span class="stat-label">PEDIDOS TOTALES</span>
+                    <strong class="stat-value">0</strong>
+                </div>
+                <div class="stat-card-stitch">
+                    <span class="stat-label">MIEMBRO DESDE</span>
+                    <strong id="u-reg-date-stat" class="stat-value">—</strong>
+                </div>
+            </div>
+
+            <!-- Bloque de Información y Seguridad -->
+            <div class="detail-content-stitch">
+                <section class="security-panel-stitch">
+                    <div class="security-main-info">
+                        <h3>Información y Seguridad del Usuario</h3>
+                        
+                        <div class="info-group-stitch">
+                            <div class="info-item-stitch">
+                                <span class="material-symbols-outlined">badge</span>
+                                <div class="info-texts">
+                                    <label>ROL ASIGNADO</label>
+                                    <select id="u-role-select" class="role-select-stitch">
+                                        <option value="user">Usuario</option>
+                                        <option value="admin">Administrador</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="info-item-stitch">
+                                <span class="material-symbols-outlined">alternate_email</span>
+                                <div class="info-texts">
+                                    <label>CORREO ELECTRÓNICO</label>
+                                    <p id="u-email-text">—</p>
+                                </div>
+                            </div>
+
+                            <div class="info-item-stitch">
+                                <span class="material-symbols-outlined">call</span>
+                                <div class="info-texts">
+                                    <label>NÚMERO DE TELÉFONO</label>
+                                    <p id="u-phone-text">—</p>
+                                </div>
+                            </div>
+                            
+                            <div class="info-item-stitch">
+                                <span class="material-symbols-outlined">home_pin</span>
+                                <div class="info-texts">
+                                    <label>DIRECCIÓN / PAÍS</label>
+                                    <p id="u-address-text">—</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="audit-info-stitch">
+                            <p><strong>Fecha Registro:</strong> <span id="u-created-at">—</span></p>
+                        </div>
+                    </div>
+
+                    <!-- Centro de Control Lado Derecho -->
+                    <div class="security-control-center">
+                        <div class="control-box">
+                            <label class="control-label">CENTRO DE CONTROL</label>
+                            <p class="control-desc">Gestiona el acceso y el estado de la cuenta del personal de forma segura.</p>
+                            
+                            <button class="btn-reset-stitch" id="btnResetPass">
+                                <span class="material-symbols-outlined">lock_reset</span>
+                                Enviar enlace de restablecimiento de contraseña
+                            </button>
+
+                            <div class="status-toggle-wrapper">
+                                <div class="status-info">
+                                    <strong>Estado de la Cuenta</strong>
+                                    <p>Define si el usuario puede acceder al sistema</p>
+                                </div>
+                                <label class="switch-stitch">
+                                    <input type="checkbox" id="u-status-toggle" checked>
+                                    <span class="slider-stitch"></span>
+                                </label>
+                                <span class="status-label-stitch">ACTIVO</span>
+                            </div>
+                        </div>
+                         
+                        <button class="btn-save-stitch" id="btnSaveChanges">
+                            <span class="material-symbols-outlined">save</span>
+                            Guardar Cambios de Seguridad
+                        </button>
+                    </div>
+                </section>
+            </div>
+        </section>
+
+        <!-- ESTADO DE SELECCIÓN VACÍO -->
+        <section id="no-selection" class="no-selection-section-stitch">
+            <div class="empty-state-stitch">
+                <span class="material-symbols-outlined large-icon">shield_person</span>
+                <h3>Selecciona un usuario</h3>
+                <p>Elige un miembro del directorio para gestionar sus permisos y seguridad operacional.</p>
+            </div>
+        </section>
+
+    </div>
+  </main>
+
+  <!-- Template Usuario (Sincronizado con Clientes) -->
+  <template id="tpl-user-card">
+    <div class="user-card-item-stitch">
+        <div class="card-avatar-placeholder"></div>
+        <div class="card-info-stitch">
+            <h4 class="card-name-stitch">—</h4>
+            <p class="card-email-stitch">—</p>
         </div>
+        <span class="material-symbols-outlined arrow-stitch">chevron_right</span>
     </div>
+  </template>
 
-    <!-- Snackbar/Toast -->
-    <div id="admin-snackbar" class="snackbar shadow-elevation-3">
-        <span class="material-symbols-outlined" id="snack-icon">info</span>
-        <span id="snack-text">Evento completado</span>
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/js/core/supabase-client-core.js"></script>
+  <script src="/js/core/supabase-auth.js"></script>
+  
+  <script>
+    window.PAGE_MODE = "admin-usuarios";
+  </script>
+
+  <script src="/js/ui/layout.js"></script>
+  <script type="module" src="/js/ui/header.js"></script>
+
+  <script type="module">
+    import { renderHeaderSearch } from "/js/ui/header.search.js";
+    document.addEventListener("header:ready", () => {
+      const slot = document.getElementById("header-middle-slot");
+      if (!slot) return;
+      slot.innerHTML = renderHeaderSearch({ showFilter: true, showAdd: false, placeholder: "Nombre, email o cargo..." });
+
+      const filter = document.getElementById("header-status-filter");
+      if (filter) {
+        filter.innerHTML = `<option value="all">Todos los Roles</option><option value="admin">Administradores</option><option value="user">Usuarios</option>`;
+        filter.addEventListener("change", (e) => document.dispatchEvent(new CustomEvent("user:filter", { detail: e.target.value })));
+      }
+
+      const input = document.getElementById("header-search-input");
+      if (input) {
+        input.addEventListener("input", (e) => document.dispatchEvent(new CustomEvent("user:search", { detail: e.target.value.trim() })));
+      }
+    });
+  </script>
+
+  <script src="/js/admin/admin-usuarios.js" type="module"></script>
+
+  <div id="admin-snackbar" class="snackbar">
+    <span class="material-symbols-outlined" id="snack-icon">info</span>
+    <span id="snack-text">Mensaje</span>
+  </div>
+
+  <!-- =========================
+       MODAL DE CONTACTO MULTICANAL
+  ========================= -->
+  <div id="modal-contact" class="modal-overlay hidden">
+    <div class="modal-content contact-modal-stitch fade-in">
+      <header class="modal-header">
+        <h3>Contactar Usuario</h3>
+        <button class="btn-close-modal" id="close-contact-modal">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </header>
+
+      <div class="modal-body">
+        <p class="modal-intro">Selecciona el medio preferido para contactar a <strong><span id="contact-user-name">—</span></strong>:</p>
+        
+        <div class="contact-options-grid">
+          <!-- WhatsApp -->
+          <button class="contact-option-btn whatsapp" id="opt-whatsapp">
+            <div class="option-icon"><i class="fab fa-whatsapp"></i></div>
+            <div class="option-text">
+              <strong>WhatsApp</strong>
+              <span>Mensaje directo al celular</span>
+            </div>
+          </button>
+
+          <!-- Email -->
+          <button class="contact-option-btn email" id="opt-email">
+            <div class="option-icon"><span class="material-symbols-outlined">mail</span></div>
+            <div class="option-text">
+              <strong>Correo Electrónico</strong>
+              <span>Enviar email corporativo</span>
+            </div>
+          </button>
+
+          <!-- Push Notification -->
+          <button class="contact-option-btn push" id="opt-push">
+            <div class="option-icon"><span class="material-symbols-outlined">notifications_active</span></div>
+            <div class="option-text">
+              <strong>Notificación Push</strong>
+              <span>App en tiempo real (Avanzado)</span>
+            </div>
+          </button>
+        </div>
+      </div>
     </div>
+  </div>
 
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="/js/core/supabase-client-core.js"></script>
-    <script src="/js/core/supabase-auth.js"></script>
-
-    <script>window.PAGE_MODE = "admin-usuarios";</script>
-    <script src="/js/ui/layout.js"></script>
-    <script type="module" src="/js/ui/header.js"></script>
-
-    <script type="module">
-        import { renderHeaderSearch } from "/js/ui/header.search.js";
-        document.addEventListener("header:ready", () => {
-            const slot = document.getElementById("header-middle-slot");
-            if (slot) {
-                slot.innerHTML = renderHeaderSearch({ showFilter: true, showAdd: false, placeholder: "Buscar por nombre, email o cargo..." });
-                
-                const filter = document.getElementById("header-status-filter");
-                if (filter) {
-                    filter.innerHTML = `
-                        <option value="all">Todos los Roles</option>
-                        <option value="admin">Administradores</option>
-                        <option value="user">Usuarios/Clientes</option>
-                    `;
-                    filter.addEventListener("change", (e) => {
-                        document.dispatchEvent(new CustomEvent("user:filter", { detail: e.target.value }));
-                    });
-                }
-                
-                document.getElementById("header-search-input")?.addEventListener("input", (e) => {
-                    document.dispatchEvent(new CustomEvent("user:search", { detail: e.target.value.trim() }));
-                });
-            }
-        });
-    </script>
-    <script src="/js/admin/admin-usuarios.js" type="module"></script>
+  <!-- SUB-MODAL PUSH (Independiente) -->
+  <div id="modal-push" class="modal-overlay hidden">
+    <div class="modal-content push-modal-stitch fade-in">
+      <header class="modal-header">
+        <h3>Enviar Notificación Push</h3>
+        <button class="btn-close-modal" id="close-push-modal">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </header>
+      <div class="modal-body">
+        <div class="push-info-banner">
+          <span class="material-symbols-outlined">bolt</span>
+          <p>El usuario recibirá una alerta directa en su dispositivo móvil si tiene la App instalada.</p>
+        </div>
+        <div class="form-group-stitch">
+          <label>Título de la Alerta</label>
+          <input type="text" id="push-title" placeholder="Ej: Actualización de seguridad" maxlength="50">
+        </div>
+        <div class="form-group-stitch">
+          <label>Mensaje Corto</label>
+          <textarea id="push-message" placeholder="Escribe el mensaje aquí..." maxlength="200"></textarea>
+        </div>
+      </div>
+      <footer class="modal-footer-stitch">
+        <button class="btn-stitch-ghost" id="cancel-push">Cancelar</button>
+        <button class="btn-stitch-primary" id="send-push">
+          <span class="material-symbols-outlined">send</span>
+          Enviar Alerta
+        </button>
+      </footer>
+    </div>
+  </div>
 </body>
-
 </html>

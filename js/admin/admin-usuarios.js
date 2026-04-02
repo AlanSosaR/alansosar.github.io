@@ -118,23 +118,21 @@ function renderUsersList() {
 
     pageItems.forEach(u => {
         const clone = tpl.content.cloneNode(true);
-        const card = clone.querySelector('.user-card-item'); // ✅ Selector M3
+        const card = clone.querySelector('.user-card-item-stitch');
         
-        if (!card) return;
-
         // Info Básica
         card.querySelector('.card-name-stitch').textContent = u.name || 'Sin nombre';
         card.querySelector('.card-email-stitch').textContent = u.email;
         
+        // La flecha chevron_right ya está en el template, no necesita lógica adicional
+
         // Avatar
         const avatarPlaceholder = card.querySelector('.card-avatar-placeholder');
-        if (avatarPlaceholder) {
-            avatarPlaceholder.innerHTML = getAvatarHtml(u, 'avatar-mini', 'avatar-mini-initials');
-        }
+        avatarPlaceholder.innerHTML = getAvatarHtml(u, 'avatar-img-small', 'avatar-init-small');
 
         // Estado Activo UI
         if (selectedUser && selectedUser.id === u.id) {
-            card.classList.add('is-selected');
+            card.classList.add('active');
         }
 
         // Evento Click
@@ -172,7 +170,7 @@ function selectUser(user) {
     // Llenar Datos Principales
     document.getElementById('u-name').textContent = user.name || 'Sin nombre';
     document.getElementById('u-email-text').textContent = user.email;
-    document.getElementById('u-avatar-placeholder').innerHTML = getAvatarHtml(user, 'avatar-extra-large', 'avatar-extra-large-initials');
+    document.getElementById('u-avatar-placeholder').innerHTML = getAvatarHtml(user, 'avatar-img-large', 'avatar-init-large');
     
     // Estadísticas
     const regDate = new Date(user.created_at);
@@ -371,9 +369,9 @@ function getAvatarHtml(user, imgClass, initialClass) {
     const initials = name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
     
     if (user.photo_url) {
-        return `<div class="${imgClass}" style="background-image: url('${user.photo_url}')" title="${name}"></div>`;
+        return `<img src="${user.photo_url}" class="${imgClass}" alt="${name}" onerror="this.outerHTML='<div class=\\'${initialClass}\\'>${initials}</div>'">`;
     }
-    return `<div class="${imgClass} ${initialClass}">${initials}</div>`;
+    return `<div class="${initialClass}">${initials}</div>`;
 }
 
 function getShortRoleName(role) {
@@ -386,12 +384,16 @@ function updatePaginationUI(totalPages) {
     if (!numbers) return;
     numbers.innerHTML = '';
 
-    if (totalPages <= 1) {
-        numbers.textContent = `Página 1 de 1`;
-        return;
+    for (let i = 1; i <= totalPages; i++) {
+        const btn = document.createElement('button');
+        btn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
+        btn.textContent = i;
+        btn.onclick = () => {
+            currentPage = i;
+            renderUsersList();
+        };
+        numbers.appendChild(btn);
     }
-
-    numbers.textContent = `Página ${currentPage} de ${totalPages}`;
 }
 
 function showSnackbar(msg, type = "success") {
@@ -405,6 +407,6 @@ function showSnackbar(msg, type = "success") {
     icon.textContent = type === "success" ? "check_circle" : "error";
     snackbar.style.backgroundColor = type === "success" ? "#377B4C" : "#BA1A1A";
     
-    snackbar.classList.add('show');
-    setTimeout(() => snackbar.classList.remove('show'), 3000);
+    snackbar.classList.add('active');
+    setTimeout(() => snackbar.classList.remove('active'), 3000);
 }
