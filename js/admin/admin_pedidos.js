@@ -12,6 +12,8 @@ console.log("🛠️ admin_pedidos.js — INIT STITCH");
     let orders = [];
     let filtered = [];
     let selectedOrder = null;
+    let currentPage = 1;
+    const itemsPerPage = 5;
     let currentStatus = "pending";
     let searchFilter = "";
 
@@ -54,9 +56,18 @@ console.log("🛠️ admin_pedidos.js — INIT STITCH");
             renderList();
         });
 
-        // Paginación (Mock por ahora para el Sidebar)
-        document.getElementById("list-prev")?.addEventListener("click", () => showSnack("info", "Paginación próximamente"));
-        document.getElementById("list-next")?.addEventListener("click", () => showSnack("info", "Paginación próximamente"));
+        // Paginación (Funcional)
+        document.getElementById("list-prev")?.addEventListener("click", () => changePage(-1));
+        document.getElementById("list-next")?.addEventListener("click", () => changePage(1));
+    }
+
+    function changePage(delta) {
+        const totalPages = Math.ceil(filtered.length / itemsPerPage);
+        const newPage = currentPage + delta;
+        if (newPage >= 1 && newPage <= totalPages) {
+            currentPage = newPage;
+            renderList(false); // No resetear selección al cambiar de página
+        }
     }
 
     function bindDetailActions() {
@@ -115,12 +126,14 @@ console.log("🛠️ admin_pedidos.js — INIT STITCH");
     /* =========================
        RENDER LIST (SIDEBAR)
     ========================= */
-    function renderList() {
+    function renderList(resetPage = true) {
         const container = document.getElementById("orders-list");
         const countBadge = document.getElementById("orders-count-stitch");
         const tpl = document.getElementById("tpl-order-card");
+        const pageInfo = document.getElementById("list-page-numbers");
         
         if (!container || !tpl) return;
+        if (resetPage) currentPage = 1;
 
         // Filtrar localmente
         filtered = orders.filter(o => {
@@ -134,15 +147,24 @@ console.log("🛠️ admin_pedidos.js — INIT STITCH");
 
         if (countBadge) countBadge.textContent = filtered.length;
 
+        // PAGINACIÓN (Límite 5 solicitado)
+        const totalPages = Math.ceil(filtered.length / itemsPerPage);
+        const start = (currentPage - 1) * itemsPerPage;
+        const pageItems = filtered.slice(start, start + itemsPerPage);
+
+        if (pageInfo) {
+            pageInfo.textContent = filtered.length > 0 ? `Pág. ${currentPage} / ${totalPages || 1}` : "0 / 0";
+        }
+
         container.innerHTML = "";
 
-        if (filtered.length === 0) {
+        if (pageItems.length === 0) {
             container.innerHTML = '<div class="loading-state">No hay pedidos</div>';
-            showNoSelection();
+            if (resetPage) showNoSelection();
             return;
         }
 
-        filtered.forEach(o => {
+        pageItems.forEach(o => {
             const clone = tpl.content.cloneNode(true);
             const card = clone.querySelector(".order-card-item-stitch");
             
