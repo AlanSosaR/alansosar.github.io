@@ -173,6 +173,7 @@ function selectUser(user) {
     // Navegación Móvil (Master-Detail)
     if (window.innerWidth <= 768) {
         document.getElementById('mobile-list-view')?.classList.add('mobile-hidden');
+        document.querySelector('.page-title-section-stitch')?.classList.add('mobile-hidden');
         document.getElementById('user-detail')?.classList.add('active');
         document.getElementById('mobile-detail-header')?.style.setProperty('display', 'flex', 'important');
         window.scrollTo(0, 0);
@@ -182,6 +183,7 @@ function selectUser(user) {
 // --- NAVEGACIÓN MÓVIL ---
 function handleMobileBack() {
     document.getElementById('mobile-list-view')?.classList.remove('mobile-hidden');
+    document.querySelector('.page-title-section-stitch')?.classList.remove('mobile-hidden');
     document.getElementById('user-detail')?.classList.remove('active');
     document.getElementById('mobile-detail-header')?.style.setProperty('display', 'none');
     window.scrollTo(0, 0);
