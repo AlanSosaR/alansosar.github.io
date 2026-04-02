@@ -213,10 +213,21 @@
         </div>
     </template>
 
-    <!-- SNACKBAR STITCH -->
+    <!-- SNACKBAR STITCH (MENSAJES) -->
     <div id="admin-snackbar" class="snackbar">
         <span class="material-symbols-outlined" id="snack-icon">info</span>
         <span id="snack-text">Evento completado</span>
+    </div>
+
+    <!-- CONFRIM SNACKBAR (ACCIONES) -->
+    <div id="confirm-snackbar" class="confirm-snack hidden">
+        <div class="confirm-content">
+            <span id="confirm-text">¿Confirmar acción?</span>
+            <div class="confirm-actions">
+                <button id="btn-confirm-cancel" class="btn-snack-ghost">Cancelar</button>
+                <button id="btn-confirm-ok" class="btn-snack-primary">Confirmar</button>
+            </div>
+        </div>
     </div>
 
     <!-- =========================
@@ -314,6 +325,7 @@
             const slot = document.getElementById("header-middle-slot");
             if (slot) {
                 slot.innerHTML = renderHeaderSearch({ showFilter: true, showAdd: false, placeholder: "Buscar # Pedido o Cliente..." });
+                
                 const filter = document.getElementById("header-status-filter");
                 if (filter) {
                     filter.innerHTML = `

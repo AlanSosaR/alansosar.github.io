@@ -395,11 +395,43 @@ console.log("🛠️ admin_pedidos.js — INIT STITCH");
        ACTIONS (DB)
     ========================= */
 
-    function confirmStatusChange(newStatus) {
-        const text = `¿Cambiar pedido a ${(STATUS_MAP[newStatus]?.label || newStatus).toLowerCase()}?`;
-        if (confirm(text)) {
+    async function confirmStatusChange(newStatus) {
+        const label = (STATUS_MAP[newStatus]?.label || newStatus).toLowerCase();
+        const ok = await showActionConfirm(`¿Cambiar pedido a <b>${label}</b>?`);
+        if (ok) {
             performStatusUpdate(newStatus);
         }
+    }
+
+    /* =========================
+       CONFIRMATION BOX LOGIC
+    ========================= */
+    function showActionConfirm(text) {
+        return new Promise((resolve) => {
+            const snack = document.getElementById("confirm-snackbar");
+            const label = document.getElementById("confirm-text");
+            const btnOk = document.getElementById("btn-confirm-ok");
+            const btnCancel = document.getElementById("btn-confirm-cancel");
+
+            if (!snack || !label) return resolve(false);
+
+            label.innerHTML = text;
+            snack.classList.remove("hidden");
+            // Pequeño delay para la animación
+            requestAnimationFrame(() => snack.classList.add("active"));
+
+            const wrapResolve = (val) => {
+                snack.classList.remove("active");
+                setTimeout(() => snack.classList.add("hidden"), 300);
+                resolve(val);
+                // Limpiar eventos para evitar fugas
+                btnOk.onclick = null;
+                btnCancel.onclick = null;
+            };
+
+            btnOk.onclick = () => wrapResolve(true);
+            btnCancel.onclick = () => wrapResolve(false);
+        });
     }
 
     async function performStatusUpdate(newStatus) {
