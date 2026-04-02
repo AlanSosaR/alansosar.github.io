@@ -154,7 +154,6 @@ function selectUser(user) {
     // Llenar Datos Principales
     document.getElementById('u-name').textContent = user.name || 'Sin nombre';
     document.getElementById('u-email-text').textContent = user.email;
-    document.getElementById('u-country-text').textContent = finalAddress;
     document.getElementById('u-avatar-placeholder').innerHTML = getAvatarHtml(user, 'avatar-img-large', 'avatar-init-large');
     
     // Estadísticas
