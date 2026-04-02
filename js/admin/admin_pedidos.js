@@ -19,11 +19,11 @@ console.log("🛠️ admin_pedidos.js — INIT STITCH");
 
     // CONFIG DE ESTADOS (Sync con DB y UI)
     const STATUS_MAP = {
-        'pending': { label: 'PENDIENTE', color: '#FF9800', icon: 'inventory_2' },
-        'preparing': { label: 'PREPARANDO', color: '#2196F3', icon: 'mop' },
-        'shipped': { label: 'EN CAMINO', color: '#9C27B0', icon: 'local_shipping' },
-        'delivered': { label: 'ENTREGADO', color: '#4CAF50', icon: 'verified' },
-        'cancelled': { label: 'ANULADO', color: '#f44336', icon: 'cancel' }
+        'pending': { label: 'PENDIENTE', color: '#9E9E9E', icon: 'inventory_2' }, // Gris oficial
+        'preparing': { label: 'PREPARANDO', color: '#F9A825', icon: 'mop' },      // Naranja oficial
+        'shipped': { label: 'EN CAMINO', color: '#19227D', icon: 'local_shipping' }, // Azul oscuro
+        'delivered': { label: 'ENTREGADO', color: '#2E7D32', icon: 'verified' },     // Verde oficial
+        'cancelled': { label: 'ANULADO', color: '#C62828', icon: 'cancel' }          // Rojo oficial
     };
 
     /* =========================
