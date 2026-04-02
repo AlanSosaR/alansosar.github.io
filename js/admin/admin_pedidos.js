@@ -166,7 +166,9 @@ console.log("🛠️ admin-pedidos.js — INIT");
 
     filtered.forEach((o, index) => {
       const node = tpl.content.cloneNode(true);
-      const card = node.querySelector(".order-card");
+      const card = node.querySelector(".order-card-item"); // ✅ Cambiado: .order-card -> .order-card-item
+
+      if (!card) return; // Blindaje
 
       card.dataset.index = index;
 
@@ -186,15 +188,17 @@ console.log("🛠️ admin-pedidos.js — INIT");
       node.querySelector(".o-card-client").textContent = o.users?.name || o.address?.full_name || "Cliente";
 
       const img = node.querySelector(".order-card-img");
-      const placeholder = node.querySelector(".order-card-placeholder");
+      const miniIcon = node.querySelector(".mini-icon"); // ✅ Selector M3 compatible
 
       if (o.receipt?.[0]?.file_url) {
-        img.src = o.receipt[0].file_url;
-        img.classList.remove("hidden");
-        placeholder.classList.add("hidden");
+        if (img) {
+            img.src = o.receipt[0].file_url;
+            img.classList.remove("hidden");
+        }
+        if (miniIcon) miniIcon.classList.add("hidden");
       } else {
-        img.classList.add("hidden");
-        placeholder.classList.remove("hidden");
+        if (img) img.classList.add("hidden");
+        if (miniIcon) miniIcon.classList.remove("hidden");
       }
 
       card.onclick = () => {
@@ -238,11 +242,11 @@ console.log("🛠️ admin-pedidos.js — INIT");
   }
 
   function applySelection() {
-    document.querySelectorAll(".order-card")
+    document.querySelectorAll(".order-card-item")
       .forEach(c => c.classList.remove("is-selected"));
 
     const card = document.querySelector(
-      `.order-card[data-index="${activeIndex}"]`
+      `.order-card-item[data-index="${activeIndex}"]`
     );
     card?.classList.add("is-selected");
   }
