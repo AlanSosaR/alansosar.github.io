@@ -74,9 +74,10 @@ body.page-admin-orders {
 .orders-layout-stitch {
     flex: 1;
     display: grid;
-    grid-template-columns: 360px 1fr;
+    grid-template-columns: 380px 1fr; /* Sidebar fija más ancha */
     gap: 24px;
     overflow: hidden;
+    min-height: 700px; /* Altura mínima fija para estabilidad */
 }
 
 @media (max-width: 1100px) {
@@ -242,7 +243,14 @@ body.page-admin-orders {
 .step.active .step-label { color: var(--primary-green); }
 
 /* GRID DE INFORMACIÓN STITCH */
-.detail-grid-stitch { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+.detail-grid-stitch { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); /* Evita contracción excesiva */
+    gap: 32px; 
+}
+@media (max-width: 1300px) {
+    .detail-grid-stitch { grid-template-columns: 1fr; }
+}
 .info-card-stitch { background: var(--white); border: 1.5px solid var(--border-soft); border-radius: var(--radius-16); padding: 24px; }
 .card-title-stitch { font-size: 16px; font-weight: 900; color: var(--coffee-deep); margin-bottom: 20px; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 1px; }
 .card-title-stitch .material-symbols-outlined { color: var(--primary-green); font-size: 20px; }
