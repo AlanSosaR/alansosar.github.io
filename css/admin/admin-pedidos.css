@@ -334,6 +334,20 @@ body.page-admin-orders {
     font-weight: 600;
 }
 
+.status-badge-stitch {
+    padding: 6px 18px;
+    border-radius: 50px; /* Estilo píldora */
+    font-size: 11px;
+    font-weight: 900;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
 .orders-list-stitch {
     flex: 1;
     overflow-y: auto;
