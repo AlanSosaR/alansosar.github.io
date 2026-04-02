@@ -157,7 +157,6 @@ function selectUser(user) {
     document.getElementById('u-role-select').value = user.rol || 'user';
     document.getElementById('u-phone-text').textContent = user.phone || 'No registrado';
     document.getElementById('u-address-text').textContent = user.country || 'No especificada';
-    document.getElementById('u-full-id').textContent = user.id;
     document.getElementById('u-created-at').textContent = regDate.toLocaleDateString();
 
     // Estado Toggle (Supuesto de columna 'status' o 'active' en BD, si no existe lo seteamos a true por defecto)
