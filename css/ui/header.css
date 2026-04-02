@@ -1109,7 +1109,7 @@ body.page-admin-agregar-cafe .header-logo-link,
 body.page-admin-editar-cafe .header-logo-link {
   display: flex !important;
   position: absolute;
-  right: 16px;
+  left: 16px;
   top: 50%;
   transform: translateY(-50%);
   z-index: 3001;
@@ -1230,15 +1230,15 @@ body {
     /* ya lo tienes, se queda */
   }
 
-  /* ✅ Avatar (botón real) a la izquierda cuando está logueado */
+  /* ✅ Avatar (botón real) a la derecha cuando está logueado */
   body.page-admin-cafes.logged #btn-header-user,
   body.page-admin-agregar-cafe.logged #btn-header-user,
   body.page-admin-editar-cafe.logged #btn-header-user {
     display: flex !important;
 
     position: absolute !important;
-    left: 16px !important;
-    right: auto !important;
+    right: 16px !important;
+    left: auto !important;
     top: 50% !important;
     transform: translateY(-50%) !important;
     z-index: 3002 !important;
@@ -1251,15 +1251,15 @@ body {
     display: flex !important;
   }
 
-  /* ✅ Logo SIEMPRE a la derecha */
+  /* ✅ Logo SIEMPRE a la izquierda */
   body.page-admin-cafes .header-logo-link,
   body.page-admin-agregar-cafe .header-logo-link,
   body.page-admin-editar-cafe .header-logo-link {
     display: flex !important;
 
     position: absolute !important;
-    right: 16px !important;
-    left: auto !important;
+    left: 16px !important;
+    right: auto !important;
     top: 50% !important;
     transform: translateY(-50%) !important;
     z-index: 3001 !important;
