@@ -207,28 +207,35 @@ async function handleSaveChanges() {
     if (!selectedUser) return;
 
     const newRole = document.getElementById('u-role-select').value;
+    const isActive = document.getElementById('u-status-toggle').checked;
+    const newStatus = isActive ? 'activo' : 'inactivo';
     
     try {
         const { error } = await _supabase
             .from('users')
-            .update({ rol: newRole })
+            .update({ 
+                rol: newRole,
+                status: newStatus
+            })
             .eq('id', selectedUser.id);
 
         if (error) throw error;
 
-        showSnackbar(`Rol de ${selectedUser.name} actualizado correctamente`);
+        showSnackbar(`Configuración de ${selectedUser.name} actualizada`);
         
         // Actualizar datos locales
         selectedUser.rol = newRole;
+        selectedUser.status = newStatus;
         const idx = allUsers.findIndex(u => u.id === selectedUser.id);
         if (idx !== -1) {
             allUsers[idx].rol = newRole;
+            allUsers[idx].status = newStatus;
         }
         
         renderUsersList();
     } catch (err) {
         console.error("Error guardando cambios:", err);
-        showSnackbar("Error al actualizar el rol. Intenta de nuevo.", "error");
+        showSnackbar("Error al actualizar la configuración. Intenta de nuevo.", "error");
     }
 }
 
