@@ -55,9 +55,6 @@ function initEventListeners() {
             if(label) label.textContent = e.target.checked ? "ACTIVO" : "INACTIVO";
         });
     }
-
-    // Botón Atrás Móvil
-    document.getElementById('btnBackToList')?.addEventListener('click', handleMobileBack);
 }
 
 // --- CARGA DE DATOS ---
@@ -170,23 +167,10 @@ function selectUser(user) {
     if(toggle) toggle.checked = isActive;
     if(statusLabel) statusLabel.textContent = isActive ? "ACTIVO" : "INACTIVO";
 
-    // Navegación Móvil (Master-Detail)
+    // Efecto Feedback en Móvil (Scroll al inicio para ver el detalle actualizado)
     if (window.innerWidth <= 768) {
-        document.getElementById('mobile-list-view')?.classList.add('mobile-hidden');
-        document.querySelector('.page-title-section-stitch')?.classList.add('mobile-hidden');
-        document.getElementById('user-detail')?.classList.add('active');
-        document.getElementById('mobile-detail-header')?.style.setProperty('display', 'flex', 'important');
-        window.scrollTo(0, 0);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-}
-
-// --- NAVEGACIÓN MÓVIL ---
-function handleMobileBack() {
-    document.getElementById('mobile-list-view')?.classList.remove('mobile-hidden');
-    document.querySelector('.page-title-section-stitch')?.classList.remove('mobile-hidden');
-    document.getElementById('user-detail')?.classList.remove('active');
-    document.getElementById('mobile-detail-header')?.style.setProperty('display', 'none');
-    window.scrollTo(0, 0);
 }
 
 // --- FILTROS Y BÚSQUEDA ---
