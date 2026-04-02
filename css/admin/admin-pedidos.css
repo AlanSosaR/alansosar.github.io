@@ -43,8 +43,30 @@ body.page-admin-orders {
     margin-bottom: 32px;
 }
 
-.header-actions-stitch .btn-stitch-secondary .material-symbols-outlined {
-    color: var(--primary-green);
+.header-actions-stitch {
+    display: flex !important;
+    flex-direction: row !important; /* Forzar en fila */
+    gap: 12px;
+    align-items: center;
+}
+
+#btnContact {
+    background: var(--primary-container) !important;
+    color: var(--primary-green) !important;
+    border: 1px solid var(--primary-green) !important;
+}
+
+#btnContact .material-symbols-outlined {
+    color: var(--primary-green) !important;
+}
+
+#btnContact:hover {
+    background: var(--primary-green) !important;
+    color: white !important;
+}
+
+#btnContact:hover .material-symbols-outlined {
+    color: white !important;
 }
 
 /* =====================================================
