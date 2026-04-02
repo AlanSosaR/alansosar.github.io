@@ -74,6 +74,20 @@ console.log("🛠️ admin_pedidos.js — INIT STITCH");
         // Imprimir
         document.getElementById("btnPrint")?.addEventListener("click", () => window.print());
 
+        // Contactar Modal
+        document.getElementById("btnContact")?.addEventListener("click", openContactModal);
+        document.getElementById("close-contact-modal")?.addEventListener("click", closeContactModal);
+        document.getElementById("close-push-modal")?.addEventListener("click", closePushModal);
+        document.getElementById("cancel-push")?.addEventListener("click", closePushModal);
+
+        // Opciones de Contacto
+        document.getElementById("opt-whatsapp")?.addEventListener("click", () => handleContactAction("whatsapp"));
+        document.getElementById("opt-email")?.addEventListener("click", () => handleContactAction("email"));
+        document.getElementById("opt-push")?.addEventListener("click", openPushModal);
+
+        // Envío de Push
+        document.getElementById("send-push")?.addEventListener("click", handleSendPush);
+
         // Botones de cambio de estado en el footer
         document.querySelectorAll(".status-btn").forEach(btn => {
             btn.addEventListener("click", (e) => {
@@ -83,6 +97,85 @@ console.log("🛠️ admin_pedidos.js — INIT STITCH");
                 }
             });
         });
+    }
+
+    /* =========================
+       CONTACT MODAL LOGIC
+    ========================= */
+    function openContactModal() {
+        if (!selectedOrder) return;
+        const name = selectedOrder.users?.name || selectedOrder.address?.full_name || "Cliente";
+        const modal = document.getElementById("modal-contact");
+        const nameSpan = document.getElementById("contact-user-name");
+        
+        if (nameSpan) nameSpan.textContent = name;
+        modal?.classList.remove("hidden");
+    }
+
+    function closeContactModal() {
+        document.getElementById("modal-contact")?.classList.add("hidden");
+    }
+
+    function openPushModal() {
+        closeContactModal();
+        document.getElementById("modal-push")?.classList.remove("hidden");
+    }
+
+    function closePushModal() {
+        document.getElementById("modal-push")?.classList.add("hidden");
+    }
+
+    function handleContactAction(type) {
+        if (!selectedOrder) return;
+        const phone = selectedOrder.address?.phone || "";
+        const email = selectedOrder.users?.email || "";
+
+        if (type === "whatsapp") {
+            if (!phone) return showSnack("error", "No hay teléfono registrado");
+            const cleanPhone = phone.replace(/\D/g, "");
+            window.open(`https://wa.me/${cleanPhone}`, "_blank");
+        } else if (type === "email") {
+            if (!email) return showSnack("error", "No hay email registrado");
+            window.location.href = `mailto:${email}`;
+        }
+        closeContactModal();
+    }
+
+    async function handleSendPush() {
+        if (!selectedOrder || !selectedOrder.user_id) {
+            showSnack("error", "Usuario no identificado");
+            return;
+        }
+
+        const title = document.getElementById("push-title").value.trim();
+        const message = document.getElementById("push-message").value.trim();
+
+        if (!title || !message) {
+            showSnack("error", "Título y mensaje requeridos");
+            return;
+        }
+
+        try {
+            const { error } = await sb.from("notifications").insert({
+                user_id: selectedOrder.user_id,
+                title,
+                message,
+                type: "admin_alert",
+                is_read: false,
+                metadata: { order_id: selectedOrder.id }
+            });
+
+            if (error) throw error;
+
+            showSnack("success", "Notificación enviada");
+            closePushModal();
+            // Limpiar campos
+            document.getElementById("push-title").value = "";
+            document.getElementById("push-message").value = "";
+            
+        } catch (err) {
+            showSnack("error", "Error al enviar notificación");
+        }
     }
 
     /* =========================
