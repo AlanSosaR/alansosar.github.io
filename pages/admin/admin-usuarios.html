@@ -110,9 +110,7 @@
                                     <label>ROL ASIGNADO</label>
                                     <select id="u-role-select" class="role-select-stitch">
                                         <option value="user">Usuario</option>
-                                        <option value="moderator">Moderador</option>
                                         <option value="admin">Administrador</option>
-                                        <option value="suspendido">Suspendido</option>
                                     </select>
                                 </div>
                             </div>
@@ -225,7 +223,7 @@
 
       const filter = document.getElementById("header-status-filter");
       if (filter) {
-        filter.innerHTML = `<option value="all">Todos los Roles</option><option value="admin">Administradores</option><option value="moderator">Moderadores</option><option value="user">Usuarios</option>`;
+        filter.innerHTML = `<option value="all">Todos los Roles</option><option value="admin">Administradores</option><option value="user">Usuarios</option>`;
         filter.addEventListener("change", (e) => document.dispatchEvent(new CustomEvent("user:filter", { detail: e.target.value })));
       }
 

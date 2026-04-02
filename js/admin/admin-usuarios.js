@@ -273,8 +273,8 @@ function getAvatarHtml(user, imgClass, initialClass) {
 }
 
 function getShortRoleName(role) {
-    const map = { 'admin': 'ADMIN', 'moderator': 'MOD', 'user': 'SOCIO', 'suspendido': 'BLOQ' };
-    return map[role] || 'SOCIO';
+    const map = { 'admin': 'ADMIN', 'user': 'USUARIO' };
+    return map[role] || 'USUARIO';
 }
 
 function updatePaginationUI(totalPages) {
