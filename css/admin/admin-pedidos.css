@@ -29,8 +29,8 @@ body.page-admin-orders {
     background-color: var(--bg-canvas) !important;
     font-family: 'Roboto', sans-serif;
     color: var(--text-main);
-    overflow: hidden;
-    height: 100vh;
+    overflow-y: auto; /* Permitir scroll global solicitado */
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
 }
