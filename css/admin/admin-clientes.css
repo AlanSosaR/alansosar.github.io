@@ -173,11 +173,21 @@ body.page-admin-customers {
     border-left: 4px solid var(--principal);
 }
 
-.card-img {
+.card-avatar-placeholder img, .avatar-init-small {
     width: 36px;
     height: 36px;
     border-radius: 50%;
     object-fit: cover;
+}
+
+.avatar-init-small {
+    background: #E8F5E9;
+    color: var(--principal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
 }
 
 .card-info {
@@ -266,7 +276,7 @@ body.page-admin-customers {
     gap: 24px;
 }
 
-.profile-img {
+.profile-img, .avatar-init-large {
     width: 128px;
     height: 128px;
     border-radius: 50%;
@@ -274,6 +284,16 @@ body.page-admin-customers {
     border: 4px solid var(--fondo-card);
     box-shadow: var(--shadow-editorial);
     background: var(--fondo-card);
+}
+
+.avatar-init-large {
+    background: #E8F5E9;
+    color: var(--principal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    font-weight: 800;
 }
 
 .client-name {

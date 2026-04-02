@@ -37,7 +37,7 @@ body.page-admin-users {
 }
 
 .page-title {
-    font-family: 'Fraunces', serif;
+    font-family: 'Roboto', sans-serif;
     font-size: 36px;
     font-weight: 900;
     color: var(--coffee-deep);
@@ -426,7 +426,7 @@ input:checked + .slider-stitch:before { transform: translateX(24px); }
     margin: 0 0 8px;
     color: var(--coffee-deep);
     font-size: 24px;
-    font-family: 'Fraunces', serif;
+    font-family: 'Roboto', sans-serif;
 }
 
 .empty-state-stitch p {
@@ -450,11 +450,14 @@ input:checked + .slider-stitch:before { transform: translateX(24px); }
         gap: 32px; 
     }
 
-    /* El Detalle o el Estado Vacío siempre arriba */
-    .user-detail-section-stitch, 
-    .no-selection-section-stitch { 
+    /* El Detalle siempre arriba, per la sección vacía se oculta en móvil */
+    .user-detail-section-stitch { 
         order: 1; 
         width: 100%; 
+    }
+    
+    .no-selection-section-stitch {
+        display: none !important;
     }
 
     /* La sección institucional y la lista se van abajo */

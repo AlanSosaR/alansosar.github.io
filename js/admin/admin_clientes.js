@@ -124,11 +124,12 @@ const initAdminClientes = () => {
         pageItems.forEach(customer => {
             const clone = tplCard.content.cloneNode(true);
             const card = clone.querySelector(".customer-card");
-            const img = clone.querySelector(".card-img");
+            const avatarPlaceholder = clone.querySelector(".card-avatar-placeholder");
             const name = clone.querySelector(".card-name");
             const email = clone.querySelector(".card-email");
 
-            if (customer.photo_url) img.src = customer.photo_url;
+            // Avatar Dinámico (Foto o Iniciales)
+            avatarPlaceholder.innerHTML = getAvatarHtml(customer, "card-img", "avatar-init-small");
             name.textContent = customer.name || "Sin nombre";
             email.textContent = customer.email || "Sin email";
 
@@ -198,7 +199,11 @@ const initAdminClientes = () => {
         customerDetail.classList.remove("hidden");
         customerDetail.style.opacity = "0.5";
 
-        cPhoto.src = customer.photo_url || "/imagenes/avatar-default.svg";
+        const cPhotoWrapper = document.getElementById("c-photo-wrapper");
+        if (cPhotoWrapper) {
+            cPhotoWrapper.innerHTML = getAvatarHtml(customer, "profile-img", "avatar-init-large");
+        }
+        
         cName.textContent = customer.name;
         cLocation.innerHTML = `<span class="material-symbols-outlined">location_on</span><span>${customer.country || "Ubicación desconocida"}</span>`;
         cRegDate.textContent = new Date(customer.created_at).toLocaleDateString("es-ES", { month: "short", year: "numeric" });
@@ -370,6 +375,17 @@ const initAdminClientes = () => {
     if (sendPush) sendPush.onclick = handleSendPush;
 
     init();
+};
+
+// Utils
+const getAvatarHtml = (user, imgClass, initialClass) => {
+    const name = user.name || 'Sin nombre';
+    const initials = name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
+    
+    if (user.photo_url) {
+        return `<img src="${user.photo_url}" class="${imgClass}" alt="${name}" onerror="this.outerHTML='<div class=\\'${initialClass}\\'>${initials}</div>'">`;
+    }
+    return `<div class="${initialClass}">${initials}</div>`;
 };
 
 // Carga Robusta
