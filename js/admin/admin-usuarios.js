@@ -156,6 +156,7 @@ function selectUser(user) {
     // Panel de Seguridad
     document.getElementById('u-role-select').value = user.rol || 'user';
     document.getElementById('u-phone-text').textContent = user.phone || 'No registrado';
+    document.getElementById('u-address-text').textContent = user.country || 'No especificada';
     document.getElementById('u-full-id').textContent = user.id;
     document.getElementById('u-created-at').textContent = regDate.toLocaleDateString();
 
