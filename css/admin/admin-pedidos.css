@@ -300,9 +300,7 @@ body.page-admin-orders {
     min-height: 700px;
 }
 
-@media (max-width: 1100px) {
-    .orders-layout-stitch { grid-template-columns: 1fr; }
-}
+/* Media query movido al final para consistencia */
 
 /* SIDEBAR LIST STITCH */
 .orders-list-section-stitch {
@@ -593,15 +591,23 @@ body.page-admin-orders {
         flex-direction: column;
         align-items: flex-start;
         gap: 16px;
+        padding: 0 16px;
     }
 
-    .admin-layout-stitch {
+    .admin-orders-container {
+        margin-top: 60px;
+        padding: 16px 0;
+    }
+
+    .orders-layout-stitch {
         grid-template-columns: 1fr !important;
         padding: 0 16px 160px 16px;
+        gap: 0;
+        min-height: auto;
     }
 
     /* Maestro-Detalle Mobile Pattern: Solo uno a la vez */
-    body.detail-view-active .orders-sidebar-stitch {
+    body.detail-view-active .orders-list-section-stitch {
         display: none !important;
     }
 
@@ -609,27 +615,44 @@ body.page-admin-orders {
         display: none !important;
     }
 
+    .order-detail-section-stitch {
+        width: 100%;
+        max-width: 100%;
+    }
+
     .detail-grid-stitch {
-        grid-template-columns: 1fr; /* Stack cards */
+        grid-template-columns: 1fr !important; 
+        gap: 16px;
     }
 
     .detail-header-stitch-alt {
+        padding: 24px 16px;
         flex-direction: column;
         align-items: flex-start;
         gap: 16px;
     }
 
+    .order-number-stitch {
+        font-size: 24px;
+    }
+
+    .detail-scroll-area {
+        padding: 20px 16px;
+    }
+
     .header-actions-stitch {
         width: 100%;
         justify-content: flex-start;
+        flex-wrap: wrap;
     }
 
     .header-actions-stitch button {
         flex: 1;
+        min-width: 130px;
     }
 
     .status-actions-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(2, 1fr) !important;
     }
 
     /* Botón Volver para móvil */
@@ -637,13 +660,15 @@ body.page-admin-orders {
         display: flex;
         align-items: center;
         gap: 8px;
-        background: none;
+        background: #F1F3F2;
         border: none;
         color: var(--primary-green);
-        font-weight: 600;
-        margin-bottom: 12px;
+        font-weight: 700;
+        margin-bottom: 20px;
         cursor: pointer;
-        padding: 0;
+        padding: 10px 16px;
+        border-radius: 12px;
+        width: fit-content;
     }
 
     .confirm-snack {
@@ -651,6 +676,13 @@ body.page-admin-orders {
         flex-direction: column;
         gap: 12px;
         padding: 16px;
+        text-align: center;
+    }
+    
+    .confirm-content {
+        flex-direction: column;
+        gap: 12px;
+        white-space: normal;
     }
 }
 
