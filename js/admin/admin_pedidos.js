@@ -88,6 +88,9 @@ console.log("🛠️ admin_pedidos.js — INIT STITCH");
         // Envío de Push
         document.getElementById("send-push")?.addEventListener("click", handleSendPush);
 
+        // Volver (Mobile)
+        document.getElementById("btn-back-to-list")?.addEventListener("click", backToList);
+
         // Botones de cambio de estado en el footer
         document.querySelectorAll(".status-btn").forEach(btn => {
             btn.addEventListener("click", (e) => {
@@ -202,8 +205,8 @@ console.log("🛠️ admin_pedidos.js — INIT STITCH");
             orders = data || [];
             renderList();
 
-            // Auto-seleccionar el primero si no hay selección
-            if (filtered.length > 0 && !selectedOrder) {
+            // Auto-seleccionar el primero si no hay selección (SOLO EN DESKTOP)
+            if (filtered.length > 0 && !selectedOrder && window.innerWidth > 768) {
                 selectOrder(filtered[0]);
             }
 
@@ -286,15 +289,25 @@ console.log("🛠️ admin_pedidos.js — INIT STITCH");
     function selectOrder(order) {
         selectedOrder = order;
         
+        // Marcar activo en mobile
+        document.body.classList.add("detail-view-active");
+
         // UI de lista
         document.querySelectorAll(".order-card-item-stitch").forEach(c => c.classList.remove("active"));
-        renderList(); // Refresh para marcar activo
+        renderList(false); // No resetear página
 
         // Mostrar panel
         document.getElementById("order-detail").classList.remove("hidden");
+        document.getElementById("order-detail-content").classList.remove("hidden");
         document.getElementById("no-selection").classList.add("hidden");
 
         renderDetail(order);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function backToList() {
+        document.body.classList.remove("detail-view-active");
+        selectedOrder = null;
     }
 
     function renderDetail(o) {

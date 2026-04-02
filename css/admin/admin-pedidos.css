@@ -589,12 +589,73 @@ body.page-admin-orders {
 .status-cancelled { background: #f44336; }
 
 @media (max-width: 768px) {
-    .admin-orders-container { margin: 0; padding: 16px; }
-    .orders-layout-stitch { display: flex; flex-direction: column; }
-    .orders-list-section-stitch { order: 2; }
-    .order-detail-section-stitch { order: 1; }
-    .detail-grid-stitch { grid-template-columns: 1fr; }
-    .status-actions-grid { grid-template-columns: repeat(2, 1fr); }
-    .detail-actions-footer-stitch { flex-direction: column; align-items: stretch; }
-    .order-number-stitch { font-size: 24px; }
+    .page-title-section-stitch {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .admin-layout-stitch {
+        grid-template-columns: 1fr !important;
+        padding: 0 16px 160px 16px;
+    }
+
+    /* Maestro-Detalle Mobile Pattern: Solo uno a la vez */
+    body.detail-view-active .orders-sidebar-stitch {
+        display: none !important;
+    }
+
+    body:not(.detail-view-active) .order-detail-section-stitch {
+        display: none !important;
+    }
+
+    .detail-grid-stitch {
+        grid-template-columns: 1fr; /* Stack cards */
+    }
+
+    .detail-header-stitch-alt {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .header-actions-stitch {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .header-actions-stitch button {
+        flex: 1;
+    }
+
+    .status-actions-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Botón Volver para móvil */
+    .btn-mobile-back {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: none;
+        border: none;
+        color: var(--primary-green);
+        font-weight: 600;
+        margin-bottom: 12px;
+        cursor: pointer;
+        padding: 0;
+    }
+
+    .confirm-snack {
+        width: 90%;
+        flex-direction: column;
+        gap: 12px;
+        padding: 16px;
+    }
+}
+
+@media (min-width: 769px) {
+    .btn-mobile-back {
+        display: none;
+    }
 }
