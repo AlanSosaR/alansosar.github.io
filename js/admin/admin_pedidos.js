@@ -71,9 +71,6 @@ console.log("🛠️ admin_pedidos.js — INIT STITCH");
     }
 
     function bindDetailActions() {
-        // Guardar Notas
-        document.getElementById("btnSaveNotes")?.addEventListener("click", saveAdminNotes);
-
         // Imprimir
         document.getElementById("btnPrint")?.addEventListener("click", () => window.print());
 
@@ -255,9 +252,6 @@ console.log("🛠️ admin_pedidos.js — INIT STITCH");
             </div>
         `).join('');
 
-        // Notas Admin
-        document.getElementById("o-admin-notes").value = o.order_notes || "";
-
         // Footer Buttons active state
         document.querySelectorAll(".status-btn").forEach(btn => {
             btn.classList.toggle("active", btn.dataset.status === o.status);
@@ -285,33 +279,6 @@ console.log("🛠️ admin_pedidos.js — INIT STITCH");
     /* =========================
        ACTIONS (DB)
     ========================= */
-    async function saveAdminNotes() {
-        if (!selectedOrder) return;
-        const notes = document.getElementById("o-admin-notes").value;
-        const btn = document.getElementById("btnSaveNotes");
-        const original = btn.innerHTML;
-
-        try {
-            btn.disabled = true;
-            btn.textContent = "Guardando...";
-
-            const { error } = await sb
-                .from("orders")
-                .update({ order_notes: notes })
-                .eq("id", selectedOrder.id);
-
-            if (error) throw error;
-
-            showSnack("success", "Nota interna guardada");
-            selectedOrder.order_notes = notes;
-
-        } catch (err) {
-            showSnack("error", "Error al guardar nota");
-        } finally {
-            btn.disabled = false;
-            btn.innerHTML = original;
-        }
-    }
 
     function confirmStatusChange(newStatus) {
         const text = `¿Cambiar pedido a ${(STATUS_MAP[newStatus]?.label || newStatus).toLowerCase()}?`;
