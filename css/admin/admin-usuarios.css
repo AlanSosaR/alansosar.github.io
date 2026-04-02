@@ -506,3 +506,206 @@ input:checked + .slider-stitch:before { transform: translateX(24px); }
     .empty-state-stitch { margin: 0; padding: 40px 20px; box-shadow: none; border-radius: 20px; }
     .empty-state-stitch h3 { font-size: 22px; }
 }
+
+/* =====================================================
+   MODALES PREMIUM (ESTILO STITCH)
+===================================================== */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(25, 28, 28, 0.4);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 4000;
+    padding: 20px;
+    transition: all 0.3s ease;
+}
+
+.modal-content {
+    background: var(--white);
+    border-radius: 24px;
+    width: 100%;
+    max-width: 480px;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    overflow: hidden;
+}
+
+.modal-header {
+    padding: 24px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--surface-low);
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    color: var(--coffee-deep);
+}
+
+.btn-close-modal {
+    background: var(--surface-low);
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-muted);
+}
+
+.modal-body {
+    padding: 32px;
+}
+
+.modal-intro {
+    font-size: 15px;
+    color: var(--text-muted);
+    margin-bottom: 24px;
+    line-height: 1.5;
+}
+
+/* GRID DE OPCIONES DE CONTACTO */
+.contact-options-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.contact-option-btn {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    border: 1.5px solid var(--border-soft);
+    border-radius: 16px;
+    background: var(--white);
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    text-align: left;
+    width: 100%;
+}
+
+.contact-option-btn:hover {
+    border-color: var(--primary-green);
+    background: var(--primary-container);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(55, 123, 76, 0.08);
+}
+
+.option-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: var(--surface-low);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-green);
+}
+
+.option-icon .material-symbols-outlined, .option-icon i {
+    font-size: 22px;
+}
+
+.option-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.option-text strong {
+    font-size: 15px;
+    color: var(--text-main);
+}
+
+.option-text span {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+/* COLORES ESPECÍFICOS PARA LAS OPCIONES */
+.contact-option-btn.whatsapp:hover .option-icon { background: #25D366; color: white; }
+.contact-option-btn.email:hover .option-icon { background: var(--primary-green); color: white; }
+.contact-option-btn.push:hover .option-icon { background: var(--coffee-deep); color: white; }
+
+/* MODAL PUSH ESPECÍFICO */
+.push-info-banner {
+    background: var(--primary-container);
+    padding: 16px;
+    border-radius: 12px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.push-info-banner .material-symbols-outlined { color: var(--primary-green); }
+.push-info-banner p { font-size: 13px; color: var(--primary-green); font-weight: 500; margin: 0; }
+
+.form-group-stitch {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.form-group-stitch label {
+    font-size: 12px;
+    font-weight: 850;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+}
+
+.form-group-stitch input, .form-group-stitch textarea {
+    padding: 14px 16px;
+    border-radius: 12px;
+    border: 1.5px solid var(--border-soft);
+    background: var(--surface-low);
+    font-family: inherit;
+    font-size: 14px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.form-group-stitch textarea {
+    height: 100px;
+    resize: none;
+}
+
+.modal-footer-stitch {
+    padding: 24px 32px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    border-top: 1px solid var(--surface-low);
+}
+
+.btn-stitch-ghost {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-weight: 700;
+    padding: 12px 20px;
+    border-radius: 12px;
+    cursor: pointer;
+}
+
+.btn-stitch-ghost:hover {
+    background: var(--surface-low);
+}
+
+@media (max-width: 480px) {
+    .modal-content {
+        max-width: 100%;
+        border-radius: 20px 20px 0 0;
+        position: absolute;
+        bottom: 0;
+    }
+}

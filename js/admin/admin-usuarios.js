@@ -47,6 +47,22 @@ function initEventListeners() {
     document.getElementById('btnResetPass')?.addEventListener('click', handleResetPassword);
     document.getElementById('btnSaveChanges')?.addEventListener('click', handleSaveChanges);
     
+    // Contactar - Abrir Modal Multicanal
+    document.getElementById('btnContact')?.addEventListener('click', openContactModal);
+    
+    // Cerrar Modales
+    document.getElementById('close-contact-modal')?.addEventListener('click', closeContactModal);
+    document.getElementById('close-push-modal')?.addEventListener('click', closePushModal);
+    document.getElementById('cancel-push')?.addEventListener('click', closePushModal);
+
+    // Selección de Vía de Contacto
+    document.getElementById('opt-whatsapp')?.addEventListener('click', handleWhatsApp);
+    document.getElementById('opt-email')?.addEventListener('click', handleEmail);
+    document.getElementById('opt-push')?.addEventListener('click', openPushModal);
+    
+    // Acción Final: Enviar Push
+    document.getElementById('send-push')?.addEventListener('click', handleSendPush);
+
     // Toggle de Estado UI Feedback
     const toggle = document.getElementById('u-status-toggle');
     if(toggle) {
@@ -261,6 +277,89 @@ async function handleResetPassword() {
     } catch (err) {
         console.error("Excepción en handleResetPassword:", err);
         showSnackbar("Ocurrió un error inesperado al restablecer.", "error");
+    }
+}
+
+// --- LÓGICA DE CONTACTO MULTICANAL ---
+
+function openContactModal() {
+    if (!selectedUser) return;
+    const modal = document.getElementById('modal-contact');
+    const nameSpan = document.getElementById('contact-user-name');
+    
+    if (nameSpan) nameSpan.textContent = selectedUser.name;
+    if (modal) modal.classList.remove('hidden');
+}
+
+function closeContactModal() {
+    const modal = document.getElementById('modal-contact');
+    if (modal) modal.classList.add('hidden');
+}
+
+function handleWhatsApp() {
+    if (!selectedUser || !selectedUser.phone) {
+        showSnackbar("El usuario no tiene un teléfono registrado", "error");
+        return;
+    }
+    // Limpiar número (solo dígitos)
+    const cleanPhone = selectedUser.phone.replace(/\D/g, '');
+    const message = encodeURIComponent(`Hola ${selectedUser.name}, te contactamos desde la administración de Café Cortero.`);
+    window.open(`https://wa.me/${cleanPhone}?text=${message}`, "_blank");
+}
+
+function handleEmail() {
+    if (!selectedUser || !selectedUser.email) return;
+    const subject = encodeURIComponent("Contacto Administrativo — Café Cortero");
+    window.open(`mailto:${selectedUser.email}?subject=${subject}`, "_blank");
+}
+
+function openPushModal() {
+    closeContactModal();
+    const modal = document.getElementById('modal-push');
+    if (modal) modal.classList.remove('hidden');
+}
+
+function closePushModal() {
+    const modal = document.getElementById('modal-push');
+    if (modal) modal.classList.add('hidden');
+}
+
+async function handleSendPush() {
+    if (!selectedUser) return;
+    
+    const title = document.getElementById('push-title').value.trim();
+    const message = document.getElementById('push-message').value.trim();
+    
+    if (!title || !message) {
+        showSnackbar("Por favor, completa el título y el mensaje", "error");
+        return;
+    }
+
+    try {
+        // Registrar notificación en la BD (Mecanismo Serverless enviará el Push real)
+        const { error } = await _supabase
+            .from('notifications')
+            .insert([{
+                user_id: selectedUser.id,
+                title: title,
+                message: message,
+                type: 'admin_push',
+                is_read: false,
+                push_sent: false
+            }]);
+
+        if (error) throw error;
+
+        showSnackbar(`Notificación push enviada a ${selectedUser.name}`);
+        closePushModal();
+        
+        // Limpiar campos
+        document.getElementById('push-title').value = '';
+        document.getElementById('push-message').value = '';
+        
+    } catch (err) {
+        console.error("Error enviando push:", err);
+        showSnackbar("No se pudo enviar la notificación. Verifica la conexión.", "error");
     }
 }
 
