@@ -16,6 +16,7 @@ console.log("🛠️ admin-pedidos.js — INIT");
   let search = "";
   let pendingAction = null;
   let userSelected = false;
+  let selectedOrder = null; // ✅ Guardar objeto actual
 
   /* =========================
      STATUS MAP
@@ -46,6 +47,7 @@ console.log("🛠️ admin-pedidos.js — INIT");
     if (!user || user.rol !== "admin") return;
 
     bindControls(); // ✅ header:search y header:filter
+    bindDetailButtons(); // ✅ print, contact
 
     await loadOrdersByStatus(currentStatus);
     renderCarousel();
@@ -55,6 +57,21 @@ console.log("🛠️ admin-pedidos.js — INIT");
     } else {
       showEmpty();
     }
+  }
+
+  function bindDetailButtons() {
+    document.getElementById("btnPrint")?.addEventListener("click", () => window.print());
+    document.getElementById("btnContactCustomer")?.addEventListener("click", () => {
+        if (!selectedOrder) return;
+        const u = selectedOrder.users || {};
+        const email = u.email || "";
+        if (email) {
+            const subject = `Estado de tu pedido #${String(selectedOrder.order_number).padStart(3, '0')} — Café Cortero`;
+            window.open(`mailto:${email}?subject=${encodeURIComponent(subject)}`);
+        } else {
+            console.warn("No hay email para contactar");
+        }
+    });
   }
 
   /* =========================
@@ -128,7 +145,7 @@ console.log("🛠️ admin-pedidos.js — INIT");
   }
 
   /* =========================
-     CARRUSEL
+     CARRUSEL (AHORA LISTA VERTICAL)
   ========================= */
   function renderCarousel() {
     applyGlobalSearch(search);
@@ -140,12 +157,12 @@ console.log("🛠️ admin-pedidos.js — INIT");
     wrap.innerHTML = "";
 
     if (!filtered.length) {
-      related.classList.add("hidden");
+      if (related) related.classList.add("hidden");
       showEmpty();
       return;
     }
 
-    related.classList.remove("hidden");
+    if (related) related.classList.remove("hidden");
 
     filtered.forEach((o, index) => {
       const node = tpl.content.cloneNode(true);
@@ -154,13 +171,19 @@ console.log("🛠️ admin-pedidos.js — INIT");
       card.dataset.index = index;
 
       node.querySelector(".o-card-number").textContent =
-        `Pedido N.º ${String(o.order_number).padStart(3, "0")}`;
+        `#${String(o.order_number).padStart(3, "0")}`;
 
       node.querySelector(".o-card-total").textContent =
-        `L ${Number(o.total).toFixed(2)}`;
+        `L ${Number(o.total).toLocaleString("es-HN", { minimumFractionDigits: 2 })}`;
 
-      node.querySelector(".o-card-status").textContent =
-        STATUS_LABELS[o.status] || o.status;
+      const statusEl = node.querySelector(".o-card-status");
+      const statusLabel = STATUS_LABELS[o.status] || o.status;
+      statusEl.textContent = statusLabel;
+      
+      // Clases dinámicas de Tailwind según estado
+      statusEl.classList.add(`status-badge-${o.status}`);
+
+      node.querySelector(".o-card-client").textContent = o.users?.name || o.address?.full_name || "Cliente";
 
       const img = node.querySelector(".order-card-img");
       const placeholder = node.querySelector(".order-card-placeholder");
@@ -184,7 +207,6 @@ console.log("🛠️ admin-pedidos.js — INIT");
 
     requestAnimationFrame(() => {
       applySelection();
-      bindCarouselArrows();
     });
   }
 
@@ -204,7 +226,6 @@ console.log("🛠️ admin-pedidos.js — INIT");
     renderPreview(filtered[index]);
 
     if (userSelected) {
-      explainScrollToPreview();
       userSelected = false;
     }
   }
@@ -230,44 +251,88 @@ console.log("🛠️ admin-pedidos.js — INIT");
      PREVIEW
   ========================= */
   function renderPreview(o) {
+    selectedOrder = o; // ✅ Guardamos para persistencia
     const u = o.users || {};
     const a = o.address || {};
 
     document.getElementById("o-number").textContent =
-      `Pedido N.º ${String(o.order_number).padStart(3, "0")}`;
-    document.getElementById("o-date").textContent =
-      new Date(o.created_at).toLocaleString("es-HN");
+      `Pedido #${String(o.order_number).padStart(3, "0")}`;
+    
+    // Formato fecha: 12 Octubre, 2023
+    const date = new Date(o.created_at);
+    const day = date.getDate();
+    const month = date.toLocaleString('es-ES', { month: 'long' });
+    const year = date.getFullYear();
+    document.getElementById("o-date").textContent = `Realizado el ${day} de ${month.charAt(0).toUpperCase() + month.slice(1)}, ${year}`;
 
     document.getElementById("o-client-name").textContent =
       u.name || a.full_name || "Cliente";
     document.getElementById("o-phone").textContent = a.phone || "—";
     document.getElementById("o-email").textContent = u.email || "—";
 
-    const pills = document.getElementById("order-items-pills");
-    pills.innerHTML = "";
+    const table = document.getElementById("order-items-table");
+    table.innerHTML = "";
 
     let total = 0;
     o.items?.forEach(item => {
       const subtotal = item.quantity * item.price;
       total += subtotal;
 
-      pills.insertAdjacentHTML("beforeend", `
-        <div class="order-pill">
-          <span class="pill-name">${item.products?.name} · ${item.quantity} bolsas</span>
-          <span class="pill-price">L ${subtotal.toFixed(2)}</span>
-        </div>
+      table.insertAdjacentHTML("beforeend", `
+        <tr>
+          <td class="py-6 flex items-center gap-4">
+            <div class="w-14 h-14 rounded-lg bg-surface-container overflow-hidden">
+              <img src="/imagenes/logo.png" class="w-full h-full object-contain p-2" />
+            </div>
+            <div>
+              <p class="font-bold text-on-surface">${item.products?.name}</p>
+              <p class="text-xs text-tertiary">Cantidad: ${item.quantity}</p>
+            </div>
+          </td>
+          <td class="py-6 text-center font-bold">${item.quantity}</td>
+          <td class="py-6 text-right font-medium">L ${Number(item.price).toLocaleString("es-HN", { minimumFractionDigits: 2 })}</td>
+          <td class="py-6 text-right font-bold text-primary">L ${subtotal.toLocaleString("es-HN", { minimumFractionDigits: 2 })}</td>
+        </tr>
       `);
     });
 
-    document.getElementById("o-total").textContent = `L ${total.toFixed(2)}`;
-    document.getElementById("o-zone").textContent =
-      [a.city, a.state].filter(Boolean).join(", ") || "—";
+    document.getElementById("o-total").textContent = `L ${total.toLocaleString("es-HN", { minimumFractionDigits: 2 })}`;
     document.getElementById("o-address").textContent =
       [a.street, a.city, a.state, a.country].filter(Boolean).join(", ") || "—";
     document.getElementById("o-reference").textContent = a.postal_code || "—";
 
+    updateTimeline(o.status);
     renderMedia(o);
     renderStatusActions(o);
+  }
+
+  function updateTimeline(status) {
+      const progress = document.getElementById("timeline-progress-bar");
+      const steps = {
+          "pending": { pct: "0%", active: [".step-pending"] },
+          "processing": { pct: "33%", active: [".step-pending", ".step-processing"] },
+          "shipped": { pct: "66%", active: [".step-pending", ".step-processing", ".step-shipped"] },
+          "delivered": { pct: "100%", active: [".step-pending", ".step-processing", ".step-shipped", ".step-delivered"] },
+          "cancelled": { pct: "0%", active: [] }
+      };
+
+      const config = steps[status] || steps.pending;
+      progress.style.width = config.pct;
+
+      // Reset steps
+      document.querySelectorAll("#order-timeline .status-icon").forEach(icon => {
+          icon.classList.remove("bg-primary", "text-on-primary");
+          icon.classList.add("bg-surface-variant");
+      });
+
+      // Activate steps
+      config.active.forEach(selector => {
+          const step = document.querySelector(selector + " .status-icon");
+          if(step) {
+              step.classList.remove("bg-surface-variant");
+              step.classList.add("bg-primary", "text-on-primary", "shadow-lg");
+          }
+      });
   }
 
   /* =========================
@@ -513,36 +578,13 @@ console.log("🛠️ admin-pedidos.js — INIT");
   }
 
   /* =========================
-     CAROUSEL ARROWS
+     PAGINATION (MOCK FOR NOW)
   ========================= */
-  function bindCarouselArrows() {
-    const list = document.getElementById("orders-carousel");
-    const btnPrev = document.getElementById("orders-prev");
-    const btnNext = document.getElementById("orders-next");
-
-    if (!list || !btnPrev || !btnNext) return;
-
-    const STEP = list.clientWidth * 0.9;
-
-    function update() {
-      const max = list.scrollWidth - list.clientWidth;
-      const atStart = list.scrollLeft <= 4;
-      const atEnd = list.scrollLeft >= max - 4;
-
-      btnPrev.classList.toggle("hidden", atStart);
-      btnNext.classList.toggle("hidden", atEnd);
-    }
-
-    btnPrev.onclick = () =>
-      list.scrollBy({ left: -STEP, behavior: "smooth" });
-
-    btnNext.onclick = () =>
-      list.scrollBy({ left: STEP, behavior: "smooth" });
-
-    list.addEventListener("scroll", update);
-    window.addEventListener("resize", update);
-
-    requestAnimationFrame(update);
+  function updatePaginationInfo() {
+      const info = document.getElementById("page-info");
+      if (info) {
+          info.textContent = `Viendo ${filtered.length} de ${orders.length}`;
+      }
   }
 
   /* =========================

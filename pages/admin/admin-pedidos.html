@@ -1,303 +1,476 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="light">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
   <title>Admin · Pedidos | Café Cortero</title>
 
-  <!-- Material Symbols -->
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
-
-  <!-- Estilos -->
-  <link rel="stylesheet" href="/css/core/tipografia.css" />
-  <link rel="stylesheet" href="/css/ui/header.css" />
-  <link rel="stylesheet" href="/css/ui/header.search.css">
-  <link rel="stylesheet" href="/css/admin/admin-pedidos.css" />
+  <!-- Tailwind & Fonts -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;700;800&amp;family=Manrope:wght@400;500;600;700&amp;family=Fraunces:opsz,wght@9..144,400;700;900&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
   <link rel="icon" type="image/png" href="/imagenes/logo.png">
+
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface-dim": "#d8dad9",
+            "secondary-container": "#91f78e",
+            "surface-variant": "#e1e3e2",
+            "outline-variant": "#c0c9be",
+            "on-primary-fixed": "#00210c",
+            "inverse-primary": "#90d69f",
+            "surface-bright": "#f8faf9",
+            "on-error-container": "#93000a",
+            "surface-container-low": "#f2f4f3",
+            "on-error": "#ffffff",
+            "secondary": "#006e1c",
+            "on-tertiary": "#ffffff",
+            "on-primary-fixed-variant": "#035228",
+            "primary-fixed-dim": "#90d69f",
+            "on-background": "#191c1c",
+            "tertiary-fixed": "#ffdbce",
+            "surface-container-highest": "#e1e3e2",
+            "secondary-fixed": "#94f990",
+            "surface-container-high": "#e6e9e8",
+            "on-primary-container": "#c7ffd0",
+            "inverse-on-surface": "#eff1f0",
+            "surface": "#f8faf9",
+            "on-secondary-container": "#00731e",
+            "tertiary-container": "#85675c",
+            "secondary-fixed-dim": "#78dc77",
+            "on-secondary": "#ffffff",
+            "surface-container-lowest": "#ffffff",
+            "primary-fixed": "#abf3b9",
+            "primary-container": "#377b4c",
+            "on-tertiary-fixed-variant": "#5b4137",
+            "on-tertiary-fixed": "#2b160f",
+            "error": "#ba1a1a",
+            "primary": "#1b6236",
+            "error-container": "#ffdad6",
+            "on-primary": "#ffffff",
+            "tertiary-fixed-dim": "#e4beb2",
+            "inverse-surface": "#2e3131",
+            "background": "#f8faf9",
+            "on-secondary-fixed": "#002204",
+            "tertiary": "#6b4f45",
+            "outline": "#707a70",
+            "on-surface-variant": "#404940",
+            "on-surface": "#191c1c",
+            "surface-container": "#eceeed",
+            "on-secondary-fixed-variant": "#005313",
+            "on-tertiary-container": "#ffeee8",
+            "surface-tint": "#266b3e"
+          },
+          fontFamily: {
+            "headline": ["Fraunces", "serif"],
+            "body": ["Manrope", "sans-serif"],
+            "label": ["Manrope", "sans-serif"],
+            "epilogue": ["Epilogue", "sans-serif"]
+          },
+          borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+        },
+      },
+    }
+  </script>
+
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+
+    body {
+      font-family: 'Manrope', sans-serif;
+      background-color: #f8faf9;
+    }
+
+    .fraunces {
+      font-family: 'Fraunces', serif;
+    }
+
+    /* Custom scrollbar for clean editorial look */
+    .custom-scroll::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .custom-scroll::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #c0c9be;
+      border-radius: 10px;
+    }
+
+    /* Status classes consistent with admin_pedidos.js LABELS */
+    .status-badge-pending { background-color: #d8dad9; color: #404940; }
+    .status-badge-processing { background-color: #91f78e; color: #00731e; }
+    .status-badge-shipped { background-color: #377b4c; color: #c7ffd0; }
+    .status-badge-delivered { background-color: #91f78e; color: #00731e; }
+    .status-badge-cancelled { background-color: #ffdad6; color: #93000a; }
+
+    /* Selection highlight */
+    .order-card.is-selected {
+      background-color: #ffffff;
+      border-left: 4px solid #1b6236;
+      box-shadow: 0 4px 20px rgba(25,28,28,0.08);
+    }
+
+    /* Animation */
+    .fade-in { animation: fadeIn 0.4s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    .hidden { display: none !important; }
+  </style>
 </head>
 
-<body class="page-admin-pedidos">
-  <main class="admin-orders-container fade-in">
+<body class="text-on-surface antialiased overflow-hidden h-screen flex flex-col">
 
-    <!-- =========================
-     BARRA SUPERIOR
-========================= -->
+  <!-- TopNavBar (Inyectado por layout.js -> PERO aquí lo definimos estático para match design si el usuario quiere, o usamos el dinámico) -->
+  <!-- Mantengo el placeholder para que layout.js inyecte el compartido si lo requiere, 
+       pero el usuario proporcionó uno específico. Voy a usar el compartido para no romper la sesión. -->
+  <div id="app-header"></div>
 
+  <!-- Header Global Section -->
+  <div class="bg-surface px-8 pt-8 pb-4 flex justify-between items-end">
+    <h2 class="fraunces text-4xl font-black text-on-surface tracking-tight">Gestión de Pedidos</h2>
+  </div>
 
-    <!-- =========================
-     ESTADO VACÍO
-========================= -->
-    <section id="admin-empty-state" class="admin-empty-state hidden">
-      <h2 class="empty-title">No hay pedidos</h2>
-      <p class="empty-text">
-        Cuando los clientes realicen pedidos, aparecerán aquí.
-      </p>
-      <img src="" alt="" class="empty-illustration hidden">
-    </section>
+  <!-- Main Content: Maestro-Detalle Layout -->
+  <main class="flex-1 flex overflow-hidden px-8 pb-8 gap-8">
 
-    <!-- =========================
-     PREVIEW PEDIDO
-========================= -->
-    <section id="admin-order-preview" class="order-main admin-preview hidden">
-
-      <!-- HEADER (flecha arriba, pedido abajo) -->
-      <header class="order-preview-header stacked-header">
-
-        <!-- FLECHA ARRIBA -->
-        <button class="back-btn" onclick="location.href='/pages/home/index.html'" id="btnBackOrders" type="button">
-          <span class="material-symbols-outlined">chevron_left</span>
-        </button>
-
-        <!-- PEDIDO DEBAJO -->
-        <div class="order-header-text">
-          <h2 id="o-number">Pedido N.º —</h2>
-          <span id="o-date" class="order-date">—</span>
-        </div>
-
-        <!-- ESTADO OCULTO (solo para JS, no UI) -->
-        <span id="o-status" class="status-chip" hidden></span>
-
-      </header>
-      <!-- CONTENIDO -->
-      <div class="order-layout">
-
-        <!-- COLUMNA TEXTO -->
-        <div class="order-text">
-
-          <!-- CLIENTE -->
-          <section class="order-client">
-            <h3>Cliente</h3>
-            <p id="o-client-name" class="client-name">—</p>
-
-            <div class="client-meta-vertical">
-              <div class="meta-row">
-                <span class="material-symbols-outlined">call</span>
-                <span id="o-phone">—</span>
-              </div>
-              <div class="meta-row">
-                <span class="material-symbols-outlined">mail</span>
-                <span id="o-email">—</span>
-              </div>
-            </div>
-          </section>
-
-          <!-- PRODUCTOS -->
-          <div id="order-items-pills" class="order-pills order-summary"></div>
-
-          <!-- TOTAL -->
-          <div class="order-total order-summary">
-            <span>Total del pedido</span>
-            <strong id="o-total">L 0.00</strong>
-          </div>
-
-          <p id="o-zone" class="order-zone">Zona —</p>
-
-          <!-- ENTREGA -->
-          <section class="order-address">
-            <h3>Entrega</h3>
-            <p id="o-address">—</p>
-            <p class="reference">
-              <strong>Referencia:</strong>
-              <span id="o-reference">—</span>
-            </p>
-          </section>
-
-          <!-- ACCIONES EN LÍNEA -->
-          <section class="order-actions inline-actions">
-
-            <button id="btnAccept" class="admin-action-btn accept hidden">
-              <span class="material-symbols-outlined">hourglass_top</span>
-              Pasar a preparación
-            </button>
-
-            <button id="btnReject" class="admin-action-btn reject hidden">
-              <span class="material-symbols-outlined">cancel</span>
-              Cancelar pedido
-            </button>
-
-            <button id="btnShip" class="admin-action-btn ship hidden">
-              <span class="material-symbols-outlined">local_shipping</span>
-              Marcar como enviado
-            </button>
-
-            <button id="btnDeliver" class="admin-action-btn deliver hidden">
-              <span class="material-symbols-outlined">done_all</span>
-              Marcar como entregado
-            </button>
-
-          </section>
-        </div>
-
-        <!-- COLUMNA MEDIA -->
-        <div id="order-media" class="order-media hidden">
-
-          <div id="receipt-payment" class="payment-media hidden">
-            <img id="receipt-img" alt="Recibo de pago" loading="lazy" />
-          </div>
-
-          <div id="cash-payment" class="payment-media placeholder hidden">
-            <img src="/imagenes/pago_en_mano.svg" alt="Pago contra entrega" />
-            <p>Pago contra entrega</p>
-          </div>
-
-        </div>
-
+    <!-- Columna Izquierda: Listado de Pedidos -->
+    <aside class="w-1/3 flex flex-col gap-4">
+      <div id="orders-carousel" class="flex-1 overflow-y-auto custom-scroll pr-2 space-y-4">
+        <!-- Se llena con JS -->
+        <div class="loading-state p-8 text-center text-on-surface-variant">Cargando pedidos...</div>
       </div>
-    </section>
 
-    <!-- =========================
-     CARRUSEL
-========================= -->
-    <section class="related admin-related hidden">
-      <h3 class="similar-title">Pedidos</h3>
-      <p class="section-subtitle">
-        Selecciona un pedido para gestionarlo.
-      </p>
-
-      <div class="carousel-container with-arrows">
-        <button class="carousel-prev-circle inside" id="orders-prev">
+      <!-- Paginación UI (Simplificada) -->
+      <div id="pagination-controls" class="flex items-center justify-between bg-surface-container-low px-4 py-3 rounded-xl">
+        <button id="orders-prev" class="p-1 hover:bg-surface-variant rounded-full transition-colors">
           <span class="material-symbols-outlined">chevron_left</span>
         </button>
-
-        <div class="similar-list" id="orders-carousel"></div>
-
-        <button class="carousel-next-circle inside" id="orders-next">
+        <span id="page-info" class="text-xs font-bold text-on-surface-variant uppercase tracking-tighter">Cargando...</span>
+        <button id="orders-next" class="p-1 hover:bg-surface-variant rounded-full transition-colors">
           <span class="material-symbols-outlined">chevron_right</span>
         </button>
       </div>
+    </aside>
+
+    <!-- Panel Derecho: Ficha Detalle del Pedido -->
+    <section id="admin-order-preview" class="flex-1 bg-surface-container-lowest rounded-2xl shadow-[0_20px_50px_rgba(25,28,28,0.06)] overflow-hidden flex flex-col hidden">
+      <!-- Cabecera del Detalle -->
+      <div class="p-8 pb-6 flex justify-between items-start border-b border-surface-container-high">
+        <div>
+          <h4 id="o-number" class="fraunces text-3xl font-bold text-on-surface mb-1">Pedido #000</h4>
+          <p class="text-tertiary font-medium flex items-center gap-2">
+            <span class="material-symbols-outlined text-sm">calendar_today</span>
+            <span id="o-date">—</span>
+          </p>
+        </div>
+        <div class="flex gap-3">
+          <button id="btnPrint" class="flex items-center gap-2 px-5 py-2.5 rounded-full bg-secondary-container text-on-secondary-container font-bold text-sm hover:opacity-90 transition-all">
+            <span class="material-symbols-outlined text-[20px]">print</span>
+            Imprimir Factura
+          </button>
+          <button id="btnContactCustomer" class="flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary text-on-primary font-bold text-sm hover:opacity-90 transition-all shadow-md">
+            <span class="material-symbols-outlined text-[20px]">mail</span>
+            Contactar Cliente
+          </button>
+        </div>
+      </div>
+
+      <!-- Scrollable Detail Body -->
+      <div class="flex-1 overflow-y-auto custom-scroll p-8 space-y-12 fade-in">
+        
+        <!-- Sección de Seguimiento (Timeline Horizontal) -->
+        <div id="order-timeline" class="relative px-4 mb-8">
+            <!-- Puntos de estado -->
+            <div class="flex justify-between relative z-10">
+                <!-- Creado -->
+                <div class="flex flex-col items-center gap-2 step-pending">
+                    <div class="w-10 h-10 rounded-full bg-surface-variant text-on-surface flex items-center justify-center shadow-sm status-icon">
+                        <span class="material-symbols-outlined text-sm">check</span>
+                    </div>
+                    <span class="text-xs font-bold text-on-surface uppercase tracking-tight">Creado</span>
+                </div>
+                <!-- Preparando -->
+                <div class="flex flex-col items-center gap-2 step-processing">
+                    <div class="w-10 h-10 rounded-full bg-surface-variant flex items-center justify-center status-icon">
+                        <span class="material-symbols-outlined text-sm">inventory_2</span>
+                    </div>
+                    <span class="text-xs font-bold text-on-surface uppercase tracking-tight">Preparando</span>
+                </div>
+                <!-- Enviado -->
+                <div class="flex flex-col items-center gap-2 step-shipped">
+                    <div class="w-10 h-10 rounded-full bg-surface-variant flex items-center justify-center status-icon">
+                        <span class="material-symbols-outlined text-sm">local_shipping</span>
+                    </div>
+                    <span class="text-xs font-bold text-on-surface uppercase tracking-tight">Enviado</span>
+                </div>
+                <!-- Entregado -->
+                <div class="flex flex-col items-center gap-2 step-delivered">
+                    <div class="w-10 h-10 rounded-full bg-surface-variant flex items-center justify-center status-icon">
+                        <span class="material-symbols-outlined text-sm">done_all</span>
+                    </div>
+                    <span class="text-xs font-bold text-on-surface uppercase tracking-tight">Entregado</span>
+                </div>
+            </div>
+            <!-- Línea de progreso -->
+            <div class="absolute top-5 left-8 right-8 h-[2px] bg-surface-variant z-0">
+                <div id="timeline-progress-bar" class="h-full bg-primary w-0 transition-all duration-1000"></div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          <!-- Información del Cliente -->
+          <div class="bg-surface-container-low p-6 rounded-xl">
+            <h5 class="fraunces text-xl font-bold text-on-surface mb-6 flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary">person</span>
+              Información del Cliente
+            </h5>
+            <div class="space-y-4">
+              <div class="flex justify-between">
+                <span class="text-on-surface-variant text-sm">Nombre</span>
+                <span id="o-client-name" class="text-on-surface font-bold">—</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-on-surface-variant text-sm">Email</span>
+                <span id="o-email" class="text-on-surface font-bold">—</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-on-surface-variant text-sm">Teléfono</span>
+                <span id="o-phone" class="text-on-surface font-bold">—</span>
+              </div>
+              <div class="flex justify-between items-start">
+                <span class="text-on-surface-variant text-sm">Dirección</span>
+                <span id="o-address" class="text-on-surface font-bold text-right max-w-[200px]">—</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-on-surface-variant text-sm">Referencia/Cod.</span>
+                <span id="o-reference" class="text-on-surface font-bold">—</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Resumen de Pago -->
+          <div class="bg-surface-container-low p-6 rounded-xl flex flex-col justify-between">
+            <div>
+              <h5 class="fraunces text-xl font-bold text-on-surface mb-6 flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">payments</span>
+                Resumen de Pago
+              </h5>
+              <div class="space-y-3 mb-6">
+                <!-- Mostramos solo el total simplificado por ahora según diseño orignal vs nuevo -->
+                <div class="flex justify-between pt-3 border-t border-surface-variant">
+                  <span class="text-on-surface font-bold text-sm uppercase">TOTAL A PAGAR</span>
+                  <span id="o-total" class="text-primary text-2xl font-black">L 0.00</span>
+                </div>
+              </div>
+            </div>
+            
+            <div id="payment-status-badge" class="bg-primary flex items-center justify-center gap-2 py-3 rounded-lg shadow-sm">
+                <span class="material-symbols-outlined text-on-primary text-sm" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+                <span id="payment-method-text" class="text-on-primary font-bold text-xs uppercase tracking-widest">Pago Verificado</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Comprobante de Pago (Media) -->
+        <div id="order-media" class="space-y-6">
+            <h5 class="fraunces text-xl font-bold text-on-surface mb-4 flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">image</span>
+                Comprobante / Recibo
+            </h5>
+            <div class="flex gap-4">
+                <div id="receipt-payment" class="w-full max-w-sm rounded-xl overflow-hidden border border-surface-container-high hidden">
+                    <img id="receipt-img" alt="Recibo" class="w-full object-cover cursor-zoom-in" onclick="window.open(this.src)" />
+                </div>
+                <div id="cash-payment" class="bg-surface-container-low p-8 rounded-xl flex flex-col items-center justify-center gap-4 w-full text-center hidden">
+                    <img src="/imagenes/pago_en_mano.svg" class="w-24 opacity-40" alt="Pago en efectivo" />
+                    <p class="text-on-surface-variant font-medium">Pago contra entrega en efectivo</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resumen de Compra (Tabla) -->
+        <div>
+          <h5 class="fraunces text-xl font-bold text-on-surface mb-6 flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary">shopping_basket</span>
+            Productos del Pedido
+          </h5>
+          <div class="overflow-x-auto">
+            <table class="w-full">
+              <thead>
+                <tr class="text-left border-b border-surface-variant">
+                  <th class="pb-4 font-bold text-xs uppercase tracking-widest text-on-surface-variant">Producto</th>
+                  <th class="pb-4 font-bold text-xs uppercase tracking-widest text-on-surface-variant text-center">Cant.</th>
+                  <th class="pb-4 font-bold text-xs uppercase tracking-widest text-on-surface-variant text-right">Precio</th>
+                  <th class="pb-4 font-bold text-xs uppercase tracking-widest text-on-surface-variant text-right">Subtotal</th>
+                </tr>
+              </thead>
+              <tbody id="order-items-table" class="divide-y divide-surface-container-high">
+                  <!-- Se llena con JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Acciones del Administrador -->
+        <div class="bg-surface-container-low p-8 rounded-2xl border border-surface-container-high space-y-6">
+            <h5 class="fraunces text-xl font-bold text-on-surface flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">settings</span>
+                Acciones de Gestión
+            </h5>
+            <div class="flex flex-wrap gap-4">
+                <button id="btnAccept" class="flex-1 flex items-center justify-center gap-3 bg-secondary text-white font-bold py-4 rounded-xl hover:opacity-90 transition-all hidden">
+                    <span class="material-symbols-outlined">hourglass_top</span>
+                    Pasar a preparación
+                </button>
+                <button id="btnReject" class="flex-1 flex items-center justify-center gap-3 bg-error text-white font-bold py-4 rounded-xl hover:opacity-90 transition-all hidden">
+                    <span class="material-symbols-outlined">cancel</span>
+                    Cancelar pedido
+                </button>
+                <button id="btnShip" class="flex-1 flex items-center justify-center gap-3 bg-primary text-white font-bold py-4 rounded-xl hover:opacity-90 transition-all hidden">
+                    <span class="material-symbols-outlined">local_shipping</span>
+                    Marcar como enviado
+                </button>
+                <button id="btnDeliver" class="flex-1 flex items-center justify-center gap-3 bg-secondary text-white font-bold py-4 rounded-xl hover:opacity-90 transition-all hidden">
+                    <span class="material-symbols-outlined">done_all</span>
+                    Marcar como entregado
+                </button>
+            </div>
+        </div>
+
+        <!-- Notas Internas -->
+        <div class="hidden">
+          <h5 class="fraunces text-xl font-bold text-on-surface mb-4 flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary">sticky_note_2</span>
+            Notas Internas del Administrador
+          </h5>
+          <textarea class="w-full bg-surface-container-low border-none rounded-xl p-4 text-sm focus:ring-2 focus:ring-primary h-32 placeholder:text-outline-variant transition-all" placeholder="Añadir un comentario privado sobre este pedido..."></textarea>
+          <div class="flex justify-end mt-4">
+            <button class="bg-surface-container-highest text-on-surface font-bold text-sm px-6 py-2 rounded-full hover:bg-surface-dim transition-all">
+              Guardar Nota
+            </button>
+          </div>
+        </div>
+
+      </div>
     </section>
+
+    <!-- ESTADO VACÍO -->
+    <section id="admin-empty-state" class="flex-1 flex items-center justify-center bg-surface-container-low rounded-2xl border border-dashed border-outline-variant">
+      <div class="text-center max-w-sm px-8">
+        <h2 class="empty-title fraunces text-2xl font-bold text-on-surface mb-2">Selecciona un pedido</h2>
+        <p class="empty-text text-on-surface-variant text-sm">
+          Elige un pedido de la lista de la izquierda para ver su información detallada y gestionar su estado.
+        </p>
+        <img src="" alt="" class="empty-illustration mx-auto mt-8 opacity-20 hidden">
+      </div>
+    </section>
+
+    <!-- PESTAÑA RELACIONADOS (Hidden in new layout since we use Maestro-Detalle) -->
+    <div class="admin-related hidden"></div>
 
   </main>
 
   <!-- =========================
-     TEMPLATE CARD
-========================= -->
+       TEMPLATE CARD (Maestro List)
+  ========================= -->
   <template id="tpl-order-card">
-    <article class="similar-card order-card">
-      <div class="order-card-media">
-        <img class="order-card-img hidden" alt="Recibo" loading="lazy" />
-        <div class="order-card-placeholder hidden">
-          <img src="/imagenes/pago_en_mano.svg" alt="Pago contra entrega" />
-          <p>Pago contra entrega</p>
+    <div class="order-card bg-surface-container-low p-5 rounded-xl hover:bg-surface-container-high transition-all cursor-pointer border border-transparent">
+        <div class="flex justify-between items-start mb-2">
+            <span class="o-card-number text-tertiary font-bold font-body text-sm tracking-wider">#000</span>
+            <span class="o-card-status px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest status-badge">Pendiente</span>
         </div>
-      </div>
-
-      <div class="order-card-info">
-        <h4 class="o-card-number">Pedido N.º 000</h4>
-        <p class="o-card-total">L 0.00</p>
-        <span class="o-card-status">—</span>
-      </div>
-    </article>
+        <h3 class="o-card-client font-headline text-lg font-bold text-on-surface">—</h3>
+        <div class="flex justify-between items-end mt-4">
+            <p class="o-card-total text-primary font-black">L 0.00</p>
+            <div class="order-card-media-mini">
+                <img class="order-card-img w-6 h-6 rounded-md object-cover hidden" alt="Recibo" />
+                <div class="order-card-placeholder text-[#6b4f45] hidden">
+                    <span class="material-symbols-outlined text-sm">payments</span>
+                </div>
+            </div>
+        </div>
+    </div>
   </template>
 
   <!-- =========================
-     SNACKBAR
-========================= -->
-  <div id="snackbar-action" class="snackbar-action hidden">
-    <div class="snackbar-content">
-      <div class="snackbar-text">
-        <strong id="snackbar-title">—</strong>
-        <span id="snackbar-message">—</span>
-      </div>
-
-      <div class="snackbar-actions">
-        <button id="snackbar-cancel" class="snackbar-btn cancel">Cancelar</button>
-        <button id="snackbar-confirm" class="snackbar-btn danger">Confirmar</button>
-      </div>
+       SNACKBAR / DIALOG
+  ========================= -->
+  <div id="snackbar-action" class="fixed inset-0 bg-on-background/40 backdrop-blur-sm flex items-center justify-center z-[60] hidden">
+    <div class="bg-surface-container-lowest p-8 rounded-3xl shadow-2xl max-w-md w-full mx-4 fade-in">
+        <div class="mb-6">
+            <h3 id="snackbar-title" class="fraunces text-2xl font-bold text-on-surface mb-2">Título</h3>
+            <p id="snackbar-message" class="text-on-surface-variant">Mensaje de confirmación detallado aquí.</p>
+        </div>
+        <div class="flex gap-4">
+            <button id="snackbar-cancel" class="flex-1 py-3 px-6 rounded-full font-bold text-on-surface-variant bg-surface-container-high hover:bg-surface-dim transition-all">
+                Cerrar
+            </button>
+            <button id="snackbar-confirm" class="flex-1 py-3 px-6 rounded-full font-bold text-on-primary bg-primary hover:bg-primary-fixed-dim transition-all shadow-lg">
+                Confirmar
+            </button>
+        </div>
     </div>
   </div>
 
-  <!-- =========================
-     SCRIPTS CORE
-========================= -->
-
-  <!-- Supabase -->
+  <!-- Scripts Core -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/js/core/supabase-client-core.js"></script>
   <script src="/js/core/supabase-auth.js"></script>
 
-  <!-- Modo de página (ANTES del layout) -->
   <script>
     window.PAGE_MODE = "admin-pedidos";
   </script>
 
-  <!-- Layout (inyecta el HEADER en #app-header) -->
+  <!-- Layout shared -->
   <script src="/js/ui/layout.js"></script>
-
-  <!-- Header core -->
   <script type="module" src="/js/ui/header.js"></script>
 
-  <!-- 🔍 Buscador global del header — ADMIN PEDIDOS -->
+  <!-- Buscador global logic -->
   <script type="module">
     import { renderHeaderSearch } from "/js/ui/header.search.js";
 
     document.addEventListener("header:ready", () => {
       const slot = document.getElementById("header-middle-slot");
+      if (!slot) return;
 
-      if (!slot) {
-        console.warn("❌ header-middle-slot no encontrado");
-        return;
-      }
-
-      /* ===============================
-         INYECTAR BUSCADOR
-      =============================== */
       slot.innerHTML = renderHeaderSearch({
         showFilter: true,
         showAdd: false,
-        placeholder: "Nombre, email, teléfono o pedido…"
+        placeholder: "Nombre, email, o pedido..."
       });
 
-      /* ===============================
-         ESTADO INICIAL → NUEVOS
-      =============================== */
       const DEFAULT_STATUS = "pending";
+      document.dispatchEvent(new CustomEvent("header:filter", { detail: DEFAULT_STATUS }));
 
-      document.dispatchEvent(
-        new CustomEvent("header:filter", {
-          detail: DEFAULT_STATUS
-        })
-      );
-
-      /* ===============================
-         🔍 BÚSQUEDA GLOBAL
-      =============================== */
       const input = document.getElementById("header-search-input");
       if (input) {
         input.addEventListener("input", (e) => {
-          document.dispatchEvent(
-            new CustomEvent("header:search", {
-              detail: e.target.value.trim()
-            })
-          );
+          document.dispatchEvent(new CustomEvent("header:search", { detail: e.target.value.trim() }));
         });
       }
 
-      /* ===============================
-         🎯 FILTRO POR ESTADO
-      =============================== */
       const filter = document.getElementById("header-status-filter");
       if (filter) {
         filter.value = DEFAULT_STATUS;
         filter.addEventListener("change", (e) => {
-          document.dispatchEvent(
-            new CustomEvent("header:filter", {
-              detail: e.target.value
-            })
-          );
+          document.dispatchEvent(new CustomEvent("header:filter", { detail: e.target.value }));
         });
       }
-
-      console.log("🔍 Buscador del header listo (Admin pedidos)");
     });
   </script>
 
-  <!-- Auth UI (opcional pero correcto aquí) -->
-  <script src="/js/core/auth-ui.js"></script>
-
-  <!-- ADMIN PEDIDOS (AL FINAL SIEMPRE) -->
+  <!-- Principal Admin Pedidos Logic -->
   <script src="/js/admin/admin_pedidos.js"></script>
+
 </body>
 
 </html>
