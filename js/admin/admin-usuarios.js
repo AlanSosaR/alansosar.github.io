@@ -242,7 +242,24 @@ async function handleSaveChanges() {
 
 async function handleResetPassword() {
     if (!selectedUser) return;
-    showSnackbar(`Enlace de recuperación enviado a ${selectedUser.email}`);
+    
+    try {
+        const redirectTo = `${window.location.origin}/pages/auth/new-password.html`;
+        const { error } = await _supabase.auth.resetPasswordForEmail(selectedUser.email, {
+            redirectTo: redirectTo
+        });
+
+        if (error) {
+            console.error(error);
+            showSnackbar("Error al enviar el enlace. Intenta más tarde.", "error");
+            return;
+        }
+
+        showSnackbar(`Enlace de recuperación enviado con éxito a ${selectedUser.email}`);
+    } catch (err) {
+        console.error("Excepción en handleResetPassword:", err);
+        showSnackbar("Ocurrió un error inesperado al restablecer.", "error");
+    }
 }
 
 // --- UTILS UI ---
