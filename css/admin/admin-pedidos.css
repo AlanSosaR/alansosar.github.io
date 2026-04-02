@@ -283,19 +283,20 @@ body.page-admin-orders {
 .item-variant { font-size: 12px; color: var(--text-muted); }
 
 
-/* ACTIONS FOOTER STITCH */
-.detail-actions-footer-stitch {
+/* ACTIONS FOOTER STITCH (INTEGRADO EN CARD) */
+.detail-actions-card-footer-stitch {
     padding: 24px 40px;
     background: var(--white);
     border-top: 1px solid var(--border-soft);
     display: flex;
     align-items: center;
     gap: 24px;
+    margin-top: auto;
 }
 
 .action-label-stitch { font-size: 12px; font-weight: 900; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
 
-.status-actions-grid { flex: 1; display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+.status-actions-grid { flex: 1; display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 12px; }
 .status-btn {
     padding: 12px 8px; border-radius: 10px; border: 1.5px solid var(--border-soft); background: var(--white);
     font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s; color: var(--text-muted);

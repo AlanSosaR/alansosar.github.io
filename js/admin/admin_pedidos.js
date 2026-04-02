@@ -252,7 +252,29 @@ console.log("🛠️ admin_pedidos.js — INIT STITCH");
             </div>
         `).join('');
 
-        // Footer Buttons active state
+        // Footer Buttons active state & Visibility conditional
+        const btnPending = document.getElementById("btn-st-pending");
+        const btnPreparing = document.getElementById("btn-st-preparing");
+        const btnShipped = document.getElementById("btn-st-shipped");
+        const btnDelivered = document.getElementById("btn-st-delivered");
+        const btnCancelled = document.getElementById("btn-st-cancelled");
+
+        // Ocultar todos por defecto
+        [btnPending, btnPreparing, btnShipped, btnDelivered, btnCancelled].forEach(b => b?.classList.add("hidden"));
+
+        if (o.status === "pending") {
+            btnPreparing?.classList.remove("hidden");
+            btnCancelled?.classList.remove("hidden");
+        } else if (o.status === "preparing") {
+            btnShipped?.classList.remove("hidden");
+            btnCancelled?.classList.remove("hidden");
+        } else if (o.status === "shipped") {
+            btnDelivered?.classList.remove("hidden");
+            btnCancelled?.classList.remove("hidden");
+        } else if (o.status === "cancelled") {
+            btnPending?.classList.remove("hidden"); // Opción de restaurar
+        }
+
         document.querySelectorAll(".status-btn").forEach(btn => {
             btn.classList.toggle("active", btn.dataset.status === o.status);
         });
