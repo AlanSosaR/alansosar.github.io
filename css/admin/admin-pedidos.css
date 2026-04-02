@@ -611,13 +611,15 @@ body.page-admin-orders {
         display: none !important;
     }
 
-    body:not(.detail-view-active) .order-detail-section-stitch {
+    body:not(.detail-view-active) .order-detail-section-stitch,
+    body:not(.detail-view-active) #no-selection {
         display: none !important;
     }
 
-    .order-detail-section-stitch {
-        width: 100%;
-        max-width: 100%;
+    /* Forzar que el detalle ocupe todo el ancho si está activo */
+    body.detail-view-active .order-detail-section-stitch {
+        display: flex !important;
+        width: 100% !important;
     }
 
     .detail-grid-stitch {
