@@ -280,18 +280,18 @@ console.log("🛠️ admin-pedidos.js — INIT");
 
       table.insertAdjacentHTML("beforeend", `
         <tr>
-          <td class="py-6 flex items-center gap-4">
-            <div class="w-14 h-14 rounded-lg bg-surface-container overflow-hidden">
-              <img src="/imagenes/logo.png" class="w-full h-full object-contain p-2" />
-            </div>
-            <div>
-              <p class="font-bold text-on-surface">${item.products?.name}</p>
-              <p class="text-xs text-tertiary">Cantidad: ${item.quantity}</p>
+          <td>
+            <div class="product-info-cell">
+              <img src="/imagenes/logo.png" class="prod-mini-img" />
+              <div>
+                <p class="prod-name">${item.products?.name}</p>
+                <p class="prod-meta">Precio Unitario: L ${Number(item.price).toLocaleString("es-HN", { minimumFractionDigits: 2 })}</p>
+              </div>
             </div>
           </td>
-          <td class="py-6 text-center font-bold">${item.quantity}</td>
-          <td class="py-6 text-right font-medium">L ${Number(item.price).toLocaleString("es-HN", { minimumFractionDigits: 2 })}</td>
-          <td class="py-6 text-right font-bold text-primary">L ${subtotal.toLocaleString("es-HN", { minimumFractionDigits: 2 })}</td>
+          <td class="center font-bold">${item.quantity}</td>
+          <td class="right font-medium">L ${Number(item.price).toLocaleString("es-HN", { minimumFractionDigits: 2 })}</td>
+          <td class="right font-bold text-primary">L ${subtotal.toLocaleString("es-HN", { minimumFractionDigits: 2 })}</td>
         </tr>
       `);
     });
@@ -299,7 +299,9 @@ console.log("🛠️ admin-pedidos.js — INIT");
     document.getElementById("o-total").textContent = `L ${total.toLocaleString("es-HN", { minimumFractionDigits: 2 })}`;
     document.getElementById("o-address").textContent =
       [a.street, a.city, a.state, a.country].filter(Boolean).join(", ") || "—";
-    document.getElementById("o-reference").textContent = a.postal_code || "—";
+    
+    const ref = document.getElementById("o-reference");
+    if(ref) ref.textContent = a.postal_code || "—";
 
     updateTimeline(o.status);
     renderMedia(o);
@@ -308,7 +310,7 @@ console.log("🛠️ admin-pedidos.js — INIT");
 
   function updateTimeline(status) {
       const progress = document.getElementById("timeline-progress-bar");
-      const steps = {
+      const stepsConfig = {
           "pending": { pct: "0%", active: [".step-pending"] },
           "processing": { pct: "33%", active: [".step-pending", ".step-processing"] },
           "shipped": { pct: "66%", active: [".step-pending", ".step-processing", ".step-shipped"] },
@@ -316,22 +318,18 @@ console.log("🛠️ admin-pedidos.js — INIT");
           "cancelled": { pct: "0%", active: [] }
       };
 
-      const config = steps[status] || steps.pending;
-      progress.style.width = config.pct;
+      const config = stepsConfig[status] || stepsConfig.pending;
+      if(progress) progress.style.width = config.pct;
 
-      // Reset steps
-      document.querySelectorAll("#order-timeline .status-icon").forEach(icon => {
-          icon.classList.remove("bg-primary", "text-on-primary");
-          icon.classList.add("bg-surface-variant");
+      // Reset all steps
+      document.querySelectorAll(".status-timeline-container .step").forEach(step => {
+          step.classList.remove("step-active");
       });
 
-      // Activate steps
+      // Activate steps based on config
       config.active.forEach(selector => {
-          const step = document.querySelector(selector + " .status-icon");
-          if(step) {
-              step.classList.remove("bg-surface-variant");
-              step.classList.add("bg-primary", "text-on-primary", "shadow-lg");
-          }
+          const step = document.querySelector(".status-timeline-container " + selector);
+          if(step) step.classList.add("step-active");
       });
   }
 
