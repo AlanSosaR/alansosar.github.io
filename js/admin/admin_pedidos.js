@@ -60,8 +60,19 @@ console.log("🛠️ admin-pedidos.js — INIT");
   }
 
   function bindDetailButtons() {
-    document.getElementById("btnPrint")?.addEventListener("click", () => window.print());
-    document.getElementById("btnContactCustomer")?.addEventListener("click", () => {
+      document.getElementById("orders-prev")?.addEventListener("click", () => changePage(-1));
+      document.getElementById("orders-next")?.addEventListener("click", () => changePage(1));
+
+      // Botón para Guardar Notas
+      document.getElementById("btnSaveNotes")?.addEventListener("click", () => saveAdminNotes());
+
+      // Botones de acción (Aceptar, Rechazar, etc.)
+      ["Accept", "Reject", "Ship", "Deliver"].forEach(act => {
+          document.getElementById(`btn${act}`)?.addEventListener("click", () => handleStatusAction(act));
+      });
+      
+      document.getElementById("btnPrint")?.addEventListener("click", () => window.print());
+      document.getElementById("btnContactCustomer")?.addEventListener("click", () => {
         if (!selectedOrder) return;
         const u = selectedOrder.users || {};
         const email = u.email || "";
@@ -87,6 +98,7 @@ console.log("🛠️ admin-pedidos.js — INIT");
         total,
         status,
         created_at,
+        order_notes,
         users ( name, email ),
         address:addresses ( country, state, city, street, postal_code, phone, full_name ),
         items:order_items ( quantity, price, products ( name ) ),
@@ -198,7 +210,7 @@ console.log("🛠️ admin-pedidos.js — INIT");
         if (miniIcon) miniIcon.classList.add("hidden");
       } else {
         if (img) img.classList.add("hidden");
-        if (miniIcon) miniIcon.classList.remove("hidden");
+        if (miniIcon) miniIcon.classList.add("hidden");
       }
 
       card.onclick = () => {
@@ -307,6 +319,10 @@ console.log("🛠️ admin-pedidos.js — INIT");
     const ref = document.getElementById("o-reference");
     if(ref) ref.textContent = a.postal_code || "—";
 
+    // Cargar Notas
+    const notesArea = document.getElementById("o-admin-notes");
+    if(notesArea) notesArea.value = o.order_notes || "";
+
     updateTimeline(o.status);
     renderMedia(o);
     renderStatusActions(o);
@@ -316,9 +332,10 @@ console.log("🛠️ admin-pedidos.js — INIT");
       const progress = document.getElementById("timeline-progress-bar");
       const stepsConfig = {
           "pending": { pct: "0%", active: [".step-pending"] },
-          "processing": { pct: "33%", active: [".step-pending", ".step-processing"] },
-          "shipped": { pct: "66%", active: [".step-pending", ".step-processing", ".step-shipped"] },
-          "delivered": { pct: "100%", active: [".step-pending", ".step-processing", ".step-shipped", ".step-delivered"] },
+          "confirmed": { pct: "33%", active: [".step-pending", ".step-preparing"] },
+          "preparing": { pct: "33%", active: [".step-pending", ".step-preparing"] },
+          "shipped": { pct: "66%", active: [".step-pending", ".step-preparing", ".step-shipped"] },
+          "delivered": { pct: "100%", active: [".step-pending", ".step-preparing", ".step-shipped", ".step-delivered"] },
           "cancelled": { pct: "0%", active: [] }
       };
 
@@ -358,7 +375,48 @@ console.log("🛠️ admin-pedidos.js — INIT");
   }
 
   /* =========================
-     STATUS ACTIONS
+     GUARDAR NOTAS ADMIN
+  ========================= */
+  async function saveAdminNotes() {
+      if (!selectedOrder) return;
+      const notesArea = document.getElementById("o-admin-notes");
+      const btn = document.getElementById("btnSaveNotes");
+      const originalText = btn.innerHTML;
+
+      try {
+          const notes = notesArea.value.trim();
+          btn.disabled = true;
+          btn.innerHTML = `<span class="material-symbols-outlined animate-spin">refresh</span> Guardando...`;
+
+          const { error } = await sb
+              .from("orders")
+              .update({ order_notes: notes })
+              .eq("id", selectedOrder.id);
+
+          if (error) throw error;
+
+          // Feedback visual
+          btn.classList.add("bg-success-container", "text-on-success-container");
+          btn.innerHTML = `<span class="material-symbols-outlined">check_circle</span> Guardado`;
+          
+          setTimeout(() => {
+              btn.disabled = false;
+              btn.innerHTML = originalText;
+              btn.classList.remove("bg-success-container", "text-on-success-container");
+          }, 2000);
+
+          // Actualizar objeto local
+          selectedOrder.order_notes = notes;
+      } catch (err) {
+          console.error("Error guardando notas:", err);
+          alert("Error al guardar las notas");
+          btn.disabled = false;
+          btn.innerHTML = originalText;
+      }
+  }
+
+  /* =========================
+     CABECERA & ACCIONES
   ========================= */
   function renderStatusActions(o) {
     const btnAccept = document.getElementById("btnAccept");

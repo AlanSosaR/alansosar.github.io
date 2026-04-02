@@ -6,7 +6,7 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Gestión de Pedidos | Café Cortero</title>
 
-    <!-- Google Fonts - FIXED URL -->
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;700;800&family=Manrope:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;700;900&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
@@ -17,17 +17,17 @@
     <link rel="stylesheet" href="/css/admin/admin-pedidos.css">
 </head>
 
-<body class="m3-expressive-layout admin-pedidos-page">
+<body class="m3-expressive-layout admin-pedidos-page font-body">
 
     <!-- Header Holder (Inyectado por layout.js) -->
     <div id="app-header"></div>
 
     <!-- Page Content -->
-    <div class="admin-main-wrapper shadow-container">
+    <div class="admin-main-wrapper">
         
         <!-- Header de Sección -->
         <header class="section-header">
-            <h2 class="headline-large">Gestión de Pedidos</h2>
+            <h2 class="headline-large fraunces">Gestión de Pedidos</h2>
         </header>
 
         <!-- Layout de dos columnas (Maestro-Detalle) -->
@@ -40,11 +40,11 @@
                 </div>
 
                 <!-- Paginación / Info -->
-                <nav class="pagination-bar">
+                <nav class="pagination-bar surface-low">
                     <button id="orders-prev" class="icon-button" aria-label="Anterior">
                         <span class="material-symbols-outlined">chevron_left</span>
                     </button>
-                    <span id="page-info" class="label-medium">Cargando...</span>
+                    <span id="page-info" class="label-medium">Página 1 de 1</span>
                     <button id="orders-next" class="icon-button" aria-label="Siguiente">
                         <span class="material-symbols-outlined">chevron_right</span>
                     </button>
@@ -55,9 +55,9 @@
             <section id="admin-order-preview" class="detail-panel shadow-elevation-2 hidden">
                 
                 <!-- Cabecera Detalle -->
-                <div class="detail-header">
+                <div class="detail-header border-b">
                     <div class="order-id-block">
-                        <h4 id="o-number" class="headline-medium">Pedido #000</h4>
+                        <h4 id="o-number" class="headline-medium fraunces">Pedido #000</h4>
                         <p class="body-medium text-secondary">
                             <span class="material-symbols-outlined">calendar_today</span>
                             <span id="o-date">—</span>
@@ -76,7 +76,7 @@
                 </div>
 
                 <!-- Cuerpo Detalle (Scrollable) -->
-                <div class="detail-body custom-scroll">
+                <div class="detail-body custom-scroll p-8">
                     
                     <!-- Timeline de Estado -->
                     <div class="status-timeline-container">
@@ -88,7 +88,7 @@
                                 <div class="step-icon"><span class="material-symbols-outlined">check</span></div>
                                 <span class="step-label">Creado</span>
                             </div>
-                            <div class="step step-processing" data-status="processing">
+                            <div class="step step-preparing" data-status="preparing">
                                 <div class="step-icon"><span class="material-symbols-outlined">inventory_2</span></div>
                                 <span class="step-label">Preparando</span>
                             </div>
@@ -103,11 +103,11 @@
                         </div>
                     </div>
 
-                    <div class="info-grid">
+                    <div class="info-grid mt-12">
                         <!-- Card Cliente -->
-                        <div class="info-card surface-variant">
-                            <h5 class="title-medium">
-                                <span class="material-symbols-outlined">person</span>
+                        <div class="info-card surface-low">
+                            <h5 class="title-large fraunces text-on-surface">
+                                <span class="material-symbols-outlined text-primary">person</span>
                                 Información del Cliente
                             </h5>
                             <div class="property-list">
@@ -120,9 +120,9 @@
                         </div>
 
                         <!-- Card Pago -->
-                        <div class="info-card surface-variant payment-summary">
-                            <h5 class="title-medium">
-                                <span class="material-symbols-outlined">payments</span>
+                        <div class="info-card surface-low payment-summary">
+                            <h5 class="title-large fraunces text-on-surface">
+                                <span class="material-symbols-outlined text-primary">payments</span>
                                 Resumen de Pago
                             </h5>
                             <div class="total-block">
@@ -130,29 +130,17 @@
                                 <span id="o-total" class="total-value headline-small">L 0.00</span>
                             </div>
                             <div id="payment-status-badge" class="badge-status-container">
-                                <span class="material-symbols-outlined">verified_user</span>
-                                <span id="payment-method-text">PAGO VERIFICADO</span>
+                                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+                                <span id="payment-method-text" class="font-bold uppercase tracking-widest text-[10px]">Pago Verificado</span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Comprobante -->
-                    <div id="order-media" class="media-section">
-                        <h5 class="title-medium"><span class="material-symbols-outlined">image</span> Comprobante de Pago</h5>
-                        <div id="receipt-payment" class="receipt-container hidden">
-                            <img id="receipt-img" src="" alt="Comprobante" onclick="window.open(this.src)">
-                        </div>
-                        <div id="cash-payment" class="cash-container hidden">
-                            <img src="/imagenes/pago_en_mano.svg" alt="Efectivo" class="cash-icon">
-                            <p>Pago contra entrega en efectivo</p>
-                        </div>
-                    </div>
-
                     <!-- Tabla Productos -->
-                    <div class="products-section">
-                        <h5 class="title-medium"><span class="material-symbols-outlined">shopping_basket</span> Productos del Pedido</h5>
-                        <div class="table-container">
-                            <table class="m3-table">
+                    <div class="products-section mt-12">
+                        <h5 class="title-large fraunces text-on-surface"><span class="material-symbols-outlined text-primary">shopping_basket</span> Productos del Pedido</h5>
+                        <div class="table-container mt-6">
+                            <table class="m3-table w-full">
                                 <thead>
                                     <tr>
                                         <th>Producto</th>
@@ -168,14 +156,40 @@
                         </div>
                     </div>
 
+                    <!-- Comprobante -->
+                    <div id="order-media" class="media-section mt-12">
+                        <h5 class="title-large fraunces text-on-surface"><span class="material-symbols-outlined text-primary">image</span> Comprobante de Pago</h5>
+                        <div id="receipt-payment" class="receipt-container mt-4 hidden">
+                            <img id="receipt-img" src="" alt="Comprobante" class="cursor-zoom-in rounded-xl border">
+                        </div>
+                        <div id="cash-payment" class="cash-container mt-4 hidden">
+                            <img src="/imagenes/pago_en_mano.svg" alt="Efectivo" class="cash-icon opacity-50">
+                            <p class="body-medium">Pago contra entrega en efectivo</p>
+                        </div>
+                    </div>
+
                     <!-- Acciones de Gestión -->
-                    <div class="management-actions surface-tonal">
-                        <h5 class="title-medium"><span class="material-symbols-outlined">settings</span> Acciones de Gestión</h5>
-                        <div class="actions-buttons-row">
+                    <div class="management-actions surface-tonal mt-12">
+                        <h5 class="title-large fraunces text-on-surface"><span class="material-symbols-outlined">settings</span> Gestión de Estado</h5>
+                        <div class="actions-buttons-row mt-6">
                             <button id="btnAccept" class="btn-action hidden" data-variant="accept"><span class="material-symbols-outlined">hourglass_top</span> Preparar</button>
                             <button id="btnReject" class="btn-action hidden" data-variant="reject"><span class="material-symbols-outlined">cancel</span> Cancelar</button>
                             <button id="btnShip" class="btn-action hidden" data-variant="ship"><span class="material-symbols-outlined">local_shipping</span> Enviar</button>
                             <button id="btnDeliver" class="btn-action hidden" data-variant="deliver"><span class="material-symbols-outlined">done_all</span> Entregar</button>
+                        </div>
+                    </div>
+
+                    <!-- Notas Internas -->
+                    <div class="notes-section surface-tonal mt-12">
+                        <h5 class="title-large fraunces text-on-surface"><span class="material-symbols-outlined">description</span> Notas del Administrador</h5>
+                        <div class="notes-container mt-6">
+                            <textarea id="o-admin-notes" class="m3-textarea" placeholder="Escribe un comentario privado sobre este pedido..."></textarea>
+                            <div class="notes-actions mt-4 text-right">
+                                <button id="btnSaveNotes" class="btn-tonal">
+                                    <span class="material-symbols-outlined">save</span>
+                                    Guardar Nota
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -185,9 +199,8 @@
             <!-- Estado Vacío -->
             <section id="admin-empty-state" class="empty-layout">
                 <div class="empty-content">
-                    <h2 class="headline-medium empty-title">Selecciona un pedido</h2>
+                    <h2 class="headline-medium fraunces">Selecciona un pedido</h2>
                     <p class="body-large empty-text">Elige un pedido de la lista para ver su información y gestionar su estado.</p>
-                    <img src="/imagenes/empty/pending.svg" class="empty-illustration hidden">
                 </div>
             </section>
 
@@ -196,17 +209,17 @@
 
     <!-- Template Tarjeta -->
     <template id="tpl-order-card">
-        <div class="order-card-item surface-low interactive">
-            <div class="card-header">
-                <span class="o-card-number label-large">#000</span>
-                <span class="o-card-status label-small badge-pill">PENDIENTE</span>
+        <div class="order-card-item surface-low interactive p-5 rounded-xl border-l-4">
+            <div class="card-header flex justify-between items-start mb-2">
+                <span class="o-card-number label-large text-tertiary">#000</span>
+                <span class="o-card-status label-small badge-pill font-bold tracking-widest text-[10px]">PENDIENTE</span>
             </div>
-            <h3 class="o-card-client title-medium">—</h3>
-            <div class="card-footer">
-                <span class="o-card-total title-small">L 0.00</span>
+            <h3 class="o-card-client headline-small text-on-surface font-headline">—</h3>
+            <div class="card-footer flex justify-between items-end mt-4">
+                <span class="o-card-total title-medium text-primary font-black">L 0.00</span>
                 <div class="media-mini">
-                    <img class="order-card-img hidden" src="" alt="Recibo">
-                    <span class="material-symbols-outlined mini-icon">payments</span>
+                    <img class="order-card-img hidden w-full h-full object-cover rounded" src="" alt="Recibo">
+                    <span class="material-symbols-outlined mini-icon text-outline text-lg">payments</span>
                 </div>
             </div>
         </div>
@@ -214,12 +227,12 @@
 
     <!-- Snackbar / Confirm Dialóg -->
     <div id="snackbar-action" class="modal-overlay hidden">
-        <div class="modal-surface shadow-elevation-5">
+        <div class="modal-surface shadow-elevation-5 p-6 rounded-[28px]">
             <div class="modal-content">
-                <h3 id="snackbar-title" class="headline-small">Confirmar</h3>
-                <p id="snackbar-message" class="body-medium">¿Estás seguro?</p>
+                <h3 id="snackbar-title" class="headline-small fraunces">Confirmar</h3>
+                <p id="snackbar-message" class="body-medium mt-4">¿Estás seguro?</p>
             </div>
-            <div class="modal-actions">
+            <div class="modal-actions mt-8 flex justify-end gap-3">
                 <button id="snackbar-cancel" class="btn-text">Cancelar</button>
                 <button id="snackbar-confirm" class="btn-filled">Confirmar</button>
             </div>
