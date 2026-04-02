@@ -1,688 +1,366 @@
 /* ============================================================
    ADMIN — PEDIDOS | CAFÉ CORTERO
+   STITCH LOGIC (MAESTRO-DETALLE)
 ============================================================ */
 
-console.log("🛠️ admin-pedidos.js — INIT");
+console.log("🛠️ admin_pedidos.js — INIT STITCH");
 
 (() => {
-  const sb = window.supabaseClient;
-  if (!sb) throw new Error("❌ Supabase no inicializado");
+    const sb = window.supabaseClient;
+    if (!sb) throw new Error("❌ Supabase no inicializado");
 
-  const EMPTY_BASE = window.location.origin + "/imagenes/empty/";
-  let orders = [];
-  let filtered = [];
-  let activeIndex = 0;
-  let currentStatus = "pending";
-  let search = "";
-  let pendingAction = null;
-  let userSelected = false;
-  let selectedOrder = null; // ✅ Guardar objeto actual
+    let orders = [];
+    let filtered = [];
+    let selectedOrder = null;
+    let currentStatus = "pending";
+    let searchFilter = "";
 
-  /* =========================
-     STATUS MAP
-  ========================= */
-  const STATUS_GROUPS = {
-    pending: ["pending"],
-    processing: ["processing"],
-    shipped: ["shipped"],
-    delivered: ["delivered"],
-    cancelled: ["cancelled"]
-  };
+    // CONFIG DE ESTADOS (Sync con DB y UI)
+    const STATUS_MAP = {
+        'pending': { label: 'PENDIENTE', color: '#FF9800', icon: 'inventory_2' },
+        'preparing': { label: 'PREPARANDO', color: '#2196F3', icon: 'mop' },
+        'shipped': { label: 'EN CAMINO', color: '#9C27B0', icon: 'local_shipping' },
+        'delivered': { label: 'ENTREGADO', color: '#4CAF50', icon: 'verified' },
+        'cancelled': { label: 'ANULADO', color: '#f44336', icon: 'cancel' }
+    };
 
-  const STATUS_LABELS = {
-    pending: "Nuevo",
-    processing: "En preparación",
-    shipped: "Enviado",
-    delivered: "Entregado",
-    cancelled: "Cancelado"
-  };
+    /* =========================
+       INIT
+    ========================= */
+    document.addEventListener("DOMContentLoaded", init);
 
-  /* =========================
-     INIT
-  ========================= */
-  document.addEventListener("DOMContentLoaded", init);
+    async function init() {
+        const user = JSON.parse(localStorage.getItem("cortero_user") || "null");
+        if (!user || user.rol !== "admin") return;
 
-  async function init() {
-    const user = JSON.parse(localStorage.getItem("cortero_user") || "null");
-    if (!user || user.rol !== "admin") return;
+        bindGlobalEvents();
+        bindDetailActions();
 
-    bindControls(); // ✅ header:search y header:filter
-    bindDetailButtons(); // ✅ print, contact
-
-    await loadOrdersByStatus(currentStatus);
-    renderCarousel();
-
-    if (filtered.length) {
-      selectOrderByIndex(0);
-    } else {
-      showEmpty();
+        await loadOrders();
     }
-  }
 
-  function bindDetailButtons() {
-      document.getElementById("orders-prev")?.addEventListener("click", () => changePage(-1));
-      document.getElementById("orders-next")?.addEventListener("click", () => changePage(1));
+    /* =========================
+       EVENTS
+    ========================= */
+    function bindGlobalEvents() {
+        // Escuchar eventos del header search/filter (inyectados por layout.js)
+        document.addEventListener("order:filter", async (e) => {
+            currentStatus = e.detail;
+            renderList();
+        });
 
-      // Botón para Guardar Notas
-      document.getElementById("btnSaveNotes")?.addEventListener("click", () => saveAdminNotes());
+        document.addEventListener("order:search", (e) => {
+            searchFilter = e.detail.toLowerCase();
+            renderList();
+        });
 
-      // Botones de acción (Aceptar, Rechazar, etc.)
-      ["Accept", "Reject", "Ship", "Deliver"].forEach(act => {
-          document.getElementById(`btn${act}`)?.addEventListener("click", () => handleStatusAction(act));
-      });
-      
-      document.getElementById("btnPrint")?.addEventListener("click", () => window.print());
-      document.getElementById("btnContactCustomer")?.addEventListener("click", () => {
-        if (!selectedOrder) return;
-        const u = selectedOrder.users || {};
-        const email = u.email || "";
-        if (email) {
-            const subject = `Estado de tu pedido #${String(selectedOrder.order_number).padStart(3, '0')} — Café Cortero`;
-            window.open(`mailto:${email}?subject=${encodeURIComponent(subject)}`);
+        // Paginación (Mock por ahora para el Sidebar)
+        document.getElementById("list-prev")?.addEventListener("click", () => showSnack("info", "Paginación próximamente"));
+        document.getElementById("list-next")?.addEventListener("click", () => showSnack("info", "Paginación próximamente"));
+    }
+
+    function bindDetailActions() {
+        // Guardar Notas
+        document.getElementById("btnSaveNotes")?.addEventListener("click", saveAdminNotes);
+
+        // Imprimir
+        document.getElementById("btnPrint")?.addEventListener("click", () => window.print());
+
+        // Botones de cambio de estado en el footer
+        document.querySelectorAll(".status-btn").forEach(btn => {
+            btn.addEventListener("click", (e) => {
+                const newStatus = e.target.dataset.status;
+                if (selectedOrder && newStatus) {
+                    confirmStatusChange(newStatus);
+                }
+            });
+        });
+    }
+
+    /* =========================
+       LOAD DATA
+    ========================= */
+    async function loadOrders() {
+        const container = document.getElementById("orders-list");
+        if (container) container.innerHTML = '<div class="loading-state">Cargando...</div>';
+
+        try {
+            const { data, error } = await sb
+                .from("orders")
+                .select(`
+                    *,
+                    users ( name, email ),
+                    address:addresses ( * ),
+                    items:order_items ( *, products ( * ) ),
+                    receipt:payment_receipts ( * )
+                `)
+                .order("created_at", { ascending: false });
+
+            if (error) throw error;
+
+            orders = data || [];
+            renderList();
+
+            // Auto-seleccionar el primero si no hay selección
+            if (filtered.length > 0 && !selectedOrder) {
+                selectOrder(filtered[0]);
+            }
+
+        } catch (err) {
+            console.error("Error cargando pedidos:", err);
+            showSnack("error", "Error al cargar pedidos");
+        }
+    }
+
+    /* =========================
+       RENDER LIST (SIDEBAR)
+    ========================= */
+    function renderList() {
+        const container = document.getElementById("orders-list");
+        const countBadge = document.getElementById("orders-count-stitch");
+        const tpl = document.getElementById("tpl-order-card");
+        
+        if (!container || !tpl) return;
+
+        // Filtrar localmente
+        filtered = orders.filter(o => {
+            const matchStatus = currentStatus === "all" || o.status === currentStatus;
+            const matchSearch = !searchFilter || 
+                String(o.order_number).includes(searchFilter) || 
+                (o.users?.name || "").toLowerCase().includes(searchFilter) ||
+                (o.address?.full_name || "").toLowerCase().includes(searchFilter);
+            return matchStatus && matchSearch;
+        });
+
+        if (countBadge) countBadge.textContent = filtered.length;
+
+        container.innerHTML = "";
+
+        if (filtered.length === 0) {
+            container.innerHTML = '<div class="loading-state">No hay pedidos</div>';
+            showNoSelection();
+            return;
+        }
+
+        filtered.forEach(o => {
+            const clone = tpl.content.cloneNode(true);
+            const card = clone.querySelector(".order-card-item-stitch");
+            
+            card.querySelector(".card-order-number").textContent = `Pedido #${o.order_number}`;
+            card.querySelector(".card-user-name").textContent = o.users?.name || o.address?.full_name || "Cliente";
+            card.querySelector(".card-date").textContent = new Date(o.created_at).toLocaleDateString();
+            card.querySelector(".card-total").textContent = `L ${Number(o.total).toLocaleString('es-HN', { minimumFractionDigits: 2 })}`;
+            
+            const statusLabel = card.querySelector(".card-status-label");
+            const statusConfig = STATUS_MAP[o.status] || STATUS_MAP.pending;
+            statusLabel.textContent = statusConfig.label;
+            statusLabel.style.color = statusConfig.color;
+
+            const dot = card.querySelector(".card-status-dot");
+            dot.style.backgroundColor = statusConfig.color;
+
+            if (selectedOrder && selectedOrder.id === o.id) {
+                card.classList.add("active");
+            }
+
+            card.onclick = () => selectOrder(o);
+            container.appendChild(clone);
+        });
+    }
+
+    /* =========================
+       SELECT & RENDER DETAIL
+    ========================= */
+    function selectOrder(order) {
+        selectedOrder = order;
+        
+        // UI de lista
+        document.querySelectorAll(".order-card-item-stitch").forEach(c => c.classList.remove("active"));
+        renderList(); // Refresh para marcar activo
+
+        // Mostrar panel
+        document.getElementById("order-detail").classList.remove("hidden");
+        document.getElementById("no-selection").classList.add("hidden");
+
+        renderDetail(order);
+    }
+
+    function renderDetail(o) {
+        // Cabecera
+        document.getElementById("order-id-display").textContent = `Pedido #${o.order_number}`;
+        const badge = document.getElementById("order-status-badge");
+        const config = STATUS_MAP[o.status] || STATUS_MAP.pending;
+        badge.textContent = config.label;
+        badge.style.backgroundColor = config.color;
+
+        // Timeline
+        updateTimeline(o.status);
+
+        // Cliente
+        document.getElementById("o-client-name").textContent = o.users?.name || o.address?.full_name || "—";
+        document.getElementById("o-email").textContent = o.users?.email || "—";
+        document.getElementById("o-phone").textContent = o.address?.phone || "—";
+        const addr = o.address;
+        document.getElementById("o-address").textContent = addr ? `${addr.street}, ${addr.city}, ${addr.state}` : "—";
+
+        // Pago
+        document.getElementById("p-method").textContent = (o.payment_method || "No especificado").toUpperCase();
+        document.getElementById("p-date").textContent = new Date(o.created_at).toLocaleString();
+        document.getElementById("p-total").textContent = `L ${Number(o.total).toLocaleString('es-HN', { minimumFractionDigits: 2 })}`;
+
+        // Comprobante
+        const receiptBox = document.getElementById("receipt-container");
+        if (o.receipt && o.receipt[0]) {
+            receiptBox.classList.remove("hidden");
+            document.getElementById("receipt-link").href = o.receipt[0].file_url;
         } else {
-            console.warn("No hay email para contactar");
+            receiptBox.classList.add("hidden");
         }
-    });
-  }
 
-  /* =========================
-     LOAD ORDERS
-  ========================= */
-  async function loadOrdersByStatus(statusKey) {
-    let query = sb
-      .from("orders")
-      .select(`
-        id,
-        user_id,
-        order_number,
-        total,
-        status,
-        created_at,
-        order_notes,
-        users ( name, email ),
-        address:addresses ( country, state, city, street, postal_code, phone, full_name ),
-        items:order_items ( quantity, price, products ( name ) ),
-        receipt:payment_receipts ( file_url )
-      `)
-      .order("created_at", { ascending: false });
-
-    const statuses = STATUS_GROUPS[statusKey];
-    if (statuses) query = query.in("status", statuses);
-
-    const { data, error } = await query;
-    if (error) {
-      console.error("❌ Error cargando pedidos:", error);
-      orders = [];
-      filtered = [];
-      return;
-    }
-
-    orders = data || [];
-    filtered = [...orders];
-  }
-
-  /* =========================
-     GLOBAL SEARCH (HEADER)
-  ========================= */
-  function applyGlobalSearch(query) {
-    if (!query) {
-      filtered = [...orders];
-      return;
-    }
-
-    const q = query.toLowerCase();
-
-    filtered = orders.filter(o => {
-      // Buscar en número de pedido
-      const matchNum = String(o.order_number).includes(q) ||
-        String(o.order_number).padStart(3, "0").includes(q);
-
-      // Buscar en cliente (email o nombre de tabla users)
-      const matchUser = (o.users?.name || "").toLowerCase().includes(q) ||
-        (o.users?.email || "").toLowerCase().includes(q);
-
-      // Buscar en dirección (teléfono, nombre completo, ciudad, etc)
-      const matchAddress = (o.address?.phone || "").includes(q) ||
-        (o.address?.full_name || "").toLowerCase().includes(q) ||
-        (o.address?.city || "").toLowerCase().includes(q) ||
-        (o.address?.street || "").toLowerCase().includes(q);
-
-      // Buscar en productos
-      const matchProducts = o.items?.some(i =>
-        (i.products?.name || "").toLowerCase().includes(q)
-      );
-
-      return matchNum || matchUser || matchAddress || matchProducts;
-    });
-  }
-
-  /* =========================
-     CARRUSEL (AHORA LISTA VERTICAL)
-  ========================= */
-  function renderCarousel() {
-    applyGlobalSearch(search);
-
-    const wrap = document.getElementById("orders-carousel");
-    const tpl = document.getElementById("tpl-order-card");
-    const related = document.querySelector(".admin-related");
-
-    wrap.innerHTML = "";
-
-    if (!filtered.length) {
-      if (related) related.classList.add("hidden");
-      showEmpty();
-      return;
-    }
-
-    if (related) related.classList.remove("hidden");
-
-    filtered.forEach((o, index) => {
-      const node = tpl.content.cloneNode(true);
-      const card = node.querySelector(".order-card-item"); // ✅ Cambiado: .order-card -> .order-card-item
-
-      if (!card) return; // Blindaje
-
-      card.dataset.index = index;
-
-      node.querySelector(".o-card-number").textContent =
-        `#${String(o.order_number).padStart(3, "0")}`;
-
-      node.querySelector(".o-card-total").textContent =
-        `L ${Number(o.total).toLocaleString("es-HN", { minimumFractionDigits: 2 })}`;
-
-      const statusEl = node.querySelector(".o-card-status");
-      const statusLabel = STATUS_LABELS[o.status] || o.status;
-      statusEl.textContent = statusLabel;
-      
-      // Clases dinámicas de Tailwind según estado
-      statusEl.classList.add(`status-badge-${o.status}`);
-
-      node.querySelector(".o-card-client").textContent = o.users?.name || o.address?.full_name || "Cliente";
-
-      const img = node.querySelector(".order-card-img");
-      const miniIcon = node.querySelector(".mini-icon"); // ✅ Selector M3 compatible
-
-      if (o.receipt?.[0]?.file_url) {
-        if (img) {
-            img.src = o.receipt[0].file_url;
-            img.classList.remove("hidden");
-        }
-        if (miniIcon) miniIcon.classList.add("hidden");
-      } else {
-        if (img) img.classList.add("hidden");
-        if (miniIcon) miniIcon.classList.add("hidden");
-      }
-
-      card.onclick = () => {
-        userSelected = true;
-        selectOrderByIndex(index);
-      };
-
-      wrap.appendChild(node);
-    });
-
-    requestAnimationFrame(() => {
-      applySelection();
-    });
-  }
-
-  /* =========================
-     SELECT ORDER
-  ========================= */
-  function selectOrderByIndex(index) {
-    if (!filtered[index]) return;
-
-    activeIndex = index;
-    applySelection();
-
-    const preview = document.getElementById("admin-order-preview");
-    preview.classList.remove("hidden");
-    document.getElementById("admin-empty-state").classList.add("hidden");
-
-    renderPreview(filtered[index]);
-
-    if (userSelected) {
-      userSelected = false;
-    }
-  }
-
-  function explainScrollToPreview() {
-    const preview = document.getElementById("admin-order-preview");
-    requestAnimationFrame(() => {
-      preview.scrollIntoView({ behavior: "smooth", block: "start" });
-    });
-  }
-
-  function applySelection() {
-    document.querySelectorAll(".order-card-item")
-      .forEach(c => c.classList.remove("is-selected"));
-
-    const card = document.querySelector(
-      `.order-card-item[data-index="${activeIndex}"]`
-    );
-    card?.classList.add("is-selected");
-  }
-
-  /* =========================
-     PREVIEW
-  ========================= */
-  function renderPreview(o) {
-    selectedOrder = o; // ✅ Guardamos para persistencia
-    const u = o.users || {};
-    const a = o.address || {};
-
-    document.getElementById("o-number").textContent =
-      `Pedido #${String(o.order_number).padStart(3, "0")}`;
-    
-    // Formato fecha: 12 Octubre, 2023
-    const date = new Date(o.created_at);
-    const day = date.getDate();
-    const month = date.toLocaleString('es-ES', { month: 'long' });
-    const year = date.getFullYear();
-    document.getElementById("o-date").textContent = `Realizado el ${day} de ${month.charAt(0).toUpperCase() + month.slice(1)}, ${year}`;
-
-    document.getElementById("o-client-name").textContent =
-      u.name || a.full_name || "Cliente";
-    document.getElementById("o-phone").textContent = a.phone || "—";
-    document.getElementById("o-email").textContent = u.email || "—";
-
-    const table = document.getElementById("order-items-table");
-    table.innerHTML = "";
-
-    let total = 0;
-    o.items?.forEach(item => {
-      const subtotal = item.quantity * item.price;
-      total += subtotal;
-
-      table.insertAdjacentHTML("beforeend", `
-        <tr>
-          <td>
-            <div class="product-info-cell">
-              <img src="/imagenes/logo.png" class="prod-mini-img" />
-              <div>
-                <p class="prod-name">${item.products?.name}</p>
-                <p class="prod-meta">Precio Unitario: L ${Number(item.price).toLocaleString("es-HN", { minimumFractionDigits: 2 })}</p>
-              </div>
+        // Productos
+        const itemsList = document.getElementById("order-items-list");
+        itemsList.innerHTML = o.items.map(item => `
+            <div class="order-item-row">
+                <img src="${item.products?.image_url || '/imagenes/placeholder-cafe.png'}" class="item-img" alt="Producto">
+                <div class="item-info">
+                    <div class="item-info-top">
+                        <span>${item.products?.name || 'Producto'}</span>
+                        <span>x${item.quantity}</span>
+                    </div>
+                    <div class="item-variant">${item.products?.presentation || ''} | ${item.products?.grind_type || ''}</div>
+                </div>
+                <div class="item-price">L ${(item.price * item.quantity).toLocaleString()}</div>
             </div>
-          </td>
-          <td class="center font-bold">${item.quantity}</td>
-          <td class="right font-medium">L ${Number(item.price).toLocaleString("es-HN", { minimumFractionDigits: 2 })}</td>
-          <td class="right font-bold text-primary">L ${subtotal.toLocaleString("es-HN", { minimumFractionDigits: 2 })}</td>
-        </tr>
-      `);
-    });
+        `).join('');
 
-    document.getElementById("o-total").textContent = `L ${total.toLocaleString("es-HN", { minimumFractionDigits: 2 })}`;
-    document.getElementById("o-address").textContent =
-      [a.street, a.city, a.state, a.country].filter(Boolean).join(", ") || "—";
-    
-    const ref = document.getElementById("o-reference");
-    if(ref) ref.textContent = a.postal_code || "—";
+        // Notas Admin
+        document.getElementById("o-admin-notes").value = o.order_notes || "";
 
-    // Cargar Notas
-    const notesArea = document.getElementById("o-admin-notes");
-    if(notesArea) notesArea.value = o.order_notes || "";
-
-    updateTimeline(o.status);
-    renderMedia(o);
-    renderStatusActions(o);
-  }
-
-  function updateTimeline(status) {
-      const progress = document.getElementById("timeline-progress-bar");
-      const stepsConfig = {
-          "pending": { pct: "0%", active: [".step-pending"] },
-          "confirmed": { pct: "33%", active: [".step-pending", ".step-preparing"] },
-          "preparing": { pct: "33%", active: [".step-pending", ".step-preparing"] },
-          "shipped": { pct: "66%", active: [".step-pending", ".step-preparing", ".step-shipped"] },
-          "delivered": { pct: "100%", active: [".step-pending", ".step-preparing", ".step-shipped", ".step-delivered"] },
-          "cancelled": { pct: "0%", active: [] }
-      };
-
-      const config = stepsConfig[status] || stepsConfig.pending;
-      if(progress) progress.style.width = config.pct;
-
-      // Reset all steps
-      document.querySelectorAll(".status-timeline-container .step").forEach(step => {
-          step.classList.remove("step-active");
-      });
-
-      // Activate steps based on config
-      config.active.forEach(selector => {
-          const step = document.querySelector(".status-timeline-container " + selector);
-          if(step) step.classList.add("step-active");
-      });
-  }
-
-  /* =========================
-     MEDIA
-  ========================= */
-  function renderMedia(o) {
-    const media = document.getElementById("order-media");
-    const cash = document.getElementById("cash-payment");
-    const receipt = document.getElementById("receipt-payment");
-
-    media.classList.remove("hidden");
-    cash.classList.add("hidden");
-    receipt.classList.add("hidden");
-
-    if (o.receipt?.[0]?.file_url) {
-      receipt.classList.remove("hidden");
-      document.getElementById("receipt-img").src = o.receipt[0].file_url;
-    } else {
-      cash.classList.remove("hidden");
-    }
-  }
-
-  /* =========================
-     GUARDAR NOTAS ADMIN
-  ========================= */
-  async function saveAdminNotes() {
-      if (!selectedOrder) return;
-      const notesArea = document.getElementById("o-admin-notes");
-      const btn = document.getElementById("btnSaveNotes");
-      const originalText = btn.innerHTML;
-
-      try {
-          const notes = notesArea.value.trim();
-          btn.disabled = true;
-          btn.innerHTML = `<span class="material-symbols-outlined animate-spin">refresh</span> Guardando...`;
-
-          const { error } = await sb
-              .from("orders")
-              .update({ order_notes: notes })
-              .eq("id", selectedOrder.id);
-
-          if (error) throw error;
-
-          // Feedback visual
-          btn.classList.add("bg-success-container", "text-on-success-container");
-          btn.innerHTML = `<span class="material-symbols-outlined">check_circle</span> Guardado`;
-          
-          setTimeout(() => {
-              btn.disabled = false;
-              btn.innerHTML = originalText;
-              btn.classList.remove("bg-success-container", "text-on-success-container");
-          }, 2000);
-
-          // Actualizar objeto local
-          selectedOrder.order_notes = notes;
-      } catch (err) {
-          console.error("Error guardando notas:", err);
-          alert("Error al guardar las notas");
-          btn.disabled = false;
-          btn.innerHTML = originalText;
-      }
-  }
-
-  /* =========================
-     CABECERA & ACCIONES
-  ========================= */
-  function renderStatusActions(o) {
-    const btnAccept = document.getElementById("btnAccept");
-    const btnReject = document.getElementById("btnReject");
-    const btnShip = document.getElementById("btnShip");
-    const btnDeliver = document.getElementById("btnDeliver");
-
-    [btnAccept, btnReject, btnShip, btnDeliver]
-      .forEach(b => b.classList.add("hidden"));
-
-    if (o.status === "pending") {
-      btnAccept.classList.remove("hidden");
-      btnReject.classList.remove("hidden");
-
-      btnAccept.onclick = () =>
-        openSnackbar(
-          "Pasar a preparación",
-          "¿Deseas marcar este pedido como En preparación?",
-          () => updateStatus(o.id, "processing")
-        );
-
-      btnReject.onclick = () =>
-        openSnackbar(
-          "Cancelar pedido",
-          "Esta acción no se puede deshacer",
-          () => updateStatus(o.id, "cancelled")
-        );
+        // Footer Buttons active state
+        document.querySelectorAll(".status-btn").forEach(btn => {
+            btn.classList.toggle("active", btn.dataset.status === o.status);
+        });
     }
 
-    if (o.status === "processing") {
-      btnShip.classList.remove("hidden");
-      btnShip.onclick = () =>
-        openSnackbar(
-          "Marcar como enviado",
-          "Confirma el envío del pedido",
-          () => updateStatus(o.id, "shipped")
-        );
+    function updateTimeline(status) {
+        const bar = document.getElementById("timeline-progress-bar");
+        const steps = document.querySelectorAll(".timeline-steps-stitch .step");
+        
+        const levels = { 'pending': 0, 'preparing': 1, 'shipped': 2, 'delivered': 3, 'cancelled': -1 };
+        const level = levels[status] ?? 0;
+
+        if (level === -1) {
+            bar.style.width = "0%";
+            steps.forEach(s => s.classList.remove("active"));
+        } else {
+            bar.style.width = `${(level / 3) * 100}%`;
+            steps.forEach((s, idx) => {
+                s.classList.toggle("active", idx <= level);
+            });
+        }
     }
 
-    if (o.status === "shipped") {
-      btnDeliver.classList.remove("hidden");
-      btnDeliver.onclick = () =>
-        openSnackbar(
-          "Marcar como entregado",
-          "Confirma entrega al cliente",
-          () => updateStatus(o.id, "delivered")
-        );
-    }
-  }
+    /* =========================
+       ACTIONS (DB)
+    ========================= */
+    async function saveAdminNotes() {
+        if (!selectedOrder) return;
+        const notes = document.getElementById("o-admin-notes").value;
+        const btn = document.getElementById("btnSaveNotes");
+        const original = btn.innerHTML;
 
-  /* =========================
-     UPDATE STATUS
-  ========================= */
-  async function updateStatus(orderId, newStatus) {
-    // 1. Obtener datos del pedido para la notificación
-    const orderToUpdate = orders.find(o => o.id === orderId);
-    if (!orderToUpdate) return;
+        try {
+            btn.disabled = true;
+            btn.textContent = "Guardando...";
 
-    // 2. Actualizar estado
-    const { error } = await sb
-      .from("orders")
-      .update({ status: newStatus })
-      .eq("id", orderId);
+            const { error } = await sb
+                .from("orders")
+                .update({ order_notes: notes })
+                .eq("id", selectedOrder.id);
 
-    if (error) {
-      console.error("❌ Error actualizando estado:", error);
-      alert("No se pudo actualizar el estado. Revisa la consola.");
-      return;
-    }
+            if (error) throw error;
 
-    // 3. Enviar notificación al usuario (si corresponde)
-    if (orderToUpdate.users?.id || orderToUpdate.user_id) {
-      const userId = orderToUpdate.users?.id || orderToUpdate.user_id; // Ajuste según tu estructura (join vs raw)
-      // Nota: En tu select original tienes `users ( name, email )`, pero no el ID anidado si no lo pides explícitamente.
-      // Sin embargo, `user_id` suele estar en la tabla `orders` base.
-      // Vamos a confiar en `orderToUpdate.user_id` si está disponible, o modificar el select.
+            showSnack("success", "Nota interna guardada");
+            selectedOrder.order_notes = notes;
 
-      // Revisando `loadOrdersByStatus`, NO estamos seleccionando user_id explícitamente,
-      // pero Supabase a veces lo devuelve si es columna.
-      // Para estar seguros, usaremos el `user_id` de la orden (columna FK).
-      // Si `orders` no tiene `user_id` cargado, fallará.
-      // VOY A MODIFICAR `loadOrdersByStatus` TAMBIÉN para asegurar `user_id`.
-
-      await sendNotification(userId, newStatus, orderToUpdate);
+        } catch (err) {
+            showSnack("error", "Error al guardar nota");
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = original;
+        }
     }
 
-    // 4. Refrescar UI
-    await loadOrdersByStatus(currentStatus);
-    renderCarousel();
-
-    if (filtered.length) {
-      activeIndex = 0;
-      selectOrderByIndex(0);
-    } else {
-      showEmpty();
-    }
-  }
-
-  /* =========================
-     NOTIFICACIONES
-  ========================= */
-  async function sendNotification(userId, status, order) {
-    if (!userId) return;
-
-    const config = {
-      processing: {
-        title: "Pedido en preparación ☕",
-        body: `¡Tu pedido #${order.order_number} se está preparando! Pronto estará listo.`
-      },
-      shipped: {
-        title: "Pedido en camino 🚚",
-        body: `¡Tu pedido #${order.order_number} ha sido enviado! Espéralo pronto.`
-      },
-      delivered: {
-        title: "Pedido entregado ✅",
-        body: `¡Tu pedido #${order.order_number} ha sido entregado! Gracias por tu compra.`
-      },
-      cancelled: {
-        title: "Pedido cancelado ❌",
-        body: `Tu pedido #${order.order_number} ha sido cancelado.`
-      }
-    };
-
-    const msg = config[status];
-    if (!msg) return;
-
-    console.log(`🔔 Enviando notificación a ${userId} (${status})`);
-
-    const { error } = await sb.from("notifications").insert({
-      user_id: userId,
-      title: msg.title,
-      message: msg.body, // Corregido: 'body' -> 'message' según schema
-      type: "order_status",
-      is_read: false,
-      metadata: {
-        order_id: order.id,
-        order_number: order.order_number,
-        new_status: status
-      }
-    });
-
-    if (error) {
-      console.error("❌ Error enviando notificación:", error);
-    } else {
-      console.log("✅ Notificación enviada correctamente");
-    }
-  }
-
-  /* =========================
-     SNACKBAR (FIX DEFINITIVO)
-  ========================= */
-  function openSnackbar(title, message, onConfirm) {
-    const box = document.getElementById("snackbar-action");
-    const btnConfirm = document.getElementById("snackbar-confirm");
-    const btnCancel = document.getElementById("snackbar-cancel");
-
-    document.getElementById("snackbar-title").textContent = title;
-    document.getElementById("snackbar-message").textContent = message;
-
-    // Limpia handlers anteriores (CRÍTICO)
-    btnConfirm.onclick = null;
-    btnCancel.onclick = null;
-
-    pendingAction = onConfirm;
-
-    btnConfirm.onclick = async () => {
-      box.classList.add("hidden");
-
-      const action = pendingAction;
-      pendingAction = null;
-
-      if (typeof action === "function") {
-        await action();
-      }
-    };
-
-    btnCancel.onclick = () => {
-      pendingAction = null;
-      box.classList.add("hidden");
-    };
-
-    box.classList.remove("hidden");
-  }
-
-  /* =========================
-     CONTROLS (GLOBAL HEADER) — FIX REAL
-  ========================= */
-  function bindControls() {
-    /* ---------- FILTRO POR ESTADO ---------- */
-    document.addEventListener("header:filter", async e => {
-      currentStatus = e.detail;
-      userSelected = false;
-
-      await loadOrdersByStatus(currentStatus);
-      renderCarousel();
-
-      if (filtered.length) {
-        activeIndex = 0;
-        selectOrderByIndex(0);
-      } else {
-        showEmpty();
-      }
-    });
-
-    /* ---------- BUSCADOR GLOBAL ---------- */
-    document.addEventListener("header:search", e => {
-      search = (e.detail || "").trim();
-      userSelected = false;
-
-      renderCarousel();
-
-      if (filtered.length) {
-        activeIndex = 0;
-        selectOrderByIndex(0);
-      } else {
-        showEmpty();
-      }
-    });
-  }
-
-  /* =========================
-     PAGINATION (MOCK FOR NOW)
-  ========================= */
-  function updatePaginationInfo() {
-      const info = document.getElementById("page-info");
-      if (info) {
-          info.textContent = `Viendo ${filtered.length} de ${orders.length}`;
-      }
-  }
-
-  /* =========================
-     EMPTY
-  ========================= */
-  function showEmpty() {
-    document.getElementById("admin-order-preview").classList.add("hidden");
-    document.querySelector(".admin-related").classList.add("hidden");
-
-    const empty = document.getElementById("admin-empty-state");
-    if (!empty) return;
-
-    const title = empty.querySelector(".empty-title");
-    const text = empty.querySelector(".empty-text");
-    const img = empty.querySelector(".empty-illustration");
-
-    const config = {
-      new: ["Todo está al día por aquí", "No hay nuevos pedidos pendientes de revisión.", "pending.svg"],
-      processing: ["Nada en preparación", "No tienes pedidos que se estén preparando ahora mismo.", "processing.svg"],
-      shipped: ["Sin envíos activos", "Todos los pedidos enviados han sido gestionados.", "shipped.svg"],
-      delivered: ["Historial vacío", "Aquí aparecerán los pedidos que ya han sido entregados.", "delivered.svg"],
-      cancelled: ["Sin cancelaciones", "No hay pedidos cancelados en esta sección.", "cancelled.svg"],
-      search: ["No hay resultados", `No encontramos nada para "${search}". Prueba con otro término.`, "pending.svg"]
-    };
-
-    // Si hay búsqueda activa y no hay resultados, priorizamos mensaje de búsqueda
-    const key = (search && filtered.length === 0) ? "search" : currentStatus;
-    const [t, d, imgName] = config[key] || config.new;
-
-    title.textContent = t;
-    text.textContent = d;
-
-    if (img) {
-      img.src = EMPTY_BASE + imgName;
-      img.alt = t;
-      img.classList.remove("hidden");
+    function confirmStatusChange(newStatus) {
+        const text = `¿Cambiar pedido a ${(STATUS_MAP[newStatus]?.label || newStatus).toLowerCase()}?`;
+        if (confirm(text)) {
+            performStatusUpdate(newStatus);
+        }
     }
 
-    empty.classList.remove("hidden");
-  }
+    async function performStatusUpdate(newStatus) {
+        try {
+            const { error } = await sb
+                .from("orders")
+                .update({ status: newStatus })
+                .eq("id", selectedOrder.id);
+
+            if (error) throw error;
+
+            showSnack("success", "Estado actualizado");
+            
+            // Enviar notificación (Async)
+            sendPushNotification(selectedOrder.user_id, newStatus, selectedOrder.order_number);
+
+            // Recargar datos
+            await loadOrders();
+            const updated = orders.find(x => x.id === selectedOrder.id);
+            if (updated) selectOrder(updated);
+
+        } catch (err) {
+            showSnack("error", "Error al actualizar estado");
+        }
+    }
+
+    async function sendPushNotification(userId, status, orderNum) {
+        if (!userId) return;
+        const msgs = {
+            preparing: "Estamos preparando tu pedido #",
+            shipped: "Tu pedido está en camino #",
+            delivered: "¡Pedido entregado! Gracias #",
+            cancelled: "Tu pedido ha sido cancelado #"
+        };
+
+        const msg = msgs[status];
+        if (!msg) return;
+
+        await sb.from("notifications").insert({
+            user_id: userId,
+            title: "Actualización de Pedido",
+            message: `${msg}${orderNum}`,
+            type: "status",
+            is_read: false
+        });
+    }
+
+    /* =========================
+       UTILS
+    ========================= */
+    function showNoSelection() {
+        document.getElementById("order-detail").classList.add("hidden");
+        document.getElementById("no-selection").classList.remove("hidden");
+    }
+
+    function showSnack(type, text) {
+        const snack = document.getElementById("admin-snackbar");
+        const icon = document.getElementById("snack-icon");
+        const label = document.getElementById("snack-text");
+        
+        label.textContent = text;
+        icon.textContent = type === "success" ? "check_circle" : type === "error" ? "error" : "info";
+        
+        snack.classList.add("active");
+        setTimeout(() => snack.classList.remove("active"), 3000);
+    }
+
 })();

@@ -6,237 +6,228 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Gestión de Pedidos | Café Cortero</title>
 
-    <!-- Google Fonts -->
+    <!-- Material Symbols & Fonts - REFERENCE SYNC -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;700;800&family=Manrope:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;700;900&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;900&family=Roboto:wght@400;500;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <link rel="icon" type="image/png" href="/imagenes/logo.png">
 
-    <!-- CSS Propios (Material 3 Expressive) -->
+    <!-- Estilos Core -->
+    <link rel="stylesheet" href="/css/core/tipografia.css">
+    <link rel="stylesheet" href="/css/ui/header.css">
+    <link rel="stylesheet" href="/css/ui/header.search.css">
     <link rel="stylesheet" href="/css/admin/admin-pedidos.css">
 </head>
 
-<body class="m3-expressive-layout admin-pedidos-page font-body">
+<body class="page-admin-orders">
+    <div id="header-placeholder"></div>
 
-    <!-- Header Holder (Inyectado por layout.js) -->
-    <div id="app-header"></div>
-
-    <!-- Page Content -->
-    <div class="admin-main-wrapper">
+    <main class="admin-orders-container fade-in">
         
-        <!-- Header de Sección -->
-        <header class="section-header">
-            <h2 class="headline-large fraunces">Gestión de Pedidos</h2>
+        <!-- Header Institucional Stitch -->
+        <header class="page-title-section-stitch">
+            <div class="title-group">
+                <h1 class="page-title">Gestión de Pedidos</h1>
+                <p class="page-subtitle">Monitorea pedidos en tiempo real, actualiza estados y gestiona la logística.</p>
+            </div>
         </header>
 
-        <!-- Layout de dos columnas (Maestro-Detalle) -->
-        <main class="maestro-detalle-container">
+        <!-- Layout de Panel Dual Stitch -->
+        <div class="orders-layout-stitch" id="main-layout-stitch">
 
-            <!-- Columna Izquierda: Listado de Pedidos -->
-            <aside class="sidebar-list">
-                <div id="orders-carousel" class="orders-scroll-list custom-scroll">
-                    <div class="loading-status">Cargando pedidos...</div>
+            <!-- SECCIÓN IZQUIERDA: LISTADO -->
+            <aside class="orders-list-section-stitch" id="mobile-list-view">
+                <header class="list-header-stitch">
+                    <h2 class="section-title">Pedidos</h2>
+                    <div id="orders-count-stitch" class="count-badge-stitch">0</div>
+                </header>
+
+                <div id="orders-list" class="orders-list-stitch custom-scroll">
+                    <div class="loading-state">Cargando pedidos...</div>
                 </div>
 
-                <!-- Paginación / Info -->
-                <nav class="pagination-bar surface-low">
-                    <button id="orders-prev" class="icon-button" aria-label="Anterior">
+                <!-- Paginación Stitch -->
+                <footer class="list-pagination-footer-stitch">
+                    <button class="page-btn-icon" id="list-prev">
                         <span class="material-symbols-outlined">chevron_left</span>
                     </button>
-                    <span id="page-info" class="label-medium">Página 1 de 1</span>
-                    <button id="orders-next" class="icon-button" aria-label="Siguiente">
+                    <div id="list-page-numbers" class="page-numbers-stitch"></div>
+                    <button class="page-btn-icon" id="list-next">
                         <span class="material-symbols-outlined">chevron_right</span>
                     </button>
-                </nav>
+                </footer>
             </aside>
 
-            <!-- Panel Derecho: Detalle del Pedido -->
-            <section id="admin-order-preview" class="detail-panel shadow-elevation-2 hidden">
+            <!-- SECCIÓN DERECHA: DETALLE -->
+            <section id="order-detail" class="order-detail-section-stitch hidden">
                 
-                <!-- Cabecera Detalle -->
-                <div class="detail-header border-b">
-                    <div class="order-id-block">
-                        <h4 id="o-number" class="headline-medium fraunces">Pedido #000</h4>
-                        <p class="body-medium text-secondary">
-                            <span class="material-symbols-outlined">calendar_today</span>
-                            <span id="o-date">—</span>
-                        </p>
+                <!-- Cabecera de Pedido Stitch -->
+                <header class="detail-header-stitch-alt">
+                    <div class="header-info-stitch">
+                        <h2 id="order-id-display" class="order-number-stitch">Pedido #0000</h2>
+                        <span id="order-status-badge" class="status-badge-stitch">PENDIENTE</span>
                     </div>
-                    <div class="detail-actions">
-                        <button id="btnPrint" class="btn-tonal">
+                    <div class="header-actions-stitch">
+                        <button class="btn-stitch-secondary" id="btnPrint">
                             <span class="material-symbols-outlined">print</span>
-                            Imprimir Factura
+                            Factura
                         </button>
-                        <button id="btnContactCustomer" class="btn-primary">
+                        <button class="btn-stitch-secondary" id="btnContact">
                             <span class="material-symbols-outlined">mail</span>
-                            Contactar Cliente
+                            Contactar
                         </button>
                     </div>
-                </div>
+                </header>
 
-                <!-- Cuerpo Detalle (Scrollable) -->
-                <div class="detail-body custom-scroll p-8">
+                <div class="detail-scroll-area custom-scroll">
                     
-                    <!-- Timeline de Estado -->
-                    <div class="status-timeline-container">
-                        <div class="timeline-track">
-                            <div id="timeline-progress-bar" class="timeline-fill"></div>
+                    <!-- Línea de Tiempo de Estado -->
+                    <div class="timeline-container-stitch">
+                        <div class="timeline-progress-stitch">
+                            <div id="timeline-progress-bar" class="progress-fill"></div>
                         </div>
-                        <div class="timeline-steps">
-                            <div class="step step-pending" data-status="pending">
-                                <div class="step-icon"><span class="material-symbols-outlined">check</span></div>
+                        <div class="timeline-steps-stitch">
+                            <div class="step step-pending active">
+                                <div class="step-icon"><span class="material-symbols-outlined">inventory_2</span></div>
                                 <span class="step-label">Creado</span>
                             </div>
-                            <div class="step step-preparing" data-status="preparing">
-                                <div class="step-icon"><span class="material-symbols-outlined">inventory_2</span></div>
+                            <div class="step step-preparing">
+                                <div class="step-icon"><span class="material-symbols-outlined">mop</span></div>
                                 <span class="step-label">Preparando</span>
                             </div>
-                            <div class="step step-shipped" data-status="shipped">
+                            <div class="step step-shipped">
                                 <div class="step-icon"><span class="material-symbols-outlined">local_shipping</span></div>
-                                <span class="step-label">Enviado</span>
+                                <span class="step-label">En Camino</span>
                             </div>
-                            <div class="step step-delivered" data-status="delivered">
-                                <div class="step-icon"><span class="material-symbols-outlined">done_all</span></div>
+                            <div class="step step-delivered">
+                                <div class="step-icon"><span class="material-symbols-outlined">verified</span></div>
                                 <span class="step-label">Entregado</span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="info-grid mt-12">
-                        <!-- Card Cliente -->
-                        <div class="info-card surface-low">
-                            <h5 class="title-large fraunces text-on-surface">
-                                <span class="material-symbols-outlined text-primary">person</span>
-                                Información del Cliente
-                            </h5>
-                            <div class="property-list">
-                                <div class="prop-item"><span class="label">Nombre</span> <span id="o-client-name" class="value">—</span></div>
-                                <div class="prop-item"><span class="label">Email</span> <span id="o-email" class="value">—</span></div>
-                                <div class="prop-item"><span class="label">Teléfono</span> <span id="o-phone" class="value">—</span></div>
-                                <div class="prop-item vertical"><span class="label">Dirección</span> <span id="o-address" class="value">—</span></div>
-                                <div class="prop-item"><span class="label">Referencia</span> <span id="o-reference" class="value">—</span></div>
+                    <!-- Grid de Información Maestro-Detalle -->
+                    <div class="detail-grid-stitch">
+                        
+                        <!-- Columna Info Cliente -->
+                        <div class="info-card-stitch">
+                            <h3 class="card-title-stitch"><span class="material-symbols-outlined">person</span> Cliente</h3>
+                            <div class="info-group-stitch">
+                                <div class="info-row">
+                                    <label>Nombre:</label>
+                                    <p id="o-client-name">—</p>
+                                </div>
+                                <div class="info-row">
+                                    <label>Email:</label>
+                                    <p id="o-email">—</p>
+                                </div>
+                                <div class="info-row">
+                                    <label>Teléfono:</label>
+                                    <p id="o-phone">—</p>
+                                </div>
+                                <div class="info-row full">
+                                    <label>Dirección de Envío:</label>
+                                    <p id="o-address">—</p>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Card Pago -->
-                        <div class="info-card surface-low payment-summary">
-                            <h5 class="title-large fraunces text-on-surface">
-                                <span class="material-symbols-outlined text-primary">payments</span>
-                                Resumen de Pago
-                            </h5>
-                            <div class="total-block">
-                                <span class="label-large">TOTAL A PAGAR</span>
-                                <span id="o-total" class="total-value headline-small">L 0.00</span>
-                            </div>
-                            <div id="payment-status-badge" class="badge-status-container">
-                                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">verified_user</span>
-                                <span id="payment-method-text" class="font-bold uppercase tracking-widest text-[10px]">Pago Verificado</span>
+                        <!-- Columna Detalle Pago -->
+                        <div class="info-card-stitch">
+                            <h3 class="card-title-stitch"><span class="material-symbols-outlined">payments</span> Pago y Total</h3>
+                            <div class="info-group-stitch">
+                                <div class="info-row">
+                                    <label>Método:</label>
+                                    <p id="p-method">—</p>
+                                </div>
+                                <div class="info-row">
+                                    <label>Fecha:</label>
+                                    <p id="p-date">—</p>
+                                </div>
+                                <div class="total-row-stitch">
+                                    <label>TOTAL:</label>
+                                    <strong id="p-total" class="total-value-stitch">L 0.00</strong>
+                                </div>
+                                <div id="receipt-container" class="receipt-preview-stitch hidden">
+                                    <label>Comprobante:</label>
+                                    <a id="receipt-link" href="#" target="_blank" class="receipt-btn">Ver Imagen <span class="material-symbols-outlined">open_in_new</span></a>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Tabla Productos -->
-                    <div class="products-section mt-12">
-                        <h5 class="title-large fraunces text-on-surface"><span class="material-symbols-outlined text-primary">shopping_basket</span> Productos del Pedido</h5>
-                        <div class="table-container mt-6">
-                            <table class="m3-table w-full">
-                                <thead>
-                                    <tr>
-                                        <th>Producto</th>
-                                        <th class="center">Cant.</th>
-                                        <th class="right">Precio</th>
-                                        <th class="right">Subtotal</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="order-items-table">
-                                    <!-- Dinámico -->
-                                </tbody>
-                            </table>
+                    <!-- Resumen de Productos Stitch -->
+                    <div class="products-section-stitch">
+                        <h3 class="card-title-stitch"><span class="material-symbols-outlined">shopping_basket</span> Artículos</h3>
+                        <div id="order-items-list" class="items-mini-list">
+                            <!-- Items dinámicos -->
                         </div>
                     </div>
 
-                    <!-- Comprobante -->
-                    <div id="order-media" class="media-section mt-12">
-                        <h5 class="title-large fraunces text-on-surface"><span class="material-symbols-outlined text-primary">image</span> Comprobante de Pago</h5>
-                        <div id="receipt-payment" class="receipt-container mt-4 hidden">
-                            <img id="receipt-img" src="" alt="Comprobante" class="cursor-zoom-in rounded-xl border">
-                        </div>
-                        <div id="cash-payment" class="cash-container mt-4 hidden">
-                            <img src="/imagenes/pago_en_mano.svg" alt="Efectivo" class="cash-icon opacity-50">
-                            <p class="body-medium">Pago contra entrega en efectivo</p>
-                        </div>
-                    </div>
-
-                    <!-- Acciones de Gestión -->
-                    <div class="management-actions surface-tonal mt-12">
-                        <h5 class="title-large fraunces text-on-surface"><span class="material-symbols-outlined">settings</span> Gestión de Estado</h5>
-                        <div class="actions-buttons-row mt-6">
-                            <button id="btnAccept" class="btn-action hidden" data-variant="accept"><span class="material-symbols-outlined">hourglass_top</span> Preparar</button>
-                            <button id="btnReject" class="btn-action hidden" data-variant="reject"><span class="material-symbols-outlined">cancel</span> Cancelar</button>
-                            <button id="btnShip" class="btn-action hidden" data-variant="ship"><span class="material-symbols-outlined">local_shipping</span> Enviar</button>
-                            <button id="btnDeliver" class="btn-action hidden" data-variant="deliver"><span class="material-symbols-outlined">done_all</span> Entregar</button>
-                        </div>
-                    </div>
-
-                    <!-- Notas Internas -->
-                    <div class="notes-section surface-tonal mt-12">
-                        <h5 class="title-large fraunces text-on-surface"><span class="material-symbols-outlined">description</span> Notas del Administrador</h5>
-                        <div class="notes-container mt-6">
-                            <textarea id="o-admin-notes" class="m3-textarea" placeholder="Escribe un comentario privado sobre este pedido..."></textarea>
-                            <div class="notes-actions mt-4 text-right">
-                                <button id="btnSaveNotes" class="btn-tonal">
-                                    <span class="material-symbols-outlined">save</span>
-                                    Guardar Nota
-                                </button>
-                            </div>
-                        </div>
+                    <!-- Notas del Administrador (Funcionalidad Preservada) -->
+                    <div class="admin-notes-section-stitch">
+                        <h3 class="card-title-stitch"><span class="material-symbols-outlined">edit_note</span> Notas del Administrador</h3>
+                        <p class="section-desc">Comentarios privados para el equipo de logística.</p>
+                        <textarea id="o-admin-notes" class="stitch-textarea" placeholder="Escribe observaciones internas aquí..."></textarea>
+                        <button id="btnSaveNotes" class="btn-save-stitch">
+                            <span class="material-symbols-outlined">save</span>
+                            Guardar Nota Interna
+                        </button>
                     </div>
 
                 </div>
+
+                <!-- Footer de Acciones de Estado Stitch -->
+                <footer class="detail-actions-footer-stitch">
+                    <div class="action-label-stitch">Actualizar Estado:</div>
+                    <div class="status-actions-grid">
+                        <button class="status-btn pending" data-status="pending">Pendiente</button>
+                        <button class="status-btn preparing" data-status="preparing">Preparar</button>
+                        <button class="status-btn shipped" data-status="shipped">Enviar</button>
+                        <button class="status-btn delivered" data-status="delivered">Entregar</button>
+                        <button class="status-btn cancelled" data-status="cancelled">Anular</button>
+                    </div>
+                </footer>
+
             </section>
 
-            <!-- Estado Vacío -->
-            <section id="admin-empty-state" class="empty-layout">
-                <div class="empty-content">
-                    <h2 class="headline-medium fraunces">Selecciona un pedido</h2>
-                    <p class="body-large empty-text">Elige un pedido de la lista para ver su información y gestionar su estado.</p>
+            <!-- ESTADO DE SELECCIÓN VACÍO STITCH -->
+            <section id="no-selection" class="no-selection-section-stitch">
+                <div class="empty-state-stitch">
+                    <span class="material-symbols-outlined large-icon">order_approve</span>
+                    <h3>Selecciona un pedido</h3>
+                    <p>Elige un registro del listado para gestionar su logística, pagos y entregas.</p>
                 </div>
             </section>
 
-        </main>
-    </div>
+        </div>
+    </main>
 
-    <!-- Template Tarjeta -->
+    <!-- Template Tarjeta Pedido Stitch -->
     <template id="tpl-order-card">
-        <div class="order-card-item surface-low interactive p-5 rounded-xl border-l-4">
-            <div class="card-header flex justify-between items-start mb-2">
-                <span class="o-card-number label-large text-tertiary">#000</span>
-                <span class="o-card-status label-small badge-pill font-bold tracking-widest text-[10px]">PENDIENTE</span>
-            </div>
-            <h3 class="o-card-client headline-small text-on-surface font-headline">—</h3>
-            <div class="card-footer flex justify-between items-end mt-4">
-                <span class="o-card-total title-medium text-primary font-black">L 0.00</span>
-                <div class="media-mini">
-                    <img class="order-card-img hidden w-full h-full object-cover rounded" src="" alt="Recibo">
-                    <span class="material-symbols-outlined mini-icon text-outline text-lg">payments</span>
+        <div class="order-card-item-stitch">
+            <div class="card-status-dot"></div>
+            <div class="card-info-stitch">
+                <div class="card-top-row">
+                    <h4 class="card-order-number">—</h4>
+                    <span class="card-date">—</span>
+                </div>
+                <p class="card-user-name title-medium">—</p>
+                <div class="card-bottom-row">
+                    <span class="card-total">—</span>
+                    <span class="card-status-label">—</span>
                 </div>
             </div>
+            <span class="material-symbols-outlined arrow-stitch">chevron_right</span>
         </div>
     </template>
 
-    <!-- Snackbar / Confirm Dialóg -->
-    <div id="snackbar-action" class="modal-overlay hidden">
-        <div class="modal-surface shadow-elevation-5 p-6 rounded-[28px]">
-            <div class="modal-content">
-                <h3 id="snackbar-title" class="headline-small fraunces">Confirmar</h3>
-                <p id="snackbar-message" class="body-medium mt-4">¿Estás seguro?</p>
-            </div>
-            <div class="modal-actions mt-8 flex justify-end gap-3">
-                <button id="snackbar-cancel" class="btn-text">Cancelar</button>
-                <button id="snackbar-confirm" class="btn-filled">Confirmar</button>
-            </div>
-        </div>
+    <!-- Snackbar/Toast Stitch -->
+    <div id="admin-snackbar" class="snackbar">
+        <span class="material-symbols-outlined" id="snack-icon">info</span>
+        <span id="snack-text">Evento completado</span>
     </div>
 
     <!-- Scripts -->
@@ -247,32 +238,37 @@
     <script>window.PAGE_MODE = "admin-pedidos";</script>
     <script src="/js/ui/layout.js"></script>
     <script type="module" src="/js/ui/header.js"></script>
-
-    <!-- Buscador global -->
+    
     <script type="module">
         import { renderHeaderSearch } from "/js/ui/header.search.js";
         document.addEventListener("header:ready", () => {
             const slot = document.getElementById("header-middle-slot");
             if (slot) {
-                slot.innerHTML = renderHeaderSearch({ showFilter: true, showAdd: false, placeholder: "Buscar pedido..." });
-                
-                const DEFAULT_STATUS = "pending";
-                document.dispatchEvent(new CustomEvent("header:filter", { detail: DEFAULT_STATUS }));
-                
-                document.getElementById("header-search-input")?.addEventListener("input", (e) => {
-                    document.dispatchEvent(new CustomEvent("header:search", { detail: e.target.value.trim() }));
-                });
+                slot.innerHTML = renderHeaderSearch({ showFilter: true, showAdd: false, placeholder: "Buscar # Pedido o Cliente..." });
                 const filter = document.getElementById("header-status-filter");
                 if (filter) {
-                    filter.value = DEFAULT_STATUS;
+                    filter.innerHTML = `
+                        <option value="all">Saber Estados</option>
+                        <option value="pending">Pendientes</option>
+                        <option value="preparing">En Preparación</option>
+                        <option value="shipped">Enviados</option>
+                        <option value="delivered">Entregados</option>
+                        <option value="cancelled">Cancelados</option>
+                    `;
                     filter.addEventListener("change", (e) => {
-                        document.dispatchEvent(new CustomEvent("header:filter", { detail: e.target.value }));
+                        document.dispatchEvent(new CustomEvent("order:filter", { detail: e.target.value }));
+                    });
+                }
+                const input = document.getElementById("header-search-input");
+                if (input) {
+                    input.addEventListener("input", (e) => {
+                        document.dispatchEvent(new CustomEvent("order:search", { detail: e.target.value.trim() }));
                     });
                 }
             }
         });
     </script>
-    <script src="/js/admin/admin_pedidos.js"></script>
+    <script src="/js/admin/admin_pedidos.js" type="module"></script>
 </body>
 
 </html>
