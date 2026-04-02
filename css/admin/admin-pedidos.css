@@ -117,8 +117,11 @@ body.page-admin-orders {
     flex: 1;
     overflow-y: auto;
     padding: 16px;
-    max-height: calc(100vh - 380px); /* Ajuste para evitar overflow */
+    max-height: calc(100vh - 300px);
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
 }
+.orders-list-stitch::-webkit-scrollbar { display: none; } /* Chrome/Safari */
 
 /* SCROLLBAR CUSTOM */
 .custom-scroll::-webkit-scrollbar { width: 4px; }
@@ -201,7 +204,10 @@ body.page-admin-orders {
     display: flex;
     flex-direction: column;
     gap: 32px;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
 }
+.detail-scroll-area::-webkit-scrollbar { display: none; } /* Chrome/Safari */
 
 /* TIMELINE STITCH STYLE */
 .timeline-container-stitch {
@@ -324,27 +330,6 @@ body.page-admin-orders {
 .empty-state-stitch .large-icon { font-size: 80px; color: var(--border-soft); margin-bottom: 24px; display: block; }
 .empty-state-stitch h3 { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 900; color: var(--coffee-deep); margin-bottom: 12px; }
 .empty-state-stitch p { color: var(--primary-green); font-size: 15px; font-weight: 500; }
-
-/* FOOTER DASHBOARD STITCH */
-.admin-dashboard-footer-stitch {
-    margin-top: 24px;
-    padding: 20px 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-top: 1px solid var(--border-soft);
-    color: var(--text-muted);
-    font-size: 13px;
-    font-weight: 500;
-}
-
-.footer-left { display: flex; align-items: center; gap: 12px; }
-.footer-logo-mini { width: 24px; filter: grayscale(1) opacity(0.5); }
-
-.footer-right { display: flex; align-items: center; gap: 16px; }
-.footer-tag { background: var(--surface-low); padding: 2px 8px; border-radius: 6px; font-weight: 900; font-size: 10px; }
-.footer-status-dot { width: 8px; height: 8px; border-radius: 50%; background: #ccc; }
-.footer-status-dot.active { background: #4CAF50; box-shadow: 0 0 8px rgba(76, 175, 80, 0.4); }
 
 .hidden { display: none !important; }
 .fade-in { animation: fadeIn 0.4s ease-out; }
