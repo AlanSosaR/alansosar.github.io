@@ -240,13 +240,14 @@ body[class*="page-admin-"] #cart-btn {
   display: none !important;
 }
 
-body[class*="page-admin-"] .header-middle {
+body[class*="page-admin-"] .header-middle-stitch {
+  flex: 4 !important; /* Le da 4 veces más espacio al buscador */
   max-width: 1200px !important;
   margin: 0 20px;
 }
 
 @media (max-width: 768px) {
-  body[class*="page-admin-"] .header-middle {
+  body[class*="page-admin-"] .header-middle-stitch {
     margin: 0 12px;
   }
 }
