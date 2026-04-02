@@ -413,24 +413,28 @@ console.log("🛠️ admin_pedidos.js — INIT STITCH");
             const btnOk = document.getElementById("btn-confirm-ok");
             const btnCancel = document.getElementById("btn-confirm-cancel");
 
-            if (!snack || !label) return resolve(false);
+            if (!snack || !label || !btnOk || !btnCancel) {
+                console.error("❌ Error: Elementos del confirm-snack no encontrados");
+                return resolve(false);
+            }
 
             label.innerHTML = text;
             snack.classList.remove("hidden");
             // Pequeño delay para la animación
             requestAnimationFrame(() => snack.classList.add("active"));
 
-            const wrapResolve = (val) => {
+            const cleanup = () => {
                 snack.classList.remove("active");
                 setTimeout(() => snack.classList.add("hidden"), 300);
-                resolve(val);
-                // Limpiar eventos para evitar fugas
-                btnOk.onclick = null;
-                btnCancel.onclick = null;
+                btnOk.removeEventListener("click", onOk);
+                btnCancel.removeEventListener("click", onCancel);
             };
 
-            btnOk.onclick = () => wrapResolve(true);
-            btnCancel.onclick = () => wrapResolve(false);
+            const onOk = () => { cleanup(); resolve(true); };
+            const onCancel = () => { cleanup(); resolve(false); };
+
+            btnOk.addEventListener("click", onOk);
+            btnCancel.addEventListener("click", onCancel);
         });
     }
 
