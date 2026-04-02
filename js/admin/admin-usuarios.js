@@ -62,7 +62,7 @@ async function loadUsers() {
     try {
         const { data, error } = await _supabase
             .from('users')
-            .select('*')
+            .select('*, addresses(*)')
             .order('name', { ascending: true });
 
         if (error) throw error;
@@ -142,10 +142,19 @@ function selectUser(user) {
     if (detailSection) detailSection.classList.remove('hidden');
     if (emptyState) emptyState.classList.add('hidden');
 
+    // Calcular Dirección de Entrega Completa
+    let finalAddress = user.country || 'No especificada';
+    if (user.addresses && user.addresses.length > 0) {
+        let addr = user.addresses.find(a => a.is_default);
+        if (!addr) addr = user.addresses[0]; // Fallback
+        const parts = [addr.street, addr.city, addr.state, addr.country].filter(Boolean);
+        if (parts.length > 0) finalAddress = parts.join(', ');
+    }
+
     // Llenar Datos Principales
     document.getElementById('u-name').textContent = user.name || 'Sin nombre';
     document.getElementById('u-email-text').textContent = user.email;
-    document.getElementById('u-country-text').textContent = user.country || 'Honduras';
+    document.getElementById('u-country-text').textContent = finalAddress;
     document.getElementById('u-avatar-placeholder').innerHTML = getAvatarHtml(user, 'avatar-img-large', 'avatar-init-large');
     
     // Estadísticas
@@ -156,7 +165,7 @@ function selectUser(user) {
     // Panel de Seguridad
     document.getElementById('u-role-select').value = user.rol || 'user';
     document.getElementById('u-phone-text').textContent = user.phone || 'No registrado';
-    document.getElementById('u-address-text').textContent = user.country || 'No especificada';
+    document.getElementById('u-address-text').textContent = finalAddress;
     document.getElementById('u-created-at').textContent = regDate.toLocaleDateString();
 
     // Estado Toggle (Supuesto de columna 'status' o 'active' en BD, si no existe lo seteamos a true por defecto)
