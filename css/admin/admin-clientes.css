@@ -281,9 +281,7 @@ body.page-admin-customers {
     height: 128px;
     border-radius: 50%;
     object-fit: cover;
-    border: 4px solid var(--fondo-card);
-    box-shadow: var(--shadow-editorial);
-    background: var(--fondo-card);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
 }
 
 .avatar-init-large {

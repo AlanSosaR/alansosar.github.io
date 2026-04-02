@@ -242,9 +242,7 @@ body.page-admin-users {
     width: 140px;
     height: 140px;
     border-radius: var(--radius-circle);
-    border: 6px solid var(--white);
-    box-shadow: 0 12px 30px rgba(0,0,0,0.1);
-    background: var(--white);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.15);
     object-fit: cover;
 }
 
@@ -484,7 +482,7 @@ input:checked + .slider-stitch:before { transform: translateX(24px); }
     .detail-header-stitch { height: auto; margin-bottom: 32px; display: flex; flex-direction: column; align-items: center; text-align: center; }
     .header-overlay-green { display: none; }
     .detail-profile-wrapper-stitch { position: static; flex-direction: column; align-items: center; gap: 16px; padding-top: 20px; }
-    .avatar-large-wrapper img, .avatar-init-large { width: 120px; height: 120px; border-width: 4px; border-color: white; box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+    .avatar-large-wrapper img, .avatar-init-large { width: 120px; height: 120px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
     .user-display-name-stitch { font-size: 28px; }
     .header-actions-stitch { position: static; margin-top: 24px; justify-content: center; width: 100%; padding: 0 16px; box-sizing: border-box; }
     
