@@ -82,8 +82,8 @@ body.page-admin-orders {
     display: grid;
     grid-template-columns: 380px 1fr; /* Sidebar fija más ancha */
     gap: 24px;
-    overflow: hidden;
-    min-height: 700px; /* Altura mínima fija para estabilidad */
+    align-items: start; /* Importante: que no se estiren al fondo */
+    min-height: 700px;
 }
 
 @media (max-width: 1100px) {
