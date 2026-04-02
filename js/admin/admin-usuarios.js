@@ -161,8 +161,11 @@ function selectUser(user) {
     const months = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
     document.getElementById('u-reg-date-stat').textContent = `${months[regDate.getMonth()]} ${regDate.getFullYear()}`;
     
-    // Panel de Seguridad
-    document.getElementById('u-role-select').value = user.rol || 'user';
+    // Panel de Seguridad — normalizar rol a las 2 opciones válidas
+    const validRoles = ['user', 'admin'];
+    const roleMap = { 'moderator': 'user', 'suspendido': 'user' }; // migrar roles legacy
+    const normalizedRole = roleMap[user.rol] || (validRoles.includes(user.rol) ? user.rol : 'user');
+    document.getElementById('u-role-select').value = normalizedRole;
     document.getElementById('u-phone-text').textContent = user.phone || 'No registrado';
     document.getElementById('u-address-text').textContent = finalAddress;
     document.getElementById('u-created-at').textContent = regDate.toLocaleDateString();
