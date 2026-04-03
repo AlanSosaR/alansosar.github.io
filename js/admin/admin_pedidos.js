@@ -94,7 +94,9 @@ console.log("🛠️ admin_pedidos.js — INIT STITCH");
         // Botones de cambio de estado en el footer
         document.querySelectorAll(".status-btn").forEach(btn => {
             btn.addEventListener("click", (e) => {
-                const newStatus = e.target.dataset.status;
+                // currentTarget siempre es el botón con data-status,
+                // aunque el clic venga de un texto o icono interno
+                const newStatus = e.currentTarget.dataset.status;
                 if (selectedOrder && newStatus) {
                     confirmStatusChange(newStatus);
                 }
@@ -423,35 +425,31 @@ console.log("🛠️ admin_pedidos.js — INIT STITCH");
         return new Promise((resolve) => {
             const snack = document.getElementById("confirm-snackbar");
             const label = document.getElementById("confirm-text");
-            let btnOk = document.getElementById("btn-confirm-ok");
-            let btnCancel = document.getElementById("btn-confirm-cancel");
+            const btnOk = document.getElementById("btn-confirm-ok");
+            const btnCancel = document.getElementById("btn-confirm-cancel");
 
             if (!snack || !label || !btnOk || !btnCancel) {
-                console.error("❌ Error: Elementos del confirm-snack no encontrados");
+                console.error("❌ Error: confirm-snackbar elements not found in DOM");
                 return resolve(false);
             }
 
-            // Clonar botones para asegurar que se eliminan eventos colgados previos
-            const newBtnOk = btnOk.cloneNode(true);
-            btnOk.parentNode.replaceChild(newBtnOk, btnOk);
-            btnOk = newBtnOk;
-
-            const newBtnCancel = btnCancel.cloneNode(true);
-            btnCancel.parentNode.replaceChild(newBtnCancel, btnCancel);
-            btnCancel = newBtnCancel;
-
             label.innerHTML = text;
-            snack.classList.remove("hidden");
-            // Pequeño delay para la animación
-            requestAnimationFrame(() => snack.classList.add("active"));
 
-            const cleanup = () => {
+            // cleanup: oculta el snack y resuelve con el resultado
+            const finish = (result) => {
                 snack.classList.remove("active");
                 setTimeout(() => snack.classList.add("hidden"), 300);
+                resolve(result);
             };
 
-            btnOk.onclick = () => { cleanup(); resolve(true); };
-            btnCancel.onclick = () => { cleanup(); resolve(false); };
+            // Usar { once: true } para que cada listener se auto-elimine tras el primer clic
+            // y no acumule handlers de invocaciones anteriores
+            btnOk.addEventListener("click", () => finish(true), { once: true });
+            btnCancel.addEventListener("click", () => finish(false), { once: true });
+
+            // Mostrar con animación (doble rAF para garantizar que el display:flex ya aplicó)
+            snack.classList.remove("hidden");
+            requestAnimationFrame(() => requestAnimationFrame(() => snack.classList.add("active")));
         });
     }
 
