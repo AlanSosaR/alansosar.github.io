@@ -318,7 +318,7 @@ const initAdminClientes = () => {
 
     // 7. CONTACTO MULTICANAL
     const openContactModal = () => {
-        console.log("📱 Intentando abrir modal de contacto. Cliente ID:", selectedCustomerId);
+        console.log("📱 Intentando abrir modal de contacto (con clase active). Cliente ID:", selectedCustomerId);
         if (!selectedCustomerId) {
             console.warn("⚠️ No customer selected when calling openContactModal");
             return;
@@ -329,11 +329,13 @@ const initAdminClientes = () => {
             return;
         }
         if (contactClientName) contactClientName.textContent = customer.name || 'el cliente';
-        modalContact?.classList.remove("hidden");
+        
+        // El CSS usa la clase "active" para mostrar el modal overlay
+        modalContact?.classList.add("active");
     };
 
     const closeContactModalFn = () => {
-        modalContact?.classList.add("hidden");
+        modalContact?.classList.remove("active");
     };
 
     const openPushModal = () => {
@@ -341,11 +343,11 @@ const initAdminClientes = () => {
         if (!selectedCustomerId) return;
         inputTitle.value = "";
         inputMessage.value = "";
-        modalPush.classList.remove("hidden");
+        modalPush?.classList.add("active");
     };
 
     const closePushModal = () => {
-        modalPush?.classList.add("hidden");
+        modalPush?.classList.remove("active");
     };
 
     const showSnack = (text, type = "info") => {

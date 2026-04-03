@@ -214,6 +214,31 @@
         });
       }
 
+      const prevHistBtn = document.getElementById("prev-page");
+      const nextHistBtn = document.getElementById("next-page");
+
+      if (prevHistBtn) {
+          prevHistBtn.onclick = () => {
+              if (historyPage > 1) {
+                  historyPage--;
+                  const customer = allCustomers.find(c => c.id === selectedCustomerId);
+                  if (customer) renderHistory(customer.fetchedOrders);
+              }
+          };
+      }
+
+      if (nextHistBtn) {
+          nextHistBtn.onclick = () => {
+              const customer = allCustomers.find(c => c.id === selectedCustomerId);
+              if (!customer || !customer.fetchedOrders) return;
+              const totalPages = Math.ceil(customer.fetchedOrders.length / historyPerPage);
+              if (historyPage < totalPages) {
+                  historyPage++;
+                  renderHistory(customer.fetchedOrders);
+              }
+          };
+      }
+
       // Configurar Búsqueda
       const input = document.getElementById("header-search-input");
       if (input) {
@@ -225,10 +250,10 @@
   </script>
 
   <!-- Lógica de Clientes -->
-  <script src="/js/admin/admin_clientes.js?v=2" type="module"></script>
+  <script src="/js/admin/admin_clientes.js?v=12" type="module"></script>
 
   <!-- ========================= MODAL CONTACTO MULTICANAL ========================= -->
-  <div id="modal-contact" class="modal-overlay hidden">
+  <div id="modal-contact" class="modal-overlay">
     <div class="modal-content contact-modal-stitch fade-in">
       <header class="modal-header">
         <h3>Contactar Cliente</h3>
@@ -269,7 +294,7 @@
   </div>
 
   <!-- ========================= SUB-MODAL PUSH ========================= -->
-  <div id="modal-push" class="modal-overlay hidden">
+  <div id="modal-push" class="modal-overlay">
     <div class="modal-content">
       <header class="modal-header">
         <h3>Enviar Notificación Push</h3>
