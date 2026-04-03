@@ -386,9 +386,31 @@ body.page-admin-users {
 input:checked + .slider-stitch { background-color: var(--primary-green); }
 input:checked + .slider-stitch:before { transform: translateX(24px); }
 
-/* SNACKBAR */
-.snackbar { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #191C1C; color: white; padding: 14px 24px; border-radius: 12px; display: flex; align-items: center; gap: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 9999; opacity: 0; transition: all 0.3s; }
+/* SNACKBAR STITCH (SYNC) */
+.snackbar {
+    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #191C1C;
+    color: white; padding: 14px 24px; border-radius: 12px; display: flex; align-items: center; gap: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 9999; opacity: 0; transition: all 0.3s;
+}
 .snackbar.active { opacity: 1; bottom: 40px; }
+.snackbar.success { border-left: 5px solid var(--primary-green); }
+.snackbar.error { border-left: 5px solid #BA1A1A; }
+.snackbar.info { border-left: 5px solid #1976D2; }
+
+/* SNACKBAR DE ACCIÓN (CONFIRMAR) */
+.confirm-snack {
+    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+    background: #191C1C; color: white; padding: 12px 24px; border-radius: 16px;
+    display: flex; align-items: center; gap: 24px; z-index: 5000;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+    opacity: 0; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.confirm-snack.active { opacity: 1; bottom: 40px; }
+.confirm-content { display: flex; align-items: center; gap: 24px; width: 100%; white-space: nowrap; }
+.confirm-actions { display: flex; gap: 8px; }
+.btn-snack-ghost { background: transparent; border: none; color: #9E9E9E; font-weight: 700; padding: 8px 16px; cursor: pointer; border-radius: 8px; }
+.btn-snack-ghost:hover { background: rgba(255,255,255,0.1); }
+.btn-snack-primary { background: var(--primary-green); color: white; border: none; font-weight: 700; padding: 8px 16px; cursor: pointer; border-radius: 8px; }
 
 /* UTILS */
 .hidden { display: none !important; }

@@ -96,7 +96,7 @@ async function loadUsers() {
         renderUsersList();
     } catch (err) {
         console.error("Error cargando usuarios:", err);
-        showSnackbar("Error al conectar con el servidor", "error");
+        showSnack("error", "Error al conectar con el servidor");
     }
 }
 
@@ -208,6 +208,12 @@ function selectUser(user) {
     }
 }
 
+function backToList() {
+    document.body.classList.remove('detail-view-active');
+    selectedUser = null;
+    renderUsersList();
+}
+
 // --- FILTROS Y BÚSQUEDA ---
 function handleSearch(query) {
     const q = query.toLowerCase();
@@ -236,6 +242,9 @@ async function handleSaveChanges() {
     const newRole = document.getElementById('u-role-select').value;
     const isActive = document.getElementById('u-status-toggle').checked;
     const newStatus = isActive ? 'activo' : 'inactivo';
+
+    const ok = await showActionConfirm(`¿Deseas actualizar la configuración de <b>${selectedUser.name}</b>?`);
+    if (!ok) return;
     
     try {
         const { error } = await _supabase
@@ -248,7 +257,7 @@ async function handleSaveChanges() {
 
         if (error) throw error;
 
-        showSnackbar(`Configuración de ${selectedUser.name} actualizada`);
+        showSnack("success", `Configuración de ${selectedUser.name} actualizada`);
         
         // Actualizar datos locales
         selectedUser.rol = newRole;
@@ -262,12 +271,15 @@ async function handleSaveChanges() {
         renderUsersList();
     } catch (err) {
         console.error("Error guardando cambios:", err);
-        showSnackbar("Error al actualizar la configuración. Intenta de nuevo.", "error");
+        showSnack("error", "Error al actualizar la configuración");
     }
 }
 
 async function handleResetPassword() {
     if (!selectedUser) return;
+
+    const ok = await showActionConfirm(`¿Enviar enlace de recuperación a <b>${selectedUser.email}</b>?`);
+    if (!ok) return;
     
     try {
         const redirectTo = `${window.location.origin}/pages/auth/new-password.html`;
@@ -277,14 +289,14 @@ async function handleResetPassword() {
 
         if (error) {
             console.error(error);
-            showSnackbar("Error al enviar el enlace. Intenta más tarde.", "error");
+            showSnack("error", "Error al enviar el enlace");
             return;
         }
 
-        showSnackbar(`Enlace de recuperación enviado con éxito a ${selectedUser.email}`);
+        showSnack("success", "Enlace de recuperación enviado con éxito");
     } catch (err) {
         console.error("Excepción en handleResetPassword:", err);
-        showSnackbar("Ocurrió un error inesperado al restablecer.", "error");
+        showSnack("error", "Ocurrió un error inesperado");
     }
 }
 
@@ -306,7 +318,7 @@ function closeContactModal() {
 
 function handleWhatsApp() {
     if (!selectedUser || !selectedUser.phone) {
-        showSnackbar("El usuario no tiene un teléfono registrado", "error");
+        showSnack("error", "El usuario no tiene un teléfono registrado");
         return;
     }
     // Limpiar número (solo dígitos)
@@ -339,7 +351,7 @@ async function handleSendPush() {
     const message = document.getElementById('push-message').value.trim();
     
     if (!title || !message) {
-        showSnackbar("Por favor, completa el título y el mensaje", "error");
+        showSnack("error", "Por favor, completa el título y el mensaje");
         return;
     }
 
@@ -358,7 +370,7 @@ async function handleSendPush() {
 
         if (error) throw error;
 
-        showSnackbar(`Notificación push enviada a ${selectedUser.name}`);
+        showSnack("success", `Notificación push enviada a ${selectedUser.name}`);
         closePushModal();
         
         // Limpiar campos
@@ -367,7 +379,7 @@ async function handleSendPush() {
         
     } catch (err) {
         console.error("Error enviando push:", err);
-        showSnackbar("No se pudo enviar la notificación. Verifica la conexión.", "error");
+        showSnack("error", "No se pudo enviar la notificación");
     }
 }
 
@@ -404,17 +416,46 @@ function updatePaginationUI(totalPages) {
     }
 }
 
-function showSnackbar(msg, type = "success") {
-    const snackbar = document.getElementById('admin-snackbar');
-    const icon = document.getElementById('snack-icon');
-    const text = document.getElementById('snack-text');
+/* =========================
+   CONFIRMATION BOX LOGIC (STITCH)
+========================= */
+function showActionConfirm(text) {
+    return new Promise((resolve) => {
+        const snack = document.getElementById("confirm-snackbar");
+        const label = document.getElementById("confirm-text");
+        const btnOk = document.getElementById("btn-confirm-ok");
+        const btnCancel = document.getElementById("btn-confirm-cancel");
 
-    if (!snackbar || !text || !icon) return;
+        if (!snack || !label || !btnOk || !btnCancel) return resolve(false);
 
-    text.textContent = msg;
-    icon.textContent = type === "success" ? "check_circle" : "error";
-    snackbar.style.backgroundColor = type === "success" ? "#377B4C" : "#BA1A1A";
+        label.innerHTML = text;
+        
+        const cleanup = (result) => {
+            btnOk.replaceWith(btnOk.cloneNode(true));
+            btnCancel.replaceWith(btnCancel.cloneNode(true));
+            snack.classList.remove("active");
+            setTimeout(() => snack.classList.add("hidden"), 300);
+            resolve(result);
+        };
+
+        snack.classList.remove("hidden");
+        requestAnimationFrame(() => requestAnimationFrame(() => snack.classList.add("active")));
+
+        document.getElementById("btn-confirm-ok").onclick = () => cleanup(true);
+        document.getElementById("btn-confirm-cancel").onclick = () => cleanup(false);
+    });
+}
+
+function showSnack(type, text) {
+    const snackbar = document.getElementById("admin-snackbar");
+    const icon = document.getElementById("snack-icon");
+    const label = document.getElementById("snack-text");
+
+    if (!snackbar || !label || !icon) return;
+
+    label.textContent = text;
+    icon.textContent = type === "success" ? "check_circle" : type === "error" ? "error" : "info";
+    snackbar.className = `snackbar active ${type}`;
     
-    snackbar.classList.add('active');
-    setTimeout(() => snackbar.classList.remove('active'), 3000);
+    setTimeout(() => snackbar.classList.remove("active"), 3000);
 }

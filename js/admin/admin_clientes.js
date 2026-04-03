@@ -344,11 +344,40 @@ const initAdminClientes = () => {
         const snackMsg = document.getElementById("snack-text");
         const snackIcon = document.getElementById("snack-icon");
 
+        if (!snack || !snackMsg || !snackIcon) return;
+
         snackMsg.textContent = text;
-        snack.className = `snackbar active ${type}`;
         snackIcon.textContent = type === "success" ? "check_circle" : (type === "error" ? "error" : "info");
+        snack.className = `snackbar active ${type}`;
 
         setTimeout(() => snack.classList.remove("active"), 3500);
+    };
+
+    const showActionConfirm = (text) => {
+        return new Promise((resolve) => {
+            const snack = document.getElementById("confirm-snackbar");
+            const label = document.getElementById("confirm-text");
+            const btnOk = document.getElementById("btn-confirm-ok");
+            const btnCancel = document.getElementById("btn-confirm-cancel");
+
+            if (!snack || !label || !btnOk || !btnCancel) return resolve(false);
+
+            label.innerHTML = text;
+            
+            const cleanup = (result) => {
+                btnOk.replaceWith(btnOk.cloneNode(true));
+                btnCancel.replaceWith(btnCancel.cloneNode(true));
+                snack.classList.remove("active");
+                setTimeout(() => snack.classList.add("hidden"), 300);
+                resolve(result);
+            };
+
+            snack.classList.remove("hidden");
+            requestAnimationFrame(() => requestAnimationFrame(() => snack.classList.add("active")));
+
+            document.getElementById("btn-confirm-ok").onclick = () => cleanup(true);
+            document.getElementById("btn-confirm-cancel").onclick = () => cleanup(false);
+        });
     };
 
     const handleSendPush = async () => {
