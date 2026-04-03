@@ -198,6 +198,7 @@ const initAdminClientes = () => {
         noSelection.classList.add("hidden");
         customerDetail.classList.remove("hidden");
         customerDetail.style.opacity = "0.5";
+        document.body.classList.add("detail-view-active");
 
         const cPhotoWrapper = document.getElementById("c-photo-wrapper");
         if (cPhotoWrapper) {
@@ -256,7 +257,15 @@ const initAdminClientes = () => {
         document.getElementById("next-page").disabled = historyPage === totalPages || totalPages === 0;
     };
 
+    const backToList = () => {
+        document.body.classList.remove("detail-view-active");
+        selectedCustomerId = null;
+        renderCustomerList();
+    };
+
     // 6. EVENTOS DIRECTOS
+    document.getElementById("btn-back-to-list")?.addEventListener("click", backToList);
+
     document.addEventListener("customer:search", (e) => {
         const query = e.detail.toLowerCase();
         filteredCustomers = allCustomers.filter(c => 

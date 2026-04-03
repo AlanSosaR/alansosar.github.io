@@ -89,6 +89,43 @@ body.page-admin-customers {
     .no-selection-section {
         display: none !important;
     }
+
+    /* Maestro-Detalle Mobile Pattern: Solo uno a la vez */
+    body.detail-view-active .customers-list-section {
+        display: none !important;
+    }
+
+    body:not(.detail-view-active) .customer-detail-section,
+    body:not(.detail-view-active) #no-selection {
+        display: none !important;
+    }
+
+    body.detail-view-active .customer-detail-section {
+        display: flex !important;
+        width: 100% !important;
+    }
+}
+
+/* Botón Volver para móvil */
+.btn-mobile-back {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #F1F3F2;
+    border: none;
+    color: var(--principal);
+    font-weight: 700;
+    margin-bottom: 20px;
+    cursor: pointer;
+    padding: 10px 16px;
+    border-radius: 12px;
+    width: fit-content;
+}
+
+@media (min-width: 1025px) {
+    .btn-mobile-back {
+        display: none;
+    }
 }
 
 /* SECCIÓN IZQUIERDA: LISTA */

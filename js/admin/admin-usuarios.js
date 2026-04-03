@@ -59,9 +59,16 @@ function initEventListeners() {
     document.getElementById('opt-whatsapp')?.addEventListener('click', handleWhatsApp);
     document.getElementById('opt-email')?.addEventListener('click', handleEmail);
     document.getElementById('opt-push')?.addEventListener('click', openPushModal);
-    
-    // Acción Final: Enviar Push
+
+    // Enviar Alerta Push
     document.getElementById('send-push')?.addEventListener('click', handleSendPush);
+
+    // Volver a la Lista (Mobile)
+    document.getElementById('btn-back-to-list')?.addEventListener('click', () => {
+        document.body.classList.remove('detail-view-active');
+        selectedUser = null;
+        renderUsersList();
+    });
 
     // Toggle de Estado UI Feedback
     const toggle = document.getElementById('u-status-toggle');
@@ -157,6 +164,7 @@ function selectUser(user) {
 
     if (detailSection) detailSection.classList.remove('hidden');
     if (emptyState) emptyState.classList.add('hidden');
+    document.body.classList.add('detail-view-active');
 
     // Calcular Dirección de Entrega Completa
     let finalAddress = user.country || 'No especificada';

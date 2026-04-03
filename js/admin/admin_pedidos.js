@@ -423,13 +423,22 @@ console.log("🛠️ admin_pedidos.js — INIT STITCH");
         return new Promise((resolve) => {
             const snack = document.getElementById("confirm-snackbar");
             const label = document.getElementById("confirm-text");
-            const btnOk = document.getElementById("btn-confirm-ok");
-            const btnCancel = document.getElementById("btn-confirm-cancel");
+            let btnOk = document.getElementById("btn-confirm-ok");
+            let btnCancel = document.getElementById("btn-confirm-cancel");
 
             if (!snack || !label || !btnOk || !btnCancel) {
                 console.error("❌ Error: Elementos del confirm-snack no encontrados");
                 return resolve(false);
             }
+
+            // Clonar botones para asegurar que se eliminan eventos colgados previos
+            const newBtnOk = btnOk.cloneNode(true);
+            btnOk.parentNode.replaceChild(newBtnOk, btnOk);
+            btnOk = newBtnOk;
+
+            const newBtnCancel = btnCancel.cloneNode(true);
+            btnCancel.parentNode.replaceChild(newBtnCancel, btnCancel);
+            btnCancel = newBtnCancel;
 
             label.innerHTML = text;
             snack.classList.remove("hidden");
@@ -439,15 +448,10 @@ console.log("🛠️ admin_pedidos.js — INIT STITCH");
             const cleanup = () => {
                 snack.classList.remove("active");
                 setTimeout(() => snack.classList.add("hidden"), 300);
-                btnOk.removeEventListener("click", onOk);
-                btnCancel.removeEventListener("click", onCancel);
             };
 
-            const onOk = () => { cleanup(); resolve(true); };
-            const onCancel = () => { cleanup(); resolve(false); };
-
-            btnOk.addEventListener("click", onOk);
-            btnCancel.addEventListener("click", onCancel);
+            btnOk.onclick = () => { cleanup(); resolve(true); };
+            btnCancel.onclick = () => { cleanup(); resolve(false); };
         });
     }
 
