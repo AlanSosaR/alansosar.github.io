@@ -308,12 +308,12 @@ function openContactModal() {
     const nameSpan = document.getElementById('contact-user-name');
     
     if (nameSpan) nameSpan.textContent = selectedUser.name;
-    if (modal) modal.classList.remove('hidden');
+    if (modal) modal.classList.add('active');
 }
 
 function closeContactModal() {
     const modal = document.getElementById('modal-contact');
-    if (modal) modal.classList.add('hidden');
+    if (modal) modal.classList.remove('active');
 }
 
 function handleWhatsApp() {
@@ -336,12 +336,12 @@ function handleEmail() {
 function openPushModal() {
     closeContactModal();
     const modal = document.getElementById('modal-push');
-    if (modal) modal.classList.remove('hidden');
+    if (modal) modal.classList.add('active');
 }
 
 function closePushModal() {
     const modal = document.getElementById('modal-push');
-    if (modal) modal.classList.add('hidden');
+    if (modal) modal.classList.remove('active');
 }
 
 async function handleSendPush() {

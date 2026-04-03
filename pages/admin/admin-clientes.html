@@ -214,31 +214,6 @@
         });
       }
 
-      const prevHistBtn = document.getElementById("prev-page");
-      const nextHistBtn = document.getElementById("next-page");
-
-      if (prevHistBtn) {
-          prevHistBtn.onclick = () => {
-              if (historyPage > 1) {
-                  historyPage--;
-                  const customer = allCustomers.find(c => c.id === selectedCustomerId);
-                  if (customer) renderHistory(customer.fetchedOrders);
-              }
-          };
-      }
-
-      if (nextHistBtn) {
-          nextHistBtn.onclick = () => {
-              const customer = allCustomers.find(c => c.id === selectedCustomerId);
-              if (!customer || !customer.fetchedOrders) return;
-              const totalPages = Math.ceil(customer.fetchedOrders.length / historyPerPage);
-              if (historyPage < totalPages) {
-                  historyPage++;
-                  renderHistory(customer.fetchedOrders);
-              }
-          };
-      }
-
       // Configurar Búsqueda
       const input = document.getElementById("header-search-input");
       if (input) {
@@ -250,9 +225,11 @@
   </script>
 
   <!-- Lógica de Clientes -->
-  <script src="/js/admin/admin_clientes.js?v=12" type="module"></script>
+  <script src="/js/admin/admin_clientes.js?v=20" type="module"></script>
 
-  <!-- ========================= MODAL CONTACTO MULTICANAL ========================= -->
+  <!-- =========================
+       MODAL DE CONTACTO MULTICANAL
+  ========================= -->
   <div id="modal-contact" class="modal-overlay">
     <div class="modal-content contact-modal-stitch fade-in">
       <header class="modal-header">
