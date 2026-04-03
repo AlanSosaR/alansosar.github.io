@@ -316,6 +316,23 @@
         </div>
     </div>
 
+    <!-- ========================= CONFIRM ACTION SNACKBAR ========================= -->
+    <div id="confirm-snackbar" class="confirm-snack hidden">
+        <div class="confirm-content">
+            <span id="confirm-text">¿Confirmar cambio?</span>
+            <div class="confirm-actions">
+                <button class="btn-snack-ghost" id="btn-confirm-cancel">Cancelar</button>
+                <button class="btn-snack-primary" id="btn-confirm-ok">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Snackbar -->
+    <div id="admin-snackbar" class="snackbar">
+        <span class="material-symbols-outlined" id="snack-icon">info</span>
+        <span id="snack-text">Mensaje</span>
+    </div>
+
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="/js/core/supabase-client-core.js"></script>
