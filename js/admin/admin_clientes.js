@@ -18,6 +18,14 @@ const initAdminClientes = () => {
     const pageInfo = document.getElementById("page-info");
     const btnContact = document.getElementById("btnSendMessage");
 
+    // Modal Contacto Multicanal
+    const modalContact = document.getElementById("modal-contact");
+    const closeContactModal = document.getElementById("close-contact-modal");
+    const contactClientName = document.getElementById("contact-client-name");
+    const optWhatsApp = document.getElementById("opt-whatsapp");
+    const optEmail = document.getElementById("opt-email");
+    const optPush = document.getElementById("opt-push");
+
     // Modal Push
     const modalPush = document.getElementById("modal-push");
     const closePush = document.getElementById("close-push-modal");
@@ -306,19 +314,29 @@ const initAdminClientes = () => {
         }
     };
 
-    // 7. NOTIFICACIONES PUSH
-    const openPushModal = () => {
+    // 7. CONTACTO MULTICANAL
+    const openContactModal = () => {
         if (!selectedCustomerId) return;
         const customer = allCustomers.find(c => c.id === selectedCustomerId);
         if (!customer) return;
+        if (contactClientName) contactClientName.textContent = customer.name || 'el cliente';
+        modalContact?.classList.remove("hidden");
+    };
 
+    const closeContactModalFn = () => {
+        modalContact?.classList.add("hidden");
+    };
+
+    const openPushModal = () => {
+        closeContactModalFn();
+        if (!selectedCustomerId) return;
         inputTitle.value = "";
         inputMessage.value = "";
-        modalPush.classList.add("active");
+        modalPush.classList.remove("hidden");
     };
 
     const closePushModal = () => {
-        modalPush.classList.remove("active");
+        modalPush?.classList.add("hidden");
     };
 
     const showSnack = (text, type = "info") => {
@@ -378,10 +396,38 @@ const initAdminClientes = () => {
     };
 
     // Eventos del Modal
-    if (btnContact) btnContact.onclick = openPushModal;
+    if (btnContact) btnContact.onclick = openContactModal;
+    if (closeContactModal) closeContactModal.onclick = closeContactModalFn;
+    modalContact?.addEventListener("click", (e) => { if (e.target === modalContact) closeContactModalFn(); });
+
+    // Opciones de Contacto
+    if (optWhatsApp) optWhatsApp.onclick = () => {
+        const customer = allCustomers.find(c => c.id === selectedCustomerId);
+        const phone = customer?.phone;
+        if (phone) {
+            window.open(`https://wa.me/${phone.replace(/\D/g, "")}`, "_blank");
+        } else {
+            showSnack("Este cliente no tiene número de teléfono registrado", "error");
+        }
+        closeContactModalFn();
+    };
+
+    if (optEmail) optEmail.onclick = () => {
+        const customer = allCustomers.find(c => c.id === selectedCustomerId);
+        if (customer?.email) {
+            window.open(`mailto:${customer.email}`, "_blank");
+        } else {
+            showSnack("Este cliente no tiene email registrado", "error");
+        }
+        closeContactModalFn();
+    };
+
+    if (optPush) optPush.onclick = openPushModal;
+
     if (closePush) closePush.onclick = closePushModal;
     if (cancelPush) cancelPush.onclick = closePushModal;
     if (sendPush) sendPush.onclick = handleSendPush;
+    modalPush?.addEventListener("click", (e) => { if (e.target === modalPush) closePushModal(); });
 
     init();
 };

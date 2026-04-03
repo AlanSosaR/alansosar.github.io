@@ -946,3 +946,143 @@ body.page-admin-customers {
     animation: rotar 1.5s linear infinite;
 }
 
+/* =====================================================
+   MODAL CONTACTO MULTICANAL (STITCH SYNC)
+===================================================== */
+.modal-intro {
+    font-size: 15px;
+    color: var(--texto-secundario);
+    margin-bottom: 8px;
+    line-height: 1.5;
+}
+
+.contact-options-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.contact-option-btn {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    border: 1.5px solid var(--borde);
+    border-radius: 16px;
+    background: #fff;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    text-align: left;
+    width: 100%;
+}
+
+.contact-option-btn:hover {
+    border-color: var(--principal);
+    background: #EFF7F2;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(55, 123, 76, 0.1);
+}
+
+.option-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: var(--fondo-general);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--principal);
+    flex-shrink: 0;
+    font-size: 22px;
+}
+
+.option-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.option-text strong {
+    font-size: 15px;
+    color: var(--texto-principal);
+    font-weight: 700;
+}
+
+.option-text span {
+    font-size: 12px;
+    color: var(--texto-secundario);
+}
+
+/* Hover colors por tipo */
+.contact-option-btn.whatsapp:hover .option-icon { background: #25D366; color: white; }
+.contact-option-btn.email:hover .option-icon { background: var(--principal); color: white; }
+.contact-option-btn.push:hover .option-icon { background: #512615; color: white; }
+
+/* Buttons Stitch (para modal push) */
+.form-group-stitch {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.form-group-stitch label {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--texto-secundario);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.form-group-stitch input,
+.form-group-stitch textarea {
+    padding: 14px 16px;
+    border-radius: var(--radius-8);
+    border: 1.5px solid var(--borde);
+    background: var(--fondo-general);
+    font-family: inherit;
+    font-size: 14px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.form-group-stitch textarea {
+    height: 100px;
+    resize: none;
+}
+
+.modal-footer-stitch {
+    padding: 16px 24px 24px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    border-top: 1px solid var(--fondo-general);
+}
+
+.btn-stitch-ghost {
+    background: transparent;
+    border: none;
+    color: var(--texto-secundario);
+    font-weight: 700;
+    padding: 12px 20px;
+    border-radius: var(--radius-8);
+    cursor: pointer;
+}
+
+.btn-stitch-ghost:hover { background: var(--fondo-general); }
+
+.btn-stitch-primary {
+    background: var(--principal);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: var(--radius-8);
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.btn-stitch-primary:hover { opacity: 0.9; }
+

@@ -227,11 +227,52 @@
   <!-- Lógica de Clientes -->
   <script src="/js/admin/admin_clientes.js?v=2" type="module"></script>
 
-  <!-- Modal de Contacto / Push -->
-  <div id="modal-push" class="modal-overlay">
+  <!-- ========================= MODAL CONTACTO MULTICANAL ========================= -->
+  <div id="modal-contact" class="modal-overlay hidden">
+    <div class="modal-content contact-modal-stitch fade-in">
+      <header class="modal-header">
+        <h3>Contactar Cliente</h3>
+        <button class="btn-close-modal" id="close-contact-modal">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </header>
+      <div class="modal-body">
+        <p class="modal-intro">Selecciona el medio preferido para contactar a <strong><span id="contact-client-name">—</span></strong>:</p>
+        <div class="contact-options-grid">
+          <!-- WhatsApp -->
+          <button class="contact-option-btn whatsapp" id="opt-whatsapp">
+            <div class="option-icon"><i class="fab fa-whatsapp"></i></div>
+            <div class="option-text">
+              <strong>WhatsApp</strong>
+              <span>Mensaje directo al celular</span>
+            </div>
+          </button>
+          <!-- Email -->
+          <button class="contact-option-btn email" id="opt-email">
+            <div class="option-icon"><span class="material-symbols-outlined">mail</span></div>
+            <div class="option-text">
+              <strong>Correo Electrónico</strong>
+              <span>Abrir cliente de correo</span>
+            </div>
+          </button>
+          <!-- Push -->
+          <button class="contact-option-btn push" id="opt-push">
+            <div class="option-icon"><span class="material-symbols-outlined">notifications_active</span></div>
+            <div class="option-text">
+              <strong>Notificación Push</strong>
+              <span>App en tiempo real</span>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================= SUB-MODAL PUSH ========================= -->
+  <div id="modal-push" class="modal-overlay hidden">
     <div class="modal-content">
       <header class="modal-header">
-        <h3>Enviar Notificación</h3>
+        <h3>Enviar Notificación Push</h3>
         <button class="btn-close-modal" id="close-push-modal">
           <span class="material-symbols-outlined">close</span>
         </button>
@@ -241,18 +282,18 @@
           <span class="material-symbols-outlined">info</span>
           <p>El cliente recibirá una notificación push en su dispositivo si tiene los permisos activados.</p>
         </div>
-        <div class="form-group">
+        <div class="form-group-stitch">
           <label for="push-title">Título</label>
           <input type="text" id="push-title" placeholder="Ej: ¡Tu pedido está listo!" maxlength="50">
         </div>
-        <div class="form-group">
+        <div class="form-group-stitch">
           <label for="push-message">Mensaje</label>
           <textarea id="push-message" placeholder="Escribe el mensaje que verá el cliente..." maxlength="200"></textarea>
         </div>
       </div>
-      <footer class="modal-footer">
-        <button class="btn-cancel" id="cancel-push">Cancelar</button>
-        <button class="btn-send" id="send-push">
+      <footer class="modal-footer-stitch">
+        <button class="btn-stitch-ghost" id="cancel-push">Cancelar</button>
+        <button class="btn-stitch-primary" id="send-push">
           <span class="material-symbols-outlined">send</span>
           <span>Enviar Notificación</span>
         </button>
