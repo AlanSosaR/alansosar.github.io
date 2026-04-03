@@ -317,38 +317,43 @@ const initAdminClientes = () => {
     };
 
     // 7. CONTACTO MULTICANAL
-    const openContactModal = () => {
-        console.log("📱 Intentando abrir modal de contacto (con clase active). Cliente ID:", selectedCustomerId);
+    const openContactModal = (id) => {
+        if (id) selectedCustomerId = id;
         if (!selectedCustomerId) {
             console.warn("⚠️ No customer selected when calling openContactModal");
             return;
         }
-        const customer = allCustomers.find(c => c.id === selectedCustomerId);
-        if (!customer) {
-            console.error("❌ Customer not found in allCustomers for ID:", selectedCustomerId);
-            return;
-        }
-        if (contactClientName) contactClientName.textContent = customer.name || 'el cliente';
         
-        // El CSS usa la clase "active" para mostrar el modal overlay
-        modalContact?.classList.add("active");
+        const customer = allCustomers.find(c => c.id === selectedCustomerId);
+        if (contactClientName) contactClientName.textContent = customer?.name || 'el cliente';
+        
+        modalContact.classList.remove("hidden");
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                modalContact.classList.add("active");
+            });
+        });
     };
 
     const closeContactModalFn = () => {
-        modalContact?.classList.remove("active");
-    };
+        modalContact.classList.remove("active");
+        setTimeout(() => modalContact.classList.add("hidden"), 300);
+    }
 
     const openPushModal = () => {
         closeContactModalFn();
-        if (!selectedCustomerId) return;
-        inputTitle.value = "";
-        inputMessage.value = "";
-        modalPush?.classList.add("active");
-    };
+        modalPush.classList.remove("hidden");
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                modalPush.classList.add("active");
+            });
+        });
+    }
 
     const closePushModal = () => {
-        modalPush?.classList.remove("active");
-    };
+        modalPush.classList.remove("active");
+        setTimeout(() => modalPush.classList.add("hidden"), 300);
+    }
 
     const showSnack = (text, type = "info") => {
         const snack = document.getElementById("admin-snackbar");

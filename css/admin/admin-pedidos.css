@@ -69,46 +69,6 @@ body.page-admin-orders {
     color: white !important;
 }
 
-/* =====================================================
-   MODALES PREMIUM (ESTILO STITCH) - PORTADO DE USUARIOS
-===================================================== */
-.modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(25, 28, 28, 0.4);
-    backdrop-filter: blur(8px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 4000;
-    padding: 20px;
-    transition: all 0.3s ease;
-}
-
-.modal-content {
-    background: var(--white);
-    border-radius: 24px;
-    width: 100%;
-    max-width: 480px;
-    box-shadow: 0 30px 60px rgba(0,0,0,0.2);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    overflow: hidden;
-}
-
-.modal-header {
-    padding: 24px 32px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid var(--surface-low);
-}
-
-.modal-header h3 {
-    margin: 0;
-    font-family: 'Fraunces', serif;
-    font-size: 22px;
-    color: var(--coffee-deep);
-}
 
 .btn-close-modal {
     background: var(--surface-low);
@@ -576,8 +536,39 @@ body.page-admin-orders {
 .empty-state-stitch p { color: var(--primary-green); font-size: 15px; font-weight: 500; }
 
 .hidden { display: none !important; }
-.fade-in { animation: fadeIn 0.4s ease-out; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.fade-in { animation: fadeIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+@keyframes fadeIn { from { opacity: 0; transform: scale(0.9) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+
+.modal-overlay {
+    position: fixed; inset: 0; background: rgba(10, 15, 15, 0.4); backdrop-filter: blur(8px);
+    display: flex; align-items: center; justify-content: center; z-index: 5000; transition: all 0.3s ease;
+    visibility: hidden; opacity: 0; padding: 20px;
+}
+.modal-overlay.active {
+    visibility: visible; opacity: 1;
+}
+
+.modal-content {
+    background: var(--white); border-radius: 24px; width: 100%; max-width: 480px;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.2); border: 1px solid rgba(255, 255, 255, 0.3); overflow: hidden;
+}
+.modal-header {
+    padding: 24px 32px; display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid var(--surface-low);
+}
+.modal-header h3 { margin: 0; font-family: 'Fraunces', serif; font-size: 22px; color: var(--coffee-deep); }
+.btn-close-modal {
+    background: var(--surface-low); border: none; width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-muted);
+}
+.modal-body { padding: 32px; }
+
+.btn-stitch-primary {
+    background: var(--primary-green); color: white; border: none; padding: 12px 24px; border-radius: 12px;
+    font-weight: 700; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;
+}
+.btn-stitch-primary:hover { transform: translateY(-2px); filter: brightness(1.1); box-shadow: 0 4px 12px rgba(55, 123, 76, 0.2); }
+.btn-stitch-primary:active { transform: translateY(0); }
 
 /* COLORES ESTADOS */
 .status-pending { background: #FF9800; }

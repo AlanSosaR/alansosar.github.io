@@ -76,6 +76,7 @@ console.log("🛠️ admin_pedidos.js — INIT STITCH");
 
         // Contactar Modal
         document.getElementById("btnContact")?.addEventListener("click", openContactModal);
+        document.getElementById("btn-contact-order")?.addEventListener("click", openContactModal);
         document.getElementById("close-contact-modal")?.addEventListener("click", closeContactModal);
         document.getElementById("close-push-modal")?.addEventListener("click", closePushModal);
         document.getElementById("cancel-push")?.addEventListener("click", closePushModal);
@@ -114,20 +115,36 @@ console.log("🛠️ admin_pedidos.js — INIT STITCH");
         const nameSpan = document.getElementById("contact-user-name");
         
         if (nameSpan) nameSpan.textContent = name;
-        modal?.classList.remove("hidden");
+        
+        modal.classList.remove("hidden");
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                modal.classList.add("active");
+            });
+        });
     }
 
     function closeContactModal() {
-        document.getElementById("modal-contact")?.classList.add("hidden");
+        const modal = document.getElementById("modal-contact");
+        modal.classList.remove("active");
+        setTimeout(() => modal.classList.add("hidden"), 300);
     }
 
     function openPushModal() {
         closeContactModal();
-        document.getElementById("modal-push")?.classList.remove("hidden");
+        const modal = document.getElementById("modal-push");
+        modal.classList.remove("hidden");
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                modal.classList.add("active");
+            });
+        });
     }
 
     function closePushModal() {
-        document.getElementById("modal-push")?.classList.add("hidden");
+        const modal = document.getElementById("modal-push");
+        modal.classList.remove("active");
+        setTimeout(() => modal.classList.add("hidden"), 300);
     }
 
     function handleContactAction(type) {
