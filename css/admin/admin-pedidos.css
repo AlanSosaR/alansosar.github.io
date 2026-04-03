@@ -688,6 +688,16 @@ body.page-admin-orders {
     }
 }
 
+/* GLOBAL TOUCH FIX */
+* {
+    -webkit-tap-highlight-color: transparent !important;
+}
+
+.btn-snack-primary, .btn-snack-ghost {
+    pointer-events: auto !important;
+    cursor: pointer;
+}
+
 @media (min-width: 769px) {
     .btn-mobile-back {
         display: none;

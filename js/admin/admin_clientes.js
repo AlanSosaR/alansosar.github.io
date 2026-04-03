@@ -112,6 +112,8 @@ const initAdminClientes = () => {
         }
     };
 
+
+
     // 5. RENDERIZADO
     const renderCustomerList = () => {
         if (!listContainer) return;
@@ -316,9 +318,16 @@ const initAdminClientes = () => {
 
     // 7. CONTACTO MULTICANAL
     const openContactModal = () => {
-        if (!selectedCustomerId) return;
+        console.log("📱 Intentando abrir modal de contacto. Cliente ID:", selectedCustomerId);
+        if (!selectedCustomerId) {
+            console.warn("⚠️ No customer selected when calling openContactModal");
+            return;
+        }
         const customer = allCustomers.find(c => c.id === selectedCustomerId);
-        if (!customer) return;
+        if (!customer) {
+            console.error("❌ Customer not found in allCustomers for ID:", selectedCustomerId);
+            return;
+        }
         if (contactClientName) contactClientName.textContent = customer.name || 'el cliente';
         modalContact?.classList.remove("hidden");
     };
@@ -425,9 +434,19 @@ const initAdminClientes = () => {
     };
 
     // Eventos del Modal
-    if (btnContact) btnContact.onclick = openContactModal;
+    if (btnContact) {
+        btnContact.onclick = () => {
+            console.log("🖱️ Clic en botone Contactar. Cliente ID:", selectedCustomerId);
+            openContactModal();
+        };
+    }
     if (closeContactModal) closeContactModal.onclick = closeContactModalFn;
-    modalContact?.addEventListener("click", (e) => { if (e.target === modalContact) closeContactModalFn(); });
+    modalContact?.addEventListener("click", (e) => { 
+        if (e.target === modalContact) {
+            console.log("🖱️ Clic fuera del modal para cerrar");
+            closeContactModalFn();
+        }
+    });
 
     // Opciones de Contacto
     if (optWhatsApp) optWhatsApp.onclick = () => {

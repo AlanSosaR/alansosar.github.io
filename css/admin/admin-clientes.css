@@ -485,6 +485,18 @@ body.page-admin-customers {
 .status-confirmed::before { background: #1976D2; }
 
 .status-preparing { background: #FFF3E0; color: #F57C00; }
+.snackbar.error { background-color: #f44336; }
+.snackbar.info { background-color: #2196F3; }
+
+/* GLOBAL TOUCH FIX */
+* {
+    -webkit-tap-highlight-color: transparent !important;
+}
+
+.btn-snack-primary, .btn-snack-ghost {
+    pointer-events: auto !important;
+    cursor: pointer;
+}
 .status-preparing::before { background: #F57C00; }
 
 .status-shipped { background: #E1F5FE; color: #0288D1; }
