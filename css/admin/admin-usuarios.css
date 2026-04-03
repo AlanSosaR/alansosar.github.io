@@ -437,15 +437,19 @@ input:checked + .slider-stitch:before { transform: translateX(24px); }
 /* =====================================================
    RESPONSIVE: MOBILE PREMIUM (ESTILO ELENA RODRIGUEZ)
 ===================================================== */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
     /* Layout & Container */
     .admin-users-container { margin: 0; padding: 24px 16px 80px; max-width: 100%; width: 100%; box-sizing: border-box; }
     
     /* REORDENAMIENTO VERTICAL (Estilo Clientes) */
     .users-layout-stitch { 
         display: flex !important; 
-        flex-direction: column !important; 
+        flex-direction: column-reverse !important; 
         gap: 32px; 
+    }
+
+    body:not(.detail-view-active) #no-selection {
+        display: none !important;
     }
 
     /* Maestro-Detalle Mobile Pattern: Solo uno a la vez */
@@ -453,13 +457,13 @@ input:checked + .slider-stitch:before { transform: translateX(24px); }
         display: none !important;
     }
 
-    body:not(.detail-view-active) .user-detail-section-stitch,
-    body:not(.detail-view-active) #no-selection {
+    body:not(.detail-view-active) .user-detail-section-stitch {
         display: none !important;
     }
 
     body.detail-view-active .user-detail-section-stitch {
         display: flex !important;
+        flex-direction: column !important;
         width: 100% !important;
     }
 
@@ -517,7 +521,7 @@ input:checked + .slider-stitch:before { transform: translateX(24px); }
     .empty-state-stitch h3 { font-size: 22px; }
 }
 
-@media (min-width: 769px) {
+@media (min-width: 1025px) {
     .btn-mobile-back {
         display: none;
     }
