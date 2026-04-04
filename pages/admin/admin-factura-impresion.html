@@ -430,13 +430,12 @@
         <div class="header-section">
             <div class="company-details">
                 <h1>Café Cortero</h1>
-                <p>Tienda Demo S.A.</p>
                 <p>Danlí, El Paraíso, Honduras</p>
                 <p>RTN: 05019654135885</p>
             </div>
             <div class="document-info">
                 <h2>Factura</h2>
-                <div class="number">N° <span id="f-doc-num">6549864654-00000084</span></div>
+                <div class="number">N° <span id="f-order-number">—</span></div>
                 <div class="copy-type">Original: Cliente</div>
             </div>
         </div>
@@ -446,11 +445,17 @@
             <!-- Client Box -->
             <div class="box-card">
                 <span class="lbl">Cliente</span>
-                <div class="client-name" id="f-customer-name">Consumidor final</div>
-                <div class="client-p">RTN: <span id="f-customer-rtn">00000000000000</span></div>
+                <div class="client-name" id="f-customer-name">—</div>
+                <div class="client-p" id="f-customer-email-row">
+                    <span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle;color:var(--primary);">mail</span>
+                    <span id="f-customer-email">—</span>
+                </div>
+                <div class="client-p" id="f-customer-phone-row">
+                    <span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle;color:var(--primary);">call</span>
+                    <span id="f-customer-phone">—</span>
+                </div>
                 <div class="divider"></div>
-                <div class="lbl" style="margin-bottom:8px;">Notas:</div>
-                <div class="client-p" style="font-style:italic;" id="f-notes">Escribe notas en tus facturas.</div>
+                <div class="client-p" style="line-height:1.6;" id="f-customer-address">—</div>
             </div>
             
             <!-- Issue Box -->

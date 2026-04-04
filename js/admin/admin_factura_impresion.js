@@ -55,22 +55,37 @@ function hydrateInvoice(o) {
     // Número de factura real simulado a formato SAR
     const orderNumPadded = o.order_number?.toString().padStart(8,"0") || "00000000";
     const docNum = `6549864654-${orderNumPadded}`;
-    const fDocNum = document.getElementById("f-doc-num");
-    if (fDocNum) fDocNum.textContent = docNum;
+    const fOrderNumber = document.getElementById("f-order-number");
+    if (fOrderNumber) fOrderNumber.textContent = docNum;
     
     // Cliente
     const clientName = o.address?.full_name || o.users?.name || "Consumidor final";
     const fCustomerName = document.getElementById("f-customer-name");
     if (fCustomerName) fCustomerName.textContent = clientName;
-    
-    // RTN Opcional (si implementaran RTN)
-    const fCustomerRtn = document.getElementById("f-customer-rtn");
-    if (fCustomerRtn) fCustomerRtn.textContent = "00000000000000"; // Mock format
 
-    // Notas de pedido
-    const notesStr = o.order_notes || "Sin notas adicionales";
-    const fNotes = document.getElementById("f-notes");
-    if (fNotes) fNotes.textContent = notesStr;
+    // Email
+    const fCustomerEmail = document.getElementById("f-customer-email");
+    if (fCustomerEmail) fCustomerEmail.textContent = o.users?.email || "—";
+
+    // Teléfono
+    const fCustomerPhone = document.getElementById("f-customer-phone");
+    if (fCustomerPhone) fCustomerPhone.textContent = o.address?.phone || o.users?.phone || "—";
+
+    // Dirección de envío
+    const fCustomerAddress = document.getElementById("f-customer-address");
+    if (fCustomerAddress) {
+        if (o.address) {
+            const parts = [
+                o.address.street || o.address.address_line1 || "",
+                o.address.city || "",
+                o.address.state || "",
+                o.address.country || "",
+            ].filter(Boolean);
+            fCustomerAddress.innerHTML = `<strong style="font-size:11px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px;">Dirección de envío</strong><br>${parts.join(', ')}`;
+        } else {
+            fCustomerAddress.textContent = "Recogida local / Sin dirección";
+        }
+    }
 
     // Detalles
     const fOrderDate = document.getElementById("f-order-date");
