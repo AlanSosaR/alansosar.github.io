@@ -52,109 +52,105 @@ function hydrateInvoice(o) {
         return d.toLocaleDateString("es-ES", { day: 'numeric', month: 'long', year: 'numeric' });
     };
 
-    const STATUS_MAP = {
-        'pending': 'Pendiente',
-        'confirmed': 'Confirmado',
-        'preparing': 'En Preparación',
-        'shipped': 'Enviado',
-        'delivered': 'Entregado',
-        'cancelled': 'Anulado'
-    };
-
-    document.getElementById("f-order-num").textContent = `#${o.order_number?.toString().padStart(4,"0")}`;
+    // Número de factura real simulado a formato SAR
+    const orderNumPadded = o.order_number?.toString().padStart(8,"0") || "00000000";
+    const docNum = `6549864654-${orderNumPadded}`;
+    const fDocNum = document.getElementById("f-doc-num");
+    if (fDocNum) fDocNum.textContent = docNum;
     
     // Cliente
-    const clientName = o.address?.full_name || o.users?.name || "Desconocido";
-    document.getElementById("f-customer-name").textContent = clientName;
-    document.getElementById("f-customer-email").textContent = o.users?.email || "—";
-    document.getElementById("f-customer-phone").textContent = o.address?.phone || "—";
+    const clientName = o.address?.full_name || o.users?.name || "Consumidor final";
+    const fCustomerName = document.getElementById("f-customer-name");
+    if (fCustomerName) fCustomerName.textContent = clientName;
     
-    let addressStr = "—";
-    if (o.address) {
-        const addrSt = o.address.street || o.address.address_line1 || "";
-        const addrCity = `${o.address.city || ""}, ${o.address.state || ""}`;
-        addressStr = `${addrSt ? addrSt + '\n' : ''}${addrCity}`;
-    }
-    document.getElementById("f-customer-address").innerHTML = addressStr.replace(/\n/g, "<br>") || "Recogida Local / Sin Dirección";
+    // RTN Opcional (si implementaran RTN)
+    const fCustomerRtn = document.getElementById("f-customer-rtn");
+    if (fCustomerRtn) fCustomerRtn.textContent = "00000000000000"; // Mock format
+
+    // Notas de pedido
+    const notesStr = o.order_notes || "Sin notas adicionales";
+    const fNotes = document.getElementById("f-notes");
+    if (fNotes) fNotes.textContent = notesStr;
 
     // Detalles
-    document.getElementById("f-order-date").textContent = formatDate(o.created_at);
-    document.getElementById("f-order-status").textContent = STATUS_MAP[o.status] || o.status;
+    const fOrderDate = document.getElementById("f-order-date");
+    if (fOrderDate) fOrderDate.textContent = formatDate(o.created_at);
     
-    // Traducción de métodos
-    const PAYMENT_MAP = {
-        'cash': 'Efectivo',
-        'transfer': 'Transferencia',
-        'cash_on_delivery': 'Contra entrega'
-    };
-    document.getElementById("f-payment-method").textContent = PAYMENT_MAP[o.payment_method] || o.payment_method || "—";
-    
-    // Lógica para mostrar la Tarjeta de Estado de Pago (Nuevo Diseño)
-    const paymentCard = document.getElementById("f-payment-card");
-    const isPaid = (o.status !== 'pending' && o.status !== 'cancelled');
-    
-    if (paymentCard) {
-        if (o.status === "cancelled") {
-            paymentCard.style.display = "none";
-        } else {
-            paymentCard.style.display = "flex";
-            const payIcon = document.getElementById("f-pay-icon");
-            const payTitle = document.getElementById("f-pay-title");
-            const paySubtitle = document.getElementById("f-pay-subtitle");
-            
-            if (isPaid) {
-                paymentCard.classList.remove("pending");
-                payIcon.innerHTML = `<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1; font-size: 32px;">verified</span>`;
-                payTitle.textContent = "Pago Confirmado";
-                const transId = o.id ? `${o.id.substring(0, 4)}-${o.id.substring(4, 8)}-XX`.toUpperCase() : "N/A";
-                paySubtitle.textContent = `Transacción ID: ${transId}`;
-            } else {
-                // Pendiente
-                paymentCard.classList.add("pending");
-                payIcon.innerHTML = `<span class="material-symbols-outlined" style="font-size: 28px;">hourglass_empty</span>`;
-                payTitle.textContent = "Pago Pendiente";
-                paySubtitle.textContent = "A la espera de confirmación";
-            }
+    // Eliminamos el comportamiento antiguo de cambiar la UI si era pendiente
+    // El Invoice fiscal siempre mostrará "Documento Válido" salvo que sea cancelada
+
+    if (o.status === "cancelled") {
+        const payTitle = document.getElementById("f-pay-title");
+        const payIcon = document.getElementById("f-pay-icon");
+        if(payTitle) {
+            payTitle.textContent = "Anulado";
+            payTitle.style.color = "#C62828";
+        }
+        if(payIcon) {
+            payIcon.innerHTML = `<span class="material-symbols-outlined" style="font-size: 32px; color: #C62828;">cancel</span>`;
+            payIcon.style.borderColor = "#C62828";
         }
     }
 
     // Tabla de Productos
     const tbody = document.getElementById("f-items-tbody");
-    tbody.innerHTML = "";
-    
-    let subtotal = 0;
-    
-    if (o.items && o.items.length > 0) {
-        o.items.forEach((item, index) => {
-            const product = item.products || {};
-            const lineTotal = item.price * item.quantity;
-            subtotal += lineTotal;
-            
-            const pName = product.name || "Producto Removido";
-            const pPres = product.presentation || "Unidad";
-            const pGrind = product.grind_type ? `| ${product.grind_type}` : "";
-            
-            const tr = document.createElement("tr");
-            tr.className = index % 2 === 0 ? "alt" : "";
-            tr.innerHTML = `
-                <td>
-                    <p class="item-name primary">${pName}</p>
-                    <p class="item-desc">${pPres} ${pGrind}</p>
-                </td>
-                <td class="center">x${item.quantity}</td>
-                <td class="right">${formatCurrency(item.price)}</td>
-                <td class="right total">${formatCurrency(lineTotal)}</td>
-            `;
-            tbody.appendChild(tr);
-        });
-    } else {
-        tbody.innerHTML = `<tr><td colspan="4" class="center">No hay productos en este pedido</td></tr>`;
-    }
+    if (tbody) {
+        tbody.innerHTML = "";
+        
+        let subtotal = 0;
+        
+        if (o.items && o.items.length > 0) {
+            o.items.forEach((item) => {
+                const product = item.products || {};
+                const lineTotal = item.price * item.quantity;
+                subtotal += lineTotal;
+                
+                const pName = product.name || "Producto Removido";
+                const pPres = product.presentation || "Unidad";
+                const pGrind = product.grind_type ? `• ${product.grind_type}` : "";
+                
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td class="left">
+                        <p class="item-name">${pName}</p>
+                        <p class="item-desc">${pPres} ${pGrind}</p>
+                    </td>
+                    <td>${item.quantity}</td>
+                    <td>${formatCurrency(item.price)}</td>
+                    <td>L 0.00</td>
+                    <td>0.00%</td>
+                    <td class="right">${formatCurrency(lineTotal)}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        } else {
+            tbody.innerHTML = `<tr><td colspan="6" class="center">No hay productos en este pedido</td></tr>`;
+        }
 
-    // Costos
-    document.getElementById("f-subtotal").textContent = formatCurrency(subtotal);
-    // Como backend solo retorna el Total y no existe desglose real en BD, mostramos lo cobrado
-    document.getElementById("f-total").textContent = formatCurrency(o.total || subtotal);
+        // Costos
+        const fSubtotal = document.getElementById("f-subtotal");
+        if(fSubtotal) fSubtotal.textContent = formatCurrency(subtotal);
+
+        // Envío mockup
+        const baseEnvio = (o.total && o.total > subtotal) ? (o.total - subtotal) : 0;
+        const fEnvio = document.getElementById("f-envio");
+        if (fEnvio) fEnvio.textContent = formatCurrency(baseEnvio);
+
+        // Gravamiento ficticio al 15% (Mock, si es café usualmente es exento, pero el repo dice Gravado 15%)
+        const fGravado = document.getElementById("f-gravado");
+        if(fGravado) fGravado.textContent = formatCurrency(subtotal);
+        
+        const fIsv = document.getElementById("f-isv");
+        const totalTax = subtotal * 0.15;
+        if(fIsv) fIsv.textContent = formatCurrency(totalTax); // Factura real sumaría tax, pero aquí mock
+
+        const mTotal = o.total || subtotal;
+        const fTotal = document.getElementById("f-total");
+        if(fTotal) fTotal.textContent = formatCurrency(mTotal);
+
+        const fLetras = document.getElementById("f-letras");
+        if(fLetras) fLetras.textContent = `VALOR DE ${formatCurrency(mTotal)} EN LEMPIRAS (GENERADO DIGITALMENTE)`;
+    }
 
     // Auto imprimir tras carga de fuentes (700ms)
     setTimeout(() => {

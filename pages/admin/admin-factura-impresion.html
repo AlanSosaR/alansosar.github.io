@@ -1,65 +1,61 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Factura Café Cortero</title>
-    
-    <!-- Material Symbols & Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;700;900&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-    
-    <!-- Core CSS Standard M3 Expressive -->
-    <link rel="stylesheet" href="/css/core/tipografia.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Imprimir Factura</title>
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     
     <style>
         :root {
             --primary: #377b4c;
-            --primary-light: #e8f3ec;
-            --espresso: #512615;
-            --espresso-light: rgba(81, 38, 21, 0.7);
-            --surface: #faf9f6;
-            --surface-container-lowest: #ffffff;
-            --surface-container-low: #f4f4f0;
-            --surface-container: #eeeeea;
-            --outline-variant: rgba(192, 201, 190, 0.5);
-            /* M3 Expressive Tokens */
-            --radius-xl: 16px;
-            --radius-lg: 12px;
-            --radius-full: 9999px;
-            --font-headline: 'Fraunces', serif;
-            --font-body: 'Roboto', sans-serif;
+            --primary-light: #e8f5e9;
+            --espresso: #3e2723;
+            --espresso-light: #795548;
+            --surface: #ffffff;
+            --background: #f5f7f6;
+            --outline: #e0e0e0;
+            --outline-variant: #eeeeee;
+            --text-main: #2b2b2b;
+            --text-secondary: #6b6b6b;
+            --font-main: 'Inter', sans-serif;
+            --font-headline: 'Outfit', sans-serif;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         body {
-            background-color: var(--surface);
-            color: var(--espresso);
-            font-family: var(--font-body);
-            -webkit-font-smoothing: antialiased;
-            line-height: 1.5;
+            font-family: var(--font-main);
+            background-color: var(--background);
+            color: var(--text-main);
+            padding: 40px;
+            display: flex;
+            justify-content: center;
         }
 
-        /* Top Bar */
+        /* Top Bar - No Print */
         .top-bar {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            background: var(--surface);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 16px 32px;
-            background: var(--surface);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            position: relative;
-            z-index: 10;
+            padding: 12px 24px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            z-index: 100;
         }
         .top-bar .brand {
             font-family: var(--font-headline);
+            font-size: 18px;
+            font-weight: 700;
             color: var(--primary);
-            font-size: 24px;
-            font-weight: 900;
-            letter-spacing: -0.5px;
         }
         .top-actions {
             display: flex;
@@ -69,351 +65,347 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 8px 12px;
-            background: transparent;
+            padding: 8px 16px;
             border: none;
-            border-radius: var(--radius-lg);
-            color: #555;
+            background: none;
             cursor: pointer;
-            font-family: var(--font-body);
             font-weight: 500;
+            color: var(--text-secondary);
+            border-radius: 8px;
+            transition: all 0.2s;
             font-size: 14px;
-            transition: background 0.2s;
         }
         .action-btn:hover {
-            background: var(--surface-container);
+            background: #f0f0f0;
+            color: var(--text-main);
         }
 
         /* Invoice Container */
         .invoice-container {
+            background: var(--surface);
+            width: 100%;
             max-width: 900px;
-            margin: 48px auto;
-            background: var(--surface-container-lowest);
-            padding: 48px 64px;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.04);
-            border-radius: var(--radius-xl);
+            padding: 64px 48px;
+            margin-top: 40px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.04);
+            border-radius: 8px;
         }
 
-        /* Header */
-        .invoice-header {
+        /* Header Info */
+        .header-section {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 64px;
+            margin-bottom: 48px;
         }
-        .brand-header {
-            display: flex;
-            align-items: center;
-            gap: 24px;
-        }
-        .invoice-logo {
-            width: 140px;
-            height: 140px;
-            object-fit: contain;
-            border-radius: 12px;
-        }
-        .company-info h2 {
+        .company-details h1 {
             font-family: var(--font-headline);
+            font-size: 32px;
             color: var(--primary);
-            font-size: 36px;
-            font-weight: 900;
-            letter-spacing: -1px;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
         }
-        .company-info p {
+        .company-details p {
+            font-size: 11px;
             color: var(--espresso-light);
-            font-size: 14px;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
+            line-height: 1.4;
+            font-weight: 500;
         }
-        .invoice-title {
+
+        .document-info {
             text-align: right;
         }
-        .invoice-title h1 {
+        .document-info h2 {
             font-family: var(--font-headline);
-            font-weight: 900;
-            font-size: 64px;
-            color: var(--espresso);
-            opacity: 0.1;
+            font-size: 56px;
+            color: #f3efe9; /* Watermark color */
+            margin-bottom: 12px;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            font-weight: 800;
             line-height: 1;
+        }
+        .document-info .number {
+            font-size: 15px;
+            font-family: var(--font-headline);
+            font-weight: 800;
+            color: var(--espresso);
             margin-bottom: 8px;
         }
-        .invoice-title p {
-            font-family: var(--font-headline);
+        .document-info .copy-type {
+            font-size: 10px;
             font-weight: 700;
-            font-size: 24px;
-            color: var(--espresso);
-        }
-
-        /* Grid */
-        .info-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 48px;
-            margin-bottom: 64px;
-        }
-
-        /* Customer Card */
-        .customer-card {
-            background: var(--surface-container-low);
-            padding: 32px;
-            border-radius: var(--radius-xl);
-        }
-        .section-label {
-            font-family: var(--font-headline);
-            font-size: 11px;
-            font-weight: 700;
+            color: var(--text-secondary);
             letter-spacing: 2px;
             text-transform: uppercase;
-            color: var(--espresso);
+        }
+
+        /* Twin Cards (Cliente / Emision) */
+        .meta-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+        
+        .box-card {
+            background: #f8f9fa; /* Very light gray/beige tint */
+            border-radius: 8px;
+            padding: 24px;
+        }
+        
+        /* Client Label */
+        .lbl {
+            font-family: var(--font-headline);
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: var(--primary);
+            text-transform: uppercase;
             margin-bottom: 16px;
             display: block;
         }
-        .customer-name {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-        .customer-contact {
-            color: var(--espresso-light);
-            font-size: 14px;
-            line-height: 1.6;
-        }
-        .customer-address {
-            margin-top: 16px;
-            padding-top: 16px;
-            border-top: 1px solid var(--outline-variant);
-            color: var(--espresso);
-            font-size: 14px;
-            line-height: 1.6;
-        }
 
-        /* Modulos de Estado (Cards) */
-        .meta-cards-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-        
-        .meta-card {
-            background: var(--surface);
-            border: 1px solid #e2e8f0; /* Soft border */
-            border-radius: 8px;
-            padding: 20px 16px;
-        }
-        
-        .meta-label {
+        .client-name {
             font-family: var(--font-headline);
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 2px;
-            color: var(--primary); /* Títulos en verde */
-            text-transform: uppercase;
-            display: block;
-            margin-bottom: 12px;
-        }
-        
-        .meta-card p {
-            color: var(--espresso); /* Textos en cafe oscuro */
-            font-size: 15px;
-            font-weight: 500;
-            line-height: 1.4;
-        }
-
-        .payment-status-card {
-            background: var(--surface);
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 24px;
-            display: none; /* Oculto por defecto, inyectado via JS */
-            align-items: center;
-            gap: 20px;
-        }
-
-        .payment-status-card .icon-box {
-            width: 56px;
-            height: 56px;
-            border-radius: 12px;
-            border: 2px solid var(--primary);
-            color: var(--primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .payment-status-card .p-title {
-            color: var(--espresso);
-            font-family: var(--font-headline);
-            font-weight: 800;
-            font-size: 20px;
-        }
-        
-        .payment-status-card .p-subtitle {
-            color: var(--espresso-light);
-            font-size: 14px;
-            margin-top: 4px;
-        }
-
-        /* Table */
-        .items-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 48px;
-            text-align: left;
-        }
-        .items-table th {
-            background: var(--surface-container);
-            padding: 16px 24px;
-            font-family: var(--font-headline);
-            font-size: 12px;
-            font-weight: 900; /* Negrita pronunciada */
-            color: var(--espresso); /* Color café */
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            border-bottom: 2px solid var(--primary);
-        }
-        .items-table th:first-child { border-radius: 12px 0 0 0; }
-        .items-table th:last-child { border-radius: 0 12px 0 0; text-align: right; }
-        .items-table th.center { text-align: center; }
-        .items-table th.right { text-align: right; }
-        
-        .items-table td {
-            padding: 24px;
-        }
-        .items-table tr {
-            background: var(--surface-container-lowest);
-        }
-        .items-table tr.alt {
-            background: var(--surface);
-        }
-        .item-name {
-            font-weight: 700;
-            font-size: 16px;
-        }
-        .item-name.primary { color: var(--primary); }
-        .item-desc {
-            color: var(--espresso-light);
-            font-size: 14px;
-            font-style: italic;
-            margin-top: 4px;
-        }
-        .items-table td.center { text-align: center; font-weight: 500; }
-        .items-table td.right { text-align: right; font-weight: 500; }
-        .items-table td.total { font-weight: 700; }
-
-        /* Summary */
-        .summary-section {
-            display: flex;
-            justify-content: flex-end;
-            margin-bottom: 48px;
-        }
-        
-        .totals-table {
-            width: 100%;
-            max-width: 320px;
-        }
-        .tot-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            color: var(--espresso);
-        }
-        .tot-final {
-            border-top: 2px solid var(--primary);
-            padding-top: 16px;
-            font-weight: 700;
             font-size: 18px;
-        }
-
-        /* Legal Footer */
-        .legal-footer {
-            margin-top: 48px;
-            padding-top: 24px;
-            border-top: 1px solid var(--outline-variant);
-            text-align: center;
             color: var(--espresso);
-            font-size: 13px;
-            line-height: 1.6;
-        }
-        
-        .legal-footer strong {
-            color: var(--primary);
-            font-weight: 700;
-        }
-
-        /* Footer */
-        .invoice-footer {
-            margin-top: 80px;
-            padding-top: 48px;
-            border-top: 1px solid var(--outline-variant);
-            text-align: center;
-        }
-        .invoice-footer h4 {
-            font-family: var(--font-headline);
-            color: var(--primary);
-            font-size: 18px;
             font-weight: 700;
             margin-bottom: 8px;
         }
-        .invoice-footer p {
-            color: var(--espresso-light);
-            font-size: 11px;
+        .client-p {
+            font-size: 12px;
+            color: var(--text-main);
+            margin-bottom: 8px;
+        }
+        .client-p span { color: var(--text-secondary); font-size: 11px; }
+
+        .divider {
+            height: 1px;
+            background: var(--outline-variant);
+            margin: 16px 0;
+        }
+        
+        /* Emision Info inside box */
+        .emision-top {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 32px;
+        }
+        .emision-top div.right { text-align: right; }
+        .emision-val {
+            font-size: 15px;
+            color: var(--text-main);
             font-weight: 500;
-            letter-spacing: 2px;
+        }
+
+        /* Validator / Status Block */
+        .status-block {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .status-block .icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            border: 2px solid var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+        }
+        .status-title {
+            color: var(--espresso);
+            font-family: var(--font-headline);
+            font-size: 16px;
+            font-weight: 800;
+        }
+        .status-subtitle {
+            font-size: 10px;
+            color: var(--text-secondary);
+            margin-top: 4px;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Items Table */
+        .items-area { margin-bottom: 48px; }
+        .invoice-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .invoice-table th {
+            background: #f7f5f0; 
+            padding: 12px 16px;
+            font-family: var(--font-headline);
+            font-size: 10px;
+            font-weight: 800;
+            color: var(--espresso);
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid var(--outline-variant);
+            border-radius: 4px; /* Slight visual softening */
+        }
+        .invoice-table th.left { text-align: left; }
+        .invoice-table th.right { text-align: right; }
+        
+        .invoice-table td {
+            padding: 24px 16px;
+            font-size: 13px;
+            color: var(--text-main);
+            text-align: center;
+        }
+        .invoice-table td.left { text-align: left; }
+        .invoice-table td.right { text-align: right; }
+
+        .item-name {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 15px;
+            font-family: var(--font-headline);
+        }
+        .item-desc {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 6px;
             font-style: italic;
         }
 
-        /* Ajustes responsivos móviles (Pantalla) */
-        @media screen and (max-width: 768px) {
-            .info-grid { grid-template-columns: 1fr; gap: 32px; }
-            .meta-cards-grid { grid-template-columns: 1fr; gap: 12px; }
-            .invoice-container { padding: 24px 16px; margin: 16px; border-radius: 12px; }
-            .invoice-header { flex-direction: column; gap: 16px; margin-bottom: 32px; }
-            .invoice-title { text-align: left; }
-            .invoice-title h1 { font-size: 40px; }
-            .company-info h2 { font-size: 28px; }
-            
-            /* Scroll para tabla en teléfono */
-            .table-responsive-wrapper { width: 100%; overflow-x: auto; margin-bottom: 32px; -webkit-overflow-scrolling: touch; }
-            .items-table { min-width: 500px; margin-bottom: 0; }
-            .items-table th, .items-table td { padding: 16px 12px; }
-            
-            /* Botones Superiores */
-            .top-bar { padding: 16px; flex-direction: column; align-items: flex-start; gap: 16px; }
-            .top-actions { width: 100%; justify-content: space-between; }
-            .action-btn { flex: 1; justify-content: center; }
+        /* Totals / Letters Section */
+        .bottom-section {
+            display: flex;
+            justify-content: space-between;
+            gap: 48px;
+            margin-bottom: 48px;
+        }
+        .bottom-left { flex: 1.5; }
+        .bottom-right { flex: 1; min-width: 280px; }
+
+        .letras-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        .letras-val {
+            font-family: var(--font-headline);
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--espresso);
+            line-height: 1.5;
+            letter-spacing: 0.5px;
         }
 
-        /* Print Overrides */
+        .fiscal-lines {
+            font-size: 10px;
+            color: var(--text-secondary);
+            line-height: 2.4;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Totals List */
+        .tot-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+        .tot-row.bold {
+            color: var(--text-main);
+        }
+        .tot-row.grand {
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 2px solid var(--primary);
+            font-family: var(--font-headline);
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--primary);
+            align-items: flex-end;
+        }
+        .tot-row.grand .val {
+            font-size: 28px;
+            color: var(--espresso);
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        /* RTN Footer Data (Mock) */
+        .sar-data {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 48px;
+            padding-top: 24px;
+            border-top: 1px dashed var(--outline-variant);
+        }
+        .sar-col {
+            font-size: 9px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            line-height: 2;
+            letter-spacing: 0.5px;
+        }
+        .sar-col strong { color: var(--espresso); font-weight: 800; }
+        .sar-col.right { text-align: right; }
+
+        /* Slogan Footer */
+        .final-footer {
+            text-align: center;
+            font-size: 10px;
+            color: var(--espresso-light);
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            font-weight: 700;
+        }
+        
+        .page-num {
+            text-align: center;
+            font-size: 10px;
+            color: var(--text-secondary);
+            font-style: italic;
+            margin-top: 24px;
+        }
+
+        /* Print Media */
         @media print {
-            body { background: white !important; font-size: 12px; }
-            .no-print { display: none !important; }
+            body { padding: 0; background: white; margin: 0; display: block; }
+            .top-bar { display: none !important; }
             .invoice-container { 
-                margin: 0; padding: 0; 
-                box-shadow: none; border-radius: 0;
+                box-shadow: none; 
+                margin: 0; 
+                padding: 0;
+                max-width: 100%;
             }
-            .customer-card { border: 1px solid var(--outline-variant); padding: 16px; }
-            @page { margin: 8mm; }
-            
-            .invoice-header { margin-bottom: 24px; }
-            .company-info h2 { font-size: 24px; margin-bottom: 4px; }
-            .invoice-title h1 { font-size: 36px; margin-bottom: 4px; }
-            .invoice-title p { font-size: 16px; }
-            .info-grid { margin-bottom: 24px; gap: 24px; }
-            .items-table { margin-bottom: 24px; }
-            .items-table th { padding: 8px 16px; font-size: 10px; }
-            .items-table td { padding: 12px 16px; }
-            .item-name { font-size: 14px; }
-            .item-desc { font-size: 12px; margin-top: 2px; }
-            .invoice-footer { margin-top: 32px; padding-top: 16px; }
+            .sar-data { padding-top: 16px; margin-bottom: 32px; }
+            @page { margin: 10mm; }
+        }
+        
+        /* Ajuste móvil - Solo visualizar */
+        @media screen and (max-width: 768px) {
+            .invoice-container { padding: 24px; margin-top: 64px; }
+            .header-section { flex-direction: column; gap: 24px; text-align: center; align-items: center; }
+            .document-info { text-align: center; }
+            .meta-grid { grid-template-columns: 1fr; gap: 16px; }
+            .items-area { overflow-x: auto; }
+            .invoice-table { min-width: 600px; }
+            .bottom-section { flex-direction: column; gap: 32px; }
+            .bottom-right { width: 100%; }
+            .sar-data { flex-direction: column; gap: 16px; text-align: center; }
+            .sar-col.right { text-align: center; }
         }
     </style>
 </head>
 <body>
-    <!-- Top Navigation Shell -->
-    <header class="top-bar no-print">
-        <div class="brand">Café Cortero</div>
+
+    <!-- Bar -->
+    <div class="top-bar no-print">
+        <h3 class="brand">Café Cortero</h3>
         <div class="top-actions">
             <button class="action-btn" id="btn-print">
                 <span class="material-symbols-outlined">print</span>
@@ -431,75 +423,70 @@
                 <span class="material-symbols-outlined">close</span>
             </button>
         </div>
-    </header>
+    </div>
 
-    <main class="invoice-container" id="invoice-doc">
-        <!-- Branded Header -->
-        <header class="invoice-header">
-            <div class="brand-header">
-                <img src="/imagenes/logo.png" alt="Café Cortero" class="invoice-logo">
-                <div class="company-info">
-                    <h2>Café Cortero</h2>
-                    <p>Danlí, El Paraíso, Honduras</p>
-                </div>
+    <main class="invoice-container">
+        <!-- Header -->
+        <div class="header-section">
+            <div class="company-details">
+                <h1>Café Cortero</h1>
+                <p>Tienda Demo S.A.</p>
+                <p>Danlí, El Paraíso, Honduras</p>
+                <p>RTN: 05019654135885</p>
             </div>
-            <div class="invoice-title">
-                <h1>FACTURA</h1>
-                <p id="f-order-num">#---</p>
+            <div class="document-info">
+                <h2>Factura</h2>
+                <div class="number">N° <span id="f-doc-num">6549864654-00000084</span></div>
+                <div class="copy-type">Original: Cliente</div>
             </div>
-        </header>
+        </div>
 
-        <!-- Customer & Order Grid -->
-        <div class="info-grid">
-            <!-- Left: Customer -->
-            <div class="customer-card">
-                <span class="section-label">Cliente</span>
-                <div class="customer-name" id="f-customer-name">Cargando...</div>
-                <div class="customer-contact" id="f-customer-email">—</div>
-                <div class="customer-contact" id="f-customer-phone">—</div>
-                
-                <div class="customer-address" id="f-customer-address">
-                    Cargando dirección...
-                </div>
+        <!-- Twin Metas -->
+        <div class="meta-grid">
+            <!-- Client Box -->
+            <div class="box-card">
+                <span class="lbl">Cliente</span>
+                <div class="client-name" id="f-customer-name">Consumidor final</div>
+                <div class="client-p">RTN: <span id="f-customer-rtn">00000000000000</span></div>
+                <div class="divider"></div>
+                <div class="lbl" style="margin-bottom:8px;">Notas:</div>
+                <div class="client-p" style="font-style:italic;" id="f-notes">Escribe notas en tus facturas.</div>
             </div>
-
-            <!-- Right: Order Details -->
-            <div class="order-details">
-                <div class="meta-cards-grid">
-                    <div class="meta-card">
-                        <span class="meta-label">Fecha</span>
-                        <p id="f-order-date">—</p>
+            
+            <!-- Issue Box -->
+            <div class="box-card">
+                <div class="emision-top">
+                    <div>
+                        <span class="lbl">Fecha de emisión</span>
+                        <div class="emision-val" id="f-order-date">20 de Noviembre, 2025</div>
                     </div>
-                    <div class="meta-card">
-                        <span class="meta-label">Estado</span>
-                        <p id="f-order-status">—</p>
-                    </div>
-                    <div class="meta-card">
-                        <span class="meta-label">Método</span>
-                        <p id="f-payment-method" style="text-transform: capitalize;">—</p>
+                    <div class="right">
+                        <span class="lbl">Lugar</span>
+                        <div class="emision-val">Danlí, Honduras</div>
                     </div>
                 </div>
-                
-                <div id="f-payment-card" class="payment-status-card">
-                    <div class="icon-box" id="f-pay-icon">
-                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1; font-size: 32px;">verified</span>
+                <div class="status-block">
+                    <div class="icon" id="f-pay-icon">
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">verified</span>
                     </div>
                     <div>
-                        <div class="p-title" id="f-pay-title">Pago Confirmado</div>
-                        <div class="p-subtitle" id="f-pay-subtitle">—</div>
+                        <div class="status-title" id="f-pay-title">Documento Válido</div>
+                        <div class="status-subtitle" id="f-pay-subtitle">Operación autorizada por el SAR</div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Line Items Table -->
-        <div class="table-responsive-wrapper">
-            <table class="items-table">
+        <!-- Table -->
+        <div class="items-area">
+            <table class="invoice-table">
                 <thead>
                     <tr>
-                        <th>Descripción</th>
-                        <th class="center">Cant.</th>
-                        <th class="right">Precio</th>
+                        <th class="left">Producto / Descripción</th>
+                        <th>Cant.</th>
+                        <th>Precio</th>
+                        <th>Descuento</th>
+                        <th>Impuesto (ISV)</th>
                         <th class="right">Total</th>
                     </tr>
                 </thead>
@@ -509,35 +496,56 @@
             </table>
         </div>
 
-        <!-- Summary (Subtotal, Total, etc) -->
-        <div class="summary-section" style="justify-content: flex-end;">
-            <div class="totals-table">
-                <div class="tot-row">
-                    <span>Subtotal</span>
-                    <span id="f-subtotal">L 0.00</span>
+        <!-- Totals & Letters -->
+        <div class="bottom-section">
+            <!-- Text amounts -->
+            <div class="bottom-left">
+                <div class="letras-card">
+                    <span class="lbl">Total en letras</span>
+                    <div class="letras-val" id="f-letras">MIL CIENTO CINCUENTA LEMPIRAS EXACTOS</div>
                 </div>
-                <div class="tot-row">
-                    <span>Envío</span>
-                    <span id="f-envio">L 0.00</span>
+                <div class="fiscal-lines">
+                    No. Orden de Compra Exenta: ________________<br>
+                    No. Constancia de Exoneración: ________________<br>
+                    No. Registro SAG: ________________
                 </div>
-                <div class="tot-row" style="margin-bottom: 12px;">
-                    <span>Impuestos</span>
-                    <span id="f-impuestos">L 0.00</span>
-                </div>
-                <div class="tot-row tot-final">
-                    <span>Total</span>
-                    <span id="f-total">L 0.00</span>
+            </div>
+            
+            <!-- Breakdown -->
+            <div class="bottom-right">
+                <div class="tot-row"><span>Descuento:</span> <span>-L 0.00</span></div>
+                <div class="tot-row"><span>Importe Exento:</span> <span>L 0.00</span></div>
+                <div class="tot-row"><span>Importe Exonerado:</span> <span>L 0.00</span></div>
+                <div class="tot-row"><span>Importe Gravado 15%:</span> <span id="f-gravado">L 0.00</span></div>
+                <div class="tot-row"><span>Importe Gravado 18%:</span> <span>L 0.00</span></div>
+                <div class="tot-row"><span>ISV 15%:</span> <span id="f-isv">L 0.00</span></div>
+                <div class="tot-row"><span>ISV 18%:</span> <span>L 0.00</span></div>
+                <div class="tot-row"><span>Envío:</span> <span id="f-envio">L 0.00</span></div>
+                
+                <div class="tot-row grand">
+                    <span>TOTAL</span>
+                    <span class="val" id="f-total">L 0.00</span>
                 </div>
             </div>
         </div>
 
-        <!-- Contact / Legal Footer -->
-        <div class="legal-footer no-print-break">
-            <p>La esencia de Honduras en cada sorbo. Si algo no es perfecto o tienes dudas, somos todo oídos.<br>
-            Escribinos cuando quieras: <strong>+504 9667-0613 / 9867-5101 | cafecortero@gmail.com</strong>.<br>
-            Queremos que disfrutes cada sorbo.</p>
+        <!-- SAR Footer Data -->
+        <div class="sar-data">
+            <div class="sar-col">
+                Rango Autorizado Del: <strong>6549864654-00000001</strong> al <strong>6549864654-00000100</strong><br>
+                Fecha Límite de Emisión: <strong>2025-12-31</strong>
+            </div>
+            <div class="sar-col right">
+                CAI: <strong>3AE914-B7C623-5D8B2F-40FD9A-8721BC-4E</strong><br>
+                Lugar de Emisión: <strong>Danlí, El Paraíso, Honduras</strong>
+            </div>
         </div>
 
+        <div class="final-footer">
+            Cosechado en Honduras • Tostado con Alma
+        </div>
+        <div class="page-num">Página 1 de 1</div>
+        
     </main>
 
     <script src="/js/admin/admin_factura_impresion.js" type="module"></script>
