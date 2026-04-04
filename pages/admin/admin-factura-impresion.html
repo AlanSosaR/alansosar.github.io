@@ -361,14 +361,31 @@
 
         /* Print Overrides */
         @media print {
-            body { background: white !important; }
+            body { background: white !important; font-size: 12px; }
             .no-print { display: none !important; }
             .invoice-container { 
                 margin: 0; padding: 0; 
                 box-shadow: none; border-radius: 0;
             }
-            .customer-card { border: 1px solid var(--outline-variant); }
-            @page { margin: 10mm; }
+            .customer-card { border: 1px solid var(--outline-variant); padding: 16px; }
+            @page { margin: 8mm; }
+            
+            /* Combatiendo desbordamiento a 2 páginas */
+            .invoice-header { margin-bottom: 24px; }
+            .company-info h2 { font-size: 24px; margin-bottom: 4px; }
+            .invoice-title h1 { font-size: 36px; margin-bottom: 4px; }
+            .invoice-title p { font-size: 16px; }
+            .info-grid { margin-bottom: 24px; gap: 24px; }
+            .payment-badge { margin-top: 16px; }
+            .items-table { margin-bottom: 24px; }
+            .items-table th { padding: 8px 16px; font-size: 10px; }
+            .items-table td { padding: 12px 16px; }
+            .item-name { font-size: 14px; }
+            .item-desc { font-size: 12px; margin-top: 2px; }
+            .summary-section { gap: 24px; }
+            .grand-total { margin-top: 8px; padding-top: 8px; }
+            .grand-total .value { font-size: 24px; }
+            .invoice-footer { margin-top: 32px; padding-top: 16px; }
         }
     </style>
 </head>
