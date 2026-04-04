@@ -344,6 +344,8 @@ function handleEmail() {
 }
 
 function openPushModal() {
+    if (!selectedUser) return;
+    
     // Cerrar el modal de contacto actual de forma inmediata para evitar solapamientos
     const contactModal = document.getElementById('modal-contact');
     if (contactModal) {
@@ -352,6 +354,10 @@ function openPushModal() {
     }
     
     const modal = document.getElementById('modal-push');
+    const nameSpan = document.getElementById('push-user-name');
+    
+    if (nameSpan) nameSpan.textContent = selectedUser.name;
+    
     if (modal) {
         modal.classList.remove('hidden');
         // El doble RAF asegura que el navegador registre el fin del 'display: none' antes de animar
