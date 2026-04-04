@@ -350,13 +350,30 @@
             font-style: italic;
         }
 
-        /* Ajustes responsivos básicos */
-        @media (max-width: 768px) {
+        /* Ajustes responsivos móviles (Pantalla) */
+        @media screen and (max-width: 768px) {
             .info-grid { grid-template-columns: 1fr; gap: 32px; }
-            .summary-section { flex-direction: column-reverse; }
-            .invoice-container { padding: 24px; margin: 16px; }
-            .invoice-header { flex-direction: column; gap: 24px; }
+            .order-meta { grid-template-columns: 1fr; gap: 16px; }
+            .summary-section { flex-direction: column-reverse; gap: 32px; }
+            .invoice-container { padding: 24px 16px; margin: 16px; border-radius: 12px; }
+            .invoice-header { flex-direction: column; gap: 16px; margin-bottom: 32px; }
             .invoice-title { text-align: left; }
+            .invoice-title h1 { font-size: 40px; }
+            .company-info h2 { font-size: 28px; }
+            
+            /* Scroll para tabla en teléfono */
+            .table-responsive-wrapper { width: 100%; overflow-x: auto; margin-bottom: 32px; -webkit-overflow-scrolling: touch; }
+            .items-table { min-width: 500px; margin-bottom: 0; }
+            .items-table th, .items-table td { padding: 16px 12px; }
+            
+            /* Botones Superiores */
+            .top-bar { padding: 16px; flex-direction: column; align-items: flex-start; gap: 16px; }
+            .top-actions { width: 100%; justify-content: space-between; }
+            .action-btn { flex: 1; justify-content: center; }
+            
+            /* Sumario */
+            .legal-note { max-width: 100%; }
+            .totals { max-width: 100%; }
         }
 
         /* Print Overrides */
@@ -467,19 +484,21 @@
         </div>
 
         <!-- Line Items Table -->
-        <table class="items-table">
-            <thead>
-                <tr>
-                    <th>Descripción</th>
-                    <th class="center">Cant.</th>
-                    <th class="right">Precio</th>
-                    <th class="right">Total</th>
-                </tr>
-            </thead>
-            <tbody id="f-items-tbody">
-                <!-- Dinámico -->
-            </tbody>
-        </table>
+        <div class="table-responsive-wrapper">
+            <table class="items-table">
+                <thead>
+                    <tr>
+                        <th>Descripción</th>
+                        <th class="center">Cant.</th>
+                        <th class="right">Precio</th>
+                        <th class="right">Total</th>
+                    </tr>
+                </thead>
+                <tbody id="f-items-tbody">
+                    <!-- Dinámico -->
+                </tbody>
+            </table>
+        </div>
 
         <!-- Summary Section -->
         <div class="summary-section">
