@@ -10,6 +10,19 @@ document.addEventListener("DOMContentLoaded", () => {
         const order = JSON.parse(dataStr);
         hydrateInvoice(order);
         
+        // Menú 3 puntos (móvil)
+        const dotsBtn = document.getElementById("menu-dots-btn");
+        const dotsDropdown = document.getElementById("dots-dropdown");
+        if (dotsBtn && dotsDropdown) {
+            dotsBtn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                dotsDropdown.classList.toggle("open");
+            });
+            document.addEventListener("click", () => {
+                dotsDropdown.classList.remove("open");
+            });
+        }
+
         // Listener del botón
         document.getElementById("btn-print")?.addEventListener("click", () => {
             window.print();

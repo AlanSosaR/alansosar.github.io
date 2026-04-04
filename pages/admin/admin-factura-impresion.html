@@ -51,11 +51,19 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
             z-index: 100;
         }
-        .top-bar .brand {
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: none;
+            background: none;
+            cursor: pointer;
             font-family: var(--font-headline);
-            font-size: 18px;
-            font-weight: 700;
+            font-weight: 800;
+            font-size: 14px;
             color: var(--primary);
+            letter-spacing: 1px;
+            padding: 8px 4px;
         }
         .top-actions {
             display: flex;
@@ -78,6 +86,59 @@
         .action-btn:hover {
             background: #f0f0f0;
             color: var(--text-main);
+        }
+        /* Menú 3 puntos */
+        .menu-dots-wrapper { position: relative; }
+        .dots-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            color: var(--text-secondary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+        .dots-btn:hover { background: #f0f0f0; }
+        .dots-dropdown {
+            display: none;
+            position: absolute;
+            top: 44px;
+            right: 0;
+            background: var(--surface);
+            border-radius: 12px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+            min-width: 180px;
+            z-index: 200;
+            overflow: hidden;
+        }
+        .dots-dropdown.open { display: block; }
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            padding: 14px 16px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-main);
+            text-align: left;
+            transition: background 0.15s;
+        }
+        .dropdown-item:hover { background: #f5f5f5; }
+        .dropdown-item .material-symbols-outlined { color: var(--primary); font-size: 20px; }
+        /* Ocultar/mostrar según viewport */
+        .mobile-menu { display: none; }
+        .desktop-actions { display: flex; gap: 12px; }
+        @media screen and (max-width: 768px) {
+            .mobile-menu { display: block; }
+            .desktop-actions { display: none; }
+            .top-bar { padding: 12px 16px; }
         }
 
         /* Invoice Container */
@@ -285,8 +346,11 @@
         .item-desc {
             font-size: 12px;
             color: var(--text-secondary);
-            margin-top: 6px;
+            margin-top: 4px;
             font-style: italic;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         /* Totals / Letters Section */
@@ -554,8 +618,13 @@
 
     <!-- Bar -->
     <div class="top-bar no-print">
-        <h3 class="brand">Café Cortero</h3>
-        <div class="top-actions">
+        <button class="back-btn" onclick="window.close()">
+            <span class="material-symbols-outlined">arrow_back</span>
+            FACTURA
+        </button>
+
+        <!-- Desktop: botones expandidos -->
+        <div class="top-actions desktop-actions">
             <button class="action-btn" id="btn-print">
                 <span class="material-symbols-outlined">print</span>
                 Imprimir
@@ -568,9 +637,27 @@
                 <span class="material-symbols-outlined">share</span>
                 Compartir
             </button>
-            <button class="action-btn" onclick="window.close()" title="Cerrar ventana">
-                <span class="material-symbols-outlined">close</span>
+        </div>
+
+        <!-- Mobile: menú 3 puntos -->
+        <div class="menu-dots-wrapper mobile-menu">
+            <button class="dots-btn" id="menu-dots-btn" aria-label="Opciones">
+                <span class="material-symbols-outlined">more_vert</span>
             </button>
+            <div class="dots-dropdown" id="dots-dropdown">
+                <button class="dropdown-item" id="btn-print">
+                    <span class="material-symbols-outlined">print</span>
+                    Imprimir
+                </button>
+                <button class="dropdown-item" id="btn-pdf">
+                    <span class="material-symbols-outlined">download</span>
+                    Descargar PDF
+                </button>
+                <button class="dropdown-item" id="btn-share">
+                    <span class="material-symbols-outlined">share</span>
+                    Compartir
+                </button>
+            </div>
         </div>
     </div>
 
