@@ -65,7 +65,34 @@ function hydrateInvoice(o) {
     };
     document.getElementById("f-payment-method").textContent = PAYMENT_MAP[o.payment_method] || o.payment_method || "—";
     
-    // Los elementos decorativos y de tracking fueron eliminados por diseño
+    // Lógica para mostrar la Tarjeta de Estado de Pago (Nuevo Diseño)
+    const paymentCard = document.getElementById("f-payment-card");
+    const isPaid = (o.status !== 'pending' && o.status !== 'cancelled');
+    
+    if (paymentCard) {
+        if (o.status === "cancelled") {
+            paymentCard.style.display = "none";
+        } else {
+            paymentCard.style.display = "flex";
+            const payIcon = document.getElementById("f-pay-icon");
+            const payTitle = document.getElementById("f-pay-title");
+            const paySubtitle = document.getElementById("f-pay-subtitle");
+            
+            if (isPaid) {
+                paymentCard.classList.remove("pending");
+                payIcon.innerHTML = `<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1; font-size: 32px;">verified</span>`;
+                payTitle.textContent = "Pago Confirmado";
+                const transId = o.id ? `${o.id.substring(0, 4)}-${o.id.substring(4, 8)}-XX`.toUpperCase() : "N/A";
+                paySubtitle.textContent = `Transacción ID: ${transId}`;
+            } else {
+                // Pendiente
+                paymentCard.classList.add("pending");
+                payIcon.innerHTML = `<span class="material-symbols-outlined" style="font-size: 28px;">hourglass_empty</span>`;
+                payTitle.textContent = "Pago Pendiente";
+                paySubtitle.textContent = "A la espera de confirmación";
+            }
+        }
+    }
 
     // Tabla de Productos
     const tbody = document.getElementById("f-items-tbody");

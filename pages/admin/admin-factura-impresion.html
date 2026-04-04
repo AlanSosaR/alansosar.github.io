@@ -187,50 +187,74 @@
             line-height: 1.6;
         }
 
-        /* Order Details */
-        .order-meta {
+        /* Modulos de Estado (Cards) */
+        .meta-cards-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px 32px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
         }
-        .meta-item p {
-            font-weight: 500;
-            margin-top: 8px;
+        
+        .meta-card {
+            background: var(--surface);
+            border: 1px solid #e2e8f0; /* Soft border */
+            border-radius: 8px;
+            padding: 20px 16px;
         }
-        .meta-item .highlight {
-            color: var(--primary);
+        
+        .meta-label {
+            font-family: var(--font-headline);
+            font-size: 11px;
             font-weight: 700;
-            text-transform: capitalize;
+            letter-spacing: 2px;
+            color: var(--primary); /* Títulos en verde */
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 12px;
+        }
+        
+        .meta-card p {
+            color: var(--espresso); /* Textos en cafe oscuro */
+            font-size: 15px;
+            font-weight: 500;
+            line-height: 1.4;
         }
 
-        /* Payment Badge */
-        .payment-badge {
-            margin-top: 32px;
-            display: flex;
+        .payment-status-card {
+            background: var(--surface);
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 24px;
+            display: none; /* Oculto por defecto, inyectado via JS */
             align-items: center;
-            gap: 12px;
+            gap: 20px;
         }
-        .payment-badge .payment-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: var(--radius-full);
+
+        .payment-status-card .icon-box {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
             border: 2px solid var(--primary);
+            color: var(--primary);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--primary);
         }
-        .payment-badge.pending .payment-icon {
+        .payment-status-card.pending .icon-box {
             border-color: var(--espresso-light);
             color: var(--espresso-light);
         }
-        .payment-status {
-            font-weight: 700;
-            line-height: 1.2;
+
+        .payment-status-card .p-title {
+            color: var(--espresso);
+            font-family: var(--font-headline);
+            font-weight: 800;
+            font-size: 20px;
         }
-        .payment-id {
+        
+        .payment-status-card .p-subtitle {
             color: var(--espresso-light);
-            font-size: 12px;
+            font-size: 14px;
             margin-top: 4px;
         }
 
@@ -366,7 +390,7 @@
         /* Ajustes responsivos móviles (Pantalla) */
         @media screen and (max-width: 768px) {
             .info-grid { grid-template-columns: 1fr; gap: 32px; }
-            .order-meta { grid-template-columns: 1fr; gap: 16px; }
+            .meta-cards-grid { grid-template-columns: 1fr; gap: 12px; }
             .summary-section { flex-direction: column-reverse; gap: 32px; }
             .invoice-container { padding: 24px 16px; margin: 16px; border-radius: 12px; }
             .invoice-header { flex-direction: column; gap: 16px; margin-bottom: 32px; }
@@ -466,19 +490,31 @@
             </div>
 
             <!-- Right: Order Details -->
+            <!-- Order Info Cards -->
             <div class="order-details">
-                <div class="order-meta">
-                    <div class="meta-item">
-                        <span class="section-label">Fecha</span>
+                <div class="meta-cards-grid">
+                    <div class="meta-card">
+                        <span class="meta-label">Fecha</span>
                         <p id="f-order-date">—</p>
                     </div>
-                    <div class="meta-item">
-                        <span class="section-label">Estado</span>
-                        <p class="highlight" id="f-order-status">—</p>
+                    <div class="meta-card">
+                        <span class="meta-label">Estado</span>
+                        <p id="f-order-status">—</p>
                     </div>
-                    <div class="meta-item">
-                        <span class="section-label">Método</span>
+                    <div class="meta-card">
+                        <span class="meta-label">Método</span>
                         <p id="f-payment-method" style="text-transform: capitalize;">—</p>
+                    </div>
+                </div>
+                
+                <!-- Payment Full Card -->
+                <div id="f-payment-card" class="payment-status-card">
+                    <div class="icon-box" id="f-pay-icon">
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1; font-size: 32px;">verified</span>
+                    </div>
+                    <div>
+                        <div class="p-title" id="f-pay-title">Pago Confirmado</div>
+                        <div class="p-subtitle" id="f-pay-subtitle">—</div>
                     </div>
                 </div>
             </div>
