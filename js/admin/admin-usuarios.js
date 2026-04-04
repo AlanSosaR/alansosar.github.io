@@ -344,8 +344,12 @@ function handleEmail() {
 }
 
 function openPushModal() {
-    // Cerrar el modal de contacto actual
-    closeContactModal();
+    // Cerrar el modal de contacto actual de forma inmediata para evitar solapamientos
+    const contactModal = document.getElementById('modal-contact');
+    if (contactModal) {
+        contactModal.classList.remove('active');
+        contactModal.classList.add('hidden');
+    }
     
     const modal = document.getElementById('modal-push');
     if (modal) {
