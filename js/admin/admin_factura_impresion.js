@@ -52,11 +52,9 @@ function hydrateInvoice(o) {
         return d.toLocaleDateString("es-ES", { day: 'numeric', month: 'long', year: 'numeric' });
     };
 
-    // Número de factura real simulado a formato SAR
-    const orderNumPadded = o.order_number?.toString().padStart(8,"0") || "00000000";
-    const docNum = `6549864654-${orderNumPadded}`;
+    // Número de orden real
     const fOrderNumber = document.getElementById("f-order-number");
-    if (fOrderNumber) fOrderNumber.textContent = docNum;
+    if (fOrderNumber) fOrderNumber.textContent = o.order_number || "—";
     
     // Cliente
     const clientName = o.address?.full_name || o.users?.name || "Consumidor final";
