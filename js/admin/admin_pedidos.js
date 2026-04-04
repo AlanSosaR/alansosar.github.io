@@ -452,28 +452,25 @@ console.log("🛠️ admin_pedidos.js — INIT STITCH");
 
             label.innerHTML = text;
 
-            // Cleanup function to remove all listeners and hide snackbar
+            // Limpiar listeners previos mediante clonación
+            const newBtnOk = btnOk.cloneNode(true);
+            const newBtnCancel = btnCancel.cloneNode(true);
+            btnOk.replaceWith(newBtnOk);
+            btnCancel.replaceWith(newBtnCancel);
+
             const cleanup = (result) => {
-                btnOk.replaceWith(btnOk.cloneNode(true));
-                btnCancel.replaceWith(btnCancel.cloneNode(true));
-                
                 snack.classList.remove("active");
                 setTimeout(() => snack.classList.add("hidden"), 300);
                 resolve(result);
             };
 
-            // Use the cloned elements for fresh listeners
             snack.classList.remove("hidden");
-            // double requestAnimationFrame to ensure display: flex is applied before opacity transition
+            // Doble RAF para asegurar visibilidad antes de animar
             requestAnimationFrame(() => {
                 requestAnimationFrame(() => {
                     snack.classList.add("active");
                 });
             });
-
-            // Re-select after cloning for binding
-            const newBtnOk = document.getElementById("btn-confirm-ok");
-            const newBtnCancel = document.getElementById("btn-confirm-cancel");
 
             newBtnOk.addEventListener("click", () => cleanup(true), { once: true });
             newBtnCancel.addEventListener("click", () => cleanup(false), { once: true });
