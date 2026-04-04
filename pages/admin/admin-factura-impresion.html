@@ -101,6 +101,17 @@
             align-items: flex-start;
             margin-bottom: 64px;
         }
+        .brand-header {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+        .invoice-logo {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            border-radius: 12px;
+        }
         .company-info h2 {
             font-family: var(--font-headline);
             color: var(--primary);
@@ -425,10 +436,13 @@
     <main class="invoice-container" id="invoice-doc">
         <!-- Branded Header -->
         <header class="invoice-header">
-            <div class="company-info">
-                <h2>Café Cortero</h2>
-                <p>+504 2769-1234</p>
-                <p>Danlí, El Paraíso, Honduras</p>
+            <div class="brand-header">
+                <img src="/imagenes/logo.png" alt="Café Cortero" class="invoice-logo">
+                <div class="company-info">
+                    <h2>Café Cortero</h2>
+                    <p>+504 2769-1234</p>
+                    <p>Danlí, El Paraíso, Honduras</p>
+                </div>
             </div>
             <div class="invoice-title">
                 <h1>FACTURA</h1>
@@ -493,10 +507,16 @@
                 <div>
                     <p style="font-weight: 700; color: var(--primary); font-size: 13px; margin-bottom: 4px;">Gracias por elegir Café Cortero.</p>
                     <p style="margin-bottom: 8px;">Si algo no es perfecto o tienes dudas, somos todo oídos. Escribinos cuando quieras:</p>
-                    <p style="font-weight: 500; color: var(--espresso); margin-bottom: 8px;">
-                        ☕ WhatsApp: +504 9667-0613 / 9867-5101<br>
-                        📧 cafecortero@gmail.com
-                    </p>
+                    <div style="font-weight: 500; color: var(--espresso); margin-bottom: 8px; display: flex; flex-direction: column; gap: 4px;">
+                        <span style="display: flex; align-items: center; gap: 6px;">
+                            <span class="material-symbols-outlined" style="font-size: 18px; font-variation-settings: 'FILL' 1;">forum</span> 
+                            WhatsApp: +504 9667-0613 / 9867-5101
+                        </span>
+                        <span style="display: flex; align-items: center; gap: 6px;">
+                            <span class="material-symbols-outlined" style="font-size: 18px; font-variation-settings: 'FILL' 1;">mail</span> 
+                            cafecortero@gmail.com
+                        </span>
+                    </div>
                     <p style="font-style: italic;">Queremos que disfrutes cada sorbo.</p>
                 </div>
             </div>
