@@ -71,8 +71,12 @@ console.log("🛠️ admin_pedidos.js — INIT STITCH");
     }
 
     function bindDetailActions() {
-        // Imprimir
-        document.getElementById("btnPrint")?.addEventListener("click", () => window.print());
+        // Imprimir Factura
+        document.getElementById("btnPrint")?.addEventListener("click", () => {
+            if (!selectedOrder) return;
+            sessionStorage.setItem("printOrderData", JSON.stringify(selectedOrder));
+            window.open("/pages/admin/admin-factura-impresion.html", "_blank");
+        });
 
         // Contactar Modal
         document.getElementById("btnContact")?.addEventListener("click", openContactModal);

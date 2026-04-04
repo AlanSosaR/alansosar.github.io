@@ -444,4 +444,15 @@ console.log("🛠️ admin_pedido_detalle.js — INIT");
         });
     }
 
+    // ==========================================
+    // INVOICE PRINTING HOOKS
+    // ==========================================
+    const handlePrint = () => {
+        if (!orderData) return;
+        sessionStorage.setItem("printOrderData", JSON.stringify(orderData));
+        window.open("/pages/admin/admin-factura-impresion.html", "_blank");
+    };
+    document.getElementById("btnPrint")?.addEventListener("click", handlePrint);
+    document.getElementById("btnPrintMobile")?.addEventListener("click", handlePrint);
+
 })();

@@ -21,7 +21,7 @@
             <button class="btn-back-mobile" onclick="history.back()"><span class="material-symbols-outlined">arrow_back</span></button>
             <h1 class="pedido-number-mobile" id="detail-order-number-mobile">Pedido #—</h1>
             <div class="mobile-header-actions">
-                <button class="btn-icon-mobile" onclick="window.print()" title="Imprimir">
+                <button class="btn-icon-mobile" id="btnPrintMobile" title="Imprimir">
                     <span class="material-symbols-outlined">print</span>
                     <span class="hidden-txt">Imprimir</span>
                 </button>
@@ -48,7 +48,7 @@
                 </div>
                 
                 <div class="pedido-actions-col">
-                    <button class="btn-outline" onclick="window.print()">
+                    <button class="btn-outline" id="btnPrint">
                         <span class="material-symbols-outlined">print</span>
                         Imprimir Factura
                     </button>
