@@ -439,6 +439,7 @@ console.log("🛠️ admin_pedidos.js — INIT STITCH");
        CONFIRMATION BOX LOGIC (FIXED)
     ========================= */
     function showActionConfirm(text) {
+        console.log("💬 Solicitando confirmación:", text);
         return new Promise((resolve) => {
             const snack = document.getElementById("confirm-snackbar");
             const label = document.getElementById("confirm-text");
@@ -446,34 +447,35 @@ console.log("🛠️ admin_pedidos.js — INIT STITCH");
             const btnCancel = document.getElementById("btn-confirm-cancel");
 
             if (!snack || !label || !btnOk || !btnCancel) {
-                console.error("❌ Error: confirm-snackbar elements not found in DOM");
+                console.error("❌ Componentes del confirm-snackbar no encontrados");
                 return resolve(false);
             }
 
             label.innerHTML = text;
 
-            // Limpiar listeners previos mediante clonación
+            // Limpieza absoluta mediante clones profundos
             const newBtnOk = btnOk.cloneNode(true);
             const newBtnCancel = btnCancel.cloneNode(true);
             btnOk.replaceWith(newBtnOk);
             btnCancel.replaceWith(newBtnCancel);
 
-            const cleanup = (result) => {
+            const closeSnack = (result) => {
+                console.log("✅ Confirmación resuelta con:", result);
                 snack.classList.remove("active");
                 setTimeout(() => snack.classList.add("hidden"), 300);
                 resolve(result);
             };
 
+            // Asignación directa para máxima fiabilidad
+            newBtnOk.onclick = () => closeSnack(true);
+            newBtnCancel.onclick = () => closeSnack(false);
+
             snack.classList.remove("hidden");
-            // Doble RAF para asegurar visibilidad antes de animar
             requestAnimationFrame(() => {
                 requestAnimationFrame(() => {
                     snack.classList.add("active");
                 });
             });
-
-            newBtnOk.addEventListener("click", () => cleanup(true), { once: true });
-            newBtnCancel.addEventListener("click", () => cleanup(false), { once: true });
         });
     }
 
