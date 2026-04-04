@@ -443,78 +443,60 @@ console.log("🛠️ admin_pedidos.js — INIT STITCH");
      * Implementación blindada para el snackbar de confirmación (Stitch Robust Protocol)
      */
     function showActionConfirm(text) {
-        console.log("🎯 showActionConfirm: INICIANDO FLUJO", text);
+        console.log("🎯 showActionConfirm: INIT");
         return new Promise((resolve) => {
             const snack = document.getElementById("confirm-snackbar");
             const label = document.getElementById("confirm-text");
-            const rawBtnOk = document.getElementById("btn-confirm-ok");
-            const rawBtnCancel = document.getElementById("btn-confirm-cancel");
+            const btnOk = document.getElementById("btn-confirm-ok");
+            const btnCancel = document.getElementById("btn-confirm-cancel");
+            
+            let isResolving = false; // Debounce flag
 
-            if (!snack || !label || !rawBtnOk || !rawBtnCancel) {
-                console.error("❌ Componentes del confirm-snackbar perdidos en el DOM");
+            if (!snack || !label || !btnOk || !btnCancel) {
+                console.error("❌ Componentes del snackbar no encontrados");
                 return resolve(false);
             }
 
-            // 1. Inyectar Texto
             label.innerHTML = text;
 
-            // 2. Clonación para limpiar listeners anteriores (Garantía de unicidad)
-            const btnOk = rawBtnOk.cloneNode(true);
-            const btnCancel = rawBtnCancel.cloneNode(true);
-            // Marcar para trazabilidad
-            const callId = Date.now();
-            btnOk.dataset.call = callId;
-            btnCancel.dataset.call = callId;
+            // Handler principal para resolver
+            const handleFinish = (result) => {
+                if (isResolving) return;
+                isResolving = true;
 
-            rawBtnOk.replaceWith(btnOk);
-            rawBtnCancel.replaceWith(btnCancel);
+                // Limpieza manual de listeners (Requisito estricto)
+                btnOk.removeEventListener("click", onConfirm);
+                btnCancel.removeEventListener("click", onCancel);
 
-            // 3. Handlers con Auto-limpieza
+                console.log(`✅ Promise RESOLVIENDO CON ${result}`);
+                
+                // Ocultar y resolver
+                snack.classList.remove("active");
+                setTimeout(() => snack.classList.add("hidden"), 300);
+                resolve(result);
+            };
+
             const onConfirm = (e) => {
                 e.preventDefault();
-                e.stopPropagation();
                 console.log("✅ [btn-confirm-ok] CLIC DETECTADO");
-                finish(true);
+                handleFinish(true);
             };
 
             const onCancel = (e) => {
                 e.preventDefault();
-                e.stopPropagation();
                 console.log("✅ [btn-confirm-cancel] CLIC DETECTADO");
-                finish(false);
+                handleFinish(false);
             };
 
-            const finish = (result) => {
-                // Eliminar listeners explícitamente antes de resolver
-                btnOk.removeEventListener("click", onConfirm);
-                btnCancel.removeEventListener("click", onCancel);
-                
-                // RESOLVER ANTES DE OCULTAR (Requisito del usuario)
-                console.log("✅ showActionConfirm: RESOLVIENDO PROMISE CON", result);
-                resolve(result);
+            // 1. Asignar listeners ANTES de mostrar
+            btnOk.addEventListener("click", onConfirm);
+            btnCancel.addEventListener("click", onCancel);
 
-                // Iniciar ocultamiento visual
-                snack.classList.remove("active");
-                setTimeout(() => snack.classList.add("hidden"), 400);
-            };
-
-            // 4. Asignar Listeners ANTES de mostrar (Crucial para timing)
-            btnOk.addEventListener("click", onConfirm, { once: true });
-            btnCancel.addEventListener("click", onCancel, { once: true });
-
-            // 5. Garantizar visibilidad (Pointer events auto)
-            btnOk.style.pointerEvents = "auto";
-            btnCancel.style.pointerEvents = "auto";
-
-            // 6. TRIPLE RAF para despertar al renderizador (Mobile Safe)
+            // 2. Mostrar con máximo 1 RAF
             snack.classList.remove("hidden");
             requestAnimationFrame(() => {
-                requestAnimationFrame(() => {
-                    requestAnimationFrame(() => {
-                        snack.classList.add("active");
-                        console.log("🎯 showActionConfirm: SNACKBAR VISIBLE Y LISTO");
-                    });
-                });
+                snack.classList.add("active");
+                console.log("🎯 showActionConfirm: SNACKBAR VISIBLE Y LISTO");
             });
         });
     }
