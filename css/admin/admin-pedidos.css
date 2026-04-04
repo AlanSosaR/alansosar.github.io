@@ -312,16 +312,36 @@ body.page-admin-orders {
     cursor: pointer !important; 
     border-radius: 8px; 
     pointer-events: auto !important;
+    position: relative;
+    z-index: 2;
+    transition: all 0.2s;
 } 
+.btn-snack-primary:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+.btn-snack-primary:active {
+    transform: translateY(1px);
+}
 .btn-snack-ghost { 
     background: transparent; 
     border: none; 
-    color: #9E9E9E; 
+    color: #cecece; 
     font-weight: 700; 
     padding: 10px 20px; 
     cursor: pointer !important; 
     border-radius: 8px; 
     pointer-events: auto !important;
+    position: relative;
+    z-index: 2;
+    transition: all 0.2s;
+}
+.btn-snack-ghost:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+}
+.btn-snack-ghost:active {
+    background: rgba(255, 255, 255, 0.2);
 }
 
 .status-badge-stitch {
