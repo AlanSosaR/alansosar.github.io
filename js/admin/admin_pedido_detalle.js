@@ -48,20 +48,30 @@ console.log("🛠️ admin_pedido_detalle.js — INIT");
 
     let pendingAction = null;
 
-    /* =========================
-       SNACKBAR
-    ========================= */
+    let isSnackbarResolving = false;
+
+    /**
+     * @function openSnackbar
+     * Implementación robusta sincronizada con el sistema Maestro-Detalle
+     */
     function openSnackbar(title, message, onConfirm, showCancel = true) {
+        console.log("🎯 openSnackbar: INIT", title);
         const box = document.getElementById("snackbar-action");
         const btnConfirm = document.getElementById("snackbar-confirm");
         const btnCancel = document.getElementById("snackbar-cancel");
+        const titleEl = document.getElementById("snackbar-title");
+        const messageEl = document.getElementById("snackbar-message");
 
-        document.getElementById("snackbar-title").textContent = title;
-        document.getElementById("snackbar-message").textContent = message;
+        if (!box || !btnConfirm || !btnCancel || !titleEl || !messageEl) {
+            console.error("❌ Componentes del snackbar de detalle no encontrados");
+            return;
+        }
 
-        btnConfirm.onclick = null;
-        btnCancel.onclick = null;
+        titleEl.textContent = title;
+        messageEl.textContent = message;
+        isSnackbarResolving = false; // Reset debounce
 
+        // Configuración de botones
         if (showCancel) {
             btnCancel.classList.remove("hidden");
             btnConfirm.textContent = "Confirmar";
@@ -70,21 +80,43 @@ console.log("🛠️ admin_pedido_detalle.js — INIT");
             btnConfirm.textContent = "Aceptar";
         }
 
-        pendingAction = onConfirm;
+        const handleFinish = async (confirmed) => {
+            if (isSnackbarResolving) return;
+            isSnackbarResolving = true;
 
-        btnConfirm.onclick = async () => {
+            console.log(`✅ [snackbar] RESOLVIENDO: ${confirmed}`);
+            
+            // Limpieza manual obligatoria
+            btnConfirm.removeEventListener("click", onConfirmed);
+            btnCancel.removeEventListener("click", onCancelled);
+
+            // Ocultar primero para fluidez visual
             box.classList.add("hidden");
-            const action = pendingAction;
-            pendingAction = null;
-            if (typeof action === "function") await action();
+
+            if (confirmed && typeof onConfirm === "function") {
+                await onConfirm();
+            }
         };
 
-        btnCancel.onclick = () => {
-            pendingAction = null;
-            box.classList.add("hidden");
+        const onConfirmed = (e) => {
+            e.preventDefault();
+            console.log("✅ [snackbar-confirm] CLIC DETECTADO");
+            handleFinish(true);
         };
 
+        const onCancelled = (e) => {
+            e.preventDefault();
+            console.log("✅ [snackbar-cancel] CLIC DETECTADO");
+            handleFinish(false);
+        };
+
+        // 1. Asignar listeners ANTES de mostrar
+        btnConfirm.addEventListener("click", onConfirmed);
+        btnCancel.addEventListener("click", onCancelled);
+
+        // 2. Mostrar
         box.classList.remove("hidden");
+        console.log("🎯 openSnackbar: VISIBLE");
     }
 
     /* =========================
@@ -320,7 +352,7 @@ console.log("🛠️ admin_pedido_detalle.js — INIT");
 
         if (o.status === "pending") {
             appendActionButton("Pasar a preparación", "hourglass_top", "accent", () => updateStatus(o.id, "processing"));
-            appendActionButton("Cancelar pedido", "cancel", "", () => updateStatus(o.id, "cancelled"));
+            appendActionButton("Anular", "cancel", "", () => updateStatus(o.id, "cancelled"));
         } else if (o.status === "processing") {
             appendActionButton("Marcar como enviado", "local_shipping", "accent", () => updateStatus(o.id, "shipped"));
         } else if (o.status === "shipped") {
