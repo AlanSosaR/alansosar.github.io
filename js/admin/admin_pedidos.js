@@ -439,41 +439,64 @@ console.log("🛠️ admin_pedidos.js — INIT STITCH");
        CONFIRMATION BOX LOGIC (FIXED)
     ========================= */
     function showActionConfirm(text) {
-        console.log("💬 Solicitando confirmación:", text);
+        console.log("💬 showActionConfirm INVOKED with:", text);
         return new Promise((resolve) => {
             const snack = document.getElementById("confirm-snackbar");
             const label = document.getElementById("confirm-text");
-            const btnOk = document.getElementById("btn-confirm-ok");
-            const btnCancel = document.getElementById("btn-confirm-cancel");
+            const rawBtnOk = document.getElementById("btn-confirm-ok");
+            const rawBtnCancel = document.getElementById("btn-confirm-cancel");
 
-            if (!snack || !label || !btnOk || !btnCancel) {
-                console.error("❌ Componentes del confirm-snackbar no encontrados");
+            if (!snack || !label || !rawBtnOk || !rawBtnCancel) {
+                console.error("❌ Componentes del confirm-snackbar no encontrados!");
                 return resolve(false);
             }
 
             label.innerHTML = text;
 
-            // Limpieza absoluta mediante clones profundos
-            const newBtnOk = btnOk.cloneNode(true);
-            const newBtnCancel = btnCancel.cloneNode(true);
-            btnOk.replaceWith(newBtnOk);
-            btnCancel.replaceWith(newBtnCancel);
+            // Limpieza absoluta mediante clones profundos EXTREMOS
+            const btnOk = rawBtnOk.cloneNode(true);
+            const btnCancel = rawBtnCancel.cloneNode(true);
+            rawBtnOk.replaceWith(btnOk);
+            rawBtnCancel.replaceWith(btnCancel);
 
             const closeSnack = (result) => {
-                console.log("✅ Confirmación resuelta con:", result);
+                console.log("✅ Resolving confirm with:", result);
                 snack.classList.remove("active");
-                setTimeout(() => snack.classList.add("hidden"), 300);
-                resolve(result);
+                // Reset handlers to prevent any ghost clicks
+                btnOk.onclick = null;
+                btnCancel.onclick = null;
+                setTimeout(() => {
+                    snack.classList.add("hidden");
+                    resolve(result);
+                }, 300);
             };
 
-            // Asignación directa para máxima fiabilidad
-            newBtnOk.onclick = () => closeSnack(true);
-            newBtnCancel.onclick = () => closeSnack(false);
+            // Asignación directa con feedback visual inmediato
+            btnOk.onclick = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                btnOk.style.opacity = "0.5";
+                closeSnack(true);
+            };
+
+            btnCancel.onclick = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                btnCancel.style.opacity = "0.5";
+                closeSnack(false);
+            };
+
+            // Reset visual states
+            btnOk.style.opacity = "1";
+            btnCancel.style.opacity = "1";
 
             snack.classList.remove("hidden");
+            // Triple RAF por si acaso
             requestAnimationFrame(() => {
                 requestAnimationFrame(() => {
-                    snack.classList.add("active");
+                    requestAnimationFrame(() => {
+                        snack.classList.add("active");
+                    });
                 });
             });
         });
