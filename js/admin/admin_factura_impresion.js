@@ -56,31 +56,16 @@ function hydrateInvoice(o) {
     // Detalles
     document.getElementById("f-order-date").textContent = formatDate(o.created_at);
     document.getElementById("f-order-status").textContent = STATUS_MAP[o.status] || o.status;
-    document.getElementById("f-payment-method").textContent = o.payment_method === 'transfer' ? 'Transferencia' : (o.payment_method === 'cash' ? 'Efectivo' : o.payment_method || "—");
     
-    // Autogenerar una guía falsa con el UUID del pedido para trackeo
-    document.getElementById("f-order-guid").textContent = o.id ? `CC-${o.id.substring(0,8).toUpperCase()}` : "—";
+    // Traducción de métodos
+    const PAYMENT_MAP = {
+        'cash': 'Efectivo',
+        'transfer': 'Transferencia',
+        'cash_on_delivery': 'Contra entrega'
+    };
+    document.getElementById("f-payment-method").textContent = PAYMENT_MAP[o.payment_method] || o.payment_method || "—";
     
-    const isPaid = (o.status !== 'pending' && o.status !== 'cancelled');
-    if (!isPaid) {
-        const pg = document.getElementById("f-payment-group");
-        if(pg) {
-            pg.innerHTML = `
-                <div class="flex items-center gap-3">
-                    <div class="h-12 w-12 rounded-full border-2 border-stone-300 flex items-center justify-center">
-                        <span class="material-symbols-outlined text-stone-300">hourglass_empty</span>
-                    </div>
-                    <div>
-                        <p class="text-espresso font-bold leading-none">Pago Pendiente</p>
-                        <p class="text-espresso/60 text-xs mt-1">A la espera de confirmación</p>
-                    </div>
-                </div>
-            `;
-        }
-    } else {
-        const pgId = document.getElementById("f-transaction-id");
-        if(pgId) pgId.textContent = `Aprobado - ID: ${o.id.substring(8, 16).toUpperCase()}`;
-    }
+    // Los elementos decorativos y de tracking fueron eliminados por diseño
 
     // Tabla de Productos
     const tbody = document.getElementById("f-items-tbody");
@@ -117,10 +102,7 @@ function hydrateInvoice(o) {
 
     // Costos
     document.getElementById("f-subtotal").textContent = formatCurrency(subtotal);
-    // El "total" en DB contiene ya el subtotal + envio, asi que solo mostramos el total de la DB y asumimos envío como 0 o diferencia
-    const envio = parseFloat(o.total || subtotal) - subtotal;
-    // Si la DB maneja shipping exacto lo mostraríamos
-    
+    // Como backend solo retorna el Total y no existe desglose real en BD, mostramos lo cobrado
     document.getElementById("f-total").textContent = formatCurrency(o.total || subtotal);
 
     // Auto imprimir tras carga de fuentes (700ms)
