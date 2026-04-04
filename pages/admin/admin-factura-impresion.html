@@ -98,6 +98,20 @@
             align-items: flex-start;
             margin-bottom: 48px;
         }
+
+        /* Brand + Logo */
+        .brand-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .invoice-logo {
+            width: 90px;
+            height: 90px;
+            object-fit: contain;
+            border-radius: 12px;
+            flex-shrink: 0;
+        }
         .company-details h1 {
             font-family: var(--font-headline);
             font-size: 32px;
@@ -387,19 +401,58 @@
             font-weight: 700;
         }
 
-        /* Print Media */
+        /* Print Media - Una sola página */
         @media print {
-            body { padding: 0; background: white; margin: 0; display: block; }
-            .top-bar { display: none !important; }
-            .invoice-container { 
-                box-shadow: none; 
-                margin: 0; 
-                padding: 0;
-                max-width: 100%;
+            @page { 
+                size: A4 portrait; 
+                margin: 6mm 8mm;
             }
-            .sar-data { padding-top: 16px; margin-bottom: 32px; }
-            @page { margin: 10mm; }
+
+            html, body {
+                padding: 0 !important;
+                margin: 0 !important;
+                background: white !important;
+                display: block !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .top-bar { display: none !important; }
+
+            .invoice-container { 
+                box-shadow: none !important; 
+                margin: 0 !important; 
+                padding: 16px 20px !important;
+                max-width: 100% !important;
+                border-radius: 0 !important;
+                /* Escalar para ajustar en una página */
+                transform: scale(0.82);
+                transform-origin: top left;
+                width: 122%; /* Compensar el scale */
+            }
+
+            /* Reducir espaciados */
+            .header-section { margin-bottom: 16px !important; }
+            .meta-grid { margin-bottom: 16px !important; gap: 12px !important; }
+            .box-card { padding: 12px 14px !important; }
+            .items-area { margin-bottom: 16px !important; }
+            .bottom-section { margin-bottom: 16px !important; gap: 24px !important; }
+            .sar-data { margin-bottom: 16px !important; padding-top: 12px !important; }
+            .letras-card { padding: 14px !important; margin-bottom: 12px !important; }
+            .invoice-table td { padding: 10px 12px !important; }
+            .invoice-table th { padding: 8px 12px !important; }
+            .tot-row { margin-bottom: 6px !important; }
+            .tot-row.grand { margin-top: 12px !important; padding-top: 12px !important; }
+            .final-footer { margin: 0 !important; }
+            .contact-footer { margin-top: 10px !important; padding-top: 10px !important; }
+            .page-num { margin-top: 10px !important; }
+
+            /* Evitar cortes */
+            .meta-grid, .items-area, .bottom-section, .sar-data { 
+                page-break-inside: avoid; 
+            }
         }
+
         
         /* Ajuste móvil - Solo visualizar */
         @media screen and (max-width: 768px) {
@@ -443,10 +496,13 @@
     <main class="invoice-container">
         <!-- Header -->
         <div class="header-section">
-            <div class="company-details">
-                <h1>Café Cortero</h1>
-                <p>Danlí, El Paraíso, Honduras</p>
-                <p>RTN: 05019654135885</p>
+            <div class="brand-header">
+                <img src="/imagenes/logo.png" alt="Café Cortero" class="invoice-logo">
+                <div class="company-details">
+                    <h1>Café Cortero</h1>
+                    <p>Danlí, El Paraíso, Honduras</p>
+                    <p>RTN: 05019654135885</p>
+                </div>
             </div>
             <div class="document-info">
                 <h2>Factura</h2>
