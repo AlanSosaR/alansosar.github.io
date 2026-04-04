@@ -310,7 +310,11 @@ function openContactModal() {
     if (nameSpan) nameSpan.textContent = selectedUser.name;
     if (modal) {
         modal.classList.remove('hidden');
-        requestAnimationFrame(() => modal.classList.add('active'));
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                modal.classList.add('active');
+            });
+        });
     }
 }
 
@@ -340,11 +344,18 @@ function handleEmail() {
 }
 
 function openPushModal() {
+    // Cerrar el modal de contacto actual
     closeContactModal();
+    
     const modal = document.getElementById('modal-push');
     if (modal) {
         modal.classList.remove('hidden');
-        requestAnimationFrame(() => modal.classList.add('active'));
+        // El doble RAF asegura que el navegador registre el fin del 'display: none' antes de animar
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                modal.classList.add('active');
+            });
+        });
     }
 }
 
