@@ -403,3 +403,16 @@ body.header-checkout {
 .snackbar.error {
   background: var(--error);
 }
+
+@media (max-width: 768px) {
+  .header-left-stitch {
+    width: 100% !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+  }
+  
+  .header-logo-link {
+    margin-left: auto !important;
+  }
+}
