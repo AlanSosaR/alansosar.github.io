@@ -87,7 +87,7 @@ function hydrateInvoice(o) {
             tr.className = index % 2 === 0 ? "alt" : "";
             tr.innerHTML = `
                 <td>
-                    <p class="item-name ${index % 2 === 0 ? 'primary' : ''}">${pName}</p>
+                    <p class="item-name primary">${pName}</p>
                     <p class="item-desc">${pPres} ${pGrind}</p>
                 </td>
                 <td class="center">x${item.quantity}</td>
