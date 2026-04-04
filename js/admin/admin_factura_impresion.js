@@ -15,6 +15,30 @@ document.addEventListener("DOMContentLoaded", () => {
             window.print();
         });
 
+        // Guardar como PDF llama a Print nativo
+        const btnPdf = document.getElementById("btn-pdf");
+        if (btnPdf) {
+            btnPdf.addEventListener("click", () => {
+                window.print();
+            });
+        }
+
+        // Compartir nativo en móviles o copia al portapapeles
+        const btnShare = document.getElementById("btn-share");
+        if (btnShare) {
+            btnShare.addEventListener("click", () => {
+                if (navigator.share) {
+                    navigator.share({
+                        title: `Factura Café Cortero - Orden #${order.order_number}`,
+                        text: `Factura digital por pedido de Café Cortero. Orden #${order.order_number}`,
+                        url: window.location.href,
+                    }).catch(err => console.log('Error al compartir', err));
+                } else {
+                    alert("Compartir no está soportado en este navegador de escritorio. Puedes copiar el enlace de esta página.");
+                }
+            });
+        }
+
     } catch(err) {
         console.error("Error procesando datos del pedido:", err);
     }

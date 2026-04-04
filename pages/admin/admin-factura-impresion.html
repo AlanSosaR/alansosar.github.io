@@ -448,13 +448,20 @@
     <header class="top-bar no-print">
         <div class="brand">Café Cortero</div>
         <div class="top-actions">
-            <button id="btn-print" class="action-btn">
+            <button class="action-btn" id="btn-print">
                 <span class="material-symbols-outlined">print</span>
                 Imprimir
             </button>
-            <button onclick="window.close()" class="action-btn">
+            <button class="action-btn" id="btn-pdf">
+                <span class="material-symbols-outlined">download</span>
+                Descargar PDF
+            </button>
+            <button class="action-btn" id="btn-share">
+                <span class="material-symbols-outlined">share</span>
+                Compartir
+            </button>
+            <button class="action-btn" onclick="window.close()" title="Cerrar ventana">
                 <span class="material-symbols-outlined">close</span>
-                Cerrar
             </button>
         </div>
     </header>
