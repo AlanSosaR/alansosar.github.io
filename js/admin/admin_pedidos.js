@@ -516,8 +516,8 @@ console.log("🛠️ admin_pedidos.js — INIT STITCH");
 
             showSnack("success", "Estado actualizado");
             
-            // Enviar notificación (Async)
-            sendPushNotification(selectedOrder.user_id, newStatus, selectedOrder.order_number);
+            // Enviar notificación (AWAIT REQUERIDO)
+            await sendPushNotification(selectedOrder.user_id, newStatus, selectedOrder.order_number);
 
             // Recargar datos
             await loadOrders();
