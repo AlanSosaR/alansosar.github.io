@@ -532,8 +532,8 @@ console.log("🛠️ admin_pedidos.js — INIT STITCH");
     async function sendPushNotification(userId, status, orderNum) {
         if (!userId) return;
         const msgs = {
-            processing: "Estamos preparando tu pedido #",
-            preparing: "Estamos preparando tu pedido #",
+            processing: "¡Hola! ☕ Recibimos tu pedido y confirmamos tu pago. Ya está siendo preparado con cuidado. Cuando esté listo para enviar, te notificaremos. ¡Gracias! Pedido #",
+            preparing: "¡Hola! ☕ Recibimos tu pedido y confirmamos tu pago. Ya está siendo preparado con cuidado. Cuando esté listo para enviar, te notificaremos. ¡Gracias! Pedido #",
             shipped: "Tu pedido está en camino #",
             delivered: "¡Pedido entregado! Gracias #",
             cancelled: "Tu pedido ha sido cancelado #"
