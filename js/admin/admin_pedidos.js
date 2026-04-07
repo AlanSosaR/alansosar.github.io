@@ -544,28 +544,21 @@ console.log("🛠️ admin_pedidos.js — INIT STITCH");
 
         try {
             console.log("🚀 Notificando pedido #" + orderNum);
-            const { data: newNotif, error: insErr } = await sb
+            const { error: insErr } = await sb
                 .from("notifications")
                 .insert([{
                     user_id: userId,
-                    title: "☕ Actualización de Pedido",
+                    title: "☕ Café Cortero — ¡Pago Confirmado!",
                     message: `${msgBase}${orderNum}`,
                     type: "status",
                     is_read: false
-                }])
-                .select()
-                .single();
+                }]);
 
             if (insErr) throw insErr;
-
-            // LLAMADA DIRECTA A LA EDGE FUNCTION (A prueba de fallos de red interna)
-            console.log("🔥 Disparando PUSH desde el navegador...");
-            await sb.functions.invoke('send-push-notification', {
-                body: { record: newNotif }
-            });
+            console.log("✅ Notificación grabada en DB. El disparador automático se encarga del resto.");
             
         } catch (err) {
-            console.error("❌ Error en flujo de notificación:", err);
+            console.error("❌ Error al grabar notificación:", err);
         }
     }
 
