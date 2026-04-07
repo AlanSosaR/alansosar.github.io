@@ -42,6 +42,36 @@ messaging.onBackgroundMessage(payload => {
 });
 
 /* =====================================================
+   ⚓ RESPALDO NATIVO (FALLBACK ABSOLUTO)
+   Garantiza que el móvil muestre algo aunque el SDK falle
+===================================================== */
+self.addEventListener("push", event => {
+  if (event.data) {
+    try {
+      const payload = event.data.json();
+      console.log("⚓ Native push detectado:", payload);
+
+      // Si Firebase ya lo manejó en onBackgroundMessage, lo omitimos
+      // Pero si no llegó por ahí (payload.notification vacío), mostramos esto:
+      if (payload.notification) return; 
+
+      const title = payload.notification?.title || payload.data?.title || "Café Cortero";
+      const options = {
+        body: payload.notification?.body || payload.data?.message || payload.data?.body || "Actualización disponible",
+        icon: "/imagenes/logo.png",
+        badge: "/imagenes/icon-192.png",
+        data: payload.data,
+        requireInteraction: true
+      };
+
+      event.waitUntil(self.registration.showNotification(title, options));
+    } catch (e) {
+      console.error("🔥 Error en native push handler:", e);
+    }
+  }
+});
+
+/* =====================================================
    CLICK EN NOTIFICACIÓN
 ===================================================== */
 self.addEventListener("notificationclick", event => {

@@ -75,8 +75,8 @@ export async function registerPushToken(userId) {
       }
     }
 
-    // Registrar con cache-bust para asegurar que toma las nuevas credenciales de Firebase
-    const swUrl = `${SW_SCRIPT}?v=${Date.now()}`;
+    // Registrar de forma estable (sin cache-bust que cause re-registros persistentes)
+    const swUrl = SW_SCRIPT;
     const registration = await navigator.serviceWorker.register(swUrl, { scope: "/" });
     await navigator.serviceWorker.ready;
 
