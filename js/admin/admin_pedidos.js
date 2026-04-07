@@ -534,21 +534,39 @@ console.log("🛠️ admin_pedidos.js — INIT STITCH");
         const msgs = {
             processing: "¡Hola! ☕ Recibimos tu pedido y confirmamos tu pago. Ya está siendo preparado con cuidado. Cuando esté listo para enviar, te notificaremos. ¡Gracias! Pedido #",
             preparing: "¡Hola! ☕ Recibimos tu pedido y confirmamos tu pago. Ya está siendo preparado con cuidado. Cuando esté listo para enviar, te notificaremos. ¡Gracias! Pedido #",
-            shipped: "Tu pedido está en camino #",
-            delivered: "¡Pedido entregado! Gracias #",
-            cancelled: "Tu pedido ha sido cancelado #"
+            shipped: "🚢 ¡Buenas noticias! Tu pedido ya va en camino. Sigue el rastro para saber cuándo disfrutarás de tu café. Pedido #",
+            delivered: "☕✨ ¡Disfrútalo! Tu pedido ha sido entregado. Esperamos que cada taza sea especial. ¡Vuelve pronto! Pedido #",
+            cancelled: "❌ Tu pedido ha sido cancelado. Si tienes dudas, contáctanos. Pedido #"
         };
 
-        const msg = msgs[status];
-        if (!msg) return;
+        const msgBase = msgs[status];
+        if (!msgBase) return;
 
-        await sb.from("notifications").insert({
-            user_id: userId,
-            title: "Actualización de Pedido",
-            message: `${msg}${orderNum}`,
-            type: "status",
-            is_read: false
-        });
+        try {
+            console.log("🚀 Notificando pedido #" + orderNum);
+            const { data: newNotif, error: insErr } = await sb
+                .from("notifications")
+                .insert([{
+                    user_id: userId,
+                    title: "☕ Actualización de Pedido",
+                    message: `${msgBase}${orderNum}`,
+                    type: "status",
+                    is_read: false
+                }])
+                .select()
+                .single();
+
+            if (insErr) throw insErr;
+
+            // LLAMADA DIRECTA A LA EDGE FUNCTION (A prueba de fallos de red interna)
+            console.log("🔥 Disparando PUSH desde el navegador...");
+            await sb.functions.invoke('send-push-notification', {
+                body: { record: newNotif }
+            });
+            
+        } catch (err) {
+            console.error("❌ Error en flujo de notificación:", err);
+        }
     }
 
     /* =========================
