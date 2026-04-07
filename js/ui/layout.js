@@ -105,14 +105,6 @@ if (document.body.dataset.page !== "login") {
         initNotifications(authUser);
         console.log("🔔 notifications inicializadas (authUser OK)");
 
-        // PRUEBA LOCAL PARA PC — Verifica si el SO permite notificaciones
-        if (Notification.permission === "granted") {
-            new Notification("☕ Café Cortero: Conexión Visual OK", {
-                body: "Si ves esto, tu PC SÍ permite notificaciones de esta app.",
-                icon: "/imagenes/logo.png"
-            });
-        }
-
       } catch (e) {
         console.error("❌ Error cargando notifications.js", e);
       }
