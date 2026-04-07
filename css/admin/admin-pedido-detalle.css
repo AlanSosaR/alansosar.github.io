@@ -641,6 +641,42 @@ body.page-admin-pedido-detalle {
     margin: 2px 0 0;
 }
 
+/* COMPROBANTE - MATERIAL 3 EXPRESSIVE STYLE */
+.receipt-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 24px;
+    background: var(--bg-surface-lowest);
+    color: var(--text-primary);
+    text-decoration: none;
+    border-radius: 28px; /* M3 Expressive Pill Shape */
+    font-weight: 700;
+    font-size: 13px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    width: fit-content;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-soft);
+    margin-top: 8px;
+}
+
+.receipt-btn .material-symbols-outlined {
+    font-size: 18px;
+}
+
+.receipt-btn:hover {
+    background: var(--bg-primary);
+    color: white;
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 8px 24px rgba(55, 123, 76, 0.15);
+    border-color: var(--bg-primary);
+}
+
+.receipt-btn:active {
+    transform: scale(0.98);
+}
+
 /* =========================================================================
    NOTAS INTERNAS
    ========================================================================= */

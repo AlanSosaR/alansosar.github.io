@@ -175,11 +175,128 @@ function hydrateInvoice(o) {
         if(fTotal) fTotal.textContent = formatCurrency(mTotal);
 
         const fLetras = document.getElementById("f-letras");
-        if(fLetras) fLetras.textContent = `VALOR DE ${formatCurrency(mTotal)} EN LEMPIRAS (GENERADO DIGITALMENTE)`;
+        if(fLetras) {
+            const totalEnLetras = numeroALetras(mTotal);
+            fLetras.textContent = totalEnLetras;
+        }
     }
 
     // Auto imprimir tras carga de fuentes (700ms)
     setTimeout(() => {
         window.print();
     }, 700);
+}
+
+/**
+ * Convierte un número a letras (Moneda: Lempiras)
+ */
+function numeroALetras(num) {
+    const Unidades = (n) => {
+        switch (n) {
+            case 1: return "UN";
+            case 2: return "DOS";
+            case 3: return "TRES";
+            case 4: return "CUATRO";
+            case 5: return "CINCO";
+            case 6: return "SEIS";
+            case 7: return "SIETE";
+            case 8: return "OCHO";
+            case 9: return "NUEVE";
+            default: return "";
+        }
+    };
+
+    const Decenas = (n) => {
+        let decena = Math.floor(n / 10);
+        let unidad = n % 10;
+        switch (decena) {
+            case 1:
+                switch (unidad) {
+                    case 0: return "DIEZ";
+                    case 1: return "ONCE";
+                    case 2: return "DOCE";
+                    case 3: return "TRECE";
+                    case 4: return "CATORCE";
+                    case 5: return "QUINCE";
+                    default: return "DIECI" + Unidades(unidad);
+                }
+            case 2:
+                if (unidad === 0) return "VEINTE";
+                return "VEINTI" + Unidades(unidad);
+            case 3: return DecenasY("TREINTA", unidad);
+            case 4: return DecenasY("CUARENTA", unidad);
+            case 5: return DecenasY("CINCUENTA", unidad);
+            case 6: return DecenasY("SESENTA", unidad);
+            case 7: return DecenasY("SETENTA", unidad);
+            case 8: return DecenasY("OCHENTA", unidad);
+            case 9: return DecenasY("NOVENTA", unidad);
+            case 0: return Unidades(unidad);
+        }
+    };
+
+    const DecenasY = (strSin, numUnid) => {
+        if (numUnid > 0) return strSin + " Y " + Unidades(numUnid);
+        return strSin;
+    };
+
+    const Centenas = (n) => {
+        let centena = Math.floor(n / 100);
+        let decena = n % 100;
+        switch (centena) {
+            case 1:
+                if (decena > 0) return "CIENTO " + Decenas(decena);
+                return "CIEN";
+            case 2: return "DOSCIENTOS " + Decenas(decena);
+            case 3: return "TRESCIENTOS " + Decenas(decena);
+            case 4: return "CUATROCIENTOS " + Decenas(decena);
+            case 5: return "QUINIENTOS " + Decenas(decena);
+            case 6: return "SEISCIENTOS " + Decenas(decena);
+            case 7: return "SETECIENTOS " + Decenas(decena);
+            case 8: return "OCHOCIENTOS " + Decenas(decena);
+            case 9: return "NOVECIENTOS " + Decenas(decena);
+            default: return Decenas(decena);
+        }
+    };
+
+    const Seccion = (n, divisor, strSingular, strPlural) => {
+        let cientos = Math.floor(n / divisor);
+        let resto = n % divisor;
+        let letras = "";
+        if (cientos > 0) {
+            if (cientos > 1) letras = Centenas(cientos) + " " + strPlural;
+            else letras = strSingular;
+        }
+        if (resto > 0) letras += (letras !== "" ? " " : "") + Centenas(resto);
+        return letras;
+    };
+
+    const Miles = (n) => {
+        let divisor = 1000;
+        let cientos = Math.floor(n / divisor);
+        let resto = n % divisor;
+        let strMiles = Seccion(n, divisor, "MIL", "MIL");
+        let strCentenas = Centenas(resto);
+        if (strMiles === "") return strCentenas;
+        return strMiles + " " + (strCentenas || "");
+    };
+
+    const Millones = (n) => {
+        let divisor = 1000000;
+        let cientos = Math.floor(n / divisor);
+        let resto = n % divisor;
+        let strMillones = Seccion(n, divisor, "UN MILLON", "MILLONES");
+        let strMiles = Miles(resto);
+        if (strMillones === "") return strMiles;
+        return strMillones + " " + strMiles;
+    };
+
+    const enteros = Math.floor(num);
+    const centavos = Math.round((num - enteros) * 100);
+    const strCentavos = `${centavos.toString().padStart(2, "0")}/100`;
+
+    let letrasEnteros = Millones(enteros).trim();
+    if (enteros === 0) letrasEnteros = "CERO";
+    if (enteros === 1) return `UN LEMPIRA CON ${strCentavos}`;
+    
+    return `${letrasEnteros} LEMPIRAS CON ${strCentavos}`;
 }

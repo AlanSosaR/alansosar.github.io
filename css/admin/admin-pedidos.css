@@ -517,6 +517,58 @@ body.page-admin-orders {
 .total-row-stitch label { font-weight: 900; color: var(--coffee-deep); font-size: 12px; }
 .total-value-stitch { font-size: 24px; font-weight: 900; color: var(--primary-green); }
 
+/* COMPROBANTE - MATERIAL 3 EXPRESSIVE STYLE */
+.receipt-preview-stitch {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid var(--surface-low);
+}
+
+.receipt-preview-stitch label {
+    font-size: 11px;
+    font-weight: 900;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: block;
+}
+
+.receipt-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 14px 28px;
+    background: var(--primary-container);
+    color: var(--primary-green);
+    text-decoration: none;
+    border-radius: 28px; /* M3 Expressive Pill Shape */
+    font-weight: 700;
+    font-size: 14px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    width: fit-content;
+    box-shadow: 0 4px 12px rgba(55, 123, 76, 0.05);
+    border: 1px solid transparent;
+}
+
+.receipt-btn .material-symbols-outlined {
+    font-size: 20px;
+}
+
+.receipt-btn:hover {
+    background: var(--primary-green);
+    color: var(--white);
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 8px 24px rgba(55, 123, 76, 0.15);
+}
+
+.receipt-btn:active {
+    transform: scale(0.98);
+}
+
 /* PRODUCT LIST STITCH */
 .products-section-stitch { border: 1.5px solid var(--border-soft); border-radius: var(--radius-16); padding: 24px; }
 .items-mini-list { display: flex; flex-direction: column; gap: 12px; }
