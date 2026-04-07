@@ -63,6 +63,7 @@ function getStatusDetails(status, paymentMethod) {
       steps: ["Pedido registrado", "Preparación", "En camino", "Entregado"],
       pending: { step: 1, label: "Pedido registrado", desc: "Tu pedido fue recibido correctamente." },
       processing: { step: 2, label: "Preparación", desc: "Estamos preparando tu pedido." },
+      preparing: { step: 2, label: "Preparación", desc: "Estamos preparando tu pedido." },
       shipped: { step: 3, label: "En camino", desc: "El repartidor lleva tu pedido." },
       delivered: { step: 4, label: "Entregado", desc: "Pedido entregado." },
     }
@@ -71,6 +72,7 @@ function getStatusDetails(status, paymentMethod) {
       pending: { step: 1, label: "Pago enviado", desc: "Validando comprobante." },
       payment_review: { step: 2, label: "Revisión", desc: "Revisando el pago." },
       processing: { step: 3, label: "Confirmado", desc: "Pedido confirmado." },
+      preparing: { step: 3, label: "Confirmado", desc: "Pedido confirmado." },
       shipped: { step: 4, label: "Enviado", desc: "Pedido en camino." },
       delivered: { step: 4, label: "Entregado", desc: "Pedido entregado." },
     };
@@ -129,7 +131,7 @@ function applyLocalFilters() {
       const map = {
         pending: ["pending"],
         payment_review: ["payment_review"],
-        processing: ["processing"],
+        processing: ["processing", "preparing"],
         shipped: ["shipped"],
         delivered: ["delivered"],
         cancelled: ["cancelled"],

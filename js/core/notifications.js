@@ -78,6 +78,8 @@ const CLIENT_VISIBLE_STATUSES = [
   "cash_on_delivery",
   "payment_review",
   "confirmed",
+  "preparing",
+  "processing",
   "shipped",
   "delivered"
 ];

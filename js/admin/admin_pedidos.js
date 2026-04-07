@@ -533,6 +533,7 @@ console.log("🛠️ admin_pedidos.js — INIT STITCH");
         if (!userId) return;
         const msgs = {
             processing: "Estamos preparando tu pedido #",
+            preparing: "Estamos preparando tu pedido #",
             shipped: "Tu pedido está en camino #",
             delivered: "¡Pedido entregado! Gracias #",
             cancelled: "Tu pedido ha sido cancelado #"
