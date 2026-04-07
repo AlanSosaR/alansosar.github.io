@@ -211,7 +211,7 @@ async function initRealtime(sb, authUser, role) {
    PUSH
 ===================================================== */
 async function initPush(authUser) {
-  const PUSH_VERSION = "20250210_v1"; // Forzar actualización por cambio de credenciales
+  const PUSH_VERSION = "20250407_v1"; // Forzar actualización por cambio de credenciales
   if (localStorage.getItem("push_v") === PUSH_VERSION) return;
 
   try {
