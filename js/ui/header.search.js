@@ -25,7 +25,6 @@ export function renderHeaderSearch({
               class="header-status-filter"
               aria-label="Filtrar por estado"
             >
-              <option value="all">Todos</option>
               <option value="pending">Pendientes</option>
               <option value="processing">En preparación</option>
               <option value="shipped">En camino</option>
