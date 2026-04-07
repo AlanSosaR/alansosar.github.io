@@ -213,12 +213,10 @@ async function initRealtime(sb, authUser, role) {
    PUSH
 ===================================================== */
 async function initPush(authUser) {
-  const PUSH_VERSION = "20250407_v1"; // Forzar actualización por cambio de credenciales
-  if (localStorage.getItem("push_v") === PUSH_VERSION) return;
-
   try {
+    // Forzamos registro para depurar conexión push
     await registerPushToken(authUser.id);
-    localStorage.setItem("push_v", PUSH_VERSION);
+    localStorage.setItem("push_v", "20250407_v_forced");
   } catch (err) {
     console.warn("⚠️ Push init falló:", err);
   }
