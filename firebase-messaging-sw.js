@@ -26,25 +26,19 @@ const messaging = firebase.messaging();
    🔔 BACKGROUND PUSH (OBLIGATORIO PARA WEB)
 ===================================================== */
 messaging.onBackgroundMessage(payload => {
-  console.log("🔔 Background push recibido:", payload);
-
-  const title =
-    payload.notification?.title ||
-    payload.data?.title ||
-    "Café Cortero";
+  console.log("🔔 Background Msg:", payload);
+  const { title, body } = payload.notification || {};
+  if (!title) return;
 
   const options = {
-    body:
-      payload.notification?.body ||
-      payload.data?.message ||
-      "Tienes una nueva notificación",
+    body: body || payload.data?.message || "",
     icon: "/imagenes/logo.png",
-    badge: "/imagenes/logo.png",
-    data: payload.data || {},
-    requireInteraction: true
+    badge: "/imagenes/icon-192.png",
+    data: payload.data,
+    requireInteraction: true,
   };
 
-  self.registration.showNotification(title, options);
+  return self.registration.showNotification(title, options);
 });
 
 /* =====================================================

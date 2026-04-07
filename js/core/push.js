@@ -40,13 +40,24 @@ export async function registerPushToken(userId) {
     window.__PUSH_REGISTERED__ = true;
 
     // -----------------------------
-    // Permisos de notificación
+    // Permisos de notificación (GESTOR DE GESTO REQUERIDO PARA MÓVIL)
     // -----------------------------
     if (Notification.permission === "denied") return;
 
     if (Notification.permission !== "granted") {
-      const permission = await Notification.requestPermission();
-      if (permission !== "granted") return;
+      console.log("👆 Esperando gesto del usuario para pedir permisos de notificación");
+      const ask = async () => {
+        const permission = await Notification.requestPermission();
+        if (permission === "granted") {
+          window.__PUSH_REGISTERED__ = false; // Reset para re-intentar registro con permiso
+          registerPushToken(userId);
+        }
+        document.removeEventListener("click", ask);
+        document.removeEventListener("touchstart", ask);
+      };
+      document.addEventListener("click", ask);
+      document.addEventListener("touchstart", ask);
+      return;
     }
 
     // -----------------------------

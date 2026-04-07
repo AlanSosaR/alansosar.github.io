@@ -155,6 +155,17 @@ Deno.serve(async (req) => {
           data: {
             type: notificationRecord.type || 'info',
             notification_id: String(notificationRecord.id || '')
+          },
+          webpush: {
+            headers: {
+              Urgency: "high",
+              TTL: "3600"
+            },
+            notification: {
+              icon: "/imagenes/logo.png",
+              badge: "/imagenes/logo.png",
+              requireInteraction: true
+            }
           }
         }
       };
