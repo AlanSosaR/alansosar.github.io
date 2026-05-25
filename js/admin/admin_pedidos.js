@@ -544,14 +544,20 @@ console.log("🛠️ admin_pedidos.js — INIT STITCH");
 
         try {
             console.log("🚀 Notificando pedido #" + orderNum);
+            
             const { error: insErr } = await sb
                 .from("notifications")
                 .insert([{
                     user_id: userId,
                     title: "☕ Café Cortero — ¡Pago Confirmado!",
                     message: `${msgBase}${orderNum}`,
-                    type: "status",
-                    is_read: false
+                    type: "order_status",
+                    is_read: false,
+                    metadata: {
+                        order_id: selectedOrder.id,
+                        order_number: orderNum,
+                        new_status: status
+                    }
                 }]);
 
             if (insErr) throw insErr;
