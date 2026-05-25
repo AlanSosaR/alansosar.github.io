@@ -11,14 +11,11 @@ Deno.serve(async (req) => {
     const payload = await req.json();
     console.log('📦 FCM Payload received:', JSON.stringify(payload, null, 2));
 
-    const notificationRecord = payload.record || payload; // Handle direct record or enveloped record
-
-
+    const notificationRecord = payload.record || payload;
 
     // Fetch push tokens
     let tokens = [];
 
-    // CASO 1: Notificación específica a un usuario
     if (notificationRecord.user_id) {
       const { data, error } = await supabase
         .from('push_tokens')
@@ -26,12 +23,9 @@ Deno.serve(async (req) => {
         .eq('user_id', notificationRecord.user_id);
 
       if (!error && data) tokens = data;
-    }
-    // CASO 2: Notificación para el ADMINISTRADOR (user_id null)
-    else {
+    } else {
       console.log('📢 Notification for ADMIN (user_id is null/missing) - Broadcasting to admins...');
 
-      // 1. Obtener IDs de admins
       const { data: admins, error: adminErr } = await supabase
         .from('users')
         .select('id')
@@ -40,7 +34,6 @@ Deno.serve(async (req) => {
       if (!adminErr && admins && admins.length > 0) {
         const adminIds = admins.map((a: { id: string }) => a.id);
 
-        // 2. Obtener tokens de esos admins
         const { data: adminTokens, error: tokenErr } = await supabase
           .from('push_tokens')
           .select('token')
@@ -57,7 +50,6 @@ Deno.serve(async (req) => {
 
     console.log(`✅ Found ${tokens.length} token(s) to notify.`);
 
-    // Get Firebase service account from secrets
     const fcmSecret = Deno.env.get("FCM_SERVICE_ACCOUNT");
     if (!fcmSecret) {
       console.error("❌ Missing FCM_SERVICE_ACCOUNT");
@@ -82,7 +74,6 @@ Deno.serve(async (req) => {
     const now = getNumericDate(0);
 
     console.log("🔑 Importing Private Key for RS256...");
-    // Convert PEM to CryptoKey
     const pemHeader = "-----BEGIN PRIVATE KEY-----";
     const pemFooter = "-----END PRIVATE KEY-----";
     const pemContents = privateKey
@@ -90,7 +81,6 @@ Deno.serve(async (req) => {
       .replace(pemFooter, "")
       .replace(/\s/g, "");
 
-    // Decode base64 to array buffer
     const binaryDerString = atob(pemContents);
     const binaryDer = new Uint8Array(binaryDerString.length);
     for (let i = 0; i < binaryDerString.length; i++) {
@@ -109,7 +99,6 @@ Deno.serve(async (req) => {
     );
 
     console.log("🔑 Creating JWT...");
-    // Create JWT for OAuth
     const jwt = await create(
       { alg: "RS256", typ: "JWT" },
       {
@@ -123,7 +112,6 @@ Deno.serve(async (req) => {
     );
 
     console.log("🔑 Fetching OAuth token...");
-    // Get OAuth access token
     const authRes = await fetch("https://oauth2.googleapis.com/token", {
       method: "POST",
       body: new URLSearchParams({
@@ -141,7 +129,8 @@ Deno.serve(async (req) => {
 
     console.log('🔑 OAuth token obtained successfully');
 
-    // Send push to all tokens
+    // Send push to all tokens and validate FCM response
+    let allSucceeded = true;
     const results = [];
     for (const tokenRow of tokens) {
       console.log(`📤 Sending to token: ${tokenRow.token.substring(0, 15)}...`);
@@ -183,23 +172,32 @@ Deno.serve(async (req) => {
       );
 
       const result = await res.json();
-      results.push({ token: tokenRow.token.substring(0, 20) + '...', result });
-      console.log('📤 FCM Response:', JSON.stringify(result));
+      const isError = !!result.error;
+      results.push({ token: tokenRow.token.substring(0, 20) + '...', success: !isError, result });
+      
+      if (isError) {
+        allSucceeded = false;
+        console.error('❌ FCM Error:', result.error.message, '- Token:', tokenRow.token.substring(0, 20) + '...');
+      } else {
+        console.log('✅ FCM Success:', result.name);
+      }
     }
 
-    // Mark notification as push_sent
-    if (notificationRecord.id) {
-      console.log(`✅ Updating push_sent for ID: ${notificationRecord.id}`);
+    // Only mark push_sent if ALL tokens were delivered successfully
+    if (notificationRecord.id && allSucceeded) {
+      console.log(`✅ All pushes succeeded, updating push_sent for ID: ${notificationRecord.id}`);
       const { error: updateErr } = await supabase
         .from('notifications')
         .update({ push_sent: true })
         .eq('id', notificationRecord.id);
 
       if (updateErr) console.error("❌ Update push_sent error:", updateErr);
+    } else if (notificationRecord.id && !allSucceeded) {
+      console.log(`⚠️ Some pushes failed, NOT marking push_sent for ID: ${notificationRecord.id}`);
     }
 
     return new Response(
-      JSON.stringify({ success: true, sent: results.length, results }),
+      JSON.stringify({ success: allSucceeded, sent: results.length, results }),
       { headers: { 'Content-Type': 'application/json' } }
     );
 

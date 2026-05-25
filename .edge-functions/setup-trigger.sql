@@ -17,11 +17,14 @@ LANGUAGE plpgsql
 AS $$
 BEGIN
   -- Call edge function asynchronously using pg_net
+  -- IMPORTANTE: Debe incluir el Authorization header con la anon key
+  -- para que Supabase Gateway acepte la solicitud
   PERFORM
     net.http_post(
       url := 'https://eaipcuvvddyrqkbmjmvw.supabase.co/functions/v1/send-push-notification',
       headers := jsonb_build_object(
-        'Content-Type', 'application/json'
+        'Content-Type', 'application/json',
+        'Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVhaXBjdXZ2ZGR5cnFrYm1qbXZ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMwOTcxMDEsImV4cCI6MjA3ODY3MzEwMX0.2qICLx3qZgeGr0oXZ8PYRxXPL1X5Vog4UoOnTQBFzNA'
       ),
       body := jsonb_build_object(
         'record', row_to_json(NEW)
