@@ -70,7 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
         logoLink.style.alignItems = "center";
       }
     } else if (authGroup) {
-      headerRight.insertBefore(wrapper, authGroup.nextSibling);
+      headerRight.insertBefore(wrapper, authGroup);
     } else {
       headerRight.appendChild(wrapper);
     }
