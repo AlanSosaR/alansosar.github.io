@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const API_URL = "https://132.145.42.123:8080";
+  const API_URL = "https://132.145.42.123:3002/api";
   const INSTANCE = "CafeCortero";
   const API_KEY = "429683C4C977415CAAFCCE10F7D57E11";
 
@@ -263,6 +263,9 @@ document.addEventListener("DOMContentLoaded", () => {
     messageInput.disabled = false;
     sendBtn.disabled = false;
 
+    // En móvil, ocultar sidebar y mostrar solo el chat
+    document.querySelector(".wa-sidebar")?.classList.add("wa-sidebar-hidden");
+
     loadMessages(contact);
   }
 
@@ -410,6 +413,14 @@ document.addEventListener("DOMContentLoaded", () => {
   /* =========================
      EVENTS
   ========================= */
+  document.getElementById("wa-back-btn")?.addEventListener("click", () => {
+    document.querySelector(".wa-sidebar")?.classList.remove("wa-sidebar-hidden");
+    chat?.classList.add("hidden");
+    noSelection?.classList.remove("hidden");
+    selectedContact = null;
+    renderContacts();
+  });
+
   searchInput?.addEventListener("input", (e) => {
     const q = e.target.value.toLowerCase().trim();
     filteredContacts = allContacts.filter(c =>

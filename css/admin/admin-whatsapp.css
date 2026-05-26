@@ -406,6 +406,10 @@
     min-width: unset;
   }
 
+  .wa-sidebar-hidden {
+    display: none !important;
+  }
+
   .wa-body {
     flex-direction: column;
     height: auto;
@@ -413,5 +417,21 @@
 
   .wa-panel {
     min-height: 400px;
+  }
+
+  .wa-chat-header .wa-back-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 50%;
+    color: #666;
+  }
+
+  .wa-chat-header .wa-back-btn:hover {
+    background: rgba(0,0,0,0.05);
   }
 }
