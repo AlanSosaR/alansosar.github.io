@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", () => {
         </button>
       </div>
     `;
-    headerRight.appendChild(wrapper);
+    headerLeft.appendChild(wrapper);
     bindGearEvents();
     updateStatus();
     setInterval(updateStatus, 10000);
