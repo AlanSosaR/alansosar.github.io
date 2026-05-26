@@ -241,8 +241,8 @@ body[class*="page-admin-"] #cart-btn {
 }
 
 body[class*="page-admin-"] .header-middle-stitch {
-  flex: 8 !important; /* Le da 8 veces más espacio al buscador para casi todo el ancho */
-  max-width: 1400px !important;
+  flex: 4 !important; /* Le da 4 veces más espacio al buscador */
+  max-width: 1200px !important;
   margin: 0 20px;
 }
 
