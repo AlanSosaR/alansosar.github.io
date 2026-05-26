@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let allContacts = [];
   let filteredContacts = [];
   let selectedContact = null;
-  let messageHistory = [];
+  const sentMessages = {};
 
   /* =========================
      STATUS
@@ -172,42 +172,83 @@ document.addEventListener("DOMContentLoaded", () => {
   /* =========================
      MESSAGES
   ========================= */
+  function getPhoneVariants(phone) {
+    const clean = phone.replace(/\D/g, "");
+    const variants = [clean, `${clean}@s.whatsapp.net`];
+    if (clean.startsWith("504")) variants.push(clean.slice(3));
+    return variants;
+  }
+
+  function matchesContact(jid, phoneVariants) {
+    if (!jid) return false;
+    return phoneVariants.some(v => jid.includes(v));
+  }
+
+  function renderMessageList(messages) {
+    chatHistory.innerHTML = "";
+
+    if (messages.length === 0) {
+      chatHistory.innerHTML = '<div class="wa-history-placeholder"><span class="material-symbols-outlined">history</span><p>No hay mensajes previos. Envía el primer mensaje.</p></div>';
+      return;
+    }
+
+    messages.sort((a, b) => (a.ts || a.messageTimestamp || 0) - (b.ts || b.messageTimestamp || 0));
+
+    messages.forEach(msg => {
+      const text = msg.text || "—";
+      const fromMe = msg.fromMe;
+      const time = msg.time || (msg.messageTimestamp
+        ? new Date(msg.messageTimestamp * 1000).toLocaleString("es-HN")
+        : "");
+
+      const bubble = document.createElement("div");
+      bubble.className = `wa-message-bubble ${fromMe ? "sent" : "received"}`;
+      bubble.innerHTML = `${text}${time ? `<div class="wa-message-time">${time}</div>` : ""}`;
+      chatHistory.appendChild(bubble);
+    });
+
+    chatHistory.scrollTop = chatHistory.scrollHeight;
+  }
+
   async function loadMessages(contact) {
     chatHistory.innerHTML = '<div class="wa-history-placeholder"><span class="material-symbols-outlined">hourglass_empty</span><p>Cargando mensajes...</p></div>';
 
+    const contactId = contact.id;
+    const phoneVariants = getPhoneVariants(contact.phone);
+    const local = sentMessages[contactId] || [];
+
     try {
-      const cleanPhone = contact.phone.replace(/\D/g, "");
-      const resp = await fetch(
-        `${API_URL}/chat/findMessages/${INSTANCE}?number=${cleanPhone}&page=1&limit=20`,
-        { method: "GET", headers: { apikey: API_KEY } }
-      );
-
-      if (!resp.ok) throw new Error("HTTP " + resp.status);
-      const data = await resp.json();
-      const messages = data?.messages || data?.records || [];
-
-      chatHistory.innerHTML = "";
-      if (messages.length === 0) {
-        chatHistory.innerHTML = '<div class="wa-history-placeholder"><span class="material-symbols-outlined">history</span><p>No hay mensajes previos. Envía el primer mensaje.</p></div>';
-        return;
-      }
-
-      messages.forEach(msg => {
-        const text = msg.message?.conversation || msg.text || "—";
-        const fromMe = msg.key?.fromMe || msg.fromMe;
-        const time = msg.messageTimestamp
-          ? new Date(msg.messageTimestamp * 1000).toLocaleString("es-HN")
-          : "";
-
-        const bubble = document.createElement("div");
-        bubble.className = `wa-message-bubble ${fromMe ? "sent" : "received"}`;
-        bubble.innerHTML = `${text}${time ? `<div class="wa-message-time">${time}</div>` : ""}`;
-        chatHistory.appendChild(bubble);
+      const resp = await fetch(`${API_URL}/chat/findMessages/${INSTANCE}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", apikey: API_KEY },
+        body: JSON.stringify({ number: phoneVariants[0], page: 1, limit: 50 })
       });
 
-      chatHistory.scrollTop = chatHistory.scrollHeight;
+      if (resp.ok) {
+        const data = await resp.json();
+        const records = data?.messages?.records || [];
+
+        const apiMessages = records
+          .filter(r => {
+            const jid = r.key?.remoteJid || "";
+            const alt = r.remoteJidAlt || "";
+            return matchesContact(jid, phoneVariants) || matchesContact(alt, phoneVariants);
+          })
+          .map(r => ({
+            text: r.message?.conversation || (r.message?.imageMessage ? "[imagen]" : null) || (r.message?.audioMessage ? "[audio]" : null) || (r.message?.stickerMessage ? "[sticker]" : null) || "—",
+            fromMe: r.key?.fromMe === true,
+            time: r.messageTimestamp ? new Date(r.messageTimestamp * 1000).toLocaleString("es-HN") : "",
+            messageTimestamp: r.messageTimestamp,
+            ts: r.messageTimestamp || 0
+          }));
+
+        const all = [...apiMessages, ...local];
+        renderMessageList(all);
+      } else {
+        renderMessageList(local);
+      }
     } catch {
-      chatHistory.innerHTML = '<div class="wa-history-placeholder"><span class="material-symbols-outlined">info</span><p>No se pudo cargar el historial. Envía un mensaje para iniciar la conversación.</p></div>';
+      renderMessageList(local);
     }
   }
 
@@ -236,6 +277,11 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!resp.ok) throw new Error("HTTP " + resp.status);
 
       const now = new Date().toLocaleString("es-HN");
+      const ts = Date.now();
+
+      if (!sentMessages[selectedContact.id]) sentMessages[selectedContact.id] = [];
+      sentMessages[selectedContact.id].push({ text, fromMe: true, time: now, ts });
+
       const bubble = document.createElement("div");
       bubble.className = "wa-message-bubble sent";
       bubble.innerHTML = `${text}<div class="wa-message-time">${now}</div>`;
