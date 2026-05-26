@@ -2,7 +2,16 @@ const TARGET = 'http://132.145.42.123:8080';
 
 module.exports = async function handler(req, res) {
   const slug = req.query.slug || [];
-  const path = Array.isArray(slug) ? slug.join('/') : slug;
+  const parts = Array.isArray(slug) ? slug : [slug];
+
+  if (parts.length < 1 || parts[0] !== 'wa-proxy') {
+    res.statusCode = 404;
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify({ error: 'Not found' }));
+    return;
+  }
+
+  const path = parts.slice(1).join('/');
   const qs = req.url.includes('?') ? req.url.split('?')[1] : '';
   const targetUrl = `${TARGET}/${path}${qs ? '?' + qs : ''}`;
 
