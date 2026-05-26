@@ -141,22 +141,6 @@ export async function registerPushToken(userId) {
 // =====================================================
 onMessage(messaging, payload => {
   console.log("📩 Push recibido en foreground:", payload);
-
-  // Seguridad básica
-  if (!payload?.notification) {
-    console.warn("⚠️ Push sin notification payload");
-    return;
-  }
-  if (Notification.permission !== "granted") {
-    console.warn("⚠️ Permisos de notificación no otorgados");
-    return;
-  }
-
-  console.log("🔔 Mostrando notificación:", payload.notification.title);
-
-  new Notification(payload.notification.title, {
-    body: payload.notification.body,
-    icon: "/imagenes/logo.png",
-    data: payload.data || {}
-  });
+  if (!payload?.notification) return;
+  document.dispatchEvent(new CustomEvent("push:foreground", { detail: payload }));
 });
