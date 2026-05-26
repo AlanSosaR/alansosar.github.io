@@ -14,21 +14,13 @@
 .wa-status-bar {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  background: #e8f5e9;
-  border-radius: 8px;
+  justify-content: flex-end;
+  padding: 4px 8px;
   margin-bottom: 8px;
-  font-size: 14px;
   position: relative;
 }
 
-.wa-status-bar.error {
-  background: #ffebee;
-}
-
 .wa-status-actions {
-  margin-left: auto;
   position: relative;
 }
 
@@ -39,13 +31,14 @@
   color: #666;
   display: flex;
   align-items: center;
-  padding: 4px;
+  padding: 6px;
   border-radius: 50%;
   transition: background 0.2s;
 }
 
 .wa-settings-btn:hover {
   background: rgba(0,0,0,0.05);
+  color: #333;
 }
 
 .wa-settings-dropdown {
@@ -53,12 +46,31 @@
   right: 0;
   top: 100%;
   background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
   z-index: 100;
-  min-width: 200px;
+  min-width: 220px;
   overflow: hidden;
+}
+
+.wa-dropdown-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px 8px;
+  font-size: 13px;
+  color: #666;
+}
+
+.wa-dropdown-status .material-symbols-outlined {
+  font-size: 18px;
+}
+
+.wa-dropdown-divider {
+  border: none;
+  border-top: 1px solid #eee;
+  margin: 4px 0;
 }
 
 .wa-dropdown-item {

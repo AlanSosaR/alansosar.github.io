@@ -3,9 +3,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const INSTANCE = "CafeCortero";
   const API_KEY = "429683C4C977415CAAFCCE10F7D57E11";
 
-  const statusIcon = document.getElementById("status-icon");
-  const statusText = document.getElementById("status-text");
-  const statusBar = document.getElementById("wa-status");
+  const statusIcon = document.getElementById("dropdown-status-icon");
+  const statusText = document.getElementById("dropdown-status-text");
   const contactsList = document.getElementById("contacts-list");
   const contactsCount = document.getElementById("contacts-count");
   const searchInput = document.getElementById("wa-search");
@@ -47,30 +46,26 @@ document.addEventListener("DOMContentLoaded", () => {
       if (state === "open") {
         statusIcon.textContent = "check_circle";
         statusIcon.style.color = "#2e7d32";
-        statusText.textContent = "WhatsApp conectado";
-        statusBar.className = "wa-status-bar";
+        statusText.textContent = "Conectado";
         disconnectBtn?.classList.remove("hidden");
         connectBtn?.classList.add("hidden");
       } else if (state === "connecting") {
         statusIcon.textContent = "hourglass_empty";
         statusIcon.style.color = "#f9a825";
-        statusText.textContent = "WhatsApp conectándose...";
-        statusBar.className = "wa-status-bar";
+        statusText.textContent = "Conectándose...";
         disconnectBtn?.classList.add("hidden");
         connectBtn?.classList.add("hidden");
       } else {
         statusIcon.textContent = "error";
         statusIcon.style.color = "#c62828";
-        statusText.textContent = "WhatsApp desconectado";
-        statusBar.className = "wa-status-bar error";
+        statusText.textContent = "Desconectado";
         disconnectBtn?.classList.add("hidden");
         connectBtn?.classList.remove("hidden");
       }
     } catch {
       statusIcon.textContent = "error";
       statusIcon.style.color = "#c62828";
-      statusText.textContent = "Error de conexión con el servidor";
-      statusBar.className = "wa-status-bar error";
+      statusText.textContent = "Error de conexión";
       disconnectBtn?.classList.add("hidden");
       connectBtn?.classList.add("hidden");
     }
