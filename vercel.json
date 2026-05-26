@@ -1,7 +1,10 @@
 {
   "functions": {
-    "api/**/*.js": {
+    "api/wa-proxy.js": {
       "runtime": "nodejs@18.x"
     }
-  }
+  },
+  "rewrites": [
+    { "source": "/api/wa-proxy/:path*", "destination": "/api/wa-proxy?path=$path" }
+  ]
 }
