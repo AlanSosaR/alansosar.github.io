@@ -521,7 +521,7 @@ const initAdminClientes = () => {
             const cleanPhone = phone.replace(/\D/g, "");
             const hasCountryCode = phone.trim().startsWith("+");
             const fullNumber = hasCountryCode ? cleanPhone : `504${cleanPhone}`;
-            const waApi = "http://132.145.42.123:8080";
+            const waApi = "https://cafe-cortero.vercel.app/api/wa-proxy";
             const waKey = "429683C4C977415CAAFCCE10F7D57E11";
 
             const res = await fetch(`${waApi}/message/sendText/CafeCortero`, {

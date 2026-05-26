@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const API_URL = "http://132.145.42.123:8080";
+  const API_URL = "https://cafe-cortero.vercel.app/api/wa-proxy";
   const INSTANCE = "CafeCortero";
   const API_KEY = "429683C4C977415CAAFCCE10F7D57E11";
 
