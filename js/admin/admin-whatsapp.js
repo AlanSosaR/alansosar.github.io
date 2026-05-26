@@ -7,7 +7,7 @@
 document.addEventListener("DOMContentLoaded", () => {
 
   // --- CONFIGURACIÓN EVOLUTION API ---
-  const API_URL = "http://132.145.42.123:8080";
+  const API_URL = "https://132.145.42.123:8080";
   const INSTANCE_NAME = "CafeCortero";
   const GLOBAL_API_KEY = "429683C4C977415CAAFCCE10F7D57E11"; // Definido en tu `.env`
   
