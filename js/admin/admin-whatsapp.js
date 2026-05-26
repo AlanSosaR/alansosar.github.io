@@ -14,6 +14,18 @@ document.addEventListener("DOMContentLoaded", () => {
   let selectedContact = null;
   const sentMessages = {};
 
+  const contactsList = document.getElementById("contacts-list");
+  const contactsCount = document.getElementById("contacts-count");
+  const searchInput = document.getElementById("wa-search");
+  const panel = document.getElementById("wa-panel");
+  const noSelection = document.getElementById("wa-no-selection");
+  const chat = document.getElementById("wa-chat");
+  const chatName = document.getElementById("chat-name");
+  const chatPhone = document.getElementById("chat-phone");
+  const chatHistory = document.getElementById("chat-history");
+  const messageInput = document.getElementById("wa-message-input");
+  const sendBtn = document.getElementById("wa-send-btn");
+
   /* =========================
      INJECT GEAR INTO HEADER
   ========================= */
