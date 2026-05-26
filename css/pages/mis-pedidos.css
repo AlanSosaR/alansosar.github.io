@@ -202,14 +202,15 @@ body.page-mis-pedidos {
     display: none;
     align-items: center;
     gap: 8px;
-    padding: 16px 20px;
-    background: none;
+    background: var(--surface-low);
     border: none;
-    border-bottom: 1px solid var(--surface-low);
-    font-size: 14px;
-    font-weight: 600;
     color: var(--primary-green);
+    font-weight: 700;
+    margin-bottom: 20px;
     cursor: pointer;
+    padding: 10px 16px;
+    border-radius: 12px;
+    width: fit-content;
 }
 
 .detail-container-alt {
@@ -220,7 +221,8 @@ body.page-mis-pedidos {
 
 .detail-header-stitch-alt {
     padding: 24px 28px 20px;
-    border-bottom: 1px solid var(--surface-low);
+    background: var(--primary-container);
+    border-bottom: 1px solid var(--border-soft);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -269,7 +271,9 @@ body.page-mis-pedidos {
 .timeline-container-stitch {
     margin-bottom: 28px;
     padding: 20px 16px;
-    background: var(--bg-canvas);
+    background: var(--white);
+    border: 1px solid var(--border-soft);
+    box-shadow: var(--shadow-soft);
     border-radius: var(--radius-12);
 }
 
@@ -340,7 +344,9 @@ body.page-mis-pedidos {
 }
 
 .info-card-stitch {
-    background: var(--bg-canvas);
+    background: var(--white);
+    border: 1px solid var(--border-soft);
+    box-shadow: var(--shadow-soft);
     border-radius: var(--radius-12);
     padding: 20px;
 }
@@ -431,6 +437,11 @@ body.page-mis-pedidos {
 
 /* ================= PRODUCTS ================= */
 .products-section-stitch {
+    background: var(--white);
+    border: 1px solid var(--border-soft);
+    box-shadow: var(--shadow-soft);
+    border-radius: var(--radius-12);
+    padding: 24px;
     margin-bottom: 24px;
 }
 
@@ -445,7 +456,8 @@ body.page-mis-pedidos {
     justify-content: space-between;
     align-items: center;
     padding: 12px 16px;
-    background: var(--bg-canvas);
+    background: var(--white);
+    border: 1px solid var(--border-soft);
     border-radius: var(--radius-12);
 }
 
@@ -650,30 +662,38 @@ body.page-mis-pedidos {
     }
 
     .orders-layout-stitch {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr !important;
+        gap: 0;
         min-height: auto;
     }
 
-    .orders-list-section-stitch { min-height: auto; }
-    .orders-list-stitch { max-height: none; }
-
-    .order-detail-section-stitch {
-        position: fixed;
-        inset: 0;
-        z-index: 100;
-        border-radius: 0;
-        min-height: 100vh;
-        overflow-y: auto;
-        background: var(--white);
+    /* Maestro-Detalle Mobile Pattern: Solo uno a la vez */
+    body.detail-view-active .orders-list-section-stitch {
+        display: none !important;
     }
 
-    .order-detail-section-stitch.hidden { display: none !important; }
+    body:not(.detail-view-active) .order-detail-section-stitch,
+    body:not(.detail-view-active) #no-selection {
+        display: none !important;
+    }
+
+    /* Forzar que el detalle ocupe todo el ancho si está activo */
+    body.detail-view-active .order-detail-section-stitch {
+        display: flex !important;
+        width: 100% !important;
+        background: var(--white);
+        border-radius: var(--radius-16);
+        box-shadow: var(--shadow-soft);
+        border: 1px solid var(--border-soft);
+        min-height: auto;
+    }
 
     .btn-mobile-back {
         display: flex !important;
+        margin: 16px 20px 0;
     }
 
-    .no-selection-section-stitch { display: none; }
+    .no-selection-section-stitch { display: none !important; }
 
     .detail-grid-stitch {
         grid-template-columns: 1fr;

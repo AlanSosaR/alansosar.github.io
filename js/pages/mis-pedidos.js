@@ -193,6 +193,7 @@ function applyLocalFilters() {
   if (window.innerWidth > 768) {
     selectOrder(0);
   } else {
+    document.body.classList.remove("detail-view-active");
     $id("order-detail")?.classList.add("hidden");
     $id("no-selection")?.classList.remove("hidden");
   }
@@ -302,6 +303,9 @@ function selectOrder(index) {
   const cards = document.querySelectorAll(".order-card-item-stitch");
   cards[index]?.classList.add("active");
 
+  // Marcar activo en mobile
+  document.body.classList.add("detail-view-active");
+
   renderDetail(filteredOrders[index]);
 }
 
@@ -401,6 +405,9 @@ function esperarSupabase() {
    MOBILE BACK
 ========================= */
 $id("btn-back-to-list")?.addEventListener("click", () => {
+  document.body.classList.remove("detail-view-active");
+  activeIndex = -1;
+  document.querySelectorAll(".order-card-item-stitch").forEach((c) => c.classList.remove("active"));
   $id("order-detail")?.classList.add("hidden");
   $id("no-selection")?.classList.remove("hidden");
 });
