@@ -29,14 +29,15 @@ document.addEventListener("DOMContentLoaded", () => {
   /* =========================
      INJECT GEAR INTO HEADER
   ========================= */
-  function injectGear() {
-    const headerLeft = document.querySelector(".header-left-stitch");
-    if (!headerLeft || document.getElementById("wa-settings-btn")) return;
+   function injectGear() {
+    const headerRight = document.querySelector(".header-right-stitch");
+    if (!headerRight || document.getElementById("wa-settings-btn")) return;
+
+    const cartBtn = document.getElementById("cart-btn");
 
     const wrapper = document.createElement("div");
     wrapper.className = "wa-header-gear";
     wrapper.style.position = "relative";
-    wrapper.style.marginLeft = "8px";
     wrapper.innerHTML = `
       <button id="wa-settings-btn" class="header-icon-btn" title="WhatsApp" style="position:relative;">
         <span class="material-symbols-outlined">settings</span>
@@ -59,7 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
         </button>
       </div>
     `;
-    headerLeft.appendChild(wrapper);
+    headerRight.insertBefore(wrapper, cartBtn);
     bindGearEvents();
     updateStatus();
     setInterval(updateStatus, 10000);

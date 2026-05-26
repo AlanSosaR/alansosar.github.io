@@ -419,6 +419,14 @@
     min-height: 400px;
   }
 
+  .wa-chat-input-area {
+    display: none;
+  }
+
+  .wa-chat:not(.hidden) .wa-chat-input-area {
+    display: flex;
+  }
+
   .wa-chat-header .wa-back-btn {
     display: flex;
     align-items: center;
