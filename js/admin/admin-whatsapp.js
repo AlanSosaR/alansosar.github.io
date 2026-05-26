@@ -385,45 +385,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =========================
-     SETTINGS DROPDOWN
-  ========================= */
-  settingsBtn?.addEventListener("click", (e) => {
-    e.stopPropagation();
-    settingsDropdown.classList.toggle("hidden");
-  });
-
-  document.addEventListener("click", () => {
-    settingsDropdown?.classList.add("hidden");
-  });
-
-  settingsDropdown?.addEventListener("click", (e) => {
-    e.stopPropagation();
-  });
-
-  disconnectBtn?.addEventListener("click", async () => {
-    settingsDropdown.classList.add("hidden");
-    const ok = confirm("¿Desconectar WhatsApp de la instancia CafeCortero? Los clientes no recibirán notificaciones hasta que reconectes.");
-    if (!ok) return;
-
-    try {
-      const resp = await fetch(`${API_URL}/instance/logout/${INSTANCE}`, {
-        method: "DELETE", headers: { apikey: API_KEY }
-      });
-      if (!resp.ok) throw new Error("HTTP " + resp.status);
-      showSnack("WhatsApp desconectado", "success");
-      await updateStatus();
-    } catch (err) {
-      console.error(err);
-      showSnack("Error al desconectar", "error");
-    }
-  });
-
-  connectBtn?.addEventListener("click", () => {
-    settingsDropdown.classList.add("hidden");
-    window.open("https://132.145.42.123:3002", "_blank");
-  });
-
-  /* =========================
      UTILS
   ========================= */
   function showSnack(text, type) {
