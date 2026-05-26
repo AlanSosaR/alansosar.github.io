@@ -516,8 +516,13 @@ console.log("🛠️ admin_pedidos.js — INIT STITCH");
 
             showSnack("success", "Estado actualizado");
             
-            // Enviar notificación (AWAIT REQUERIDO)
+            // Enviar notificación push
             await sendPushNotification(selectedOrder.user_id, newStatus, selectedOrder.order_number);
+            // Enviar WhatsApp al cliente
+            const customerPhone = selectedOrder.address?.phone || "";
+            if (customerPhone && customerPhone.replace(/\D/g, "").length >= 10) {
+                await sendWhatsAppNotification(customerPhone, newStatus, selectedOrder.order_number);
+            }
 
             // Recargar datos
             await loadOrders();
@@ -526,6 +531,45 @@ console.log("🛠️ admin_pedidos.js — INIT STITCH");
 
         } catch (err) {
             showSnack("error", "Error al actualizar estado");
+        }
+    }
+
+    async function sendWhatsAppNotification(phone, status, orderNum) {
+        if (!phone) return;
+        const msgs = {
+            processing: "☕ *Café Cortero* — ¡Recibimos tu pedido #",
+            preparing: "☕ *Café Cortero* — Estamos preparando tu pedido #",
+            shipped: "🚢 *Café Cortero* — ¡Tu pedido #",
+            delivered: "☕✨ *Café Cortero* — ¡Disfruta tu café! Pedido #",
+            cancelled: "❌ *Café Cortero* — Tu pedido #"
+        };
+        const msgBase = msgs[status];
+        if (!msgBase) return;
+
+        const suffixes = {
+            processing: "! Ya está siendo preparado con cuidado. Te avisaremos cuando esté listo.",
+            preparing: "! Ya estamos en ello. Pronto estará listo.",
+            shipped: " ya va en camino! Sigue el rastro para saber cuándo llegará.",
+            delivered: " ha sido entregado. Esperamos que cada taza sea especial. ¡Vuelve pronto!",
+            cancelled: " ha sido cancelado. Si tienes dudas, contáctanos."
+        };
+
+        try {
+            const cleanPhone = phone.replace(/\D/g, "");
+            const fullNumber = cleanPhone.startsWith("52") ? cleanPhone : `52${cleanPhone}`;
+            const waApi = "https://132.145.42.123:8080";
+            const waKey = "429683C4C977415CAAFCCE10F7D57E11";
+
+            await fetch(`${waApi}/message/sendText/CafeCortero`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json", apikey: waKey },
+                body: JSON.stringify({
+                    number: fullNumber,
+                    text: `${msgBase}${orderNum}${suffixes[status]}`
+                })
+            });
+        } catch (err) {
+            console.error("❌ Error al enviar WhatsApp:", err);
         }
     }
 
