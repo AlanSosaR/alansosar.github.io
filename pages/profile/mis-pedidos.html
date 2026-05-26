@@ -7,8 +7,9 @@
   <title>Mis pedidos | Café Cortero</title>
 
   <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
 
   <!-- Styles -->
   <link rel="stylesheet" href="/css/ui/header.css">
@@ -17,26 +18,145 @@
   <link rel="stylesheet" href="/css/pages/mis-pedidos.css" />
 </head>
 
-<body class="page-mis-pedidos header-checkout">
-
+<body class="page-mis-pedidos page-admin-">
 
   <main class="admin-orders-container fade-in" aria-live="polite">
 
-    <!-- El botón "Seguir comprando" ahora se maneja dentro del detalle del pedido o vía drawer -->
+    <!-- LAYOUT DUAL PANEL -->
+    <div class="orders-layout-stitch" id="main-layout-stitch">
 
-    <!-- PEDIDO ACTIVO (VISIBLE POR DEFECTO) -->
-    <section id="pedido-activo" class="pedido-activo hidden" aria-label="Detalle del pedido seleccionado">
-    </section>
+      <!-- LEFT: ORDER LIST -->
+      <aside class="orders-list-section-stitch" id="mobile-list-view">
+        <header class="list-header-stitch">
+          <h2 class="section-title">Mis pedidos</h2>
+          <div id="orders-count-stitch" class="count-badge-stitch">0</div>
+        </header>
 
-    <!-- EMPTY STATE (SOLO SI NO HAY PEDIDOS) -->
+        <div id="orders-list" class="orders-list-stitch custom-scroll">
+          <div class="loading-state">Cargando pedidos...</div>
+        </div>
+      </aside>
+
+      <!-- RIGHT: ORDER DETAIL -->
+      <section id="order-detail" class="order-detail-section-stitch hidden">
+
+        <button id="btn-back-to-list" class="btn-mobile-back">
+          <span class="material-symbols-outlined">arrow_back</span>
+          Volver a la lista
+        </button>
+
+        <div id="order-detail-content" class="detail-container-alt hidden">
+
+          <!-- Header -->
+          <header class="detail-header-stitch-alt">
+            <div class="header-info-stitch">
+              <h2 id="order-id-display" class="order-number-stitch">Pedido #0000</h2>
+              <span id="order-status-badge" class="status-badge-stitch">PENDIENTE</span>
+            </div>
+          </header>
+
+          <div class="detail-scroll-area custom-scroll">
+
+            <!-- TIMELINE -->
+            <div class="timeline-container-stitch">
+              <div class="timeline-progress-stitch">
+                <div id="timeline-progress-bar" class="progress-fill"></div>
+              </div>
+              <div class="timeline-steps-stitch">
+                <div class="step step-pending active">
+                  <div class="step-icon"><span class="material-symbols-outlined">inventory_2</span></div>
+                  <span class="step-label">Creado</span>
+                </div>
+                <div class="step step-preparing">
+                  <div class="step-icon"><img src="/imagenes/carretilla.png" class="step-custom-icon" alt="" /></div>
+                  <span class="step-label">Preparando</span>
+                </div>
+                <div class="step step-shipped">
+                  <div class="step-icon"><img src="/imagenes/camion.png" class="step-custom-icon" alt="" /></div>
+                  <span class="step-label">En Camino</span>
+                </div>
+                <div class="step step-delivered">
+                  <div class="step-icon"><img src="/imagenes/contra-reembolso.png" class="step-custom-icon" alt="" /></div>
+                  <span class="step-label">Entregado</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- INFO GRID -->
+            <div class="detail-grid-stitch">
+
+              <div class="info-card-stitch">
+                <h3 class="card-title-stitch"><img src="/imagenes/cupones-de-alimentos.png" class="card-title-icon-img" alt="" /> Pago y Total</h3>
+                <div class="info-group-stitch">
+                  <div class="info-row">
+                    <label>Método:</label>
+                    <p id="p-method">—</p>
+                  </div>
+                  <div class="info-row">
+                    <label>Fecha:</label>
+                    <p id="p-date">—</p>
+                  </div>
+                  <div class="total-row-stitch">
+                    <label>TOTAL:</label>
+                    <strong id="p-total" class="total-value-stitch">L 0.00</strong>
+                  </div>
+                  <div id="receipt-container" class="receipt-preview-stitch hidden">
+                    <label>Comprobante:</label>
+                    <a id="receipt-link" href="#" target="_blank" class="receipt-btn">Ver Imagen <span class="material-symbols-outlined">open_in_new</span></a>
+                  </div>
+                </div>
+              </div>
+
+              <div class="info-card-stitch">
+                <h3 class="card-title-stitch"><img src="/imagenes/ubicacion-del-cafe.png" class="card-title-icon-img" alt="" /> Entrega</h3>
+                <div class="info-group-stitch">
+                  <div class="info-row full">
+                    <label>Dirección:</label>
+                    <p id="o-address">—</p>
+                  </div>
+                  <div class="info-row full">
+                    <label>Referencia:</label>
+                    <p id="o-reference">—</p>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- PRODUCTS -->
+            <div class="products-section-stitch">
+              <h3 class="card-title-stitch"><img src="/imagenes/clasificacion.png" class="card-title-icon-img" alt="" /> CAFÉS SELECCIONADOS</h3>
+              <div id="order-items-list" class="items-mini-list"></div>
+            </div>
+
+            <!-- FOOTER -->
+            <div class="detail-actions-card-footer-stitch">
+              <a href="/pages/home/index.html#productos" class="btn-stitch-secondary">
+                <span class="material-symbols-outlined">add_shopping_cart</span>
+                Seguir comprando
+              </a>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- NO SELECTION STATE -->
+      <section id="no-selection" class="no-selection-section-stitch">
+        <div class="empty-state-stitch">
+          <span class="material-symbols-outlined large-icon">order_approve</span>
+          <h3>Selecciona un pedido</h3>
+          <p>Tus pedidos aparecerán aquí. Elige uno del listado para ver su detalle.</p>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- EMPTY STATE (NO ORDERS AT ALL) -->
     <section id="empty-state" class="admin-empty-state hidden" aria-hidden="true">
       <h2 class="empty-title">No tienes pedidos</h2>
       <p class="empty-text">Cuando realices un pedido, aparecerá aquí.</p>
-
-      <!-- Imagen dinámica según estado -->
       <img class="empty-illustration" src="" alt="" aria-hidden="true" />
-
-      <!-- Botón de retorno en estado vacío -->
       <a href="/pages/home/index.html#productos" class="btn-volver-premium variant-white" style="margin-top: 2rem;">
         <div class="circle-icon">
           <span class="material-symbols-outlined">arrow_back</span>
@@ -45,211 +165,60 @@
       </a>
     </section>
 
-    <!-- CARRUSEL (VISIBLE POR DEFECTO) -->
-    <section class="related admin-related hidden" id="mis-pedidos-carrusel" aria-label="Listado de pedidos">
-
-      <h3 class="similar-title">Mis pedidos</h3>
-      <p class="section-subtitle">Selecciona un pedido para ver su detalle.</p>
-
-      <div class="carousel-container" role="region" aria-roledescription="carousel">
-
-        <button class="carousel-prev-circle" id="pedidos-prev" aria-label="Pedido anterior">
-          <span class="material-symbols-outlined">chevron_left</span>
-        </button>
-
-        <div class="similar-list" id="pedidos-carrusel" role="list">
-        </div>
-
-        <button class="carousel-next-circle" id="pedidos-next" aria-label="Siguiente pedido">
-          <span class="material-symbols-outlined">chevron_right</span>
-        </button>
-      </div>
-    </section>
   </main>
 
-  <!-- =========================
-     TEMPLATE — PEDIDO ACTIVO
-========================= -->
-  <template id="pedido-activo-template">
-    <section class="order-main">
-      <header class="order-preview-header">
-        <a href="/pages/home/index.html#productos" class="btn-volver-premium variant-white"
-          style="margin-bottom: 1.5rem;">
-          <div class="circle-icon">
-            <span class="material-symbols-outlined">arrow_back</span>
-          </div>
-          <span class="text">Seguir comprando</span>
-        </a>
-
-        <div class="order-header-text">
-          <h2 class="pedido-numero"></h2>
-          <span class="pedido-fecha">
-            <span class="fecha"></span> · <span class="hora"></span>
-          </span>
+  <!-- TEMPLATE: ORDER CARD -->
+  <template id="tpl-order-card">
+    <div class="order-card-item-stitch">
+      <div class="card-status-dot"></div>
+      <div class="card-info-stitch">
+        <div class="card-top-row">
+          <h4 class="card-order-number">—</h4>
+          <span class="card-date">—</span>
         </div>
-      </header>
-
-      <div class="order-layout">
-        <div class="order-text">
-          <div class="productos-pills"></div>
-
-          <div class="order-total">
-            <span>Total del pedido</span>
-            <strong class="pedido-total"></strong>
-          </div>
-
-          <section class="order-address">
-            <h3>Entrega</h3>
-            <p class="entrega-text"></p>
-          </section>
-
-          <section class="order-address">
-            <h3>Referencia</h3>
-            <p class="referencia-text"></p>
-          </section>
-
-          <section class="pedido-estado">
-            <h3>Estado del pedido</h3>
-
-            <div class="estado-header-dinamico">
-              <p class="estado-resumen">
-                Paso <span class="estado-paso"></span> de 4 ·
-                <strong class="estado-nombre"></strong>
-              </p>
-              <p class="estado-descripcion"></p>
-            </div>
-
-            <ul class="estado-list">
-              <li class="estado-item"><span class="dot">1</span><span class="step-text"></span></li>
-              <li class="estado-item"><span class="dot">2</span><span class="step-text"></span></li>
-              <li class="estado-item"><span class="dot">3</span><span class="step-text"></span></li>
-              <li class="estado-item"><span class="dot">4</span><span class="step-text"></span></li>
-            </ul>
-
-            <button class="ver-recibo">
-              <span class="material-symbols-outlined">receipt_long</span>
-              <span>Ver recibo</span>
-              <span class="material-symbols-outlined">arrow_forward</span>
-            </button>
-          </section>
-        </div>
-
-        <div class="order-media">
-          <img class="recibo-img" src="" alt="Estado del pago" />
+        <div class="card-bottom-row">
+          <span class="card-total">—</span>
+          <span class="card-status-label">—</span>
         </div>
       </div>
-    </section>
+      <span class="material-symbols-outlined arrow-stitch">chevron_right</span>
+    </div>
   </template>
 
-  <!-- =========================
-     TEMPLATE — CARRUSEL
-========================= -->
-  <template id="pedido-carrusel-template">
-    <article class="similar-card" role="listitem">
-      <div class="pedido-mini-img-container">
-        <img class="pedido-mini-img" src="" alt="Miniatura del pedido" />
-      </div>
-      <div class="order-card-info">
-        <h4 class="pedido-mini-numero"></h4>
-        <p class="pedido-mini-total"></p>
-        <span class="pedido-mini-status"></span>
-      </div>
-    </article>
-  </template>
-
-  <!-- =========================
-     SCRIPTS
-========================= -->
-
-  <!-- Supabase -->
+  <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/js/core/supabase-client-core.js"></script>
   <script src="/js/core/supabase-auth.js"></script>
-
-  <!-- Auth UI (necesario para disparar auth:ready) -->
   <script src="/js/core/auth-ui.js"></script>
-
-  <!-- Layout (inyecta el header) -->
   <script src="/js/ui/layout.js"></script>
-
-  <!-- Header core -->
   <script type="module" src="/js/ui/header.js"></script>
 
-  <!-- 🔍 Buscador global del header — MIS PEDIDOS (CORE FINAL DEFINITIVO) -->
   <script type="module">
     import { renderHeaderSearch } from "/js/ui/header.search.js";
-
-    // ⚠️ Esperar a que layout.js termine de inyectar el header
     document.addEventListener("header:ready", () => {
       const slot = document.getElementById("header-search-slot");
-
-      if (!slot) {
-        console.warn("❌ header-search-slot no encontrado");
-        return;
-      }
-
-      /* =====================================================
-         INYECTAR BUSCADOR
-      ===================================================== */
+      if (!slot) return;
       slot.innerHTML = renderHeaderSearch({
         showFilter: true,
         showAdd: false,
         placeholder: "N.º de pedido o café…"
       });
-
-      /* =====================================================
-         ESTADO INICIAL → PENDIENTES
-      ===================================================== */
-      const DEFAULT_STATUS = "pending";
-
-      // Forzar estado inicial
-      document.dispatchEvent(
-        new CustomEvent("header:filter", {
-          detail: DEFAULT_STATUS
-        })
-      );
-
-      /* =====================================================
-         🔍 BÚSQUEDA (NÚMERO DE PEDIDO / TEXTO)
-      ===================================================== */
+      // ⚠️ No dispatch — mis-pedidos.js detects the right status on init
       const input = document.getElementById("header-search-input");
-
       if (input) {
         input.addEventListener("input", (e) => {
-          const value = e.target.value.trim();
-
-          // Emitir SIEMPRE, incluso vacío (reset)
-          document.dispatchEvent(
-            new CustomEvent("header:search", {
-              detail: value
-            })
-          );
+          document.dispatchEvent(new CustomEvent("header:search", { detail: e.target.value.trim() }));
         });
       }
-
-      /* =====================================================
-         🎯 FILTRO POR ESTADO
-      ===================================================== */
       const filter = document.getElementById("header-status-filter");
-
       if (filter) {
-        // Mostrar Pendientes por defecto
-        filter.value = DEFAULT_STATUS;
-
         filter.addEventListener("change", (e) => {
-          document.dispatchEvent(
-            new CustomEvent("header:filter", {
-              detail: e.target.value
-            })
-          );
+          document.dispatchEvent(new CustomEvent("header:filter", { detail: e.target.value }));
         });
       }
-
-      console.log("🔍 Buscador del header listo (Mis pedidos)");
     });
   </script>
 
-  <!-- Página Mis Pedidos -->
   <script type="module" src="/js/pages/mis-pedidos.js"></script>
 
 </body>
