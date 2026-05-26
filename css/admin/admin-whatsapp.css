@@ -6,39 +6,23 @@
 
 .wa-layout {
   max-width: 100%;
-  margin: 80px 0 0;
+  margin: 72px 0 0;
   padding: 8px 8px 0;
 }
 
-/* Status Bar */
-.wa-status-bar {
+/* Dropdown en header */
+.wa-header-gear {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  padding: 4px 8px;
-  margin-bottom: 8px;
-  position: relative;
 }
 
-.wa-status-actions {
-  position: relative;
-}
-
-.wa-settings-btn {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  color: #666;
-  display: flex;
-  align-items: center;
-  padding: 6px;
+.wa-dot {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
-  transition: background 0.2s;
-}
-
-.wa-settings-btn:hover {
-  background: rgba(0,0,0,0.05);
-  color: #333;
 }
 
 .wa-settings-dropdown {
@@ -49,7 +33,7 @@
   border: 1px solid #e0e0e0;
   border-radius: 10px;
   box-shadow: 0 6px 20px rgba(0,0,0,0.12);
-  z-index: 100;
+  z-index: 5100;
   min-width: 220px;
   overflow: hidden;
 }
@@ -110,7 +94,7 @@
 .wa-body {
   display: flex;
   gap: 8px;
-  height: calc(100vh - 130px);
+  height: calc(100vh - 100px);
 }
 
 /* Sidebar */

@@ -27,6 +27,37 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
+  // Inyectar engranaje en el header
+  const headerRight = document.querySelector(".header-right-stitch");
+  if (headerRight) {
+    const wrapper = document.createElement("div");
+    wrapper.className = "wa-header-gear";
+    wrapper.style.position = "relative";
+    wrapper.innerHTML = `
+      <button id="wa-settings-btn" class="header-icon-btn" title="WhatsApp" style="position:relative;">
+        <span class="material-symbols-outlined">chat</span>
+        <span id="wa-dot" class="wa-dot" style="
+          position:absolute; top:2px; right:2px; width:8px; height:8px;
+          border-radius:50%; background:#2e7d32;
+        "></span>
+      </button>
+      <div id="wa-settings-dropdown" class="wa-settings-dropdown hidden">
+        <div id="wa-dropdown-status" class="wa-dropdown-status">
+          <span class="material-symbols-outlined" id="dropdown-status-icon" style="font-size:18px;color:#2e7d32">check_circle</span>
+          <span id="dropdown-status-text">Conectado</span>
+        </div>
+        <hr class="wa-dropdown-divider">
+        <button id="wa-disconnect-btn" class="wa-dropdown-item danger hidden">
+          <span class="material-symbols-outlined">link_off</span> Desconectar WhatsApp
+        </button>
+        <button id="wa-connect-btn" class="wa-dropdown-item hidden">
+          <span class="material-symbols-outlined">qr_code_scanner</span> Conectar WhatsApp
+        </button>
+      </div>
+    `;
+    headerRight.appendChild(wrapper);
+  }
+
   let allContacts = [];
   let filteredContacts = [];
   let selectedContact = null;
