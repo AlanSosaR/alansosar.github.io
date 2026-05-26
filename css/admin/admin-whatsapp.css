@@ -92,6 +92,8 @@
   font-size: 20px;
 }
 
+.hidden { display: none !important; }
+
 /* Body: Sidebar + Panel */
 .wa-body {
   display: flex;
