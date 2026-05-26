@@ -60,7 +60,16 @@ document.addEventListener("DOMContentLoaded", () => {
         </button>
       </div>
     `;
-    if (authGroup) {
+
+    if (window.innerWidth < 768) {
+      const logoLink = document.querySelector(".header-logo-link");
+      if (logoLink) {
+        headerRight.insertBefore(logoLink, headerRight.firstChild);
+        logoLink.style.display = "flex";
+        logoLink.style.alignItems = "center";
+      }
+      headerRight.appendChild(wrapper);
+    } else if (authGroup) {
       headerRight.insertBefore(wrapper, authGroup.nextSibling);
     } else {
       headerRight.appendChild(wrapper);

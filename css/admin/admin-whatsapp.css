@@ -427,6 +427,10 @@
     display: flex;
   }
 
+  body.page-admin-whatsapp .wa-header-gear {
+    margin-left: -8px;
+  }
+
   .wa-chat-header .wa-back-btn {
     display: flex;
     align-items: center;
