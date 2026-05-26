@@ -33,6 +33,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const headerRight = document.querySelector(".header-right-stitch");
     if (!headerRight || document.getElementById("wa-settings-btn")) return;
 
+    const menuToggle = document.getElementById("menu-toggle");
+    if (menuToggle) {
+      headerRight.insertBefore(menuToggle, headerRight.firstChild);
+    }
+
     const cartBtn = document.getElementById("cart-btn");
 
     const wrapper = document.createElement("div");
