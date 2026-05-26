@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
     wrapper.style.position = "relative";
     wrapper.innerHTML = `
       <button id="wa-settings-btn" class="header-icon-btn" title="WhatsApp" style="position:relative;">
-        <span class="material-symbols-outlined">chat</span>
+        <span class="material-symbols-outlined">settings</span>
         <span id="wa-dot" class="wa-dot" style="
           position:absolute; top:2px; right:2px; width:8px; height:8px;
           border-radius:50%; background:#2e7d32;
