@@ -73,7 +73,7 @@ const initAdminClientes = () => {
             // Pedimos columnas específicas para evitar bloqueos por RLS en columnas sensibles si no se es admin
             const { data, error } = await window.supabase
                 .from("users")
-                .select("id, name, email, rol, country, photo_url, created_at")
+                .select("id, name, email, phone, rol, country, photo_url, created_at")
                 .order("name", { ascending: true });
 
             if (error) {
@@ -458,13 +458,13 @@ const initAdminClientes = () => {
     // Opciones de Contacto
     if (optWhatsApp) optWhatsApp.onclick = () => {
         const customer = allCustomers.find(c => c.id === selectedCustomerId);
-        const phone = customer?.phone;
-        if (phone) {
-            window.open(`https://wa.me/${phone.replace(/\D/g, "")}`, "_blank");
-        } else {
+        if (!customer?.phone) {
             showSnack("Este cliente no tiene número de teléfono registrado", "error");
+            closeContactModalFn();
+            return;
         }
         closeContactModalFn();
+        openWhatsAppModal(customer);
     };
 
     if (optEmail) optEmail.onclick = () => {
@@ -483,6 +483,61 @@ const initAdminClientes = () => {
     if (cancelPush) cancelPush.onclick = closePushModal;
     if (sendPush) sendPush.onclick = handleSendPush;
     modalPush?.addEventListener("click", (e) => { if (e.target === modalPush) closePushModal(); });
+
+    // WhatsApp Modal
+    const openWhatsAppModal = (customer) => {
+        const modal = document.getElementById("modal-whatsapp");
+        const nameSpan = document.getElementById("whatsapp-client-name");
+        const phoneSpan = document.getElementById("whatsapp-client-phone");
+        const msg = document.getElementById("whatsapp-message");
+        if (nameSpan) nameSpan.textContent = customer.name || "Cliente";
+        if (phoneSpan) phoneSpan.textContent = customer.phone || "—";
+        if (msg) msg.value = "";
+        modal.classList.remove("hidden");
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                modal.classList.add("active");
+                if (msg) msg.focus();
+            });
+        });
+    };
+
+    const closeWhatsAppModal = () => {
+        const modal = document.getElementById("modal-whatsapp");
+        modal.classList.remove("active");
+        setTimeout(() => modal.classList.add("hidden"), 300);
+    };
+
+    document.getElementById("close-whatsapp-modal")?.addEventListener("click", closeWhatsAppModal);
+    document.getElementById("cancel-whatsapp")?.addEventListener("click", closeWhatsAppModal);
+    document.getElementById("send-whatsapp")?.addEventListener("click", async () => {
+        const customer = allCustomers.find(c => c.id === selectedCustomerId);
+        const phone = customer?.phone;
+        const message = document.getElementById("whatsapp-message")?.value.trim();
+        if (!message) return showSnack("Escribe un mensaje", "error");
+        if (!phone) return showSnack("No hay teléfono", "error");
+
+        try {
+            const cleanPhone = phone.replace(/\D/g, "");
+            const hasCountryCode = phone.trim().startsWith("+");
+            const fullNumber = hasCountryCode ? cleanPhone : `504${cleanPhone}`;
+            const waApi = "https://132.145.42.123:8080";
+            const waKey = "429683C4C977415CAAFCCE10F7D57E11";
+
+            const res = await fetch(`${waApi}/message/sendText/CafeCortero`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json", apikey: waKey },
+                body: JSON.stringify({ number: fullNumber, text: message })
+            });
+
+            if (!res.ok) throw new Error("HTTP " + res.status);
+            showSnack("WhatsApp enviado con éxito", "success");
+            closeWhatsAppModal();
+        } catch (err) {
+            console.error("❌ Error al enviar WhatsApp:", err);
+            showSnack("Error al enviar WhatsApp", "error");
+        }
+    });
 
     init();
 };

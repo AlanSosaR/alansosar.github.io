@@ -86,12 +86,17 @@ console.log("🛠️ admin_pedidos.js — INIT STITCH");
         document.getElementById("cancel-push")?.addEventListener("click", closePushModal);
 
         // Opciones de Contacto
-        document.getElementById("opt-whatsapp")?.addEventListener("click", () => handleContactAction("whatsapp"));
+        document.getElementById("opt-whatsapp")?.addEventListener("click", openWhatsAppModal);
         document.getElementById("opt-email")?.addEventListener("click", () => handleContactAction("email"));
         document.getElementById("opt-push")?.addEventListener("click", openPushModal);
 
         // Envío de Push
         document.getElementById("send-push")?.addEventListener("click", handleSendPush);
+
+        // Envío de WhatsApp
+        document.getElementById("send-whatsapp")?.addEventListener("click", handleSendWhatsApp);
+        document.getElementById("close-whatsapp-modal")?.addEventListener("click", closeWhatsAppModal);
+        document.getElementById("cancel-whatsapp")?.addEventListener("click", closeWhatsAppModal);
 
         // Volver (Mobile)
         document.getElementById("btn-back-to-list")?.addEventListener("click", backToList);
@@ -153,18 +158,72 @@ console.log("🛠️ admin_pedidos.js — INIT STITCH");
 
     function handleContactAction(type) {
         if (!selectedOrder) return;
-        const phone = selectedOrder.address?.phone || "";
         const email = selectedOrder.users?.email || "";
 
-        if (type === "whatsapp") {
-            if (!phone) return showSnack("error", "No hay teléfono registrado");
-            const cleanPhone = phone.replace(/\D/g, "");
-            window.open(`https://wa.me/${cleanPhone}`, "_blank");
-        } else if (type === "email") {
+        if (type === "email") {
             if (!email) return showSnack("error", "No hay email registrado");
             window.location.href = `mailto:${email}`;
         }
         closeContactModal();
+    }
+
+    /* =========================
+       WHATSAPP MODAL LOGIC
+    ========================= */
+    function openWhatsAppModal() {
+        if (!selectedOrder) return;
+        const phone = selectedOrder.address?.phone || "";
+        if (!phone) return showSnack("error", "No hay teléfono registrado");
+
+        const name = selectedOrder.users?.name || selectedOrder.address?.full_name || "Cliente";
+        document.getElementById("whatsapp-user-name").textContent = name;
+        document.getElementById("whatsapp-user-phone").textContent = phone;
+        document.getElementById("whatsapp-message").value = "";
+
+        closeContactModal();
+        const modal = document.getElementById("modal-whatsapp");
+        modal.classList.remove("hidden");
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                modal.classList.add("active");
+                document.getElementById("whatsapp-message").focus();
+            });
+        });
+    }
+
+    function closeWhatsAppModal() {
+        const modal = document.getElementById("modal-whatsapp");
+        modal.classList.remove("active");
+        setTimeout(() => modal.classList.add("hidden"), 300);
+    }
+
+    async function handleSendWhatsApp() {
+        if (!selectedOrder) return;
+        const phone = selectedOrder.address?.phone || "";
+        const message = document.getElementById("whatsapp-message").value.trim();
+        if (!message) return showSnack("error", "Escribe un mensaje");
+
+        try {
+            const cleanPhone = phone.replace(/\D/g, "");
+            const hasCountryCode = phone.trim().startsWith("+");
+            const fullNumber = hasCountryCode ? cleanPhone : `504${cleanPhone}`;
+            const waApi = "https://132.145.42.123:8080";
+            const waKey = "429683C4C977415CAAFCCE10F7D57E11";
+
+            const res = await fetch(`${waApi}/message/sendText/CafeCortero`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json", apikey: waKey },
+                body: JSON.stringify({ number: fullNumber, text: message })
+            });
+
+            if (!res.ok) throw new Error("HTTP " + res.status);
+
+            showSnack("success", "WhatsApp enviado");
+            closeWhatsAppModal();
+        } catch (err) {
+            console.error("❌ Error al enviar WhatsApp:", err);
+            showSnack("error", "Error al enviar WhatsApp");
+        }
     }
 
     async function handleSendPush() {
@@ -556,7 +615,8 @@ console.log("🛠️ admin_pedidos.js — INIT STITCH");
 
         try {
             const cleanPhone = phone.replace(/\D/g, "");
-            const fullNumber = cleanPhone.startsWith("52") ? cleanPhone : `52${cleanPhone}`;
+            const hasCountryCode = phone.trim().startsWith("+");
+            const fullNumber = hasCountryCode ? cleanPhone : `504${cleanPhone}`;
             const waApi = "https://132.145.42.123:8080";
             const waKey = "429683C4C977415CAAFCCE10F7D57E11";
 
