@@ -330,11 +330,17 @@
 /* Input Area */
 .wa-chat-input-area {
   display: flex;
-  align-items: flex-end;
+  flex-direction: column;
   gap: 8px;
   padding: 12px 16px;
   border-top: 1px solid #eee;
   background: #fafafa;
+}
+
+.wa-input-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
 }
 
 .wa-chat-input-area textarea {
@@ -352,6 +358,31 @@
 
 .wa-chat-input-area textarea:focus {
   border-color: #377B4C;
+}
+
+.wa-attach-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: #888;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+
+.wa-attach-btn:hover {
+  background: #eee;
+  color: #333;
+}
+
+.wa-attach-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 .wa-send-btn {
@@ -376,6 +407,62 @@
 .wa-send-btn:disabled {
   background: #ccc;
   cursor: not-allowed;
+}
+
+/* Image preview above input */
+.wa-image-preview {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  position: relative;
+  max-width: 120px;
+}
+
+.wa-image-preview img {
+  width: 100px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+.wa-preview-cancel-btn {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: none;
+  background: #c62828;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0;
+  line-height: 1;
+}
+
+.wa-preview-cancel-btn:hover {
+  background: #b71c1c;
+}
+
+.wa-preview-cancel-btn .material-symbols-outlined {
+  font-size: 14px;
+}
+
+/* Sent image in chat */
+.wa-msg-img {
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: 8px;
+  display: block;
+}
+
+.wa-message-bubble.sent p {
+  margin: 4px 0 0;
 }
 
 /* Snackbar */
@@ -451,4 +538,28 @@
   .wa-chat-header .wa-back-btn:hover {
     background: rgba(0,0,0,0.05);
   }
+}
+
+.wa-qr-section {
+  padding: 8px 16px 12px;
+}
+
+.wa-qr-image-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.wa-qr-image-wrapper img {
+  width: 180px;
+  height: 180px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+}
+
+.wa-qr-status {
+  font-size: 12px;
+  text-align: center;
+  color: #f9a825;
+  margin: 0 0 8px;
 }

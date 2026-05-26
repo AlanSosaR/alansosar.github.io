@@ -1,32 +1,21 @@
 /* ============================================================
-   📦 MIS PEDIDOS — UX FLUIDA (FINAL DEFINITIVO ESTABLE)
+   MIS PEDIDOS — DUAL PANEL (ADMIN-STYLE)
+   CAFÉ CORTERO
 ============================================================ */
-
-console.log("📦 mis-pedidos.js — FINAL DEFINITIVO");
 
 const sb = () => window.supabaseClient;
 
-/* ============================================================
-   IMÁGENES
-============================================================ */
 const IMG_CASH = "/imagenes/pago_en_mano.svg";
 const IMG_DEFAULT = "/imagenes/recibo_default.svg";
 const EMPTY_BASE = window.location.origin + "/imagenes/empty/";
 
-/* ============================================================
-   STATE
-============================================================ */
 let orders = [];
 let filteredOrders = [];
-let activeIndex = 0;
+let activeIndex = -1;
 let autoRefresh = null;
-
 let currentSearch = "";
 let currentFilter = "pending";
 
-/* ============================================================
-   HELPERS
-============================================================ */
 const $id = (id) => document.getElementById(id);
 
 function isCashPayment(method) {
@@ -37,14 +26,11 @@ function formatDateTime(dateStr) {
   const d = new Date(dateStr);
   return {
     fecha: d.toLocaleDateString("es-HN", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
+      day: "2-digit", month: "short", year: "numeric"
     }),
     hora: d.toLocaleTimeString("es-HN", {
-      hour: "2-digit",
-      minute: "2-digit",
-    }),
+      hour: "2-digit", minute: "2-digit"
+    })
   };
 }
 
@@ -52,47 +38,66 @@ function normalizeOrderNumber(num) {
   return String(num ?? "").padStart(3, "0");
 }
 
-/* ============================================================
+/* =========================
    STATUS MAP
-============================================================ */
+========================= */
 function getStatusDetails(status, paymentMethod) {
   const isCash = isCashPayment(paymentMethod);
-
   const map = isCash
     ? {
-      steps: ["Pedido registrado", "Preparación", "En camino", "Entregado"],
-      pending: { step: 1, label: "Pedido registrado", desc: "Tu pedido fue recibido correctamente." },
-      processing: { step: 2, label: "Preparación", desc: "Estamos preparando tu pedido." },
-      preparing: { step: 2, label: "Preparación", desc: "Estamos preparando tu pedido." },
-      shipped: { step: 3, label: "En camino", desc: "El repartidor lleva tu pedido." },
-      delivered: { step: 4, label: "Entregado", desc: "Pedido entregado." },
-    }
+        steps: ["Pedido registrado", "Preparación", "En camino", "Entregado"],
+        pending:     { step: 1, label: "Pedido registrado", desc: "Tu pedido fue recibido correctamente." },
+        processing:  { step: 2, label: "Preparación", desc: "Estamos preparando tu pedido." },
+        preparing:   { step: 2, label: "Preparación", desc: "Estamos preparando tu pedido." },
+        shipped:     { step: 3, label: "En camino", desc: "El repartidor lleva tu pedido." },
+        delivered:   { step: 4, label: "Entregado", desc: "Pedido entregado." }
+      }
     : {
-      steps: ["Pago enviado", "Revisión", "Confirmado", "Enviado"],
-      pending: { step: 1, label: "Pago enviado", desc: "Validando comprobante." },
-      payment_review: { step: 2, label: "Revisión", desc: "Revisando el pago." },
-      processing: { step: 3, label: "Confirmado", desc: "Pedido confirmado." },
-      preparing: { step: 3, label: "Confirmado", desc: "Pedido confirmado." },
-      shipped: { step: 4, label: "Enviado", desc: "Pedido en camino." },
-      delivered: { step: 4, label: "Entregado", desc: "Pedido entregado." },
-    };
-
+        steps: ["Pago enviado", "Revisión", "Confirmado", "Enviado"],
+        pending:        { step: 1, label: "Pago enviado", desc: "Validando comprobante." },
+        payment_review: { step: 2, label: "Revisión", desc: "Revisando el pago." },
+        processing:     { step: 3, label: "Confirmado", desc: "Pedido confirmado." },
+        preparing:      { step: 3, label: "Confirmado", desc: "Pedido confirmado." },
+        shipped:        { step: 4, label: "Enviado", desc: "Pedido en camino." },
+        delivered:      { step: 4, label: "Entregado", desc: "Pedido entregado." }
+      };
   return { ...(map[status] || map.pending), steps: map.steps };
 }
 
-/* ============================================================
+/* =========================
+   HELPERS
+========================= */
+const STATUS_LABELS = {
+  pending: "Pendiente",
+  payment_review: "Revisión",
+  processing: "Procesando",
+  preparing: "Preparando",
+  shipped: "Enviado",
+  delivered: "Entregado",
+  cancelled: "Cancelado"
+};
+
+const STATUS_DOT = {
+  pending: "pending",
+  payment_review: "preparing",
+  processing: "preparing",
+  preparing: "preparing",
+  shipped: "shipped",
+  delivered: "delivered",
+  cancelled: "cancelled"
+};
+
+/* =========================
    INIT
-============================================================ */
+========================= */
 document.addEventListener("DOMContentLoaded", init);
 
 async function init() {
   await esperarSupabase();
-
   const { data } = await sb().auth.getSession();
   if (!data?.session) return;
 
   await loadOrders(data.session.user.id);
-
   bindHeaderEvents();
 
   if (!orders.length) {
@@ -100,14 +105,37 @@ async function init() {
     return;
   }
 
-  applyLocalFilters();
+  // Auto-detect first status that has orders
+  const statusPriority = ["pending", "payment_review", "processing", "preparing", "shipped", "delivered", "cancelled"];
+  const map = {
+    pending: ["pending"],
+    payment_review: ["payment_review"],
+    processing: ["processing", "preparing"],
+    preparing: ["processing", "preparing"],
+    shipped: ["shipped"],
+    delivered: ["delivered"],
+    cancelled: ["cancelled"]
+  };
+  let detected = "pending";
+  for (const s of statusPriority) {
+    if (orders.some(o => (map[s] || [s]).includes(o.status))) {
+      detected = s;
+      break;
+    }
+  }
+  currentFilter = detected;
 
+  // Sync header filter dropdown
+  const filterEl = document.getElementById("header-status-filter");
+  if (filterEl) filterEl.value = detected;
+
+  applyLocalFilters();
   startAutoRefresh(data.session.user.id);
 }
 
-/* ============================================================
+/* =========================
    HEADER EVENTS
-============================================================ */
+========================= */
 function bindHeaderEvents() {
   document.addEventListener("header:search", (e) => {
     currentSearch = String(e.detail || "").toLowerCase().trim();
@@ -120,13 +148,12 @@ function bindHeaderEvents() {
   });
 }
 
-/* ============================================================
-   FILTROS + BUSCADOR
-============================================================ */
+/* =========================
+   FILTERS
+========================= */
 function applyLocalFilters() {
   filteredOrders = orders.filter((o) => {
     let matchStatus = true;
-
     if (currentFilter !== "all") {
       const map = {
         pending: ["pending"],
@@ -134,9 +161,8 @@ function applyLocalFilters() {
         processing: ["processing", "preparing"],
         shipped: ["shipped"],
         delivered: ["delivered"],
-        cancelled: ["cancelled"],
+        cancelled: ["cancelled"]
       };
-
       matchStatus = (map[currentFilter] || []).includes(o.status);
     }
 
@@ -145,96 +171,79 @@ function applyLocalFilters() {
       const byNumber =
         String(o.order_number).includes(currentSearch) ||
         normalizeOrderNumber(o.order_number).includes(currentSearch);
-
       const byProduct = o.items?.some((i) =>
         i.products?.name?.toLowerCase().includes(currentSearch)
       );
-
       matchSearch = byNumber || byProduct;
     }
 
     return matchStatus && matchSearch;
   });
 
+  $id("empty-state")?.classList.add("hidden");
+
   if (!filteredOrders.length) {
-    ocultarTodoPorFiltro();
-    renderEmpty(currentFilter);
+    showEmptyFilter();
     return;
   }
 
-  mostrarCarrusel();
-  renderCarousel();
+  showListAndDetail();
+  renderOrderList();
   selectOrder(0);
 }
 
-/* ============================================================
-   EMPTY STATE (GLOBAL)
-============================================================ */
-function renderEmpty(filter = "pending") {
-  ocultarTodoPorFiltro();
-
+/* =========================
+   EMPTY / VISIBILITY
+========================= */
+function renderEmpty(filter) {
   const empty = $id("empty-state");
   if (!empty) return;
+  $id("main-layout-stitch")?.classList.add("hidden");
 
   const title = empty.querySelector(".empty-title");
   const text = empty.querySelector(".empty-text");
   const img = empty.querySelector(".empty-illustration");
 
   const config = {
-    pending: ["Todo está al día por aquí", "No tienes pedidos pendientes.", "pending.svg"],
-    new: ["Todo está al día por aquí", "No tienes pedidos nuevos.", "pending.svg"],
+    pending:    ["Todo está al día por aquí", "No tienes pedidos pendientes.", "pending.svg"],
+    new:        ["Todo está al día por aquí", "No tienes pedidos nuevos.", "pending.svg"],
     processing: ["Nada en preparación", "Cuando empecemos a trabajar en un pedido, aparecerá aquí.", "processing.svg"],
-    shipped: ["Sin envíos en camino", "Te avisaremos cuando un pedido salga.", "shipped.svg"],
-    delivered: ["Sin entregas aún", "Aquí verás tu historial de pedidos.", "delivered.svg"],
-    cancelled: ["Sin pedidos cancelados", "¡Excelente! No tienes compras canceladas.", "cancelled.svg"],
+    shipped:    ["Sin envíos en camino", "Te avisaremos cuando un pedido salga.", "shipped.svg"],
+    delivered:  ["Sin entregas aún", "Aquí verás tu historial de pedidos.", "delivered.svg"],
+    cancelled:  ["Sin pedidos cancelados", "¡Excelente! No tienes compras canceladas.", "cancelled.svg"]
   };
 
   const [t, d, imgName] = config[filter] || config.pending;
-
   title.textContent = t;
   text.textContent = d;
   img.src = EMPTY_BASE + imgName;
   img.alt = t;
-
   empty.classList.remove("hidden");
 }
 
-/* ============================================================
-   SUPABASE READY
-============================================================ */
-function esperarSupabase() {
-  return new Promise((resolve) => {
-    if (window.supabaseClient) return resolve();
-    const i = setInterval(() => {
-      if (window.supabaseClient) {
-        clearInterval(i);
-        resolve();
-      }
-    }, 50);
-  });
+function showEmptyFilter() {
+  $id("main-layout-stitch")?.classList.remove("hidden");
+  $id("orders-list").innerHTML = '<div class="loading-state">Sin pedidos para este filtro</div>';
+  $id("order-detail")?.classList.add("hidden");
+  $id("no-selection")?.classList.remove("hidden");
 }
 
-/* ============================================================
+function showListAndDetail() {
+  $id("empty-state")?.classList.add("hidden");
+  $id("main-layout-stitch")?.classList.remove("hidden");
+}
+
+/* =========================
    LOAD ORDERS
-============================================================ */
+========================= */
 async function loadOrders(userId) {
   const { data } = await sb()
     .from("orders")
     .select(`
-      id,
-      order_number,
-      total,
-      status,
-      payment_method,
-      created_at,
-      order_notes,
+      id, order_number, total, status, payment_method, created_at, order_notes,
       address:addresses ( street, city ),
       receipt:payment_receipts ( file_url ),
-      items:order_items (
-        quantity,
-        price,
-        products ( name )
-      )
+      items:order_items ( quantity, price, products ( name ) )
     `)
     .eq("user_id", userId)
     .order("created_at", { ascending: false });
@@ -242,192 +251,163 @@ async function loadOrders(userId) {
   orders = data || [];
 }
 
-/* ============================================================
-   UI VISIBILITY
-============================================================ */
-function mostrarCarrusel() {
-  $id("mis-pedidos-carrusel")?.classList.remove("hidden");
-  $id("pedido-activo")?.classList.remove("hidden");
-  $id("empty-state")?.classList.add("hidden");
-}
-
-function ocultarTodoPorFiltro() {
-  $id("pedido-activo")?.classList.add("hidden");
-  $id("mis-pedidos-carrusel")?.classList.add("hidden");
-}
-
-/* ============================================================
-   CARRUSEL
-============================================================ */
-function renderCarousel() {
-  const wrap = $id("pedidos-carrusel");
-  const tpl = $id("pedido-carrusel-template");
+/* =========================
+   RENDER ORDER LIST
+========================= */
+function renderOrderList() {
+  const wrap = $id("orders-list");
+  const tpl = $id("tpl-order-card");
   if (!wrap || !tpl) return;
 
   wrap.innerHTML = "";
 
   filteredOrders.forEach((o, index) => {
     const node = tpl.content.cloneNode(true);
-    const card = node.querySelector(".similar-card");
+    const card = node.querySelector(".order-card-item-stitch");
+    const { fecha } = formatDateTime(o.created_at);
 
-    const img = node.querySelector(".pedido-mini-img");
-    img.src = isCashPayment(o.payment_method)
-      ? IMG_CASH
-      : o.receipt?.[0]?.file_url || IMG_DEFAULT;
+    node.querySelector(".card-order-number").textContent = `#${normalizeOrderNumber(o.order_number)}`;
+    node.querySelector(".card-date").textContent = fecha;
+    node.querySelector(".card-total").textContent = `L ${o.total.toFixed(2)}`;
+    node.querySelector(".card-status-label").textContent = STATUS_LABELS[o.status] || o.status;
 
-    node.querySelector(".pedido-mini-numero").textContent =
-      `N.º ${normalizeOrderNumber(o.order_number)}`;
-    node.querySelector(".pedido-mini-total").textContent =
-      `L ${o.total.toFixed(2)}`;
-    node.querySelector(".pedido-mini-status").textContent =
-      getStatusDetails(o.status, o.payment_method).label;
+    const dot = node.querySelector(".card-status-dot");
+    const dotColor = STATUS_DOT[o.status] || "pending";
+    dot.classList.add(dotColor);
+
+    if (index === activeIndex) card.classList.add("active");
 
     card.onclick = () => selectOrder(index);
     wrap.appendChild(node);
   });
 
-  bindCarouselArrows();
+  $id("orders-count-stitch").textContent = filteredOrders.length;
 }
 
-/* ============================================================
-   SELECCIÓN + SCROLL SUAVE
-============================================================ */
+/* =========================
+   SELECT & RENDER DETAIL
+========================= */
 function selectOrder(index) {
   if (!filteredOrders[index]) return;
   activeIndex = index;
 
-  document.querySelectorAll(".similar-card").forEach((c) =>
-    c.classList.remove("is-selected")
-  );
-  document.querySelectorAll(".similar-card")[index]
-    ?.classList.add("is-selected");
+  // Update list active state
+  document.querySelectorAll(".order-card-item-stitch").forEach((c) => c.classList.remove("active"));
+  const cards = document.querySelectorAll(".order-card-item-stitch");
+  cards[index]?.classList.add("active");
 
-  renderPedidoActivo(filteredOrders[index]);
-
-  requestAnimationFrame(() => {
-    $id("pedido-activo")?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-  });
+  renderDetail(filteredOrders[index]);
 }
 
-/* ============================================================
-   PEDIDO ACTIVO
-============================================================ */
-function renderPedidoActivo(pedido) {
-  const container = $id("pedido-activo");
-  const tpl = $id("pedido-activo-template");
-  if (!container || !tpl) return;
+function renderDetail(pedido) {
+  const detail = $id("order-detail");
+  const content = $id("order-detail-content");
+  const noSel = $id("no-selection");
+  if (!detail || !content) return;
 
-  container.innerHTML = "";
-  const node = tpl.content.cloneNode(true);
+  detail.classList.remove("hidden");
+  noSel?.classList.add("hidden");
+  content.classList.remove("hidden");
 
   const { fecha, hora } = formatDateTime(pedido.created_at);
   const status = getStatusDetails(pedido.status, pedido.payment_method);
 
-  node.querySelector(".pedido-numero").textContent = `Pedido N.º ${pedido.order_number}`;
-  node.querySelector(".fecha").textContent = fecha;
-  node.querySelector(".hora").textContent = hora;
-  node.querySelector(".pedido-total").textContent = `L ${pedido.total.toFixed(2)}`;
+  $id("order-id-display").textContent = `Pedido #${normalizeOrderNumber(pedido.order_number)}`;
 
-  node.querySelector(".entrega-text").textContent =
-    pedido.address ? `${pedido.address.street}, ${pedido.address.city}` : "—";
-  node.querySelector(".referencia-text").textContent =
-    pedido.order_notes || "Sin referencia";
+  const badge = $id("order-status-badge");
+  badge.textContent = status.label.toUpperCase();
+  badge.className = `status-badge-stitch ${pedido.status}`;
 
-  node.querySelector(".estado-nombre").textContent = status.label;
-  node.querySelector(".estado-descripcion").textContent = status.desc;
-  node.querySelector(".estado-paso").textContent = status.step;
+  // Payment info
+  $id("p-method").textContent =
+    pedido.payment_method === "cash_on_delivery" || pedido.payment_method === "cash"
+      ? "Pago en mano" : "Transferencia";
+  $id("p-date").textContent = `${fecha} · ${hora}`;
+  $id("p-total").textContent = `L ${pedido.total.toFixed(2)}`;
 
-  /* ===== PRODUCTOS PILLS (BOLSAS DE CAFÉ) ===== */
-  const pillsContainer = node.querySelector(".productos-pills");
-  if (pillsContainer && pedido.items) {
-    pillsContainer.innerHTML = "";
+  // Receipt
+  const receiptContainer = $id("receipt-container");
+  const receiptLink = $id("receipt-link");
+  if (isCashPayment(pedido.payment_method) || !pedido.receipt?.[0]?.file_url) {
+    receiptContainer?.classList.add("hidden");
+  } else {
+    receiptContainer?.classList.remove("hidden");
+    if (receiptLink) receiptLink.href = pedido.receipt[0].file_url;
+  }
+
+  // Address
+  $id("o-address").textContent = pedido.address
+    ? `${pedido.address.street}, ${pedido.address.city}`
+    : "—";
+  $id("o-reference").textContent = pedido.order_notes || "Sin referencia";
+
+  // Timeline
+  const steps = document.querySelectorAll(".timeline-steps-stitch .step");
+  const stepNames = status.steps;
+  const currentStep = status.step;
+
+  steps.forEach((step, i) => {
+    const label = stepNames[i] || "";
+    step.querySelector(".step-label").textContent = label;
+    step.classList.remove("active", "completed");
+    if (i + 1 === currentStep) step.classList.add("active");
+    else if (i + 1 < currentStep) step.classList.add("completed");
+  });
+
+  const pct = ((currentStep - 1) / 3) * 100;
+  document.getElementById("timeline-progress-bar").style.width = `${pct}%`;
+
+  // Products
+  const itemsList = $id("order-items-list");
+  itemsList.innerHTML = "";
+  if (pedido.items) {
     pedido.items.forEach((item) => {
-      const pill = document.createElement("span");
-      pill.className = "producto-pill";
-      pill.textContent = `${item.products.name} × ${item.quantity}`;
-      pillsContainer.appendChild(pill);
+      const row = document.createElement("div");
+      row.className = "item-mini-row";
+      row.innerHTML = `
+        <span class="item-name">${item.products?.name || "Café"}</span>
+        <div class="item-meta">
+          <span class="item-qty">×${item.quantity}</span>
+          <span class="item-price">L ${(item.price * item.quantity).toFixed(2)}</span>
+        </div>
+      `;
+      itemsList.appendChild(row);
     });
   }
 
-  /* ===== MARCADO DE PASOS ===== */
-  const pasos = node.querySelectorAll(".estado-item");
-  pasos.forEach((li, i) => {
-    li.querySelector(".step-text").textContent = status.steps[i];
-    li.classList.remove("activo", "completado");
+  // Scroll to top of detail on mobile
+  detail.scrollTop = 0;
+}
 
-    if (i + 1 === status.step) li.classList.add("activo");
-    else if (i + 1 < status.step) li.classList.add("completado");
+/* =========================
+   SUPABASE READY
+========================= */
+function esperarSupabase() {
+  return new Promise((resolve) => {
+    if (window.supabaseClient) return resolve();
+    const i = setInterval(() => {
+      if (window.supabaseClient) { clearInterval(i); resolve(); }
+    }, 50);
   });
-
-  node.querySelector(".recibo-img").src = isCashPayment(pedido.payment_method)
-    ? IMG_CASH
-    : pedido.receipt?.[0]?.file_url || IMG_DEFAULT;
-
-  node.querySelector(".ver-recibo").onclick =
-    () => (location.href = `/pages/shop/recibo.html?id=${pedido.id}`);
-
-  container.appendChild(node);
 }
 
-/* ============================================================
-   ARROWS + AUTO REFRESH (FINAL CORREGIDO)
-============================================================ */
+/* =========================
+   MOBILE BACK
+========================= */
+$id("btn-back-to-list")?.addEventListener("click", () => {
+  $id("order-detail")?.classList.add("hidden");
+  $id("no-selection")?.classList.remove("hidden");
+});
 
-/**
- * Flechas del carrusel
- * Blindadas para evitar errores cuando el DOM cambia
- */
-function bindCarouselArrows() {
-  const list = $id("pedidos-carrusel");
-  const prev = $id("pedidos-prev");
-  const next = $id("pedidos-next");
-
-  if (!list || !prev || !next) return;
-
-  function update() {
-    const max = list.scrollWidth - list.clientWidth;
-    const atStart = list.scrollLeft <= 4;
-    const atEnd = list.scrollLeft >= max - 4;
-
-    prev.classList.toggle("hidden", atStart);
-    next.classList.toggle("hidden", atEnd);
-  }
-
-  prev.onclick = () => {
-    list.scrollBy({ left: -300, behavior: "smooth" });
-  };
-
-  next.onclick = () => {
-    list.scrollBy({ left: 300, behavior: "smooth" });
-  };
-
-  // 🔑 ESCUCHA DE SCROLL PARA VISIBILIDAD
-  list.addEventListener("scroll", update);
-  window.addEventListener("resize", update);
-
-  // Estado inicial
-  requestAnimationFrame(update);
-}
-
-/**
- * Auto refresh REAL
- * 🔑 Resetea estado UI antes de re-aplicar filtros
- */
+/* =========================
+   AUTO REFRESH
+========================= */
 function startAutoRefresh(userId) {
   clearInterval(autoRefresh);
-
   autoRefresh = setInterval(async () => {
     await loadOrders(userId);
-
-    // 🔥 CLAVE ABSOLUTA
-    // Evita que pedidos que ya cambiaron de estado
-    // sigan mostrándose como pendientes
-    activeIndex = 0;
+    activeIndex = -1;
     filteredOrders = [];
-
     applyLocalFilters();
   }, 30000);
 }

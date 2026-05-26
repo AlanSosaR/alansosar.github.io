@@ -63,10 +63,22 @@
           </div>
 
           <div class="wa-chat-input-area">
-            <textarea id="wa-message-input" placeholder="Escribe tu mensaje aquí..." rows="2" maxlength="500"></textarea>
-            <button id="wa-send-btn" class="wa-send-btn">
-              <span class="material-symbols-outlined">send</span>
-            </button>
+            <div id="wa-image-preview" class="wa-image-preview hidden">
+              <img id="wa-preview-img" src="" alt="preview" />
+              <button id="wa-preview-cancel" class="wa-preview-cancel-btn">
+                <span class="material-symbols-outlined">close</span>
+              </button>
+            </div>
+            <div class="wa-input-row">
+              <button id="wa-attach-btn" class="wa-attach-btn" title="Adjuntar imagen">
+                <span class="material-symbols-outlined">attach_file</span>
+              </button>
+              <input type="file" id="wa-file-input" accept="image/*" class="hidden" />
+              <textarea id="wa-message-input" placeholder="Escribe tu mensaje aquí..." rows="2" maxlength="500"></textarea>
+              <button id="wa-send-btn" class="wa-send-btn">
+                <span class="material-symbols-outlined">send</span>
+              </button>
+            </div>
           </div>
         </div>
       </section>
