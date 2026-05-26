@@ -7,7 +7,7 @@
 document.addEventListener("DOMContentLoaded", () => {
 
   // --- CONFIGURACIÓN EVOLUTION API ---
-  const API_URL = "http://localhost:8080";
+  const API_URL = "http://132.145.42.123:8080";
   const INSTANCE_NAME = "CafeCortero";
   const GLOBAL_API_KEY = "429683C4C977415CAAFCCE10F7D57E11"; // Definido en tu `.env`
   
@@ -136,7 +136,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     } catch (error) {
       console.error("Error Evolution API:", error);
-      setStatus("ERROR", "No se puede conectar al puerto 8080. ¿Iniciaste los contenedores de Docker?");
+      setStatus("ERROR", "No se puede conectar al servidor en puerto 8080. Contacta al administrador.");
     }
   }
 
@@ -163,7 +163,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     } catch (error) {
       console.error(error);
-      setStatus("ERROR", "Fallo al crear la instancia. Comprueba que Docker esté corriendo.");
+      setStatus("ERROR", "Fallo al crear la instancia en el servidor remoto.");
     }
   }
 
