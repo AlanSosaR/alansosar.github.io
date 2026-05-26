@@ -63,12 +63,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (window.innerWidth < 768) {
       const logoLink = document.querySelector(".header-logo-link");
+      headerRight.appendChild(wrapper);
       if (logoLink) {
-        headerRight.insertBefore(logoLink, headerRight.firstChild);
+        headerRight.appendChild(logoLink);
         logoLink.style.display = "flex";
         logoLink.style.alignItems = "center";
       }
-      headerRight.appendChild(wrapper);
     } else if (authGroup) {
       headerRight.insertBefore(wrapper, authGroup.nextSibling);
     } else {
