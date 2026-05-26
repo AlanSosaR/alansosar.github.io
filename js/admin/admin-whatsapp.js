@@ -17,6 +17,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const chatHistory = document.getElementById("chat-history");
   const messageInput = document.getElementById("wa-message-input");
   const sendBtn = document.getElementById("wa-send-btn");
+  const settingsBtn = document.getElementById("wa-settings-btn");
+  const settingsDropdown = document.getElementById("wa-settings-dropdown");
+  const disconnectBtn = document.getElementById("wa-disconnect-btn");
+  const connectBtn = document.getElementById("wa-connect-btn");
 
   const user = JSON.parse(localStorage.getItem("cortero_user"));
   if (!user || user.rol !== "admin") {
@@ -45,22 +49,30 @@ document.addEventListener("DOMContentLoaded", () => {
         statusIcon.style.color = "#2e7d32";
         statusText.textContent = "WhatsApp conectado";
         statusBar.className = "wa-status-bar";
+        disconnectBtn?.classList.remove("hidden");
+        connectBtn?.classList.add("hidden");
       } else if (state === "connecting") {
         statusIcon.textContent = "hourglass_empty";
         statusIcon.style.color = "#f9a825";
         statusText.textContent = "WhatsApp conectándose...";
         statusBar.className = "wa-status-bar";
+        disconnectBtn?.classList.add("hidden");
+        connectBtn?.classList.add("hidden");
       } else {
         statusIcon.textContent = "error";
         statusIcon.style.color = "#c62828";
         statusText.textContent = "WhatsApp desconectado";
         statusBar.className = "wa-status-bar error";
+        disconnectBtn?.classList.add("hidden");
+        connectBtn?.classList.remove("hidden");
       }
     } catch {
       statusIcon.textContent = "error";
       statusIcon.style.color = "#c62828";
       statusText.textContent = "Error de conexión con el servidor";
       statusBar.className = "wa-status-bar error";
+      disconnectBtn?.classList.add("hidden");
+      connectBtn?.classList.add("hidden");
     }
   }
 
@@ -299,6 +311,45 @@ document.addEventListener("DOMContentLoaded", () => {
       messageInput.focus();
     }
   }
+
+  /* =========================
+     SETTINGS DROPDOWN
+  ========================= */
+  settingsBtn?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    settingsDropdown.classList.toggle("hidden");
+  });
+
+  document.addEventListener("click", () => {
+    settingsDropdown?.classList.add("hidden");
+  });
+
+  settingsDropdown?.addEventListener("click", (e) => {
+    e.stopPropagation();
+  });
+
+  disconnectBtn?.addEventListener("click", async () => {
+    settingsDropdown.classList.add("hidden");
+    const ok = confirm("¿Desconectar WhatsApp de la instancia CafeCortero? Los clientes no recibirán notificaciones hasta que reconectes.");
+    if (!ok) return;
+
+    try {
+      const resp = await fetch(`${API_URL}/instance/logout/${INSTANCE}`, {
+        method: "DELETE", headers: { apikey: API_KEY }
+      });
+      if (!resp.ok) throw new Error("HTTP " + resp.status);
+      showSnack("WhatsApp desconectado", "success");
+      await updateStatus();
+    } catch (err) {
+      console.error(err);
+      showSnack("Error al desconectar", "error");
+    }
+  });
+
+  connectBtn?.addEventListener("click", () => {
+    settingsDropdown.classList.add("hidden");
+    window.open("https://132.145.42.123:3002", "_blank");
+  });
 
   /* =========================
      UTILS

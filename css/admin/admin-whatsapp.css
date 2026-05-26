@@ -20,10 +20,76 @@
   border-radius: 8px;
   margin-bottom: 8px;
   font-size: 14px;
+  position: relative;
 }
 
 .wa-status-bar.error {
   background: #ffebee;
+}
+
+.wa-status-actions {
+  margin-left: auto;
+  position: relative;
+}
+
+.wa-settings-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #666;
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  border-radius: 50%;
+  transition: background 0.2s;
+}
+
+.wa-settings-btn:hover {
+  background: rgba(0,0,0,0.05);
+}
+
+.wa-settings-dropdown {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  z-index: 100;
+  min-width: 200px;
+  overflow: hidden;
+}
+
+.wa-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 14px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 14px;
+  font-family: inherit;
+  text-align: left;
+  transition: background 0.15s;
+}
+
+.wa-dropdown-item:hover {
+  background: #f5f5f5;
+}
+
+.wa-dropdown-item.danger {
+  color: #c62828;
+}
+
+.wa-dropdown-item.danger:hover {
+  background: #ffebee;
+}
+
+.wa-dropdown-item .material-symbols-outlined {
+  font-size: 20px;
 }
 
 /* Body: Sidebar + Panel */

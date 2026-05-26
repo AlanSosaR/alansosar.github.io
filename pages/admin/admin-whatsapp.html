@@ -20,6 +20,19 @@
     <div id="wa-status" class="wa-status-bar">
       <span class="material-symbols-outlined" id="status-icon" style="font-size:20px">check_circle</span>
       <span id="status-text">WhatsApp conectado</span>
+      <div class="wa-status-actions">
+        <button id="wa-settings-btn" class="wa-settings-btn" title="Opciones">
+          <span class="material-symbols-outlined">settings</span>
+        </button>
+        <div id="wa-settings-dropdown" class="wa-settings-dropdown hidden">
+          <button id="wa-disconnect-btn" class="wa-dropdown-item danger">
+            <span class="material-symbols-outlined">link_off</span> Desconectar WhatsApp
+          </button>
+          <button id="wa-connect-btn" class="wa-dropdown-item hidden">
+            <span class="material-symbols-outlined">qr_code_scanner</span> Conectar WhatsApp
+          </button>
+        </div>
+      </div>
     </div>
 
     <div class="wa-body">
