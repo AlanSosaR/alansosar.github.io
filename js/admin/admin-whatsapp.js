@@ -3,33 +3,24 @@ document.addEventListener("DOMContentLoaded", () => {
   const INSTANCE = "CafeCortero";
   const API_KEY = "429683C4C977415CAAFCCE10F7D57E11";
 
-  const statusIcon = document.getElementById("dropdown-status-icon");
-  const statusText = document.getElementById("dropdown-status-text");
-  const contactsList = document.getElementById("contacts-list");
-  const contactsCount = document.getElementById("contacts-count");
-  const searchInput = document.getElementById("wa-search");
-  const panel = document.getElementById("wa-panel");
-  const noSelection = document.getElementById("wa-no-selection");
-  const chat = document.getElementById("wa-chat");
-  const chatName = document.getElementById("chat-name");
-  const chatPhone = document.getElementById("chat-phone");
-  const chatHistory = document.getElementById("chat-history");
-  const messageInput = document.getElementById("wa-message-input");
-  const sendBtn = document.getElementById("wa-send-btn");
-  const settingsBtn = document.getElementById("wa-settings-btn");
-  const settingsDropdown = document.getElementById("wa-settings-dropdown");
-  const disconnectBtn = document.getElementById("wa-disconnect-btn");
-  const connectBtn = document.getElementById("wa-connect-btn");
-
   const user = JSON.parse(localStorage.getItem("cortero_user"));
   if (!user || user.rol !== "admin") {
     window.location.href = "/pages/auth/login.html";
     return;
   }
 
-  // Inyectar engranaje en el header
-  const headerRight = document.querySelector(".header-right-stitch");
-  if (headerRight) {
+  let allContacts = [];
+  let filteredContacts = [];
+  let selectedContact = null;
+  const sentMessages = {};
+
+  /* =========================
+     INJECT GEAR INTO HEADER
+  ========================= */
+  function injectGear() {
+    const headerRight = document.querySelector(".header-right-stitch");
+    if (!headerRight || document.getElementById("wa-settings-btn")) return;
+
     const wrapper = document.createElement("div");
     wrapper.className = "wa-header-gear";
     wrapper.style.position = "relative";
@@ -56,17 +47,68 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
     `;
     headerRight.appendChild(wrapper);
+    bindGearEvents();
+    updateStatus();
+    setInterval(updateStatus, 10000);
+    loadContacts();
   }
 
-  let allContacts = [];
-  let filteredContacts = [];
-  let selectedContact = null;
-  const sentMessages = {};
+  /* =========================
+     GEAR EVENTS
+  ========================= */
+  function bindGearEvents() {
+    const settingsBtn = document.getElementById("wa-settings-btn");
+    const settingsDropdown = document.getElementById("wa-settings-dropdown");
+    const disconnectBtn = document.getElementById("wa-disconnect-btn");
+    const connectBtn = document.getElementById("wa-connect-btn");
+
+    settingsBtn?.addEventListener("click", (e) => {
+      e.stopPropagation();
+      settingsDropdown?.classList.toggle("hidden");
+    });
+
+    document.addEventListener("click", () => {
+      settingsDropdown?.classList.add("hidden");
+    });
+
+    settingsDropdown?.addEventListener("click", (e) => {
+      e.stopPropagation();
+    });
+
+    disconnectBtn?.addEventListener("click", async () => {
+      settingsDropdown?.classList.add("hidden");
+      const ok = confirm("¿Desconectar WhatsApp de la instancia CafeCortero? Los clientes no recibirán notificaciones hasta que reconectes.");
+      if (!ok) return;
+      try {
+        const resp = await fetch(`${API_URL}/instance/logout/${INSTANCE}`, {
+          method: "DELETE", headers: { apikey: API_KEY }
+        });
+        if (!resp.ok) throw new Error("HTTP " + resp.status);
+        showSnack("WhatsApp desconectado", "success");
+        await updateStatus();
+      } catch (err) {
+        console.error(err);
+        showSnack("Error al desconectar", "error");
+      }
+    });
+
+    connectBtn?.addEventListener("click", () => {
+      settingsDropdown?.classList.add("hidden");
+      window.open("https://132.145.42.123:3002", "_blank");
+    });
+  }
 
   /* =========================
      STATUS
   ========================= */
   async function updateStatus() {
+    const statusIcon = document.getElementById("dropdown-status-icon");
+    const statusText = document.getElementById("dropdown-status-text");
+    const disconnectBtn = document.getElementById("wa-disconnect-btn");
+    const connectBtn = document.getElementById("wa-connect-btn");
+    const waDot = document.getElementById("wa-dot");
+    if (!statusText) return;
+
     try {
       const resp = await fetch(`${API_URL}/instance/connectionState/${INSTANCE}`, {
         method: "GET", headers: { "Content-Type": "application/json", apikey: API_KEY }
@@ -80,18 +122,21 @@ document.addEventListener("DOMContentLoaded", () => {
         statusText.textContent = "Conectado";
         disconnectBtn?.classList.remove("hidden");
         connectBtn?.classList.add("hidden");
+        if (waDot) waDot.style.background = "#2e7d32";
       } else if (state === "connecting") {
         statusIcon.textContent = "hourglass_empty";
         statusIcon.style.color = "#f9a825";
         statusText.textContent = "Conectándose...";
         disconnectBtn?.classList.add("hidden");
         connectBtn?.classList.add("hidden");
+        if (waDot) waDot.style.background = "#f9a825";
       } else {
         statusIcon.textContent = "error";
         statusIcon.style.color = "#c62828";
         statusText.textContent = "Desconectado";
         disconnectBtn?.classList.add("hidden");
         connectBtn?.classList.remove("hidden");
+        if (waDot) waDot.style.background = "#c62828";
       }
     } catch {
       statusIcon.textContent = "error";
@@ -99,6 +144,7 @@ document.addEventListener("DOMContentLoaded", () => {
       statusText.textContent = "Error de conexión";
       disconnectBtn?.classList.add("hidden");
       connectBtn?.classList.add("hidden");
+      if (waDot) waDot.style.background = "#c62828";
     }
   }
 
@@ -409,7 +455,9 @@ document.addEventListener("DOMContentLoaded", () => {
   /* =========================
      INIT
   ========================= */
-  updateStatus();
-  setInterval(updateStatus, 10000);
-  loadContacts();
+  if (document.getElementById("main-header")) {
+    injectGear();
+  } else {
+    document.addEventListener("header:ready", injectGear);
+  }
 });
