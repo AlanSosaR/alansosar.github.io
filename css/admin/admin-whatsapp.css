@@ -1,193 +1,33 @@
-/* =========================================================
-   ESTILOS — ADMIN WHATSAPP (CONEXIÓN EVOLUTION API)
-========================================================= */
-
 .page-admin-whatsapp {
   background-color: var(--fondo, #F5F7F6);
   min-height: 100vh;
 }
 
-/* CONTENEDOR PRINCIPAL */
 .admin-whatsapp-container {
-  max-width: 800px;
-  margin: 100px auto 40px;
-  padding: 0 20px;
+  max-width: 100%;
+  margin: 80px 0 0;
+  padding: 8px 8px 0;
 }
 
-/* HEADER DEL DASHBOARD */
-.whatsapp-header-info {
-  text-align: center;
-  margin-bottom: 2rem;
+.wa-manager-frame {
+  width: 100%;
+  height: calc(100vh - 100px);
+  border: none;
+  border-radius: 8px 8px 0 0;
 }
 
-.whatsapp-header-info .title {
-  font-size: 2rem;
-  color: var(--marron, #512615);
-  margin-bottom: 0.5rem;
-  font-weight: 700;
-}
-
-.whatsapp-header-info .subtitle {
-  font-size: 1rem;
-  color: #6B6B6B;
-}
-
-/* TARJETA DE ESTADO */
-.whatsapp-status-card {
-  background: #FFFFFF;
-  border-radius: 12px;
-  padding: 30px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  text-align: center;
-  border-top: 5px solid var(--principal, #377b4c);
-  transition: all 0.3s ease;
-}
-
-.status-indicator {
+.wa-status-bar {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-
-.status-indicator span {
-  font-size: 28px;
-  color: #F9A825; /* Warning / Cargando */
-}
-
-.status-indicator h3 {
-  font-size: 1.5rem;
-  color: #2B2B2B;
-}
-
-.status-message {
-  color: #6B6B6B;
-  margin-bottom: 20px;
-  font-size: 0.95rem;
-}
-
-/* ESTILOS DE ESTADOS ESPECÍFICOS (Controlados por JS) */
-.whatsapp-status-card.state-connected {
-  border-top-color: #2E7D32; /* Success */
-}
-.whatsapp-status-card.state-connected .status-indicator span {
-  color: #2E7D32;
-}
-
-.whatsapp-status-card.state-disconnected {
-  border-top-color: #C62828; /* Error */
-}
-.whatsapp-status-card.state-disconnected .status-indicator span {
-  color: #C62828;
-}
-
-/* CONTENEDOR DEL QR */
-.qr-container {
-  margin: 30px 0;
-  padding: 20px;
-  background: var(--fondo, #F5F7F6);
-  border-radius: 12px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-  animation: fadeIn 0.5s ease forwards;
-}
-
-.qr-wrapper {
-  background: #FFFFFF;
-  padding: 15px;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-}
-
-.qr-wrapper img {
-  width: 260px;
-  height: 260px;
-  display: block;
-}
-
-/* INSTRUCCIONES */
-.qr-instructions {
-  text-align: left;
-  max-width: 400px;
-}
-
-.qr-instructions ol {
-  margin: 0;
-  padding-left: 20px;
-  color: #2B2B2B;
-  line-height: 1.6;
-}
-
-.qr-instructions li {
-  margin-bottom: 10px;
-}
-
-.inline-icon {
-  font-size: 18px;
-  vertical-align: middle;
-  color: #6B6B6B;
-}
-
-/* BOTONES DE ACCIÓN */
-.whatsapp-actions {
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-  margin-top: 25px;
-}
-
-.admin-btn {
-  display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 20px;
+  padding: 8px 16px;
+  background: #e8f5e9;
   border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  border: none;
-  font-family: inherit;
-  transition: all 0.2s ease;
-  font-size: 0.95rem;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-family: 'Roboto', sans-serif;
 }
 
-.admin-btn span {
-  font-size: 20px;
-}
-
-.admin-btn.danger {
-  background: #C62828;
-  color: #FFFFFF;
-}
-
-.admin-btn.danger:hover {
-  background: #b71c1c;
-}
-
-.admin-btn.secondary {
-  background: #FFFFFF;
-  color: var(--principal, #377b4c);
-  border: 1px solid var(--principal, #377b4c);
-}
-
-.admin-btn.secondary:hover {
-  background: #f1f8f3;
-}
-
-/* UTILIDADES */
-.hidden {
-  display: none !important;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@media (max-width: 768px) {
-  .whatsapp-actions {
-    flex-direction: column;
-  }
+.wa-status-bar.error {
+  background: #ffebee;
 }
