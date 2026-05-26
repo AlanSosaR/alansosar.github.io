@@ -415,7 +415,12 @@
     height: auto;
   }
 
-  .wa-panel {
+  #wa-panel {
+    display: none;
+  }
+
+  .wa-sidebar-hidden + #wa-panel {
+    display: flex;
     min-height: 400px;
   }
 
