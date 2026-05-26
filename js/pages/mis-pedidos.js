@@ -189,7 +189,13 @@ function applyLocalFilters() {
 
   showListAndDetail();
   renderOrderList();
-  selectOrder(0);
+  
+  if (window.innerWidth > 768) {
+    selectOrder(0);
+  } else {
+    $id("order-detail")?.classList.add("hidden");
+    $id("no-selection")?.classList.remove("hidden");
+  }
 }
 
 /* =========================
