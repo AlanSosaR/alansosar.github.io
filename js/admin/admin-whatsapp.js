@@ -33,12 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const headerRight = document.querySelector(".header-right-stitch");
     if (!headerRight || document.getElementById("wa-settings-btn")) return;
 
-    const menuToggle = document.getElementById("menu-toggle");
-    if (menuToggle) {
-      headerRight.insertBefore(menuToggle, headerRight.firstChild);
-    }
-
-    const cartBtn = document.getElementById("cart-btn");
+    const authGroup = document.querySelector(".header-auth-group");
 
     const wrapper = document.createElement("div");
     wrapper.className = "wa-header-gear";
@@ -65,7 +60,11 @@ document.addEventListener("DOMContentLoaded", () => {
         </button>
       </div>
     `;
-    headerRight.insertBefore(wrapper, cartBtn);
+    if (authGroup) {
+      headerRight.insertBefore(wrapper, authGroup.nextSibling);
+    } else {
+      headerRight.appendChild(wrapper);
+    }
     bindGearEvents();
     updateStatus();
     setInterval(updateStatus, 10000);
