@@ -216,6 +216,7 @@ body.page-mis-pedidos {
     display: flex;
     flex-direction: column;
     min-height: 600px;
+    overflow: hidden;
 }
 
 .btn-mobile-back {
@@ -233,6 +234,7 @@ body.page-mis-pedidos {
     display: flex;
     flex-direction: column;
     flex: 1;
+    min-height: 0;
 }
 
 .detail-header-stitch-alt {
@@ -700,6 +702,11 @@ body.page-mis-pedidos {
         box-shadow: var(--shadow-soft);
         border: 1px solid var(--border-soft);
         min-height: auto;
+        overflow: hidden;
+    }
+
+    .detail-container-alt {
+        min-height: 0;
     }
 
     .order-card-item-stitch.active {
@@ -731,7 +738,8 @@ body.page-mis-pedidos {
         display: flex;
         align-items: center;
         gap: 4px;
-        padding: 8px 12px;
+        padding: 4px 12px;
+        border-radius: 15px 15px 0 0;
     }
 
     .header-info-stitch {
@@ -755,7 +763,7 @@ body.page-mis-pedidos {
     }
 
     .timeline-container-stitch {
-        padding: 8px 12px;
+        padding: 0 12px;
         margin-bottom: 12px;
     }
 
