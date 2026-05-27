@@ -132,6 +132,15 @@ async function init() {
 
   applyLocalFilters();
 
+  // Restaurar pedido seleccionado antes de recargar
+  const savedId = sessionStorage.getItem("selectedOrderId");
+  if (savedId) {
+    const idx = filteredOrders.findIndex(o => String(o.id) === savedId);
+    if (idx >= 0) {
+      selectOrder(idx);
+    }
+  }
+
   // Enlazar paginación de lista
   $id("list-prev")?.addEventListener("click", () => changePage(-1));
   $id("list-next")?.addEventListener("click", () => changePage(1));
@@ -341,6 +350,7 @@ function selectOrder(index) {
 
   // Marcar activo en mobile
   document.body.classList.add("detail-view-active");
+  sessionStorage.setItem("selectedOrderId", filteredOrders[index].id);
 
   renderDetail(filteredOrders[index]);
 }
@@ -456,5 +466,6 @@ $id("btn-back-to-list")?.addEventListener("click", () => {
   document.body.classList.remove("detail-view-active");
   $id("order-detail")?.classList.add("hidden");
   $id("no-selection")?.classList.add("hidden");
+  sessionStorage.removeItem("selectedOrderId");
 });
 
