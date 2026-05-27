@@ -12,7 +12,6 @@ const EMPTY_BASE = window.location.origin + "/imagenes/empty/";
 let orders = [];
 let filteredOrders = [];
 let activeIndex = -1;
-let autoRefresh = null;
 let currentSearch = "";
 let currentFilter = "pending";
 let currentPage = 1;
@@ -132,7 +131,6 @@ async function init() {
   if (filterEl) filterEl.value = detected;
 
   applyLocalFilters();
-  startAutoRefresh(data.session.user.id);
 
   // Enlazar paginación de lista
   $id("list-prev")?.addEventListener("click", () => changePage(-1));
@@ -447,7 +445,7 @@ function esperarSupabase() {
     if (window.supabaseClient) return resolve();
     const i = setInterval(() => {
       if (window.supabaseClient) { clearInterval(i); resolve(); }
-    }, 50);
+  }, 50);
   });
 }
 
@@ -460,25 +458,3 @@ $id("btn-back-to-list")?.addEventListener("click", () => {
   $id("no-selection")?.classList.add("hidden");
 });
 
-/* =========================
-   AUTO REFRESH
-========================= */
-function startAutoRefresh(userId) {
-  clearInterval(autoRefresh);
-  autoRefresh = setInterval(async () => {
-    const wasDetail = document.body.classList.contains("detail-view-active");
-    const prevId = wasDetail && filteredOrders[activeIndex]?.id;
-
-    await loadOrders(userId);
-    activeIndex = -1;
-    filteredOrders = [];
-    applyLocalFilters();
-
-    if (wasDetail && filteredOrders.length > 0) {
-      const restoreIdx = prevId
-        ? filteredOrders.findIndex(o => o.id === prevId)
-        : -1;
-      selectOrder(restoreIdx >= 0 ? restoreIdx : 0);
-    }
-  }, 30000);
-}
