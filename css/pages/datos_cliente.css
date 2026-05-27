@@ -100,6 +100,10 @@ body.page-datos-cliente {
   z-index: 10;
 }
 
+.mobile-back-summary {
+  display: none;
+}
+
 .back-btn-alt:hover {
   transform: scale(1.05);
   background: var(--verde-light);
@@ -516,7 +520,7 @@ body.page-datos-cliente {
 
   .form-section {
     order: 2;
-    /* Formulario abajo en móviles */
+    padding-bottom: 3rem;
   }
 
   .summary-section {
@@ -526,6 +530,19 @@ body.page-datos-cliente {
 
   .summary-card {
     position: static;
+  }
+
+  .summary-items-list {
+    max-height: none;
+    overflow-y: visible;
+  }
+
+  .form-section .back-btn-alt {
+    display: none;
+  }
+
+  .mobile-back-summary {
+    display: flex !important;
   }
 
   .checkout-header-text h1 {

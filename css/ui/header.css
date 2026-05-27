@@ -149,12 +149,14 @@ body.page-datos-cliente .header-logo-link {
   display: flex !important;
 }
 
-/* Logo a la derecha en móvil para carrito */
+/* Logo a la derecha en móvil para carrito y datos cliente */
 @media (max-width: 768px) {
-  body.page-carrito header.header-fixed {
+  body.page-carrito header.header-fixed,
+  body.page-datos-cliente header.header-fixed {
     position: relative !important;
   }
-  body.page-carrito .header-logo-link {
+  body.page-carrito .header-logo-link,
+  body.page-datos-cliente .header-logo-link {
     position: absolute !important;
     right: 16px !important;
     top: 50% !important;
@@ -162,7 +164,8 @@ body.page-datos-cliente .header-logo-link {
     left: auto !important;
     z-index: 10 !important;
   }
-  body.page-carrito .header-logo {
+  body.page-carrito .header-logo,
+  body.page-datos-cliente .header-logo {
     height: 36px !important;
   }
 }

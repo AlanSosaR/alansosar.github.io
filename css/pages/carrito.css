@@ -109,6 +109,10 @@ body.page-carrito {
     flex-direction: column;
   }
 
+  .item {
+    width: 100%;
+  }
+
   .cart-header-container {
     margin-top: 60px;
     margin-bottom: 1rem;
