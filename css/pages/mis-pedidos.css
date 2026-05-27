@@ -104,19 +104,57 @@ body.page-mis-pedidos {
     font-size: 14px;
 }
 
-/* PAGINACIÓN CIRCULAR STITCH */
-.list-pagination-footer-stitch {
+/* PAGINACIÓN CIRCULAR */
+.list-pagination-footer {
     padding: 16px;
+    border-top: 1px solid var(--surface-low);
     background: var(--white);
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 12px;
-    border-top: 1px solid var(--surface-low);
+    gap: 8px;
 }
 
-.page-btn-icon { background: none; border: none; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; }
-.page-numbers-stitch { font-size: 13px; font-weight: 700; color: var(--text-main); }
+.page-numbers {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.page-btn {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #F5F7F6;
+    color: var(--text-main);
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.page-btn .material-symbols-outlined {
+    font-size: 20px;
+}
+
+.page-btn:hover:not(:disabled) {
+    background: #EAEAEA;
+}
+
+.page-btn:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+.page-btn.active {
+    background: var(--primary-green);
+    color: white;
+    font-weight: 600;
+}
 
 /* ORDER CARD ITEM */
 .order-card-item-stitch {

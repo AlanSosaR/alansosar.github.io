@@ -290,7 +290,6 @@ async function loadOrders(userId) {
 function renderOrderList(resetSelection = true) {
   const wrap = $id("orders-list");
   const tpl = $id("tpl-order-card");
-  const pageInfo = $id("list-page-numbers");
   if (!wrap || !tpl) return;
 
   // Calcular paginación
@@ -298,9 +297,7 @@ function renderOrderList(resetSelection = true) {
   const start = (currentPage - 1) * itemsPerPage;
   const pageItems = filteredOrders.slice(start, start + itemsPerPage);
 
-  if (pageInfo) {
-    pageInfo.textContent = filteredOrders.length > 0 ? `Pág. ${currentPage} / ${totalPages || 1}` : "0 / 0";
-  }
+  renderPageButtons();
 
   wrap.innerHTML = "";
 
@@ -363,7 +360,26 @@ function changePage(delta) {
   const newPage = currentPage + delta;
   if (newPage >= 1 && newPage <= totalPages) {
     currentPage = newPage;
-    renderOrderList(false); // No resetear selección al cambiar de página
+    renderOrderList(false);
+  }
+}
+
+function renderPageButtons() {
+  const numbersDiv = $id("list-page-numbers");
+  if (!numbersDiv) return;
+  const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
+  numbersDiv.innerHTML = "";
+  for (let i = 1; i <= totalPages; i++) {
+    const btn = document.createElement("button");
+    btn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
+    btn.textContent = i;
+    btn.onclick = () => {
+      currentPage = i;
+      renderOrderList(false);
+      const list = $id("orders-list");
+      if (list) list.scrollTop = 0;
+    };
+    numbersDiv.appendChild(btn);
   }
 }
 

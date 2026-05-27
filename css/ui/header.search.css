@@ -119,6 +119,7 @@
 @media (min-width: 901px) {
   #header-search-slot {
     margin: 0 32px;
+    width: 100%;
   }
 }
 

@@ -149,6 +149,24 @@ body.page-datos-cliente .header-logo-link {
   display: flex !important;
 }
 
+/* Logo a la derecha en móvil para carrito */
+@media (max-width: 768px) {
+  body.page-carrito header.header-fixed {
+    position: relative !important;
+  }
+  body.page-carrito .header-logo-link {
+    position: absolute !important;
+    right: 16px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    left: auto !important;
+    z-index: 10 !important;
+  }
+  body.page-carrito .header-logo {
+    height: 36px !important;
+  }
+}
+
 /* =====================================================
    TÍTULO CENTRAL — CARRITO
 ===================================================== */
@@ -244,6 +262,11 @@ body[class*="page-admin-"] .header-middle-stitch {
   flex: 4 !important; /* Le da 4 veces más espacio al buscador */
   max-width: 1200px !important;
   margin: 0 20px;
+}
+
+body.page-mis-pedidos .header-middle-stitch {
+  flex: 5 !important;
+  margin: 0 32px;
 }
 
 @media (max-width: 768px) {
