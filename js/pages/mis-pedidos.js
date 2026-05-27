@@ -15,6 +15,8 @@ let activeIndex = -1;
 let autoRefresh = null;
 let currentSearch = "";
 let currentFilter = "pending";
+let currentPage = 1;
+const itemsPerPage = 5;
 
 const $id = (id) => document.getElementById(id);
 
@@ -131,6 +133,21 @@ async function init() {
 
   applyLocalFilters();
   startAutoRefresh(data.session.user.id);
+
+  // Enlazar paginación de lista
+  $id("list-prev")?.addEventListener("click", () => changePage(-1));
+  $id("list-next")?.addEventListener("click", () => changePage(1));
+
+  // Event delegation para clicks en la lista
+  const list = $id("orders-list");
+  if (list) {
+    list.addEventListener("click", (e) => {
+      const card = e.target.closest(".order-card-item-stitch");
+      if (card && card.dataset.index !== undefined) {
+        selectOrder(Number(card.dataset.index));
+      }
+    });
+  }
 }
 
 /* =========================
@@ -181,6 +198,8 @@ function applyLocalFilters() {
   });
 
   $id("empty-state")?.classList.add("hidden");
+  activeIndex = -1;
+  currentPage = 1;
 
   if (!filteredOrders.length) {
     showEmptyFilter();
@@ -188,7 +207,7 @@ function applyLocalFilters() {
   }
 
   showListAndDetail();
-  renderOrderList();
+  renderOrderList(true);
   
   if (window.innerWidth > 768) {
     selectOrder(0);
@@ -261,14 +280,25 @@ async function loadOrders(userId) {
 /* =========================
    RENDER ORDER LIST
 ========================= */
-function renderOrderList() {
+function renderOrderList(resetSelection = true) {
   const wrap = $id("orders-list");
   const tpl = $id("tpl-order-card");
+  const pageInfo = $id("list-page-numbers");
   if (!wrap || !tpl) return;
+
+  // Calcular paginación
+  const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
+  const start = (currentPage - 1) * itemsPerPage;
+  const pageItems = filteredOrders.slice(start, start + itemsPerPage);
+
+  if (pageInfo) {
+    pageInfo.textContent = filteredOrders.length > 0 ? `Pág. ${currentPage} / ${totalPages || 1}` : "0 / 0";
+  }
 
   wrap.innerHTML = "";
 
-  filteredOrders.forEach((o, index) => {
+  pageItems.forEach((o, pageIndex) => {
+    const globalIndex = start + pageIndex;
     const node = tpl.content.cloneNode(true);
     const card = node.querySelector(".order-card-item-stitch");
     const { fecha } = formatDateTime(o.created_at);
@@ -282,9 +312,9 @@ function renderOrderList() {
     const dotColor = STATUS_DOT[o.status] || "pending";
     dot.classList.add(dotColor);
 
-    if (index === activeIndex) card.classList.add("active");
+    if (globalIndex === activeIndex) card.classList.add("active");
 
-    card.onclick = () => selectOrder(index);
+    card.dataset.index = globalIndex;
     wrap.appendChild(node);
   });
 
@@ -298,15 +328,35 @@ function selectOrder(index) {
   if (!filteredOrders[index]) return;
   activeIndex = index;
 
-  // Update list active state
+  // Desmarcar todas las tarjetas activas de la página actual
   document.querySelectorAll(".order-card-item-stitch").forEach((c) => c.classList.remove("active"));
+  
+  // Buscar la tarjeta correspondiente en el DOM actual
   const cards = document.querySelectorAll(".order-card-item-stitch");
-  cards[index]?.classList.add("active");
+  const start = (currentPage - 1) * itemsPerPage;
+  const pageIndex = index - start;
+  if (cards[pageIndex]) {
+    cards[pageIndex].classList.add("active");
+    // Asegurar que la tarjeta activa sea visible (scroll)
+    cards[pageIndex].scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }
 
   // Marcar activo en mobile
   document.body.classList.add("detail-view-active");
 
   renderDetail(filteredOrders[index]);
+}
+
+/* =========================
+   PAGINATION LOGIC
+========================= */
+function changePage(delta) {
+  const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
+  const newPage = currentPage + delta;
+  if (newPage >= 1 && newPage <= totalPages) {
+    currentPage = newPage;
+    renderOrderList(false); // No resetear selección al cambiar de página
+  }
 }
 
 function renderDetail(pedido) {
@@ -406,10 +456,8 @@ function esperarSupabase() {
 ========================= */
 $id("btn-back-to-list")?.addEventListener("click", () => {
   document.body.classList.remove("detail-view-active");
-  activeIndex = -1;
-  document.querySelectorAll(".order-card-item-stitch").forEach((c) => c.classList.remove("active"));
   $id("order-detail")?.classList.add("hidden");
-  $id("no-selection")?.classList.remove("hidden");
+  $id("no-selection")?.classList.add("hidden");
 });
 
 /* =========================

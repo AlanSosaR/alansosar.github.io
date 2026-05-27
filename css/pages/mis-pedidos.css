@@ -104,6 +104,20 @@ body.page-mis-pedidos {
     font-size: 14px;
 }
 
+/* PAGINACIÓN CIRCULAR STITCH */
+.list-pagination-footer-stitch {
+    padding: 16px;
+    background: var(--white);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    border-top: 1px solid var(--surface-low);
+}
+
+.page-btn-icon { background: none; border: none; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; }
+.page-numbers-stitch { font-size: 13px; font-weight: 700; color: var(--text-main); }
+
 /* ORDER CARD ITEM */
 .order-card-item-stitch {
     display: flex;
@@ -112,8 +126,9 @@ body.page-mis-pedidos {
     padding: 14px 16px;
     border-radius: var(--radius-12);
     cursor: pointer;
-    transition: all 0.15s ease;
-    border: 1.5px solid transparent;
+    transition: background 0.15s ease, border-left 0.15s ease, box-shadow 0.15s ease;
+    border: 1px solid transparent;
+    border-left: 4px solid transparent;
     margin-bottom: 4px;
 }
 
@@ -122,8 +137,13 @@ body.page-mis-pedidos {
 }
 
 .order-card-item-stitch.active {
-    background: var(--primary-container);
-    border-color: var(--primary-green);
+    background-color: var(--primary-container);
+    border-left: 5px solid var(--primary-green);
+    border-top: 1px solid rgba(55, 123, 76, 0.15);
+    border-right: 1px solid rgba(55, 123, 76, 0.15);
+    border-bottom: 1px solid rgba(55, 123, 76, 0.15);
+    box-shadow: 0 4px 12px rgba(55, 123, 76, 0.08);
+    border-radius: 0 var(--radius-12) var(--radius-12) 0;
 }
 
 .card-status-dot {
@@ -203,14 +223,10 @@ body.page-mis-pedidos {
     align-items: center;
     gap: 8px;
     background: var(--surface-low);
-    border: none;
-    color: var(--primary-green);
-    font-weight: 700;
-    margin-bottom: 20px;
-    cursor: pointer;
-    padding: 10px 16px;
-    border-radius: 12px;
-    width: fit-content;
+}
+
+.btn-mobile-back-inline {
+    display: none;
 }
 
 .detail-container-alt {
@@ -667,20 +683,18 @@ body.page-mis-pedidos {
         min-height: auto;
     }
 
-    /* Maestro-Detalle Mobile Pattern: Solo uno a la vez */
+    /* Mobile: lista sola / detalle en pantalla completa */
     body.detail-view-active .orders-list-section-stitch {
         display: none !important;
     }
 
-    body:not(.detail-view-active) .order-detail-section-stitch,
-    body:not(.detail-view-active) #no-selection {
+    body:not(.detail-view-active) .order-detail-section-stitch {
         display: none !important;
     }
 
-    /* Forzar que el detalle ocupe todo el ancho si está activo */
     body.detail-view-active .order-detail-section-stitch {
         display: flex !important;
-        width: 100% !important;
+        flex-direction: column;
         background: var(--white);
         border-radius: var(--radius-16);
         box-shadow: var(--shadow-soft);
@@ -688,27 +702,65 @@ body.page-mis-pedidos {
         min-height: auto;
     }
 
-    .btn-mobile-back {
-        display: flex !important;
-        margin: 16px 20px 0;
+    .order-card-item-stitch.active {
+        background-color: #C8E6C9 !important;
+        border-left: 6px solid #2E7D32 !important;
     }
 
-    .no-selection-section-stitch { display: none !important; }
+    .order-card-item-stitch.active .card-order-number {
+        color: #1B5E20 !important;
+    }
+
+    /* Back button inline en el header */
+    .btn-mobile-back-inline {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        background: none;
+        border: none;
+        color: var(--primary-green);
+        cursor: pointer;
+        padding: 4px;
+        margin: 0;
+        min-width: 36px;
+        height: 36px;
+        font-size: 24px;
+    }
+
+    .detail-header-stitch-alt {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        padding: 8px 12px;
+    }
+
+    .header-info-stitch {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    body.detail-view-active #no-selection,
+    body:not(.detail-view-active) #no-selection {
+        display: none !important;
+    }
 
     .detail-grid-stitch {
         grid-template-columns: 1fr;
     }
 
-    .detail-header-stitch-alt {
-        padding: 16px 20px;
+    .detail-scroll-area {
+        padding: 0 12px 20px;
+    }
+
+    .timeline-container-stitch {
+        padding: 8px 12px;
+        margin-bottom: 12px;
     }
 
     .order-number-stitch {
         font-size: 18px;
-    }
-
-    .detail-scroll-area {
-        padding: 16px 20px;
     }
 
     .step-icon {

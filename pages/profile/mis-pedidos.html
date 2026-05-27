@@ -35,20 +35,29 @@
         <div id="orders-list" class="orders-list-stitch custom-scroll">
           <div class="loading-state">Cargando pedidos...</div>
         </div>
+
+        <!-- Paginación Stitch -->
+        <footer class="list-pagination-footer-stitch">
+          <button class="page-btn-icon" id="list-prev">
+            <span class="material-symbols-outlined">chevron_left</span>
+          </button>
+          <div id="list-page-numbers" class="page-numbers-stitch"></div>
+          <button class="page-btn-icon" id="list-next">
+            <span class="material-symbols-outlined">chevron_right</span>
+          </button>
+        </footer>
       </aside>
 
       <!-- RIGHT: ORDER DETAIL -->
       <section id="order-detail" class="order-detail-section-stitch hidden">
 
-        <button id="btn-back-to-list" class="btn-mobile-back">
-          <span class="material-symbols-outlined">arrow_back</span>
-          Volver a la lista
-        </button>
-
         <div id="order-detail-content" class="detail-container-alt hidden">
 
           <!-- Header -->
           <header class="detail-header-stitch-alt">
+            <button id="btn-back-to-list" class="btn-mobile-back-inline">
+              <span class="material-symbols-outlined">chevron_left</span>
+            </button>
             <div class="header-info-stitch">
               <h2 id="order-id-display" class="order-number-stitch">Pedido #0000</h2>
               <span id="order-status-badge" class="status-badge-stitch">PENDIENTE</span>
