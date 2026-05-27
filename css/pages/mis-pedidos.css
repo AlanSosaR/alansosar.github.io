@@ -676,7 +676,8 @@ body.page-mis-pedidos {
 /* ================= RESPONSIVE ================= */
 @media (max-width: 768px) {
     .customer-orders-container {
-        padding: 72px 12px 24px;
+        padding: 56px 12px 24px;
+        margin-top: 0;
     }
 
     .orders-layout-stitch {
@@ -738,7 +739,7 @@ body.page-mis-pedidos {
         display: flex;
         align-items: center;
         gap: 4px;
-        padding: 12px 12px 1px;
+        padding: 12px 12px;
         border-radius: 15px 15px 0 0;
     }
 
@@ -759,11 +760,11 @@ body.page-mis-pedidos {
     }
 
     .detail-scroll-area {
-        padding: 1px 12px 20px;
+        padding: 12px 12px 20px;
     }
 
     .timeline-container-stitch {
-        padding: 1px 12px;
+        padding: 12px 12px;
         margin-bottom: 16px;
     }
 
