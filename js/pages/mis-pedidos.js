@@ -466,9 +466,19 @@ $id("btn-back-to-list")?.addEventListener("click", () => {
 function startAutoRefresh(userId) {
   clearInterval(autoRefresh);
   autoRefresh = setInterval(async () => {
+    const wasDetail = document.body.classList.contains("detail-view-active");
+    const prevId = wasDetail && filteredOrders[activeIndex]?.id;
+
     await loadOrders(userId);
     activeIndex = -1;
     filteredOrders = [];
     applyLocalFilters();
+
+    if (wasDetail && filteredOrders.length > 0) {
+      const restoreIdx = prevId
+        ? filteredOrders.findIndex(o => o.id === prevId)
+        : -1;
+      selectOrder(restoreIdx >= 0 ? restoreIdx : 0);
+    }
   }, 30000);
 }

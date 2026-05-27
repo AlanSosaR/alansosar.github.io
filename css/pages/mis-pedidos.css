@@ -738,7 +738,7 @@ body.page-mis-pedidos {
         display: flex;
         align-items: center;
         gap: 4px;
-        padding: 4px 12px;
+        padding: 12px 12px;
         border-radius: 15px 15px 0 0;
     }
 
@@ -759,12 +759,12 @@ body.page-mis-pedidos {
     }
 
     .detail-scroll-area {
-        padding: 0 12px 20px;
+        padding: 12px 12px 20px;
     }
 
     .timeline-container-stitch {
-        padding: 0 12px;
-        margin-bottom: 12px;
+        padding: 12px 12px;
+        margin-bottom: 16px;
     }
 
     .order-number-stitch {
