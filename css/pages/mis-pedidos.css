@@ -401,6 +401,11 @@ body.page-mis-pedidos {
     filter: brightness(0) invert(1);
 }
 
+.step-shipped.active .step-custom-icon,
+.step-shipped.completed .step-custom-icon {
+    filter: brightness(0) invert(1);
+}
+
 
 
 
