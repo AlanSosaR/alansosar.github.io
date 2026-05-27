@@ -444,7 +444,13 @@ body.page-admin-orders {
     align-items: center;
 }
 
-.order-number-stitch { font-family: 'Fraunces', serif; font-size: 32px; font-weight: 900; color: var(--coffee-deep); }
+.order-number-stitch { font-family: 'Fraunces', serif; font-size: 32px; font-weight: 900; color: var(--coffee-deep); margin: 0; }
+
+.header-info-stitch {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
 
 .detail-scroll-area {
     flex: 1;
