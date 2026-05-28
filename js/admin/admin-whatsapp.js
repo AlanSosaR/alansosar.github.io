@@ -414,6 +414,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // Limpiar badge de WhatsApp al entrar
       localStorage.setItem("wa_notif_count", "0");
       if (typeof window.setWaNotifCount === "function") window.setWaNotifCount(0);
+      if (typeof window.toggleGlobalNotificationDot === "function") window.toggleGlobalNotificationDot(false);
 
       const { data: users, error: uErr } = await supabaseClient
         .from("users")
@@ -576,6 +577,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Limpiar badge al seleccionar un contacto
     localStorage.setItem("wa_notif_count", "0");
     if (typeof window.setWaNotifCount === "function") window.setWaNotifCount(0);
+    if (typeof window.toggleGlobalNotificationDot === "function") window.toggleGlobalNotificationDot(false);
 
     chatName.textContent = contact.name;
     chatPhone.textContent = contact.isGroup ? "Grupo de WhatsApp" : contact.phone;

@@ -217,11 +217,21 @@ if (!window.__HEADER_CORE_LOADED__) {
     });
     $("user-scrim")?.addEventListener("click", closeDrawer);
 
-    // Cierre automático al pulsar cualquier link del drawer
+    // Cierre automático al pulsar cualquier link del drawer + limpiar notificaciones
     $("user-drawer")?.addEventListener("click", (e) => {
       const item = e.target.closest(".user-drawer-item, .user-drawer-profile-link, .drawer-notification");
       if (item) {
-        // Un ligero retardo permite que el enlace se procese antes de ocultar
+        // Limpiar badge WhatsApp si va a WhatsApp
+        if (item.getAttribute("href")?.includes("admin-whatsapp")) {
+          localStorage.setItem("wa_notif_count", "0");
+          setWaNotifCount(0);
+        }
+        // Limpiar notificaciones si va a Pedidos
+        if (item.getAttribute("href")?.includes("admin-pedidos")) {
+          localStorage.setItem("wa_notif_count", "0");
+          setWaNotifCount(0);
+          document.dispatchEvent(new CustomEvent("notification:opened"));
+        }
         setTimeout(closeDrawer, 150);
       }
     });
@@ -250,8 +260,12 @@ if (!window.__HEADER_CORE_LOADED__) {
       window.__WA_BADGE_POLL__ = true;
       setInterval(() => {
         const v = parseInt(localStorage.getItem("wa_notif_count") || "0", 10);
-        if (v > 0) setWaNotifCount(v);
-        else setWaNotifCount(0);
+        if (v > 0) {
+          setWaNotifCount(v);
+          toggleGlobalNotificationDot(true);
+        } else {
+          setWaNotifCount(0);
+        }
       }, 5000);
     }
 
