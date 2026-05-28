@@ -369,6 +369,10 @@ async function enviarPedido() {
         headers: { "Content-Type": "application/json", apikey: waKey },
         body: JSON.stringify({ number: groupJid, text: msg })
       });
+
+      // Incrementar badge de WhatsApp en el menú
+      const cur = parseInt(localStorage.getItem("wa_notif_count") || "0", 10);
+      localStorage.setItem("wa_notif_count", String(cur + 1));
     } catch (e) {
       console.error("❌ Error al enviar WhatsApp al grupo:", e);
     }
