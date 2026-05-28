@@ -110,13 +110,20 @@ async function syncMyOrdersCount(sb, userId) {
    NOTIFICACIÓN ACTIVA (SOLO 1)
 ===================================================== */
 async function syncNotificationsUI(sb, authUser, role) {
-  const { data } = await sb
+  let query = sb
     .from("notifications")
     .select("*")
-    .eq("user_id", authUser.id)
     .eq("is_read", false)
     .order("created_at", { ascending: false })
     .limit(1);
+
+  if (role === "admin") {
+    query = query.or(`user_id.eq.${authUser.id},user_id.is.null`);
+  } else {
+    query = query.eq("user_id", authUser.id);
+  }
+
+  const { data } = await query;
 
   if (!data?.length) {
     hideAllNotificationUI();
@@ -140,19 +147,29 @@ async function syncNotificationsUI(sb, authUser, role) {
 /* =====================================================
    MARCAR COMO LEÍDAS (CLICK)
 ===================================================== */
-async function markNotificationsAsRead(sb, userId) {
+async function markNotificationsAsRead(sb, userId, role) {
   try {
-    await sb
-      .from("notifications")
-      .update({ is_read: true })
-      .eq("user_id", userId)
-      .eq("is_read", false);
+    if (role === "admin") {
+      await sb
+        .from("notifications")
+        .update({ is_read: true })
+        .or(`user_id.eq.${userId},user_id.is.null`)
+        .eq("is_read", false);
+    } else {
+      await sb
+        .from("notifications")
+        .update({ is_read: true })
+        .eq("user_id", userId)
+        .eq("is_read", false);
+    }
 
     // UI inmediata
     hideAllNotificationUI();
     setGlobalBadge(false);
     setAdminCount(0);
     setMyCount(0);
+    localStorage.setItem("wa_notif_count", "0");
+    window.setWaNotifCount?.(0);
 
     console.log("✅ Notificaciones marcadas como leídas");
   } catch (err) {
@@ -202,7 +219,9 @@ async function initRealtime(sb, authUser, role) {
         event: "*",
         schema: "public",
         table: "notifications",
-        filter: `user_id=eq.${authUser.id}`
+        filter: role === "admin"
+          ? `or=(user_id.eq.${authUser.id},user_id.is.null)`
+          : `user_id=eq.${authUser.id}`
       },
       () => syncNotificationsUI(sb, authUser, role)
     )
@@ -236,12 +255,12 @@ function timeAgo(date) {
 /* =====================================================
    EVENTO: NOTIFICACIÓN ABIERTA
 ===================================================== */
-document.addEventListener("notification:opened", async () => {
+document.addEventListener("notification:opened", async (e) => {
   const sb = getSupabase();
   const cache = getUserCache();
   if (!sb || !cache?.id) return;
 
-  await markNotificationsAsRead(sb, cache.id);
+  await markNotificationsAsRead(sb, cache.id, cache.rol);
 });
 
 /* =====================================================
