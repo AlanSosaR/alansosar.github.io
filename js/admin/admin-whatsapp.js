@@ -165,9 +165,12 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         if (!resp.ok) throw new Error("HTTP " + resp.status);
         showSnack("WhatsApp desconectado", "success");
+        resetWhatsAppState();
         await updateStatus();
       } catch (err) {
         console.error(err);
+        resetWhatsAppState();
+        await updateStatus();
         showSnack("Error al desconectar", "error");
       }
     });
@@ -179,6 +182,31 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("wa-qr-cancel")?.addEventListener("click", () => {
       cancelQR();
     });
+  }
+
+  /* =========================
+     RESET STATE
+  ========================= */
+  function resetWhatsAppState() {
+    allContacts = [];
+    filteredContacts = [];
+    if (messagesRefreshTimer) {
+      clearInterval(messagesRefreshTimer);
+      messagesRefreshTimer = null;
+    }
+    selectedContact = null;
+    cachedApiMessages = {};
+    Object.keys(sentMessages).forEach(k => delete sentMessages[k]);
+    notifiedMessages.clear();
+    lastSeenTs = Math.floor(Date.now() / 1000);
+
+    contactsList.innerHTML = '<div class="wa-loading">Sesión cerrada. Escanea el QR para conectar.</div>';
+    if (contactsCount) contactsCount.textContent = "0 contactos";
+    chat?.classList.add("hidden");
+    noSelection?.classList.remove("hidden");
+    chatName.textContent = "";
+    chatPhone.textContent = "";
+    chatHistory.innerHTML = "";
   }
 
   /* =========================
@@ -226,7 +254,7 @@ document.addEventListener("DOMContentLoaded", () => {
           if (state === "open") {
             qrStatus.textContent = "✅ ¡Conectado!";
             qrStatus.style.color = "#2e7d32";
-            setTimeout(() => { cancelQR(); updateStatus(); }, 1200);
+            setTimeout(() => { cancelQR(); updateStatus(); loadContacts(); }, 1200);
           } else if (state === "connecting") {
             qrStatus.textContent = "Conectando... espera";
             qrStatus.style.color = "#f9a825";
@@ -305,10 +333,10 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch {
       statusIcon.textContent = "error";
       statusIcon.style.color = "#c62828";
-      statusText.textContent = "Error de conexión";
+      statusText.textContent = "Desconectado";
       if (!isQR) {
         disconnectBtn?.classList.add("hidden");
-        connectBtn?.classList.add("hidden");
+        connectBtn?.classList.remove("hidden");
       }
       if (waDot) waDot.style.background = "#c62828";
     }
