@@ -362,7 +362,7 @@ async function enviarPedido() {
       const customerPhone = ($("telefonoCliente")?.textContent || "").trim();
       const addressLine = [$("direccionCliente")?.textContent, $("zonaCliente")?.textContent].filter(Boolean).join(", ");
 
-      const msg = `🛍️ *Nuevo Pedido #${orderNumber}*\n\n👤 *Cliente:* ${user.name || "Cliente"}\n📞 *Tel:* ${customerPhone || "N/D"}\n📍 *Dirección:* ${addressLine || "N/D"}\n\n━━━ *Productos* ━━━\n\n${prodLines}\n${sep}\n💰 *Total:* L ${totalPedido.toFixed(2)}\n💳 *Pago:* ${metodoPago.value === "bank_transfer" ? "Transferencia bancaria" : "Efectivo contra entrega"}`;
+      const msg = `🫘 *Nuevo Pedido #${orderNumber}*\n\n👤 *Cliente:* ${user.name || "Cliente"}\n📞 *Tel:* ${customerPhone || "N/D"}\n📍 *Dirección:* ${addressLine || "N/D"}\n\n━━━ *Productos* ━━━\n\n${prodLines}\n${sep}\n💰 *Total:* L ${totalPedido.toFixed(2)}\n💳 *Pago:* ${metodoPago.value === "bank_transfer" ? "Transferencia bancaria" : "Efectivo contra entrega"}`;
 
       await fetch(`${waApi}/message/sendText/CafeCortero`, {
         method: "POST",
