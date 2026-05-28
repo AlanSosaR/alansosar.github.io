@@ -502,19 +502,31 @@ document.addEventListener("DOMContentLoaded", () => {
     const contactId = contact.id;
     const phoneVariants = getPhoneVariants(contact.phone);
     const local = sentMessages[contactId] || [];
+    const LIMIT = 999;
+    const MAX_PAGES = silent ? 1 : 20;
 
-    try {
+    async function fetchPage(page) {
       const resp = await fetch(`${API_URL}/chat/findMessages/${INSTANCE}`, {
         method: "POST",
         headers: { "Content-Type": "application/json", apikey: API_KEY },
-        body: JSON.stringify({ number: phoneVariants[0], page: 1, limit: 50 })
+        body: JSON.stringify({ number: phoneVariants[0], page, limit: LIMIT })
       });
+      if (!resp.ok) return null;
+      return resp.json();
+    }
 
-      if (resp.ok) {
-        const data = await resp.json();
+    try {
+      let allApiMessages = [];
+      let totalPages = 1;
+
+      for (let page = 1; page <= Math.min(totalPages, MAX_PAGES); page++) {
+        const data = await fetchPage(page);
+        if (!data) break;
+
+        totalPages = data?.messages?.pages || 1;
         const records = data?.messages?.records || [];
 
-        const apiMessages = records
+        const matched = records
           .filter(r => {
             const jid = r.key?.remoteJid || "";
             const alt = r.remoteJidAlt || "";
@@ -528,11 +540,12 @@ document.addEventListener("DOMContentLoaded", () => {
             ts: r.messageTimestamp || 0
           }));
 
-        const all = [...apiMessages, ...local];
-        renderMessageList(all);
-      } else {
-        renderMessageList(local);
+        allApiMessages.push(...matched);
+        if (!records.length) break;
       }
+
+      const all = [...allApiMessages, ...local];
+      renderMessageList(all);
     } catch {
       renderMessageList(local);
     }
