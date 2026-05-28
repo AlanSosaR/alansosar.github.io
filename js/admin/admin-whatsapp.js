@@ -496,6 +496,8 @@ document.addEventListener("DOMContentLoaded", () => {
     chatHistory.scrollTop = chatHistory.scrollHeight;
   }
 
+  const cachedApiMessages = {};
+
   async function loadMessages(contact, silent) {
     if (!silent) chatHistory.innerHTML = '<div class="wa-history-placeholder"><span class="material-symbols-outlined">hourglass_empty</span><p>Cargando mensajes...</p></div>';
 
@@ -503,7 +505,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const phoneVariants = getPhoneVariants(contact.phone);
     const local = sentMessages[contactId] || [];
     const LIMIT = 999;
-    const MAX_PAGES = silent ? 1 : 20;
 
     async function fetchPage(page) {
       const resp = await fetch(`${API_URL}/chat/findMessages/${INSTANCE}`, {
@@ -516,8 +517,39 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
+      if (silent && cachedApiMessages[contactId]) {
+        const data = await fetchPage(1);
+        if (data) {
+          const records = data?.messages?.records || [];
+          const knownIds = new Set(cachedApiMessages[contactId].map(m => m.msgId));
+          const newMatched = records
+            .filter(r => {
+              const msgId = r.key?.id || "";
+              if (knownIds.has(msgId)) return false;
+              const jid = r.key?.remoteJid || "";
+              const alt = r.remoteJidAlt || "";
+              return matchesContact(jid, phoneVariants) || matchesContact(alt, phoneVariants);
+            })
+            .map(r => ({
+              msgId: r.key?.id || "",
+              text: r.message?.conversation || (r.message?.imageMessage ? "[imagen]" : null) || (r.message?.audioMessage ? "[audio]" : null) || (r.message?.stickerMessage ? "[sticker]" : null) || "—",
+              fromMe: r.key?.fromMe === true,
+              time: r.messageTimestamp ? new Date(r.messageTimestamp * 1000).toLocaleString("es-HN") : "",
+              messageTimestamp: r.messageTimestamp,
+              ts: r.messageTimestamp || 0
+            }));
+          if (newMatched.length > 0) {
+            cachedApiMessages[contactId].push(...newMatched);
+          }
+        }
+        const all = [...cachedApiMessages[contactId], ...local];
+        renderMessageList(all);
+        return;
+      }
+
       let allApiMessages = [];
       let totalPages = 1;
+      const MAX_PAGES = 20;
 
       for (let page = 1; page <= Math.min(totalPages, MAX_PAGES); page++) {
         const data = await fetchPage(page);
@@ -533,6 +565,7 @@ document.addEventListener("DOMContentLoaded", () => {
             return matchesContact(jid, phoneVariants) || matchesContact(alt, phoneVariants);
           })
           .map(r => ({
+            msgId: r.key?.id || "",
             text: r.message?.conversation || (r.message?.imageMessage ? "[imagen]" : null) || (r.message?.audioMessage ? "[audio]" : null) || (r.message?.stickerMessage ? "[sticker]" : null) || "—",
             fromMe: r.key?.fromMe === true,
             time: r.messageTimestamp ? new Date(r.messageTimestamp * 1000).toLocaleString("es-HN") : "",
@@ -544,6 +577,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!records.length) break;
       }
 
+      cachedApiMessages[contactId] = allApiMessages;
       const all = [...allApiMessages, ...local];
       renderMessageList(all);
     } catch {
