@@ -14,7 +14,10 @@ document.addEventListener("DOMContentLoaded", () => {
   let selectedContact = null;
   let messagesRefreshTimer = null;
   let notificationPollTimer = null;
-  let lastSeenTs = Math.floor(Date.now() / 1000);
+  let lastSeenTs = Math.max(
+    parseInt(localStorage.getItem("wa_last_seen_ts") || "0", 10),
+    Math.floor(Date.now() / 1000) - 3600 // 1h atrás en primera visita
+  );
   const sentMessages = {};
   const notifiedMessages = new Set();
 
@@ -844,6 +847,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const ts = r.messageTimestamp || 0;
         if (ts > lastSeenTs) lastSeenTs = ts;
       }
+      localStorage.setItem("wa_last_seen_ts", String(lastSeenTs));
     } catch (_) {}
   }
 
@@ -899,6 +903,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const ts = r.messageTimestamp || 0;
         if (ts > lastSeenTs) lastSeenTs = ts;
       }
+      localStorage.setItem("wa_last_seen_ts", String(lastSeenTs));
     } catch (_) {}
   }
 
