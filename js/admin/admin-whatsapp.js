@@ -157,23 +157,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
     disconnectBtn?.addEventListener("click", async () => {
       settingsDropdown?.classList.add("hidden");
-      const ok = confirm("¿Desconectar WhatsApp de la instancia CafeCortero? Los clientes no recibirán notificaciones hasta que reconectes.");
-      if (!ok) return;
+      const confirmed = await showConfirmSnack("¿Desconectar WhatsApp de la instancia CafeCortero? Los clientes no recibirán notificaciones hasta que reconectes.");
+      if (!confirmed) return;
+
       try {
-        const resp = await fetch(`${API_URL}/instance/logout/${INSTANCE}`, {
+        await fetch(`${API_URL}/instance/logout/${INSTANCE}`, {
           method: "DELETE", headers: { apikey: API_KEY }
         });
-        if (!resp.ok) throw new Error("HTTP " + resp.status);
-        showSnack("WhatsApp desconectado", "success");
-      } catch (err) {
-        console.error(err);
-      }
-      // Reiniciar la instancia para forzar un estado limpio
-      await fetch(`${API_URL}/instance/restart/${INSTANCE}`, {
-        method: "GET", headers: { apikey: API_KEY }
-      });
+      } catch (_) {}
+      try {
+        await fetch(`${API_URL}/instance/restart/${INSTANCE}`, {
+          method: "GET", headers: { apikey: API_KEY }
+        });
+      } catch (_) {}
+
       resetWhatsAppState();
       await updateStatus();
+      showSnack("WhatsApp desconectado", "success");
     });
 
     connectBtn?.addEventListener("click", () => {
@@ -182,6 +182,40 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.getElementById("wa-qr-cancel")?.addEventListener("click", () => {
       cancelQR();
+    });
+  }
+
+  /* =========================
+     CONFIRM SNACK
+  ========================= */
+  function showConfirmSnack(text) {
+    return new Promise((resolve) => {
+      const bar = document.getElementById("snackbar");
+      if (!bar) { resolve(true); return; }
+      bar.innerHTML = `
+        <div style="display:flex;flex-direction:column;gap:12px;width:100%;">
+          <span class="snack-text">${text}</span>
+          <div style="display:flex;justify-content:flex-end;gap:8px;">
+            <button id="snack-cancel-disconnect"
+              style="background:none;border:none;color:#fff;font-weight:600;cursor:pointer;padding:8px 16px;">
+              Cancelar
+            </button>
+            <button id="snack-confirm-disconnect"
+              style="background:#c62828;border:none;color:#fff;font-weight:600;
+                     cursor:pointer;padding:8px 16px;border-radius:8px;">
+              Desconectar
+            </button>
+          </div>
+        </div>`;
+      bar.className = "snackbar show";
+      document.getElementById("snack-cancel-disconnect").onclick = () => {
+        bar.className = "snackbar";
+        resolve(false);
+      };
+      document.getElementById("snack-confirm-disconnect").onclick = () => {
+        bar.className = "snackbar";
+        resolve(true);
+      };
     });
   }
 
@@ -201,13 +235,20 @@ document.addEventListener("DOMContentLoaded", () => {
     notifiedMessages.clear();
     lastSeenTs = Math.floor(Date.now() / 1000);
 
-    contactsList.innerHTML = '<div class="wa-loading">Sesión cerrada. Escanea el QR para conectar.</div>';
+    if (contactsList) contactsList.innerHTML = '<div class="wa-loading">Sesión cerrada. Escanea el QR para conectar.</div>';
     if (contactsCount) contactsCount.textContent = "0 contactos";
-    chat?.classList.add("hidden");
-    noSelection?.classList.remove("hidden");
-    chatName.textContent = "";
-    chatPhone.textContent = "";
-    chatHistory.innerHTML = "";
+    if (chat) chat.classList.add("hidden");
+    if (noSelection) noSelection.classList.remove("hidden");
+    if (chatName) chatName.textContent = "";
+    if (chatPhone) chatPhone.textContent = "";
+    if (chatHistory) chatHistory.innerHTML = "";
+
+    // Forzar actualizacion del buscador
+    if (searchInput) { searchInput.value = ""; }
+    // Limpiar entrada de mensaje
+    if (messageInput) messageInput.value = "";
+    if (previewArea) previewArea.classList.add("hidden");
+    pendingImage = null;
   }
 
   /* =========================
