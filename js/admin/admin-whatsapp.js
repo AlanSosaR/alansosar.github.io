@@ -518,7 +518,17 @@ document.addEventListener("DOMContentLoaded", () => {
       // Auto-seleccionar grupo de pedidos
       if (!selectedContact) {
         const group = contacts.find(c => c.id === "group_pedidos");
-        if (group) selectContact(group);
+        if (group) {
+          selectContact(group);
+          // Marcar mensajes ya cargados como vistos para el badge
+          setTimeout(() => {
+            for (const id of Object.keys(cachedApiMessages)) {
+              for (const m of cachedApiMessages[id]) {
+                if (m.msgId) notifiedMessages.add(m.msgId);
+              }
+            }
+          }, 1000);
+        }
       }
     } catch (err) {
       console.error("Error cargando contactos:", err);
@@ -807,11 +817,10 @@ document.addEventListener("DOMContentLoaded", () => {
       const records = data?.messages?.records || [];
       for (const r of records) {
         const fm = r.key?.fromMe;
-        if (fm !== false) continue; // only incoming
         const jid = r.key?.remoteJid || "";
         const alt = r.remoteJidAlt || "";
         const ts = r.messageTimestamp || 0;
-        if (ts <= lastSeenTs) continue; // already seen
+        if (ts <= lastSeenTs) continue;
         const msgId = r.key?.id || "";
         if (notifiedMessages.has(msgId)) continue;
 
@@ -825,33 +834,37 @@ document.addEventListener("DOMContentLoaded", () => {
           }
         }
         if (!matched) continue;
-        // Don't notify if this contact is currently selected
-        if (selectedContact && selectedContact.id === matched.id) continue;
 
         notifiedMessages.add(msgId);
 
-        // Incrementar badge de WhatsApp en el menú
-        const currentCount = parseInt(localStorage.getItem("wa_notif_count") || "0", 10);
-        const newCount = currentCount + 1;
-        localStorage.setItem("wa_notif_count", String(newCount));
-        if (typeof window.setWaNotifCount === "function") {
-          window.setWaNotifCount(newCount);
+        // Incrementar badge para cualquier mensaje nuevo (incluso nuestros)
+        // Solo si el contacto NO está seleccionado actualmente
+        if (!selectedContact || selectedContact.id !== matched.id) {
+          const currentCount = parseInt(localStorage.getItem("wa_notif_count") || "0", 10);
+          const newCount = currentCount + 1;
+          localStorage.setItem("wa_notif_count", String(newCount));
+          if (typeof window.setWaNotifCount === "function") {
+            window.setWaNotifCount(newCount);
+          }
         }
-        const text =
-          r.message?.conversation ||
-          (r.message?.imageMessage ? "📷 Imagen" : null) ||
-          (r.message?.audioMessage ? "🎵 Audio" : null) ||
-          (r.message?.stickerMessage ? "🖼️ Sticker" : null) ||
-          "Mensaje nuevo";
-        try {
-          // eslint-disable-next-line no-new
-          new Notification("☕ Café Cortero", {
-            body: `${matched.name}: ${text}`,
-            icon: "/favicon.ico",
-            tag: msgId,
-            silent: false
-          });
-        } catch (_) {}
+
+        // Solo notificación push para mensajes entrantes
+        if (fm === false) {
+          const text =
+            r.message?.conversation ||
+            (r.message?.imageMessage ? "📷 Imagen" : null) ||
+            (r.message?.audioMessage ? "🎵 Audio" : null) ||
+            (r.message?.stickerMessage ? "🖼️ Sticker" : null) ||
+            "Mensaje nuevo";
+          try {
+            new Notification("☕ Café Cortero", {
+              body: `${matched.name}: ${text}`,
+              icon: "/favicon.ico",
+              tag: msgId,
+              silent: false
+            });
+          } catch (_) {}
+        }
       }
       // Update lastSeenTs to the latest timestamp among all records
       for (const r of records) {
