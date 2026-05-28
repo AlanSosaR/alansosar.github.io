@@ -165,14 +165,15 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         if (!resp.ok) throw new Error("HTTP " + resp.status);
         showSnack("WhatsApp desconectado", "success");
-        resetWhatsAppState();
-        await updateStatus();
       } catch (err) {
         console.error(err);
-        resetWhatsAppState();
-        await updateStatus();
-        showSnack("Error al desconectar", "error");
       }
+      // Reiniciar la instancia para forzar un estado limpio
+      await fetch(`${API_URL}/instance/restart/${INSTANCE}`, {
+        method: "GET", headers: { apikey: API_KEY }
+      });
+      resetWhatsAppState();
+      await updateStatus();
     });
 
     connectBtn?.addEventListener("click", () => {
@@ -227,14 +228,34 @@ document.addEventListener("DOMContentLoaded", () => {
     connectBtn?.classList.add("hidden");
     qrSection.classList.remove("hidden");
     qrImg.src = "";
+    qrStatus.textContent = "Reiniciando instancia...";
+
+    // Reiniciar la instancia para garantizar un QR fresco
+    try {
+      await fetch(`${API_URL}/instance/restart/${INSTANCE}`, {
+        method: "GET", headers: { apikey: API_KEY }
+      });
+    } catch (_) {}
+    await new Promise(r => setTimeout(r, 2000));
+
     qrStatus.textContent = "Obteniendo código QR...";
 
     try {
-      const resp = await fetch(`${API_URL}/instance/connect/${INSTANCE}`, {
+      let data;
+      // Intentar con GET primero
+      let resp = await fetch(`${API_URL}/instance/connect/${INSTANCE}`, {
         method: "GET", headers: { apikey: API_KEY }
       });
+      if (!resp.ok) {
+        // Reintentar con POST
+        resp = await fetch(`${API_URL}/instance/connect/${INSTANCE}`, {
+          method: "POST", headers: { "Content-Type": "application/json", apikey: API_KEY },
+          body: "{}"
+        });
+      }
       if (!resp.ok) throw new Error("HTTP " + resp.status);
-      const data = await resp.json();
+      data = await resp.json();
+
       if (data.base64) {
         qrImg.src = data.base64;
         qrStatus.textContent = "Escanea el código con tu WhatsApp";
@@ -266,7 +287,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }, 3000);
     } catch (err) {
       console.error(err);
-      qrStatus.textContent = "Error al obtener QR";
+      qrStatus.textContent = "Error al obtener QR. Intenta de nuevo.";
       qrStatus.style.color = "#c62828";
     }
   }
