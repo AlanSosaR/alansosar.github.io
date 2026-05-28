@@ -348,6 +348,27 @@ async function enviarPedido() {
       }
     });
 
+    /* 📲 WHATSAPP AL ADMIN */
+    try {
+      const waApi = "https://cafe-cortero.vercel.app/api/wa-proxy";
+      const waKey = "429683C4C977415CAAFCCE10F7D57E11";
+      const adminPhone = "+447352349335";
+      const cleanAdminPhone = adminPhone.replace(/\D/g, "");
+      const prodLines = carrito.map(it => `• ${it.name} × ${it.qty}`).join("\n");
+      const customerPhone = ($("telefonoCliente")?.textContent || "").trim();
+      const addressLine = [$("direccionCliente")?.textContent, $("zonaCliente")?.textContent].filter(Boolean).join(", ");
+
+      const msg = `🛍️ *Nuevo Pedido #${orderNumber}*\n\n👤 *Cliente:* ${user.name || "Cliente"}\n📞 *Tel:* ${customerPhone || "N/D"}\n📍 *Dirección:* ${addressLine || "N/D"}\n\n📦 *Productos:*\n${prodLines}\n\n💰 *Total:* L ${totalPedido.toFixed(2)}\n💳 *Pago:* ${metodoPago.value === "bank_transfer" ? "Transferencia bancaria" : "Efectivo contra entrega"}`;
+
+      await fetch(`${waApi}/message/sendText/CafeCortero`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", apikey: waKey },
+        body: JSON.stringify({ number: cleanAdminPhone, text: msg })
+      });
+    } catch (e) {
+      console.error("❌ Error al enviar WhatsApp al admin:", e);
+    }
+
     localStorage.setItem(CART_KEY, "[]");
     sessionStorage.removeItem("current_order_notes"); // limpieza correcta
 
