@@ -494,9 +494,28 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       } catch (_) {}
 
+      // Agregar grupo de pedidos como contacto fijo
+      const GROUP_JID = "120363410476492208@g.us";
+      if (!contacts.some(c => c.phone === GROUP_JID)) {
+        contacts.unshift({
+          id: "group_pedidos",
+          name: "📦 Café cortero - Pedidos",
+          phone: GROUP_JID,
+          email: null,
+          photo_url: null,
+          isGroup: true
+        });
+      }
+
       allContacts = contacts;
       filteredContacts = [...contacts];
       renderContacts();
+
+      // Auto-seleccionar grupo de pedidos
+      if (!selectedContact) {
+        const group = contacts.find(c => c.id === "group_pedidos");
+        if (group) selectContact(group);
+      }
     } catch (err) {
       console.error("Error cargando contactos:", err);
       contactsList.innerHTML = '<div class="wa-loading">Error al cargar clientes</div>';
@@ -518,13 +537,14 @@ document.addEventListener("DOMContentLoaded", () => {
     filteredContacts.forEach(c => {
       const div = document.createElement("div");
       div.className = `wa-contact-item${selectedContact?.id === c.id ? " active" : ""}`;
+      const icon = c.isGroup ? "groups" : "person";
       div.innerHTML = `
         <div class="wa-contact-avatar">
-          <span class="material-symbols-outlined">person</span>
+          <span class="material-symbols-outlined">${icon}</span>
         </div>
         <div class="wa-contact-info">
           <div class="wa-contact-name">${c.name}</div>
-          <div class="wa-contact-phone">${c.phone}</div>
+          <div class="wa-contact-phone">${c.isGroup ? "Grupo de WhatsApp" : c.phone}</div>
         </div>
       `;
       div.onclick = () => selectContact(c);
@@ -540,7 +560,7 @@ document.addEventListener("DOMContentLoaded", () => {
     chat.classList.remove("hidden");
 
     chatName.textContent = contact.name;
-    chatPhone.textContent = contact.phone;
+    chatPhone.textContent = contact.isGroup ? "Grupo de WhatsApp" : contact.phone;
     messageInput.value = "";
     messageInput.disabled = false;
     sendBtn.disabled = false;
@@ -696,9 +716,13 @@ document.addEventListener("DOMContentLoaded", () => {
     messageInput.disabled = true;
     if (attachBtn) attachBtn.disabled = true;
 
-    const cleanPhone = selectedContact.phone.replace(/\D/g, "");
-    const hasCC = selectedContact.phone.trim().startsWith("+");
-    const fullNumber = hasCC ? cleanPhone : `504${cleanPhone}`;
+    const isGroup = selectedContact.isGroup;
+    const fullNumber = isGroup
+      ? selectedContact.phone
+      : (() => {
+          const clean = selectedContact.phone.replace(/\D/g, "");
+          return selectedContact.phone.trim().startsWith("+") ? clean : `504${clean}`;
+        })();
     const now = new Date().toLocaleString("es-HN");
     const ts = Date.now();
 
