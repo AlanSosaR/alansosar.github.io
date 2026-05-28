@@ -524,14 +524,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const group = contacts.find(c => c.id === "group_pedidos");
         if (group) {
           selectContact(group);
-          // Marcar mensajes ya cargados como vistos para el badge
-          setTimeout(() => {
-            for (const id of Object.keys(cachedApiMessages)) {
-              for (const m of cachedApiMessages[id]) {
-                if (m.msgId) notifiedMessages.add(m.msgId);
-              }
-            }
-          }, 1000);
         }
       }
     } catch (err) {
@@ -835,6 +827,11 @@ document.addEventListener("DOMContentLoaded", () => {
           }
         }
         if (!matched) continue;
+        // No badgear mensajes ya cargados en el chat
+        if ((cachedApiMessages[matched.id] || []).some(m => m.msgId === msgId)) {
+          notifiedMessages.add(msgId);
+          continue;
+        }
         notifiedMessages.add(msgId);
         if (!selectedContact || selectedContact.id !== matched.id) {
           const cur = parseInt(localStorage.getItem("wa_notif_count") || "0", 10);
