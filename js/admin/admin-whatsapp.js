@@ -802,6 +802,50 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =========================
+     CHECK BADGE (sin notificaciones push)
+  ========================= */
+  async function checkBadge() {
+    try {
+      const resp = await fetch(`${API_URL}/chat/findMessages/${INSTANCE}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", apikey: API_KEY },
+        body: JSON.stringify({ page: 1, limit: 5 })
+      });
+      if (!resp.ok) return;
+      const data = await resp.json();
+      const records = data?.messages?.records || [];
+      for (const r of records) {
+        const jid = r.key?.remoteJid || "";
+        const alt = r.remoteJidAlt || "";
+        const ts = r.messageTimestamp || 0;
+        if (ts <= lastSeenTs) continue;
+        const msgId = r.key?.id || "";
+        if (notifiedMessages.has(msgId)) continue;
+        let matched = null;
+        for (const c of allContacts) {
+          const variants = getPhoneVariants(c.phone);
+          if (matchesContact(jid, variants) || matchesContact(alt, variants)) {
+            matched = c;
+            break;
+          }
+        }
+        if (!matched) continue;
+        notifiedMessages.add(msgId);
+        if (!selectedContact || selectedContact.id !== matched.id) {
+          const cur = parseInt(localStorage.getItem("wa_notif_count") || "0", 10);
+          const n = cur + 1;
+          localStorage.setItem("wa_notif_count", String(n));
+          if (typeof window.setWaNotifCount === "function") window.setWaNotifCount(n);
+        }
+      }
+      for (const r of records) {
+        const ts = r.messageTimestamp || 0;
+        if (ts > lastSeenTs) lastSeenTs = ts;
+      }
+    } catch (_) {}
+  }
+
+  /* =========================
      PUSH NOTIFICATIONS
   ========================= */
   async function pollNewMessages() {
@@ -817,14 +861,13 @@ document.addEventListener("DOMContentLoaded", () => {
       const records = data?.messages?.records || [];
       for (const r of records) {
         const fm = r.key?.fromMe;
+        if (fm !== false) continue;
         const jid = r.key?.remoteJid || "";
         const alt = r.remoteJidAlt || "";
         const ts = r.messageTimestamp || 0;
         if (ts <= lastSeenTs) continue;
         const msgId = r.key?.id || "";
         if (notifiedMessages.has(msgId)) continue;
-
-        // Find matching contact
         let matched = null;
         for (const c of allContacts) {
           const variants = getPhoneVariants(c.phone);
@@ -834,39 +877,22 @@ document.addEventListener("DOMContentLoaded", () => {
           }
         }
         if (!matched) continue;
-
         notifiedMessages.add(msgId);
-
-        // Incrementar badge para cualquier mensaje nuevo (incluso nuestros)
-        // Solo si el contacto NO está seleccionado actualmente
-        if (!selectedContact || selectedContact.id !== matched.id) {
-          const currentCount = parseInt(localStorage.getItem("wa_notif_count") || "0", 10);
-          const newCount = currentCount + 1;
-          localStorage.setItem("wa_notif_count", String(newCount));
-          if (typeof window.setWaNotifCount === "function") {
-            window.setWaNotifCount(newCount);
-          }
-        }
-
-        // Solo notificación push para mensajes entrantes
-        if (fm === false) {
-          const text =
-            r.message?.conversation ||
-            (r.message?.imageMessage ? "📷 Imagen" : null) ||
-            (r.message?.audioMessage ? "🎵 Audio" : null) ||
-            (r.message?.stickerMessage ? "🖼️ Sticker" : null) ||
-            "Mensaje nuevo";
-          try {
-            new Notification("☕ Café Cortero", {
-              body: `${matched.name}: ${text}`,
-              icon: "/favicon.ico",
-              tag: msgId,
-              silent: false
-            });
-          } catch (_) {}
-        }
+        const text =
+          r.message?.conversation ||
+          (r.message?.imageMessage ? "📷 Imagen" : null) ||
+          (r.message?.audioMessage ? "🎵 Audio" : null) ||
+          (r.message?.stickerMessage ? "🖼️ Sticker" : null) ||
+          "Mensaje nuevo";
+        try {
+          new Notification("☕ Café Cortero", {
+            body: `${matched.name}: ${text}`,
+            icon: "/favicon.ico",
+            tag: msgId,
+            silent: false
+          });
+        } catch (_) {}
       }
-      // Update lastSeenTs to the latest timestamp among all records
       for (const r of records) {
         const ts = r.messageTimestamp || 0;
         if (ts > lastSeenTs) lastSeenTs = ts;
@@ -921,9 +947,15 @@ document.addEventListener("DOMContentLoaded", () => {
     document.addEventListener("header:ready", injectGear);
   }
 
+  // Start badge checker every 15s (no requiere permisos de notificación)
+  setInterval(checkBadge, 15000);
+  // Also start immediately when contacts are ready, via a small delay
+  setTimeout(() => {
+    if (allContacts.length > 0) checkBadge();
+  }, 6000);
+
   // Start notification polling every 30s
   notificationPollTimer = setInterval(pollNewMessages, 30000);
-  // Also start immediately when contacts are ready, via a small delay
   setTimeout(() => {
     if (allContacts.length > 0) pollNewMessages();
   }, 5000);
