@@ -503,7 +503,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!contacts.some(c => c.phone === GROUP_JID)) {
         contacts.unshift({
           id: "group_pedidos",
-          name: "📦 Café cortero - Pedidos",
+          name: "☕ Café cortero - Pedidos",
           phone: GROUP_JID,
           email: null,
           photo_url: null,
@@ -541,7 +541,7 @@ document.addEventListener("DOMContentLoaded", () => {
     filteredContacts.forEach(c => {
       const div = document.createElement("div");
       div.className = `wa-contact-item${selectedContact?.id === c.id ? " active" : ""}`;
-      const icon = c.isGroup ? "groups" : "person";
+      const icon = c.isGroup ? "local_cafe" : "person";
       div.innerHTML = `
         <div class="wa-contact-avatar">
           <span class="material-symbols-outlined">${icon}</span>
