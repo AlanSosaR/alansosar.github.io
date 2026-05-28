@@ -348,12 +348,11 @@ async function enviarPedido() {
       }
     });
 
-    /* 📲 WHATSAPP AL ADMIN */
+    /* 📲 WHATSAPP AL GRUPO */
     try {
       const waApi = "https://cafe-cortero.vercel.app/api/wa-proxy";
       const waKey = "429683C4C977415CAAFCCE10F7D57E11";
-      const adminPhone = "+447352349335";
-      const cleanAdminPhone = adminPhone.replace(/\D/g, "");
+      const groupJid = "120363410476492208@g.us";
       const prodLines = carrito.map(it => `• ${it.name} × ${it.qty}`).join("\n");
       const customerPhone = ($("telefonoCliente")?.textContent || "").trim();
       const addressLine = [$("direccionCliente")?.textContent, $("zonaCliente")?.textContent].filter(Boolean).join(", ");
@@ -363,10 +362,10 @@ async function enviarPedido() {
       await fetch(`${waApi}/message/sendText/CafeCortero`, {
         method: "POST",
         headers: { "Content-Type": "application/json", apikey: waKey },
-        body: JSON.stringify({ number: cleanAdminPhone, text: msg })
+        body: JSON.stringify({ number: groupJid, text: msg })
       });
     } catch (e) {
-      console.error("❌ Error al enviar WhatsApp al admin:", e);
+      console.error("❌ Error al enviar WhatsApp al grupo:", e);
     }
 
     localStorage.setItem(CART_KEY, "[]");
