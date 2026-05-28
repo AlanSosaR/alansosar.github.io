@@ -1,5 +1,7 @@
 console.log("🧭 header.js — UI CORE LIMPIO (CON HOOKS COMPLETOS)");
 
+import { initNotifications } from "../core/notifications.js";
+
 if (!window.__HEADER_CORE_LOADED__) {
   window.__HEADER_CORE_LOADED__ = true;
 
@@ -270,9 +272,7 @@ if (!window.__HEADER_CORE_LOADED__) {
     }
 
     requestAnimationFrame(() => {
-      if (typeof window.syncNotificationsAll === "function") {
-        window.syncNotificationsAll();
-      }
+      initNotifications();
     });
   }
 
@@ -291,7 +291,7 @@ if (!window.__HEADER_CORE_LOADED__) {
       syncUserUI();
       updateCartCount();
       updateHeaderCartTitle();
-      document.dispatchEvent(new Event("initNotifications"));
+      initNotifications();
     });
 
     document.addEventListener("userLoggedOut", () => {
