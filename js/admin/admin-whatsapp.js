@@ -419,29 +419,37 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       }
 
-      // Fetch WhatsApp chats not in DB (skip LID entries — duplicated by phone entry)
+      // Solo traer chats de WhatsApp si la instancia está conectada
       try {
-        const resp = await fetch(`${API_URL}/chat/findChats/${INSTANCE}`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json", apikey: API_KEY },
-          body: "{}"
+        const stateResp = await fetch(`${API_URL}/instance/connectionState/${INSTANCE}`, {
+          method: "GET", headers: { "Content-Type": "application/json", apikey: API_KEY }
         });
-        if (resp.ok) {
-          const records = await resp.json();
-          (Array.isArray(records) ? records : []).forEach(chat => {
-            const jid = chat.remoteJid || "";
-            if (jid.endsWith("@lid")) return; // skip LID, duplicated by phone entry
-            const phoneRaw = jid.replace(/@.*$/, "");
-            if (!phoneRaw || phoneRaw.length < 8 || usedPhones.has(phoneRaw)) return;
-            usedPhones.add(phoneRaw);
-            contacts.push({
-              id: "wa_" + phoneRaw,
-              name: chat.pushName || phoneRaw,
-              phone: phoneRaw,
-              email: null,
-              photo_url: null
-            });
+        const stateData = stateResp.ok ? await stateResp.json() : null;
+        const isConnected = stateData?.instance?.state === "open";
+
+        if (isConnected) {
+          const resp = await fetch(`${API_URL}/chat/findChats/${INSTANCE}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", apikey: API_KEY },
+            body: "{}"
           });
+          if (resp.ok) {
+            const records = await resp.json();
+            (Array.isArray(records) ? records : []).forEach(chat => {
+              const jid = chat.remoteJid || "";
+              if (jid.endsWith("@lid")) return;
+              const phoneRaw = jid.replace(/@.*$/, "");
+              if (!phoneRaw || phoneRaw.length < 8 || usedPhones.has(phoneRaw)) return;
+              usedPhones.add(phoneRaw);
+              contacts.push({
+                id: "wa_" + phoneRaw,
+                name: chat.pushName || phoneRaw,
+                phone: phoneRaw,
+                email: null,
+                photo_url: null
+              });
+            });
+          }
         }
       } catch (_) {}
 
