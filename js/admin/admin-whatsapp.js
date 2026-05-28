@@ -411,6 +411,10 @@ document.addEventListener("DOMContentLoaded", () => {
     contactsList.innerHTML = '<div class="wa-loading">Cargando clientes...</div>';
 
     try {
+      // Limpiar badge de WhatsApp al entrar
+      localStorage.setItem("wa_notif_count", "0");
+      if (typeof window.setWaNotifCount === "function") window.setWaNotifCount(0);
+
       const { data: users, error: uErr } = await supabaseClient
         .from("users")
         .select("id, name, email, phone, photo_url")
@@ -558,6 +562,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     noSelection.classList.add("hidden");
     chat.classList.remove("hidden");
+
+    // Limpiar badge al seleccionar un contacto
+    localStorage.setItem("wa_notif_count", "0");
+    if (typeof window.setWaNotifCount === "function") window.setWaNotifCount(0);
 
     chatName.textContent = contact.name;
     chatPhone.textContent = contact.isGroup ? "Grupo de WhatsApp" : contact.phone;
@@ -821,6 +829,14 @@ document.addEventListener("DOMContentLoaded", () => {
         if (selectedContact && selectedContact.id === matched.id) continue;
 
         notifiedMessages.add(msgId);
+
+        // Incrementar badge de WhatsApp en el menú
+        const currentCount = parseInt(localStorage.getItem("wa_notif_count") || "0", 10);
+        const newCount = currentCount + 1;
+        localStorage.setItem("wa_notif_count", String(newCount));
+        if (typeof window.setWaNotifCount === "function") {
+          window.setWaNotifCount(newCount);
+        }
         const text =
           r.message?.conversation ||
           (r.message?.imageMessage ? "📷 Imagen" : null) ||

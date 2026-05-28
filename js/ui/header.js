@@ -55,6 +55,18 @@ if (!window.__HEADER_CORE_LOADED__) {
   window.setMyOrdersCount = setMyOrdersCount;
 
   /* =====================================================
+     💬 BADGE — WHATSAPP
+  ===================================================== */
+  function setWaNotifCount(count) {
+    const badge = $("wa-notif-count");
+    if (!badge) return;
+    badge.textContent = count;
+    badge.classList.toggle("hidden", count === 0);
+  }
+
+  window.setWaNotifCount = setWaNotifCount;
+
+  /* =====================================================
      🛒 CARRITO
   ===================================================== */
   function updateCartCount() {
@@ -228,6 +240,20 @@ if (!window.__HEADER_CORE_LOADED__) {
     syncUserUI();
     updateCartCount();
     updateHeaderCartTitle();
+
+    // Leer badge de WhatsApp desde localStorage (lo escribe admin-whatsapp.js)
+    const saved = parseInt(localStorage.getItem("wa_notif_count") || "0", 10);
+    if (saved > 0) setWaNotifCount(saved);
+
+    // Polling periódico del badge WhatsApp desde localStorage
+    if (!window.__WA_BADGE_POLL__) {
+      window.__WA_BADGE_POLL__ = true;
+      setInterval(() => {
+        const v = parseInt(localStorage.getItem("wa_notif_count") || "0", 10);
+        if (v > 0) setWaNotifCount(v);
+        else setWaNotifCount(0);
+      }, 5000);
+    }
 
     requestAnimationFrame(() => {
       if (typeof window.syncNotificationsAll === "function") {
