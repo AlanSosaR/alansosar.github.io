@@ -353,11 +353,16 @@ async function enviarPedido() {
       const waApi = "https://cafe-cortero.vercel.app/api/wa-proxy";
       const waKey = "429683C4C977415CAAFCCE10F7D57E11";
       const groupJid = "120363410476492208@g.us";
-      const prodLines = carrito.map(it => `• ${it.name} × ${it.qty}`).join("\n");
+      const maxLen = Math.max(...carrito.map(it => it.name.length), 12);
+      const prodLines = carrito.map((it, i) => {
+        const name = it.name.padEnd(maxLen);
+        return ` ${i + 1}.  ${name}  ×${String(it.qty).padStart(2)}   L ${it.price.toFixed(2)}`;
+      }).join("\n");
+      const sep = "━".repeat(Math.max(maxLen + 18, 30));
       const customerPhone = ($("telefonoCliente")?.textContent || "").trim();
       const addressLine = [$("direccionCliente")?.textContent, $("zonaCliente")?.textContent].filter(Boolean).join(", ");
 
-      const msg = `🛍️ *Nuevo Pedido #${orderNumber}*\n\n👤 *Cliente:* ${user.name || "Cliente"}\n📞 *Tel:* ${customerPhone || "N/D"}\n📍 *Dirección:* ${addressLine || "N/D"}\n\n📦 *Productos:*\n${prodLines}\n\n💰 *Total:* L ${totalPedido.toFixed(2)}\n💳 *Pago:* ${metodoPago.value === "bank_transfer" ? "Transferencia bancaria" : "Efectivo contra entrega"}`;
+      const msg = `🛍️ *Nuevo Pedido #${orderNumber}*\n\n👤 *Cliente:* ${user.name || "Cliente"}\n📞 *Tel:* ${customerPhone || "N/D"}\n📍 *Dirección:* ${addressLine || "N/D"}\n\n━━━ *Productos* ━━━\n\n${prodLines}\n${sep}\n💰 *Total:* L ${totalPedido.toFixed(2)}\n💳 *Pago:* ${metodoPago.value === "bank_transfer" ? "Transferencia bancaria" : "Efectivo contra entrega"}`;
 
       await fetch(`${waApi}/message/sendText/CafeCortero`, {
         method: "POST",
