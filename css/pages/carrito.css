@@ -832,7 +832,11 @@ main.carrito-vacio-activo {
 @media (max-width: 900px) {
   .grid-carrito {
     grid-template-columns: 1fr;
-    max-width: 700px;
+    max-width: 100%;
+  }
+
+  .item {
+    width: 100%;
   }
 
   .resumen-box {
