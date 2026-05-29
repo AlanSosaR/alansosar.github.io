@@ -69,7 +69,14 @@ function hideAllNotificationUI() {
 /* =====================================================
    STATUS
 ===================================================== */
-const ADMIN_ACTIVE_STATUSES = [
+const ORDER_STATUSES_ACTIVE = [
+  "pending",
+  "confirmed",
+  "preparing",
+  "shipped"
+];
+
+const ORDER_STATUSES_CLIENT = [
   "pending",
   "confirmed",
   "preparing",
@@ -83,18 +90,17 @@ async function syncAdminOrdersCount(sb) {
   const { count } = await sb
     .from("orders")
     .select("*", { count: "exact", head: true })
-    .in("status", ADMIN_ACTIVE_STATUSES);
+    .in("status", ORDER_STATUSES_ACTIVE);
 
   setAdminCount(count || 0);
 }
 
 async function syncMyOrdersCount(sb, userId) {
   const { count } = await sb
-    .from("notifications")
+    .from("orders")
     .select("*", { count: "exact", head: true })
     .eq("user_id", userId)
-    .eq("is_read", false)
-    .in("type", ["order_status", "admin_alert"]);
+    .in("status", ORDER_STATUSES_CLIENT);
 
   setMyCount(count || 0);
 }
