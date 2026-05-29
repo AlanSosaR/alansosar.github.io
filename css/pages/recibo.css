@@ -137,6 +137,10 @@ body.header-checkout .recibo-container {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
+.btn-volver-premium.variant-white.btn-back-icon-only {
+  padding: 6px;
+}
+
 .btn-volver-premium.variant-white .circle-icon {
   background: var(--verde);
   width: 34px;
