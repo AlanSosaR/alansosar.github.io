@@ -76,16 +76,8 @@ const ADMIN_ACTIVE_STATUSES = [
   "shipped"
 ];
 
-const CLIENT_VISIBLE_STATUSES = [
-  "pending",
-  "confirmed",
-  "preparing",
-  "shipped",
-  "delivered"
-];
-
 /* =====================================================
-   CONTADORES
+    CONTADORES
 ===================================================== */
 async function syncAdminOrdersCount(sb) {
   const { count } = await sb
@@ -98,16 +90,73 @@ async function syncAdminOrdersCount(sb) {
 
 async function syncMyOrdersCount(sb, userId) {
   const { count } = await sb
-    .from("orders")
+    .from("notifications")
     .select("*", { count: "exact", head: true })
     .eq("user_id", userId)
-    .in("status", CLIENT_VISIBLE_STATUSES);
+    .eq("is_read", false)
+    .in("type", ["order_status", "admin_alert"]);
 
   setMyCount(count || 0);
 }
 
 /* =====================================================
-   NOTIFICACIÓN ACTIVA (SOLO 1)
+    WHATSAPP — POLLING GLOBAL (ADMIN)
+===================================================== */
+const WA_API_URL = "https://cafe-cortero.vercel.app/api/wa-proxy";
+const WA_INSTANCE = "CafeCortero";
+const WA_API_KEY = "429683C4C977415CAAFCCE10F7D57E11";
+
+let waBadgeTimer = null;
+let waNotifiedMessages = null;
+let waLastSeenTs = 0;
+
+async function checkWhatsAppBadge() {
+  try {
+    const resp = await fetch(`${WA_API_URL}/chat/findMessages/${WA_INSTANCE}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", apikey: WA_API_KEY },
+      body: JSON.stringify({ page: 1, limit: 5 })
+    });
+    if (!resp.ok) return;
+    const data = await resp.json();
+    const records = data?.messages?.records || [];
+
+    let lastTs = waLastSeenTs;
+    for (const r of records) {
+      const ts = r.messageTimestamp || 0;
+      if (ts > lastTs) lastTs = ts;
+
+      const fromMe = r.key?.fromMe;
+      if (fromMe !== false) continue;
+      if (ts <= waLastSeenTs) continue;
+
+      const msgId = r.key?.id || "";
+      if (waNotifiedMessages.has(msgId)) continue;
+      waNotifiedMessages.add(msgId);
+
+      const cur = parseInt(localStorage.getItem("wa_notif_count") || "0", 10);
+      const n = cur + 1;
+      localStorage.setItem("wa_notif_count", String(n));
+      if (typeof window.setWaNotifCount === "function") window.setWaNotifCount(n);
+    }
+    waLastSeenTs = lastTs;
+    localStorage.setItem("wa_global_last_seen_ts", String(waLastSeenTs));
+  } catch (_) {}
+}
+
+function initWhatsAppBadge() {
+  if (waBadgeTimer) return;
+  waLastSeenTs = Math.max(
+    parseInt(localStorage.getItem("wa_global_last_seen_ts") || "0", 10),
+    Math.floor(Date.now() / 1000) - 3600
+  );
+  waNotifiedMessages = new Set();
+  waBadgeTimer = setInterval(checkWhatsAppBadge, 15000);
+  setTimeout(() => checkWhatsAppBadge(), 3000);
+}
+
+/* =====================================================
+    NOTIFICACIÓN ACTIVA (SOLO 1)
 ===================================================== */
 async function syncNotificationsUI(sb, authUser, role) {
   let query = sb
@@ -120,7 +169,9 @@ async function syncNotificationsUI(sb, authUser, role) {
   if (role === "admin") {
     query = query.or(`user_id.eq.${authUser.id},user_id.is.null`);
   } else {
-    query = query.eq("user_id", authUser.id);
+    query = query
+      .eq("user_id", authUser.id)
+      .in("type", ["order_status", "admin_alert"]);
   }
 
   const { data } = await query;
@@ -294,6 +345,10 @@ export async function initNotifications() {
   await syncAll(sb, authUser, role);
   await initRealtime(sb, authUser, role);
   await initPush(authUser);
+
+  if (role === "admin") {
+    initWhatsAppBadge();
+  }
 
   // Auto-marcar como leídas si ya estamos en la página de pedidos o WhatsApp
   const path = window.location.pathname;

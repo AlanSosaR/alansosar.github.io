@@ -403,7 +403,7 @@ body[class*="page-admin-"] .header-right-new {
   min-height: 48px;
 
   border-radius: 50% !important;
-  overflow: hidden !important;
+  overflow: visible !important;
 
   display: flex;
   align-items: center;
@@ -412,7 +412,6 @@ body[class*="page-admin-"] .header-right-new {
   background: #f0f0f0;
   border: none;
   padding: 0 !important;
-  /* 🔑 CRÍTICO: sin espacio interno */
   cursor: pointer;
 
   box-shadow:
