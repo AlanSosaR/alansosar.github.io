@@ -70,16 +70,16 @@ function hideAllNotificationUI() {
    STATUS
 ===================================================== */
 const ADMIN_ACTIVE_STATUSES = [
-  "cash_on_delivery",
-  "payment_review"
+  "pending",
+  "confirmed",
+  "preparing",
+  "shipped"
 ];
 
 const CLIENT_VISIBLE_STATUSES = [
-  "cash_on_delivery",
-  "payment_review",
+  "pending",
   "confirmed",
   "preparing",
-  "processing",
   "shipped",
   "delivered"
 ];
@@ -166,8 +166,6 @@ async function markNotificationsAsRead(sb, userId, role) {
     // UI inmediata
     hideAllNotificationUI();
     setGlobalBadge(false);
-    setAdminCount(0);
-    setMyCount(0);
     localStorage.setItem("wa_notif_count", "0");
     window.setWaNotifCount?.(0);
 
@@ -219,11 +217,18 @@ async function initRealtime(sb, authUser, role) {
         event: "*",
         schema: "public",
         table: "notifications",
-        filter: role === "admin"
-          ? `or=(user_id.eq.${authUser.id},user_id.is.null)`
-          : `user_id=eq.${authUser.id}`
+        filter: role === "admin" ? undefined : `user_id=eq.${authUser.id}`
       },
-      () => syncNotificationsUI(sb, authUser, role)
+      (payload) => {
+        if (role === "admin") {
+          const newNotif = payload.new;
+          if (newNotif && (!newNotif.user_id || newNotif.user_id === authUser.id)) {
+            syncNotificationsUI(sb, authUser, role);
+          }
+        } else {
+          syncNotificationsUI(sb, authUser, role);
+        }
+      }
     )
     .subscribe();
 }
@@ -289,4 +294,11 @@ export async function initNotifications() {
   await syncAll(sb, authUser, role);
   await initRealtime(sb, authUser, role);
   await initPush(authUser);
+
+  // Auto-marcar como leídas si ya estamos en la página de pedidos o WhatsApp
+  const path = window.location.pathname;
+  if (path.includes("admin-pedidos") || path.includes("mis-pedidos") || path.includes("admin-whatsapp")) {
+    console.log("📖 Auto-marcando notificaciones como leídas por ubicación");
+    await markNotificationsAsRead(sb, authUser.id, role);
+  }
 }

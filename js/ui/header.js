@@ -223,13 +223,8 @@ if (!window.__HEADER_CORE_LOADED__) {
     $("user-drawer")?.addEventListener("click", (e) => {
       const item = e.target.closest(".user-drawer-item, .user-drawer-profile-link, .drawer-notification");
       if (item) {
-        // Limpiar badge WhatsApp si va a WhatsApp
-        if (item.getAttribute("href")?.includes("admin-whatsapp")) {
-          localStorage.setItem("wa_notif_count", "0");
-          setWaNotifCount(0);
-        }
-        // Limpiar notificaciones si va a Pedidos
-        if (item.getAttribute("href")?.includes("admin-pedidos")) {
+        const href = item.getAttribute("href") || "";
+        if (href.includes("admin-whatsapp") || href.includes("admin-pedidos") || href.includes("mis-pedidos")) {
           localStorage.setItem("wa_notif_count", "0");
           setWaNotifCount(0);
           document.dispatchEvent(new CustomEvent("notification:opened"));
