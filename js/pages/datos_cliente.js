@@ -30,7 +30,7 @@ const ciudadInput = document.getElementById("ciudad");
 const zonaSelect = document.getElementById("zona");
 const direccionInput = document.getElementById("direccion");
 const notaInput = document.getElementById("nota");
-const btnSubmit = document.getElementById("btn-submit");
+const btnSubmit = document.getElementById("btn-submit-desktop");
 
 // Resumen del pedido
 const summaryItemsContainer = document.getElementById("summary-items");

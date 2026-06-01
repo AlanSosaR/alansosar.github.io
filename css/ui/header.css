@@ -149,12 +149,9 @@ body.page-datos-cliente .header-logo-link {
   display: flex !important;
 }
 
-/* Logo a la derecha en móvil para carrito y datos cliente */
+/* Logo a la derecha en móvil para checkout, carrito y datos cliente */
 @media (max-width: 768px) {
-  body.page-carrito header.header-fixed,
-  body.page-datos-cliente header.header-fixed {
-    position: relative !important;
-  }
+  body.page-recibo .header-logo-link,
   body.page-carrito .header-logo-link,
   body.page-datos-cliente .header-logo-link {
     position: absolute !important;
@@ -164,9 +161,17 @@ body.page-datos-cliente .header-logo-link {
     left: auto !important;
     z-index: 10 !important;
   }
+  body.page-recibo .header-logo,
   body.page-carrito .header-logo,
   body.page-datos-cliente .header-logo {
     height: 36px !important;
+  }
+
+  /* Sombra en móvil para que el header blanco se distinga del body blanco */
+  body.page-recibo header.header-fixed,
+  body.page-carrito header.header-fixed,
+  body.page-datos-cliente header.header-fixed {
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06) !important;
   }
 }
 
@@ -450,20 +455,12 @@ body[class*="page-admin-"] .header-right-new {
 }
 
 /* VISIBILIDAD HEADER */
-.header-fixed.no-user #btn-header-user {
-  display: none;
-}
-
-.header-fixed.no-user #login-desktop {
-  display: inline-flex;
-}
-
-.header-fixed.logged #login-desktop {
-  display: none;
-}
-
-.header-fixed.logged #btn-header-user {
+.header-fixed #btn-header-user {
   display: flex;
+}
+
+.header-fixed #login-desktop {
+  display: none;
 }
 
 /* 🔥 Ocultar login desktop en carrito y datos */

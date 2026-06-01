@@ -12,9 +12,15 @@ if (window.IS_READ_ONLY) {
 }
 
 /* =========================================================
-   HELPERS
+    HELPERS
 ========================================================= */
 const $ = (id) => document.getElementById(id);
+
+function resolveImgUrl(src) {
+  if (!src) return '/imagenes/no-image.png';
+  if (src.startsWith('http')) return src;
+  return `https://eaipcuvvddyrqkbmjmvw.supabase.co/storage/v1/object/public/product-images/${src}`;
+}
 
 /* =========================================================
    UI (referencias seguras)
@@ -148,13 +154,23 @@ function renderCarrito() {
   lista.innerHTML = "";
   totalPedido = 0;
 
-  carrito.forEach(it => {
+  carrito.forEach((it, idx) => {
     const sub = it.qty * it.price;
     totalPedido += sub;
+    const imgSrc = resolveImgUrl(it.img);
     lista.innerHTML += `
-      <div class="cafe-item">
-        <span>${it.name} × ${it.qty}</span>
-        <strong>L ${sub.toFixed(2)}</strong>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;padding:8px 0;${idx < carrito.length - 1 ? 'border-bottom:1px solid rgba(55,123,76,0.3)' : ''}">
+        <div style="display:flex;gap:8px;flex:1;min-width:0">
+          <img src="${imgSrc}" alt="${it.name}" style="width:64px;height:auto;object-fit:contain;border-radius:8px;flex-shrink:0;filter:drop-shadow(0 2px 6px rgba(0,0,0,0.10))" onerror="this.onerror=null;this.src='/imagenes/no-image.png'">
+          <div style="display:flex;flex-direction:column;justify-content:center;min-width:0">
+            <span style="font-family:'Poppins',sans-serif;font-weight:700;font-size:0.95rem;color:#1c1b1b">${it.name}</span>
+            <span style="font-family:'Poppins',sans-serif;font-size:0.85rem;color:#50453e">Café ${it.weight ? it.weight + 'g' : ''}${it.grind ? ', ' + it.grind : ''}</span>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;flex-shrink:0;justify-content:center">
+          <span style="font-family:'Poppins',sans-serif;font-weight:700;font-size:0.95rem;color:#377b4c">L ${sub.toFixed(2)}</span>
+          <span style="font-family:'Poppins',sans-serif;font-size:0.85rem;color:#50453e">Cant: ${it.qty}</span>
+        </div>
       </div>`;
   });
 

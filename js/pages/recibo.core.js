@@ -10,6 +10,12 @@ console.log("🧾 recibo.core.js — READY");
 ========================================================= */
 const $id = (id) => document.getElementById(id);
 
+function resolveImgUrl(src) {
+  if (!src) return '/imagenes/no-image.png';
+  if (src.startsWith('http')) return src;
+  return `https://eaipcuvvddyrqkbmjmvw.supabase.co/storage/v1/object/public/product-images/${src}`;
+}
+
 window.ORDER_ID = new URLSearchParams(window.location.search).get("id");
 window.IS_READ_ONLY = Boolean(window.ORDER_ID);
 
@@ -203,7 +209,7 @@ window.cargarPedidoExistente = async (orderId) => {
       *,
       users(name,email,phone),
       addresses(state,city,street),
-      order_items(quantity,price,products(name)),
+      order_items(quantity,price,products(name,image_url)),
       payment_receipts(file_url)
     `)
     .eq("id", orderId)
@@ -239,12 +245,24 @@ window.cargarPedidoExistente = async (orderId) => {
   }
 
   /* PRODUCTOS */
-  $id("listaProductos").innerHTML = pedido.order_items.map(it => `
-    <div class="cafe-item">
-      <span>${it.products.name} × ${it.quantity}</span>
-      <strong>L ${(it.quantity * it.price).toFixed(2)}</strong>
-    </div>
-  `).join("");
+  $id("listaProductos").innerHTML = pedido.order_items.map((it, idx) => {
+    const sub = it.quantity * it.price;
+    const imgSrc = resolveImgUrl(it.products?.image_url);
+    return `
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;padding:8px 0;${idx < pedido.order_items.length - 1 ? 'border-bottom:1px solid rgba(55,123,76,0.3)' : ''}">
+        <div style="display:flex;gap:8px;flex:1;min-width:0">
+          <img src="${imgSrc}" alt="${it.products.name}" style="width:64px;height:auto;object-fit:contain;border-radius:8px;flex-shrink:0;filter:drop-shadow(0 2px 6px rgba(0,0,0,0.10))" onerror="this.onerror=null;this.src='/imagenes/no-image.png'">
+          <div style="display:flex;flex-direction:column;justify-content:center;min-width:0">
+            <span style="font-family:'Poppins',sans-serif;font-weight:700;font-size:0.95rem;color:#1c1b1b">${it.products.name}</span>
+            <span style="font-family:'Poppins',sans-serif;font-size:0.85rem;color:#50453e">Café</span>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;flex-shrink:0;justify-content:center">
+          <span style="font-family:'Poppins',sans-serif;font-weight:700;font-size:0.95rem;color:#377b4c">L ${sub.toFixed(2)}</span>
+          <span style="font-family:'Poppins',sans-serif;font-size:0.85rem;color:#50453e">Cant: ${it.quantity}</span>
+        </div>
+      </div>`;
+  }).join("");
 
   /* ===============================
      COMPROBANTE — SOLO IMAGEN + INFO

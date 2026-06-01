@@ -41,7 +41,7 @@ body.page-datos-cliente {
 .checkout-container {
   max-width: 1200px;
   margin: 0.2rem auto;
-  padding: 0 20px;
+  padding: 0 20px 4rem;
 }
 
 .checkout-grid {
@@ -309,23 +309,22 @@ body.page-datos-cliente {
 
 /* SUBMIT BUTTON */
 .primary-checkout-btn {
-  width: 100%;
   background: #2e7d32;
   /* Verde principal solicitado */
   color: #fff;
   border: none;
   border-radius: 20px;
-  padding: 1.4rem;
-  font-size: 1.15rem;
+  padding: 0.7rem 1.8rem;
+  font-size: 1rem;
   font-weight: 800;
   cursor: pointer;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 8px;
   transition: all 0.3s ease;
-  margin-top: 1rem;
-  box-shadow: 0 10px 25px rgba(46, 125, 50, 0.15);
+  box-shadow: 0 8px 20px rgba(46, 125, 50, 0.15);
+  white-space: nowrap;
 }
 
 .primary-checkout-btn:hover {
@@ -519,13 +518,12 @@ body.page-datos-cliente {
   }
 
   .form-section {
-    order: 2;
+    order: 1;
     padding-bottom: 3rem;
   }
 
   .summary-section {
-    order: 1;
-    /* Resumen arriba en móviles */
+    order: 2;
   }
 
   .summary-card {
@@ -537,12 +535,8 @@ body.page-datos-cliente {
     overflow-y: visible;
   }
 
-  .form-section .back-btn-alt {
-    display: none;
-  }
-
   .mobile-back-summary {
-    display: flex !important;
+    display: none !important;
   }
 
   .checkout-header-text h1 {
@@ -813,4 +807,11 @@ body.page-datos-cliente {
     flex-direction: column;
     align-items: flex-start;
   }
+}
+
+/* Botón submit: debajo del total en el resumen */
+#btn-submit-desktop {
+  margin-top: 20px;
+  width: 100%;
+  display: flex;
 }
