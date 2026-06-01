@@ -112,7 +112,7 @@
 
         <!-- Total -->
         <div class="flex justify-between items-end mb-6">
-          <span class="font-headline text-headline-sm font-bold text-on-surface">Total:</span>
+          <span class="font-headline text-headline-sm font-bold text-primary">Total:</span>
           <span class="font-headline text-[28px] font-bold text-verde tracking-tight">
             L <span id="totalPedido">0.00</span>
           </span>
@@ -124,7 +124,7 @@
         </div>
 
         <!-- ================= MÉTODOS DE PAGO ================= -->
-        <section class="flex flex-col gap-md">
+        <section id="metodo-pago-section" class="flex flex-col gap-md">
           <h2 class="font-headline-sm text-headline-sm text-primary flex items-center gap-2">
             <span class="material-symbols-outlined text-secondary">payments</span>
             Método de pago
@@ -233,6 +233,8 @@
   <script>
     if (!window.IS_READ_ONLY) {
       document.querySelector(".pago-select-label")?.classList.remove("hidden");
+    } else {
+      document.getElementById("metodo-pago-section")?.classList.add("hidden");
     }
   </script>
 

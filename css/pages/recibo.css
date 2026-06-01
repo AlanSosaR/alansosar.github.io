@@ -157,8 +157,10 @@ body.header-checkout .recibo-container {
 .pedido-progreso {
   margin: 8px 0 18px;
   padding: 16px 20px;
-  background: #f7f2f2;
+  background: var(--blanco);
   border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(85,55,34,0.06);
+  border: 1px solid rgba(212,195,186,0.25);
 }
 
 .progreso-title {

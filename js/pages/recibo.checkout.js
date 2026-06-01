@@ -163,8 +163,8 @@ function renderCarrito() {
         <div style="display:flex;gap:8px;flex:1;min-width:0">
           <img src="${imgSrc}" alt="${it.name}" style="width:64px;height:auto;object-fit:contain;border-radius:8px;flex-shrink:0;filter:drop-shadow(0 2px 6px rgba(0,0,0,0.10))" onerror="this.onerror=null;this.src='/imagenes/no-image.png'">
           <div style="display:flex;flex-direction:column;justify-content:center;min-width:0">
-            <span style="font-family:'Poppins',sans-serif;font-weight:700;font-size:0.95rem;color:#1c1b1b">${it.name}</span>
-            <span style="font-family:'Poppins',sans-serif;font-size:0.85rem;color:#50453e">Café ${it.weight ? it.weight + 'g' : ''}${it.grind ? ', ' + it.grind : ''}</span>
+            <span style="font-family:'Poppins',sans-serif;font-weight:700;font-size:0.95rem;color:#553722">${it.name}</span>
+            ${it.weight || it.grind || it.presentation ? `<span style="font-family:'Poppins',sans-serif;font-size:0.85rem;color:#50453e">${it.presentation ? it.presentation.replace('1lb','1 lb (454 g)') : ''}${it.weight ? it.weight + 'g' : ''}${(it.presentation || it.weight) && it.grind ? ' · ' : ''}${it.grind || ''}</span>` : ''}
           </div>
         </div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;flex-shrink:0;justify-content:center">
