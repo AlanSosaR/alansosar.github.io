@@ -396,9 +396,10 @@ async function enviarPedido() {
     localStorage.setItem(CART_KEY, "[]");
     sessionStorage.removeItem("current_order_notes"); // limpieza correcta
 
+    window.showSnack("✅ ¡Su pedido fue enviado con éxito!");
     setTimeout(() => {
-      location.href = `/pages/shop/recibo.html?id=${order.id}`;
-    }, 1200);
+      location.href = "/pages/profile/mis-pedidos.html";
+    }, 2000);
 
   } catch (e) {
     console.error(e);

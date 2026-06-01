@@ -276,7 +276,7 @@ async function loadOrders(userId) {
       id, order_number, total, status, payment_method, created_at, order_notes,
       address:addresses ( street, city ),
       receipt:payment_receipts ( file_url ),
-      items:order_items ( quantity, price, products ( name ) )
+      items:order_items ( quantity, price, products ( name, image_url ) )
     `)
     .eq("user_id", userId)
     .order("created_at", { ascending: false });
@@ -446,9 +446,15 @@ function renderDetail(pedido) {
   itemsList.innerHTML = "";
   if (pedido.items) {
     pedido.items.forEach((item) => {
+      const imgUrl = item.products?.image_url
+        ? item.products.image_url.startsWith("http")
+          ? item.products.image_url
+          : `https://${item.products.image_url}`
+        : null;
       const row = document.createElement("div");
       row.className = "item-mini-row";
       row.innerHTML = `
+        ${imgUrl ? `<img src="${imgUrl}" alt="${item.products?.name || ''}" class="item-mini-img" onerror="this.style.display='none'">` : ''}
         <span class="item-name">${item.products?.name || "Café"}</span>
         <div class="item-meta">
           <span class="item-qty">×${item.quantity}</span>

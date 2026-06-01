@@ -289,8 +289,7 @@ form.addEventListener("submit", async e => {
   // El método de envío ahora es fijo (gratis/estándar) tras la simplificación
   sessionStorage.setItem("checkout_shipping_method", "gratis");
 
-  showSnack("✅ ¡Su pedido fue enviado con éxito!");
-  setTimeout(() => window.location.href = "/pages/profile/mis-pedidos.html", 2000);
+  setTimeout(() => window.location.href = "/pages/shop/recibo.html", 800);
 });
 
 (async function init() {
