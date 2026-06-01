@@ -5,6 +5,21 @@
 console.log("📦 datos_cliente.js — Rediseño Checkout Iniciado");
 
 /* ============================================================
+   SNACKBAR
+============================================================ */
+function showSnack(msg, duration = 3000) {
+  const el = document.getElementById("snackbar");
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.remove("hidden");
+  el.classList.add("show");
+  setTimeout(() => {
+    el.classList.remove("show");
+    el.classList.add("hidden");
+  }, duration);
+}
+
+/* ============================================================
    ESPERAR SUPABASE
 ============================================================ */
 function esperarSupabase() {
@@ -274,7 +289,8 @@ form.addEventListener("submit", async e => {
   // El método de envío ahora es fijo (gratis/estándar) tras la simplificación
   sessionStorage.setItem("checkout_shipping_method", "gratis");
 
-  setTimeout(() => window.location.href = "/pages/shop/recibo.html", 800);
+  showSnack("✅ ¡Su pedido fue enviado con éxito!");
+  setTimeout(() => window.location.href = "/pages/profile/mis-pedidos.html", 2000);
 });
 
 (async function init() {
