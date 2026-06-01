@@ -705,6 +705,7 @@ document.addEventListener("DOMContentLoaded", () => {
       discount_percent: activeDiscount,
       img: currentProduct.image_url,
       qty,
+      category: currentProduct.category || '',
       presentation: currentProduct.presentation || '',
       grind: currentProduct.grind_type || ''
     });
