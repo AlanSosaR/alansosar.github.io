@@ -704,7 +704,9 @@ document.addEventListener("DOMContentLoaded", () => {
       price_original: currentProduct.price,
       discount_percent: activeDiscount,
       img: currentProduct.image_url,
-      qty
+      qty,
+      presentation: currentProduct.presentation || '',
+      grind: currentProduct.grind_type || ''
     });
 
     qtyNumber.textContent = "1";
