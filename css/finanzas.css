@@ -213,8 +213,8 @@
 
 .fin-notch-btn {
   position: absolute;
-  left: -16px;
-  top: -16px;
+  left: 12px;
+  top: 12px;
   background: var(--md-surface-container);
   border: 1px solid rgba(0,0,0,0.06);
   cursor: pointer;
@@ -225,8 +225,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow:
-    0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   z-index: 2;
   font-size: 18px;
   transition: all 0.15s ease;
