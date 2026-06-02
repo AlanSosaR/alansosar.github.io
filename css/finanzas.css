@@ -201,8 +201,9 @@
 .fin-periodo-label {
   font: var(--md-label-sm);
   color: var(--md-on-surface-variant);
+  width: fit-content;
+  margin: 0 auto 20px;
   text-align: center;
-  margin-bottom: 20px;
   opacity: 0.7;
 }
 
@@ -1419,6 +1420,10 @@
 
   .fin-stat-card {
     padding: 16px;
+  }
+
+  .fin-stat-card .fin-stat-monto {
+    white-space: nowrap;
   }
 
   .fin-card {
