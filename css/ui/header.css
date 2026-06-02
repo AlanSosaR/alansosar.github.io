@@ -84,7 +84,18 @@ header.header-fixed,
     display: flex !important;
     align-items: center !important;
     gap: 12px !important;
-    flex: 1 !important;
+  }
+
+  .header-middle-stitch {
+    display: none !important;
+  }
+
+  .header-left-stitch .header-logo-link {
+    position: absolute !important;
+    right: 0 !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    z-index: 5 !important;
   }
 
   /* DERECHA: Carrito + Auth */
@@ -1332,7 +1343,23 @@ body {
 .page-admin-pedidos #cart-btn,
 .page-admin-pedidos #cart-btn *,
 .page-admin-pedidos .header-cart,
-.page-admin-pedidos .header-cart-badge {
+.page-admin-pedidos .header-cart-badge,
+.page-fin-dashboard #cart-btn,
+.page-fin-dashboard #cart-btn *,
+.page-fin-dashboard .header-cart,
+.page-fin-dashboard .header-cart-badge,
+.page-fin-unified-registro #cart-btn,
+.page-fin-unified-registro #cart-btn *,
+.page-fin-unified-registro .header-cart,
+.page-fin-unified-registro .header-cart-badge,
+.page-fin-egresos #cart-btn,
+.page-fin-egresos #cart-btn *,
+.page-fin-egresos .header-cart,
+.page-fin-egresos .header-cart-badge,
+.page-fin-ingresos #cart-btn,
+.page-fin-ingresos #cart-btn *,
+.page-fin-ingresos .header-cart,
+.page-fin-ingresos .header-cart-badge {
   display: none !important;
 }
 

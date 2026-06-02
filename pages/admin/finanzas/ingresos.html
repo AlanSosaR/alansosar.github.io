@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Ingresos | Café Cortero</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+
+  <link rel="icon" type="image/png" href="/imagenes/logo.png">
+
+  <link rel="stylesheet" href="/css/core/tipografia.css">
+  <link rel="stylesheet" href="/css/ui/header.css">
+  <link rel="stylesheet" href="/css/finanzas.css">
+  <style>
+    .page-fin-ingresos .fin-card {
+      box-shadow: none;
+    }
+    .page-fin-ingresos .fin-saldo-card {
+      box-shadow: 0 10px 40px rgba(55, 123, 76, 0.2);
+      -webkit-mask: radial-gradient(circle 22px at 0% 50%, transparent 22px, black 22.5px);
+      mask: radial-gradient(circle 22px at 0% 50%, transparent 22px, black 22.5px);
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.12));
+      padding-left: 56px;
+    }
+  </style>
+</head>
+<body class="finanzas-page page-fin-ingresos">
+  <div id="header-placeholder"></div>
+
+  <main class="fin-page">
+    <!-- TOP APP BAR -->
+    <header class="fin-top-app-bar">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <button class="fin-back-btn" onclick="history.back()">
+          <span class="material-symbols-outlined">arrow_back</span>
+          Atrás
+        </button>
+        <h1 class="fin-title" style="font:var(--md-headline-md);">Ingresos</h1>
+      </div>
+      <button class="fin-icon-btn" aria-label="Filtrar">
+        <span class="material-symbols-outlined">filter_list</span>
+      </button>
+    </header>
+
+    <div class="fin-content">
+      <!-- SUMMARY CARD -->
+      <div class="fin-saldo-card-wrapper">
+        <button onclick="history.back()" class="fin-notch-btn">
+          &#x276E;
+        </button>
+        <section class="fin-saldo-card">
+          <div style="position:absolute;right:-32px;top:-32px;width:128px;height:128px;border-radius:50%;background:rgba(55,123,76,0.12);filter:blur(32px);pointer-events:none;"></div>
+          <div class="fin-saldo-label">Total ingresos</div>
+          <div class="fin-saldo-monto" id="ingresos-total" style="font:var(--md-display-sm);color:var(--verde);">HNL 0,000.00</div>
+          <div class="fin-saldo-compare" id="ingresos-compare"></div>
+        </section>
+      </div>
+
+      <!-- SEGMENTED -->
+      <div class="fin-segmented-wrapper">
+        <div class="fin-segmented">
+          <button class="fin-seg-btn" data-periodo="dia">Día</button>
+          <button class="fin-seg-btn active" data-periodo="semana">Semana</button>
+          <button class="fin-seg-btn" data-periodo="mes">Mes</button>
+        </div>
+      </div>
+
+      <!-- FILTER CHIPS -->
+      <div style="margin-bottom:16px;overflow-x:auto;">
+        <div class="fin-filter-chips" id="ingresos-chips"></div>
+      </div>
+
+      <!-- LISTA -->
+      <section class="fin-card">
+        <div id="ingresos-lista"></div>
+      </section>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/js/core/supabase-client-core.js"></script>
+  <script src="/js/core/supabase-auth.js"></script>
+  <script>window.PAGE_MODE = "finanzas-ingresos";</script>
+  <script src="/js/ui/layout.js"></script>
+  <script type="module" src="/js/ui/header.js"></script>
+  <script src="/js/finanzas/ingresos.js"></script>
+</body>
+</html>

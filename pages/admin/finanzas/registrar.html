@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Nuevo Registro | Café Cortero</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="/imagenes/logo.png">
+
+  <link rel="stylesheet" href="/css/core/tipografia.css">
+  <link rel="stylesheet" href="/css/ui/header.css">
+  <link rel="stylesheet" href="/css/finanzas.css">
+  <style>
+    .material-symbols-outlined { font-variation-settings: 'FILL' 1; }
+    .page-fin-unified-registro .fin-saldo-card {
+      -webkit-mask: radial-gradient(circle 22px at 0% 50%, transparent 22px, black 22.5px);
+      mask: radial-gradient(circle 22px at 0% 50%, transparent 22px, black 22.5px);
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.12));
+      margin-top: 24px;
+      padding-left: 56px;
+    }
+  </style>
+</head>
+<body class="finanzas-page page-fin-unified-registro">
+  <div id="header-placeholder"></div>
+
+  <main class="fin-page">
+
+    <!-- TOP APP BAR -->
+    <header class="fin-top-app-bar">
+      <button class="fin-back-btn" onclick="history.back()">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+      <h1 class="fin-title" style="flex:1;">Nuevo Registro</h1>
+      <button class="fin-icon-btn" aria-label="Notificaciones">
+        <span class="material-symbols-outlined">notifications</span>
+      </button>
+    </header>
+
+    <div class="fin-content">
+
+      <!-- HERO CANTIDAD -->
+      <div class="fin-saldo-card-wrapper">
+        <button onclick="history.back()" class="fin-notch-btn">
+          &#x276E;
+        </button>
+        <section class="fin-saldo-card">
+          <div class="fin-hero-label">¿Cuánto vas a registrar?</div>
+          <div class="fin-hero-input-wrap">
+            <span class="fin-prefix" style="color:var(--verde);font-weight:600;">HNL</span>
+            <input type="text" id="fin-monto-input" inputmode="decimal" placeholder="0,000.00" value="0.00"
+              class="fin-hero-input">
+          </div>
+        </section>
+      </div>
+
+      <!-- TIPO DE MOVIMIENTO -->
+      <section style="margin-bottom:16px;">
+        <p style="font:var(--md-title-md);color:var(--md-on-surface);font-weight:600;margin-bottom:12px;">Tipo de Movimiento</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;" id="tipo-toggle">
+          <button class="fin-tipo-btn active primary" data-tipo="ingreso">
+            <span class="material-symbols-outlined" style="font-size:32px;">trending_up</span>
+            <span style="font:var(--md-title-md);font-weight:700;">Ingreso</span>
+          </button>
+          <button class="fin-tipo-btn" data-tipo="egreso">
+            <span class="material-symbols-outlined" style="font-size:32px;">trending_down</span>
+            <span style="font:var(--md-title-md);">Gasto</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- CATEGORÍA -->
+      <section style="margin-bottom:16px;">
+        <p style="font:var(--md-title-md);color:var(--md-on-surface);font-weight:600;margin-bottom:12px;">Categoría</p>
+        <div class="fin-category-chips" id="fin-categoria-chips"></div>
+      </section>
+
+      <!-- FORM CARD -->
+      <section class="fin-form-card">
+
+        <!-- Fecha -->
+        <div class="fin-field">
+          <div class="fin-input-wrapper" id="fin-fecha-wrapper" style="cursor:pointer;">
+            <span class="material-symbols-outlined fin-input-icon fin-fecha-icon">calendar_today</span>
+            <input type="text" id="fin-fecha-display" placeholder="Seleccionar fecha" readonly
+              style="cursor:pointer;caret-color:transparent;">
+            <label class="fin-field-label" style="cursor:pointer;">Fecha</label>
+            <input type="hidden" id="fin-fecha">
+          </div>
+        </div>
+
+        <!-- Descripción -->
+        <div class="fin-field">
+          <div class="fin-input-wrapper">
+            <span class="material-symbols-outlined fin-input-icon">description</span>
+            <textarea id="fin-concepto" placeholder=" " rows="3"></textarea>
+            <label class="fin-field-label">Descripción</label>
+          </div>
+        </div>
+
+        <button class="fin-btn-filled primary" id="fin-guardar-btn" disabled style="margin-top:4px;">
+          <span class="material-symbols-outlined" style="font-size:18px;">save</span>
+          Guardar Registro
+        </button>
+
+      </section>
+
+    </div>
+
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/js/core/supabase-client-core.js"></script>
+  <script src="/js/core/supabase-auth.js"></script>
+  <script>window.PAGE_MODE = "finanzas-unified-registro";</script>
+  <script src="/js/ui/layout.js"></script>
+  <script type="module" src="/js/ui/header.js"></script>
+  <script src="/js/finanzas/date-picker-m3.js"></script>
+  <script src="/js/finanzas/registrar.js"></script>
+</body>
+</html>
