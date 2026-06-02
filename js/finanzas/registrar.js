@@ -167,7 +167,7 @@ console.log("✏️ finanzas/registrar.js — INIT");
             return;
           }
 
-          console.log("✅ Guardado OK — datos:", upData);
+          console.log("✅ Guardado OK");
           showSnackbar(editId ? "✓ Movimiento actualizado" : "✓ Movimiento guardado");
 
           setTimeout(() => {
