@@ -330,6 +330,7 @@ console.log("📊 finanzas/dashboard.js — INIT");
               usePointStyle: true,
               font: { family: "Poppins", size: 12 },
               padding: 16,
+              color: (ctx) => ctx.datasetIndex === 0 ? primaryColor : errorColor,
             },
           },
           tooltip: {

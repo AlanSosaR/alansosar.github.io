@@ -13,6 +13,7 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Playfair+Display:wght@500;600&display=swap"
     rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap">
 
   <!-- CSS GLOBAL -->
   <link rel="stylesheet" href="/css/core/main.css">
@@ -20,12 +21,107 @@
 
   <!-- CSS PÁGINA SOBRE NOSOTROS -->
   <link rel="stylesheet" href="/css/pages/sobre-nosotros.css">
+  <link rel="stylesheet" href="/css/ui/navigation-rail.css">
 </head>
 
-<body>
+<body class="has-nav-rail page-sobre-nosotros">
 
   <!-- HEADER Y FOOTER SE INYECTAN AUTOMÁTICAMENTE -->
   <!-- layout.js se encarga de eso -->
+
+  <nav class="nav-rail" id="nav-rail">
+    <button class="nav-rail-mobile-close" id="nav-rail-mobile-close" aria-label="Cerrar menú">
+      <span class="material-symbols-outlined">menu</span>
+    </button>
+
+    <div class="nav-rail-avatar logged hidden">
+      <a href="/pages/profile/perfil.html" class="nav-rail-avatar-link">
+        <img id="nav-avatar-user" src="/imagenes/avatar-default.svg" alt="Usuario">
+      </a>
+      <div class="nav-rail-user-info">
+        <span class="nav-rail-user-name" id="nav-user-name">Usuario</span>
+        <span class="nav-rail-user-email" id="nav-user-email">correo@ejemplo.com</span>
+      </div>
+    </div>
+
+    <a href="/pages/home/index.html" class="nav-rail-dest">
+      <span class="material-symbols-outlined">home</span>
+      <span class="nav-rail-label">Inicio</span>
+    </a>
+
+    <div class="nav-rail-section client-only logged hidden">
+      <a href="/pages/profile/mis-pedidos.html" class="nav-rail-dest">
+        <span class="material-symbols-outlined">shopping_bag</span>
+        <span class="nav-rail-label">Mis pedidos</span>
+      </a>
+      <a href="/pages/profile/historial.html" class="nav-rail-dest">
+        <span class="material-symbols-outlined">history</span>
+        <span class="nav-rail-label">Historial</span>
+      </a>
+    </div>
+
+    <div class="nav-rail-section admin-only logged hidden">
+      <a href="/pages/admin/admin-pedidos.html" class="nav-rail-dest">
+        <span class="material-symbols-outlined">inventory_2</span>
+        <span class="nav-rail-label">Pedidos</span>
+      </a>
+      <a href="/pages/admin/finanzas/index.html" class="nav-rail-dest">
+        <span class="material-symbols-outlined">account_balance_wallet</span>
+        <span class="nav-rail-label">Finanzas</span>
+      </a>
+      <a href="/pages/admin/admin-clientes.html" class="nav-rail-dest">
+        <span class="material-symbols-outlined">groups</span>
+        <span class="nav-rail-label">Clientes</span>
+      </a>
+      <a href="/pages/admin/admin-usuarios.html" class="nav-rail-dest">
+        <span class="material-symbols-outlined">person</span>
+        <span class="nav-rail-label">Usuarios</span>
+      </a>
+      <a href="/pages/admin/admin-productos.html" class="nav-rail-dest">
+        <span class="material-symbols-outlined">inventory</span>
+        <span class="nav-rail-label">Productos</span>
+      </a>
+      <a href="/pages/admin/admin-whatsapp.html" class="nav-rail-dest">
+        <span class="material-symbols-outlined">chat</span>
+        <span class="nav-rail-label">WhatsApp</span>
+      </a>
+    </div>
+
+    <a href="/pages/about/sobre-nosotros.html" class="nav-rail-dest active">
+      <span class="material-symbols-outlined">info</span>
+      <span class="nav-rail-label">Nosotros</span>
+    </a>
+
+    <a href="/pages/home/index.html#contacto" class="nav-rail-dest">
+      <span class="material-symbols-outlined">mail</span>
+      <span class="nav-rail-label">Contacto</span>
+    </a>
+
+    <div class="nav-rail-divider"></div>
+
+    <div class="nav-rail-no-user no-user">
+      <a href="/pages/auth/login.html" class="nav-rail-dest">
+        <span class="material-symbols-outlined">login</span>
+        <span class="nav-rail-label">Iniciar Sesión</span>
+      </a>
+    </div>
+
+    <div class="nav-rail-logged logged hidden">
+      <button id="nav-rail-logout" class="nav-rail-dest">
+        <span class="material-symbols-outlined">logout</span>
+        <span class="nav-rail-label">Cerrar sesión</span>
+      </button>
+    </div>
+
+    <div class="nav-rail-spacer"></div>
+
+    <button class="nav-rail-toggle" id="nav-rail-toggle" aria-label="Colapsar menú">
+      <span class="material-symbols-outlined">dock_to_left</span>
+      <span class="toggle-label">Colapsar</span>
+    </button>
+  </nav>
+
+  <div class="nav-rail-scrim" id="nav-rail-scrim"></div>
 
   <main>
 
@@ -219,6 +315,106 @@
   <script type="module" src="/js/ui/header.js"></script>
   <script type="module" src="/js/core/notifications.js"></script>
   <script src="/js/ui/layout.js"></script>
+
+  <script>
+    (function() {
+      const rail = document.getElementById('nav-rail');
+      const toggle = document.getElementById('nav-rail-toggle');
+      const scrim = document.getElementById('nav-rail-scrim');
+      const menuBtn = document.getElementById('menu-toggle');
+      const body = document.body;
+
+      if (!rail || !toggle) return;
+
+      const KEY = 'nav_rail_expanded';
+
+      function setExpanded(expanded) {
+        rail.classList.toggle('expanded', expanded);
+        body.classList.toggle('nav-rail-expanded', expanded);
+        toggle.querySelector('.toggle-label').textContent = expanded ? 'Colapsar' : 'Expandir';
+        localStorage.setItem(KEY, expanded ? '1' : '0');
+      }
+
+      var wasExpanded = null;
+
+      function openMobileRail() {
+        wasExpanded = rail.classList.contains('expanded');
+        rail.classList.add('open', 'expanded');
+        if (scrim) scrim.classList.add('open');
+        body.style.overflow = 'hidden';
+      }
+
+      function closeMobileRail() {
+        rail.classList.remove('open');
+        if (wasExpanded !== null && !wasExpanded) {
+          rail.classList.remove('expanded');
+        }
+        wasExpanded = null;
+        if (scrim) scrim.classList.remove('open');
+        body.style.overflow = '';
+      }
+
+      const saved = localStorage.getItem(KEY);
+      setExpanded(saved === '1');
+
+      toggle.addEventListener('click', () => {
+        setExpanded(!rail.classList.contains('expanded'));
+      });
+
+      if (scrim) {
+        scrim.addEventListener('click', closeMobileRail);
+      }
+
+      const closeBtn = document.getElementById('nav-rail-mobile-close');
+      if (closeBtn) {
+        closeBtn.addEventListener('click', closeMobileRail);
+      }
+
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('#menu-toggle')) return;
+        if (window.innerWidth > 900) return;
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        openMobileRail();
+      }, true);
+
+      rail.querySelectorAll('.nav-rail-dest').forEach(link => {
+        link.addEventListener('click', () => {
+          if (window.innerWidth <= 900) closeMobileRail();
+        });
+      });
+
+      // Avatar
+      function updateNavAvatar() {
+        const navAvatar = document.getElementById('nav-avatar-user');
+        if (!navAvatar) return;
+        try {
+          const user = JSON.parse(localStorage.getItem('cortero_user'));
+          navAvatar.src = user?.photo_url || '/imagenes/avatar-default.svg';
+          const nameEl = document.getElementById('nav-user-name');
+          const emailEl = document.getElementById('nav-user-email');
+          if (nameEl) nameEl.textContent = user?.name || 'Usuario';
+          if (emailEl) emailEl.textContent = user?.email || '';
+        } catch {
+          navAvatar.src = '/imagenes/avatar-default.svg';
+        }
+      }
+
+      updateNavAvatar();
+      document.addEventListener('userLoggedIn', updateNavAvatar);
+      document.addEventListener('userLoggedOut', updateNavAvatar);
+
+      const logoutBtn = document.getElementById('nav-rail-logout');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', async () => {
+          if (window.supabaseAuth?.logoutUser) {
+            await window.supabaseAuth.logoutUser();
+          }
+        });
+      }
+    })();
+  </script>
 
 </body>
 
