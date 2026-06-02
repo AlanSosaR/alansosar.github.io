@@ -146,32 +146,19 @@ console.log("✏️ finanzas/registrar.js — INIT");
             ? payloadBase
             : { ...payloadBase, hora: ahora.toTimeString().slice(0, 8), notas: null };
           console.log("📦 Payload:", payload, "editId:", editId);
-          console.log("🔐 Auth session:", await sb.auth.getSession());
 
-          const { data: upData, error } = editId
-            ? await sb.from("finanzas_movimientos").update(payload).eq("id", editId).select()
-            : await sb.from("finanzas_movimientos").insert(payload).select();
+          const { error } = editId
+            ? await sb.from("finanzas_movimientos").update(payload).eq("id", editId)
+            : await sb.from("finanzas_movimientos").insert(payload);
 
-          // REST direct fallback si update devuelve 0 filas
-          if (!error && editId && (!upData || upData.length === 0)) {
-            console.warn("⚠️ update devolvió 0 filas — probando REST directo...");
-            const session = (await sb.auth.getSession()).data.session;
-            if (session) {
-              const restUrl = `https://eaipcuvvddyrqkbmjmvw.supabase.co/rest/v1/finanzas_movimientos?id=eq.${editId}`;
-              const restRes = await fetch(restUrl, {
-                method: "PATCH",
-                headers: {
-                  "Content-Type": "application/json",
-                  "apikey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVhaXBjdXZ2ZGR5cnFrYm1qbXZ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjYwODI0NjAsImV4cCI6MjA0MTY1ODQ2MH0.B7itbjTXzA66BUAKbTzI7KJh3dJzxVgP1B-PuBok7Nc",
-                  "Authorization": `Bearer ${session.access_token}`,
-                  "Prefer": "return=representation",
-                },
-                body: JSON.stringify(payload),
-              });
-              const restData = await restRes.json();
-              console.log("🌐 REST PATCH status:", restRes.status, "respuesta:", restData);
-            }
+          if (error) {
+            console.error("❌ Error al guardar:", error);
+            showSnackbar("Error al guardar. Intentalo de nuevo.");
+            guardarBtn.disabled = false;
+            return;
           }
+
+          console.log("✅ Guardado OK");
 
           if (error) {
             console.error("❌ Error al guardar:", error);
@@ -190,7 +177,7 @@ console.log("✏️ finanzas/registrar.js — INIT");
             } else {
               window.location.href = "/pages/admin/finanzas/index.html";
             }
-          }, 5000);
+          }, 800);
         } catch (err) {
           console.error("❌ Excepción al guardar:", err);
           showSnackbar("Error inesperado. Revisa la consola.");
