@@ -65,9 +65,16 @@
         </div>
       </div>
 
-      <!-- FILTER CHIPS -->
-      <div style="margin-bottom:16px;overflow-x:auto;">
-        <div class="fin-filter-chips" id="ingresos-chips"></div>
+      <!-- FILTER DROPDOWN -->
+      <div class="fin-cat-dropdown" id="ingresos-chips" style="margin-bottom:16px;">
+        <button class="fin-cat-dropdown-trigger" id="ingresos-cat-trigger" type="button">
+          <span class="fin-cat-trigger-content">
+            <span class="material-symbols-outlined fin-cat-trigger-icon">filter_list</span>
+            <span class="fin-cat-trigger-label">Todos</span>
+          </span>
+          <span class="material-symbols-outlined fin-cat-trigger-arrow">arrow_drop_down</span>
+        </button>
+        <div class="fin-cat-dropdown-menu" id="ingresos-cat-menu"></div>
       </div>
 
       <!-- LISTA -->

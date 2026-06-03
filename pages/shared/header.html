@@ -52,102 +52,104 @@
      DRAWER — MATERIAL 3 (FUNCIONALIDAD COMPLETA)
 ====================================================== -->
 <aside id="user-drawer" class="user-drawer">
-  
-  <div class="drawer-header logged hidden">
-     <a href="/pages/profile/perfil.html" class="user-drawer-profile-link">
-        <div class="user-drawer-avatar">
-          <img id="avatar-user-drawer" src="/imagenes/avatar-default.svg" alt="Usuario">
-        </div>
-        <div class="user-drawer-profile-texts">
-          <p id="drawer-name">Usuario</p>
-          <p id="drawer-email">correo@ejemplo.com</p>
-        </div>
-        <span class="material-symbols-outlined">chevron_right</span>
-     </a>
+  <div class="drawer-scroll">
+
+    <div class="drawer-header logged hidden">
+       <a href="/pages/profile/perfil.html" class="user-drawer-profile-link">
+          <div class="user-drawer-avatar">
+            <img id="avatar-user-drawer" src="/imagenes/avatar-default.svg" alt="Usuario">
+          </div>
+          <div class="user-drawer-profile-texts">
+            <p id="drawer-name">Usuario</p>
+            <p id="drawer-email">correo@ejemplo.com</p>
+          </div>
+          <span class="material-symbols-outlined">chevron_right</span>
+       </a>
+    </div>
+
+    <hr class="user-drawer-divider logged hidden">
+
+    <!-- PRIVADO: CLIENTE -->
+    <div class="drawer-nav-section client-only logged hidden">
+        <a href="/pages/home/index.html" class="user-drawer-item">
+          <span class="material-symbols-outlined">home</span>
+          Inicio
+        </a>
+        <a href="/pages/profile/mis-pedidos.html" class="user-drawer-item">
+          <span class="material-symbols-outlined">shopping_bag</span>
+          <span>Mis pedidos</span>
+          <span class="drawer-badge hidden" id="my-orders-count">0</span>
+        </a>
+        <a href="/pages/profile/historial.html" class="user-drawer-item">
+          <span class="material-symbols-outlined">history</span>
+          Historial
+        </a>
+    </div>
+
+    <!-- PRIVADO: ADMIN -->
+    <div class="drawer-nav-section admin-only logged hidden">
+        <a href="/pages/home/index.html" class="user-drawer-item">
+          <span class="material-symbols-outlined">home</span>
+          Inicio
+        </a>
+        <a href="/pages/admin/admin-pedidos.html" class="user-drawer-item">
+          <span class="material-symbols-outlined">inventory_2</span>
+          Pedidos
+          <span class="drawer-badge hidden" id="admin-orders-count">0</span>
+        </a>
+        <a href="/pages/admin/finanzas/index.html" class="user-drawer-item">
+          <span class="material-symbols-outlined">account_balance_wallet</span>
+          Finanzas
+        </a>
+        <a href="/pages/admin/admin-clientes.html" class="user-drawer-item">
+          <span class="material-symbols-outlined">groups</span>
+          Clientes
+        </a>
+        <a href="/pages/admin/admin-usuarios.html" class="user-drawer-item">
+          <span class="material-symbols-outlined">person</span>
+          Usuarios
+        </a>
+        <a href="/pages/admin/admin-productos.html" class="user-drawer-item">
+          <span class="material-symbols-outlined">inventory</span>
+          Productos
+        </a>
+        <a href="/pages/admin/admin-whatsapp.html" class="user-drawer-item">
+          <span class="material-symbols-outlined">chat</span>
+          WhatsApp
+          <span class="drawer-badge hidden" id="wa-notif-count">0</span>
+        </a>
+    </div>
+
+    <!-- PÚBLICO -->
+    <div class="drawer-nav-section">
+        <a href="/pages/home/index.html#productos" class="user-drawer-item">
+          <span class="material-symbols-outlined">local_cafe</span>
+          Variedades de café
+        </a>
+        <a href="/pages/about/sobre-nosotros.html" class="user-drawer-item">
+          <span class="material-symbols-outlined">info</span>
+          Quiénes somos
+        </a>
+        <a href="/pages/home/index.html#contacto" class="user-drawer-item">
+          <span class="material-symbols-outlined">mail</span>
+          Contáctanos
+        </a>
+    </div>
+
+    <hr class="user-drawer-divider">
+
+    <div class="drawer-footer">
+        <a href="/pages/auth/login.html" class="user-drawer-item no-user">
+          <span class="material-symbols-outlined">login</span>
+          Iniciar Sesión
+        </a>
+        <button id="logout-btn" class="user-drawer-item logout logged hidden">
+          <span class="material-symbols-outlined">logout</span>
+          Cerrar sesión
+        </button>
+    </div>
+
   </div>
-
-  <hr class="user-drawer-divider logged hidden">
-
-  <!-- PRIVADO: CLIENTE -->
-  <div class="drawer-nav-section client-only logged hidden">
-      <a href="/pages/home/index.html" class="user-drawer-item">
-        <span class="material-symbols-outlined">home</span>
-        Inicio
-      </a>
-      <a href="/pages/profile/mis-pedidos.html" class="user-drawer-item">
-        <span class="material-symbols-outlined">shopping_bag</span>
-        <span>Mis pedidos</span>
-        <span class="drawer-badge hidden" id="my-orders-count">0</span>
-      </a>
-      <a href="/pages/profile/historial.html" class="user-drawer-item">
-        <span class="material-symbols-outlined">history</span>
-        Historial
-      </a>
-  </div>
-
-  <!-- PRIVADO: ADMIN -->
-  <div class="drawer-nav-section admin-only logged hidden">
-      <a href="/pages/home/index.html" class="user-drawer-item">
-        <span class="material-symbols-outlined">home</span>
-        Inicio
-      </a>
-      <a href="/pages/admin/admin-pedidos.html" class="user-drawer-item">
-        <span class="material-symbols-outlined">inventory_2</span>
-        Pedidos
-        <span class="drawer-badge hidden" id="admin-orders-count">0</span>
-      </a>
-      <a href="/pages/admin/finanzas/index.html" class="user-drawer-item">
-        <span class="material-symbols-outlined">account_balance_wallet</span>
-        Finanzas
-      </a>
-      <a href="/pages/admin/admin-clientes.html" class="user-drawer-item">
-        <span class="material-symbols-outlined">groups</span>
-        Clientes
-      </a>
-      <a href="/pages/admin/admin-usuarios.html" class="user-drawer-item">
-        <span class="material-symbols-outlined">person</span>
-        Usuarios
-      </a>
-      <a href="/pages/admin/admin-productos.html" class="user-drawer-item">
-        <span class="material-symbols-outlined">inventory</span>
-        Productos
-      </a>
-      <a href="/pages/admin/admin-whatsapp.html" class="user-drawer-item">
-        <span class="material-symbols-outlined">chat</span>
-        WhatsApp
-        <span class="drawer-badge hidden" id="wa-notif-count">0</span>
-      </a>
-  </div>
-
-  <!-- PÚBLICO -->
-  <div class="drawer-nav-section">
-      <a href="/pages/home/index.html#productos" class="user-drawer-item">
-        <span class="material-symbols-outlined">local_cafe</span>
-        Variedades de café
-      </a>
-      <a href="/pages/about/sobre-nosotros.html" class="user-drawer-item">
-        <span class="material-symbols-outlined">info</span>
-        Quiénes somos
-      </a>
-      <a href="/pages/home/index.html#contacto" class="user-drawer-item">
-        <span class="material-symbols-outlined">mail</span>
-        Contáctanos
-      </a>
-  </div>
-
-  <hr class="user-drawer-divider">
-
-  <div class="drawer-footer">
-      <a href="/pages/auth/login.html" class="user-drawer-item no-user">
-        <span class="material-symbols-outlined">login</span>
-        Iniciar Sesión
-      </a>
-      <button id="logout-btn" class="user-drawer-item logout logged hidden">
-        <span class="material-symbols-outlined">logout</span>
-        Cerrar sesión
-      </button>
-  </div>
-
 </aside>
 
 <script type="module" src="/js/ui/header.js"></script>

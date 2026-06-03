@@ -70,9 +70,19 @@
       </section>
 
       <!-- CATEGORÍA -->
-      <section style="margin-bottom:16px;">
+      <section style="margin-bottom:16px;" id="fin-categoria-section">
         <p style="font:var(--md-title-md);color:var(--md-on-surface);font-weight:600;margin-bottom:12px;">Categoría</p>
-        <div class="fin-category-chips" id="fin-categoria-chips"></div>
+        <div class="fin-cat-dropdown" id="fin-categoria-chips">
+          <button class="fin-cat-dropdown-trigger" id="fin-cat-trigger" type="button">
+            <span class="fin-cat-trigger-content">
+              <span class="material-symbols-outlined fin-cat-trigger-icon">category</span>
+              <span class="fin-cat-trigger-label fin-cat-trigger-placeholder">Seleccionar categoría</span>
+            </span>
+            <span class="material-symbols-outlined fin-cat-trigger-arrow">arrow_drop_down</span>
+          </button>
+          <div class="fin-cat-dropdown-menu" id="fin-cat-menu"></div>
+          <div id="acciones-categoria" style="display:flex;gap:8px;margin-top:8px;"></div>
+        </div>
       </section>
 
       <!-- FORM CARD -->

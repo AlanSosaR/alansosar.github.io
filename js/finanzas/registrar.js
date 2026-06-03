@@ -64,7 +64,8 @@ console.log("✏️ finanzas/registrar.js — INIT");
 
     const montoInput = document.getElementById("fin-monto-input");
     const conceptoInput = document.getElementById("fin-concepto");
-    const categoriaContainer = document.getElementById("fin-categoria-chips");
+    const trigger = document.getElementById("fin-cat-trigger");
+    const menu = document.getElementById("fin-cat-menu");
     const fechaInput = document.getElementById("fin-fecha");
     const fechaDisplay = document.getElementById("fin-fecha-display");
     const fechaWrapper = document.getElementById("fin-fecha-wrapper");
@@ -108,12 +109,11 @@ console.log("✏️ finanzas/registrar.js — INIT");
         fechaDisplay.value = new Date(data.fecha + "T" + (data.hora || "00:00:00")).toLocaleDateString("es-HN", { day: "2-digit", month: "long", year: "numeric" });
         guardarBtn.innerHTML = `<span class="material-symbols-outlined" style="font-size:18px;">save</span> Actualizar ${data.tipo === "ingreso" ? "Ingreso" : "Egreso"}`;
         setTimeout(() => {
-          const chips = categoriaContainer.querySelectorAll(".fin-cat-chip:not(#btn-crear-categoria)");
-          const match = [...chips].find(c => c.dataset.categoria === data.categoria);
+          const cats = CATEGORIAS[data.tipo] || [];
+          const match = cats.find(c => c.label === data.categoria);
           if (match) {
-            chips.forEach(c => c.classList.remove("active"));
-            match.classList.add("active");
             categoriaSeleccionada = data.categoria;
+            updateTrigger(data.categoria, match.icon || "category");
             mostrarAcciones(data.categoria);
             validarForm();
           }
@@ -186,92 +186,129 @@ console.log("✏️ finanzas/registrar.js — INIT");
       });
     }
 
+    function closeMenu() {
+      trigger.classList.remove("open");
+      menu.classList.remove("open");
+    }
+
+    function openMenu() {
+      trigger.classList.add("open");
+      menu.classList.add("open");
+    }
+
+    function toggleMenu() {
+      if (menu.classList.contains("open")) {
+        closeMenu();
+      } else {
+        renderCategorias(tipo);
+        openMenu();
+      }
+    }
+
+    trigger?.addEventListener("click", toggleMenu);
+
+    document.addEventListener("click", (e) => {
+      const dd = document.querySelector(".fin-cat-dropdown");
+      if (dd && !dd.contains(e.target)) {
+        closeMenu();
+      }
+    });
+
     function renderCategorias(t) {
-      if (!categoriaContainer) return;
+      if (!menu) return;
       const cats = CATEGORIAS[t];
       let html = cats
         .map(
-          (c) =>
-            `<button class="fin-cat-chip${CATEGORIAS_CUSTOM.some(x => x.tipo === t && x.label === c.label) ? ' custom' : ''}" data-categoria="${c.label}">
-              <span class="material-symbols-outlined">${c.icon}</span>
-              ${c.label}
-            </button>`
+          (c) => {
+            const selected = c.label === categoriaSeleccionada;
+            return `<button class="fin-cat-menu-item${selected ? ' selected' : ''}" data-categoria="${c.label}">
+              <span class="material-symbols-outlined fin-cat-menu-item-icon">${c.icon}</span>
+              <span class="fin-cat-menu-item-text">${c.label}</span>
+              <span class="material-symbols-outlined fin-cat-menu-item-check">check</span>
+            </button>`;
+          }
         )
         .join("");
 
       html += `
-        <div style="display:flex;align-items:center;gap:6px;width:100%;">
-          <button class="fin-cat-chip" id="btn-crear-categoria" style="border-style:dashed;opacity:0.7;">
-            <span class="material-symbols-outlined" style="font-size:18px;">add</span>
-            Crear categoría
-          </button>
-          <input type="text" id="input-nueva-categoria" placeholder="Nueva categoría"
-            style="display:none;flex:1;padding:8px 12px;border:1px solid var(--md-outline);border-radius:var(--md-shape-full);font:var(--md-label-lg);background:transparent;outline:none;">
-          <button id="btn-confirmar-categoria" style="display:none;padding:8px 12px;border:none;border-radius:var(--md-shape-full);background:var(--md-primary);color:var(--md-on-primary);font:var(--md-label-lg);cursor:pointer;">OK</button>
-        </div>
-        <div id="acciones-categoria" style="display:flex;gap:8px;margin-top:4px;"></div>`;
+        <div class="fin-cat-menu-divider"></div>
+        <button class="fin-cat-menu-item fin-cat-menu-item-create" id="btn-crear-categoria">
+          <span class="material-symbols-outlined fin-cat-menu-item-icon">add</span>
+          <span class="fin-cat-menu-item-text">Crear categoría</span>
+        </button>`;
 
-      categoriaContainer.innerHTML = html;
+      menu.innerHTML = html;
 
-      categoriaSeleccionada = null;
-      const accionDiv = document.getElementById("acciones-categoria");
-      categoriaContainer.querySelectorAll(".fin-cat-chip:not(#btn-crear-categoria)").forEach((chip) => {
-        chip.addEventListener("click", () => {
-          categoriaContainer.querySelectorAll(".fin-cat-chip:not(#btn-crear-categoria)").forEach((c) => c.classList.remove("active"));
-          chip.classList.add("active");
-          categoriaSeleccionada = chip.dataset.categoria;
-          mostrarAcciones(chip.dataset.categoria);
+      menu.querySelectorAll(".fin-cat-menu-item:not(#btn-crear-categoria)").forEach((item) => {
+        item.addEventListener("click", () => {
+          const label = item.dataset.categoria;
+          categoriaSeleccionada = label;
+          const icon = item.querySelector(".fin-cat-menu-item-icon")?.textContent || "category";
+          updateTrigger(label, icon);
+          mostrarAcciones(label);
           validarForm();
+          closeMenu();
         });
       });
 
-      const btnCrear = document.getElementById("btn-crear-categoria");
-      const inputNueva = document.getElementById("input-nueva-categoria");
-      const btnConfirmar = document.getElementById("btn-confirmar-categoria");
-
-      btnCrear?.addEventListener("click", () => {
-        btnCrear.style.display = "none";
-        inputNueva.style.display = "block";
-        btnConfirmar.style.display = "block";
-        inputNueva.focus();
+      document.getElementById("btn-crear-categoria")?.addEventListener("click", () => {
+        closeMenu();
+        mostrarFormCrear(t);
       });
+    }
 
-      btnConfirmar?.addEventListener("click", () => {
-        const label = inputNueva.value.trim();
+    function updateTrigger(label, icon) {
+      const triggerIcon = trigger?.querySelector(".fin-cat-trigger-icon");
+      const triggerLabel = trigger?.querySelector(".fin-cat-trigger-label");
+      if (triggerIcon) triggerIcon.textContent = icon;
+      if (triggerLabel) {
+        triggerLabel.textContent = label;
+        triggerLabel.classList.remove("fin-cat-trigger-placeholder");
+      }
+    }
+
+    function mostrarFormCrear(t) {
+      const existing = document.querySelector(".fin-cat-inline-form");
+      if (existing) existing.remove();
+
+      const form = document.createElement("div");
+      form.className = "fin-cat-inline-form open";
+      form.innerHTML = `
+        <input type="text" class="fin-cat-inline-input" id="input-nueva-categoria" placeholder="Nueva categoría" autofocus>
+        <button class="fin-cat-inline-btn fin-cat-inline-btn-primary" id="btn-confirmar-categoria">OK</button>
+        <button class="fin-cat-inline-btn fin-cat-inline-btn-text" id="btn-cancelar-categoria">Cancelar</button>
+      `;
+
+      const dd = document.querySelector(".fin-cat-dropdown");
+      dd?.appendChild(form);
+
+      const input = document.getElementById("input-nueva-categoria");
+      const okBtn = document.getElementById("btn-confirmar-categoria");
+      const cancelBtn = document.getElementById("btn-cancelar-categoria");
+
+      input?.focus();
+
+      function confirmar() {
+        const label = input.value.trim();
         if (!label) {
-          inputNueva.style.display = "none";
-          btnConfirmar.style.display = "none";
-          btnCrear.style.display = "inline-flex";
+          form.remove();
           return;
         }
         CATEGORIAS[t].push({ icon: "add_circle", label });
         CATEGORIAS_CUSTOM.push({ tipo: t, label });
-        inputNueva.value = "";
-        inputNueva.style.display = "none";
-        btnConfirmar.style.display = "none";
-        btnCrear.style.display = "inline-flex";
-        renderCategorias(t);
-        setTimeout(() => {
-          const chips = categoriaContainer.querySelectorAll(".fin-cat-chip:not(#btn-crear-categoria)");
-          const last = chips[chips.length - 1];
-          if (last) {
-            chips.forEach((c) => c.classList.remove("active"));
-            last.classList.add("active");
-            categoriaSeleccionada = last.dataset.categoria;
-            mostrarAcciones(last.dataset.categoria);
-            validarForm();
-          }
-        }, 0);
-      });
+        categoriaSeleccionada = label;
+        updateTrigger(label, "add_circle");
+        mostrarAcciones(label);
+        validarForm();
+        form.remove();
+      }
 
-      inputNueva?.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") btnConfirmar?.click();
-        if (e.key === "Escape") {
-          inputNueva.style.display = "none";
-          btnConfirmar.style.display = "none";
-          btnCrear.style.display = "inline-flex";
-        }
+      okBtn?.addEventListener("click", confirmar);
+      input?.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") confirmar();
+        if (e.key === "Escape") form.remove();
       });
+      cancelBtn?.addEventListener("click", () => form.remove());
     }
 
     function mostrarAcciones(label) {
@@ -299,7 +336,18 @@ console.log("✏️ finanzas/registrar.js — INIT");
         if (idx !== -1) CATEGORIAS[tipo].splice(idx, 1);
         const cIdx = CATEGORIAS_CUSTOM.findIndex(x => x.tipo === tipo && x.label === label);
         if (cIdx !== -1) CATEGORIAS_CUSTOM.splice(cIdx, 1);
-        renderCategorias(tipo);
+        if (categoriaSeleccionada === label) {
+          categoriaSeleccionada = null;
+          const triggerIcon = trigger?.querySelector(".fin-cat-trigger-icon");
+          const triggerLabel = trigger?.querySelector(".fin-cat-trigger-label");
+          if (triggerIcon) triggerIcon.textContent = "category";
+          if (triggerLabel) {
+            triggerLabel.textContent = "Seleccionar categoría";
+            triggerLabel.classList.add("fin-cat-trigger-placeholder");
+          }
+          accionDiv.innerHTML = "";
+        }
+        validarForm();
       });
 
       document.getElementById("btn-editar-categoria")?.addEventListener("click", () => {
@@ -319,18 +367,11 @@ console.log("✏️ finanzas/registrar.js — INIT");
         if (cat) cat.label = nuevo;
         const cItem = CATEGORIAS_CUSTOM.find(x => x.tipo === tipo && x.label === label);
         if (cItem) cItem.label = nuevo;
-        renderCategorias(tipo);
-        setTimeout(() => {
-          const chips = categoriaContainer.querySelectorAll(".fin-cat-chip:not(#btn-crear-categoria)");
-          const match = [...chips].find(c => c.dataset.categoria === nuevo);
-          if (match) {
-            chips.forEach(c => c.classList.remove("active"));
-            match.classList.add("active");
-            categoriaSeleccionada = nuevo;
-            mostrarAcciones(nuevo);
-            validarForm();
-          }
-        }, 0);
+        if (categoriaSeleccionada === label) {
+          categoriaSeleccionada = nuevo;
+          updateTrigger(nuevo, cat?.icon || "add_circle");
+        }
+        validarForm();
       });
 
       document.getElementById("input-editar-categoria")?.addEventListener("keydown", (e) => {
@@ -342,8 +383,22 @@ console.log("✏️ finanzas/registrar.js — INIT");
       });
     }
 
+    function resetCategoria() {
+      categoriaSeleccionada = null;
+      const triggerIcon = trigger?.querySelector(".fin-cat-trigger-icon");
+      const triggerLabel = trigger?.querySelector(".fin-cat-trigger-label");
+      if (triggerIcon) triggerIcon.textContent = "category";
+      if (triggerLabel) {
+        triggerLabel.textContent = "Seleccionar categoría";
+        triggerLabel.classList.add("fin-cat-trigger-placeholder");
+      }
+      const accionDiv = document.getElementById("acciones-categoria");
+      if (accionDiv) accionDiv.innerHTML = "";
+    }
+
     function updateTipo(t) {
       tipo = t;
+      resetCategoria();
       toggleBtns.forEach((btn) => {
         const isActive = btn.dataset.tipo === t;
         btn.classList.toggle("active", isActive);

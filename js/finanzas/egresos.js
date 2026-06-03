@@ -305,21 +305,55 @@ console.log("📉 finanzas/egresos.js — INIT");
     });
 
     const chipContainer = document.getElementById("egresos-chips");
-    if (chipContainer) {
-      CATEGORIAS.forEach((cat) => {
-        const chip = document.createElement("button");
-        chip.className = `fin-chip${cat === "Todos" ? " active" : ""}`;
-        chip.dataset.categoria = cat === "Todos" ? "todos" : cat;
-        chip.textContent = cat;
-        chip.addEventListener("click", () => {
-          chipContainer.querySelectorAll(".fin-chip").forEach((c) => c.classList.remove("active"));
-          chip.classList.add("active");
-          categoriaFiltro = chip.dataset.categoria;
+    const trigger = document.getElementById("egresos-cat-trigger");
+    const menu = document.getElementById("egresos-cat-menu");
+
+    function closeMenu() {
+      trigger?.classList.remove("open");
+      menu?.classList.remove("open");
+    }
+
+    function openMenu() {
+      trigger?.classList.add("open");
+      menu?.classList.add("open");
+    }
+
+    function renderMenu() {
+      if (!menu) return;
+      menu.innerHTML = CATEGORIAS.map(cat => {
+        const value = cat === "Todos" ? "todos" : cat;
+        const selected = value === categoriaFiltro;
+        return `<button class="fin-cat-menu-item${selected ? ' selected' : ''}" data-categoria="${value}">
+          <span class="fin-cat-menu-item-text">${cat}</span>
+          <span class="material-symbols-outlined fin-cat-menu-item-check">check</span>
+        </button>`;
+      }).join("");
+      menu.querySelectorAll(".fin-cat-menu-item").forEach(item => {
+        item.addEventListener("click", () => {
+          categoriaFiltro = item.dataset.categoria;
+          const label = item.querySelector(".fin-cat-menu-item-text")?.textContent || "Todos";
+          const tIcon = trigger?.querySelector(".fin-cat-trigger-label");
+          if (tIcon) tIcon.textContent = label;
           renderLista(movimientos);
+          closeMenu();
         });
-        chipContainer.appendChild(chip);
       });
     }
+
+    trigger?.addEventListener("click", () => {
+      if (menu?.classList.contains("open")) {
+        closeMenu();
+      } else {
+        renderMenu();
+        openMenu();
+      }
+    });
+
+    document.addEventListener("click", (e) => {
+      if (chipContainer && !chipContainer.contains(e.target)) {
+        closeMenu();
+      }
+    });
 
     cargarEgresos();
   }

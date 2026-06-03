@@ -1,6 +1,6 @@
 :root {
   --nav-rail-width: 80px;
-  --nav-rail-expanded: 220px;
+  --nav-rail-expanded: 240px;
 }
 
 .nav-rail {
@@ -19,7 +19,13 @@
   z-index: 6000;
   overflow-y: auto;
   overflow-x: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   transition: width 0.25s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.nav-rail::-webkit-scrollbar {
+  display: none;
 }
 
 .nav-rail.expanded {
@@ -230,7 +236,7 @@ button.nav-rail-dest {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 160px;
+  max-width: 220px;
   line-height: 1.3;
 }
 
@@ -241,7 +247,7 @@ button.nav-rail-dest {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 160px;
+  max-width: 220px;
   line-height: 1.2;
 }
 
@@ -303,6 +309,7 @@ body.has-nav-rail.nav-rail-expanded .fin-page {
   .nav-rail {
     left: -100% !important;
     right: auto !important;
+    width: 85vw !important;
     transition: left 0.3s cubic-bezier(0.2, 0, 0, 1);
     padding-top: 100px;
   }
@@ -314,7 +321,8 @@ body.has-nav-rail.nav-rail-expanded .fin-page {
   .nav-rail-mobile-close {
     position: absolute;
     top: 11px;
-    left: 12px;
+    right: 0;
+    left: auto;
     z-index: 1;
     width: 42px;
     height: 42px;

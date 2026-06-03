@@ -202,26 +202,30 @@ console.log("📊 finanzas/dashboard.js — INIT");
       const rango = getRangoFechas(periodo);
       if (els.periodoLabel()) els.periodoLabel().textContent = rango.label;
 
-      const { data } = await awaitQuery(rango.desde, rango.hasta);
-      console.log("📊 Dashboard data count:", data?.length);
+      // Parallel: all-time data for saldo, period data for chart/historial
+      const [periodResult, allResult] = await Promise.all([
+        awaitQuery(rango.desde, rango.hasta),
+        sb.from("finanzas_movimientos").select("*"),
+      ]);
+
+      const { data } = periodResult;
+      const allData = allResult?.data || [];
       movimientos = data;
 
+      // Saldo — always from ALL data
+      const allIng = allData.filter((r) => r.tipo === "ingreso").reduce((s, r) => s + Number(r.monto), 0);
+      const allEgr = allData.filter((r) => r.tipo === "egreso").reduce((s, r) => s + Number(r.monto), 0);
+      if (els.saldoMonto()) els.saldoMonto().innerHTML = fmtMontoHTML(allIng - allEgr);
+      if (els.saldoCompare()) els.saldoCompare().style.display = "none";
+
+      // Stats cards (period-specific)
       const ingresos = data.filter((r) => r.tipo === "ingreso");
       const egresos = data.filter((r) => r.tipo === "egreso");
-      const totalIngresos = ingresos.reduce((s, i) => s + Number(i.monto), 0);
-      const totalEgresos = egresos.reduce((s, i) => s + Number(i.monto), 0);
+      if (els.ingresosMonto()) els.ingresosMonto().innerHTML = fmtMontoHTML(ingresos.reduce((s, i) => s + Number(i.monto), 0));
+      if (els.egresosMonto()) els.egresosMonto().innerHTML = fmtMontoHTML(egresos.reduce((s, i) => s + Number(i.monto), 0));
 
-      // Stats cards
-      if (els.ingresosMonto()) els.ingresosMonto().innerHTML = fmtMontoHTML(totalIngresos);
-      if (els.egresosMonto()) els.egresosMonto().innerHTML = fmtMontoHTML(totalEgresos);
-
-      // Saldo
-      await renderSaldo(ingresos, egresos, periodo);
-
-      // Chart
+      // Chart & historial from filtered data
       renderChart(data);
-
-      // Historial
       renderHistorial(data);
     } catch (err) {
       console.error("📊 Error en cargarDashboard:", err);

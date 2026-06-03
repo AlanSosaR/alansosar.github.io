@@ -49,10 +49,23 @@
    BODY — AJUSTE POR HEADER FIJO (CORREGIDO)
 ===================================================== */
 
-html,
+html {
+  overflow-x: hidden;
+  overflow-y: auto;
+  width: 100%;
+  max-width: 100%;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar {
+  display: none;
+}
+
 body {
   overflow-x: hidden;
   width: 100%;
+  max-width: 100%;
 }
 
 body {
