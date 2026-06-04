@@ -1242,79 +1242,88 @@
   border: 1px solid var(--md-outline-variant);
 }
 
-/* --- FLOATING LABEL FIELDS (CHECKOUT STYLE) --- */
+/* =====================================================
+   M3 OUTLINED TEXT FIELDS — Material Design 3
+   https://m3.material.io/components/text-fields/overview
+===================================================== */
 .fin-field {
   position: relative;
   width: 100%;
 }
 
+/* Contenedor base del campo — borde outlined */
 .fin-input-wrapper {
   position: relative;
-  background: var(--blanco);
-  border-radius: var(--input-radius);
-  padding: 1rem 1.2rem;
+  background: #FFFFFF;
+  border-radius: 4px;
+  padding: 0 1rem;
+  height: 56px;
   border: 1px solid var(--md-outline);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: border-color 0.18s, border-width 0.18s;
   display: flex;
   align-items: center;
-  gap: 0.8rem;
+  gap: 0.75rem;
+  box-sizing: border-box;
 }
 
+/* Hover — borde oscuro */
+.fin-input-wrapper:hover {
+  border-color: var(--md-on-surface);
+}
+
+/* Focus — borde verde 2px */
 .fin-input-wrapper:focus-within {
-  border-color: var(--verde);
-  border-width: 2px;
-  box-shadow: 0 0 0 1px var(--verde);
+  border: 2px solid var(--verde);
 }
 
+/* Icono leading */
 .fin-input-icon {
-  color: var(--verde);
-  font-size: 1.4rem;
+  color: var(--md-on-surface-variant);
+  font-size: 1.25rem;
   flex-shrink: 0;
+  transition: color 0.2s;
 }
 
-.fin-input-wrapper input[type="text"][readonly] {
-  cursor: pointer;
-  caret-color: transparent;
+.fin-input-wrapper:focus-within .fin-input-icon {
+  color: var(--verde);
 }
 
-.fin-fecha-icon {
-  cursor: pointer;
-  transition: transform 0.2s var(--md-spring);
-}
-
-.fin-fecha-icon:hover {
-  transform: scale(1.1);
-}
-
-.fin-fecha-icon:active {
-  transform: scale(0.9);
-}
-
+/* Input / textarea / select base */
 .fin-input-wrapper input,
 .fin-input-wrapper textarea,
 .fin-input-wrapper select {
   width: 100%;
   border: none;
   background: transparent;
-  font-size: 1.05rem;
+  font-size: 1rem;
   font-family: inherit;
-  color: var(--marron);
+  color: var(--md-on-surface);
   outline: none;
   font-weight: 500;
-  padding: 0.2rem 0;
+  padding: 0;
+  margin-top: 0.35rem;
 }
 
+/* Textarea — resizable */
+.fin-input-wrapper textarea {
+  margin-top: 0;
+  padding-top: 0.4rem;
+  resize: vertical;
+  min-height: 72px;
+}
+
+/* Ocultar placeholder hasta focus para permitir label flotante */
 .fin-input-wrapper input::placeholder,
 .fin-input-wrapper textarea::placeholder {
   color: transparent;
-  transition: color 0.2s;
 }
 
 .fin-input-wrapper input:focus::placeholder,
 .fin-input-wrapper textarea:focus::placeholder {
-  color: #c0c0be;
+  color: rgba(0,0,0,0.38);
 }
 
+/* Select custom */
 .fin-input-wrapper select {
   cursor: pointer;
   appearance: none;
@@ -1326,45 +1335,83 @@
   padding-right: 24px;
 }
 
-/* Floating label */
-.fin-field-label {
-  position: absolute;
-  left: 3.2rem;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 1rem;
-  font-weight: 400;
-  color: var(--texto-secundario);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  pointer-events: none;
-  background: transparent;
-  padding: 0 4px;
-  z-index: 1;
-}
-
-/* Active floating label (focus or has value) */
-.fin-input-wrapper:focus-within .fin-field-label,
-.fin-input-wrapper input:not(:placeholder-shown) + .fin-field-label,
-.fin-input-wrapper textarea:not(:placeholder-shown) + .fin-field-label,
-.fin-input-wrapper select:valid + .fin-field-label,
-.fin-input-wrapper select:not([value=""]) + .fin-field-label {
-  top: 0;
-  left: 1rem;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--verde);
-  background: var(--blanco);
-  transform: translateY(-50%);
-}
-
-.fin-input-wrapper textarea {
-  resize: vertical;
-  min-height: 72px;
+/* Campos de solo lectura / fecha */
+.fin-input-wrapper input[type="text"][readonly] {
+  cursor: pointer;
+  caret-color: transparent;
 }
 
 .fin-input-wrapper input[type="date"] {
   appearance: none;
   -webkit-appearance: none;
+}
+
+/* Icono de fecha */
+.fin-fecha-icon {
+  cursor: pointer;
+  transition: transform 0.2s var(--md-spring);
+}
+
+.fin-fecha-icon:hover  { transform: scale(1.1); }
+.fin-fecha-icon:active { transform: scale(0.9); }
+
+/* -------------------------------------------------------
+   FLOATING LABEL — Corta visualmente el borde (M3 spec)
+------------------------------------------------------- */
+.fin-field-label {
+  position: absolute;
+  left: 2.8rem;          /* alineado después del icono */
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--md-on-surface-variant);
+  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+  background: #FFFFFF;   /* "corta" el borde visualmente */
+  padding: 0 4px;
+  z-index: 1;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* Label flotante — sube al borde cuando hay valor o foco */
+.fin-input-wrapper:focus-within .fin-field-label,
+.fin-input-wrapper input:not(:placeholder-shown) + .fin-field-label,
+.fin-input-wrapper textarea:not(:placeholder-shown) + .fin-field-label,
+.fin-input-wrapper select:valid + .fin-field-label,
+.fin-input-wrapper:has(.fin-cat-trigger-label:not(.fin-cat-trigger-placeholder)) .fin-field-label {
+  top: 0;
+  left: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--verde);
+  transform: translateY(-50%);
+  padding: 0 4px;
+}
+
+/* Sin icono: label empieza más a la izquierda */
+.fin-field-label.no-icon {
+  left: 1rem;
+}
+
+/* Wrapper para textarea — altura auto */
+.fin-input-wrapper.textarea-wrapper {
+  height: auto;
+  align-items: flex-start;
+  padding-top: 1.2rem;
+  padding-bottom: 0.75rem;
+}
+
+.fin-input-wrapper.textarea-wrapper .fin-field-label {
+  top: 0.9rem;
+  transform: none;
+}
+
+.fin-input-wrapper.textarea-wrapper:focus-within .fin-field-label,
+.fin-input-wrapper.textarea-wrapper textarea:not(:placeholder-shown) + .fin-field-label {
+  top: 0;
+  transform: translateY(-50%);
 }
 
 /* --- TIPO TOGGLE BUTTONS (OUTLINED CARD) --- */
@@ -1411,23 +1458,27 @@
   position: relative;
 }
 
+/* -------------------------------------------------------
+   DROPDOWN TRIGGER — mismo aspecto que Outlined Text Field
+------------------------------------------------------- */
 .fin-cat-dropdown-trigger {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: 0 12px;
+  padding: 0 12px 0 16px;
   height: 56px;
   border: 1px solid var(--md-outline);
-  border-radius: var(--md-shape-sm);
-  background: var(--md-surface-container);
+  border-radius: 4px;               /* M3 usa 4px */
+  background: #FFFFFF;              /* fondo blanco igual que inputs */
   cursor: pointer;
   font: var(--md-body-lg);
   color: var(--md-on-surface);
   text-align: left;
-  transition: border-color var(--md-duration-md) var(--md-standard);
+  transition: border-color 0.18s, border-width 0.18s;
   position: relative;
-  overflow: hidden;
+  overflow: visible;                /* permitir label flotante */
+  box-sizing: border-box;
 }
 
 .fin-cat-dropdown-trigger:hover {
@@ -1435,12 +1486,16 @@
 }
 
 .fin-cat-dropdown-trigger:focus-visible {
-  outline: 2px solid var(--md-primary);
-  outline-offset: 2px;
+  outline: none;
 }
 
+/* Estado abierto / seleccionado — borde verde 2px */
 .fin-cat-dropdown-trigger.open {
-  border-color: var(--md-primary);
+  border: 2px solid var(--verde);
+}
+
+.fin-cat-dropdown-trigger.has-value {
+  border-color: var(--md-outline);
 }
 
 .fin-cat-trigger-content {
@@ -1455,28 +1510,59 @@
   font-size: 20px;
   color: var(--md-on-surface-variant);
   flex-shrink: 0;
+  transition: color 0.18s;
+}
+
+.fin-cat-dropdown-trigger.open .fin-cat-trigger-icon {
+  color: var(--verde);
 }
 
 .fin-cat-trigger-label {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--md-on-surface);
 }
 
 .fin-cat-trigger-placeholder {
   color: var(--md-on-surface-variant);
-  opacity: 0.7;
+  opacity: 0.6;
+  font-weight: 400;
 }
 
 .fin-cat-trigger-arrow {
   font-size: 24px;
   color: var(--md-on-surface-variant);
-  transition: transform var(--md-duration-md) var(--md-standard);
+  transition: transform var(--md-duration-md) var(--md-standard), color 0.18s;
   flex-shrink: 0;
 }
 
 .fin-cat-dropdown-trigger.open .fin-cat-trigger-arrow {
   transform: rotate(180deg);
+  color: var(--verde);
+}
+
+/* Label flotante sobre el borde del dropdown (M3 spec) */
+.fin-cat-dropdown {
+  position: relative;
+}
+
+.fin-cat-floating-label {
+  position: absolute;
+  top: 0;
+  left: 0.75rem;
+  transform: translateY(-50%);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--verde);
+  background: #FFFFFF;
+  padding: 0 4px;
+  pointer-events: none;
+  z-index: 2;
+  line-height: 1;
+  white-space: nowrap;
 }
 
 /* Menu container */
@@ -1488,7 +1574,7 @@
   background: var(--md-surface-container);
   border-radius: 4px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.10), 0 4px 16px rgba(0,0,0,0.08);
-  padding: 8px 0;
+  padding: 4px 0;
   opacity: 0;
   visibility: hidden;
   transform: translateY(-4px) scale(0.98);
@@ -1528,12 +1614,25 @@
   overflow: hidden;
 }
 
-.fin-cat-menu-item:hover {
-  background: var(--md-surface-container-high);
+.fin-cat-menu-item::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: currentColor;
+  opacity: 0;
+  transition: opacity 0.15s;
 }
 
-.fin-cat-menu-item:active {
-  background: var(--md-surface-container-high);
+.fin-cat-menu-item:hover::before {
+  opacity: 0.08;
+}
+
+.fin-cat-menu-item:active::before {
+  opacity: 0.12;
+}
+
+.fin-cat-menu-item.selected {
+  background: color-mix(in srgb, var(--md-primary) 8%, transparent);
 }
 
 .fin-cat-menu-item-icon {
@@ -1547,6 +1646,11 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-weight: 500;
+}
+
+.fin-cat-menu-item.selected .fin-cat-menu-item-text {
+  font-weight: 600;
 }
 
 .fin-cat-menu-item-check {

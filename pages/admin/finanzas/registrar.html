@@ -69,45 +69,121 @@
         </div>
       </section>
 
-      <!-- CATEGORÍA -->
-      <section style="margin-bottom:16px;" id="fin-categoria-section">
-        <p style="font:var(--md-title-md);color:var(--md-on-surface);font-weight:600;margin-bottom:12px;">Categoría</p>
-        <div class="fin-cat-dropdown" id="fin-categoria-chips">
-          <button class="fin-cat-dropdown-trigger" id="fin-cat-trigger" type="button">
-            <span class="fin-cat-trigger-content">
-              <span class="material-symbols-outlined fin-cat-trigger-icon">category</span>
-              <span class="fin-cat-trigger-label fin-cat-trigger-placeholder">Seleccionar categoría</span>
-            </span>
-            <span class="material-symbols-outlined fin-cat-trigger-arrow">arrow_drop_down</span>
-          </button>
-          <div class="fin-cat-dropdown-menu" id="fin-cat-menu"></div>
-          <div id="acciones-categoria" style="display:flex;gap:8px;margin-top:8px;"></div>
-        </div>
-      </section>
-
-      <!-- MÉTODO DE PAGO -->
-      <section style="margin-bottom:16px;">
-        <p style="font:var(--md-title-md);color:var(--md-on-surface);font-weight:600;margin-bottom:12px;">Método de pago</p>
-        <div class="fin-cat-dropdown" id="fin-metodo-pago-chips">
-          <button class="fin-cat-dropdown-trigger" id="fin-metodo-pago-trigger" type="button">
-            <span class="fin-cat-trigger-content">
-              <span class="material-symbols-outlined fin-cat-trigger-icon">payments</span>
-              <span class="fin-cat-trigger-label">Efectivo</span>
-            </span>
-            <span class="material-symbols-outlined fin-cat-trigger-arrow">arrow_drop_down</span>
-          </button>
-          <div class="fin-cat-dropdown-menu" id="fin-metodo-pago-menu"></div>
-        </div>
-      </section>
-
       <!-- FORM CARD -->
       <section class="fin-form-card">
+
+        <!-- CATEGORÍA -->
+          <div class="fin-cat-dropdown" id="fin-categoria-chips">
+            <span class="fin-cat-floating-label">Categoría</span>
+            <button class="fin-cat-dropdown-trigger" id="fin-cat-trigger" type="button">
+              <span class="fin-cat-trigger-content">
+                <span class="material-symbols-outlined fin-cat-trigger-icon">category</span>
+                <span class="fin-cat-trigger-label fin-cat-trigger-placeholder">Seleccionar categoría</span>
+              </span>
+              <span class="material-symbols-outlined fin-cat-trigger-arrow">arrow_drop_down</span>
+            </button>
+            <div class="fin-cat-dropdown-menu" id="fin-cat-menu"></div>
+            <div id="acciones-categoria" style="display:flex;gap:8px;margin-top:8px;"></div>
+          </div>
+
+        <!-- CAMPOS DE CAFÉ (CANTIDAD Y PRECIO POR LIBRA) -->
+        <section style="margin-bottom:16px;display:none;" id="fin-cafe-fields">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div class="fin-field">
+              <div class="fin-input-wrapper">
+                <span class="material-symbols-outlined fin-input-icon">weight</span>
+                <input type="text" id="fin-cantidad-libras" inputmode="decimal" placeholder="0.00">
+                <label class="fin-field-label">Cantidad de libras</label>
+              </div>
+            </div>
+            <div class="fin-field">
+              <div class="fin-input-wrapper">
+                <span class="material-symbols-outlined fin-input-icon">attach_money</span>
+                <input type="text" id="fin-precio-libra" inputmode="decimal" placeholder="0.00">
+                <label class="fin-field-label">Precio por libra (HNL)</label>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- CAMPOS DE FINCA LA ROSA -->
+        <section style="margin-bottom:16px;display:none;" id="fin-finca-fields">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div class="fin-cat-dropdown" id="fin-presentacion-dropdown">
+              <span class="fin-cat-floating-label">Presentación</span>
+              <button class="fin-cat-dropdown-trigger" id="fin-presentacion-trigger" type="button">
+                <span class="fin-cat-trigger-content">
+                  <span class="material-symbols-outlined fin-cat-trigger-icon">inventory</span>
+                  <span class="fin-cat-trigger-label fin-cat-trigger-placeholder">Seleccionar</span>
+                </span>
+                <span class="material-symbols-outlined fin-cat-trigger-arrow">arrow_drop_down</span>
+              </button>
+              <div class="fin-cat-dropdown-menu" id="fin-presentacion-menu"></div>
+            </div>
+            <div class="fin-cat-dropdown" id="fin-tipo-cafe-dropdown">
+              <span class="fin-cat-floating-label">Tipo de café</span>
+              <button class="fin-cat-dropdown-trigger" id="fin-tipo-cafe-trigger" type="button">
+                <span class="fin-cat-trigger-content">
+                  <span class="material-symbols-outlined fin-cat-trigger-icon">coffee</span>
+                  <span class="fin-cat-trigger-label fin-cat-trigger-placeholder">Seleccionar</span>
+                </span>
+                <span class="material-symbols-outlined fin-cat-trigger-arrow">arrow_drop_down</span>
+              </button>
+              <div class="fin-cat-dropdown-menu" id="fin-tipo-cafe-menu"></div>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px;">
+            <div class="fin-field">
+              <div class="fin-input-wrapper">
+                <span class="material-symbols-outlined fin-input-icon">sell</span>
+                <input type="text" id="fin-unidades-vendidas" inputmode="decimal" placeholder="0">
+                <label class="fin-field-label">Unidades vendidas</label>
+              </div>
+            </div>
+            <div class="fin-field">
+              <div class="fin-input-wrapper">
+                <span class="material-symbols-outlined fin-input-icon">person</span>
+                <input type="text" id="fin-vendido-a" placeholder=" ">
+                <label class="fin-field-label">Vendido a</label>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div id="fin-pago-variedad-wrapper">
+          <section style="margin-bottom:16px;display:none;" id="fin-variedad-section">
+            <div class="fin-cat-dropdown" id="fin-variedad-dropdown">
+              <span class="fin-cat-floating-label">Variedad</span>
+              <button class="fin-cat-dropdown-trigger" id="fin-variedad-trigger" type="button">
+                <span class="fin-cat-trigger-content">
+                  <span class="material-symbols-outlined fin-cat-trigger-icon">grass</span>
+                  <span class="fin-cat-trigger-label fin-cat-trigger-placeholder">Seleccionar</span>
+                </span>
+                <span class="material-symbols-outlined fin-cat-trigger-arrow">arrow_drop_down</span>
+              </button>
+              <div class="fin-cat-dropdown-menu" id="fin-variedad-menu"></div>
+            </div>
+          </section>
+          <section style="margin-bottom:16px;" id="fin-metodo-pago-section">
+            <div class="fin-cat-dropdown" id="fin-metodo-pago-chips">
+              <span class="fin-cat-floating-label">Método de pago</span>
+              <button class="fin-cat-dropdown-trigger" id="fin-metodo-pago-trigger" type="button">
+                <span class="fin-cat-trigger-content">
+                  <span class="material-symbols-outlined fin-cat-trigger-icon">payments</span>
+                  <span class="fin-cat-trigger-label">Efectivo</span>
+                </span>
+                <span class="material-symbols-outlined fin-cat-trigger-arrow">arrow_drop_down</span>
+              </button>
+              <div class="fin-cat-dropdown-menu" id="fin-metodo-pago-menu"></div>
+            </div>
+          </section>
+        </div>
 
         <!-- Fecha -->
         <div class="fin-field">
           <div class="fin-input-wrapper" id="fin-fecha-wrapper" style="cursor:pointer;">
             <span class="material-symbols-outlined fin-input-icon fin-fecha-icon">calendar_today</span>
-            <input type="text" id="fin-fecha-display" placeholder="Seleccionar fecha" readonly
+            <input type="text" id="fin-fecha-display" placeholder=" " readonly
               style="cursor:pointer;caret-color:transparent;">
             <label class="fin-field-label" style="cursor:pointer;">Fecha</label>
             <input type="hidden" id="fin-fecha">
@@ -116,8 +192,8 @@
 
         <!-- Descripción -->
         <div class="fin-field">
-          <div class="fin-input-wrapper">
-            <span class="material-symbols-outlined fin-input-icon">description</span>
+          <div class="fin-input-wrapper textarea-wrapper">
+            <span class="material-symbols-outlined fin-input-icon" style="margin-top:0.2rem;">description</span>
             <textarea id="fin-concepto" placeholder=" " rows="3"></textarea>
             <label class="fin-field-label">Descripción</label>
           </div>

@@ -14,6 +14,7 @@ console.log("✏️ finanzas/registrar.js — INIT");
       { icon: "blender", label: "Café Molido" },
       { icon: "local_fire_department", label: "Café Tostado" },
       { icon: "all_inclusive", label: "Todo en Uno" },
+      { icon: "local_florist", label: "Café Finca La Rosa" },
       { icon: "orders", label: "Pedidos en Línea" },
     ],
     egreso: [
@@ -33,6 +34,28 @@ console.log("✏️ finanzas/registrar.js — INIT");
     Object.values(CATEGORIAS).flatMap((c) => c.map((x) => x.label))
   );
   const CATEGORIAS_CUSTOM = []; // { tipo, label }
+
+  const PRECIOS_CAFE = {
+    "Café Molido": 5,
+    "Café Trillado": 8,
+    "Café Tostado": 9,
+    "Todo en Uno": 22,
+  };
+
+  const PRECIOS_FINCA = {
+    "Premium": 150,
+    "Tradicional": 100,
+  };
+
+  const CATEGORIA_FINCA = "Café Finca La Rosa";
+
+  function isCategoriaCafe(label) {
+    return label in PRECIOS_CAFE;
+  }
+
+  function isCategoriaFinca(label) {
+    return label === CATEGORIA_FINCA;
+  }
 
   function fmtMonto(n) {
     const num = Number(n) || 0;
@@ -75,6 +98,23 @@ console.log("✏️ finanzas/registrar.js — INIT");
     const fechaWrapper = document.getElementById("fin-fecha-wrapper");
     const guardarBtn = document.getElementById("fin-guardar-btn");
     const toggleBtns = document.querySelectorAll(".fin-tipo-btn");
+    const cafeFields = document.getElementById("fin-cafe-fields");
+    const cantidadInput = document.getElementById("fin-cantidad-libras");
+    const precioInput = document.getElementById("fin-precio-libra");
+    const fincaFields = document.getElementById("fin-finca-fields");
+    const unidadesInput = document.getElementById("fin-unidades-vendidas");
+    const vendidoAInput = document.getElementById("fin-vendido-a");
+    let presentacionSeleccionada = "";
+    let tipoCafeSeleccionado = "";
+    const presTrigger = document.getElementById("fin-presentacion-trigger");
+    const presMenu = document.getElementById("fin-presentacion-menu");
+    const tipoTrigger = document.getElementById("fin-tipo-cafe-trigger");
+    const tipoMenu = document.getElementById("fin-tipo-cafe-menu");
+    const variedadSection = document.getElementById("fin-variedad-section");
+    const pagoVarWrapper = document.getElementById("fin-pago-variedad-wrapper");
+    let variedadSeleccionada = "";
+    const varTrigger = document.getElementById("fin-variedad-trigger");
+    const varMenu = document.getElementById("fin-variedad-menu");
 
     // Default date
     if (fechaInput && fechaDisplay) {
@@ -122,6 +162,42 @@ console.log("✏️ finanzas/registrar.js — INIT");
             categoriaSeleccionada = data.categoria;
             updateTrigger(data.categoria, match.icon || "category");
             mostrarAcciones(data.categoria);
+            actualizarCamposEspeciales(data.categoria);
+            if (isCategoriaCafe(data.categoria)) {
+              if (data.cantidad_libras != null) cantidadInput.value = Number(data.cantidad_libras).toFixed(2);
+              if (data.precio_por_libra != null) precioInput.value = Number(data.precio_por_libra).toFixed(2);
+              recalcularMontoCafe();
+            }
+            if (isCategoriaFinca(data.categoria)) {
+              if (data.unidades_vendidas != null) unidadesInput.value = Number(data.unidades_vendidas).toFixed(2);
+              if (data.tipo_cafe) {
+                tipoCafeSeleccionado = data.tipo_cafe;
+                const tipoLabel = tipoTrigger?.querySelector(".fin-cat-trigger-label");
+                if (tipoLabel) {
+                  tipoLabel.textContent = data.tipo_cafe;
+                  tipoLabel.classList.remove("fin-cat-trigger-placeholder");
+                }
+              }
+              if (data.presentacion) {
+                presentacionSeleccionada = data.presentacion;
+                const presLabel = presTrigger?.querySelector(".fin-cat-trigger-label");
+                if (presLabel) {
+                  const presOpt = PRESENTACION_OPTS.find(o => o.value === data.presentacion);
+                  presLabel.textContent = presOpt ? presOpt.label : data.presentacion;
+                  presLabel.classList.remove("fin-cat-trigger-placeholder");
+                }
+              }
+              if (data.vendido_a) vendidoAInput.value = data.vendido_a;
+              if (data.variedad) {
+                variedadSeleccionada = data.variedad;
+                const varLabel = varTrigger?.querySelector(".fin-cat-trigger-label");
+                if (varLabel) {
+                  varLabel.textContent = data.variedad;
+                  varLabel.classList.remove("fin-cat-trigger-placeholder");
+                }
+              }
+              recalcularMontoFinca();
+            }
             validarForm();
           }
         }, 50);
@@ -142,6 +218,8 @@ console.log("✏️ finanzas/registrar.js — INIT");
           }
 
           const ahora = new Date();
+          const esCafe = isCategoriaCafe(categoriaSeleccionada);
+          const esFinca = isCategoriaFinca(categoriaSeleccionada);
           const payloadBase = {
             tipo,
             concepto,
@@ -149,6 +227,14 @@ console.log("✏️ finanzas/registrar.js — INIT");
             monto: montoValor,
             fecha: fechaInput?.value || ahora.toISOString().split("T")[0],
             metodo_pago: metodoPago,
+            cantidad_libras: esCafe ? (parseFloat(cantidadInput?.value.replace(/[^0-9.]/g, "")) || 0) : null,
+            precio_por_libra: esCafe ? (parseFloat(precioInput?.value.replace(/[^0-9.]/g, "")) || 0) : null,
+            unidades_vendidas: esFinca ? (parseFloat(unidadesInput?.value.replace(/[^0-9.]/g, "")) || 0) : null,
+            tipo_cafe: esFinca ? (tipoCafeSeleccionado || null) : null,
+            presentacion: esFinca ? (presentacionSeleccionada || null) : null,
+            vendido_a: esFinca ? (vendidoAInput?.value?.trim() || null) : null,
+            variedad: esFinca ? (variedadSeleccionada || null) : null,
+            monto_calculado: esFinca ? montoValor : null,
           };
           const payload = editId
             ? payloadBase
@@ -278,8 +364,11 @@ console.log("✏️ finanzas/registrar.js — INIT");
         .map(
           (c) => {
             const selected = c.label === categoriaSeleccionada;
+            const iconHtml = c.label === CATEGORIA_FINCA
+              ? `<img src="/imagenes/field.png" class="fin-cat-menu-item-icon" style="width:24px;height:24px;object-fit:contain;">`
+              : `<span class="material-symbols-outlined fin-cat-menu-item-icon">${c.icon}</span>`;
             return `<button class="fin-cat-menu-item${selected ? ' selected' : ''}" data-categoria="${c.label}">
-              <span class="material-symbols-outlined fin-cat-menu-item-icon">${c.icon}</span>
+              ${iconHtml}
               <span class="fin-cat-menu-item-text">${c.label}</span>
               <span class="material-symbols-outlined fin-cat-menu-item-check">check</span>
             </button>`;
@@ -300,9 +389,11 @@ console.log("✏️ finanzas/registrar.js — INIT");
         item.addEventListener("click", () => {
           const label = item.dataset.categoria;
           categoriaSeleccionada = label;
-          const icon = item.querySelector(".fin-cat-menu-item-icon")?.textContent || "category";
+          const iconEl = item.querySelector(".fin-cat-menu-item-icon");
+          const icon = label === CATEGORIA_FINCA ? "img-finca" : (iconEl?.textContent || "category");
           updateTrigger(label, icon);
           mostrarAcciones(label);
+          actualizarCamposEspeciales(label);
           validarForm();
           closeMenu();
         });
@@ -317,7 +408,27 @@ console.log("✏️ finanzas/registrar.js — INIT");
     function updateTrigger(label, icon) {
       const triggerIcon = trigger?.querySelector(".fin-cat-trigger-icon");
       const triggerLabel = trigger?.querySelector(".fin-cat-trigger-label");
-      if (triggerIcon) triggerIcon.textContent = icon;
+      if (triggerIcon) {
+        if (label === CATEGORIA_FINCA) {
+          if (triggerIcon.tagName !== "IMG") {
+            const img = document.createElement("img");
+            img.src = "/imagenes/field.png";
+            img.alt = "Finca";
+            img.className = "fin-cat-trigger-icon";
+            img.style.cssText = "width:24px;height:24px;object-fit:contain;";
+            triggerIcon.replaceWith(img);
+          }
+        } else {
+          if (triggerIcon.tagName === "IMG") {
+            const span = document.createElement("span");
+            span.className = "material-symbols-outlined fin-cat-trigger-icon";
+            span.textContent = icon || "category";
+            triggerIcon.replaceWith(span);
+          } else {
+            triggerIcon.textContent = icon || "category";
+          }
+        }
+      }
       if (triggerLabel) {
         triggerLabel.textContent = label;
         triggerLabel.classList.remove("fin-cat-trigger-placeholder");
@@ -356,6 +467,7 @@ console.log("✏️ finanzas/registrar.js — INIT");
         categoriaSeleccionada = label;
         updateTrigger(label, "add_circle");
         mostrarAcciones(label);
+        actualizarCamposEspeciales(label);
         validarForm();
         form.remove();
       }
@@ -440,17 +552,117 @@ console.log("✏️ finanzas/registrar.js — INIT");
       });
     }
 
+    function actualizarCamposEspeciales(label) {
+      const esCafe = isCategoriaCafe(label);
+      const esFinca = isCategoriaFinca(label);
+      cafeFields.style.display = esCafe ? "" : "none";
+      fincaFields.style.display = esFinca ? "" : "none";
+      if (esFinca) {
+        pagoVarWrapper.style.display = "grid";
+        pagoVarWrapper.style.gridTemplateColumns = "1fr 1fr";
+        pagoVarWrapper.style.gap = "12px";
+        variedadSection.style.display = "";
+      } else {
+        pagoVarWrapper.style.display = "";
+        variedadSection.style.display = "none";
+      }
+      if (!esFinca) {
+        variedadSeleccionada = "";
+        const varLabel = varTrigger?.querySelector(".fin-cat-trigger-label");
+        if (varLabel) {
+          varLabel.textContent = "Seleccionar";
+          varLabel.classList.add("fin-cat-trigger-placeholder");
+        }
+      }
+      if (esCafe) {
+        const precioDefault = PRECIOS_CAFE[label];
+        precioInput.value = precioDefault.toFixed(2);
+        cantidadInput.value = "";
+        montoInput.readOnly = true;
+        montoInput.style.opacity = "0.7";
+        recalcularMontoCafe();
+      } else if (esFinca) {
+        unidadesInput.value = "";
+        presentacionSeleccionada = "";
+        tipoCafeSeleccionado = "";
+        vendidoAInput.value = "";
+        const presLabel = presTrigger?.querySelector(".fin-cat-trigger-label");
+        if (presLabel) {
+          presLabel.textContent = "Seleccionar";
+          presLabel.classList.add("fin-cat-trigger-placeholder");
+        }
+        const tipoLabel = tipoTrigger?.querySelector(".fin-cat-trigger-label");
+        if (tipoLabel) {
+          tipoLabel.textContent = "Seleccionar";
+          tipoLabel.classList.add("fin-cat-trigger-placeholder");
+        }
+        montoInput.readOnly = true;
+        montoInput.style.opacity = "0.7";
+        recalcularMontoFinca();
+      } else {
+        cantidadInput.value = "";
+        precioInput.value = "";
+        unidadesInput.value = "";
+        presentacionSeleccionada = "";
+        tipoCafeSeleccionado = "";
+        vendidoAInput.value = "";
+        const presLabel = presTrigger?.querySelector(".fin-cat-trigger-label");
+        if (presLabel) {
+          presLabel.textContent = "Seleccionar";
+          presLabel.classList.add("fin-cat-trigger-placeholder");
+        }
+        const tipoLabel = tipoTrigger?.querySelector(".fin-cat-trigger-label");
+        if (tipoLabel) {
+          tipoLabel.textContent = "Seleccionar";
+          tipoLabel.classList.add("fin-cat-trigger-placeholder");
+        }
+        montoInput.readOnly = false;
+        montoInput.style.opacity = "";
+      }
+    }
+
+    function recalcularMontoCafe() {
+      const rawCant = cantidadInput.value.replace(/[^0-9.]/g, "");
+      const rawPrec = precioInput.value.replace(/[^0-9.]/g, "");
+      const cant = parseFloat(rawCant) || 0;
+      const prec = parseFloat(rawPrec) || 0;
+      const total = cant * prec;
+      montoValor = total;
+      montoInput.value = total.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      validarForm();
+    }
+
+    function recalcularMontoFinca() {
+      const rawUnidades = unidadesInput.value.replace(/[^0-9.]/g, "");
+      const unidades = parseFloat(rawUnidades) || 0;
+      const precioPresentacion = PRECIOS_FINCA[presentacionSeleccionada] || 0;
+      const total = unidades * precioPresentacion;
+      montoValor = total;
+      montoInput.value = total.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      validarForm();
+    }
+
     function resetCategoria() {
       categoriaSeleccionada = null;
       const triggerIcon = trigger?.querySelector(".fin-cat-trigger-icon");
       const triggerLabel = trigger?.querySelector(".fin-cat-trigger-label");
-      if (triggerIcon) triggerIcon.textContent = "category";
+      if (triggerIcon) {
+        if (triggerIcon.tagName === "IMG") {
+          const span = document.createElement("span");
+          span.className = "material-symbols-outlined fin-cat-trigger-icon";
+          span.textContent = "category";
+          triggerIcon.replaceWith(span);
+        } else {
+          triggerIcon.textContent = "category";
+        }
+      }
       if (triggerLabel) {
         triggerLabel.textContent = "Seleccionar categoría";
         triggerLabel.classList.add("fin-cat-trigger-placeholder");
       }
       const accionDiv = document.getElementById("acciones-categoria");
       if (accionDiv) accionDiv.innerHTML = "";
+      actualizarCamposEspeciales(null);
     }
 
     function updateTipo(t) {
@@ -503,6 +715,194 @@ console.log("✏️ finanzas/registrar.js — INIT");
     // Concepto
     if (conceptoInput) {
       conceptoInput.addEventListener("input", validarForm);
+    }
+
+    // Cantidad / Precio café
+    if (cantidadInput) {
+      cantidadInput.addEventListener("input", recalcularMontoCafe);
+      cantidadInput.addEventListener("blur", () => {
+        const raw = cantidadInput.value.replace(/[^0-9.]/g, "");
+        const num = parseFloat(raw) || 0;
+        cantidadInput.value = num ? num.toFixed(2) : "";
+      });
+    }
+    if (precioInput) {
+      precioInput.addEventListener("input", recalcularMontoCafe);
+      precioInput.addEventListener("blur", () => {
+        const raw = precioInput.value.replace(/[^0-9.]/g, "");
+        const num = parseFloat(raw) || 0;
+        precioInput.value = num.toFixed(2);
+      });
+    }
+
+    // Finca La Rosa
+    if (unidadesInput) {
+      unidadesInput.addEventListener("input", recalcularMontoFinca);
+      unidadesInput.addEventListener("blur", () => {
+        const raw = unidadesInput.value.replace(/[^0-9.]/g, "");
+        const num = parseFloat(raw) || 0;
+        unidadesInput.value = num ? num.toFixed(2) : "";
+      });
+    }
+
+    // --- Presentación dropdown ---
+    const PRESENTACION_OPTS = [
+      { value: "Premium", label: "Premium (150 HNL)" },
+      { value: "Tradicional", label: "Tradicional (100 HNL)" },
+    ];
+
+    function closePresMenu() {
+      presTrigger?.classList.remove("open");
+      presMenu?.classList.remove("open");
+    }
+
+    function openPresMenu() {
+      presTrigger?.classList.add("open");
+      presMenu?.classList.add("open");
+    }
+
+    presTrigger?.addEventListener("click", () => {
+      if (presMenu?.classList.contains("open")) {
+        closePresMenu();
+      } else {
+        renderPresMenu();
+        openPresMenu();
+      }
+    });
+
+    document.addEventListener("click", (e) => {
+      const dd = document.getElementById("fin-presentacion-dropdown");
+      if (dd && !dd.contains(e.target)) closePresMenu();
+    });
+
+    function renderPresMenu() {
+      if (!presMenu) return;
+      presMenu.innerHTML = PRESENTACION_OPTS.map(o => {
+        const selected = o.value === presentacionSeleccionada;
+        return `<button class="fin-cat-menu-item${selected ? ' selected' : ''}" data-value="${o.value}">
+          <span class="fin-cat-menu-item-text">${o.label}</span>
+          <span class="material-symbols-outlined fin-cat-menu-item-check">check</span>
+        </button>`;
+      }).join("");
+      presMenu.querySelectorAll(".fin-cat-menu-item").forEach(item => {
+        item.addEventListener("click", () => {
+          presentacionSeleccionada = item.dataset.value;
+          const label = item.querySelector(".fin-cat-menu-item-text")?.textContent || presentacionSeleccionada;
+          const presLabel = presTrigger?.querySelector(".fin-cat-trigger-label");
+          if (presLabel) {
+            presLabel.textContent = label;
+            presLabel.classList.remove("fin-cat-trigger-placeholder");
+          }
+          closePresMenu();
+          recalcularMontoFinca();
+        });
+      });
+    }
+
+    // --- Tipo de café dropdown ---
+    const TIPO_CAFE_OPTS = [
+      { value: "Molido", label: "Molido" },
+      { value: "En grano", label: "En grano" },
+    ];
+
+    function closeTipoMenu() {
+      tipoTrigger?.classList.remove("open");
+      tipoMenu?.classList.remove("open");
+    }
+
+    function openTipoMenu() {
+      tipoTrigger?.classList.add("open");
+      tipoMenu?.classList.add("open");
+    }
+
+    tipoTrigger?.addEventListener("click", () => {
+      if (tipoMenu?.classList.contains("open")) {
+        closeTipoMenu();
+      } else {
+        renderTipoMenu();
+        openTipoMenu();
+      }
+    });
+
+    document.addEventListener("click", (e) => {
+      const dd = document.getElementById("fin-tipo-cafe-dropdown");
+      if (dd && !dd.contains(e.target)) closeTipoMenu();
+    });
+
+    function renderTipoMenu() {
+      if (!tipoMenu) return;
+      tipoMenu.innerHTML = TIPO_CAFE_OPTS.map(o => {
+        const selected = o.value === tipoCafeSeleccionado;
+        return `<button class="fin-cat-menu-item${selected ? ' selected' : ''}" data-value="${o.value}">
+          <span class="fin-cat-menu-item-text">${o.label}</span>
+          <span class="material-symbols-outlined fin-cat-menu-item-check">check</span>
+        </button>`;
+      }).join("");
+      tipoMenu.querySelectorAll(".fin-cat-menu-item").forEach(item => {
+        item.addEventListener("click", () => {
+          tipoCafeSeleccionado = item.dataset.value;
+          const label = item.querySelector(".fin-cat-menu-item-text")?.textContent || tipoCafeSeleccionado;
+          const tipoLabel = tipoTrigger?.querySelector(".fin-cat-trigger-label");
+          if (tipoLabel) {
+            tipoLabel.textContent = label;
+            tipoLabel.classList.remove("fin-cat-trigger-placeholder");
+          }
+          closeTipoMenu();
+        });
+      });
+    }
+
+    // --- Variedad dropdown (Parainema / Geisha) ---
+    const VARIEDAD_OPTS = [
+      { value: "Parainema", label: "Parainema" },
+      { value: "Geisha", label: "Geisha" },
+    ];
+
+    function closeVarMenu() {
+      varTrigger?.classList.remove("open");
+      varMenu?.classList.remove("open");
+    }
+
+    function openVarMenu() {
+      varTrigger?.classList.add("open");
+      varMenu?.classList.add("open");
+    }
+
+    varTrigger?.addEventListener("click", () => {
+      if (varMenu?.classList.contains("open")) {
+        closeVarMenu();
+      } else {
+        renderVarMenu();
+        openVarMenu();
+      }
+    });
+
+    document.addEventListener("click", (e) => {
+      const dd = document.getElementById("fin-variedad-dropdown");
+      if (dd && !dd.contains(e.target)) closeVarMenu();
+    });
+
+    function renderVarMenu() {
+      if (!varMenu) return;
+      varMenu.innerHTML = VARIEDAD_OPTS.map(o => {
+        const selected = o.value === variedadSeleccionada;
+        return `<button class="fin-cat-menu-item${selected ? ' selected' : ''}" data-value="${o.value}">
+          <span class="fin-cat-menu-item-text">${o.label}</span>
+          <span class="material-symbols-outlined fin-cat-menu-item-check">check</span>
+        </button>`;
+      }).join("");
+      varMenu.querySelectorAll(".fin-cat-menu-item").forEach(item => {
+        item.addEventListener("click", () => {
+          variedadSeleccionada = item.dataset.value;
+          const label = item.querySelector(".fin-cat-menu-item-text")?.textContent || variedadSeleccionada;
+          const varLabel = varTrigger?.querySelector(".fin-cat-trigger-label");
+          if (varLabel) {
+            varLabel.textContent = label;
+            varLabel.classList.remove("fin-cat-trigger-placeholder");
+          }
+          closeVarMenu();
+        });
+      });
     }
 
     function validarForm() {
