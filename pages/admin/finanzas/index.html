@@ -87,12 +87,22 @@
       </div>
 
       <!-- SEGMENTED BUTTON -->
-      <div class="fin-segmented" id="periodo-segmented">
-        <button class="fin-seg-btn" data-periodo="dia">Día</button>
-        <button class="fin-seg-btn active" data-periodo="semana">Semana</button>
-        <button class="fin-seg-btn" data-periodo="mes">Mes</button>
+      <div class="fin-segmented-wrapper">
+        <div class="fin-segmented" id="periodo-segmented">
+          <button class="fin-seg-btn" data-periodo="dia">Día</button>
+          <button class="fin-seg-btn active" data-periodo="semana">Semana</button>
+          <button class="fin-seg-btn" data-periodo="mes">Mes</button>
+        </div>
       </div>
-      <div class="fin-periodo-label" id="periodo-label"></div>
+      <div class="fin-periodo-nav">
+        <button class="fin-periodo-arrow" id="periodo-prev" aria-label="Anterior">
+          <span class="material-symbols-outlined">chevron_left</span>
+        </button>
+        <div class="fin-periodo-label" id="periodo-label"></div>
+        <button class="fin-periodo-arrow" id="periodo-next" aria-label="Siguiente">
+          <span class="material-symbols-outlined">chevron_right</span>
+        </button>
+      </div>
 
       <!-- GRÁFICA -->
       <section class="fin-card">
@@ -124,36 +134,6 @@
       <span class="fin-fab-label">Registrar</span>
     </a>
 
-    <!-- BOTTOM SHEET -->
-    <div class="fin-bottom-sheet-overlay"></div>
-    <div class="fin-bottom-sheet">
-      <div class="fin-bottom-sheet-handle"></div>
-      <div class="fin-bs-title" id="bs-concepto"></div>
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
-        <span class="material-symbols-outlined" id="bs-icon"></span>
-        <span id="bs-categoria" style="font:var(--md-label-lg);color:var(--md-on-surface-variant);opacity:0.7;"></span>
-      </div>
-      <div class="fin-bs-row">
-        <span class="fin-bs-label">Monto</span>
-        <span id="bs-monto" style="font:var(--md-title-lg);"></span>
-      </div>
-      <div class="fin-bs-row">
-        <span class="fin-bs-label">Fecha</span>
-        <span id="bs-fecha"></span>
-      </div>
-      <div class="fin-bs-row">
-        <span class="fin-bs-label">Hora</span>
-        <span id="bs-hora"></span>
-      </div>
-      <div class="fin-bs-row">
-        <span class="fin-bs-label">Notas</span>
-        <span id="bs-notas"></span>
-      </div>
-      <div class="fin-bs-actions">
-        <button class="fin-btn-outlined">Editar</button>
-        <button class="fin-btn-text">Eliminar</button>
-      </div>
-    </div>
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

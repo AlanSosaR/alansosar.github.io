@@ -10,6 +10,7 @@ console.log("📊 finanzas/dashboard.js — INIT");
 
   /* --- STATE --- */
   let periodo = localStorage.getItem("fin_periodo") || "semana";
+  let periodoOffset = 0;
   let filtro = "ambos";
   let movimientos = [];
 
@@ -49,13 +50,21 @@ console.log("📊 finanzas/dashboard.js — INIT");
     return `HNL ${parts.join(".")}`;
   }
 
-  function fmtMontoHTML(n, signo) {
+  function fmtMontoHTML(n, signo, esIngreso) {
     const num = Number(n) || 0;
     const fixed = num.toFixed(2);
     const parts = fixed.split(".");
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     const s = signo || "";
-    return `${s ? `<span style="color:var(--marron)">${s}</span>` : ""}<span style="color:var(--marron);font-weight:900;">${parts.join(".")}</span> <span style="color:var(--verde);font-weight:600;font-size:0.6em;vertical-align:super;">HNL</span>`;
+    const color = esIngreso === undefined ? (num >= 0 ? "var(--verde)" : "var(--md-error)") : esIngreso ? "var(--verde)" : "var(--md-error)";
+    return `${s ? `<span style="color:var(--marron)">${s}</span>` : ""}<span style="color:${color};font-weight:900;">${parts.join(".")}</span> <span style="color:var(--marron);font-weight:600;font-size:0.6em;vertical-align:super;">HNL</span>`;
+  }
+
+  function obtenerNombreUsuario() {
+    try {
+      const user = JSON.parse(localStorage.getItem("cortero_user") || "null");
+      return user?.name || user?.email || "—";
+    } catch { return "—"; }
   }
 
   function showSnackbar(msg) {
@@ -71,11 +80,48 @@ console.log("📊 finanzas/dashboard.js — INIT");
     sb._timer = setTimeout(() => sb.classList.remove("open"), 3000);
   }
 
-  function getRangoFechas(per) {
+  function showConfirmSnackbar(msg) {
+    return new Promise((resolve) => {
+      let sb = document.querySelector(".fin-snackbar-confirm");
+      if (!sb) {
+        sb = document.createElement("div");
+        sb.className = "fin-snackbar-confirm";
+        sb.innerHTML = `
+          <span class="fin-snackbar-confirm-msg"></span>
+          <div class="fin-snackbar-confirm-actions">
+            <button class="fin-snackbar-btn-cancel">Cancelar</button>
+            <button class="fin-snackbar-btn-confirm">Eliminar</button>
+          </div>`;
+        document.body.appendChild(sb);
+      }
+      sb.querySelector(".fin-snackbar-confirm-msg").textContent = msg;
+      sb.classList.add("open");
+
+      const cleanup = () => {
+        sb.classList.remove("open");
+        sb.querySelector(".fin-snackbar-btn-cancel").removeEventListener("click", onCancel);
+        sb.querySelector(".fin-snackbar-btn-confirm").removeEventListener("click", onConfirm);
+      };
+
+      const onCancel = () => { cleanup(); resolve(false); };
+      const onConfirm = () => { cleanup(); resolve(true); };
+
+      sb.querySelector(".fin-snackbar-btn-cancel").addEventListener("click", onCancel);
+      sb.querySelector(".fin-snackbar-btn-confirm").addEventListener("click", onConfirm);
+    });
+  }
+
+  function getRangoFechas(per, offset) {
+    offset = offset || 0;
     const now = new Date();
-    const y = now.getFullYear();
-    const m = now.getMonth();
-    const d = now.getDate();
+    let base = new Date(now);
+    if (per === "semana") base.setDate(base.getDate() + offset * 7);
+    else if (per === "dia") base.setDate(base.getDate() + offset);
+    else if (per === "mes") base.setMonth(base.getMonth() + offset);
+
+    const y = base.getFullYear();
+    const m = base.getMonth();
+    const d = base.getDate();
     let desde, hasta, label;
 
     switch (per) {
@@ -86,7 +132,7 @@ console.log("📊 finanzas/dashboard.js — INIT");
         break;
       }
       case "semana": {
-        const day = now.getDay();
+        const day = base.getDay();
         const diff = day === 0 ? 6 : day - 1;
         desde = new Date(y, m, d - diff);
         hasta = new Date(y, m, d - diff + 7);
@@ -109,7 +155,7 @@ console.log("📊 finanzas/dashboard.js — INIT");
   }
 
   function getRangoAnterior(per) {
-    const { desde, hasta } = getRangoFechas(per);
+    const { desde, hasta } = getRangoFechas(per, periodoOffset);
     const d = new Date(desde);
     const h = new Date(hasta);
     const diff = h.getTime() - d.getTime();
@@ -199,7 +245,7 @@ console.log("📊 finanzas/dashboard.js — INIT");
 
   async function cargarDashboard() {
     try {
-      const rango = getRangoFechas(periodo);
+      const rango = getRangoFechas(periodo, periodoOffset);
       if (els.periodoLabel()) els.periodoLabel().textContent = rango.label;
 
       // Parallel: all-time data for saldo, period data for chart/historial
@@ -221,8 +267,8 @@ console.log("📊 finanzas/dashboard.js — INIT");
       // Stats cards (period-specific)
       const ingresos = data.filter((r) => r.tipo === "ingreso");
       const egresos = data.filter((r) => r.tipo === "egreso");
-      if (els.ingresosMonto()) els.ingresosMonto().innerHTML = fmtMontoHTML(ingresos.reduce((s, i) => s + Number(i.monto), 0));
-      if (els.egresosMonto()) els.egresosMonto().innerHTML = fmtMontoHTML(egresos.reduce((s, i) => s + Number(i.monto), 0));
+      if (els.ingresosMonto()) els.ingresosMonto().innerHTML = fmtMontoHTML(ingresos.reduce((s, i) => s + Number(i.monto), 0), "", true);
+      if (els.egresosMonto()) els.egresosMonto().innerHTML = fmtMontoHTML(egresos.reduce((s, i) => s + Number(i.monto), 0), "", false);
 
       // Chart & historial from filtered data
       renderChart(data);
@@ -392,12 +438,13 @@ console.log("📊 finanzas/dashboard.js — INIT");
               <span class="material-symbols-outlined">${icon}</span>
             </div>
             <div class="fin-item-body">
-              <div class="fin-item-concept">${item.concepto}</div>
-              <div class="fin-item-categoria">${item.categoria}</div>
+              <div class="fin-item-concept">${item.categoria}</div>
+              <div class="fin-item-categoria">${item.notas || item.concepto}</div>
             </div>
             <div class="fin-item-trailing ${isIngreso ? "primary" : "error"}">
-              ${fmtMontoHTML(item.monto, isIngreso ? "+" : "−")}
+              ${fmtMontoHTML(item.monto, isIngreso ? "+" : "−", isIngreso)}
             </div>
+            <span class="material-symbols-outlined fin-item-chevron">expand_more</span>
           </div>`;
         if (idx < grupos[key].length - 1) {
           html += `<div class="fin-item-divider"></div>`;
@@ -407,36 +454,79 @@ console.log("📊 finanzas/dashboard.js — INIT");
 
     container.innerHTML = html;
 
-    // Tap item -> bottom sheet
+    // Tap item -> expandable detail
     container.querySelectorAll(".fin-item").forEach((el) => {
       el.addEventListener("click", () => {
         const id = el.dataset.id;
         const item = data.find((r) => r.id === id);
-        if (item) showBottomSheet(item);
+        if (item) toggleDetail(el, item);
       });
     });
   }
 
-  function showBottomSheet(item) {
-    const overlay = document.querySelector(".fin-bottom-sheet-overlay");
-    const sheet = document.querySelector(".fin-bottom-sheet");
-    if (!overlay || !sheet) return;
+  function toggleDetail(el, item) {
+    const existing = el.nextElementSibling;
+    if (existing && existing.classList.contains("fin-item-detail")) {
+      existing.querySelector(".fin-item-detail-inner").style.maxHeight = "0";
+      setTimeout(() => existing.remove(), 300);
+      el.classList.remove("expanded");
+      return;
+    }
+
+    document.querySelectorAll(".fin-item-detail").forEach(d => d.remove());
+    document.querySelectorAll(".fin-item.expanded").forEach(e => e.classList.remove("expanded"));
 
     const isIngreso = item.tipo === "ingreso";
     const icon = CATEGORY_ICONS[item.categoria] || (isIngreso ? "trending_up" : "trending_down");
+    const fechaStr = new Date(item.fecha + "T" + (item.hora || "00:00:00")).toLocaleDateString("es-HN", {
+      weekday: "long", day: "numeric", month: "long", year: "numeric"
+    });
 
-    document.getElementById("bs-icon").textContent = icon;
-    document.getElementById("bs-icon").className = `material-symbols-outlined`;
-    document.getElementById("bs-concepto").textContent = item.concepto;
-    document.getElementById("bs-categoria").textContent = item.categoria;
-    document.getElementById("bs-monto").innerHTML = fmtMontoHTML(item.monto, isIngreso ? "+" : "−");
-    document.getElementById("bs-monto").style.color = "";
-    document.getElementById("bs-fecha").textContent = new Date(item.fecha + "T" + (item.hora || "00:00:00")).toLocaleDateString("es-HN", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
-    document.getElementById("bs-hora").textContent = item.hora ? item.hora.slice(0, 5) : "--:--";
-    document.getElementById("bs-notas").textContent = item.notas || "—";
+    const div = document.createElement("div");
+    div.className = "fin-item-detail";
+    div.innerHTML = `
+      <div class="fin-item-detail-inner">
+        <div class="fin-detail-row">
+          <span class="fin-detail-label">Método de pago</span>
+          <span class="fin-detail-value">${item.metodo_pago || "—"}</span>
+        </div>
+        <div class="fin-detail-row">
+          <span class="fin-detail-label">Fecha</span>
+          <span class="fin-detail-value">${fechaStr}${item.hora ? ` · ${item.hora.slice(0, 5)}` : ""}</span>
+        </div>
+        <div class="fin-detail-row">
+          <span class="fin-detail-label">Registrado por</span>
+          <span class="fin-detail-value">${obtenerNombreUsuario()}</span>
+        </div>
+        <div class="fin-detail-actions">
+          <button class="fin-btn-outlined" style="border-color:var(--md-outline);color:var(--md-on-surface-variant);">Editar</button>
+          <button class="fin-btn-outlined" style="border-color:#dc2626;color:#dc2626;">Eliminar</button>
+        </div>
+      </div>
+    `;
+    el.after(div);
+    el.classList.add("expanded");
+    const inner = div.querySelector(".fin-item-detail-inner");
+    requestAnimationFrame(() => {
+      inner.style.maxHeight = inner.scrollHeight + "px";
+    });
 
-    overlay.classList.add("open");
-    sheet.classList.add("open");
+    const btns = div.querySelectorAll(".fin-btn-outlined");
+    btns[0].addEventListener("click", () => {
+      window.location.href = `/pages/admin/finanzas/registrar.html?id=${item.id}`;
+    });
+
+    btns[1].addEventListener("click", async () => {
+      if (!await showConfirmSnackbar("¿Eliminar este movimiento?")) return;
+      const { error } = await sb.from("finanzas_movimientos").delete().eq("id", item.id);
+      if (!error) {
+        el.remove();
+        div.remove();
+        window.dispatchEvent(new CustomEvent("fin:refresh"));
+      } else {
+        showSnackbar("Error al eliminar");
+      }
+    });
   }
 
   /* --- CATEGORY ICONS --- */
@@ -455,14 +545,6 @@ console.log("📊 finanzas/dashboard.js — INIT");
     "Todo en Uno": "all_inclusive",
     "Otros": "more_horiz",
   };
-
-  /* --- BOTTOM SHEET CLOSE --- */
-  function closeBottomSheet() {
-    const overlay = document.querySelector(".fin-bottom-sheet-overlay");
-    const sheet = document.querySelector(".fin-bottom-sheet");
-    if (overlay) overlay.classList.remove("open");
-    if (sheet) sheet.classList.remove("open");
-  }
 
   /* --- FAB SCROLL --- */
   function setupFabScroll() {
@@ -507,9 +589,20 @@ console.log("📊 finanzas/dashboard.js — INIT");
         els.segBtns().forEach((b) => b.classList.remove("active"));
         btn.classList.add("active");
         periodo = btn.dataset.periodo;
+        periodoOffset = 0;
         localStorage.setItem("fin_periodo", periodo);
         await cargarDashboard();
       });
+    });
+
+    // Period nav arrows
+    document.getElementById("periodo-prev")?.addEventListener("click", async () => {
+      periodoOffset--;
+      await cargarDashboard();
+    });
+    document.getElementById("periodo-next")?.addEventListener("click", async () => {
+      periodoOffset++;
+      await cargarDashboard();
     });
 
     // Filter chips
@@ -524,9 +617,6 @@ console.log("📊 finanzas/dashboard.js — INIT");
 
     // FAB scroll
     setupFabScroll();
-
-    // Bottom sheet close
-    document.querySelector(".fin-bottom-sheet-overlay")?.addEventListener("click", closeBottomSheet);
 
     // Load data
     await cargarDashboard();

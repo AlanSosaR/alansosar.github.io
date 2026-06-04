@@ -60,12 +60,15 @@ console.log("✏️ finanzas/registrar.js — INIT");
 
     let tipo = "ingreso";
     let categoriaSeleccionada = null;
+    let metodoPago = "Efectivo";
     let montoValor = 0;
 
     const montoInput = document.getElementById("fin-monto-input");
     const conceptoInput = document.getElementById("fin-concepto");
     const trigger = document.getElementById("fin-cat-trigger");
     const menu = document.getElementById("fin-cat-menu");
+    const mpTrigger = document.getElementById("fin-metodo-pago-trigger");
+    const mpMenu = document.getElementById("fin-metodo-pago-menu");
     const fechaInput = document.getElementById("fin-fecha");
     const fechaDisplay = document.getElementById("fin-fecha-display");
     const fechaWrapper = document.getElementById("fin-fecha-wrapper");
@@ -108,6 +111,9 @@ console.log("✏️ finanzas/registrar.js — INIT");
         fechaInput.value = data.fecha;
         fechaDisplay.value = new Date(data.fecha + "T" + (data.hora || "00:00:00")).toLocaleDateString("es-HN", { day: "2-digit", month: "long", year: "numeric" });
         guardarBtn.innerHTML = `<span class="material-symbols-outlined" style="font-size:18px;">save</span> Actualizar ${data.tipo === "ingreso" ? "Ingreso" : "Egreso"}`;
+        metodoPago = data.metodo_pago || "Efectivo";
+        const mpLabel = mpTrigger?.querySelector(".fin-cat-trigger-label");
+        if (mpLabel) mpLabel.textContent = metodoPago;
         setTimeout(() => {
           const cats = CATEGORIAS[data.tipo] || [];
           const match = cats.find(c => c.label === data.categoria);
@@ -141,6 +147,7 @@ console.log("✏️ finanzas/registrar.js — INIT");
             categoria: categoriaSeleccionada,
             monto: montoValor,
             fecha: fechaInput?.value || ahora.toISOString().split("T")[0],
+            metodo_pago: metodoPago,
           };
           const payload = editId
             ? payloadBase
@@ -213,6 +220,55 @@ console.log("✏️ finanzas/registrar.js — INIT");
         closeMenu();
       }
     });
+
+    // --- Método de pago dropdown ---
+    const METODOS_PAGO = ["Efectivo", "Transferencia"];
+
+    function closeMpMenu() {
+      mpTrigger?.classList.remove("open");
+      mpMenu?.classList.remove("open");
+    }
+
+    function openMpMenu() {
+      mpTrigger?.classList.add("open");
+      mpMenu?.classList.add("open");
+    }
+
+    mpTrigger?.addEventListener("click", () => {
+      if (mpMenu?.classList.contains("open")) {
+        closeMpMenu();
+      } else {
+        renderMpMenu();
+        openMpMenu();
+      }
+    });
+
+    document.addEventListener("click", (e) => {
+      const dd = document.getElementById("fin-metodo-pago-chips");
+      if (dd && !dd.contains(e.target)) {
+        closeMpMenu();
+      }
+    });
+
+    function renderMpMenu() {
+      if (!mpMenu) return;
+      mpMenu.innerHTML = METODOS_PAGO.map(mp => {
+        const selected = mp === metodoPago;
+        return `<button class="fin-cat-menu-item${selected ? ' selected' : ''}" data-metodo="${mp}">
+          <span class="fin-cat-menu-item-text">${mp}</span>
+          <span class="material-symbols-outlined fin-cat-menu-item-check">check</span>
+        </button>`;
+      }).join("");
+      mpMenu.querySelectorAll(".fin-cat-menu-item").forEach(item => {
+        item.addEventListener("click", () => {
+          metodoPago = item.dataset.metodo;
+          const mpLabel = mpTrigger?.querySelector(".fin-cat-trigger-label");
+          if (mpLabel) mpLabel.textContent = metodoPago;
+          closeMpMenu();
+        });
+      });
+    }
+    // --- Fin método de pago ---
 
     function renderCategorias(t) {
       if (!menu) return;
@@ -418,6 +474,11 @@ console.log("✏️ finanzas/registrar.js — INIT");
         guardarBtn.className = `fin-btn-filled ${t === "ingreso" ? "primary" : "error"}`;
         guardarBtn.innerHTML = `<span class="material-symbols-outlined" style="font-size:18px;">save</span> Guardar ${t === "ingreso" ? "Ingreso" : "Egreso"}`;
       }
+      const montoColor = t === "ingreso" ? "var(--verde)" : "var(--md-error)";
+      const montoInput = document.getElementById("fin-monto-input");
+      if (montoInput) montoInput.style.color = montoColor;
+      const hnlLabel = document.getElementById("fin-hnl-label");
+      if (hnlLabel) hnlLabel.style.color = "var(--marron)";
       validarForm();
     }
 

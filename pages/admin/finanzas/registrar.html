@@ -47,7 +47,7 @@
         <section class="fin-saldo-card">
           <div class="fin-hero-label">¿Cuánto vas a registrar?</div>
           <div class="fin-hero-input-wrap">
-            <span style="flex-shrink:0;"><span style="color:var(--verde);font-weight:600;font:var(--md-display-lg);font-size:clamp(24px, 6vw, 48px);">HNL</span></span>
+            <span style="flex-shrink:0;"><span id="fin-hnl-label" style="color:var(--marron);font-weight:600;font:var(--md-display-lg);font-size:clamp(24px, 6vw, 48px);">HNL</span></span>
             <input type="text" id="fin-monto-input" inputmode="decimal" placeholder="0,000.00" value="0.00"
               class="fin-hero-input">
           </div>
@@ -82,6 +82,21 @@
           </button>
           <div class="fin-cat-dropdown-menu" id="fin-cat-menu"></div>
           <div id="acciones-categoria" style="display:flex;gap:8px;margin-top:8px;"></div>
+        </div>
+      </section>
+
+      <!-- MÉTODO DE PAGO -->
+      <section style="margin-bottom:16px;">
+        <p style="font:var(--md-title-md);color:var(--md-on-surface);font-weight:600;margin-bottom:12px;">Método de pago</p>
+        <div class="fin-cat-dropdown" id="fin-metodo-pago-chips">
+          <button class="fin-cat-dropdown-trigger" id="fin-metodo-pago-trigger" type="button">
+            <span class="fin-cat-trigger-content">
+              <span class="material-symbols-outlined fin-cat-trigger-icon">payments</span>
+              <span class="fin-cat-trigger-label">Efectivo</span>
+            </span>
+            <span class="material-symbols-outlined fin-cat-trigger-arrow">arrow_drop_down</span>
+          </button>
+          <div class="fin-cat-dropdown-menu" id="fin-metodo-pago-menu"></div>
         </div>
       </section>
 

@@ -4,5 +4,8 @@
   "scripts": {
     "dev": "npx live-server --port=3000 --no-browser --wait=200",
     "dev:open": "npx live-server --port=3000 --wait=200"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.107.0"
   }
 }

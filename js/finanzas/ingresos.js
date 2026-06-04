@@ -11,6 +11,7 @@ console.log("📈 finanzas/ingresos.js — INIT");
   let periodo = localStorage.getItem("fin_periodo") || "semana";
   let categoriaFiltro = "todos";
   let movimientos = [];
+  let periodoOffset = 0;
 
   const $ = (sel) => document.querySelector(sel);
   const $$ = (sel) => document.querySelectorAll(sel);
@@ -38,7 +39,7 @@ console.log("📈 finanzas/ingresos.js — INIT");
     const parts = fixed.split(".");
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     const s = signo || "";
-    return `${s ? `<span style="color:var(--marron)">${s}</span>` : ""}<span style="color:var(--marron);font-weight:900;">${parts.join(".")}</span> <span style="color:var(--verde);font-weight:600;font-size:0.6em;vertical-align:super;">HNL</span>`;
+    return `${s ? `<span style="color:var(--verde)">${s}</span>` : ""}<span style="color:var(--verde);font-weight:900;">${parts.join(".")}</span> <span style="color:var(--marron);font-weight:600;font-size:0.6em;vertical-align:super;">HNL</span>`;
   }
 
   function showSnackbar(msg) {
@@ -54,39 +55,87 @@ console.log("📈 finanzas/ingresos.js — INIT");
     sb._timer = setTimeout(() => sb.classList.remove("open"), 3000);
   }
 
-  function getRangoFechas(per) {
+  function obtenerNombreUsuario() {
+    try {
+      const user = JSON.parse(localStorage.getItem("cortero_user") || "null");
+      return user?.name || user?.email || "—";
+    } catch { return "—"; }
+  }
+
+  function showConfirmSnackbar(msg) {
+    return new Promise((resolve) => {
+      let sb = document.querySelector(".fin-snackbar-confirm");
+      if (!sb) {
+        sb = document.createElement("div");
+        sb.className = "fin-snackbar-confirm";
+        sb.innerHTML = `
+          <span class="fin-snackbar-confirm-msg"></span>
+          <div class="fin-snackbar-confirm-actions">
+            <button class="fin-snackbar-btn-cancel">Cancelar</button>
+            <button class="fin-snackbar-btn-confirm">Eliminar</button>
+          </div>`;
+        document.body.appendChild(sb);
+      }
+      sb.querySelector(".fin-snackbar-confirm-msg").textContent = msg;
+      sb.classList.add("open");
+
+      const cleanup = () => {
+        sb.classList.remove("open");
+        sb.querySelector(".fin-snackbar-btn-cancel").removeEventListener("click", onCancel);
+        sb.querySelector(".fin-snackbar-btn-confirm").removeEventListener("click", onConfirm);
+      };
+
+      const onCancel = () => { cleanup(); resolve(false); };
+      const onConfirm = () => { cleanup(); resolve(true); };
+
+      sb.querySelector(".fin-snackbar-btn-cancel").addEventListener("click", onCancel);
+      sb.querySelector(".fin-snackbar-btn-confirm").addEventListener("click", onConfirm);
+    });
+  }
+
+  function getRangoFechas(per, offset) {
+    offset = offset || 0;
     const now = new Date();
-    const y = now.getFullYear();
-    const m = now.getMonth();
-    const d = now.getDate();
-    let desde, hasta;
+    let base = new Date(now);
+    if (per === "semana") base.setDate(base.getDate() + offset * 7);
+    else if (per === "dia") base.setDate(base.getDate() + offset);
+    else if (per === "mes") base.setMonth(base.getMonth() + offset);
+
+    const y = base.getFullYear();
+    const m = base.getMonth();
+    const d = base.getDate();
+    let desde, hasta, label;
 
     switch (per) {
       case "dia":
         desde = new Date(y, m, d);
         hasta = new Date(y, m, d + 1);
+        label = desde.toLocaleDateString("es-HN", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
         break;
       case "semana": {
-        const day = now.getDay();
+        const day = base.getDay();
         const diff = day === 0 ? 6 : day - 1;
         desde = new Date(y, m, d - diff);
         hasta = new Date(y, m, d - diff + 7);
+        label = `${desde.toLocaleDateString("es-HN", { day: "numeric", month: "short" })} – ${new Date(hasta.getTime() - 86400000).toLocaleDateString("es-HN", { day: "numeric", month: "short", year: "numeric" })}`;
         break;
       }
       case "mes":
         desde = new Date(y, m, 1);
         hasta = new Date(y, m + 1, 1);
+        label = desde.toLocaleDateString("es-HN", { month: "long", year: "numeric" });
         break;
     }
 
     return {
       desde: fmtDate(desde),
       hasta: fmtDate(hasta),
+      label,
     };
   }
 
   function getRangoAnterior(per) {
-    const { desde, hasta } = getRangoFechas(per);
+    const { desde, hasta } = getRangoFechas(per, periodoOffset);
     const d = new Date(desde);
     const h = new Date(hasta);
     const diff = h.getTime() - d.getTime();
@@ -123,7 +172,9 @@ console.log("📈 finanzas/ingresos.js — INIT");
   }
 
   async function cargarIngresos() {
-    const rango = getRangoFechas(periodo);
+    const rango = getRangoFechas(periodo, periodoOffset);
+    const labelEl = document.getElementById("periodo-label");
+    if (labelEl) labelEl.textContent = rango.label;
     console.log("📈 Query rango:", rango);
     const { data, error } = await sb
       .from("finanzas_movimientos")
@@ -199,10 +250,11 @@ console.log("📈 finanzas/ingresos.js — INIT");
               <span class="material-symbols-outlined">${icon}</span>
             </div>
             <div class="fin-item-body">
-              <div class="fin-item-concept">${item.concepto}</div>
-              <div class="fin-item-categoria">${item.categoria}</div>
+              <div class="fin-item-concept">${item.categoria}</div>
+              <div class="fin-item-categoria">${item.notas || item.concepto}</div>
             </div>
             <div class="fin-item-trailing">${fmtMontoHTML(item.monto, "+")}</div>
+            <span class="material-symbols-outlined fin-item-chevron">expand_more</span>
           </div>`;
         if (idx < grupos[key].length - 1) {
           html += `<div class="fin-item-divider"></div>`;
@@ -241,7 +293,6 @@ console.log("📈 finanzas/ingresos.js — INIT");
     document.querySelectorAll(".fin-item-detail").forEach(d => d.remove());
     document.querySelectorAll(".fin-item.expanded").forEach(e => e.classList.remove("expanded"));
 
-    const icon = ICONS[item.categoria] || "trending_up";
     const fechaStr = new Date(item.fecha + "T" + (item.hora || "00:00:00")).toLocaleDateString("es-HN", {
       weekday: "long", day: "numeric", month: "long", year: "numeric"
     });
@@ -250,30 +301,21 @@ console.log("📈 finanzas/ingresos.js — INIT");
     div.className = "fin-item-detail";
     div.innerHTML = `
       <div class="fin-item-detail-inner">
-        <div class="fin-detail-header">
-          <span class="material-symbols-outlined" style="color:var(--verde);font-size:22px;">${icon}</span>
-          <span style="font:var(--md-label-lg);color:var(--md-on-surface-variant);opacity:0.7;">${item.categoria}</span>
-          <span class="fin-detail-concepto">${item.concepto}</span>
-        </div>
         <div class="fin-detail-row">
-          <span class="fin-detail-label">Monto</span>
-          <span class="fin-detail-value">${fmtMontoHTML(item.monto, "+")}</span>
+          <span class="fin-detail-label">Método de pago</span>
+          <span class="fin-detail-value">${item.metodo_pago || "—"}</span>
         </div>
         <div class="fin-detail-row">
           <span class="fin-detail-label">Fecha</span>
-          <span class="fin-detail-value">${fechaStr}</span>
+          <span class="fin-detail-value">${fechaStr}${item.hora ? ` · ${item.hora.slice(0, 5)}` : ""}</span>
         </div>
         <div class="fin-detail-row">
-          <span class="fin-detail-label">Hora</span>
-          <span class="fin-detail-value">${item.hora ? item.hora.slice(0, 5) : "--:--"}</span>
-        </div>
-        <div class="fin-detail-row">
-          <span class="fin-detail-label">Notas</span>
-          <span class="fin-detail-value">${item.notas || "—"}</span>
+          <span class="fin-detail-label">Registrado por</span>
+          <span class="fin-detail-value">${obtenerNombreUsuario()}</span>
         </div>
         <div class="fin-detail-actions">
-          <button class="fin-btn-outlined">Editar</button>
-          <button class="fin-btn-text">Eliminar</button>
+          <button class="fin-btn-outlined" style="border-color:var(--md-outline);color:var(--md-on-surface-variant);">Editar</button>
+          <button class="fin-btn-outlined" style="border-color:#dc2626;color:#dc2626;">Eliminar</button>
         </div>
       </div>
     `;
@@ -284,16 +326,20 @@ console.log("📈 finanzas/ingresos.js — INIT");
       inner.style.maxHeight = inner.scrollHeight + "px";
     });
 
-    div.querySelector(".fin-btn-outlined").addEventListener("click", () => {
+    const btns = div.querySelectorAll(".fin-btn-outlined");
+    btns[0].addEventListener("click", () => {
       window.location.href = `/pages/admin/finanzas/registrar.html?id=${item.id}`;
     });
 
-    div.querySelector(".fin-btn-text").addEventListener("click", async () => {
-      if (!confirm("¿Eliminar este ingreso?")) return;
+    btns[1].addEventListener("click", async () => {
+      if (!await showConfirmSnackbar("¿Eliminar este ingreso?")) return;
       const { error } = await sb.from("finanzas_movimientos").delete().eq("id", item.id);
       if (!error) {
         el.remove();
         div.remove();
+        showSnackbar("Ingreso eliminado");
+      } else {
+        showSnackbar("Error al eliminar");
       }
     });
   }
@@ -314,6 +360,15 @@ console.log("📈 finanzas/ingresos.js — INIT");
         localStorage.setItem("fin_periodo", periodo);
         cargarIngresos();
       });
+    });
+
+    document.getElementById("periodo-prev")?.addEventListener("click", async () => {
+      periodoOffset--;
+      await cargarIngresos();
+    });
+    document.getElementById("periodo-next")?.addEventListener("click", async () => {
+      periodoOffset++;
+      await cargarIngresos();
     });
 
     const chipContainer = document.getElementById("ingresos-chips");
