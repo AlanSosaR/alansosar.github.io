@@ -420,6 +420,83 @@
   opacity: 0.7;
 }
 
+/* --- Por Cobrar --- */
+.fin-card-porcobrar {
+  background: var(--md-surface-container);
+  border-radius: var(--md-shape-xl);
+  padding: 16px 20px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow-premium);
+}
+
+.fin-porcobrar-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.fin-porcobrar-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--md-shape-full);
+  background: #E8F5E9;
+  color: var(--verde);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.fin-porcobrar-icon .material-symbols-outlined {
+  font-size: 24px;
+}
+
+.fin-porcobrar-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.fin-porcobrar-label {
+  font: var(--md-title-md);
+  font-weight: 600;
+  color: var(--md-on-surface);
+}
+
+.fin-porcobrar-monto {
+  font: var(--md-headline-md);
+  font-weight: 800;
+  color: var(--md-on-surface);
+  margin-top: 2px;
+}
+
+.fin-porcobrar-count {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--md-on-surface-variant);
+  opacity: 0.5;
+  flex-shrink: 0;
+}
+
+.fin-porcobrar-detalle {
+  display: flex;
+  gap: 16px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--md-outline-variant);
+  font: var(--md-label-sm);
+  color: var(--md-on-surface-variant);
+}
+
+.fin-porcobrar-dash {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.fin-porcobrar-dash strong {
+  color: var(--md-on-surface);
+}
+
 .fin-stat-empty {
   font-size: 12px;
   color: var(--md-on-surface-variant);

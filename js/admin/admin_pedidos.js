@@ -580,6 +580,68 @@ console.log("🛠️ admin_pedidos.js — INIT STITCH");
         });
     }
 
+    function totalBolsas(items) {
+        let count = 0;
+        (items || []).forEach(item => {
+            count += Number(item.quantity) || 0;
+        });
+        return count;
+    }
+
+    async function registrarFinanzasIngreso(pedido) {
+        const esCash = pedido.payment_method === "cash_on_delivery";
+        const yaRegistrado = await sb
+            .from("finanzas_movimientos")
+            .select("id")
+            .eq("order_id", pedido.id)
+            .maybeSingle();
+        if (yaRegistrado.data) return;
+
+        const nombre = pedido.users?.name || "";
+        const bolsas = totalBolsas(pedido.items);
+        const bolsaStr = bolsas > 0 ? ` — ${bolsas} bolsa${bolsas !== 1 ? "s" : ""}` : "";
+
+        const ahora = new Date();
+        const payload = {
+            tipo: "ingreso",
+            concepto: `Pedido #${pedido.order_number}${nombre ? ` — ${nombre}` : ""}${bolsaStr}`,
+            categoria: "Pedidos en Línea",
+            monto: pedido.total,
+            fecha: ahora.toISOString().split("T")[0],
+            hora: ahora.toTimeString().slice(0, 8),
+            metodo_pago: esCash ? "Efectivo" : "Transferencia",
+            notas: pedido.order_notes || null,
+            order_id: pedido.id,
+        };
+        const { error } = await sb.from("finanzas_movimientos").insert(payload);
+        if (error) console.error("❌ Error al registrar ingreso de pedido:", error);
+        else console.log(`✅ Ingreso registrado para pedido #${pedido.order_number}`);
+    }
+
+    async function registrarFinanzasAnulacion(pedido) {
+        const existente = await sb
+            .from("finanzas_movimientos")
+            .select("id, monto")
+            .eq("order_id", pedido.id)
+            .maybeSingle();
+        if (!existente.data) return; // no había ingreso registrado
+
+        const ahora = new Date();
+        const payload = {
+            tipo: "egreso",
+            concepto: `Anulación Pedido #${pedido.order_number}`,
+            categoria: "Otros",
+            monto: existente.data.monto,
+            fecha: ahora.toISOString().split("T")[0],
+            hora: ahora.toTimeString().slice(0, 8),
+            metodo_pago: "Efectivo",
+            notas: `Anulación del pedido #${pedido.order_number}`,
+        };
+        const { error } = await sb.from("finanzas_movimientos").insert(payload);
+        if (error) console.error("❌ Error al registrar anulación en finanzas:", error);
+        else console.log(`✅ Anulación registrada en finanzas para pedido #${pedido.order_number}`);
+    }
+
     async function performStatusUpdate(newStatus) {
         try {
             const { error } = await sb
@@ -588,6 +650,15 @@ console.log("🛠️ admin_pedidos.js — INIT STITCH");
                 .eq("id", selectedOrder.id);
 
             if (error) throw error;
+
+            // Auto-registrar en finanzas
+            if (newStatus === "delivered" && selectedOrder.payment_method === "cash_on_delivery") {
+                await registrarFinanzasIngreso(selectedOrder);
+            } else if (newStatus === "preparing" && selectedOrder.payment_method === "bank_transfer") {
+                await registrarFinanzasIngreso(selectedOrder);
+            } else if (newStatus === "cancelled") {
+                await registrarFinanzasAnulacion(selectedOrder);
+            }
 
             showSnack("success", "Estado actualizado");
             

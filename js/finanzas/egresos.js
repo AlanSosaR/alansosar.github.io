@@ -332,12 +332,21 @@ console.log("📉 finanzas/egresos.js — INIT");
     div.innerHTML = `
       <div class="fin-item-detail-inner">
         <div class="fin-detail-row">
+          <span class="fin-detail-label">Descripción</span>
+          <span class="fin-detail-value">${item.concepto || "—"}</span>
+        </div>
+        ${item.notas ? `
+        <div class="fin-detail-row">
           <span class="fin-detail-label">Notas</span>
-          <span class="fin-detail-value">${item.notas || item.concepto || "—"}</span>
+          <span class="fin-detail-value">${item.notas}</span>
+        </div>` : ""}
+        <div class="fin-detail-row">
+          <span class="fin-detail-label">Fecha</span>
+          <span class="fin-detail-value">${fechaStr}${item.hora ? ` · ${item.hora.slice(0, 5)}` : ""}</span>
         </div>
         <div class="fin-detail-row">
           <span class="fin-detail-label">Método de pago</span>
-          <span class="fin-detail-value">${fechaStr}${item.hora ? ` · ${item.hora.slice(0, 5)}` : ""}</span>
+          <span class="fin-detail-value">${item.metodo_pago || "—"}</span>
         </div>
         <div class="fin-detail-row">
           <span class="fin-detail-label">Registrado por</span>

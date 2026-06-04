@@ -14,6 +14,7 @@ console.log("✏️ finanzas/registrar.js — INIT");
       { icon: "blender", label: "Café Molido" },
       { icon: "local_fire_department", label: "Café Tostado" },
       { icon: "all_inclusive", label: "Todo en Uno" },
+      { icon: "orders", label: "Pedidos en Línea" },
     ],
     egreso: [
       { icon: "local_gas_station", label: "Gasolina" },

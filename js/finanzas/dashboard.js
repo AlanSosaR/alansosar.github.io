@@ -301,12 +301,56 @@ console.log("📊 finanzas/dashboard.js — INIT");
       setEmptyText("egresos-empty", egrTotal, els.egresosMonto());
       actualizarBadge(allIng - allEgr, ingTotal, egrTotal);
 
+      // Por cobrar
+      await cargarPorCobrar();
+
       // Chart & historial from filtered data
       renderChart(data);
       renderHistorial(data);
     } catch (err) {
       console.error("📊 Error en cargarDashboard:", err);
       showSnackbar("Error al cargar datos");
+    }
+  }
+
+  async function cargarPorCobrar() {
+    try {
+      const { data: orders, error } = await sb
+        .from("orders")
+        .select("total, payment_method, status, order_number, created_at")
+        .neq("status", "cancelled");
+
+      if (error) throw error;
+
+      const porCobrar = (orders || []).filter(o =>
+        (o.payment_method === "cash_on_delivery" && ["pending", "preparing", "shipped"].includes(o.status))
+        || (o.payment_method === "bank_transfer" && o.status === "pending")
+      );
+
+      const total = porCobrar.reduce((s, o) => s + Number(o.total), 0);
+      const count = porCobrar.length;
+
+      const montoEl = document.getElementById("porcobrar-monto");
+      const countEl = document.getElementById("porcobrar-count");
+      const detalleEl = document.getElementById("porcobrar-detalle");
+
+      if (montoEl) montoEl.innerHTML = fmtMontoHTML(total);
+      if (countEl) countEl.textContent = count;
+
+      if (detalleEl) {
+        if (count === 0) {
+          detalleEl.innerHTML = `<span>Sin pedidos por cobrar</span>`;
+        } else {
+          const cashCount = porCobrar.filter(o => o.payment_method === "cash_on_delivery").length;
+          const transCount = porCobrar.filter(o => o.payment_method === "bank_transfer").length;
+          detalleEl.innerHTML = `
+            <span class="fin-porcobrar-dash">Contra entrega: <strong>${cashCount}</strong></span>
+            <span class="fin-porcobrar-dash">Transferencia: <strong>${transCount}</strong></span>
+          `;
+        }
+      }
+    } catch (err) {
+      console.error("❌ Error al cargar por cobrar:", err);
     }
   }
 
@@ -551,12 +595,21 @@ console.log("📊 finanzas/dashboard.js — INIT");
     div.innerHTML = `
       <div class="fin-item-detail-inner">
         <div class="fin-detail-row">
+          <span class="fin-detail-label">Descripción</span>
+          <span class="fin-detail-value">${item.concepto || "—"}</span>
+        </div>
+        ${item.notas ? `
+        <div class="fin-detail-row">
           <span class="fin-detail-label">Notas</span>
-          <span class="fin-detail-value">${item.notas || item.concepto || "—"}</span>
+          <span class="fin-detail-value">${item.notas}</span>
+        </div>` : ""}
+        <div class="fin-detail-row">
+          <span class="fin-detail-label">Fecha</span>
+          <span class="fin-detail-value">${fechaStr}${item.hora ? ` · ${item.hora.slice(0, 5)}` : ""}</span>
         </div>
         <div class="fin-detail-row">
           <span class="fin-detail-label">Método de pago</span>
-          <span class="fin-detail-value">${fechaStr}${item.hora ? ` · ${item.hora.slice(0, 5)}` : ""}</span>
+          <span class="fin-detail-value">${item.metodo_pago || "—"}</span>
         </div>
         <div class="fin-detail-row">
           <span class="fin-detail-label">Registrado por</span>
@@ -607,6 +660,7 @@ console.log("📊 finanzas/dashboard.js — INIT");
     "Café Tostado": "local_fire_department",
     "Café Molido": "blender",
     "Todo en Uno": "all_inclusive",
+    "Pedidos en Línea": "orders",
     "Otros": "more_horiz",
   };
 
@@ -773,7 +827,13 @@ console.log("📊 finanzas/dashboard.js — INIT");
     // Load data
     await cargarDashboard();
 
-    // Listen for refresh
+    // Auto-refresh al volver de otra pestaña/página
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") cargarDashboard();
+    });
+    window.addEventListener("pageshow", (e) => {
+      if (e.persisted) cargarDashboard();
+    });
     window.addEventListener("fin:refresh", () => cargarDashboard());
   }
 
