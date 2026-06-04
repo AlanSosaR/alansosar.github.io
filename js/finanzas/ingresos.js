@@ -250,10 +250,12 @@ console.log("📈 finanzas/ingresos.js — INIT");
               <span class="material-symbols-outlined">${icon}</span>
             </div>
             <div class="fin-item-body">
-              <div class="fin-item-concept">${item.categoria}</div>
+              <div class="fin-item-head">
+                <div class="fin-item-concept">${item.categoria}</div>
+                <div class="fin-item-trailing">${fmtMontoHTML(item.monto, "+")}</div>
+              </div>
               <div class="fin-item-categoria">${item.notas || item.concepto}</div>
             </div>
-            <div class="fin-item-trailing">${fmtMontoHTML(item.monto, "+")}</div>
             <span class="material-symbols-outlined fin-item-chevron">expand_more</span>
           </div>`;
         if (idx < grupos[key].length - 1) {
@@ -302,11 +304,11 @@ console.log("📈 finanzas/ingresos.js — INIT");
     div.innerHTML = `
       <div class="fin-item-detail-inner">
         <div class="fin-detail-row">
-          <span class="fin-detail-label">Método de pago</span>
-          <span class="fin-detail-value">${item.metodo_pago || "—"}</span>
+          <span class="fin-detail-label">Notas</span>
+          <span class="fin-detail-value">${item.notas || item.concepto || "—"}</span>
         </div>
         <div class="fin-detail-row">
-          <span class="fin-detail-label">Fecha</span>
+          <span class="fin-detail-label">Método de pago</span>
           <span class="fin-detail-value">${fechaStr}${item.hora ? ` · ${item.hora.slice(0, 5)}` : ""}</span>
         </div>
         <div class="fin-detail-row">
