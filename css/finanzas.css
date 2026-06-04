@@ -622,6 +622,10 @@
   color: var(--md-on-surface-variant);
   opacity: 0.7;
 }
+.fin-detail-value {
+  text-align: right;
+  flex-shrink: 0;
+}
 .fin-detail-actions {
   display: flex;
   gap: 12px;
