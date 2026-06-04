@@ -8,6 +8,29 @@ if (!window.__HEADER_CORE_LOADED__) {
   const $ = (id) => document.getElementById(id);
 
   /* =====================================================
+     PWA — CONTROL DE INSTALACIÓN
+  ===================================================== */
+  let deferredPrompt = null;
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    console.log("PWA: Evento beforeinstallprompt capturado");
+    e.preventDefault();
+    deferredPrompt = e;
+    const installBtn = document.getElementById("pwa-install-btn");
+    if (installBtn) {
+      installBtn.classList.remove("hidden");
+    }
+  });
+
+  window.addEventListener('appinstalled', (evt) => {
+    console.log('PWA: Aplicación instalada exitosamente');
+    const installBtn = document.getElementById("pwa-install-btn");
+    if (installBtn) {
+      installBtn.classList.add("hidden");
+    }
+  });
+
+  /* =====================================================
      HELPERS — USUARIO
   ===================================================== */
   function getUserCache() {
@@ -218,6 +241,24 @@ if (!window.__HEADER_CORE_LOADED__) {
       toggleDrawer();
     });
     $("user-scrim")?.addEventListener("click", closeDrawer);
+
+    // Botón de instalación PWA
+    const installBtn = $("pwa-install-btn");
+    if (installBtn) {
+      if (deferredPrompt) {
+        installBtn.classList.remove("hidden");
+      }
+      installBtn.addEventListener("click", async () => {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log(`PWA: Respuesta del usuario para instalar la app: ${outcome}`);
+        if (outcome === 'accepted') {
+          installBtn.classList.add("hidden");
+        }
+        deferredPrompt = null;
+      });
+    }
 
     // Cierre automático al pulsar cualquier link del drawer + limpiar notificaciones
     $("user-drawer")?.addEventListener("click", (e) => {
