@@ -1320,24 +1320,26 @@ body {
 ===================================================== */
 @media (max-width: 900px) {
 
+  /* 🔥 Mostrar buscador en todos los admin */
+  body[class*="page-admin-"] .header-middle-stitch {
+    display: flex !important;
+  }
+
   /* 🔥 NUNCA mostrar logo en Mis Pedidos y Admin */
   body.page-mis-pedidos .header-logo-link,
-  body.page-admin-pedidos .header-logo-link,
-  body.page-admin-cafes .header-logo-link {
+  body[class*="page-admin-"] .header-logo-link {
     display: none !important;
   }
 
   /* 🔥 Header NO centrado (evita compresión visual) */
   body.page-mis-pedidos header.header-fixed,
-  body.page-admin-pedidos header.header-fixed,
-  body.page-admin-cafes header.header-fixed {
+  body[class*="page-admin-"] header.header-fixed {
     justify-content: flex-start !important;
   }
 
   /* 🍔 Menú hamburguesa — fijo a la izquierda */
   body.page-mis-pedidos #menu-toggle,
-  body.page-admin-pedidos #menu-toggle,
-  body.page-admin-cafes #menu-toggle {
+  body[class*="page-admin-"] #menu-toggle {
     position: relative;
     margin-right: 12px;
     /* ⬅️ separación real del buscador */
@@ -1345,8 +1347,7 @@ body {
 
   /* 🔍 Buscador respira */
   body.page-mis-pedidos #header-search-slot,
-  body.page-admin-pedidos #header-search-slot,
-  body.page-admin-cafes #header-search-slot {
+  body[class*="page-admin-"] #header-search-slot {
     padding-left: 0 !important;
     padding-right: 0 !important;
   }
