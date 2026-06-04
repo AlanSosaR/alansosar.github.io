@@ -117,14 +117,41 @@
       <!-- HISTORIAL -->
       <section class="fin-card">
         <div class="fin-historial-header">
-          <h2 class="fin-card-title" style="margin-bottom:0;">Historial</h2>
-          <div class="fin-filter-chips">
-            <button class="fin-chip active" data-filter="ambos">Ambos</button>
-            <button class="fin-chip" data-filter="ingreso">Ingresos</button>
-            <button class="fin-chip" data-filter="egreso">Egresos</button>
+          <div class="fin-filter-row">
+            <h2 class="fin-card-title" style="margin-bottom:0;">Historial</h2>
+            <div class="fin-filter-right">
+              <div class="fin-filter-chips">
+                <button class="fin-chip active" data-filter="ambos">Ambos</button>
+                <button class="fin-chip" data-filter="ingreso">Ingresos</button>
+                <button class="fin-chip" data-filter="egreso">Egresos</button>
+              </div>
+              <button class="fin-btn-export" id="btn-exportar" title="Exportar">
+                <span class="material-symbols-outlined">download</span>
+              </button>
+            </div>
+          </div>
+          <div class="fin-search-row" id="fin-search-row">
+            <button class="fin-btn-search" id="btn-search" title="Buscar">
+              <span class="material-symbols-outlined">search</span>
+            </button>
+            <div class="fin-search-field" id="fin-search-field">
+              <input type="text" class="fin-search-input" id="fin-search-input" placeholder="Buscar por categoría, nota o monto (HNL)...">
+              <button class="fin-search-clear" id="fin-search-clear" title="Limpiar">
+                <span class="material-symbols-outlined">close</span>
+              </button>
+            </div>
           </div>
         </div>
         <div id="fin-historial-list"></div>
+        <div class="fin-history-footer" id="fin-history-footer">
+          <button class="fin-pag-btn" id="pag-prev">
+            <span class="material-symbols-outlined">chevron_left</span>
+          </button>
+          <span class="fin-pagination-info" id="fin-pagination-info"></span>
+          <button class="fin-pag-btn" id="pag-next">
+            <span class="material-symbols-outlined">chevron_right</span>
+          </button>
+        </div>
       </section>
     </div>
 
@@ -143,6 +170,7 @@
   <script src="/js/ui/layout.js"></script>
   <script type="module" src="/js/ui/header.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="/js/finanzas/dashboard.js"></script>
 </body>
 </html>

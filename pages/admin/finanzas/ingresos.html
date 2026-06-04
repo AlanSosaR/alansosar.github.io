@@ -88,7 +88,27 @@
 
       <!-- LISTA -->
       <section class="fin-card">
+        <div class="fin-search-row" id="fin-search-row">
+          <button class="fin-btn-search" id="btn-search" title="Buscar">
+            <span class="material-symbols-outlined">search</span>
+          </button>
+          <div class="fin-search-field" id="fin-search-field">
+            <input type="text" class="fin-search-input" id="fin-search-input" placeholder="Buscar por categoría, nota o monto (HNL)...">
+            <button class="fin-search-clear" id="fin-search-clear" title="Limpiar">
+              <span class="material-symbols-outlined">close</span>
+            </button>
+          </div>
+        </div>
         <div id="ingresos-lista"></div>
+        <div class="fin-history-footer" id="fin-history-footer">
+          <button class="fin-pag-btn" id="pag-prev">
+            <span class="material-symbols-outlined">chevron_left</span>
+          </button>
+          <span class="fin-pagination-info" id="fin-pagination-info"></span>
+          <button class="fin-pag-btn" id="pag-next">
+            <span class="material-symbols-outlined">chevron_right</span>
+          </button>
+        </div>
       </section>
     </div>
   </main>

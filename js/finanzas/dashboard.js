@@ -13,6 +13,9 @@ console.log("📊 finanzas/dashboard.js — INIT");
   let periodoOffset = 0;
   let filtro = "ambos";
   let movimientos = [];
+  let busqueda = "";
+  let pagina = 1;
+  const REGS_POR_PAGINA = 5;
 
   /* --- DOM REFS --- */
   const $ = (sel) => document.querySelector(sel);
@@ -265,6 +268,10 @@ console.log("📊 finanzas/dashboard.js — INIT");
 
   async function cargarDashboard() {
     try {
+      busqueda = ""; pagina = 1;
+      document.getElementById("fin-search-row")?.classList.remove("open");
+      const inp = document.getElementById("fin-search-input");
+      if (inp) inp.value = "";
       const rango = getRangoFechas(periodo, periodoOffset);
       if (els.periodoLabel()) els.periodoLabel().textContent = rango.label;
 
@@ -438,17 +445,49 @@ console.log("📊 finanzas/dashboard.js — INIT");
     if (filtro === "ingreso") filtered = data.filter((r) => r.tipo === "ingreso");
     else if (filtro === "egreso") filtered = data.filter((r) => r.tipo === "egreso");
 
-    if (filtered.length === 0) {
+    const q = busqueda.trim().toLowerCase();
+    if (q) {
+      const numQ = parseFloat(q.replace(/[^0-9.,]/g, "").replace(/,/g, ""));
+      filtered = filtered.filter((r) => {
+        if ((r.categoria || "").toLowerCase().includes(q)) return true;
+        if ((r.notas || r.concepto || "").toLowerCase().includes(q)) return true;
+        if (!isNaN(numQ) && Number(r.monto) === numQ) return true;
+        return false;
+      });
+    }
+
+    const total = filtered.length;
+    const totalPaginas = Math.max(1, Math.ceil(total / REGS_POR_PAGINA));
+    if (pagina > totalPaginas) pagina = totalPaginas;
+
+    const start = (pagina - 1) * REGS_POR_PAGINA;
+    const pageItems = filtered.slice(start, start + REGS_POR_PAGINA);
+
+    const info = document.getElementById("fin-pagination-info");
+    const prevBtn = document.getElementById("pag-prev");
+    const nextBtn = document.getElementById("pag-next");
+    if (info) {
+      if (total === 0) {
+        info.textContent = "Sin resultados";
+      } else {
+        const end = Math.min(start + REGS_POR_PAGINA, total);
+        info.textContent = `Mostrando ${start + 1}–${end} de ${total} registros`;
+      }
+    }
+    if (prevBtn) prevBtn.disabled = pagina <= 1;
+    if (nextBtn) nextBtn.disabled = pagina >= totalPaginas;
+
+    if (pageItems.length === 0) {
       container.innerHTML = `
         <div class="fin-empty">
           <span class="material-symbols-outlined">receipt_long</span>
-          <div class="fin-empty-title">Sin movimientos en este período</div>
-          <div class="fin-empty-desc">Registrá tu primer movimiento</div>
+          <div class="fin-empty-title">${q ? "Sin resultados de búsqueda" : "Sin movimientos en este período"}</div>
+          <div class="fin-empty-desc">${q ? "Intentá con otros términos" : "Registrá tu primer movimiento"}</div>
         </div>`;
       return;
     }
 
-    const grupos = agruparPorPeriodo(filtered, periodo);
+    const grupos = agruparPorPeriodo(pageItems, periodo);
     let html = "";
 
     Object.keys(grupos).forEach((key) => {
@@ -480,7 +519,6 @@ console.log("📊 finanzas/dashboard.js — INIT");
 
     container.innerHTML = html;
 
-    // Tap item -> expandable detail
     container.querySelectorAll(".fin-item").forEach((el) => {
       el.addEventListener("click", () => {
         const id = el.dataset.id;
@@ -637,8 +675,96 @@ console.log("📊 finanzas/dashboard.js — INIT");
         els.filterChips().forEach((c) => c.classList.remove("active"));
         chip.classList.add("active");
         filtro = chip.dataset.filter;
+        pagina = 1;
         renderHistorial(movimientos);
       });
+    });
+
+    // Search toggle
+    document.getElementById("btn-search")?.addEventListener("click", () => {
+      const row = document.getElementById("fin-search-row");
+      const input = document.getElementById("fin-search-input");
+      if (!row || !input) return;
+      const isOpen = row.classList.toggle("open");
+      if (isOpen) { input.focus(); }
+      else { busqueda = ""; input.value = ""; pagina = 1; renderHistorial(movimientos); }
+    });
+
+    document.getElementById("fin-search-input")?.addEventListener("input", (e) => {
+      busqueda = e.target.value;
+      pagina = 1;
+      renderHistorial(movimientos);
+    });
+
+    document.getElementById("fin-search-clear")?.addEventListener("click", () => {
+      const input = document.getElementById("fin-search-input");
+      if (!input) return;
+      input.value = "";
+      busqueda = "";
+      pagina = 1;
+      renderHistorial(movimientos);
+      input.focus();
+    });
+
+    // Pagination
+    document.getElementById("pag-prev")?.addEventListener("click", () => {
+      if (pagina > 1) { pagina--; renderHistorial(movimientos); }
+    });
+    document.getElementById("pag-next")?.addEventListener("click", () => {
+      pagina++; renderHistorial(movimientos);
+    });
+
+    // Export button
+    document.getElementById("btn-exportar")?.addEventListener("click", () => {
+      const active = document.querySelector(".fin-filter-chips .fin-chip.active");
+      const label = active?.dataset?.filter || "ambos";
+
+      let filtered = movimientos;
+      if (label === "ingreso") filtered = movimientos.filter((r) => r.tipo === "ingreso");
+      else if (label === "egreso") filtered = movimientos.filter((r) => r.tipo === "egreso");
+
+      if (filtered.length === 0) { showSnackbar("No hay datos para exportar"); return; }
+
+      const periodoLabel = document.querySelector(".fin-periodo-label")?.textContent || "";
+      const parseMonto = (el) => parseFloat((el?.textContent || "0").replace(/[^0-9.,-]/g, "").replace(/,/g, "")) || 0;
+      const ingTotal = parseMonto(document.getElementById("ingresos-monto"));
+      const egrTotal = parseMonto(document.getElementById("egresos-monto"));
+      const saldoActual = parseMonto(document.querySelector(".fin-saldo-monto"));
+
+      const rows = [
+        ["Reporte de Finanzas - Café Cortero"],
+        [`Período: ${periodoLabel}`],
+        [`Ingresos Totales: HNL ${ingTotal.toFixed(2)}`, `Egresos Totales: HNL ${egrTotal.toFixed(2)}`, `Saldo Actual: HNL ${saldoActual.toFixed(2)}`],
+        [],
+        ["Fecha Completa", "Tipo", "Categoría", "Descripción / Notas", "Monto"],
+      ];
+
+      filtered.forEach((r) => {
+        rows.push([
+          new Date(r.fecha + "T" + (r.hora || "00:00:00")).toLocaleString("es-HN"),
+          r.tipo === "ingreso" ? "Ingreso" : "Egreso",
+          r.categoria,
+          r.notas || r.concepto || "",
+          Number(r.monto),
+        ]);
+      });
+
+      const ws = XLSX.utils.aoa_to_sheet(rows);
+      const colCount = rows[4].length;
+      const colWidths = [];
+      for (let c = 0; c < colCount; c++) {
+        let maxLen = 0;
+        rows.forEach((r) => {
+          const val = r[c] != null ? String(r[c]) : "";
+          maxLen = Math.max(maxLen, val.length);
+        });
+        colWidths.push({ wch: Math.max(maxLen, 10) + 2 });
+      }
+      ws["!cols"] = colWidths;
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Historial");
+      const map = { ambos: "Ambos", ingreso: "Ingresos", egreso: "Egresos" };
+      XLSX.writeFile(wb, `reporte_finanzas_${map[label]}_${new Date().toISOString().slice(0, 10)}.xlsx`);
     });
 
     // FAB scroll

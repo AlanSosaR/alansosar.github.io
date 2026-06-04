@@ -12,6 +12,9 @@ console.log("📈 finanzas/ingresos.js — INIT");
   let categoriaFiltro = "todos";
   let movimientos = [];
   let periodoOffset = 0;
+  let busqueda = "";
+  let pagina = 1;
+  const REGS_POR_PAGINA = 5;
 
   const $ = (sel) => document.querySelector(sel);
   const $$ = (sel) => document.querySelectorAll(sel);
@@ -172,6 +175,10 @@ console.log("📈 finanzas/ingresos.js — INIT");
   }
 
   async function cargarIngresos() {
+    busqueda = ""; pagina = 1;
+    document.getElementById("fin-search-row")?.classList.remove("open");
+    const inp = document.getElementById("fin-search-input");
+    if (inp) inp.value = "";
     const rango = getRangoFechas(periodo, periodoOffset);
     const labelEl = document.getElementById("periodo-label");
     if (labelEl) labelEl.textContent = rango.label;
@@ -227,17 +234,49 @@ console.log("📈 finanzas/ingresos.js — INIT");
       filtered = data.filter((r) => r.categoria === categoriaFiltro);
     }
 
-    if (filtered.length === 0) {
+    const q = busqueda.trim().toLowerCase();
+    if (q) {
+      const numQ = parseFloat(q.replace(/[^0-9.,]/g, "").replace(/,/g, ""));
+      filtered = filtered.filter((r) => {
+        if ((r.categoria || "").toLowerCase().includes(q)) return true;
+        if ((r.notas || r.concepto || "").toLowerCase().includes(q)) return true;
+        if (!isNaN(numQ) && Number(r.monto) === numQ) return true;
+        return false;
+      });
+    }
+
+    const total = filtered.length;
+    const totalPaginas = Math.max(1, Math.ceil(total / REGS_POR_PAGINA));
+    if (pagina > totalPaginas) pagina = totalPaginas;
+
+    const start = (pagina - 1) * REGS_POR_PAGINA;
+    const pageItems = filtered.slice(start, start + REGS_POR_PAGINA);
+
+    const info = document.getElementById("fin-pagination-info");
+    const prevBtn = document.getElementById("pag-prev");
+    const nextBtn = document.getElementById("pag-next");
+    if (info) {
+      if (total === 0) {
+        info.textContent = "Sin resultados";
+      } else {
+        const end = Math.min(start + REGS_POR_PAGINA, total);
+        info.textContent = `Mostrando ${start + 1}–${end} de ${total} registros`;
+      }
+    }
+    if (prevBtn) prevBtn.disabled = pagina <= 1;
+    if (nextBtn) nextBtn.disabled = pagina >= totalPaginas;
+
+    if (pageItems.length === 0) {
       container.innerHTML = `
         <div class="fin-empty">
           <span class="material-symbols-outlined">receipt_long</span>
-          <div class="fin-empty-title">Sin ingresos en este período</div>
-          <div class="fin-empty-desc">Registrá tu primer ingreso</div>
+          <div class="fin-empty-title">${q ? "Sin resultados de búsqueda" : "Sin ingresos en este período"}</div>
+          <div class="fin-empty-desc">${q ? "Intentá con otros términos" : "Registrá tu primer ingreso"}</div>
         </div>`;
       return;
     }
 
-    const grupos = agruparPorPeriodo(filtered, periodo);
+    const grupos = agruparPorPeriodo(pageItems, periodo);
     let html = "";
 
     Object.keys(grupos).forEach((key) => {
@@ -373,6 +412,40 @@ console.log("📈 finanzas/ingresos.js — INIT");
       await cargarIngresos();
     });
 
+    // Search toggle
+    document.getElementById("btn-search")?.addEventListener("click", () => {
+      const row = document.getElementById("fin-search-row");
+      const input = document.getElementById("fin-search-input");
+      if (!row || !input) return;
+      const isOpen = row.classList.toggle("open");
+      if (isOpen) { input.focus(); }
+      else { busqueda = ""; input.value = ""; pagina = 1; renderLista(movimientos); }
+    });
+
+    document.getElementById("fin-search-input")?.addEventListener("input", (e) => {
+      busqueda = e.target.value;
+      pagina = 1;
+      renderLista(movimientos);
+    });
+
+    document.getElementById("fin-search-clear")?.addEventListener("click", () => {
+      const input = document.getElementById("fin-search-input");
+      if (!input) return;
+      input.value = "";
+      busqueda = "";
+      pagina = 1;
+      renderLista(movimientos);
+      input.focus();
+    });
+
+    // Pagination
+    document.getElementById("pag-prev")?.addEventListener("click", () => {
+      if (pagina > 1) { pagina--; renderLista(movimientos); }
+    });
+    document.getElementById("pag-next")?.addEventListener("click", () => {
+      pagina++; renderLista(movimientos);
+    });
+
     const chipContainer = document.getElementById("ingresos-chips");
     const trigger = document.getElementById("ingresos-cat-trigger");
     const menu = document.getElementById("ingresos-cat-menu");
@@ -400,6 +473,7 @@ console.log("📈 finanzas/ingresos.js — INIT");
       menu.querySelectorAll(".fin-cat-menu-item").forEach(item => {
         item.addEventListener("click", () => {
           categoriaFiltro = item.dataset.categoria;
+          pagina = 1;
           const label = item.querySelector(".fin-cat-menu-item-text")?.textContent || "Todos";
           const tIcon = trigger?.querySelector(".fin-cat-trigger-label");
           if (tIcon) tIcon.textContent = label;
