@@ -195,14 +195,11 @@
   padding: 0.85rem 2rem;
   border-radius: 999px;
   text-decoration: none;
-  box-shadow: 0 8px 24px rgba(51, 103, 59, 0.4);
-  transition: background 200ms, box-shadow 200ms, translate 200ms;
+  transition: background 200ms;
 }
 
 .ns-btn-primary:hover {
   background: #2a5a32;
-  box-shadow: 0 12px 32px rgba(51, 103, 59, 0.5);
-  translate: 0 -2px;
 }
 
 .ns-btn-outline {
@@ -242,9 +239,6 @@
 .ns-image-card {
   border-radius: 28px;
   overflow: hidden;
-  box-shadow:
-    0 24px 64px rgba(0, 0, 0, 0.14),
-    0 8px 20px rgba(0, 0, 0, 0.1);
 }
 
 .ns-image-card img {
@@ -261,9 +255,6 @@
   border-radius: 28px;
   overflow: hidden;
   margin-block: 2rem;
-  box-shadow:
-    0 24px 64px rgba(0, 0, 0, 0.14),
-    0 8px 20px rgba(0, 0, 0, 0.1);
 }
 
 .ns-landscape img {
@@ -296,9 +287,6 @@
 .ns-img-portrait {
   border-radius: 28px;
   overflow: hidden;
-  box-shadow:
-    0 24px 64px rgba(0, 0, 0, 0.14),
-    0 8px 20px rgba(0, 0, 0, 0.1);
 }
 
 .ns-img-portrait img {
@@ -317,9 +305,6 @@
 .ns-img-square {
   border-radius: 28px;
   overflow: hidden;
-  box-shadow:
-    0 24px 64px rgba(0, 0, 0, 0.14),
-    0 8px 20px rgba(0, 0, 0, 0.1);
 }
 
 .ns-img-square img {
@@ -333,8 +318,6 @@
   background: #ffffff;
   border-radius: 28px;
   padding: clamp(1.5rem, 3vw, 2.2rem);
-  box-shadow:
-    0 16px 40px rgba(0, 0, 0, 0.08);
 }
 
 .ns-quote-text {
@@ -388,7 +371,6 @@
   overflow: hidden;
   aspect-ratio: 4 / 3;
   margin-bottom: 1rem;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
 }
 
 .ns-process-img img {
@@ -470,15 +452,6 @@
   flex-direction: column;
   justify-content: flex-end;
   min-height: 200px;
-  box-shadow:
-    0 12px 32px rgba(0, 0, 0, 0.08);
-  transition: translate 250ms ease, box-shadow 250ms ease;
-}
-
-.ns-bento-item:hover {
-  translate: 0 -4px;
-  box-shadow:
-    0 20px 48px rgba(0, 0, 0, 0.14);
 }
 
 .ns-bento-large {
