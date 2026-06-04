@@ -203,27 +203,47 @@ console.log("📊 finanzas/dashboard.js — INIT");
     return grupos;
   }
 
-  /* --- RENDER --- */
-  async function renderSaldo(ingresos, egresos, periodoActual) {
-    const totalIngresos = ingresos.reduce((s, i) => s + Number(i.monto), 0);
-    const totalEgresos = egresos.reduce((s, i) => s + Number(i.monto), 0);
-    const saldo = totalIngresos - totalEgresos;
+  function setEmptyText(id, total, refEl) {
+    const el = document.getElementById(id);
+    if (total > 0) { if (el) el.remove(); return; }
+    const msgs = { dia: "hoy", semana: "esta semana", mes: "este mes" };
+    if (el) { el.textContent = `Sin movimientos ${msgs[periodo] || ""}`; return; }
+    const d = document.createElement("div");
+    d.id = id; d.className = "fin-stat-empty";
+    d.textContent = `Sin movimientos ${msgs[periodo] || ""}`;
+    refEl.after(d);
+  }
 
-    if (els.saldoMonto()) els.saldoMonto().innerHTML = fmtMontoHTML(saldo);
+  function actualizarBadge(saldoActual, ingTotal, egrTotal) {
+    const el = document.getElementById("saldo-compare");
+    const iconEl = document.getElementById("saldo-compare-icon");
+    const textEl = document.getElementById("saldo-compare-text");
+    if (!el || !iconEl || !textEl) return;
 
-    // Comparación con período anterior
-    const rangoAnt = getRangoAnterior(periodoActual);
-    const { data: antData } = await awaitQuery(rangoAnt.desde, rangoAnt.hasta);
-    const antIng = antData.filter((r) => r.tipo === "ingreso").reduce((s, r) => s + Number(r.monto), 0);
-    const antEgr = antData.filter((r) => r.tipo === "egreso").reduce((s, r) => s + Number(r.monto), 0);
-    const antSaldo = antIng - antEgr;
-    const diff = saldo - antSaldo;
-    const signo = diff >= 0 ? "+" : "";
-    const pct = antSaldo !== 0 ? ((diff / Math.abs(antSaldo)) * 100).toFixed(1) : "0.0";
+    const saldoInicial = saldoActual - ingTotal + egrTotal;
+    const diferencia = saldoActual - saldoInicial;
 
-    if (els.saldoCompare()) {
-      els.saldoCompare().textContent = `${signo}${fmtMonto(diff)} (${signo}${pct}%) vs período anterior`;
+    const pre = { dia: "el día", semana: "la semana", mes: "el mes" }[periodo] || "el día";
+
+    let estado, icono, texto;
+
+    if (diferencia > 0) {
+      estado = "positive";
+      icono = "trending_up";
+      texto = `Iniciaste ${pre} con ${fmtMonto(saldoInicial)} y subiste ${fmtMonto(diferencia)}.`;
+    } else if (diferencia < 0) {
+      estado = "negative";
+      icono = "trending_down";
+      texto = `Iniciaste ${pre} con ${fmtMonto(saldoInicial)} y bajaste ${fmtMonto(Math.abs(diferencia))}.`;
+    } else {
+      estado = "neutral";
+      icono = "schedule";
+      texto = "El saldo se mantiene igual que al inicio del período.";
     }
+
+    el.className = `fin-saldo-compare ${estado}`;
+    iconEl.textContent = icono;
+    textEl.textContent = texto;
   }
 
   async function awaitQuery(desde, hasta) {
@@ -262,13 +282,17 @@ console.log("📊 finanzas/dashboard.js — INIT");
       const allIng = allData.filter((r) => r.tipo === "ingreso").reduce((s, r) => s + Number(r.monto), 0);
       const allEgr = allData.filter((r) => r.tipo === "egreso").reduce((s, r) => s + Number(r.monto), 0);
       if (els.saldoMonto()) els.saldoMonto().innerHTML = fmtMontoHTML(allIng - allEgr);
-      if (els.saldoCompare()) els.saldoCompare().style.display = "none";
 
       // Stats cards (period-specific)
       const ingresos = data.filter((r) => r.tipo === "ingreso");
       const egresos = data.filter((r) => r.tipo === "egreso");
-      if (els.ingresosMonto()) els.ingresosMonto().innerHTML = fmtMontoHTML(ingresos.reduce((s, i) => s + Number(i.monto), 0), "", true);
-      if (els.egresosMonto()) els.egresosMonto().innerHTML = fmtMontoHTML(egresos.reduce((s, i) => s + Number(i.monto), 0), "", false);
+      const ingTotal = ingresos.reduce((s, i) => s + Number(i.monto), 0);
+      const egrTotal = egresos.reduce((s, i) => s + Number(i.monto), 0);
+      if (els.ingresosMonto()) els.ingresosMonto().innerHTML = fmtMontoHTML(ingTotal, "", true);
+      if (els.egresosMonto()) els.egresosMonto().innerHTML = fmtMontoHTML(egrTotal, "", false);
+      setEmptyText("ingresos-empty", ingTotal, els.ingresosMonto());
+      setEmptyText("egresos-empty", egrTotal, els.egresosMonto());
+      actualizarBadge(allIng - allEgr, ingTotal, egrTotal);
 
       // Chart & historial from filtered data
       renderChart(data);

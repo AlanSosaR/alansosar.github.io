@@ -307,10 +307,37 @@
 }
 
 .fin-saldo-card .fin-saldo-compare {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border-radius: 100px;
+  width: fit-content;
+  margin-top: 12px;
+  transition: background 0.25s, color 0.25s;
+}
+
+.fin-saldo-card .fin-saldo-compare.positive {
+  background: rgba(46, 125, 50, 0.10);
+  color: #2e7d32;
+}
+
+.fin-saldo-card .fin-saldo-compare.negative {
+  background: rgba(211, 47, 47, 0.10);
+  color: #c62828;
+}
+
+.fin-saldo-card .fin-saldo-compare.neutral {
+  background: rgba(0, 0, 0, 0.06);
+  color: #5f6368;
+}
+
+.fin-saldo-card .fin-saldo-compare-icon {
+  font-size: 18px;
+}
+
+.fin-saldo-card .fin-saldo-compare-text {
   font: var(--md-label-sm);
-  color: var(--md-on-surface-variant);
-  opacity: 0.6;
-  margin-top: 4px;
 }
 
 /* --- INGRESOS / EGRESOS CARDS ROW --- */
@@ -391,6 +418,12 @@
   font: var(--md-label-sm);
   color: var(--md-on-surface-variant);
   opacity: 0.7;
+}
+
+.fin-stat-empty {
+  font-size: 12px;
+  color: var(--md-on-surface-variant);
+  margin-top: 2px;
 }
 
 /* --- CHART CARD --- */
