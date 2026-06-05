@@ -240,7 +240,7 @@ console.log("✏️ finanzas/registrar.js — INIT");
                 .eq("presentation", presentationVal)
                 .eq("grind_type", tipoCafeVal)
                 .eq("variedad", variedadVal)
-                .limit(1).single();
+                .limit(1).maybeSingle();
               
               if (!error && data) {
                 product_id = data.id;
@@ -255,7 +255,6 @@ console.log("✏️ finanzas/registrar.js — INIT");
             monto: montoValor,
             fecha: fechaInput?.value || ahora.toISOString().split("T")[0],
             metodo_pago: metodoPago,
-            product_id: product_id,
             tamano: tamanoSeleccionado || null,
           };
 
