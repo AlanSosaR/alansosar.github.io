@@ -255,7 +255,6 @@ console.log("✏️ finanzas/registrar.js — INIT");
             monto: montoValor,
             fecha: fechaInput?.value || ahora.toISOString().split("T")[0],
             metodo_pago: metodoPago,
-            tamano: tamanoSeleccionado || null,
           };
 
           const payload = editId
