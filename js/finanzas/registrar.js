@@ -103,7 +103,9 @@ console.log("✏️ finanzas/registrar.js — INIT");
     const precioInput = document.getElementById("fin-precio-libra");
     const fincaFields = document.getElementById("fin-finca-fields");
     const unidadesInput = document.getElementById("fin-unidades-vendidas");
-    const vendidoAInput = document.getElementById("fin-vendido-a");
+    let tamanoSeleccionado = "";
+    const tamTrigger = document.getElementById("fin-tamano-trigger");
+    const tamMenu = document.getElementById("fin-tamano-menu");
     let presentacionSeleccionada = "";
     let tipoCafeSeleccionado = "";
     const presTrigger = document.getElementById("fin-presentacion-trigger");
@@ -169,34 +171,41 @@ console.log("✏️ finanzas/registrar.js — INIT");
               recalcularMontoCafe();
             }
             if (isCategoriaFinca(data.categoria)) {
-              if (data.unidades_vendidas != null) unidadesInput.value = Number(data.unidades_vendidas).toFixed(2);
-              if (data.tipo_cafe) {
-                tipoCafeSeleccionado = data.tipo_cafe;
-                const tipoLabel = tipoTrigger?.querySelector(".fin-cat-trigger-label");
-                if (tipoLabel) {
-                  tipoLabel.textContent = data.tipo_cafe;
-                  tipoLabel.classList.remove("fin-cat-trigger-placeholder");
+              if (data.product_id) {
+                (async () => {
+                  const { data: prod } = await sb.from("products").select("presentation,grind_type,variedad").eq("id", data.product_id).single();
+                  if (prod) {
+                    presentacionSeleccionada = prod.presentation || "";
+                    tipoCafeSeleccionado = prod.grind_type || "";
+                    variedadSeleccionada = prod.variedad || "";
+                    // Update dropdown UI labels
+                    const presLabel = presTrigger?.querySelector(".fin-cat-trigger-label");
+                    if (presLabel) {
+                      const presOpt = PRESENTACION_OPTS.find(o => o.value === presentacionSeleccionada);
+                      presLabel.textContent = presOpt ? presOpt.label : presentacionSeleccionada;
+                      presLabel.classList.remove("fin-cat-trigger-placeholder");
+                    }
+                    const tipoLabel = tipoTrigger?.querySelector(".fin-cat-trigger-label");
+                    if (tipoLabel) {
+                      tipoLabel.textContent = tipoCafeSeleccionado;
+                      tipoLabel.classList.remove("fin-cat-trigger-placeholder");
+                    }
+                    const varLabel = varTrigger?.querySelector(".fin-cat-trigger-label");
+                    if (varLabel) {
+                      varLabel.textContent = variedadSeleccionada;
+                      varLabel.classList.remove("fin-cat-trigger-placeholder");
+                    }
+                  }
+                })();
+              }
+              if (data.tamano) {
+                tamanoSeleccionado = data.tamano;
+                const tamLabel = tamTrigger?.querySelector(".fin-cat-trigger-label");
+                if (tamLabel) {
+                  tamLabel.textContent = data.tamano;
+                  tamLabel.classList.remove("fin-cat-trigger-placeholder");
                 }
               }
-              if (data.presentacion) {
-                presentacionSeleccionada = data.presentacion;
-                const presLabel = presTrigger?.querySelector(".fin-cat-trigger-label");
-                if (presLabel) {
-                  const presOpt = PRESENTACION_OPTS.find(o => o.value === data.presentacion);
-                  presLabel.textContent = presOpt ? presOpt.label : data.presentacion;
-                  presLabel.classList.remove("fin-cat-trigger-placeholder");
-                }
-              }
-              if (data.vendido_a) vendidoAInput.value = data.vendido_a;
-              if (data.variedad) {
-                variedadSeleccionada = data.variedad;
-                const varLabel = varTrigger?.querySelector(".fin-cat-trigger-label");
-                if (varLabel) {
-                  varLabel.textContent = data.variedad;
-                  varLabel.classList.remove("fin-cat-trigger-placeholder");
-                }
-              }
-              recalcularMontoFinca();
             }
             validarForm();
           }
@@ -218,8 +227,27 @@ console.log("✏️ finanzas/registrar.js — INIT");
           }
 
           const ahora = new Date();
-          const esCafe = isCategoriaCafe(categoriaSeleccionada);
           const esFinca = isCategoriaFinca(categoriaSeleccionada);
+          let product_id = null;
+
+          if (esFinca) {
+            const presentationVal = presentacionSeleccionada ? presentacionSeleccionada.split(" ")[0] : null;
+            const tipoCafeVal = tipoCafeSeleccionado;
+            const variedadVal = variedadSeleccionada;
+
+            if (presentacionVal && tipoCafeVal && variedadVal) {
+              const { data, error } = await sb.from("products").select("id").eq("finca", "La Rosa")
+                .eq("presentation", presentationVal)
+                .eq("grind_type", tipoCafeVal)
+                .eq("variedad", variedadVal)
+                .limit(1).single();
+              
+              if (!error && data) {
+                product_id = data.id;
+              }
+            }
+          }
+
           const payloadBase = {
             tipo,
             concepto,
@@ -227,18 +255,14 @@ console.log("✏️ finanzas/registrar.js — INIT");
             monto: montoValor,
             fecha: fechaInput?.value || ahora.toISOString().split("T")[0],
             metodo_pago: metodoPago,
-            cantidad_libras: esCafe ? (parseFloat(cantidadInput?.value.replace(/[^0-9.]/g, "")) || 0) : null,
-            precio_por_libra: esCafe ? (parseFloat(precioInput?.value.replace(/[^0-9.]/g, "")) || 0) : null,
-            unidades_vendidas: esFinca ? (parseFloat(unidadesInput?.value.replace(/[^0-9.]/g, "")) || 0) : null,
-            tipo_cafe: esFinca ? (tipoCafeSeleccionado || null) : null,
-            presentacion: esFinca ? (presentacionSeleccionada || null) : null,
-            vendido_a: esFinca ? (vendidoAInput?.value?.trim() || null) : null,
-            variedad: esFinca ? (variedadSeleccionada || null) : null,
-            monto_calculado: esFinca ? montoValor : null,
+            product_id: product_id,
+            tamano: tamanoSeleccionado || null,
           };
+
           const payload = editId
             ? payloadBase
-            : { ...payloadBase, hora: ahora.toTimeString().slice(0, 8), notas: null };
+            : { ...payloadBase, hora: ahora.toTimeString().slice(0, 8) };
+          
           console.log("📦 Payload:", payload, "editId:", editId);
 
           const { error } = editId
@@ -252,16 +276,6 @@ console.log("✏️ finanzas/registrar.js — INIT");
             return;
           }
 
-          console.log("✅ Guardado OK");
-
-          if (error) {
-            console.error("❌ Error al guardar:", error);
-            showSnackbar("Error al guardar. Intentalo de nuevo.");
-            guardarBtn.disabled = false;
-            return;
-          }
-
-          console.log("✅ Guardado OK");
           showSnackbar(editId ? "✓ Movimiento actualizado" : "✓ Movimiento guardado");
 
           setTimeout(() => {
@@ -357,9 +371,11 @@ console.log("✏️ finanzas/registrar.js — INIT");
     }
     // --- Fin método de pago ---
 
+    const CATEGORIAS_OCULTAS = new Set(["Pedidos en Línea"]);
+
     function renderCategorias(t) {
       if (!menu) return;
-      const cats = CATEGORIAS[t];
+      const cats = CATEGORIAS[t].filter(c => !CATEGORIAS_OCULTAS.has(c.label));
       let html = cats
         .map(
           (c) => {
@@ -557,6 +573,7 @@ console.log("✏️ finanzas/registrar.js — INIT");
       const esFinca = isCategoriaFinca(label);
       cafeFields.style.display = esCafe ? "" : "none";
       fincaFields.style.display = esFinca ? "" : "none";
+
       if (esFinca) {
         pagoVarWrapper.style.display = "grid";
         pagoVarWrapper.style.gridTemplateColumns = "1fr 1fr";
@@ -585,7 +602,7 @@ console.log("✏️ finanzas/registrar.js — INIT");
         unidadesInput.value = "";
         presentacionSeleccionada = "";
         tipoCafeSeleccionado = "";
-        vendidoAInput.value = "";
+        tamanoSeleccionado = "";
         const presLabel = presTrigger?.querySelector(".fin-cat-trigger-label");
         if (presLabel) {
           presLabel.textContent = "Seleccionar";
@@ -595,6 +612,11 @@ console.log("✏️ finanzas/registrar.js — INIT");
         if (tipoLabel) {
           tipoLabel.textContent = "Seleccionar";
           tipoLabel.classList.add("fin-cat-trigger-placeholder");
+        }
+        const tamLabel = tamTrigger?.querySelector(".fin-cat-trigger-label");
+        if (tamLabel) {
+          tamLabel.textContent = "Seleccionar";
+          tamLabel.classList.add("fin-cat-trigger-placeholder");
         }
         montoInput.readOnly = true;
         montoInput.style.opacity = "0.7";
@@ -605,7 +627,7 @@ console.log("✏️ finanzas/registrar.js — INIT");
         unidadesInput.value = "";
         presentacionSeleccionada = "";
         tipoCafeSeleccionado = "";
-        vendidoAInput.value = "";
+        tamanoSeleccionado = "";
         const presLabel = presTrigger?.querySelector(".fin-cat-trigger-label");
         if (presLabel) {
           presLabel.textContent = "Seleccionar";
@@ -616,7 +638,12 @@ console.log("✏️ finanzas/registrar.js — INIT");
           tipoLabel.textContent = "Seleccionar";
           tipoLabel.classList.add("fin-cat-trigger-placeholder");
         }
-        montoInput.readOnly = false;
+        const tamLabel = tamTrigger?.querySelector(".fin-cat-trigger-label");
+        if (tamLabel) {
+          tamLabel.textContent = "Seleccionar";
+          tamLabel.classList.add("fin-cat-trigger-placeholder");
+        }
+      montoInput.readOnly = false;
         montoInput.style.opacity = "";
       }
     }
@@ -663,86 +690,6 @@ console.log("✏️ finanzas/registrar.js — INIT");
       const accionDiv = document.getElementById("acciones-categoria");
       if (accionDiv) accionDiv.innerHTML = "";
       actualizarCamposEspeciales(null);
-    }
-
-    function updateTipo(t) {
-      tipo = t;
-      resetCategoria();
-      toggleBtns.forEach((btn) => {
-        const isActive = btn.dataset.tipo === t;
-        btn.classList.toggle("active", isActive);
-        if (isActive) {
-          btn.classList.add(t === "ingreso" ? "primary" : "error");
-          btn.classList.remove(t === "ingreso" ? "error" : "primary");
-          const span = btn.querySelector("span:last-child");
-          if (span) span.style.fontWeight = "700";
-        } else {
-          btn.classList.remove("primary", "error");
-          const span = btn.querySelector("span:last-child");
-          if (span) span.style.fontWeight = "";
-        }
-      });
-      renderCategorias(t);
-      if (guardarBtn) {
-        guardarBtn.className = `fin-btn-filled ${t === "ingreso" ? "primary" : "error"}`;
-        guardarBtn.innerHTML = `<span class="material-symbols-outlined" style="font-size:18px;">save</span> Guardar ${t === "ingreso" ? "Ingreso" : "Egreso"}`;
-      }
-      const montoColor = t === "ingreso" ? "var(--verde)" : "var(--md-error)";
-      const montoInput = document.getElementById("fin-monto-input");
-      if (montoInput) montoInput.style.color = montoColor;
-      const hnlLabel = document.getElementById("fin-hnl-label");
-      if (hnlLabel) hnlLabel.style.color = "var(--marron)";
-      validarForm();
-    }
-
-    // Monto
-    if (montoInput) {
-      montoInput.addEventListener("focus", () => {
-        if (montoInput.value === "0.00") montoInput.value = "";
-      });
-      montoInput.addEventListener("blur", () => {
-        const raw = montoInput.value.replace(/[^0-9.]/g, "");
-        const num = parseFloat(raw) || 0;
-        montoInput.value = num.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-      });
-      montoInput.addEventListener("input", () => {
-        const raw = montoInput.value.replace(/[^0-9.]/g, "");
-        montoValor = parseFloat(raw) || 0;
-        validarForm();
-      });
-    }
-
-    // Concepto
-    if (conceptoInput) {
-      conceptoInput.addEventListener("input", validarForm);
-    }
-
-    // Cantidad / Precio café
-    if (cantidadInput) {
-      cantidadInput.addEventListener("input", recalcularMontoCafe);
-      cantidadInput.addEventListener("blur", () => {
-        const raw = cantidadInput.value.replace(/[^0-9.]/g, "");
-        const num = parseFloat(raw) || 0;
-        cantidadInput.value = num ? num.toFixed(2) : "";
-      });
-    }
-    if (precioInput) {
-      precioInput.addEventListener("input", recalcularMontoCafe);
-      precioInput.addEventListener("blur", () => {
-        const raw = precioInput.value.replace(/[^0-9.]/g, "");
-        const num = parseFloat(raw) || 0;
-        precioInput.value = num.toFixed(2);
-      });
-    }
-
-    // Finca La Rosa
-    if (unidadesInput) {
-      unidadesInput.addEventListener("input", recalcularMontoFinca);
-      unidadesInput.addEventListener("blur", () => {
-        const raw = unidadesInput.value.replace(/[^0-9.]/g, "");
-        const num = parseFloat(raw) || 0;
-        unidadesInput.value = num ? num.toFixed(2) : "";
-      });
     }
 
     // --- Presentación dropdown ---
@@ -905,11 +852,155 @@ console.log("✏️ finanzas/registrar.js — INIT");
       });
     }
 
+    // --- Tamaño dropdown (Libra / Media Libra / Cuarto) ---
+    const TAMANO_OPTS = [
+      { value: "1 Libra", label: "1 Libra" },
+      { value: "1/2 Libra", label: "1/2 Libra" },
+    ];
+
+    function closeTamMenu() {
+      tamTrigger?.classList.remove("open");
+      tamMenu?.classList.remove("open");
+    }
+
+    function openTamMenu() {
+      tamTrigger?.classList.add("open");
+      tamMenu?.classList.add("open");
+    }
+
+    tamTrigger?.addEventListener("click", () => {
+      if (tamMenu?.classList.contains("open")) {
+        closeTamMenu();
+      } else {
+        renderTamMenu();
+        openTamMenu();
+      }
+    });
+
+    document.addEventListener("click", (e) => {
+      const dd = document.getElementById("fin-tamano-dropdown");
+      if (dd && !dd.contains(e.target)) closeTamMenu();
+    });
+
+    function renderTamMenu() {
+      if (!tamMenu) return;
+      tamMenu.innerHTML = TAMANO_OPTS.map(o => {
+        const selected = o.value === tamanoSeleccionado;
+        return `<button class="fin-cat-menu-item${selected ? ' selected' : ''}" data-value="${o.value}">
+          <span class="fin-cat-menu-item-text">${o.label}</span>
+          <span class="material-symbols-outlined fin-cat-menu-item-check">check</span>
+        </button>`;
+      }).join("");
+      tamMenu.querySelectorAll(".fin-cat-menu-item").forEach(item => {
+        item.addEventListener("click", () => {
+          tamanoSeleccionado = item.dataset.value;
+          const label = item.querySelector(".fin-cat-menu-item-text")?.textContent || tamanoSeleccionado;
+          const tamLabel = tamTrigger?.querySelector(".fin-cat-trigger-label");
+          if (tamLabel) {
+            tamLabel.textContent = label;
+            tamLabel.classList.remove("fin-cat-trigger-placeholder");
+          }
+          closeTamMenu();
+        });
+      });
+    }
+
+    function updateTipo(t) {
+      tipo = t;
+      resetCategoria();
+      toggleBtns.forEach((btn) => {
+        const isActive = btn.dataset.tipo === t;
+        btn.classList.toggle("active", isActive);
+        if (isActive) {
+          btn.classList.add(t === "ingreso" ? "primary" : "error");
+          btn.classList.remove(t === "ingreso" ? "error" : "primary");
+          const span = btn.querySelector("span:last-child");
+          if (span) span.style.fontWeight = "700";
+        } else {
+          btn.classList.remove("primary", "error");
+          const span = btn.querySelector("span:last-child");
+          if (span) span.style.fontWeight = "";
+        }
+      });
+      renderCategorias(t);
+      if (guardarBtn) {
+        guardarBtn.className = `fin-btn-filled ${t === "ingreso" ? "primary" : "error"}`;
+        guardarBtn.innerHTML = `<span class="material-symbols-outlined" style="font-size:18px;">save</span> Guardar ${t === "ingreso" ? "Ingreso" : "Egreso"}`;
+      }
+      const montoColor = t === "ingreso" ? "var(--verde)" : "var(--md-error)";
+      const montoInput = document.getElementById("fin-monto-input");
+      if (montoInput) montoInput.style.color = montoColor;
+      const hnlLabel = document.getElementById("fin-hnl-label");
+      if (hnlLabel) hnlLabel.style.color = "var(--marron)";
+      validarForm();
+    }
+
+    // Monto
+    if (montoInput) {
+      montoInput.addEventListener("focus", () => {
+        if (montoInput.value === "0.00") montoInput.value = "";
+      });
+      montoInput.addEventListener("blur", () => {
+        const raw = montoInput.value.replace(/[^0-9.]/g, "");
+        const num = parseFloat(raw) || 0;
+        montoInput.value = num.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      });
+      montoInput.addEventListener("input", () => {
+        const raw = montoInput.value.replace(/[^0-9.]/g, "");
+        montoValor = parseFloat(raw) || 0;
+        validarForm();
+      });
+    }
+
+    // Concepto
+    if (conceptoInput) {
+      conceptoInput.addEventListener("input", validarForm);
+    }
+
+    // Cantidad / Precio café
+    if (cantidadInput) {
+      cantidadInput.addEventListener("input", recalcularMontoCafe);
+      cantidadInput.addEventListener("blur", () => {
+        const raw = cantidadInput.value.replace(/[^0-9.]/g, "");
+        const num = parseFloat(raw) || 0;
+        cantidadInput.value = num ? num.toFixed(2) : "";
+      });
+    }
+    if (precioInput) {
+      precioInput.addEventListener("input", recalcularMontoCafe);
+      precioInput.addEventListener("blur", () => {
+        const raw = precioInput.value.replace(/[^0-9.]/g, "");
+        const num = parseFloat(raw) || 0;
+        precioInput.value = num.toFixed(2);
+      });
+    }
+
+    // Finca La Rosa
+    if (unidadesInput) {
+      unidadesInput.addEventListener("input", recalcularMontoFinca);
+      unidadesInput.addEventListener("blur", () => {
+        const raw = unidadesInput.value.replace(/[^0-9.]/g, "");
+        const num = parseFloat(raw) || 0;
+        unidadesInput.value = num ? num.toFixed(2) : "";
+      });
+    }
+
     function validarForm() {
       if (!guardarBtn) return;
       const conceptoVal = (conceptoInput?.value || "").trim();
-      const ok = montoValor > 0 && categoriaSeleccionada && conceptoVal.length > 0;
-      guardarBtn.disabled = !ok;
+      const esCafe = isCategoriaCafe(categoriaSeleccionada);
+      const esFinca = isCategoriaFinca(categoriaSeleccionada);
+      let inputOk = montoValor > 0 && categoriaSeleccionada && conceptoVal.length > 0;
+
+      if (esCafe) {
+        const rawCant = cantidadInput.value.replace(/[^0-9.]/g, "");
+        const rawPrec = precioInput.value.replace(/[^0-9.]/g, "");
+        inputOk = inputOk && parseFloat(rawCant) > 0 && parseFloat(rawPrec) > 0;
+      } else if (esFinca) {
+        inputOk = inputOk && unidadesInput.value.replace(/[^0-9.]/g, "") !== "";
+      }
+      
+      guardarBtn.disabled = !inputOk;
     }
 
     // Toggle

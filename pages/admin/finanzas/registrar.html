@@ -140,12 +140,16 @@
                 <label class="fin-field-label">Unidades vendidas</label>
               </div>
             </div>
-            <div class="fin-field">
-              <div class="fin-input-wrapper">
-                <span class="material-symbols-outlined fin-input-icon">person</span>
-                <input type="text" id="fin-vendido-a" placeholder=" ">
-                <label class="fin-field-label">Vendido a</label>
-              </div>
+            <div class="fin-cat-dropdown" id="fin-tamano-dropdown">
+              <span class="fin-cat-floating-label">Tamaño</span>
+              <button class="fin-cat-dropdown-trigger" id="fin-tamano-trigger" type="button">
+                <span class="fin-cat-trigger-content">
+                  <span class="material-symbols-outlined fin-cat-trigger-icon">straighten</span>
+                  <span class="fin-cat-trigger-label fin-cat-trigger-placeholder">Seleccionar</span>
+                </span>
+                <span class="material-symbols-outlined fin-cat-trigger-arrow">arrow_drop_down</span>
+              </button>
+              <div class="fin-cat-dropdown-menu" id="fin-tamano-menu"></div>
             </div>
           </div>
         </section>
@@ -180,7 +184,7 @@
         </div>
 
         <!-- Fecha -->
-        <div class="fin-field">
+        <div class="fin-field" style="margin-bottom:8px;">
           <div class="fin-input-wrapper" id="fin-fecha-wrapper" style="cursor:pointer;">
             <span class="material-symbols-outlined fin-input-icon fin-fecha-icon">calendar_today</span>
             <input type="text" id="fin-fecha-display" placeholder=" " readonly
@@ -191,7 +195,7 @@
         </div>
 
         <!-- Descripción -->
-        <div class="fin-field">
+        <div class="fin-field" style="margin-bottom:8px;">
           <div class="fin-input-wrapper textarea-wrapper">
             <span class="material-symbols-outlined fin-input-icon" style="margin-top:0.2rem;">description</span>
             <textarea id="fin-concepto" placeholder=" " rows="3"></textarea>
