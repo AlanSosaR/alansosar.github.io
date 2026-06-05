@@ -235,7 +235,7 @@ console.log("✏️ finanzas/registrar.js — INIT");
             const tipoCafeVal = tipoCafeSeleccionado;
             const variedadVal = variedadSeleccionada;
 
-            if (presentacionVal && tipoCafeVal && variedadVal) {
+            if (presentationVal && tipoCafeVal && variedadVal) {
               const { data, error } = await sb.from("products").select("id").eq("finca", "La Rosa")
                 .eq("presentation", presentationVal)
                 .eq("grind_type", tipoCafeVal)
