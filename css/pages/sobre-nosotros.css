@@ -1,88 +1,88 @@
-/* =====================================================
-   SOBRE NOSOTROS — MATERIAL 3 EXPRESSIVE
-   Rediseño editorial 2026
-   Tokens: --verde (#33673b), --marron (#6a3f2b)
-   Body: Poppins, Headings: Playfair Display
-===================================================== */
+/* ============================================================
+   SOBRE NOSOTROS — Apple structure + M3 Expressive accents
+   Rectángulos limpios para texto, curvas solo en imágenes
+   y detalles orgánicos.
+   Variables: --marron · --verde · --fondo · --acento · --blanco
+============================================================ */
 
-/* =====================
+/* ============================================================
    CONTAINER
-===================== */
+============================================================ */
 .ns-container {
   max-width: 1120px;
   margin-inline: auto;
-  padding-inline: clamp(1rem, 3vw, 2rem);
+  padding-inline: clamp(1.25rem, 4vw, 2.5rem);
+}
+
+.ns-container--narrow {
+  max-width: 760px;
 }
 
 .ns-section {
-  padding-block: clamp(4rem, 8vh, 7rem);
+  padding-block: clamp(4rem, 10vh, 8rem);
 }
 
 .ns-section-alt {
-  background: #f5f3ef;
+  background: var(--fondo);
 }
 
-.ns-section-dark {
-  background: #1e2a1e;
-  color: #eae6df;
-}
-
-.ns-section-quote {
-  background: #f5f3ef;
-}
-
-.ns-mt {
-  margin-top: 1rem;
-}
-
-/* =====================
+/* ============================================================
    TYPOGRAPHY
-===================== */
+============================================================ */
 .ns-label {
   display: inline-block;
-  font-family: Poppins, sans-serif;
-  font-size: 0.75rem;
+  font-family: "Poppins", sans-serif;
+  font-size: 0.65rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.15em;
-  color: var(--marron);
-  margin-bottom: 0.6rem;
-}
-
-.ns-label-light {
-  color: #c7b5a0;
+  letter-spacing: 0.2em;
+  color: var(--acento);
+  margin-bottom: 0.75rem;
 }
 
 .ns-heading {
-  font-family: "Playfair Display", serif;
-  font-size: clamp(2rem, 4.5vw, 2.8rem);
+  font-family: "Poppins", sans-serif;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-weight: 800;
   line-height: 1.15;
-  color: var(--verde);
-  margin-bottom: 1rem;
-}
-
-.ns-heading-light {
-  color: #ffffff;
+  color: var(--marron);
+  margin-bottom: 1.25rem;
+  letter-spacing: -0.02em;
 }
 
 .ns-body-lg {
-  font-size: 1.1rem;
-  line-height: 1.75;
+  font-family: "Poppins", sans-serif;
+  font-size: clamp(1.05rem, 1.6vw, 1.2rem);
+  font-weight: 400;
+  line-height: 1.8;
   color: var(--marron);
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
 }
 
 .ns-body-md {
-  font-size: 0.975rem;
-  line-height: 1.7;
+  font-family: "Poppins", sans-serif;
+  font-size: 0.95rem;
+  font-weight: 400;
+  line-height: 1.8;
   color: var(--marron);
+  opacity: 0.75;
+}
+
+.ns-text-narrow {
+  max-width: 640px;
+  margin-inline: auto;
+}
+
+.ns-text-center {
+  text-align: center;
 }
 
 .ns-divider {
-  width: 48px;
-  height: 3px;
+  width: 32px;
+  height: 2px;
   background: var(--verde);
-  border-radius: 2px;
+  opacity: 0.3;
+  border-radius: 1px;
   margin-bottom: 1.5rem;
   margin-top: 0.5rem;
 }
@@ -91,286 +91,353 @@
   margin-inline: auto;
 }
 
-.ns-text-center {
-  text-align: center;
-}
-
-.ns-text-narrow {
-  max-width: 680px;
-  margin-inline: auto;
-}
-
-/* =====================================================
-   1. HERO
-===================================================== */
+/* ============================================================
+   HERO — Apple editorial puro, todo recto
+============================================================ */
 .ns-hero {
   position: relative;
-  height: 100vh;
-  min-height: 560px;
+  width: 100%;
+  min-height: 100vh;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
   text-align: center;
   overflow: hidden;
-}
-
-.ns-hero-bg {
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(135deg, #1e2a1e 0%, #2d4a2d 40%, #3d5e3d 100%);
-  z-index: 0;
-}
-
-.ns-hero-overlay {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(ellipse 80% 60% at 50% 40%, rgba(255, 255, 255, 0.08) 0%, transparent 70%),
-    radial-gradient(ellipse 100% 50% at 50% 100%, rgba(0, 0, 0, 0.3) 0%, transparent 70%);
+  background: var(--fondo);
 }
 
 .ns-hero-content {
   position: relative;
   z-index: 1;
-  max-width: 820px;
-  padding-inline: clamp(1rem, 3vw, 2rem);
+  width: 100%;
+  max-width: 960px;
+  padding-block: clamp(4rem, 12vh, 8rem);
+  padding-inline: clamp(1.5rem, 5vw, 4rem);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1;
   animation: ns-fade-up 0.9s ease-out;
 }
 
-.ns-hero-badge {
-  display: inline-block;
-  font-family: Poppins, sans-serif;
-  font-size: 0.7rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
-  color: #c7b5a0;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  padding: 0.4rem 1rem;
-  border-radius: 999px;
-  margin-bottom: 1.5rem;
-}
-
 .ns-hero-title {
-  font-family: "Playfair Display", serif;
-  font-size: clamp(2.2rem, 5.5vw, 3.8rem);
-  line-height: 1.12;
-  color: #ffffff;
-  margin-bottom: 1.2rem;
+  font-family: "Poppins", sans-serif;
+  font-size: clamp(2.2rem, 5vw, 3.4rem);
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--marron);
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.03em;
+  margin-top: auto;
 }
 
 .ns-hero-subtitle {
-  font-family: Poppins, sans-serif;
-  font-size: clamp(0.9rem, 1.5vw, 1.05rem);
-  color: rgba(255, 255, 255, 0.75);
+  font-family: "Poppins", sans-serif;
+  font-size: clamp(0.95rem, 1.5vw, 1.15rem);
+  font-weight: 400;
+  color: var(--acento);
+  line-height: 1.7;
   margin-bottom: 2rem;
 }
 
-.ns-scroll-indicator {
-  position: absolute;
-  bottom: 2rem;
-  left: 50%;
-  translate: -50% 0;
-  color: rgba(255, 255, 255, 0.4);
-  animation: ns-bounce 2s infinite;
+.ns-hero-claim {
+  font-family: "Poppins", sans-serif;
+  font-size: clamp(1rem, 1.8vw, 1.25rem);
+  font-weight: 500;
+  color: var(--marron);
+  line-height: 1.7;
+  margin-bottom: 1.5rem;
+  opacity: 0.8;
+  max-width: 680px;
+  margin-inline: auto;
+}
+
+.ns-hero-origin {
+  font-family: "Poppins", sans-serif;
+  font-size: clamp(0.85rem, 1.4vw, 1rem);
+  font-weight: 400;
+  color: var(--marron);
+  line-height: 1.8;
+  margin-bottom: 1.5rem;
+  opacity: 0.7;
+  max-width: 640px;
+  margin-inline: auto;
+}
+
+.ns-hero-desc {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  font-family: "Poppins", sans-serif;
+  font-size: clamp(0.8rem, 1.3vw, 0.95rem);
+  font-weight: 400;
+  color: var(--acento);
+  line-height: 1.7;
+  margin-bottom: 1.5rem;
+}
+
+.ns-hero-desc-sep {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--verde);
+  opacity: 0.4;
+}
+
+@media (max-width: 480px) {
+  .ns-hero-desc {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .ns-hero-desc-sep {
+    display: none;
+  }
+}
+
+.ns-hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: "Poppins", sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--verde);
+  text-decoration: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 999px;
+  border: 1.5px solid rgba(55, 123, 76, 0.25);
+  transition: border-color 300ms ease, background 300ms ease;
+  align-self: center;
+  margin-bottom: auto;
+}
+
+.ns-hero-cta:hover {
+  border-color: var(--verde);
+  background: rgba(55, 123, 76, 0.04);
+}
+
+.ns-hero-cta .material-symbols-outlined {
+  font-size: 1.1rem;
+  animation: ns-bounce 2.4s ease-in-out infinite;
 }
 
 @keyframes ns-bounce {
-  0%, 100% { translate: -50% 0; }
-  50% { translate: -50% 8px; }
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 4px; }
 }
 
-/* =====================================================
-   BUTTONS
-===================================================== */
-.ns-btn-primary {
-  display: inline-block;
-  font-family: Poppins, sans-serif;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: #ffffff;
-  background: #33673b;
-  padding: 0.85rem 2rem;
-  border-radius: 999px;
-  text-decoration: none;
-  transition: background 200ms;
-}
-
-.ns-btn-primary:hover {
-  background: #2a5a32;
-}
-
-.ns-btn-outline {
-  display: inline-block;
-  font-family: Poppins, sans-serif;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: #ffffff;
-  border: 2px solid rgba(255, 255, 255, 0.5);
-  padding: 0.85rem 2rem;
-  border-radius: 999px;
-  text-decoration: none;
-  transition: border-color 200ms, background 200ms;
-}
-
-.ns-btn-outline:hover {
-  border-color: #ffffff;
-  background: rgba(255, 255, 255, 0.08);
-}
-
-/* =====================================================
-   2. IDENTITY
-===================================================== */
-.ns-grid-2col {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: clamp(2rem, 5vw, 4rem);
-  align-items: center;
-}
-
-@media (max-width: 860px) {
-  .ns-grid-2col {
-    grid-template-columns: 1fr;
-  }
-}
-
-.ns-image-card {
-  border-radius: 28px;
-  overflow: hidden;
-}
-
-.ns-image-card img {
-  display: block;
-  width: 100%;
-  height: clamp(300px, 40vw, 480px);
-  object-fit: cover;
-}
-
-/* =====================================================
-   3. LANDSCAPE
-===================================================== */
-.ns-landscape {
-  border-radius: 28px;
-  overflow: hidden;
-  margin-block: 2rem;
-}
-
-.ns-landscape img {
-  display: block;
-  width: 100%;
-  height: clamp(300px, 45vw, 520px);
-  object-fit: cover;
-}
-
-/* =====================================================
-   4. PEOPLE
-===================================================== */
-.ns-people-header {
-  margin-bottom: 2.5rem;
-}
-
-.ns-people-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: clamp(1rem, 3vw, 2rem);
-  align-items: start;
-}
-
-@media (max-width: 760px) {
-  .ns-people-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-.ns-img-portrait {
-  border-radius: 28px;
-  overflow: hidden;
-}
-
-.ns-img-portrait img {
-  display: block;
-  width: 100%;
-  height: clamp(380px, 50vw, 560px);
-  object-fit: cover;
-}
-
-.ns-people-col {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.ns-img-square {
-  border-radius: 28px;
-  overflow: hidden;
-}
-
-.ns-img-square img {
-  display: block;
-  width: 100%;
-  height: clamp(200px, 30vw, 300px);
-  object-fit: cover;
-}
-
-.ns-quote-card {
-  background: #ffffff;
-  border-radius: 28px;
-  padding: clamp(1.5rem, 3vw, 2.2rem);
-}
-
-.ns-quote-text {
-  font-family: "Playfair Display", serif;
-  font-size: 1.05rem;
-  line-height: 1.65;
-  color: var(--marron);
+/* ============================================================
+   SOBRE CAFÉ CORTERO — Texto plano, imágenes curvas
+============================================================ */
+.ns-em {
+  color: var(--verde);
   font-style: italic;
 }
 
-/* =====================================================
-   5. PROCESS
-===================================================== */
-.ns-process-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1.25rem;
-  margin-top: 3rem;
+.ns-story-divider {
+  height: 1px;
+  background: rgba(81, 38, 21, 0.06);
+  margin-block: 2.5rem;
 }
 
-@media (max-width: 900px) {
-  .ns-process-grid {
-    grid-template-columns: repeat(2, 1fr);
+/* Texto: contenedor blanco sutil, esquinas rectas Apple */
+.ns-story-card {
+  background: var(--blanco);
+  border: 1px solid rgba(81, 38, 21, 0.08);
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+/* Imagen: M3 expressive curve */
+.ns-story-card--img {
+  border: none;
+  border-radius: 28px;
+  overflow: hidden;
+  background: var(--blanco);
+  padding: 0;
+}
+
+.ns-story-card--img img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ns-story-lead {
+  font-family: "Poppins", sans-serif;
+  font-size: clamp(1.15rem, 2vw, 1.4rem);
+  font-weight: 400;
+  line-height: 1.8;
+  color: var(--marron);
+  margin: 0;
+}
+
+.ns-story-body {
+  font-family: "Poppins", sans-serif;
+  font-size: clamp(0.95rem, 1.3vw, 1.05rem);
+  font-weight: 400;
+  line-height: 1.9;
+  color: var(--marron);
+  opacity: 0.8;
+  margin: 0;
+}
+
+.ns-story-label {
+  display: inline-block;
+  font-family: "Poppins", sans-serif;
+  font-size: 0.6rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--acento);
+  margin-bottom: 0.75rem;
+}
+
+.ns-story-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+@media (min-width: 680px) {
+  .ns-story-grid {
+    grid-template-columns: 1fr 1fr;
   }
 }
 
-@media (max-width: 500px) {
-  .ns-process-grid {
-    grid-template-columns: 1fr;
+.ns-story-grid .ns-story-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.ns-story-grid .ns-story-card--img {
+  aspect-ratio: 4 / 3;
+}
+
+/* Pull quote: fondo blanco, acento verde arriba */
+.ns-story-card--pull {
+  text-align: center;
+  border-top: 3px solid var(--verde);
+  border-left: none;
+  border-right: none;
+  border-bottom: none;
+}
+
+.ns-story-pull-icon {
+  font-size: 2rem !important;
+  color: var(--verde);
+  opacity: 0.2;
+  margin-bottom: 0.5rem;
+}
+
+.ns-story-pull-text {
+  font-family: "Poppins", sans-serif;
+  font-size: clamp(1.3rem, 2.5vw, 1.7rem);
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--marron);
+  margin: 0;
+}
+
+/* ============================================================
+   BUTTONS
+============================================================ */
+.ns-btn-primary,
+.ns-btn-outline {
+  display: inline-block;
+  font-family: "Poppins", sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 0.85rem 2.4rem;
+  border-radius: 999px;
+  text-decoration: none;
+  transition: opacity 250ms ease, transform 250ms ease;
+  cursor: pointer;
+}
+
+.ns-btn-primary {
+  color: var(--blanco);
+  background: var(--verde);
+}
+
+.ns-btn-primary:hover {
+  opacity: 0.85;
+  transform: translateY(-1px);
+}
+
+.ns-btn-outline {
+  color: var(--marron);
+  background: transparent;
+  border: 1.5px solid var(--marron);
+  opacity: 0.6;
+}
+
+.ns-btn-outline:hover {
+  opacity: 1;
+  transform: translateY(-1px);
+}
+
+/* ============================================================
+   PROCESS — Bloques planos, imágenes curvas
+============================================================ */
+.ns-timeline {
+  margin-top: 3.5rem;
+}
+
+.ns-timeline-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 680px) {
+  .ns-timeline-list {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
 .ns-process-card {
   display: flex;
   flex-direction: column;
+  background: var(--blanco);
+  border: 1px solid rgba(81, 38, 21, 0.06);
+  padding: 1.5rem;
 }
 
-.ns-process-offset {
-  margin-top: 2rem;
-}
-
-@media (max-width: 900px) {
-  .ns-process-offset {
-    margin-top: 0;
+@media (max-width: 680px) {
+  .ns-process-card {
+    border-left: none;
+    border-right: none;
+    border-radius: 0;
+    padding: 1.5rem 0;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(81, 38, 21, 0.06);
   }
 }
 
+/* Imagen: curva M3 expressive */
 .ns-process-img {
   position: relative;
-  border-radius: 20px;
+  aspect-ratio: 16 / 9;
   overflow: hidden;
-  aspect-ratio: 4 / 3;
+  border-radius: 28px;
   margin-bottom: 1rem;
+}
+
+.ns-process-img::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(81, 38, 21, 0.3), transparent 50%);
+  pointer-events: none;
 }
 
 .ns-process-img img {
@@ -380,83 +447,150 @@
   object-fit: cover;
 }
 
-.ns-process-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.4), transparent 50%);
-}
-
+/* Número: badge circular sobre la imagen */
 .ns-process-number {
   position: absolute;
   top: 0.75rem;
   left: 0.75rem;
-  font-family: "Playfair Display", serif;
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: #ffffff;
-  z-index: 1;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  z-index: 2;
+  font-family: "Poppins", sans-serif;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--blanco);
+  background: var(--verde);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ns-process-body {
+  padding: 0;
 }
 
 .ns-process-title {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-family: Poppins, sans-serif;
-  font-size: 1rem;
-  font-weight: 600;
-  color: #ffffff;
-  margin-bottom: 0.4rem;
-}
-
-.ns-process-title .material-symbols-outlined {
-  font-size: 1.25rem;
-  color: #8ab88a;
+  font-family: "Poppins", sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--marron);
+  margin-bottom: 0.5rem;
 }
 
 .ns-process-desc {
   font-size: 0.85rem;
-  line-height: 1.65;
-  color: rgba(255, 255, 255, 0.75);
+  font-weight: 400;
+  line-height: 1.7;
+  color: var(--marron);
+  opacity: 0.7;
+  margin: 0;
 }
 
-/* =====================================================
-   6. VALUES — BENTO
-===================================================== */
+/* ============================================================
+   PEOPLE — Imágenes curvas, texto recto
+============================================================ */
+.ns-people-header {
+  margin-bottom: 2.5rem;
+  max-width: 640px;
+}
+
+.ns-people-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (min-width: 760px) {
+  .ns-people-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Imagen grande: curva M3 */
+.ns-img-portrait {
+  border-radius: 28px;
+  overflow: hidden;
+}
+
+.ns-img-portrait img {
+  display: block;
+  width: 100%;
+  height: clamp(380px, 55vw, 600px);
+  object-fit: cover;
+}
+
+.ns-people-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Imagen cuadrada: curva M3 */
+.ns-img-square {
+  border-radius: 28px;
+  overflow: hidden;
+}
+
+.ns-img-square img {
+  display: block;
+  width: 100%;
+  height: clamp(220px, 30vw, 320px);
+  object-fit: cover;
+}
+
+/* Cita: bloque blanco sutil */
+.ns-quote-card {
+  background: var(--blanco);
+  border: 1px solid rgba(81, 38, 21, 0.08);
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+  position: relative;
+  border-left: 4px solid var(--verde);
+}
+
+.ns-quote-text {
+  font-family: "Poppins", sans-serif;
+  font-size: 1.1rem;
+  font-weight: 400;
+  line-height: 1.7;
+  color: var(--marron);
+  opacity: 0.8;
+  font-style: italic;
+  margin: 0;
+}
+
+/* ============================================================
+   VALUES — Bento plano, solo imagen con curva
+============================================================ */
 .ns-bento {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
-  grid-template-rows: auto auto;
+  grid-template-columns: 1fr;
   gap: 1rem;
-  margin-top: 2rem;
+  margin-top: 2.5rem;
 }
 
-@media (max-width: 860px) {
+@media (min-width: 560px) {
   .ns-bento {
     grid-template-columns: 1fr 1fr;
   }
 }
 
-@media (max-width: 520px) {
-  .ns-bento {
-    grid-template-columns: 1fr;
-  }
-}
-
 .ns-bento-item {
   position: relative;
-  border-radius: 24px;
   overflow: hidden;
-  padding: 1.8rem;
+  padding: 2rem;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
-  min-height: 200px;
+  justify-content: center;
+  min-height: 140px;
 }
 
 .ns-bento-large {
-  grid-row: span 2;
-  min-height: 320px;
+  grid-column: 1 / -1;
+  min-height: 300px;
+  border-radius: 28px;
 }
 
 .ns-bento-bg {
@@ -475,7 +609,7 @@
 .ns-bento-bg-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(30, 42, 30, 0.85) 0%, rgba(30, 42, 30, 0.3) 60%, transparent 100%);
+  background: linear-gradient(to top, rgba(81, 38, 21, 0.65) 0%, rgba(81, 38, 21, 0.15) 60%, transparent 100%);
 }
 
 .ns-bento-content {
@@ -484,13 +618,14 @@
 }
 
 .ns-bento-solid {
-  background: #33673b;
+  background: var(--verde);
   justify-content: center;
 }
 
 .ns-bento-wide {
-  background: #f5f3ef;
-  grid-column: span 2;
+  background: var(--blanco);
+  border: 1px solid rgba(81, 38, 21, 0.08);
+  grid-column: 1 / -1;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
@@ -499,8 +634,8 @@
 
 @media (max-width: 520px) {
   .ns-bento-wide {
-    grid-column: span 1;
     flex-direction: column;
+    align-items: flex-start;
   }
 }
 
@@ -511,13 +646,13 @@
 }
 
 .ns-bento-icon {
-  font-size: 2rem !important;
-  color: #ffffff;
+  font-size: 1.8rem !important;
+  color: var(--blanco);
   margin-bottom: 0.5rem;
 }
 
 .ns-bento-solid .ns-bento-icon {
-  color: #ffffff;
+  color: var(--blanco);
   opacity: 0.9;
 }
 
@@ -526,29 +661,29 @@
 }
 
 .ns-bento-title {
-  font-family: Poppins, sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 1.05rem;
-  font-weight: 600;
-  color: #ffffff;
+  font-weight: 700;
+  color: var(--blanco);
   margin-bottom: 0.3rem;
 }
 
-.ns-bento-solid .ns-bento-title {
-  color: #ffffff;
-}
-
 .ns-bento-wide .ns-bento-title {
-  color: var(--verde);
+  color: var(--marron);
 }
 
 .ns-bento-desc {
   font-size: 0.85rem;
-  line-height: 1.55;
-  color: rgba(255, 255, 255, 0.8);
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--blanco);
+  opacity: 0.85;
+  margin: 0;
 }
 
 .ns-bento-wide .ns-bento-desc {
   color: var(--marron);
+  opacity: 0.7;
 }
 
 .ns-bento-tags {
@@ -561,70 +696,68 @@
   font-size: 0.7rem;
   font-weight: 500;
   color: var(--verde);
-  background: rgba(51, 103, 59, 0.1);
-  padding: 0.25rem 0.75rem;
+  background: rgba(55, 123, 76, 0.1);
+  padding: 0.3rem 0.85rem;
   border-radius: 999px;
 }
 
-/* =====================================================
-   7. QUOTE
-===================================================== */
+/* ============================================================
+   PULL QUOTE — editorial recto
+============================================================ */
 .ns-quote-block {
-  max-width: 780px;
-  margin-inline: auto;
   text-align: center;
+  position: relative;
 }
 
 .ns-quote-icon {
-  font-size: 3rem !important;
+  font-size: 2.5rem !important;
   color: var(--verde);
-  opacity: 0.35;
-  margin-bottom: 0.5rem;
+  opacity: 0.2;
+  margin-bottom: 0.75rem;
 }
 
 .ns-quote-heading {
-  font-family: "Playfair Display", serif;
-  font-size: clamp(1.5rem, 3.5vw, 2.1rem);
-  line-height: 1.35;
-  color: var(--verde);
+  font-family: "Poppins", sans-serif;
+  font-size: clamp(1.4rem, 3.5vw, 2rem);
   font-weight: 600;
-  margin-bottom: 1.2rem;
+  line-height: 1.45;
+  color: var(--marron);
+  margin-bottom: 1.25rem;
 }
 
-/* =====================================================
-   8. FINAL CTA
-===================================================== */
+.ns-quote-attribution {
+  font-family: "Poppins", sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--acento);
+  font-style: normal;
+  letter-spacing: 0.05em;
+}
+
+/* ============================================================
+   FINAL CTA
+============================================================ */
 .ns-section-cta {
   position: relative;
-  padding-block: clamp(5rem, 10vh, 8rem);
+  padding-block: clamp(5rem, 12vh, 9rem);
   text-align: center;
   overflow: hidden;
-}
-
-.ns-cta-bg {
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(135deg, #1e2a1e 0%, #2d4a2d 40%, #3d5e3d 100%);
-  z-index: 0;
-}
-
-.ns-cta-overlay {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(ellipse 80% 50% at 50% 50%, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+  background: var(--fondo);
 }
 
 .ns-cta-content {
   position: relative;
-  z-index: 1;
+  max-width: 640px;
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 4vw, 2.5rem);
 }
 
 .ns-cta-heading {
-  font-family: "Playfair Display", serif;
-  font-size: clamp(1.8rem, 4vw, 2.6rem);
-  color: #ffffff;
+  font-family: "Poppins", sans-serif;
+  font-size: clamp(1.8rem, 4.5vw, 2.8rem);
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--marron);
   margin-bottom: 2rem;
 }
 
@@ -635,9 +768,9 @@
   flex-wrap: wrap;
 }
 
-/* =====================================================
+/* ============================================================
    ANIMATIONS
-===================================================== */
+============================================================ */
 @keyframes ns-fade-up {
   from {
     opacity: 0;
@@ -646,5 +779,27 @@
   to {
     opacity: 1;
     translate: 0 0;
+  }
+}
+
+/* ============================================================
+   RESPONSIVE
+============================================================ */
+@media (max-width: 600px) {
+  .ns-hero {
+    min-height: 90vh;
+  }
+
+  .ns-bento-item {
+    min-height: 120px;
+    padding: 1.5rem;
+  }
+
+  .ns-bento-large {
+    min-height: 220px;
+  }
+
+  .ns-bento-icon {
+    font-size: 1.5rem !important;
   }
 }

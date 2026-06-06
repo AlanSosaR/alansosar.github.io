@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Playfair+Display:wght@500;600;700&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap">
 
@@ -23,272 +23,291 @@
 
   <main>
 
-    <!-- =====================================================
-         1. HERO — FULL SCREEN
-    ====================================================== -->
-    <section class="ns-hero">
-      <div class="ns-hero-bg">
-        <div class="ns-hero-overlay"></div>
-      </div>
-      <div class="ns-hero-content">
-        <span class="ns-hero-badge">Nuestra Historia</span>
-        <h1 class="ns-hero-title">
-          No producimos millones de tazas.<br>
-          Producimos el café que nos enorgullece servir.
-        </h1>
-        <p class="ns-hero-subtitle">
-          Café hondureño hecho con respeto, tradición y familia.
-        </p>
-        <a href="#identity" class="ns-btn-primary">Conocer nuestra historia</a>
-      </div>
-      <div class="ns-scroll-indicator">
-        <span class="material-symbols-outlined">arrow_downward</span>
-      </div>
-    </section>
+    <!-- ============================================================
+         HERO — Apple-style full-screen narrative
+    ============================================================ -->
+    <article class="ns-article">
 
-    <!-- =====================================================
-         2. IDENTITY
-    ====================================================== -->
-    <section class="ns-section" id="identity">
-      <div class="ns-container">
-        <div class="ns-grid-2col">
-          <div class="ns-text-block">
-            <span class="ns-label">Más que café</span>
-            <h2 class="ns-heading">
-              No hacemos café rápido.<br>
-              Hacemos café con sentido.
-            </h2>
-            <div class="ns-divider"></div>
-            <p class="ns-body-lg">
-              Creemos que un buen café comienza respetando la tierra, a las personas
-              y al proceso. Cada taza cuenta una historia real.
-            </p>
-            <p class="ns-body-md">
+      <header class="ns-hero">
+        <div class="ns-hero-content">
+          <h1 class="ns-hero-title">
+            La esencia de Honduras<br>
+            en cada sorbo
+          </h1>
+          <p class="ns-hero-claim">
+            No producimos millones de tazas.<br>
+            Producimos el café que nos enorgullece servir.
+          </p>
+          <p class="ns-hero-origin">
+            Café Cortero es un proyecto familiar nacido del amor por la tierra
+            y el café bien hecho. Desde nuestros inicios, trabajamos con una
+            sola idea clara: hacer las cosas bien, sin atajos.
+          </p>
+          <div class="ns-hero-desc">
+            <span>Café de altura cultivado a 1100 msnm, fresco y directo de la finca.</span>
+            <span class="ns-hero-desc-sep"></span>
+            <span>Café hondureño hecho con respeto, tradición y familia.</span>
+          </div>
+          <a href="#sobre-cortero" class="ns-hero-cta">
+            <span>Conocer más</span>
+            <span class="material-symbols-outlined">arrow_downward</span>
+          </a>
+        </div>
+      </header>
+
+      <!-- ============================================================
+           SOBRE CAFÉ CORTERO — Narrativa editorial (Apple × M3)
+      ============================================================ -->
+      <section class="ns-section" id="sobre-cortero">
+        <div class="ns-container ns-container--narrow">
+
+          <div class="ns-story-card">
+            <p class="ns-story-lead">
               Café Cortero es un proyecto familiar nacido del amor por la tierra
               y el café bien hecho. Desde nuestros inicios, trabajamos con una
-              sola idea clara: hacer las cosas bien, sin atajos.
+              sola idea clara: <em class="ns-em">hacer las cosas bien, sin atajos.</em>
             </p>
           </div>
-          <div class="ns-image-card">
-            <img src="/imagenes/nosotros.jpg" alt="Granos de café tostado">
+
+          <div class="ns-story-divider"></div>
+
+          <figure class="ns-story-card ns-story-card--img">
+            <img src="/imagenes/nosotros.jpg" alt="Granos de café tostado recién preparados">
+          </figure>
+
+          <div class="ns-story-divider"></div>
+
+          <div class="ns-story-card">
+            <p class="ns-story-body">
+              Creemos que un buen café comienza respetando la tierra, a las personas
+              y al proceso. Cada taza cuenta una historia real, y esa historia
+              merece ser contada con honestidad.
+            </p>
+          </div>
+
+          <div class="ns-story-grid">
+            <div class="ns-story-card">
+              <span class="ns-story-label">Nuestra Tierra</span>
+              <p class="ns-story-body">
+                Desde la siembra hasta el tostado, cuidamos cada etapa de forma
+                artesanal, combinando tradición, dedicación y experiencia para
+                ofrecer un café honesto y lleno de sabor.
+              </p>
+            </div>
+            <figure class="ns-story-card ns-story-card--img">
+              <img src="/imagenes/nosotros.jpg" alt="Montañas hondureñas">
+            </figure>
+          </div>
+
+          <div class="ns-story-divider"></div>
+
+          <div class="ns-story-card ns-story-card--pull">
+            <span class="material-symbols-outlined ns-story-pull-icon">format_quote</span>
+            <p class="ns-story-pull-text">
+              No hacemos café rápido.<br>
+              Hacemos café con sentido.
+            </p>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ============================================================
+           PROCESS — timeline editorial (Apple × M3)
+      ============================================================ -->
+      <section class="ns-section ns-section-alt">
+        <div class="ns-container">
+          <header class="ns-text-center">
+            <span class="ns-label">Nuestro Proceso</span>
+            <h2 class="ns-heading">Del origen a la taza</h2>
+            <p class="ns-body-md ns-text-narrow">
+              Cuatro etapas, un mismo compromiso. Así viaja nuestro café
+              desde las montañas de Honduras hasta tu mesa.
+            </p>
+          </header>
+
+          <div class="ns-timeline">
+            <ol class="ns-timeline-list">
+              <li class="ns-timeline-item">
+                <article class="ns-process-card">
+                  <div class="ns-process-number">01</div>
+                  <div class="ns-process-img">
+                    <img src="/imagenes/nosotros.jpg" alt="Siembra del café">
+                  </div>
+                  <div class="ns-process-body">
+                    <h3 class="ns-process-title">Siembra</h3>
+                    <p class="ns-process-desc">
+                      Todo comienza con la tierra. Respetamos los ciclos naturales
+                      del café y cuidamos cada planta desde su origen.
+                    </p>
+                  </div>
+                </article>
+              </li>
+              <li class="ns-timeline-item">
+                <article class="ns-process-card">
+                  <div class="ns-process-number">02</div>
+                  <div class="ns-process-img">
+                    <img src="/imagenes/nosotros.jpg" alt="Cosecha manual del café">
+                  </div>
+                  <div class="ns-process-body">
+                    <h3 class="ns-process-title">Cosecha</h3>
+                    <p class="ns-process-desc">
+                      Selección manual del grano en su punto óptimo, priorizando
+                      calidad sobre cantidad. Solo lo mejor llega al siguiente paso.
+                    </p>
+                  </div>
+                </article>
+              </li>
+              <li class="ns-timeline-item">
+                <article class="ns-process-card">
+                  <div class="ns-process-number">03</div>
+                  <div class="ns-process-img">
+                    <img src="/imagenes/nosotros.jpg" alt="Tueste artesanal">
+                  </div>
+                  <div class="ns-process-body">
+                    <h3 class="ns-process-title">Tueste</h3>
+                    <p class="ns-process-desc">
+                      Tueste medio controlado, diseñado para resaltar los sabores
+                      auténticos del café hondureño sin enmascarar su identidad.
+                    </p>
+                  </div>
+                </article>
+              </li>
+              <li class="ns-timeline-item">
+                <article class="ns-process-card">
+                  <div class="ns-process-number">04</div>
+                  <div class="ns-process-img">
+                    <img src="/imagenes/nosotros.jpg" alt="Taza de café listo">
+                  </div>
+                  <div class="ns-process-body">
+                    <h3 class="ns-process-title">Taza</h3>
+                    <p class="ns-process-desc">
+                      Un café honesto que llega directo a tu mesa, manteniendo
+                      intacta la esencia de su origen.
+                    </p>
+                  </div>
+                </article>
+              </li>
+            </ol>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- =====================================================
-         3. OUR LAND
-    ====================================================== -->
-    <section class="ns-section ns-section-alt">
-      <div class="ns-container">
-        <div class="ns-text-center">
-          <span class="ns-label">Nuestra Tierra</span>
-          <h2 class="ns-heading">El origen de Café Cortero</h2>
-        </div>
-        <div class="ns-landscape">
-          <img src="/imagenes/nosotros.jpg" alt="Montañas hondureñas">
-        </div>
-        <div class="ns-text-center ns-text-narrow">
-          <p class="ns-body-lg">
-            Desde la siembra hasta el tostado, cuidamos cada etapa de forma
-            artesanal, combinando tradición, dedicación y experiencia para
-            ofrecer un café honesto y lleno de sabor.
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <!-- =====================================================
-         4. OUR PEOPLE
-    ====================================================== -->
-    <section class="ns-section">
-      <div class="ns-container">
-        <div class="ns-people-header">
-          <div>
+      <!-- ============================================================
+           OUR PEOPLE — portrait narrative
+      ============================================================ -->
+      <section class="ns-section">
+        <div class="ns-container">
+          <header class="ns-people-header">
             <span class="ns-label">Nuestra Gente</span>
-            <h2 class="ns-heading">Personas detrás del café</h2>
-            <p class="ns-body-md ns-mt">
+            <h2 class="ns-heading">Las personas detrás del café</h2>
+            <p class="ns-body-md">
               Detrás de cada grano hay personas reales, familias que trabajan
               con orgullo para llevar un café de calidad a tu mesa.
             </p>
+          </header>
+          <div class="ns-people-grid">
+            <figure class="ns-img-portrait">
+              <img src="/imagenes/nosotros.jpg" alt="Productor de café hondureño">
+            </figure>
+            <div class="ns-people-col">
+              <figure class="ns-img-square">
+                <img src="/imagenes/nosotros.jpg" alt="Manos seleccionando granos de café">
+              </figure>
+              <blockquote class="ns-quote-card">
+                <p class="ns-quote-text">
+                  "Gracias por interesarte en nuestra historia.<br>
+                  Cada taza que disfrutas forma parte de este camino."
+                </p>
+              </blockquote>
+            </div>
           </div>
         </div>
-        <div class="ns-people-grid">
-          <div class="ns-img-portrait">
-            <img src="/imagenes/nosotros.jpg" alt="Productor de café">
-          </div>
-          <div class="ns-people-col">
-            <div class="ns-img-square">
-              <img src="/imagenes/nosotros.jpg" alt="Seleccionando café">
-            </div>
-            <div class="ns-quote-card">
-              <p class="ns-quote-text">
-                "Gracias por interesarte en nuestra historia.<br>
-                Cada taza que disfrutas forma parte de este camino."
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- =====================================================
-         5. OUR PROCESS
-    ====================================================== -->
-    <section class="ns-section ns-section-dark">
-      <div class="ns-container">
-        <div class="ns-text-center">
-          <span class="ns-label ns-label-light">Nuestro Proceso</span>
-          <h2 class="ns-heading ns-heading-light">Del origen a la taza</h2>
-        </div>
-        <div class="ns-process-grid">
-          <article class="ns-process-card">
-            <div class="ns-process-img">
-              <div class="ns-process-number">01</div>
-              <div class="ns-process-overlay"></div>
-              <img src="/imagenes/nosotros.jpg" alt="Siembra">
-            </div>
-            <h3 class="ns-process-title">
-              <span class="material-symbols-outlined">energy_savings_leaf</span>
-              Siembra
-            </h3>
-            <p class="ns-process-desc">
-              Todo comienza con la tierra. Respetamos los ciclos naturales
-              del café y cuidamos cada planta desde su origen.
-            </p>
-          </article>
-          <article class="ns-process-card ns-process-offset">
-            <div class="ns-process-img">
-              <div class="ns-process-number">02</div>
-              <div class="ns-process-overlay"></div>
-              <img src="/imagenes/nosotros.jpg" alt="Cosecha">
-            </div>
-            <h3 class="ns-process-title">
-              <span class="material-symbols-outlined">shopping_basket</span>
-              Cosecha
-            </h3>
-            <p class="ns-process-desc">
-              Selección manual del grano en su punto óptimo, priorizando
-              calidad sobre cantidad.
-            </p>
-          </article>
-          <article class="ns-process-card">
-            <div class="ns-process-img">
-              <div class="ns-process-number">03</div>
-              <div class="ns-process-overlay"></div>
-              <img src="/imagenes/nosotros.jpg" alt="Tueste">
-            </div>
-            <h3 class="ns-process-title">
-              <span class="material-symbols-outlined">local_fire_department</span>
-              Tueste
-            </h3>
-            <p class="ns-process-desc">
-              Tueste medio controlado, diseñado para resaltar los sabores
-              auténticos del café hondureño.
-            </p>
-          </article>
-          <article class="ns-process-card ns-process-offset">
-            <div class="ns-process-img">
-              <div class="ns-process-number">04</div>
-              <div class="ns-process-overlay"></div>
-              <img src="/imagenes/nosotros.jpg" alt="Hoy">
-            </div>
-            <h3 class="ns-process-title">
-              <span class="material-symbols-outlined">coffee</span>
-              Hoy
-            </h3>
-            <p class="ns-process-desc">
-              Un café honesto que llega directo a tu taza, manteniendo
-              intacta su esencia.
-            </p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- =====================================================
-         6. VALUES — BENTO GRID
-    ====================================================== -->
-    <section class="ns-section">
-      <div class="ns-container">
-        <div class="ns-text-center">
-          <span class="ns-label">Lo que nos define</span>
-          <h2 class="ns-heading">Nuestros valores</h2>
-        </div>
-        <div class="ns-bento">
-          <div class="ns-bento-item ns-bento-large">
-            <div class="ns-bento-bg">
-              <div class="ns-bento-bg-overlay"></div>
-              <img src="/imagenes/nosotros.jpg" alt="Respeto por la tierra">
-            </div>
-            <div class="ns-bento-content">
-              <span class="material-symbols-outlined ns-bento-icon">public</span>
-              <h3 class="ns-bento-title">Respeto por la tierra</h3>
-              <p class="ns-bento-desc">Cuidamos el entorno y los recursos naturales.</p>
-            </div>
-          </div>
-          <div class="ns-bento-item ns-bento-solid">
-            <span class="material-symbols-outlined ns-bento-icon">family_home</span>
-            <h3 class="ns-bento-title">Proyecto familiar</h3>
-            <p class="ns-bento-desc">Trabajo honesto, hecho con orgullo y dedicación.</p>
-          </div>
-          <div class="ns-bento-item ns-bento-solid">
-            <span class="material-symbols-outlined ns-bento-icon">handyman</span>
-            <h3 class="ns-bento-title">Proceso artesanal</h3>
-            <p class="ns-bento-desc">Cada etapa es cuidada a mano.</p>
-          </div>
-          <div class="ns-bento-item ns-bento-wide">
-            <div class="ns-bento-wide-inner">
-              <span class="material-symbols-outlined ns-bento-icon">handshake</span>
-              <div>
-                <h3 class="ns-bento-title">Comercio justo</h3>
-                <p class="ns-bento-desc">Relaciones basadas en respeto y equidad.</p>
+      <!-- ============================================================
+           VALUES — bento grid (Apple × M3)
+      ============================================================ -->
+      <section class="ns-section ns-section-alt">
+        <div class="ns-container">
+          <header class="ns-text-center">
+            <span class="ns-label">Lo que nos define</span>
+            <h2 class="ns-heading">Nuestros valores</h2>
+          </header>
+          <div class="ns-bento">
+            <div class="ns-bento-item ns-bento-large">
+              <div class="ns-bento-bg">
+                <div class="ns-bento-bg-overlay"></div>
+                <img src="/imagenes/nosotros.jpg" alt="Paisaje de cultivo de café">
+              </div>
+              <div class="ns-bento-content">
+                <span class="material-symbols-outlined ns-bento-icon">public</span>
+                <h3 class="ns-bento-title">Respeto por la tierra</h3>
+                <p class="ns-bento-desc">Cuidamos el entorno y los recursos naturales en cada etapa.</p>
               </div>
             </div>
-            <div class="ns-bento-tags">
-              <span>Calidad Premium</span>
-              <span>Café Hondureño</span>
+            <div class="ns-bento-item ns-bento-solid">
+              <span class="material-symbols-outlined ns-bento-icon">family_home</span>
+              <h3 class="ns-bento-title">Proyecto familiar</h3>
+              <p class="ns-bento-desc">Trabajo honesto, hecho con orgullo y dedicación.</p>
+            </div>
+            <div class="ns-bento-item ns-bento-solid">
+              <span class="material-symbols-outlined ns-bento-icon">handyman</span>
+              <h3 class="ns-bento-title">Proceso artesanal</h3>
+              <p class="ns-bento-desc">Cada etapa es cuidada a mano, sin atajos.</p>
+            </div>
+            <div class="ns-bento-item ns-bento-wide">
+              <div class="ns-bento-wide-inner">
+                <span class="material-symbols-outlined ns-bento-icon">handshake</span>
+                <div>
+                  <h3 class="ns-bento-title">Comercio justo</h3>
+                  <p class="ns-bento-desc">Relaciones basadas en respeto y equidad.</p>
+                </div>
+              </div>
+              <div class="ns-bento-tags">
+                <span>Calidad Premium</span>
+                <span>Café Hondureño</span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- =====================================================
-         7. QUOTE
-    ====================================================== -->
-    <section class="ns-section ns-section-quote">
-      <div class="ns-container">
-        <div class="ns-quote-block">
-          <span class="material-symbols-outlined ns-quote-icon">format_quote</span>
-          <h2 class="ns-quote-heading">
-            Detrás de cada grano hay una historia, una familia y una tierra
-            que merece ser valorada.
-          </h2>
-          <div class="ns-divider ns-divider-center"></div>
+      <!-- ============================================================
+           PULL QUOTE — editorial
+      ============================================================ -->
+      <section class="ns-section">
+        <div class="ns-container ns-container--narrow">
+          <blockquote class="ns-quote-block">
+            <span class="material-symbols-outlined ns-quote-icon">format_quote</span>
+            <p class="ns-quote-heading">
+              Detrás de cada grano hay una historia, una familia y una tierra
+              que merece ser valorada.
+            </p>
+            <div class="ns-divider ns-divider-center"></div>
+            <cite class="ns-quote-attribution">— Café Cortero, desde Honduras</cite>
+          </blockquote>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- =====================================================
-         8. FINAL CTA
-    ====================================================== -->
-    <section class="ns-section ns-section-cta">
-      <div class="ns-cta-bg">
-        <div class="ns-cta-overlay"></div>
-      </div>
-      <div class="ns-cta-content">
-        <h2 class="ns-cta-heading">Descubre el sabor auténtico de Honduras.</h2>
-        <div class="ns-cta-actions">
-          <a href="/pages/home/index.html#productos" class="ns-btn-primary">
-            Explorar nuestros cafés
-          </a>
-          <a href="/pages/home/index.html#contacto" class="ns-btn-outline">
-            Contáctanos
-          </a>
+      <!-- ============================================================
+           FINAL CTA
+      ============================================================ -->
+      <section class="ns-section ns-section-cta">
+        <div class="ns-cta-content">
+          <h2 class="ns-cta-heading">Descubre el sabor auténtico de Honduras.</h2>
+          <div class="ns-cta-actions">
+            <a href="/pages/home/index.html#productos" class="ns-btn-primary">
+              Explorar nuestros cafés
+            </a>
+            <a href="/pages/home/index.html#contacto" class="ns-btn-outline">
+              Contáctanos
+            </a>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+
+    </article>
 
   </main>
 
