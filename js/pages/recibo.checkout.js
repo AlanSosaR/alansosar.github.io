@@ -56,12 +56,15 @@ const carrito = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
 async function pintarDatosProvisionales() {
   const sb = window.supabaseClient;
   const user = window.supabaseAuth.getCurrentUser();
-  if (!sb || !user) return;
+  if (!sb) return;
+
+  const uid = window.POS_CLIENT ? window.POS_CLIENT.id : user?.id;
+  if (!uid) return;
 
   const { data } = await sb
     .from("orders")
     .select("order_number")
-    .eq("user_id", user.id)
+    .eq("user_id", uid)
     .order("order_number", { ascending: false })
     .limit(1);
 
@@ -102,7 +105,7 @@ function validarBoton() {
   }
 
   if (metodoPago.value === "bank_transfer") {
-    btnEnviar.disabled = !tempFile;
+    btnEnviar.disabled = !tempFile && !window.POS_CLIENT;
     return;
   }
 
@@ -116,6 +119,16 @@ async function cargarResumen() {
   const sb = window.supabaseClient;
   const user = window.supabaseAuth.getCurrentUser();
   if (!sb || !user) return;
+
+  if (window.POS_CLIENT) {
+    $("nombreCliente").textContent = window.POS_CLIENT.name;
+    $("correoCliente").textContent = window.POS_CLIENT.email || "—";
+    $("telefonoCliente").textContent = window.POS_CLIENT.phone || "—";
+    $("zonaCliente").textContent = "POS (mostrador)";
+    $("direccionCliente").textContent = "Venta en tienda";
+    $("notaCliente").textContent = orderNotesCache || "Pedido POS (mostrador)";
+    return;
+  }
 
   const { data: userRow } = await sb
     .from("users")
@@ -213,12 +226,11 @@ function renderCarrito() {
 function actualizarPago() {
   const v = metodoPago.value;
 
-  bloqueDeposito.classList.toggle("hidden", v !== "bank_transfer");
-  bloqueEfectivo.classList.toggle("hidden", v !== "cash");
+  bloqueDeposito.classList.toggle("hidden", v !== "bank_transfer" || !!window.POS_CLIENT);
+  bloqueEfectivo.classList.toggle("hidden", v !== "cash" || !!window.POS_CLIENT);
 
   validarBoton();
 }
-
 /* =========================================================
    SNACKBAR DE CONFIRMACIÓN (ACCIÓN)
 ========================================================= */
@@ -228,7 +240,7 @@ function mostrarConfirmacionEnvio() {
 
   bar.innerHTML = `
     <div style="display:flex;flex-direction:column;gap:12px;width:100%;">
-      <span class="snack-text">¿Confirmar envío del pedido?</span>
+      <span class="snack-text">${window.POS_CLIENT ? "¿Confirmar compra?" : "¿Confirmar envío del pedido?"}</span>
       <div style="display:flex;justify-content:flex-end;gap:8px;">
         <button id="snack-editar"
           style="background:none;border:none;color:#fff;font-weight:600;cursor:pointer;">
@@ -265,7 +277,7 @@ function confirmarEnvio(e) {
     return;
   }
 
-  if (metodoPago.value === "bank_transfer" && !tempFile) {
+  if (metodoPago.value === "bank_transfer" && !tempFile && !window.POS_CLIENT) {
     window.showSnack("Debes subir el comprobante de pago");
     return;
   }
@@ -279,7 +291,17 @@ function confirmarEnvio(e) {
 async function enviarPedido() {
   const sb = window.supabaseClient;
   const user = window.supabaseAuth.getCurrentUser();
-  if (!user || !selectedAddressId) {
+
+  const isPOS = !!window.POS_CLIENT;
+  const orderUserId = isPOS ? window.POS_CLIENT.id : user?.id;
+  const customerName = isPOS ? window.POS_CLIENT.name : user?.name;
+
+  if (!orderUserId) {
+    window.showSnack("Faltan datos del pedido");
+    return;
+  }
+
+  if (!isPOS && !selectedAddressId) {
     window.showSnack("Faltan datos del pedido");
     return;
   }
@@ -288,28 +310,35 @@ async function enviarPedido() {
   loader.classList.remove("hidden");
 
   try {
-    const { data: orderNumber, error: numErr } =
-      await sb.rpc("next_order_number", { p_user_id: user.id });
-
-    if (numErr || !orderNumber) {
-      throw new Error("No se pudo generar el número de pedido");
+    let orderNumber;
+    if (isPOS) {
+      const { data: lastOrder } = await sb
+        .from("orders")
+        .select("order_number")
+        .eq("user_id", orderUserId)
+        .order("order_number", { ascending: false })
+        .limit(1);
+      orderNumber = (lastOrder?.[0]?.order_number || 0) + 1;
+    } else {
+      const { data: num, error: numErr } =
+        await sb.rpc("next_order_number", { p_user_id: orderUserId });
+      if (numErr || !num) throw new Error("No se pudo generar el número de pedido");
+      orderNumber = num;
     }
 
-    // ✅ FIX: usar la nota congelada
     const orderNotes = orderNotesCache;
+    const method = metodoPago.value;
+    const paymentMethod = method === "bank_transfer" ? "bank_transfer" : "cash_on_delivery";
 
     const { data: order, error } = await sb
       .from("orders")
       .insert({
-        user_id: user.id,
-        address_id: selectedAddressId,
+        user_id: orderUserId,
+        address_id: isPOS ? null : selectedAddressId,
         order_number: orderNumber,
         total: totalPedido,
-        payment_method:
-          metodoPago.value === "bank_transfer"
-            ? "bank_transfer"
-            : "cash_on_delivery",
-        status: "pending",
+        payment_method: paymentMethod,
+        status: isPOS ? "delivered" : "pending",
         order_notes: orderNotes
       })
       .select("id")
@@ -319,7 +348,7 @@ async function enviarPedido() {
       throw new Error("No se pudo crear el pedido");
     }
 
-    console.log("✅ Pedido creado:", order.id, "- Trigger debería insertar notificación");
+    console.log("Pedido creado:", order.id, isPOS ? "(POS)" : "");
 
     await sb.from("order_items").insert(
       carrito.map(it => ({
@@ -330,9 +359,28 @@ async function enviarPedido() {
       }))
     );
 
+    if (isPOS) {
+      for (const it of carrito) {
+        const { data: prod } = await sb.from("products").select("stock").eq("id", it.product_id).single();
+        if (prod) {
+          await sb.from("products").update({ stock: Math.max(0, prod.stock - it.qty) }).eq("id", it.product_id);
+        }
+      }
+      const now = new Date();
+      await sb.from("finanzas_movimientos").insert({
+        tipo: "ingreso",
+        categoria: "Pedido POS",
+        concepto: `Venta POS - ${customerName} - Pedido #${orderNumber}`,
+        monto: totalPedido,
+        fecha: now.toISOString().split("T")[0],
+        hora: now.toTimeString().slice(0, 8),
+        metodo_pago: metodoPago.value === "cash" ? "Efectivo" : "Transferencia"
+      });
+    }
+
     if (tempFile) {
       const ext = tempFile.name.split(".").pop();
-      const path = `${user.id}/${order.id}.${ext}`;
+      const path = `${orderUserId}/${order.id}.${ext}`;
 
       await sb.storage
         .from("payment-receipts")
@@ -344,18 +392,18 @@ async function enviarPedido() {
 
       await sb.from("payment_receipts").insert({
         order_id: order.id,
-        user_id: user.id,
+        user_id: orderUserId,
         file_url: data.publicUrl,
         file_path: path
       });
     }
 
-    /* 🔔 NOTIFICAR AL ADMIN (Simplificado) */
-    // Usamos user_id: null para que la Edge Function detecte y haga broadcast a admins.
     await sb.from("notifications").insert({
-      user_id: null, // <--- CLAVE PARA ADMIN
-      title: "Nuevo pedido recibido 🛍️",
-      message: `El cliente ${user.name || "Cliente"} ha realizado el pedido #${orderNumber}.`, // Corregido: 'body' -> 'message'
+      user_id: null,
+      title: isPOS ? "Pedido POS registrado" : "Nuevo pedido recibido",
+      message: isPOS
+        ? `Pedido #${orderNumber} registrado en mostrador para ${customerName}`
+        : `El cliente ${customerName} ha realizado el pedido #${orderNumber}.`,
       type: "new_order",
       is_read: false,
       metadata: {
@@ -364,41 +412,42 @@ async function enviarPedido() {
       }
     });
 
-    /* 📲 WHATSAPP AL GRUPO */
-    try {
-      const waApi = "https://cafe-cortero.vercel.app/api/wa-proxy";
-      const waKey = "429683C4C977415CAAFCCE10F7D57E11";
-      const groupJid = "120363410476492208@g.us";
-      const maxLen = Math.max(...carrito.map(it => it.name.length), 12);
-      const prodLines = carrito.map((it, i) => {
-        const name = it.name.padEnd(maxLen);
-        return ` ${i + 1}.  ${name}  ×${String(it.qty).padStart(2)}   L ${it.price.toFixed(2)}`;
-      }).join("\n");
-      const sep = "━".repeat(Math.max(maxLen + 18, 30));
-      const customerPhone = ($("telefonoCliente")?.textContent || "").trim();
-      const addressLine = [$("direccionCliente")?.textContent, $("zonaCliente")?.textContent].filter(Boolean).join(", ");
+    if (!isPOS) {
+      try {
+        const waApi = "https://cafe-cortero.vercel.app/api/wa-proxy";
+        const waKey = "429683C4C977415CAAFCCE10F7D57E11";
+        const groupJid = "120363410476492208@g.us";
+        const maxLen = Math.max(...carrito.map(it => it.name.length), 12);
+        const prodLines = carrito.map((it, i) => {
+          const name = it.name.padEnd(maxLen);
+          return ` ${i + 1}.  ${name}  ×${String(it.qty).padStart(2)}   L ${it.price.toFixed(2)}`;
+        }).join("\n");
+        const sep = "━".repeat(Math.max(maxLen + 18, 30));
+        const customerPhone = ($("telefonoCliente")?.textContent || "").trim();
+        const addressLine = [$("direccionCliente")?.textContent, $("zonaCliente")?.textContent].filter(Boolean).join(", ");
 
-      const msg = `☕ *Nuevo Pedido #${orderNumber}*\n\n👤 *Cliente:* ${user.name || "Cliente"}\n📞 *Tel:* ${customerPhone || "N/D"}\n📍 *Dirección:* ${addressLine || "N/D"}\n\n━━━ *Productos* ━━━\n\n${prodLines}\n${sep}\n💰 *Total:* L ${totalPedido.toFixed(2)}\n💳 *Pago:* ${metodoPago.value === "bank_transfer" ? "Transferencia bancaria" : "Efectivo contra entrega"}`;
+        const msg = `☕ *Nuevo Pedido #${orderNumber}*\n\n👤 *Cliente:* ${customerName}\n📞 *Tel:* ${customerPhone || "N/D"}\n📍 *Dirección:* ${addressLine || "N/D"}\n\n━━━ *Productos* ━━━\n\n${prodLines}\n${sep}\n💰 *Total:* L ${totalPedido.toFixed(2)}\n💳 *Pago:* ${paymentMethod === "bank_transfer" ? "Transferencia bancaria" : "Efectivo contra entrega"}`;
 
-      await fetch(`${waApi}/message/sendText/CafeCortero`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", apikey: waKey },
-        body: JSON.stringify({ number: groupJid, text: msg })
-      });
+        await fetch(`${waApi}/message/sendText/CafeCortero`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", apikey: waKey },
+          body: JSON.stringify({ number: groupJid, text: msg })
+        });
 
-      // Incrementar badge de WhatsApp en el menú
-      const cur = parseInt(localStorage.getItem("wa_notif_count") || "0", 10);
-      localStorage.setItem("wa_notif_count", String(cur + 1));
-    } catch (e) {
-      console.error("❌ Error al enviar WhatsApp al grupo:", e);
+        const cur = parseInt(localStorage.getItem("wa_notif_count") || "0", 10);
+        localStorage.setItem("wa_notif_count", String(cur + 1));
+      } catch (e) {
+        console.error("Error al enviar WhatsApp al grupo:", e);
+      }
     }
 
     localStorage.setItem(CART_KEY, "[]");
-    sessionStorage.removeItem("current_order_notes"); // limpieza correcta
+    sessionStorage.removeItem("current_order_notes");
+    sessionStorage.removeItem("pos_client");
 
-    window.showSnack("✅ ¡Su pedido fue enviado con éxito!");
+    window.showSnack(isPOS ? "Compra creada con xito" : "Pedido enviado con xito");
     setTimeout(() => {
-      location.href = "/pages/profile/mis-pedidos.html";
+      location.href = isPOS ? `/pages/admin/admin-clientes.html?id=${orderUserId}` : "/pages/profile/mis-pedidos.html";
     }, 2000);
 
   } catch (e) {
@@ -435,10 +484,9 @@ async function enviarPedido() {
 
   await pintarDatosProvisionales();
 
-  // 🔑 Determinar si es primer pedido
   const sb = window.supabaseClient;
   const user = window.supabaseAuth.getCurrentUser();
-  if (sb && user) {
+  if (!window.POS_CLIENT && sb && user) {
     const { count } = await sb
       .from("orders")
       .select("*", { count: 'exact', head: true })
@@ -448,6 +496,10 @@ async function enviarPedido() {
 
   await cargarResumen();
   renderCarrito();
+
+  if (window.POS_CLIENT) {
+    metodoPago.value = "cash";
+  }
   validarBoton();
 
   metodoPago.onchange = actualizarPago;

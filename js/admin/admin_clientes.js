@@ -64,6 +64,12 @@ const initAdminClientes = () => {
 
         await fetchCustomers();
         renderCustomerList();
+        const params = new URLSearchParams(window.location.search);
+        const preselectedId = params.get("id");
+        if (preselectedId) {
+          const customer = allCustomers.find(c => c.id === preselectedId);
+          if (customer) setTimeout(() => selectCustomer(customer), 100);
+        }
     };
 
     // 4. FUNCIONES DE DATOS

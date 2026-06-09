@@ -138,6 +138,7 @@
               <option value="" selected disabled>Selecciona un método de pago</option>
               <option value="bank_transfer">Depósito bancario</option>
               <option value="cash">Pago en efectivo</option>
+
             </select>
 
             <!-- Chips de pago visibles -->
@@ -150,6 +151,7 @@
                 <span class="material-symbols-outlined">payments</span>
                 <span>Pago en efectivo</span>
               </button>
+
             </div>
           </div>
 
@@ -222,6 +224,10 @@
     window.PAGE_MODE = "recibo";
     window.ORDER_ID = new URLSearchParams(window.location.search).get("id");
     window.IS_READ_ONLY = Boolean(window.ORDER_ID);
+    try {
+      const pos = sessionStorage.getItem("pos_client");
+      if (pos) window.POS_CLIENT = JSON.parse(pos);
+    } catch {}
   </script>
 
   <script src="/js/pages/recibo.core.js"></script>
@@ -236,6 +242,12 @@
     } else {
       document.getElementById("metodo-pago-section")?.classList.add("hidden");
       document.getElementById("btn-back").href = "/pages/profile/mis-pedidos.html";
+    }
+    if (window.POS_CLIENT) {
+      const zona = document.getElementById("zonaCliente")?.closest(".flex.flex-col.gap-1");
+      const dir = document.getElementById("direccionCliente")?.closest(".flex.flex-col.gap-1");
+      if (zona) zona.style.display = "none";
+      if (dir) dir.style.display = "none";
     }
   </script>
 
@@ -261,6 +273,10 @@
         });
       });
 
+      if (window.POS_CLIENT) {
+        selectPayment("cash");
+      }
+
       window.selectMetodoPago = selectPayment;
     });
   </script>
@@ -278,6 +294,9 @@
         btn.classList.add("btn-cancelar");
         btn.id = "btnCancelarPedido";
         btn.disabled = false;
+      }
+      if (window.POS_CLIENT) {
+        text.textContent = "Confirmar pedido";
       }
     });
   </script>

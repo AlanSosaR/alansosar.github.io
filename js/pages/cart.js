@@ -375,11 +375,6 @@ document.getElementById("proceder-btn")?.addEventListener("click", async () => {
     return;
   }
 
-  if (String(userRow.rol || "").toLowerCase() === "admin") {
-    showSnackbar("Las cuentas de administrador no pueden realizar compras.");
-    return;
-  }
-
   const invalid = cart.some(p => !p.product_id);
   if (invalid) {
     showSnackbar("Algunos productos necesitan actualizarse. Vuelve a agregarlos.");

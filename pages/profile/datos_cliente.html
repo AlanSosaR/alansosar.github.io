@@ -37,129 +37,235 @@
       <!-- COLUMNA IZQUIERDA: FORMULARIO -->
       <section class="form-section">
 
-        <div class="unipro-card">
-          <!-- BOTÓN ATRÁS -->
-          <button class="back-btn-alt" onclick="window.location.href='/pages/shop/carrito.html'">
-            <span class="material-symbols-outlined">arrow_back</span>
-          </button>
+        <!-- ===================== SECCIÓN CLIENTE (público) ===================== -->
+        <div id="customer-form-section">
+          <div class="unipro-card">
+            <!-- BOTÓN ATRÁS -->
+            <button class="back-btn-alt" onclick="window.location.href='/pages/shop/carrito.html'">
+              <span class="material-symbols-outlined">arrow_back</span>
+            </button>
 
-          <form id="cliente-form" novalidate>
+            <form id="cliente-form" novalidate>
 
-            <!-- SECCIÓN: INFORMACIÓN PERSONAL -->
-            <div class="form-group-section">
-              <div class="section-title">
-                <span class="material-symbols-outlined">person</span>
-                <h2>Información Personal</h2>
-              </div>
+              <!-- SECCIÓN: INFORMACIÓN PERSONAL -->
+              <div class="form-group-section">
+                <div class="section-title">
+                  <span class="material-symbols-outlined">person</span>
+                  <h2>Información Personal</h2>
+                </div>
 
-              <div class="fields-row">
-                <div class="m3-field full">
-                  <div class="m3-input-wrapper">
-                    <span class="material-symbols-outlined input-icon">person</span>
-                    <input id="nombre" type="text" placeholder=" " required>
-                    <label class="field-label">Nombre completo</label>
+                <div class="fields-row">
+                  <div class="m3-field full">
+                    <div class="m3-input-wrapper">
+                      <span class="material-symbols-outlined input-icon">person</span>
+                      <input id="nombre" type="text" placeholder=" " required>
+                      <label class="field-label">Nombre completo</label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="fields-row split">
+                  <div class="m3-field">
+                    <div class="m3-input-wrapper">
+                      <span class="material-symbols-outlined input-icon">call</span>
+                      <input id="telefono" type="tel" placeholder=" " required>
+                      <label class="field-label">Teléfono</label>
+                    </div>
+                  </div>
+                  <div class="m3-field">
+                    <div class="m3-input-wrapper">
+                      <span class="material-symbols-outlined input-icon">mail</span>
+                      <input id="correo" type="email" placeholder=" " required readonly>
+                      <label class="field-label">Correo electrónico</label>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <div class="fields-row split">
-                <div class="m3-field">
-                  <div class="m3-input-wrapper">
-                    <span class="material-symbols-outlined input-icon">call</span>
-                    <input id="telefono" type="tel" placeholder=" " required>
-                    <label class="field-label">Teléfono</label>
+              <hr class="section-divider">
+
+              <!-- SECCIÓN: DETALLES DE ENVÍO -->
+              <div class="form-group-section">
+                <div class="section-title">
+                  <span class="material-symbols-outlined">local_shipping</span>
+                  <h2>Detalles de Envío</h2>
+                </div>
+
+                <!-- 1. CIUDAD Y DEPARTAMENTO -->
+                <div class="fields-row split">
+                  <div class="m3-field">
+                    <div class="m3-input-wrapper">
+                      <span class="material-symbols-outlined input-icon">location_city</span>
+                      <input id="ciudad" type="text" placeholder=" " required autocomplete="off">
+                      <label class="field-label">Ciudad</label>
+                    </div>
+                  </div>
+                  <div class="m3-field">
+                    <div class="m3-input-wrapper">
+                      <span class="material-symbols-outlined input-icon">public</span>
+                      <select id="zona" required>
+                        <option value="" disabled selected></option>
+                        <option value="El Paraíso">El Paraíso</option>
+                        <option value="Francisco Morazán">Francisco Morazán</option>
+                        <option value="Choluteca">Choluteca</option>
+                        <option value="Cortés">Cortés</option>
+                        <option value="Comayagua">Comayagua</option>
+                        <option value="La Paz">La Paz</option>
+                        <option value="Olancho">Olancho</option>
+                        <option value="Yoro">Yoro</option>
+                      </select>
+                      <label class="field-label">Departamento</label>
+                    </div>
                   </div>
                 </div>
-                <div class="m3-field">
-                  <div class="m3-input-wrapper">
-                    <span class="material-symbols-outlined input-icon">mail</span>
-                    <input id="correo" type="email" placeholder=" " required readonly>
-                    <label class="field-label">Correo electrónico</label>
+
+                <!-- 2. DIRECCIÓN EXACTA -->
+                <div class="fields-row">
+                  <div class="m3-field full" style="position: relative;">
+                    <div class="m3-input-wrapper">
+                      <span class="material-symbols-outlined input-icon">map</span>
+                      <input id="direccion" type="text" placeholder=" " required autocomplete="off">
+                      <label class="field-label">Dirección exacta</label>
+                    </div>
+                    <!-- SUGERENCIAS AUTOCOMPLETE -->
+                    <ul id="direccion-suggestions" class="suggestions-list hidden"></ul>
                   </div>
                 </div>
+
+                <!-- 3. MAPA INTERACTIVO -->
+                <div id="map-section">
+                  <div class="map-wrapper">
+                    <div class="map-toolbar">
+                      <span class="map-hint">
+                        <span class="material-symbols-outlined">info</span>
+                        Escribe tu ciudad o dirección, o haz clic en el mapa
+                      </span>
+                      <button type="button" id="btn-gps" class="gps-btn" title="Usar mi ubicación actual">
+                        <span class="material-symbols-outlined">my_location</span>
+                        Mi ubicación
+                      </button>
+                    </div>
+                    <div id="delivery-map"></div>
+                    <div id="map-status" class="map-status hidden"></div>
+                  </div>
+                </div>
+
+                <!-- 4. REFERENCIAS (OPCIONAL) -->
+                <div class="fields-row" style="margin-top: 1.5rem;">
+                  <div class="m3-field full">
+                    <div class="m3-input-wrapper">
+                      <span class="material-symbols-outlined input-icon">comment</span>
+                      <textarea id="nota" rows="2" placeholder=" "></textarea>
+                      <label class="field-label">Referencias (opcional)</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </form>
+          </div>
+        </div>
+
+        <!-- ===================== SECCIÓN POS ADMIN ===================== -->
+        <div id="admin-pos-section" class="hidden">
+          <div class="unipro-card">
+            <button class="back-btn-alt" onclick="window.location.href='/pages/shop/carrito.html'">
+              <span class="material-symbols-outlined">arrow_back</span>
+            </button>
+
+            <!-- TÍTULO -->
+            <div class="pos-header">
+              <span class="material-symbols-outlined pos-icon">point_of_sale</span>
+              <div>
+                <h2>Pedido POS</h2>
+                <p class="pos-subtitle">Registra un pedido directamente desde el mostrador</p>
               </div>
             </div>
 
-            <hr class="section-divider">
-
-            <!-- SECCIÓN: DETALLES DE ENVÍO -->
-            <div class="form-group-section">
-              <div class="section-title">
-                <span class="material-symbols-outlined">local_shipping</span>
-                <h2>Detalles de Envío</h2>
-              </div>
-
-              <!-- 1. CIUDAD Y DEPARTAMENTO -->
-              <div class="fields-row split">
-                <div class="m3-field">
-                  <div class="m3-input-wrapper">
-                    <span class="material-symbols-outlined input-icon">location_city</span>
-                    <input id="ciudad" type="text" placeholder=" " required autocomplete="off">
-                    <label class="field-label">Ciudad</label>
-                  </div>
+            <!-- PASO 2: CLIENTE -->
+            <div id="pos-step-cliente">
+              <div class="form-group-section">
+                <div class="section-title">
+                  <span class="material-symbols-outlined">person_search</span>
+                  <h3>Paso 2: Cliente</h3>
                 </div>
-                <div class="m3-field">
-                  <div class="m3-input-wrapper">
-                    <span class="material-symbols-outlined input-icon">public</span>
-                    <select id="zona" required>
-                      <option value="" disabled selected></option>
-                      <option value="El Paraíso">El Paraíso</option>
-                      <option value="Francisco Morazán">Francisco Morazán</option>
-                      <option value="Choluteca">Choluteca</option>
-                      <option value="Cortés">Cortés</option>
-                      <option value="Comayagua">Comayagua</option>
-                      <option value="La Paz">La Paz</option>
-                      <option value="Olancho">Olancho</option>
-                      <option value="Yoro">Yoro</option>
-                    </select>
-                    <label class="field-label">Departamento</label>
-                  </div>
-                </div>
-              </div>
 
-              <!-- 2. DIRECCIÓN EXACTA -->
-              <div class="fields-row">
-                <div class="m3-field full" style="position: relative;">
-                  <div class="m3-input-wrapper">
-                    <span class="material-symbols-outlined input-icon">map</span>
-                    <input id="direccion" type="text" placeholder=" " required autocomplete="off">
-                    <label class="field-label">Dirección exacta</label>
-                  </div>
-                  <!-- SUGERENCIAS AUTOCOMPLETE -->
-                  <ul id="direccion-suggestions" class="suggestions-list hidden"></ul>
-                </div>
-              </div>
-
-              <!-- 3. MAPA INTERACTIVO -->
-              <div class="map-wrapper">
-                <div class="map-toolbar">
-                  <span class="map-hint">
-                    <span class="material-symbols-outlined">info</span>
-                    Escribe tu ciudad o dirección, o haz clic en el mapa
-                  </span>
-                  <button type="button" id="btn-gps" class="gps-btn" title="Usar mi ubicación actual">
-                    <span class="material-symbols-outlined">my_location</span>
-                    Mi ubicación
+                <!-- Botones de tipo de cliente -->
+                <div class="pos-client-type-select">
+                  <button id="pos-btn-nuevo" class="pos-type-btn active">
+                    <span class="material-symbols-outlined">person_add</span>
+                    <span>Cliente nuevo</span>
+                  </button>
+                  <button id="pos-btn-existente" class="pos-type-btn">
+                    <span class="material-symbols-outlined">person_search</span>
+                    <span>Cliente existente</span>
                   </button>
                 </div>
-                <div id="delivery-map"></div>
-                <div id="map-status" class="map-status hidden"></div>
-              </div>
 
-              <!-- 4. REFERENCIAS (OPCIONAL) -->
-              <div class="fields-row" style="margin-top: 1.5rem;">
-                <div class="m3-field full">
-                  <div class="m3-input-wrapper">
-                    <span class="material-symbols-outlined input-icon">comment</span>
-                    <textarea id="nota" rows="2" placeholder=" "></textarea>
-                    <label class="field-label">Referencias (opcional)</label>
+                <!-- Mini-form nuevo cliente -->
+                <div id="pos-new-client-form">
+                  <div class="fields-row">
+                    <div class="m3-field full">
+                      <div class="m3-input-wrapper">
+                        <span class="material-symbols-outlined input-icon">person</span>
+                        <input type="text" id="pos-new-name" placeholder=" " required>
+                        <label class="field-label">Nombre completo *</label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="fields-row split">
+                    <div class="m3-field">
+                      <div class="m3-input-wrapper">
+                        <span class="material-symbols-outlined input-icon">call</span>
+                        <input type="tel" id="pos-new-phone" placeholder=" ">
+                        <label class="field-label">Teléfono (opcional)</label>
+                      </div>
+                    </div>
+                    <div class="m3-field">
+                      <div class="m3-input-wrapper">
+                        <span class="material-symbols-outlined input-icon">mail</span>
+                        <input type="email" id="pos-new-email" placeholder=" ">
+                        <label class="field-label">Correo (opcional)</label>
+                      </div>
+                    </div>
+                  </div>
+                  <button id="pos-create-client-btn-original" class="btn-primary pos-create-btn hidden">
+                    <span class="material-symbols-outlined">person_add</span>
+                    Crear cliente y continuar
+                  </button>
+                </div>
+
+                <!-- Buscador (oculto hasta que se elija "existente") -->
+                <div id="pos-search-section" class="hidden">
+                  <div class="pos-search-box">
+                    <div class="m3-input-wrapper">
+                      <span class="material-symbols-outlined input-icon">search</span>
+                      <input type="text" id="pos-search-input" placeholder=" " autocomplete="off">
+                      <label class="field-label">Buscar cliente por nombre o teléfono</label>
+                    </div>
+                    <div id="pos-search-results" class="pos-search-results hidden"></div>
                   </div>
                 </div>
+
+                <!-- Cliente seleccionado (se muestra al escoger uno) -->
+                <div id="pos-selected-client" class="pos-selected-client hidden">
+                  <div class="selected-client-header">
+                    <span class="material-symbols-outlined">check_circle</span>
+                    <span>Cliente seleccionado:</span>
+                  </div>
+                  <div id="pos-client-info" class="pos-client-info"></div>
+                  <button id="pos-change-client-btn" class="btn-ghost-sm">
+                    <span class="material-symbols-outlined">edit</span>
+                    Cambiar cliente
+                  </button>
+                </div>
+
               </div>
             </div>
 
-          </form>
+          </div>
         </div>
+
       </section>
 
       <!-- COLUMNA DERECHA: RESUMEN -->
@@ -207,6 +313,62 @@
             Finalizar la compra
             <span class="material-symbols-outlined">arrow_forward</span>
           </button>
+
+          <!-- Botón crear cliente POS (en el resumen) -->
+          <button id="pos-create-client-btn" class="btn-primary hidden" style="margin-top:16px;width:100%;">
+            <span class="material-symbols-outlined">person_add</span>
+            Crear cliente y continuar
+          </button>
+
+          <!-- Botón continuar POS (en el resumen) -->
+          <button id="pos-continuar-btn" class="btn-primary hidden" style="margin-top:16px;width:100%;">
+            Continuar con el pedido
+            <span class="material-symbols-outlined">arrow_forward</span>
+          </button>
+
+          <!-- ===================== POS ADMIN: CONFIRMAR ===================== -->
+          <div id="pos-step-confirmar" class="hidden pos-step-summary">
+            <hr class="section-divider">
+
+            <!-- Cliente -->
+            <div id="pos-confirm-client" class="pos-confirm-box">
+              <div class="confirm-label">Cliente</div>
+              <div id="pos-confirm-client-info"></div>
+            </div>
+
+            <!-- Productos -->
+            <div id="pos-confirm-order" class="pos-confirm-box">
+              <div class="confirm-label">Productos</div>
+              <div id="pos-confirm-items"></div>
+              <div class="pos-confirm-total">
+                <span>Total</span>
+                <span id="pos-confirm-total-amount">L 0.00</span>
+              </div>
+            </div>
+
+            <!-- Método de pago -->
+            <div class="form-group-section">
+              <div class="section-title">
+                <span class="material-symbols-outlined">payments</span>
+                <h4>Método de pago</h4>
+              </div>
+              <div class="pos-payment-options">
+                <button class="pos-payment-btn" data-payment="cash">
+                  <span class="material-symbols-outlined">payments</span>
+                  <span>Efectivo</span>
+                </button>
+                <button class="pos-payment-btn" data-payment="transfer">
+                  <span class="material-symbols-outlined">account_balance</span>
+                  <span>Transferencia</span>
+                </button>
+              </div>
+            </div>
+
+            <button id="pos-confirmar-btn" class="btn-primary" disabled>
+              <span class="btn-text">Registrar pedido</span>
+              <i class="fa-solid fa-circle-notch fa-spin hidden" id="pos-loader"></i>
+            </button>
+          </div>
 
           </div>
       </aside>
