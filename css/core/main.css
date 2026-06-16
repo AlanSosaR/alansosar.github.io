@@ -640,15 +640,11 @@ body {
 /* PÍLDORA: borde verde + texto café + leve elevación */
 .pill {
   background: #fff;
-  border: 1.6px solid var(--verde);
   color: var(--marron);
   border-radius: 999px;
   padding: 0.45rem 1rem;
   font-size: 0.88rem;
   align-self: flex-start;
-
-  box-shadow: 0 6px 14px rgba(46, 125, 50, 0.10);
-  /* sombra verde suave */
 }
 
 /* ESTADO DEL PRODUCTO (dinámico por clases) */

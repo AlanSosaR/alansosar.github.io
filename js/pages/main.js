@@ -221,12 +221,10 @@ function renderMainProduct(product) {
   safe("product-description").textContent = product.description || "";
 
   const badge = [
-    product.category,
+    product.presentation,
     product.grind_type,
-    product.presentation
+    product.category
   ].filter(Boolean).join(" · ");
-
-  safe("product-badge").textContent = badge;
 
   // FICHA TÉCNICA DINÁMICA
   const specsContainer = safe("product-specs");
@@ -282,17 +280,20 @@ function renderMainProduct(product) {
       <div class="product-footer-sheet">
         <div class="footer-text">
           <p class="enjoy-msg">¡Disfrútalo y Compártelo!</p>
-          <p class="product-weight">1 lb (454 g)</p>
+          <span id="product-badge" class="pill" aria-live="polite"></span>
         </div>
       </div>
     `;
+
+    const badgeEl = safe("product-badge");
+    if (badgeEl) badgeEl.textContent = badge;
   }
 
   const activeDiscount = getActiveDiscount(product);
   const finalPrice = activeDiscount > 0 ? Math.floor(product.price * (1 - activeDiscount / 100)) : product.price;
 
   const priceEl = safe("product-price");
-  priceEl.innerHTML = `L ${finalPrice}${activeDiscount > 0 ? ' <small class="price-discount-note">(con descuento)</small>' : ''}`;
+  priceEl.innerHTML = `L ${Number(finalPrice).toFixed(2)}${activeDiscount > 0 ? ' <small class="price-discount-note">(con descuento)</small>' : ''}`;
 
   const img = safe("product-image");
   img.classList.remove("swap");
@@ -354,7 +355,7 @@ function syncProductPrice() {
   const totalPrice = unitPrice * qty;
   const priceEl = safe("product-price");
   if (priceEl) {
-    priceEl.innerHTML = `L ${totalPrice}${activeDiscount > 0 ? ' <small class="price-discount-note">(con descuento)</small>' : ''}`;
+    priceEl.innerHTML = `L ${Number(totalPrice).toFixed(2)}${activeDiscount > 0 ? ' <small class="price-discount-note">(con descuento)</small>' : ''}`;
   }
 }
 
@@ -454,13 +455,13 @@ async function loadSimilarProducts() {
         <h4>${p.name}</h4>
         
         <div class="card-footer-3col">
-          <span class="weight-label">1 lb</span>
+          ${p.presentation ? `<span class="weight-label">${p.presentation}</span>` : ""}
           
           <button class="fav-btn ${activeFav}" onclick="event.stopPropagation(); toggleFavorite('${p.id}')">
             <i class="${heartIcon}"></i>
           </button>
 
-          <div class="price-pill">L ${p.price}</div>
+          <div class="price-pill">L ${Number(p.price).toFixed(2)}</div>
         </div>
       </div>
     </div>
