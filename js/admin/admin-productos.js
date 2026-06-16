@@ -1,4 +1,4 @@
-console.log("🧩 admin-productos.js — FINAL ESTABLE");
+console.log("🧩 admin-productos.js — LISTA + DETALLE");
 
 /* ============================================================
    ESPERAR SUPABASE
@@ -18,25 +18,9 @@ function esperarSupabase() {
 const emptyState = document.getElementById("admin-empty-state");
 const EMPTY_BASE = window.location.origin + "/imagenes/empty/";
 
-const preview = {
-  section: document.getElementById("admin-product-preview"),
-  name: document.getElementById("p-name"),
-  description: document.getElementById("p-description"),
-  badge: document.getElementById("p-badge"),
-  price: document.getElementById("p-price"),
-  stock: document.getElementById("p-stock"),
-  tueste: document.getElementById("p-tueste"),
-  image: document.getElementById("p-image"),
-  carouselToggle: document.getElementById("p-carousel-toggle"),
-  carouselStatus: document.getElementById("carousel-status")
-};
-
-const btnEditProduct = document.getElementById("btnEditProduct");
-const btnDeleteProduct = document.getElementById("btnDeleteProduct");
-
-const relatedSection = document.querySelector(".admin-related");
-const carouselContainer = document.getElementById("admin-products-carousel");
-const carouselTemplate = document.getElementById("tpl-admin-carousel-card");
+const productsList = document.getElementById("products-list");
+const detailPanel = document.getElementById("product-detail-panel");
+const detailEmpty = document.getElementById("detailEmpty");
 
 /* SNACKBAR ELIMINAR */
 const snackbarDelete = document.getElementById("snackbar-delete");
@@ -49,9 +33,9 @@ const btnConfirmDelete = document.getElementById("btnConfirmDelete");
 let products = [];
 let filteredProducts = [];
 let selectedProductId = null;
-let carouselIndex = 0;
 let productToDelete = null;
 let searchActive = "";
+let activeFilter = "all";
 
 /* ============================================================
    HELPERS
@@ -70,19 +54,16 @@ function getImageUrl(product) {
   return `https://eaipcuvvddyrqkbmjmvw.supabase.co/storage/v1/object/public/product-images/${product.image_url}`;
 }
 
-function updateCarouselStatus(active) {
-  if (!preview.carouselStatus) return;
-  preview.carouselStatus.textContent = active ? "Activo" : "Desactivado";
-  preview.carouselStatus.className =
-    `carousel-status ${active ? "active" : "inactive"}`;
-}
-
 /* ============================================================
    ESTADO VACÍO
 ============================================================ */
 function mostrarEstadoVacio() {
-  preview.section?.classList.add("hidden");
-  relatedSection?.classList.add("hidden");
+  productsList.innerHTML = "";
+  detailPanel.innerHTML = `
+    <div class="detail-empty">
+      <span class="material-symbols-outlined detail-empty-icon">coffee</span>
+      <p class="detail-empty-text">Selecciona un producto para ver el detalle</p>
+    </div>`;
 
   if (!emptyState) return;
   emptyState.classList.remove("hidden");
@@ -104,7 +85,7 @@ function mostrarEstadoVacio() {
     title.textContent = "No hay cafés registrados";
     text.textContent = "Agrega un café para que los clientes puedan verlo y comprarlo en la tienda.";
     if (img) {
-      img.src = EMPTY_BASE + "processing.svg"; // O una imagen que represente "vacio"
+      img.src = EMPTY_BASE + "processing.svg";
       img.classList.remove("hidden");
     }
   }
@@ -112,122 +93,193 @@ function mostrarEstadoVacio() {
 
 function ocultarEstadoVacio() {
   emptyState?.classList.add("hidden");
-  preview.section?.classList.remove("hidden");
-  relatedSection?.classList.remove("hidden");
 }
 
 /* =========================================================
    SNACKBAR — CONFIRMACIÓN DE ELIMINACIÓN
 ========================================================= */
-
 function showDeleteConfirm(product) {
   if (!product) return;
-
   productToDelete = product;
-
   snackbarDelete.classList.add("show");
   snackbarDelete.setAttribute("aria-hidden", "false");
-
-  // 🔑 foco seguro en cancelar (UX + accesibilidad)
   btnCancelDelete.focus();
 }
 
 function closeDeleteConfirm() {
   snackbarDelete.classList.remove("show");
   snackbarDelete.setAttribute("aria-hidden", "true");
-
   productToDelete = null;
-
-  // devolver foco al botón eliminar (opcional pero pro)
-  btnDeleteProduct?.focus();
 }
 
-/* =====================
-   CONFIRMAR
-===================== */
 btnConfirmDelete.addEventListener("click", async () => {
   if (!productToDelete) return;
-
   const product = productToDelete;
   closeDeleteConfirm();
-
   await eliminarProducto(product);
 });
 
-/* =====================
-   CANCELAR
-===================== */
 btnCancelDelete.addEventListener("click", closeDeleteConfirm);
 
-/* =====================
-   TECLA ESC
-===================== */
 document.addEventListener("keydown", (e) => {
-  if (
-    e.key === "Escape" &&
-    snackbarDelete.classList.contains("show")
-  ) {
+  if (e.key === "Escape" && snackbarDelete.classList.contains("show")) {
     closeDeleteConfirm();
   }
 });
 
 /* ============================================================
-   PREVIEW PRINCIPAL
+   RENDERIZAR LISTA DE PRODUCTOS
 ============================================================ */
-function renderPreview(product) {
-  if (!product) return;
+function renderList(list) {
+  productsList.innerHTML = "";
 
-  selectedProductId = product.id;
-
-  preview.name.textContent = product.name || "—";
-  preview.description.textContent =
-    product.description || "Sin descripción";
-
-  const badgeParts = [];
-  if (product.category) badgeParts.push(product.category);
-  if (product.grind_type) badgeParts.push(product.grind_type);
-  if (product.presentation) {
-    badgeParts.push(
-      product.presentation === "1lb"
-        ? "1 lb"
-        : product.presentation
-    );
+  if (!list.length) {
+    mostrarEstadoVacio();
+    return;
   }
 
-  preview.badge.textContent = badgeParts.join(" · ") || "—";
+  ocultarEstadoVacio();
 
-  preview.price.textContent =
-    formatPrice(product.price, product.currency);
+  list.forEach(product => {
+    const row = document.createElement("div");
+    row.className = "product-row";
+    row.dataset.id = product.id;
 
-  preview.stock.textContent = product.stock ?? "—";
-  if (preview.tueste) {
-    preview.tueste.textContent = product.fecha_tueste || "No especificada";
+    const imgUrl = getImageUrl(product);
+    const stock = product.stock ?? 0;
+
+    let badgeClass = "badge-inactive";
+    let badgeText = "Inactivo";
+    if (product.active !== false) {
+      if (stock <= 15) {
+        badgeClass = "badge-low-stock";
+        badgeText = "Stock bajo";
+      } else {
+        badgeClass = "badge-active";
+        badgeText = "Activo";
+      }
+    }
+
+    row.innerHTML = `
+      <img class="product-row-thumb" src="${imgUrl}" alt="${product.name}" loading="lazy">
+      <div class="product-row-info">
+        <p class="product-row-name">${product.name || "—"}</p>
+        <p class="product-row-meta">${product.category || ""}${product.grind_type ? " · " + product.grind_type : ""}</p>
+      </div>
+      <div class="product-row-right">
+        <p class="product-row-price">${formatPrice(product.price, product.currency)}</p>
+        <p class="product-row-stock">${stock} en almacén</p>
+      </div>
+      <span class="product-row-badge ${badgeClass}">${badgeText}</span>
+    `;
+
+    row.addEventListener("click", () => selectProduct(product.id));
+    productsList.appendChild(row);
+  });
+
+  if (selectedProductId) {
+    const match = list.find(p => p.id === selectedProductId);
+    if (match) {
+      const prevRow = productsList.querySelector(".product-row.selected");
+      if (prevRow) prevRow.classList.remove("selected");
+      const row = productsList.querySelector(`[data-id="${selectedProductId}"]`);
+      if (row) row.classList.add("selected");
+    } else {
+      selectProduct(list[0].id);
+    }
+  } else if (list.length > 0) {
+    selectProduct(list[0].id);
+  }
+}
+
+/* ============================================================
+   RENDERIZAR PANEL DE DETALLE
+============================================================ */
+function renderDetail(product) {
+  if (!product) {
+    detailPanel.innerHTML = `
+      <div class="detail-empty">
+        <span class="material-symbols-outlined detail-empty-icon">coffee</span>
+        <p class="detail-empty-text">Selecciona un producto para ver el detalle</p>
+      </div>`;
+    return;
   }
 
   const imgUrl = getImageUrl(product);
-  preview.image.src = imgUrl
-    ? `${imgUrl}?v=${Date.now()}`
-    : "/imagenes/no-image.png";
+  const stock = product.stock ?? 0;
 
-  preview.image.onerror = () => {
-    preview.image.src = "/imagenes/no-image.png";
-  };
+  const tags = [];
+  if (product.category) tags.push(product.category);
+  if (product.grind_type) tags.push(product.grind_type);
+  if (product.presentation) {
+    tags.push(product.presentation === "1lb" ? "1 lb" : product.presentation);
+  }
 
-  /* =====================================================
-     SLICE — DESTACAR PRODUCTO EN LA TIENDA
-  ===================================================== */
-  const activo = product.featured === true;
-  preview.carouselToggle.checked = activo;
-  updateCarouselStatus(activo);
+  const featuredActive = product.featured === true;
 
-  // ⚠️ quitar listeners anteriores (CLAVE)
-  preview.carouselToggle.onchange = null;
+  detailPanel.innerHTML = `
+    <div class="detail-content">
+      <div class="detail-main">
+        <div class="detail-image-wrap">
+          <img src="${imgUrl}?v=${Date.now()}" alt="${product.name}"
+            onerror="this.src='/imagenes/no-image.png'">
+        </div>
+        <div class="detail-info">
+          <h3 class="detail-name">${product.name || "—"}</h3>
+          <p class="detail-desc">${product.description || "Sin descripción"}</p>
+          <div class="detail-tags">
+            ${tags.map(t => `<span class="detail-tag">${t}</span>`).join("")}
+          </div>
+        </div>
+      </div>
+      <div class="detail-stats">
+        <div class="stat-card">
+          <p class="stat-label">Precio</p>
+          <p class="stat-value">${formatPrice(product.price, product.currency)}</p>
+        </div>
+        <div class="stat-card">
+          <p class="stat-label">En almacén</p>
+          <p class="stat-value">${stock}</p>
+        </div>
+      </div>
+      <div class="detail-row">
+        <span class="detail-row-label">Fecha de tueste</span>
+        <span class="detail-row-value">${product.fecha_tueste || "No especificada"}</span>
+      </div>
+      <div class="detail-carousel-row">
+        <div class="detail-carousel-left">
+          <p class="detail-carousel-label">Mostrar en carrusel</p>
+          <p class="detail-carousel-note ${featuredActive ? "visible-note" : ""}">
+            ${featuredActive ? "Visible en la tienda" : "No visible en tienda"}
+          </p>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="d-carousel-toggle" ${featuredActive ? "checked" : ""}>
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+    <div class="detail-actions">
+      <button class="detail-action-btn delete-btn" id="d-delete-btn">
+        <span class="material-symbols-outlined">delete</span>
+        Eliminar
+      </button>
+      <button class="detail-action-btn edit-btn" id="d-edit-btn">
+        <span class="material-symbols-outlined">edit</span>
+        Editar producto
+      </button>
+    </div>
+  `;
 
-  preview.carouselToggle.onchange = async () => {
-    const nuevoEstado = preview.carouselToggle.checked;
-
-    // feedback inmediato
-    updateCarouselStatus(nuevoEstado);
+  /* =====================
+     CARRUSEL TOGGLE
+  ===================== */
+  const toggle = document.getElementById("d-carousel-toggle");
+  toggle.onchange = async () => {
+    const nuevoEstado = toggle.checked;
+    const note = detailPanel.querySelector(".detail-carousel-note");
+    note.textContent = nuevoEstado ? "Visible en la tienda" : "No visible en tienda";
+    note.className = `detail-carousel-note ${nuevoEstado ? "visible-note" : ""}`;
 
     const { error } = await window.supabaseClient
       .from("products")
@@ -236,119 +288,50 @@ function renderPreview(product) {
 
     if (error) {
       console.error("❌ Error actualizando featured:", error);
-
-      // rollback visual
-      preview.carouselToggle.checked = !nuevoEstado;
-      updateCarouselStatus(!nuevoEstado);
+      toggle.checked = !nuevoEstado;
+      note.textContent = !nuevoEstado ? "Visible en la tienda" : "No visible en tienda";
+      note.className = `detail-carousel-note ${!nuevoEstado ? "visible-note" : ""}`;
       return;
     }
 
-    // ✅ ACTUALIZAR ESTADO LOCAL (CRÍTICO)
     product.featured = nuevoEstado;
-
     const p = products.find(p => p.id === product.id);
     if (p) p.featured = nuevoEstado;
-
     const fp = filteredProducts.find(p => p.id === product.id);
     if (fp) fp.featured = nuevoEstado;
-
-    console.log("✅ Featured actualizado:", product.name, nuevoEstado);
   };
 
-  // 🔒 ESTE cierre es el que faltaba: cierra renderPreview(product)
+  /* =====================
+     BOTÓN ELIMINAR
+  ===================== */
+  document.getElementById("d-delete-btn").addEventListener("click", () => {
+    showDeleteConfirm(product);
+  });
+
+  /* =====================
+     BOTÓN EDITAR
+  ===================== */
+  document.getElementById("d-edit-btn").addEventListener("click", () => {
+    location.href = `/pages/admin/admin-agregar-producto.html?id=${product.id}`;
+  });
 }
 
 /* ============================================================
-   CARRUSEL
+   SELECCIÓN DE PRODUCTO
 ============================================================ */
-function renderCarousel(list) {
-  carouselContainer.innerHTML = "";
-
-  list.forEach((product, index) => {
-    const card = carouselTemplate.content.cloneNode(true);
-    const root = card.querySelector(".admin-card");
-
-    root.dataset.index = index;
-    root.dataset.id = product.id;
-
-    const img = root.querySelector("img");
-    const imgUrl = getImageUrl(product);
-
-    img.src = imgUrl
-      ? `${imgUrl}?v=${Date.now()}`
-      : "/imagenes/no-image.png";
-
-    img.onerror = () => {
-      img.src = "/imagenes/no-image.png";
-    };
-
-    root.querySelector(".c-name").textContent = product.name;
-    root.querySelector(".c-price").textContent =
-      formatPrice(product.price, product.currency);
-
-    root.addEventListener("click", () => seleccionarProducto(index));
-
-    carouselContainer.appendChild(card);
-  });
-
-  seleccionarProducto(0);
-}
-/* =====================
-   SCROLL PREVIEW (ADMIN)
-===================== */
-function scrollToAdminPreview() {
-  if (!preview.section) return;
-
-  preview.section.scrollIntoView({
-    behavior: "smooth",
-    block: "start"
-  });
-}
-/* ============================================================
-   SELECCIÓN
-============================================================ */
-function seleccionarProducto(index) {
-  const product = filteredProducts[index];
+function selectProduct(id) {
+  const product = filteredProducts.find(p => p.id === id);
   if (!product) return;
 
-  carouselIndex = index;
   selectedProductId = product.id;
 
-  document
-    .querySelectorAll(".admin-card")
-    .forEach(c => c.classList.remove("active-card"));
+  const prevRow = productsList.querySelector(".product-row.selected");
+  if (prevRow) prevRow.classList.remove("selected");
 
-  carouselContainer
-    .querySelector(`[data-index="${index}"]`)
-    ?.classList.add("active-card");
+  const row = productsList.querySelector(`[data-id="${id}"]`);
+  if (row) row.classList.add("selected");
 
-  renderPreview(product);
-  actualizarScrollCarrusel();
-
-  // 👇 NUEVO: scroll suave al preview principal
-  scrollToAdminPreview();
-}
-
-/* ============================================================
-   SCROLL
-============================================================ */
-function actualizarScrollCarrusel() {
-  const card = carouselContainer.querySelector(".admin-card");
-  if (!card) return;
-
-  const gap = parseInt(getComputedStyle(carouselContainer).gap || 16, 10);
-  const width = card.offsetWidth + gap;
-
-  carouselContainer.scrollTo({
-    left: width * carouselIndex,
-    behavior: "smooth"
-  });
-
-  // 🔑 VISIBILIDAD DE FLECHAS
-  const prev = document.getElementById("admin-prev");
-  const next = document.getElementById("admin-next");
-  if (prev) prev.classList.toggle("hidden", carouselIndex === 0);
-  if (next) next.classList.toggle("hidden", carouselIndex === filteredProducts.length - 1);
+  renderDetail(product);
 }
 
 /* ============================================================
@@ -357,16 +340,26 @@ function actualizarScrollCarrusel() {
 function aplicarFiltro(query) {
   searchActive = (typeof query === "string" ? query : "").toLowerCase().trim();
 
-  filteredProducts = !searchActive
+  let base = !searchActive
     ? [...products]
     : products.filter(p => {
-      const nameMatch = (p.name || "").toLowerCase().includes(searchActive);
-      const descMatch = (p.description || "").toLowerCase().includes(searchActive);
-      const catMatch = (p.category || "").toLowerCase().includes(searchActive);
-      const grindMatch = (p.grind_type || "").toLowerCase().includes(searchActive);
+        const nameMatch = (p.name || "").toLowerCase().includes(searchActive);
+        const descMatch = (p.description || "").toLowerCase().includes(searchActive);
+        const catMatch = (p.category || "").toLowerCase().includes(searchActive);
+        const grindMatch = (p.grind_type || "").toLowerCase().includes(searchActive);
+        return nameMatch || descMatch || catMatch || grindMatch;
+      });
 
-      return nameMatch || descMatch || catMatch || grindMatch;
-    });
+  switch (activeFilter) {
+    case "active":
+      base = base.filter(p => p.active !== false);
+      break;
+    case "carousel":
+      base = base.filter(p => p.featured === true);
+      break;
+  }
+
+  filteredProducts = base;
 
   if (!filteredProducts.length) {
     mostrarEstadoVacio();
@@ -374,14 +367,13 @@ function aplicarFiltro(query) {
   }
 
   ocultarEstadoVacio();
-  renderCarousel(filteredProducts);
+  renderList(filteredProducts);
 }
 
 /* ============================================================
    ELIMINAR CAFÉ (BD + IMAGEN REAL)
 ============================================================ */
 async function eliminarProducto(product) {
-  // 🔒 Protección base
   if (!product?.id) {
     console.warn("⚠️ Producto inválido para eliminar:", product);
     safeSnackbar("⚠️ Producto inválido", "error");
@@ -389,13 +381,8 @@ async function eliminarProducto(product) {
   }
 
   try {
-    /* =====================
-       1️⃣ ELIMINAR IMAGEN (SI EXISTE)
-    ===================== */
     if (product.image_url) {
       let path = product.image_url;
-
-      // 🔑 Si viene como URL pública → extraer path real
       if (path.startsWith("http")) {
         try {
           const url = new URL(path);
@@ -418,9 +405,6 @@ async function eliminarProducto(product) {
       }
     }
 
-    /* =====================
-       2️⃣ ELIMINAR PRODUCTO BD
-    ===================== */
     const { error } = await window.supabaseClient
       .from("products")
       .delete()
@@ -428,19 +412,16 @@ async function eliminarProducto(product) {
 
     if (error) throw error;
 
-    /* =====================
-       3️⃣ ACTUALIZAR UI LOCAL
-    ===================== */
     products = products.filter(p => p.id !== product.id);
     filteredProducts = filteredProducts.filter(p => p.id !== product.id);
 
+    if (selectedProductId === product.id) {
+      selectedProductId = null;
+    }
+
     aplicarFiltro();
 
-    /* =====================
-       4️⃣ FEEDBACK
-    ===================== */
     safeSnackbar("☕ Café eliminado correctamente", "success");
-
   } catch (err) {
     console.error("❌ Error eliminando café:", err);
     safeSnackbar("❌ No se pudo eliminar el café", "error");
@@ -463,65 +444,64 @@ async function cargarProductos() {
 /* ============================================================
    INIT
 ============================================================ */
-(async function init() {
-  await esperarSupabase();
+(function init() {
+  esperarSupabase().then(() => {
 
-  if (localStorage.getItem("cortero_logged") !== "1") {
-    location.href = "/pages/auth/login.html";
-    return;
-  }
-
-  // Listen to Global Header Events
-  document.addEventListener("header:search", (e) => {
-    aplicarFiltro(e.detail);
-  });
-
-  document.addEventListener("header:add-click", () => {
-    location.href = "/pages/admin/admin-agregar-producto.html";
-  });
-
-  btnEditProduct?.addEventListener("click", () => {
-    if (!selectedProductId) {
-      safeSnackbar("Selecciona un café primero", "error");
+    if (localStorage.getItem("cortero_logged") !== "1") {
+      location.href = "/pages/auth/login.html";
       return;
     }
-    location.href = `/pages/admin/admin-agregar-producto.html?id=${selectedProductId}`;
-  });
 
-  btnDeleteProduct?.addEventListener("click", () => {
-    if (!selectedProductId) {
-      safeSnackbar("Selecciona un café primero", "error");
-      return;
-    }
-    const product = products.find(p => p.id === selectedProductId);
-    if (product) showDeleteConfirm(product);
-  });
+    /* =====================
+       FILTROS PILL
+    ===================== */
+    const pills = document.querySelectorAll("#filterPills .pill");
+    pills.forEach(pill => {
+      pill.addEventListener("click", () => {
+        pills.forEach(p => p.classList.remove("active"));
+        pill.classList.add("active");
+        activeFilter = pill.dataset.filter;
+        aplicarFiltro();
+      });
+    });
 
-  /* ============================================================
-     EVENTOS DE FLECHAS (ADMIN)
-  ============================================================ */
-  document.getElementById("admin-prev")?.addEventListener("click", () => {
-    if (carouselIndex > 0) {
-      seleccionarProducto(carouselIndex - 1);
-    }
-  });
+    /* =====================
+       BOTÓN NUEVO PRODUCTO
+    ===================== */
+    document.getElementById("btnAddProduct").addEventListener("click", () => {
+      location.href = "/pages/admin/admin-agregar-producto.html";
+    });
 
-  document.getElementById("admin-next")?.addEventListener("click", () => {
-    if (carouselIndex < filteredProducts.length - 1) {
-      seleccionarProducto(carouselIndex + 1);
-    }
-  });
+    /* =====================
+       SEARCH
+    ===================== */
+    document.addEventListener("header:search", (e) => {
+      aplicarFiltro(e.detail);
+    });
 
-  await cargarProductos();
+    /* =====================
+       BOTÓN NUEVO DESDE HEADER (add-btn)
+    ===================== */
+    document.addEventListener("header:add-click", () => {
+      location.href = "/pages/admin/admin-agregar-producto.html";
+    });
+
+    cargarProductos();
+  });
 })();
 
 /* ============================================================
-   SAFE HELPERS
+   SNACKBAR
 ============================================================ */
+function showSnackbar(message, type = "success") {
+  const el = document.getElementById("snackbar");
+  if (!el) return;
+  el.textContent = message;
+  el.className = `snackbar ${type}`;
+  el.classList.add("show");
+  setTimeout(() => el.classList.remove("show"), 3500);
+}
+
 function safeSnackbar(msg, type = "info") {
-  if (typeof showSnackbar === "function") {
-    showSnackbar(msg, type);
-  } else {
-    console.warn("Snackbar:", msg);
-  }
+  showSnackbar(msg, type);
 }

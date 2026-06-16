@@ -38,215 +38,244 @@
 
         <!-- ================= FORM ================= -->
         <form id="producto-form" novalidate>
-
-          <!-- ================= IMAGEN ================= -->
-          <div class="m3-field">
-            <div class="upload-box" id="uploadBox">
-
-              <img id="imagePreview" class="upload-preview hidden" alt="Vista previa del producto">
-
-              <span class="material-symbols-outlined upload-icon">photo_camera</span>
-              <p class="upload-title">Subir imagen</p>
-              <p class="upload-hint">JPG, PNG o WEBP (máx. 2 MB)</p>
-
-              <input type="file" id="imagen" accept="image/*">
+          <div class="admin-grid-layout">
+            
+            <!-- TARJETA IZQUIERDA: IMAGEN DEL PRODUCTO -->
+            <div class="admin-card-image">
+              <h3 class="card-section-title">Imagen del café</h3>
+              <!-- ================= IMAGEN ================= -->
+              <div class="m3-field">
+                <div class="upload-box" id="uploadBox">
+                  <img id="imagePreview" class="upload-preview hidden" alt="Vista previa del producto">
+                  <span class="material-symbols-outlined upload-icon">photo_camera</span>
+                  <p class="upload-title">Subir imagen</p>
+                  <p class="upload-hint">JPG, PNG o WEBP (máx. 2 MB)</p>
+                  <input type="file" id="imagen" accept="image/*">
+                </div>
+                <small class="field-error"></small>
+              </div>
             </div>
-            <small class="field-error"></small>
-          </div>
 
-          <!-- NOMBRE -->
-          <div class="m3-field">
-            <div class="m3-input">
-              <span class="material-symbols-outlined">inventory_2</span>
-              <input id="nombre" type="text" placeholder=" " required>
-              <label class="floating-label">Nombre del producto *</label>
+            <!-- TARJETA DERECHA: INFORMACIÓN Y DETALLES -->
+            <div class="admin-card-info">
+              
+              <!-- TÍTULO PRINCIPAL DE LA TARJETA -->
+              <h3 class="card-section-title">Datos Comerciales Principales</h3>
+
+              <!-- NOMBRE (ANCHO COMPLETO) -->
+              <div class="m3-field">
+                <div class="m3-input">
+                  <span class="material-symbols-outlined">inventory_2</span>
+                  <input id="nombre" type="text" placeholder=" " required>
+                  <label class="floating-label">Nombre del producto *</label>
+                </div>
+                <small class="field-error"></small>
+              </div>
+
+              <!-- DESCRIPCIÓN (ANCHO COMPLETO) -->
+              <div class="m3-field">
+                <div class="m3-input textarea-field">
+                  <span class="material-symbols-outlined">description</span>
+                  <textarea id="descripcion" rows="3" placeholder=" " required></textarea>
+                  <label class="floating-label">Descripción *</label>
+                </div>
+                <small class="field-error"></small>
+              </div>
+
+              <!-- REJILLA DE DOS COLUMNAS INFERIORES -->
+              <div class="info-grid">
+                
+                <!-- SUB-COLUMNA 1: DETALLES COMERCIALES RESTANTES -->
+                <div class="info-column">
+                  <h4 class="card-sub-title">Configuración de Venta</h4>
+
+                  <!-- CATEGORÍA -->
+                  <div class="m3-field">
+                    <div class="m3-input">
+                      <span class="material-symbols-outlined">category</span>
+                      <select id="categoria" required>
+                        <option value="" disabled selected></option>
+                        <option value="Tradicional">Tradicional</option>
+                        <option value="Premium">Premium</option>
+                        <option value="Especial">Edición especial</option>
+                      </select>
+                      <label class="floating-label">Categoría *</label>
+                    </div>
+                    <small class="field-error"></small>
+                  </div>
+
+                  <!-- PRESENTACIÓN -->
+                  <div class="m3-field">
+                    <div class="m3-input">
+                      <span class="material-symbols-outlined">scale</span>
+                      <select id="presentacion" required>
+                        <option value="" disabled selected></option>
+                        <option value="250g">250 g</option>
+                        <option value="500g">500 g</option>
+                        <option value="1lb">1 lb</option>
+                        <option value="pack">Pack regalo</option>
+                      </select>
+                      <label class="floating-label">Presentación / Tamaño *</label>
+                    </div>
+                    <small class="field-error"></small>
+                  </div>
+
+                  <!-- PRECIO -->
+                  <div class="m3-field">
+                    <div class="m3-input">
+                      <span class="material-symbols-outlined">attach_money</span>
+                      <input id="precio" type="number" step="0.01" placeholder=" " required>
+                      <label class="floating-label">Precio *</label>
+                    </div>
+                    <small class="field-error"></small>
+                  </div>
+
+                  <!-- STOCK -->
+                  <div class="m3-field">
+                    <div class="m3-input">
+                      <span class="material-symbols-outlined">warehouse</span>
+                      <input id="stock" type="number" min="0" placeholder=" " required>
+                      <label class="floating-label">Stock disponible *</label>
+                    </div>
+                    <small class="field-error"></small>
+                  </div>
+
+                  <!-- DESCUENTO -->
+                  <div class="m3-field">
+                    <div class="m3-input">
+                      <span class="material-symbols-outlined">label_off</span>
+                      <input id="descuento" type="number" min="0" max="100" placeholder=" " value="0">
+                      <label class="floating-label">Descuento (%)</label>
+                    </div>
+                    <small class="field-error"></small>
+                  </div>
+
+                  <!-- ESTADO -->
+                  <div class="m3-field estado-field">
+                    <p class="field-title">Estado</p>
+                    <div class="estado-switch-wrapper">
+                      <label class="switch">
+                        <input type="checkbox" id="estadoToggle" checked>
+                        <span class="slider"></span>
+                      </label>
+                      <span id="estadoTexto" class="estado-label activo">Activo</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- SUB-COLUMNA 2: FICHA TÉCNICA Y ORIGEN -->
+                <div class="info-column">
+                  <h4 class="card-sub-title">Ficha Técnica & Origen</h4>
+
+                  <!-- FINCA -->
+                  <div class="m3-field">
+                    <div class="m3-input">
+                      <span class="material-symbols-outlined">potted_plant</span>
+                      <input id="finca" type="text" placeholder=" " required value="La Rosa">
+                      <label class="floating-label">Finca *</label>
+                    </div>
+                    <small class="field-error"></small>
+                  </div>
+
+                  <!-- ALTITUD -->
+                  <div class="m3-field">
+                    <div class="m3-input">
+                      <span class="material-symbols-outlined">landscape</span>
+                      <input id="altitud" type="text" placeholder=" " required value="1100-1150 msnm">
+                      <label class="floating-label">Altitud *</label>
+                    </div>
+                    <small class="field-error"></small>
+                  </div>
+
+                  <!-- PRODUCTOR -->
+                  <div class="m3-field">
+                    <div class="m3-input">
+                      <span class="material-symbols-outlined">person</span>
+                      <input id="productor" type="text" placeholder=" " required value="Leonardo Antonio Sosa">
+                      <label class="floating-label">Productor *</label>
+                    </div>
+                    <small class="field-error"></small>
+                  </div>
+
+                  <!-- ORIGEN -->
+                  <div class="m3-field">
+                    <div class="m3-input">
+                      <span class="material-symbols-outlined">location_on</span>
+                      <input id="origen" type="text" placeholder=" " required
+                        value="San Ramon, Santa María, Departamento del Paraíso, Honduras.">
+                      <label class="floating-label">Origen *</label>
+                    </div>
+                    <small class="field-error"></small>
+                  </div>
+
+                  <!-- PROCESO -->
+                  <div class="m3-field">
+                    <div class="m3-input">
+                      <span class="material-symbols-outlined">settings_suggest</span>
+                      <input id="proceso" type="text" placeholder=" " required value="Lavado, seco">
+                      <label class="floating-label">Proceso *</label>
+                    </div>
+                    <small class="field-error"></small>
+                  </div>
+
+                  <!-- PERFIL -->
+                  <div class="m3-field">
+                    <div class="m3-input">
+                      <span class="material-symbols-outlined">palette</span>
+                      <input id="perfil" type="text" placeholder=" " required value="Miel, cítrico, chocolate">
+                      <label class="floating-label">Perfil *</label>
+                    </div>
+                    <small class="field-error"></small>
+                  </div>
+
+                  <!-- VARIEDAD -->
+                  <div class="m3-field">
+                    <div class="m3-input">
+                      <span class="material-symbols-outlined">psychiatry</span>
+                      <input id="variedad" type="text" placeholder=" " required value="Parainema">
+                      <label class="floating-label">Variedad *</label>
+                    </div>
+                    <small class="field-error"></small>
+                  </div>
+
+                  <!-- FECHA DE TUESTE -->
+                  <div class="m3-field">
+                    <div class="m3-input">
+                      <span class="material-symbols-outlined">calendar_today</span>
+                      <input id="fecha_tueste" type="date" placeholder=" " required>
+                      <label class="floating-label">Fecha de tueste *</label>
+                    </div>
+                    <small class="field-error"></small>
+                  </div>
+
+                  <!-- TIPO DE CAFÉ -->
+                  <div class="m3-field">
+                    <div class="m3-input">
+                      <span class="material-symbols-outlined">grain</span>
+                      <select id="tipoCafe" required>
+                        <option value="" disabled selected></option>
+                        <option value="Molido">Molido</option>
+                        <option value="En grano">En grano</option>
+                      </select>
+                      <label class="floating-label">Tipo de café *</label>
+                    </div>
+                    <small class="field-error"></small>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- BOTÓN DE ACCIÓN -->
+              <div class="form-actions">
+                <button type="submit" id="btn-submit" class="m3-btn">
+                  <span class="loader"></span>
+                  <span class="btn-text">Guardar producto</span>
+                </button>
+              </div>
+
             </div>
-            <small class="field-error"></small>
-          </div>
 
-          <!-- DESCRIPCIÓN -->
-          <div class="m3-field">
-            <div class="m3-input textarea-field">
-              <span class="material-symbols-outlined">description</span>
-              <textarea id="descripcion" rows="3" placeholder=" " required></textarea>
-              <label class="floating-label">Descripción *</label>
-            </div>
-            <small class="field-error"></small>
           </div>
-
-          <!-- CATEGORÍA -->
-          <div class="m3-field">
-            <div class="m3-input">
-              <span class="material-symbols-outlined">category</span>
-              <select id="categoria" required>
-                <option value="" disabled selected></option>
-                <option value="Tradicional">Tradicional</option>
-                <option value="Premium">Premium</option>
-                <option value="Especial">Edición especial</option>
-              </select>
-              <label class="floating-label">Categoría *</label>
-            </div>
-            <small class="field-error"></small>
-          </div>
-
-          <!-- TIPO DE CAFÉ -->
-          <div class="m3-field">
-            <div class="m3-input">
-              <span class="material-symbols-outlined">grain</span>
-              <select id="tipoCafe" required>
-                <option value="" disabled selected></option>
-                <option value="Molido">Molido</option>
-                <option value="En grano">En grano</option>
-              </select>
-              <label class="floating-label">Tipo de café *</label>
-            </div>
-            <small class="field-error"></small>
-          </div>
-
-          <!-- FINCA -->
-          <div class="m3-field">
-            <div class="m3-input">
-              <span class="material-symbols-outlined">potted_plant</span>
-              <input id="finca" type="text" placeholder=" " required value="La Rosa">
-              <label class="floating-label">Finca *</label>
-            </div>
-            <small class="field-error"></small>
-          </div>
-
-          <!-- ALTITUD -->
-          <div class="m3-field">
-            <div class="m3-input">
-              <span class="material-symbols-outlined">landscape</span>
-              <input id="altitud" type="text" placeholder=" " required value="1100-1150 msnm">
-              <label class="floating-label">Altitud *</label>
-            </div>
-            <small class="field-error"></small>
-          </div>
-
-          <!-- PRODUCTOR -->
-          <div class="m3-field">
-            <div class="m3-input">
-              <span class="material-symbols-outlined">person</span>
-              <input id="productor" type="text" placeholder=" " required value="Leonardo Antonio Sosa">
-              <label class="floating-label">Productor *</label>
-            </div>
-            <small class="field-error"></small>
-          </div>
-
-          <!-- ORIGEN -->
-          <div class="m3-field">
-            <div class="m3-input">
-              <span class="material-symbols-outlined">location_on</span>
-              <input id="origen" type="text" placeholder=" " required
-                value="San Ramon, Santa María, Departamento del Paraíso, Honduras.">
-              <label class="floating-label">Origen *</label>
-            </div>
-            <small class="field-error"></small>
-          </div>
-
-          <!-- PROCESO -->
-          <div class="m3-field">
-            <div class="m3-input">
-              <span class="material-symbols-outlined">settings_suggest</span>
-              <input id="proceso" type="text" placeholder=" " required value="Lavado, seco">
-              <label class="floating-label">Proceso *</label>
-            </div>
-            <small class="field-error"></small>
-          </div>
-
-          <!-- PERFIL -->
-          <div class="m3-field">
-            <div class="m3-input">
-              <span class="material-symbols-outlined">palette</span>
-              <input id="perfil" type="text" placeholder=" " required value="Miel, cítrico, chocolate">
-              <label class="floating-label">Perfil *</label>
-            </div>
-            <small class="field-error"></small>
-          </div>
-
-          <!-- VARIEDAD -->
-          <div class="m3-field">
-            <div class="m3-input">
-              <span class="material-symbols-outlined">psychiatry</span>
-              <input id="variedad" type="text" placeholder=" " required value="Parainema">
-              <label class="floating-label">Variedad *</label>
-            </div>
-            <small class="field-error"></small>
-          </div>
-
-          <!-- FECHA DE TUESTE -->
-          <div class="m3-field">
-            <div class="m3-input">
-              <span class="material-symbols-outlined">calendar_today</span>
-              <input id="fecha_tueste" type="date" placeholder=" " required>
-              <label class="floating-label">Fecha de tueste *</label>
-            </div>
-            <small class="field-error"></small>
-          </div>
-
-          <!-- PRESENTACIÓN -->
-          <div class="m3-field">
-            <div class="m3-input">
-              <span class="material-symbols-outlined">scale</span>
-              <select id="presentacion" required>
-                <option value="" disabled selected></option>
-                <option value="250g">250 g</option>
-                <option value="500g">500 g</option>
-                <option value="1lb">1 lb</option>
-                <option value="pack">Pack regalo</option>
-              </select>
-              <label class="floating-label">Presentación / Tamaño *</label>
-            </div>
-            <small class="field-error"></small>
-          </div>
-
-          <!-- PRECIO -->
-          <div class="m3-field">
-            <div class="m3-input">
-              <span class="material-symbols-outlined">attach_money</span>
-              <input id="precio" type="number" step="0.01" placeholder=" " required>
-              <label class="floating-label">Precio *</label>
-            </div>
-            <small class="field-error"></small>
-          </div>
-
-          <!-- STOCK -->
-          <div class="m3-field">
-            <div class="m3-input">
-              <span class="material-symbols-outlined">warehouse</span>
-              <input id="stock" type="number" min="0" placeholder=" " required>
-              <label class="floating-label">Stock disponible *</label>
-            </div>
-            <small class="field-error"></small>
-          </div>
-
-          <!-- DESCUENTO -->
-          <div class="m3-field">
-            <div class="m3-input">
-              <span class="material-symbols-outlined">label_off</span>
-              <input id="descuento" type="number" min="0" max="100" placeholder=" " value="0">
-              <label class="floating-label">Descuento (%)</label>
-            </div>
-            <small class="field-error"></small>
-          </div>
-
-          <!-- ESTADO -->
-          <div class="m3-field estado-field">
-            <p class="field-title">Estado</p>
-            <div class="estado-switch-wrapper">
-              <label class="switch">
-                <input type="checkbox" id="estadoToggle" checked>
-                <span class="slider"></span>
-              </label>
-              <span id="estadoTexto" class="estado-label activo">Activo</span>
-            </div>
-          </div>
-
-          <!-- BOTÓN -->
-          <button type="submit" id="btn-submit" class="m3-btn">
-            <span class="loader"></span>
-            <span class="btn-text">Guardar producto</span>
-          </button>
 
         </form>
 

@@ -5,17 +5,16 @@
   --cafe: #512615;
   --cafe-soft: #6b3a1e;
   --verde: #377b4c;
+  --verde-btn: #3A6B35;
   --verde-soft: #4a8a57;
   --rojo: #c0392b;
   --gris-bg: #fafafa;
   --gris-line: #e6e2de;
   --gris-text: #777;
   --blanco: #ffffff;
+  --ambar: #d4a017;
 }
 
-/* =========================================================
-   UX GLOBAL
-========================================================= */
 * {
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
@@ -41,359 +40,388 @@ a {
 }
 
 /* =========================================================
-   BARRA SUPERIOR — ADMIN PRODUCTOS
+   TOPBAR
 ========================================================= */
-.products-actions-bar {
+.products-topbar {
   display: flex;
   align-items: center;
-  margin-bottom: 32px;
+  justify-content: space-between;
+  margin-bottom: 1.2rem;
+}
+
+.topbar-left h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--cafe);
+  margin: 0 0 4px;
+}
+
+.topbar-subtitle {
+  font-size: 0.88rem;
+  color: var(--gris-text);
+  margin: 0;
+}
+
+.btn-new-product {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--verde-btn);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 0.65rem 1.25rem;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.btn-new-product:hover {
+  background: var(--verde-soft);
+  transform: translateY(-1px);
+}
+
+.btn-new-product .material-symbols-outlined {
+  font-size: 20px;
 }
 
 /* =========================================================
-   SEARCH BAR (contenedor principal)
+   FILTROS PILL
 ========================================================= */
-.search-box {
-  flex: 1;
+.filter-pills {
   display: flex;
-  align-items: center;
-  gap: 10px;
+  gap: 8px;
+  margin-bottom: 1.5rem;
+}
 
-  padding: 10px 12px;
-  border-radius: 999px;
-  border: 1px solid var(--gris-line);
+.filter-pills .pill {
+  border: 1.5px solid var(--gris-line);
   background: var(--blanco);
-
-  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  color: var(--cafe);
+  padding: 0.4rem 1.1rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-/* Focus general del buscador */
-.search-box:focus-within {
+.filter-pills .pill.active {
+  background: var(--verde);
+  color: #fff;
   border-color: var(--verde);
-  box-shadow: 0 0 0 3px rgba(51, 103, 59, 0.15);
 }
 
 /* =========================================================
-   ICONO LUPA
+   GRID: LISTA + DETALLE
 ========================================================= */
-.search-box .material-symbols-outlined {
-  font-size: 22px;
+.products-grid {
+  display: grid;
+  grid-template-columns: 1fr 680px;
+  gap: 2rem;
+  align-items: start;
+}
+
+/* =========================================================
+   COLUMNA LISTA
+========================================================= */
+.products-list-column {
+  min-width: 0;
+}
+
+/* =========================================================
+   FILA DE PRODUCTO
+========================================================= */
+.product-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0.85rem 1rem;
+  background: var(--blanco);
+  border-radius: 12px;
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  margin-bottom: 6px;
+}
+
+.product-row:hover {
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+}
+
+.product-row.selected {
+  border-color: var(--verde-btn);
+  box-shadow: 0 0 0 2px rgba(58,107,53,.15);
+}
+
+.product-row-thumb {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.product-row-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.product-row-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--cafe);
+  margin: 0 0 2px;
+}
+
+.product-row-meta {
+  font-size: 0.8rem;
+  color: var(--gris-text);
+  margin: 0;
+}
+
+.product-row-right {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.product-row-price {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--verde);
+  margin: 0 0 2px;
+}
+
+.product-row-stock {
+  font-size: 0.78rem;
+  color: var(--gris-text);
+  margin: 0;
+}
+
+.product-row-badge {
+  flex-shrink: 0;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 999px;
+  margin-left: 6px;
+}
+
+.badge-active {
+  background: rgba(55,123,76,.12);
+  color: var(--verde);
+}
+
+.badge-low-stock {
+  background: rgba(212,160,23,.18);
+  color: var(--ambar);
+}
+
+.badge-inactive {
+  background: rgba(0,0,0,.06);
+  color: var(--gris-text);
+}
+
+/* =========================================================
+   PANEL DETALLE
+========================================================= */
+.detail-panel-column {
+  position: sticky;
+  top: calc(var(--header-height, 72px) + 80px);
+}
+
+#product-detail-panel {
+  background: var(--blanco);
+  border: 1px solid var(--gris-line);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* =====================
+   ESTADO VACÍO
+===================== */
+.detail-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.5rem;
+  text-align: center;
+}
+
+.detail-empty-icon {
+  font-size: 48px;
+  color: var(--gris-line);
+  margin-bottom: 0.8rem;
+}
+
+.detail-empty-text {
+  font-size: 0.9rem;
+  color: var(--gris-text);
+  margin: 0;
+}
+
+/* =====================
+   CONTENIDO DEL DETALLE
+===================== */
+.detail-content {
+  padding: 1.2rem;
+}
+
+.detail-image-wrap {
+  width: 260px;
+  min-width: 260px;
+  height: 260px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.detail-image-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.detail-main {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.detail-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.detail-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--cafe);
+  margin: 0 0 4px;
+}
+
+.detail-desc {
+  font-size: 0.9rem;
+  color: var(--gris-text);
+  line-height: 1.5;
+  margin: 1rem 0 0.8rem;
+}
+
+/* TAGS */
+.detail-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 1rem;
+}
+
+.detail-tag {
+  border: 1px solid var(--gris-line);
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
   color: var(--cafe-soft);
 }
 
-/* =========================================================
-   INPUT
-========================================================= */
-.search-box input {
-  flex: 1;
-  border: none;
-  background: transparent;
-
-  font-size: 0.95rem;
-  color: var(--cafe);
-}
-
-.search-box input::placeholder {
-  color: #9b9b9b;
-}
-
-.search-box input:focus {
-  outline: none;
-}
-
-/* =========================================================
-   BOTÓN AGREGAR — CIRCULAR ELEVADO (DENTRO DEL SEARCH)
-========================================================= */
-.search-box .search-action-btn {
-  width: 44px;
-  height: 44px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  background: var(--verde);
-  color: #fff;
-
-  border: none;
-  border-radius: 50%;
-
-  cursor: pointer;
-
-  /* Elevación base */
-  box-shadow:
-    0 2px 4px rgba(0, 0, 0, 0.18),
-    0 6px 14px rgba(0, 0, 0, 0.12);
-
-  transition:
-    background 0.2s ease,
-    transform 0.18s cubic-bezier(.2, .8, .2, 1),
-    box-shadow 0.18s cubic-bezier(.2, .8, .2, 1);
-}
-
-/* Icono + (blanco) */
-.search-box .search-action-btn span {
-  font-size: 22px;
-  line-height: 1;
-  color: #ffffff;
-  /* 🔑 BLANCO */
-}
-
-/* Hover — flota */
-.search-box .search-action-btn:hover {
-  background: var(--verde-soft);
-  transform: translateY(-2px);
-
-  box-shadow:
-    0 6px 8px rgba(0, 0, 0, 0.22),
-    0 12px 24px rgba(0, 0, 0, 0.18);
-}
-
-/* Active — baja ligeramente */
-.search-box .search-action-btn:active {
-  transform: translateY(-1px);
-
-  box-shadow:
-    0 3px 6px rgba(0, 0, 0, 0.18),
-    0 6px 12px rgba(0, 0, 0, 0.12);
-}
-
-/* Focus visible — accesibilidad */
-.search-box .search-action-btn:focus-visible {
-  outline: none;
-  box-shadow:
-    0 0 0 4px rgba(51, 103, 59, 0.35),
-    0 6px 14px rgba(0, 0, 0, 0.16);
-}
-
-/* =========================================================
-   BARRA SUPERIOR — SEARCH FIJA (PC + MÓVIL)
-========================================================= */
-.products-actions-bar {
-  position: sticky;
-  top: calc(var(--header-height, 72px) + 8px);
-  /* desktop */
-  z-index: 20;
-
-  background: var(--gris-bg, #fafafa);
-  padding-bottom: 12px;
-}
-
-/* =========================================================
-   MOBILE — AJUSTE DE ALTURA DEL HEADER
-========================================================= */
-@media (max-width: 600px) {
-  .products-actions-bar {
-    top: calc(var(--header-height, 64px) + 8px);
-    /* móvil */
-  }
-}
-
-/* =========================================================
-   RESPONSIVE — AJUSTES FINOS (SOLO MÓVIL)
-========================================================= */
-@media (max-width: 600px) {
-
-  .search-box {
-    padding: 8px 10px;
-  }
-
-  .search-box .btn-primary {
-    width: 40px;
-    height: 40px;
-  }
-
-  .search-box .btn-primary span {
-    font-size: 20px;
-  }
-}
-
-/* =========================================================
-   TARJETA PRINCIPAL (PREVIEW ADMIN)
-========================================================= */
-.product-main {
-  max-width: 1100px;
-  margin: 0 auto 3.5rem;
-  background: var(--blanco);
-  border-radius: 24px;
+/* STAT CARDS */
+.detail-stats {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 2.2rem;
-  padding: 2.6rem 2.2rem 2.2rem;
-  /* 🔑 espacio arriba para botón */
-  align-items: center;
-  box-shadow: 0 14px 32px rgba(0, 0, 0, .08);
-  position: relative;
-}
-
-@media (max-width: 900px) {
-  .product-main {
-    grid-template-columns: 1fr;
-    padding: 2.8rem 1.6rem 1.6rem;
-  }
-}
-
-/* =========================================================
-   BOTÓN ATRÁS — FIX DEFINITIVO
-========================================================= */
-.back-btn {
-  /* 🔑 RESET SOLO PARA ESTE BOTÓN */
-  all: unset;
-
-  position: absolute;
-  top: 28px;
-  /* ⬆️ más separación vertical */
-  left: 24px;
-  /* ⬅️ más separación horizontal */
-
-  width: 42px !important;
-  height: 42px !important;
-  min-width: 42px;
-  min-height: 42px;
-
-  border-radius: 50% !important;
-  background: #fff;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  cursor: pointer;
-  z-index: 10;
-
-  box-shadow: 0 6px 16px rgba(0, 0, 0, .18);
-  transition: transform .15s ease, box-shadow .15s ease;
-}
-
-.back-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, .22);
-}
-
-.back-btn .material-symbols-outlined {
-  font-size: 26px;
-  color: var(--cafe);
-  line-height: 1;
-}
-
-/* 📱 MÓVIL */
-@media (max-width: 900px) {
-  .back-btn {
-    width: 48px !important;
-    height: 48px !important;
-
-    top: 32px;
-    /* más separación del contenido */
-    left: 22px;
-    /* más aire lateral */
-  }
-}
-
-/* =========================================================
-   TEXTO
-========================================================= */
-
-/* TÍTULO PRINCIPAL (VERDE) */
-.product-text h2 {
-  font-family: "Playfair Display", serif;
-  font-size: 2rem;
-  margin-bottom: 0.6rem;
-  color: var(--verde);
-}
-
-.product-text {
-  margin-top: 2.4rem;
-  /* ⬅️ aire entre botón y texto */
-}
-
-@media (max-width: 900px) {
-  .product-text {
-    margin-top: 3rem;
-  }
-}
-
-/* DESCRIPCIÓN (CAFÉ) */
-.product-description {
-  font-size: 0.95rem;
-  color: var(--cafe);
-  line-height: 1.55;
+  gap: 8px;
   margin-bottom: 1rem;
 }
 
-/* PÍLDORA CALIDAD (BORDE VERDE, TEXTO CAFÉ) */
-.pill {
-  display: inline-block;
-  border: 1.6px solid var(--verde);
-  padding: 0.45rem 1.1rem;
-  border-radius: 999px;
+.stat-card {
+  background: var(--gris-bg);
+  border-radius: 8px;
+  padding: 0.7rem 0.85rem;
+}
+
+.stat-label {
+  font-size: 0.72rem;
+  color: var(--gris-text);
+  margin: 0 0 2px;
+}
+
+.stat-value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--cafe);
+  margin: 0;
+}
+
+/* TUESTE */
+.detail-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.83rem;
+  color: var(--cafe);
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--gris-line);
+}
+
+.detail-row:last-of-type {
+  border-bottom: none;
+}
+
+.detail-row-label {
+  color: var(--gris-text);
+}
+
+.detail-row-value {
+  font-weight: 600;
+}
+
+/* CARRUSEL TOGGLE */
+.detail-carousel-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--gris-line);
+}
+
+.detail-carousel-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.detail-carousel-label {
   font-size: 0.85rem;
-  color: var(--cafe);
-  margin-bottom: 1.2rem;
-
-  /* leve elevación premium */
-  box-shadow: 0 4px 10px rgba(46, 125, 50, 0.10);
-}
-
-/* INFO CLAVE (ADMIN / DETALLE) */
-.admin-product-info {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 1.4rem;
-}
-
-.admin-product-info li {
-  margin-bottom: 0.45rem;
-  font-size: 0.95rem;
-  color: var(--cafe);
-}
-
-/* Etiquetas (Precio / En almacén) */
-.admin-product-info li strong {
-  color: var(--cafe);
-  font-weight: 500;
-}
-
-/* Valores (cantidades) en verde */
-.admin-product-info li span {
-  color: var(--verde);
   font-weight: 600;
-  margin-left: 4px;
-}
-
-/* =========================================================
-   SWITCH CARRUSEL
-========================================================= */
-.admin-carousel-toggle {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  font-size: 0.9rem;
-  margin-bottom: 1rem;
   color: var(--cafe);
-  /* 👈 texto en café */
+  margin: 0;
 }
 
-.carousel-status {
-  font-weight: 600;
-  font-size: .85rem;
+.detail-carousel-note {
+  font-size: 0.72rem;
+  color: var(--gris-text);
+  margin: 0;
 }
 
-.carousel-status.active {
+.detail-carousel-note.visible-note {
   color: var(--verde);
 }
 
-.carousel-status.inactive {
-  color: var(--rojo);
-}
-
-/* SWITCH */
+/* =====================
+   SWITCH (reutilizado)
+===================== */
 .switch {
   position: relative;
   width: 46px;
   height: 26px;
+  flex-shrink: 0;
 }
 
 .switch input {
   opacity: 0;
+  width: 0;
+  height: 0;
 }
 
 .slider {
@@ -417,268 +445,141 @@ a {
   transition: transform .25s ease;
 }
 
-.switch input:checked+.slider {
+.switch input:checked + .slider {
   background: var(--verde);
 }
 
-.switch input:checked+.slider::before {
+.switch input:checked + .slider::before {
   transform: translateX(20px);
 }
 
-/* =========================================================
-   ACCIONES ADMIN
-========================================================= */
-.admin-actions.inline-actions {
-  display: flex;
-  gap: 14px;
-  margin-top: .8rem;
+/* =====================
+   BOTONES ACCIÓN DETALLE
+===================== */
+.detail-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 1rem 1.2rem;
+  border-top: 1px solid var(--gris-line);
 }
 
-.admin-action-btn {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  border: none;
-  background: #fff;
+.detail-action-btn {
+  padding: 0.6rem 0.5rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 8px 22px rgba(0, 0, 0, .18);
-  transition: transform .15s ease, box-shadow .15s ease;
+  gap: 5px;
+  transition: background 0.2s ease, transform 0.15s ease;
+  border: none;
 }
 
-.admin-action-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 14px 30px rgba(0, 0, 0, .22);
+.detail-action-btn .material-symbols-outlined {
+  font-size: 18px;
 }
 
-.admin-action-btn .material-symbols-outlined {
-  font-size: 24px;
-}
-
-.admin-action-btn.edit {
-  color: var(--verde);
-}
-
-.admin-action-btn.delete {
+.detail-action-btn.delete-btn {
+  background: transparent;
   color: var(--rojo);
+  border: 1.5px solid var(--rojo);
+}
+
+.detail-action-btn.delete-btn:hover {
+  background: rgba(192,57,43,.06);
+}
+
+.detail-action-btn.edit-btn {
+  background: var(--verde-btn);
+  color: #fff;
+}
+
+.detail-action-btn.edit-btn:hover {
+  background: var(--verde-soft);
 }
 
 /* =========================================================
-   IMAGEN PREVIEW — FULL COVER (IGUAL QUE INDEX)
+   EMPTY STATE (GLOBAL)
 ========================================================= */
-.product-img-wrap {
-  width: 100%;
-  height: 360px;
-  /* controla el alto visual */
-  border-radius: 20px;
-  overflow: hidden;
-  /* recorte limpio */
-
-  background: #ffffff;
-
-  /* 🌿 Elevación con sombra verde */
-  box-shadow:
-    0 12px 28px rgba(46, 125, 50, 0.20),
-    0 4px 10px rgba(46, 125, 50, 0.14);
-
-  margin-top: 0.8rem;
+.admin-empty-state {
+  text-align: center;
+  padding: 4rem 1.5rem;
 }
 
-.product-img-wrap img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  /* 🔑 llena TODO el contenedor */
-  border-radius: 20px;
-  display: block;
-}
-
-/* 📱 MOBILE */
-@media (max-width: 480px) {
-  .product-img-wrap {
-    height: 300px;
-  }
-}
-
-/* =========================================================
-   CARRUSEL ADMIN
-========================================================= */
-.related {
-  max-width: 1100px;
-  margin: 0 auto 3.5rem;
-}
-
-/* =========================================================
-   TÍTULO Y SUBTÍTULO — ADMIN CARRUSEL
-========================================================= */
-
-.similar-title {
-  font-size: 1.4rem;
-  font-weight: 600;
-  color: var(--verde);
-  margin-bottom: 0.3rem;
-}
-
-.section-subtitle {
-  font-size: 0.9rem;
-  color: var(--cafe);
-  margin-bottom: 1.4rem;
-  max-width: 520px;
-  line-height: 1.45;
-}
-
-/* =========================================================
-   — ADMIN CARRUSEL
-========================================================= */
-
-.carousel-container {
-  position: relative;
-  display: flex;
-  justify-content: center;
-}
-
-.similar-list {
-  display: flex;
-  gap: 1rem;
-  padding: 14px 0;
-  width: 100%;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-
-.similar-list::-webkit-scrollbar {
+.admin-empty-state.hidden {
   display: none;
 }
 
-/* TARJETA */
-.similar-card {
-  flex: 0 0 190px;
-  background: #fff;
-  border-radius: 18px;
-  box-shadow: 0 10px 24px rgba(0, 0, 0, .08);
-  padding: 1rem;
-  cursor: pointer;
-  transition: transform .25s ease, box-shadow .25s ease;
-  overflow: hidden;
+.empty-title {
+  color: var(--cafe);
+  font-weight: 700;
 }
 
-.similar-card img {
-  width: 100%;
-  height: 160px;
-  object-fit: cover;
-  border-radius: 12px;
-}
-
-.similar-card:hover {
-  transform: translateY(-4px);
-}
-
-.similar-card.active-card {
-  border: 1.5px solid var(--verde);
-  box-shadow: 0 10px 26px rgba(51, 103, 59, .28);
-  transform: translateY(-6px);
+.empty-text {
+  color: #6f6f6f;
+  font-size: 15px;
+  line-height: 1.4;
 }
 
 /* =========================================================
-   FLECHAS (PC)
+   SNACKBAR GLOBAL
 ========================================================= */
-.carousel-prev-circle,
-.carousel-next-circle {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background: #fff;
-  border: none;
-  cursor: pointer;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, .18);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--verde) !important;
-  /* 🔑 ICONO SIEMPRE VERDE */
-  transition:
-    transform .18s ease,
-    box-shadow .18s ease,
-    opacity .25s ease,
-    visibility .25s ease;
-}
-
-/* Ocultar flechas con transición */
-.carousel-prev-circle.hidden,
-.carousel-next-circle.hidden {
+.snackbar {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #333;
+  color: #fff;
+  padding: 14px 22px;
+  border-radius: 14px;
   opacity: 0;
-  visibility: hidden;
   pointer-events: none;
-}
-
-.carousel-prev-circle {
-  left: -32px;
-}
-
-/* Ajustado para consistencia */
-.carousel-next-circle {
-  right: -32px;
-}
-
-@media (max-width: 900px) {
-
-  .carousel-prev-circle,
-  .carousel-next-circle {
-    display: none;
-  }
+  transition: .3s ease;
+  z-index: 9999;
 }
 
 .snackbar.show {
   opacity: 1;
   pointer-events: auto;
-  /* ✅ CLAVE */
+}
+
+.snackbar.success {
+  background: var(--verde);
+}
+
+.snackbar.error {
+  background: var(--rojo);
 }
 
 /* =========================================================
-   SNACKBAR — CONFIRMACIÓN ELIMINAR (ACTION)
+   SNACKBAR CONFIRMACIÓN ELIMINAR
 ========================================================= */
-
 .snackbar-action {
   position: fixed;
   left: 50%;
   bottom: 24px;
   transform: translateX(-50%) translateY(20px);
-
   width: calc(100% - 32px);
   max-width: 520px;
-
   background: #ffffff;
   color: var(--cafe);
-
   border-radius: 16px;
-  box-shadow:
-    0 12px 30px rgba(0, 0, 0, .18),
-    0 4px 12px rgba(0, 0, 0, .12);
-
+  box-shadow: 0 12px 30px rgba(0,0,0,.18), 0 4px 12px rgba(0,0,0,.12);
   opacity: 0;
   pointer-events: none;
   z-index: 9999;
-
-  transition:
-    opacity .25s ease,
-    transform .25s cubic-bezier(.2, .8, .2, 1);
+  transition: opacity .25s ease, transform .25s cubic-bezier(.2,.8,.2,1);
 }
 
-/* Estado visible */
 .snackbar-action.show {
   opacity: 1;
   pointer-events: auto;
   transform: translateX(-50%) translateY(0);
 }
-
-/* =========================================================
-   CONTENIDO
-========================================================= */
 
 .snackbar-content {
   display: flex;
@@ -688,7 +589,6 @@ a {
   padding: 16px 18px;
 }
 
-/* Texto */
 .snackbar-text {
   display: flex;
   flex-direction: column;
@@ -706,10 +606,6 @@ a {
   color: var(--gris-text);
 }
 
-/* =========================================================
-   ACCIONES
-========================================================= */
-
 .snackbar-actions {
   display: flex;
   align-items: center;
@@ -717,7 +613,6 @@ a {
   flex-shrink: 0;
 }
 
-/* Botón base */
 .snackbar-btn {
   border: none;
   background: transparent;
@@ -729,59 +624,59 @@ a {
   transition: background .2s ease, transform .15s ease;
 }
 
-/* Cancelar */
 .snackbar-btn.cancel {
   color: var(--gris-text);
 }
 
 .snackbar-btn.cancel:hover {
-  background: rgba(0, 0, 0, .06);
+  background: rgba(0,0,0,.06);
 }
 
-/* Eliminar (danger) */
 .snackbar-btn.danger {
   color: var(--rojo);
 }
 
 .snackbar-btn.danger:hover {
-  background: rgba(192, 57, 43, .12);
+  background: rgba(192,57,43,.12);
 }
 
-/* Active */
 .snackbar-btn:active {
   transform: scale(.96);
 }
 
-/* =========================================================
-   MOBILE — STACK VERTICAL
-========================================================= */
-
 @media (max-width: 520px) {
-
   .snackbar-content {
     flex-direction: column;
     align-items: flex-start;
   }
-
   .snackbar-actions {
     width: 100%;
     justify-content: flex-end;
   }
 }
 
-/* =========================
-   EMPTY STATES — GLOBAL
-========================= */
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+@media (max-width: 1100px) {
+  .products-grid {
+    grid-template-columns: 1fr;
+  }
 
-.empty-title {
-  color: var(--cafe);
-  /* 🔑 mismo color del carrito */
-  font-weight: 700;
+  .detail-panel-column {
+    position: static;
+  }
 }
 
-.empty-text {
-  color: #6f6f6f;
-  /* mismo gris del carrito */
-  font-size: 15px;
-  line-height: 1.4;
+@media (max-width: 600px) {
+  .products-topbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .filter-pills {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
 }

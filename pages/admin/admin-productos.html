@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin · Productos | Café Cortero</title>
 
-  <!-- Material Symbols (Material 3) -->
+  <!-- Material Symbols -->
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 
   <!-- Estilos -->
@@ -21,13 +21,58 @@
   <main class="admin-products-container fade-in">
 
     <!-- =========================
-     BARRA SUPERIOR
-========================= -->
-
+       TOBAR
+    ========================= -->
+    <div class="products-topbar">
+      <div class="topbar-left">
+        <h1>Productos</h1>
+        <p class="topbar-subtitle">Gestiona el catálogo y visibilidad en tienda</p>
+      </div>
+      <button id="btnAddProduct" class="btn-new-product">
+        <span class="material-symbols-outlined">add</span>
+        Nuevo producto
+      </button>
+    </div>
 
     <!-- =========================
-       ESTADO VACÍO (CONTROLADO POR JS)
-  ========================= -->
+       FILTROS PILL
+    ========================= -->
+    <div class="filter-pills" id="filterPills">
+      <button class="pill active" data-filter="all">Todos</button>
+      <button class="pill" data-filter="active">Activos</button>
+      <button class="pill" data-filter="carousel">En carrusel</button>
+    </div>
+
+    <!-- =========================
+       GRID: LISTA + DETALLE
+    ========================= -->
+    <div class="products-grid">
+
+      <!-- COLUMNA IZQUIERDA — LISTA -->
+      <div class="products-list-column">
+        <div id="products-list">
+          <!-- JS renderiza filas -->
+        </div>
+      </div>
+
+      <!-- COLUMNA DERECHA — PANEL DETALLE -->
+      <aside class="detail-panel-column">
+        <div id="product-detail-panel">
+          <!-- JS renderiza detalle o estado vacío -->
+          <div class="detail-empty" id="detailEmpty">
+            <span class="material-symbols-outlined detail-empty-icon">coffee</span>
+            <p class="detail-empty-text">Selecciona un producto para ver el detalle</p>
+          </div>
+        </div>
+
+        <!-- SNACKBAR CONFIRMACIÓN ELIMINAR (dentro del flujo pero fuera del panel) -->
+      </aside>
+
+    </div>
+
+    <!-- =========================
+       ESTADO VACÍO (GLOBAL, SIN PRODUCTOS)
+    ========================= -->
     <section id="admin-empty-state" class="admin-empty-state hidden">
       <h2 class="empty-title">No hay cafés registrados</h2>
       <p class="empty-text">
@@ -35,144 +80,28 @@
       </p>
       <img src="" alt="Sin resultados" class="empty-illustration hidden">
     </section>
-    <!-- =========================
-       TARJETA PRINCIPAL (PREVIEW ADMIN)
-  ========================= -->
-    <section id="admin-product-preview" class="product-main admin-preview hidden">
-
-      <!-- BOTÓN ATRÁS -->
-      <button class="back-btn" onclick="location.href='/pages/home/index.html'" aria-label="Volver a inicio">
-        <span class="material-symbols-outlined">chevron_left</span>
-      </button>
-      <!-- ================= TEXTO ================= -->
-      <div class="product-text">
-
-        <!-- NOMBRE -->
-        <h2 id="p-name">—</h2>
-
-        <!-- DESCRIPCIÓN -->
-        <p id="p-description" class="product-description">—</p>
-
-        <!-- PÍLDORA · CALIDAD DEL CAFÉ -->
-        <span id="p-badge" class="pill">—</span>
-
-        <!-- INFO CLAVE -->
-        <ul class="admin-product-info">
-          <li>
-            <strong>Precio:</strong>
-            <span id="p-price">—</span>
-          </li>
-          <li>
-            <strong>En almacén:</strong>
-            <span id="p-stock">—</span>
-          </li>
-          <li>
-            <strong>Tueste:</strong>
-            <span id="p-tueste">—</span>
-          </li>
-        </ul>
-
-        <!-- MOSTRAR EN CARRUSEL -->
-        <div class="admin-carousel-toggle">
-          <span>Mostrar en carrusel del cliente</span>
-
-          <label class="switch">
-            <input type="checkbox" id="p-carousel-toggle">
-            <span class="slider"></span>
-          </label>
-
-          <span id="carousel-status" class="carousel-status inactive">
-            Desactivado
-          </span>
-        </div>
-
-        <!-- ACCIONES ADMIN -->
-        <div class="admin-actions inline-actions">
-
-          <button id="btnEditProduct" class="admin-action-btn edit" title="Editar café" type="button">
-            <span class="material-symbols-outlined">edit</span>
-          </button>
-
-          <button id="btnDeleteProduct" class="admin-action-btn delete" title="Eliminar café" type="button">
-            <span class="material-symbols-outlined">delete</span>
-          </button>
-
-        </div>
-      </div>
-      <!-- SNACKBAR CONFIRMACIÓN ELIMINAR -->
-      <div id="snackbar-delete" class="snackbar-action">
-
-        <div class="snackbar-content">
-          <div class="snackbar-text">
-            <strong>¿Seguro que deseas eliminar este café?</strong>
-            <span>Esta acción no se puede deshacer.</span>
-          </div>
-
-          <div class="snackbar-actions">
-            <button type="button" class="snackbar-btn cancel" id="btnCancelDelete">
-              Cancelar
-            </button>
-
-            <button type="button" class="snackbar-btn danger" id="btnConfirmDelete">
-              Eliminar
-            </button>
-          </div>
-        </div>
-
-      </div>
-      <!-- ================= IMAGEN ================= -->
-      <div class="product-img-wrap">
-        <img id="p-image" src="/imagenes/logo_secundario.png" alt="Imagen del producto" />
-      </div>
-
-    </section>
-
-    <!-- =========================
-       CARRUSEL DE PRODUCTOS (ADMIN)
-  ========================= -->
-    <section class="related admin-related hidden">
-
-      <h3 class="similar-title">Administración del carrusel de cafés</h3>
-      <p class="section-subtitle">
-        Selecciona qué cafés se muestran al cliente, edítalos o elimínalos.
-      </p>
-
-      <div class="carousel-container with-arrows">
-
-        <button class="carousel-prev-circle inside" id="admin-prev">
-          <span class="material-symbols-outlined">chevron_left</span>
-        </button>
-
-        <div class="similar-list" id="admin-products-carousel">
-          <!-- JS renderiza tarjetas -->
-        </div>
-
-        <button class="carousel-next-circle inside" id="admin-next">
-          <span class="material-symbols-outlined">chevron_right</span>
-        </button>
-
-      </div>
-
-    </section>
 
   </main>
 
-  <!-- =========================
-     TEMPLATE TARJETA CARRUSEL ADMIN
-========================= -->
-  <template id="tpl-admin-carousel-card">
-    <article class="similar-card admin-card" data-id="">
-      <img src="" alt="">
-      <h4 class="c-name"></h4>
-      <p class="c-price"></p>
-    </article>
-  </template>
-
   <div id="snackbar" class="snackbar"></div>
+
+  <!-- SNACKBAR ELIMINAR -->
+  <div id="snackbar-delete" class="snackbar-action">
+    <div class="snackbar-content">
+      <div class="snackbar-text">
+        <strong>¿Seguro que deseas eliminar este café?</strong>
+        <span>Esta acción no se puede deshacer.</span>
+      </div>
+      <div class="snackbar-actions">
+        <button type="button" class="snackbar-btn cancel" id="btnCancelDelete">Cancelar</button>
+        <button type="button" class="snackbar-btn danger" id="btnConfirmDelete">Eliminar</button>
+      </div>
+    </div>
+  </div>
 
   <!-- =========================
      SCRIPTS
-========================= -->
+  ========================= -->
 
   <!-- Supabase SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -190,7 +119,7 @@
   <script src="/js/core/auth-ui.js"></script>
   <script src="/js/ui/layout.js"></script>
 
-  <!-- 🔍 Buscador global del header — ADMIN PRODUCTOS -->
+  <!-- Buscador global del header — ADMIN PRODUCTOS -->
   <script type="module">
     import { renderHeaderSearch } from "/js/ui/header.search.js";
 
@@ -198,12 +127,9 @@
       const slot = document.getElementById("header-middle-slot");
       if (!slot) return;
 
-      /* ===============================
-         INYECTAR BUSCADOR CON BOTÓN ADD
-      =============================== */
       slot.innerHTML = renderHeaderSearch({
         showFilter: false,
-        showAdd: true,
+        showAdd: false,
         placeholder: "Nombre, categoría o descripción…"
       });
 
@@ -215,13 +141,6 @@
               detail: e.target.value.trim()
             })
           );
-        });
-      }
-
-      const addBtn = document.getElementById("header-add-btn");
-      if (addBtn) {
-        addBtn.addEventListener("click", () => {
-          document.dispatchEvent(new Event("header:add-click"));
         });
       }
 

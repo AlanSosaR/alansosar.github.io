@@ -41,9 +41,10 @@ body.header-checkout {
 
 /* ================= CONTENEDOR ================= */
 .profile-container {
-  max-width: 900px;
+  max-width: 1100px;
   margin: 32px auto 2.5rem;
   padding: 0 1rem;
+  transition: max-width 0.3s ease;
 }
 
 /* ================= TARJETA ================= */
@@ -99,6 +100,10 @@ body.header-checkout {
   cursor: pointer;
   background: #fafafa;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .upload-box input[type="file"] {
@@ -125,10 +130,16 @@ body.header-checkout {
 
 .upload-preview {
   width: 100%;
-  height: 260px;
-  object-fit: cover;
+  height: 280px;
+  object-fit: contain;
+  object-position: center;
   border-radius: 18px;
   display: block;
+  background-color: #ffffff;
+  border: none;
+  padding: 0;
+  box-sizing: border-box;
+  box-shadow: none;
 }
 
 .upload-preview.hidden {
@@ -414,5 +425,121 @@ body.header-checkout {
   
   .header-logo-link {
     margin-left: auto !important;
+  }
+}
+
+/* ============================================================
+   GRID FORMULARIO (Dos Tarjetas Separadas en PC)
+   ============================================================ */
+.admin-grid-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* TÍTULOS DE SECCIÓN DE TARJETAS (ESTILO MATERIAL DESIGN) */
+.card-section-title {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--marron);
+  margin-top: 0;
+  margin-bottom: 1.8rem;
+  border-bottom: 2px solid rgba(55, 123, 76, 0.15);
+  padding-bottom: 0.6rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* SUBTÍTULOS DE COLUMNAS INTERNAS */
+.card-sub-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--marron);
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px dashed rgba(55, 123, 76, 0.12);
+  padding-bottom: 0.4rem;
+}
+
+/* TARJETAS FÍSICAS INDEPENDIENTES */
+.admin-card-image,
+.admin-card-info {
+  background: var(--blanco);
+  border-radius: 22px;
+  padding: 2.2rem 2rem;
+  box-shadow: 
+    0 10px 30px rgba(0,0,0,.04),
+    0 2px 8px rgba(0,0,0,.02);
+}
+
+.admin-card-image {
+  flex-shrink: 0;
+}
+
+/* ESTRUCTURA DE LA INFORMACIÓN DENTRO DE LA TARJETA */
+.info-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.info-column {
+  display: flex;
+  flex-direction: column;
+}
+
+/* BOTONES Y ACCIONES */
+.form-actions {
+  margin-top: 1.5rem;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* AJUSTES PARA PC / PANTALLAS GRANDES */
+@media (min-width: 900px) {
+  /* Hacemos que el wrapper original sea transparente para que las dos tarjetas floten */
+  .profile-card {
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 1rem 0 3rem !important;
+  }
+
+  .profile-inner-card {
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+  }
+
+  /* Disposición en 2 tarjetas */
+  .admin-grid-layout {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 2rem;
+    align-items: start;
+  }
+
+  /* Ampliar el previsualizador de imagen en PC para que llene la tarjeta */
+  .upload-preview {
+    height: 550px !important;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  /* La tarjeta de información a su vez se divide en 2 columnas internas */
+  .info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+
+  .form-actions {
+    margin-top: 2rem;
+  }
+
+  .admin-card-image .card-section-title,
+  .admin-card-info .card-section-title {
+    justify-content: center;
   }
 }
