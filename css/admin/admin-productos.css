@@ -140,9 +140,8 @@ a {
   padding: 0.85rem 1rem;
   background: var(--blanco);
   border-radius: 12px;
-  border: 1.5px solid transparent;
   cursor: pointer;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: box-shadow 0.2s ease;
   margin-bottom: 6px;
 }
 
@@ -151,7 +150,7 @@ a {
 }
 
 .product-row.selected {
-  border-color: var(--verde-btn);
+  border: 1.5px solid var(--verde-btn);
   box-shadow: 0 0 0 2px rgba(58,107,53,.15);
 }
 
@@ -233,7 +232,6 @@ a {
 
 #product-detail-panel {
   background: var(--blanco);
-  border: 1px solid var(--gris-line);
   border-radius: 12px;
   overflow: hidden;
 }
@@ -382,7 +380,6 @@ a {
   align-items: center;
   justify-content: space-between;
   padding: 0.7rem 0;
-  border-bottom: 1px solid var(--gris-line);
 }
 
 .detail-carousel-left {
