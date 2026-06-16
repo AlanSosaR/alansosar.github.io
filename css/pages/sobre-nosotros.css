@@ -143,6 +143,22 @@
   animation: ns-fade-up 0.9s ease-out;
 }
 
+@media (max-width: 768px) {
+  .ns-hero {
+    min-height: auto;
+  }
+
+  .ns-hero-content {
+    justify-content: flex-start;
+    padding-block: 0;
+    padding-top: 2.5rem;
+  }
+
+  .ns-scroll-indicator {
+    display: none;
+  }
+}
+
 .ns-hero-badge {
   display: inline-block;
   font-family: Poppins, sans-serif;
@@ -297,7 +313,7 @@
 .ns-image-card img {
   display: block;
   width: 100%;
-  height: clamp(300px, 40vw, 480px);
+  height: clamp(560px, 90vw, 960px);
   object-fit: cover;
 }
 
@@ -469,7 +485,7 @@
   align-items: center;
   justify-content: center;
   padding: 1.5rem;
-  background: var(--fondo);
+  background: transparent;
 }
 
 .ns-people-v2-strip-text .ns-people-v2-closing {
@@ -477,21 +493,21 @@
   font-size: clamp(0.95rem, 1.1vw, 1.05rem);
   font-weight: 400;
   line-height: 1.7;
-  color: var(--marron);
-  opacity: 0.65;
+  color: var(--blanco);
+  opacity: 1;
   font-style: italic;
   text-align: center;
   margin: 0;
+  display: inline-block;
+  background: var(--marron);
+  padding: 0.6rem 1.2rem;
+  border-radius: 12px;
 }
 
 /* Mobile */
 @media (max-width: 768px) {
   .ns-people-v2-row {
     grid-template-columns: 1fr;
-  }
-
-  .ns-people-v2-image {
-    order: -1;
   }
 
   .ns-people-v2-strip {
@@ -542,6 +558,19 @@
   letter-spacing: 0.15em;
   color: var(--verde);
   margin-bottom: 0;
+}
+
+.ns-land-v2 .ns-label {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.ns-land-v2 .ns-land-v2-heading,
+.ns-land-v2 .ns-land-v2-text p {
+  color: var(--blanco);
+}
+
+.ns-land-v2 .ns-divider {
+  background: var(--blanco);
 }
 
 .ns-land-v2-heading {
@@ -595,6 +624,10 @@
   height: 280px;
 }
 
+.ns-strip-item-mobile {
+  display: none;
+}
+
 .ns-land-v2-strip-item img {
   display: block;
   width: 100%;
@@ -608,7 +641,7 @@
   }
 
   .ns-land-v2-image {
-    order: -1;
+    display: none;
   }
 
   .ns-land-v2-strip {
@@ -625,6 +658,10 @@
     height: 240px;
     scroll-snap-align: start;
     border-radius: 16px;
+  }
+
+  .ns-strip-item-mobile {
+    display: block;
   }
 }
 
@@ -855,26 +892,11 @@
   }
 
   .ns-hero-preview-col {
-    flex-direction: row;
-    overflow-x: auto;
-    gap: 0.75rem;
-    padding-inline: clamp(1rem, 3vw, 2rem);
-    padding-bottom: 0.5rem;
+    display: none;
   }
 
-  .ns-hero-preview-card {
-    flex: 0 0 70%;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .ns-hero-preview-img {
-    flex: none;
-    width: 100%;
-  }
-
-  .ns-hcar-arrow-next {
-    right: 1rem;
+  .ns-hcar-arrow {
+    display: none !important;
   }
 }
 
