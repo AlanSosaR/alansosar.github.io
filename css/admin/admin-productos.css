@@ -665,6 +665,11 @@ a {
 
   .detail-panel-column {
     position: static;
+    order: 1;
+  }
+
+  .products-list-column {
+    order: 2;
   }
 }
 

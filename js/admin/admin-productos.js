@@ -332,6 +332,13 @@ function selectProduct(id) {
   if (row) row.classList.add("selected");
 
   renderDetail(product);
+
+  if (window.innerWidth <= 1100) {
+    detailPanel.closest(".detail-panel-column")?.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+  }
 }
 
 /* ============================================================
