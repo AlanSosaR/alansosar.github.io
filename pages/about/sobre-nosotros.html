@@ -332,7 +332,32 @@
         });
         previewCard.style.cursor = 'pointer';
 
+        var activeCol = document.querySelector('.ns-hero-active-col');
+        var touchStartX = 0;
+        activeCol.addEventListener('touchstart', function (e) {
+          touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+        activeCol.addEventListener('touchend', function (e) {
+          var diff = touchStartX - e.changedTouches[0].screenX;
+          if (Math.abs(diff) > 40) {
+            goTo(diff > 0 ? currentIndex + 1 : currentIndex - 1);
+          }
+        }, { passive: true });
+
         render();
+      });
+    </script>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        var imgs = document.querySelector('.ns-bento-imgs');
+        if (!imgs) return;
+        document.querySelector('.ns-bento-arrow-prev').addEventListener('click', function () {
+          imgs.scrollBy({ left: -imgs.clientWidth, behavior: 'smooth' });
+        });
+        document.querySelector('.ns-bento-arrow-next').addEventListener('click', function () {
+          imgs.scrollBy({ left: imgs.clientWidth, behavior: 'smooth' });
+        });
       });
     </script>
 
@@ -347,10 +372,19 @@
         </div>
         <div class="ns-bento">
           <div class="ns-bento-item ns-bento-large">
-            <div class="ns-bento-bg">
-              <div class="ns-bento-bg-overlay"></div>
+            <div class="ns-bento-imgs">
+              <img src="/imagenes/IMG-20251013-WA0029.jpg" alt="">
               <img src="/imagenes/respetoporlatierra.jpg" alt="Respeto por la tierra">
+              <img src="/imagenes/IMG-20241002-WA0002.jpg" alt="">
+              <img src="/imagenes/IMG-20241002-WA0021.jpg" alt="">
             </div>
+            <button class="ns-bento-arrow ns-bento-arrow-prev" aria-label="Anterior">
+              <span class="material-symbols-outlined">chevron_left</span>
+            </button>
+            <button class="ns-bento-arrow ns-bento-arrow-next" aria-label="Siguiente">
+              <span class="material-symbols-outlined">chevron_right</span>
+            </button>
+            <div class="ns-bento-bg-overlay"></div>
             <div class="ns-bento-content">
               <span class="material-symbols-outlined ns-bento-icon">public</span>
               <h3 class="ns-bento-title">Respeto por la tierra</h3>
