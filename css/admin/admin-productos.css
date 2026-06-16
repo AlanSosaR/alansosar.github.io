@@ -666,10 +666,36 @@ a {
   .detail-panel-column {
     position: static;
     order: 1;
+    max-width: 100%;
   }
 
   .products-list-column {
     order: 2;
+  }
+
+  .detail-main {
+    flex-direction: column;
+  }
+
+  .detail-image-wrap {
+    width: 100%;
+    min-width: 100%;
+    height: 220px;
+  }
+
+  .detail-info {
+    width: 100%;
+  }
+
+  .detail-content {
+    max-width: 100%;
+    overflow: hidden;
+    padding: 0.8rem;
+  }
+
+  #product-detail-panel {
+    max-width: 100%;
+    overflow: hidden;
   }
 }
 

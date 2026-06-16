@@ -426,6 +426,53 @@ body.header-checkout {
   .header-logo-link {
     margin-left: auto !important;
   }
+
+  .profile-card {
+    background: transparent;
+    box-shadow: none;
+    padding: 0;
+  }
+
+  .profile-inner-card {
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    background: transparent;
+  }
+
+  .admin-card-image {
+    position: relative;
+    padding: 1rem 1rem 1.5rem;
+    box-shadow: 0 4px 16px rgba(0,0,0,.06);
+  }
+
+  .admin-card-info {
+    padding: 1.5rem 1rem;
+    box-shadow: 0 4px 16px rgba(0,0,0,.06);
+  }
+
+  .admin-card-image .back-btn {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    width: 36px;
+    height: 36px;
+    z-index: 2;
+  }
+
+  .admin-card-image .card-section-title {
+    justify-content: center;
+    padding-top: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .card-section-title {
+    font-size: 1rem;
+  }
+
+  .card-sub-title {
+    font-size: 0.95rem;
+  }
 }
 
 /* ============================================================
@@ -475,6 +522,7 @@ body.header-checkout {
 
 .admin-card-image {
   flex-shrink: 0;
+  position: relative;
 }
 
 /* ESTRUCTURA DE LA INFORMACIÓN DENTRO DE LA TARJETA */
