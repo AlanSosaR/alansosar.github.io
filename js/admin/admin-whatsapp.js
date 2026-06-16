@@ -909,9 +909,11 @@ document.addEventListener("DOMContentLoaded", () => {
   ========================= */
   function showSnack(text, type) {
     const snack = document.getElementById("snackbar");
+    if (!snack) return;
     snack.textContent = text;
-    snack.className = `snackbar active ${type}`;
-    setTimeout(() => snack.classList.remove("active"), 3000);
+    snack.className = "snackbar show";
+    snack.classList.add(type);
+    setTimeout(() => snack.classList.remove("show", "success", "error", "warn"), 3500);
   }
 
   /* =========================

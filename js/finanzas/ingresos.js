@@ -45,17 +45,13 @@ console.log("📈 finanzas/ingresos.js — INIT");
     return `${s ? `<span style="color:var(--verde)">${s}</span>` : ""}<span style="color:var(--verde);font-weight:900;">${parts.join(".")}</span> <span style="color:var(--marron);font-weight:600;font-size:0.6em;vertical-align:super;">HNL</span>`;
   }
 
-  function showSnackbar(msg) {
-    let sb = document.querySelector(".fin-snackbar");
-    if (!sb) {
-      sb = document.createElement("div");
-      sb.className = "fin-snackbar";
-      document.body.appendChild(sb);
-    }
-    sb.textContent = msg;
-    sb.classList.add("open");
-    clearTimeout(sb._timer);
-    sb._timer = setTimeout(() => sb.classList.remove("open"), 3000);
+  function showSnackbar(msg, type = "success") {
+    const el = document.getElementById("snackbar");
+    if (!el) return;
+    el.textContent = msg;
+    el.className = "snackbar show";
+    if (type) el.classList.add(type);
+    setTimeout(() => el.classList.remove("show", "success", "error", "warn"), 3500);
   }
 
   function obtenerNombreUsuario() {

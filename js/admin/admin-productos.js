@@ -504,9 +504,9 @@ function showSnackbar(message, type = "success") {
   const el = document.getElementById("snackbar");
   if (!el) return;
   el.textContent = message;
-  el.className = `snackbar ${type}`;
-  el.classList.add("show");
-  setTimeout(() => el.classList.remove("show"), 3500);
+  el.className = "snackbar show";
+  if (type) el.classList.add(type);
+  setTimeout(() => el.classList.remove("show", "success", "error", "warn"), 3500);
 }
 
 function safeSnackbar(msg, type = "info") {

@@ -768,15 +768,14 @@ console.log("🛠️ admin_pedidos.js — INIT STITCH");
     }
 
     function showSnack(type, text) {
-        const snack = document.getElementById("admin-snackbar");
-        const icon = document.getElementById("snack-icon");
-        const label = document.getElementById("snack-text");
-        
-        label.textContent = text;
-        icon.textContent = type === "success" ? "check_circle" : type === "error" ? "error" : "info";
-        
-        snack.classList.add("active");
-        setTimeout(() => snack.classList.remove("active"), 3000);
+        const snack = document.getElementById("snackbar");
+        if (!snack) return;
+
+        snack.textContent = text;
+        snack.className = "snackbar show";
+        snack.classList.add(type);
+
+        setTimeout(() => snack.classList.remove("show", "success", "error", "warn"), 3500);
     }
 
 })();

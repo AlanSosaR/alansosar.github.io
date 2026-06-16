@@ -37,35 +37,13 @@ function syncHeaderCounter() {
 }
 
 /* ================= SNACKBAR ================= */
-function showSnackbar(message, duration = 3000, action = null) {
+function showSnackbar(message, type = "success") {
   const el = document.getElementById("snackbar");
   if (!el) return;
-
-  // Limpiar contenido previo y establecer mensaje
-  el.innerHTML = `<span>${message}</span>`;
-
-  if (action && action.text && action.callback) {
-    const btn = document.createElement("button");
-    btn.textContent = action.text;
-    btn.className = "snackbar-action-btn";
-    btn.onclick = () => {
-      action.callback();
-      el.classList.remove("show");
-      el.classList.add("hidden");
-    };
-    el.appendChild(btn);
-    // Extender duración si hay acción
-    duration = 6000;
-  }
-
-  el.classList.remove("hidden");
-  el.classList.add("show");
-
-  clearTimeout(el._t);
-  el._t = setTimeout(() => {
-    el.classList.remove("show");
-    el.classList.add("hidden");
-  }, duration);
+  el.textContent = message;
+  el.className = "snackbar show";
+  if (type) el.classList.add(type);
+  setTimeout(() => el.classList.remove("show", "success", "error", "warn"), 3500);
 }
 
 /* ================= HEADER (TÍTULO) ================= */

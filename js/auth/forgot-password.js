@@ -30,8 +30,8 @@
   } = {}) {
     if (!snackbar) return Promise.resolve("confirm");
 
-    snackbar.classList.remove("hidden", "is-error", "is-success", "is-warn");
-    snackbar.classList.add("show", `is-${type}`);
+    snackbar.className = "snackbar show";
+    if (type) snackbar.classList.add(type);
 
     snackMsg.textContent = message;
     snackActions.style.display = "inline-flex";
@@ -51,8 +51,7 @@
         const b = e.target.closest("button");
         if (!b) return;
 
-        snackbar.classList.remove("show");
-        snackbar.classList.add("hidden");
+        snackbar.classList.remove("show", "success", "error", "warn");
 
         snackActions.removeEventListener("click", snackHandler);
         snackHandler = null;

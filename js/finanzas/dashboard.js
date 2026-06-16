@@ -70,17 +70,13 @@ console.log("📊 finanzas/dashboard.js — INIT");
     } catch { return "—"; }
   }
 
-  function showSnackbar(msg) {
-    let sb = document.querySelector(".fin-snackbar");
-    if (!sb) {
-      sb = document.createElement("div");
-      sb.className = "fin-snackbar";
-      document.body.appendChild(sb);
-    }
-    sb.textContent = msg;
-    sb.classList.add("open");
-    clearTimeout(sb._timer);
-    sb._timer = setTimeout(() => sb.classList.remove("open"), 3000);
+  function showSnackbar(msg, type = "success") {
+    const el = document.getElementById("snackbar");
+    if (!el) return;
+    el.textContent = msg;
+    el.className = "snackbar show";
+    if (type) el.classList.add(type);
+    setTimeout(() => el.classList.remove("show", "success", "error", "warn"), 3500);
   }
 
   function showConfirmSnackbar(msg) {

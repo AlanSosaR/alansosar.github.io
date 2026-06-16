@@ -37,25 +37,20 @@ document.addEventListener("DOMContentLoaded", () => {
   const snackActionsEl = snackbarEl?.querySelector(".snackbar__actions");
 
   function openSnackbar(message, type = "info") {
-    if (!snackbarEl) return;
-
-    snackbarEl.classList.remove("hidden", "show", "is-error", "is-warn", "is-success");
-    if (type === "error") snackbarEl.classList.add("is-error");
-    if (type === "warn") snackbarEl.classList.add("is-warn");
-    if (type === "success") snackbarEl.classList.add("is-success");
-
-    if (snackMsgEl) snackMsgEl.textContent = message;
-    else snackbarEl.textContent = message;
-
-    void snackbarEl.offsetWidth;
-    snackbarEl.classList.add("show");
+    const el = document.getElementById("snackbar");
+    if (!el) return;
+    el.textContent = message;
+    el.className = "snackbar show";
+    if (type === "error") el.classList.add("error");
+    else if (type === "warn") el.classList.add("warn");
+    else el.classList.add("success");
+    setTimeout(() => el.classList.remove("show", "success", "error", "warn"), 3500);
   }
 
   function closeSnackbar() {
-    if (!snackbarEl) return;
-    snackbarEl.classList.remove("show");
-    snackbarEl.classList.add("hidden");
-    if (snackActionsEl) snackActionsEl.style.display = "";
+    const el = document.getElementById("snackbar");
+    if (!el) return;
+    el.classList.remove("show");
   }
 
   function actionSnackbar({

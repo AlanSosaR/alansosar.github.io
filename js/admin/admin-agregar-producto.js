@@ -50,6 +50,11 @@ const uploadBox = document.getElementById("uploadBox");
 const imagePreview = document.getElementById("imagePreview");
 
 const btnSubmit = document.getElementById("btn-submit");
+const btnText = btnSubmit?.querySelector(".btn-text");
+
+if (btnText) {
+  btnText.textContent = IS_EDIT ? "Actualizar producto" : "Guardar producto";
+}
 
 const estadoToggle = document.getElementById("estadoToggle");
 const estadoTexto = document.getElementById("estadoTexto");
@@ -62,11 +67,12 @@ function showSnackbar(message, type = "success") {
   if (!bar) return;
 
   bar.textContent = message;
-  bar.className = `snackbar show ${type}`;
+  bar.className = "snackbar show";
+  if (type) bar.classList.add(type);
 
   setTimeout(() => {
-    bar.classList.remove("show", "success", "error");
-  }, 3000);
+    bar.classList.remove("show", "success", "error", "warn");
+  }, 3500);
 }
 
 /* ============================================================

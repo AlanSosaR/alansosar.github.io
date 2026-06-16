@@ -302,118 +302,64 @@ body {
    SNACKBAR — Material 3 Expressive (BOTTOM BAR)
 =============================== */
 
-#snackbar{
+#snackbar.snackbar {
   position: fixed;
   left: 50%;
-  bottom: env(safe-area-inset-bottom, 8px);
-  transform: translateX(-50%) translateY(12px);
-
-  width: min(560px, calc(100% - 24px));
-  padding: 16px 18px;
-
-  background: rgba(18, 20, 22, 0.96);
-  color: #ffffff;
-
+  bottom: 24px;
+  transform: translate(-50%, 18px);
+  max-width: 520px;
+  width: calc(100% - 56px);
+  padding: 14px 16px;
   border-radius: 18px;
-
-  font-family: "Roboto", system-ui, -apple-system, Segoe UI, Arial, sans-serif;
+  background: rgba(20, 22, 24, 0.92);
+  color: #fff;
   font-size: 14.5px;
+  line-height: 1.25;
   font-weight: 600;
-  line-height: 1.35;
-
+  box-shadow: 0 18px 44px rgba(0,0,0,.55), 0 6px 16px rgba(0,0,0,.35), 0 0 0 1px rgba(255,255,255,.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   display: flex;
   align-items: center;
-  gap: 14px;
-
-  box-shadow:
-    0 10px 28px rgba(0,0,0,.45),
-    0 2px 8px rgba(0,0,0,.35);
-
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-
+  gap: 12px;
   opacity: 0;
   pointer-events: none;
   z-index: 99999;
-
-  transition:
-    opacity .18s ease,
-    transform .18s cubic-bezier(.2,0,0,1);
+  transition: opacity .22s ease, transform .22s cubic-bezier(.2,0,0,1);
 }
 
-/* Barra lateral (estado) */
-#snackbar::before{
+#snackbar.snackbar::before {
   content: "";
   width: 6px;
   align-self: stretch;
   border-radius: 999px;
   background: #33c26b;
+  opacity: .95;
 }
 
-/* Texto */
-#snackbar .snackbar__msg{
-  flex: 1;
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
-
-/* Acciones */
-.snackbar__actions{
-  display: flex;
-  gap: 10px;
-}
-
-.snackbar__btn{
-  font: inherit;
-  font-weight: 600;
-  border-radius: 10px;
-  padding: 8px 14px;
-  cursor: pointer;
-  border: none;
-}
-
-.snackbar__btn--text{
-  background: transparent;
-  color: #cfcfcf;
-}
-
-.snackbar__btn--filled{
-  background: #ffffff;
-  color: #111;
-}
-
-/* Visible */
-#snackbar.show{
+#snackbar.snackbar.show {
   opacity: 1;
   pointer-events: auto;
-  transform: translateX(-50%) translateY(0);
+  transform: translate(-50%, 0);
 }
 
-/* Oculto */
-#snackbar.hidden{
+#snackbar.snackbar.hidden {
   opacity: 0;
   pointer-events: none;
 }
 
-/* Estados */
-#snackbar.is-success::before{ background:#33c26b; }
-#snackbar.is-warn::before{ background:#f6c343; }
-#snackbar.is-error::before{ background:#ff4b4b; }
+#snackbar.snackbar.error::before { background: #ff4b4b; }
+#snackbar.snackbar.warn::before { background: #f6c343; }
+#snackbar.snackbar.success::before { background: #33c26b; }
 
-/* Móvil */
-@media (max-width: 600px){
-  #snackbar{
-    width: calc(100% - 16px);
-    padding: 16px;
+@media (max-width: 900px) {
+  #snackbar.snackbar {
+    bottom: 20px;
+    width: calc(100% - 64px);
+    max-width: 480px;
+    padding: 13px 14px;
     border-radius: 16px;
     font-size: 14px;
-  }
-}
-
-/* Accesibilidad */
-@media (prefers-reduced-motion: reduce){
-  #snackbar{
-    transition: none;
   }
 }
 
@@ -434,7 +380,7 @@ body {
     font-size: 1.5rem;
   }
 
-  #snackbar {
+  #snackbar.snackbar {
     bottom: 60px;
     padding: 10px 16px;
   }

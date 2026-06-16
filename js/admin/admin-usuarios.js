@@ -480,15 +480,10 @@ function showActionConfirm(text) {
 }
 
 function showSnack(type, text) {
-    const snackbar = document.getElementById("admin-snackbar");
-    const icon = document.getElementById("snack-icon");
-    const label = document.getElementById("snack-text");
-
-    if (!snackbar || !label || !icon) return;
-
-    label.textContent = text;
-    icon.textContent = type === "success" ? "check_circle" : type === "error" ? "error" : "info";
-    snackbar.className = `snackbar active ${type}`;
-    
-    setTimeout(() => snackbar.classList.remove("active"), 3000);
+  const el = document.getElementById("snackbar");
+  if (!el) return;
+  el.textContent = text;
+  el.className = "snackbar show";
+  el.classList.add(type);
+  setTimeout(() => el.classList.remove("show", "success", "error", "warn"), 3500);
 }

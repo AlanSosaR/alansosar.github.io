@@ -361,18 +361,15 @@ const initAdminClientes = () => {
         setTimeout(() => modalPush.classList.add("hidden"), 300);
     }
 
-    const showSnack = (text, type = "info") => {
-        const snack = document.getElementById("admin-snackbar");
-        const snackMsg = document.getElementById("snack-text");
-        const snackIcon = document.getElementById("snack-icon");
+    const showSnack = (text, type = "success") => {
+        const snack = document.getElementById("snackbar");
+        if (!snack) return;
 
-        if (!snack || !snackMsg || !snackIcon) return;
+        snack.textContent = text;
+        snack.className = "snackbar show";
+        snack.classList.add(type);
 
-        snackMsg.textContent = text;
-        snackIcon.textContent = type === "success" ? "check_circle" : (type === "error" ? "error" : "info");
-        snack.className = `snackbar active ${type}`;
-
-        setTimeout(() => snack.classList.remove("active"), 3500);
+        setTimeout(() => snack.classList.remove("show", "success", "error", "warn"), 3500);
     };
 
     const showActionConfirm = (text) => {
