@@ -276,10 +276,10 @@ function initAdminPOS() {
     stepConfirmar.classList.add("hidden");
   }
 
+  btnRapida.onclick = activarModoRapida;
   btnNuevo.onclick = activarModoNuevo;
   btnExistente.onclick = activarModoExistente;
-  btnRapida.onclick = activarModoRapida;
-  activarModoNuevo();
+  activarModoRapida();
 
   searchInput.addEventListener("input", () => {
     clearTimeout(searchTimer);
