@@ -374,17 +374,16 @@ body.page-datos-cliente {
 
 .summary-item {
   display: flex;
-  gap: 1.2rem;
+  gap: 1rem;
   margin-bottom: 1.5rem;
+  align-items: center;
 }
 
 .item-img {
-  width: 65px;
-  height: 65px;
+  width: 100px;
+  height: 100px;
   object-fit: contain;
-  /* Para que la bolsa se vea completa */
   background: transparent;
-  /* Quitamos el círculo/fondo anterior */
 }
 
 .item-name {
