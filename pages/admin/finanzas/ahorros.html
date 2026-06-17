@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Ahorros | Café Cortero</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+
+  <link rel="icon" type="image/png" href="/imagenes/logo.png">
+
+  <link rel="stylesheet" href="/css/core/tipografia.css">
+  <link rel="stylesheet" href="/css/ui/header.css">
+  <link rel="stylesheet" href="/css/finanzas.css">
+  <style>
+    .material-symbols-outlined { font-variation-settings: 'FILL' 1; }
+    .page-fin-ahorros .fin-card {
+      box-shadow: none;
+      border: none;
+    }
+    .page-fin-ahorros .fin-saldo-card {
+      box-shadow: 0 10px 40px rgba(92, 107, 192, 0.2);
+      padding-left: 56px;
+    }
+  </style>
+</head>
+<body class="finanzas-page page-fin-ahorros">
+  <div id="header-placeholder"></div>
+
+  <main class="fin-page">
+    <!-- TOP APP BAR -->
+    <header class="fin-top-app-bar">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <button class="fin-back-btn" onclick="window.location.href='/pages/admin/finanzas/index.html'">
+          <span class="material-symbols-outlined">arrow_back</span>
+          Atrás
+        </button>
+        <h1 class="fin-title" style="font:var(--md-headline-md);">Ahorros</h1>
+      </div>
+      <button class="fin-icon-btn" aria-label="Filtrar">
+        <span class="material-symbols-outlined">filter_list</span>
+      </button>
+    </header>
+
+    <div class="fin-content">
+      <!-- SUMMARY CARD -->
+      <div class="fin-saldo-card-wrapper">
+        <button onclick="window.location.href='/pages/admin/finanzas/index.html'" class="fin-notch-btn">
+          &#x276E;
+        </button>
+        <section class="fin-saldo-card">
+          <div style="position:absolute;right:-32px;top:-32px;width:128px;height:128px;border-radius:50%;background:rgba(92,107,192,0.12);filter:blur(32px);pointer-events:none;"></div>
+          <div class="fin-saldo-label">Total ahorros</div>
+          <div class="fin-saldo-monto" id="ahorros-total" style="font:var(--md-display-sm);color:#5c6bc0;">HNL 0,000.00</div>
+          <div class="fin-saldo-compare" id="ahorros-compare"></div>
+        </section>
+      </div>
+
+      <!-- SEGMENTED -->
+      <div class="fin-segmented-wrapper">
+        <div class="fin-segmented">
+          <button class="fin-seg-btn" data-periodo="dia">Día</button>
+          <button class="fin-seg-btn active" data-periodo="semana">Semana</button>
+          <button class="fin-seg-btn" data-periodo="mes">Mes</button>
+        </div>
+      </div>
+      <div class="fin-periodo-nav">
+        <button class="fin-periodo-arrow" id="periodo-prev" aria-label="Anterior">
+          <span class="material-symbols-outlined">chevron_left</span>
+        </button>
+        <div class="fin-periodo-label" id="periodo-label"></div>
+        <button class="fin-periodo-arrow" id="periodo-next" aria-label="Siguiente">
+          <span class="material-symbols-outlined">chevron_right</span>
+        </button>
+      </div>
+
+      <!-- FILTER DROPDOWN -->
+      <div class="fin-cat-dropdown" id="ahorros-chips" style="margin-bottom:16px;">
+        <button class="fin-cat-dropdown-trigger" id="ahorros-cat-trigger" type="button">
+          <span class="fin-cat-trigger-content">
+            <span class="material-symbols-outlined fin-cat-trigger-icon">filter_list</span>
+            <span class="fin-cat-trigger-label">Todos</span>
+          </span>
+          <span class="material-symbols-outlined fin-cat-trigger-arrow">arrow_drop_down</span>
+        </button>
+        <div class="fin-cat-dropdown-menu" id="ahorros-cat-menu"></div>
+      </div>
+
+      <!-- LISTA -->
+      <section class="fin-card">
+        <div class="fin-search-row" id="fin-search-row">
+          <button class="fin-btn-search" id="btn-search" title="Buscar">
+            <span class="material-symbols-outlined">search</span>
+          </button>
+          <div class="fin-search-field" id="fin-search-field">
+            <input type="text" class="fin-search-input" id="fin-search-input" placeholder="Buscar por categoría, nota o monto (HNL)...">
+            <button class="fin-search-clear" id="fin-search-clear" title="Limpiar">
+              <span class="material-symbols-outlined">close</span>
+            </button>
+          </div>
+        </div>
+        <div id="ahorros-lista"></div>
+        <div class="fin-history-footer" id="fin-history-footer">
+          <button class="fin-pag-btn" id="pag-prev">
+            <span class="material-symbols-outlined">chevron_left</span>
+          </button>
+          <span class="fin-pagination-info" id="fin-pagination-info"></span>
+          <button class="fin-pag-btn" id="pag-next">
+            <span class="material-symbols-outlined">chevron_right</span>
+          </button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/js/core/supabase-client-core.js"></script>
+  <script src="/js/core/supabase-auth.js"></script>
+  <script>window.PAGE_MODE = "finanzas-ahorros";</script>
+  <script src="/js/ui/layout.js"></script>
+  <script type="module" src="/js/ui/header.js"></script>
+  <script src="/js/finanzas/ahorros.js"></script>
+</body>
+</html>

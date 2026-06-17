@@ -584,11 +584,17 @@ console.log("📊 finanzas/dashboard.js — INIT");
       existing.querySelector(".fin-item-detail-inner").style.maxHeight = "0";
       setTimeout(() => existing.remove(), 300);
       el.classList.remove("expanded");
+      const cat = el.querySelector(".fin-item-categoria");
+      if (cat) cat.style.display = "";
       return;
     }
 
     document.querySelectorAll(".fin-item-detail").forEach(d => d.remove());
-    document.querySelectorAll(".fin-item.expanded").forEach(e => e.classList.remove("expanded"));
+    document.querySelectorAll(".fin-item.expanded").forEach(e => {
+      e.classList.remove("expanded");
+      const cat = e.querySelector(".fin-item-categoria");
+      if (cat) cat.style.display = "";
+    });
 
     const isIngreso = item.tipo === "ingreso";
     const icon = CATEGORY_ICONS[item.categoria] || (isIngreso ? "trending_up" : "trending_down");
@@ -629,6 +635,8 @@ console.log("📊 finanzas/dashboard.js — INIT");
     `;
     el.after(div);
     el.classList.add("expanded");
+    const cat = el.querySelector(".fin-item-categoria");
+    if (cat) cat.style.display = "none";
     const inner = div.querySelector(".fin-item-detail-inner");
     requestAnimationFrame(() => {
       inner.style.maxHeight = inner.scrollHeight + "px";

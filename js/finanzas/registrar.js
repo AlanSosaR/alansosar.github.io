@@ -281,12 +281,8 @@ console.log("✏️ finanzas/registrar.js — INIT");
 
           setTimeout(() => {
             if (editId) {
-              if (tipo === "ahorro") {
-                window.location.href = "/pages/admin/finanzas/index.html";
-              } else {
-                const destino = tipo === "ingreso" ? "ingresos" : "egresos";
-                window.location.href = `/pages/admin/finanzas/${destino}.html?_=${Date.now()}`;
-              }
+              const destino = tipo === "ingreso" ? "ingresos" : tipo === "ahorro" ? "ahorros" : "egresos";
+              window.location.href = `/pages/admin/finanzas/${destino}.html?_=${Date.now()}`;
             } else {
               window.location.href = "/pages/admin/finanzas/index.html";
             }
