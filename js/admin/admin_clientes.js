@@ -160,6 +160,7 @@ const initAdminClientes = () => {
             return (data || []).map(r => ({
                 fecha: r.fecha,
                 monto: r.monto,
+                order_id: r.order_id,
                 order_number: r.order_id && orderMap[r.order_id] ? orderMap[r.order_id].order_number : "—",
                 status: r.order_id && orderMap[r.order_id] ? orderMap[r.order_id].status : "—",
                 hasOrder: !!r.order_id,
@@ -498,6 +499,12 @@ const initAdminClientes = () => {
                     <td>${status ? `<span class="status-badge status-${status}">${status}</span>` : "—"}</td>
                     <td class="text-right"><strong>L ${parseFloat(item.monto).toFixed(2)}</strong></td>
                 `;
+                if (item.hasOrder) {
+                    row.style.cursor = "pointer";
+                    row.onclick = () => {
+                        window.location.href = `/pages/admin/admin-pedido-detalle.html?id=${item.order_id}`;
+                    };
+                }
             }
             historyBody.appendChild(row);
         });

@@ -9,6 +9,8 @@ console.log("🛠️ admin_pedido_detalle.js — INIT");
     if (!sb) throw new Error("❌ Supabase no inicializado");
 
     let orderData = null;
+    let isPOS = false;
+    let posPaymentMethod = null;
 
     const STATUS_LABELS = {
         pending: "Nuevo",
@@ -43,7 +45,11 @@ console.log("🛠️ admin_pedido_detalle.js — INIT");
         
         statusActionsBox: document.getElementById("status-action-buttons"),
         timelineProgress: document.getElementById("timeline-progress"),
-        btnContactClients: document.querySelectorAll("#btn-contact-client, #btn-contact-client-mobile")
+        btnContactClients: document.querySelectorAll("#btn-contact-client, #btn-contact-client-mobile"),
+        clientSectionTitle: document.getElementById("detail-client-section-title"),
+        clientSectionTitleMobile: document.getElementById("detail-client-section-title-mobile"),
+        shippingSection: document.getElementById("detail-shipping-section"),
+        shippingSectionMobile: document.getElementById("detail-shipping-section-mobile"),
     };
 
     let pendingAction = null;
@@ -169,6 +175,17 @@ console.log("🛠️ admin_pedido_detalle.js — INIT");
             if (error || !data) throw error;
             
             orderData = data;
+            isPOS = !data.address_id;
+
+            if (isPOS) {
+                const { data: fm } = await sb
+                    .from("finanzas_movimientos")
+                    .select("metodo_pago")
+                    .eq("order_id", orderId)
+                    .limit(1);
+                posPaymentMethod = fm?.[0]?.metodo_pago || null;
+            }
+
             renderOrderData(orderData);
         } catch (err) {
             console.error("❌ Error cargando el detalle del pedido:", err);
@@ -196,22 +213,50 @@ console.log("🛠️ admin_pedido_detalle.js — INIT");
         DOM.statusBadge.innerHTML = `<span class="material-symbols-outlined">check_circle</span> ${STATUS_LABELS[o.status] || o.status}`;
         DOM.statusBadge.className = `status-pill status-badge ${o.status}`; // Set specific color class
 
-        // 2. Client Info
-        const cName = a.full_name || u.name || "Cliente";
-        
-        DOM.clientNames.forEach(el => el.textContent = cName);
-        DOM.clientEmails.forEach(el => el.textContent = u.email || "—");
-        DOM.clientPhones.forEach(el => el.textContent = a.phone || u.phone || "—");
-        
-        // Initials Avatar
-        const initials = cName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-        DOM.avatars.forEach(el => el.textContent = initials);
-        
-        // Dirección Completa
-        const addressParts = [a.street, a.city, a.state, a.country, a.postal_code].filter(Boolean);
-        DOM.shippingAddresses.forEach(el => {
-            el.innerHTML = addressParts.join("<br>") || "—";
-        });
+        // 2. Client Info — POS variant vs regular
+        if (isPOS) {
+            const adminUser = JSON.parse(localStorage.getItem("cortero_user") || "{}");
+            const adminName = adminUser.name || "Admin";
+
+            DOM.clientNames.forEach(el => el.textContent = adminName);
+            DOM.clientEmails.forEach(el => el.textContent = "Venta en mostrador");
+            DOM.clientPhones.forEach(el => el.textContent = "—");
+
+            DOM.clientSectionTitle.innerHTML = `<span class="material-symbols-outlined icon-primary">support_agent</span> Atendido por`;
+            if (DOM.clientSectionTitleMobile) {
+                DOM.clientSectionTitleMobile.innerHTML = `<span class="material-symbols-outlined icon-primary">support_agent</span> Atendido por`;
+            }
+
+            if (DOM.shippingSection) DOM.shippingSection.style.display = "none";
+            if (DOM.shippingSectionMobile) DOM.shippingSectionMobile.style.display = "none";
+            DOM.btnContactClients.forEach(btn => { btn.style.display = "none"; });
+
+            const initials = adminName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+            DOM.avatars.forEach(el => el.textContent = initials);
+        } else {
+            const cName = a.full_name || u.name || "Cliente";
+            
+            DOM.clientNames.forEach(el => el.textContent = cName);
+            DOM.clientEmails.forEach(el => el.textContent = u.email || "—");
+            DOM.clientPhones.forEach(el => el.textContent = a.phone || u.phone || "—");
+            
+            DOM.clientSectionTitle.innerHTML = `<span class="material-symbols-outlined icon-primary">person</span> Información del Cliente`;
+            if (DOM.clientSectionTitleMobile) {
+                DOM.clientSectionTitleMobile.textContent = "Información de Envío";
+            }
+
+            if (DOM.shippingSection) DOM.shippingSection.style.display = "";
+            if (DOM.shippingSectionMobile) DOM.shippingSectionMobile.style.display = "";
+            DOM.btnContactClients.forEach(btn => { btn.style.display = ""; });
+
+            const initials = cName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+            DOM.avatars.forEach(el => el.textContent = initials);
+            
+            const addressParts = [a.street, a.city, a.state, a.country, a.postal_code].filter(Boolean);
+            DOM.shippingAddresses.forEach(el => {
+                el.innerHTML = addressParts.join("<br>") || "—";
+            });
+        }
 
         // 3. Productos (Items) - Now rendering as Mobile Cards naturally
         DOM.itemsBody.innerHTML = "";
@@ -245,7 +290,7 @@ console.log("🛠️ admin_pedido_detalle.js — INIT");
                             </div>
                             <div class="pmc-bottom">
                                 <span class="pmc-qty">Qty: ${item.quantity}</span>
-                                <span class="pmc-subtotal">$${lineTotal.toFixed(2)}</span>
+                                <span class="pmc-subtotal">L ${lineTotal.toFixed(2)}</span>
                             </div>
                         </div>
                     </div>
@@ -260,8 +305,12 @@ console.log("🛠️ admin_pedido_detalle.js — INIT");
         DOM.subtotal.textContent = `L ${subtotalFloat.toFixed(2)}`;
         DOM.total.textContent = `L ${parseFloat(o.total || subtotalFloat).toFixed(2)}`;
 
-        // Payment Method Logic
-        if (o.payment_method === "Contra Entrega" || !o.receipt || o.receipt.length === 0) {
+        if (isPOS) {
+            DOM.paymentTitle.textContent = "Pago en mostrador";
+            DOM.paymentDesc.textContent = posPaymentMethod || "Efectivo";
+            DOM.paymentIcon.textContent = "payments";
+            DOM.paymentReceiptLink.classList.add("hidden");
+        } else if (o.payment_method === "Contra Entrega" || !o.receipt || o.receipt.length === 0) {
             DOM.paymentTitle.textContent = "Pago Contra Entrega";
             DOM.paymentDesc.textContent = "Se cobrará en el destino";
             DOM.paymentIcon.textContent = "local_shipping";
@@ -283,17 +332,19 @@ console.log("🛠️ admin_pedido_detalle.js — INIT");
             DOM.orderNotes.style.opacity = "0.7";
         }
 
-        // WhatsApp Action
+        // WhatsApp Action (no-op for POS)
         DOM.btnContactClients.forEach(btn => {
             btn.onclick = () => {
-                 const phone = a.phone || u.phone;
-                 if (!phone) { 
-                     openSnackbar("Atención", "El cliente no tiene teléfono registrado.", null, false);
-                     return;
-                 }
-                 const cleanPhone = phone.replace(/\D/g, "");
-                 const msg = encodeURIComponent(`Hola ${cName}, te contactamos de Café Cortero sobre tu pedido #${o.order_number}...`);
-                 window.open(`https://wa.me/${cleanPhone}?text=${msg}`, "_blank");
+                if (isPOS) return;
+                const cName = a.full_name || u.name || "Cliente";
+                const phone = a.phone || u.phone;
+                if (!phone) { 
+                    openSnackbar("Atención", "El cliente no tiene teléfono registrado.", null, false);
+                    return;
+                }
+                const cleanPhone = phone.replace(/\D/g, "");
+                const msg = encodeURIComponent(`Hola ${cName}, te contactamos de Café Cortero sobre tu pedido #${o.order_number}...`);
+                window.open(`https://wa.me/${cleanPhone}?text=${msg}`, "_blank");
             };
         });
 
@@ -306,6 +357,23 @@ console.log("🛠️ admin_pedido_detalle.js — INIT");
        TIMELINE
     ========================= */
     function renderTimeline(status) {
+        const timelineCard = document.querySelector(".timeline-card");
+        if (!timelineCard) return;
+
+        if (isPOS) {
+            timelineCard.innerHTML = `
+                <h2 class="card-title">Estado del Pedido</h2>
+                <div style="display:flex;align-items:center;gap:12px;padding:16px 0">
+                    <span class="material-symbols-outlined" style="font-size:32px;color:#2E7D32">check_circle</span>
+                    <div>
+                        <strong style="font-size:16px;color:#2E7D32">Venta completada</strong>
+                        <span style="display:block;font-size:13px;color:var(--texto-secundario);margin-top:2px">Cobrado en mostrador</span>
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
         const flow = ["pending", "processing", "shipped", "delivered"];
         const currentIndex = flow.indexOf(status);
         let progressPercent = 0;
@@ -350,7 +418,9 @@ console.log("🛠️ admin_pedido_detalle.js — INIT");
     function renderActionButtons(o) {
         DOM.statusActionsBox.innerHTML = "";
 
-        if (o.status === "pending") {
+        if (isPOS) {
+            DOM.statusActionsBox.innerHTML = "<span class='text-muted text-sm'>Venta completada en mostrador.</span>";
+        } else if (o.status === "pending") {
             appendActionButton("Pasar a preparación", "hourglass_top", "accent", () => updateStatus(o.id, "processing"));
             appendActionButton("Anular", "cancel", "", () => updateStatus(o.id, "cancelled"));
         } else if (o.status === "processing") {
