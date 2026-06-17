@@ -234,6 +234,7 @@ function initAdminPOS() {
   const stepConfirmar = document.getElementById("pos-step-confirmar");
   const btnNuevo = document.getElementById("pos-btn-nuevo");
   const btnExistente = document.getElementById("pos-btn-existente");
+  const btnRapida = document.getElementById("pos-btn-rapida");
   const createBtn = document.getElementById("pos-create-client-btn");
 
   let searchTimer = null;
@@ -241,6 +242,7 @@ function initAdminPOS() {
   function activarModoNuevo() {
     btnNuevo.classList.add("active");
     btnExistente.classList.remove("active");
+    btnRapida.classList.remove("active");
     searchSection.classList.add("hidden");
     newForm.classList.remove("hidden");
     createBtn.classList.remove("hidden");
@@ -249,14 +251,34 @@ function initAdminPOS() {
   function activarModoExistente() {
     btnExistente.classList.add("active");
     btnNuevo.classList.remove("active");
+    btnRapida.classList.remove("active");
     newForm.classList.add("hidden");
     searchSection.classList.remove("hidden");
     searchInput.focus();
     createBtn.classList.add("hidden");
   }
 
+  function activarModoRapida() {
+    btnRapida.classList.add("active");
+    btnNuevo.classList.remove("active");
+    btnExistente.classList.remove("active");
+    newForm.classList.add("hidden");
+    searchSection.classList.add("hidden");
+    selectedEl.classList.add("hidden");
+    createBtn.classList.add("hidden");
+    const admin = JSON.parse(localStorage.getItem("cortero_user") || "{}");
+    selectedClient = { id: admin.id, name: `${admin.name} (Venta rápida)`, phone: null, email: null };
+    document.getElementById("pos-client-info").innerHTML = `
+      <div class="info-row"><span class="info-label">Atendido por:</span><span>${admin.name}</span></div>
+    `;
+    selectedEl.classList.remove("hidden");
+    continuarBtn.classList.remove("hidden");
+    stepConfirmar.classList.add("hidden");
+  }
+
   btnNuevo.onclick = activarModoNuevo;
   btnExistente.onclick = activarModoExistente;
+  btnRapida.onclick = activarModoRapida;
   activarModoNuevo();
 
   searchInput.addEventListener("input", () => {

@@ -367,6 +367,7 @@ async function enviarPedido() {
         }
       }
       const now = new Date();
+      const adminUser = JSON.parse(localStorage.getItem("cortero_user") || "null");
       await sb.from("finanzas_movimientos").insert({
         tipo: "ingreso",
         categoria: "Pedido POS",
@@ -374,7 +375,8 @@ async function enviarPedido() {
         monto: totalPedido,
         fecha: now.toISOString().split("T")[0],
         hora: now.toTimeString().slice(0, 8),
-        metodo_pago: metodoPago.value === "cash" ? "Efectivo" : "Transferencia"
+        metodo_pago: metodoPago.value === "cash" ? "Efectivo" : "Transferencia",
+        created_by: adminUser?.id || null
       });
     }
 
