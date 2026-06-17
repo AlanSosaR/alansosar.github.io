@@ -649,6 +649,21 @@ body.page-carrito {
 #snackbar.snackbar.warn::before { background: #f6c343; }
 #snackbar.snackbar.success::before { background: #33c26b; }
 
+.snackbar-action {
+  background: #33c26b;
+  border: none;
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 6px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background .2s;
+}
+.snackbar-action:hover { background: #2bad5b; }
+
 @media (max-width: 900px) {
   #snackbar.snackbar {
     bottom: 20px;

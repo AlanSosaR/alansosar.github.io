@@ -376,7 +376,9 @@ console.log("🛠️ admin_pedidos.js — INIT STITCH");
                 card.classList.add("active");
             }
 
-            card.onclick = () => selectOrder(o);
+            card.onclick = () => {
+                window.location.href = `/pages/admin/admin-pedido-detalle.html?id=${o.id}`;
+            };
             container.appendChild(clone);
         });
     }
