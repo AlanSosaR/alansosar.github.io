@@ -58,7 +58,7 @@
         </div>
       </section>
 
-      <!-- INGRESOS & EGRESOS -->
+      <!-- INGRESOS & EGRESOS & AHORRO -->
       <div class="fin-row-cards">
         <a href="/pages/admin/finanzas/ingresos.html" class="fin-stat-card">
           <div>
@@ -84,24 +84,33 @@
             <div class="fin-stat-compare" id="egresos-compare"></div>
           </div>
         </a>
-      </div>
-
-      <!-- POR COBRAR -->
-      <section class="fin-card-porcobrar" id="porcobrar-card">
-        <div class="fin-porcobrar-row">
-          <div class="fin-porcobrar-icon">
-            <span class="material-symbols-outlined">receipt_long</span>
+        <div class="fin-stat-card">
+          <div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+              <div class="fin-stat-label" style="color:#5c6bc0;margin-bottom:0;">Ahorro</div>
+              <div class="fin-stat-icon secondary" style="margin-bottom:0;">
+                <span class="material-symbols-outlined">savings</span>
+              </div>
+            </div>
+            <div class="fin-stat-monto secondary" id="ahorro-monto"><span style="color:var(--verde);font-weight:600">HNL</span> <span style="color:var(--marron)">0,000.00</span></div>
+            <div class="fin-stat-compare" id="ahorro-compare"></div>
           </div>
-          <div class="fin-porcobrar-body">
-            <div class="fin-porcobrar-label">Por cobrar</div>
-            <div class="fin-porcobrar-monto" id="porcobrar-monto">HNL 0,000.00</div>
+        </div>
+        <div class="fin-stat-card" id="porcobrar-card" style="cursor:default;">
+          <div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+              <div class="fin-stat-label" style="color:#e67e22;margin-bottom:0;">Por cobrar</div>
+              <div class="fin-stat-icon" style="margin-bottom:0;background:#fef5e7;color:#e67e22;">
+                <span class="material-symbols-outlined">receipt_long</span>
+              </div>
+            </div>
+            <div class="fin-stat-monto" id="porcobrar-monto" style="color:#e67e22;"><span style="color:var(--verde);font-weight:600">HNL</span> <span style="color:var(--marron)">0,000.00</span></div>
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;font:var(--md-label-sm);color:var(--md-on-surface-variant);margin-top:4px;">
+              <span id="porcobrar-count" style="background:var(--md-surface-variant);padding:2px 10px;border-radius:var(--md-shape-full);font-weight:600;">0</span>
+              <span class="fin-porcobrar-dash" id="porcobrar-detalle"></span>
+            </div>
           </div>
-          <div class="fin-porcobrar-count" id="porcobrar-count">0</div>
         </div>
-        <div class="fin-porcobrar-detalle" id="porcobrar-detalle">
-          <span>Cargando...</span>
-        </div>
-      </section>
 
       <!-- SEGMENTED BUTTON -->
       <div class="fin-segmented-wrapper">
@@ -121,55 +130,58 @@
         </button>
       </div>
 
-      <!-- GRÁFICA -->
-      <section class="fin-card">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-          <h2 class="fin-card-title" style="margin-bottom:0;"><span style="color:var(--verde)">Ingresos</span> vs <span style="color:var(--md-error)">Egresos</span></h2>
-        </div>
-        <div class="fin-chart-container" style="height:340px;">
-          <canvas id="fin-chart"></canvas>
-        </div>
-      </section>
+      <div class="fin-chart-history-grid">
+        <!-- GRÁFICA -->
+        <section class="fin-card">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+            <h2 class="fin-card-title" style="margin-bottom:0;"><span style="color:var(--verde)">Ingresos</span> vs <span style="color:var(--md-error)">Egresos</span></h2>
+          </div>
+          <div class="fin-chart-container" style="height:340px;">
+            <canvas id="fin-chart"></canvas>
+          </div>
+        </section>
 
-      <!-- HISTORIAL -->
-      <section class="fin-card">
-        <div class="fin-historial-header">
-          <div class="fin-filter-row">
-            <h2 class="fin-card-title" style="margin-bottom:0;">Historial</h2>
-            <div class="fin-filter-right">
-              <div class="fin-filter-chips">
-                <button class="fin-chip active" data-filter="ambos">Ambos</button>
-                <button class="fin-chip" data-filter="ingreso">Ingresos</button>
-                <button class="fin-chip" data-filter="egreso">Egresos</button>
+        <!-- HISTORIAL -->
+        <section class="fin-card">
+          <div class="fin-historial-header">
+            <div class="fin-filter-row">
+              <h2 class="fin-card-title" style="margin-bottom:0;">Historial</h2>
+              <div class="fin-filter-right">
+                <div class="fin-filter-chips">
+                  <button class="fin-chip active" data-filter="ambos">Ambos</button>
+                  <button class="fin-chip" data-filter="ingreso">Ingresos</button>
+                  <button class="fin-chip secondary" data-filter="ahorro">Ahorro</button>
+                  <button class="fin-chip" data-filter="egreso">Egresos</button>
+                </div>
+                <button class="fin-btn-export" id="btn-exportar" title="Exportar">
+                  <span class="material-symbols-outlined">download</span>
+                </button>
               </div>
-              <button class="fin-btn-export" id="btn-exportar" title="Exportar">
-                <span class="material-symbols-outlined">download</span>
+            </div>
+            <div class="fin-search-row" id="fin-search-row">
+              <button class="fin-btn-search" id="btn-search" title="Buscar">
+                <span class="material-symbols-outlined">search</span>
               </button>
+              <div class="fin-search-field" id="fin-search-field">
+                <input type="text" class="fin-search-input" id="fin-search-input" placeholder="Buscar por categoría, nota o monto (HNL)...">
+                <button class="fin-search-clear" id="fin-search-clear" title="Limpiar">
+                  <span class="material-symbols-outlined">close</span>
+                </button>
+              </div>
             </div>
           </div>
-          <div class="fin-search-row" id="fin-search-row">
-            <button class="fin-btn-search" id="btn-search" title="Buscar">
-              <span class="material-symbols-outlined">search</span>
+          <div id="fin-historial-list"></div>
+          <div class="fin-history-footer" id="fin-history-footer">
+            <button class="fin-pag-btn" id="pag-prev">
+              <span class="material-symbols-outlined">chevron_left</span>
             </button>
-            <div class="fin-search-field" id="fin-search-field">
-              <input type="text" class="fin-search-input" id="fin-search-input" placeholder="Buscar por categoría, nota o monto (HNL)...">
-              <button class="fin-search-clear" id="fin-search-clear" title="Limpiar">
-                <span class="material-symbols-outlined">close</span>
-              </button>
-            </div>
+            <span class="fin-pagination-info" id="fin-pagination-info"></span>
+            <button class="fin-pag-btn" id="pag-next">
+              <span class="material-symbols-outlined">chevron_right</span>
+            </button>
           </div>
-        </div>
-        <div id="fin-historial-list"></div>
-        <div class="fin-history-footer" id="fin-history-footer">
-          <button class="fin-pag-btn" id="pag-prev">
-            <span class="material-symbols-outlined">chevron_left</span>
-          </button>
-          <span class="fin-pagination-info" id="fin-pagination-info"></span>
-          <button class="fin-pag-btn" id="pag-next">
-            <span class="material-symbols-outlined">chevron_right</span>
-          </button>
-        </div>
-      </section>
+        </section>
+      </div>
     </div>
 
     <!-- FAB -->

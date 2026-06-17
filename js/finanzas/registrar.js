@@ -17,6 +17,11 @@ console.log("✏️ finanzas/registrar.js — INIT");
       { icon: "local_florist", label: "Café Finca La Rosa" },
       { icon: "orders", label: "Pedidos en Línea" },
     ],
+    ahorro: [
+      { icon: "savings", label: "Ahorro General" },
+      { icon: "account_balance", label: "Fondo de Emergencia" },
+      { icon: "flag", label: "Meta de Ahorro" },
+    ],
     egreso: [
       { icon: "local_gas_station", label: "Gasolina" },
       { icon: "oil_barrel", label: "Aceite motor" },
@@ -149,7 +154,7 @@ console.log("✏️ finanzas/registrar.js — INIT");
         conceptoInput.value = data.concepto;
         fechaInput.value = data.fecha;
         fechaDisplay.value = new Date(data.fecha + "T" + (data.hora || "00:00:00")).toLocaleDateString("es-HN", { day: "2-digit", month: "long", year: "numeric" });
-        guardarBtn.innerHTML = `<span class="material-symbols-outlined" style="font-size:18px;">save</span> Actualizar ${data.tipo === "ingreso" ? "Ingreso" : "Egreso"}`;
+        guardarBtn.innerHTML = `<span class="material-symbols-outlined" style="font-size:18px;">save</span> Actualizar ${data.tipo === "ingreso" ? "Ingreso" : data.tipo === "ahorro" ? "Ahorro" : "Gasto"}`;
         metodoPago = data.metodo_pago || "Efectivo";
         const mpLabel = mpTrigger?.querySelector(".fin-cat-trigger-label");
         if (mpLabel) mpLabel.textContent = metodoPago;
@@ -276,8 +281,12 @@ console.log("✏️ finanzas/registrar.js — INIT");
 
           setTimeout(() => {
             if (editId) {
-              const destino = tipo === "ingreso" ? "ingresos" : "egresos";
-              window.location.href = `/pages/admin/finanzas/${destino}.html?_=${Date.now()}`;
+              if (tipo === "ahorro") {
+                window.location.href = "/pages/admin/finanzas/index.html";
+              } else {
+                const destino = tipo === "ingreso" ? "ingresos" : "egresos";
+                window.location.href = `/pages/admin/finanzas/${destino}.html?_=${Date.now()}`;
+              }
             } else {
               window.location.href = "/pages/admin/finanzas/index.html";
             }
@@ -908,22 +917,24 @@ console.log("✏️ finanzas/registrar.js — INIT");
         const isActive = btn.dataset.tipo === t;
         btn.classList.toggle("active", isActive);
         if (isActive) {
-          btn.classList.add(t === "ingreso" ? "primary" : "error");
-          btn.classList.remove(t === "ingreso" ? "error" : "primary");
+          const cls = t === "ingreso" ? "primary" : t === "ahorro" ? "secondary" : "error";
+          btn.classList.add(cls);
+          btn.classList.remove(t === "ingreso" ? "error" : t === "ahorro" ? "primary" : "primary", t === "ahorro" ? "error" : "secondary");
           const span = btn.querySelector("span:last-child");
           if (span) span.style.fontWeight = "700";
         } else {
-          btn.classList.remove("primary", "error");
+          btn.classList.remove("primary", "secondary", "error");
           const span = btn.querySelector("span:last-child");
           if (span) span.style.fontWeight = "";
         }
       });
       renderCategorias(t);
       if (guardarBtn) {
-        guardarBtn.className = `fin-btn-filled ${t === "ingreso" ? "primary" : "error"}`;
-        guardarBtn.innerHTML = `<span class="material-symbols-outlined" style="font-size:18px;">save</span> Guardar ${t === "ingreso" ? "Ingreso" : "Egreso"}`;
+        const label = t === "ingreso" ? "Ingreso" : t === "ahorro" ? "Ahorro" : "Gasto";
+        guardarBtn.className = `fin-btn-filled ${t === "ingreso" ? "primary" : t === "ahorro" ? "secondary" : "error"}`;
+        guardarBtn.innerHTML = `<span class="material-symbols-outlined" style="font-size:18px;">save</span> Guardar ${label}`;
       }
-      const montoColor = t === "ingreso" ? "var(--verde)" : "var(--md-error)";
+      const montoColor = t === "ingreso" ? "var(--verde)" : t === "ahorro" ? "#5c6bc0" : "var(--md-error)";
       const montoInput = document.getElementById("fin-monto-input");
       if (montoInput) montoInput.style.color = montoColor;
       const hnlLabel = document.getElementById("fin-hnl-label");

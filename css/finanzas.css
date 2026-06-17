@@ -71,6 +71,7 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+
 .fin-page * {
   box-sizing: border-box;
   margin: 0;
@@ -398,6 +399,11 @@
   color: var(--md-error);
 }
 
+.fin-stat-card .fin-stat-icon.secondary {
+  background: #eef0ff;
+  color: #5c6bc0;
+}
+
 .fin-stat-card .fin-stat-label {
   font: var(--md-title-md);
   color: var(--md-on-surface);
@@ -413,6 +419,7 @@
 
 .fin-stat-card .fin-stat-monto.primary { color: var(--verde); }
 .fin-stat-card .fin-stat-monto.error { color: var(--md-error); }
+.fin-stat-card .fin-stat-monto.secondary { color: #5c6bc0; }
 
 .fin-stat-card .fin-stat-compare {
   font: var(--md-label-sm);
@@ -501,6 +508,14 @@
   font-size: 12px;
   color: var(--md-on-surface-variant);
   margin-top: 2px;
+}
+
+/* --- CHART + HISTORIAL GRID (single column, full viewport width) --- */
+.fin-chart-history-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  width: 100%;
 }
 
 /* --- CHART CARD --- */
@@ -756,6 +771,12 @@
   border-color: var(--md-primary);
 }
 
+.fin-chip.secondary.active {
+  background: #5c6bc0;
+  color: #fff;
+  border-color: #5c6bc0;
+}
+
 .fin-chip.error.active {
   background: var(--md-error);
   color: var(--md-on-error);
@@ -846,6 +867,11 @@
   color: var(--md-error);
 }
 
+.fin-item-leading.secondary {
+  background: #eef0ff;
+  color: #5c6bc0;
+}
+
 .fin-item-body {
   flex: 1;
   min-width: 0;
@@ -880,6 +906,7 @@
 
 .fin-item-trailing.primary { color: var(--verde); }
 .fin-item-trailing.error { color: var(--md-error); }
+.fin-item-trailing.secondary { color: #5c6bc0; }
 
 .fin-item-chevron {
   font-size: 20px;
@@ -1147,6 +1174,15 @@
 .fin-btn-filled.error {
   background: var(--md-error);
   color: var(--md-on-error);
+}
+
+.fin-btn-filled.secondary {
+  background: #5c6bc0;
+  color: #fff;
+}
+
+.fin-btn-filled.secondary:hover {
+  background: #4a55a0;
 }
 
 /* --- HERO MONTO (OUTLINED CARD) --- */
@@ -1443,6 +1479,12 @@
   border-color: var(--md-error);
   background: var(--md-error-container);
   color: var(--md-on-error-container);
+}
+
+.fin-tipo-btn.active.secondary {
+  border-color: #5c6bc0;
+  background: #eef0ff;
+  color: #5c6bc0;
 }
 
 .fin-tipo-btn:not(.active):hover {

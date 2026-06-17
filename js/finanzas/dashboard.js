@@ -30,6 +30,8 @@ console.log("📊 finanzas/dashboard.js — INIT");
     ingresosCompare: () => $("#ingresos-compare"),
     egresosMonto: () => $("#egresos-monto"),
     egresosCompare: () => $("#egresos-compare"),
+    ahorroMonto: () => $("#ahorro-monto"),
+    ahorroCompare: () => $("#ahorro-compare"),
     historial: () => $("#fin-historial-list"),
     filterChips: () => $$(".fin-filter-chips .fin-chip"),
     fab: () => $(".fin-fab"),
@@ -213,13 +215,13 @@ console.log("📊 finanzas/dashboard.js — INIT");
     refEl.after(d);
   }
 
-  function actualizarBadge(saldoActual, ingTotal, egrTotal) {
+  function actualizarBadge(saldoActual, ingTotal, egrTotal, ahorroTotal) {
     const el = document.getElementById("saldo-compare");
     const iconEl = document.getElementById("saldo-compare-icon");
     const textEl = document.getElementById("saldo-compare-text");
     if (!el || !iconEl || !textEl) return;
 
-    const saldoInicial = saldoActual - ingTotal + egrTotal;
+    const saldoInicial = saldoActual - ingTotal + egrTotal + ahorroTotal;
     const diferencia = saldoActual - saldoInicial;
 
     const pre = { dia: "el día", semana: "la semana", mes: "el mes" }[periodo] || "el día";
@@ -284,18 +286,22 @@ console.log("📊 finanzas/dashboard.js — INIT");
       // Saldo — always from ALL data
       const allIng = allData.filter((r) => r.tipo === "ingreso").reduce((s, r) => s + Number(r.monto), 0);
       const allEgr = allData.filter((r) => r.tipo === "egreso").reduce((s, r) => s + Number(r.monto), 0);
-      if (els.saldoMonto()) els.saldoMonto().innerHTML = fmtMontoHTML(allIng - allEgr);
+      const allAhr = allData.filter((r) => r.tipo === "ahorro").reduce((s, r) => s + Number(r.monto), 0);
+      if (els.saldoMonto()) els.saldoMonto().innerHTML = fmtMontoHTML(allIng - allEgr - allAhr);
 
       // Stats cards (period-specific)
       const ingresos = data.filter((r) => r.tipo === "ingreso");
       const egresos = data.filter((r) => r.tipo === "egreso");
+      const ahorros = data.filter((r) => r.tipo === "ahorro");
       const ingTotal = ingresos.reduce((s, i) => s + Number(i.monto), 0);
       const egrTotal = egresos.reduce((s, i) => s + Number(i.monto), 0);
+      const ahrTotal = ahorros.reduce((s, i) => s + Number(i.monto), 0);
       if (els.ingresosMonto()) els.ingresosMonto().innerHTML = fmtMontoHTML(ingTotal, "", true);
       if (els.egresosMonto()) els.egresosMonto().innerHTML = fmtMontoHTML(egrTotal, "", false);
+      if (els.ahorroMonto()) els.ahorroMonto().innerHTML = fmtMontoHTML(ahrTotal, "", true);
       setEmptyText("ingresos-empty", ingTotal, els.ingresosMonto());
       setEmptyText("egresos-empty", egrTotal, els.egresosMonto());
-      actualizarBadge(allIng - allEgr, ingTotal, egrTotal);
+      actualizarBadge(allIng - allEgr - allAhr, ingTotal, egrTotal, ahrTotal);
 
       // Por cobrar
       await cargarPorCobrar();
@@ -335,14 +341,14 @@ console.log("📊 finanzas/dashboard.js — INIT");
 
       if (detalleEl) {
         if (count === 0) {
-          detalleEl.innerHTML = `<span>Sin pedidos por cobrar</span>`;
+          detalleEl.textContent = "Sin pedidos por cobrar";
         } else {
           const cashCount = porCobrar.filter(o => o.payment_method === "cash_on_delivery").length;
           const transCount = porCobrar.filter(o => o.payment_method === "bank_transfer").length;
-          detalleEl.innerHTML = `
-            <span class="fin-porcobrar-dash">Contra entrega: <strong>${cashCount}</strong></span>
-            <span class="fin-porcobrar-dash">Transferencia: <strong>${transCount}</strong></span>
-          `;
+          const parts = [];
+          if (cashCount > 0) parts.push(`Contra entrega: ${cashCount}`);
+          if (transCount > 0) parts.push(`Transferencia: ${transCount}`);
+          detalleEl.textContent = parts.join(" · ");
         }
       }
     } catch (err) {
@@ -484,6 +490,7 @@ console.log("📊 finanzas/dashboard.js — INIT");
     let filtered = data;
     if (filtro === "ingreso") filtered = data.filter((r) => r.tipo === "ingreso");
     else if (filtro === "egreso") filtered = data.filter((r) => r.tipo === "egreso");
+    else if (filtro === "ahorro") filtered = data.filter((r) => r.tipo === "ahorro");
 
     const q = busqueda.trim().toLowerCase();
     if (q) {
@@ -534,17 +541,20 @@ console.log("📊 finanzas/dashboard.js — INIT");
       html += `<div class="fin-grupo-header">${key}</div>`;
       grupos[key].forEach((item, idx) => {
         const isIngreso = item.tipo === "ingreso";
-        const icon = CATEGORY_ICONS[item.categoria] || (isIngreso ? "trending_up" : "trending_down");
+        const isAhorro = item.tipo === "ahorro";
+        const typeClass = isIngreso ? "primary" : isAhorro ? "secondary" : "error";
+        const sign = isIngreso ? "+" : isAhorro ? "+" : "−";
+        const icon = CATEGORY_ICONS[item.categoria] || (isIngreso ? "trending_up" : isAhorro ? "savings" : "trending_down");
         html += `
           <div class="fin-item" data-id="${item.id}">
-            <div class="fin-item-leading ${isIngreso ? "primary" : "error"}">
+            <div class="fin-item-leading ${typeClass}">
               <span class="material-symbols-outlined">${icon}</span>
             </div>
             <div class="fin-item-body">
               <div class="fin-item-head">
                 <div class="fin-item-concept">${item.categoria}</div>
-                <div class="fin-item-trailing ${isIngreso ? "primary" : "error"}">
-                  ${fmtMontoHTML(item.monto, isIngreso ? "+" : "−", isIngreso)}
+                <div class="fin-item-trailing ${typeClass}">
+                  ${fmtMontoHTML(item.monto, sign, isIngreso || isAhorro)}
                 </div>
               </div>
               <div class="fin-item-categoria">${item.notas || item.concepto}</div>
@@ -772,6 +782,7 @@ console.log("📊 finanzas/dashboard.js — INIT");
       let filtered = movimientos;
       if (label === "ingreso") filtered = movimientos.filter((r) => r.tipo === "ingreso");
       else if (label === "egreso") filtered = movimientos.filter((r) => r.tipo === "egreso");
+      else if (label === "ahorro") filtered = movimientos.filter((r) => r.tipo === "ahorro");
 
       if (filtered.length === 0) { showSnackbar("No hay datos para exportar"); return; }
 
@@ -779,12 +790,13 @@ console.log("📊 finanzas/dashboard.js — INIT");
       const parseMonto = (el) => parseFloat((el?.textContent || "0").replace(/[^0-9.,-]/g, "").replace(/,/g, "")) || 0;
       const ingTotal = parseMonto(document.getElementById("ingresos-monto"));
       const egrTotal = parseMonto(document.getElementById("egresos-monto"));
+      const ahrTotal = parseMonto(document.getElementById("ahorro-monto"));
       const saldoActual = parseMonto(document.querySelector(".fin-saldo-monto"));
 
       const rows = [
         ["Reporte de Finanzas - Café Cortero"],
         [`Período: ${periodoLabel}`],
-        [`Ingresos Totales: HNL ${ingTotal.toFixed(2)}`, `Egresos Totales: HNL ${egrTotal.toFixed(2)}`, `Saldo Actual: HNL ${saldoActual.toFixed(2)}`],
+        [`Ingresos Totales: HNL ${ingTotal.toFixed(2)}`, `Egresos Totales: HNL ${egrTotal.toFixed(2)}`, `Ahorro: HNL ${ahrTotal.toFixed(2)}`, `Saldo Actual: HNL ${saldoActual.toFixed(2)}`],
         [],
         ["Fecha Completa", "Tipo", "Categoría", "Descripción / Notas", "Monto"],
       ];
@@ -792,7 +804,7 @@ console.log("📊 finanzas/dashboard.js — INIT");
       filtered.forEach((r) => {
         rows.push([
           new Date(r.fecha + "T" + (r.hora || "00:00:00")).toLocaleString("es-HN"),
-          r.tipo === "ingreso" ? "Ingreso" : "Egreso",
+          r.tipo === "ingreso" ? "Ingreso" : r.tipo === "ahorro" ? "Ahorro" : "Egreso",
           r.categoria,
           r.notas || r.concepto || "",
           Number(r.monto),
@@ -813,7 +825,7 @@ console.log("📊 finanzas/dashboard.js — INIT");
       ws["!cols"] = colWidths;
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, "Historial");
-      const map = { ambos: "Ambos", ingreso: "Ingresos", egreso: "Egresos" };
+      const map = { ambos: "Ambos", ingreso: "Ingresos", egreso: "Egresos", ahorro: "Ahorro" };
       XLSX.writeFile(wb, `reporte_finanzas_${map[label]}_${new Date().toISOString().slice(0, 10)}.xlsx`);
     });
 
