@@ -1,3 +1,9 @@
+/* Hide notification badges on POS checkout page */
+body.page-datos-cliente #menu-notification-badge,
+body.page-datos-cliente #avatar-notification-badge {
+  display: none !important;
+}
+
 /* ============================================================
    CHECKOUT PREMIUM — CAFÉ CORTERO 2025
    ✔ Una sola tarjeta principal unificada
