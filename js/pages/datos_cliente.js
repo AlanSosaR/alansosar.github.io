@@ -246,6 +246,15 @@ function initAdminPOS() {
     searchSection.classList.add("hidden");
     newForm.classList.remove("hidden");
     createBtn.classList.remove("hidden");
+    restaurarModoComun();
+  }
+
+  function restaurarModoComun() {
+    document.getElementById("pos-selected-header").innerHTML = `
+      <span class="material-symbols-outlined">check_circle</span>
+      <span>Cliente seleccionado:</span>
+    `;
+    document.getElementById("pos-change-client-btn").classList.remove("hidden");
   }
 
   function activarModoExistente() {
@@ -256,6 +265,7 @@ function initAdminPOS() {
     searchSection.classList.remove("hidden");
     searchInput.focus();
     createBtn.classList.add("hidden");
+    restaurarModoComun();
   }
 
   function activarModoRapida() {
@@ -271,6 +281,11 @@ function initAdminPOS() {
     document.getElementById("pos-client-info").innerHTML = `
       <div class="info-row"><span class="info-label">Atendido por:</span><span>${admin.name}</span></div>
     `;
+    document.getElementById("pos-selected-header").innerHTML = `
+      <span class="material-symbols-outlined">check_circle</span>
+      <span>Venta sin cliente registrado</span>
+    `;
+    document.getElementById("pos-change-client-btn").classList.add("hidden");
     selectedEl.classList.remove("hidden");
     continuarBtn.classList.remove("hidden");
     stepConfirmar.classList.add("hidden");
