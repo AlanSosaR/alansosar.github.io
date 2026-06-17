@@ -91,23 +91,41 @@
                 <!-- Grid de Estadísticas -->
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <span class="stat-label">GASTO TOTAL</span>
+                        <span class="stat-label" id="c-stat-label-spent">GASTO TOTAL</span>
                         <strong id="c-total-spent" class="stat-value">L 0.00</strong>
                     </div>
                     <div class="stat-card">
-                        <span class="stat-label">PEDIDOS TOTALES</span>
+                        <span class="stat-label" id="c-stat-label-orders">PEDIDOS TOTALES</span>
                         <strong id="c-total-orders" class="stat-value">0</strong>
                     </div>
-                    <div class="stat-card">
-                        <span class="stat-label">MIEMBRO DESDE</span>
+                    <div class="stat-card" id="admin-stat-reg">
+                        <span class="stat-label" id="c-stat-label-reg">MIEMBRO DESDE</span>
                         <strong id="c-reg-date" class="stat-value">—</strong>
+                    </div>
+                    <div class="stat-card hidden" id="admin-stat-top-product">
+                        <span class="stat-label">PRODUCTO MÁS VENDIDO</span>
+                        <div class="top-product-content">
+                            <img id="c-top-product-img" class="top-product-thumb" src="" alt="">
+                            <div class="top-product-info">
+                                <strong id="c-top-product-name" class="stat-value">—</strong>
+                                <span id="c-top-product-count" class="stat-subtext"></span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Historial de Compras -->
                 <section class="history-section">
                     <div class="history-header">
-                        <h3>Historial de Compras</h3>
+                        <h3 id="c-history-title">Historial de Compras</h3>
+                        <div id="admin-periodo-filter" class="admin-periodo-filter hidden">
+                            <button class="periodo-btn active" data-periodo="dia">Día</button>
+                            <button class="periodo-btn" data-periodo="semana">Semana</button>
+                            <button class="periodo-btn" data-periodo="mes">Mes</button>
+                            <button class="periodo-nav" id="admin-periodo-prev"><span class="material-symbols-outlined">chevron_left</span></button>
+                            <span id="admin-periodo-label" class="periodo-label"></span>
+                            <button class="periodo-nav" id="admin-periodo-next"><span class="material-symbols-outlined">chevron_right</span></button>
+                        </div>
                     </div>
 
                     <div class="history-table-container">
@@ -168,6 +186,7 @@
             <h4 class="card-name">—</h4>
             <p class="card-email">—</p>
         </div>
+        <span class="admin-badge hidden">Admin</span>
         <span class="material-symbols-outlined arrow">chevron_right</span>
     </div>
   </template>

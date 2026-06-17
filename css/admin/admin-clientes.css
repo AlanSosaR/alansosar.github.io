@@ -255,6 +255,17 @@ body.page-admin-customers {
     font-size: 18px;
 }
 
+.admin-badge {
+    background: #512615;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+}
+
 /* SECCIÓN DERECHA: DETALLE */
 .customer-detail-section {
     background: var(--fondo-card);
@@ -415,6 +426,59 @@ body.page-admin-customers {
     font-size: 24px;
     font-weight: 900;
     color: var(--principal);
+}
+
+.stat-subtext {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--texto-secundario);
+    margin-top: 2px;
+}
+
+.top-product-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 4px;
+}
+
+.top-product-thumb {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: var(--fondo-general);
+}
+
+.top-product-placeholder {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    flex-shrink: 0;
+    background: var(--fondo-general);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--texto-secundario);
+    font-size: 18px;
+}
+
+.top-product-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.top-product-info .stat-value {
+    font-size: 16px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.top-product-info .stat-subtext {
+    font-size: 12px;
 }
 
 #c-total-spent { color: var(--principal); }
@@ -1147,4 +1211,70 @@ body.page-admin-customers {
 }
 
 .btn-stitch-primary:hover { opacity: 0.9; }
+
+/* Admin Period Filter */
+.admin-periodo-filter {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.periodo-btn {
+    background: var(--fondo-general);
+    border: none;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--texto-secundario);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.periodo-btn.active {
+    background: var(--principal);
+    color: #fff;
+}
+
+.periodo-btn:hover:not(.active) {
+    background: #ddd;
+}
+
+.periodo-nav {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--texto-secundario);
+    display: flex;
+    align-items: center;
+    padding: 2px;
+}
+
+.periodo-nav .material-symbols-outlined {
+    font-size: 20px;
+}
+
+.periodo-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--texto-principal);
+    white-space: nowrap;
+}
+
+.history-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.history-header h3 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: #512615;
+}
 

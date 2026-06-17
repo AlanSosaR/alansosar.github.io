@@ -368,16 +368,23 @@ async function enviarPedido() {
       }
       const now = new Date();
       const adminUser = JSON.parse(localStorage.getItem("cortero_user") || "null");
-      await sb.from("finanzas_movimientos").insert({
-        tipo: "ingreso",
-        categoria: "Pedido POS",
-        concepto: `Venta POS - ${customerName} - Pedido #${orderNumber}`,
-        monto: totalPedido,
-        fecha: now.toISOString().split("T")[0],
-        hora: now.toTimeString().slice(0, 8),
-        metodo_pago: metodoPago.value === "cash" ? "Efectivo" : "Transferencia",
-        created_by: adminUser?.id || null
-      });
+      const fmFecha = now.toISOString().split("T")[0];
+      const fmHora = now.toTimeString().slice(0, 8);
+      const fmMetodo = metodoPago.value === "cash" ? "Efectivo" : "Transferencia";
+      for (const it of carrito) {
+        await sb.from("finanzas_movimientos").insert({
+          tipo: "ingreso",
+          categoria: "Pedido POS",
+          concepto: it.name,
+          monto: it.qty * it.price,
+          fecha: fmFecha,
+          hora: fmHora,
+          metodo_pago: fmMetodo,
+          created_by: adminUser?.id || null,
+          product_id: it.product_id,
+          order_id: order.id,
+        });
+      }
     }
 
     if (tempFile) {

@@ -26,6 +26,14 @@ const initAdminClientes = () => {
     const optEmail = document.getElementById("opt-email");
     const optPush = document.getElementById("opt-push");
 
+    // Admin period filter
+    const adminPeriodoFilter = document.getElementById("admin-periodo-filter");
+    const adminPeriodoLabel = document.getElementById("admin-periodo-label");
+    const adminStatTopProduct = document.getElementById("admin-stat-top-product");
+    const cTopProductName = document.getElementById("c-top-product-name");
+    const cTopProductCount = document.getElementById("c-top-product-count");
+    const cTopProductImg = document.getElementById("c-top-product-img");
+
     // Modal Push
     const modalPush = document.getElementById("modal-push");
     const closePush = document.getElementById("close-push-modal");
@@ -45,6 +53,174 @@ const initAdminClientes = () => {
     let custCurrentPage = 1;
     const custItemsPerPage = 5;
 
+    let adminId = null;
+    let adminPeriodo = "semana";
+    let adminPeriodoOffset = 0;
+
+    function fmtDate(d) {
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, "0");
+        const day = String(d.getDate()).padStart(2, "0");
+        return `${y}-${m}-${day}`;
+    }
+
+    function getAdminRango(per, offset) {
+        offset = offset || 0;
+        const now = new Date();
+        let base = new Date(now);
+        if (per === "semana") base.setDate(base.getDate() + offset * 7);
+        else if (per === "dia") base.setDate(base.getDate() + offset);
+        else if (per === "mes") base.setMonth(base.getMonth() + offset);
+
+        const y = base.getFullYear();
+        const m = base.getMonth();
+        const d = base.getDate();
+        let desde, hasta, label;
+
+        switch (per) {
+            case "dia":
+                desde = new Date(y, m, d);
+                hasta = new Date(y, m, d + 1);
+                label = desde.toLocaleDateString("es-HN", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+                break;
+            case "semana": {
+                const day = base.getDay();
+                const diff = day === 0 ? 6 : day - 1;
+                desde = new Date(y, m, d - diff);
+                hasta = new Date(y, m, d - diff + 7);
+                label = `${desde.toLocaleDateString("es-HN", { day: "numeric", month: "short" })} – ${new Date(hasta.getTime() - 86400000).toLocaleDateString("es-HN", { day: "numeric", month: "short", year: "numeric" })}`;
+                break;
+            }
+            case "mes":
+                desde = new Date(y, m, 1);
+                hasta = new Date(y, m + 1, 1);
+                label = desde.toLocaleDateString("es-HN", { month: "long", year: "numeric" });
+                break;
+        }
+
+        return {
+            desde: fmtDate(desde),
+            hasta: fmtDate(hasta),
+            label,
+        };
+    }
+
+    async function fetchAdminSalesData(adminIdVal, desde, hasta) {
+        try {
+            const { data, error } = await window.supabase
+                .from("finanzas_movimientos")
+                .select("monto, order_id")
+                .eq("created_by", adminIdVal)
+                .eq("tipo", "ingreso")
+                .gte("fecha", desde)
+                .lt("fecha", hasta);
+
+            if (error) throw error;
+
+            const total = (data || []).reduce((sum, r) => sum + (parseFloat(r.monto) || 0), 0);
+            const orderIds = new Set();
+            let nullCount = 0;
+            (data || []).forEach(r => {
+                if (r.order_id) orderIds.add(r.order_id);
+                else nullCount++;
+            });
+            const count = orderIds.size + nullCount;
+            return { totalVendido: total, ventasAtendidas: count };
+        } catch (err) {
+            console.error("❌ Error fetchAdminSalesData:", err);
+            return { totalVendido: 0, ventasAtendidas: 0 };
+        }
+    }
+
+    async function fetchAdminSalesHistory(adminIdVal, desde, hasta) {
+        try {
+            const { data, error } = await window.supabase
+                .from("finanzas_movimientos")
+                .select("fecha, monto, order_id")
+                .eq("created_by", adminIdVal)
+                .eq("tipo", "ingreso")
+                .gte("fecha", desde)
+                .lt("fecha", hasta)
+                .order("fecha", { ascending: false });
+
+            if (error) throw error;
+
+            const orderIds = (data || []).filter(r => r.order_id).map(r => r.order_id);
+            let orderMap = {};
+            if (orderIds.length > 0) {
+                const { data: orders, error: ordErr } = await window.supabase
+                    .from("orders")
+                    .select("id, order_number, status")
+                    .in("id", orderIds);
+                if (!ordErr) {
+                    orders.forEach(o => { orderMap[o.id] = o; });
+                }
+            }
+
+            return (data || []).map(r => ({
+                fecha: r.fecha,
+                monto: r.monto,
+                order_number: r.order_id && orderMap[r.order_id] ? orderMap[r.order_id].order_number : "—",
+                status: r.order_id && orderMap[r.order_id] ? orderMap[r.order_id].status : "—",
+                hasOrder: !!r.order_id,
+            }));
+        } catch (err) {
+            console.error("❌ Error fetchAdminSalesHistory:", err);
+            return [];
+        }
+    }
+
+    async function fetchAdminTopProduct(adminIdVal, desde, hasta) {
+        try {
+            const { data: movs, error } = await window.supabase
+                .from("finanzas_movimientos")
+                .select("product_id, order_id")
+                .eq("created_by", adminIdVal)
+                .eq("tipo", "ingreso")
+                .gte("fecha", desde)
+                .lt("fecha", hasta)
+                .not("product_id", "is", null);
+
+            if (error) throw error;
+
+            if (!movs || movs.length === 0) return null;
+
+            const orderIds = [...new Set(movs.map(r => r.order_id).filter(Boolean))];
+            const pidCounts = {};
+            movs.forEach(r => { pidCounts[r.product_id] = (pidCounts[r.product_id] || 0) + 1; });
+            const topPid = Object.keys(pidCounts).reduce((a, b) => pidCounts[a] > pidCounts[b] ? a : b);
+
+            let totalUnits = pidCounts[topPid];
+
+            if (orderIds.length > 0) {
+                const { data: oi } = await window.supabase
+                    .from("order_items")
+                    .select("product_id, quantity")
+                    .in("order_id", orderIds)
+                    .eq("product_id", topPid);
+
+                if (oi && oi.length > 0) {
+                    totalUnits = oi.reduce((sum, r) => sum + (r.quantity || 0), 0);
+                }
+            }
+
+            const { data: products } = await window.supabase
+                .from("products")
+                .select("name, image_url")
+                .eq("id", topPid)
+                .single();
+
+            return {
+                name: products?.name || "Producto desconocido",
+                image_url: products?.image_url || null,
+                veces_vendido: totalUnits,
+            };
+        } catch (err) {
+            console.error("❌ Error fetchAdminTopProduct:", err);
+            return null;
+        }
+    }
+
     // 3. INICIO
     const init = async () => {
         console.log("🚀 Iniciando Admin Clientes...");
@@ -53,6 +229,9 @@ const initAdminClientes = () => {
             if(listContainer) listContainer.innerHTML = `<div class="error-state">Error: Cliente no inicializado.</div>`;
             return;
         }
+
+        const adminUser = JSON.parse(localStorage.getItem("cortero_user") || "null");
+        adminId = adminUser?.id || null;
 
         // Verificamos sesión para depurar problemas de RLS
         const { data: { session } } = await window.supabase.auth.getSession();
@@ -143,11 +322,16 @@ const initAdminClientes = () => {
             const avatarPlaceholder = clone.querySelector(".card-avatar-placeholder");
             const name = clone.querySelector(".card-name");
             const email = clone.querySelector(".card-email");
+            const badge = clone.querySelector(".admin-badge");
 
             // Avatar Dinámico (Foto o Iniciales)
             avatarPlaceholder.innerHTML = getAvatarHtml(customer, "card-img", "avatar-init-small");
             name.textContent = customer.name || "Sin nombre";
             email.textContent = customer.email || "Sin email";
+
+            if (adminId && customer.id === adminId) {
+                badge.classList.remove("hidden");
+            }
 
             if (selectedCustomerId === customer.id) card.classList.add("active");
 
@@ -225,48 +409,100 @@ const initAdminClientes = () => {
         cLocation.innerHTML = `<span class="material-symbols-outlined">location_on</span><span>${customer.country || "Ubicación desconocida"}</span>`;
         cRegDate.textContent = new Date(customer.created_at).toLocaleDateString("es-ES", { month: "short", year: "numeric" });
 
-        const stats = await fetchCustomerStats(customer.id);
-        cTotalSpent.textContent = stats.totalSpent;
-        cTotalOrders.textContent = stats.totalOrders;
+        const isAdmin = adminId && customer.id === adminId;
+
+        if (cLocation) cLocation.style.display = isAdmin ? "none" : "";
+        if (btnContact) btnContact.style.display = isAdmin ? "none" : "";
+        if (adminPeriodoFilter) adminPeriodoFilter.classList.toggle("hidden", !isAdmin);
+        if (adminStatTopProduct) adminStatTopProduct.classList.toggle("hidden", !isAdmin);
+        const adminStatReg = document.getElementById("admin-stat-reg");
+        if (adminStatReg) adminStatReg.classList.toggle("hidden", isAdmin);
+
+        document.getElementById("c-stat-label-spent").textContent = isAdmin ? "Total vendido" : "Gasto total";
+        document.getElementById("c-stat-label-orders").textContent = isAdmin ? "Ventas atendidas" : "Pedidos totales";
+        document.getElementById("c-stat-label-reg").textContent = isAdmin ? "Activo desde" : "Miembro desde";
+        document.getElementById("c-history-title").textContent = isAdmin ? "Historial de ventas (mostrador)" : "Historial de Compras";
 
         historyPage = 1;
-        customer.fetchedOrders = stats.orders;
-        renderHistory(stats.orders);
+        if (isAdmin) {
+            const rango = getAdminRango(adminPeriodo, adminPeriodoOffset);
+            if (adminPeriodoLabel) adminPeriodoLabel.textContent = rango.label;
+            const [salesData, salesHistory, topProduct] = await Promise.all([
+                fetchAdminSalesData(adminId, rango.desde, rango.hasta),
+                fetchAdminSalesHistory(adminId, rango.desde, rango.hasta),
+                fetchAdminTopProduct(adminId, rango.desde, rango.hasta),
+            ]);
+            cTotalSpent.textContent = `L ${salesData.totalVendido.toFixed(2)}`;
+            cTotalOrders.textContent = salesData.ventasAtendidas;
+            if (cTopProductName) {
+                cTopProductName.textContent = topProduct ? topProduct.name : "Sin datos";
+            }
+            if (cTopProductCount) {
+                cTopProductCount.textContent = topProduct ? `${topProduct.veces_vendido} unidades` : "";
+            }
+            if (cTopProductImg) {
+                if (topProduct && topProduct.image_url) {
+                    cTopProductImg.src = topProduct.image_url;
+                    cTopProductImg.style.display = "";
+                } else {
+                    cTopProductImg.style.display = "none";
+                }
+            }
+            customer.fetchedOrders = salesHistory;
+            renderHistory(salesHistory, true);
+        } else {
+            const stats = await fetchCustomerStats(customer.id);
+            cTotalSpent.textContent = stats.totalSpent;
+            cTotalOrders.textContent = stats.totalOrders;
+            customer.fetchedOrders = stats.orders;
+            renderHistory(stats.orders, false);
+        }
 
         customerDetail.style.opacity = "1";
     };
 
-    const renderHistory = (orders) => {
+    const renderHistory = (items, isAdminMode = false) => {
         if (!historyBody) return;
         historyBody.innerHTML = "";
         
         const start = (historyPage - 1) * historyPerPage;
         const end = start + historyPerPage;
-        const paginated = orders.slice(start, end);
+        const paginated = items.slice(start, end);
 
         if (paginated.length === 0) {
-            historyBody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 40px; color: #999;">Sin historial de compras</td></tr>`;
-            pageInfo.textContent = "Sin pedidos";
+            historyBody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 40px; color: #999;">Sin historial</td></tr>`;
+            pageInfo.textContent = "Sin registros";
             return;
         }
 
-        paginated.forEach(order => {
+        paginated.forEach(item => {
             const row = document.createElement("tr");
-            row.className = `status-row-${order.status}`;
-            row.style.cursor = "pointer";
-            row.onclick = () => {
-                window.location.href = `/pages/admin/admin-pedido-detalle.html?id=${order.id}`;
-            };
-            row.innerHTML = `
-                <td><strong>Pedido #${order.order_number || "—"}</strong></td>
-                <td>${new Date(order.created_at).toLocaleDateString("es-ES", { day: '2-digit', month: 'short', year: 'numeric' })}</td>
-                <td><span class="status-badge status-${order.status}">${order.status}</span></td>
-                <td class="text-right"><strong>L ${parseFloat(order.total).toFixed(2)}</strong></td>
-            `;
+            if (!isAdminMode) {
+                row.className = `status-row-${item.status}`;
+                row.style.cursor = "pointer";
+                row.onclick = () => {
+                    window.location.href = `/pages/admin/admin-pedido-detalle.html?id=${item.id}`;
+                };
+                row.innerHTML = `
+                    <td><strong>Pedido #${item.order_number || "—"}</strong></td>
+                    <td>${new Date(item.created_at).toLocaleDateString("es-ES", { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+                    <td><span class="status-badge status-${item.status}">${item.status}</span></td>
+                    <td class="text-right"><strong>L ${parseFloat(item.total).toFixed(2)}</strong></td>
+                `;
+            } else {
+                const status = item.status === "—" ? "" : item.status;
+                row.className = status ? `status-row-${status}` : "";
+                row.innerHTML = `
+                    <td><strong>${item.order_number !== "—" ? `Pedido #${item.order_number}` : "Venta rápida"}</strong></td>
+                    <td>${new Date(item.fecha + "T00:00:00").toLocaleDateString("es-ES", { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+                    <td>${status ? `<span class="status-badge status-${status}">${status}</span>` : "—"}</td>
+                    <td class="text-right"><strong>L ${parseFloat(item.monto).toFixed(2)}</strong></td>
+                `;
+            }
             historyBody.appendChild(row);
         });
 
-        const totalPages = Math.ceil(orders.length / historyPerPage);
+        const totalPages = Math.ceil(items.length / historyPerPage);
         pageInfo.textContent = `Página ${historyPage} de ${totalPages || 1}`;
         
         document.getElementById("prev-page").disabled = historyPage === 1;
@@ -304,11 +540,15 @@ const initAdminClientes = () => {
         renderCustomerList();
     });
 
+    const getIsSelectedAdmin = () => {
+        return adminId && selectedCustomerId === adminId;
+    };
+
     document.getElementById("prev-page").onclick = () => {
         if (historyPage > 1) {
             historyPage--;
             const customer = allCustomers.find(c => c.id === selectedCustomerId);
-            renderHistory(customer.fetchedOrders);
+            if (customer) renderHistory(customer.fetchedOrders, getIsSelectedAdmin());
         }
     };
 
@@ -318,9 +558,63 @@ const initAdminClientes = () => {
         const totalPages = Math.ceil(customer.fetchedOrders.length / historyPerPage);
         if (historyPage < totalPages) {
             historyPage++;
-            renderHistory(customer.fetchedOrders);
+            renderHistory(customer.fetchedOrders, getIsSelectedAdmin());
         }
     };
+
+    // 6b. ADMIN PERIOD FILTER
+    const refreshAdminView = async () => {
+        if (!adminId || selectedCustomerId !== adminId) return;
+        const rango = getAdminRango(adminPeriodo, adminPeriodoOffset);
+        if (adminPeriodoLabel) adminPeriodoLabel.textContent = rango.label;
+        const [salesData, salesHistory, topProduct] = await Promise.all([
+            fetchAdminSalesData(adminId, rango.desde, rango.hasta),
+            fetchAdminSalesHistory(adminId, rango.desde, rango.hasta),
+            fetchAdminTopProduct(adminId, rango.desde, rango.hasta),
+        ]);
+        cTotalSpent.textContent = `L ${salesData.totalVendido.toFixed(2)}`;
+        cTotalOrders.textContent = salesData.ventasAtendidas;
+        if (cTopProductName) {
+            cTopProductName.textContent = topProduct ? topProduct.name : "Sin datos";
+        }
+        if (cTopProductCount) {
+            cTopProductCount.textContent = topProduct ? `${topProduct.veces_vendido} unidades` : "";
+        }
+        if (cTopProductImg) {
+            if (topProduct && topProduct.image_url) {
+                cTopProductImg.src = topProduct.image_url;
+                cTopProductImg.style.display = "";
+            } else {
+                cTopProductImg.style.display = "none";
+            }
+        }
+        const customer = allCustomers.find(c => c.id === selectedCustomerId);
+        if (customer) {
+            customer.fetchedOrders = salesHistory;
+            historyPage = 1;
+            renderHistory(salesHistory, true);
+        }
+    };
+
+    document.querySelectorAll(".periodo-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            document.querySelectorAll(".periodo-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            adminPeriodo = btn.dataset.periodo;
+            adminPeriodoOffset = 0;
+            refreshAdminView();
+        });
+    });
+
+    document.getElementById("admin-periodo-prev")?.addEventListener("click", () => {
+        adminPeriodoOffset--;
+        refreshAdminView();
+    });
+
+    document.getElementById("admin-periodo-next")?.addEventListener("click", () => {
+        adminPeriodoOffset++;
+        refreshAdminView();
+    });
 
     // 7. CONTACTO MULTICANAL
     const openContactModal = (id) => {
