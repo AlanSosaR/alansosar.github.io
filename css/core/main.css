@@ -428,7 +428,9 @@ body {
 @media (max-width: 900px) {
   .product-main {
     grid-template-columns: 1fr;
-    margin: 2rem 0.5rem;
+    width: auto;
+    margin: 2rem 1rem;
+    padding: 1.5rem;
   }
 }
 
