@@ -64,7 +64,8 @@ function getDefaultSettings() {
     historia_lead: "Café Cortero es un proyecto familiar nacido del amor por la tierra y el café bien hecho. Cada grano refleja nuestro compromiso con la calidad, el respeto al entorno y el orgullo de producir café hondureño.",
     historia_body: "Desde la siembra hasta el tostado, cuidamos cada etapa de forma artesanal, combinando tradición, dedicación y experiencia para que disfrutes en cada taza un café honesto y lleno de sabor.",
     historia_imagen_url: "/imagenes/nosotros.jpg",
-    whatsapp_numero: "50494546047",
+    whatsapp_numero: "50496670613",
+    whatsapp_numero2: "50498675101",
     facebook_url: "https://www.facebook.com/share/1FsrT4DYrU/",
     instagram_url: "https://www.instagram.com/TU_USUARIO"
   };

@@ -695,10 +695,11 @@ async function cargarSiteSettings() {
 
   // FAB — enlaces de contacto
   const fabLinks = document.querySelectorAll(".fab-options a");
-  if (fabLinks.length >= 3) {
+  if (fabLinks.length >= 4) {
     if (s.whatsapp_numero) fabLinks[0].href = `https://wa.me/${s.whatsapp_numero.replace(/\D/g, "")}`;
-    if (s.facebook_url) fabLinks[1].href = s.facebook_url;
-    if (s.instagram_url) fabLinks[2].href = s.instagram_url;
+    if (s.whatsapp_numero2) fabLinks[1].href = `https://wa.me/${s.whatsapp_numero2.replace(/\D/g, "")}`;
+    if (s.facebook_url) fabLinks[2].href = s.facebook_url;
+    if (s.instagram_url) fabLinks[3].href = s.instagram_url;
   }
 }
 

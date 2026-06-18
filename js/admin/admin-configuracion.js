@@ -29,6 +29,7 @@ const historiaImgUpload = document.getElementById("historiaImgUpload");
 const historiaImgInput = document.getElementById("historiaImgInput");
 
 const whatsappNumero = document.getElementById("whatsapp_numero");
+const whatsappNumero2 = document.getElementById("whatsapp_numero2");
 const facebookUrl = document.getElementById("facebook_url");
 const instagramUrl = document.getElementById("instagram_url");
 const btnSave = document.getElementById("btnSaveConfig");
@@ -195,7 +196,8 @@ async function cargarConfiguracion() {
     historiaLead.value = "Café Cortero es un proyecto familiar nacido del amor por la tierra y el café bien hecho. Cada grano refleja nuestro compromiso con la calidad, el respeto al entorno y el orgullo de producir café hondureño.";
     historiaBody.value = "Desde la siembra hasta el tostado, cuidamos cada etapa de forma artesanal, combinando tradición, dedicación y experiencia para que disfrutes en cada taza un café honesto y lleno de sabor.";
     historiaPreview.src = "/imagenes/nosotros.jpg";
-    whatsappNumero.value = "50494546047";
+    whatsappNumero.value = "50496670613";
+    whatsappNumero2.value = "50498675101";
     facebookUrl.value = "https://www.facebook.com/share/1FsrT4DYrU/";
     instagramUrl.value = "https://www.instagram.com/TU_USUARIO";
     renderSlides();
@@ -208,6 +210,7 @@ async function cargarConfiguracion() {
   historiaBody.value = data.historia_body || "";
   historiaPreview.src = data.historia_imagen_url || "/imagenes/nosotros.jpg";
   whatsappNumero.value = data.whatsapp_numero || "";
+  whatsappNumero2.value = data.whatsapp_numero2 || "";
   facebookUrl.value = data.facebook_url || "";
   instagramUrl.value = data.instagram_url || "";
 
@@ -260,6 +263,7 @@ async function guardarConfiguracion(e) {
       historia_body: historiaBody.value.trim(),
       historia_imagen_url: historiaImagenUrl,
       whatsapp_numero: whatsappNumero.value.trim(),
+      whatsapp_numero2: whatsappNumero2.value.trim(),
       facebook_url: facebookUrl.value.trim(),
       instagram_url: instagramUrl.value.trim(),
       updated_at: new Date().toISOString()
@@ -325,7 +329,8 @@ function showSnackbar(message, type = "success") {
   if (!el) return;
   el.textContent = message;
   el.className = "snackbar show";
-  setTimeout(() => el.classList.remove("show"), 3500);
+  if (type) el.classList.add(type);
+  setTimeout(() => el.classList.remove("show", "success", "error", "warn"), 3500);
 }
 
 /* ============================================================
