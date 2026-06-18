@@ -51,6 +51,15 @@ function injectNotificationStyles() {
       z-index: 999999;
       transition: opacity .22s ease, transform .22s cubic-bezier(.2,0,0,1);
     }
+    #push-snackbar::before {
+      content: "";
+      width: 6px;
+      align-self: stretch;
+      border-radius: 999px;
+      background: #33c26b;
+      opacity: .95;
+      flex-shrink: 0;
+    }
     #push-snackbar.show {
       opacity: 1;
       pointer-events: auto;
