@@ -164,13 +164,13 @@ body {
 }
 
 .legal-content h2 {
-  margin-top: 24px;
-  margin-bottom: 10px;
-
-  font-size: 1.1rem;
-  color: var(--verde);
-  padding-left: 12px;
-  border-left: 4px solid var(--marron);
+  margin-top: 28px;
+  margin-bottom: 12px;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--marron);
+  padding-bottom: 6px;
+  border-bottom: 2px solid var(--verde);
 }
 
 /* ================= LISTAS ================= */
