@@ -47,7 +47,7 @@ body {
   width: 100%;
   max-width: 900px;
 
-  margin: 96px auto 96px; /* ↑ aire arriba | ↓ aire abajo */
+  margin: 96px auto 160px; /* ↑ aire arriba | ↓ aire abajo */
   background: var(--blanco);
 
   border-radius: 26px;
@@ -61,7 +61,7 @@ body {
 /* ================= MOBILE ================= */
 @media (max-width: 600px) {
   .legal-card {
-    margin: 88px auto 120px; /* 🔑 aire inferior REAL en móvil */
+    margin: 88px auto 160px; /* 🔑 aire inferior REAL en móvil */
     padding: 4rem 16px 3rem;
     border-radius: 24px;
   }
