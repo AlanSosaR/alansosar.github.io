@@ -30,8 +30,8 @@ if (window.__LAYOUT_LOADED__) {
         }
       }
 
-      // ================= INYECTAR FOOTER (siempre, si no existe ya) =================
-      if (!document.getElementById("site-footer")) {
+      // ================= INYECTAR FOOTER (excepto login) =================
+      if (!isLoginPage && !document.getElementById("site-footer")) {
         const footerRes = await fetch("/pages/shared/footer.html", { cache: "no-store" });
         if (!footerRes.ok) throw new Error("footer.html no encontrado");
         const footerHtml = await footerRes.text();
