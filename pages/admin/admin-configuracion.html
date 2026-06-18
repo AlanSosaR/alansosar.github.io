@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin · Configuración | Café Cortero</title>
+
+  <!-- Material Symbols -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+
+  <link rel="stylesheet" href="/css/core/tipografia.css" />
+  <link rel="stylesheet" href="/css/ui/header.css">
+  <link rel="stylesheet" href="/css/admin/admin-configuracion.css" />
+</head>
+
+<body class="page-admin-config">
+
+  <main class="admin-config-container fade-in">
+
+    <div class="config-topbar">
+      <h1>Configuración del sitio</h1>
+      <p class="config-subtitle">Administra el carrusel, la sección "Nuestra historia" y los datos de contacto</p>
+    </div>
+
+    <form id="configForm">
+
+      <!-- ==================== BLOQUE: CARRUSEL ==================== -->
+      <section class="config-card">
+        <div class="card-header-stitch">
+          <span class="material-symbols-outlined">view_carousel</span>
+          <h2>Carrusel principal</h2>
+        </div>
+        <p class="card-desc-stitch">Agrega, reordena y edita las imágenes del carrusel del inicio.</p>
+
+        <div id="slides-container" class="slides-list">
+          <!-- JS renderiza cada slide -->
+        </div>
+
+        <button type="button" id="btnAddSlide" class="btn-add-slide">
+          <span class="material-symbols-outlined">add_photo_alternate</span>
+          Agregar imagen al carrusel
+        </button>
+        <input type="file" id="slideUploadInput" accept="image/jpeg,image/png,image/webp" multiple hidden>
+      </section>
+
+      <!-- ==================== BLOQUE: NUESTRA HISTORIA ==================== -->
+      <section class="config-card">
+        <div class="card-header-stitch">
+          <span class="material-symbols-outlined">auto_stories</span>
+          <h2>Nuestra historia</h2>
+        </div>
+        <p class="card-desc-stitch">Edita el texto y la imagen de la sección "Nuestra historia".</p>
+
+        <div class="form-grid-2col">
+          <div class="field-group">
+            <label for="historia_titulo">Título</label>
+            <input id="historia_titulo" type="text" class="config-input" />
+          </div>
+          <div class="field-group">
+            <label for="historia_subtitulo">Subtítulo</label>
+            <input id="historia_subtitulo" type="text" class="config-input" />
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label for="historia_lead">Texto principal</label>
+          <textarea id="historia_lead" class="config-input config-textarea" rows="3"></textarea>
+        </div>
+
+        <div class="field-group">
+          <label for="historia_body">Texto secundario</label>
+          <textarea id="historia_body" class="config-input config-textarea" rows="3"></textarea>
+        </div>
+
+        <div class="field-group">
+          <label>Imagen de la historia</label>
+          <div class="historia-img-upload" id="historiaImgUpload">
+            <img id="historiaPreview" src="" alt="Previsualización" />
+            <div class="historia-img-overlay">
+              <span class="material-symbols-outlined">camera_alt</span>
+              <span>Cambiar imagen</span>
+            </div>
+          </div>
+          <input type="file" id="historiaImgInput" accept="image/jpeg,image/png,image/webp" hidden>
+        </div>
+      </section>
+
+      <!-- ==================== BLOQUE: CONTACTO ==================== -->
+      <section class="config-card">
+        <div class="card-header-stitch">
+          <span class="material-symbols-outlined">contacts</span>
+          <h2>Contacto</h2>
+        </div>
+        <p class="card-desc-stitch">Números y redes sociales que aparecen en el botón flotante de contacto.</p>
+
+        <div class="form-grid-3col">
+          <div class="field-group">
+            <label for="whatsapp_numero">
+              <i class="fa-brands fa-whatsapp" style="color:#25D366"></i> WhatsApp
+            </label>
+            <input id="whatsapp_numero" type="text" class="config-input" placeholder="50494546047" />
+          </div>
+          <div class="field-group">
+            <label for="facebook_url">
+              <i class="fa-brands fa-facebook" style="color:#1877F2"></i> Facebook URL
+            </label>
+            <input id="facebook_url" type="url" class="config-input" placeholder="https://facebook.com/..." />
+          </div>
+          <div class="field-group">
+            <label for="instagram_url">
+              <i class="fa-brands fa-instagram" style="color:#E4405F"></i> Instagram URL
+            </label>
+            <input id="instagram_url" type="url" class="config-input" placeholder="https://instagram.com/..." />
+          </div>
+        </div>
+      </section>
+
+      <!-- BOTÓN GUARDAR -->
+      <div class="form-actions">
+        <button type="submit" id="btnSaveConfig" class="btn-save-config">
+          <span class="material-symbols-outlined">save</span>
+          Guardar cambios
+        </button>
+      </div>
+
+    </form>
+  </main>
+
+  <div id="snackbar" class="snackbar" aria-live="polite"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/js/core/supabase-client-core.js"></script>
+  <script src="/js/core/supabase-auth.js"></script>
+  <script src="/js/ui/layout.js"></script>
+  <script type="module" src="/js/ui/header.js"></script>
+  <script src="/js/core/auth-ui.js"></script>
+  <script src="/js/admin/admin-configuracion.js"></script>
+</body>
+
+</html>

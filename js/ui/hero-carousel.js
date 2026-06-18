@@ -1,21 +1,51 @@
 /* =========================================
    HERO CAROUSEL — Logic (Premium)
+   Renderiza slides desde site_settings
    ========================================= */
 
-document.addEventListener("DOMContentLoaded", () => {
+async function initHeroCarousel() {
   const carousel = document.getElementById("heroCarousel");
   if (!carousel) return;
 
-  const slides = Array.from(carousel.querySelectorAll(".hero-slide"));
-
-  // New Controls
+  const wrapper = carousel.querySelector(".hero-slides-wrapper");
+  const heroContent = carousel.querySelector(".hero-content");
+  const totalSlidesEl = carousel.querySelector(".total-slides");
+  const currentSlideEl = carousel.querySelector(".current-slide");
+  const progressFill = carousel.querySelector(".progress-fill");
   const prevBtn = carousel.querySelector(".nav-arrow.prev");
   const nextBtn = carousel.querySelector(".nav-arrow.next");
-  const currentSlideEl = carousel.querySelector(".current-slide");
-  const totalSlidesEl = carousel.querySelector(".total-slides");
-  const progressFill = carousel.querySelector(".progress-fill");
 
-  if (!slides.length) return;
+  // Cargar settings
+  const settings = await window.loadSiteSettings();
+  const slides = settings.hero_slides || [];
+
+  // Renderizar slides
+  wrapper.innerHTML = "";
+  slides.forEach((slide, i) => {
+    const div = document.createElement("div");
+    div.className = "hero-slide" + (i === 0 ? " active" : "");
+    div.innerHTML = `
+      <img src="${slide.url}" alt="${slide.titulo || 'Slide ' + (i + 1)}" loading="${i === 0 ? 'eager' : 'lazy'}">
+      <div class="hero-overlay-gradient"></div>
+    `;
+    wrapper.appendChild(div);
+  });
+
+  // Mostrar título/subtítulo del primer slide
+  if (heroContent && slides.length > 0) {
+    const first = slides[0];
+    const h1 = heroContent.querySelector("h1");
+    const p = heroContent.querySelector("p");
+    if (h1) h1.textContent = first.titulo || "La esencia de Honduras en cada sorbo";
+    if (p) p.textContent = first.subtitulo || "Café de altura cultivado a 1100 msnm, fresco y directo de la finca.";
+
+    // Actualizar título/subtítulo al cambiar slide
+    const origShowSlide = showSlide;
+    const _origUpdate = updateControls;
+  }
+
+  const slidesArray = Array.from(wrapper.querySelectorAll(".hero-slide"));
+  if (!slidesArray.length) return;
 
   // Config
   const INTERVAL_MS = 6000;
@@ -23,96 +53,47 @@ document.addEventListener("DOMContentLoaded", () => {
   let timerId = null;
   let isPaused = false;
 
-  // Init Logic
-  function init() {
-    // Set Total Slides Count
-    if (totalSlidesEl) {
-      totalSlidesEl.textContent = formatNumber(slides.length);
-    }
-
-    // Show first slide
-    showSlide(0);
-
-    // Start AutoPlay
-    startAutoPlay();
-
-    // Listeners for Arrows
-    if (nextBtn) nextBtn.addEventListener("click", () => {
-      stopAutoPlay(); // Pause interaction
-      nextSlide();
-      startAutoPlay(); // Restart
-    });
-
-    if (prevBtn) prevBtn.addEventListener("click", () => {
-      stopAutoPlay();
-      prevSlide();
-      startAutoPlay();
-    });
-
-    // Pause on Hover / Touch
-    carousel.addEventListener("mouseenter", () => isPaused = true);
-    carousel.addEventListener("mouseleave", () => isPaused = false);
-    carousel.addEventListener("touchstart", () => isPaused = true, { passive: true });
-    carousel.addEventListener("touchend", () => isPaused = false);
-  }
-
-  // Helper: 01, 02...
   function formatNumber(num) {
     return num < 10 ? `0${num}` : num;
   }
 
   function showSlide(index) {
-    // Wrap index
-    if (index >= slides.length) index = 0;
-    if (index < 0) index = slides.length - 1;
-
-    // Update State
+    if (index >= slidesArray.length) index = 0;
+    if (index < 0) index = slidesArray.length - 1;
     currentIndex = index;
 
-    // Visual Update (Slides)
-    slides.forEach((slide, i) => {
-      if (i === currentIndex) {
-        slide.classList.add("active");
-      } else {
-        slide.classList.remove("active");
-      }
+    slidesArray.forEach((slide, i) => {
+      slide.classList.toggle("active", i === currentIndex);
     });
 
-    // Visual Update (Controls)
+    // Actualizar hero content con título/subtítulo del slide actual
+    if (heroContent && slides[currentIndex]) {
+      const s = slides[currentIndex];
+      const h1 = heroContent.querySelector("h1");
+      const p = heroContent.querySelector("p");
+      if (h1) h1.textContent = s.titulo || "La esencia de Honduras en cada sorbo";
+      if (p) p.textContent = s.subtitulo || "Café de altura cultivado a 1100 msnm, fresco y directo de la finca.";
+    }
+
     updateControls();
   }
 
   function updateControls() {
-    const realIndex = currentIndex + 1; // 1-based
-
-    // 1. Update Number "01"
-    if (currentSlideEl) {
-      currentSlideEl.textContent = formatNumber(realIndex);
-    }
-
-    // 2. Update Progress Bar Width
+    const realIndex = currentIndex + 1;
+    if (currentSlideEl) currentSlideEl.textContent = formatNumber(realIndex);
+    if (totalSlidesEl) totalSlidesEl.textContent = formatNumber(slidesArray.length);
     if (progressFill) {
-      const percentage = (realIndex / slides.length) * 100;
+      const percentage = (realIndex / slidesArray.length) * 100;
       progressFill.style.width = `${percentage}%`;
     }
   }
 
-  function nextSlide() {
-    showSlide(currentIndex + 1);
-  }
+  function nextSlide() { showSlide(currentIndex + 1); }
+  function prevSlide() { showSlide(currentIndex - 1); }
 
-  function prevSlide() {
-    showSlide(currentIndex - 1);
-  }
-
-  // Auto Play Logic
   function startAutoPlay() {
     if (timerId) clearInterval(timerId);
-    timerId = setInterval(() => {
-      if (!isPaused) {
-        nextSlide();
-      }
-    }, INTERVAL_MS);
+    timerId = setInterval(() => { if (!isPaused) nextSlide(); }, INTERVAL_MS);
   }
 
   function stopAutoPlay() {
@@ -120,35 +101,34 @@ document.addEventListener("DOMContentLoaded", () => {
     timerId = null;
   }
 
-  // --- SWIPE SUPPORT (Touch) ---
-  let touchStartX = 0;
-  let touchEndX = 0;
+  // Init
+  if (totalSlidesEl) totalSlidesEl.textContent = formatNumber(slidesArray.length);
+  showSlide(0);
+  startAutoPlay();
 
-  carousel.addEventListener("touchstart", (e) => {
-    touchStartX = e.changedTouches[0].screenX;
-  }, { passive: true });
+  if (nextBtn) nextBtn.addEventListener("click", () => { stopAutoPlay(); nextSlide(); startAutoPlay(); });
+  if (prevBtn) prevBtn.addEventListener("click", () => { stopAutoPlay(); prevSlide(); startAutoPlay(); });
 
-  carousel.addEventListener("touchend", (e) => {
-    touchEndX = e.changedTouches[0].screenX;
-    handleSwipe();
-  }, { passive: true });
+  carousel.addEventListener("mouseenter", () => isPaused = true);
+  carousel.addEventListener("mouseleave", () => isPaused = false);
+  carousel.addEventListener("touchstart", () => isPaused = true, { passive: true });
+  carousel.addEventListener("touchend", () => isPaused = false);
+
+  // Swipe
+  let touchStartX = 0, touchEndX = 0;
+  carousel.addEventListener("touchstart", (e) => { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
+  carousel.addEventListener("touchend", (e) => { touchEndX = e.changedTouches[0].screenX; handleSwipe(); }, { passive: true });
 
   function handleSwipe() {
     const threshold = 50;
-    if (touchEndX < touchStartX - threshold) {
-      // Swipe Left -> Next
-      stopAutoPlay();
-      nextSlide();
-      startAutoPlay();
-    }
-    if (touchEndX > touchStartX + threshold) {
-      // Swipe Right -> Prev
-      stopAutoPlay();
-      prevSlide();
-      startAutoPlay();
-    }
+    if (touchEndX < touchStartX - threshold) { stopAutoPlay(); nextSlide(); startAutoPlay(); }
+    if (touchEndX > touchStartX + threshold) { stopAutoPlay(); prevSlide(); startAutoPlay(); }
   }
+}
 
-  // Run
-  init();
-});
+// Auto-init cuando el DOM esté listo
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", () => initHeroCarousel());
+} else {
+  initHeroCarousel();
+}

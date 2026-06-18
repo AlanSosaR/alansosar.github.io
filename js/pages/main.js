@@ -673,12 +673,42 @@ function initContactFAB() {
 }
 
 /* =========================
+   CARGAR CONFIGURACIÓN DEL SITIO
+======================== */
+async function cargarSiteSettings() {
+  await window.loadSiteSettings();
+  const s = window.siteSettings;
+  if (!s) return;
+
+  // Nuestra historia
+  const aboutTitle = document.querySelector(".about-title");
+  const aboutSubtitle = document.querySelector(".about-subtitle");
+  const aboutLead = document.querySelector(".about-lead");
+  const aboutBody = document.querySelector(".about-body");
+  const aboutImg = document.querySelector(".about-img img");
+
+  if (aboutTitle && s.historia_titulo) aboutTitle.textContent = s.historia_titulo;
+  if (aboutSubtitle && s.historia_subtitulo) aboutSubtitle.textContent = s.historia_subtitulo;
+  if (aboutLead && s.historia_lead) aboutLead.textContent = s.historia_lead;
+  if (aboutBody && s.historia_body) aboutBody.textContent = s.historia_body;
+  if (aboutImg && s.historia_imagen_url) aboutImg.src = s.historia_imagen_url;
+
+  // FAB — enlaces de contacto
+  const fabLinks = document.querySelectorAll(".fab-options a");
+  if (fabLinks.length >= 3) {
+    if (s.whatsapp_numero) fabLinks[0].href = `https://wa.me/${s.whatsapp_numero.replace(/\D/g, "")}`;
+    if (s.facebook_url) fabLinks[1].href = s.facebook_url;
+    if (s.instagram_url) fabLinks[2].href = s.instagram_url;
+  }
+}
+
+/* =========================
    DOM READY (ÚNICO Y CORRECTO)
-========================= */
+======================== */
 document.addEventListener("DOMContentLoaded", () => {
 
   syncHeaderCounter();
-  // initHeroCarousel(); // REMOVED: Replaced by hero-carousel.js
+  cargarSiteSettings();
   initContactFAB();
 
   const qtyNumber = safe("qty-number");
