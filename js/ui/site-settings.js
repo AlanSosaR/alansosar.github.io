@@ -21,6 +21,9 @@ window.loadSiteSettings = async function () {
       applySiteSettings(data);
     }
 
+    // Sanitizar URLs corruptas (localhost/127.0.0.1 guardado por error)
+    sanitizarURLs(data);
+
     window.siteSettings = data;
     window.siteSettingsLoaded = true;
     applySiteSettings(data);
@@ -81,6 +84,42 @@ function getDefaultSettings() {
 }
 
 /* ============================================================
+   SANITIZAR URLs CORRUPTAS (localhost/127.0.0.1)
+   ============================================================ */
+function sanitizarURLs(data) {
+  const campos = ["logo_url", "logo_secundario_url", "favicon_url", "historia_imagen_url"];
+  const defaults = {
+    logo_url: "/imagenes/logo.png",
+    logo_secundario_url: "/imagenes/logo_secundario.png",
+    favicon_url: "/imagenes/logo.png",
+    historia_imagen_url: "/imagenes/nosotros.jpg"
+  };
+  campos.forEach(campo => {
+    if (data[campo] && /localhost|127\.0\.0\.1/.test(data[campo])) {
+      console.warn(`🔧 URL corrupta detectada en ${campo}, usando default`);
+      data[campo] = defaults[campo] || "";
+    }
+  });
+  // Slides
+  if (Array.isArray(data.hero_slides)) {
+    data.hero_slides.forEach(s => {
+      if (s.url && /localhost|127\.0\.0\.1/.test(s.url)) {
+        s.url = "/imagenes/origen1.jpg";
+      }
+    });
+  }
+}
+
+/* ============================================================
+   LIMPIAR URL LOCALHOST (datos corruptos)
+   ============================================================ */
+function urlValida(url) {
+  if (!url) return "";
+  if (/localhost|127\.0\.0\.1/.test(url)) return "";
+  return url;
+}
+
+/* ============================================================
    APLICAR SETTINGS DINÁMICOS — Logo, Footer, Favicon
    ============================================================ */
 function applySiteSettings(s) {
@@ -88,26 +127,25 @@ function applySiteSettings(s) {
 
   // Logo header
   const headerLogo = document.querySelector(".header-logo");
-  if (headerLogo && s.logo_url) headerLogo.src = s.logo_url;
+  if (headerLogo) headerLogo.src = urlValida(s.logo_url) || "/imagenes/logo.png";
 
   // Footer
   const footerLogo = document.getElementById("footer-logo-img");
-  if (footerLogo && s.logo_secundario_url) footerLogo.src = s.logo_secundario_url;
+  if (footerLogo) footerLogo.src = urlValida(s.logo_secundario_url) || "/imagenes/logo_secundario.png";
   const footerText = document.getElementById("footer-copy-text");
   if (footerText && s.footer_text) footerText.textContent = s.footer_text;
 
   // Favicon dinámico
+  const faviconUrl = urlValida(s.favicon_url) || "/imagenes/logo.png";
   const existingIcon = document.querySelector('link[rel="icon"]');
-  if (s.favicon_url) {
-    if (existingIcon) {
-      existingIcon.href = s.favicon_url;
-    } else {
-      const link = document.createElement("link");
-      link.rel = "icon";
-      link.type = "image/png";
-      link.href = s.favicon_url;
-      document.head.appendChild(link);
-    }
+  if (existingIcon) {
+    existingIcon.href = faviconUrl;
+  } else {
+    const link = document.createElement("link");
+    link.rel = "icon";
+    link.type = "image/png";
+    link.href = faviconUrl;
+    document.head.appendChild(link);
   }
 }
 

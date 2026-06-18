@@ -1,6 +1,15 @@
 console.log("⚙️ admin-configuracion.js");
 
 /* ============================================================
+   LIMPIAR URL LOCALHOST (datos corruptos)
+   ============================================================ */
+function urlValida(url) {
+  if (!url) return "";
+  if (/localhost|127\.0\.0\.1/.test(url)) return "";
+  return url;
+}
+
+/* ============================================================
    ESPERAR SUPABASE
    ============================================================ */
 function esperarSupabase() {
@@ -232,16 +241,16 @@ async function cargarConfiguracion() {
   historiaSubtitulo.value = data.historia_subtitulo || "";
   historiaLead.value = data.historia_lead || "";
   historiaBody.value = data.historia_body || "";
-  historiaPreview.src = data.historia_imagen_url || "/imagenes/nosotros.jpg";
-  originalHistoriaImgUrl = data.historia_imagen_url || "";
+  historiaPreview.src = urlValida(data.historia_imagen_url) || "/imagenes/nosotros.jpg";
+  originalHistoriaImgUrl = urlValida(data.historia_imagen_url);
   whatsappNumero.value = data.whatsapp_numero || "";
   whatsappNumero2.value = data.whatsapp_numero2 || "";
   facebookUrl.value = data.facebook_url || "";
   instagramUrl.value = data.instagram_url || "";
-  logoPreview.src = data.logo_url || "/imagenes/logo.png";
-  originalLogoUrl = data.logo_url || "";
-  logoSecPreview.src = data.logo_secundario_url || "/imagenes/logo_secundario.png";
-  originalLogoSecUrl = data.logo_secundario_url || "";
+  logoPreview.src = urlValida(data.logo_url) || "/imagenes/logo.png";
+  originalLogoUrl = urlValida(data.logo_url);
+  logoSecPreview.src = urlValida(data.logo_secundario_url) || "/imagenes/logo_secundario.png";
+  originalLogoSecUrl = urlValida(data.logo_secundario_url);
   footerTextInput.value = data.footer_text || "2026 Café Cortero. Todos los derechos reservados.";
   if (privacyEditor) privacyEditor.innerHTML = data.privacy_content || "";
   if (termsEditor) termsEditor.innerHTML = data.terms_content || "";
