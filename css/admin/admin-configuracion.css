@@ -22,6 +22,7 @@ body.page-admin-config {
   background: var(--gris-bg);
   color: var(--cafe);
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 .admin-config-container {
@@ -29,6 +30,7 @@ body.page-admin-config {
   margin: 0 auto;
   padding: 20px;
   padding-top: calc(var(--header-height, 72px) + 24px);
+  overflow-x: hidden;
 }
 
 .config-topbar {
@@ -121,6 +123,31 @@ body.page-admin-config {
 .config-textarea {
   resize: vertical;
   min-height: 80px;
+}
+
+/* Editor de páginas legales — monospace, sin scroll horizontal */
+.legal-editor {
+  font-family: 'Cascadia Code', 'Fira Code', 'JetBrains Mono', 'Consolas', monospace;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--border-soft);
+  background: #fafbfa;
+  color: var(--cafe);
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
+  word-break: break-word;
+  transition: border-color 0.2s;
+}
+
+.legal-editor:focus {
+  outline: none;
+  border-color: var(--verde);
+  box-shadow: 0 0 0 3px rgba(55,123,76,.12);
 }
 
 .form-grid-2col {
@@ -457,6 +484,10 @@ body.page-admin-config {
    RESPONSIVE
    ========================================================= */
 @media (max-width: 768px) {
+  .admin-config-container {
+    padding: 16px;
+  }
+
   .slide-item {
     flex-wrap: wrap;
   }
