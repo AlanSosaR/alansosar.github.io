@@ -25,10 +25,11 @@ CREATE POLICY "Public SELECT site_settings" ON public.site_settings
 
 DROP POLICY IF EXISTS "Admin UPDATE site_settings" ON public.site_settings;
 CREATE POLICY "Admin UPDATE site_settings" ON public.site_settings
-  FOR UPDATE USING (
-    auth.role() = 'authenticated'
-    AND (SELECT rol FROM public.users WHERE id = auth.uid()) = 'admin'
-  );
+  FOR UPDATE USING (public.is_admin());
+
+DROP POLICY IF EXISTS "Admin INSERT site_settings" ON public.site_settings;
+CREATE POLICY "Admin INSERT site_settings" ON public.site_settings
+  FOR INSERT WITH CHECK (public.is_admin());
 
 -- Seed inicial con los valores actuales
 INSERT INTO public.site_settings (id, hero_slides, historia_titulo, historia_subtitulo, historia_lead, historia_body, historia_imagen_url, whatsapp_numero, facebook_url, instagram_url)
