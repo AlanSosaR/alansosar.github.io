@@ -48,10 +48,6 @@ const footerTextInput = document.getElementById("footerTextInput");
 let logoBlob = null;
 let logoSecBlob = null;
 
-// Páginas legales — contenteditable WYSIWYG
-const privacyEditor = document.getElementById("privacyEditor");
-const termsEditor = document.getElementById("termsEditor");
-
 const BUCKET = "site-assets";
 const STORAGE_URL = "https://eaipcuvvddyrqkbmjmvw.supabase.co/storage/v1/object/public";
 
@@ -221,8 +217,6 @@ async function cargarConfiguracion() {
     logoPreview.src = "/imagenes/logo.png";
     logoSecPreview.src = "/imagenes/logo_secundario.png";
     footerTextInput.value = "2026 Café Cortero. Todos los derechos reservados.";
-    privacyEditor.innerHTML = getDefaultPrivacyContent();
-    termsEditor.innerHTML = getDefaultTermsContent();
     renderSlides();
     return;
   }
@@ -239,8 +233,6 @@ async function cargarConfiguracion() {
   logoPreview.src = data.logo_url || "/imagenes/logo.png";
   logoSecPreview.src = data.logo_secundario_url || "/imagenes/logo_secundario.png";
   footerTextInput.value = data.footer_text || "2026 Café Cortero. Todos los derechos reservados.";
-  privacyEditor.innerHTML = data.privacy_content || getDefaultPrivacyContent();
-  termsEditor.innerHTML = data.terms_content || getDefaultTermsContent();
 
   slides = (data.hero_slides || []).map(s => ({ ...s }));
   renderSlides();
@@ -315,8 +307,6 @@ async function guardarConfiguracion(e) {
       logo_url: logoUrl,
       logo_secundario_url: logoSecUrl,
       footer_text: footerTextInput.value.trim(),
-      privacy_content: privacyEditor.innerHTML.trim(),
-      terms_content: termsEditor.innerHTML.trim(),
       updated_at: new Date().toISOString()
     };
 
@@ -382,42 +372,6 @@ function showSnackbar(message, type = "success") {
   el.className = "snackbar show";
   if (type) el.classList.add(type);
   setTimeout(() => el.classList.remove("show", "success", "error", "warn"), 3500);
-}
-
-/* ============================================================
-   DEFAULT LEGAL CONTENT
-   ============================================================ */
-function getDefaultPrivacyContent() {
-  return `<h2>Datos que recopilamos</h2>
-<ul>
-  <li>Correo electrónico y nombre básico (si inicias sesión con Google).</li>
-  <li>Datos necesarios para operar tu cuenta dentro de la aplicación.</li>
-</ul>
-
-<h2>Cómo usamos tus datos</h2>
-<p>Usamos esta información únicamente para autenticarte y gestionar tu cuenta dentro de Café Cortero. No vendemos tus datos.</p>
-
-<h2>Google Sign-In</h2>
-<p>No almacenamos tu contraseña de Google. El acceso se gestiona mediante OAuth y tokens de sesión.</p>
-
-<h2>Compartición con terceros</h2>
-<p>No compartimos información personal con terceros, salvo cuando sea necesario para el funcionamiento del inicio de sesión (por ejemplo, el proveedor de autenticación).</p>
-
-<h2>Contacto</h2>
-<p class="contacto">Si tienes preguntas, escríbenos a: <a href="mailto:cafecortero@gmail.com"><strong>cafecortero@gmail.com</strong></a></p>`;
-}
-
-function getDefaultTermsContent() {
-  return `<p>Al utilizar Café Cortero aceptas los presentes Términos del Servicio.</p>
-
-<h2>Uso del servicio</h2>
-<p>El servicio se proporciona "tal cual", sin garantías de disponibilidad continua ni ausencia de errores.</p>
-
-<h2>Responsabilidad del usuario</h2>
-<p>El uso de la aplicación es responsabilidad exclusiva del usuario, quien se compromete a utilizarla de forma lícita y adecuada.</p>
-
-<h2>Modificaciones</h2>
-<p>Café Cortero se reserva el derecho de modificar estos términos en cualquier momento. Las modificaciones entrarán en vigor una vez publicadas.</p>`;
 }
 
 /* ============================================================

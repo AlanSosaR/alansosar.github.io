@@ -6,17 +6,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Política de Privacidad | Café Cortero</title>
 
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="/imagenes/logo.png">
+
   <!-- Tipografía global -->
   <link rel="stylesheet" href="/css/core/tipografia.css">
-
-  <!-- Footer styles -->
-  <link rel="stylesheet" href="/css/ui/footer.css">
 
   <!-- Material Symbols -->
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
 
-  <!-- CSS legal -->
-  <link rel="stylesheet" href="/css/pages/legal/legal.css?v=7">
+  <!-- CSS legal (ruta absoluta, forzar recarga) -->
+  <link rel="stylesheet" href="/css/pages/legal/legal.css?v=6">
 </head>
 
 <body>
@@ -31,39 +31,62 @@
 
       <!-- Header -->
       <header class="legal-header">
+        <div class="logo-container" onclick="window.location.href='/pages/home/index.html'" role="button"
+          aria-label="Ir al inicio">
+          <img src="/imagenes/logo.png" alt="Café Cortero" class="logo-img" />
+        </div>
+
         <h1 class="legal-title">Política de Privacidad</h1>
+
         <p class="legal-subtitle">
           Esta página explica cómo usamos tus datos cuando inicias sesión en Café Cortero.
         </p>
       </header>
 
-      <!-- Contenido dinámico desde site_settings -->
-      <div class="legal-content" id="legalContent">
-        <p class="legal-loading">Cargando...</p>
-      </div>
+      <!-- Contenido -->
+      <div class="legal-content">
 
+        <h2>Datos que recopilamos</h2>
+        <ul>
+          <li>Correo electrónico y nombre básico (si inicias sesión con Google).</li>
+          <li>Datos necesarios para operar tu cuenta dentro de la aplicación.</li>
+        </ul>
+
+        <h2>Cómo usamos tus datos</h2>
+        <p>
+          Usamos esta información únicamente para autenticarte y gestionar tu cuenta dentro
+          de Café Cortero. No vendemos tus datos.
+        </p>
+
+        <h2>Google Sign-In</h2>
+        <p>
+          No almacenamos tu contraseña de Google. El acceso se gestiona mediante OAuth
+          y tokens de sesión.
+        </p>
+
+        <h2>Compartición con terceros</h2>
+        <p>
+          No compartimos información personal con terceros, salvo cuando sea necesario
+          para el funcionamiento del inicio de sesión (por ejemplo, el proveedor de
+          autenticación).
+        </p>
+
+        <h2>Contacto</h2>
+        <p class="contacto">
+          Si tienes preguntas, escríbenos a:
+          <a href="mailto:cafecortero@gmail.com">
+            <strong>cafecortero@gmail.com</strong>
+          </a>
+        </p>
+
+        <footer class="legal-footer">
+          <small>Última actualización: 2026</small>
+        </footer>
+
+      </div>
     </section>
   </main>
 
-  <div id="snackbar" class="snackbar" aria-live="polite"></div>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="/js/core/supabase-client-core.js"></script>
-  <script src="/js/core/supabase-auth.js"></script>
-  <script src="/js/ui/layout.js"></script>
-  <script src="/js/ui/site-settings.js"></script>
-  <script>
-    (async function() {
-      await window.loadSiteSettings();
-      const s = window.siteSettings;
-      const container = document.getElementById("legalContent");
-      if (s && s.privacy_content) {
-        container.innerHTML = s.privacy_content;
-      } else {
-        container.innerHTML = '<p>No hay contenido disponible.</p>';
-      }
-    })();
-  </script>
 </body>
 
 </html>

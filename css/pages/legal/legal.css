@@ -164,13 +164,13 @@ body {
 }
 
 .legal-content h2 {
-  margin-top: 28px;
-  margin-bottom: 12px;
-  font-size: 1.15rem;
-  font-weight: 600;
-  color: var(--marron);
-  padding-bottom: 6px;
-  border-bottom: 2px solid var(--verde);
+  margin-top: 24px;
+  margin-bottom: 10px;
+
+  font-size: 1.1rem;
+  color: var(--verde);
+  padding-left: 12px;
+  border-left: 4px solid var(--marron);
 }
 
 /* ================= LISTAS ================= */
@@ -193,14 +193,6 @@ body {
 
 .legal-content a:hover {
   text-decoration: underline;
-}
-
-/* Loading state */
-.legal-loading {
-  text-align: center;
-  color: var(--marron-suave);
-  padding: 40px 0;
-  font-size: 0.95rem;
 }
 
 /* ================= FOOTER ================= */
