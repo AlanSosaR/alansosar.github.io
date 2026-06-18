@@ -11,250 +11,179 @@
     <link rel="stylesheet" href="/css/core/tipografia.css" />
     <link rel="stylesheet" href="/css/ui/header.css" />
     <!-- Specific CSS -->
-    <link rel="stylesheet" href="/css/admin/admin-pedido-detalle.css" />
+    <link rel="stylesheet" href="/css/admin/admin-pedido-detalle.css?v=2" />
     <link rel="icon" type="image/png" href="/imagenes/logo.png">
 </head>
 
 <body class="page-admin-pedido-detalle">
-        <!-- Mobile Stitch Fixed Header TopAppBar -->
-        <header class="pedido-mobile-header hidden-desktop">
-            <button class="btn-back-mobile" onclick="history.back()"><span class="material-symbols-outlined">arrow_back</span></button>
-            <h1 class="pedido-number-mobile" id="detail-order-number-mobile">Pedido #—</h1>
-            <div class="mobile-header-actions">
-                <button class="btn-icon-mobile" id="btnPrintMobile" title="Imprimir">
-                    <span class="material-symbols-outlined">print</span>
-                    <span class="hidden-txt">Imprimir</span>
-                </button>
-                <button class="btn-contact-mobile" id="btn-contact-client-mobile" title="Contactar">
-                    <span class="material-symbols-outlined">mail</span>
-                    Contactar
-                </button>
-            </div>
-            <div class="header-border-bottom"></div>
-        </header>
-
         <main class="admin-pedido-container fade-in">
             
-            <!-- ====== HEADER DESKTOP ====== -->
-            <header class="pedido-header hidden-mobile">
-                <div class="pedido-title-col">
-                    <div class="breadcrumb">
-                        <button class="btn-back" onclick="history.back()" title="Volver">
-                            <span class="material-symbols-outlined">arrow_back</span>
-                        </button>
-                        <span class="breadcrumb-text">Gestión de Pedidos</span>
+            <!-- SCROLL CONTENT (mis-pedidos style) -->
+            <div id="order-detail-content" class="detail-container-alt">
+
+                <!-- Mobile Header -->
+                <header class="detail-header-stitch-alt hidden-desktop">
+                    <button onclick="history.back()" class="btn-mobile-back-inline">
+                        <span class="material-symbols-outlined">chevron_left</span>
+                    </button>
+                    <div class="header-info-stitch">
+                        <h2 class="order-number-stitch" id="detail-order-number-mobile">Pedido #—</h2>
+                        <span class="status-badge-stitch" id="detail-status-mobile">CARGANDO</span>
                     </div>
-                    <h1 class="pedido-number" id="detail-order-number">Pedido #—</h1>
-                </div>
-                
-                <div class="pedido-actions-col">
-                    <button class="btn-outline" id="btnPrint">
-                        <span class="material-symbols-outlined">print</span>
-                        Imprimir Factura
-                    </button>
-                    <button class="btn-primary" id="btn-contact-client">
-                        <span class="material-symbols-outlined">mail</span>
-                        Contactar Cliente
-                    </button>
-                </div>
-            </header>
+                    <div class="mobile-header-actions" style="display:flex;gap:8px;align-items:center">
+                        <button class="btn-icon-mobile" id="btnPrintMobile" title="Imprimir" style="background:none;border:none;cursor:pointer">
+                            <span class="material-symbols-outlined">print</span>
+                        </button>
+                        <button class="btn-contact-mobile" id="btn-contact-client-mobile" title="Contactar" style="background:none;border:none;cursor:pointer">
+                            <span class="material-symbols-outlined">mail</span>
+                        </button>
+                    </div>
+                </header>
 
-            <!-- TITULO ESTADO (Mobile & Desktop) -->
-            <section class="status-header-center">
-                <div class="status-badge-container">
-                    <span class="status-badge status-pill" id="detail-status">
-                        <span class="material-symbols-outlined">check_circle</span>
-                        Cargando...
-                    </span>
-                </div>
-                <p class="meta-date" id="detail-date">Realizado el —</p>
-            </section>
+                <div class="detail-scroll-area custom-scroll">
 
-            <!-- Bento Grid Principal -->
-            <div class="pedido-bento-grid">
-                
-                <!-- ====== COLUMNA IZQUIERDA (2/3) ====== -->
-                <div class="bento-col-left">
-                    
-                    <!-- Historial del Pedido (Timeline) -->
-                    <section class="bento-card timeline-card">
-                        <h2 class="card-title">
-                            Estado del Pedido
-                        </h2>
-                        
-                        <div class="timeline-container mobile-vertical">
-                            <div class="timeline-track-background"></div>
-                            <div class="timeline-track-progress" id="timeline-progress"></div>
+                    <div class="main-detail-card">
+
+                        <!-- ====== HEADER DESKTOP ====== -->
+                        <header class="pedido-header hidden-mobile">
+                            <div class="pedido-title-col">
+                                <div class="breadcrumb">
+                                    <button class="btn-back" onclick="history.back()" title="Volver">
+                                        <span class="material-symbols-outlined">arrow_back</span>
+                                    </button>
+                                    <span class="breadcrumb-text">Gestión de Pedidos</span>
+                                </div>
+                                <h1 class="order-number-stitch" id="detail-order-number">Pedido #—</h1>
+                            </div>
                             
-                            <!-- Steps -->
-                            <div class="timeline-step" id="step-pending">
-                                <div class="step-icon"><span class="material-symbols-outlined">check</span></div>
-                                <div class="step-info">
-                                    <strong>Pedido Creado</strong>
-                                    <span>—</span>
-                                </div>
+                            <div class="pedido-actions-col">
+                                <button class="btn-outline" id="btnPrint">
+                                    <span class="material-symbols-outlined">print</span>
+                                    Imprimir Factura
+                                </button>
+                                <button class="btn-primary" id="btn-contact-client">
+                                    <span class="material-symbols-outlined">mail</span>
+                                    Contactar Cliente
+                                </button>
                             </div>
-                            <div class="timeline-step" id="step-confirmed">
-                                <div class="step-icon"><span class="material-symbols-outlined">check</span></div>
-                                <div class="step-info">
-                                    <strong>Confirmado</strong>
-                                    <span>—</span>
-                                </div>
-                            </div>
-                            <div class="timeline-step" id="step-preparing">
-                                <div class="step-icon"><span class="material-symbols-outlined">check</span></div>
-                                <div class="step-info">
-                                    <strong>Preparando Granos</strong>
-                                    <span>—</span>
-                                </div>
-                            </div>
-                            <div class="timeline-step" id="step-shipped">
-                                <div class="step-icon"><span class="material-symbols-outlined">check</span></div>
-                                <div class="step-info">
-                                    <strong>En Camino</strong>
-                                    <span>—</span>
-                                </div>
-                            </div>
-                            <div class="timeline-step" id="step-delivered">
-                                <div class="step-icon"><span class="material-symbols-outlined">verified</span></div>
-                                <div class="step-info">
-                                    <strong>Entregado</strong>
-                                    <span>—</span>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
+                        </header>
 
-                    <!-- Productos Comprados -->
-                    <section class="bento-card mobile-pt-0 mb-reduce">
-                        <div class="card-header-bordered">
-                            <h2 class="card-title m-0">
-                                Resumen de Compra
-                            </h2>
-                        </div>
-                        
-                        <div class="products-list-mobile" id="detail-items-body">
-                            <!-- JS generates products here, adaptive via CSS -->
-                            <div class="text-center p-8 loading-state">Cargando productos...</div>
-                        </div>
-                    </section>
-
-                    <!-- Info del Cliente (Mobile) -->
-                    <section class="bento-card mobile-client-info hidden-desktop">
-                        <h2 class="card-title" id="detail-client-section-title-mobile">Información de Envío</h2>
-                        
-                        <div class="client-info-flex">
-                            <div class="client-avatar" id="detail-avatar-mobile">US</div>
-                            <div class="client-data">
-                                <strong id="detail-client-name-mobile">Cliente</strong>
-                                <span id="detail-client-email-mobile">email@...</span>
-                                <span id="detail-client-phone-mobile">+000</span>
+                        <!-- Status -->
+                        <section class="status-header-center" style="margin-bottom:24px">
+                            <div class="status-badge-container">
+                                <span class="status-badge-stitch" id="detail-status">
+                                    <span class="material-symbols-outlined">check_circle</span>
+                                    Cargando...
+                                </span>
                             </div>
-                        </div>
+                            <p class="meta-date" id="detail-date">Realizado el —</p>
+                        </section>
 
-                        <div class="shipping-info" id="detail-shipping-section-mobile">
-                            <div class="shipping-address-flex">
-                                <span class="material-symbols-outlined icon-faded">location_on</span>
-                                <div>
-                                    <p class="section-label mb-1">Dirección de Entrega</p>
-                                    <p id="detail-shipping-address-mobile" class="text-on-surface">Cargando dirección...</p>
+                        <!-- TIMELINE -->
+                        <div class="timeline-container-stitch">
+                            <div class="timeline-progress-stitch">
+                                <div id="timeline-progress" class="progress-fill"></div>
+                            </div>
+                            <div class="timeline-steps-stitch">
+                                <div class="step step-pending active">
+                                    <div class="step-icon"><img src="/imagenes/creado.png" class="step-custom-icon" alt="" /></div>
+                                    <span class="step-label">Creado</span>
+                                </div>
+                                <div class="step step-preparing">
+                                    <div class="step-icon"><img src="/imagenes/carretilla.png" class="step-custom-icon" alt="" /></div>
+                                    <span class="step-label">Preparando</span>
+                                </div>
+                                <div class="step step-shipped">
+                                    <div class="step-icon"><img src="/imagenes/camion.png" class="step-custom-icon" alt="" /></div>
+                                    <span class="step-label">En Camino</span>
+                                </div>
+                                <div class="step step-delivered">
+                                    <div class="step-icon"><img src="/imagenes/contra-reembolso.png" class="step-custom-icon" alt="" /></div>
+                                    <span class="step-label">Entregado</span>
                                 </div>
                             </div>
                         </div>
-                    </section>
-                    
-                    <!-- Notas Internas -->
-                    <section class="bento-card note-card pb-reduced">
-                        <div class="flex items-center gap-2 mb-3 note-header">
-                            <span class="material-symbols-outlined text-xl">sticky_note_2</span>
-                            <h2 class="font-headline font-bold text-sm m-0">Notas Internas</h2>
-                        </div>
-                        <p class="note-content" id="detail-order-notes">
-                            El cliente no dejó notas.
-                        </p>
-                    </section>
 
-                    <!-- Área de Acciones de Estado -->
-                    <section class="bento-card actions-card pb-extend">
-                        <div class="change-status-header">
-                            <span class="material-symbols-outlined">edit_square</span>
-                            <h3>Actualizar estado</h3>
-                        </div>
-                        <div class="status-actions" id="status-action-buttons">
-                            <!-- Llenados dinámicamente -->
-                            Cargando acciones...
-                        </div>
-                    </section>
-                </div>
+                        <!-- INFO GRID -->
+                        <div class="detail-grid-stitch">
 
+                            <div class="info-card-stitch">
+                                <h3 class="card-title-stitch"><span class="material-symbols-outlined" style="font-size:18px;color:var(--primary-green)">person</span> Cliente</h3>
+                                <div class="info-group-stitch">
+                                    <div class="info-row">
+                                        <label>Nombre:</label>
+                                        <p id="detail-client-name">—</p>
+                                    </div>
+                                    <div class="info-row">
+                                        <label>Email:</label>
+                                        <p id="detail-client-email">—</p>
+                                    </div>
+                                    <div class="info-row">
+                                        <label>Teléfono:</label>
+                                        <p id="detail-client-phone">—</p>
+                                    </div>
+                                </div>
+                                <div class="shipping-info" style="margin-top:12px">
+                                    <p class="section-label">Dirección de Envío</p>
+                                    <p id="detail-shipping-address">—</p>
+                                </div>
+                                <div class="shipping-info" style="margin-top:12px">
+                                    <p class="section-label">Notas Internas</p>
+                                    <p id="detail-order-notes">El cliente no dejó notas.</p>
+                                </div>
+                            </div>
 
-                <!-- ====== COLUMNA DERECHA (1/3) ====== -->
-                <div class="bento-col-right">
-                    
-                    <!-- Info del Cliente (Desktop) -->
-                    <section class="bento-card hidden-mobile">
-                        <h2 class="card-title" id="detail-client-section-title">
-                            <span class="material-symbols-outlined icon-primary">person</span>
-                            Información del Cliente
-                        </h2>
-                        
-                        <div class="client-info-flex">
-                            <div class="client-avatar" id="detail-avatar">
-                                US
+                            <div class="info-card-stitch">
+                                <h3 class="card-title-stitch"><img src="/imagenes/cupones-de-alimentos.png" class="card-title-icon-img" alt="" /> Resumen del pedido</h3>
+
+                                <div id="detail-items-body" class="summary-items-list"></div>
+
+                                <div class="payment-info-rows">
+                                    <div class="pay-row">
+                                        <span>Método:</span>
+                                        <span id="detail-payment-method">—</span>
+                                    </div>
+                                    <div class="pay-row">
+                                        <span>Fecha:</span>
+                                        <span id="detail-payment-date">—</span>
+                                    </div>
+                                </div>
+
+                                <hr class="summary-divider">
+
+                                <div class="summary-totals">
+                                    <div class="sum-row">
+                                        <span>Subtotal</span>
+                                        <span id="detail-subtotal">L 0.00</span>
+                                    </div>
+                                    <div class="sum-row">
+                                        <span>Envío</span>
+                                        <span id="detail-shipping">Gratis</span>
+                                    </div>
+                                    <div class="sum-row discount-text" id="discount-row" style="display:none">
+                                        <span>Descuento</span>
+                                        <span id="detail-discount">- L 0.00</span>
+                                    </div>
+                                </div>
+
+                                <hr class="summary-divider">
+
+                                <div class="final-total-row">
+                                    <span>Total</span>
+                                    <strong id="detail-total-amount" class="total-value-stitch">L 0.00</strong>
+                                </div>
+
+                                <div id="receipt-container" class="receipt-preview-stitch hidden" style="margin-top:16px">
+                                    <label>Comprobante:</label>
+                                    <a id="payment-receipt-link" href="#" target="_blank" class="receipt-btn">Ver Imagen <span class="material-symbols-outlined">open_in_new</span></a>
+                                </div>
                             </div>
-                            <div class="client-data">
-                                <strong id="detail-client-name">Cliente</strong>
-                                <span id="detail-client-email">email@...</span>
-                                <span id="detail-client-phone">+000</span>
-                            </div>
+
                         </div>
 
-                        <div class="shipping-info" id="detail-shipping-section">
-                            <p class="section-label">Dirección de Envío</p>
-                            <div class="shipping-address-flex">
-                                <span class="material-symbols-outlined icon-faded">location_on</span>
-                                <p id="detail-shipping-address">Cargando dirección...</p>
-                            </div>
-                        </div>
-                    </section>
-
-                    <!-- Resumen de Pago -->
-                    <section class="bento-card card-dark payment-mobile-style">
-                        <h2 class="card-title text-white hidden-mobile">
-                            <span class="material-symbols-outlined text-white">receipt_long</span>
-                            Resumen de Pago
-                        </h2>
-                        
-                        <div class="payment-rows">
-                            <div class="payment-row">
-                                <span>Subtotal</span>
-                                <span class="font-medium" id="detail-subtotal">L 0.00</span>
-                            </div>
-                            <div class="payment-row">
-                                <span>Gastos de Envío</span>
-                                <span class="font-medium">Gratis</span>
-                            </div>
-                            <!-- Pago Contra Entrega info si aplica -->
-                            <div class="payment-row total-row">
-                                <span class="font-headline font-bold text-lg text-on-surface-white">Total</span>
-                                <strong class="font-headline font-extrabold text-2xl text-primary-light" id="detail-total-amount">L 0.00</strong>
-                            </div>
-                        </div>
-                        
-                        <div class="payment-verification mt-6" id="detail-payment-method-box">
-                            <span class="material-symbols-outlined" id="payment-icon">verified_user</span>
-                            <div class="flex-grow">
-                                <p class="verification-title uppercase tracking-wider" id="payment-title">Pago Verificado</p>
-                                <p class="verification-desc text-xs opacity-80" id="payment-desc">Método cargando...</p>
-                            </div>
-                            <a id="payment-receipt-link" href="#" target="_blank" class="receipt-btn hidden">
-                                Ver Comprobante <span class="material-symbols-outlined">open_in_new</span>
-                            </a>
-                        </div>
-                    </section>
+                    </div>
 
                 </div>
-
             </div>
         </main>
 

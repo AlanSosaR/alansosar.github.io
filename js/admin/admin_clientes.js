@@ -249,6 +249,9 @@ const initAdminClientes = () => {
         if (preselectedId) {
           const customer = allCustomers.find(c => c.id === preselectedId);
           if (customer) setTimeout(() => selectCustomer(customer), 100);
+        } else if (adminId && window.innerWidth >= 1024) {
+          const adminUser = allCustomers.find(c => c.id === adminId);
+          if (adminUser) setTimeout(() => selectCustomer(adminUser), 100);
         }
     };
 

@@ -377,7 +377,7 @@ console.log("🛠️ admin_pedidos.js — INIT STITCH");
             }
 
             card.onclick = () => {
-                window.location.href = `/pages/admin/admin-pedido-detalle.html?id=${o.id}`;
+                selectOrder(o);
             };
             container.appendChild(clone);
         });
@@ -418,6 +418,14 @@ console.log("🛠️ admin_pedidos.js — INIT STITCH");
         badge.textContent = config.label;
         badge.style.backgroundColor = config.color;
 
+        // Fecha
+        const dateEl = document.getElementById("o-date");
+        if (dateEl) {
+            dateEl.textContent = `Realizado el ${new Date(o.created_at).toLocaleString("es-HN", {
+                day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+            })}`;
+        }
+
         // Timeline
         updateTimeline(o.status);
 
@@ -427,6 +435,13 @@ console.log("🛠️ admin_pedidos.js — INIT STITCH");
         document.getElementById("o-phone").textContent = o.address?.phone || "—";
         const addr = o.address;
         document.getElementById("o-address").textContent = addr ? `${addr.street}, ${addr.city}, ${addr.state}` : "—";
+
+        // Notas
+        const notesEl = document.getElementById("o-order-notes");
+        if (notesEl) {
+            notesEl.textContent = o.order_notes || "El cliente no dejó notas.";
+            notesEl.style.opacity = o.order_notes ? "1" : "0.7";
+        }
 
         // Pago
         document.getElementById("p-method").textContent = (o.payment_method || "No especificado").toUpperCase();
@@ -444,19 +459,24 @@ console.log("🛠️ admin_pedidos.js — INIT STITCH");
 
         // Productos
         const itemsList = document.getElementById("order-items-list");
-        itemsList.innerHTML = o.items.map(item => `
-            <div class="order-item-row">
-                <img src="${item.products?.image_url || '/imagenes/placeholder-cafe.png'}" class="item-img" alt="Producto">
-                <div class="item-info">
-                    <div class="item-info-top">
-                        <span>${item.products?.name || 'Producto'}</span>
-                        <span>x${item.quantity}</span>
+        itemsList.innerHTML = o.items.map(item => {
+            const prod = item.products || {};
+            const name = prod.name || "Producto General";
+            const lineTotal = item.quantity * item.price;
+            const imgUrl = prod.image_url
+                ? (prod.image_url.startsWith("http") ? prod.image_url : `https://${prod.image_url}`)
+                : null;
+            return `
+                <div class="item-mini-row">
+                    ${imgUrl ? `<img src="${imgUrl}" alt="${name}" class="item-mini-img" onerror="this.style.display='none'">` : ''}
+                    <span class="item-name">${name}</span>
+                    <div class="item-meta">
+                        <span class="item-qty">×${item.quantity}</span>
+                        <span class="item-price">L ${lineTotal.toFixed(2)}</span>
                     </div>
-                    <div class="item-variant">${item.products?.presentation || ''} | ${item.products?.grind_type || ''}</div>
                 </div>
-                <div class="item-price">L ${(item.price * item.quantity).toLocaleString()}</div>
-            </div>
-        `).join('');
+            `;
+        }).join('');
 
         // Footer Buttons active state & Visibility conditional
         const btnPending = document.getElementById("btn-st-pending");

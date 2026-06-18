@@ -1,6 +1,6 @@
 /* ============================================================
-   ADMIN — DETALLE DE PEDIDO (STITCH DESIGN) | CAFÉ CORTERO
-============================================================ */
+   ADMIN — DETALLE DE PEDIDO (MIS PEDIDOS STYLE) | CAFÉ CORTERO
+   ============================================================ */
 
 console.log("🛠️ admin_pedido_detalle.js — INIT");
 
@@ -20,64 +20,60 @@ console.log("🛠️ admin_pedido_detalle.js — INIT");
         cancelled: "Cancelado"
     };
 
+    const STATUS_BADGE_CLASS = {
+        pending: "pending",
+        processing: "preparing",
+        preparing: "preparing",
+        shipped: "shipped",
+        delivered: "delivered",
+        cancelled: "cancelled"
+    };
+
     // DOM Elements
     const DOM = {
-        orderNumbers: document.querySelectorAll(".pedido-number, .pedido-number-mobile"),
+        orderNumber: document.getElementById("detail-order-number"),
+        orderNumberMobile: document.getElementById("detail-order-number-mobile"),
         statusBadge: document.getElementById("detail-status"),
+        statusBadgeMobile: document.getElementById("detail-status-mobile"),
         date: document.getElementById("detail-date"),
-        
-        avatars: document.querySelectorAll("#detail-avatar, #detail-avatar-mobile"),
-        clientNames: document.querySelectorAll("#detail-client-name, #detail-client-name-mobile"),
-        clientEmails: document.querySelectorAll("#detail-client-email, #detail-client-email-mobile"),
-        clientPhones: document.querySelectorAll("#detail-client-phone, #detail-client-phone-mobile"),
-        shippingAddresses: document.querySelectorAll("#detail-shipping-address, #detail-shipping-address-mobile"),
-        
+
+        clientName: document.getElementById("detail-client-name"),
+        clientEmail: document.getElementById("detail-client-email"),
+        clientPhone: document.getElementById("detail-client-phone"),
+        shippingAddress: document.getElementById("detail-shipping-address"),
+
         itemsBody: document.getElementById("detail-items-body"),
-        
-        subtotal: document.getElementById("detail-subtotal"),
+
+        paymentMethod: document.getElementById("detail-payment-method"),
+        paymentDate: document.getElementById("detail-payment-date"),
         total: document.getElementById("detail-total-amount"),
-        paymentTitle: document.getElementById("payment-title"),
-        paymentDesc: document.getElementById("payment-desc"),
-        paymentIcon: document.getElementById("payment-icon"),
+        receiptContainer: document.getElementById("receipt-container"),
         paymentReceiptLink: document.getElementById("payment-receipt-link"),
-        
+
         orderNotes: document.getElementById("detail-order-notes"),
-        
+
         statusActionsBox: document.getElementById("status-action-buttons"),
+        statusActionCard: document.getElementById("status-action-card"),
         timelineProgress: document.getElementById("timeline-progress"),
         btnContactClients: document.querySelectorAll("#btn-contact-client, #btn-contact-client-mobile"),
-        clientSectionTitle: document.getElementById("detail-client-section-title"),
-        clientSectionTitleMobile: document.getElementById("detail-client-section-title-mobile"),
-        shippingSection: document.getElementById("detail-shipping-section"),
-        shippingSectionMobile: document.getElementById("detail-shipping-section-mobile"),
     };
 
     let pendingAction = null;
-
     let isSnackbarResolving = false;
 
-    /**
-     * @function openSnackbar
-     * Implementación robusta sincronizada con el sistema Maestro-Detalle
-     */
     function openSnackbar(title, message, onConfirm, showCancel = true) {
-        console.log("🎯 openSnackbar: INIT", title);
         const box = document.getElementById("snackbar-action");
         const btnConfirm = document.getElementById("snackbar-confirm");
         const btnCancel = document.getElementById("snackbar-cancel");
         const titleEl = document.getElementById("snackbar-title");
         const messageEl = document.getElementById("snackbar-message");
 
-        if (!box || !btnConfirm || !btnCancel || !titleEl || !messageEl) {
-            console.error("❌ Componentes del snackbar de detalle no encontrados");
-            return;
-        }
+        if (!box || !btnConfirm || !btnCancel || !titleEl || !messageEl) return;
 
         titleEl.textContent = title;
         messageEl.textContent = message;
-        isSnackbarResolving = false; // Reset debounce
+        isSnackbarResolving = false;
 
-        // Configuración de botones
         if (showCancel) {
             btnCancel.classList.remove("hidden");
             btnConfirm.textContent = "Confirmar";
@@ -89,40 +85,18 @@ console.log("🛠️ admin_pedido_detalle.js — INIT");
         const handleFinish = async (confirmed) => {
             if (isSnackbarResolving) return;
             isSnackbarResolving = true;
-
-            console.log(`✅ [snackbar] RESOLVIENDO: ${confirmed}`);
-            
-            // Limpieza manual obligatoria
             btnConfirm.removeEventListener("click", onConfirmed);
             btnCancel.removeEventListener("click", onCancelled);
-
-            // Ocultar primero para fluidez visual
             box.classList.add("hidden");
-
-            if (confirmed && typeof onConfirm === "function") {
-                await onConfirm();
-            }
+            if (confirmed && typeof onConfirm === "function") await onConfirm();
         };
 
-        const onConfirmed = (e) => {
-            e.preventDefault();
-            console.log("✅ [snackbar-confirm] CLIC DETECTADO");
-            handleFinish(true);
-        };
+        const onConfirmed = (e) => { e.preventDefault(); handleFinish(true); };
+        const onCancelled = (e) => { e.preventDefault(); handleFinish(false); };
 
-        const onCancelled = (e) => {
-            e.preventDefault();
-            console.log("✅ [snackbar-cancel] CLIC DETECTADO");
-            handleFinish(false);
-        };
-
-        // 1. Asignar listeners ANTES de mostrar
         btnConfirm.addEventListener("click", onConfirmed);
         btnCancel.addEventListener("click", onCancelled);
-
-        // 2. Mostrar
         box.classList.remove("hidden");
-        console.log("🎯 openSnackbar: VISIBLE");
     }
 
     /* =========================
@@ -158,6 +132,7 @@ console.log("🛠️ admin_pedido_detalle.js — INIT");
                 .select(`
                     id,
                     user_id,
+                    address_id,
                     order_number,
                     total,
                     status,
@@ -173,7 +148,7 @@ console.log("🛠️ admin_pedido_detalle.js — INIT");
                 .single();
 
             if (error || !data) throw error;
-            
+
             orderData = data;
             isPOS = !data.address_id;
 
@@ -201,66 +176,57 @@ console.log("🛠️ admin_pedido_detalle.js — INIT");
         const a = o.address || {};
 
         // 1. Header Info
-        DOM.orderNumbers.forEach(el => {
-            el.textContent = `Pedido #${String(o.order_number).padStart(4, "0")}`;
-        });
-        
-        DOM.date.textContent = `Realizado el ${new Date(o.created_at).toLocaleString("es-HN", {
-            day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute:'2-digit'
-        })}`;
-        
-        // Mantener material symbol icon
-        DOM.statusBadge.innerHTML = `<span class="material-symbols-outlined">check_circle</span> ${STATUS_LABELS[o.status] || o.status}`;
-        DOM.statusBadge.className = `status-pill status-badge ${o.status}`; // Set specific color class
+        const orderLabel = `Pedido #${String(o.order_number).padStart(4, "0")}`;
+        if (DOM.orderNumber) DOM.orderNumber.textContent = orderLabel;
+        if (DOM.orderNumberMobile) DOM.orderNumberMobile.textContent = orderLabel;
+
+        if (DOM.date) {
+            DOM.date.textContent = `Realizado el ${new Date(o.created_at).toLocaleString("es-HN", {
+                day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+            })}`;
+        }
+
+        const statusLabel = STATUS_LABELS[o.status] || o.status;
+        const badgeClass = STATUS_BADGE_CLASS[o.status] || "pending";
+
+        if (DOM.statusBadge) {
+            DOM.statusBadge.innerHTML = `<span class="material-symbols-outlined">check_circle</span> ${statusLabel}`;
+            DOM.statusBadge.className = `status-badge-stitch ${badgeClass}`;
+        }
+        if (DOM.statusBadgeMobile) {
+            DOM.statusBadgeMobile.textContent = statusLabel.toUpperCase();
+            DOM.statusBadgeMobile.className = `status-badge-stitch ${badgeClass}`;
+        }
 
         // 2. Client Info — POS variant vs regular
         if (isPOS) {
             const adminUser = JSON.parse(localStorage.getItem("cortero_user") || "{}");
             const adminName = adminUser.name || "Admin";
 
-            DOM.clientNames.forEach(el => el.textContent = adminName);
-            DOM.clientEmails.forEach(el => el.textContent = "Venta en mostrador");
-            DOM.clientPhones.forEach(el => el.textContent = "—");
-
-            DOM.clientSectionTitle.innerHTML = `<span class="material-symbols-outlined icon-primary">support_agent</span> Atendido por`;
-            if (DOM.clientSectionTitleMobile) {
-                DOM.clientSectionTitleMobile.innerHTML = `<span class="material-symbols-outlined icon-primary">support_agent</span> Atendido por`;
-            }
-
-            if (DOM.shippingSection) DOM.shippingSection.style.display = "none";
-            if (DOM.shippingSectionMobile) DOM.shippingSectionMobile.style.display = "none";
+            if (DOM.clientName) DOM.clientName.textContent = adminName;
+            if (DOM.clientEmail) DOM.clientEmail.textContent = "Venta en mostrador";
+            if (DOM.clientPhone) DOM.clientPhone.textContent = "—";
+            if (DOM.shippingAddress) DOM.shippingAddress.textContent = "—";
             DOM.btnContactClients.forEach(btn => { btn.style.display = "none"; });
-
-            const initials = adminName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-            DOM.avatars.forEach(el => el.textContent = initials);
         } else {
             const cName = a.full_name || u.name || "Cliente";
-            
-            DOM.clientNames.forEach(el => el.textContent = cName);
-            DOM.clientEmails.forEach(el => el.textContent = u.email || "—");
-            DOM.clientPhones.forEach(el => el.textContent = a.phone || u.phone || "—");
-            
-            DOM.clientSectionTitle.innerHTML = `<span class="material-symbols-outlined icon-primary">person</span> Información del Cliente`;
-            if (DOM.clientSectionTitleMobile) {
-                DOM.clientSectionTitleMobile.textContent = "Información de Envío";
-            }
 
-            if (DOM.shippingSection) DOM.shippingSection.style.display = "";
-            if (DOM.shippingSectionMobile) DOM.shippingSectionMobile.style.display = "";
+            if (DOM.clientName) DOM.clientName.textContent = cName;
+            if (DOM.clientEmail) DOM.clientEmail.textContent = u.email || "—";
+            if (DOM.clientPhone) DOM.clientPhone.textContent = a.phone || u.phone || "—";
             DOM.btnContactClients.forEach(btn => { btn.style.display = ""; });
 
-            const initials = cName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-            DOM.avatars.forEach(el => el.textContent = initials);
-            
             const addressParts = [a.street, a.city, a.state, a.country, a.postal_code].filter(Boolean);
-            DOM.shippingAddresses.forEach(el => {
-                el.innerHTML = addressParts.join("<br>") || "—";
-            });
+            if (DOM.shippingAddress) {
+                DOM.shippingAddress.innerHTML = addressParts.join(", ") || "—";
+            }
         }
 
-        // 3. Productos (Items) - Now rendering as Mobile Cards naturally
+        // 3. Productos (Items) — summary style
         DOM.itemsBody.innerHTML = "";
         let subtotalFloat = 0;
+        const shippingFloat = 60;
+        let discountFloat = 0;
 
         if (o.items && o.items.length > 0) {
             o.items.forEach(item => {
@@ -268,77 +234,87 @@ console.log("🛠️ admin_pedido_detalle.js — INIT");
                 const name = prod.name || "Producto General";
                 const lineTotal = item.quantity * item.price;
                 subtotalFloat += lineTotal;
-                
-                const metaParts = [];
-                if(prod.grind_type) metaParts.push(prod.grind_type);
-                if(prod.presentation) metaParts.push(prod.presentation);
-                const metaStr = metaParts.join(" • ");
 
-                const imgHtml = prod.image_url 
-                    ? `<img src="${prod.image_url}" alt="${name}">`
-                    : `<span class="material-symbols-outlined pb-icon text-4xl opacity-30">coffee</span>`;
+                const imgUrl = prod.image_url
+                    ? (prod.image_url.startsWith("http") ? prod.image_url : `https://${prod.image_url}`)
+                    : null;
 
-                const cardHtml = `
-                    <div class="product-mobile-card">
-                        <div class="pmc-img-wrapper">
-                            ${imgHtml}
-                        </div>
-                        <div class="pmc-details">
-                            <div>
-                                <h3 class="pmc-name">${name}</h3>
-                                <p class="pmc-meta">${metaStr}</p>
-                            </div>
-                            <div class="pmc-bottom">
-                                <span class="pmc-qty">Qty: ${item.quantity}</span>
-                                <span class="pmc-subtotal">L ${lineTotal.toFixed(2)}</span>
-                            </div>
-                        </div>
+                const div = document.createElement("div");
+                div.className = "summary-item";
+                div.innerHTML = `
+                    ${imgUrl ? `<img src="${imgUrl}" alt="${name}" class="item-img">` : `<div class="item-img-placeholder"><span class="material-symbols-outlined">coffee</span></div>`}
+                    <div class="item-info">
+                        <div class="item-name">${name}</div>
+                        <div class="item-details">Cant: ${item.quantity}</div>
                     </div>
+                    <span class="item-price">L ${lineTotal.toFixed(2)}</span>
                 `;
-                DOM.itemsBody.insertAdjacentHTML('beforeend', cardHtml);
+                DOM.itemsBody.appendChild(div);
             });
         } else {
-            DOM.itemsBody.innerHTML = `<div class="text-center p-8 text-sm opacity-60">No hay productos en este pedido.</div>`;
+            DOM.itemsBody.innerHTML = `<div style="text-align:center;padding:24px;color:var(--text-muted);font-size:14px">No hay productos en este pedido.</div>`;
         }
 
         // 4. Pago y Totales
-        DOM.subtotal.textContent = `L ${subtotalFloat.toFixed(2)}`;
-        DOM.total.textContent = `L ${parseFloat(o.total || subtotalFloat).toFixed(2)}`;
+        const shippingTotal = subtotalFloat >= 150 ? 0 : shippingFloat;
+        const discountVal = subtotalFloat - parseFloat(o.total || subtotalFloat);
+        discountFloat = discountVal > 0 ? discountVal : 0;
 
-        if (isPOS) {
-            DOM.paymentTitle.textContent = "Pago en mostrador";
-            DOM.paymentDesc.textContent = posPaymentMethod || "Efectivo";
-            DOM.paymentIcon.textContent = "payments";
-            DOM.paymentReceiptLink.classList.add("hidden");
-        } else if (o.payment_method === "Contra Entrega" || !o.receipt || o.receipt.length === 0) {
-            DOM.paymentTitle.textContent = "Pago Contra Entrega";
-            DOM.paymentDesc.textContent = "Se cobrará en el destino";
-            DOM.paymentIcon.textContent = "local_shipping";
-            DOM.paymentReceiptLink.classList.add("hidden");
+        const subtotalEl = document.getElementById("detail-subtotal");
+        const shippingEl = document.getElementById("detail-shipping");
+        const discountEl = document.getElementById("detail-discount");
+        const discountRow = document.getElementById("discount-row");
+
+        if (subtotalEl) subtotalEl.textContent = `L ${subtotalFloat.toFixed(2)}`;
+        if (shippingEl) shippingEl.textContent = shippingTotal === 0 ? "Gratis" : `L ${shippingTotal.toFixed(2)}`;
+        if (discountFloat > 0 && discountEl) {
+            discountRow.style.display = "flex";
+            discountEl.textContent = `- L ${discountFloat.toFixed(2)}`;
+        } else if (discountRow) {
+            discountRow.style.display = "none";
+        }
+
+        if (DOM.paymentMethod) {
+            DOM.paymentMethod.textContent = o.payment_method === "cash_on_delivery" || o.payment_method === "cash"
+                ? "Pago en mano" : "Transferencia";
+        }
+        if (DOM.paymentDate) {
+            DOM.paymentDate.textContent = `${new Date(o.created_at).toLocaleDateString("es-HN", {
+                day: '2-digit', month: 'short', year: 'numeric'
+            })} · ${new Date(o.created_at).toLocaleTimeString("es-HN", {
+                hour: '2-digit', minute: '2-digit'
+            })}`;
+        }
+        if (DOM.total) {
+            DOM.total.textContent = `L ${parseFloat(o.total || subtotalFloat).toFixed(2)}`;
+        }
+
+        // Receipt link
+        if (isPOS || o.payment_method === "Contra Entrega" || !o.receipt || o.receipt.length === 0) {
+            if (DOM.receiptContainer) DOM.receiptContainer.classList.add("hidden");
         } else {
-            DOM.paymentTitle.textContent = "Transferencia Verificada";
-            DOM.paymentDesc.textContent = "Recibo cargado por el cliente";
-            DOM.paymentIcon.textContent = "verified_user";
-            DOM.paymentReceiptLink.href = o.receipt[0].file_url;
-            DOM.paymentReceiptLink.classList.remove("hidden");
+            if (DOM.receiptContainer) DOM.receiptContainer.classList.remove("hidden");
+            if (DOM.paymentReceiptLink) DOM.paymentReceiptLink.href = o.receipt[0].file_url;
         }
 
         // 5. Order Notes
-        if (o.order_notes) {
-            DOM.orderNotes.textContent = o.order_notes;
-            DOM.orderNotes.style.opacity = "1";
-        } else {
-            DOM.orderNotes.textContent = 'El cliente no dejó notas.';
-            DOM.orderNotes.style.opacity = "0.7";
+        if (DOM.orderNotes) {
+            if (o.order_notes) {
+                DOM.orderNotes.textContent = o.order_notes;
+                DOM.orderNotes.style.opacity = "1";
+            } else {
+                DOM.orderNotes.textContent = 'El cliente no dejó notas.';
+                DOM.orderNotes.style.opacity = "0.7";
+            }
         }
 
-        // WhatsApp Action (no-op for POS)
+        // WhatsApp Action
         DOM.btnContactClients.forEach(btn => {
             btn.onclick = () => {
                 if (isPOS) return;
                 const cName = a.full_name || u.name || "Cliente";
                 const phone = a.phone || u.phone;
-                if (!phone) { 
+                if (!phone) {
                     openSnackbar("Atención", "El cliente no tiene teléfono registrado.", null, false);
                     return;
                 }
@@ -348,67 +324,65 @@ console.log("🛠️ admin_pedido_detalle.js — INIT");
             };
         });
 
-        // Render Action Buttons & Timeline
+        // Timeline & Action Buttons
         renderTimeline(o.status);
         renderActionButtons(o);
     }
 
     /* =========================
-       TIMELINE
+       TIMELINE (mis-pedidos style)
     ========================= */
     function renderTimeline(status) {
-        const timelineCard = document.querySelector(".timeline-card");
-        if (!timelineCard) return;
-
         if (isPOS) {
-            timelineCard.innerHTML = `
-                <h2 class="card-title">Estado del Pedido</h2>
-                <div style="display:flex;align-items:center;gap:12px;padding:16px 0">
-                    <span class="material-symbols-outlined" style="font-size:32px;color:#2E7D32">check_circle</span>
-                    <div>
-                        <strong style="font-size:16px;color:#2E7D32">Venta completada</strong>
-                        <span style="display:block;font-size:13px;color:var(--texto-secundario);margin-top:2px">Cobrado en mostrador</span>
+            const container = document.querySelector(".timeline-container-stitch");
+            if (container) {
+                container.innerHTML = `
+                    <div style="display:flex;align-items:center;gap:12px;padding:8px 0">
+                        <span class="material-symbols-outlined" style="font-size:32px;color:#2E7D32">check_circle</span>
+                        <div>
+                            <strong style="font-size:16px;color:#2E7D32">Venta completada</strong>
+                            <span style="display:block;font-size:13px;color:var(--text-muted);margin-top:2px">Cobrado en mostrador</span>
+                        </div>
                     </div>
-                </div>
-            `;
+                `;
+            }
             return;
         }
+
+        // Reset all steps
+        document.querySelectorAll(".timeline-steps-stitch .step").forEach(s => {
+            s.classList.remove("active", "completed");
+        });
+
+        const progressBar = DOM.timelineProgress;
+        if (!progressBar) return;
 
         const flow = ["pending", "processing", "shipped", "delivered"];
         const currentIndex = flow.indexOf(status);
         let progressPercent = 0;
 
-        // Limpiar todas las clases active
-        ["pending", "confirmed", "preparing", "shipped", "delivered"].forEach(s => {
-            const el = document.getElementById(`step-${s}`);
-            if(el) el.classList.remove("active");
-        });
-
         if (status === "cancelled") {
-            DOM.timelineProgress.style.width = "0%";
-            DOM.timelineProgress.style.backgroundColor = "#ba1a1a";
-            document.getElementById("step-pending")?.classList.add("active");
-            if (document.querySelector("#step-pending .step-icon span")) {
-                document.querySelector("#step-pending .step-icon span").textContent = "cancel";
-            }
+            progressBar.style.width = "0%";
+            progressBar.style.backgroundColor = "#ba1a1a";
+            document.querySelector(".step-pending")?.classList.add("active");
+            const icon = document.querySelector(".step-pending .step-custom-icon");
+            if (icon) icon.src = "/imagenes/cancelado.png"; // fallback: keep original
             return;
         }
 
-        if (currentIndex === 0) progressPercent = 0; 
-        if (currentIndex === 1) progressPercent = 50; 
-        if (currentIndex === 2) progressPercent = 75; 
-        if (currentIndex === 3) progressPercent = 100; 
+        if (currentIndex >= 0) {
+            if (currentIndex === 0) progressPercent = 0;
+            if (currentIndex === 1) progressPercent = 50;
+            if (currentIndex === 2) progressPercent = 75;
+            if (currentIndex === 3) progressPercent = 100;
 
-        DOM.timelineProgress.style.width = `${progressPercent}%`;
+            progressBar.style.width = `${progressPercent}%`;
+            progressBar.style.backgroundColor = "";
 
-        for (let i = 0; i <= currentIndex; i++) {
-            let sId = flow[i];
-            if (sId === "processing") {
-                document.getElementById("step-confirmed")?.classList.add("active");
-                document.getElementById("step-preparing")?.classList.add("active");
-            } else if (document.getElementById(`step-${sId}`)) {
-                document.getElementById(`step-${sId}`).classList.add("active");
-            }
+            const steps = document.querySelectorAll(".timeline-steps-stitch .step");
+            steps.forEach((step, i) => {
+                if (i <= currentIndex) step.classList.add("active");
+            });
         }
     }
 
@@ -416,27 +390,14 @@ console.log("🛠️ admin_pedido_detalle.js — INIT");
        ACTION BUTTONS
     ========================= */
     function renderActionButtons(o) {
-        DOM.statusActionsBox.innerHTML = "";
-
-        if (isPOS) {
-            DOM.statusActionsBox.innerHTML = "<span class='text-muted text-sm'>Venta completada en mostrador.</span>";
-        } else if (o.status === "pending") {
-            appendActionButton("Pasar a preparación", "hourglass_top", "accent", () => updateStatus(o.id, "processing"));
-            appendActionButton("Anular", "cancel", "", () => updateStatus(o.id, "cancelled"));
-        } else if (o.status === "processing") {
-            appendActionButton("Marcar como enviado", "local_shipping", "accent", () => updateStatus(o.id, "shipped"));
-        } else if (o.status === "shipped") {
-            appendActionButton("Marcar como entregado", "done_all", "accent", () => updateStatus(o.id, "delivered"));
-        } else {
-            DOM.statusActionsBox.innerHTML = "<span class='text-muted text-sm'>No hay acciones disponibles para el estado actual.</span>";
-        }
+        // No status actions on this page
     }
 
     function appendActionButton(label, icon, extraClass, onClick) {
         const btn = document.createElement("button");
         btn.className = `status-btn ${extraClass}`;
         btn.innerHTML = `<span class="material-symbols-outlined">${icon}</span> ${label}`;
-        
+
         btn.onclick = () => {
             openSnackbar("Confirmación requerida", `¿Seguro que deseas: ${label}?`, async () => {
                 await onClick();
@@ -446,12 +407,11 @@ console.log("🛠️ admin_pedido_detalle.js — INIT");
     }
 
     /* =========================
-       UPDATE STATUS LOGIC
+       UPDATE STATUS
     ========================= */
     async function updateStatus(orderId, newStatus) {
         DOM.statusActionsBox.innerHTML = "Actualizando...";
 
-        // 1. Update in DB
         const { error } = await sb
             .from("orders")
             .update({ status: newStatus })
@@ -460,18 +420,15 @@ console.log("🛠️ admin_pedido_detalle.js — INIT");
         if (error) {
             console.error("❌ Error actualizando estado:", error);
             openSnackbar("Error", "Error al actualizar el estado", null, false);
-            renderActionButtons(orderData); // Restore buttons
+            renderActionButtons(orderData);
             return;
         }
 
-        // 2. Notification System
         if (orderData.user_id) {
             await sendNotification(orderData.user_id, newStatus, orderData);
         }
 
         openSnackbar("¡Éxito!", "Estado actualizado correctamente.", null, false);
-
-        // 3. Reload Data natively to reflect changes perfectly
         await fetchOrderData(orderId);
     }
 

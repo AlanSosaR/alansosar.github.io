@@ -367,6 +367,8 @@ body.page-datos-cliente {
   overflow-y: auto;
   margin-bottom: 2rem;
   padding-right: 5px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .summary-items-list::-webkit-scrollbar {
@@ -628,8 +630,12 @@ body.page-datos-cliente {
   z-index: 9999;
   max-height: 220px;
   overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   animation: fadeInDown 0.18s ease;
 }
+
+.suggestions-list::-webkit-scrollbar { display: none; }
 
 .suggestions-list.hidden {
   display: none;
@@ -928,7 +934,11 @@ body.page-datos-cliente {
   z-index: 9999;
   max-height: 220px;
   overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
+
+.pos-search-results::-webkit-scrollbar { display: none; }
 
 .pos-search-results.hidden {
   display: none;

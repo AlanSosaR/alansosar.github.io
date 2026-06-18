@@ -1,3 +1,10 @@
+html {
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+html::-webkit-scrollbar { width: 0; height: 0; display: none; }
+
 /* ============================================================ 
    ADMIN CLIENTES - ESTILOS
    Café Cortero - Premium & Minimalist
