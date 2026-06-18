@@ -170,6 +170,27 @@
         </div>
       </section>
 
+      <!-- ==================== BLOQUE: PÁGINAS LEGALES ==================== -->
+      <section class="config-card" id="legal">
+        <div class="card-header-stitch">
+          <span class="material-symbols-outlined">gavel</span>
+          <h2>Páginas legales</h2>
+        </div>
+        <p class="card-desc-stitch">Contenido de las páginas de Política de Privacidad y Términos del Servicio.</p>
+
+        <div class="field-group">
+          <label for="privacyContent">Política de Privacidad</label>
+          <textarea id="privacyContent" class="legal-editor-raw" hidden></textarea>
+          <div id="privacyEditor" class="legal-editor-wysiwyg" contenteditable="true" spellcheck="true"></div>
+        </div>
+
+        <div class="field-group" style="margin-top:12px">
+          <label for="termsContent">Términos del Servicio</label>
+          <textarea id="termsContent" class="legal-editor-raw" hidden></textarea>
+          <div id="termsEditor" class="legal-editor-wysiwyg" contenteditable="true" spellcheck="true"></div>
+        </div>
+      </section>
+
       <!-- BOTÓN GUARDAR -->
       <div class="form-actions">
         <button type="submit" id="btnSaveConfig" class="btn-save-config">

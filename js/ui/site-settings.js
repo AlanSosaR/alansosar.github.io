@@ -74,7 +74,9 @@ function getDefaultSettings() {
     logo_url: "/imagenes/logo.png",
     logo_secundario_url: "/imagenes/logo_secundario.png",
     footer_text: "2026 Café Cortero. Todos los derechos reservados.",
-    favicon_url: "/imagenes/logo.png"
+    favicon_url: "/imagenes/logo.png",
+    privacy_content: "",
+    terms_content: ""
   };
 }
 
