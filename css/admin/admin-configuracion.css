@@ -150,6 +150,56 @@ body.page-admin-config {
   box-shadow: 0 0 0 3px rgba(55,123,76,.12);
 }
 
+/* Preview en vivo del HTML legal */
+.legal-preview {
+  margin-top: 8px;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid var(--border-soft);
+  background: #fff;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--cafe);
+  min-height: 40px;
+  display: none;
+}
+
+.legal-preview:not(:empty) {
+  display: block;
+}
+
+.legal-preview h2 {
+  margin: 16px 0 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--marron, #4a3520);
+  padding-bottom: 4px;
+  border-bottom: 2px solid var(--verde, #377b4c);
+}
+
+.legal-preview h2:first-child {
+  margin-top: 0;
+}
+
+.legal-preview p {
+  margin: 0 0 10px;
+}
+
+.legal-preview ul {
+  margin: 0 0 10px;
+  padding-left: 20px;
+}
+
+.legal-preview li {
+  margin-bottom: 4px;
+}
+
+.legal-preview a {
+  color: var(--verde, #377b4c);
+  font-weight: 600;
+  text-decoration: none;
+}
+
 .form-grid-2col {
   display: grid;
   grid-template-columns: 1fr 1fr;

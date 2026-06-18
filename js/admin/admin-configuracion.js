@@ -223,6 +223,10 @@ async function cargarConfiguracion() {
     footerTextInput.value = "2026 Café Cortero. Todos los derechos reservados.";
     privacyContent.value = getDefaultPrivacyContent();
     termsContent.value = getDefaultTermsContent();
+    ["privacyContent", "termsContent"].forEach(id => {
+      const ta = document.getElementById(id);
+      if (ta) ta.dispatchEvent(new Event("input"));
+    });
     renderSlides();
     return;
   }
@@ -241,6 +245,12 @@ async function cargarConfiguracion() {
   footerTextInput.value = data.footer_text || "2026 Café Cortero. Todos los derechos reservados.";
   privacyContent.value = data.privacy_content || getDefaultPrivacyContent();
   termsContent.value = data.terms_content || getDefaultTermsContent();
+
+  // Disparar preview inicial
+  ["privacyContent", "termsContent"].forEach(id => {
+    const ta = document.getElementById(id);
+    if (ta) ta.dispatchEvent(new Event("input"));
+  });
 
   slides = (data.hero_slides || []).map(s => ({ ...s }));
   renderSlides();
@@ -383,6 +393,26 @@ function showSnackbar(message, type = "success") {
   if (type) el.classList.add(type);
   setTimeout(() => el.classList.remove("show", "success", "error", "warn"), 3500);
 }
+
+/* ============================================================
+   PREVIEW EN VIVO — Páginas legales
+   ============================================================ */
+function setupLegalPreview(textareaId, previewId) {
+  const ta = document.getElementById(textareaId);
+  const prev = document.getElementById(previewId);
+  if (!ta || !prev) return;
+  ta.addEventListener("input", () => {
+    const html = ta.value.trim();
+    if (html) {
+      prev.innerHTML = html;
+    } else {
+      prev.innerHTML = "";
+    }
+  });
+}
+
+setupLegalPreview("privacyContent", "privacyPreview");
+setupLegalPreview("termsContent", "termsPreview");
 
 /* ============================================================
    DEFAULT LEGAL CONTENT
