@@ -47,6 +47,9 @@ const footerTextInput = document.getElementById("footerTextInput");
 
 let logoBlob = null;
 let logoSecBlob = null;
+let originalLogoUrl = "";
+let originalLogoSecUrl = "";
+let originalHistoriaImgUrl = "";
 
 // Páginas legales
 const privacyEditor = document.getElementById("privacyEditor");
@@ -230,12 +233,15 @@ async function cargarConfiguracion() {
   historiaLead.value = data.historia_lead || "";
   historiaBody.value = data.historia_body || "";
   historiaPreview.src = data.historia_imagen_url || "/imagenes/nosotros.jpg";
+  originalHistoriaImgUrl = data.historia_imagen_url || "";
   whatsappNumero.value = data.whatsapp_numero || "";
   whatsappNumero2.value = data.whatsapp_numero2 || "";
   facebookUrl.value = data.facebook_url || "";
   instagramUrl.value = data.instagram_url || "";
   logoPreview.src = data.logo_url || "/imagenes/logo.png";
+  originalLogoUrl = data.logo_url || "";
   logoSecPreview.src = data.logo_secundario_url || "/imagenes/logo_secundario.png";
+  originalLogoSecUrl = data.logo_secundario_url || "";
   footerTextInput.value = data.footer_text || "2026 Café Cortero. Todos los derechos reservados.";
   if (privacyEditor) privacyEditor.innerHTML = data.privacy_content || "";
   if (termsEditor) termsEditor.innerHTML = data.terms_content || "";
@@ -266,29 +272,32 @@ async function guardarConfiguracion(e) {
     }
 
     // 2. Subir imagen de historia si cambió
-    let historiaImagenUrl = historiaPreview.src;
+    let historiaImagenUrl = originalHistoriaImgUrl;
     if (historiaImagenBlob) {
       const fileName = `historia_${Date.now()}.webp`;
       historiaImagenUrl = await subirArchivo(historiaImagenBlob, fileName);
       historiaPreview.src = historiaImagenUrl;
+      originalHistoriaImgUrl = historiaImagenUrl;
       historiaImagenBlob = null;
     }
 
     // 2b. Subir logo principal si cambió
-    let logoUrl = logoPreview.src;
+    let logoUrl = originalLogoUrl;
     if (logoBlob) {
       const fileName = `logo_${Date.now()}.webp`;
       logoUrl = await subirArchivo(logoBlob, fileName);
       logoPreview.src = logoUrl;
+      originalLogoUrl = logoUrl;
       logoBlob = null;
     }
 
     // 2c. Subir logo secundario si cambió
-    let logoSecUrl = logoSecPreview.src;
+    let logoSecUrl = originalLogoSecUrl;
     if (logoSecBlob) {
       const fileName = `logo_sec_${Date.now()}.webp`;
       logoSecUrl = await subirArchivo(logoSecBlob, fileName);
       logoSecPreview.src = logoSecUrl;
+      originalLogoSecUrl = logoSecUrl;
       logoSecBlob = null;
     }
 
