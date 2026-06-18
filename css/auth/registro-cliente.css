@@ -27,6 +27,11 @@ img,
 /* ===============================
    BASE / TIPOGRAFÍA
 =============================== */
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
                "Inter", "Roboto", sans-serif;
