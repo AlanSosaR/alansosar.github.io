@@ -1,0 +1,86 @@
+/* ============================================================
+   FOOTER — Estilos globales para el partial inyectado
+   Las variables se repiten aquí para no depender de main.css
+   ============================================================ */
+:root {
+  --marron: #512615;
+  --verde: #377b4c;
+  --blanco: #ffffff;
+  --border-soft: #e0e0e0;
+}
+
+footer {
+  background: var(--blanco);
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  padding: 1rem 1rem 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: nowrap;
+}
+
+footer p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--marron);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.footer-logo-inline {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  opacity: 0.95;
+}
+
+.footer-simple .footer-logo-inline {
+  display: none;
+}
+
+.footer-legal {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.footer-legal a {
+  color: var(--marron);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.footer-legal a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.footer-legal .footer-sep {
+  color: var(--verde);
+  font-weight: 700;
+}
+
+@media (max-width: 600px) {
+  footer {
+    flex-direction: column;
+    gap: 6px;
+    text-align: center;
+  }
+
+  footer p,
+  .footer-legal {
+    white-space: normal;
+    justify-content: center;
+    font-size: 0.85rem;
+  }
+
+  .footer-logo-inline {
+    width: 36px;
+    height: 36px;
+  }
+}

@@ -1571,6 +1571,11 @@ footer p {
   opacity: 0.95;
 }
 
+/* Footer simplificado (auth/legal/profile) — oculta logo */
+.footer-simple .footer-logo-inline {
+  display: none;
+}
+
 /* ===== Links legales ===== */
 .footer-legal {
   display: inline-flex;

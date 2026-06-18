@@ -18,16 +18,19 @@ window.loadSiteSettings = async function () {
     if (error || !data) {
       console.warn("⚠️ No se pudo cargar site_settings, usando defaults");
       data = getDefaultSettings();
+      applySiteSettings(data);
     }
 
     window.siteSettings = data;
     window.siteSettingsLoaded = true;
+    applySiteSettings(data);
     window.siteSettingsCallbacks.forEach(cb => cb(data));
     window.siteSettingsCallbacks = [];
     return data;
   } catch (err) {
     console.warn("⚠️ Error cargando site_settings:", err);
     const def = getDefaultSettings();
+    applySiteSettings(def);
     window.siteSettings = def;
     window.siteSettingsLoaded = true;
     return def;
@@ -67,6 +70,59 @@ function getDefaultSettings() {
     whatsapp_numero: "50496670613",
     whatsapp_numero2: "50498675101",
     facebook_url: "https://www.facebook.com/share/1FsrT4DYrU/",
-    instagram_url: "https://www.instagram.com/TU_USUARIO"
+    instagram_url: "https://www.instagram.com/TU_USUARIO",
+    logo_url: "/imagenes/logo.png",
+    logo_secundario_url: "/imagenes/logo_secundario.png",
+    footer_text: "2026 Café Cortero. Todos los derechos reservados.",
+    favicon_url: "/imagenes/logo.png"
   };
 }
+
+/* ============================================================
+   APLICAR SETTINGS DINÁMICOS — Logo, Footer, Favicon
+   ============================================================ */
+function applySiteSettings(s) {
+  if (!s) return;
+
+  // Logo header
+  const headerLogo = document.querySelector(".header-logo");
+  if (headerLogo && s.logo_url) headerLogo.src = s.logo_url;
+
+  // Footer
+  const footerLogo = document.getElementById("footer-logo-img");
+  if (footerLogo && s.logo_secundario_url) footerLogo.src = s.logo_secundario_url;
+  const footerText = document.getElementById("footer-copy-text");
+  if (footerText && s.footer_text) footerText.textContent = s.footer_text;
+
+  // Favicon dinámico
+  const existingIcon = document.querySelector('link[rel="icon"]');
+  if (s.favicon_url) {
+    if (existingIcon) {
+      existingIcon.href = s.favicon_url;
+    } else {
+      const link = document.createElement("link");
+      link.rel = "icon";
+      link.type = "image/png";
+      link.href = s.favicon_url;
+      document.head.appendChild(link);
+    }
+  }
+}
+
+/* ============================================================
+   AUTO-INIT — Se ejecuta al cargar el script en cualquier página
+   ============================================================ */
+(function autoInit() {
+  if (window.__SITE_SETTINGS_AUTO_INIT__) return;
+  window.__SITE_SETTINGS_AUTO_INIT__ = true;
+  // Aplicar defaults inmediatamente para evitar parpadeo
+  applySiteSettings(getDefaultSettings());
+  // Luego cargar desde Supabase cuando esté listo
+  document.addEventListener("DOMContentLoaded", () => {
+    setTimeout(() => {
+      if (window.supabaseClient) {
+        window.loadSiteSettings().catch(() => {});
+      }
+    }, 100);
+  });
+})();

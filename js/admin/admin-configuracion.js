@@ -34,6 +34,20 @@ const facebookUrl = document.getElementById("facebook_url");
 const instagramUrl = document.getElementById("instagram_url");
 const btnSave = document.getElementById("btnSaveConfig");
 
+// Logo y footer
+const logoInput = document.getElementById("logoInput");
+const logoPreview = document.getElementById("logoPreview");
+const btnUploadLogo = document.getElementById("btnUploadLogo");
+const btnRestoreLogo = document.getElementById("btnRestoreLogo");
+const logoInputSec = document.getElementById("logoInputSec");
+const logoSecPreview = document.getElementById("logoSecPreview");
+const btnUploadLogoSec = document.getElementById("btnUploadLogoSec");
+const btnRestoreLogoSec = document.getElementById("btnRestoreLogoSec");
+const footerTextInput = document.getElementById("footerTextInput");
+
+let logoBlob = null;
+let logoSecBlob = null;
+
 const BUCKET = "site-assets";
 const STORAGE_URL = "https://eaipcuvvddyrqkbmjmvw.supabase.co/storage/v1/object/public";
 
@@ -200,6 +214,9 @@ async function cargarConfiguracion() {
     whatsappNumero2.value = "50498675101";
     facebookUrl.value = "https://www.facebook.com/share/1FsrT4DYrU/";
     instagramUrl.value = "https://www.instagram.com/TU_USUARIO";
+    logoPreview.src = "/imagenes/logo.png";
+    logoSecPreview.src = "/imagenes/logo_secundario.png";
+    footerTextInput.value = "2026 Café Cortero. Todos los derechos reservados.";
     renderSlides();
     return;
   }
@@ -213,6 +230,9 @@ async function cargarConfiguracion() {
   whatsappNumero2.value = data.whatsapp_numero2 || "";
   facebookUrl.value = data.facebook_url || "";
   instagramUrl.value = data.instagram_url || "";
+  logoPreview.src = data.logo_url || "/imagenes/logo.png";
+  logoSecPreview.src = data.logo_secundario_url || "/imagenes/logo_secundario.png";
+  footerTextInput.value = data.footer_text || "2026 Café Cortero. Todos los derechos reservados.";
 
   slides = (data.hero_slides || []).map(s => ({ ...s }));
   renderSlides();
@@ -248,6 +268,24 @@ async function guardarConfiguracion(e) {
       historiaImagenBlob = null;
     }
 
+    // 2b. Subir logo principal si cambió
+    let logoUrl = logoPreview.src;
+    if (logoBlob) {
+      const fileName = `logo_${Date.now()}.webp`;
+      logoUrl = await subirArchivo(logoBlob, fileName);
+      logoPreview.src = logoUrl;
+      logoBlob = null;
+    }
+
+    // 2c. Subir logo secundario si cambió
+    let logoSecUrl = logoSecPreview.src;
+    if (logoSecBlob) {
+      const fileName = `logo_sec_${Date.now()}.webp`;
+      logoSecUrl = await subirArchivo(logoSecBlob, fileName);
+      logoSecPreview.src = logoSecUrl;
+      logoSecBlob = null;
+    }
+
     // 3. Construir payload
     const payload = {
       id: 1,
@@ -266,6 +304,9 @@ async function guardarConfiguracion(e) {
       whatsapp_numero2: whatsappNumero2.value.trim(),
       facebook_url: facebookUrl.value.trim(),
       instagram_url: instagramUrl.value.trim(),
+      logo_url: logoUrl,
+      logo_secundario_url: logoSecUrl,
+      footer_text: footerTextInput.value.trim(),
       updated_at: new Date().toISOString()
     };
 
@@ -332,6 +373,33 @@ function showSnackbar(message, type = "success") {
   if (type) el.classList.add(type);
   setTimeout(() => el.classList.remove("show", "success", "error", "warn"), 3500);
 }
+
+/* ============================================================
+   LOGO UPLOAD / RESTORE
+   ============================================================ */
+function setupLogoUpload(btn, input, preview, blobVarSetter) {
+  btn.addEventListener("click", () => input.click());
+  input.addEventListener("change", async () => {
+    const file = input.files[0];
+    if (!file) return;
+    const blob = await comprimirImagen(file);
+    blobVarSetter(blob);
+    preview.src = URL.createObjectURL(blob);
+  });
+}
+
+setupLogoUpload(btnUploadLogo, logoInput, logoPreview, b => { logoBlob = b; });
+setupLogoUpload(btnUploadLogoSec, logoInputSec, logoSecPreview, b => { logoSecBlob = b; });
+
+btnRestoreLogo.addEventListener("click", () => {
+  logoBlob = null;
+  logoPreview.src = "/imagenes/logo.png";
+});
+
+btnRestoreLogoSec.addEventListener("click", () => {
+  logoSecBlob = null;
+  logoSecPreview.src = "/imagenes/logo_secundario.png";
+});
 
 /* ============================================================
    INIT

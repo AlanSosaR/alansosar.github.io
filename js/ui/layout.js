@@ -1,116 +1,111 @@
 // =====================================================
-// LAYOUT — HEADER GLOBAL (CORE FINAL DEFINITIVO)
+// LAYOUT — HEADER + FOOTER GLOBAL
 // =====================================================
 
 console.log("📐 layout.js cargado");
 
-/*
-  REGLAS:
-  - layout.js orquesta UI global
-  - NO decide auth
-  - NO se ejecuta en login
-*/
+// =====================================================
+// GUARD GLOBAL — EVITA DOBLE EJECUCIÓN
+// =====================================================
+if (window.__LAYOUT_LOADED__) {
+  console.warn("⚠️ layout.js ya estaba cargado");
+} else {
+  window.__LAYOUT_LOADED__ = true;
 
-if (document.body.dataset.page !== "login") {
+  document.addEventListener("DOMContentLoaded", async () => {
 
-  // =====================================================
-  // GUARD GLOBAL — EVITA DOBLE EJECUCIÓN
-  // =====================================================
-  if (!window.__LAYOUT_LOADED__) {
-    window.__LAYOUT_LOADED__ = true;
+    const isLoginPage = document.body.dataset.page === "login";
+    const isSimpleFooter = /^\/(pages\/(auth|legal|profile)\/)/.test(window.location.pathname);
 
-    document.addEventListener("DOMContentLoaded", async () => {
-
-      if (document.getElementById("main-header")) {
-        console.warn("⚠️ Header ya existe, abortando inyección");
-        return;
+    try {
+      // ================= INYECTAR HEADER (solo si no es login) =================
+      if (!isLoginPage) {
+        if (document.getElementById("main-header")) {
+          console.warn("⚠️ Header ya existe, abortando inyección");
+        } else {
+          const headerRes = await fetch("/pages/shared/header.html", { cache: "no-store" });
+          if (!headerRes.ok) throw new Error("header.html no encontrado");
+          document.body.insertAdjacentHTML("afterbegin", await headerRes.text());
+          console.log("✅ Header inyectado");
+        }
       }
 
-      try {
-        console.log("📦 layout.js → cargando header.html");
-
-        const HEADER_PATH =
-          window.PAGE_MODE?.startsWith("admin")
-            ? "/pages/shared/header.html"
-            : "/pages/shared/header.html";
-
-        const res = await fetch(HEADER_PATH, { cache: "no-store" });
-        if (!res.ok) {
-          throw new Error("/pages/shared/header.html no encontrado");
+      // ================= INYECTAR FOOTER (siempre, si no existe ya) =================
+      if (!document.getElementById("site-footer")) {
+        const footerRes = await fetch("/pages/shared/footer.html", { cache: "no-store" });
+        if (!footerRes.ok) throw new Error("footer.html no encontrado");
+        const footerHtml = await footerRes.text();
+        const template = document.createElement("template");
+        template.innerHTML = footerHtml.trim();
+        const footerEl = template.content.firstElementChild;
+        if (isSimpleFooter) {
+          footerEl.classList.add("footer-simple");
         }
+        document.body.appendChild(footerEl);
+        console.log("✅ Footer inyectado" + (isSimpleFooter ? " (simplificado)" : ""));
+      }
 
-        const html = await res.text();
-        document.body.insertAdjacentHTML("afterbegin", html);
-        console.log("✅ Header inyectado");
+      // ================= PUSH (GLOBAL) =================
+      if (!window.__PUSH_LOADED__) {
+        window.__PUSH_LOADED__ = true;
+        const pushScript = document.createElement("script");
+        pushScript.type = "module";
+        pushScript.src = "/js/core/push.js";
+        document.body.appendChild(pushScript);
+        console.log("🔔 push.js cargado globalmente");
+      }
 
-        // ================= PUSH (GLOBAL) =================
-        if (!window.__PUSH_LOADED__) {
-          window.__PUSH_LOADED__ = true;
-
-          const pushScript = document.createElement("script");
-          pushScript.type = "module";
-          pushScript.src = "/js/core/push.js";
-          document.body.appendChild(pushScript);
-
-          console.log("🔔 push.js cargado globalmente");
-        }
-
-        // ================= HEADER UI =================
+      // ================= HEADER UI (solo si hay header) =================
+      if (!isLoginPage) {
         if (typeof window.initHeader === "function") {
           window.initHeader();
           console.log("🧭 initHeader OK");
         }
-
-        // ================= AUTH UI =================
         if (typeof window.initAuthUI === "function") {
           await window.initAuthUI();
           console.log("🔐 initAuthUI OK");
         }
-
-        // ================= HEADER READY =================
         document.dispatchEvent(new Event("header:ready"));
         console.log("📣 Evento header:ready");
-
-      } catch (err) {
-        console.error("❌ Error crítico en layout.js:", err);
       }
-    });
 
-    // =====================================================
-    // 🔔 NOTIFICATIONS — ESCUCHA AUTH:READY (CORRECTO)
-    // =====================================================
-    document.addEventListener("auth:ready", async () => {
-      if (window.__NOTIFICATIONS_LOADED__) return;
-      window.__NOTIFICATIONS_LOADED__ = true;
+    } catch (err) {
+      console.error("❌ Error crítico en layout.js:", err);
+    }
+  });
 
-      try {
-        const sb = window.supabase;
-        if (!sb) {
-          console.warn("⚠️ Supabase no disponible para notificaciones");
-          return;
-        }
+  // =====================================================
+  // 🔔 NOTIFICATIONS — ESCUCHA AUTH:READY (CORRECTO)
+  // =====================================================
+  document.addEventListener("auth:ready", async () => {
+    if (window.__NOTIFICATIONS_LOADED__) return;
+    window.__NOTIFICATIONS_LOADED__ = true;
 
-        const { data } = await sb.auth.getSession();
-        const authUser = data?.session?.user;
-
-        if (!authUser) {
-          console.warn("⚠️ authUser no disponible para notificaciones");
-          return;
-        }
-
-        const { initNotifications } = await import(
-          "/js/core/notifications.js"
-        );
-
-        initNotifications(authUser);
-        console.log("🔔 notifications inicializadas (authUser OK)");
-
-      } catch (e) {
-        console.error("❌ Error cargando notifications.js", e);
+    try {
+      const sb = window.supabase;
+      if (!sb) {
+        console.warn("⚠️ Supabase no disponible para notificaciones");
+        return;
       }
-    });
 
-  } else {
-    console.warn("⚠️ layout.js ya estaba cargado");
-  }
+      const { data } = await sb.auth.getSession();
+      const authUser = data?.session?.user;
+
+      if (!authUser) {
+        console.warn("⚠️ authUser no disponible para notificaciones");
+        return;
+      }
+
+      const { initNotifications } = await import(
+        "/js/core/notifications.js"
+      );
+
+      initNotifications(authUser);
+      console.log("🔔 notifications inicializadas (authUser OK)");
+
+    } catch (e) {
+      console.error("❌ Error cargando notifications.js", e);
+    }
+  });
+
 }
