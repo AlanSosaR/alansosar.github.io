@@ -1496,7 +1496,9 @@ body {
   }
 
   .about-img img {
-    height: 460px;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16/10;
     border-radius: 18px;
   }
 }

@@ -96,7 +96,6 @@ function sanitizarURLs(data) {
   };
   campos.forEach(campo => {
     if (data[campo] && /localhost|127\.0\.0\.1/.test(data[campo])) {
-      console.warn(`🔧 URL corrupta detectada en ${campo}, usando default`);
       data[campo] = defaults[campo] || "";
     }
   });
