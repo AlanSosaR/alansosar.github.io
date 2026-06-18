@@ -180,12 +180,25 @@ export async function registerPushToken(userId) {
 
     // -----------------------------
     // Permisos de notificación — SNACKBAR PERSONALIZADO
+    // Solo mostrar si:
+    //   1. El permiso está en estado "default" (el usuario nunca decidió)
+    //   2. No ha descartado el snackbar antes (localStorage)
+    //   3. El usuario está logueado (userId)
     // -----------------------------
-    if (Notification.permission === "denied") return;
-
-    if (Notification.permission !== "granted") {
-      mostrarSnackbarNotificaciones(userId);
+    if (Notification.permission === "denied") {
+      console.log("🔕 Notificaciones denegadas por el usuario");
       return;
+    }
+
+    if (Notification.permission === "granted") {
+      console.log("✅ Notificaciones ya aceptadas — registrando push directamente");
+      // Continuar normalmente con el registro del SW + token
+    } else if (Notification.permission === "default") {
+      console.log("👆 Notificaciones sin decidir — mostrando snackbar");
+      mostrarSnackbarNotificaciones(userId);
+      return; // Esperar decisión del usuario
+    } else {
+      return; // Caso raro (shouldn't happen)
     }
 
     // -----------------------------
