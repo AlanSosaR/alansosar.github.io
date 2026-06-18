@@ -6,17 +6,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Términos del Servicio | Café Cortero</title>
 
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="/imagenes/logo.png">
-
   <!-- Tipografía global -->
   <link rel="stylesheet" href="/css/core/tipografia.css">
+
+  <!-- Footer styles -->
+  <link rel="stylesheet" href="/css/ui/footer.css">
 
   <!-- Material Symbols -->
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
 
-  <!-- CSS legal (ruta absoluta + cache busting) -->
-  <link rel="stylesheet" href="/css/pages/legal/legal.css?v=6">
+  <!-- CSS legal -->
+  <link rel="stylesheet" href="/css/pages/legal/legal.css?v=7">
 </head>
 
 <body>
@@ -31,51 +31,39 @@
 
       <!-- Header -->
       <header class="legal-header">
-        <div class="logo-container" onclick="window.location.href='/pages/home/index.html'" role="button"
-          aria-label="Ir al inicio">
-          <img src="/imagenes/logo.png" alt="Café Cortero" class="logo-img" />
-        </div>
-
         <h1 class="legal-title">Términos del Servicio</h1>
-
         <p class="legal-subtitle">
           Condiciones de uso de la aplicación Café Cortero.
         </p>
       </header>
 
-      <!-- Contenido -->
-      <div class="legal-content">
-
-        <p>
-          Al utilizar Café Cortero aceptas los presentes Términos del Servicio.
-        </p>
-
-        <h2>Uso del servicio</h2>
-        <p>
-          El servicio se proporciona “tal cual”, sin garantías de disponibilidad continua
-          ni ausencia de errores.
-        </p>
-
-        <h2>Responsabilidad del usuario</h2>
-        <p>
-          El uso de la aplicación es responsabilidad exclusiva del usuario, quien se
-          compromete a utilizarla de forma lícita y adecuada.
-        </p>
-
-        <h2>Modificaciones</h2>
-        <p>
-          Café Cortero se reserva el derecho de modificar estos términos en cualquier momento.
-          Las modificaciones entrarán en vigor una vez publicadas.
-        </p>
-
-        <footer class="legal-footer">
-          <small>Última actualización: 2026</small>
-        </footer>
-
+      <!-- Contenido dinámico desde site_settings -->
+      <div class="legal-content" id="legalContent">
+        <p class="legal-loading">Cargando...</p>
       </div>
+
     </section>
   </main>
 
+  <div id="snackbar" class="snackbar" aria-live="polite"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/js/core/supabase-client-core.js"></script>
+  <script src="/js/core/supabase-auth.js"></script>
+  <script src="/js/ui/layout.js"></script>
+  <script src="/js/ui/site-settings.js"></script>
+  <script>
+    (async function() {
+      await window.loadSiteSettings();
+      const s = window.siteSettings;
+      const container = document.getElementById("legalContent");
+      if (s && s.terms_content) {
+        container.innerHTML = s.terms_content;
+      } else {
+        container.innerHTML = '<p>No hay contenido disponible.</p>';
+      }
+    })();
+  </script>
 </body>
 
 </html>

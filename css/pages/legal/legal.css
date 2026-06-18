@@ -195,6 +195,14 @@ body {
   text-decoration: underline;
 }
 
+/* Loading state */
+.legal-loading {
+  text-align: center;
+  color: var(--marron-suave);
+  padding: 40px 0;
+  font-size: 0.95rem;
+}
+
 /* ================= FOOTER ================= */
 .legal-footer {
   margin-top: 28px;
