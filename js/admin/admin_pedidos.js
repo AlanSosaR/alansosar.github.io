@@ -13,7 +13,7 @@ console.log("🛠️ admin_pedidos.js — INIT STITCH");
     let filtered = [];
     let selectedOrder = null;
     let currentPage = 1;
-    const itemsPerPage = 5;
+    const itemsPerPage = 8;
     let currentStatus = "pending";
     let searchFilter = "";
 

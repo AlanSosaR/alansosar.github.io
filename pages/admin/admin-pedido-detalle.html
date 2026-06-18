@@ -34,9 +34,7 @@
                         <button class="btn-icon-mobile" id="btnPrintMobile" title="Imprimir" style="background:none;border:none;cursor:pointer">
                             <span class="material-symbols-outlined">print</span>
                         </button>
-                        <button class="btn-contact-mobile" id="btn-contact-client-mobile" title="Contactar" style="background:none;border:none;cursor:pointer">
-                            <span class="material-symbols-outlined">mail</span>
-                        </button>
+
                     </div>
                 </header>
 
@@ -57,27 +55,20 @@
                             </div>
                             
                             <div class="pedido-actions-col">
-                                <button class="btn-outline" id="btnPrint">
-                                    <span class="material-symbols-outlined">print</span>
-                                    Imprimir Factura
-                                </button>
-                                <button class="btn-primary" id="btn-contact-client">
-                                    <span class="material-symbols-outlined">mail</span>
-                                    Contactar Cliente
-                                </button>
+                                <div class="payment-status-display">
+                                    <span class="material-symbols-outlined">check_circle</span>
+                                    <span class="payment-status-text">Venta completada</span>
+                                    <span class="payment-subtext">Cobrado en mostrador</span>
+                                </div>
+                                <div class="pedido-action-buttons">
+                                    <button class="btn-outline" id="btnPrint">
+                                        <span class="material-symbols-outlined">print</span>
+                                        Imprimir Factura
+                                    </button>
+
+                                </div>
                             </div>
                         </header>
-
-                        <!-- Status -->
-                        <section class="status-header-center" style="margin-bottom:24px">
-                            <div class="status-badge-container">
-                                <span class="status-badge-stitch" id="detail-status">
-                                    <span class="material-symbols-outlined">check_circle</span>
-                                    Cargando...
-                                </span>
-                            </div>
-                            <p class="meta-date" id="detail-date">Realizado el —</p>
-                        </section>
 
                         <!-- TIMELINE -->
                         <div class="timeline-container-stitch">
@@ -124,11 +115,11 @@
                                     </div>
                                 </div>
                                 <div class="shipping-info" style="margin-top:12px">
-                                    <p class="section-label">Dirección de Envío</p>
+                                    <h3 class="card-title-stitch" style="font-size:0.9rem;margin-bottom:0.5rem;font-weight:500"><span class="material-symbols-outlined" style="font-size:16px;color:var(--primary-green)">location_on</span> Dirección de Envío</h3>
                                     <p id="detail-shipping-address">—</p>
                                 </div>
                                 <div class="shipping-info" style="margin-top:12px">
-                                    <p class="section-label">Notas Internas</p>
+                                    <h3 class="card-title-stitch" style="font-size:0.9rem;margin-bottom:0.5rem;font-weight:500"><span class="material-symbols-outlined" style="font-size:16px;color:var(--primary-green)">notes</span> Notas Internas</h3>
                                     <p id="detail-order-notes">El cliente no dejó notas.</p>
                                 </div>
                             </div>
@@ -139,6 +130,10 @@
                                 <div id="detail-items-body" class="summary-items-list"></div>
 
                                 <div class="payment-info-rows">
+                                    <div class="pay-row" id="admin-row" style="display:none">
+                                        <span>Atendido por:</span>
+                                        <span id="detail-admin-name">—</span>
+                                    </div>
                                     <div class="pay-row">
                                         <span>Método:</span>
                                         <span id="detail-payment-method">—</span>

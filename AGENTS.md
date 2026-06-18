@@ -8,6 +8,8 @@ Vanilla HTML/CSS/JS e-commerce PWA ("Café Cortero"). No framework, **no build s
 |---|---|
 | `npm run dev` | `live-server` on port 3000 (no browser open) |
 | `npm run dev:open` | Same, opens browser |
+| `npm run dev:safe` | **Usar siempre este.** Mata procesos zombies en puerto 3000, arranca en background, verifica que realmente escuche antes de avisar, log a `server.log` |
+| `npm run dev:safe:open` | Igual pero abre navegador |
 
 No test/lint/format scripts exist. **No CI pipeline.** No TypeScript on frontend (only Supabase Edge Functions use Deno/TS).
 

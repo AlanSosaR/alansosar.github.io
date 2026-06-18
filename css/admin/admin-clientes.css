@@ -32,7 +32,7 @@ html::-webkit-scrollbar { width: 0; height: 0; display: none; }
 body.page-admin-customers {
     background-color: var(--fondo-general);
     color: var(--texto-principal);
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Poppins', sans-serif;
     margin: 0;
     padding: 0;
 }

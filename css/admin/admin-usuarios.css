@@ -24,7 +24,7 @@ html::-webkit-scrollbar { width: 0; height: 0; display: none; }
 /* RESET & GLOBAL */
 body.page-admin-users {
     background-color: var(--bg-canvas) !important;
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Poppins', sans-serif;
     color: var(--text-main);
     margin: 0;
 }
@@ -44,7 +44,7 @@ body.page-admin-users {
 }
 
 .page-title {
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Poppins', sans-serif;
     font-size: 36px;
     font-weight: 900;
     color: var(--coffee-deep);
@@ -504,7 +504,7 @@ input:checked + .slider-stitch:before { transform: translateX(24px); }
     margin: 0 0 8px;
     color: var(--coffee-deep);
     font-size: 24px;
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Poppins', sans-serif;
 }
 
 .empty-state-stitch p {

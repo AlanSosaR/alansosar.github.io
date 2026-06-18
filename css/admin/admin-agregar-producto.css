@@ -188,6 +188,13 @@ body.header-checkout {
   color: var(--verde);
 }
 
+.m3-input .currency-symbol {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--verde);
+  font-family: 'Poppins', sans-serif;
+}
+
 .m3-input input,
 .m3-input textarea,
 .m3-input select {

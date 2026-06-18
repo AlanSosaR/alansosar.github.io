@@ -55,7 +55,6 @@ console.log("🛠️ admin_pedido_detalle.js — INIT");
         statusActionsBox: document.getElementById("status-action-buttons"),
         statusActionCard: document.getElementById("status-action-card"),
         timelineProgress: document.getElementById("timeline-progress"),
-        btnContactClients: document.querySelectorAll("#btn-contact-client, #btn-contact-client-mobile"),
     };
 
     let pendingAction = null;
@@ -200,21 +199,50 @@ console.log("🛠️ admin_pedido_detalle.js — INIT");
 
         // 2. Client Info — POS variant vs regular
         if (isPOS) {
-            const adminUser = JSON.parse(localStorage.getItem("cortero_user") || "{}");
-            const adminName = adminUser.name || "Admin";
-
-            if (DOM.clientName) DOM.clientName.textContent = adminName;
-            if (DOM.clientEmail) DOM.clientEmail.textContent = "Venta en mostrador";
-            if (DOM.clientPhone) DOM.clientPhone.textContent = "—";
-            if (DOM.shippingAddress) DOM.shippingAddress.textContent = "—";
-            DOM.btnContactClients.forEach(btn => { btn.style.display = "none"; });
+            const leftCard = document.querySelector(".info-card-stitch");
+            if (leftCard) {
+                leftCard.innerHTML = `
+                    <h3 class="card-title-stitch"><img src="/imagenes/clasificacion.png" class="card-title-icon-img" alt="" /> Productos vendidos</h3>
+                    <div id="pos-items-list" class="items-mini-list"></div>
+                `;
+                const posList = document.getElementById("pos-items-list");
+                if (posList && o.items) {
+                    o.items.forEach(item => {
+                        const prod = item.products || {};
+                        const name = prod.name || "Producto";
+                        const imgUrl = prod.image_url
+                            ? (prod.image_url.startsWith("http") ? prod.image_url : `https://${prod.image_url}`)
+                            : null;
+                        const div = document.createElement("div");
+                        div.className = "summary-item";
+                        div.innerHTML = `
+                            ${imgUrl ? `<img src="${imgUrl}" alt="${name}" class="item-img">` : `<div class="item-img-placeholder"><span class="material-symbols-outlined">coffee</span></div>`}
+                            <div class="item-info">
+                                <div class="item-name">${name}</div>
+                                <div class="item-details">Cant: ${item.quantity}</div>
+                            </div>
+                            <span class="item-price">L ${item.price.toFixed(2)} c/u</span>
+                        `;
+                        posList.appendChild(div);
+                    });
+                }
+            }
+            const rightItems = document.getElementById("detail-items-body");
+            if (rightItems) rightItems.style.display = "none";
+            const adminRow = document.getElementById("admin-row");
+            const adminNameEl = document.getElementById("detail-admin-name");
+            if (adminRow) adminRow.style.display = "flex";
+            if (adminNameEl) {
+                const adminUser = JSON.parse(localStorage.getItem("cortero_user") || "{}");
+                adminNameEl.textContent = adminUser.name || "Admin";
+            }
         } else {
             const cName = a.full_name || u.name || "Cliente";
 
             if (DOM.clientName) DOM.clientName.textContent = cName;
             if (DOM.clientEmail) DOM.clientEmail.textContent = u.email || "—";
             if (DOM.clientPhone) DOM.clientPhone.textContent = a.phone || u.phone || "—";
-            DOM.btnContactClients.forEach(btn => { btn.style.display = ""; });
+
 
             const addressParts = [a.street, a.city, a.state, a.country, a.postal_code].filter(Boolean);
             if (DOM.shippingAddress) {
@@ -308,21 +336,7 @@ console.log("🛠️ admin_pedido_detalle.js — INIT");
             }
         }
 
-        // WhatsApp Action
-        DOM.btnContactClients.forEach(btn => {
-            btn.onclick = () => {
-                if (isPOS) return;
-                const cName = a.full_name || u.name || "Cliente";
-                const phone = a.phone || u.phone;
-                if (!phone) {
-                    openSnackbar("Atención", "El cliente no tiene teléfono registrado.", null, false);
-                    return;
-                }
-                const cleanPhone = phone.replace(/\D/g, "");
-                const msg = encodeURIComponent(`Hola ${cName}, te contactamos de Café Cortero sobre tu pedido #${o.order_number}...`);
-                window.open(`https://wa.me/${cleanPhone}?text=${msg}`, "_blank");
-            };
-        });
+
 
         // Timeline & Action Buttons
         renderTimeline(o.status);
@@ -335,17 +349,7 @@ console.log("🛠️ admin_pedido_detalle.js — INIT");
     function renderTimeline(status) {
         if (isPOS) {
             const container = document.querySelector(".timeline-container-stitch");
-            if (container) {
-                container.innerHTML = `
-                    <div style="display:flex;align-items:center;gap:12px;padding:8px 0">
-                        <span class="material-symbols-outlined" style="font-size:32px;color:#2E7D32">check_circle</span>
-                        <div>
-                            <strong style="font-size:16px;color:#2E7D32">Venta completada</strong>
-                            <span style="display:block;font-size:13px;color:var(--text-muted);margin-top:2px">Cobrado en mostrador</span>
-                        </div>
-                    </div>
-                `;
-            }
+            if (container) container.style.display = "none";
             return;
         }
 

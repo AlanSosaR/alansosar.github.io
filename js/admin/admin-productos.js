@@ -36,6 +36,8 @@ let selectedProductId = null;
 let productToDelete = null;
 let searchActive = "";
 let activeFilter = "all";
+let displayCount = 0;
+const ITEMS_PER_PAGE = 8;
 
 /* ============================================================
    HELPERS
@@ -140,7 +142,10 @@ function renderList(list) {
 
   ocultarEstadoVacio();
 
-  list.forEach(product => {
+  displayCount = Math.min(ITEMS_PER_PAGE, list.length);
+  const pageItems = list.slice(0, displayCount);
+
+  pageItems.forEach(product => {
     const row = document.createElement("div");
     row.className = "product-row";
     row.dataset.id = product.id;
@@ -173,9 +178,53 @@ function renderList(list) {
       <span class="product-row-badge ${badgeClass}">${badgeText}</span>
     `;
 
-    row.addEventListener("click", () => selectProduct(product.id));
+    row.addEventListener("click", () => selectProduct(product.id, { fromUserClick: true }));
     productsList.appendChild(row);
   });
+
+  if (list.length > ITEMS_PER_PAGE && displayCount < list.length) {
+    const loadMore = document.createElement("button");
+    loadMore.className = "load-more-btn";
+    loadMore.textContent = "Cargar más";
+    loadMore.onclick = () => {
+      const more = list.slice(displayCount, displayCount + ITEMS_PER_PAGE);
+      more.forEach(product => {
+        const row = document.createElement("div");
+        row.className = "product-row";
+        row.dataset.id = product.id;
+        const imgUrl = getImageUrl(product);
+        const stock = product.stock ?? 0;
+        let badgeClass = "badge-inactive";
+        let badgeText = "Inactivo";
+        if (product.active !== false) {
+          if (stock <= 15) {
+            badgeClass = "badge-low-stock";
+            badgeText = "Stock bajo";
+          } else {
+            badgeClass = "badge-active";
+            badgeText = "Activo";
+          }
+        }
+        row.innerHTML = `
+          <img class="product-row-thumb" src="${imgUrl}" alt="${product.name}" loading="lazy">
+          <div class="product-row-info">
+            <p class="product-row-name">${product.name || "—"}</p>
+            <p class="product-row-meta">${product.category || ""}${product.grind_type ? " · " + product.grind_type : ""}</p>
+          </div>
+          <div class="product-row-right">
+            <p class="product-row-price">${formatPrice(product.price, product.currency)}</p>
+            <p class="product-row-stock">${stock} en almacén</p>
+          </div>
+          <span class="product-row-badge ${badgeClass}">${badgeText}</span>
+        `;
+        row.addEventListener("click", () => selectProduct(product.id, { fromUserClick: true }));
+        productsList.insertBefore(row, loadMore);
+      });
+      displayCount += ITEMS_PER_PAGE;
+      if (displayCount >= list.length) loadMore.remove();
+    };
+    productsList.appendChild(loadMore);
+  }
 
   if (selectedProductId) {
     const match = list.find(p => p.id === selectedProductId);
@@ -184,7 +233,7 @@ function renderList(list) {
       if (prevRow) prevRow.classList.remove("selected");
       const row = productsList.querySelector(`[data-id="${selectedProductId}"]`);
       if (row) row.classList.add("selected");
-    } else {
+    } else if (list.length > 0) {
       selectProduct(list[0].id);
     }
   } else if (list.length > 0) {
@@ -319,7 +368,7 @@ function renderDetail(product) {
 /* ============================================================
    SELECCIÓN DE PRODUCTO
 ============================================================ */
-function selectProduct(id) {
+function selectProduct(id, { fromUserClick = false } = {}) {
   const product = filteredProducts.find(p => p.id === id);
   if (!product) return;
 
@@ -333,11 +382,10 @@ function selectProduct(id) {
 
   renderDetail(product);
 
-  if (window.innerWidth <= 1100) {
-    detailPanel.closest(".detail-panel-column")?.scrollIntoView({
-      behavior: "smooth",
-      block: "start"
-    });
+  if (window.innerWidth <= 1100 && fromUserClick) {
+    document.body.classList.add("detail-view-active");
+    const backBtn = document.getElementById("btn-back-products");
+    if (backBtn) backBtn.style.display = "flex";
   }
 }
 
@@ -362,7 +410,7 @@ function aplicarFiltro(query) {
       base = base.filter(p => p.active !== false);
       break;
     case "carousel":
-      base = base.filter(p => p.featured === true);
+      base = base.filter(p => p.featured === true && (p.stock ?? 0) > 0);
       break;
   }
 
@@ -491,6 +539,10 @@ async function cargarProductos() {
     ===================== */
     document.addEventListener("header:add-click", () => {
       location.href = "/pages/admin/admin-agregar-producto.html";
+    });
+
+    document.getElementById("btn-back-products-title")?.addEventListener("click", () => {
+      document.body.classList.remove("detail-view-active");
     });
 
     cargarProductos();

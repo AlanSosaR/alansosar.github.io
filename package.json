@@ -3,7 +3,9 @@
   "private": true,
   "scripts": {
     "dev": "npx live-server --port=3000 --no-browser --wait=200",
-    "dev:open": "npx live-server --port=3000 --wait=200"
+    "dev:open": "npx live-server --port=3000 --wait=200",
+    "dev:safe": "powershell -ExecutionPolicy Bypass -File scripts/start-server.ps1 -Port 3000",
+    "dev:safe:open": "powershell -ExecutionPolicy Bypass -File scripts/start-server.ps1 -Port 3000 -OpenBrowser"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.107.0"

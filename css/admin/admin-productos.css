@@ -56,7 +56,13 @@ a {
   margin-bottom: 1.2rem;
 }
 
-.topbar-left h1 {
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.topbar-titles h1 {
   font-size: 1.6rem;
   font-weight: 700;
   color: var(--cafe);
@@ -681,6 +687,41 @@ a {
   transform: scale(.96);
 }
 
+@media (min-width: 1101px) {
+  .hidden-desktop {
+    display: none !important;
+  }
+}
+
+.btn-back-title {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: white;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  color: var(--verde);
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 0;
+  font-size: 24px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-back-title:hover {
+  transform: translateX(-4px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+@media (max-width: 1100px) {
+  body.detail-view-active .btn-back-title {
+    display: flex;
+  }
+}
+
 @media (max-width: 520px) {
   .snackbar-content {
     flex-direction: column;
@@ -702,12 +743,20 @@ a {
 
   .detail-panel-column {
     position: static;
-    order: 1;
     max-width: 100%;
+    display: none;
+  }
+
+  body.detail-view-active .detail-panel-column {
+    display: block;
+  }
+
+  body.detail-view-active .products-list-column {
+    display: none;
   }
 
   .products-list-column {
-    order: 2;
+    order: 0;
   }
 
   .detail-main {

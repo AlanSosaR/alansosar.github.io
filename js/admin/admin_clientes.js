@@ -51,7 +51,7 @@ const initAdminClientes = () => {
 
     // Paginación de Lista de Clientes
     let custCurrentPage = 1;
-    const custItemsPerPage = 5;
+    const custItemsPerPage = 8;
 
     let adminId = null;
     let adminPeriodo = "semana";

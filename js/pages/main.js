@@ -455,7 +455,7 @@ async function loadSimilarProducts() {
         <h4>${p.name}</h4>
         
         <div class="card-footer-3col">
-          ${p.presentation ? `<span class="weight-label">${p.presentation}</span>` : ""}
+          <span class="weight-label">${[p.presentation, p.grind_type].filter(Boolean).join(" · ")}</span>
           
           <button class="fav-btn ${activeFav}" onclick="event.stopPropagation(); toggleFavorite('${p.id}')">
             <i class="${heartIcon}"></i>

@@ -311,7 +311,7 @@ async function cargarProducto() {
   categoriaSel.value = data.category || "";
   tipoCafeSel.value = data.grind_type || "";
   presentacion.value = data.presentation || "";
-  precioInput.value = data.price ?? "";
+  precioInput.value = data.price != null ? Number(data.price).toFixed(2) : "";
   stockInput.value = data.stock ?? "";
   descuentoInput.value = data.discount ?? 0;
 
