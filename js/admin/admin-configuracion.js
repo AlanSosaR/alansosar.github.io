@@ -48,9 +48,9 @@ const footerTextInput = document.getElementById("footerTextInput");
 let logoBlob = null;
 let logoSecBlob = null;
 
-// Páginas legales
-const privacyContent = document.getElementById("privacyContent");
-const termsContent = document.getElementById("termsContent");
+// Páginas legales — contenteditable WYSIWYG
+const privacyEditor = document.getElementById("privacyEditor");
+const termsEditor = document.getElementById("termsEditor");
 
 const BUCKET = "site-assets";
 const STORAGE_URL = "https://eaipcuvvddyrqkbmjmvw.supabase.co/storage/v1/object/public";
@@ -221,12 +221,8 @@ async function cargarConfiguracion() {
     logoPreview.src = "/imagenes/logo.png";
     logoSecPreview.src = "/imagenes/logo_secundario.png";
     footerTextInput.value = "2026 Café Cortero. Todos los derechos reservados.";
-    privacyContent.value = getDefaultPrivacyContent();
-    termsContent.value = getDefaultTermsContent();
-    ["privacyContent", "termsContent"].forEach(id => {
-      const ta = document.getElementById(id);
-      if (ta) ta.dispatchEvent(new Event("input"));
-    });
+    privacyEditor.innerHTML = getDefaultPrivacyContent();
+    termsEditor.innerHTML = getDefaultTermsContent();
     renderSlides();
     return;
   }
@@ -243,14 +239,8 @@ async function cargarConfiguracion() {
   logoPreview.src = data.logo_url || "/imagenes/logo.png";
   logoSecPreview.src = data.logo_secundario_url || "/imagenes/logo_secundario.png";
   footerTextInput.value = data.footer_text || "2026 Café Cortero. Todos los derechos reservados.";
-  privacyContent.value = data.privacy_content || getDefaultPrivacyContent();
-  termsContent.value = data.terms_content || getDefaultTermsContent();
-
-  // Disparar preview inicial
-  ["privacyContent", "termsContent"].forEach(id => {
-    const ta = document.getElementById(id);
-    if (ta) ta.dispatchEvent(new Event("input"));
-  });
+  privacyEditor.innerHTML = data.privacy_content || getDefaultPrivacyContent();
+  termsEditor.innerHTML = data.terms_content || getDefaultTermsContent();
 
   slides = (data.hero_slides || []).map(s => ({ ...s }));
   renderSlides();
@@ -325,8 +315,8 @@ async function guardarConfiguracion(e) {
       logo_url: logoUrl,
       logo_secundario_url: logoSecUrl,
       footer_text: footerTextInput.value.trim(),
-      privacy_content: privacyContent.value.trim(),
-      terms_content: termsContent.value.trim(),
+      privacy_content: privacyEditor.innerHTML.trim(),
+      terms_content: termsEditor.innerHTML.trim(),
       updated_at: new Date().toISOString()
     };
 
@@ -393,26 +383,6 @@ function showSnackbar(message, type = "success") {
   if (type) el.classList.add(type);
   setTimeout(() => el.classList.remove("show", "success", "error", "warn"), 3500);
 }
-
-/* ============================================================
-   PREVIEW EN VIVO — Páginas legales
-   ============================================================ */
-function setupLegalPreview(textareaId, previewId) {
-  const ta = document.getElementById(textareaId);
-  const prev = document.getElementById(previewId);
-  if (!ta || !prev) return;
-  ta.addEventListener("input", () => {
-    const html = ta.value.trim();
-    if (html) {
-      prev.innerHTML = html;
-    } else {
-      prev.innerHTML = "";
-    }
-  });
-}
-
-setupLegalPreview("privacyContent", "privacyPreview");
-setupLegalPreview("termsContent", "termsPreview");
 
 /* ============================================================
    DEFAULT LEGAL CONTENT
