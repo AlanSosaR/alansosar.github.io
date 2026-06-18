@@ -542,6 +542,13 @@ body {
   padding-right: 1rem;
 }
 
+.spec-row-full {
+  grid-column: 1 / -1;
+  padding-top: 0.6rem;
+  margin-top: 0.4rem;
+  border-top: 1px dashed rgba(55, 123, 76, 0.15);
+}
+
 .spec-item {
   display: flex;
   align-items: flex-start;
@@ -602,7 +609,7 @@ body {
 
 .prep-chips-wrap {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 6px;
   margin-top: 4px;
 }

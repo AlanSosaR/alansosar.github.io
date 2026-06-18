@@ -233,8 +233,7 @@ function renderMainProduct(product) {
       { label: "Finca", value: product.finca, icon: "/imagenes/field.png" },
       { label: "Productor", value: product.productor, icon: "/imagenes/farmer.png" },
       { label: "Origen", value: product.origen, icon: "/imagenes/map.png" },
-      { label: "Fecha de tueste", value: product.fecha_tueste, icon: "/imagenes/calendar.png" },
-      { label: "Recomendado para", value: product.preparation, icon: "local_cafe" }
+      { label: "Fecha de tueste", value: product.fecha_tueste, icon: "/imagenes/calendar.png" }
     ];
 
     const rightSpecs = [
@@ -253,23 +252,6 @@ function renderMainProduct(product) {
 
     const renderSpec = s => {
       if (!s.value || s.value.trim() === "") return "";
-      if (s.label === "Recomendado para") {
-        const items = s.value.split(",").map(v => v.trim()).filter(Boolean);
-        const chips = items.map(v => `
-          <span class="prep-chip">
-            <span class="material-symbols-outlined">${prepIcons[v] || "local_cafe"}</span>
-            ${v}
-          </span>
-        `).join("");
-        return `
-          <div class="spec-item">
-            <div class="spec-info">
-              <span class="spec-label">${s.label}</span>
-              <div class="prep-chips-wrap">${chips}</div>
-            </div>
-          </div>
-        `;
-      }
       const isPng = s.icon.includes(".png");
       return `
         <div class="spec-item">
@@ -282,6 +264,26 @@ function renderMainProduct(product) {
       `;
     };
 
+    const prepHtml = (() => {
+      if (!product.preparation) return "";
+      const items = product.preparation.split(",").map(v => v.trim()).filter(Boolean);
+      if (!items.length) return "";
+      const chips = items.map(v => `
+        <span class="prep-chip">
+          <span class="material-symbols-outlined">${prepIcons[v] || "local_cafe"}</span>
+          ${v}
+        </span>
+      `).join("");
+      return `
+        <div class="spec-row-full">
+          <div class="spec-info">
+            <span class="spec-label">Recomendado para</span>
+            <div class="prep-chips-wrap">${chips}</div>
+          </div>
+        </div>
+      `;
+    })();
+
     specsContainer.innerHTML = `
       <div class="specs-col">
         ${leftSpecs.filter(s => s.value).map(renderSpec).join("")}
@@ -289,6 +291,7 @@ function renderMainProduct(product) {
       <div class="specs-col">
         ${rightSpecs.filter(s => s.value).map(renderSpec).join("")}
       </div>
+      ${prepHtml}
       <div class="spec-contact">
         <div class="contact-info-wrap">
           <img src="/imagenes/contact-mail.png" class="spec-icon-png" alt="Contacto">
