@@ -600,6 +600,30 @@ body {
   line-height: 1.2;
 }
 
+.prep-chips-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.prep-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(55,123,76,.1);
+  color: var(--verde);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.prep-chip .material-symbols-outlined {
+  font-size: 1rem;
+  color: var(--verde);
+}
+
 .contact-link {
   color: inherit;
   text-decoration: none;

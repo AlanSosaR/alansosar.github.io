@@ -233,18 +233,43 @@ function renderMainProduct(product) {
       { label: "Finca", value: product.finca, icon: "/imagenes/field.png" },
       { label: "Productor", value: product.productor, icon: "/imagenes/farmer.png" },
       { label: "Origen", value: product.origen, icon: "/imagenes/map.png" },
-      { label: "Fecha de tueste", value: product.fecha_tueste, icon: "/imagenes/calendar.png" }
+      { label: "Fecha de tueste", value: product.fecha_tueste, icon: "/imagenes/calendar.png" },
+      { label: "Recomendado para", value: product.preparation, icon: "local_cafe" }
     ];
 
     const rightSpecs = [
       { label: "Altitud", value: product.altitud, icon: "/imagenes/mountain.png" },
       { label: "Variedad", value: product.variedad, icon: "/imagenes/sprouts.png" },
       { label: "Proceso", value: product.proceso, icon: "/imagenes/smart-factory.png" },
-      { label: "Perfil", value: product.perfil, icon: "palette" } 
+      { label: "Perfil", value: product.perfil, icon: "palette" }
     ];
+
+    const prepIcons = {
+      "Filtro": "coffee_maker",
+      "Prensa francesa": "air",
+      "V60": "science",
+      "Espresso": "local_cafe"
+    };
 
     const renderSpec = s => {
       if (!s.value || s.value.trim() === "") return "";
+      if (s.label === "Recomendado para") {
+        const items = s.value.split(",").map(v => v.trim()).filter(Boolean);
+        const chips = items.map(v => `
+          <span class="prep-chip">
+            <span class="material-symbols-outlined">${prepIcons[v] || "local_cafe"}</span>
+            ${v}
+          </span>
+        `).join("");
+        return `
+          <div class="spec-item">
+            <div class="spec-info">
+              <span class="spec-label">${s.label}</span>
+              <div class="prep-chips-wrap">${chips}</div>
+            </div>
+          </div>
+        `;
+      }
       const isPng = s.icon.includes(".png");
       return `
         <div class="spec-item">
@@ -444,6 +469,7 @@ async function loadSimilarProducts() {
       data-perfil="${p.perfil || ""}"
       data-variedad="${p.variedad || ""}"
       data-tueste="${p.fecha_tueste || ""}"
+      data-preparation="${p.preparation || ""}"
       data-discount="${activeDiscount}"
     >
       <div class="similar-img-cont">
@@ -499,6 +525,7 @@ function initDefaultProduct() {
     perfil: firstCard.dataset.perfil,
     variedad: firstCard.dataset.variedad,
     fecha_tueste: firstCard.dataset.tueste,
+    preparation: firstCard.dataset.preparation,
     discount: Number(firstCard.dataset.discount || 0)
   });
 
@@ -543,6 +570,7 @@ function bindSimilarCardEvents() {
         perfil: card.dataset.perfil,
         variedad: card.dataset.variedad,
         fecha_tueste: card.dataset.tueste,
+        preparation: card.dataset.preparation,
         discount: Number(card.dataset.discount || 0)
       });
 

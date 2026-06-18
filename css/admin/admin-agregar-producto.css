@@ -459,6 +459,53 @@ body.header-checkout {
 #snackbar.snackbar.warn::before    { background: #f6c343; }
 #snackbar.snackbar.success::before { background: #33c26b; }
 
+.chip-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.chip-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1.5px solid var(--border-soft, #ddd);
+  background: var(--blanco);
+  cursor: pointer;
+  font-size: 0.88rem;
+  color: var(--gris-text);
+  transition: all 0.2s;
+  user-select: none;
+}
+
+.chip-option input {
+  display: none;
+}
+
+.chip-option .material-symbols-outlined {
+  font-size: 1.2rem;
+}
+
+.chip-option:has(input:checked) {
+  background: var(--verde);
+  border-color: var(--verde);
+  color: #fff;
+}
+
+.chip-option:has(input:checked) .material-symbols-outlined {
+  color: #fff;
+}
+
+.m3-field .field-title {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--cafe);
+  margin: 0 0 4px;
+}
+
 @media (max-width: 900px) {
   #snackbar.snackbar {
     bottom: 20px;

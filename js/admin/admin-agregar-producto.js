@@ -253,6 +253,7 @@ async function guardarProducto() {
     origen: origenInput.value.trim(),
     proceso: procesoInput.value.trim(),
     perfil: perfilInput.value.trim(),
+    preparation: [...document.querySelectorAll("#preparationChips input:checked")].map(cb => cb.value).join(", "),
     variedad: variedadInput.value.trim(),
     fecha_tueste: fechaTuesteInput.value,
     status: estadoToggle.checked ? "activo" : "inactivo"
@@ -321,6 +322,10 @@ async function cargarProducto() {
   origenInput.value = data.origen || "San Ramon, Santa María, Departamento del Paraíso, Honduras.";
   procesoInput.value = data.proceso || "Lavado, seco";
   perfilInput.value = data.perfil || "Miel, cítrico, chocolate";
+  const prepValues = (data.preparation || "").split(",").map(s => s.trim()).filter(Boolean);
+  document.querySelectorAll("#preparationChips input").forEach(cb => {
+    cb.checked = prepValues.includes(cb.value);
+  });
   variedadInput.value = data.variedad || "Parainema";
   fechaTuesteInput.value = data.fecha_tueste || "";
 
