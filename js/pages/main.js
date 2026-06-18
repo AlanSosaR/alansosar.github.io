@@ -212,6 +212,19 @@ function addToCart(product) {
 }
 
 /* =========================
+   FORMATO TELÉFONO
+========================= */
+function formatPhoneLink(raw) {
+  const digits = raw.replace(/\D/g, "");
+  if (digits.length === 11) {
+    const pretty = `+${digits.slice(0,3)} ${digits.slice(3,7)}-${digits.slice(7)}`;
+    return `<a href="https://wa.me/${digits}" target="_blank" class="contact-link">${pretty}</a>`;
+  }
+  const pretty = `+${digits.slice(0,3)} ${digits.slice(3,7)}-${digits.slice(7)}`;
+  return `<a href="https://wa.me/${digits}" target="_blank" class="contact-link">${digits}</a>`;
+}
+
+/* =========================
    RENDER PRODUCTO PRINCIPAL
 ========================= */
 function renderMainProduct(product) {
@@ -298,8 +311,8 @@ function renderMainProduct(product) {
           <div class="spec-info">
             <span class="spec-label">Contacto:</span>
             <span class="spec-value">
-              <a href="https://wa.me/50496670613" target="_blank" class="contact-link">+504 9667-0613</a> / 
-              <a href="https://wa.me/50498675101" target="_blank" class="contact-link">9867-5101</a>
+              ${formatPhoneLink(window.siteSettings?.whatsapp_numero || "50496670613")} / 
+              ${formatPhoneLink(window.siteSettings?.whatsapp_numero2 || "50498675101")}
             </span>
           </div>
         </div>
