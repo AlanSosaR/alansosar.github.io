@@ -36,6 +36,18 @@ header.header-fixed,
   box-sizing: border-box;
 }
 
+/* =====================================================
+   NAVBAR TRANSPARENTE — SOLO HOME
+   ===================================================== */
+header.header-fixed.navbar-transparent,
+#main-header.header-fixed.navbar-transparent {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+}
+
 /* ESTRUCTURA TRES BLOQUES STITCH (RESTAURADO) */
 .header-left-stitch {
   flex: 1; /* Ocupa espacio proporcional para permitir centrado del title */
@@ -488,7 +500,7 @@ body.page-datos-cliente #login-desktop {
   height: 40px;
   border-radius: 50%;
   border: none;
-  background: transparent;
+  background: #ffffff;
 
   display: flex;
   align-items: center;

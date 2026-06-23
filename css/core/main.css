@@ -82,6 +82,11 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Home page: carrusel detrás del navbar transparente */
+body.home-page {
+  padding-top: 0 !important;
+}
+
 /* =========================================================
    HERO — LAYOUT GENERAL (FIX DEFINITIVO)
 ========================================================= */

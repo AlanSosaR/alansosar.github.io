@@ -183,6 +183,22 @@ body.page-admin-config {
   background: var(--gris-bg);
   border-radius: 12px;
   border: 1px solid var(--border-soft);
+  cursor: grab;
+  transition: border-color 0.15s, box-shadow 0.15s, opacity 0.15s;
+}
+
+.slide-item:active {
+  cursor: grabbing;
+}
+
+.slide-item.dragging {
+  opacity: 0.4;
+  border-style: dashed;
+}
+
+.slide-item.drag-over {
+  border-color: var(--verde);
+  box-shadow: 0 0 0 2px rgba(55,123,76,.2);
 }
 
 .slide-thumb {

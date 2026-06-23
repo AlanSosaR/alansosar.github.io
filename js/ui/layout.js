@@ -26,6 +26,15 @@ if (window.__LAYOUT_LOADED__) {
           const headerRes = await fetch("/pages/shared/header.html", { cache: "no-store" });
           if (!headerRes.ok) throw new Error("header.html no encontrado");
           document.body.insertAdjacentHTML("afterbegin", await headerRes.text());
+
+          // Navbar transparente solo en home
+          const isHomePage = window.location.pathname === '/pages/home/index.html' || window.location.pathname === '/pages/home/';
+          if (isHomePage) {
+            const header = document.getElementById("main-header");
+            if (header) header.classList.add("navbar-transparent");
+            document.body.classList.add("home-page");
+          }
+
           console.log("✅ Header inyectado");
         }
       }

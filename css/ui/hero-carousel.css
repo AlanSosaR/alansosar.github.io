@@ -47,7 +47,7 @@
 
 @media (min-width: 1024px) {
     .hero-carousel {
-        height: 80vh;
+        height: 94vh;
         /* Desktop */
     }
 }
@@ -84,7 +84,7 @@
     height: 100%;
     object-fit: cover;
     /* Ajuste "Super Premium": Centrado */
-    object-position: center;
+    object-position: center 45%;
 }
 
 /* Scrim / Overlay Gradient */

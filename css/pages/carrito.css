@@ -38,6 +38,13 @@ body {
 /* Offset Header */
 body.page-carrito {
   padding-top: 100px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+body.page-carrito main {
+  flex: 1;
 }
 
 /* Ocultar el botón antiguo o cualquier contenedor residual */

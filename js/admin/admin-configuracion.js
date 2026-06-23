@@ -117,6 +117,7 @@ function renderSlides() {
   slides.forEach((slide, i) => {
     const div = document.createElement("div");
     div.className = "slide-item";
+    div.draggable = true;
 
     const imgSrc = slide._blob
       ? URL.createObjectURL(slide._blob)
@@ -183,6 +184,41 @@ function renderSlides() {
       slide._blob = blob;
       slide._dirty = true;
       renderSlides();
+    });
+
+    // Drag & Drop events
+    div.addEventListener("dragstart", (e) => {
+      e.dataTransfer.effectAllowed = "move";
+      e.dataTransfer.setData("text/plain", i);
+      div.classList.add("dragging");
+    });
+
+    div.addEventListener("dragend", () => {
+      div.classList.remove("dragging");
+      slidesContainer.querySelectorAll(".slide-item").forEach(el => el.classList.remove("drag-over"));
+    });
+
+    div.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = "move";
+      slidesContainer.querySelectorAll(".slide-item").forEach(el => el.classList.remove("drag-over"));
+      div.classList.add("drag-over");
+    });
+
+    div.addEventListener("dragleave", () => {
+      div.classList.remove("drag-over");
+    });
+
+    div.addEventListener("drop", (e) => {
+      e.preventDefault();
+      div.classList.remove("drag-over");
+      const from = parseInt(e.dataTransfer.getData("text/plain"));
+      const to = i;
+      if (from !== to) {
+        const [moved] = slides.splice(from, 1);
+        slides.splice(to, 0, moved);
+        renderSlides();
+      }
     });
 
     slidesContainer.appendChild(div);
