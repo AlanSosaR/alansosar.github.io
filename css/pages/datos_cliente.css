@@ -41,6 +41,13 @@ body {
 /* Offset Header */
 body.page-datos-cliente {
   padding-top: 100px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+body.page-datos-cliente main {
+  flex: 1;
 }
 
 

@@ -19,7 +19,7 @@ function saveUserLS(data) {
 function showSnack(msg) {
   const bar = document.getElementById("snackbar");
   if (!bar) return;
-  bar.querySelector(".snack-text").textContent = msg;
+  bar.textContent = msg;
   bar.classList.add("show");
   setTimeout(() => bar.classList.remove("show"), 2800);
 }
