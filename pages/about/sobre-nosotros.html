@@ -59,11 +59,11 @@
     ====================================================== -->
     <section class="ns-section ns-section-alt">
       <div class="ns-container">
-        <div class="ns-grid-2col ns-story-grid">
-          <div class="ns-story-image-col">
+          <div class="ns-grid-2col ns-story-grid">
+          <div class="ns-story-image-col ns-reveal">
             <img src="/imagenes/IMG-20260507-WA0020.jpg" alt="Finca La Rosa, Danlí">
           </div>
-          <div class="ns-story-text">
+          <div class="ns-story-text ns-reveal ns-reveal-d1">
             <h2 class="ns-story-title">De dónde venimos</h2>
             <p>
               Nuestra historia comienza en Finca La Rosa, en las montañas
@@ -99,7 +99,7 @@
     <section class="ns-section" id="identity">
       <div class="ns-container">
         <div class="ns-grid-2col">
-          <div class="ns-text-block">
+          <div class="ns-text-block ns-reveal">
             <span class="ns-label">Más que café</span>
             <h2 class="ns-heading">
               No hacemos café rápido. Hacemos café con propósito.
@@ -116,7 +116,7 @@
               de Honduras.
             </p>
           </div>
-          <div class="ns-image-card">
+          <div class="ns-image-card ns-reveal ns-reveal-d1">
             <img src="/imagenes/nosotros.jpg" alt="Granos de café tostado">
           </div>
         </div>
@@ -129,10 +129,10 @@
     <section class="ns-section ns-land-v2" style="background: var(--verde); overflow: hidden;">
       <div class="ns-container">
         <div class="ns-land-v2-row">
-          <div class="ns-land-v2-image">
+          <div class="ns-land-v2-image ns-reveal">
             <img src="/imagenes/origen1.jpg" alt="Montañas hondureñas">
           </div>
-          <div class="ns-land-v2-text">
+          <div class="ns-land-v2-text ns-reveal ns-reveal-d1">
             <span class="ns-label">Nuestra Tierra</span>
             <h2 class="ns-land-v2-heading">El origen de Café Cortero</h2>
             <div class="ns-divider"></div>
@@ -150,7 +150,7 @@
             </p>
           </div>
         </div>
-        <div class="ns-land-v2-strip">
+        <div class="ns-land-v2-strip ns-reveal ns-reveal-d2">
           <div class="ns-land-v2-strip-item ns-strip-item-mobile">
             <img src="/imagenes/origen1.jpg" alt="Montañas hondureñas">
           </div>
@@ -173,7 +173,7 @@
     <section class="ns-section ns-people-v2">
       <div class="ns-container">
         <div class="ns-people-v2-row">
-          <div class="ns-people-v2-text">
+          <div class="ns-people-v2-text ns-reveal">
             <span class="ns-label">Nuestra Familia</span>
             <h2 class="ns-people-v2-heading">El corazón de Café Cortero</h2>
             <div class="ns-divider"></div>
@@ -190,11 +190,11 @@
               cosas como se deben hacer.
             </p>
           </div>
-          <div class="ns-people-v2-image">
+          <div class="ns-people-v2-image ns-reveal ns-reveal-d1">
             <img src="/imagenes/cosecha3.jpg" alt="Productor de café">
           </div>
         </div>
-        <div class="ns-people-v2-strip">
+        <div class="ns-people-v2-strip ns-reveal ns-reveal-d2">
           <div class="ns-people-v2-strip-item">
             <img src="/imagenes/cosecha1.jpg" alt="Seleccionando café">
           </div>
@@ -218,7 +218,7 @@
       </div>
 
       <div class="ns-hero-carousel">
-        <div class="ns-hero-active-col">
+        <div class="ns-hero-active-col ns-reveal">
           <button class="ns-hcar-arrow ns-hcar-arrow-prev" aria-label="Anterior">
             <span class="material-symbols-outlined">chevron_left</span>
           </button>
@@ -235,7 +235,7 @@
           </div>
         </div>
 
-        <div class="ns-hero-preview-col">
+        <div class="ns-hero-preview-col ns-reveal ns-reveal-d1">
           <div class="ns-hero-preview-card">
             <div class="ns-hero-preview-img">
               <div class="ns-hero-badge">02</div>
@@ -248,7 +248,7 @@
         </div>
       </div>
 
-      <div class="ns-hcar-dots">
+      <div class="ns-hcar-dots ns-reveal ns-reveal-d2">
         <span class="ns-hcar-dot active" data-index="0"></span>
         <span class="ns-hcar-dot" data-index="1"></span>
         <span class="ns-hcar-dot" data-index="2"></span>
@@ -372,7 +372,7 @@
           <h2 class="ns-land-v2-heading">Nuestros valores</h2>
           <div class="ns-divider"></div>
         </div>
-        <div class="ns-bento">
+        <div class="ns-bento ns-reveal">
           <div class="ns-bento-item ns-bento-large">
             <div class="ns-bento-imgs">
               <img src="/imagenes/IMG-20251013-WA0029.jpg" alt="">
@@ -425,7 +425,7 @@
     ====================================================== -->
     <section class="ns-section ns-section-quote">
       <div class="ns-container">
-        <div class="ns-quote-block">
+        <div class="ns-quote-block ns-reveal">
           <span class="material-symbols-outlined ns-quote-icon">format_quote</span>
           <h2 class="ns-quote-heading">
             Detrás de cada grano hay una historia, una familia y una tierra
@@ -443,7 +443,7 @@
       <div class="ns-cta-bg">
         <div class="ns-cta-overlay"></div>
       </div>
-      <div class="ns-cta-content">
+      <div class="ns-cta-content ns-reveal">
         <h2 class="ns-cta-heading">Descubre el sabor auténtico de Honduras.</h2>
         <div class="ns-cta-actions">
           <a href="/pages/home/index.html#productos" class="ns-btn-primary">
@@ -461,6 +461,21 @@
   <script src="/js/ui/layout.js"></script>
   <script type="module" src="/js/ui/header.js"></script>
   <script type="module" src="/js/core/notifications.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.15 });
+
+      document.querySelectorAll('.ns-reveal').forEach(el => observer.observe(el));
+    });
+  </script>
 
 </body>
 

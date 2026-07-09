@@ -118,7 +118,7 @@
   align-items: center;
   text-align: center;
   overflow: hidden;
-  background: var(--fondo);
+  background: var(--verde);
 }
 
 .ns-hero-bg {
@@ -179,7 +179,7 @@
   font-size: clamp(2.2rem, 5vw, 3.6rem);
   letter-spacing: -0.02em;
   line-height: 1.15;
-  color: var(--marron);
+  color: var(--blanco);
   margin-bottom: 1.2rem;
 }
 
@@ -188,8 +188,8 @@
   font-size: clamp(0.9rem, 1.5vw, 1.05rem);
   font-weight: 400;
   line-height: 1.8;
-  color: var(--marron);
-  opacity: 0.7;
+  color: var(--blanco);
+  opacity: 0.85;
   margin-bottom: 2rem;
 }
 
@@ -198,8 +198,8 @@
   bottom: 2rem;
   left: 50%;
   translate: -50% 0;
-  color: var(--marron);
-  opacity: 0.3;
+  color: var(--blanco);
+  opacity: 0.5;
   animation: ns-bounce 2s infinite;
 }
 
@@ -1193,6 +1193,26 @@
   gap: 1rem;
   flex-wrap: wrap;
 }
+
+/* =====================================================
+   SCROLL REVEAL
+===================================================== */
+.ns-reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+}
+
+.ns-reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.ns-reveal-d1 { transition-delay: 0.1s; }
+.ns-reveal-d2 { transition-delay: 0.2s; }
+.ns-reveal-d3 { transition-delay: 0.3s; }
+.ns-reveal-d4 { transition-delay: 0.4s; }
+.ns-reveal-d5 { transition-delay: 0.5s; }
 
 /* =====================================================
    ANIMATIONS
