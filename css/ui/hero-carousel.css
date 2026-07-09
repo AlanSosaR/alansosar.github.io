@@ -253,17 +253,21 @@
 }
 
 /* =========================================
-   GLOBE EXPRESS NAVIGATION (Bottom Right)
+   GLOBE EXPRESS NAVIGATION — single right-aligned group
    ========================================= */
 .carousel-controls {
     position: absolute;
     bottom: 40px;
     right: 5%;
-    /* Alineado a la derecha */
+    left: auto;
     display: flex;
     align-items: center;
     gap: 24px;
     z-index: 30;
+    pointer-events: none;
+}
+
+.carousel-controls > * {
     pointer-events: auto;
 }
 
@@ -282,13 +286,12 @@
     transition: all 0.3s ease;
     color: #ffffff;
     padding: 0;
-    /* Reset default button padding */
+    flex-shrink: 0;
 }
 
 .nav-arrow:hover {
     background: #ffffff;
     color: var(--md-sys-color-primary);
-    /* Verde al hover */
     transform: scale(1.1);
     border-color: #ffffff;
 }
@@ -306,15 +309,16 @@
     font-family: 'Poppins', sans-serif;
     font-weight: 500;
     font-size: 1rem;
+    flex-shrink: 1;
 }
 
 .progress-bar {
     width: 100px;
-    /* Longitud de la línea */
     height: 2px;
     background: rgba(255, 255, 255, 0.3);
     position: relative;
     border-radius: 2px;
+    flex-shrink: 1;
 }
 
 .progress-fill {
@@ -324,19 +328,15 @@
     height: 100%;
     background: var(--verde);
     width: 0%;
-    /* JS lo actualizará */
     transition: width 0.4s ease;
     border-radius: 2px;
 }
 
-/* Ajuste Mobile: Controles a la derecha (igual que PC) */
+/* Ajuste Mobile */
 @media (max-width: 768px) {
     .carousel-controls {
-        right: 5%;
-        left: auto;
-        transform: none;
         bottom: 52px;
-        /* Subimos un poco para despejar del botón */
+        right: 4%;
         gap: 16px;
     }
 
@@ -347,6 +347,11 @@
 
     .progress-bar {
         width: 60px;
+    }
+
+    .progress-section {
+        gap: 10px;
+        font-size: 0.9rem;
     }
 }
 
