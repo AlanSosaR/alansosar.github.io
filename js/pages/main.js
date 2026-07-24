@@ -813,5 +813,150 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }, 800);
   }
+
+  /* ===== RESEÑAS ===== */
+  cargarResenas();
 });
+
+let reviewIndex = 0;
+let reviewChannel = null;
+
+function updateReviewsUI() {
+  const list = document.getElementById("lista-resenas");
+  if (!list) return;
+  const cards = list.querySelectorAll(".review-card");
+  const dots = document.querySelectorAll("#reviews-dots .dot");
+  if (!cards.length) return;
+  const rect = cards[0].getBoundingClientRect();
+  if (rect.width === 0) return;
+  const gap = parseInt(getComputedStyle(list).gap || "24", 10);
+  const CARD_WIDTH = rect.width + gap;
+  list.scrollTo({ left: CARD_WIDTH * reviewIndex, behavior: "smooth" });
+  cards.forEach((c, i) => c.classList.toggle("active", i === reviewIndex));
+  dots.forEach((d, i) => d.classList.toggle("active", i === reviewIndex));
+  const prev = document.getElementById("reviews-prev");
+  const next = document.getElementById("reviews-next");
+  if (prev) prev.style.display = reviewIndex === 0 ? "none" : "flex";
+  if (next) next.style.display = reviewIndex === cards.length - 1 ? "none" : "flex";
+}
+
+function initReviewCarousel() {
+  const prev = document.getElementById("reviews-prev");
+  const next = document.getElementById("reviews-next");
+  if (prev) prev.onclick = () => { if (reviewIndex > 0) { reviewIndex--; updateReviewsUI(); } };
+  if (next) next.onclick = () => {
+    const cards = document.querySelectorAll("#lista-resenas .review-card");
+    if (reviewIndex < cards.length - 1) { reviewIndex++; updateReviewsUI(); }
+  };
+  requestAnimationFrame(() => { requestAnimationFrame(updateReviewsUI); });
+}
+
+async function cargarResenas() {
+  const container = document.getElementById("reviews-container");
+  if (!container) return;
+
+  try {
+    const { data: reviews, error } = await window.supabaseClient
+      .from("reviews")
+      .select("id, rating, comment, order_id, user_id")
+      .or("hidden.is.null,hidden.eq.false")
+      .order("created_at", { ascending: false })
+      .limit(9);
+
+    if (error || !reviews?.length) {
+      container.innerHTML = `
+        <div class="reviews-empty">
+          <span class="material-symbols-outlined" style="font-size:40px;color:#E0E0E0;">rate_review</span>
+          <p>Aún no hay reseñas. ¡Sé el primero en compartir tu opinión!</p>
+        </div>`;
+      return;
+    }
+
+    const userIds = [...new Set(reviews.map(r => r.user_id))];
+
+    const { data: users } = await window.supabaseClient
+      .from("users")
+      .select("id, name, photo_url")
+      .in("id", userIds);
+
+    const userMap = Object.fromEntries((users || []).map(u => [u.id, u.name]));
+    const userPhotoMap = Object.fromEntries((users || []).map(u => [u.id, u.photo_url]));
+
+    const cardsHtml = reviews.map((r, idx) => {
+      const photo = userPhotoMap[r.user_id];
+      return `
+      <div class="review-card${idx === 0 ? ' active' : ''}" data-index="${idx}">
+        <div class="review-card-info">
+          <p class="review-card-comment">"${r.comment || 'Sin comentario'}"</p>
+          <div class="review-card-stars">
+            ${Array(5).fill(0).map((_, i) =>
+              `<span class="star${i < r.rating ? ' active' : ''}">★</span>`
+            ).join('')}
+          </div>
+          <div class="review-card-author-row">
+            ${photo ? `<img src="${photo}" alt="" class="review-card-avatar" onerror="this.style.display='none'">` : '<span class="review-card-avatar-placeholder">👤</span>'}
+            <span class="review-card-author">— ${userMap[r.user_id] || "Cliente"}</span>
+          </div>
+        </div>
+      </div>`;
+    }).join("");
+
+    const dotsHtml = reviews.map((_, i) =>
+      `<span class="dot${i === 0 ? ' active' : ''}"></span>`
+    ).join("");
+
+    container.innerHTML = `
+      <div class="carousel-container with-arrows">
+        <button id="reviews-prev" class="carousel-prev-circle inside" aria-label="Anterior" style="display:none">
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+
+        <div class="reviews-list" id="lista-resenas">
+          ${cardsHtml}
+        </div>
+
+        <button id="reviews-next" class="carousel-next-circle inside" aria-label="Siguiente">
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      </div>
+
+      <div class="carousel-nav desktop-only">
+        <div class="carousel-dots" id="reviews-dots">
+          ${dotsHtml}
+        </div>
+      </div>
+    `;
+
+    reviewIndex = 0;
+
+    // Click en card para activarla
+    document.querySelectorAll("#lista-resenas .review-card").forEach(card => {
+      card.addEventListener("click", () => {
+        const idx = Number(card.dataset.index);
+        if (!isNaN(idx)) { reviewIndex = idx; updateReviewsUI(); }
+      });
+    });
+
+    initReviewCarousel();
+
+    // Realtime: re-cargar cuando cambie visibilidad de reseñas
+    if (!reviewChannel) {
+      reviewChannel = window.supabaseClient
+        .channel("reviews-changes")
+        .on("postgres_changes",
+          { event: "UPDATE", schema: "public", table: "reviews", filter: "hidden=eq.true" },
+          () => { cargarResenas(); }
+        )
+        .on("postgres_changes",
+          { event: "UPDATE", schema: "public", table: "reviews", filter: "hidden=eq.false" },
+          () => { cargarResenas(); }
+        )
+        .subscribe();
+    }
+  } catch (e) {
+    console.error("⚠️ Error al cargar reseñas:", e);
+    const section = document.getElementById("resenas");
+    if (section) section.style.display = "none";
+  }
+}
 

@@ -17,6 +17,7 @@
   <link rel="stylesheet" href="/css/ui/header.css"> <!-- 🔑 HEADER GLOBAL -->
   <link rel="stylesheet" href="/css/ui/footer.css">
   <link rel="stylesheet" href="/css/ui/hero-carousel.css"> <!-- 🆕 HERO CAROUSEL -->
+  <link rel="stylesheet" href="/css/pages/reviews.css?v=8"><!-- 🆕 RESEÑAS -->
   <link rel="manifest" href="/manifest.webmanifest">
   <script>
     console.log("PWA: manifest linked");
@@ -203,6 +204,18 @@
       </div>
     </section>
 
+    <!-- RESEÑAS DE CLIENTES -->
+    <section id="resenas" class="reviews-section">
+      <div class="reviews-header">
+        <span class="material-symbols-outlined reviews-header-icon">star</span>
+        <h2>Lo que dicen nuestros clientes</h2>
+        <p class="reviews-subtitle">La opinión de quienes ya disfrutaron nuestro café</p>
+      </div>
+      <div id="reviews-container">
+        <div class="reviews-loading">Cargando reseñas...</div>
+      </div>
+    </section>
+
     <!-- CONTACTO -->
     <section id="contacto" class="contacto">
       <h2>Contáctanos</h2>
@@ -265,7 +278,7 @@
   <script src="/js/core/auth-ui.js"></script>
 
   <!-- 7️⃣ Página -->
-  <script src="/js/pages/main.js?v=13"></script>
+  <script src="/js/pages/main.js?v=27"></script>
 
 </body>
 

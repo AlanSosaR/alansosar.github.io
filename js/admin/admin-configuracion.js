@@ -54,6 +54,9 @@ const btnUploadLogoSec = document.getElementById("btnUploadLogoSec");
 const btnRestoreLogoSec = document.getElementById("btnRestoreLogoSec");
 const footerTextInput = document.getElementById("footerTextInput");
 
+// Reseñas
+const reviewsAdminList = document.getElementById("reviewsAdminList");
+
 let logoBlob = null;
 let logoSecBlob = null;
 let originalLogoUrl = "";
@@ -269,6 +272,7 @@ async function cargarConfiguracion() {
     logoPreview.src = "/imagenes/logo.png";
     logoSecPreview.src = "/imagenes/logo_secundario.png";
     footerTextInput.value = "2026 Café Cortero. Todos los derechos reservados.";
+
     renderSlides();
     return;
   }
@@ -425,6 +429,87 @@ historiaImgInput.addEventListener("change", async () => {
 });
 
 /* ============================================================
+   ACCORDEÓN
+   ============================================================ */
+document.addEventListener("click", (e) => {
+  const header = e.target.closest(".card-header-stitch");
+  if (!header) return;
+  const card = header.closest(".config-card");
+  if (!card) return;
+  card.classList.toggle("collapsed");
+});
+
+/* ============================================================
+   CARGAR RESEÑAS (ADMIN)
+   ============================================================ */
+async function cargarReviewsAdmin() {
+  reviewsAdminList.innerHTML = '<div class="reviews-admin-loading">Cargando reseñas...</div>';
+
+  const { data: reviews, error } = await window.supabaseClient
+    .from("reviews")
+    .select("id, rating, comment, user_id, hidden, created_at")
+    .order("created_at", { ascending: false });
+
+  if (error || !reviews?.length) {
+    reviewsAdminList.innerHTML = '<div class="reviews-admin-empty">No hay reseñas registradas aún.</div>';
+    return;
+  }
+
+  const userIds = [...new Set(reviews.map(r => r.user_id))];
+  const { data: users } = await window.supabaseClient
+    .from("users")
+    .select("id, name, photo_url")
+    .in("id", userIds);
+
+  const userMap = Object.fromEntries((users || []).map(u => [u.id, u]));
+  const userPhoto = u => {
+    const url = userMap[u]?.photo_url;
+    return url ? `<img src="${url}" alt="" class="reviews-admin-avatar" onerror="this.style.display='none'">` : '<span class="reviews-admin-avatar-placeholder">👤</span>';
+  };
+
+  reviewsAdminList.innerHTML = reviews.map(r => {
+    const hidden = r.hidden === true;
+    return `
+    <div class="reviews-admin-item" data-id="${r.id}">
+      <div class="reviews-admin-item-left">
+        ${userPhoto(r.user_id)}
+        <div class="reviews-admin-item-info">
+          <div class="reviews-admin-item-name">${userMap[r.user_id]?.name || "Cliente"}</div>
+          <div class="reviews-admin-item-stars">${Array(5).fill(0).map((_, i) => `<span class="star${i < r.rating ? ' active' : ''}">★</span>`).join('')}</div>
+          <div class="reviews-admin-item-comment">"${(r.comment || 'Sin comentario')}"</div>
+        </div>
+      </div>
+      <label class="toggle-switch">
+        <input type="checkbox" class="review-toggle" ${!hidden ? 'checked' : ''} />
+        <span class="toggle-slider"></span>
+      </label>
+    </div>`;
+  }).join("");
+
+  // Toggle directo
+  reviewsAdminList.querySelectorAll(".review-toggle").forEach(toggle => {
+    toggle.addEventListener("change", async () => {
+      const item = toggle.closest(".reviews-admin-item");
+      const id = item.dataset.id;
+      const newHidden = !toggle.checked;
+      const prevState = toggle.checked;
+
+      const { error } = await window.supabaseClient
+        .from("reviews")
+        .update({ hidden: newHidden })
+        .eq("id", id);
+
+      if (error) {
+        toggle.checked = prevState;
+        showSnackbar("❌ Error al actualizar la reseña", "error");
+      } else {
+        showSnackbar(newHidden ? "🔇 Reseña ocultada" : "🔊 Reseña visible", "success");
+      }
+    });
+  });
+}
+
+/* ============================================================
    SNACKBAR
    ============================================================ */
 function showSnackbar(message, type = "success") {
@@ -514,4 +599,5 @@ btnRestoreLogoSec.addEventListener("click", () => {
   form.addEventListener("submit", guardarConfiguracion);
 
   await cargarConfiguracion();
+  cargarReviewsAdmin();
 })();

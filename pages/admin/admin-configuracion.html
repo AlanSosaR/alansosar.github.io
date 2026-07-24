@@ -27,168 +27,187 @@
     <form id="configForm">
 
       <!-- ==================== BLOQUE: CARRUSEL ==================== -->
-      <section class="config-card">
+      <section class="config-card collapsed">
         <div class="card-header-stitch">
           <span class="material-symbols-outlined">view_carousel</span>
           <h2>Carrusel principal</h2>
+          <span class="config-chevron material-symbols-outlined">expand_more</span>
         </div>
         <p class="card-desc-stitch">Agrega, reordena y edita las imágenes del carrusel del inicio.</p>
-
-        <div id="slides-container" class="slides-list">
-          <!-- JS renderiza cada slide -->
+        <div class="config-card-body">
+          <div id="slides-container" class="slides-list">
+          </div>
+          <button type="button" id="btnAddSlide" class="btn-add-slide">
+            <span class="material-symbols-outlined">add_photo_alternate</span>
+            Agregar imagen al carrusel
+          </button>
+          <input type="file" id="slideUploadInput" accept="image/jpeg,image/png,image/webp" multiple hidden>
         </div>
-
-        <button type="button" id="btnAddSlide" class="btn-add-slide">
-          <span class="material-symbols-outlined">add_photo_alternate</span>
-          Agregar imagen al carrusel
-        </button>
-        <input type="file" id="slideUploadInput" accept="image/jpeg,image/png,image/webp" multiple hidden>
       </section>
 
       <!-- ==================== BLOQUE: NUESTRA HISTORIA ==================== -->
-      <section class="config-card">
+      <section class="config-card collapsed">
         <div class="card-header-stitch">
           <span class="material-symbols-outlined">auto_stories</span>
           <h2>Nuestra historia</h2>
+          <span class="config-chevron material-symbols-outlined">expand_more</span>
         </div>
         <p class="card-desc-stitch">Edita el texto y la imagen de la sección "Nuestra historia".</p>
-
-        <div class="form-grid-2col">
-          <div class="field-group">
-            <label for="historia_titulo">Título</label>
-            <input id="historia_titulo" type="text" class="config-input" />
-          </div>
-          <div class="field-group">
-            <label for="historia_subtitulo">Subtítulo</label>
-            <input id="historia_subtitulo" type="text" class="config-input" />
-          </div>
-        </div>
-
-        <div class="field-group">
-          <label for="historia_lead">Texto principal</label>
-          <textarea id="historia_lead" class="config-input config-textarea" rows="3"></textarea>
-        </div>
-
-        <div class="field-group">
-          <label for="historia_body">Texto secundario</label>
-          <textarea id="historia_body" class="config-input config-textarea" rows="3"></textarea>
-        </div>
-
-        <div class="field-group">
-          <label>Imagen de la historia</label>
-          <div class="historia-img-upload" id="historiaImgUpload">
-            <img id="historiaPreview" src="" alt="Previsualización" />
-            <div class="historia-img-overlay">
-              <span class="material-symbols-outlined">camera_alt</span>
-              <span>Cambiar imagen</span>
+        <div class="config-card-body">
+          <div class="form-grid-2col">
+            <div class="field-group">
+              <label for="historia_titulo">Título</label>
+              <input id="historia_titulo" type="text" class="config-input" />
+            </div>
+            <div class="field-group">
+              <label for="historia_subtitulo">Subtítulo</label>
+              <input id="historia_subtitulo" type="text" class="config-input" />
             </div>
           </div>
-          <input type="file" id="historiaImgInput" accept="image/jpeg,image/png,image/webp" hidden>
+          <div class="field-group">
+            <label for="historia_lead">Texto principal</label>
+            <textarea id="historia_lead" class="config-input config-textarea" rows="3"></textarea>
+          </div>
+          <div class="field-group">
+            <label for="historia_body">Texto secundario</label>
+            <textarea id="historia_body" class="config-input config-textarea" rows="3"></textarea>
+          </div>
+          <div class="field-group">
+            <label>Imagen de la historia</label>
+            <div class="historia-img-upload" id="historiaImgUpload">
+              <img id="historiaPreview" src="" alt="Previsualización" />
+              <div class="historia-img-overlay">
+                <span class="material-symbols-outlined">camera_alt</span>
+                <span>Cambiar imagen</span>
+              </div>
+            </div>
+            <input type="file" id="historiaImgInput" accept="image/jpeg,image/png,image/webp" hidden>
+          </div>
         </div>
       </section>
 
       <!-- ==================== BLOQUE: CONTACTO ==================== -->
-      <section class="config-card">
+      <section class="config-card collapsed">
         <div class="card-header-stitch">
           <span class="material-symbols-outlined">contacts</span>
           <h2>Contacto</h2>
+          <span class="config-chevron material-symbols-outlined">expand_more</span>
         </div>
         <p class="card-desc-stitch">Números y redes sociales que aparecen en el botón flotante de contacto.</p>
-
-        <div class="form-grid-2col">
-          <div class="field-group">
-            <label for="whatsapp_numero">
-              <i class="fa-brands fa-whatsapp" style="color:#25D366"></i> WhatsApp 1
-            </label>
-            <input id="whatsapp_numero" type="text" class="config-input" placeholder="50496670613" />
-          </div>
-          <div class="field-group">
-            <label for="whatsapp_numero2">
-              <i class="fa-brands fa-whatsapp" style="color:#25D366"></i> WhatsApp 2
-            </label>
-            <input id="whatsapp_numero2" type="text" class="config-input" placeholder="50498675101" />
-          </div>
-          <div class="field-group">
-            <label for="facebook_url">
-              <i class="fa-brands fa-facebook" style="color:#1877F2"></i> Facebook URL
-            </label>
-            <input id="facebook_url" type="url" class="config-input" placeholder="https://facebook.com/..." />
-          </div>
-          <div class="field-group">
-            <label for="instagram_url">
-              <i class="fa-brands fa-instagram" style="color:#E4405F"></i> Instagram URL
-            </label>
-            <input id="instagram_url" type="url" class="config-input" placeholder="https://instagram.com/..." />
+        <div class="config-card-body">
+          <div class="form-grid-2col">
+            <div class="field-group">
+              <label for="whatsapp_numero">
+                <i class="fa-brands fa-whatsapp" style="color:#25D366"></i> WhatsApp 1
+              </label>
+              <input id="whatsapp_numero" type="text" class="config-input" placeholder="50496670613" />
+            </div>
+            <div class="field-group">
+              <label for="whatsapp_numero2">
+                <i class="fa-brands fa-whatsapp" style="color:#25D366"></i> WhatsApp 2
+              </label>
+              <input id="whatsapp_numero2" type="text" class="config-input" placeholder="50498675101" />
+            </div>
+            <div class="field-group">
+              <label for="facebook_url">
+                <i class="fa-brands fa-facebook" style="color:#1877F2"></i> Facebook URL
+              </label>
+              <input id="facebook_url" type="url" class="config-input" placeholder="https://facebook.com/..." />
+            </div>
+            <div class="field-group">
+              <label for="instagram_url">
+                <i class="fa-brands fa-instagram" style="color:#E4405F"></i> Instagram URL
+              </label>
+              <input id="instagram_url" type="url" class="config-input" placeholder="https://instagram.com/..." />
+            </div>
           </div>
         </div>
       </section>
 
       <!-- ==================== BLOQUE: LOGO Y PIE DE PÁGINA ==================== -->
-      <section class="config-card">
+      <section class="config-card collapsed">
         <div class="card-header-stitch">
           <span class="material-symbols-outlined">brand_awareness</span>
           <h2>Logo y pie de página</h2>
+          <span class="config-chevron material-symbols-outlined">expand_more</span>
         </div>
         <p class="card-desc-stitch">Imágenes del logo y texto de footer que aparecen en todo el sitio.</p>
-
-        <div class="form-grid-2col">
-          <div class="field-group">
-            <label for="logo_input">Logo principal (header)</label>
-            <div class="logo-preview-row">
-              <img id="logoPreview" class="logo-preview-img" src="/imagenes/logo.png" alt="Vista previa">
-              <div class="logo-actions">
-                <button type="button" class="btn-upload-logo" id="btnUploadLogo">
-                  <span class="material-symbols-outlined">camera_alt</span> Subir
-                </button>
-                <button type="button" class="btn-restore-logo" id="btnRestoreLogo">
-                  Restaurar predeterminado
-                </button>
+        <div class="config-card-body">
+          <div class="form-grid-2col">
+            <div class="field-group">
+              <label for="logo_input">Logo principal (header)</label>
+              <div class="logo-preview-row">
+                <img id="logoPreview" class="logo-preview-img" src="/imagenes/logo.png" alt="Vista previa">
+                <div class="logo-actions">
+                  <button type="button" class="btn-upload-logo" id="btnUploadLogo">
+                    <span class="material-symbols-outlined">camera_alt</span> Subir
+                  </button>
+                  <button type="button" class="btn-restore-logo" id="btnRestoreLogo">
+                    Restaurar predeterminado
+                  </button>
+                </div>
               </div>
+              <input type="file" id="logoInput" accept="image/jpeg,image/png,image/webp" hidden>
             </div>
-            <input type="file" id="logoInput" accept="image/jpeg,image/png,image/webp" hidden>
+            <div class="field-group">
+              <label for="logo_secundario_input">Logo secundario (footer)</label>
+              <div class="logo-preview-row">
+                <img id="logoSecPreview" class="logo-preview-img" src="/imagenes/logo_secundario.png" alt="Vista previa">
+                <div class="logo-actions">
+                  <button type="button" class="btn-upload-logo" id="btnUploadLogoSec">
+                    <span class="material-symbols-outlined">camera_alt</span> Subir
+                  </button>
+                  <button type="button" class="btn-restore-logo" id="btnRestoreLogoSec">
+                    Restaurar predeterminado
+                  </button>
+                </div>
+              </div>
+              <input type="file" id="logoInputSec" accept="image/jpeg,image/png,image/webp" hidden>
+            </div>
           </div>
-
-          <div class="field-group">
-            <label for="logo_secundario_input">Logo secundario (footer)</label>
-            <div class="logo-preview-row">
-              <img id="logoSecPreview" class="logo-preview-img" src="/imagenes/logo_secundario.png" alt="Vista previa">
-              <div class="logo-actions">
-                <button type="button" class="btn-upload-logo" id="btnUploadLogoSec">
-                  <span class="material-symbols-outlined">camera_alt</span> Subir
-                </button>
-                <button type="button" class="btn-restore-logo" id="btnRestoreLogoSec">
-                  Restaurar predeterminado
-                </button>
-              </div>
-            </div>
-            <input type="file" id="logoInputSec" accept="image/jpeg,image/png,image/webp" hidden>
+          <div class="field-group" style="margin-top:16px">
+            <label for="footerTextInput">Texto del pie de página</label>
+            <input id="footerTextInput" type="text" class="config-input" placeholder="2026 Café Cortero. Todos los derechos reservados." />
           </div>
         </div>
+      </section>
 
-        <div class="field-group" style="margin-top:16px">
-          <label for="footerTextInput">Texto del pie de página</label>
-          <input id="footerTextInput" type="text" class="config-input" placeholder="2026 Café Cortero. Todos los derechos reservados." />
+      <!-- ==================== BLOQUE: RESEÑAS ==================== -->
+      <section class="config-card collapsed">
+        <div class="card-header-stitch">
+          <span class="material-symbols-outlined">star</span>
+          <h2>Reseñas de clientes</h2>
+          <span class="config-chevron material-symbols-outlined">expand_more</span>
+        </div>
+        <p class="card-desc-stitch">Activa o desactiva reseñas individualmente. Solo las que tengan el check marcado aparecerán en el inicio.</p>
+        <div class="config-card-body">
+          <div class="field-group">
+            <div class="reviews-admin-list" id="reviewsAdminList">
+              <div class="reviews-admin-loading">Cargando reseñas...</div>
+            </div>
+          </div>
         </div>
       </section>
 
       <!-- ==================== BLOQUE: PÁGINAS LEGALES ==================== -->
-      <section class="config-card" id="legal">
+      <section class="config-card collapsed" id="legal">
         <div class="card-header-stitch">
           <span class="material-symbols-outlined">gavel</span>
           <h2>Páginas legales</h2>
+          <span class="config-chevron material-symbols-outlined">expand_more</span>
         </div>
         <p class="card-desc-stitch">Contenido de las páginas de Política de Privacidad y Términos del Servicio.</p>
-
-        <div class="field-group">
-          <label for="privacyContent">Política de Privacidad</label>
-          <textarea id="privacyContent" class="legal-editor-raw" hidden></textarea>
-          <div id="privacyEditor" class="legal-editor-wysiwyg" contenteditable="true" spellcheck="true"></div>
-        </div>
-
-        <div class="field-group" style="margin-top:12px">
-          <label for="termsContent">Términos del Servicio</label>
-          <textarea id="termsContent" class="legal-editor-raw" hidden></textarea>
-          <div id="termsEditor" class="legal-editor-wysiwyg" contenteditable="true" spellcheck="true"></div>
+        <div class="config-card-body">
+          <div class="field-group">
+            <label for="privacyContent">Política de Privacidad</label>
+            <textarea id="privacyContent" class="legal-editor-raw" hidden></textarea>
+            <div id="privacyEditor" class="legal-editor-wysiwyg" contenteditable="true" spellcheck="true"></div>
+          </div>
+          <div class="field-group" style="margin-top:12px">
+            <label for="termsContent">Términos del Servicio</label>
+            <textarea id="termsContent" class="legal-editor-raw" hidden></textarea>
+            <div id="termsEditor" class="legal-editor-wysiwyg" contenteditable="true" spellcheck="true"></div>
+          </div>
         </div>
       </section>
 

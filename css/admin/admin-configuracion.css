@@ -496,6 +496,163 @@ body.page-admin-config {
 }
 
 /* =========================================================
+   ACCORDEÓN
+   ========================================================= */
+.card-header-stitch {
+  cursor: pointer;
+  user-select: none;
+}
+
+.config-chevron {
+  margin-left: auto;
+  transition: transform 0.3s;
+}
+
+.config-card.collapsed .config-chevron {
+  transform: rotate(0deg);
+}
+
+.config-card:not(.collapsed) .config-chevron {
+  transform: rotate(180deg);
+}
+
+.config-card-body {
+  max-height: 2000px;
+  overflow: hidden;
+  transition: max-height 0.35s ease;
+}
+
+.config-card.collapsed .config-card-body {
+  max-height: 0;
+}
+
+/* =========================================================
+   LISTA DE RESEÑAS (ADMIN)
+   ========================================================= */
+.reviews-admin-list {
+  margin-top: 8px;
+}
+
+.reviews-admin-loading,
+.reviews-admin-empty {
+  padding: 24px;
+  text-align: center;
+  color: var(--gris-text);
+  font-size: 0.85rem;
+}
+
+.reviews-admin-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--border-soft);
+  border-radius: 12px;
+  margin-bottom: 8px;
+  transition: opacity 0.2s, background 0.2s;
+  background: var(--blanco);
+}
+
+.reviews-admin-item-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+
+.reviews-admin-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.reviews-admin-avatar-placeholder {
+  font-size: 22px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.reviews-admin-item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.reviews-admin-item-name {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--cafe);
+}
+
+.reviews-admin-item-stars {
+  display: flex;
+  gap: 2px;
+}
+
+.reviews-admin-item-stars .star {
+  font-size: 14px;
+  color: #E0E0E0;
+}
+
+.reviews-admin-item-stars .star.active {
+  color: #F9A825;
+}
+
+.reviews-admin-item-comment {
+  font-size: 0.78rem;
+  color: var(--gris-text);
+  word-break: break-word;
+}
+
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background: #ccc;
+  border-radius: 999px;
+  transition: background 0.2s;
+}
+
+.toggle-slider::before {
+  content: "";
+  position: absolute;
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.2s;
+}
+
+.toggle-switch input:checked + .toggle-slider {
+  background: var(--verde);
+}
+
+.toggle-switch input:checked + .toggle-slider::before {
+  transform: translateX(20px);
+}
+
+/* =========================================================
    SNACKBAR
    ========================================================= */
 #snackbar.snackbar {
