@@ -880,8 +880,10 @@ async function cargarResenas() {
       .in("id", userIds);
 
     const userMap = Object.fromEntries((users || []).map(u => [u.id, u.name]));
+    const userPhotoMap = Object.fromEntries((users || []).map(u => [u.id, u.photo_url]));
 
     const cardsHtml = reviews.map((r, idx) => {
+      const photo = userPhotoMap[r.user_id];
       return `
       <div class="review-card${idx === 0 ? ' active' : ''}" data-index="${idx}">
         <div class="review-card-info">
@@ -892,6 +894,7 @@ async function cargarResenas() {
             ).join('')}
           </div>
           <div class="review-card-author-row">
+            ${photo ? `<img src="${photo}" alt="" class="review-card-avatar">` : ''}
             <span class="review-card-author">- ${userMap[r.user_id] || "Cliente"}</span>
           </div>
         </div>
