@@ -882,24 +882,57 @@ async function cargarResenas() {
     const userMap = Object.fromEntries((users || []).map(u => [u.id, u.name]));
     const userPhotoMap = Object.fromEntries((users || []).map(u => [u.id, u.photo_url]));
 
-    const cardsHtml = reviews.map((r, idx) => {
+    // Build cards with DOM API to avoid HTML/template escaping issues
+    const cardsFragment = document.createDocumentFragment();
+    reviews.forEach((r, idx) => {
+      const card = document.createElement("div");
+      card.className = `review-card${idx === 0 ? ' active' : ''}`;
+      card.dataset.index = idx;
+
+      const info = document.createElement("div");
+      info.className = "review-card-info";
+
+      const comment = document.createElement("p");
+      comment.className = "review-card-comment";
+      comment.textContent = `"${r.comment || 'Sin comentario'}"`;
+      info.appendChild(comment);
+
+      const stars = document.createElement("div");
+      stars.className = "review-card-stars";
+      for (let i = 0; i < 5; i++) {
+        const s = document.createElement("span");
+        s.className = `star${i < r.rating ? ' active' : ''}`;
+        s.textContent = "★";
+        stars.appendChild(s);
+      }
+      info.appendChild(stars);
+
+      const row = document.createElement("div");
+      row.className = "review-card-author-row";
+
       const photo = userPhotoMap[r.user_id];
-      return `
-      <div class="review-card${idx === 0 ? ' active' : ''}" data-index="${idx}">
-        <div class="review-card-info">
-          <p class="review-card-comment">"${r.comment || 'Sin comentario'}"</p>
-          <div class="review-card-stars">
-            ${Array(5).fill(0).map((_, i) =>
-              `<span class="star${i < r.rating ? ' active' : ''}">★</span>`
-            ).join('')}
-          </div>
-          <div class="review-card-author-row">
-            ${photo ? `<img src="${photo}" alt="" class="review-card-avatar">` : ''}
-            <span class="review-card-author">- ${userMap[r.user_id] || "Cliente"}</span>
-          </div>
-        </div>
-      </div>`;
-    }).join("");
+      if (photo) {
+        const img = document.createElement("img");
+        img.src = photo;
+        img.alt = "";
+        img.className = "review-card-avatar";
+        row.appendChild(img);
+      }
+
+      const author = document.createElement("span");
+      author.className = "review-card-author";
+      author.textContent = `- ${userMap[r.user_id] || "Cliente"}`;
+      row.appendChild(author);
+
+      info.appendChild(row);
+      card.appendChild(info);
+      cardsFragment.appendChild(card);
+    });
+
+    // Convert fragment to HTML string for innerHTML
+    const tempDiv = document.createElement("div");
+    tempDiv.appendChild(cardsFragment);
+    const cardsHtml = tempDiv.innerHTML;
 
     const dotsHtml = reviews.map((_, i) =>
       `<span class="dot${i === 0 ? ' active' : ''}"></span>`
