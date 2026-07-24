@@ -246,6 +246,8 @@ function initAdminPOS() {
     searchSection.classList.add("hidden");
     newForm.classList.remove("hidden");
     createBtn.classList.remove("hidden");
+    continuarBtn.classList.add("hidden");
+    stepConfirmar.classList.add("hidden");
     restaurarModoComun();
   }
 

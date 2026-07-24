@@ -85,7 +85,7 @@ push_tokens
 (user_id, token, platform)
 
 reviews
-(product_id, user_id, rating, comment)
+(order_id [UUID], user_id, rating, comment)
 
 rating:
 1–5

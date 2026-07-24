@@ -661,4 +661,22 @@ body.page-historial {
     .order-number-stitch {
         font-size: 18px;
     }
+
+    /* Paginación responsive */
+    .list-pagination-footer {
+        display: grid !important;
+        grid-template-columns: auto 1fr auto;
+        gap: 4px;
+    }
+    .page-numbers {
+        justify-content: center;
+        overflow-x: auto;
+        scrollbar-width: none;
+    }
+    .page-numbers::-webkit-scrollbar { display: none; }
+    .page-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 13px;
+    }
 }

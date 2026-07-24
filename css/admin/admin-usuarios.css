@@ -599,6 +599,31 @@ input:checked + .slider-stitch:before { transform: translateX(24px); }
     /* Ajuste de Estado Vacío (Mobile) */
     .empty-state-stitch { margin: 0; padding: 40px 20px; box-shadow: none; border-radius: 20px; }
     .empty-state-stitch h3 { font-size: 22px; }
+
+    /* Paginación responsive */
+    .list-pagination-footer-stitch {
+        display: grid !important;
+        grid-template-columns: auto 1fr auto;
+        gap: 4px;
+    }
+    .page-numbers-stitch {
+        justify-content: center;
+        overflow-x: auto;
+        scrollbar-width: none;
+    }
+    .page-numbers-stitch::-webkit-scrollbar { display: none; }
+    .page-btn {
+        width: 30px;
+        height: 30px;
+        font-size: 12px;
+    }
+    .page-btn-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+    }
 }
 
 @media (min-width: 1025px) {

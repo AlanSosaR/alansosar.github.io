@@ -964,6 +964,29 @@ body.page-admin-orders::-webkit-scrollbar { width: 0; height: 0; display: none; 
         gap: 12px;
         white-space: normal;
     }
+
+    /* Paginación responsive — grid obliga fila */
+    .list-pagination-footer {
+        display: grid !important;
+        grid-template-columns: auto 1fr auto;
+        gap: 4px;
+    }
+
+    .page-numbers {
+        justify-content: center;
+        overflow-x: auto;
+        scrollbar-width: none;
+    }
+
+    .page-numbers::-webkit-scrollbar {
+        display: none;
+    }
+
+    .page-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 13px;
+    }
 }
 
 /* GLOBAL TOUCH FIX */

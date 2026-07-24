@@ -894,8 +894,11 @@ async function cargarResenas() {
             ).join('')}
           </div>
           <div class="review-card-author-row">
-            ${photo ? `<img src="${photo}" alt="" class="review-card-avatar" onerror="this.style.display='none'">` : '<span class="review-card-avatar-placeholder">👤</span>'}
-            <span class="review-card-author">— ${userMap[r.user_id] || "Cliente"}</span>
+            <span class="review-card-avatar-wrapper">
+              <img src="${photo || ''}" alt="" class="review-card-avatar" loading="lazy" onerror="this.style.display='none'">
+              <span class="review-card-avatar-fallback">👤</span>
+            </span>
+            <span class="review-card-author">- ${userMap[r.user_id] || "Cliente"}</span>
           </div>
         </div>
       </div>`;

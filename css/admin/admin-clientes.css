@@ -809,6 +809,24 @@ body.page-admin-customers {
     
     .history-table td:nth-child(4) { grid-area: total; justify-self: end; font-size: 16px; align-self: center; }
     .history-table td:nth-child(4) strong { color: var(--texto-principal); }
+
+    /* Paginación responsive */
+    .list-pagination-footer {
+        display: grid !important;
+        grid-template-columns: auto 1fr auto;
+        gap: 4px;
+    }
+    .page-numbers {
+        justify-content: center;
+        overflow-x: auto;
+        scrollbar-width: none;
+    }
+    .page-numbers::-webkit-scrollbar { display: none; }
+    .page-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 13px;
+    }
 }
 
 /* Helpers */
