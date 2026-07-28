@@ -1,4 +1,4 @@
-/* ============================================================
+﻿/* ============================================================
    MAIN.JS — Café Cortero 2025 (FINAL DEFINITIVO)
    UI + CARRITO + CARRUSELES + SUPABASE
 ============================================================ */
@@ -851,6 +851,27 @@ function initReviewCarousel() {
   requestAnimationFrame(() => { requestAnimationFrame(updateReviewsUI); });
 }
 
+function getRelativeTimeSpan(dateStr) {
+  if (!dateStr) return "Hace 2 semanas";
+  const date = new Date(dateStr);
+  const now = new Date();
+  const diffSecs = Math.floor((now - date) / 1000);
+  if (isNaN(diffSecs) || diffSecs < 0) return "Hace 2 semanas";
+  if (diffSecs < 60) return "Hace un momento";
+  const diffMins = Math.floor(diffSecs / 60);
+  if (diffMins < 60) return `Hace ${diffMins} min`;
+  const diffHours = Math.floor(diffMins / 60);
+  if (diffHours < 24) return `Hace ${diffHours} h`;
+  const diffDays = Math.floor(diffHours / 24);
+  if (diffDays < 7) return `Hace ${diffDays} día${diffDays > 1 ? 's' : ''}`;
+  const diffWeeks = Math.floor(diffDays / 7);
+  if (diffWeeks < 4) return `Hace ${diffWeeks} semana${diffWeeks > 1 ? 's' : ''}`;
+  const diffMonths = Math.floor(diffDays / 30);
+  if (diffMonths < 12) return `Hace ${diffMonths} mes${diffMonths > 1 ? 'es' : ''}`;
+  const diffYears = Math.floor(diffDays / 365);
+  return `Hace ${diffYears} año${diffYears > 1 ? 's' : ''}`;
+}
+
 async function cargarResenas() {
   const container = document.getElementById("reviews-container");
   if (!container) return;
@@ -858,7 +879,7 @@ async function cargarResenas() {
   try {
     const { data: reviews, error } = await window.supabaseClient
       .from("reviews")
-      .select("id, rating, comment, order_id, user_id")
+      .select("id, rating, comment, order_id, user_id, created_at")
       .or("hidden.is.null,hidden.eq.false")
       .order("created_at", { ascending: false })
       .limit(9);
@@ -875,9 +896,7 @@ async function cargarResenas() {
     const userIds = [...new Set(reviews.map(r => r.user_id))];
 
     const { data: users } = await window.supabaseClient
-      .from("users")
-      .select("id, name, photo_url")
-      .in("id", userIds);
+      .rpc("get_review_authors", { user_ids: userIds });
 
     const userMap = Object.fromEntries((users || []).map(u => [u.id, u.name]));
     const userPhotoMap = Object.fromEntries((users || []).map(u => [u.id, u.photo_url]));
@@ -894,7 +913,7 @@ async function cargarResenas() {
 
       const comment = document.createElement("p");
       comment.className = "review-card-comment";
-      comment.textContent = `"${r.comment || 'Sin comentario'}"`;
+      const clean = (r.comment || 'Sin comentario').replace(/^[\u201C\u201D""]+|[\u201C\u201D""]+$/g, '');      comment.textContent = `“${clean}”`;
       info.appendChild(comment);
 
       const stars = document.createElement("div");
@@ -911,20 +930,37 @@ async function cargarResenas() {
       row.className = "review-card-author-row";
 
       const photo = userPhotoMap[r.user_id];
+      const nameText = userMap[r.user_id] || "Cliente";
+
       if (photo) {
         const img = document.createElement("img");
         img.src = photo;
-        img.alt = "";
+        img.alt = nameText;
         img.className = "review-card-avatar";
         row.appendChild(img);
+      } else {
+        const fallback = document.createElement("div");
+        fallback.className = "review-card-avatar-fallback";
+        fallback.textContent = nameText.charAt(0).toUpperCase();
+        row.appendChild(fallback);
       }
 
-      const author = document.createElement("span");
-      author.className = "review-card-author";
-      author.textContent = `- ${userMap[r.user_id] || "Cliente"}`;
-      row.appendChild(author);
+      const meta = document.createElement("div");
+      meta.className = "review-card-author-meta";
 
+      const authorName = document.createElement("span");
+      authorName.className = "review-card-author-name";
+      authorName.textContent = nameText;
+      meta.appendChild(authorName);
+
+      const timeSpan = document.createElement("span");
+      timeSpan.className = "review-card-time";
+      timeSpan.textContent = getRelativeTimeSpan(r.created_at);
+      meta.appendChild(timeSpan);
+
+      row.appendChild(meta);
       info.appendChild(row);
+
       card.appendChild(info);
       cardsFragment.appendChild(card);
     });

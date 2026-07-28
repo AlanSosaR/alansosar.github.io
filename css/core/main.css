@@ -829,13 +829,29 @@ body.home-page {
 
 .product-img-wrap {
   width: 100%;
-  height: 480px;
+  height: 520px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: transparent;
   position: relative;
-  /* Para el badge de descuento */
+}
+
+.product-img-wrap::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  left: calc(50% - 20px);
+  transform: translateX(-50%) translateY(110px);
+  width: 140%;
+  height: 100%;
+  background-image: url("/imagenes/maqueta.svg");
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  background-size: contain;
+  z-index: 0;
+  pointer-events: none;
 }
 
 /* Badge de Descuento (Miniaturas) */
@@ -904,6 +920,7 @@ body.home-page {
   width: 100%;
   height: 100%;
   position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -925,7 +942,7 @@ body.home-page {
 /* El efecto de bolsa que "sale" del contenedor */
 @media (min-width: 901px) {
   .product-img-wrap {
-    height: 440px;
+    height: 480px;
     /* Altura estándar balanceada */
     margin-top: 0;
   }
@@ -950,20 +967,37 @@ body.home-page {
 
   /* ✨ Sombra elegante y ESCALA MAYOR BASE (Móvil/Tablet) */
   filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.22));
-  transform: scale(1.25);
+  transform: scale(1.8);
   transition: transform 0.4s ease, filter 0.4s ease;
 }
 
 /* Hover Genérico (Móvil/Tablet): Zoom suave */
 .product-img-wrap img:hover {
-  transform: translateY(-5px) scale(1.3);
+  transform: translateY(-5px) scale(1.85);
   filter: drop-shadow(0 25px 45px rgba(0, 0, 0, 0.2));
 }
 
 /* 📱 Ajuste para mobile */
-@media (max-width: 480px) {
+@media (max-width: 768px) {
   .product-img-wrap {
     height: 300px;
+  }
+  .product-img-wrap::before {
+    background-image: url("/imagenes/maqueta.svg") !important;
+    background-repeat: no-repeat !important;
+    background-position: center bottom !important;
+    background-size: contain !important;
+    bottom: auto !important;
+    top: 105px !important;
+    height: 90% !important;
+    width: 130% !important;
+    transform: translateX(-50%) !important;
+  }
+  .product-img-wrap img {
+    transform: scale(1.4) !important;
+  }
+  .product-img-wrap img:hover {
+    transform: translateY(-5px) scale(1.45) !important;
   }
 }
 
