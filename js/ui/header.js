@@ -162,9 +162,9 @@ if (!window.__HEADER_CORE_LOADED__) {
     document.querySelectorAll(".no-user").forEach(el => el.classList.add("hidden"));
 
     $("avatar-user") &&
-      ($("avatar-user").src = user.photo_url || "/imagenes/avatar-default.svg");
+      ($("avatar-user").src = user.photo_url || "/imagenes/barista.png");
     $("avatar-user-drawer") &&
-      ($("avatar-user-drawer").src = user.photo_url || "/imagenes/avatar-default.svg");
+      ($("avatar-user-drawer").src = user.photo_url || "/imagenes/barista.png");
 
     $("drawer-name") && ($("drawer-name").textContent = user.name || "Usuario");
     $("drawer-email") && ($("drawer-email").textContent = user.email || "");

@@ -59,7 +59,7 @@ if (!window.__AUTH_UI_LOADED__) {
     drawer?.classList.add("logged");
 
     // AVATARES
-    const photo = user.photo_url || "/imagenes/avatar-default.svg";
+    const photo = user.photo_url || "/imagenes/barista.png";
     $("avatar-user")?.setAttribute("src", photo);
     $("avatar-user-drawer")?.setAttribute("src", photo);
 
