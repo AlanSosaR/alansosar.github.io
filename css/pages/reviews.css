@@ -27,7 +27,7 @@
     font-family: 'Playfair Display', Georgia, serif;
     font-size: 30px;
     font-weight: 700;
-    color: #3A2312;
+    color: var(--verde);
     margin: 0 0 8px;
     letter-spacing: -0.3px;
 }
@@ -256,11 +256,8 @@
         padding: 0 20px;
     }
 
-    #resenas .carousel-prev-circle {
-        left: 0;
-    }
-
+    #resenas .carousel-prev-circle,
     #resenas .carousel-next-circle {
-        right: 0;
+        display: none !important;
     }
 }
