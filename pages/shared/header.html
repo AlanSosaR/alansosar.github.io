@@ -11,9 +11,27 @@
       <span id="menu-notification-badge" class="notification-badge hidden"><i class="fa-solid fa-bell"></i></span>
     </button>
 
+    <a href="/pages/home/index.html#productos" class="header-cart-back-btn header-icon-btn" id="header-cart-back" aria-label="Volver">
+      <span class="material-symbols-outlined">arrow_back</span>
+    </a>
+
+    <!-- Botón Volver para Datos Cliente -->
+    <a href="/pages/shop/carrito.html" class="header-datos-back-btn header-icon-btn" id="header-datos-back" aria-label="Volver">
+      <span class="material-symbols-outlined">arrow_back</span>
+    </a>
+
     <a href="/pages/home/index.html" class="header-logo-link">
       <img src="/imagenes/logo.png" alt="Café Cortero" class="header-logo">
     </a>
+
+    <!-- Slot para pos-header en el header -->
+    <div id="header-pos-header-slot" class="header-pos-header-slot"></div>
+
+    <!-- TÍTULO CARRITO: junto a la flecha (misma fila izquierda) -->
+    <div id="header-cart-title" class="header-cart-title">
+      <span class="cart-title-text">Mi carrito</span>
+      <span id="count-items" class="cart-title-sub"></span>
+    </div>
   </div>
 
   <!-- BLOQUE CENTRO: TÍTULOS Y BUSCADORES (RESTAURADO) -->
@@ -25,6 +43,8 @@
 
   <!-- BLOQUE DERECHA: NAV + ACCIONES -->
   <div class="header-right-stitch">
+    <!-- Slot para cliente POS en el header -->
+    <div id="header-pos-client-slot" class="header-pos-client-slot"></div>
     
 
 

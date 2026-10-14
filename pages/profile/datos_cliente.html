@@ -14,17 +14,17 @@
 
   <!-- ================= MATERIAL SYMBOLS ================= -->
   <link rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@300;400;500&display=swap">
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap">
 
   <!-- ================= CSS GLOBAL HEADER ================= -->
-  <link rel="stylesheet" href="/css/ui/header.css?v=30">
+  <link rel="stylesheet" href="/css/ui/header.css?v=32">
   <link rel="stylesheet" href="/css/ui/footer.css">
 
   <!-- ================= LEAFLET MAPA ================= -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
   <!-- ================= CSS PANTALLA ================= -->
-  <link rel="stylesheet" href="/css/pages/datos_cliente.css?v=11">
+  <link rel="stylesheet" href="/css/pages/datos_cliente.css?v=13">
 </head>
 
 <body class="page-datos-cliente">
@@ -179,7 +179,6 @@
               <span class="material-symbols-outlined pos-icon">point_of_sale</span>
               <div>
                 <h2>Pedido POS</h2>
-                <p class="pos-subtitle">Registra un pedido directamente desde el mostrador</p>
               </div>
             </div>
 
@@ -190,6 +189,7 @@
                   <span class="material-symbols-outlined">person_search</span>
                   <h3>Paso 2: Cliente</h3>
                 </div>
+                <p class="pos-subtitle">Registra un pedido directamente desde el mostrador</p>
 
                 <!-- Botones de tipo de cliente -->
                 <div class="pos-client-type-select">
@@ -254,10 +254,7 @@
 
                 <!-- Cliente seleccionado (se muestra al escoger uno) -->
                 <div id="pos-selected-client" class="pos-selected-client hidden">
-                  <div class="selected-client-header" id="pos-selected-header">
-                    <span class="material-symbols-outlined">check_circle</span>
-                    <span>Cliente seleccionado:</span>
-                  </div>
+                  <div class="selected-client-header" id="pos-selected-header"></div>
                   <div id="pos-client-info" class="pos-client-info"></div>
                   <button id="pos-change-client-btn" class="btn-ghost-sm">
                     <span class="material-symbols-outlined">edit</span>
@@ -389,9 +386,13 @@
   <script src="/js/core/supabase-auth.js"></script>
   <script src="/js/core/auth-ui.js"></script>
   <script src="/js/ui/layout.js"></script>
-  <script type="module" src="/js/ui/header.js"></script>
+  <script type="module" src="/js/ui/header.js?v=32"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="/js/pages/datos_cliente.js?v=11"></script>
+  <script>
+    const dcScript = document.createElement("script");
+    dcScript.src = "/js/pages/datos_cliente.js?t=" + Date.now();
+    document.body.appendChild(dcScript);
+  </script>
 
   <!-- SNACKBAR -->
   <div id="snackbar" class="snackbar" aria-live="polite"></div>

@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getMessaging } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js";
+import { getMessaging, isSupported } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js";
 
 console.log("🔥 firebase.js — INIT ÚNICO");
 
@@ -13,4 +13,21 @@ const firebaseConfig = {
 };
 
 export const firebaseApp = initializeApp(firebaseConfig);
-export const messaging = getMessaging(firebaseApp);
+
+let _messaging = null;
+
+export async function getMessagingSafe() {
+  if (_messaging) return _messaging;
+  try {
+    const supported = await isSupported().catch(() => false);
+    if (supported) {
+      _messaging = getMessaging(firebaseApp);
+      return _messaging;
+    }
+  } catch (err) {
+    console.warn("⚠️ Firebase Messaging no disponible:", err.message);
+  }
+  return null;
+}
+
+export const messaging = null;

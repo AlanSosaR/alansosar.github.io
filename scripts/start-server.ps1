@@ -17,9 +17,9 @@ if ($existing) {
   Write-Host "  -> Proceso(s) anterior(es) terminado(s)" -ForegroundColor Yellow
 }
 
-# Also kill any orphan live-server node processes
+# Also kill any orphan live-server node processes for this port
 Get-Process -Name "node" -ErrorAction SilentlyContinue |
-  Where-Object { $_.CommandLine -match "live-server" } |
+  Where-Object { $_.CommandLine -match "port=$Port" } |
   ForEach-Object { Stop-Process -Id $_.Id -Force -ErrorAction SilentlyContinue }
 Start-Sleep -Milliseconds 300
 
@@ -36,7 +36,7 @@ if (-not $npx) {
 $browserFlag = if (-not $OpenBrowser) { "--no-browser" } else { "" }
 
 # Use cmd /c to redirect both stdout+stderr to the same log file (Start-Process can't do combined redirect)
-$cmdLine = "npx live-server --port=$Port $browserFlag --wait=200 >> `"$logPath`" 2>&1"
+$cmdLine = "npx live-server --port=$Port $browserFlag --wait=200 --ignore=`"$LogFile,.git,node_modules`" >> `"$logPath`" 2>&1"
 $proc = Start-Process -FilePath "cmd.exe" -ArgumentList "/c", $cmdLine -WindowStyle Hidden -PassThru
 
 # Wait and verify the port is actually listening
@@ -67,6 +67,7 @@ if ($ready) {
   Write-Host "Para ver el log en vivo:" -ForegroundColor Gray
   Write-Host "  Get-Content -Path `"$logPath`" -Tail 20 -Wait" -ForegroundColor Gray
   Write-Host "  PID: $($proc.Id)" -ForegroundColor Gray
+  Wait-Process -Id $proc.Id
 } else {
   Write-Host "!!! ERROR: El servidor no está respondiendo en puerto $Port !!!" -ForegroundColor Red
   if ($proc.HasExited) {

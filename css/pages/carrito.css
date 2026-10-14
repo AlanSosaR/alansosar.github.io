@@ -151,31 +151,35 @@ body.page-carrito main {
 ===================================================== */
 .item {
   display: flex;
-  gap: 1.5rem;
-  padding: 1.5rem;
-
+  position: relative;
+  /* Espacio reservado para la imagen grande del producto */
+  padding: 1.5rem 1.5rem 1.5rem 210px;
   background: #FFFFFF;
   border-radius: 24px;
   border: 1px solid rgba(55, 123, 76, 0.08);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
-
   margin-bottom: 1.5rem;
   align-items: center;
+  min-height: 210px; /* Asegura espacio vertical para la imagen */
 }
 
 /* =====================================================
-   IMAGEN — ITEM CARRITO (IGUAL A TARJETA PRINCIPAL)
+   IMAGEN — ITEM CARRITO (MÁS GRANDE Y PROPORCIONADA)
 ===================================================== */
 
 .item-img-box {
-  width: 110px;
-  height: 110px;
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  width: 180px;
+  height: 180px;
+  max-height: 180px;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  transform: translateY(-50%);
   background: transparent;
-  /* Eliminamos el fondo y la sombra para que se vea premium */
 }
 
 .item-img-box img {
@@ -183,27 +187,46 @@ body.page-carrito main {
   height: 100%;
   object-fit: contain;
   display: block;
-  /* Aseguramos que no haya filtros u opacidad en la imagen del producto */
   opacity: 1;
+  transform: scale(1.08);
+  transition: transform 0.3s ease;
 }
 
 /* Desktop */
 @media (min-width: 768px) {
   .item-img-box {
-    width: 110px;
-    height: 110px;
+    width: 185px;
+    height: 185px;
+    max-height: 185px;
+  }
+}
+
+@media (max-width: 600px) {
+  .item {
+    padding: 1.25rem 1.2rem 1.25rem 145px;
+    min-height: 170px;
+  }
+  .item-img-box {
+    width: 135px;
+    height: 135px;
+    max-height: 135px;
+    left: 4px;
   }
 }
 
 /* Textos */
 .item-info {
   flex: 1;
+  padding-left: 0.2rem;
 }
 
 .item-name {
   font-weight: 600;
   font-size: 1rem;
   margin-bottom: 0.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Precios y Descuentos en Item */
@@ -224,20 +247,29 @@ body.page-carrito main {
 }
 
 .item-discount-badge {
-  background: #e8ede9;
-  color: #377b4c;
-  font-size: 0.7rem;
+  background: #c8e6c9;
+  border: 1px solid #a5d6a7;
+  color: #1b5e20;
+  font-size: 0.72rem;
   font-weight: 800;
   padding: 2px 8px;
   border-radius: 999px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
 }
 
 .item-price {
   font-size: 0.95rem;
   font-weight: 600;
   color: var(--verde);
+}
+
+.item-price .unit-text {
+  color: var(--acento, #8D6E63);
+  font-weight: 500;
+  font-size: 0.88em;
 }
 
 /* Controles */
@@ -313,8 +345,9 @@ body.page-carrito main {
   letter-spacing: -0.5px;
 }
 
-/* SECCIÓN CUPÓN */
+/* SECCIÓN CUPÓN (Oculto por ahora) */
 .coupon-section {
+  display: none !important;
   margin-bottom: 2.5rem;
 }
 
@@ -500,6 +533,8 @@ body.page-carrito main {
 
 .btn-checkout span:last-child {
   font-size: 20px;
+  font-weight: 300 !important;
+  font-variation-settings: 'wght' 300, 'opsz' 24 !important;
   transition: transform 0.2s ease;
 }
 
@@ -852,3 +887,16 @@ main.carrito-vacio-activo {
     margin-bottom: 1.5rem;
   }
 }
+
+/* =====================================================
+   HEADER: nombre "Mi carrito" junto a la flecha
+   (el layout base vive en css/ui/header.css; aquí solo se
+   garantiza que no vuelva al centrado absoluto anterior)
+===================================================== */
+body.page-carrito .header-left-stitch .header-cart-title {
+  position: static;
+  left: auto;
+  top: auto;
+  transform: none;
+}
+

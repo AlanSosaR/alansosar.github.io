@@ -228,12 +228,18 @@
 
   </main>
 
-  <!-- FAB -->
+  <!-- SCRIM BACKDROP FADE -->
+  <div class="fab-scrim" id="fab-scrim" aria-hidden="true"></div>
+
+  <!-- FAB — Material 3 Speed Dial -->
   <div class="fab-container" id="fab">
     <!-- Botón principal -->
-    <button class="fab-main" id="fab-main" aria-label="Abrir opciones de contacto">
-      <span class="material-symbols-outlined">
+    <button class="fab-main" id="fab-main" aria-label="Abrir opciones de contacto" aria-expanded="false">
+      <span class="material-symbols-outlined fab-icon-chat">
         mark_chat_unread
+      </span>
+      <span class="material-symbols-outlined fab-icon-close">
+        close
       </span>
     </button>
 

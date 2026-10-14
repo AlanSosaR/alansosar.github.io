@@ -33,6 +33,10 @@ function getSupabaseClient() {
 function syncHeaderCounter() {
   if (typeof window.updateHeaderCartCount === "function") {
     window.updateHeaderCartCount();
+  } else if (typeof window.syncHeaderCounter === "function") {
+    window.syncHeaderCounter();
+  } else {
+    window.dispatchEvent(new Event("cartUpdated"));
   }
 }
 
@@ -44,6 +48,9 @@ function showSnackbar(message, type = "success", action) {
   const msgSpan = document.createElement("span");
   msgSpan.textContent = message;
   el.appendChild(msgSpan);
+
+  const styleType = typeof type === "string" ? type : "warn";
+
   if (action && action.text) {
     const btn = document.createElement("button");
     btn.textContent = action.text;
@@ -54,11 +61,12 @@ function showSnackbar(message, type = "success", action) {
     };
     el.appendChild(btn);
     el.className = "snackbar show";
-    if (type) el.classList.add(type);
+    if (styleType) el.classList.add(styleType);
   } else {
     el.className = "snackbar show";
-    if (type) el.classList.add(type);
-    setTimeout(() => el.classList.remove("show", "success", "error", "warn"), 3500);
+    if (styleType) el.classList.add(styleType);
+    const duration = typeof type === "number" ? type : 3500;
+    setTimeout(() => el.classList.remove("show", "success", "error", "warn"), duration);
   }
 }
 
@@ -186,7 +194,7 @@ async function renderCart() {
       }
     }
 
-    currentPriceEl.textContent = `L ${Number(item.price || 0).toFixed(2)} / unidad`;
+    currentPriceEl.innerHTML = `L ${Number(item.price || 0).toFixed(2)} <span class="unit-text">/ unidad</span>`;
     clone.querySelector(".qty-number").textContent = item.qty || 1;
 
     const stock = stocksCache[item.product_id] ?? 999;

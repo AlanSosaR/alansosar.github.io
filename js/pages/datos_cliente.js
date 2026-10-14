@@ -218,12 +218,59 @@ form.addEventListener("submit", async e => {
 let selectedClient = null;
 let posSelectedPayment = null;
 
+function getPrimerNombreYApellido(fullName) {
+  if (!fullName) return "";
+  const parts = fullName.trim().split(/\s+/);
+  if (parts.length <= 2) return fullName.trim();
+  if (parts.length >= 4) {
+    return `${parts[0]} ${parts[2]}`;
+  }
+  return `${parts[0]} ${parts[1]}`;
+}
+
+function movePosElementsToHeader() {
+  const header = document.getElementById("main-header") || document.querySelector("header.header-fixed");
+  const leftStitch = (header || document).querySelector(".header-left-stitch");
+  const rightStitch = (header || document).querySelector(".header-right-stitch");
+
+  // Título "Pedido POS" -> fila izquierda, junto a la flecha.
+  const posHeader = document.querySelector("#admin-pos-section .pos-header") || document.querySelector(".pos-header");
+  const posHeaderSlot = document.getElementById("header-pos-header-slot");
+  if (posHeader && posHeaderSlot && !posHeaderSlot.contains(posHeader)) {
+    posHeaderSlot.appendChild(posHeader);
+  }
+
+  // Píldora "Atendido por" -> fila derecha (igual que en el carrito)
+  const posClientSlot = document.getElementById("header-pos-client-slot");
+  if (posClientSlot && rightStitch && !rightStitch.contains(posClientSlot)) {
+    rightStitch.appendChild(posClientSlot);
+  }
+
+  // Limpiar cualquier residuo que se haya colado en leftStitch o en el header
+  if (leftStitch) {
+    leftStitch.querySelectorAll(".pos-selected-client, #pos-selected-client, #pos-selected-header").forEach(el => el.remove());
+  }
+  if (posClientSlot) {
+    posClientSlot.querySelectorAll("#pos-selected-client, #pos-selected-header").forEach(el => el.remove());
+  }
+
+  // Sincronizar UNA SOLA píldora de Atendido por en el slot derecho
+  if (typeof window.syncAttendantHeader === "function") {
+    window.syncAttendantHeader();
+  }
+}
+
 function initAdminPOS() {
   document.getElementById("customer-form-section").classList.add("hidden");
   document.getElementById("map-section")?.classList.add("hidden");
   document.getElementById("admin-pos-section").classList.remove("hidden");
   const submitBtn = document.getElementById("btn-submit-desktop");
   if (submitBtn) submitBtn.style.display = "none";
+
+  movePosElementsToHeader();
+  document.addEventListener("header:ready", movePosElementsToHeader);
+  setTimeout(movePosElementsToHeader, 100);
+  setTimeout(movePosElementsToHeader, 350);
 
   const searchInput = document.getElementById("pos-search-input");
   const resultsEl = document.getElementById("pos-search-results");
@@ -236,8 +283,10 @@ function initAdminPOS() {
   const btnExistente = document.getElementById("pos-btn-existente");
   const btnRapida = document.getElementById("pos-btn-rapida");
   const createBtn = document.getElementById("pos-create-client-btn");
+  const createBtnOriginal = document.getElementById("pos-create-client-btn-original");
 
   let searchTimer = null;
+  try { localStorage.removeItem("pos_local_clients"); } catch (_) {}
 
   function activarModoNuevo() {
     btnNuevo.classList.add("active");
@@ -246,17 +295,10 @@ function initAdminPOS() {
     searchSection.classList.add("hidden");
     newForm.classList.remove("hidden");
     createBtn.classList.remove("hidden");
+    if (createBtnOriginal) createBtnOriginal.classList.remove("hidden");
+    selectedEl.classList.add("hidden");
     continuarBtn.classList.add("hidden");
     stepConfirmar.classList.add("hidden");
-    restaurarModoComun();
-  }
-
-  function restaurarModoComun() {
-    document.getElementById("pos-selected-header").innerHTML = `
-      <span class="material-symbols-outlined">check_circle</span>
-      <span>Cliente seleccionado:</span>
-    `;
-    document.getElementById("pos-change-client-btn").classList.remove("hidden");
   }
 
   function activarModoExistente() {
@@ -267,7 +309,14 @@ function initAdminPOS() {
     searchSection.classList.remove("hidden");
     searchInput.focus();
     createBtn.classList.add("hidden");
-    restaurarModoComun();
+    if (createBtnOriginal) createBtnOriginal.classList.add("hidden");
+    if (!selectedClient || selectedClient.name?.includes("Venta rápida")) {
+      selectedEl.classList.add("hidden");
+      continuarBtn.classList.add("hidden");
+    } else {
+      selectedEl.classList.remove("hidden");
+      continuarBtn.classList.remove("hidden");
+    }
   }
 
   function activarModoRapida() {
@@ -278,19 +327,15 @@ function initAdminPOS() {
     searchSection.classList.add("hidden");
     selectedEl.classList.add("hidden");
     createBtn.classList.add("hidden");
+    if (createBtnOriginal) createBtnOriginal.classList.add("hidden");
     const admin = JSON.parse(localStorage.getItem("cortero_user") || "{}");
-    selectedClient = { id: admin.id, name: `${admin.name} (Venta rápida)`, phone: null, email: null };
-    document.getElementById("pos-client-info").innerHTML = `
-      <div class="info-row"><span class="info-label">Atendido por:</span><span>${admin.name}</span></div>
-    `;
-    document.getElementById("pos-selected-header").innerHTML = `
-      <span class="material-symbols-outlined">check_circle</span>
-      <span>Venta sin cliente registrado</span>
-    `;
-    document.getElementById("pos-change-client-btn").classList.add("hidden");
-    selectedEl.classList.remove("hidden");
+    selectedClient = { id: admin.id, name: `${admin.name || "Mostrador"} (Venta rápida)`, phone: null, email: null };
     continuarBtn.classList.remove("hidden");
     stepConfirmar.classList.add("hidden");
+
+    if (typeof window.syncAttendantHeader === "function") {
+      window.syncAttendantHeader(admin);
+    }
   }
 
   btnRapida.onclick = activarModoRapida;
@@ -301,16 +346,17 @@ function initAdminPOS() {
   searchInput.addEventListener("input", () => {
     clearTimeout(searchTimer);
     const q = searchInput.value.trim();
-    if (q.length < 2) {
+    if (!q) {
       resultsEl.classList.add("hidden");
       return;
     }
-    searchTimer = setTimeout(() => buscarClientes(q), 300);
+    searchTimer = setTimeout(() => buscarClientes(q), 250);
   });
 
   searchInput.addEventListener("focus", () => {
-    if (searchInput.value.trim().length >= 2) {
-      resultsEl.classList.remove("hidden");
+    const q = searchInput.value.trim();
+    if (q) {
+      buscarClientes(q);
     }
   });
 
@@ -322,13 +368,28 @@ function initAdminPOS() {
 
   async function buscarClientes(query) {
     const sb = window.supabaseClient;
-    const q = query.toLowerCase();
-    const { data } = await sb
-      .from("users")
-      .select("id, name, email, phone, rol")
-      .or(`name.ilike.%${q}%,phone.ilike.%${q}%`)
-      .neq("rol", "admin");
-    renderResults(data || []);
+    const q = (query || "").toLowerCase().trim();
+    if (!q) {
+      resultsEl.classList.add("hidden");
+      return;
+    }
+
+    try {
+      const { data, error } = await sb
+        .from("users")
+        .select("id, name, email, phone, rol")
+        .or(`name.ilike.%${q}%,phone.ilike.%${q}%`)
+        .neq("rol", "admin");
+
+      if (!error && Array.isArray(data)) {
+        renderResults(data);
+      } else {
+        renderResults([]);
+      }
+    } catch (err) {
+      console.warn("Aviso al consultar clientes en BD:", err);
+      renderResults([]);
+    }
   }
 
   function renderResults(users) {
@@ -364,13 +425,19 @@ function initAdminPOS() {
     newForm.classList.add("hidden");
     searchInput.value = "";
     createBtn.classList.add("hidden");
+    if (createBtnOriginal) createBtnOriginal.classList.add("hidden");
 
+    const clientShortName = getPrimerNombreYApellido(user.name || "Cliente");
     selectedEl.classList.remove("hidden");
-    document.getElementById("pos-client-info").innerHTML = `
-      <div class="info-row"><span class="info-label">Nombre:</span><span>${user.name || "—"}</span></div>
-      <div class="info-row"><span class="info-label">Teléfono:</span><span>${user.phone || "—"}</span></div>
-      <div class="info-row"><span class="info-label">Correo:</span><span>${user.email || "—"}</span></div>
+    document.getElementById("pos-selected-header").innerHTML = `
+      <div class="pos-client-avatar-badge"><span class="material-symbols-outlined">person</span></div>
+      <div class="pos-attendant-info">
+        <span class="pos-attendant-label">Cliente</span>
+        <span class="pos-attendant-name">${clientShortName}</span>
+      </div>
     `;
+    document.getElementById("pos-client-info").innerHTML = "";
+    document.getElementById("pos-change-client-btn").classList.remove("hidden");
     continuarBtn.classList.remove("hidden");
   }
 
@@ -380,33 +447,71 @@ function initAdminPOS() {
     continuarBtn.classList.add("hidden");
     stepConfirmar.classList.add("hidden");
     createBtn.classList.add("hidden");
+    if (createBtnOriginal) createBtnOriginal.classList.add("hidden");
     activarModoExistente();
   };
 
-  // Crear nuevo cliente
-  createBtn.onclick = async () => {
-    const name = document.getElementById("pos-new-name").value.trim();
-    if (!name) { showSnack("El nombre es obligatorio"); return; }
-    const phone = document.getElementById("pos-new-phone").value.trim();
-    const email = document.getElementById("pos-new-email").value.trim();
+  // Crear nuevo cliente (manejador unificado)
+  const handleCrearCliente = async () => {
+    const nameInput = document.getElementById("pos-new-name");
+    const name = nameInput ? nameInput.value.trim() : "";
+    if (!name) {
+      showSnack("El nombre es obligatorio");
+      nameInput?.focus();
+      return;
+    }
+    const phone = document.getElementById("pos-new-phone")?.value.trim() || "";
+    const email = document.getElementById("pos-new-email")?.value.trim() || "";
+
+    const btns = [createBtn, createBtnOriginal].filter(Boolean);
+    btns.forEach(b => {
+      b.disabled = true;
+      b.style.opacity = "0.7";
+    });
 
     const sb = window.supabaseClient;
+    let clienteGuardado = null;
 
-    const signUpEmail = email || `pos_${Date.now()}@cafecortero.pos`;
-    const { data: signUpData, error: signUpErr } = await sb.auth.signUp({
-      email: signUpEmail,
-      password: Math.random().toString(36).slice(2, 10),
-      options: { data: { name, phone, rol: "cliente" } }
-    });
-    if (signUpErr) { showSnack("Error al crear el cliente"); return; }
-    const newUserId = signUpData.user?.id;
-    if (!newUserId) { showSnack("Error al crear el cliente"); return; }
+    try {
+      const { data, error } = await sb.rpc("create_pos_client", {
+        p_name: name,
+        p_phone: phone || null,
+        p_email: email || null
+      });
 
+      if (error || !data) {
+        console.error("Error al registrar cliente POS:", error);
+        showSnack("Error al crear cliente: " + (error?.message || "intenta de nuevo"));
+        return;
+      }
+      clienteGuardado = data;
+    } catch (err) {
+      console.error("Error al crear cliente:", err);
+      showSnack("Error de conexión al crear cliente");
+      return;
+    } finally {
+      btns.forEach(b => {
+        b.disabled = false;
+        b.style.opacity = "";
+      });
+    }
+
+    // Preparar sesión para el recibo
     sessionStorage.setItem("pos_client", JSON.stringify({
-      id: newUserId, name, phone: phone || null, email: email || null
+      id: clienteGuardado.id,
+      name: clienteGuardado.name,
+      phone: clienteGuardado.phone,
+      email: clienteGuardado.email
     }));
-    window.location.href = "/pages/shop/recibo.html";
+
+    showSnack("Cliente creado correctamente", "success");
+    setTimeout(() => {
+      window.location.href = "/pages/shop/recibo.html";
+    }, 300);
   };
+
+  createBtn.onclick = handleCrearCliente;
+  if (createBtnOriginal) createBtnOriginal.onclick = handleCrearCliente;
 
   // Continuar → guardar cliente y redirigir a recibo.html
   continuarBtn.onclick = () => {

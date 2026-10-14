@@ -51,6 +51,42 @@ const CART_KEY = "cafecortero_cart";
 const carrito = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
 
 /* =========================================================
+   HELPERS POS Y USUARIO
+========================================================= */
+async function asegurarUsuarioPOS(sb, posClient) {
+  if (!posClient || !posClient.id) return null;
+  try {
+    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(posClient.id);
+    if (isUUID) {
+      const { data: userExists } = await sb
+        .from("users")
+        .select("id")
+        .eq("id", posClient.id)
+        .maybeSingle();
+
+      if (userExists && userExists.id) return posClient.id;
+    }
+
+    // Si el ID era local/antiguo o no existe en la BD, registrarlo legítimamente
+    const { data: created, error } = await sb.rpc("create_pos_client", {
+      p_name: posClient.name || "Cliente Mostrador",
+      p_phone: posClient.phone || null,
+      p_email: posClient.email || null
+    });
+
+    if (created && created.id) {
+      posClient.id = created.id;
+      if (window.POS_CLIENT) window.POS_CLIENT.id = created.id;
+      try { sessionStorage.setItem("pos_client", JSON.stringify(posClient)); } catch (_) {}
+      return created.id;
+    }
+  } catch (e) {
+    console.warn("Aviso asegurando usuario POS:", e);
+  }
+  return posClient.id;
+}
+
+/* =========================================================
    PROVISIONAL (SOLO UI)
 ========================================================= */
 async function pintarDatosProvisionales() {
@@ -58,20 +94,35 @@ async function pintarDatosProvisionales() {
   const user = window.supabaseAuth.getCurrentUser();
   if (!sb) return;
 
-  const uid = window.POS_CLIENT ? window.POS_CLIENT.id : user?.id;
+  const isPOS = !!window.POS_CLIENT;
+  let uid = isPOS ? window.POS_CLIENT.id : user?.id;
   if (!uid) return;
 
-  const { data } = await sb
-    .from("orders")
-    .select("order_number")
-    .eq("user_id", uid)
-    .order("order_number", { ascending: false })
-    .limit(1);
+  if (isPOS && window.POS_CLIENT) {
+    uid = await asegurarUsuarioPOS(sb, window.POS_CLIENT);
+  }
 
-  const next = (data?.[0]?.order_number || 0) + 1;
+  let next = 1;
+  try {
+    const { data: previewNum, error: prevErr } = await sb.rpc("preview_next_order_number", { p_user_id: uid });
+    if (!prevErr && previewNum) {
+      next = previewNum;
+    } else {
+      const { data } = await sb
+        .from("orders")
+        .select("order_number")
+        .eq("user_id", uid)
+        .order("order_number", { ascending: false })
+        .limit(1);
+      next = (data?.[0]?.order_number || 0) + 1;
+    }
+  } catch (_) {
+    next = 1;
+  }
+
   const now = new Date();
 
-  $("numeroPedido").textContent = String(next).padStart(3, "0");
+  $("numeroPedido").textContent = String(next);
   $("fechaPedido").textContent = now.toLocaleDateString("es-HN", {
     day: "2-digit",
     month: "short",
@@ -293,8 +344,12 @@ async function enviarPedido() {
   const user = window.supabaseAuth.getCurrentUser();
 
   const isPOS = !!window.POS_CLIENT;
-  const orderUserId = isPOS ? window.POS_CLIENT.id : user?.id;
+  let orderUserId = isPOS ? window.POS_CLIENT.id : user?.id;
   const customerName = isPOS ? window.POS_CLIENT.name : user?.name;
+
+  if (isPOS && window.POS_CLIENT) {
+    orderUserId = await asegurarUsuarioPOS(sb, window.POS_CLIENT);
+  }
 
   if (!orderUserId) {
     window.showSnack("Faltan datos del pedido");
@@ -311,20 +366,24 @@ async function enviarPedido() {
 
   try {
     let orderNumber;
-    if (isPOS) {
+    try {
+      const { data: num, error: numErr } = await sb.rpc("next_order_number", { p_user_id: orderUserId });
+      if (!numErr && num) {
+        orderNumber = num;
+      }
+    } catch (_) {}
+
+    if (!orderNumber) {
       const { data: lastOrder } = await sb
         .from("orders")
         .select("order_number")
         .eq("user_id", orderUserId)
         .order("order_number", { ascending: false })
         .limit(1);
-      orderNumber = (lastOrder?.[0]?.order_number || 0) + 1;
-    } else {
-      const { data: num, error: numErr } =
-        await sb.rpc("next_order_number", { p_user_id: orderUserId });
-      if (numErr || !num) throw new Error("No se pudo generar el número de pedido");
-      orderNumber = num;
+      orderNumber = ((lastOrder && lastOrder[0]?.order_number) || 0) + 1;
     }
+
+    $("numeroPedido").textContent = String(orderNumber);
 
     const orderNotes = orderNotesCache;
     const method = metodoPago.value;

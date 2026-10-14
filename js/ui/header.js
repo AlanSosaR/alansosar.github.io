@@ -147,6 +147,7 @@ if (!window.__HEADER_CORE_LOADED__) {
       setMyOrdersCount(0);
 
       if (notif) notif.classList.add("hidden");
+      syncAttendantHeader(null);
       return;
     }
 
@@ -194,7 +195,40 @@ if (!window.__HEADER_CORE_LOADED__) {
         );
       };
     }
+
+    // -----------------------------
+    // ☕ PÍLDORA ATENDIDO POR (ADMIN POS / BARISTA) EN HEADER
+    // -----------------------------
+    syncAttendantHeader(user);
   }
+
+  function syncAttendantHeader(currentUser) {
+    const clientSlot = $("header-pos-client-slot");
+    if (!clientSlot || (!document.body.classList.contains("page-carrito") && !document.body.classList.contains("page-datos-cliente"))) return;
+
+    const u = currentUser || getUserCache();
+    const isAdmin = u && (u.rol === "admin" || u.role === "admin");
+    const adminPhoto = (isAdmin && u.photo_url) ? u.photo_url : "/imagenes/barista.png";
+    const rawName = (isAdmin && u.name) ? u.name : "Barista";
+    const parts = rawName.trim().split(/\s+/);
+    const shortName = parts.length <= 2 
+      ? rawName.trim() 
+      : (parts.length >= 4 ? `${parts[0]} ${parts[2]}` : `${parts[0]} ${parts[1]}`);
+
+    // Limpiar contenido residual para asegurar que solo existe una píldora
+    clientSlot.innerHTML = `
+      <div class="pos-selected-client">
+        <div class="selected-client-header">
+          <img src="${adminPhoto}" alt="${shortName}" class="pos-attendant-avatar" onerror="this.src='/imagenes/barista.png'">
+          <div class="pos-attendant-info">
+            <span class="pos-attendant-label">Atendido por</span>
+            <span class="pos-attendant-name">${shortName}</span>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+  window.syncAttendantHeader = syncAttendantHeader;
 
   /* =====================================================
      DRAWER

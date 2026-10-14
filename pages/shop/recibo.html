@@ -307,9 +307,10 @@
   <!-- Script dinámico -->
   <script>
     const script = document.createElement("script");
+    const cacheBuster = Date.now();
     script.src = window.IS_READ_ONLY
-      ? "/js/pages/recibo.view.js"
-      : "/js/pages/recibo.checkout.js";
+      ? "/js/pages/recibo.view.js?t=" + cacheBuster
+      : "/js/pages/recibo.checkout.js?t=" + cacheBuster;
     document.body.appendChild(script);
   </script>
 

@@ -4,7 +4,7 @@ import {
   onMessage
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js";
 
-import { messaging } from "./firebase.js";
+import { getMessagingSafe } from "./firebase.js";
 
 console.log("📡 push.js — Firebase Push CORE (PROD)");
 
@@ -224,6 +224,12 @@ export async function registerPushToken(userId) {
     // -----------------------------
     // Obtener token FCM
     // -----------------------------
+    const messaging = await getMessagingSafe();
+    if (!messaging) {
+      console.warn("⚠️ Firebase Messaging no compatible o deshabilitado");
+      return;
+    }
+
     const token = await getToken(messaging, {
       vapidKey: VAPID_KEY,
       serviceWorkerRegistration: registration
@@ -280,8 +286,14 @@ export async function registerPushToken(userId) {
 // ⚠️ NO VA EN notifications.js
 // ⚠️ NO VA EN EL SERVICE WORKER
 // =====================================================
-onMessage(messaging, payload => {
-  console.log("📩 Push recibido en foreground:", payload);
-  if (!payload?.notification) return;
-  document.dispatchEvent(new CustomEvent("push:foreground", { detail: payload }));
+getMessagingSafe().then(msg => {
+  if (msg) {
+    onMessage(msg, payload => {
+      console.log("📩 Push recibido en foreground:", payload);
+      if (!payload?.notification) return;
+      document.dispatchEvent(new CustomEvent("push:foreground", { detail: payload }));
+    });
+  }
+}).catch(err => {
+  console.warn("⚠️ Firebase onMessage no iniciado:", err?.message || err);
 });

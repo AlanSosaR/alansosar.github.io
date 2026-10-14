@@ -1308,14 +1308,163 @@ body.page-datos-cliente main {
   transform: none;
 }
 
-/* Responsive */
+/* Responsive POS */
 @media (max-width: 700px) {
+  .checkout-container {
+    padding: 0 12px 3rem;
+  }
+
+  .unipro-card {
+    padding: 1.75rem 1.25rem;
+    border-radius: 24px;
+  }
+
+  .back-btn-alt {
+    margin-bottom: 1.25rem;
+  }
+
+  .pos-header {
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .pos-icon {
+    font-size: 2rem;
+  }
+
+  .pos-header h2 {
+    font-size: 1.35rem;
+  }
+
+  .pos-subtitle {
+    font-size: 0.8rem;
+  }
+
+  .pos-client-type-select {
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .pos-type-btn {
+    width: 100%;
+    padding: 12px 14px;
+    justify-content: flex-start;
+    font-size: 0.9rem;
+    border-radius: 12px;
+  }
+
+  .pos-type-btn .material-symbols-outlined {
+    font-size: 1.3rem;
+  }
+
+  .pos-selected-client {
+    padding: 12px 14px;
+    border-radius: 14px;
+  }
+
   .pos-payment-options {
     flex-direction: column;
+    gap: 8px;
   }
 
   .pos-payment-btn {
     flex-direction: row;
     justify-content: center;
+    padding: 12px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 768px) {
+  body.page-datos-cliente {
+    padding-top: 76px;
+  }
+
+  .checkout-container {
+    padding: 0 12px 2.5rem !important;
+    margin: 0 auto;
+  }
+
+  .checkout-grid {
+    gap: 1.25rem !important;
+    width: 100% !important;
+  }
+
+  .form-section,
+  #admin-pos-section {
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .unipro-card {
+    padding: 1.25rem 1rem !important;
+    border-radius: 20px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    min-height: 440px !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  .summary-card {
+    padding: 1.25rem 1rem !important;
+    border-radius: 20px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .summary-card h3 {
+    font-size: 1.2rem !important;
+    margin-bottom: 1.2rem !important;
+  }
+
+  .summary-items-list {
+    margin-bottom: 1.2rem !important;
+  }
+
+  .summary-item {
+    gap: 0.75rem !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .item-img {
+    width: 70px !important;
+    height: 70px !important;
+  }
+
+  .summary-totals {
+    margin-bottom: 1.25rem !important;
+  }
+
+  .primary-checkout-btn {
+    padding: 1rem !important;
+    font-size: 1.05rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .checkout-container {
+    padding: 0 8px 2rem !important;
+  }
+
+  .unipro-card {
+    padding: 1.1rem 0.85rem !important;
+    border-radius: 18px !important;
+    min-height: 420px !important;
+  }
+
+  .summary-card {
+    padding: 1.1rem 0.85rem !important;
+    border-radius: 18px !important;
+  }
+
+  .pos-header h2 {
+    font-size: 1.25rem;
+  }
+
+  .pos-type-btn {
+    padding: 12px 14px;
+    font-size: 0.9rem;
   }
 }

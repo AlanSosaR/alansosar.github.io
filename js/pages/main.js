@@ -1,4 +1,4 @@
-﻿/* ============================================================
+/* ============================================================
    MAIN.JS — Café Cortero 2025 (FINAL DEFINITIVO)
    UI + CARRITO + CARRUSELES + SUPABASE
 ============================================================ */
@@ -665,23 +665,56 @@ function updateSimilarUI() {
 function initContactFAB() {
   const fab = document.getElementById("fab");
   const fabBtn = document.getElementById("fab-main");
+  let scrim = document.getElementById("fab-scrim");
 
   if (!fab || !fabBtn) return;
 
-  // Click en botón principal
+  // Si el elemento scrim no existe en el DOM, crearlo automáticamente
+  if (!scrim) {
+    scrim = document.createElement("div");
+    scrim.id = "fab-scrim";
+    scrim.className = "fab-scrim";
+    scrim.setAttribute("aria-hidden", "true");
+    document.body.appendChild(scrim);
+  }
+
+  const setFABOpen = (isOpen) => {
+    fab.classList.toggle("open", isOpen);
+    if (scrim) scrim.classList.toggle("open", isOpen);
+    fabBtn.setAttribute("aria-expanded", isOpen ? "true" : "false");
+  };
+
+  // Click en botón principal (toggle)
   fabBtn.addEventListener("click", (e) => {
-    e.stopPropagation(); // 🔑 CLAVE
-    fab.classList.toggle("open");
+    e.stopPropagation();
+    const isCurrentlyOpen = fab.classList.contains("open");
+    setFABOpen(!isCurrentlyOpen);
   });
 
-  // Evita cerrar al interactuar dentro del FAB
+  // Click en el scrim backdrop → cerrar
+  if (scrim) {
+    scrim.addEventListener("click", () => {
+      setFABOpen(false);
+    });
+  }
+
+  // Evita cerrar al interactuar dentro del menú FAB
   fab.addEventListener("click", (e) => {
     e.stopPropagation();
   });
 
   // Click fuera → cerrar
   document.addEventListener("click", () => {
-    fab.classList.remove("open");
+    if (fab.classList.contains("open")) {
+      setFABOpen(false);
+    }
+  });
+
+  // Tecla Escape → cerrar
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && fab.classList.contains("open")) {
+      setFABOpen(false);
+    }
   });
 }
 
@@ -720,7 +753,13 @@ async function cargarSiteSettings() {
 ======================== */
 document.addEventListener("DOMContentLoaded", () => {
 
-  syncHeaderCounter();
+  if (typeof window.syncHeaderCounter === "function") {
+    window.syncHeaderCounter();
+  } else if (typeof syncHeaderCounter === "function") {
+    syncHeaderCounter();
+  } else {
+    window.dispatchEvent(new Event("cartUpdated"));
+  }
   cargarSiteSettings();
   initContactFAB();
 

@@ -1072,8 +1072,9 @@ body.home-page {
 ===================== */
 .carousel-prev-circle i,
 .carousel-next-circle i {
-  font-size: 1.35rem;
-  /* 🔑 icono más visible */
+  font-size: 1.05rem;
+  font-weight: 300;
+  -webkit-text-stroke: 0;
   color: var(--verde);
 }
 
@@ -1639,7 +1640,25 @@ footer p {
   }
 }
 
-/* ================= FAB — Material 3 Expressive ================= */
+/* ================= FAB — Material 3 Speed Dial & Spring Motion ================= */
+
+/* ===== SCRIM BACKDROP FADE ===== */
+.fab-scrim {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 25, 18, 0.42);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 9995;
+  transition: opacity 0.32s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.fab-scrim.open {
+  opacity: 1;
+  pointer-events: auto;
+}
 
 .fab-container {
   position: fixed;
@@ -1668,30 +1687,41 @@ footer p {
   border: none;
   cursor: pointer;
   outline: none;
+  position: relative;
+  overflow: hidden;
 
   box-shadow:
-    0 6px 12px rgba(0, 0, 0, .18),
-    0 2px 4px rgba(0, 0, 0, .14);
+    0 6px 14px rgba(0, 0, 0, .20),
+    0 2px 5px rgba(0, 0, 0, .14);
 
   transition:
-    transform .22s cubic-bezier(.2, 0, 0, 1),
-    box-shadow .22s ease;
+    transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+    background 0.3s ease,
+    box-shadow 0.3s ease;
 
   -webkit-tap-highlight-color: transparent;
 }
 
 .fab-main:hover {
-  transform: translateY(-2px);
+  transform: translateY(-2px) scale(1.04);
   box-shadow:
-    0 10px 22px rgba(0, 0, 0, .22),
-    0 4px 10px rgba(0, 0, 0, .18);
+    0 10px 24px rgba(0, 0, 0, .24),
+    0 4px 10px rgba(0, 0, 0, .16);
 }
 
 .fab-main:active {
-  transform: scale(.96);
+  transform: scale(.94);
 }
 
-/* Icono */
+/* Estado abierto en botón principal */
+.fab-container.open .fab-main {
+  background: var(--marron);
+  box-shadow:
+    0 10px 24px rgba(0, 0, 0, .28),
+    0 4px 10px rgba(0, 0, 0, .20);
+}
+
+/* Iconos y morphing */
 .fab-main .material-symbols-outlined {
   font-size: 30px;
   font-variation-settings:
@@ -1699,16 +1729,40 @@ footer p {
     'wght' 600,
     'GRAD' 0,
     'opsz' 28;
+  position: absolute;
+  transition:
+    transform 0.38s cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 0.28s cubic-bezier(0.2, 0, 0, 1);
 }
 
-/* ===== OPCIONES ===== */
+.fab-main .fab-icon-chat {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+
+.fab-main .fab-icon-close {
+  opacity: 0;
+  transform: rotate(-90deg) scale(0.4);
+}
+
+.fab-container.open .fab-icon-chat {
+  opacity: 0;
+  transform: rotate(90deg) scale(0.4);
+}
+
+.fab-container.open .fab-icon-close {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+
+/* ===== OPCIONES (SPEED DIAL) ===== */
 .fab-options {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-/* Botones secundarios (cerrado) */
+/* Botones secundarios (cerrado con salida escalonada) */
 .fab-options a {
   width: 52px;
   height: 52px;
@@ -1723,30 +1777,53 @@ footer p {
 
   opacity: 0;
   pointer-events: none;
-  transform: translateY(10px) scale(.9);
+  transform: translateY(22px) scale(.45);
 
   box-shadow:
-    0 6px 14px rgba(0, 0, 0, .18),
-    0 2px 6px rgba(0, 0, 0, .14);
+    0 6px 16px rgba(0, 0, 0, .18),
+    0 2px 6px rgba(0, 0, 0, .12);
 
   transition:
-    opacity .22s ease,
-    transform .22s cubic-bezier(.2, 0, 0, 1);
+    opacity 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.26s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.22s ease;
 }
 
-/* ===== ESTADO ABIERTO ===== */
+/* Retrasos de cierre en reversa (de arriba a abajo) */
+.fab-options a:nth-child(1) { transition-delay: 0.08s; }
+.fab-options a:nth-child(2) { transition-delay: 0.04s; }
+.fab-options a:nth-child(3) { transition-delay: 0s; }
+
+/* ===== ESTADO ABIERTO — Staggered Spring Motion (Física de rebote en cascada) ===== */
 .fab-container.open .fab-options a {
   opacity: 1;
   pointer-events: auto;
   transform: translateY(0) scale(1);
+
+  transition:
+    opacity 0.32s cubic-bezier(0.2, 0, 0, 1),
+    transform 0.44s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.25s ease;
 }
 
-/* Hover opciones */
+/* Retrasos de apertura en cascada con rebote (de abajo hacia arriba) */
+.fab-container.open .fab-options a:nth-child(3) { transition-delay: 0.04s; }
+.fab-container.open .fab-options a:nth-child(2) { transition-delay: 0.09s; }
+.fab-container.open .fab-options a:nth-child(1) { transition-delay: 0.14s; }
+
+/* Hover en opciones */
 .fab-options a:hover {
-  transform: scale(1.08);
+  transform: translateY(-2px) scale(1.12);
+  box-shadow:
+    0 10px 22px rgba(0, 0, 0, .22),
+    0 4px 10px rgba(0, 0, 0, .15);
 }
 
-/* Iconos */
+.fab-options a:active {
+  transform: scale(0.96);
+}
+
+/* Iconos de marcas */
 .fab-options i {
   font-size: 1.6rem;
   line-height: 1;
@@ -1769,16 +1846,25 @@ footer p {
   .fab-container {
     right: 18px;
     bottom: 18px;
+    gap: 10px;
   }
 
   .fab-main {
-    width: 60px;
-    height: 60px;
+    width: 58px;
+    height: 58px;
+  }
+
+  .fab-options {
+    gap: 10px;
   }
 
   .fab-options a {
     width: 48px;
     height: 48px;
+  }
+
+  .fab-options i {
+    font-size: 1.45rem;
   }
 }
 
