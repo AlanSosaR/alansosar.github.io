@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-  <title>Nuevo Registro | Café Cortero</title>
+  <title>Nuevo Movimiento | Café Cortero</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700;800&family=Poppins:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
   <link rel="icon" type="image/png" href="/imagenes/logo.png">
 
   <link rel="stylesheet" href="/css/core/tipografia.css">
@@ -16,9 +16,604 @@
   <link rel="stylesheet" href="/css/finanzas.css">
   <style>
     .material-symbols-outlined { font-variation-settings: 'FILL' 1; }
-    .page-fin-unified-registro .fin-saldo-card {
-      margin-top: 24px;
-      padding-left: 56px;
+    
+    body.page-fin-unified-registro {
+      background-color: #F5F7F6 !important;
+      color: #512615;
+      font-family: 'Poppins', sans-serif;
+      padding-top: 80px !important;
+    }
+
+    @media (max-width: 900px) {
+      body.page-fin-unified-registro {
+        padding-top: 72px !important;
+      }
+    }
+
+    .page-fin-unified-registro .fin-content {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 4px 16px calc(24px + env(safe-area-inset-bottom, 12px));
+    }
+
+    /* Sub-cabecera contextual con separación del Header */
+    .sub-header-movimiento {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 18px;      /* Separación clara para que NO quede pegado al Header */
+      margin-bottom: 14px;   /* Separación limpia antes de la tarjeta Hero */
+      padding: 0 4px;
+    }
+
+    .sub-header-left {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .btn-back-circle {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: #FFFFFF;
+      border: 1px solid #E4EAE6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #377b4c; /* Cambia dinámicamente según el modo activo */
+      box-shadow: 0 2px 8px rgba(81, 38, 21, 0.05);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-back-circle .material-symbols-outlined {
+      font-size: 22px;
+      font-weight: 600;
+    }
+
+    .sub-header-title {
+      font-family: 'Poppins', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: #512615;
+      letter-spacing: -0.01em;
+    }
+
+    /* Píldora derecha: MODO INGRESO / AHORRO / GASTO */
+    .mode-badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      transition: all 0.25s ease;
+    }
+
+    .mode-badge-pill .mode-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    /* Variantes de color según el Tipo de Movimiento seleccionado */
+    .mode-badge-pill.mode-ingreso {
+      background: rgba(55, 123, 76, 0.12);
+      color: #377b4c;
+    }
+
+    .mode-badge-pill.mode-ahorro {
+      background: rgba(81, 38, 21, 0.12);
+      color: #512615;
+    }
+
+    .mode-badge-pill.mode-gasto {
+      background: rgba(198, 40, 40, 0.12);
+      color: #C62828;
+    }
+
+    /* Tarjeta Hero Monto */
+    .fin-hero-monto-card {
+      background: #FFFFFF;
+      border: 1.5px solid #E4EAE6;
+      border-radius: 24px;
+      padding: 18px 16px;
+      text-align: center;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 12px rgba(81, 38, 21, 0.04);
+      transition: border-top-color 0.25s ease;
+    }
+
+    .fin-hero-monto-card .fin-hero-label {
+      font-family: 'Poppins', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      color: #8D6E63;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .fin-hero-input-wrap {
+      display: inline-flex !important;
+      align-items: baseline !important;
+      justify-content: center !important;
+      gap: 8px !important;
+      width: 100% !important;
+      border-bottom: 2px dashed rgba(55, 123, 76, 0.35);
+      padding-bottom: 6px;
+      margin-bottom: 14px;
+      max-width: 100%;
+      transition: border-color 0.25s ease;
+    }
+
+    .fin-hero-input-wrap #fin-hnl-label {
+      font-family: 'Poppins', sans-serif !important;
+      font-size: 18px !important;
+      font-weight: 700 !important;
+      color: #512615;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .fin-hero-input-wrap .fin-hero-input {
+      font-family: 'JetBrains Mono', monospace !important;
+      font-size: 38px !important;
+      font-weight: 800 !important;
+      color: #377b4c;
+      border: none !important;
+      background: transparent !important;
+      outline: none !important;
+      text-align: left !important;
+      width: 110px !important;
+      min-width: 90px;
+      max-width: 260px !important;
+      padding: 0 !important;
+      line-height: 1 !important;
+      transition: color 0.25s ease;
+      field-sizing: content;
+    }
+
+    .fin-quick-chips {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .fin-quick-chip {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 700;
+      border-radius: 999px;
+      background: #F5F7F6;
+      border: 1px solid #E4EAE6;
+      color: #512615;
+      padding: 6px 14px;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.15s ease;
+    }
+
+    .fin-quick-chip:hover {
+      background: #EAEFEA;
+      border-color: #D2DDD4;
+      transform: translateY(-1px);
+    }
+
+    .fin-quick-chip:active {
+      transform: scale(0.96);
+    }
+
+    .fin-quick-chip.fin-quick-chip-clear {
+      color: #8D6E63;
+    }
+
+    /* Tipo de Movimiento Grid */
+    .fin-tipo-toggle-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .fin-tipo-btn {
+      height: 76px !important;
+      min-height: 76px !important;
+      max-height: 76px !important;
+      border-radius: 20px !important;
+      padding: 8px 6px !important;
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 5px !important;
+      background: #FFFFFF !important;
+      border: 1.5px solid #E4EAE6 !important;
+      transition: all 0.2s cubic-bezier(0.2, 0, 0, 1) !important;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .fin-tipo-icon-circle {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #F5F7F6;
+      color: #8D6E63;
+      transition: all 0.2s ease;
+    }
+
+    .fin-tipo-icon-circle .material-symbols-outlined {
+      font-size: 20px !important;
+      line-height: 1 !important;
+    }
+
+    .fin-tipo-label {
+      font-family: 'Poppins', sans-serif !important;
+      font-size: 12.5px !important;
+      font-weight: 500;
+      color: #8D6E63;
+      line-height: 1;
+      transition: color 0.2s ease, font-weight 0.2s ease;
+    }
+
+    .fin-tipo-btn:hover {
+      border-color: #D2DDD4 !important;
+      transform: translateY(-1px);
+    }
+
+    .fin-tipo-btn:active {
+      transform: scale(0.96) !important;
+    }
+
+    /* Activos Tipo Movimiento — Material 3 Expressive Oficial */
+    .fin-tipo-btn.active.primary,
+    .fin-tipo-btn.active[data-tipo="ingreso"] {
+      border: 2.5px solid #377b4c !important;
+      background: #EBF5EE !important;
+      box-shadow: 0 8px 18px -4px rgba(55, 123, 76, 0.28) !important;
+      transform: scale(1.02);
+    }
+    .fin-tipo-btn.active.primary .fin-tipo-icon-circle,
+    .fin-tipo-btn.active[data-tipo="ingreso"] .fin-tipo-icon-circle {
+      background: #377b4c !important;
+      color: #FFFFFF !important;
+    }
+    .fin-tipo-btn.active.primary .fin-tipo-label,
+    .fin-tipo-btn.active[data-tipo="ingreso"] .fin-tipo-label {
+      color: #377b4c !important;
+      font-weight: 700 !important;
+    }
+
+    .fin-tipo-btn.active.secondary,
+    .fin-tipo-btn.active[data-tipo="ahorro"] {
+      border: 2.5px solid #512615 !important;
+      background: #F3ECE9 !important;
+      box-shadow: 0 8px 18px -4px rgba(81, 38, 21, 0.25) !important;
+      transform: scale(1.02);
+    }
+    .fin-tipo-btn.active.secondary .fin-tipo-icon-circle,
+    .fin-tipo-btn.active[data-tipo="ahorro"] .fin-tipo-icon-circle {
+      background: #512615 !important;
+      color: #FFFFFF !important;
+    }
+    .fin-tipo-btn.active.secondary .fin-tipo-label,
+    .fin-tipo-btn.active[data-tipo="ahorro"] .fin-tipo-label {
+      color: #512615 !important;
+      font-weight: 700 !important;
+    }
+
+    .fin-tipo-btn.active.error,
+    .fin-tipo-btn.active[data-tipo="egreso"] {
+      border: 2.5px solid #C62828 !important;
+      background: #FDECEC !important;
+      box-shadow: 0 8px 18px -4px rgba(198, 40, 40, 0.25) !important;
+      transform: scale(1.02);
+    }
+    .fin-tipo-btn.active.error .fin-tipo-icon-circle,
+    .fin-tipo-btn.active[data-tipo="egreso"] .fin-tipo-icon-circle {
+      background: #C62828 !important;
+      color: #FFFFFF !important;
+    }
+    .fin-tipo-btn.active.error .fin-tipo-label,
+    .fin-tipo-btn.active[data-tipo="egreso"] .fin-tipo-label {
+      color: #C62828 !important;
+      font-weight: 700 !important;
+    }
+
+    #preset-pos-chip {
+      background: #E8F3EB;
+      border-color: rgba(55, 123, 76, 0.3);
+      color: #377b4c;
+    }
+
+    @keyframes gentleShake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      50% { transform: translateX(6px); }
+      75% { transform: translateX(-4px); }
+    }
+    .shake-alert {
+      animation: gentleShake 0.35s ease;
+    }
+
+    /* Formulario Tarjeta */
+    .fin-form-card {
+      background: #FFFFFF !important;
+      border: 1px solid #E4EAE6 !important;
+      border-radius: 24px !important;
+      padding: 16px !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 14px !important;
+      margin-bottom: 0 !important;
+      box-shadow: 0 2px 12px rgba(81, 38, 21, 0.04) !important;
+    }
+
+    .form-row-grid,
+    .fin-row-2col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      width: 100%;
+    }
+
+    /* Trigger de Categoría Moderno M3 */
+    .fin-cat-dropdown {
+      position: relative !important;
+    }
+
+    .fin-cat-dropdown-trigger {
+      height: 52px !important;
+      border-radius: 16px !important;
+      border: 1.5px solid #D5DFD8 !important;
+      background: #FFFFFF !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      padding: 0 14px !important;
+      width: 100% !important;
+      cursor: pointer !important;
+      transition: all 0.2s cubic-bezier(0.2, 0, 0, 1) !important;
+    }
+
+    .fin-cat-dropdown-trigger:hover {
+      border-color: #377b4c !important;
+      background: #F9FBF9 !important;
+    }
+
+    .fin-cat-dropdown-trigger:active {
+      transform: scale(0.985);
+    }
+
+    #fin-cat-menu {
+      display: none !important;
+    }
+
+    /* =========================================================================
+       BOTTOM SHEET M3: SELECTOR RÁPIDO DE CATEGORÍAS (1 TOQUE)
+       ========================================================================= */
+    .cat-sheet-scrim {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(2px);
+      -webkit-backdrop-filter: blur(2px);
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s cubic-bezier(0.2, 0, 0, 1);
+    }
+
+    .cat-sheet-scrim.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .cat-sheet-panel {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      max-width: 600px;
+      margin: 0 auto;
+      background: #FFFFFF;
+      border-top-left-radius: 28px;
+      border-top-right-radius: 28px;
+      padding: 16px 18px calc(24px + env(safe-area-inset-bottom, 16px));
+      z-index: 1001;
+      box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.18);
+      border-top: 1px solid #E4EAE6;
+      transform: translateY(100%);
+      transition: transform 0.3s cubic-bezier(0.2, 0, 0, 1);
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      box-sizing: border-box;
+    }
+
+    .cat-sheet-panel.open {
+      transform: translateY(0);
+    }
+
+    .cat-sheet-drag-handle {
+      width: 40px;
+      height: 4px;
+      border-radius: 999px;
+      background: #D5DFD8;
+      margin: 0 auto 12px;
+      cursor: pointer;
+    }
+
+    .cat-sheet-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .cat-sheet-title {
+      font-family: 'Poppins', sans-serif;
+      font-size: 15.5px;
+      font-weight: 700;
+      color: #512615;
+      margin: 0;
+    }
+
+    .cat-sheet-close-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #F5F7F6;
+      border: 1px solid #E4EAE6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #8D6E63;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .cat-sheet-close-btn:hover {
+      background: #EAEFEA;
+      color: #512615;
+    }
+
+    .cat-options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      overflow-y: auto;
+      padding-bottom: 8px;
+      max-height: 56vh;
+    }
+
+    .cat-sheet-item {
+      padding: 10px 12px;
+      border-radius: 16px;
+      border: 1.5px solid #E4EAE6;
+      background: #F9FBF9;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: all 0.18s cubic-bezier(0.2, 0, 0, 1);
+      box-sizing: border-box;
+    }
+
+    .cat-sheet-item:hover {
+      background: #FFFFFF;
+      border-color: #377b4c;
+      transform: translateY(-1px);
+    }
+
+    .cat-sheet-item:active {
+      transform: scale(0.97);
+    }
+
+    .cat-sheet-item.selected {
+      border-color: #377b4c !important;
+      background: #EBF5EE !important;
+      box-shadow: 0 4px 12px rgba(55, 123, 76, 0.15);
+    }
+
+    .cat-sheet-item-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #FFFFFF;
+      border: 1px solid #E4EAE6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #377b4c;
+      flex-shrink: 0;
+    }
+
+    .cat-sheet-item-text {
+      font-family: 'Poppins', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      color: #512615;
+      line-height: 1.25;
+      flex: 1;
+    }
+
+    .cat-sheet-item.selected .cat-sheet-item-text {
+      font-weight: 700;
+      color: #377b4c;
+    }
+
+    /* Textarea Limpio */
+    .fin-form-card textarea#fin-concepto {
+      resize: none !important;
+      height: 52px !important;
+      min-height: 52px !important;
+      max-height: 52px !important;
+      font-family: 'Poppins', sans-serif !important;
+      font-size: 13.5px !important;
+      line-height: 1.35 !important;
+      padding-top: 10px !important;
+    }
+
+    .fin-input-wrapper.textarea-wrapper {
+      height: 72px !important;
+      min-height: 72px !important;
+      max-height: 72px !important;
+      align-items: flex-start !important;
+    }
+
+    /* Botón Guardar Inferior Completo */
+    .fin-save-container {
+      padding: 12px 0 calc(16px + env(safe-area-inset-bottom, 12px));
+      width: 100%;
+    }
+
+    #fin-guardar-btn {
+      width: 100% !important;
+      height: 54px !important;
+      border-radius: 999px !important;
+      font-family: 'Poppins', sans-serif !important;
+      font-size: 15px !important;
+      font-weight: 600 !important;
+      color: #FFFFFF !important;
+      background: #377b4c;
+      border: none !important;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18) !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 8px !important;
+      cursor: pointer;
+      transition: all 0.2s ease !important;
+    }
+
+    #fin-guardar-btn:disabled {
+      opacity: 0.55 !important;
+      cursor: not-allowed !important;
+      box-shadow: none !important;
+    }
+
+    #fin-guardar-btn:not(:disabled):hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22) !important;
+    }
+
+    #fin-guardar-btn:not(:disabled):active {
+      transform: scale(0.99);
     }
   </style>
 </head>
@@ -27,72 +622,88 @@
 
   <main class="fin-page">
 
-    <!-- TOP APP BAR -->
-    <header class="fin-top-app-bar">
-      <button class="fin-back-btn" onclick="window.location.href='/pages/admin/finanzas/index.html'">
-        <span class="material-symbols-outlined">close</span>
-      </button>
-      <h1 class="fin-title" style="flex:1;">Nuevo Registro</h1>
-      <button class="fin-icon-btn" aria-label="Notificaciones">
-        <span class="material-symbols-outlined">notifications</span>
-      </button>
-    </header>
-
     <div class="fin-content">
 
-      <!-- HERO CANTIDAD -->
-      <div class="fin-saldo-card-wrapper">
-        <button onclick="window.location.href='/pages/admin/finanzas/index.html'" class="fin-notch-btn">
-          &#x276E;
-        </button>
-        <section class="fin-saldo-card">
-          <div class="fin-hero-label">¿Cuánto vas a registrar?</div>
-          <div class="fin-hero-input-wrap">
-            <span style="flex-shrink:0;"><span id="fin-hnl-label" style="color:var(--marron);font-weight:600;font:var(--md-display-lg);font-size:clamp(24px, 6vw, 48px);">HNL</span></span>
-            <input type="text" id="fin-monto-input" inputmode="decimal" placeholder="0,000.00" value="0.00"
-              class="fin-hero-input">
-          </div>
-        </section>
+      <!-- Sub-cabecera contextual con separación del Header -->
+      <div class="sub-header-movimiento">
+        <div class="sub-header-left" onclick="window.history.back()">
+          <button type="button" class="btn-back-circle" id="btn-back-circle" aria-label="Volver a Finanzas">
+            <span class="material-symbols-outlined">chevron_left</span>
+          </button>
+          <span class="sub-header-title fin-title">Volver a Finanzas</span>
+        </div>
+
+        <!-- Píldora dinámica de modo activo -->
+        <div id="modeBadgePill" class="mode-badge-pill mode-ingreso">
+          <span class="mode-dot"></span>
+          <span id="modeBadgeText">MODO INGRESO</span>
+        </div>
       </div>
 
-      <!-- TIPO DE MOVIMIENTO -->
-      <section style="margin-bottom:16px;">
-        <p style="font:var(--md-title-md);color:var(--md-on-surface);font-weight:600;margin-bottom:12px;">Tipo de Movimiento</p>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;" id="tipo-toggle">
-          <button class="fin-tipo-btn active primary" data-tipo="ingreso">
-            <span class="material-symbols-outlined" style="font-size:32px;">trending_up</span>
-            <span style="font:var(--md-title-md);font-weight:700;">Ingreso</span>
+      <!-- 2.2 TARJETA HERO DE MONTO CENTRADA Y CON CHIPS RÁPIDOS -->
+      <section class="fin-hero-monto-card" id="amount-hero-card" style="border-top: 5px solid #377b4c;">
+        <div class="fin-hero-label">¿Cuánto vas a registrar?</div>
+        <div class="fin-hero-input-wrap" id="amount-underline-box">
+          <span id="fin-hnl-label">HNL</span>
+          <input type="text" id="fin-monto-input" inputmode="decimal" placeholder="0.00" value="0.00" class="fin-hero-input">
+          <button type="button" id="clear-amount-btn" style="display: none; width: 26px; height: 26px; border-radius: 50%; background: #F5F7F6; border: 1px solid #E4EAE6; color: #8D6E63; cursor: pointer; align-items: center; justify-content: center; margin-left: 4px; padding: 0;" title="Borrar monto">
+            <span class="material-symbols-outlined" style="font-size: 15px;">backspace</span>
           </button>
-          <button class="fin-tipo-btn" data-tipo="ahorro">
-            <span class="material-symbols-outlined" style="font-size:32px;">savings</span>
-            <span style="font:var(--md-title-md);">Ahorro</span>
+        </div>
+        <!-- Chips Rápidos -->
+        <div class="fin-quick-chips">
+          <button type="button" class="fin-quick-chip" data-add="100">+100</button>
+          <button type="button" class="fin-quick-chip" data-add="500">+500</button>
+          <button type="button" class="fin-quick-chip" data-add="1000">+1,000</button>
+          <button type="button" class="fin-quick-chip" data-add="1900" id="preset-pos-chip">+1,900 POS</button>
+          <button type="button" class="fin-quick-chip fin-quick-chip-clear" data-action="clear">Limpiar</button>
+        </div>
+      </section>
+
+      <!-- 2.3 TIPO DE MOVIMIENTO COMPACTO CON ICONOS CIRCULARES -->
+      <section style="margin-bottom: 16px;">
+        <p style="font-family:'Poppins',sans-serif;font-size:13px;font-weight:700;color:#512615;margin-bottom:10px;">Tipo de Movimiento</p>
+        <div class="fin-tipo-toggle-grid" id="tipo-toggle">
+          <button type="button" class="fin-tipo-btn active primary" data-tipo="ingreso" id="type-btn-ingreso">
+            <div class="fin-tipo-icon-circle" id="type-icon-ingreso">
+              <span class="material-symbols-outlined">trending_up</span>
+            </div>
+            <span class="fin-tipo-label" id="type-label-ingreso">Ingreso</span>
           </button>
-          <button class="fin-tipo-btn" data-tipo="egreso">
-            <span class="material-symbols-outlined" style="font-size:32px;">trending_down</span>
-            <span style="font:var(--md-title-md);">Gasto</span>
+          <button type="button" class="fin-tipo-btn" data-tipo="ahorro" id="type-btn-ahorro">
+            <div class="fin-tipo-icon-circle" id="type-icon-ahorro">
+              <span class="material-symbols-outlined">savings</span>
+            </div>
+            <span class="fin-tipo-label" id="type-label-ahorro">Ahorro</span>
+          </button>
+          <button type="button" class="fin-tipo-btn" data-tipo="egreso" id="type-btn-egreso">
+            <div class="fin-tipo-icon-circle" id="type-icon-egreso">
+              <span class="material-symbols-outlined">trending_down</span>
+            </div>
+            <span class="fin-tipo-label" id="type-label-egreso">Gasto</span>
           </button>
         </div>
       </section>
 
-      <!-- FORM CARD -->
+      <!-- 2.4 FORMULARIO OPTIMIZADO (2 COLUMNAS Y TEXTAREA LIMPIO) -->
       <section class="fin-form-card">
 
-        <!-- CATEGORÍA -->
-          <div class="fin-cat-dropdown" id="fin-categoria-chips">
-            <span class="fin-cat-floating-label">Categoría</span>
-            <button class="fin-cat-dropdown-trigger" id="fin-cat-trigger" type="button">
-              <span class="fin-cat-trigger-content">
-                <span class="material-symbols-outlined fin-cat-trigger-icon">category</span>
-                <span class="fin-cat-trigger-label fin-cat-trigger-placeholder">Seleccionar categoría</span>
-              </span>
-              <span class="material-symbols-outlined fin-cat-trigger-arrow">arrow_drop_down</span>
-            </button>
-            <div class="fin-cat-dropdown-menu" id="fin-cat-menu"></div>
-            <div id="acciones-categoria" style="display:flex;gap:8px;margin-top:8px;"></div>
-          </div>
+        <!-- FILA 1: CATEGORÍA A ANCHO COMPLETO -->
+        <div class="fin-cat-dropdown" id="fin-categoria-chips">
+          <span class="fin-cat-floating-label">Categoría</span>
+          <button class="fin-cat-dropdown-trigger" id="fin-cat-trigger" type="button">
+            <span class="fin-cat-trigger-content">
+              <span class="material-symbols-outlined fin-cat-trigger-icon">category</span>
+              <span class="fin-cat-trigger-label fin-cat-trigger-placeholder">Seleccionar categoría</span>
+            </span>
+            <span class="material-symbols-outlined fin-cat-trigger-arrow">arrow_drop_down</span>
+          </button>
+          <div class="fin-cat-dropdown-menu" id="fin-cat-menu"></div>
+          <div id="acciones-categoria" style="display:flex;gap:8px;margin-top:8px;"></div>
+        </div>
 
-        <!-- CAMPOS DE CAFÉ (CANTIDAD Y PRECIO POR LIBRA) -->
-        <section style="margin-bottom:16px;display:none;" id="fin-cafe-fields">
+        <!-- CAMPOS ESPECIALES DE CAFÉ (CANTIDAD Y PRECIO POR LIBRA) -->
+        <section style="margin-bottom:0;display:none;" id="fin-cafe-fields">
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
             <div class="fin-field">
               <div class="fin-input-wrapper">
@@ -111,8 +722,8 @@
           </div>
         </section>
 
-        <!-- CAMPOS DE FINCA LA ROSA -->
-        <section style="margin-bottom:16px;display:none;" id="fin-finca-fields">
+        <!-- CAMPOS ESPECIALES DE FINCA LA ROSA -->
+        <section style="margin-bottom:0;display:none;" id="fin-finca-fields">
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
             <div class="fin-cat-dropdown" id="fin-presentacion-dropdown">
               <span class="fin-cat-floating-label">Presentación</span>
@@ -157,23 +768,30 @@
               <div class="fin-cat-dropdown-menu" id="fin-tamano-menu"></div>
             </div>
           </div>
+          <div style="margin-top:12px;">
+            <section style="display:none;" id="fin-variedad-section">
+              <div class="fin-cat-dropdown" id="fin-variedad-dropdown">
+                <span class="fin-cat-floating-label">Variedad</span>
+                <button class="fin-cat-dropdown-trigger" id="fin-variedad-trigger" type="button">
+                  <span class="fin-cat-trigger-content">
+                    <span class="material-symbols-outlined fin-cat-trigger-icon">grass</span>
+                    <span class="fin-cat-trigger-label fin-cat-trigger-placeholder">Seleccionar</span>
+                  </span>
+                  <span class="material-symbols-outlined fin-cat-trigger-arrow">arrow_drop_down</span>
+                </button>
+                <div class="fin-cat-dropdown-menu" id="fin-variedad-menu"></div>
+              </div>
+            </section>
+          </div>
         </section>
 
-        <div id="fin-pago-variedad-wrapper">
-          <section style="margin-bottom:16px;display:none;" id="fin-variedad-section">
-            <div class="fin-cat-dropdown" id="fin-variedad-dropdown">
-              <span class="fin-cat-floating-label">Variedad</span>
-              <button class="fin-cat-dropdown-trigger" id="fin-variedad-trigger" type="button">
-                <span class="fin-cat-trigger-content">
-                  <span class="material-symbols-outlined fin-cat-trigger-icon">grass</span>
-                  <span class="fin-cat-trigger-label fin-cat-trigger-placeholder">Seleccionar</span>
-                </span>
-                <span class="material-symbols-outlined fin-cat-trigger-arrow">arrow_drop_down</span>
-              </button>
-              <div class="fin-cat-dropdown-menu" id="fin-variedad-menu"></div>
-            </div>
-          </section>
-          <section style="margin-bottom:16px;" id="fin-metodo-pago-section">
+        <!-- Elemento de compatibilidad para registrar.js -->
+        <div id="fin-pago-variedad-wrapper" style="display:none;"></div>
+
+        <!-- FILA 2: GRID SIMÉTRICO DE 2 COLUMNAS (MÉTODO DE PAGO + FECHA) -->
+        <div class="form-row-grid">
+          <!-- Método de pago (Izquierda) -->
+          <section id="fin-metodo-pago-section" style="margin-bottom:0;">
             <div class="fin-cat-dropdown" id="fin-metodo-pago-chips">
               <span class="fin-cat-floating-label">Método de pago</span>
               <button class="fin-cat-dropdown-trigger" id="fin-metodo-pago-trigger" type="button">
@@ -186,38 +804,64 @@
               <div class="fin-cat-dropdown-menu" id="fin-metodo-pago-menu"></div>
             </div>
           </section>
-        </div>
 
-        <!-- Fecha -->
-        <div class="fin-field" style="margin-bottom:8px;">
-          <div class="fin-input-wrapper" id="fin-fecha-wrapper" style="cursor:pointer;">
-            <span class="material-symbols-outlined fin-input-icon fin-fecha-icon">calendar_today</span>
-            <input type="text" id="fin-fecha-display" placeholder=" " readonly
-              style="cursor:pointer;caret-color:transparent;">
-            <label class="fin-field-label" style="cursor:pointer;">Fecha</label>
-            <input type="hidden" id="fin-fecha">
+          <!-- Fecha (Derecha) -->
+          <div class="fin-field" style="margin-bottom:0;">
+            <div class="fin-input-wrapper" id="fin-fecha-wrapper" style="cursor:pointer; height:100%;">
+              <span class="material-symbols-outlined fin-input-icon fin-fecha-icon">calendar_today</span>
+              <input type="text" id="fin-fecha-display" placeholder=" " readonly style="cursor:pointer;caret-color:transparent;">
+              <label class="fin-field-label" style="cursor:pointer;">Fecha</label>
+              <input type="hidden" id="fin-fecha">
+            </div>
           </div>
         </div>
 
-        <!-- Descripción -->
-        <div class="fin-field" style="margin-bottom:8px;">
+        <!-- FILA 3: ÁREA DE TEXTO DE DESCRIPCIÓN -->
+        <div class="fin-field" style="margin-bottom:0;">
           <div class="fin-input-wrapper textarea-wrapper">
             <span class="material-symbols-outlined fin-input-icon" style="margin-top:0.2rem;">description</span>
-            <textarea id="fin-concepto" placeholder=" " rows="3"></textarea>
+            <textarea id="fin-concepto" placeholder=" " rows="2" style="resize: none;"></textarea>
             <label class="fin-field-label">Descripción</label>
           </div>
         </div>
 
-        <button class="fin-btn-filled primary" id="fin-guardar-btn" disabled style="margin-top:4px;">
-          <span class="material-symbols-outlined" style="font-size:18px;">save</span>
-          Guardar Registro
-        </button>
-
       </section>
+
+      <!-- 2.5 BOTÓN INFERIOR "GUARDAR" COMPLETO (SIN CORTE EN MÓVIL) -->
+      <div class="fin-save-container">
+        <button class="fin-btn-filled primary" id="fin-guardar-btn" disabled>
+          <span class="material-symbols-outlined" style="font-size:18px;">save</span>
+          <span>Guardar Ingreso</span>
+        </button>
+      </div>
 
     </div>
 
   </main>
+
+  <!-- =========================================================================
+       BOTTOM SHEET M3: SELECTOR RÁPIDO DE CATEGORÍAS (1 TOQUE)
+       ========================================================================= -->
+  <div id="cat-sheet-scrim" class="cat-sheet-scrim"></div>
+
+  <aside id="cat-sheet-panel" class="cat-sheet-panel" role="dialog" aria-modal="true" aria-labelledby="cat-sheet-title">
+    <div class="cat-sheet-drag-handle" id="cat-sheet-handle"></div>
+    <div class="cat-sheet-header">
+      <h3 class="cat-sheet-title" id="cat-sheet-title">Seleccionar Categoría</h3>
+      <button type="button" class="cat-sheet-close-btn" id="cat-sheet-close-btn" aria-label="Cerrar selector">
+        <span class="material-symbols-outlined" style="font-size: 18px;">close</span>
+      </button>
+    </div>
+    <div id="cat-options-grid" class="cat-options-grid">
+      <!-- Opciones inyectadas dinámicamente según Ingreso / Ahorro / Gasto -->
+    </div>
+    <div style="padding-top: 10px; border-top: 1px solid #E4EAE6; margin-top: 8px;">
+      <button type="button" id="btn-crear-categoria" style="width: 100%; height: 42px; border-radius: 999px; background: #F5F7F6; border: 1px dashed #D2DDD4; color: #512615; font-family: 'Poppins', sans-serif; font-size: 12.5px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; transition: all 0.2s ease;">
+        <span class="material-symbols-outlined" style="font-size: 18px; color: #377b4c;">add_circle</span>
+        <span>Crear nueva categoría</span>
+      </button>
+    </div>
+  </aside>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/js/core/supabase-client-core.js"></script>

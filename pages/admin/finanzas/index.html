@@ -25,6 +25,193 @@
     .page-fin-dashboard .fin-card {
       box-shadow: none;
     }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .animate-spin {
+      display: inline-block;
+      animation: spin 1s linear infinite;
+    }
+
+    /* MODAL DE VISTA PREVIA DE FACTURA */
+    .fin-invoice-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(4px);
+      z-index: 10000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    .fin-invoice-modal-backdrop.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .fin-invoice-modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.96);
+      width: 92%;
+      max-width: 560px;
+      max-height: 90vh;
+      background: #ffffff;
+      border-radius: 20px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+      z-index: 10001;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .fin-invoice-modal.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translate(-50%, -50%) scale(1);
+    }
+    .fin-invoice-modal-header {
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #eef2ef;
+      background: #fafbfa;
+    }
+    .fin-invoice-modal-title-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .fin-invoice-modal-title {
+      font-family: 'Poppins', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: #2e633d;
+      margin: 0;
+      line-height: 1.2;
+    }
+    .fin-invoice-modal-subtitle {
+      font-size: 11px;
+      font-weight: 500;
+      color: #6b6b6b;
+      margin: 2px 0 0 0;
+    }
+    .fin-invoice-modal-close {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 1px solid #e4eae6;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #512615;
+      transition: background 0.15s;
+    }
+    .fin-invoice-modal-close:hover {
+      background: #f0f4f1;
+    }
+    .fin-invoice-modal-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      background: #f5f7f6;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      -webkit-overflow-scrolling: touch;
+    }
+    .fin-invoice-img-container {
+      width: 100%;
+      max-width: 500px;
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+      border: 1px solid #e4eae6;
+    }
+    .fin-invoice-img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .fin-invoice-modal-footer {
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #ffffff;
+      border-top: 1px solid #eef2ef;
+    }
+    .fin-modal-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s ease;
+      flex: 1;
+    }
+    .fin-modal-btn-wa {
+      background: #25D366;
+      color: #ffffff;
+      flex: 1.4;
+      font-weight: 700;
+    }
+    .fin-modal-btn-wa:hover {
+      background: #20bd5a;
+    }
+    .fin-modal-btn-pdf {
+      background: #f0f4f1;
+      color: #2e633d;
+      border: 1px solid #dce5df;
+    }
+    .fin-modal-btn-pdf:hover {
+      background: #e2ede5;
+    }
+    .fin-modal-btn-download {
+      background: #f8f9fa;
+      color: #512615;
+      border: 1px solid #e4eae6;
+    }
+    .fin-modal-btn-download:hover {
+      background: #eef1ef;
+    }
+    @media (max-width: 600px) {
+      .fin-invoice-modal {
+        width: 96%;
+        max-height: 94vh;
+      }
+      .fin-invoice-modal-footer {
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .fin-modal-btn-wa {
+        flex-basis: 100%;
+        order: 1;
+        padding: 11px;
+        font-size: 13px;
+      }
+      .fin-modal-btn-pdf {
+        flex-basis: calc(50% - 3px);
+        order: 2;
+      }
+      .fin-modal-btn-download {
+        flex-basis: calc(50% - 3px);
+        order: 3;
+      }
+    }
   </style>
 </head>
 <body class="finanzas-page page-fin-dashboard">
@@ -47,8 +234,8 @@
       <!-- 1. HERO ANALYTICS CARD (HERO CONTAINER M3) -->
       <section class="fin-hero-card" id="fin-hero-card">
 
-        <!-- A. BANNER SUPERIOR DE CATEGORÍA ACTIVA (ACTIVE PILL) -->
-        <div class="fin-active-pill" id="fin-active-pill">
+        <!-- A. BANNER SUPERIOR DE CATEGORÍA ACTIVA (OCULTO - REDUNDANTE CON CENTRO DONA) -->
+        <div class="fin-active-pill" id="fin-active-pill" style="display:none !important;" aria-hidden="true">
           <div class="fin-active-pill-leading">
             <div class="fin-active-pill-icon" id="active-pill-icon">
               <span class="material-symbols-outlined" id="active-pill-icon-sym">account_balance_wallet</span>
@@ -113,14 +300,15 @@
                 <!-- Arcos SVG generados matemáticamente por dashboard.js -->
               </svg>
 
-              <!-- CENTRO DE LA DONA DESPEJADO -->
-              <div class="fin-donut-center">
+              <!-- CENTRO DE LA DONA INTERACTIVO -->
+              <div class="fin-donut-center" id="fin-donut-center" role="button" tabindex="0" aria-label="Restablecer filtro a Ambos" title="Tocar para restablecer a Ambos">
                 <span class="fin-donut-center-label" id="fin-donut-center-label">SALDO ACTUAL · HNL</span>
-                <div class="fin-saldo-monto" id="fin-saldo-monto-hero">0.00</div>
+                <div class="fin-saldo-monto" id="fin-saldo-monto-hero" style="white-space: nowrap;">0.00</div>
                 <div class="fin-saldo-compare" id="saldo-compare">
                   <span class="material-symbols-outlined fin-saldo-compare-icon" id="saldo-compare-icon">trending_up</span>
                   <span class="fin-saldo-compare-badge" id="saldo-compare-badge">+0.00</span>
                 </div>
+                <div class="fin-donut-reset-hint" id="fin-donut-reset-hint" style="display:none; font-family:'Poppins',sans-serif; font-size:10px; font-weight:600; color:#8D6E63; margin-top:4px;">&#x21A9; Tocar centro para ver todo</div>
               </div>
             </div>
           </div>
@@ -249,10 +437,9 @@
 
     </div>
 
-    <!-- EXTENDED FAB FIJO M3 -->
-    <a href="/pages/admin/finanzas/registrar.html" class="fin-fab" id="fin-fab">
+    <!-- FAB CIRCULAR FIJO M3 -->
+    <a href="/pages/admin/finanzas/registrar.html" class="fin-fab" id="fin-fab" aria-label="Nuevo Movimiento" title="Nuevo Movimiento">
       <span class="material-symbols-outlined">add</span>
-      <span class="fin-fab-label">+ Movimiento</span>
     </a>
 
     <!-- 3. M3 BOTTOM SHEET MODAL (COMPROBANTE Y WHATSAPP) -->
@@ -302,17 +489,10 @@
       </div>
 
       <div class="fin-sheet-actions">
-        <!-- BOTÓN DIRECTO PARA COMPARTIR RECIBO POR WHATSAPP -->
-        <button class="fin-btn-whatsapp" id="sheet-btn-whatsapp">
-          <svg class="fin-wa-icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-            <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2M12.05 3.67C14.25 3.67 16.31 4.53 17.87 6.09C19.42 7.65 20.28 9.72 20.28 11.92C20.28 16.46 16.58 20.15 12.04 20.15C10.56 20.15 9.11 19.76 7.85 19L7.55 18.83L4.43 19.65L5.26 16.61L5.06 16.29C4.24 14.99 3.81 13.47 3.81 11.91C3.81 7.37 7.5 3.67 12.05 3.67M9.04 7.39C8.86 7.39 8.56 7.46 8.32 7.72C8.07 7.99 7.39 8.63 7.39 9.92C7.39 11.22 8.33 12.47 8.47 12.65C8.6 12.83 10.34 15.5 13 16.65C13.63 16.92 14.12 17.08 14.51 17.21C15.15 17.41 15.73 17.38 16.19 17.31C16.71 17.23 17.78 16.66 18 16.03C18.23 15.4 18.23 14.86 18.16 14.75C18.09 14.64 17.9 14.57 17.62 14.43C17.34 14.29 15.97 13.62 15.72 13.53C15.46 13.44 15.28 13.39 15.09 13.67C14.91 13.95 14.39 14.57 14.23 14.75C14.07 14.93 13.92 14.96 13.64 14.82C13.36 14.68 12.46 14.38 11.39 13.43C10.56 12.69 10 11.78 9.84 11.5C9.68 11.22 9.82 11.07 9.96 10.93C10.09 10.8 10.25 10.59 10.39 10.43C10.53 10.27 10.58 10.15 10.67 9.97C10.76 9.79 10.72 9.63 10.65 9.49C10.58 9.35 10.02 7.99 9.79 7.43C9.56 6.89 9.33 6.96 9.16 6.96C9 6.95 8.86 6.95 8.72 6.95L9.04 7.39Z"/>
-          </svg>
-          <span>Compartir Recibo por WhatsApp</span>
-        </button>
         <div class="fin-sheet-subactions">
-          <button class="fin-btn-outlined" id="sheet-btn-factura" title="Ver / Imprimir Factura oficial">
-            <span class="material-symbols-outlined">receipt_long</span>
-            <span>Factura</span>
+          <button class="fin-btn-outlined" id="sheet-btn-factura" title="Compartir Factura por WhatsApp">
+            <span class="material-symbols-outlined">share</span>
+            <span>Compartir</span>
           </button>
           <button class="fin-btn-outlined" id="sheet-btn-edit">
             <span class="material-symbols-outlined">edit</span>
@@ -323,6 +503,44 @@
             <span>Eliminar</span>
           </button>
         </div>
+      </div>
+    </div>
+
+    <!-- MODAL DE VISTA PREVIA DE FACTURA (IMAGEN & COMPARTIR) -->
+    <div class="fin-invoice-modal-backdrop" id="fin-invoice-modal-backdrop"></div>
+    <div class="fin-invoice-modal" id="fin-invoice-modal" role="dialog" aria-modal="true" aria-hidden="true">
+      <div class="fin-invoice-modal-header">
+        <div class="fin-invoice-modal-title-box">
+          <span class="material-symbols-outlined" style="color: #2e633d; font-size: 24px;">receipt_long</span>
+          <div>
+            <h3 class="fin-invoice-modal-title" id="invoice-modal-title">Vista Previa de Factura</h3>
+            <p class="fin-invoice-modal-subtitle" id="invoice-modal-subtitle">Factura Digital Café Cortero</p>
+          </div>
+        </div>
+        <button class="fin-invoice-modal-close" id="invoice-modal-close-btn" aria-label="Cerrar vista previa">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <div class="fin-invoice-modal-body">
+        <div class="fin-invoice-img-container">
+          <img id="invoice-modal-img" class="fin-invoice-img" alt="Vista Previa de Factura" src="" />
+        </div>
+      </div>
+
+      <div class="fin-invoice-modal-footer">
+        <button class="fin-modal-btn fin-modal-btn-wa" id="invoice-modal-btn-wa">
+          <span class="material-symbols-outlined">chat</span>
+          <span>Enviar por WhatsApp</span>
+        </button>
+        <button class="fin-modal-btn fin-modal-btn-pdf" id="invoice-modal-btn-pdf">
+          <span class="material-symbols-outlined">picture_as_pdf</span>
+          <span>Factura PDF</span>
+        </button>
+        <button class="fin-modal-btn fin-modal-btn-download" id="invoice-modal-btn-download">
+          <span class="material-symbols-outlined">download</span>
+          <span>Descargar</span>
+        </button>
       </div>
     </div>
 

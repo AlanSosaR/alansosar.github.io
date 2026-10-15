@@ -473,9 +473,37 @@ console.log("📊 finanzas/dashboard.js — INIT (Material 3 Expressive & Dona 3
       receipt_long: `<path d="M18 17H6v-2h12v2zm0-4H6v-2h12v2zm0-4H6V7h12v2zM3 22l1.5-1.5L6 22l1.5-1.5L9 22l1.5-1.5L12 22l1.5-1.5L15 22l1.5-1.5L18 22l1.5-1.5L21 22V2l-1.5 1.5L18 2l-1.5 1.5L15 2l-1.5 1.5L12 2l-1.5 1.5L9 2 7.5 3.5 6 2 4.5 3.5 3 2v20z"/>`,
     };
 
+    // Colores hexadecimales sólidos apastelados (100% opacos) para arcos inactivos:
+    // Prohibido usar opacity < 1 o rgba() en los <path> inactivos de la dona
+    const INACTIVE_COLORS = {
+      ingreso: "#CBE2D2",
+      base: "#DDD3CF",
+      egreso: "#F1C6C6",
+      ahorro: "#CFC2BD",
+      porcobrar: "#FDE6BC",
+    };
+
     let pathsHtml = "";
     let iconsHtml = "";
     let currentAngle = -90;
+    const isFiltered = activeRubro !== "all";
+
+    // Gestionar clase de estado en el contenedor y SVG
+    const stage = svg.closest(".fin-donut-stage") || svg.closest(".fin-donut-view");
+    if (stage) {
+      stage.classList.toggle("donut-filtered", isFiltered);
+      if (isFiltered) {
+        stage.setAttribute("data-active-filter", activeRubro);
+      } else {
+        stage.removeAttribute("data-active-filter");
+      }
+    }
+    svg.classList.toggle("donut-filtered", isFiltered);
+    if (isFiltered) {
+      svg.setAttribute("data-active-filter", activeRubro);
+    } else {
+      svg.removeAttribute("data-active-filter");
+    }
 
     categories.forEach((cat) => {
       const angle = angles[cat.id];
@@ -489,33 +517,41 @@ console.log("📊 finanzas/dashboard.js — INIT (Material 3 Expressive & Dona 3
       const midAngle = startAngle + (angle / 2);
       const iconPt = polarToCartesian(cx, cy, R, midAngle);
       const isActive = activeRubro === cat.id;
-      const isDimmed = activeRubro !== "all" && !isActive;
+
+      // Color 100% opaco y ancho según estado
+      const arcColor = (!isFiltered || isActive) ? cat.color : (INACTIVE_COLORS[cat.id] || "#DDD3CF");
+      const arcStroke = isActive ? 32 : 28;
 
       pathsHtml += `
-        <g class="fin-donut-pill ${isActive ? 'active-pill-segment' : ''}" data-rubro="${cat.id}" style="${isDimmed ? 'opacity:0.38;' : 'opacity:1;'} cursor:pointer;">
+        <g class="fin-donut-pill ${isActive ? 'active-pill-segment' : ''}" data-rubro="${cat.id}" style="cursor:pointer;">
           <!-- 3. Efecto Cápsulas Entrelazadas (Cutout Border stroke 36 con fondo blanco #FFFFFF) -->
           <path d="${arcPath}" fill="none" stroke="#FFFFFF" stroke-width="36" stroke-linecap="round" />
-          <!-- Arco de Color del Rubro stroke 28 (o 32 si está activo) -->
-          <path d="${arcPath}" fill="none" stroke="${cat.color}" stroke-width="${isActive ? 32 : 28}" stroke-linecap="round" />
+          <!-- Arco de Color Sólido (100% Opaco, sin manchas en extremos redondeados) -->
+          <path d="${arcPath}" fill="none" stroke="${arcColor}" stroke-width="${arcStroke}" stroke-linecap="round" />
         </g>
       `;
 
-      // 4. Micro-ícono visible en cada barra (Capa superior en fin-donut-icons-group para que ningún recorte lo tape)
-      const circleFill = isActive ? cat.color : "#FFFFFF";
-      const iconFill = isActive ? "#FFFFFF" : cat.color;
-      const circleRadius = isActive ? 12.5 : 10.5;
-      const strokeWidth = isActive ? 2.5 : 1.8;
-      const iconSize = isActive ? 13 : 11;
-      const iconOffset = iconSize / 2;
+      // 4. Micro-ícono visible en la dona:
+      // - ESTADO INICIAL ("Ambos" / Sin Filtro): ningún segmento muestra su icono circular. La dona se ve completamente limpia.
+      // - ESTADO FILTRADO (Al seleccionar una tarjeta o arco): ÚNICAMENTE aparece el micro-ícono circular en el rubro seleccionado.
+      if (isFiltered && isActive) {
+        const circleFill = cat.color;
+        const iconFill = "#FFFFFF";
+        const circleStroke = "#FFFFFF";
+        const circleRadius = 12.5;
+        const strokeWidth = 2.5;
+        const iconSize = 13;
+        const iconOffset = iconSize / 2;
 
-      iconsHtml += `
-        <g class="fin-donut-icon-node ${isActive ? 'active-node' : ''}" data-rubro="${cat.id}" style="${isDimmed ? 'opacity:0.5;' : 'opacity:1;'} cursor:pointer;">
-          <circle cx="${iconPt.x.toFixed(2)}" cy="${iconPt.y.toFixed(2)}" r="${circleRadius}" fill="${circleFill}" stroke="${isActive ? '#FFFFFF' : cat.color}" stroke-width="${strokeWidth}" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));" />
-          <svg x="${(iconPt.x - iconOffset).toFixed(2)}" y="${(iconPt.y - iconOffset).toFixed(2)}" width="${iconSize}" height="${iconSize}" viewBox="0 0 24 24" fill="${iconFill}" style="pointer-events:none;">
-            ${MICRO_ICONS[cat.icon]}
-          </svg>
-        </g>
-      `;
+        iconsHtml += `
+          <g class="fin-donut-icon-node active-node" data-rubro="${cat.id}" style="cursor:pointer;">
+            <circle cx="${iconPt.x.toFixed(2)}" cy="${iconPt.y.toFixed(2)}" r="${circleRadius}" fill="${circleFill}" stroke="${circleStroke}" stroke-width="${strokeWidth}" style="filter: drop-shadow(0 2px 6px rgba(0,0,0,0.22));" />
+            <svg x="${(iconPt.x - iconOffset).toFixed(2)}" y="${(iconPt.y - iconOffset).toFixed(2)}" width="${iconSize}" height="${iconSize}" viewBox="0 0 24 24" fill="${iconFill}" style="pointer-events:none;">
+              ${MICRO_ICONS[cat.icon]}
+            </svg>
+          </g>
+        `;
+      }
     });
 
     svg.innerHTML = `
@@ -594,6 +630,10 @@ console.log("📊 finanzas/dashboard.js — INIT (Material 3 Expressive & Dona 3
     }
 
     // Sincronizar clases activas en las tarjetas 2x2
+    const gridEl = document.querySelector(".fin-kpi-grid");
+    if (gridEl) {
+      gridEl.classList.toggle("has-active", activeRubro !== "all");
+    }
     $$(".fin-kpi-card").forEach((c) => {
       c.classList.toggle("active-kpi", c.dataset.rubro === activeRubro);
     });
@@ -609,6 +649,11 @@ console.log("📊 finanzas/dashboard.js — INIT (Material 3 Expressive & Dona 3
     const compareEl = document.getElementById("saldo-compare");
     const iconEl = document.getElementById("saldo-compare-icon");
     const badgeEl = document.getElementById("saldo-compare-badge");
+    const resetHint = document.getElementById("fin-donut-reset-hint");
+
+    if (resetHint) {
+      resetHint.style.display = activeRubro !== "all" ? "block" : "none";
+    }
 
     const { saldoActual, ingTotal, egrTotal, ahrTotal, saldoInicial, porCobrarTotal, porCobrarCount } = currentTotals;
 
@@ -721,6 +766,11 @@ console.log("📊 finanzas/dashboard.js — INIT (Material 3 Expressive & Dona 3
 
     // Botón limpiar de la píldora superior
     document.getElementById("active-pill-clear")?.addEventListener("click", () => {
+      seleccionarRubro("all");
+    });
+
+    // Click en el centro de la Dona 360 para volver a "Ambos"
+    document.getElementById("fin-donut-center")?.addEventListener("click", () => {
       seleccionarRubro("all");
     });
 
@@ -1057,6 +1107,582 @@ console.log("📊 finanzas/dashboard.js — INIT (Material 3 Expressive & Dona 3
     return `${letrasEnteros} LEMPIRAS CON ${strCentavos}`;
   }
 
+  function roundRect(ctx, x, y, w, h, r) {
+    if (w < 2 * r) r = w / 2;
+    if (h < 2 * r) r = h / 2;
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+  }
+
+  function roundRectTop(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.lineTo(x + w, y + h);
+    ctx.lineTo(x, y + h);
+    ctx.arcTo(x, y, x + r, y, r);
+    ctx.closePath();
+  }
+
+  function truncateText(ctx, text, maxWidth) {
+    if (!text) return "";
+    if (ctx.measureText(text).width <= maxWidth) return text;
+    let str = text;
+    while (str.length > 0 && ctx.measureText(str + "...").width > maxWidth) {
+      str = str.slice(0, -1);
+    }
+    return str ? str + "..." : "";
+  }
+
+  function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+    const words = (text || "").split(" ");
+    let line = "";
+    let curY = y;
+    for (let n = 0; n < words.length; n++) {
+      const testLine = line + words[n] + " ";
+      if (ctx.measureText(testLine).width > maxWidth && n > 0) {
+        ctx.fillText(line, x, curY);
+        line = words[n] + " ";
+        curY += lineHeight;
+      } else {
+        line = testLine;
+      }
+    }
+    ctx.fillText(line, x, curY);
+    return curY;
+  }
+
+  function showDashboardToast(msg, type = "success") {
+    let toast = document.getElementById("fin-dashboard-toast");
+    if (!toast) {
+      toast = document.createElement("div");
+      toast.id = "fin-dashboard-toast";
+      toast.style.cssText = [
+        "position: fixed",
+        "bottom: 24px",
+        "left: 50%",
+        "transform: translateX(-50%) translateY(20px)",
+        "background: #1b2e23",
+        "color: #ffffff",
+        "padding: 12px 20px",
+        "border-radius: 9999px",
+        "font-size: 13px",
+        "font-weight: 600",
+        "font-family: 'Poppins', sans-serif",
+        "box-shadow: 0 8px 24px rgba(0,0,0,0.22)",
+        "z-index: 99999",
+        "opacity: 0",
+        "pointer-events: none",
+        "transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+        "display: flex",
+        "align-items: center",
+        "gap: 8px",
+        "max-width: 90vw",
+        "text-align: center"
+      ].join("; ");
+      document.body.appendChild(toast);
+    }
+    const icon = type === "success" ? "check_circle" : "info";
+    toast.innerHTML = `<span class="material-symbols-outlined" style="font-size: 18px; color: #4ade80;">${icon}</span><span>${msg}</span>`;
+
+    requestAnimationFrame(() => {
+      toast.style.opacity = "1";
+      toast.style.transform = "translateX(-50%) translateY(0)";
+    });
+
+    clearTimeout(toast._timeout);
+    toast._timeout = setTimeout(() => {
+      toast.style.opacity = "0";
+      toast.style.transform = "translateX(-50%) translateY(20px)";
+    }, 4500);
+  }
+
+  async function generateInvoiceCanvas(data) {
+    const logicalWidth = 800;
+    const itemsCount = Math.max(1, (data.items || []).length);
+    const itemsHeight = itemsCount * 50;
+    const logicalHeight = 650 + itemsHeight;
+    const scale = 2; // Ultra sharp 2x export (1600px)
+
+    const canvas = document.createElement("canvas");
+    canvas.width = logicalWidth * scale;
+    canvas.height = logicalHeight * scale;
+    const ctx = canvas.getContext("2d");
+    ctx.scale(scale, scale);
+
+    // Fondo blanco
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, logicalWidth, logicalHeight);
+
+    // Borde exterior suave con esquinas redondeadas
+    ctx.strokeStyle = "#e4eae6";
+    ctx.lineWidth = 2;
+    roundRect(ctx, 4, 4, logicalWidth - 8, logicalHeight - 8, 16);
+    ctx.stroke();
+
+    // Banda verde superior
+    ctx.fillStyle = "#377b4c";
+    roundRectTop(ctx, 4, 4, logicalWidth - 8, 8, 16);
+    ctx.fill();
+
+    // Cargar logo con fallback
+    let logoImg = null;
+    try {
+      logoImg = await new Promise((resolve) => {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.onload = () => resolve(img);
+        img.onerror = () => resolve(null);
+        img.src = "/imagenes/logo.png";
+        setTimeout(() => resolve(null), 1200);
+      });
+    } catch (e) {
+      logoImg = null;
+    }
+
+    // Dibujar logo o icono de contingencia
+    if (logoImg) {
+      ctx.save();
+      roundRect(ctx, 40, 36, 70, 70, 10);
+      ctx.clip();
+      ctx.drawImage(logoImg, 40, 36, 70, 70);
+      ctx.restore();
+      ctx.strokeStyle = "#e4eae6";
+      ctx.lineWidth = 1;
+      roundRect(ctx, 40, 36, 70, 70, 10);
+      ctx.stroke();
+    } else {
+      ctx.fillStyle = "#377b4c";
+      roundRect(ctx, 40, 36, 70, 70, 12);
+      ctx.fill();
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "bold 26px 'Poppins', 'Inter', sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("CC", 75, 80);
+      ctx.textAlign = "left";
+    }
+
+    // Encabezado empresa
+    ctx.fillStyle = "#2e633d";
+    ctx.font = "bold 22px 'Poppins', 'Inter', sans-serif";
+    ctx.fillText("CAFÉ CORTERO", 124, 62);
+
+    ctx.fillStyle = "#555555";
+    ctx.font = "600 12px 'Inter', sans-serif";
+    ctx.fillText("RTN: 05019654135885", 124, 82);
+
+    ctx.fillStyle = "#777777";
+    ctx.font = "500 11px 'Inter', sans-serif";
+    ctx.fillText("Danlí, El Paraíso, Honduras • Tel: +504 9667-0613", 124, 99);
+
+    // Encabezado derecho: Factura & Número
+    ctx.textAlign = "right";
+    ctx.fillStyle = "#e2ebe5";
+    ctx.font = "800 32px 'Poppins', 'Inter', sans-serif";
+    ctx.fillText("FACTURA", 760, 64);
+
+    ctx.fillStyle = "#3e2723";
+    ctx.font = "bold 15px 'Poppins', 'Inter', sans-serif";
+    ctx.fillText(`N° ${data.numFactura}`, 760, 84);
+
+    // Badge Original Cliente
+    const badgeText = "ORIGINAL: CLIENTE";
+    ctx.font = "bold 10px 'Inter', sans-serif";
+    const badgeWidth = ctx.measureText(badgeText).width + 16;
+    ctx.fillStyle = "#f0f4f1";
+    roundRect(ctx, 760 - badgeWidth, 92, badgeWidth, 20, 6);
+    ctx.fill();
+    ctx.fillStyle = "#2e633d";
+    ctx.fillText(badgeText, 760 - 8, 106);
+    ctx.textAlign = "left";
+
+    // Divisor
+    ctx.strokeStyle = "#e8ece9";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(40, 124);
+    ctx.lineTo(760, 124);
+    ctx.stroke();
+
+    // Twin Meta Boxes (y = 138, height = 114)
+    const boxY = 138;
+    const boxH = 114;
+    const boxW = 348;
+
+    // Caja 1: Datos Cliente
+    ctx.fillStyle = "#f8fbf9";
+    roundRect(ctx, 40, boxY, boxW, boxH, 8);
+    ctx.fill();
+    ctx.strokeStyle = "#e2ebe5";
+    ctx.stroke();
+
+    ctx.fillStyle = "#377b4c";
+    ctx.font = "bold 10px 'Inter', sans-serif";
+    ctx.fillText("DATOS DEL CLIENTE", 56, boxY + 24);
+
+    ctx.fillStyle = "#3e2723";
+    ctx.font = "bold 15px 'Poppins', 'Inter', sans-serif";
+    const clientNameTrunc = truncateText(ctx, data.finalClientName, boxW - 32);
+    ctx.fillText(clientNameTrunc, 56, boxY + 48);
+
+    ctx.fillStyle = "#444444";
+    ctx.font = "500 12px 'Inter', sans-serif";
+    const phoneText = data.finalPhone ? `Tel: ${data.finalPhone}` : "Consumidor Final";
+    ctx.fillText(phoneText, 56, boxY + 68);
+
+    ctx.fillStyle = "#666666";
+    ctx.font = "400 11px 'Inter', sans-serif";
+    const addrText = truncateText(ctx, data.finalAddress || "Danlí, El Paraíso, Honduras", boxW - 32);
+    ctx.fillText(addrText, 56, boxY + 86);
+    if (data.finalEmail) {
+      ctx.fillText(truncateText(ctx, data.finalEmail, boxW - 32), 56, boxY + 102);
+    }
+
+    // Caja 2: Emisión y Fiscal
+    const box2X = 412;
+    ctx.fillStyle = "#f8fbf9";
+    roundRect(ctx, box2X, boxY, boxW, boxH, 8);
+    ctx.fill();
+    ctx.strokeStyle = "#e2ebe5";
+    ctx.stroke();
+
+    ctx.fillStyle = "#377b4c";
+    ctx.font = "bold 10px 'Inter', sans-serif";
+    ctx.fillText("DETALLE DE EMISIÓN", box2X + 16, boxY + 24);
+
+    ctx.fillStyle = "#3e2723";
+    ctx.font = "bold 14px 'Poppins', 'Inter', sans-serif";
+    ctx.fillText(`${data.fechaStr}${data.horaStr ? ` · ${data.horaStr}` : ""}`, box2X + 16, boxY + 48);
+
+    ctx.fillStyle = "#555555";
+    ctx.font = "500 12px 'Inter', sans-serif";
+    ctx.fillText("Lugar: Danlí, El Paraíso, Honduras", box2X + 16, boxY + 68);
+
+    // Insignia de validación SAR
+    ctx.fillStyle = "#e8f5e9";
+    roundRect(ctx, box2X + 16, boxY + 80, 260, 22, 6);
+    ctx.fill();
+    ctx.fillStyle = "#2e7d32";
+    ctx.font = "bold 10px 'Inter', sans-serif";
+    ctx.fillText("✓ DOCUMENTO VÁLIDO AUTORIZADO POR SAR", box2X + 26, boxY + 95);
+
+    // Encabezado de Tabla de Productos (y = 268)
+    const tblY = 268;
+    ctx.fillStyle = "#f0f4f1";
+    roundRect(ctx, 40, tblY, 720, 32, 6);
+    ctx.fill();
+    ctx.fillStyle = "#3e2723";
+    ctx.font = "bold 10px 'Inter', sans-serif";
+    ctx.fillText("CANT.", 56, tblY + 20);
+    ctx.fillText("DESCRIPCIÓN DEL PRODUCTO", 120, tblY + 20);
+    ctx.textAlign = "right";
+    ctx.fillText("PRECIO UNIT.", 610, tblY + 20);
+    ctx.fillText("TOTAL", 744, tblY + 20);
+    ctx.textAlign = "left";
+
+    // Filas de Productos
+    let curItemY = tblY + 36;
+    (data.items || []).forEach((it, idx) => {
+      const p = it.products || {};
+      const lineTot = it.quantity * it.price;
+      const desc = [p.presentation, p.grind_type].filter(Boolean).join(" • ");
+
+      if (idx % 2 === 1) {
+        ctx.fillStyle = "#fafbfa";
+        ctx.fillRect(40, curItemY, 720, 48);
+      }
+
+      // Cantidad
+      ctx.fillStyle = "#3e2723";
+      ctx.font = "bold 13px 'Poppins', sans-serif";
+      ctx.fillText(`${it.quantity}x`, 56, curItemY + 25);
+
+      // Nombre Producto
+      ctx.fillStyle = "#222222";
+      ctx.font = "600 13px 'Inter', sans-serif";
+      const prodName = truncateText(ctx, p.name || "Café Cortero", 400);
+      ctx.fillText(prodName, 120, curItemY + 21);
+
+      // Presentación / Molienda
+      if (desc) {
+        ctx.fillStyle = "#777777";
+        ctx.font = "italic 11px 'Inter', sans-serif";
+        ctx.fillText(truncateText(ctx, desc, 400), 120, curItemY + 38);
+      }
+
+      // Precio
+      ctx.textAlign = "right";
+      ctx.fillStyle = "#555555";
+      ctx.font = "500 13px 'Inter', sans-serif";
+      ctx.fillText(`L ${fmtMonto(it.price)}`, 610, curItemY + 28);
+
+      // Total Línea
+      ctx.fillStyle = "#3e2723";
+      ctx.font = "bold 13px 'Poppins', sans-serif";
+      ctx.fillText(`L ${fmtMonto(lineTot)}`, 744, curItemY + 28);
+      ctx.textAlign = "left";
+
+      // Línea divisoria fila
+      ctx.strokeStyle = "#f0f0f0";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(40, curItemY + 48);
+      ctx.lineTo(760, curItemY + 48);
+      ctx.stroke();
+
+      curItemY += 48;
+    });
+
+    // Sección: Letras (Izquierda) & Totales (Derecha)
+    const secY = curItemY + 16;
+
+    // Caja izquierda: Total en Letras y Desglose Fiscal
+    ctx.fillStyle = "#f8fbf9";
+    roundRect(ctx, 40, secY, 410, 140, 8);
+    ctx.fill();
+    ctx.strokeStyle = "#e2ebe5";
+    ctx.stroke();
+
+    ctx.fillStyle = "#377b4c";
+    ctx.font = "bold 10px 'Inter', sans-serif";
+    ctx.fillText("TOTAL EN LETRAS:", 56, secY + 22);
+
+    ctx.fillStyle = "#3e2723";
+    ctx.font = "italic 600 11px 'Inter', sans-serif";
+    wrapText(ctx, `SON: ${data.letrasTotal}`, 56, secY + 40, 378, 16);
+
+    ctx.strokeStyle = "#e8ece9";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(56, secY + 68);
+    ctx.lineTo(434, secY + 68);
+    ctx.stroke();
+
+    ctx.fillStyle = "#666666";
+    ctx.font = "500 10px 'Inter', sans-serif";
+    ctx.fillText(`• Importe Gravado 15%:  L ${fmtMonto(data.subtotalCalc)}`, 56, secY + 86);
+    ctx.fillText(`• ISV (15%):  L ${fmtMonto(data.isv15Calc)}`, 56, secY + 102);
+    ctx.fillText(`• Importe Exento: L 0.00   • Importe Exonerado: L 0.00`, 56, secY + 118);
+
+    // Caja derecha: Resumen de Totales
+    const totX = 470;
+    const totW = 290;
+    ctx.fillStyle = "#ffffff";
+    roundRect(ctx, totX, secY, totW, 140, 8);
+    ctx.fill();
+    ctx.strokeStyle = "#e2ebe5";
+    ctx.stroke();
+
+    ctx.fillStyle = "#666666";
+    ctx.font = "500 12px 'Inter', sans-serif";
+    ctx.fillText("Subtotal:", totX + 16, secY + 26);
+    ctx.textAlign = "right";
+    ctx.fillText(`L ${fmtMonto(data.subtotalCalc)}`, totX + totW - 16, secY + 26);
+
+    ctx.textAlign = "left";
+    ctx.fillText("ISV (15%):", totX + 16, secY + 48);
+    ctx.textAlign = "right";
+    ctx.fillText(`L ${fmtMonto(data.isv15Calc)}`, totX + totW - 16, secY + 48);
+
+    if (data.envioCalc > 0) {
+      ctx.textAlign = "left";
+      ctx.fillText("Envío:", totX + 16, secY + 70);
+      ctx.textAlign = "right";
+      ctx.fillText(`L ${fmtMonto(data.envioCalc)}`, totX + totW - 16, secY + 70);
+    }
+
+    // Línea sobre Total Final
+    ctx.strokeStyle = "#377b4c";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(totX + 16, secY + 78);
+    ctx.lineTo(totX + totW - 16, secY + 78);
+    ctx.stroke();
+
+    // Gran Total
+    ctx.textAlign = "left";
+    ctx.fillStyle = "#377b4c";
+    ctx.font = "bold 13px 'Poppins', sans-serif";
+    ctx.fillText("TOTAL A PAGAR:", totX + 16, secY + 104);
+
+    ctx.textAlign = "right";
+    ctx.fillStyle = "#2e633d";
+    ctx.font = "bold 20px 'Poppins', sans-serif";
+    ctx.fillText(`L ${fmtMonto(data.montoTotalCalc)}`, totX + totW - 16, secY + 104);
+
+    ctx.fillStyle = "#777777";
+    ctx.font = "500 11px 'Inter', sans-serif";
+    ctx.fillText(`Método: ${data.metodoPago || "Efectivo"}`, totX + totW - 16, secY + 124);
+    ctx.textAlign = "left";
+
+    // Caja Autorización SAR (y = secY + 152)
+    const sarY = secY + 152;
+    ctx.fillStyle = "#fafafa";
+    roundRect(ctx, 40, sarY, 720, 64, 6);
+    ctx.fill();
+    ctx.strokeStyle = "#e8ece9";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    ctx.fillStyle = "#555555";
+    ctx.font = "600 9px 'Inter', sans-serif";
+    ctx.fillText("DATOS DE AUTORIZACIÓN SAR:", 54, sarY + 18);
+    ctx.font = "400 9px 'Inter', sans-serif";
+    ctx.fillStyle = "#666666";
+    ctx.fillText("• Rango Autorizado: 6549864654-00000001 al 6549864654-00000100", 54, sarY + 34);
+    ctx.fillText("• CAI: 3AE914-B7C623-5D8B2F-40FD9A-8721BC-4E", 54, sarY + 49);
+
+    ctx.fillText("• Fecha Límite de Emisión: 2025-12-31", 420, sarY + 34);
+    ctx.fillText("• Lugar de Emisión: Danlí, El Paraíso, Honduras", 420, sarY + 49);
+
+    // Lema y contacto
+    const botY = sarY + 84;
+    ctx.textAlign = "center";
+    ctx.fillStyle = "#512615";
+    ctx.font = "bold 11px 'Poppins', sans-serif";
+    ctx.fillText("☕ COSECHADO EN HONDURAS • TOSTADO CON ALMA ☕", 400, botY);
+
+    ctx.fillStyle = "#888888";
+    ctx.font = "500 10px 'Inter', sans-serif";
+    ctx.fillText("Dudas o consultas: +504 9667-0613 / 9867-5101 • cafecortero@gmail.com", 400, botY + 16);
+    ctx.textAlign = "left";
+
+    return new Promise((resolve) => {
+      canvas.toBlob((blob) => resolve(blob), "image/png", 0.95);
+    });
+  }
+
+  function openInvoiceModal(blob, data, orderForInvoice) {
+    const backdrop = document.getElementById("fin-invoice-modal-backdrop");
+    const modal = document.getElementById("fin-invoice-modal");
+    const imgEl = document.getElementById("invoice-modal-img");
+    const titleEl = document.getElementById("invoice-modal-title");
+    const subEl = document.getElementById("invoice-modal-subtitle");
+    const btnWa = document.getElementById("invoice-modal-btn-wa");
+    const btnPdf = document.getElementById("invoice-modal-btn-pdf");
+    const btnDownload = document.getElementById("invoice-modal-btn-download");
+    const closeBtn = document.getElementById("invoice-modal-close-btn");
+
+    if (!modal || !imgEl) return;
+
+    // Crear URL de objeto para la imagen
+    const imgUrl = URL.createObjectURL(blob);
+    imgEl.src = imgUrl;
+
+    if (titleEl) titleEl.textContent = `Factura N° ${data.numFactura}`;
+    if (subEl) {
+      const clientStr = data.finalClientName ? data.finalClientName : "Consumidor Final";
+      const telStr = data.finalPhone ? ` · Tel: ${data.finalPhone}` : "";
+      subEl.textContent = `${clientStr}${telStr}`;
+    }
+
+    const closeInvoiceModal = () => {
+      backdrop?.classList.remove("active");
+      modal?.classList.remove("active");
+      setTimeout(() => {
+        try { URL.revokeObjectURL(imgUrl); } catch (e) {}
+      }, 500);
+    };
+
+    if (closeBtn) closeBtn.onclick = closeInvoiceModal;
+    if (backdrop) backdrop.onclick = closeInvoiceModal;
+
+    let cleanPhone = (data.finalPhone || "").replace(/\D/g, "");
+    if (cleanPhone.length === 8) cleanPhone = `504${cleanPhone}`;
+
+    const fileName = `Factura_${data.numFactura}.png`;
+    const file = new File([blob], fileName, { type: "image/png" });
+    const invoiceUrl = `${window.location.origin}/pages/admin/admin-factura-impresion.html?order_id=${orderForInvoice.id}`;
+
+    // 1. BOTÓN ENVIAR POR WHATSAPP
+    if (btnWa) {
+      btnWa.onclick = async () => {
+        // En dispositivos móviles (Android / iOS): adjuntar la imagen directamente a WhatsApp
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          try {
+            await navigator.share({
+              title: `Factura ${data.numFactura} - Café Cortero`,
+              text: `Factura ${data.numFactura} de Café Cortero`,
+              files: [file]
+            });
+            return;
+          } catch (err) {
+            if (err.name === "AbortError") return;
+            console.warn("navigator.share falló, usando fallback WhatsApp:", err);
+          }
+        }
+
+        // En computadoras / navegadores de escritorio:
+        // Copiar la imagen al portapapeles
+        let copiado = false;
+        if (navigator.clipboard && window.ClipboardItem) {
+          try {
+            await navigator.clipboard.write([
+              new ClipboardItem({ "image/png": blob })
+            ]);
+            copiado = true;
+          } catch (clipErr) {
+            console.warn("No se pudo copiar imagen al portapapeles:", clipErr);
+          }
+        }
+
+        const msgWa = [
+          `☕ *CAFÉ CORTERO — FACTURA N° ${data.numFactura}* 🧾`,
+          `👤 *Cliente:* ${data.finalClientName}`,
+          `💰 *Total:* L ${fmtMonto(data.montoTotalCalc)}`,
+          `💳 *Forma de pago:* ${data.metodoPago || 'Efectivo'}`,
+          ``,
+          `📄 *Ver Factura Digital / PDF:*`,
+          `${invoiceUrl}`,
+          ``,
+          copiado ? `_(Se copió la imagen de la factura al portapapeles. ¡Pégala aquí con Ctrl + V!)_` : ``,
+          `_Cosechado en Honduras • Tostado con Alma_`
+        ].filter(Boolean).join('\n');
+
+        const waUrl = (cleanPhone.length >= 8)
+          ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent(msgWa)}`
+          : `https://wa.me/?text=${encodeURIComponent(msgWa)}`;
+
+        window.open(waUrl, "_blank");
+
+        showDashboardToast(
+          copiado
+            ? "¡Imagen copiada! Chat de WhatsApp abierto. Pega con Ctrl + V."
+            : "Abriendo chat de WhatsApp con la información y enlace de la factura."
+        );
+      };
+    }
+
+    // 2. BOTÓN FACTURA PDF (abre la vista oficial para imprimir o guardar como PDF)
+    if (btnPdf) {
+      btnPdf.onclick = () => {
+        sessionStorage.setItem("printOrderData", JSON.stringify(orderForInvoice));
+        window.open(invoiceUrl, "_blank");
+      };
+    }
+
+    // 3. BOTÓN DESCARGAR IMAGEN
+    if (btnDownload) {
+      btnDownload.onclick = () => {
+        const a = document.createElement("a");
+        a.href = imgUrl;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        showDashboardToast("¡Imagen de factura descargada!");
+      };
+    }
+
+    backdrop?.classList.add("active");
+    modal?.classList.add("active");
+  }
+
   async function openMovementBottomSheet(item) {
     const isIngreso = item.tipo === "ingreso";
     const isAhorro = item.tipo === "ahorro";
@@ -1303,87 +1929,51 @@ console.log("📊 finanzas/dashboard.js — INIT (Material 3 Expressive & Dona 3
     // Guardar en sessionStorage para que admin-factura-impresion.html cargue de inmediato
     sessionStorage.setItem("printOrderData", JSON.stringify(orderForInvoice));
 
-    // BOTÓN "VER FACTURA" (ABRE ADMIN-FACTURA-IMPRESION.HTML)
-    const facturaBtn = document.getElementById("sheet-btn-factura");
-    if (facturaBtn) {
-      facturaBtn.onclick = () => {
-        sessionStorage.setItem("printOrderData", JSON.stringify(orderForInvoice));
-        window.open(`/pages/admin/admin-factura-impresion.html?order_id=${orderForInvoice.id}`, '_blank');
-      };
-    }
-
-    // BOTÓN DIRECTO PARA COMPARTIR FACTURA OFICIAL POR WHATSAPP
-    const waBtn = document.getElementById("sheet-btn-whatsapp");
-    if (waBtn) {
-      waBtn.onclick = () => {
+    // BOTÓN "COMPARTIR FACTURA" (sheet-btn-factura)
+    const shareBtn = document.getElementById("sheet-btn-factura");
+    if (shareBtn) {
+      shareBtn.onclick = async () => {
         // Guardar por si abren el link en la misma sesión
         sessionStorage.setItem("printOrderData", JSON.stringify(orderForInvoice));
 
-        // Formatear líneas de productos idénticas a la tabla de admin-factura-impresion.html
-        const prodsText = listaItemsFactura.map(it => {
-          const p = it.products || {};
-          const desc = [p.presentation, p.grind_type].filter(Boolean).join(" • ");
-          const lineTot = it.quantity * it.price;
-          return `• *${it.quantity}x* ${p.name || 'Café'}${desc ? ` (${desc})` : ''} — *L ${fmtMonto(lineTot)}*\n   _Precio unitario: L ${fmtMonto(it.price)}_`;
-        }).join('\n');
+        const originalContent = shareBtn.innerHTML;
+        shareBtn.disabled = true;
+        shareBtn.innerHTML = `
+          <span class="material-symbols-outlined animate-spin">progress_activity</span>
+          <span>Cargando...</span>
+        `;
 
-        const invoiceUrl = `${window.location.origin}/pages/admin/admin-factura-impresion.html?order_id=${orderForInvoice.id}`;
+        try {
+          const invoicePayload = {
+            numFactura,
+            fechaStr,
+            horaStr,
+            finalClientName,
+            finalPhone,
+            finalEmail,
+            finalAddress,
+            items: listaItemsFactura,
+            subtotalCalc,
+            isv15Calc,
+            envioCalc,
+            montoTotalCalc,
+            letrasTotal,
+            metodoPago: item.metodo_pago || ord?.payment_method || "Efectivo"
+          };
 
-        const msg = [
-          `☕ *CAFÉ CORTERO* 🧾`,
-          `📍 Danlí, El Paraíso, Honduras`,
-          `📋 *RTN:* 05019654135885`,
-          `📄 *FACTURA N°:* ${numFactura}`,
-          `📋 *Original:* Cliente`,
-          `────────────────────────`,
-          `👤 *CLIENTE:* ${finalClientName}`,
-          finalPhone ? `📞 *Teléfono:* ${finalPhone}` : null,
-          finalEmail ? `✉️ *Email:* ${finalEmail}` : null,
-          finalAddress ? `🏠 *Dirección:* ${finalAddress}` : null,
-          `────────────────────────`,
-          `📅 *Fecha de emisión:* ${fechaStr}${horaStr ? ` · ${horaStr}` : ''}`,
-          `📍 *Lugar:* Danlí, Honduras`,
-          `✅ *Documento Válido — Operación autorizada por el SAR*`,
-          `────────────────────────`,
-          `📦 *DETALLE DE PRODUCTOS:*`,
-          prodsText,
-          `────────────────────────`,
-          `📝 *TOTAL EN LETRAS:*`,
-          `_${letrasTotal}_`,
-          `────────────────────────`,
-          `📊 *DESGLOSE FISCAL:*`,
-          `• Descuento: -L 0.00`,
-          `• Importe Exento: L 0.00`,
-          `• Importe Exonerado: L 0.00`,
-          `• Importe Gravado 15%: L ${fmtMonto(subtotalCalc)}`,
-          `• ISV (15%): L ${fmtMonto(isv15Calc)}`,
-          envioCalc > 0 ? `• Envío: L ${fmtMonto(envioCalc)}` : null,
-          `────────────────────────`,
-          `💰 *TOTAL A PAGAR: L ${fmtMonto(montoTotalCalc)}*`,
-          `💳 *Método de pago:* ${item.metodo_pago || ord?.payment_method || 'Efectivo'}`,
-          `────────────────────────`,
-          `🏛️ *DATOS SAR:*`,
-          `• *Rango Autorizado:* 6549864654-00000001 al 6549864654-00000100`,
-          `• *Fecha Límite de Emisión:* 2025-12-31`,
-          `• *CAI:* 3AE914-B7C623-5D8B2F-40FD9A-8721BC-4E`,
-          `• *Lugar de Emisión:* Danlí, El Paraíso, Honduras`,
-          `────────────────────────`,
-          `🌐 *Ver / Descargar Factura Digital:*`,
-          `${invoiceUrl}`,
-          `────────────────────────`,
-          `☕ _Cosechado en Honduras • Tostado con Alma_`,
-          `📞 Dudas o pedidos: +504 9667-0613 / 9867-5101`,
-          `✉️ cafecortero@gmail.com`
-        ].filter(Boolean).join('\n');
+          const blob = await generateInvoiceCanvas(invoicePayload);
+          if (!blob) throw new Error("No se pudo generar la imagen de la factura.");
 
-        // Si tenemos teléfono del cliente, enviar directo a su número
-        let cleanPhone = (finalPhone || "").replace(/\D/g, "");
-        if (cleanPhone.length === 8) cleanPhone = `504${cleanPhone}`;
-        const waLink = (cleanPhone.length >= 8) 
-          ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`
-          : `https://wa.me/?text=${encodeURIComponent(msg)}`;
-
-        window.open(waLink, '_blank');
+          // Cerrar el panel inferior y abrir la vista previa de la factura
+          closeMovementBottomSheet();
+          openInvoiceModal(blob, invoicePayload, orderForInvoice);
+        } catch (err) {
+          console.error("Error al preparar vista previa de factura:", err);
+          showDashboardToast("No se pudo cargar la vista de la factura.", "error");
+        } finally {
+          shareBtn.disabled = false;
+          shareBtn.innerHTML = originalContent;
+        }
       };
     }
 
@@ -1429,7 +2019,11 @@ console.log("📊 finanzas/dashboard.js — INIT (Material 3 Expressive & Dona 3
 
     // Cerrar con Escape
     window.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") closeMovementBottomSheet();
+      if (e.key === "Escape") {
+        closeMovementBottomSheet();
+        document.getElementById("fin-invoice-modal-backdrop")?.classList.remove("active");
+        document.getElementById("fin-invoice-modal")?.classList.remove("active");
+      }
     });
 
     // Soporte táctil para drag handle
@@ -1482,48 +2076,11 @@ console.log("📊 finanzas/dashboard.js — INIT (Material 3 Expressive & Dona 3
     "Otros": "more_horiz",
   };
 
-  /* --- FAB SCROLL INTERACTION --- */
+  /* --- FAB FIJO ESTÁTICO (NO SE CONTRAE NI EXPANDE EN SCROLL) --- */
   function setupFabScroll() {
     const fab = els.fab();
     if (!fab) return;
-
-    let ticking = false;
-
-    const getScrollTop = () => {
-      return (
-        window.pageYOffset ||
-        document.documentElement.scrollTop ||
-        document.body.scrollTop ||
-        0
-      );
-    };
-
-    const updateFabState = () => {
-      const currentScroll = getScrollTop();
-      // Al hacer scroll hacia abajo (>15px del tope), el FAB DEBE mantenerse colapsado
-      // para que no se abra ni estorbe en la lectura de los datos.
-      if (currentScroll > 15) {
-        fab.classList.add("collapsed");
-      } else {
-        // Solo cuando se está completamente arriba en el tope inicial se muestra expandido
-        fab.classList.remove("collapsed");
-      }
-      ticking = false;
-    };
-
-    const onScroll = () => {
-      if (!ticking) {
-        requestAnimationFrame(updateFabState);
-        ticking = true;
-      }
-    };
-
-    window.addEventListener("scroll", onScroll, { passive: true });
-    document.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll, { passive: true });
-
-    // Inicializar estado inmediatamente
-    updateFabState();
+    fab.classList.remove("collapsed");
   }
 
   /* --- INICIALIZACIÓN --- */

@@ -1617,18 +1617,19 @@ html::-webkit-scrollbar { width: 0; height: 0; display: none; }
 /* Menu container */
 .fin-cat-dropdown-menu {
   position: absolute;
-  top: calc(100% + 4px);
+  top: calc(100% + 6px);
   left: 0;
   right: 0;
-  background: var(--md-surface-container);
-  border-radius: 4px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.10), 0 4px 16px rgba(0,0,0,0.08);
+  background: #FFFFFF;
+  border: 1px solid #D8E0DC;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
   padding: 4px 0;
   opacity: 0;
   visibility: hidden;
   transform: translateY(-4px) scale(0.98);
   transition: all 200ms var(--md-standard);
-  z-index: 200;
+  z-index: 100;
   max-height: 320px;
   overflow-y: auto;
   scrollbar-width: none;
