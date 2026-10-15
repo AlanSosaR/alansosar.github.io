@@ -7,13 +7,14 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700;800&family=Poppins:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
   <link rel="icon" type="image/png" href="/imagenes/logo.png">
 
   <link rel="stylesheet" href="/css/core/tipografia.css">
   <link rel="stylesheet" href="/css/ui/header.css">
   <link rel="stylesheet" href="/css/ui/footer.css">
   <link rel="stylesheet" href="/css/finanzas.css">
+  <link rel="stylesheet" href="/css/finanzas-dona360.css">
   <style>
     .material-symbols-outlined {
       font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
@@ -23,12 +24,6 @@
     }
     .page-fin-dashboard .fin-card {
       box-shadow: none;
-    }
-    .page-fin-dashboard a[href*="ingresos"].fin-stat-card {
-      box-shadow: 0 10px 40px rgba(55, 123, 76, 0.2);
-    }
-    .page-fin-dashboard a[href*="egresos"].fin-stat-card {
-      box-shadow: 0 10px 40px rgba(198, 40, 40, 0.2);
     }
   </style>
 </head>
@@ -49,148 +44,287 @@
 
     <div class="fin-content">
 
-      <!-- SALDO ACTUAL -->
-      <section class="fin-saldo-card">
-        <div class="fin-saldo-label">Saldo actual</div>
-        <div class="fin-saldo-monto" style="font-size:48px;line-height:1.1;">HNL 0,000.00</div>
-        <div class="fin-saldo-compare" id="saldo-compare">
-          <span class="material-symbols-outlined fin-saldo-compare-icon" id="saldo-compare-icon">trending_up</span>
-          <span class="fin-saldo-compare-text" id="saldo-compare-text"></span>
-        </div>
-      </section>
+      <!-- 1. HERO ANALYTICS CARD (HERO CONTAINER M3) -->
+      <section class="fin-hero-card" id="fin-hero-card">
 
-      <!-- INGRESOS & EGRESOS & AHORRO -->
-      <div class="fin-row-cards">
-        <a href="/pages/admin/finanzas/ingresos.html" class="fin-stat-card">
-          <div>
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
-              <div class="fin-stat-label" style="color:var(--verde);margin-bottom:0;">Ingresos</div>
-              <div class="fin-stat-icon primary" style="margin-bottom:0;">
-                <span class="material-symbols-outlined">trending_up</span>
+        <!-- A. BANNER SUPERIOR DE CATEGORÍA ACTIVA (ACTIVE PILL) -->
+        <div class="fin-active-pill" id="fin-active-pill">
+          <div class="fin-active-pill-leading">
+            <div class="fin-active-pill-icon" id="active-pill-icon">
+              <span class="material-symbols-outlined" id="active-pill-icon-sym">account_balance_wallet</span>
+            </div>
+            <div class="fin-active-pill-info">
+              <div class="fin-active-pill-title" id="active-pill-title">Balance General</div>
+              <div class="fin-active-pill-sub" id="active-pill-sub">
+                <span id="saldo-compare-text">Iniciando análisis del período...</span>
               </div>
             </div>
-            <div class="fin-stat-monto primary" id="ingresos-monto"><span style="color:var(--verde);font-weight:600">HNL</span> <span style="color:var(--marron)">0,000.00</span></div>
-            <div class="fin-stat-compare" id="ingresos-compare"></div>
           </div>
-        </a>
-        <a href="/pages/admin/finanzas/egresos.html" class="fin-stat-card">
-          <div>
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
-              <div class="fin-stat-label" style="color:var(--md-error);margin-bottom:0;">Egresos</div>
-              <div class="fin-stat-icon error" style="margin-bottom:0;">
-                <span class="material-symbols-outlined">trending_down</span>
-              </div>
-            </div>
-            <div class="fin-stat-monto error" id="egresos-monto"><span style="color:var(--verde);font-weight:600">HNL</span> <span style="color:var(--marron)">0,000.00</span></div>
-            <div class="fin-stat-compare" id="egresos-compare"></div>
-          </div>
-        </a>
-        <a href="/pages/admin/finanzas/ahorros.html" class="fin-stat-card">
-          <div>
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
-              <div class="fin-stat-label" style="color:#5c6bc0;margin-bottom:0;">Ahorro</div>
-              <div class="fin-stat-icon secondary" style="margin-bottom:0;">
-                <span class="material-symbols-outlined">savings</span>
-              </div>
-            </div>
-            <div class="fin-stat-monto secondary" id="ahorro-monto"><span style="color:var(--verde);font-weight:600">HNL</span> <span style="color:var(--marron)">0,000.00</span></div>
-            <div class="fin-stat-compare" id="ahorro-compare"></div>
-          </div>
-        </a>
-        <div class="fin-stat-card" id="porcobrar-card" style="cursor:default;">
-          <div>
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
-              <div class="fin-stat-label" style="color:#e67e22;margin-bottom:0;">Por cobrar</div>
-              <div class="fin-stat-icon" style="margin-bottom:0;background:#fef5e7;color:#e67e22;">
-                <span class="material-symbols-outlined">receipt_long</span>
-              </div>
-            </div>
-            <div class="fin-stat-monto" id="porcobrar-monto" style="color:#e67e22;"><span style="color:var(--verde);font-weight:600">HNL</span> <span style="color:var(--marron)">0,000.00</span></div>
-            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;font:var(--md-label-sm);color:var(--md-on-surface-variant);margin-top:4px;">
-              <span id="porcobrar-count" style="background:var(--md-surface-variant);padding:2px 10px;border-radius:var(--md-shape-full);font-weight:600;">0</span>
-              <span class="fin-porcobrar-dash" id="porcobrar-detalle"></span>
-            </div>
+          <div class="fin-active-pill-trailing">
+            <div class="fin-active-pill-monto" id="active-pill-monto">HNL 0.00</div>
+            <button class="fin-active-pill-clear" id="active-pill-clear" title="Restablecer filtro a Ambos" aria-label="Limpiar filtro">
+              <span class="material-symbols-outlined">close</span>
+            </button>
           </div>
         </div>
-      </div>
 
-      <!-- SEGMENTED BUTTON -->
-      <div class="fin-segmented-wrapper">
-        <div class="fin-segmented" id="periodo-segmented">
-          <button class="fin-seg-btn" data-periodo="dia">Día</button>
-          <button class="fin-seg-btn active" data-periodo="semana">Semana</button>
-          <button class="fin-seg-btn" data-periodo="mes">Mes</button>
-        </div>
-      </div>
-      <div class="fin-periodo-nav">
-        <button class="fin-periodo-arrow" id="periodo-prev" aria-label="Anterior">
-          <span class="material-symbols-outlined">chevron_left</span>
-        </button>
-        <div class="fin-periodo-label" id="periodo-label"></div>
-        <button class="fin-periodo-arrow" id="periodo-next" aria-label="Siguiente">
-          <span class="material-symbols-outlined">chevron_right</span>
-        </button>
-      </div>
-
-      <div class="fin-chart-history-grid">
-        <!-- GRÁFICA -->
-        <section class="fin-card">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-            <h2 class="fin-card-title" style="margin-bottom:0;"><span style="color:var(--verde)">Ingresos</span> vs <span style="color:var(--md-error)">Egresos</span></h2>
-          </div>
-          <div class="fin-chart-container" style="height:340px;">
-            <canvas id="fin-chart"></canvas>
-          </div>
-        </section>
-
-        <!-- HISTORIAL -->
-        <section class="fin-card">
-          <div class="fin-historial-header">
-            <div class="fin-filter-row">
-              <h2 class="fin-card-title" style="margin-bottom:0;">Historial</h2>
-              <div class="fin-filter-right">
-                <div class="fin-filter-chips">
-                  <button class="fin-chip active" data-filter="ambos">Ambos</button>
-                  <button class="fin-chip" data-filter="ingreso">Ingresos</button>
-                  <button class="fin-chip secondary" data-filter="ahorro">Ahorro</button>
-                  <button class="fin-chip" data-filter="egreso">Egresos</button>
-                </div>
-                <button class="fin-btn-export" id="btn-exportar" title="Exportar">
-                  <span class="material-symbols-outlined">download</span>
-                </button>
-              </div>
-            </div>
-            <div class="fin-search-row" id="fin-search-row">
-              <button class="fin-btn-search" id="btn-search" title="Buscar">
-                <span class="material-symbols-outlined">search</span>
-              </button>
-              <div class="fin-search-field" id="fin-search-field">
-                <input type="text" class="fin-search-input" id="fin-search-input" placeholder="Buscar por categoría, nota o monto (HNL)...">
-                <button class="fin-search-clear" id="fin-search-clear" title="Limpiar">
-                  <span class="material-symbols-outlined">close</span>
-                </button>
-              </div>
+        <!-- B. SELECTOR DE PERÍODO Y CONMUTADOR DE VISTA -->
+        <div class="fin-hero-controls">
+          <!-- Selector Temporal (Día | Semana | Mes) -->
+          <div class="fin-segmented-wrapper hero-segmented">
+            <div class="fin-segmented" id="periodo-segmented">
+              <button class="fin-seg-btn" data-periodo="dia">Día</button>
+              <button class="fin-seg-btn active" data-periodo="semana">Semana</button>
+              <button class="fin-seg-btn" data-periodo="mes">Mes</button>
             </div>
           </div>
-          <div id="fin-historial-list"></div>
-          <div class="fin-history-footer" id="fin-history-footer">
-            <button class="fin-pag-btn" id="pag-prev">
+
+          <!-- Navegación de Período (< 12 oct – 18 oct 2026 >) -->
+          <div class="fin-periodo-nav hero-periodo-nav">
+            <button class="fin-periodo-arrow" id="periodo-prev" aria-label="Anterior">
               <span class="material-symbols-outlined">chevron_left</span>
             </button>
-            <span class="fin-pagination-info" id="fin-pagination-info"></span>
-            <button class="fin-pag-btn" id="pag-next">
+            <div class="fin-periodo-label" id="periodo-label"></div>
+            <button class="fin-periodo-arrow" id="periodo-next" aria-label="Siguiente">
               <span class="material-symbols-outlined">chevron_right</span>
             </button>
           </div>
-        </section>
-      </div>
+
+          <!-- Conmutador de Gráfica (Dona 360 vs Ingresos vs Egresos) -->
+          <div class="fin-view-toggle">
+            <button class="fin-view-btn active" id="view-btn-donut" data-view="donut">
+              <span class="material-symbols-outlined">donut_large</span>
+              <span>Dona 360</span>
+            </button>
+            <button class="fin-view-btn" id="view-btn-bar" data-view="barchart">
+              <span class="material-symbols-outlined">bar_chart</span>
+              <span>Ingresos vs Egresos</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- C. VISTA PRINCIPAL: DONA 360 Ó BARRAS -->
+        <div class="fin-visual-container">
+          <!-- VISTA DONA 360 -->
+          <div class="fin-donut-view" id="fin-donut-view">
+            <div class="fin-donut-stage">
+              <!-- SVG 280x280 cx=140 cy=140 R=102 stroke-width=28 -->
+              <svg id="fin-donut-svg" viewBox="0 0 280 280" class="fin-donut-svg" aria-label="Dona 360 de finanzas">
+                <!-- Arcos SVG generados matemáticamente por dashboard.js -->
+              </svg>
+
+              <!-- CENTRO DE LA DONA DESPEJADO -->
+              <div class="fin-donut-center">
+                <span class="fin-donut-center-label" id="fin-donut-center-label">SALDO ACTUAL · HNL</span>
+                <div class="fin-saldo-monto" id="fin-saldo-monto-hero">0.00</div>
+                <div class="fin-saldo-compare" id="saldo-compare">
+                  <span class="material-symbols-outlined fin-saldo-compare-icon" id="saldo-compare-icon">trending_up</span>
+                  <span class="fin-saldo-compare-badge" id="saldo-compare-badge">+0.00</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- VISTA BARRAS SEMANALES INTEGRADA -->
+          <div class="fin-barchart-view" id="fin-barchart-view" style="display:none;">
+            <div class="fin-chart-container" style="height:280px;position:relative;">
+              <canvas id="fin-chart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. CUADRÍCULA COMPACTA DE KPIs (2x2) -->
+        <div class="fin-kpi-grid">
+          <!-- INGRESOS -->
+          <div class="fin-kpi-card" id="kpi-ingresos" data-rubro="ingreso">
+            <div class="fin-kpi-head">
+              <span class="fin-kpi-label">Ingresos</span>
+              <div class="fin-kpi-icon primary">
+                <span class="material-symbols-outlined">trending_up</span>
+              </div>
+            </div>
+            <div class="fin-kpi-monto primary" id="ingresos-monto">
+              <span style="color:#377b4c;font-weight:700;">HNL</span> <span>0.00</span>
+            </div>
+            <div class="fin-stat-compare fin-kpi-sub" id="ingresos-compare"></div>
+          </div>
+
+          <!-- EGRESOS -->
+          <div class="fin-kpi-card" id="kpi-egresos" data-rubro="egreso">
+            <div class="fin-kpi-head">
+              <span class="fin-kpi-label">Egresos</span>
+              <div class="fin-kpi-icon error">
+                <span class="material-symbols-outlined">trending_down</span>
+              </div>
+            </div>
+            <div class="fin-kpi-monto error" id="egresos-monto">
+              <span style="color:#C62828;font-weight:700;">HNL</span> <span>0.00</span>
+            </div>
+            <div class="fin-stat-compare fin-kpi-sub" id="egresos-compare"></div>
+          </div>
+
+          <!-- AHORRO -->
+          <div class="fin-kpi-card" id="kpi-ahorro" data-rubro="ahorro">
+            <div class="fin-kpi-head">
+              <span class="fin-kpi-label">Ahorro</span>
+              <div class="fin-kpi-icon secondary">
+                <span class="material-symbols-outlined">savings</span>
+              </div>
+            </div>
+            <div class="fin-kpi-monto secondary" id="ahorro-monto">
+              <span style="color:#512615;font-weight:700;">HNL</span> <span>0.00</span>
+            </div>
+            <div class="fin-stat-compare fin-kpi-sub" id="ahorro-compare"></div>
+          </div>
+
+          <!-- POR COBRAR -->
+          <div class="fin-kpi-card" id="porcobrar-card" data-rubro="porcobrar">
+            <div class="fin-kpi-head">
+              <span class="fin-kpi-label">Por cobrar</span>
+              <div class="fin-kpi-icon warning">
+                <span class="material-symbols-outlined">receipt_long</span>
+              </div>
+            </div>
+            <div class="fin-kpi-monto warning" id="porcobrar-monto">
+              <span style="color:#F9A825;font-weight:700;">HNL</span> <span>0.00</span>
+            </div>
+            <div class="fin-kpi-sub" style="display:flex;align-items:center;gap:6px;">
+              <span id="porcobrar-count" class="fin-kpi-badge">0</span>
+              <span class="fin-porcobrar-dash" id="porcobrar-detalle" style="font-size:11px;opacity:0.8;"></span>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- 3. HISTORIAL DE MOVIMIENTOS -->
+      <section class="fin-card fin-historial-card">
+        <div class="fin-historial-header">
+          <!-- FILA 1: TÍTULO Y ACCIONES (BUSCAR Y EXPORTAR) -->
+          <div class="fin-historial-top-row">
+            <h2 class="fin-card-title" style="margin-bottom:0;">Historial</h2>
+            <div class="fin-historial-actions">
+              <button class="fin-btn-search" id="btn-search" title="Buscar" aria-label="Buscar movimientos">
+                <span class="material-symbols-outlined">search</span>
+              </button>
+              <button class="fin-btn-export" id="btn-exportar" title="Exportar a Excel" aria-label="Exportar a Excel">
+                <span class="material-symbols-outlined">download</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- FILA DE BÚSQUEDA DESPLEGABLE -->
+          <div class="fin-search-row" id="fin-search-row">
+            <div class="fin-search-field" id="fin-search-field">
+              <input type="text" class="fin-search-input" id="fin-search-input" placeholder="Buscar por categoría, nota o monto (HNL)...">
+              <button class="fin-search-clear" id="fin-search-clear" title="Limpiar" aria-label="Limpiar búsqueda">
+                <span class="material-symbols-outlined">close</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- FILA 2: CARRUSEL DE FILTER CHIPS (SALTO ABAJO) -->
+          <div class="fin-filter-chips-carousel">
+            <div class="fin-filter-chips">
+              <button class="fin-chip active" data-filter="ambos">Ambos</button>
+              <button class="fin-chip" data-filter="ingreso">Ingresos</button>
+              <button class="fin-chip secondary" data-filter="ahorro">Ahorro</button>
+              <button class="fin-chip" data-filter="egreso">Egresos</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="fin-historial-list"></div>
+
+        <div class="fin-history-footer" id="fin-history-footer">
+          <button class="fin-pag-btn" id="pag-prev">
+            <span class="material-symbols-outlined">chevron_left</span>
+          </button>
+          <span class="fin-pagination-info" id="fin-pagination-info"></span>
+          <button class="fin-pag-btn" id="pag-next">
+            <span class="material-symbols-outlined">chevron_right</span>
+          </button>
+        </div>
+      </section>
+
     </div>
 
-    <!-- FAB -->
+    <!-- EXTENDED FAB FIJO M3 -->
     <a href="/pages/admin/finanzas/registrar.html" class="fin-fab" id="fin-fab">
       <span class="material-symbols-outlined">add</span>
-      <span class="fin-fab-label">Registrar</span>
+      <span class="fin-fab-label">+ Movimiento</span>
     </a>
+
+    <!-- 3. M3 BOTTOM SHEET MODAL (COMPROBANTE Y WHATSAPP) -->
+    <div class="fin-sheet-backdrop" id="fin-sheet-backdrop"></div>
+    <div class="fin-bottomsheet" id="fin-bottomsheet" role="dialog" aria-modal="true" aria-hidden="true">
+      <div class="fin-sheet-handle"></div>
+      
+      <div class="fin-sheet-header">
+        <div class="fin-sheet-icon" id="sheet-icon">
+          <span class="material-symbols-outlined" id="sheet-icon-sym">receipt_long</span>
+        </div>
+        <div class="fin-sheet-heading">
+          <span class="fin-sheet-type-badge" id="sheet-type-badge">Ingreso</span>
+          <h3 class="fin-sheet-title" id="sheet-title">Pedido POS</h3>
+        </div>
+        <button class="fin-sheet-close" id="sheet-close-btn" aria-label="Cerrar">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <div class="fin-sheet-monto-box">
+        <div class="fin-sheet-monto" id="sheet-monto">HNL 0.00</div>
+        <div class="fin-sheet-monto-sub" id="sheet-monto-sub" style="display:none;">—</div>
+      </div>
+
+      <div class="fin-sheet-body" id="sheet-body">
+        <div class="fin-sheet-row" id="sheet-row-cliente" style="display:none;">
+          <span class="fin-sheet-label">Cliente / Comprador</span>
+          <span class="fin-sheet-val" id="sheet-cliente">—</span>
+        </div>
+        <div class="fin-sheet-row" id="sheet-row-notas" style="display:none;">
+          <span class="fin-sheet-label">Notas</span>
+          <span class="fin-sheet-val" id="sheet-notas">—</span>
+        </div>
+        <div class="fin-sheet-row">
+          <span class="fin-sheet-label">Fecha y Hora</span>
+          <span class="fin-sheet-val" id="sheet-fecha">—</span>
+        </div>
+        <div class="fin-sheet-row">
+          <span class="fin-sheet-label">Método de Pago</span>
+          <span class="fin-sheet-val" id="sheet-metodo">—</span>
+        </div>
+        <div class="fin-sheet-row">
+          <span class="fin-sheet-label">Registrado por</span>
+          <span class="fin-sheet-val" id="sheet-usuario">—</span>
+        </div>
+      </div>
+
+      <div class="fin-sheet-actions">
+        <!-- BOTÓN DIRECTO PARA COMPARTIR RECIBO POR WHATSAPP -->
+        <button class="fin-btn-whatsapp" id="sheet-btn-whatsapp">
+          <svg class="fin-wa-icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+            <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2M12.05 3.67C14.25 3.67 16.31 4.53 17.87 6.09C19.42 7.65 20.28 9.72 20.28 11.92C20.28 16.46 16.58 20.15 12.04 20.15C10.56 20.15 9.11 19.76 7.85 19L7.55 18.83L4.43 19.65L5.26 16.61L5.06 16.29C4.24 14.99 3.81 13.47 3.81 11.91C3.81 7.37 7.5 3.67 12.05 3.67M9.04 7.39C8.86 7.39 8.56 7.46 8.32 7.72C8.07 7.99 7.39 8.63 7.39 9.92C7.39 11.22 8.33 12.47 8.47 12.65C8.6 12.83 10.34 15.5 13 16.65C13.63 16.92 14.12 17.08 14.51 17.21C15.15 17.41 15.73 17.38 16.19 17.31C16.71 17.23 17.78 16.66 18 16.03C18.23 15.4 18.23 14.86 18.16 14.75C18.09 14.64 17.9 14.57 17.62 14.43C17.34 14.29 15.97 13.62 15.72 13.53C15.46 13.44 15.28 13.39 15.09 13.67C14.91 13.95 14.39 14.57 14.23 14.75C14.07 14.93 13.92 14.96 13.64 14.82C13.36 14.68 12.46 14.38 11.39 13.43C10.56 12.69 10 11.78 9.84 11.5C9.68 11.22 9.82 11.07 9.96 10.93C10.09 10.8 10.25 10.59 10.39 10.43C10.53 10.27 10.58 10.15 10.67 9.97C10.76 9.79 10.72 9.63 10.65 9.49C10.58 9.35 10.02 7.99 9.79 7.43C9.56 6.89 9.33 6.96 9.16 6.96C9 6.95 8.86 6.95 8.72 6.95L9.04 7.39Z"/>
+          </svg>
+          <span>Compartir Recibo por WhatsApp</span>
+        </button>
+        <div class="fin-sheet-subactions">
+          <button class="fin-btn-outlined" id="sheet-btn-factura" title="Ver / Imprimir Factura oficial">
+            <span class="material-symbols-outlined">receipt_long</span>
+            <span>Factura</span>
+          </button>
+          <button class="fin-btn-outlined" id="sheet-btn-edit">
+            <span class="material-symbols-outlined">edit</span>
+            <span>Editar</span>
+          </button>
+          <button class="fin-btn-outlined fin-btn-danger" id="sheet-btn-delete">
+            <span class="material-symbols-outlined">delete</span>
+            <span>Eliminar</span>
+          </button>
+        </div>
+      </div>
+    </div>
 
   </main>
 

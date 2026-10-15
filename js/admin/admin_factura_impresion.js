@@ -1,13 +1,91 @@
-document.addEventListener("DOMContentLoaded", () => {
-    // Cargar datos del pedido almacenados
+document.addEventListener("DOMContentLoaded", async () => {
+    // 1. Cargar datos del pedido almacenados en sessionStorage
+    let order = null;
     const dataStr = sessionStorage.getItem("printOrderData");
-    if (!dataStr) {
+    if (dataStr) {
+        try { order = JSON.parse(dataStr); } catch (e) { console.warn("Error parseando printOrderData:", e); }
+    }
+
+    // 2. Si no hay en sessionStorage, intentar recuperar por parámetros de URL (?order_id= o ?id= o ?finanza_id=)
+    if (!order) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const orderId = urlParams.get("order_id") || urlParams.get("id");
+        const finanzaId = urlParams.get("finanza_id");
+        const encodedData = urlParams.get("data");
+
+        if (encodedData) {
+            try {
+                order = JSON.parse(decodeURIComponent(escape(atob(encodedData))));
+            } catch (e) {
+                try { order = JSON.parse(decodeURIComponent(encodedData)); } catch (err) {}
+            }
+        }
+
+        const sb = window.supabaseClient;
+        if (!order && orderId && sb) {
+            try {
+                const [orderRes, itemsRes] = await Promise.all([
+                    sb.from("orders").select("*, users(*), addresses(*)").eq("id", orderId).maybeSingle(),
+                    sb.from("order_items").select("*, products(*)").eq("order_id", orderId)
+                ]);
+
+                if (orderRes?.data) {
+                    order = orderRes.data;
+                    order.items = itemsRes?.data || [];
+                } else {
+                    // Quizá sea un movimiento de finanzas_movimientos con ese ID
+                    const { data: fin } = await sb.from("finanzas_movimientos").select("*, products(*)").eq("id", orderId).maybeSingle();
+                    if (fin) {
+                        order = {
+                            id: fin.id,
+                            order_number: fin.id.substring(0, 8).toUpperCase(),
+                            created_at: fin.fecha ? `${fin.fecha}T${fin.hora || '12:00:00'}` : fin.created_at,
+                            status: "confirmed",
+                            total: fin.monto,
+                            payment_method: fin.metodo_pago || "Efectivo",
+                            users: { name: fin.concepto || "Consumidor final" },
+                            items: [{
+                                quantity: 1,
+                                price: fin.monto,
+                                products: { name: fin.concepto || fin.categoria || "Café Cortero", presentation: fin.tamano || "Bolsa" }
+                            }]
+                        };
+                    }
+                }
+            } catch (err) {
+                console.error("Error al cargar orden desde Supabase:", err);
+            }
+        } else if (!order && finanzaId && sb) {
+            try {
+                const { data: fin } = await sb.from("finanzas_movimientos").select("*, products(*)").eq("id", finanzaId).maybeSingle();
+                if (fin) {
+                    order = {
+                        id: fin.id,
+                        order_number: fin.id.substring(0, 8).toUpperCase(),
+                        created_at: fin.fecha ? `${fin.fecha}T${fin.hora || '12:00:00'}` : fin.created_at,
+                        status: "confirmed",
+                        total: fin.monto,
+                        payment_method: fin.metodo_pago || "Efectivo",
+                        users: { name: fin.concepto || "Consumidor final" },
+                        items: [{
+                            quantity: 1,
+                            price: fin.monto,
+                            products: { name: fin.concepto || fin.categoria || "Café Cortero", presentation: fin.tamano || "Bolsa" }
+                        }]
+                    };
+                }
+            } catch (err) {
+                console.error("Error al cargar finanza desde Supabase:", err);
+            }
+        }
+    }
+
+    if (!order) {
         alert("No se encontraron datos de la factura.");
         return;
     }
 
     try {
-        const order = JSON.parse(dataStr);
         hydrateInvoice(order);
         
         // Menú 3 puntos (móvil)
@@ -36,18 +114,19 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
 
-        // Compartir nativo en móviles o copia al portapapeles
+        // Compartir nativo en móviles o abrir WhatsApp
         const btnShare = document.getElementById("btn-share");
         if (btnShare) {
             btnShare.addEventListener("click", () => {
+                const shareText = `Factura digital Café Cortero - Orden #${order.order_number || ''}\nVer factura: ${window.location.href}`;
                 if (navigator.share) {
                     navigator.share({
                         title: `Factura Café Cortero - Orden #${order.order_number}`,
-                        text: `Factura digital por pedido de Café Cortero. Orden #${order.order_number}`,
+                        text: shareText,
                         url: window.location.href,
                     }).catch(err => console.log('Error al compartir', err));
                 } else {
-                    alert("Compartir no está soportado en este navegador de escritorio. Puedes copiar el enlace de esta página.");
+                    window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, '_blank');
                 }
             });
         }
