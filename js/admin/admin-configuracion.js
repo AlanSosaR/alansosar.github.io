@@ -113,7 +113,43 @@ function generarNombre() {
 }
 
 /* ============================================================
-   RENDERIZAR SLIDES
+   SIDE SHEET CARRUSEL: CONTROLADORES & PREVIEW
+   ============================================================ */
+function openCarouselSideSheet() {
+  const backdrop = document.getElementById("carousel-sidesheet-backdrop");
+  const sidesheet = document.getElementById("carousel-sidesheet");
+  if (backdrop) backdrop.classList.add("active");
+  if (sidesheet) sidesheet.classList.add("active");
+  document.body.style.overflow = "hidden";
+}
+
+function closeCarouselSideSheet() {
+  const backdrop = document.getElementById("carousel-sidesheet-backdrop");
+  const sidesheet = document.getElementById("carousel-sidesheet");
+  if (backdrop) backdrop.classList.remove("active");
+  if (sidesheet) sidesheet.classList.remove("active");
+  document.body.style.overflow = "";
+  updateCarouselCardPreview();
+}
+
+function updateCarouselCardPreview() {
+  const badge = document.getElementById("badgeSlidesCount");
+  if (badge) {
+    badge.textContent = `${slides.length} imagen${slides.length === 1 ? '' : 'es'}`;
+  }
+  const strip = document.getElementById("carouselPreviewStrip");
+  if (strip) {
+    strip.innerHTML = slides.length === 0
+      ? '<span style="font-size:0.8rem;color:#a0aec0;padding:6px 0;">No hay imágenes configuradas aún</span>'
+      : slides.map((s, idx) => {
+          const src = s._blob ? URL.createObjectURL(s._blob) : (s.url || '/imagenes/no-image.png');
+          return `<img class="preview-mini-thumb" src="${src}" alt="Slide ${idx + 1}" title="Slide #${idx + 1}">`;
+        }).join("");
+  }
+}
+
+/* ============================================================
+   RENDERIZAR SLIDES (ESPACIOSO Y FÁCIL DE CONFIGURAR EN SIDE SHEET)
    ============================================================ */
 function renderSlides() {
   slidesContainer.innerHTML = "";
@@ -127,31 +163,54 @@ function renderSlides() {
       : slide.url || "/imagenes/no-image.png";
 
     div.innerHTML = `
-      <img class="slide-thumb" src="${imgSrc}" alt="Slide ${i + 1}">
-      <div class="slide-fields">
-        <div class="slide-fields-row">
-          <input type="text" class="slide-title-input" placeholder="Título (opcional)" value="${escapeHtml(slide.titulo || "")}">
-          <input type="text" class="slide-subtitle-input" placeholder="Subtítulo (opcional)" value="${escapeHtml(slide.subtitulo || "")}">
+      <div class="slide-item-header">
+        <div class="slide-order-pill">
+          <span class="material-symbols-outlined">drag_indicator</span>
+          <span>Slide #${i + 1}</span>
+        </div>
+        <div class="slide-actions">
+          <button type="button" class="slide-btn move-up" title="Subir orden" ${i === 0 ? "disabled style='opacity:.3'" : ""}>
+            <span class="material-symbols-outlined">keyboard_arrow_up</span>
+          </button>
+          <button type="button" class="slide-btn move-down" title="Bajar orden" ${i === slides.length - 1 ? "disabled style='opacity:.3'" : ""}>
+            <span class="material-symbols-outlined">keyboard_arrow_down</span>
+          </button>
+          <button type="button" class="slide-btn delete" title="Eliminar slide">
+            <span class="material-symbols-outlined">delete</span>
+          </button>
         </div>
       </div>
-      <div class="slide-actions">
-        <button type="button" class="slide-btn move-up" title="Subir" ${i === 0 ? "disabled style='opacity:.3'" : ""}>
-          <span class="material-symbols-outlined">keyboard_arrow_up</span>
-        </button>
-        <button type="button" class="slide-btn move-down" title="Bajar" ${i === slides.length - 1 ? "disabled style='opacity:.3'" : ""}>
-          <span class="material-symbols-outlined">keyboard_arrow_down</span>
-        </button>
-        <button type="button" class="slide-btn delete" title="Eliminar">
-          <span class="material-symbols-outlined">delete</span>
-        </button>
+      <div class="slide-item-content">
+        <div class="slide-thumb-box" title="Haz clic para cambiar esta imagen">
+          <img class="slide-thumb" src="${imgSrc}" alt="Slide ${i + 1}">
+          <div class="slide-thumb-overlay">
+            <span class="material-symbols-outlined">camera_alt</span>
+            <span>Cambiar</span>
+          </div>
+        </div>
+        <div class="slide-fields">
+          <div class="slide-field-group">
+            <label class="slide-field-label">Título (opcional)</label>
+            <input type="text" class="slide-title-input" placeholder="Ej: Café de Especialidad" value="${escapeHtml(slide.titulo || "")}">
+          </div>
+          <div class="slide-field-group">
+            <label class="slide-field-label">Subtítulo (opcional)</label>
+            <input type="text" class="slide-subtitle-input" placeholder="Ej: Tostado fresco de origen" value="${escapeHtml(slide.subtitulo || "")}">
+          </div>
+        </div>
       </div>
     `;
 
     const titleInput = div.querySelector(".slide-title-input");
     const subtitleInput = div.querySelector(".slide-subtitle-input");
 
-    titleInput.addEventListener("input", () => { slide.titulo = titleInput.value; });
-    subtitleInput.addEventListener("input", () => { slide.subtitulo = subtitleInput.value; });
+    titleInput.addEventListener("input", () => {
+      slide.titulo = titleInput.value;
+      updateCarouselCardPreview();
+    });
+    subtitleInput.addEventListener("input", () => {
+      slide.subtitulo = subtitleInput.value;
+    });
 
     div.querySelector(".move-up").addEventListener("click", () => {
       if (i > 0) {
@@ -173,13 +232,13 @@ function renderSlides() {
     });
 
     // Click en thumbnail para reemplazar imagen
-    const thumb = div.querySelector(".slide-thumb");
+    const thumbBox = div.querySelector(".slide-thumb-box");
     const fileInput = document.createElement("input");
     fileInput.type = "file";
     fileInput.accept = "image/jpeg,image/png,image/webp";
     fileInput.hidden = true;
     div.appendChild(fileInput);
-    thumb.addEventListener("click", () => fileInput.click());
+    thumbBox.addEventListener("click", () => fileInput.click());
     fileInput.addEventListener("change", async () => {
       const file = fileInput.files[0];
       if (!file) return;
@@ -226,6 +285,8 @@ function renderSlides() {
 
     slidesContainer.appendChild(div);
   });
+
+  updateCarouselCardPreview();
 }
 
 function escapeHtml(str) {
@@ -429,14 +490,51 @@ historiaImgInput.addEventListener("change", async () => {
 });
 
 /* ============================================================
-   ACCORDEÓN
+   ACCORDEÓN & SIDE SHEET LISTENERS
    ============================================================ */
 document.addEventListener("click", (e) => {
   const header = e.target.closest(".card-header-stitch");
   if (!header) return;
   const card = header.closest(".config-card");
   if (!card) return;
+  
+  // Si es la tarjeta de carrusel, abrir el Side Sheet
+  if (card.id === "card-carrusel" || header.id === "btnOpenCarouselSidesheet") {
+    openCarouselSideSheet();
+    return;
+  }
+  
   card.classList.toggle("collapsed");
+});
+
+// Botones y listeners para cerrar/abrir Side Sheet de carrusel
+document.getElementById("btnOpenCarouselSidesheetAction")?.addEventListener("click", (e) => {
+  e.preventDefault();
+  openCarouselSideSheet();
+});
+
+document.getElementById("btnCloseCarouselSidesheet")?.addEventListener("click", (e) => {
+  e.preventDefault();
+  closeCarouselSideSheet();
+});
+
+document.getElementById("btnDoneCarouselSidesheet")?.addEventListener("click", (e) => {
+  e.preventDefault();
+  closeCarouselSideSheet();
+});
+
+document.getElementById("carousel-sidesheet-backdrop")?.addEventListener("click", (e) => {
+  e.preventDefault();
+  closeCarouselSideSheet();
+});
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    const sheet = document.getElementById("carousel-sidesheet");
+    if (sheet && sheet.classList.contains("active")) {
+      closeCarouselSideSheet();
+    }
+  }
 });
 
 /* ============================================================

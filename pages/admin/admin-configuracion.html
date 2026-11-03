@@ -26,24 +26,71 @@
 
     <form id="configForm">
 
-      <!-- ==================== BLOQUE: CARRUSEL ==================== -->
-      <section class="config-card collapsed">
-        <div class="card-header-stitch">
+      <!-- ==================== BLOQUE: CARRUSEL (Abre Side Sheet) ==================== -->
+      <section class="config-card config-card-interactive" id="card-carrusel">
+        <div class="card-header-stitch" id="btnOpenCarouselSidesheet">
           <span class="material-symbols-outlined">view_carousel</span>
-          <h2>Carrusel principal</h2>
-          <span class="config-chevron material-symbols-outlined">expand_more</span>
+          <div class="card-header-titles">
+            <h2>Carrusel principal</h2>
+            <span class="badge-slides-count" id="badgeSlidesCount">0 imágenes</span>
+          </div>
+          <button type="button" class="btn-open-sidesheet-icon" aria-label="Abrir panel lateral de carrusel">
+            <span class="material-symbols-outlined">arrow_forward</span>
+          </button>
         </div>
         <p class="card-desc-stitch">Agrega, reordena y edita las imágenes del carrusel del inicio.</p>
-        <div class="config-card-body">
-          <div id="slides-container" class="slides-list">
-          </div>
-          <button type="button" id="btnAddSlide" class="btn-add-slide">
-            <span class="material-symbols-outlined">add_photo_alternate</span>
-            Agregar imagen al carrusel
-          </button>
-          <input type="file" id="slideUploadInput" accept="image/jpeg,image/png,image/webp" multiple hidden>
-        </div>
+        
+        <!-- Preview horizontal de miniaturas -->
+        <div class="carousel-preview-strip" id="carouselPreviewStrip"></div>
+
+        <button type="button" class="btn-open-sidesheet" id="btnOpenCarouselSidesheetAction">
+          <span class="material-symbols-outlined">tune</span>
+          Configurar imágenes en panel
+        </button>
       </section>
+
+      <!-- ==================== SIDE SHEET: CARRUSEL PRINCIPAL ==================== -->
+      <div id="carousel-sidesheet-backdrop" class="sidesheet-backdrop"></div>
+      
+      <aside id="carousel-sidesheet" class="sidesheet-container" aria-label="Panel de configuración del carrusel">
+        <div class="sidesheet-header">
+          <div class="sidesheet-header-left">
+            <span class="material-symbols-outlined sidesheet-icon">view_carousel</span>
+            <div>
+              <h3>Carrusel principal</h3>
+              <p class="sidesheet-subtitle">Agrega, reordena y edita las imágenes</p>
+            </div>
+          </div>
+          <button type="button" id="btnCloseCarouselSidesheet" class="sidesheet-close-btn" aria-label="Cerrar panel">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+
+        <div class="sidesheet-body">
+          <div class="sidesheet-toolbar">
+            <button type="button" id="btnAddSlide" class="btn-add-slide-primary">
+              <span class="material-symbols-outlined">add_photo_alternate</span>
+              <span>Agregar imagen al carrusel</span>
+            </button>
+            <input type="file" id="slideUploadInput" accept="image/jpeg,image/png,image/webp" multiple hidden>
+            <span class="sidesheet-hint">
+              <span class="material-symbols-outlined">touch_app</span>
+              Toca la imagen para cambiarla o usa las flechas para reordenar
+            </span>
+          </div>
+
+          <div id="slides-container" class="slides-list-sidesheet">
+            <!-- Items de slides renderizados dinámicamente -->
+          </div>
+        </div>
+
+        <div class="sidesheet-footer">
+          <button type="button" id="btnDoneCarouselSidesheet" class="btn-sidesheet-done">
+            <span class="material-symbols-outlined">check</span>
+            <span>Listo</span>
+          </button>
+        </div>
+      </aside>
 
       <!-- ==================== BLOQUE: NUESTRA HISTORIA ==================== -->
       <section class="config-card collapsed">

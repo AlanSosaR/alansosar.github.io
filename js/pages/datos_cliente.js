@@ -240,23 +240,17 @@ function movePosElementsToHeader() {
     posHeaderSlot.appendChild(posHeader);
   }
 
-  // Píldora "Atendido por" -> fila derecha (igual que en el carrito)
+  // Píldora de cliente eliminado a solicitud del usuario
   const posClientSlot = document.getElementById("header-pos-client-slot");
-  if (posClientSlot && rightStitch && !rightStitch.contains(posClientSlot)) {
-    rightStitch.appendChild(posClientSlot);
+  if (posClientSlot) {
+    posClientSlot.innerHTML = "";
+    posClientSlot.style.display = "none";
   }
-
-  // Limpiar cualquier residuo que se haya colado en leftStitch o en el header
   if (leftStitch) {
     leftStitch.querySelectorAll(".pos-selected-client, #pos-selected-client, #pos-selected-header").forEach(el => el.remove());
   }
-  if (posClientSlot) {
-    posClientSlot.querySelectorAll("#pos-selected-client, #pos-selected-header").forEach(el => el.remove());
-  }
-
-  // Sincronizar UNA SOLA píldora de Atendido por en el slot derecho
-  if (typeof window.syncAttendantHeader === "function") {
-    window.syncAttendantHeader();
+  if (rightStitch) {
+    rightStitch.querySelectorAll(".pos-selected-client, #pos-selected-client, #pos-selected-header, #header-pos-client-slot").forEach(el => el.remove());
   }
 }
 
@@ -288,6 +282,42 @@ function initAdminPOS() {
   let searchTimer = null;
   try { localStorage.removeItem("pos_local_clients"); } catch (_) {}
 
+  const isMobile = () => window.innerWidth <= 768;
+
+  function openNewClientBottomSheet() {
+    const backdrop = document.getElementById("pos-sheet-backdrop");
+    if (backdrop) backdrop.classList.add("active");
+    newForm.classList.remove("hidden");
+    requestAnimationFrame(() => {
+      newForm.classList.add("sheet-open");
+    });
+    document.body.style.overflow = "hidden";
+    setTimeout(() => {
+      document.getElementById("pos-new-name")?.focus();
+    }, 280);
+  }
+
+  function closeNewClientBottomSheet(restorePrevious = true) {
+    const backdrop = document.getElementById("pos-sheet-backdrop");
+    if (backdrop) backdrop.classList.remove("active");
+    newForm.classList.remove("sheet-open");
+    document.body.style.overflow = "";
+
+    setTimeout(() => {
+      if (isMobile() && !newForm.classList.contains("sheet-open")) {
+        newForm.classList.add("hidden");
+      }
+    }, 300);
+
+    if (restorePrevious && isMobile()) {
+      if (selectedClient && !selectedClient.name?.includes("Venta rápida")) {
+        activarModoExistente();
+      } else {
+        activarModoRapida();
+      }
+    }
+  }
+
   function activarModoNuevo() {
     btnNuevo.classList.add("active");
     btnExistente.classList.remove("active");
@@ -296,12 +326,17 @@ function initAdminPOS() {
     newForm.classList.remove("hidden");
     createBtn.classList.remove("hidden");
     if (createBtnOriginal) createBtnOriginal.classList.remove("hidden");
-    selectedEl.classList.add("hidden");
+    if (selectedEl) selectedEl.classList.add("hidden");
     continuarBtn.classList.add("hidden");
     stepConfirmar.classList.add("hidden");
+
+    if (isMobile()) {
+      openNewClientBottomSheet();
+    }
   }
 
   function activarModoExistente() {
+    closeNewClientBottomSheet(false);
     btnExistente.classList.add("active");
     btnNuevo.classList.remove("active");
     btnRapida.classList.remove("active");
@@ -311,36 +346,92 @@ function initAdminPOS() {
     createBtn.classList.add("hidden");
     if (createBtnOriginal) createBtnOriginal.classList.add("hidden");
     if (!selectedClient || selectedClient.name?.includes("Venta rápida")) {
-      selectedEl.classList.add("hidden");
+      if (selectedEl) selectedEl.classList.add("hidden");
       continuarBtn.classList.add("hidden");
     } else {
-      selectedEl.classList.remove("hidden");
+      if (selectedEl) selectedEl.classList.remove("hidden");
       continuarBtn.classList.remove("hidden");
     }
   }
 
   function activarModoRapida() {
+    closeNewClientBottomSheet(false);
     btnRapida.classList.add("active");
     btnNuevo.classList.remove("active");
     btnExistente.classList.remove("active");
     newForm.classList.add("hidden");
     searchSection.classList.add("hidden");
-    selectedEl.classList.add("hidden");
+    if (selectedEl) selectedEl.classList.add("hidden");
     createBtn.classList.add("hidden");
     if (createBtnOriginal) createBtnOriginal.classList.add("hidden");
     const admin = JSON.parse(localStorage.getItem("cortero_user") || "{}");
     selectedClient = { id: admin.id, name: `${admin.name || "Mostrador"} (Venta rápida)`, phone: null, email: null };
     continuarBtn.classList.remove("hidden");
     stepConfirmar.classList.add("hidden");
-
-    if (typeof window.syncAttendantHeader === "function") {
-      window.syncAttendantHeader(admin);
-    }
   }
 
   btnRapida.onclick = activarModoRapida;
   btnNuevo.onclick = activarModoNuevo;
   btnExistente.onclick = activarModoExistente;
+
+  // Listeners para Bottom Sheet en móvil
+  const closeBtn = document.getElementById("pos-sheet-close-btn");
+  if (closeBtn) {
+    closeBtn.addEventListener("click", () => closeNewClientBottomSheet(true));
+  }
+
+  const sheetBackdrop = document.getElementById("pos-sheet-backdrop");
+  if (sheetBackdrop) {
+    sheetBackdrop.addEventListener("click", () => closeNewClientBottomSheet(true));
+  }
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && newForm.classList.contains("sheet-open")) {
+      closeNewClientBottomSheet(true);
+    }
+  });
+
+  // Soporte de arrastre táctil para el bottom sheet
+  let startY = 0;
+  let currentTranslate = 0;
+
+  newForm.addEventListener("touchstart", (e) => {
+    if (!isMobile() || newForm.scrollTop > 0) return;
+    startY = e.touches[0].clientY;
+  }, { passive: true });
+
+  newForm.addEventListener("touchmove", (e) => {
+    if (!isMobile() || newForm.scrollTop > 0) return;
+    const touchY = e.touches[0].clientY;
+    const deltaY = touchY - startY;
+    if (deltaY > 0) {
+      currentTranslate = deltaY;
+      newForm.style.transform = `translateY(${deltaY}px)`;
+    }
+  }, { passive: true });
+
+  newForm.addEventListener("touchend", () => {
+    if (!isMobile()) return;
+    if (currentTranslate > 90) {
+      closeNewClientBottomSheet(true);
+    }
+    newForm.style.transform = "";
+    currentTranslate = 0;
+  });
+
+  window.addEventListener("resize", () => {
+    if (!isMobile()) {
+      document.body.style.overflow = "";
+      const backdrop = document.getElementById("pos-sheet-backdrop");
+      if (backdrop) backdrop.classList.remove("active");
+      newForm.classList.remove("sheet-open");
+      newForm.style.transform = "";
+      if (btnNuevo.classList.contains("active")) {
+        newForm.classList.remove("hidden");
+      }
+    }
+  });
+
   activarModoRapida();
 
   searchInput.addEventListener("input", () => {
@@ -428,20 +519,26 @@ function initAdminPOS() {
     if (createBtnOriginal) createBtnOriginal.classList.add("hidden");
 
     const clientShortName = getPrimerNombreYApellido(user.name || "Cliente");
-    selectedEl.classList.remove("hidden");
-    document.getElementById("pos-selected-header").innerHTML = `
-      <div class="pos-client-avatar-badge"><span class="material-symbols-outlined">person</span></div>
-      <div class="pos-attendant-info">
-        <span class="pos-attendant-label">Cliente</span>
-        <span class="pos-attendant-name">${clientShortName}</span>
-      </div>
-    `;
-    document.getElementById("pos-client-info").innerHTML = "";
-    document.getElementById("pos-change-client-btn").classList.remove("hidden");
+    if (selectedEl) selectedEl.classList.remove("hidden");
+    const headerEl = document.getElementById("pos-selected-header");
+    if (headerEl) {
+      headerEl.innerHTML = `
+        <div class="pos-client-avatar-badge"><span class="material-symbols-outlined">person</span></div>
+        <div class="pos-attendant-info">
+          <span class="pos-attendant-label">Cliente</span>
+          <span class="pos-attendant-name">${clientShortName}</span>
+        </div>
+      `;
+    }
+    const infoEl = document.getElementById("pos-client-info");
+    if (infoEl) infoEl.innerHTML = "";
+    const changeBtn = document.getElementById("pos-change-client-btn");
+    if (changeBtn) changeBtn.classList.remove("hidden");
     continuarBtn.classList.remove("hidden");
   }
 
-  document.getElementById("pos-change-client-btn").onclick = () => {
+  const posChangeBtn = document.getElementById("pos-change-client-btn");
+  if (posChangeBtn) posChangeBtn.onclick = () => {
     selectedClient = null;
     selectedEl.classList.add("hidden");
     continuarBtn.classList.add("hidden");

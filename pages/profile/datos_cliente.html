@@ -24,7 +24,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
   <!-- ================= CSS PANTALLA ================= -->
-  <link rel="stylesheet" href="/css/pages/datos_cliente.css?v=13">
+  <link rel="stylesheet" href="/css/pages/datos_cliente.css?v=15">
 </head>
 
 <body class="page-datos-cliente">
@@ -207,37 +207,56 @@
                   </button>
                 </div>
 
-                <!-- Mini-form nuevo cliente -->
-                <div id="pos-new-client-form">
-                  <div class="fields-row">
-                    <div class="m3-field full">
-                      <div class="m3-input-wrapper">
-                        <span class="material-symbols-outlined input-icon">person</span>
-                        <input type="text" id="pos-new-name" placeholder=" " required>
-                        <label class="field-label">Nombre completo *</label>
-                      </div>
-                    </div>
+                <!-- Backdrop para Bottom Sheet en móvil -->
+                <div id="pos-sheet-backdrop" class="pos-sheet-backdrop"></div>
+
+                <!-- Formulario nuevo cliente (Inline en PC, Bottom Sheet en móvil) -->
+                <div id="pos-new-client-form" class="pos-new-client-form hidden">
+                  <!-- Handle y Header para Bottom Sheet en móvil (ocultos en PC) -->
+                  <div class="pos-sheet-handle-bar">
+                    <div class="pos-sheet-handle"></div>
                   </div>
-                  <div class="fields-row split">
-                    <div class="m3-field">
-                      <div class="m3-input-wrapper">
-                        <span class="material-symbols-outlined input-icon">call</span>
-                        <input type="tel" id="pos-new-phone" placeholder=" ">
-                        <label class="field-label">Teléfono (opcional)</label>
-                      </div>
+                  <div class="pos-sheet-header">
+                    <div class="pos-sheet-title">
+                      <span class="material-symbols-outlined">person_add</span>
+                      <span>Cliente nuevo</span>
                     </div>
-                    <div class="m3-field">
-                      <div class="m3-input-wrapper">
-                        <span class="material-symbols-outlined input-icon">mail</span>
-                        <input type="email" id="pos-new-email" placeholder=" ">
-                        <label class="field-label">Correo (opcional)</label>
-                      </div>
-                    </div>
+                    <button type="button" id="pos-sheet-close-btn" class="pos-sheet-close-btn" aria-label="Cerrar formulario">
+                      <span class="material-symbols-outlined">close</span>
+                    </button>
                   </div>
-                  <button id="pos-create-client-btn-original" class="btn-primary pos-create-btn hidden">
-                    <span class="material-symbols-outlined">person_add</span>
-                    Crear cliente y continuar
-                  </button>
+
+                  <div class="pos-sheet-body">
+                    <div class="fields-row">
+                      <div class="m3-field full">
+                        <div class="m3-input-wrapper">
+                          <span class="material-symbols-outlined input-icon">person</span>
+                          <input type="text" id="pos-new-name" placeholder=" " required>
+                          <label class="field-label">Nombre completo *</label>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="fields-row split">
+                      <div class="m3-field">
+                        <div class="m3-input-wrapper">
+                          <span class="material-symbols-outlined input-icon">call</span>
+                          <input type="tel" id="pos-new-phone" placeholder=" ">
+                          <label class="field-label">Teléfono (opcional)</label>
+                        </div>
+                      </div>
+                      <div class="m3-field">
+                        <div class="m3-input-wrapper">
+                          <span class="material-symbols-outlined input-icon">mail</span>
+                          <input type="email" id="pos-new-email" placeholder=" ">
+                          <label class="field-label">Correo (opcional)</label>
+                        </div>
+                      </div>
+                    </div>
+                    <button type="button" id="pos-create-client-btn-original" class="btn-primary pos-create-btn hidden">
+                      <span class="material-symbols-outlined">person_add</span>
+                      Crear cliente y continuar
+                    </button>
+                  </div>
                 </div>
 
                 <!-- Buscador (oculto hasta que se elija "existente") -->
@@ -252,15 +271,7 @@
                   </div>
                 </div>
 
-                <!-- Cliente seleccionado (se muestra al escoger uno) -->
-                <div id="pos-selected-client" class="pos-selected-client hidden">
-                  <div class="selected-client-header" id="pos-selected-header"></div>
-                  <div id="pos-client-info" class="pos-client-info"></div>
-                  <button id="pos-change-client-btn" class="btn-ghost-sm">
-                    <span class="material-symbols-outlined">edit</span>
-                    Cambiar cliente
-                  </button>
-                </div>
+<!-- Cliente seleccionado eliminado a solicitud -->
 
               </div>
             </div>

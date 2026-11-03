@@ -1,5 +1,5 @@
 param(
-  [int]$Port = 3000,
+  [int]$Port = 3005,
   [string]$LogFile = "server.log",
   [switch]$OpenBrowser
 )
@@ -17,9 +17,9 @@ if ($existing) {
   Write-Host "  -> Proceso(s) anterior(es) terminado(s)" -ForegroundColor Yellow
 }
 
-# Also kill any orphan live-server node processes for this port
+# Also kill any orphan live-server node processes
 Get-Process -Name "node" -ErrorAction SilentlyContinue |
-  Where-Object { $_.CommandLine -match "port=$Port" } |
+  Where-Object { $_.CommandLine -match "live-server" } |
   ForEach-Object { Stop-Process -Id $_.Id -Force -ErrorAction SilentlyContinue }
 Start-Sleep -Milliseconds 300
 
@@ -44,12 +44,26 @@ $maxWait = 10
 $ready = $false
 for ($i = 1; $i -le $maxWait; $i++) {
   Start-Sleep -Seconds 1
-  $conn = Get-NetTCPConnection -LocalPort $Port -ErrorAction SilentlyContinue |
-          Where-Object { $_.State -eq "Listen" }
-  if ($conn) {
-    $ready = $true
-    break
+  try {
+    $client = [System.Net.Sockets.TcpClient]::new()
+    $iar = $client.BeginConnect("127.0.0.1", $Port, $null, $null)
+    if ($iar.AsyncWaitHandle.WaitOne(300, $false) -and $client.Connected) {
+      $client.EndConnect($iar)
+      $ready = $true
+      $client.Close()
+      break
+    }
+    $client.Close()
+  } catch {}
+
+  if (-not $ready) {
+    $conn = Get-NetTCPConnection -LocalPort $Port -ErrorAction SilentlyContinue
+    if ($conn) {
+      $ready = $true
+      break
+    }
   }
+
   # Check if process already died
   if ($proc.HasExited) {
     Write-Host "  -> El proceso murió prematuramente (exit code: $($proc.ExitCode))" -ForegroundColor Red
