@@ -234,7 +234,9 @@ window.cargarPedidoExistente = async (orderId) => {
   /* CLIENTE */
   if (pedido.users) {
     $id("nombreCliente").textContent = pedido.users.name;
-    $id("correoCliente").textContent = pedido.users.email;
+    const rawUserMail = pedido.users.email || "";
+    const isDummyUserMail = !rawUserMail || rawUserMail.includes("@pos.cafecortero.com") || rawUserMail.startsWith("pos_");
+    $id("correoCliente").textContent = isDummyUserMail ? "" : rawUserMail;
     $id("telefonoCliente").textContent = pedido.users.phone;
   }
 
@@ -258,7 +260,7 @@ window.cargarPedidoExistente = async (orderId) => {
           </div>
         </div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;flex-shrink:0;justify-content:center">
-          <span style="font-family:'Poppins',sans-serif;font-weight:700;font-size:0.95rem;color:#377b4c">L ${sub.toFixed(2)}</span>
+          <span style="font-family:'Poppins',sans-serif;font-weight:700;font-size:0.95rem;color:#377b4c">L ${Number(it.price).toFixed(2)}</span>
           <span style="font-family:'Poppins',sans-serif;font-size:0.85rem;color:#50453e">Cant: ${it.quantity}</span>
         </div>
       </div>`;

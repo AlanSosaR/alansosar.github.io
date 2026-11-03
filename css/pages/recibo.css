@@ -327,11 +327,7 @@ body.header-checkout .recibo-container {
   color: #ffffff;
 }
 
-@media (max-width: 480px) {
-  .pago-chips {
-    flex-direction: column;
-  }
-}
+
 
 /* ---------- PAGO BLOQUE (expandable panel) ---------- */
 .pago-bloque {
@@ -685,3 +681,130 @@ body.header-checkout .recibo-container {
 /* ── Misc ── */
 .antialiased { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 .hidden { display: none !important; }
+
+
+/* Ocultar flecha y título duplicados dentro de la tarjeta (ahora están en el header) */
+.card-back,
+#btn-back {
+  display: none !important;
+}
+
+/* Pedido N.º X visible dentro de la tarjeta */
+
+@media (max-width: 768px) {
+  body.page-recibo {
+    padding-top: 68px !important;
+  }
+
+  body.header-checkout .recibo-container {
+    margin-top: 10px !important;
+    padding: 0 10px 40px !important;
+    width: 100% !important;
+  }
+
+  .recibo-card {
+    padding: 1.25rem 14px 1.5rem !important;
+    border-radius: 20px !important;
+    margin: 0 auto 30px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    box-shadow: 0 4px 20px rgba(85, 55, 34, 0.08) !important;
+  }
+}
+
+/* Línea divisoria full width en recibo y remoción de muescas */
+.recibo-divider-full {
+  margin-left: -24px !important;
+  margin-right: -24px !important;
+  width: calc(100% + 48px) !important;
+}
+@media (max-width: 900px) {
+  .recibo-divider-full {
+    margin-left: -16px !important;
+    margin-right: -16px !important;
+    width: calc(100% + 32px) !important;
+  }
+}
+@media (max-width: 600px) {
+  .recibo-divider-full {
+    margin-left: -14px !important;
+    margin-right: -14px !important;
+    width: calc(100% + 28px) !important;
+  }
+}
+.left-\[-24px\], .right-\[-24px\] {
+  display: none !important;
+}
+
+/* En móvil ocultar avatar de usuario en recibo */
+@media (max-width: 768px) {
+  body.page-recibo #btn-header-user,
+  body.page-recibo .header-avatar-button,
+  body.page-recibo .header-auth-group {
+    display: none !important;
+  }
+}
+
+/* ============================================================
+   MATERIAL 3 SEGMENTED BUTTONS (MÉTODO DE PAGO)
+   ============================================================ */
+@media (max-width: 768px) {
+  .pago-chips,
+  #pagoChipsContainer {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    width: 100% !important;
+    background: #f7f4f2 !important;
+    border: 1px solid rgba(85, 55, 34, 0.22) !important;
+    border-radius: 9999px !important;
+    padding: 3px !important;
+    gap: 3px !important;
+    box-sizing: border-box !important;
+  }
+
+  .pago-chip {
+    flex: 1 1 50% !important;
+    min-width: 0 !important;
+    height: 42px !important;
+    padding: 0 10px !important;
+    border: none !important;
+    border-radius: 9999px !important;
+    background: transparent !important;
+    color: #553722 !important;
+    font-family: 'Poppins', sans-serif !important;
+    font-size: 12.5px !important;
+    font-weight: 600 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    white-space: nowrap !important;
+    cursor: pointer !important;
+    box-shadow: none !important;
+    transition: background 0.2s cubic-bezier(0.4, 0, 0.2, 1), color 0.2s ease, box-shadow 0.2s ease !important;
+  }
+
+  .pago-chip .material-symbols-outlined {
+    font-size: 18px !important;
+    color: inherit !important;
+    flex-shrink: 0 !important;
+  }
+
+  .pago-chip span:last-child {
+    font-size: 12px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .pago-chip.active {
+    background: #377b4c !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 8px rgba(55, 123, 76, 0.3) !important;
+  }
+
+  .pago-chip.active .material-symbols-outlined {
+    color: #ffffff !important;
+  }
+}

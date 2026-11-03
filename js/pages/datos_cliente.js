@@ -325,7 +325,7 @@ function initAdminPOS() {
     }, 300);
 
     if (restorePrevious && isMobile()) {
-      if (selectedClient && !selectedClient.name?.includes("Venta rápida")) {
+      if (selectedClient && !selectedClient.name?.includes("Venta rápida") && !selectedClient.name?.includes("Venta rapida")) {
         activarModoExistente();
       } else {
         activarModoRapida();
@@ -333,10 +333,27 @@ function initAdminPOS() {
     }
   }
 
+  function updateBtnExistenteLabel(clientName) {
+    if (!btnExistente) return;
+    const icon = btnExistente.querySelector(".material-symbols-outlined");
+    const labelSpan = btnExistente.querySelector("span:last-child");
+    if (clientName) {
+      if (icon) icon.textContent = "person";
+      if (labelSpan) labelSpan.textContent = clientName;
+      btnExistente.title = clientName;
+    } else {
+      if (icon) icon.textContent = "person_search";
+      if (labelSpan) labelSpan.textContent = "Cliente existente";
+      btnExistente.title = "Cliente existente";
+    }
+  }
+
   function activarModoNuevo() {
     btnNuevo.classList.add("active");
     btnExistente.classList.remove("active");
     btnRapida.classList.remove("active");
+    updateBtnExistenteLabel(null);
+    try { sessionStorage.removeItem("pos_client"); } catch (_) {}
     searchSection.classList.add("hidden");
     newForm.classList.remove("hidden");
     createBtn.classList.remove("hidden");
@@ -356,16 +373,21 @@ function initAdminPOS() {
     btnNuevo.classList.remove("active");
     btnRapida.classList.remove("active");
     newForm.classList.add("hidden");
-    searchSection.classList.remove("hidden");
-    searchInput.focus();
-    createBtn.classList.add("hidden");
-    if (createBtnOriginal) createBtnOriginal.classList.add("hidden");
-    if (!selectedClient || selectedClient.name?.includes("Venta rápida")) {
+    if (!selectedClient || selectedClient.name?.includes("Venta")) {
+      searchSection.classList.remove("hidden");
+      searchInput.focus();
+      createBtn.classList.add("hidden");
+      if (createBtnOriginal) createBtnOriginal.classList.add("hidden");
       if (selectedEl) selectedEl.classList.add("hidden");
       continuarBtn.classList.add("hidden");
+      updateBtnExistenteLabel(null);
     } else {
+      searchSection.classList.add("hidden");
+      createBtn.classList.add("hidden");
+      if (createBtnOriginal) createBtnOriginal.classList.add("hidden");
       if (selectedEl) selectedEl.classList.remove("hidden");
       continuarBtn.classList.remove("hidden");
+      updateBtnExistenteLabel(selectedClient.name);
     }
   }
 
@@ -374,6 +396,7 @@ function initAdminPOS() {
     btnRapida.classList.add("active");
     btnNuevo.classList.remove("active");
     btnExistente.classList.remove("active");
+    updateBtnExistenteLabel(null);
     newForm.classList.add("hidden");
     searchSection.classList.add("hidden");
     if (selectedEl) selectedEl.classList.add("hidden");
@@ -381,6 +404,7 @@ function initAdminPOS() {
     if (createBtnOriginal) createBtnOriginal.classList.add("hidden");
     const admin = JSON.parse(localStorage.getItem("cortero_user") || "{}");
     selectedClient = { id: admin.id, name: `${admin.name || "Mostrador"} (Venta rápida)`, phone: null, email: null };
+    try { sessionStorage.setItem("pos_client", JSON.stringify(selectedClient)); } catch (_) {}
     continuarBtn.classList.remove("hidden");
     stepConfirmar.classList.add("hidden");
   }
@@ -447,7 +471,17 @@ function initAdminPOS() {
     }
   });
 
-  activarModoRapida();
+  let savedPosClient = null;
+  try {
+    const rawPos = sessionStorage.getItem("pos_client");
+    if (rawPos) savedPosClient = JSON.parse(rawPos);
+  } catch (_) {}
+
+  if (savedPosClient && savedPosClient.name && !savedPosClient.name.toLowerCase().includes("venta rápida") && !savedPosClient.name.toLowerCase().includes("venta rapida")) {
+    seleccionarCliente(savedPosClient);
+  } else {
+    activarModoRapida();
+  }
 
   searchInput.addEventListener("input", () => {
     clearTimeout(searchTimer);
@@ -467,8 +501,11 @@ function initAdminPOS() {
   });
 
   document.addEventListener("click", (e) => {
-    if (!e.target.closest(".pos-search-box")) {
+    if (!e.target.closest(".pos-search-box") && !e.target.closest("#pos-btn-existente")) {
       resultsEl.classList.add("hidden");
+      if (selectedClient && !selectedClient.name?.includes("Venta")) {
+        searchSection.classList.add("hidden");
+      }
     }
   });
 
@@ -515,7 +552,6 @@ function initAdminPOS() {
         <span class="material-symbols-outlined result-icon">person</span>
         <div>
           <div class="result-name">${u.name || "Sin nombre"}</div>
-          <div class="result-detail">${[u.phone, u.email].filter(Boolean).join(" · ") || "Sin contacto"}</div>
         </div>
       `;
       div.onclick = () => seleccionarCliente(u);
@@ -526,12 +562,25 @@ function initAdminPOS() {
 
   function seleccionarCliente(user) {
     selectedClient = user;
+    try {
+      sessionStorage.setItem("pos_client", JSON.stringify({
+        id: user.id,
+        name: user.name,
+        phone: user.phone,
+        email: user.email
+      }));
+    } catch (_) {}
     resultsEl.classList.add("hidden");
     searchSection.classList.add("hidden");
     newForm.classList.add("hidden");
     searchInput.value = "";
     createBtn.classList.add("hidden");
     if (createBtnOriginal) createBtnOriginal.classList.add("hidden");
+
+    updateBtnExistenteLabel(user.name || "Cliente");
+    btnExistente.classList.add("active");
+    btnNuevo.classList.remove("active");
+    btnRapida.classList.remove("active");
 
     const clientShortName = getPrimerNombreYApellido(user.name || "Cliente");
     if (selectedEl) selectedEl.classList.remove("hidden");
@@ -555,6 +604,8 @@ function initAdminPOS() {
   const posChangeBtn = document.getElementById("pos-change-client-btn");
   if (posChangeBtn) posChangeBtn.onclick = () => {
     selectedClient = null;
+    try { sessionStorage.removeItem("pos_client"); } catch (_) {}
+    updateBtnExistenteLabel(null);
     selectedEl.classList.add("hidden");
     continuarBtn.classList.add("hidden");
     stepConfirmar.classList.add("hidden");

@@ -61,7 +61,7 @@
         <div class="w-full h-px bg-verde/30 my-4"></div>
 
         <!-- Datos del cliente -->
-        <section class="flex flex-col gap-md mb-6">
+        <section id="seccionDatosCliente" class="flex flex-col gap-md mb-6">
           <h3 class="font-headline text-[18px] font-bold text-primary flex items-center gap-2">
             <span class="material-symbols-outlined text-verde">person</span>
             Datos del cliente
@@ -105,11 +105,9 @@
           <div id="listaProductos" class="rounded-xl p-md flex flex-col gap-sm bg-surface-container-lowest" style="box-shadow:0 4px 20px rgba(85,55,34,0.06);border:1px solid rgba(212,195,186,0.25)"></div>
         </section>
 
-        <!-- Línea divisoria punteada -->
-        <div class="relative py-4 flex items-center">
-          <div class="absolute left-[-24px] w-4 h-8 bg-white rounded-r-full border-r border-y border-outline-variant shadow-inner"></div>
+        <!-- Línea divisoria punteada full-width -->
+        <div class="recibo-divider-full relative py-4 flex items-center">
           <div class="w-full" style="border-top: 1px dotted rgba(55,123,76,0.5);"></div>
-          <div class="absolute right-[-24px] w-4 h-8 bg-white rounded-l-full border-l border-y border-outline-variant shadow-inner"></div>
         </div>
 
         <!-- Total -->
@@ -313,6 +311,89 @@
       ? "/js/pages/recibo.view.js?t=" + cacheBuster
       : "/js/pages/recibo.checkout.js?t=" + cacheBuster;
     document.body.appendChild(script);
+  </script>
+
+
+  <!-- Sincronización Header POS y Datos de Cliente -->
+  <script>
+    function renderAttendantInReciboHeader() {
+      const slot = document.getElementById("header-pos-client-slot");
+      if (!slot) return;
+      const admin = JSON.parse(localStorage.getItem("cortero_user") || "null");
+      const isAdmin = admin && (String(admin.rol || admin.role || "").toLowerCase() === "admin");
+      const rawName = (isAdmin && admin.name) ? admin.name : "Alan Sosa";
+      const parts = rawName.trim().split(/\s+/);
+      const shortName = parts.length <= 2 
+        ? rawName.trim() 
+        : (parts.length >= 4 ? `${parts[0]} ${parts[2]}` : `${parts[0]} ${parts[1]}`);
+      const adminPhoto = (isAdmin && admin.photo_url) ? admin.photo_url : "/imagenes/barista.png";
+
+      slot.style.display = "flex";
+      slot.innerHTML = `
+        <div class="pos-selected-client">
+          <div class="selected-client-header">
+            <img src="${adminPhoto}" alt="${shortName}" class="pos-attendant-avatar" onerror="this.src='/imagenes/barista.png'">
+            <div class="pos-attendant-info">
+              <span class="pos-attendant-label">Atendido por</span>
+              <span class="pos-attendant-name">${shortName}</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function syncReciboHeader() {
+      renderAttendantInReciboHeader();
+
+      // Título en el header: "Detalles del pedido"
+            // Ocultar sección de datos del cliente si es Venta rápida
+      const secCliente = document.getElementById("seccionDatosCliente");
+      if (secCliente) {
+        let isVentaRapida = false;
+        if (window.POS_CLIENT && window.POS_CLIENT.name) {
+          const n = String(window.POS_CLIENT.name).toLowerCase();
+          if (n.includes("venta rápida") || n.includes("venta rapida")) {
+            isVentaRapida = true;
+          }
+        }
+        secCliente.style.display = isVentaRapida ? "none" : "";
+      }
+
+      const titleEl = document.getElementById("header-recibo-title-text");
+      if (titleEl) {
+        titleEl.textContent = "Detalles del pedido";
+      }
+
+      // Sincronizar enlace de volver
+      const backBtn = document.getElementById("header-recibo-back");
+      if (backBtn) {
+        backBtn.href = window.IS_READ_ONLY ? "/pages/profile/mis-pedidos.html" : "/pages/profile/datos_cliente.html";
+      }
+
+      // Omitir email dummy si no es del cliente
+      const correoSpan = document.getElementById("correoCliente");
+      const checkEmail = () => {
+        if (!correoSpan) return;
+        const text = correoSpan.textContent.trim();
+        if (text.includes("@pos.cafecortero.com") || text.startsWith("pos_")) {
+          correoSpan.textContent = "";
+        }
+        const parent = correoSpan.closest(".flex.flex-col.gap-1");
+        if (parent) {
+          parent.style.removeProperty("display");
+          parent.style.display = "flex";
+        }
+      };
+      if (correoSpan) {
+        new MutationObserver(checkEmail).observe(correoSpan, { childList: true, characterData: true, subtree: true });
+        checkEmail();
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", syncReciboHeader);
+    setTimeout(syncReciboHeader, 100);
+    setTimeout(syncReciboHeader, 400);
+    setTimeout(syncReciboHeader, 1000);
   </script>
 
 </body>

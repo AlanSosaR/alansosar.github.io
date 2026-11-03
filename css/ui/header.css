@@ -1839,3 +1839,99 @@ body.page-admin-agregar-cafe #header-admin-edit-cafe-title {
     display: block !important;
   }
 }
+
+
+/* =====================================================
+   PAGE RECIBO: HEADER ADAPTADO (BACK, TÍTULO Y ATENDIDO POR)
+===================================================== */
+.header-recibo-back-btn {
+  display: none !important;
+}
+
+.header-recibo-title {
+  display: none !important;
+}
+
+body.page-recibo .header-recibo-back-btn {
+  width: 42px !important;
+  height: 42px !important;
+  min-width: 42px !important;
+  border-radius: 50% !important;
+  background: #FFFFFF !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: none !important;
+  color: var(--verde) !important;
+  text-decoration: none !important;
+  cursor: pointer;
+  z-index: 10;
+}
+
+body.page-recibo .header-recibo-title,
+body.page-recibo #header-recibo-title {
+  display: flex !important;
+  align-items: center !important;
+  font-family: "Poppins", sans-serif !important;
+  font-size: 1.15rem !important;
+  font-weight: 700 !important;
+  color: var(--marron, #512615) !important;
+  letter-spacing: -0.2px !important;
+  margin-left: 10px !important;
+  white-space: nowrap !important;
+  line-height: 1.2 !important;
+}
+
+body.page-recibo .recibo-title-text,
+body.page-recibo #header-recibo-title-text {
+  font-family: "Poppins", sans-serif !important;
+  font-size: 1.15rem !important;
+  font-weight: 700 !important;
+  color: var(--marron, #512615) !important;
+  letter-spacing: -0.2px !important;
+}
+
+/* Ocultar menú hamburguesa en mobile para recibo */
+body.page-recibo #menu-toggle {
+  display: none !important;
+}
+
+/* Ocultar logo en recibo en todas las pantallas */
+body.page-recibo .header-logo-link {
+  display: none !important;
+}
+
+/* Ocultar carrito pero MOSTRAR avatar de usuario al par de atendido por */
+body.page-recibo #cart-btn {
+  display: none !important;
+}
+
+body.page-recibo .header-auth-group,
+body.page-recibo #btn-header-user,
+body.page-recibo .header-avatar-button {
+  display: inline-flex !important;
+}
+
+body.page-recibo .header-right-stitch {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+
+/* Mostrar atendido por en recibo */
+body.page-recibo #header-pos-client-slot {
+  display: flex !important;
+}
+
+@media (max-width: 768px) {
+  body.page-recibo .header-left-stitch {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+  }
+  body.page-recibo .recibo-title-text,
+  body.page-recibo #header-recibo-title-text {
+    font-size: 1.05rem !important;
+  }
+}

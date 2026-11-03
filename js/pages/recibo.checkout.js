@@ -172,8 +172,16 @@ async function cargarResumen() {
   if (!sb || !user) return;
 
   if (window.POS_CLIENT) {
+    const isVentaRapida = String(window.POS_CLIENT.name || "").toLowerCase().includes("venta rápida") ||
+                          String(window.POS_CLIENT.name || "").toLowerCase().includes("venta rapida");
+    const secCliente = document.getElementById("seccionDatosCliente");
+    if (secCliente) {
+      secCliente.style.display = isVentaRapida ? "none" : "";
+    }
     $("nombreCliente").textContent = window.POS_CLIENT.name;
-    $("correoCliente").textContent = window.POS_CLIENT.email || "—";
+    const rawPosMail = window.POS_CLIENT.email || "";
+    const isDummyMail = !rawPosMail || rawPosMail.includes("@pos.cafecortero.com") || rawPosMail.startsWith("pos_");
+    $("correoCliente").textContent = isDummyMail ? "" : rawPosMail;
     $("telefonoCliente").textContent = window.POS_CLIENT.phone || "—";
     $("zonaCliente").textContent = "POS (mostrador)";
     $("direccionCliente").textContent = "Venta en tienda";
@@ -232,7 +240,7 @@ function renderCarrito() {
           </div>
         </div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;flex-shrink:0;justify-content:center">
-          <span style="font-family:'Poppins',sans-serif;font-weight:700;font-size:0.95rem;color:#377b4c">L ${sub.toFixed(2)}</span>
+          <span style="font-family:'Poppins',sans-serif;font-weight:700;font-size:0.95rem;color:#377b4c">L ${Number(it.price).toFixed(2)}</span>
           <span style="font-family:'Poppins',sans-serif;font-size:0.85rem;color:#50453e">Cant: ${it.qty}</span>
         </div>
       </div>`;

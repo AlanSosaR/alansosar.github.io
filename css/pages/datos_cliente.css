@@ -1926,3 +1926,10 @@ body.page-datos-cliente main {
 .summary-item .item-price {
   text-align: right !important;
 }
+
+
+.pos-type-btn span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
