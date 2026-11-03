@@ -239,12 +239,16 @@ body.page-carrito .header-cart-back-btn:active {
 /* Flecha "volver" del header: MISMA regla para carrito y datos_cliente
    para que el grosor/tamaño sean idénticos (fuente única de verdad). */
 body.page-carrito .header-cart-back-btn .material-symbols-outlined,
-body.page-datos-cliente .header-datos-back-btn .material-symbols-outlined {
-  font-size: 24px !important;
+body.page-datos-cliente .header-datos-back-btn .material-symbols-outlined,
+#header-datos-back .material-symbols-outlined,
+#header-cart-back .material-symbols-outlined {
+  font-size: 22px !important;
   color: #377b4c !important;
-  font-weight: 300 !important;
-  font-variation-settings: 'wght' 300, 'opsz' 24 !important;
+  font-weight: 200 !important;
+  font-variation-settings: 'wght' 200, 'opsz' 20, 'FILL' 0 !important;
   -webkit-text-stroke: 0 !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
   line-height: 1;
 }
 
@@ -253,18 +257,24 @@ body.page-datos-cliente .header-datos-back-btn .material-symbols-outlined {
     display: none !important;
   }
 
-  body.page-carrito .header-cart-back-btn {
+  body.page-carrito .header-cart-back-btn,
+  body.page-datos-cliente .header-datos-back-btn {
     display: inline-flex !important;
     width: 42px !important;
     height: 42px !important;
     min-width: 42px !important;
   }
 
-  body.page-carrito .header-cart-back-btn .material-symbols-outlined {
-    font-size: 24px !important;
-    font-weight: 300 !important;
-    font-variation-settings: 'wght' 300, 'opsz' 24 !important;
+  body.page-carrito .header-cart-back-btn .material-symbols-outlined,
+  body.page-datos-cliente .header-datos-back-btn .material-symbols-outlined,
+  #header-datos-back .material-symbols-outlined,
+  #header-cart-back .material-symbols-outlined {
+    font-size: 22px !important;
+    font-weight: 200 !important;
+    font-variation-settings: 'wght' 200, 'opsz' 20, 'FILL' 0 !important;
     -webkit-text-stroke: 0 !important;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
   }
 }
 
@@ -1804,4 +1814,28 @@ body.page-admin-agregar-cafe #header-admin-add-cafe-title {
 ===================================================== */
 body.page-admin-agregar-cafe #header-admin-edit-cafe-title {
   display: block;
+}
+
+/* =========================================================
+   PÍLDORA ATENDIDO POR: PC vs MÓVIL
+   En PC: Solo sale "Atendido por [Nombre]" sin la foto de perfil.
+   En móvil: Sale tal cual está (con la foto de perfil).
+   ========================================================= */
+@media (min-width: 769px) {
+  .header-pos-client-slot .pos-attendant-avatar {
+    display: none !important;
+  }
+  .header-pos-client-slot .pos-selected-client {
+    padding: 6px 14px !important;
+    gap: 0 !important;
+  }
+  .header-pos-client-slot .pos-attendant-info {
+    text-align: left !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .header-pos-client-slot .pos-attendant-avatar {
+    display: block !important;
+  }
 }

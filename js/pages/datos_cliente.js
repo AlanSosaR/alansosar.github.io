@@ -230,8 +230,6 @@ function getPrimerNombreYApellido(fullName) {
 
 function movePosElementsToHeader() {
   const header = document.getElementById("main-header") || document.querySelector("header.header-fixed");
-  const leftStitch = (header || document).querySelector(".header-left-stitch");
-  const rightStitch = (header || document).querySelector(".header-right-stitch");
 
   // Título "Pedido POS" -> fila izquierda, junto a la flecha.
   const posHeader = document.querySelector("#admin-pos-section .pos-header") || document.querySelector(".pos-header");
@@ -240,31 +238,48 @@ function movePosElementsToHeader() {
     posHeaderSlot.appendChild(posHeader);
   }
 
-  // Píldora de cliente eliminado a solicitud del usuario
+  // Píldora "Atendido por" en el header derecho (igual que en carrito)
   const posClientSlot = document.getElementById("header-pos-client-slot");
   if (posClientSlot) {
-    posClientSlot.innerHTML = "";
-    posClientSlot.style.display = "none";
-  }
-  if (leftStitch) {
-    leftStitch.querySelectorAll(".pos-selected-client, #pos-selected-client, #pos-selected-header").forEach(el => el.remove());
-  }
-  if (rightStitch) {
-    rightStitch.querySelectorAll(".pos-selected-client, #pos-selected-client, #pos-selected-header, #header-pos-client-slot").forEach(el => el.remove());
+    posClientSlot.style.display = "flex";
+    const u = (typeof userCache !== "undefined" && userCache) ? userCache : JSON.parse(localStorage.getItem("cortero_user") || "null");
+    const isAdmin = u && (String(u.rol || u.role || "").toLowerCase() === "admin");
+    const adminPhoto = (isAdmin && u.photo_url) ? u.photo_url : "/imagenes/barista.png";
+    const rawName = (isAdmin && u.name) ? u.name : "Barista";
+    const parts = rawName.trim().split(/\s+/);
+    const shortName = parts.length <= 2 
+      ? rawName.trim() 
+      : (parts.length >= 4 ? `${parts[0]} ${parts[2]}` : `${parts[0]} ${parts[1]}`);
+
+    posClientSlot.innerHTML = `
+      <div class="pos-selected-client">
+        <div class="selected-client-header">
+          <img src="${adminPhoto}" alt="${shortName}" class="pos-attendant-avatar" onerror="this.src='/imagenes/barista.png'">
+          <div class="pos-attendant-info">
+            <span class="pos-attendant-label">Atendido por</span>
+            <span class="pos-attendant-name">${shortName}</span>
+          </div>
+        </div>
+      </div>
+    `;
   }
 }
 
 function initAdminPOS() {
+  document.body.classList.add("is-pos");
   document.getElementById("customer-form-section").classList.add("hidden");
   document.getElementById("map-section")?.classList.add("hidden");
   document.getElementById("admin-pos-section").classList.remove("hidden");
   const submitBtn = document.getElementById("btn-submit-desktop");
-  if (submitBtn) submitBtn.style.display = "none";
+  if (submitBtn) { submitBtn.classList.add("hidden"); submitBtn.style.setProperty("display", "none", "important"); }
 
   movePosElementsToHeader();
   document.addEventListener("header:ready", movePosElementsToHeader);
-  setTimeout(movePosElementsToHeader, 100);
+  setTimeout(movePosElementsToHeader, 50);
+  setTimeout(movePosElementsToHeader, 150);
   setTimeout(movePosElementsToHeader, 350);
+  setTimeout(movePosElementsToHeader, 700);
+  setTimeout(movePosElementsToHeader, 1200);
 
   const searchInput = document.getElementById("pos-search-input");
   const resultsEl = document.getElementById("pos-search-results");
