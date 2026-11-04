@@ -1,3 +1,7 @@
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
 html {
     overflow-y: auto;
     scrollbar-width: none;
@@ -29,31 +33,154 @@ html::-webkit-scrollbar { width: 0; height: 0; display: none; }
     --shadow-editorial: 0 20px 40px rgba(25, 28, 28, 0.06);
 }
 
-body.page-admin-customers {
+html {
+    max-width: 100vw;
+    overflow-x: clip;
+}
+
+body.page-admin-customers, body.page-admin-users {
     background-color: var(--fondo-general);
     color: var(--texto-principal);
     font-family: 'Poppins', sans-serif;
     margin: 0;
     padding: 0;
+    max-width: 100vw;
+    overflow-x: clip;
 }
 
 .admin-customers-container {
     max-width: 1440px;
-    margin: 84px auto 40px;
-    padding: 40px 32px;
+    margin: 72px auto 40px;
+    padding: 12px 32px 40px;
+    flex: 1 0 auto;
 }
 
-/* Títulos Intenso */
+/* =========================================================
+   ELIMINAR FOOTER DE GESTIÓN DE CLIENTES
+========================================================= */
+body.page-admin-customers, body.page-admin-users footer#site-footer,
+body.page-admin-customers, body.page-admin-users .site-footer,
+body.page-admin-customers, body.page-admin-users .admin-footer {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    max-height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    overflow: hidden !important;
+    pointer-events: none !important;
+}
+
+/* Títulos Intenso - Sticky / Fijo arriba */
 .page-title-section {
-    margin-bottom: 48px;
+    position: sticky;
+    top: 72px;
+    z-index: 40;
+    background: var(--fondo-general);
+    padding-top: 8px;
+    padding-bottom: 12px;
+    margin-bottom: 16px;
 }
 
 .page-title {
-    font-size: 40px;
-    font-weight: 900;
-    letter-spacing: -1.5px;
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
     color: #512615; /* MARRÓN INTENSO */
-    margin: 0 0 8px;
+    margin: 0 0 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* =========================================================
+   CARRUSEL DE PÍLDORAS DE FILTRO POR ROL (MATERIAL 3 CHIPS)
+========================================================= */
+.customers-filter-carousel {
+    width: 100%;
+    overflow: hidden;
+    margin-top: 14px;
+}
+
+.customers-filter-chips {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding: 2px 2px 8px;
+    width: 100%;
+}
+
+.customers-filter-chips::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+}
+
+.customers-filter-chips .customer-chip {
+    flex-shrink: 0;
+    white-space: nowrap;
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 9999px;
+    padding: 8px 18px;
+    border: 1.5px solid #E4EAE6;
+    background: #FFFFFF;
+    color: #715B51;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+    user-select: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.customers-filter-chips .customer-chip:hover {
+    background: #F4F7F5;
+    border-color: #D0DDD4;
+    color: #512615;
+}
+
+.customers-filter-chips .customer-chip:active {
+    transform: scale(0.96);
+}
+
+.customers-filter-chips .customer-chip.active {
+    background: #377b4c !important;
+    color: #FFFFFF !important;
+    border-color: #377b4c !important;
+    box-shadow: 0 3px 10px rgba(55, 123, 76, 0.28);
+}
+
+.customers-filter-chips .customer-chip .chip-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 7px;
+    font-size: 11px;
+    font-weight: 700;
+    border-radius: 9999px;
+    background: rgba(81, 38, 21, 0.08);
+    color: #512615;
+    margin-left: 2px;
+    line-height: 1;
+}
+
+.customers-filter-chips .customer-chip.active .chip-count {
+    background: rgba(255, 255, 255, 0.25);
+    color: #FFFFFF;
+}
+
+.customers-filter-chips .customer-chip .chip-count:empty {
+    display: none;
 }
 
 .page-subtitle {
@@ -86,12 +213,68 @@ body.page-admin-customers {
 }
 
 @media (max-width: 1024px) {
-    .customers-layout {
-        display: flex;
-        flex-direction: column-reverse;
-        gap: 32px;
-        align-items: stretch; /* Permite que las columnas abarquen el ancho completo y no se compriman dejando espacio */
+    /* HEADER FIJO */
+    body.page-admin-customers, body.page-admin-users header#main-header,
+    body.page-admin-customers, body.page-admin-users header.header-fixed {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        height: 64px !important;
+        z-index: 1000 !important;
     }
+
+    /* SECCIÓN DE TÍTULO PERMANENTEMENTE FIJA EN MÓVIL */
+    body.page-admin-customers, body.page-admin-users .page-title-section {
+        position: fixed !important;
+        top: 64px !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        z-index: 90 !important;
+        background: var(--fondo-general) !important;
+        margin: 0 !important;
+        padding: 10px 16px 12px 16px !important;
+        box-shadow: 0 4px 12px -4px rgba(0, 0, 0, 0.06) !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Ocultar sección de título si el buscador o el detalle están activos */
+    body.page-admin-customers, body.page-admin-users.header-search-active .page-title-section,
+    body.page-admin-customers, body.page-admin-users.detail-view-active .page-title-section {
+        display: none !important;
+    }
+
+    .admin-customers-container {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 0 24px 0 !important;
+        box-sizing: border-box !important;
+    }
+
+    .customers-layout {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        padding: 0 16px !important;
+        margin-top: 196px !important; /* Despeje para header (64px) + título y chips fijos (132px) */
+        gap: 16px !important;
+    }
+
+    /* Al buscar o ver detalle, no hay barra de título fija arriba */
+    body.page-admin-customers, body.page-admin-users.header-search-active .customers-layout {
+        margin-top: 74px !important;
+    }
+
+    body.page-admin-customers, body.page-admin-users.detail-view-active .customers-layout {
+        margin-top: 74px !important;
+    }
+
 
     .no-selection-section {
         display: none !important;
@@ -110,6 +293,110 @@ body.page-admin-customers {
     body.detail-view-active .customer-detail-section {
         display: flex !important;
         width: 100% !important;
+        margin-top: 14px !important;
+    }
+
+    /* Material 3 Focused Search: Al activar el buscador en móvil, oculta el encabezado para foco completo */
+    body.header-search-active .page-title-section {
+        display: none !important;
+    }
+
+    body.header-search-active .admin-customers-container {
+        margin-top: 64px !important;
+        padding-top: 10px !important;
+    }
+
+    /* Ocultar sección de título en móvil al ver detalle del cliente */
+    body.detail-view-active .page-title-section {
+        display: none !important;
+    }
+
+    /* El botón volver se mueve al header, se oculta en el cuerpo */
+    .btn-mobile-back,
+    #btn-back-to-list {
+        display: none !important;
+    }
+
+    body.page-admin-customers, body.page-admin-users .admin-customers-container {
+        padding-bottom: 24px !important;
+    }
+
+    /* En móvil: sin tarjeta de fondo, clientes como píldoras independientes */
+    .customers-list-section {
+        background: transparent !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        border: none !important;
+        min-height: auto !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .list-header {
+        display: none !important;
+    }
+
+    .customers-list {
+        padding: 0 !important;
+        margin: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 10px !important;
+        overflow: visible !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .customer-card {
+        background: #FFFFFF !important;
+        border-radius: 16px !important;
+        border: 1.5px solid #E4EAE6 !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+        padding: 12px 16px !important;
+        gap: 12px !important;
+        margin: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
+    }
+
+    .card-info {
+        flex: 1;
+        min-width: 0;
+        overflow: hidden;
+    }
+
+    .customer-card:hover,
+    .customer-card:active {
+        background-color: #F7FAF8 !important;
+        border-color: #D2DED6 !important;
+        transform: scale(0.985);
+    }
+
+    .customer-card.active {
+        background-color: #F0FDF4 !important;
+        border-color: #377b4c !important;
+        box-shadow: 0 3px 12px rgba(55, 123, 76, 0.16) !important;
+        border-left: 1.5px solid #377b4c !important;
+    }
+
+    .list-pagination-footer {
+        background: transparent !important;
+        border-top: none !important;
+        padding: 20px 0 0 0 !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+    }
+
+    .list-pagination-footer #cust-prev,
+    .list-pagination-footer #cust-next {
+        display: none !important;
     }
 }
 
@@ -258,8 +545,16 @@ body.page-admin-customers {
 }
 
 .arrow {
-    color: var(--borde);
-    font-size: 18px;
+    color: var(--verde, #377b4c) !important;
+    font-size: 20px;
+    font-weight: 600;
+    opacity: 0.9;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.customer-card:hover .arrow {
+    opacity: 1;
+    transform: translateX(3px);
 }
 
 .admin-badge {
@@ -359,10 +654,13 @@ body.page-admin-customers {
 
 .header-actions {
     position: absolute;
-    right: 32px;
-    bottom: -20px;
+    top: 16px;
+    right: 20px;
+    bottom: auto;
     display: flex;
+    align-items: center;
     gap: 12px;
+    z-index: 10;
 }
 
 .detail-content {
@@ -694,7 +992,35 @@ body.page-admin-customers {
 ========================= */
 @media (max-width: 768px) {
     .admin-customers-container {
-        padding: 20px 16px;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 0 24px 0 !important;
+        box-sizing: border-box !important;
+    }
+
+    .page-title-section {
+        position: sticky !important;
+        top: 64px !important;
+        z-index: 40 !important;
+        background: var(--fondo-general) !important;
+        margin: 0 0 14px 0 !important; width: 100% !important; max-width: 100% !important; box-sizing: border-box !important;
+        padding: 10px 16px 12px 16px !important;
+        box-shadow: 0 4px 12px -4px rgba(0, 0, 0, 0.05) !important;
+    }
+
+    .page-title {
+        font-size: 22px !important;
+        white-space: nowrap !important;
+    }
+
+    .page-subtitle {
+        font-size: 13.5px !important;
+    }
+
+    .customers-filter-chips .customer-chip {
+        font-size: 12.5px;
+        padding: 7px 15px;
     }
 
     .detail-cover {
@@ -739,13 +1065,54 @@ body.page-admin-customers {
         word-wrap: break-word; /* Prevents long names from breaking flex layout */
     }
 
-    .header-actions {
-        position: static;
-        margin-top: 16px;
-        padding: 0 16px;
-        justify-content: flex-start;
-        flex-wrap: wrap; /* Permitir que los botones envuelvan si no caben */
-        gap: 8px;
+    .detail-cover {
+        position: relative !important;
+    }
+
+    .detail-profile-wrapper {
+        padding-right: 60px !important; /* Espacio para que el botón de contacto no solape el nombre */
+    }
+
+    /* Botón contactar en la esquina superior derecha, solo icono en móvil */
+    .header-actions,
+    .detail-cover .header-actions {
+        position: absolute !important;
+        top: 14px !important;
+        right: 14px !important;
+        bottom: auto !important;
+        left: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        z-index: 20 !important;
+    }
+
+    #btnSendMessage {
+        width: 42px !important;
+        height: 42px !important;
+        min-width: 42px !important;
+        padding: 0 !important;
+        border-radius: 50% !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        background: var(--principal) !important;
+        color: #FFFFFF !important;
+        box-shadow: 0 4px 12px rgba(55, 123, 76, 0.28) !important;
+        border: none !important;
+        transition: transform 0.15s ease, opacity 0.15s ease !important;
+    }
+
+    #btnSendMessage:active {
+        transform: scale(0.92) !important;
+    }
+
+    #btnSendMessage .material-symbols-outlined {
+        font-size: 22px !important;
+        margin: 0 !important;
+    }
+
+    #btnSendMessage .btn-contact-text {
+        display: none !important;
     }
 
     .detail-content {
@@ -755,8 +1122,87 @@ body.page-admin-customers {
     }
 
     .stats-grid {
-        grid-template-columns: 1fr;
-        gap: 12px;
+        display: grid !important;
+        grid-template-columns: minmax(90px, auto) minmax(0, 1fr) !important;
+        gap: 12px !important;
+    }
+
+    /* En móvil: gasto total en una sola fila completa arriba */
+    .stats-grid .stat-card:first-child {
+        grid-column: 1 / -1 !important;
+        padding: 18px 20px !important;
+    }
+
+    .stats-grid .stat-card:first-child .stat-value {
+        font-size: 26px !important;
+    }
+
+    /* Abajo: pedidos y desde cuándo es miembro en dos columnas */
+    .stats-grid .stat-card:not(:first-child) {
+        grid-column: span 1 !important;
+        padding: 16px 14px !important;
+    }
+
+    .stats-grid .stat-card:not(:first-child) .stat-value {
+        font-size: 20px !important;
+    }
+
+    /* Producto más vendido (cuando es admin): en la misma fila que ventas, aprovechando el espacio */
+    .stats-grid #admin-stat-top-product {
+        grid-column: span 1 !important;
+        padding: 14px 14px !important;
+        min-width: 0 !important;
+        overflow: hidden !important;
+    }
+
+    .stats-grid #admin-stat-top-product .stat-label {
+        font-size: 11px !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        display: block !important;
+    }
+
+    .stats-grid #admin-stat-top-product .top-product-content {
+        display: flex !important;
+        align-items: center !important;
+        gap: 10px !important;
+        margin-top: 4px !important;
+        min-width: 0 !important;
+    }
+
+    .stats-grid #admin-stat-top-product .top-product-thumb,
+    .stats-grid #admin-stat-top-product .top-product-placeholder {
+        width: 36px !important;
+        height: 36px !important;
+        min-width: 36px !important;
+        flex-shrink: 0 !important;
+        border-radius: 8px !important;
+    }
+
+    .stats-grid #admin-stat-top-product .top-product-info {
+        min-width: 0 !important;
+        overflow: hidden !important;
+        flex: 1 !important;
+    }
+
+    .stats-grid #admin-stat-top-product .top-product-name {
+        font-size: 14px !important;
+        font-weight: 700 !important;
+        line-height: 1.25 !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        display: block !important;
+    }
+
+    .stats-grid #admin-stat-top-product .top-product-qty {
+        font-size: 11.5px !important;
+        color: var(--texto-secundario) !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        display: block !important;
     }
 
     .history-table thead {
@@ -810,11 +1256,17 @@ body.page-admin-customers {
     .history-table td:nth-child(4) { grid-area: total; justify-self: end; font-size: 16px; align-self: center; }
     .history-table td:nth-child(4) strong { color: var(--texto-principal); }
 
-    /* Paginación responsive */
+    /* Paginación responsive: ocultar flechas en móvil */
     .list-pagination-footer {
-        display: grid !important;
-        grid-template-columns: auto 1fr auto;
-        gap: 4px;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        gap: 8px !important;
+    }
+
+    .list-pagination-footer #cust-prev,
+    .list-pagination-footer #cust-next {
+        display: none !important;
     }
     .page-numbers {
         justify-content: center;
@@ -1295,6 +1747,12 @@ body.page-admin-customers {
     gap: 12px;
     margin-bottom: 24px;
 }
+.history-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+}
 
 .history-header h3 {
     margin: 0;
@@ -1303,3 +1761,210 @@ body.page-admin-customers {
     color: #512615;
 }
 
+
+
+.empty-state-list {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 36px 20px;
+    color: #8C7E77;
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
+    background: #FFFFFF;
+    border-radius: 16px;
+    border: 1.5px dashed #E2E8F0;
+    margin: 8px 0;
+}
+
+
+/* =========================================================
+   HEADER Y TÍTULO FIJOS / STICKY SIN SCROLL
+========================================================= */
+body.page-admin-customers, body.page-admin-users header#main-header,
+body.page-admin-customers, body.page-admin-users header.header-fixed {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    z-index: 1000 !important;
+    transform: none !important;
+}
+
+body.page-admin-customers, body.page-admin-users .page-title-section {
+    position: sticky !important;
+    top: 72px !important;
+    z-index: 85 !important;
+    background: var(--fondo-general) !important;
+    padding-top: 10px !important;
+    padding-bottom: 12px !important;
+    margin-bottom: 16px !important;
+}
+
+@media (max-width: 1024px) {
+    body.page-admin-customers, body.page-admin-users .page-title-section {
+        position: fixed !important;
+        top: 64px !important;
+        left: 0 !important;
+        right: 0 !important;
+        z-index: 90 !important;
+        background: var(--fondo-general) !important;
+        margin: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        padding: 10px 16px 12px 16px !important;
+        box-shadow: 0 4px 12px -4px rgba(0, 0, 0, 0.06) !important;
+    }
+
+    body.page-admin-customers, body.page-admin-users.detail-view-active .page-title-section,
+    body.page-admin-customers, body.page-admin-users.header-search-active .page-title-section {
+        display: none !important;
+    }
+}
+
+/* Eye toggle button for history section */
+.history-title-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-toggle-history {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    color: #715B51;
+    transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+    padding: 0;
+    flex-shrink: 0;
+}
+
+.btn-toggle-history:hover {
+    background: rgba(55, 123, 76, 0.1);
+    color: var(--principal, #377b4c);
+}
+
+.btn-toggle-history:active {
+    background: rgba(55, 123, 76, 0.2);
+    transform: scale(0.92);
+}
+
+.btn-toggle-history .material-symbols-outlined {
+    font-size: 22px;
+}
+
+/* Ocultar tabla y paginación al colapsar historial */
+.history-section.is-hidden .history-table-container,
+.history-section.is-hidden .pagination-footer,
+.history-section.is-hidden #admin-periodo-filter {
+    display: none !important;
+}
+
+.history-section.is-hidden .history-header {
+    margin-bottom: 0 !important;
+}
+
+.history-section.is-hidden .btn-toggle-history {
+    color: #9E9E9E;
+}
+
+
+#btnSendMessage[style*="display: none"] {
+    display: none !important;
+}
+
+
+/* Header limpio para Modal de Contacto (elimina barra verde) */
+.contact-modal-stitch .modal-header {
+    background: transparent !important;
+    color: var(--texto-principal, #2A170E) !important;
+    padding: 16px 24px 8px 24px !important;
+    border-bottom: none !important;
+}
+
+.contact-modal-stitch .modal-header h3 {
+    color: var(--texto-principal, #2A170E) !important;
+    font-size: 20px !important;
+    font-weight: 700 !important;
+}
+
+.contact-modal-stitch .btn-close-modal {
+    color: var(--texto-secundario, #715B51) !important;
+    background: rgba(0, 0, 0, 0.06) !important;
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 50% !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: background 0.2s ease !important;
+}
+
+.contact-modal-stitch .btn-close-modal:hover {
+    background: rgba(0, 0, 0, 0.12) !important;
+}
+
+/* Material 3 Bottom Sheet on Mobile */
+@media (max-width: 768px) {
+    #modal-contact.modal-overlay {
+        align-items: flex-end !important;
+        justify-content: center !important;
+        padding: 0 !important;
+    }
+
+        #modal-contact .modal-header {
+        background: transparent !important;
+        padding: 8px 20px 8px 20px !important;
+        border-bottom: none !important;
+    }
+
+    #modal-contact .modal-header h3 {
+        color: var(--texto-principal, #2A170E) !important;
+        font-size: 19px !important;
+        font-weight: 700 !important;
+    }
+
+    #modal-contact .btn-close-modal {
+        color: var(--texto-secundario, #715B51) !important;
+        background: rgba(0, 0, 0, 0.06) !important;
+        width: 32px !important;
+        height: 32px !important;
+        border-radius: 50% !important;
+    }
+
+    #modal-contact .modal-content.contact-modal-stitch {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        border-radius: 28px 28px 0 0 !important;
+        box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.25) !important;
+        transform: translateY(100%) !important;
+        transition: transform 0.28s cubic-bezier(0.1, 0.9, 0.2, 1), opacity 0.2s ease !important;
+        max-height: 85vh !important;
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    #modal-contact.active .modal-content.contact-modal-stitch {
+        transform: translateY(0) !important;
+    }
+
+    .bottom-sheet-drag-handle {
+        display: block;
+        width: 36px;
+        height: 4px;
+        background: #CBD5E1;
+        border-radius: 2px;
+        margin: 10px auto 4px auto;
+        flex-shrink: 0;
+    }
+}

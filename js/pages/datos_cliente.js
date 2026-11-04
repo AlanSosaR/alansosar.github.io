@@ -471,17 +471,39 @@ function initAdminPOS() {
     }
   });
 
-  let savedPosClient = null;
-  try {
-    const rawPos = sessionStorage.getItem("pos_client");
-    if (rawPos) savedPosClient = JSON.parse(rawPos);
-  } catch (_) {}
+  const urlParams = new URLSearchParams(window.location.search);
+  const isFromRecibo = urlParams.get("from") === "recibo" || (document.referrer && (document.referrer.includes("recibo.html") || document.referrer.includes("recibo")));
 
-  if (savedPosClient && savedPosClient.name && !savedPosClient.name.toLowerCase().includes("venta rápida") && !savedPosClient.name.toLowerCase().includes("venta rapida")) {
+  let savedPosClient = null;
+  if (isFromRecibo) {
+    try {
+      const rawPos = sessionStorage.getItem("pos_client");
+      if (rawPos) savedPosClient = JSON.parse(rawPos);
+    } catch (_) {}
+  } else {
+    try {
+      sessionStorage.removeItem("pos_client");
+    } catch (_) {}
+  }
+
+  if (isFromRecibo && savedPosClient && savedPosClient.name && !savedPosClient.name.toLowerCase().includes("venta")) {
     seleccionarCliente(savedPosClient);
   } else {
+    updateBtnExistenteLabel(null);
     activarModoRapida();
   }
+
+  window.addEventListener("pageshow", (event) => {
+    const p = new URLSearchParams(window.location.search);
+    const fromRec = p.get("from") === "recibo" || (document.referrer && (document.referrer.includes("recibo.html") || document.referrer.includes("recibo")));
+    if (!fromRec) {
+      try {
+        sessionStorage.removeItem("pos_client");
+      } catch (_) {}
+      updateBtnExistenteLabel(null);
+      activarModoRapida();
+    }
+  });
 
   searchInput.addEventListener("input", () => {
     clearTimeout(searchTimer);

@@ -43,7 +43,7 @@
         <div id="customer-form-section">
           <div class="unipro-card">
             <!-- BOTÓN ATRÁS -->
-            <button class="back-btn-alt" onclick="window.location.href='/pages/shop/carrito.html'">
+            <button class="back-btn-alt" onclick="try{sessionStorage.removeItem('pos_client');}catch(_){} window.location.href='/pages/shop/carrito.html'">
               <span class="material-symbols-outlined">arrow_back</span>
             </button>
 
@@ -171,7 +171,7 @@
         <!-- ===================== SECCIÓN POS ADMIN ===================== -->
         <div id="admin-pos-section" class="hidden">
           <div class="unipro-card">
-            <button class="back-btn-alt" onclick="window.location.href='/pages/shop/carrito.html'">
+            <button class="back-btn-alt" onclick="try{sessionStorage.removeItem('pos_client');}catch(_){} window.location.href='/pages/shop/carrito.html'">
               <span class="material-symbols-outlined">arrow_back</span>
             </button>
 
@@ -285,7 +285,7 @@
       <!-- COLUMNA DERECHA: RESUMEN -->
       <aside class="summary-section">
         <div class="summary-card">
-          <button class="back-btn-alt mobile-back-summary" onclick="window.location.href='/pages/shop/carrito.html'">
+          <button class="back-btn-alt mobile-back-summary" onclick="try{sessionStorage.removeItem('pos_client');}catch(_){} window.location.href='/pages/shop/carrito.html'">
             <span class="material-symbols-outlined">arrow_back</span>
           </button>
           <h3>Resumen del pedido</h3>

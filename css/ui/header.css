@@ -240,12 +240,14 @@ body.page-carrito .header-cart-back-btn:active {
    para que el grosor/tamaño sean idénticos (fuente única de verdad). */
 body.page-carrito .header-cart-back-btn .material-symbols-outlined,
 body.page-datos-cliente .header-datos-back-btn .material-symbols-outlined,
+body.page-recibo .header-recibo-back-btn .material-symbols-outlined,
 #header-datos-back .material-symbols-outlined,
-#header-cart-back .material-symbols-outlined {
+#header-cart-back .material-symbols-outlined,
+#header-recibo-back .material-symbols-outlined {
   font-size: 22px !important;
   color: #377b4c !important;
-  font-weight: 200 !important;
-  font-variation-settings: 'wght' 200, 'opsz' 20, 'FILL' 0 !important;
+  font-weight: 500 !important;
+  font-variation-settings: 'wght' 500, 'opsz' 24, 'FILL' 0 !important;
   -webkit-text-stroke: 0 !important;
   -webkit-font-smoothing: antialiased !important;
   -moz-osx-font-smoothing: grayscale !important;
@@ -267,11 +269,13 @@ body.page-datos-cliente .header-datos-back-btn .material-symbols-outlined,
 
   body.page-carrito .header-cart-back-btn .material-symbols-outlined,
   body.page-datos-cliente .header-datos-back-btn .material-symbols-outlined,
+  body.page-recibo .header-recibo-back-btn .material-symbols-outlined,
   #header-datos-back .material-symbols-outlined,
-  #header-cart-back .material-symbols-outlined {
+  #header-cart-back .material-symbols-outlined,
+  #header-recibo-back .material-symbols-outlined {
     font-size: 22px !important;
-    font-weight: 200 !important;
-    font-variation-settings: 'wght' 200, 'opsz' 20, 'FILL' 0 !important;
+    font-weight: 500 !important;
+    font-variation-settings: 'wght' 500, 'opsz' 24, 'FILL' 0 !important;
     -webkit-text-stroke: 0 !important;
     -webkit-font-smoothing: antialiased !important;
     -moz-osx-font-smoothing: grayscale !important;
@@ -1706,9 +1710,43 @@ body {
 ===================================================== */
 @media (max-width: 900px) {
 
-  /* 🔥 Mostrar buscador en todos los admin */
+  /* 🔥 Adaptación del buscador en admin móvil:
+     Cuando está contraído se adapta al espacio exacto entre el menú y el borde derecho sin desbordar. */
+  body[class*="page-admin-"] .header-left-stitch {
+    flex: 0 0 auto !important;
+    width: auto !important;
+    min-width: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 0 !important;
+  }
+
+  body[class*="page-admin-"] .header-right-stitch {
+    display: none !important;
+    width: 0 !important;
+    min-width: 0 !important;
+    flex: 0 0 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
   body[class*="page-admin-"] .header-middle-stitch {
     display: flex !important;
+    flex: 1 1 0% !important;
+    min-width: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 0 0 12px !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  body[class*="page-admin-"] #header-search-slot,
+  body[class*="page-admin-"] .header-search-wrap {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   /* 🔥 NUNCA mostrar logo en Mis Pedidos y Admin */
@@ -1933,5 +1971,107 @@ body.page-recibo #header-pos-client-slot {
   body.page-recibo .recibo-title-text,
   body.page-recibo #header-recibo-title-text {
     font-size: 1.05rem !important;
+  }
+}
+
+
+/* =====================================================
+   PAGE ADMIN CLIENTES: DETALLE (HEADER BACK Y TÍTULO)
+===================================================== */
+.header-customer-detail-back-btn {
+  display: none !important;
+}
+
+.header-customer-detail-title {
+  display: none !important;
+}
+
+@media (max-width: 1024px) {
+  body.page-admin-customers.detail-view-active #menu-toggle,
+  body.page-admin-customers.detail-view-active .header-logo-link,
+  body.page-admin-customers.detail-view-active .header-middle-stitch,
+  body.page-admin-customers.detail-view-active #header-middle-slot,
+  body.page-admin-customers.detail-view-active .header-search-wrap,
+  body.page-admin-customers.detail-view-active .header-search-box,
+  body.page-admin-users.detail-view-active .header-search-box {
+    display: none !important;
+  }
+
+  body.page-admin-customers.detail-view-active .header-left-stitch,
+  body.page-admin-users.detail-view-active .header-left-stitch {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    flex: 1 1 auto !important;
+  }
+
+  body.page-admin-customers.detail-view-active .header-customer-detail-back-btn,
+  body.page-admin-users.detail-view-active .header-customer-detail-back-btn {
+    width: 42px !important;
+    height: 42px !important;
+    min-width: 42px !important;
+    border-radius: 50% !important;
+    background: #FFFFFF !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: none !important;
+    color: var(--verde, #377b4c) !important;
+    cursor: pointer !important;
+    padding: 0 !important;
+    position: relative !important;
+    transition: all 0.25s ease !important;
+    user-select: none !important;
+    box-sizing: border-box !important;
+    z-index: 10 !important;
+    flex-shrink: 0 !important;
+  }
+
+  body.page-admin-customers.detail-view-active .header-customer-detail-back-btn,
+  body.page-admin-users.detail-view-active .header-customer-detail-back-btn:hover {
+    box-shadow: 0 6px 16px rgba(55, 123, 76, 0.15) !important;
+    transform: translateY(-2px);
+  }
+
+  body.page-admin-customers.detail-view-active .header-customer-detail-back-btn,
+  body.page-admin-users.detail-view-active .header-customer-detail-back-btn:active {
+    transform: scale(0.96);
+  }
+
+  body.page-admin-customers.detail-view-active .header-customer-detail-back-btn,
+  body.page-admin-users.detail-view-active .header-customer-detail-back-btn .material-symbols-outlined {
+    font-size: 22px !important;
+    color: var(--verde, #377b4c) !important;
+    font-weight: 500 !important;
+    font-variation-settings: 'wght' 500, 'opsz' 24, 'FILL' 0 !important;
+    -webkit-text-stroke: 0 !important;
+    -webkit-font-smoothing: antialiased !important;
+    line-height: 1 !important;
+  }
+
+  body.page-admin-customers.detail-view-active .header-customer-detail-title,
+  body.page-admin-customers.detail-view-active #header-customer-detail-title,
+  body.page-admin-users.detail-view-active #header-customer-detail-title {
+    display: flex !important;
+    align-items: center !important;
+    font-family: "Poppins", sans-serif !important;
+    font-size: 1.15rem !important;
+    font-weight: 700 !important;
+    color: var(--marron, #512615) !important;
+    letter-spacing: -0.2px !important;
+    margin-left: 4px !important;
+    white-space: nowrap !important;
+    line-height: 1.2 !important;
+  }
+
+  body.page-admin-customers.detail-view-active .customer-detail-title-text,
+  body.page-admin-customers.detail-view-active #header-customer-detail-title,
+  body.page-admin-users.detail-view-active #header-customer-detail-title-text {
+    font-family: "Poppins", sans-serif !important;
+    font-size: 1.15rem !important;
+    font-weight: 700 !important;
+    color: var(--marron, #512615) !important;
+    letter-spacing: -0.2px !important;
   }
 }

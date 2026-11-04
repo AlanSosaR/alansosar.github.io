@@ -10,6 +10,8 @@
 }
 
 footer {
+  box-sizing: border-box;
+  max-width: 100vw;
   background: var(--blanco);
   border-top: 1px solid rgba(0, 0, 0, 0.05);
   padding: 1rem 1rem 1.4rem;

@@ -14,8 +14,8 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="/css/ui/header.css" />
   <link rel="stylesheet" href="/css/ui/footer.css" />
-  <link rel="stylesheet" href="/css/ui/header.search.css">
-  <link rel="stylesheet" href="/css/admin/admin-clientes.css?v=3" />
+  <link rel="stylesheet" href="/css/ui/header.search.css?v=5">
+  <link rel="stylesheet" href="/css/admin/admin-clientes.css?v=8" />
   <link rel="icon" type="image/png" href="/imagenes/logo.png">
 </head>
 
@@ -26,6 +26,24 @@
     <header class="page-title-section">
         <h1 class="page-title">Gestión de Clientes</h1>
         <p class="page-subtitle">Visualiza y gestiona la base de datos de tus clientes más fieles.</p>
+
+        <!-- Carrusel de Filtros por Rol -->
+        <div class="customers-filter-carousel">
+            <div class="customers-filter-chips" id="customers-role-chips">
+                <button class="customer-chip active" data-role="todos" type="button">
+                    <span>Todos los Roles</span>
+                    <span class="chip-count" id="chip-count-todos"></span>
+                </button>
+                <button class="customer-chip" data-role="admin" type="button">
+                    <span>Administradores</span>
+                    <span class="chip-count" id="chip-count-admin"></span>
+                </button>
+                <button class="customer-chip" data-role="usuario" type="button">
+                    <span>Clientes</span>
+                    <span class="chip-count" id="chip-count-usuario"></span>
+                </button>
+            </div>
+        </div>
     </header>
 
     <!-- =========================
@@ -80,9 +98,9 @@
                     </div>
                 </div>
                 <div class="header-actions">
-                    <button class="btn-primary" id="btnSendMessage">
+                    <button class="btn-primary" id="btnSendMessage" aria-label="Contactar al cliente" title="Contactar">
                         <span class="material-symbols-outlined">mail</span>
-                        Contactar
+                        <span class="btn-contact-text">Contactar</span>
                     </button>
                 </div>
             </header>
@@ -119,13 +137,18 @@
                 <section class="history-section">
                     <div class="history-header">
                         <h3 id="c-history-title">Historial de Compras</h3>
-                        <div id="admin-periodo-filter" class="admin-periodo-filter hidden">
+                        <div class="history-header-actions">
+                            <div id="admin-periodo-filter" class="admin-periodo-filter hidden">
                             <button class="periodo-btn active" data-periodo="dia">Día</button>
                             <button class="periodo-btn" data-periodo="semana">Semana</button>
                             <button class="periodo-btn" data-periodo="mes">Mes</button>
                             <button class="periodo-nav" id="admin-periodo-prev"><span class="material-symbols-outlined">chevron_left</span></button>
                             <span id="admin-periodo-label" class="periodo-label"></span>
                             <button class="periodo-nav" id="admin-periodo-next"><span class="material-symbols-outlined">chevron_right</span></button>
+                            </div>
+                            <button type="button" id="btn-toggle-history" class="btn-toggle-history" aria-label="Ocultar o mostrar historial" title="Ocultar historial">
+                                <span class="material-symbols-outlined" id="icon-toggle-history">visibility</span>
+                            </button>
                         </div>
                     </div>
 
@@ -211,47 +234,64 @@
   <script type="module">
     import { renderHeaderSearch } from "/js/ui/header.search.js";
 
-    document.addEventListener("header:ready", () => {
+    function setupCustomerHeaderSearch() {
       const slot = document.getElementById("header-middle-slot");
       if (!slot) return;
 
-      slot.innerHTML = renderHeaderSearch({
-        showFilter: true,
-        showAdd: false,
-        placeholder: "Nombre, email o teléfono..."
-      });
-
-      // Configurar Filtro por Rol
-      const filter = document.getElementById("header-status-filter");
-      if (filter) {
-        filter.innerHTML = `
-            <option value="todos">Todos los Roles</option>
-            <option value="admin">Administradores</option>
-            <option value="usuario">Clientes</option>
-        `;
-        filter.addEventListener("change", (e) => {
-            document.dispatchEvent(new CustomEvent("customer:filter", { detail: e.target.value }));
+      if (!document.getElementById("header-search-input")) {
+        slot.innerHTML = renderHeaderSearch({
+          showFilter: false,
+          showAdd: false,
+          placeholder: "Nombre, email o teléfono..."
         });
       }
 
-      // Configurar Búsqueda
+      // Configurar Filtro por Rol en Carrusel de Píldoras
+      const chips = document.querySelectorAll(".customer-chip");
+      chips.forEach((chip) => {
+        chip.addEventListener("click", () => {
+          chips.forEach((c) => c.classList.remove("active"));
+          chip.classList.add("active");
+          const role = chip.dataset.role || "todos";
+          document.dispatchEvent(new CustomEvent("customer:filter", { detail: role }));
+          chip.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+        });
+      });
+
+      // Configurar Búsqueda con enlace en vivo
       const input = document.getElementById("header-search-input");
       if (input) {
         input.addEventListener("input", (e) => {
-          document.dispatchEvent(new CustomEvent("customer:search", { detail: e.target.value.trim() }));
+          document.dispatchEvent(new CustomEvent("customer:search", { detail: e.target.value }));
         });
       }
-    });
+    }
+
+    document.addEventListener("header:ready", setupCustomerHeaderSearch);
+    if (document.getElementById("header-middle-slot")) {
+      setupCustomerHeaderSearch();
+    }
   </script>
 
   <!-- Lógica de Clientes -->
-  <script src="/js/admin/admin_clientes.js?v=21" type="module"></script>
+    <!-- Pre-hidratación inmediata para que al refrescar en móvil no parpadee ni salga del detalle -->
+  <script>
+    try {
+      const p = new URLSearchParams(window.location.search);
+      const savedId = p.get("id") || sessionStorage.getItem("admin_selected_customer_id");
+      if (savedId) {
+        document.body.classList.add("detail-view-active");
+      }
+    } catch(e) {}
+  </script>
+  <script src="/js/admin/admin_clientes.js?v=23" type="module"></script>
 
   <!-- =========================
        MODAL DE CONTACTO MULTICANAL
   ========================= -->
   <div id="modal-contact" class="modal-overlay hidden">
     <div class="modal-content contact-modal-stitch fade-in">
+      <div class="bottom-sheet-drag-handle" aria-hidden="true"></div>
       <header class="modal-header">
         <h3>Contactar Cliente</h3>
         <button class="btn-close-modal" id="close-contact-modal">
@@ -364,6 +404,18 @@
       </div>
     </div>
   </div>
+  <!-- Eliminar footer en esta página -->
+  <script>
+    const removeFooterObserver = new MutationObserver(() => {
+      const footer = document.getElementById("site-footer") || document.querySelector(".site-footer");
+      if (footer) footer.remove();
+    });
+    removeFooterObserver.observe(document.documentElement, { childList: true, subtree: true });
+    document.addEventListener("DOMContentLoaded", () => {
+      const footer = document.getElementById("site-footer") || document.querySelector(".site-footer");
+      if (footer) footer.remove();
+    });
+  </script>
 </body>
 
 </html>

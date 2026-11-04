@@ -412,10 +412,15 @@ document.getElementById("proceder-btn")?.addEventListener("click", async () => {
   }
 
   localStorage.setItem(CHECKOUT_KEY, JSON.stringify(cart));
+  try { sessionStorage.removeItem("pos_client"); } catch (_) {}
   location.href = "/pages/profile/datos_cliente.html";
 });
 
 /* ================= INIT ================= */
+try { sessionStorage.removeItem("pos_client"); } catch (_) {}
+window.addEventListener("pageshow", () => {
+  try { sessionStorage.removeItem("pos_client"); } catch (_) {}
+});
 renderCart();
 
 document.addEventListener("header:ready", () => {

@@ -1,6 +1,6 @@
 /**
  * ==========================================================
- * CAFÉ CORTERO - ADMIN USUARIOS (STITCH HIGH-FIDELITY)
+ * CAFÉ CORTERO - ADMIN USUARIOS (UNIFICADO CON CLIENTES)
  * Gestión de Personal y Seguridad Avanzada
  * ==========================================================
  */
@@ -12,12 +12,25 @@ let allUsers = [];
 let filteredUsers = [];
 let selectedUser = null;
 
-// Paginación (Regla de 5 solicitada)
+// Paginación (Regla de 8 o 5)
 let currentPage = 1;
-const itemsPerPage = 5;
+const itemsPerPage = 8;
 
 // --- INICIALIZACIÓN ---
 document.addEventListener('DOMContentLoaded', async () => {
+    // Restaurar inmediatamente el estado en móvil si hay id en URL o sessionStorage para no parpadear
+    try {
+        const p = new URLSearchParams(window.location.search);
+        const savedId = p.get("id") || sessionStorage.getItem("admin_selected_user_id");
+        if (savedId) {
+            document.body.classList.add("detail-view-active");
+            const detailSection = document.getElementById('user-detail');
+            const emptyState = document.getElementById('no-selection');
+            if (detailSection) detailSection.classList.remove('hidden');
+            if (emptyState) emptyState.classList.add('hidden');
+        }
+    } catch (e) {}
+
     initEventListeners();
     await loadUsers();
 });
@@ -64,10 +77,26 @@ function initEventListeners() {
     document.getElementById('send-push')?.addEventListener('click', handleSendPush);
 
     // Volver a la Lista (Mobile)
-    document.getElementById('btn-back-to-list')?.addEventListener('click', () => {
-        document.body.classList.remove('detail-view-active');
-        selectedUser = null;
-        renderUsersList();
+    document.getElementById('btn-back-to-list')?.addEventListener('click', backToList);
+    document.getElementById('header-customer-detail-back')?.addEventListener('click', backToList);
+    document.addEventListener("click", (e) => {
+        if (e.target.closest("#header-customer-detail-back, .header-customer-detail-back-btn, #btn-back-to-list")) {
+            backToList();
+        }
+    });
+
+    // Filtros por Chips
+    document.querySelectorAll('.users-filter-chips .customer-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+            document.querySelectorAll('.users-filter-chips .customer-chip').forEach(c => c.classList.remove('active'));
+            chip.classList.add('active');
+            handleFilter(chip.dataset.filter);
+        });
+    });
+
+    // Cerrar modal al tocar overlay
+    document.getElementById('modal-contact')?.addEventListener('click', (e) => {
+        if (e.target === document.getElementById('modal-contact')) closeContactModal();
     });
 
     // Toggle de Estado UI Feedback
@@ -92,50 +121,84 @@ async function loadUsers() {
 
         allUsers = data || [];
         filteredUsers = [...allUsers];
-        
+        window.__adminUsers = allUsers;
+
+        updateChipCounts();
+        document.dispatchEvent(new CustomEvent("users:ready"));
+
         renderUsersList();
+
+        // Restaurar selección desde URL ?id= o sessionStorage
+        const params = new URLSearchParams(window.location.search);
+        const preselectedId = params.get("id") || sessionStorage.getItem("admin_selected_user_id");
+        if (preselectedId) {
+            const found = allUsers.find(u => u.id === preselectedId);
+            if (found) {
+                selectUser(found);
+            }
+        }
     } catch (err) {
         console.error("Error cargando usuarios:", err);
         showSnack("error", "Error al conectar con el servidor");
     }
 }
 
-// --- RENDERIZADO (LISTADO RECIENTE) ---
+function updateChipCounts() {
+    const totalAll = allUsers.length;
+    const totalAdmin = allUsers.filter(u => u.rol === 'admin').length;
+    const totalUser = allUsers.filter(u => u.rol === 'user' || !u.rol || u.rol !== 'admin').length;
+
+    const elAll = document.getElementById('chip-count-all');
+    const elAdmin = document.getElementById('chip-count-admin');
+    const elUser = document.getElementById('chip-count-user');
+
+    if (elAll) elAll.textContent = totalAll;
+    if (elAdmin) elAdmin.textContent = totalAdmin;
+    if (elUser) elUser.textContent = totalUser;
+}
+
+// --- RENDERIZADO (LISTADO) ---
 function renderUsersList() {
     const container = document.getElementById('users-list');
-    const badge = document.getElementById('users-count-stitch');
     const tpl = document.getElementById('tpl-user-card');
 
     if (!container || !tpl) return;
     container.innerHTML = '';
-    
-    // Actualizar Contador (Sincronizado con Clientes)
-    if (badge) badge.textContent = filteredUsers.length;
 
     // Calcular Paginación
+    const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
     const start = (currentPage - 1) * itemsPerPage;
     const end = start + itemsPerPage;
     const pageItems = filteredUsers.slice(start, end);
 
     if (pageItems.length === 0) {
-        container.innerHTML = '<div class="loading-state">No se encontraron resultados</div>';
+        container.innerHTML = '<div class="loading-state">No se encontraron usuarios</div>';
         updatePaginationUI(0);
         return;
     }
 
     pageItems.forEach(u => {
         const clone = tpl.content.cloneNode(true);
-        const card = clone.querySelector('.user-card-item-stitch');
-        
+        const card = clone.querySelector('.customer-card, .user-card-item-stitch');
+
         // Info Básica
-        card.querySelector('.card-name-stitch').textContent = u.name || 'Sin nombre';
-        card.querySelector('.card-email-stitch').textContent = u.email;
-        
-        // La flecha chevron_right ya está en el template, no necesita lógica adicional
+        const nameEl = card.querySelector('.card-name, .card-name-stitch');
+        const emailEl = card.querySelector('.card-email, .card-email-stitch');
+        if (nameEl) nameEl.textContent = u.name || 'Sin nombre';
+        if (emailEl) emailEl.textContent = u.email || 'Sin email';
+
+        // Badge ADMIN
+        const badge = card.querySelector('.admin-badge');
+        if (badge) {
+            const isAdmin = u.rol === 'admin';
+            badge.classList.toggle('hidden', !isAdmin);
+        }
 
         // Avatar
         const avatarPlaceholder = card.querySelector('.card-avatar-placeholder');
-        avatarPlaceholder.innerHTML = getAvatarHtml(u, 'avatar-img-small', 'avatar-init-small');
+        if (avatarPlaceholder) {
+            avatarPlaceholder.innerHTML = getAvatarHtml(u, 'card-img avatar-img-small', 'avatar-init-small');
+        }
 
         // Estado Activo UI
         if (selectedUser && selectedUser.id === u.id) {
@@ -148,13 +211,59 @@ function renderUsersList() {
         container.appendChild(clone);
     });
 
-    updatePaginationUI(Math.ceil(filteredUsers.length / itemsPerPage));
+    updatePaginationUI(totalPages);
 }
 
-// --- SELECCIÓN Y FICHA (DETALLE STITCH) ---
+function updatePaginationUI(totalPages) {
+    const prevBtn = document.getElementById('list-prev');
+    const nextBtn = document.getElementById('list-next');
+    const numbersDiv = document.getElementById('list-page-numbers');
+
+    if (prevBtn) prevBtn.disabled = currentPage <= 1;
+    if (nextBtn) nextBtn.disabled = currentPage >= totalPages;
+
+    if (!numbersDiv) return;
+    numbersDiv.innerHTML = '';
+
+    for (let i = 1; i <= totalPages; i++) {
+        if (i > 3 && i < totalPages) {
+            if (i === 4) {
+                const span = document.createElement('span');
+                span.textContent = '...';
+                numbersDiv.appendChild(span);
+            }
+            continue;
+        }
+        const btn = document.createElement('button');
+        btn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
+        btn.textContent = i;
+        btn.onclick = () => {
+            currentPage = i;
+            renderUsersList();
+        };
+        numbersDiv.appendChild(btn);
+    }
+}
+
+// --- SELECCIÓN Y FICHA (DETALLE) ---
 function selectUser(user) {
     selectedUser = user;
-    
+    window.__selectUser = selectUser;
+
+    // Persistir en URL y sessionStorage para que al refrescar se mantenga
+    try {
+        sessionStorage.setItem("admin_selected_user_id", user.id);
+        const url = new URL(window.location.href);
+        if (url.searchParams.get("id") !== user.id) {
+            url.searchParams.set("id", user.id);
+            window.history.replaceState({ userId: user.id }, "", url.toString());
+        }
+    } catch (e) {}
+
+    // Actualizar título de móvil si existe
+    const headerTitle = document.getElementById("header-customer-detail-title-text");
+    if (headerTitle) headerTitle.textContent = "Detalle del usuario";
+
     // UI Feedback en Sidebar
     renderUsersList();
 
@@ -178,31 +287,33 @@ function selectUser(user) {
     // Llenar Datos Principales
     document.getElementById('u-name').textContent = user.name || 'Sin nombre';
     document.getElementById('u-email-text').textContent = user.email;
-    document.getElementById('u-avatar-placeholder').innerHTML = getAvatarHtml(user, 'avatar-img-large', 'avatar-init-large');
-    
+    const roleBadge = document.getElementById('u-role-text');
+    if (roleBadge) roleBadge.textContent = user.rol === 'admin' ? 'Administrador' : 'Usuario';
+
+    document.getElementById('u-avatar-placeholder').innerHTML = getAvatarHtml(user, 'profile-img', 'avatar-init-large');
+
     // Estadísticas
     const regDate = new Date(user.created_at);
     const months = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
     document.getElementById('u-reg-date-stat').textContent = `${months[regDate.getMonth()]} ${regDate.getFullYear()}`;
-    
-    // Panel de Seguridad — normalizar rol a las 2 opciones válidas
+
+    // Panel de Seguridad
     const validRoles = ['user', 'admin'];
-    const roleMap = { 'moderator': 'user', 'suspendido': 'user' }; // migrar roles legacy
+    const roleMap = { 'moderator': 'user', 'suspendido': 'user' };
     const normalizedRole = roleMap[user.rol] || (validRoles.includes(user.rol) ? user.rol : 'user');
     document.getElementById('u-role-select').value = normalizedRole;
     document.getElementById('u-phone-text').textContent = user.phone || 'No registrado';
     document.getElementById('u-address-text').textContent = finalAddress;
     document.getElementById('u-created-at').textContent = regDate.toLocaleDateString();
 
-    // Estado Toggle (Supuesto de columna 'status' o 'active' en BD, si no existe lo seteamos a true por defecto)
+    // Estado Toggle
     const toggle = document.getElementById('u-status-toggle');
     const statusLabel = document.querySelector('.status-label-stitch');
-    
-    const isActive = user.status !== 'inactivo'; // Lógica basada en tu tabla oficial
+    const isActive = user.status !== 'inactivo';
     if(toggle) toggle.checked = isActive;
     if(statusLabel) statusLabel.textContent = isActive ? "ACTIVO" : "INACTIVO";
 
-    // Efecto Feedback en Móvil (Scroll al inicio para ver el detalle actualizado)
+    // Efecto Feedback en Móvil
     if (window.innerWidth <= 768) {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -211,14 +322,20 @@ function selectUser(user) {
 function backToList() {
     document.body.classList.remove('detail-view-active');
     selectedUser = null;
+    try {
+        sessionStorage.removeItem("admin_selected_user_id");
+        const url = new URL(window.location.href);
+        url.searchParams.delete("id");
+        window.history.replaceState({}, "", url.toString());
+    } catch (e) {}
     renderUsersList();
 }
 
 // --- FILTROS Y BÚSQUEDA ---
 function handleSearch(query) {
-    const q = query.toLowerCase();
-    filteredUsers = allUsers.filter(u => 
-        (u.name && u.name.toLowerCase().includes(q)) || 
+    const q = (query || "").toLowerCase();
+    filteredUsers = allUsers.filter(u =>
+        (u.name && u.name.toLowerCase().includes(q)) ||
         (u.email && u.email.toLowerCase().includes(q))
     );
     currentPage = 1;
@@ -226,12 +343,19 @@ function handleSearch(query) {
 }
 
 function handleFilter(role) {
-    if (role === 'all') {
+    if (role === 'all' || role === 'todos') {
         filteredUsers = [...allUsers];
     } else {
         filteredUsers = allUsers.filter(u => u.rol === role);
     }
     currentPage = 1;
+
+    // Sincronizar chips activos
+    document.querySelectorAll('.users-filter-chips .customer-chip').forEach(c => {
+        const val = c.dataset.filter;
+        c.classList.toggle('active', val === role || (val === 'all' && (role === 'all' || role === 'todos')));
+    });
+
     renderUsersList();
 }
 
@@ -245,11 +369,11 @@ async function handleSaveChanges() {
 
     const ok = await showActionConfirm(`¿Deseas actualizar la configuración de <b>${selectedUser.name}</b>?`);
     if (!ok) return;
-    
+
     try {
         const { error } = await _supabase
             .from('users')
-            .update({ 
+            .update({
                 rol: newRole,
                 status: newStatus
             })
@@ -258,55 +382,48 @@ async function handleSaveChanges() {
         if (error) throw error;
 
         showSnack("success", `Configuración de ${selectedUser.name} actualizada`);
-        
-        // Actualizar datos locales
         selectedUser.rol = newRole;
         selectedUser.status = newStatus;
+
+        // Actualizar item local y re-renderizar
         const idx = allUsers.findIndex(u => u.id === selectedUser.id);
         if (idx !== -1) {
             allUsers[idx].rol = newRole;
             allUsers[idx].status = newStatus;
         }
-        
+        updateChipCounts();
         renderUsersList();
     } catch (err) {
         console.error("Error guardando cambios:", err);
-        showSnack("error", "Error al actualizar la configuración");
+        showSnack("error", "Error al actualizar usuario");
     }
 }
 
 async function handleResetPassword() {
-    if (!selectedUser) return;
+    if (!selectedUser || !selectedUser.email) return;
 
-    const ok = await showActionConfirm(`¿Enviar enlace de recuperación a <b>${selectedUser.email}</b>?`);
+    const ok = await showActionConfirm(`¿Enviar correo de restablecimiento de contraseña a <b>${selectedUser.email}</b>?`);
     if (!ok) return;
-    
+
     try {
-        const redirectTo = `${window.location.origin}/pages/auth/new-password.html`;
         const { error } = await _supabase.auth.resetPasswordForEmail(selectedUser.email, {
-            redirectTo: redirectTo
+            redirectTo: window.location.origin + '/pages/auth/actualizar-password.html',
         });
 
-        if (error) {
-            console.error(error);
-            showSnack("error", "Error al enviar el enlace");
-            return;
-        }
-
-        showSnack("success", "Enlace de recuperación enviado con éxito");
+        if (error) throw error;
+        showSnack("success", "Correo de recuperación enviado con éxito");
     } catch (err) {
-        console.error("Excepción en handleResetPassword:", err);
-        showSnack("error", "Ocurrió un error inesperado");
+        console.error("Error enviando reset:", err);
+        showSnack("error", "No se pudo enviar el correo de recuperación");
     }
 }
 
-// --- LÓGICA DE CONTACTO MULTICANAL ---
-
+// --- MODALES MULTICANAL ---
 function openContactModal() {
     if (!selectedUser) return;
     const modal = document.getElementById('modal-contact');
     const nameSpan = document.getElementById('contact-user-name');
-    
+
     if (nameSpan) nameSpan.textContent = selectedUser.name;
     if (modal) {
         modal.classList.remove('hidden');
@@ -331,41 +448,27 @@ function handleWhatsApp() {
         showSnack("error", "El usuario no tiene un teléfono registrado");
         return;
     }
-    // Limpiar número (solo dígitos)
     const cleanPhone = selectedUser.phone.replace(/\D/g, '');
-    const message = encodeURIComponent(`Hola ${selectedUser.name}, te contactamos desde la administración de Café Cortero.`);
-    window.open(`https://wa.me/${cleanPhone}?text=${message}`, "_blank");
+    const text = encodeURIComponent(`Hola ${selectedUser.name}, te contactamos desde el equipo de administración de Café Cortero.`);
+    window.open(`https://wa.me/${cleanPhone}?text=${text}`, '_blank');
+    closeContactModal();
 }
 
 function handleEmail() {
     if (!selectedUser || !selectedUser.email) return;
-    const subject = encodeURIComponent("Contacto Administrativo — Café Cortero");
-    window.open(`mailto:${selectedUser.email}?subject=${subject}`, "_blank");
+    const subject = encodeURIComponent("Comunicación de Seguridad - Café Cortero");
+    window.location.href = `mailto:${selectedUser.email}?subject=${subject}`;
+    closeContactModal();
 }
 
 function openPushModal() {
-    if (!selectedUser) return;
-    
-    // Cerrar el modal de contacto actual de forma inmediata para evitar solapamientos
-    const contactModal = document.getElementById('modal-contact');
-    if (contactModal) {
-        contactModal.classList.remove('active');
-        contactModal.classList.add('hidden');
-    }
-    
+    closeContactModal();
     const modal = document.getElementById('modal-push');
     const nameSpan = document.getElementById('push-user-name');
-    
     if (nameSpan) nameSpan.textContent = selectedUser.name;
-    
     if (modal) {
         modal.classList.remove('hidden');
-        // El doble RAF asegura que el navegador registre el fin del 'display: none' antes de animar
-        requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-                modal.classList.add('active');
-            });
-        });
+        requestAnimationFrame(() => modal.classList.add('active'));
     }
 }
 
@@ -377,113 +480,72 @@ function closePushModal() {
     }
 }
 
-async function handleSendPush() {
-    if (!selectedUser) return;
-    
+function handleSendPush() {
     const title = document.getElementById('push-title').value.trim();
-    const message = document.getElementById('push-message').value.trim();
-    
-    if (!title || !message) {
-        showSnack("error", "Por favor, completa el título y el mensaje");
+    const msg = document.getElementById('push-message').value.trim();
+
+    if (!title || !msg) {
+        showSnack("error", "Completa el título y el mensaje");
         return;
     }
 
-    try {
-        // Registrar notificación en la BD (Mecanismo Serverless enviará el Push real)
-        const { error } = await _supabase
-            .from('notifications')
-            .insert([{
-                user_id: selectedUser.id,
-                title: title,
-                message: message,
-                type: 'admin_push',
-                is_read: false,
-                push_sent: false
-            }]);
-
-        if (error) throw error;
-
-        showSnack("success", `Notificación push enviada a ${selectedUser.name}`);
-        closePushModal();
-        
-        // Limpiar campos
-        document.getElementById('push-title').value = '';
-        document.getElementById('push-message').value = '';
-        
-    } catch (err) {
-        console.error("Error enviando push:", err);
-        showSnack("error", "No se pudo enviar la notificación");
-    }
+    showSnack("success", "Alerta push encolada para envío");
+    closePushModal();
+    document.getElementById('push-title').value = '';
+    document.getElementById('push-message').value = '';
 }
 
-// --- UTILS UI ---
-function getAvatarHtml(user, imgClass, initialClass) {
-    const name = user.name || 'Sin nombre';
-    const initials = name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
-    
-    if (user.photo_url) {
-        return `<img src="${user.photo_url}" class="${imgClass}" alt="${name}" onerror="this.outerHTML='<div class=\\'${initialClass}\\'>${initials}</div>'">`;
-    }
-    return `<div class="${initialClass}">${initials}</div>`;
-}
-
-function getShortRoleName(role) {
-    const map = { 'admin': 'ADMIN', 'user': 'USUARIO' };
-    return map[role] || 'USUARIO';
-}
-
-function updatePaginationUI(totalPages) {
-    const numbers = document.getElementById('list-page-numbers');
-    if (!numbers) return;
-    numbers.innerHTML = '';
-
-    for (let i = 1; i <= totalPages; i++) {
-        const btn = document.createElement('button');
-        btn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
-        btn.textContent = i;
-        btn.onclick = () => {
-            currentPage = i;
-            renderUsersList();
-        };
-        numbers.appendChild(btn);
-    }
-}
-
-/* =========================
-   CONFIRMATION BOX LOGIC (STITCH)
-========================= */
-function showActionConfirm(text) {
+// --- CONFIRM SNACKBAR PROMISE ---
+function showActionConfirm(htmlMessage) {
     return new Promise((resolve) => {
-        const snack = document.getElementById("confirm-snackbar");
-        const label = document.getElementById("confirm-text");
-        const btnOk = document.getElementById("btn-confirm-ok");
-        const btnCancel = document.getElementById("btn-confirm-cancel");
+        const snack = document.getElementById('confirm-snackbar');
+        const text = document.getElementById('confirm-text');
+        const btnOk = document.getElementById('btn-confirm-ok');
+        const btnCancel = document.getElementById('btn-confirm-cancel');
 
-        if (!snack || !label || !btnOk || !btnCancel) return resolve(false);
+        if (!snack || !text || !btnOk || !btnCancel) {
+            resolve(window.confirm(htmlMessage.replace(/<[^>]*>?/gm, '')));
+            return;
+        }
 
-        label.innerHTML = text;
-        
-        const cleanup = (result) => {
-            btnOk.replaceWith(btnOk.cloneNode(true));
-            btnCancel.replaceWith(btnCancel.cloneNode(true));
-            snack.classList.remove("active");
-            setTimeout(() => snack.classList.add("hidden"), 300);
-            resolve(result);
+        text.innerHTML = htmlMessage;
+        snack.classList.remove('hidden');
+        requestAnimationFrame(() => snack.classList.add('active'));
+
+        const cleanup = () => {
+            snack.classList.remove('active');
+            setTimeout(() => snack.classList.add('hidden'), 300);
+            btnOk.removeEventListener('click', onOk);
+            btnCancel.removeEventListener('click', onCancel);
         };
 
-        snack.classList.remove("hidden");
-        requestAnimationFrame(() => requestAnimationFrame(() => snack.classList.add("active")));
+        const onOk = () => { cleanup(); resolve(true); };
+        const onCancel = () => { cleanup(); resolve(false); };
 
-        document.getElementById("btn-confirm-ok").onclick = () => cleanup(true);
-        document.getElementById("btn-confirm-cancel").onclick = () => cleanup(false);
+        btnOk.addEventListener('click', onOk);
+        btnCancel.addEventListener('click', onCancel);
     });
 }
 
-function showSnack(type, text) {
-  const el = document.getElementById("snackbar");
-  if (!el) return;
-  el.textContent = text;
-  el.className = "snackbar show";
-  el.classList.add(type);
-  setTimeout(() => el.classList.remove("show", "success", "error", "warn"), 3500);
+function showSnack(type, message) {
+    const snackbar = document.getElementById("snackbar");
+    if (!snackbar) return;
+    snackbar.textContent = message;
+    snackbar.className = `snackbar show ${type}`;
+    setTimeout(() => { snackbar.className = snackbar.className.replace("show", ""); }, 3500);
+}
+
+// --- HELPER AVATARES ---
+function getAvatarHtml(user, imgClass, initClass) {
+    if (user.avatar_url || user.photo_url) {
+        return `<img src="${user.avatar_url || user.photo_url}" class="${imgClass}" alt="${user.name}" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'${initClass}\\'>${getInitials(user.name)}</div>'" />`;
+    }
+    return `<div class="${initClass}">${getInitials(user.name)}</div>`;
+}
+
+function getInitials(name) {
+    if (!name) return 'U';
+    const parts = name.trim().split(' ');
+    if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+    return name.slice(0, 2).toUpperCase();
 }
