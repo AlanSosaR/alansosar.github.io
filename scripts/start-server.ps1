@@ -36,7 +36,7 @@ if (-not $npx) {
 $browserFlag = if (-not $OpenBrowser) { "--no-browser" } else { "" }
 
 # Use cmd /c to redirect both stdout+stderr to the same log file (Start-Process can't do combined redirect)
-$cmdLine = "npx live-server --port=$Port $browserFlag --wait=200 --ignore=`"$LogFile,.git,node_modules`" >> `"$logPath`" 2>&1"
+$cmdLine = "npx live-server --host=0.0.0.0 --port=$Port $browserFlag --wait=200 --ignore=`"$LogFile,.git,node_modules`" >> `"$logPath`" 2>&1"
 $proc = Start-Process -FilePath "cmd.exe" -ArgumentList "/c", $cmdLine -WindowStyle Hidden -PassThru
 
 # Wait and verify the port is actually listening

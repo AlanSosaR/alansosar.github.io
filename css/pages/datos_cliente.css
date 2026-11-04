@@ -922,8 +922,19 @@ body.page-datos-cliente main {
   margin-top: 2px;
 }
 
+#pos-search-section {
+  margin-top: 22px;
+  width: 100%;
+}
+
+#pos-search-section.hidden {
+  display: none !important;
+  margin-top: 0 !important;
+}
+
 .pos-search-box {
   position: relative;
+  width: 100%;
 }
 
 .pos-search-results {
@@ -1060,11 +1071,30 @@ body.page-datos-cliente main {
   text-decoration: underline;
 }
 
+/* Ocultar solo la tarjeta de cliente seleccionado dentro del formulario POS */
+#admin-pos-section #pos-selected-client,
+#pos-step-cliente #pos-selected-client {
+  display: none !important;
+}
+
+/* =====================================================
+   POS NUEVO CLIENTE (DESKTOP DEFAULT)
+===================================================== */
+.pos-sheet-backdrop {
+  display: none;
+}
+
+.pos-sheet-handle-bar,
+.pos-sheet-header {
+  display: none;
+}
+
 .pos-new-client-form {
   margin-top: 16px;
   padding: 16px;
   border: 1px dashed #d0d0ce;
   border-radius: 16px;
+  background: transparent;
 }
 
 .pos-form-intro {
@@ -1377,6 +1407,135 @@ body.page-datos-cliente main {
 }
 
 @media (max-width: 768px) {
+  /* POS: Bottom Sheet para Registrar Cliente Nuevo en Móvil */
+  .pos-sheet-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 9998;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+  }
+
+  .pos-sheet-backdrop.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .pos-new-client-form {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    max-width: 560px !important;
+    margin: 0 auto !important;
+    background: #ffffff !important;
+    border-radius: 24px 24px 0 0 !important;
+    border: none !important;
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.2) !important;
+    padding: 10px 20px calc(24px + env(safe-area-inset-bottom, 0px)) !important;
+    z-index: 9999 !important;
+    max-height: 85vh !important;
+    overflow-y: auto !important;
+    transform: translateY(105%) !important;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.3s ease !important;
+    visibility: hidden !important;
+    box-sizing: border-box !important;
+  }
+
+  .pos-new-client-form.sheet-open {
+    transform: translateY(0) !important;
+    visibility: visible !important;
+  }
+
+  .pos-sheet-handle-bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 8px 0 10px;
+    cursor: grab;
+    touch-action: none;
+  }
+
+  .pos-sheet-handle {
+    width: 38px;
+    height: 4px;
+    background: #d0d7de;
+    border-radius: 4px;
+  }
+
+  .pos-sheet-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 12px;
+    margin-bottom: 14px;
+    border-bottom: 1px solid #f0f2f5;
+  }
+
+  .pos-sheet-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--verde, #377b4c);
+  }
+
+  .pos-sheet-title .material-symbols-outlined {
+    font-size: 1.4rem;
+  }
+
+  .pos-sheet-close-btn {
+    background: #f4f6f8;
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #555;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .pos-sheet-close-btn:hover {
+    background: #e5e8ec;
+    color: #111;
+  }
+
+  .pos-sheet-close-btn .material-symbols-outlined {
+    font-size: 1.25rem;
+  }
+
+  .pos-sheet-body {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .pos-sheet-body .fields-row {
+    margin-bottom: 1.1rem;
+  }
+
+  .pos-sheet-body .pos-create-btn {
+    margin-top: 10px;
+    padding: 14px;
+    font-size: 1rem;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+  }
+
   body.page-datos-cliente {
     padding-top: 76px;
   }
@@ -1402,7 +1561,7 @@ body.page-datos-cliente main {
     border-radius: 20px !important;
     width: 100% !important;
     box-sizing: border-box !important;
-    min-height: 440px !important;
+    min-height: auto !important;
     display: flex !important;
     flex-direction: column !important;
   }
@@ -1451,7 +1610,7 @@ body.page-datos-cliente main {
   .unipro-card {
     padding: 1.1rem 0.85rem !important;
     border-radius: 18px !important;
-    min-height: 420px !important;
+    min-height: auto !important;
   }
 
   .summary-card {
@@ -1467,4 +1626,310 @@ body.page-datos-cliente main {
     padding: 12px 14px;
     font-size: 0.9rem;
   }
+}
+
+/* =========================================================
+   ADAPTACIÓN MÓVIL: TARJETAS (UNIPRO-CARD & SUMMARY-CARD)
+   Diseño de tarjeta limpio, ancho completo (100%) y adaptado a móviles
+   ========================================================= */
+@media (max-width: 1050px) {
+  .form-section {
+    padding-bottom: 0 !important;
+    margin-bottom: 0 !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .checkout-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 14px 2rem !important;
+    margin: 0.5rem auto 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  .checkout-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    align-items: stretch !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .form-section,
+  .summary-section,
+  #admin-pos-section {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Tarjeta principal (Paso 2 / Formulario) */
+  .unipro-card,
+  body.page-datos-cliente #admin-pos-section .unipro-card {
+    background: #ffffff !important;
+    border-radius: 20px !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05) !important;
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
+    padding: 1.25rem 1.15rem !important;
+    margin: 0 !important;
+    min-height: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  /* Tarjeta de Resumen del Pedido (sube compactada, sin exceso de espacio) */
+  .summary-card,
+  body.page-datos-cliente .summary-card {
+    background: #ffffff !important;
+    border-radius: 20px !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05) !important;
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
+    padding: 1.25rem 1.15rem !important;
+    margin: 0 !important;
+    min-height: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    position: static !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  .summary-card h3 {
+    font-size: 1.2rem !important;
+    font-weight: 700 !important;
+    color: #2b1e16 !important;
+    margin: 0 0 1rem 0 !important;
+    letter-spacing: -0.3px !important;
+  }
+
+  .summary-items-list {
+    margin-bottom: 1rem !important;
+    max-height: none !important;
+    overflow-y: visible !important;
+    padding-right: 0 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Item de resumen: imagen sola y contenido alineado a la derecha */
+  .summary-item {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+    margin-bottom: 0.85rem !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .item-img,
+  .summary-item .item-img {
+    width: 140px !important;
+    max-width: 45% !important;
+    height: 140px !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    flex-shrink: 0 !important;
+    object-fit: contain !important;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.08)) !important;
+  }
+
+  .item-info,
+  .summary-item .item-info {
+    flex: 1 !important;
+    min-width: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-end !important;
+    text-align: right !important;
+    margin-left: auto !important;
+    gap: 3px !important;
+    padding: 0 !important;
+  }
+
+  .item-name,
+  .summary-item .item-name {
+    font-size: 1rem !important;
+    font-weight: 700 !important;
+    margin: 0 !important;
+    color: #2b1e16 !important;
+    line-height: 1.25 !important;
+    text-align: right !important;
+  }
+
+  .item-details,
+  .summary-item .item-details {
+    font-size: 0.85rem !important;
+    color: #64748b !important;
+    font-weight: 500 !important;
+    margin: 0 !important;
+    text-align: right !important;
+  }
+
+  .item-price,
+  .summary-item .item-price {
+    font-size: 1.05rem !important;
+    font-weight: 800 !important;
+    color: #377b4c !important;
+    margin: 0 !important;
+    text-align: right !important;
+    white-space: nowrap !important;
+  }
+
+  .summary-totals {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .primary-checkout-btn,
+  #btn-procesar-pedido,
+  #pos-confirmar-btn {
+    width: 100% !important;
+    padding: 13px 18px !important;
+    border-radius: 14px !important;
+    font-size: 0.98rem !important;
+    font-weight: 700 !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+  }
+
+  /* Espaciados internos para Paso 2 */
+  #admin-pos-section #pos-step-cliente .form-group-section,
+  .form-group-section {
+    margin-bottom: 0 !important;
+  }
+
+  #admin-pos-section .section-title,
+  .section-title {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.6rem !important;
+    margin-bottom: 0.35rem !important;
+  }
+
+  #admin-pos-section .section-title h3,
+  .section-title h2 {
+    font-size: 1.15rem !important;
+    font-weight: 700 !important;
+    color: #2b1e16 !important;
+    margin: 0 !important;
+  }
+
+  #admin-pos-section .section-title span,
+  .section-title span {
+    font-size: 1.4rem !important;
+    color: var(--verde) !important;
+  }
+
+  #admin-pos-section .pos-subtitle {
+    margin: 0 0 0.9rem 0 !important;
+    font-size: 0.86rem !important;
+    color: #64748b !important;
+    line-height: 1.35 !important;
+  }
+
+  .pos-client-type-select {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 9px !important;
+    margin-bottom: 0 !important;
+    width: 100% !important;
+  }
+
+  .pos-type-btn {
+    width: 100% !important;
+    padding: 12px 14px !important;
+    border-radius: 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 10px !important;
+    font-size: 0.9rem !important;
+    font-weight: 600 !important;
+    box-sizing: border-box !important;
+  }
+
+  #pos-search-section {
+    margin-top: 22px !important;
+    width: 100% !important;
+  }
+
+  #pos-search-section.hidden {
+    display: none !important;
+    margin-top: 0 !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .checkout-container {
+    padding: 0 10px 1.75rem !important;
+  }
+
+  .unipro-card,
+  body.page-datos-cliente #admin-pos-section .unipro-card,
+  .summary-card,
+  body.page-datos-cliente .summary-card {
+    padding: 1.1rem 0.95rem !important;
+    border-radius: 16px !important;
+  }
+}
+
+/* =========================================================
+   SUMMARY ITEM: IMAGEN LIMPIA Y TEXTOS A LA DERECHA
+   ========================================================= */
+.summary-item .item-img {
+  width: 140px !important;
+    max-width: 45% !important;
+  height: 140px !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  object-fit: contain !important;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.08)) !important;
+}
+
+.summary-item .item-info {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-end !important;
+  text-align: right !important;
+  margin-left: auto !important;
+  gap: 3px !important;
+}
+
+.summary-item .item-name {
+  text-align: right !important;
+}
+
+.summary-item .item-details {
+  text-align: right !important;
+}
+
+.summary-item .item-price {
+  text-align: right !important;
+}
+
+
+.pos-type-btn span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

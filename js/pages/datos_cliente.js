@@ -230,8 +230,6 @@ function getPrimerNombreYApellido(fullName) {
 
 function movePosElementsToHeader() {
   const header = document.getElementById("main-header") || document.querySelector("header.header-fixed");
-  const leftStitch = (header || document).querySelector(".header-left-stitch");
-  const rightStitch = (header || document).querySelector(".header-right-stitch");
 
   // Título "Pedido POS" -> fila izquierda, junto a la flecha.
   const posHeader = document.querySelector("#admin-pos-section .pos-header") || document.querySelector(".pos-header");
@@ -240,37 +238,48 @@ function movePosElementsToHeader() {
     posHeaderSlot.appendChild(posHeader);
   }
 
-  // Píldora "Atendido por" -> fila derecha (igual que en el carrito)
+  // Píldora "Atendido por" en el header derecho (igual que en carrito)
   const posClientSlot = document.getElementById("header-pos-client-slot");
-  if (posClientSlot && rightStitch && !rightStitch.contains(posClientSlot)) {
-    rightStitch.appendChild(posClientSlot);
-  }
-
-  // Limpiar cualquier residuo que se haya colado en leftStitch o en el header
-  if (leftStitch) {
-    leftStitch.querySelectorAll(".pos-selected-client, #pos-selected-client, #pos-selected-header").forEach(el => el.remove());
-  }
   if (posClientSlot) {
-    posClientSlot.querySelectorAll("#pos-selected-client, #pos-selected-header").forEach(el => el.remove());
-  }
+    posClientSlot.style.display = "flex";
+    const u = (typeof userCache !== "undefined" && userCache) ? userCache : JSON.parse(localStorage.getItem("cortero_user") || "null");
+    const isAdmin = u && (String(u.rol || u.role || "").toLowerCase() === "admin");
+    const adminPhoto = (isAdmin && u.photo_url) ? u.photo_url : "/imagenes/barista.png";
+    const rawName = (isAdmin && u.name) ? u.name : "Barista";
+    const parts = rawName.trim().split(/\s+/);
+    const shortName = parts.length <= 2 
+      ? rawName.trim() 
+      : (parts.length >= 4 ? `${parts[0]} ${parts[2]}` : `${parts[0]} ${parts[1]}`);
 
-  // Sincronizar UNA SOLA píldora de Atendido por en el slot derecho
-  if (typeof window.syncAttendantHeader === "function") {
-    window.syncAttendantHeader();
+    posClientSlot.innerHTML = `
+      <div class="pos-selected-client">
+        <div class="selected-client-header">
+          <img src="${adminPhoto}" alt="${shortName}" class="pos-attendant-avatar" onerror="this.src='/imagenes/barista.png'">
+          <div class="pos-attendant-info">
+            <span class="pos-attendant-label">Atendido por</span>
+            <span class="pos-attendant-name">${shortName}</span>
+          </div>
+        </div>
+      </div>
+    `;
   }
 }
 
 function initAdminPOS() {
+  document.body.classList.add("is-pos");
   document.getElementById("customer-form-section").classList.add("hidden");
   document.getElementById("map-section")?.classList.add("hidden");
   document.getElementById("admin-pos-section").classList.remove("hidden");
   const submitBtn = document.getElementById("btn-submit-desktop");
-  if (submitBtn) submitBtn.style.display = "none";
+  if (submitBtn) { submitBtn.classList.add("hidden"); submitBtn.style.setProperty("display", "none", "important"); }
 
   movePosElementsToHeader();
   document.addEventListener("header:ready", movePosElementsToHeader);
-  setTimeout(movePosElementsToHeader, 100);
+  setTimeout(movePosElementsToHeader, 50);
+  setTimeout(movePosElementsToHeader, 150);
   setTimeout(movePosElementsToHeader, 350);
+  setTimeout(movePosElementsToHeader, 700);
+  setTimeout(movePosElementsToHeader, 1200);
 
   const searchInput = document.getElementById("pos-search-input");
   const resultsEl = document.getElementById("pos-search-results");
@@ -288,60 +297,213 @@ function initAdminPOS() {
   let searchTimer = null;
   try { localStorage.removeItem("pos_local_clients"); } catch (_) {}
 
+  const isMobile = () => window.innerWidth <= 768;
+
+  function openNewClientBottomSheet() {
+    const backdrop = document.getElementById("pos-sheet-backdrop");
+    if (backdrop) backdrop.classList.add("active");
+    newForm.classList.remove("hidden");
+    requestAnimationFrame(() => {
+      newForm.classList.add("sheet-open");
+    });
+    document.body.style.overflow = "hidden";
+    setTimeout(() => {
+      document.getElementById("pos-new-name")?.focus();
+    }, 280);
+  }
+
+  function closeNewClientBottomSheet(restorePrevious = true) {
+    const backdrop = document.getElementById("pos-sheet-backdrop");
+    if (backdrop) backdrop.classList.remove("active");
+    newForm.classList.remove("sheet-open");
+    document.body.style.overflow = "";
+
+    setTimeout(() => {
+      if (isMobile() && !newForm.classList.contains("sheet-open")) {
+        newForm.classList.add("hidden");
+      }
+    }, 300);
+
+    if (restorePrevious && isMobile()) {
+      if (selectedClient && !selectedClient.name?.includes("Venta rápida") && !selectedClient.name?.includes("Venta rapida")) {
+        activarModoExistente();
+      } else {
+        activarModoRapida();
+      }
+    }
+  }
+
+  function updateBtnExistenteLabel(clientName) {
+    if (!btnExistente) return;
+    const icon = btnExistente.querySelector(".material-symbols-outlined");
+    const labelSpan = btnExistente.querySelector("span:last-child");
+    if (clientName) {
+      if (icon) icon.textContent = "person";
+      if (labelSpan) labelSpan.textContent = clientName;
+      btnExistente.title = clientName;
+    } else {
+      if (icon) icon.textContent = "person_search";
+      if (labelSpan) labelSpan.textContent = "Cliente existente";
+      btnExistente.title = "Cliente existente";
+    }
+  }
+
   function activarModoNuevo() {
     btnNuevo.classList.add("active");
     btnExistente.classList.remove("active");
     btnRapida.classList.remove("active");
+    updateBtnExistenteLabel(null);
+    try { sessionStorage.removeItem("pos_client"); } catch (_) {}
     searchSection.classList.add("hidden");
     newForm.classList.remove("hidden");
     createBtn.classList.remove("hidden");
     if (createBtnOriginal) createBtnOriginal.classList.remove("hidden");
-    selectedEl.classList.add("hidden");
+    if (selectedEl) selectedEl.classList.add("hidden");
     continuarBtn.classList.add("hidden");
     stepConfirmar.classList.add("hidden");
+
+    if (isMobile()) {
+      openNewClientBottomSheet();
+    }
   }
 
   function activarModoExistente() {
+    closeNewClientBottomSheet(false);
     btnExistente.classList.add("active");
     btnNuevo.classList.remove("active");
     btnRapida.classList.remove("active");
     newForm.classList.add("hidden");
-    searchSection.classList.remove("hidden");
-    searchInput.focus();
-    createBtn.classList.add("hidden");
-    if (createBtnOriginal) createBtnOriginal.classList.add("hidden");
-    if (!selectedClient || selectedClient.name?.includes("Venta rápida")) {
-      selectedEl.classList.add("hidden");
+    if (!selectedClient || selectedClient.name?.includes("Venta")) {
+      searchSection.classList.remove("hidden");
+      searchInput.focus();
+      createBtn.classList.add("hidden");
+      if (createBtnOriginal) createBtnOriginal.classList.add("hidden");
+      if (selectedEl) selectedEl.classList.add("hidden");
       continuarBtn.classList.add("hidden");
+      updateBtnExistenteLabel(null);
     } else {
-      selectedEl.classList.remove("hidden");
+      searchSection.classList.add("hidden");
+      createBtn.classList.add("hidden");
+      if (createBtnOriginal) createBtnOriginal.classList.add("hidden");
+      if (selectedEl) selectedEl.classList.remove("hidden");
       continuarBtn.classList.remove("hidden");
+      updateBtnExistenteLabel(selectedClient.name);
     }
   }
 
   function activarModoRapida() {
+    closeNewClientBottomSheet(false);
     btnRapida.classList.add("active");
     btnNuevo.classList.remove("active");
     btnExistente.classList.remove("active");
+    updateBtnExistenteLabel(null);
     newForm.classList.add("hidden");
     searchSection.classList.add("hidden");
-    selectedEl.classList.add("hidden");
+    if (selectedEl) selectedEl.classList.add("hidden");
     createBtn.classList.add("hidden");
     if (createBtnOriginal) createBtnOriginal.classList.add("hidden");
     const admin = JSON.parse(localStorage.getItem("cortero_user") || "{}");
     selectedClient = { id: admin.id, name: `${admin.name || "Mostrador"} (Venta rápida)`, phone: null, email: null };
+    try { sessionStorage.setItem("pos_client", JSON.stringify(selectedClient)); } catch (_) {}
     continuarBtn.classList.remove("hidden");
     stepConfirmar.classList.add("hidden");
-
-    if (typeof window.syncAttendantHeader === "function") {
-      window.syncAttendantHeader(admin);
-    }
   }
 
   btnRapida.onclick = activarModoRapida;
   btnNuevo.onclick = activarModoNuevo;
   btnExistente.onclick = activarModoExistente;
-  activarModoRapida();
+
+  // Listeners para Bottom Sheet en móvil
+  const closeBtn = document.getElementById("pos-sheet-close-btn");
+  if (closeBtn) {
+    closeBtn.addEventListener("click", () => closeNewClientBottomSheet(true));
+  }
+
+  const sheetBackdrop = document.getElementById("pos-sheet-backdrop");
+  if (sheetBackdrop) {
+    sheetBackdrop.addEventListener("click", () => closeNewClientBottomSheet(true));
+  }
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && newForm.classList.contains("sheet-open")) {
+      closeNewClientBottomSheet(true);
+    }
+  });
+
+  // Soporte de arrastre táctil para el bottom sheet
+  let startY = 0;
+  let currentTranslate = 0;
+
+  newForm.addEventListener("touchstart", (e) => {
+    if (!isMobile() || newForm.scrollTop > 0) return;
+    startY = e.touches[0].clientY;
+  }, { passive: true });
+
+  newForm.addEventListener("touchmove", (e) => {
+    if (!isMobile() || newForm.scrollTop > 0) return;
+    const touchY = e.touches[0].clientY;
+    const deltaY = touchY - startY;
+    if (deltaY > 0) {
+      currentTranslate = deltaY;
+      newForm.style.transform = `translateY(${deltaY}px)`;
+    }
+  }, { passive: true });
+
+  newForm.addEventListener("touchend", () => {
+    if (!isMobile()) return;
+    if (currentTranslate > 90) {
+      closeNewClientBottomSheet(true);
+    }
+    newForm.style.transform = "";
+    currentTranslate = 0;
+  });
+
+  window.addEventListener("resize", () => {
+    if (!isMobile()) {
+      document.body.style.overflow = "";
+      const backdrop = document.getElementById("pos-sheet-backdrop");
+      if (backdrop) backdrop.classList.remove("active");
+      newForm.classList.remove("sheet-open");
+      newForm.style.transform = "";
+      if (btnNuevo.classList.contains("active")) {
+        newForm.classList.remove("hidden");
+      }
+    }
+  });
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const isFromRecibo = urlParams.get("from") === "recibo" || (document.referrer && (document.referrer.includes("recibo.html") || document.referrer.includes("recibo")));
+
+  let savedPosClient = null;
+  if (isFromRecibo) {
+    try {
+      const rawPos = sessionStorage.getItem("pos_client");
+      if (rawPos) savedPosClient = JSON.parse(rawPos);
+    } catch (_) {}
+  } else {
+    try {
+      sessionStorage.removeItem("pos_client");
+    } catch (_) {}
+  }
+
+  if (isFromRecibo && savedPosClient && savedPosClient.name && !savedPosClient.name.toLowerCase().includes("venta")) {
+    seleccionarCliente(savedPosClient);
+  } else {
+    updateBtnExistenteLabel(null);
+    activarModoRapida();
+  }
+
+  window.addEventListener("pageshow", (event) => {
+    const p = new URLSearchParams(window.location.search);
+    const fromRec = p.get("from") === "recibo" || (document.referrer && (document.referrer.includes("recibo.html") || document.referrer.includes("recibo")));
+    if (!fromRec) {
+      try {
+        sessionStorage.removeItem("pos_client");
+      } catch (_) {}
+      updateBtnExistenteLabel(null);
+      activarModoRapida();
+    }
+  });
 
   searchInput.addEventListener("input", () => {
     clearTimeout(searchTimer);
@@ -361,8 +523,11 @@ function initAdminPOS() {
   });
 
   document.addEventListener("click", (e) => {
-    if (!e.target.closest(".pos-search-box")) {
+    if (!e.target.closest(".pos-search-box") && !e.target.closest("#pos-btn-existente")) {
       resultsEl.classList.add("hidden");
+      if (selectedClient && !selectedClient.name?.includes("Venta")) {
+        searchSection.classList.add("hidden");
+      }
     }
   });
 
@@ -409,7 +574,6 @@ function initAdminPOS() {
         <span class="material-symbols-outlined result-icon">person</span>
         <div>
           <div class="result-name">${u.name || "Sin nombre"}</div>
-          <div class="result-detail">${[u.phone, u.email].filter(Boolean).join(" · ") || "Sin contacto"}</div>
         </div>
       `;
       div.onclick = () => seleccionarCliente(u);
@@ -420,6 +584,14 @@ function initAdminPOS() {
 
   function seleccionarCliente(user) {
     selectedClient = user;
+    try {
+      sessionStorage.setItem("pos_client", JSON.stringify({
+        id: user.id,
+        name: user.name,
+        phone: user.phone,
+        email: user.email
+      }));
+    } catch (_) {}
     resultsEl.classList.add("hidden");
     searchSection.classList.add("hidden");
     newForm.classList.add("hidden");
@@ -427,22 +599,35 @@ function initAdminPOS() {
     createBtn.classList.add("hidden");
     if (createBtnOriginal) createBtnOriginal.classList.add("hidden");
 
+    updateBtnExistenteLabel(user.name || "Cliente");
+    btnExistente.classList.add("active");
+    btnNuevo.classList.remove("active");
+    btnRapida.classList.remove("active");
+
     const clientShortName = getPrimerNombreYApellido(user.name || "Cliente");
-    selectedEl.classList.remove("hidden");
-    document.getElementById("pos-selected-header").innerHTML = `
-      <div class="pos-client-avatar-badge"><span class="material-symbols-outlined">person</span></div>
-      <div class="pos-attendant-info">
-        <span class="pos-attendant-label">Cliente</span>
-        <span class="pos-attendant-name">${clientShortName}</span>
-      </div>
-    `;
-    document.getElementById("pos-client-info").innerHTML = "";
-    document.getElementById("pos-change-client-btn").classList.remove("hidden");
+    if (selectedEl) selectedEl.classList.remove("hidden");
+    const headerEl = document.getElementById("pos-selected-header");
+    if (headerEl) {
+      headerEl.innerHTML = `
+        <div class="pos-client-avatar-badge"><span class="material-symbols-outlined">person</span></div>
+        <div class="pos-attendant-info">
+          <span class="pos-attendant-label">Cliente</span>
+          <span class="pos-attendant-name">${clientShortName}</span>
+        </div>
+      `;
+    }
+    const infoEl = document.getElementById("pos-client-info");
+    if (infoEl) infoEl.innerHTML = "";
+    const changeBtn = document.getElementById("pos-change-client-btn");
+    if (changeBtn) changeBtn.classList.remove("hidden");
     continuarBtn.classList.remove("hidden");
   }
 
-  document.getElementById("pos-change-client-btn").onclick = () => {
+  const posChangeBtn = document.getElementById("pos-change-client-btn");
+  if (posChangeBtn) posChangeBtn.onclick = () => {
     selectedClient = null;
+    try { sessionStorage.removeItem("pos_client"); } catch (_) {}
+    updateBtnExistenteLabel(null);
     selectedEl.classList.add("hidden");
     continuarBtn.classList.add("hidden");
     stepConfirmar.classList.add("hidden");

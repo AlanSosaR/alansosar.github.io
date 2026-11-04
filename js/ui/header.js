@@ -35,8 +35,10 @@ if (!window.__HEADER_CORE_LOADED__) {
   ===================================================== */
   function getUserCache() {
     try {
+      const u = JSON.parse(localStorage.getItem("cortero_user"));
+      if (u) return u;
       if (localStorage.getItem("cortero_logged") !== "1") return null;
-      return JSON.parse(localStorage.getItem("cortero_user"));
+      return null;
     } catch {
       return null;
     }

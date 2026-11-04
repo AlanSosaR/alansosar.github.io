@@ -1,3 +1,61 @@
+
+function numeroALetras(num) {
+  const Unidades = (n) => {
+    const u = ["", "UN", "DOS", "TRES", "CUATRO", "CINCO", "SEIS", "SIETE", "OCHO", "NUEVE"];
+    return u[n] || "";
+  };
+
+  const Decenas = (n) => {
+    if (n < 10) return Unidades(n);
+    if (n >= 10 && n <= 15) {
+      return ["DIEZ", "ONCE", "DOCE", "TRECE", "CATORCE", "QUINCE"][n - 10];
+    }
+    if (n > 15 && n < 20) return "DIECI" + Unidades(n - 10);
+    if (n === 20) return "VEINTE";
+    if (n > 20 && n < 30) return "VEINTI" + Unidades(n - 20);
+
+    const decenas = ["", "", "", "TREINTA", "CUARENTA", "CINCUENTA", "SESENTA", "SETENTA", "OCHENTA", "NOVENTA"];
+    const d = Math.floor(n / 10);
+    const u = n % 10;
+    return u === 0 ? decenas[d] : decenas[d] + " Y " + Unidades(u);
+  };
+
+  const Centenas = (n) => {
+    if (n < 100) return Decenas(n);
+    if (n === 100) return "CIEN";
+    const c = Math.floor(n / 100);
+    const resto = n % 100;
+    const centenas = ["", "CIENTO", "DOSCIENTOS", "TRESCIENTOS", "CUATROCIENTOS", "QUINIENTOS", "SEISCIENTOS", "SETECIENTOS", "OCHOCIENTOS", "NOVECIENTOS"];
+    const strC = centenas[c];
+    return resto > 0 ? strC + " " + Decenas(resto) : strC;
+  };
+
+  const Miles = (n) => {
+    if (n < 1000) return Centenas(n);
+    const m = Math.floor(n / 1000);
+    const resto = n % 1000;
+    const strM = m === 1 ? "MIL" : Centenas(m) + " MIL";
+    return resto > 0 ? strM + " " + Centenas(resto) : strM;
+  };
+
+  const Millones = (n) => {
+    if (n < 1000000) return Miles(n);
+    const mill = Math.floor(n / 1000000);
+    const resto = n % 1000000;
+    const strMill = mill === 1 ? "UN MILLÓN" : Miles(mill) + " MILLONES";
+    return resto > 0 ? strMill + " " + Miles(resto) : strMill;
+  };
+
+  const enteros = Math.floor(num || 0);
+  const centavos = Math.round(((num || 0) - enteros) * 100);
+  const strCentavos = centavos.toString().padStart(2, "0") + "/100";
+
+  if (enteros === 0) return "CERO LEMPIRAS CON " + strCentavos;
+  if (enteros === 1) return "UN LEMPIRA CON " + strCentavos;
+
+  return Millones(enteros).trim() + " LEMPIRAS CON " + strCentavos;
+}
+
 /**
  * 🧾 recibo.checkout.js — FINAL MATERIAL 3 EXPRESSIVE (SNACKBAR REAL FIXED)
  */
@@ -54,27 +112,21 @@ const carrito = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
    HELPERS POS Y USUARIO
 ========================================================= */
 async function asegurarUsuarioPOS(sb, posClient) {
-  if (!posClient || !posClient.id) return null;
+  if (!posClient) return null;
+  const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(posClient.id || "");
+  if (isUUID) {
+    return posClient.id;
+  }
+
+  // Si no es un UUID válido (ej: "pos_rapida" o local), crear/asegurar en Supabase
   try {
-    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(posClient.id);
-    if (isUUID) {
-      const { data: userExists } = await sb
-        .from("users")
-        .select("id")
-        .eq("id", posClient.id)
-        .maybeSingle();
-
-      if (userExists && userExists.id) return posClient.id;
-    }
-
-    // Si el ID era local/antiguo o no existe en la BD, registrarlo legítimamente
     const { data: created, error } = await sb.rpc("create_pos_client", {
-      p_name: posClient.name || "Cliente Mostrador",
+      p_name: posClient.name || "Consumidor Final",
       p_phone: posClient.phone || null,
       p_email: posClient.email || null
     });
 
-    if (created && created.id) {
+    if (!error && created && created.id) {
       posClient.id = created.id;
       if (window.POS_CLIENT) window.POS_CLIENT.id = created.id;
       try { sessionStorage.setItem("pos_client", JSON.stringify(posClient)); } catch (_) {}
@@ -83,6 +135,11 @@ async function asegurarUsuarioPOS(sb, posClient) {
   } catch (e) {
     console.warn("Aviso asegurando usuario POS:", e);
   }
+
+  // Fallback: usar id del admin logueado si existe
+  const admin = JSON.parse(localStorage.getItem("cortero_user") || "null");
+  if (admin && admin.id) return admin.id;
+
   return posClient.id;
 }
 
@@ -104,17 +161,24 @@ async function pintarDatosProvisionales() {
 
   let next = 1;
   try {
-    const { data: previewNum, error: prevErr } = await sb.rpc("preview_next_order_number", { p_user_id: uid });
-    if (!prevErr && previewNum) {
-      next = previewNum;
+    // 1. Consultar directamente el número máximo real en orders para evitar saltos por intentos fallidos
+    const { data: lastOrder, error: orderErr } = await sb
+      .from("orders")
+      .select("order_number")
+      .eq("user_id", uid)
+      .order("order_number", { ascending: false })
+      .limit(1);
+
+    if (!orderErr && lastOrder && lastOrder.length > 0 && lastOrder[0].order_number != null) {
+      next = Number(lastOrder[0].order_number) + 1;
     } else {
-      const { data } = await sb
-        .from("orders")
-        .select("order_number")
-        .eq("user_id", uid)
-        .order("order_number", { ascending: false })
-        .limit(1);
-      next = (data?.[0]?.order_number || 0) + 1;
+      // 2. Fallback a preview_next_order_number
+      const { data: previewNum, error: prevErr } = await sb.rpc("preview_next_order_number", { p_user_id: uid });
+      if (!prevErr && previewNum) {
+        next = previewNum;
+      } else {
+        next = 1;
+      }
     }
   } catch (_) {
     next = 1;
@@ -141,6 +205,10 @@ function mostrarPreview(file) {
   tempFile = file;
   imgPreview.src = URL.createObjectURL(file);
   previewBox.classList.remove("hidden");
+  if (btnSubir) {
+    btnSubir.innerHTML = '<span class="material-symbols-outlined">check_circle</span> Cambiar comprobante';
+    btnSubir.classList.add("comprobante-cargado");
+  }
   validarBoton();
 }
 
@@ -149,6 +217,12 @@ function mostrarPreview(file) {
 ========================================================= */
 function validarBoton() {
   if (!btnEnviar) return;
+
+  // Si el carrito está vacío, no permitir envío
+  if (!carrito || carrito.length === 0) {
+    btnEnviar.disabled = true;
+    return;
+  }
 
   if (metodoPago.value === "cash") {
     btnEnviar.disabled = false;
@@ -172,12 +246,46 @@ async function cargarResumen() {
   if (!sb || !user) return;
 
   if (window.POS_CLIENT) {
-    $("nombreCliente").textContent = window.POS_CLIENT.name;
-    $("correoCliente").textContent = window.POS_CLIENT.email || "—";
-    $("telefonoCliente").textContent = window.POS_CLIENT.phone || "—";
-    $("zonaCliente").textContent = "POS (mostrador)";
-    $("direccionCliente").textContent = "Venta en tienda";
-    $("notaCliente").textContent = orderNotesCache || "Pedido POS (mostrador)";
+    const payTitle = document.getElementById("f-pay-title");
+    const paySub = document.getElementById("f-pay-subtitle");
+    const payIcon = document.getElementById("f-pay-icon");
+    if (payTitle) payTitle.textContent = "Pedido POS";
+    if (paySub) paySub.textContent = "Venta en mostrador";
+    if (payIcon) payIcon.innerHTML = '<span class="material-symbols-outlined" style="font-variation-settings: \'FILL\' 1;">point_of_sale</span>';
+
+    const isVentaRapida = String(window.POS_CLIENT.name || "").toLowerCase().includes("venta rápida") ||
+                          String(window.POS_CLIENT.name || "").toLowerCase().includes("venta rapida");
+    if (isVentaRapida) {
+      $("nombreCliente").textContent = "Consumidor final";
+      document.getElementById("f-customer-email-row")?.classList.add("hidden");
+      document.getElementById("f-customer-phone-row")?.classList.add("hidden");
+      $("direccionCliente").textContent = "Venta en mostrador / POS";
+      if ($("notaCliente")) $("notaCliente").textContent = "";
+    } else {
+      $("nombreCliente").textContent = window.POS_CLIENT.name;
+      const rawPosMail = window.POS_CLIENT.email || "";
+      const isDummyMail = !rawPosMail || rawPosMail.includes("@pos.cafecortero.com") || rawPosMail.startsWith("pos_");
+      const emailRow = document.getElementById("f-customer-email-row");
+      if (emailRow) {
+        if (isDummyMail) {
+          emailRow.classList.add("hidden");
+        } else {
+          emailRow.classList.remove("hidden");
+          $("correoCliente").textContent = rawPosMail;
+        }
+      }
+      const phoneRow = document.getElementById("f-customer-phone-row");
+      if (phoneRow) {
+        if (window.POS_CLIENT.phone) {
+          phoneRow.classList.remove("hidden");
+          $("telefonoCliente").textContent = window.POS_CLIENT.phone;
+        } else {
+          phoneRow.classList.add("hidden");
+        }
+      }
+      $("direccionCliente").textContent = "Recogida local / Sin dirección";
+      if ($("notaCliente")) $("notaCliente").textContent = "";
+    }
     return;
   }
 
@@ -206,8 +314,7 @@ async function cargarResumen() {
     $("direccionCliente").textContent = addr[0].street;
   }
 
-  $("notaCliente").textContent =
-    orderNotesCache || "Sin nota adicional";
+  if ($("notaCliente")) $("notaCliente").textContent = "";
 }
 
 /* =========================================================
@@ -218,55 +325,67 @@ function renderCarrito() {
   lista.innerHTML = "";
   totalPedido = 0;
 
-  carrito.forEach((it, idx) => {
-    const sub = it.qty * it.price;
-    totalPedido += sub;
+  carrito.forEach((it) => {
+    const lineTotal = it.qty * it.price;
+    totalPedido += lineTotal;
     const imgSrc = resolveImgUrl(it.img);
+    const desc = [it.category, it.grind, it.presentation?.replace('1lb','1 lb (454 g)'), it.weight ? it.weight + 'g' : ''].filter(Boolean).join(' • ') || 'Café';
     lista.innerHTML += `
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;padding:8px 0;${idx < carrito.length - 1 ? 'border-bottom:1px solid rgba(55,123,76,0.3)' : ''}">
-        <div style="display:flex;gap:8px;flex:1;min-width:0">
-          <img src="${imgSrc}" alt="${it.name}" style="width:64px;height:auto;object-fit:contain;border-radius:8px;flex-shrink:0;filter:drop-shadow(0 2px 6px rgba(0,0,0,0.10))" onerror="this.onerror=null;this.src='/imagenes/no-image.png'">
-          <div style="display:flex;flex-direction:column;justify-content:center;min-width:0">
-            <span style="font-family:'Poppins',sans-serif;font-weight:700;font-size:0.95rem;color:#553722">${it.name}</span>
-            <span style="font-family:'Poppins',sans-serif;font-size:0.7rem;color:#50453e;margin-top:2px;line-height:1.2">${[it.category, it.grind, it.presentation?.replace('1lb','1 lb (454 g)'), it.weight ? it.weight + 'g' : ''].filter(Boolean).join(' · ') || 'Café'}</span>
+      <tr>
+        <td class="left col-prod">
+          <div class="prod-info-cell" style="display:flex;align-items:center;gap:12px;">
+            <img src="${imgSrc}" alt="${it.name}" style="width:60px;height:60px;object-fit:contain;flex-shrink:0;background:transparent;border:none;" onerror="this.onerror=null;this.src='/imagenes/no-image.png'">
+            <div>
+              <p class="item-name">${it.name}</p>
+              <p class="item-desc">${desc}</p>
+            </div>
           </div>
-        </div>
-        <div style="display:flex;flex-direction:column;align-items:flex-end;flex-shrink:0;justify-content:center">
-          <span style="font-family:'Poppins',sans-serif;font-weight:700;font-size:0.95rem;color:#377b4c">L ${sub.toFixed(2)}</span>
-          <span style="font-family:'Poppins',sans-serif;font-size:0.85rem;color:#50453e">Cant: ${it.qty}</span>
-        </div>
-      </div>`;
+        </td>
+        <td class="col-qty"><span class="qty-prefix">Cant: </span>${it.qty}</td>
+        <td class="right col-price" style="font-weight:700;color:var(--espresso);">L ${Number(it.price).toFixed(2)}</td>
+      </tr>`;
   });
 
-  $("totalPedido").textContent = totalPedido.toFixed(2);
+  let totalDescuento = 0;
+  carrito.forEach(it => {
+    const qty = Number(it.qty || 1);
+    const price = Number(it.price || 0);
+    const origPrice = Number(it.price_original || it.original_price || 0);
+    if (origPrice > price) {
+      totalDescuento += (origPrice - price) * qty;
+    } else if (it.discount_percent > 0) {
+      totalDescuento += (price * (it.discount_percent / 100)) * qty;
+    } else if (it.discount_amount) {
+      totalDescuento += Number(it.discount_amount);
+    }
+  });
+
+  const fDescuento = document.getElementById("f-descuento");
+  if (fDescuento) {
+    fDescuento.textContent = `-L ${totalDescuento.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  }
+
+  const formattedTotal = totalPedido.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  $("totalPedido").textContent = formattedTotal;
+
+  const fGravado = document.getElementById("f-gravado");
+  if (fGravado) fGravado.textContent = `L ${formattedTotal}`;
+
+  const fIsv = document.getElementById("f-isv");
+  if (fIsv) fIsv.textContent = `L ${(totalPedido * 0.15).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+  const fLetras = document.getElementById("f-letras");
+  if (fLetras) fLetras.textContent = numeroALetras(totalPedido);
 
   // Mensaje de primer descuento
-  const noteContainer = $("listaProductos");
   if (isFirstOrder) {
-    const hasDiscountedItems = carrito.some(it => {
-      // Podríamos comparar it.price con un precio base, pero simplifiquemos:
-      // El usuario pidió que dijéramos esto en el primer pedido.
-      return true;
-    });
-
-    if (hasDiscountedItems) {
-      noteContainer.innerHTML += `
-            <div class="first-order-badge" style="
-                margin-top: 15px;
-                padding: 12px;
-                background: rgba(55, 123, 76, 0.1);
-                border: 1px dashed var(--verde);
-                border-radius: 12px;
-                color: var(--verde);
-                font-size: 0.85rem;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-            ">
-                <span class="material-symbols-outlined" style="font-size: 1.2rem;">auto_awesome</span>
-                <span>¡Felicidades! Al ser tu <b>primera vez</b>, hemos aplicado descuentos especiales en tus productos.</span>
-            </div>
-        `;
+    const noteContainer = document.querySelector(".items-area");
+    if (noteContainer && !document.getElementById("first-order-badge-el")) {
+      const b = document.createElement("div");
+      b.id = "first-order-badge-el";
+      b.style.cssText = "margin-top: 14px; padding: 12px; background: rgba(55, 123, 76, 0.08); border: 1px dashed var(--primary); border-radius: 8px; color: var(--primary); font-size: 0.85rem; display: flex; align-items: center; gap: 8px;";
+      b.innerHTML = '<span class="material-symbols-outlined" style="font-size: 1.2rem;">auto_awesome</span><span>¡Felicidades! Al ser tu <b>primera vez</b>, tienes descuentos especiales aplicados.</span>';
+      noteContainer.appendChild(b);
     }
   }
 }
@@ -274,11 +393,11 @@ function renderCarrito() {
 /* =========================================================
    MÉTODO DE PAGO
 ========================================================= */
-function actualizarPago() {
+window.actualizarPago = function actualizarPago() {
   const v = metodoPago.value;
 
-  bloqueDeposito.classList.toggle("hidden", v !== "bank_transfer" || !!window.POS_CLIENT);
-  bloqueEfectivo.classList.toggle("hidden", v !== "cash" || !!window.POS_CLIENT);
+  bloqueDeposito.classList.toggle("hidden", v !== "bank_transfer");
+  bloqueEfectivo.classList.toggle("hidden", v !== "cash");
 
   validarBoton();
 }
@@ -290,17 +409,18 @@ function mostrarConfirmacionEnvio() {
   if (!bar) return;
 
   bar.innerHTML = `
-    <div style="display:flex;flex-direction:column;gap:12px;width:100%;">
-      <span class="snack-text">${window.POS_CLIENT ? "¿Confirmar compra?" : "¿Confirmar envío del pedido?"}</span>
-      <div style="display:flex;justify-content:flex-end;gap:8px;">
-        <button id="snack-editar"
-          style="background:none;border:none;color:#fff;font-weight:600;cursor:pointer;">
+    <div class="snackbar-action-content">
+      <div class="snackbar-text-wrap">
+        <span class="material-symbols-outlined snackbar-icon">help_outline</span>
+        <span class="snack-text">${window.POS_CLIENT ? "¿Confirmar compra?" : "¿Confirmar envío del pedido?"}</span>
+      </div>
+      <div class="snackbar-actions">
+        <button id="snack-editar" type="button" class="btn-snack-secondary">
           Editar
         </button>
-        <button id="snack-confirmar"
-          style="background:#2e7d32;border:none;color:#fff;font-weight:600;
-                 cursor:pointer;padding:8px 16px;border-radius:8px;">
-          Confirmar
+        <button id="snack-confirmar" type="button" class="btn-snack-primary">
+          <span class="material-symbols-outlined" style="font-size: 18px;">check</span>
+          <span>Confirmar</span>
         </button>
       </div>
     </div>
@@ -322,6 +442,28 @@ function confirmarEnvio(e) {
   if (e && e.preventDefault) e.preventDefault(); // 🛡️ Evitar recarga
 
   if (!btnEnviar || btnEnviar.disabled) return;
+
+  if (!carrito || carrito.length === 0) {
+    window.showSnack("Tu carrito está vacío. Agrega productos antes de pedir.");
+    return;
+  }
+
+  const user = window.supabaseAuth?.getCurrentUser?.();
+  if (!window.POS_CLIENT && !user) {
+    window.showSnack("Debes iniciar sesión con tu cuenta para confirmar tu pedido.");
+    setTimeout(() => {
+      window.location.href = "/pages/auth/login.html?redirect=recibo";
+    }, 1800);
+    return;
+  }
+
+  if (!window.POS_CLIENT && !selectedAddressId) {
+    window.showSnack("Falta la dirección de entrega. Completa tus datos de envío.");
+    setTimeout(() => {
+      window.location.href = "/pages/profile/datos_cliente.html?from=recibo";
+    }, 1800);
+    return;
+  }
 
   if (!metodoPago.value) {
     window.showSnack("Selecciona un método de pago");
@@ -352,12 +494,13 @@ async function enviarPedido() {
   }
 
   if (!orderUserId) {
-    window.showSnack("Faltan datos del pedido");
+    window.showSnack("Inicia sesión o selecciona un cliente para completar el pedido.");
     return;
   }
 
   if (!isPOS && !selectedAddressId) {
-    window.showSnack("Faltan datos del pedido");
+    window.showSnack("Falta la dirección de envío.");
+    setTimeout(() => { window.location.href = "/pages/profile/datos_cliente.html?from=recibo"; }, 1500);
     return;
   }
 
@@ -367,20 +510,26 @@ async function enviarPedido() {
   try {
     let orderNumber;
     try {
-      const { data: num, error: numErr } = await sb.rpc("next_order_number", { p_user_id: orderUserId });
-      if (!numErr && num) {
-        orderNumber = num;
-      }
-    } catch (_) {}
-
-    if (!orderNumber) {
-      const { data: lastOrder } = await sb
+      // 1. Consultar el número máximo real en orders en la base de datos
+      const { data: lastOrder, error: orderErr } = await sb
         .from("orders")
         .select("order_number")
         .eq("user_id", orderUserId)
         .order("order_number", { ascending: false })
         .limit(1);
-      orderNumber = ((lastOrder && lastOrder[0]?.order_number) || 0) + 1;
+
+      if (!orderErr && lastOrder && lastOrder.length > 0 && lastOrder[0].order_number != null) {
+        orderNumber = Number(lastOrder[0].order_number) + 1;
+      } else {
+        const { data: num, error: numErr } = await sb.rpc("next_order_number", { p_user_id: orderUserId });
+        if (!numErr && num) {
+          orderNumber = num;
+        } else {
+          orderNumber = 1;
+        }
+      }
+    } catch (_) {
+      orderNumber = 1;
     }
 
     $("numeroPedido").textContent = String(orderNumber);
@@ -404,25 +553,40 @@ async function enviarPedido() {
       .single();
 
     if (error || !order) {
-      throw new Error("No se pudo crear el pedido");
+      console.error("❌ Error en orders.insert:", error);
+      let msg = error?.message || "No se pudo crear el pedido";
+      if (msg.includes("row-level security")) {
+        msg = isPOS 
+          ? "Permisos insuficientes: Inicia sesión como Administrador para registrar ventas POS."
+          : "Sesión requerida: Inicia sesión con tu cuenta para enviar el pedido.";
+      }
+      throw new Error(msg);
     }
 
     console.log("Pedido creado:", order.id, isPOS ? "(POS)" : "");
 
-    await sb.from("order_items").insert(
+    const { error: itemsError } = await sb.from("order_items").insert(
       carrito.map(it => ({
         order_id: order.id,
-        product_id: it.product_id,
+        product_id: it.product_id || it.id,
         quantity: it.qty,
         price: it.price
       }))
     );
 
+    if (itemsError) {
+      console.error("❌ Error en order_items.insert:", itemsError);
+      throw new Error("Error al guardar productos: " + (itemsError.message || ""));
+    }
+
     if (isPOS) {
       for (const it of carrito) {
-        const { data: prod } = await sb.from("products").select("stock").eq("id", it.product_id).single();
-        if (prod) {
-          await sb.from("products").update({ stock: Math.max(0, prod.stock - it.qty) }).eq("id", it.product_id);
+        const prodId = it.product_id || it.id;
+        if (prodId) {
+          const { data: prod } = await sb.from("products").select("stock").eq("id", prodId).single();
+          if (prod) {
+            await sb.from("products").update({ stock: Math.max(0, prod.stock - it.qty) }).eq("id", prodId);
+          }
         }
       }
       const now = new Date();
@@ -440,7 +604,7 @@ async function enviarPedido() {
           hora: fmHora,
           metodo_pago: fmMetodo,
           created_by: adminUser?.id || null,
-          product_id: it.product_id,
+          product_id: it.product_id || it.id,
           order_id: order.id,
         });
       }
@@ -466,19 +630,23 @@ async function enviarPedido() {
       });
     }
 
-    await sb.from("notifications").insert({
-      user_id: null,
-      title: isPOS ? "Pedido POS registrado" : "Nuevo pedido recibido",
-      message: isPOS
-        ? `Pedido #${orderNumber} registrado en mostrador para ${customerName}`
-        : `El cliente ${customerName} ha realizado el pedido #${orderNumber}.`,
-      type: "new_order",
-      is_read: false,
-      metadata: {
-        order_id: order.id,
-        order_number: orderNumber
-      }
-    });
+    try {
+      await sb.from("notifications").insert({
+        user_id: null,
+        title: isPOS ? "Pedido POS registrado" : "Nuevo pedido recibido",
+        message: isPOS
+          ? `Pedido #${orderNumber} registrado en mostrador para ${customerName || 'Cliente'}`
+          : `El cliente ${customerName || 'Cliente'} ha realizado el pedido #${orderNumber}.`,
+        type: "new_order",
+        is_read: false,
+        metadata: {
+          order_id: order.id,
+          order_number: orderNumber
+        }
+      });
+    } catch (notifErr) {
+      console.warn("Aviso al crear notificación:", notifErr);
+    }
 
     if (!isPOS) {
       try {
@@ -494,7 +662,7 @@ async function enviarPedido() {
         const customerPhone = ($("telefonoCliente")?.textContent || "").trim();
         const addressLine = [$("direccionCliente")?.textContent, $("zonaCliente")?.textContent].filter(Boolean).join(", ");
 
-        const msg = `☕ *Nuevo Pedido #${orderNumber}*\n\n👤 *Cliente:* ${customerName}\n📞 *Tel:* ${customerPhone || "N/D"}\n📍 *Dirección:* ${addressLine || "N/D"}\n\n━━━ *Productos* ━━━\n\n${prodLines}\n${sep}\n💰 *Total:* L ${totalPedido.toFixed(2)}\n💳 *Pago:* ${paymentMethod === "bank_transfer" ? "Transferencia bancaria" : "Efectivo contra entrega"}`;
+        const msg = `☕ *Nuevo Pedido #${orderNumber}*\n\n👤 *Cliente:* ${customerName || 'Cliente'}\n📞 *Tel:* ${customerPhone || "N/D"}\n📍 *Dirección:* ${addressLine || "N/D"}\n\n━━━ *Productos* ━━━\n\n${prodLines}\n${sep}\n💰 *Total:* L ${totalPedido.toFixed(2)}\n💳 *Pago:* ${paymentMethod === "bank_transfer" ? "Transferencia bancaria" : "Efectivo contra entrega"}`;
 
         await fetch(`${waApi}/message/sendText/CafeCortero`, {
           method: "POST",
@@ -513,14 +681,15 @@ async function enviarPedido() {
     sessionStorage.removeItem("current_order_notes");
     sessionStorage.removeItem("pos_client");
 
-    window.showSnack(isPOS ? "Compra creada con xito" : "Pedido enviado con xito");
+    window.showSnack(isPOS ? "Compra creada con éxito" : "Pedido enviado con éxito");
     setTimeout(() => {
       location.href = isPOS ? `/pages/admin/admin-clientes.html?id=${orderUserId}` : "/pages/profile/mis-pedidos.html";
     }, 2000);
 
   } catch (e) {
-    console.error(e);
-    window.showSnack("Error al enviar el pedido");
+    console.error("❌ Error en enviarPedido:", e);
+    const msg = e?.message || "Error al enviar el pedido";
+    window.showSnack(msg, 6000);
     btnEnviar.disabled = false;
   } finally {
     loader.classList.add("hidden");
@@ -582,7 +751,7 @@ async function enviarPedido() {
   const btnBack = $("btn-back");
   if (btnBack) {
     btnBack.onclick = () => {
-      window.location.href = "/pages/profile/datos_cliente.html";
+      window.location.href = "/pages/profile/datos_cliente.html?from=recibo";
     };
   }
 })();

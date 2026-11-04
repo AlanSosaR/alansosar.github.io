@@ -433,6 +433,13 @@ body.home-page {
 }
 
 @media (max-width: 900px) {
+  .discount-pill {
+    align-self: flex-start !important;
+    max-width: 100% !important;
+    width: fit-content !important;
+    box-sizing: border-box !important;
+  }
+
   .product-main {
     grid-template-columns: 1fr;
     width: auto;
@@ -867,6 +874,7 @@ body.home-page {
 .discount-pill {
   display: inline-flex;
   align-items: center;
+  align-self: flex-start;
   gap: 0.8rem;
   background: var(--marron); /* Marrón original de la app */
   color: #fff;
@@ -876,6 +884,8 @@ body.home-page {
   box-shadow: 0 4px 12px rgba(0,0,0,0.12);
   border-left: 4px solid var(--principal);
   font-family: var(--fuente-texto);
+  max-width: 100%;
+  box-sizing: border-box;
   animation: fadeInDown 0.5s ease-out;
 }
 

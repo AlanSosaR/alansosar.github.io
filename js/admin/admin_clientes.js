@@ -7,6 +7,17 @@ const initAdminClientes = () => {
     const noSelection = document.getElementById("no-selection");
     const tplCard = document.getElementById("tpl-customer-card");
 
+    // Restaurar inmediatamente el estado en móvil si hay id en URL o sessionStorage para no parpadear
+    try {
+        const p = new URLSearchParams(window.location.search);
+        const savedId = p.get("id") || sessionStorage.getItem("admin_selected_customer_id");
+        if (savedId) {
+            document.body.classList.add("detail-view-active");
+            if (customerDetail) customerDetail.classList.remove("hidden");
+            if (noSelection) noSelection.classList.add("hidden");
+        }
+    } catch(e) {}
+
     // Detalle
     const cPhoto = document.getElementById("c-photo");
     const cName = document.getElementById("c-name");
@@ -245,10 +256,14 @@ const initAdminClientes = () => {
         await fetchCustomers();
         renderCustomerList();
         const params = new URLSearchParams(window.location.search);
-        const preselectedId = params.get("id");
+        const preselectedId = params.get("id") || sessionStorage.getItem("admin_selected_customer_id");
         if (preselectedId) {
           const customer = allCustomers.find(c => c.id === preselectedId);
-          if (customer) setTimeout(() => selectCustomer(customer), 100);
+          if (customer) {
+            selectCustomer(customer);
+          } else {
+            backToList();
+          }
         } else if (adminId && window.innerWidth >= 1024) {
           const adminUser = allCustomers.find(c => c.id === adminId);
           if (adminUser) setTimeout(() => selectCustomer(adminUser), 100);
@@ -273,6 +288,16 @@ const initAdminClientes = () => {
             console.log(`✅ Clientes cargados: ${data?.length || 0}`);
             allCustomers = data || [];
             filteredCustomers = [...allCustomers];
+            window.__adminCustomers = allCustomers;
+            document.dispatchEvent(new CustomEvent("customers:ready", { detail: allCustomers }));
+
+            // Actualizar contadores en las píldoras de roles
+            const elTodos = document.getElementById("chip-count-todos");
+            const elAdmin = document.getElementById("chip-count-admin");
+            const elUser = document.getElementById("chip-count-usuario");
+            if (elTodos) elTodos.textContent = allCustomers.length;
+            if (elAdmin) elAdmin.textContent = allCustomers.filter(c => c.rol === "admin" || (adminId && c.id === adminId)).length;
+            if (elUser) elUser.textContent = allCustomers.filter(c => c.rol !== "admin" && (!adminId || c.id !== adminId)).length;
         } catch (err) {
             console.error("❌ Error fetchCustomers:", err);
             if(listContainer) listContainer.innerHTML = `<div class="error-state">Error al cargar clientes: ${err.message || 'Error desconocido'}</div>`;
@@ -396,13 +421,25 @@ const initAdminClientes = () => {
     };
 
     const selectCustomer = async (customer) => {
+        window.__selectCustomer = selectCustomer;
         selectedCustomerId = customer.id;
+
+        // Persistir en URL y sessionStorage para que al refrescar en móvil se mantenga en el detalle
+        try {
+            const url = new URL(window.location);
+            url.searchParams.set("id", customer.id);
+            window.history.replaceState({ customerId: customer.id }, "", url);
+            sessionStorage.setItem("admin_selected_customer_id", customer.id);
+        } catch (e) {}
         renderCustomerList();
 
         noSelection.classList.add("hidden");
         customerDetail.classList.remove("hidden");
         customerDetail.style.opacity = "0.5";
         document.body.classList.add("detail-view-active");
+        if (window.innerWidth <= 1024) {
+            // window.scrollTo prevent
+        }
 
         const cPhotoWrapper = document.getElementById("c-photo-wrapper");
         if (cPhotoWrapper) {
@@ -423,7 +460,7 @@ const initAdminClientes = () => {
         if (adminStatReg) adminStatReg.classList.toggle("hidden", isAdmin);
 
         document.getElementById("c-stat-label-spent").textContent = isAdmin ? "Total vendido" : "Gasto total";
-        document.getElementById("c-stat-label-orders").textContent = isAdmin ? "Ventas atendidas" : "Pedidos totales";
+        document.getElementById("c-stat-label-orders").textContent = isAdmin ? "Ventas" : "Pedidos totales";
         document.getElementById("c-stat-label-reg").textContent = isAdmin ? "Activo desde" : "Miembro desde";
         document.getElementById("c-history-title").textContent = isAdmin ? "Historial de ventas (mostrador)" : "Historial de Compras";
 
@@ -522,32 +559,89 @@ const initAdminClientes = () => {
     const backToList = () => {
         document.body.classList.remove("detail-view-active");
         selectedCustomerId = null;
+
+        // Limpiar URL y sessionStorage al volver al listado
+        try {
+            const url = new URL(window.location);
+            url.searchParams.delete("id");
+            window.history.replaceState({}, "", url);
+            sessionStorage.removeItem("admin_selected_customer_id");
+        } catch (e) {}
         renderCustomerList();
+        if (window.innerWidth <= 1024) {
+            // window.scrollTo prevent
+        }
     };
 
     // 6. EVENTOS DIRECTOS
     document.getElementById("btn-back-to-list")?.addEventListener("click", backToList);
+    document.getElementById("header-customer-detail-back")?.addEventListener("click", backToList);
 
-    document.addEventListener("customer:search", (e) => {
-        const query = e.detail.toLowerCase();
-        filteredCustomers = allCustomers.filter(c => 
-            (c.name && c.name.toLowerCase().includes(query)) ||
-            (c.email && c.email.toLowerCase().includes(query)) ||
-            (c.phone && c.phone.includes(query))
-        );
+    // Delegación global para el botón volver del header o lista
+    document.addEventListener("click", (e) => {
+        if (e.target.closest("#header-customer-detail-back, .header-customer-detail-back-btn, #btn-back-to-list")) {
+            backToList();
+        }
+    });
+
+    let currentSearchQuery = "";
+    let currentRoleFilter = "todos";
+
+    const normalizeText = (str) => {
+        return (str || "")
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .trim();
+    };
+
+    const applyFiltersAndRender = () => {
+        const queryNorm = normalizeText(currentSearchQuery);
+        const tokens = queryNorm.split(/\s+/).filter(Boolean);
+
+        filteredCustomers = allCustomers.filter(c => {
+            const matchesRole = (currentRoleFilter === "todos") || 
+                                (currentRoleFilter === "admin" ? (c.rol === "admin" || (adminId && c.id === adminId)) : (c.rol !== "admin" && (!adminId || c.id !== adminId)));
+            if (!matchesRole) return false;
+            if (!tokens.length) return true;
+
+            const nameNorm = normalizeText(c.name);
+            const emailNorm = normalizeText(c.email);
+            const phoneNorm = (c.phone || "").replace(/\s+/g, "");
+
+            return tokens.every(token => 
+                nameNorm.includes(token) || 
+                emailNorm.includes(token) || 
+                phoneNorm.includes(token)
+            );
+        });
         custCurrentPage = 1;
         renderCustomerList();
+    };
+
+    const onSearchChange = (query) => {
+        currentSearchQuery = query || "";
+        applyFiltersAndRender();
+    };
+
+    // Escucha eventos globales y directos para filtrado instantáneo
+    document.addEventListener("input", (e) => {
+        if (e.target && e.target.id === "header-search-input") {
+            onSearchChange(e.target.value);
+        }
+    });
+
+    document.addEventListener("customer:search", (e) => {
+        onSearchChange(e.detail);
+    });
+
+    document.addEventListener("header:search", (e) => {
+        onSearchChange(e.detail);
     });
 
     document.addEventListener("customer:filter", (e) => {
-        const role = e.detail;
-        if (role === "todos") {
-            filteredCustomers = [...allCustomers];
-        } else {
-            filteredCustomers = allCustomers.filter(c => c.rol === role);
-        }
-        custCurrentPage = 1;
-        renderCustomerList();
+        currentRoleFilter = e.detail || "todos";
+        applyFiltersAndRender();
     });
 
     const getIsSelectedAdmin = () => {
@@ -846,6 +940,35 @@ const initAdminClientes = () => {
         }
     });
 
+    // Toggle visibilidad del historial con el botón de ojo
+    const btnToggleHistory = document.getElementById("btn-toggle-history");
+    const iconToggleHistory = document.getElementById("icon-toggle-history");
+    const historySection = document.querySelector(".history-section");
+
+    if (btnToggleHistory && historySection) {
+        btnToggleHistory.onclick = (e) => {
+            e.stopPropagation();
+            const isHidden = historySection.classList.toggle("is-hidden");
+            if (iconToggleHistory) {
+                iconToggleHistory.textContent = isHidden ? "visibility_off" : "visibility";
+            }
+            btnToggleHistory.setAttribute("title", isHidden ? "Mostrar historial" : "Ocultar historial");
+            btnToggleHistory.setAttribute("aria-label", isHidden ? "Mostrar historial" : "Ocultar historial");
+            try {
+                localStorage.setItem("admin_hide_history", isHidden ? "true" : "false");
+            } catch (err) {}
+        };
+
+        try {
+            if (localStorage.getItem("admin_hide_history") === "true") {
+                historySection.classList.add("is-hidden");
+                if (iconToggleHistory) iconToggleHistory.textContent = "visibility_off";
+                btnToggleHistory.setAttribute("title", "Mostrar historial");
+                btnToggleHistory.setAttribute("aria-label", "Mostrar historial");
+            }
+        } catch (err) {}
+    }
+
     init();
 };
 
@@ -866,3 +989,15 @@ if (document.readyState === "loading") {
 } else {
     initAdminClientes();
 }
+
+    // Navegación con historial del navegador
+    window.addEventListener("popstate", () => {
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get("id");
+        if (id) {
+            const customer = allCustomers.find(c => c.id === id);
+            if (customer) selectCustomer(customer);
+        } else {
+            backToList();
+        }
+    });

@@ -739,7 +739,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     location.href = IS_READ_ONLY
       ? "/pages/profile/mis-pedidos.html"
-      : "/pages/profile/datos_cliente.html";
+      : "/pages/profile/datos_cliente.html?from=recibo";
   });
 });
 

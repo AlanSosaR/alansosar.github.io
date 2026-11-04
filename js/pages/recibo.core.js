@@ -1,3 +1,61 @@
+
+function numeroALetras(num) {
+  const Unidades = (n) => {
+    const u = ["", "UN", "DOS", "TRES", "CUATRO", "CINCO", "SEIS", "SIETE", "OCHO", "NUEVE"];
+    return u[n] || "";
+  };
+
+  const Decenas = (n) => {
+    if (n < 10) return Unidades(n);
+    if (n >= 10 && n <= 15) {
+      return ["DIEZ", "ONCE", "DOCE", "TRECE", "CATORCE", "QUINCE"][n - 10];
+    }
+    if (n > 15 && n < 20) return "DIECI" + Unidades(n - 10);
+    if (n === 20) return "VEINTE";
+    if (n > 20 && n < 30) return "VEINTI" + Unidades(n - 20);
+
+    const decenas = ["", "", "", "TREINTA", "CUARENTA", "CINCUENTA", "SESENTA", "SETENTA", "OCHENTA", "NOVENTA"];
+    const d = Math.floor(n / 10);
+    const u = n % 10;
+    return u === 0 ? decenas[d] : decenas[d] + " Y " + Unidades(u);
+  };
+
+  const Centenas = (n) => {
+    if (n < 100) return Decenas(n);
+    if (n === 100) return "CIEN";
+    const c = Math.floor(n / 100);
+    const resto = n % 100;
+    const centenas = ["", "CIENTO", "DOSCIENTOS", "TRESCIENTOS", "CUATROCIENTOS", "QUINIENTOS", "SEISCIENTOS", "SETECIENTOS", "OCHOCIENTOS", "NOVECIENTOS"];
+    const strC = centenas[c];
+    return resto > 0 ? strC + " " + Decenas(resto) : strC;
+  };
+
+  const Miles = (n) => {
+    if (n < 1000) return Centenas(n);
+    const m = Math.floor(n / 1000);
+    const resto = n % 1000;
+    const strM = m === 1 ? "MIL" : Centenas(m) + " MIL";
+    return resto > 0 ? strM + " " + Centenas(resto) : strM;
+  };
+
+  const Millones = (n) => {
+    if (n < 1000000) return Miles(n);
+    const mill = Math.floor(n / 1000000);
+    const resto = n % 1000000;
+    const strMill = mill === 1 ? "UN MILLÓN" : Miles(mill) + " MILLONES";
+    return resto > 0 ? strMill + " " + Miles(resto) : strMill;
+  };
+
+  const enteros = Math.floor(num || 0);
+  const centavos = Math.round(((num || 0) - enteros) * 100);
+  const strCentavos = centavos.toString().padStart(2, "0") + "/100";
+
+  if (enteros === 0) return "CERO LEMPIRAS CON " + strCentavos;
+  if (enteros === 1) return "UN LEMPIRA CON " + strCentavos;
+
+  return Millones(enteros).trim() + " LEMPIRAS CON " + strCentavos;
+}
+
 /**
  * 🧾 recibo.core.js — FINAL DEFINITIVO ESTABLE
  * Proyecto: Café Cortero — Material 3 Expressive
@@ -53,7 +111,14 @@ window.showSnack = (msg, duration = 4000) => {
   const bar = $id("snackbar");
   if (!bar) return;
 
-  bar.innerHTML = `<span class="snack-text">${msg}</span>`;
+  bar.innerHTML = `
+    <div class="snackbar-action-content">
+      <div class="snackbar-text-wrap">
+        <span class="material-symbols-outlined snackbar-icon">info</span>
+        <span class="snack-text">${msg}</span>
+      </div>
+    </div>
+  `;
   bar.classList.add("show");
   setTimeout(() => bar.classList.remove("show"), duration);
 };
@@ -229,40 +294,89 @@ window.cargarPedidoExistente = async (orderId) => {
     minute: "2-digit"
   });
   $id("totalPedido").textContent = pedido.total.toFixed(2);
-  $id("notaCliente").textContent = pedido.order_notes || "Sin nota";
+  if ($id("notaCliente")) $id("notaCliente").textContent = "";
 
   /* CLIENTE */
-  if (pedido.users) {
-    $id("nombreCliente").textContent = pedido.users.name;
-    $id("correoCliente").textContent = pedido.users.email;
-    $id("telefonoCliente").textContent = pedido.users.phone;
-  }
+  const customerName = pedido.users?.name || "Consumidor final";
+  const isVentaRapida = customerName.toLowerCase().includes("venta rápida") || customerName.toLowerCase().includes("venta rapida");
 
-  if (pedido.addresses) {
-    $id("zonaCliente").textContent =
-      `${pedido.addresses.state}, ${pedido.addresses.city}`;
-    $id("direccionCliente").textContent = pedido.addresses.street;
+  if (isVentaRapida) {
+    $id("nombreCliente").textContent = "Consumidor final";
+    document.getElementById("f-customer-email-row")?.classList.add("hidden");
+    document.getElementById("f-customer-phone-row")?.classList.add("hidden");
+    $id("direccionCliente").textContent = "Venta en mostrador / POS";
+  } else {
+    $id("nombreCliente").textContent = customerName;
+    const emailRow = document.getElementById("f-customer-email-row");
+    if (emailRow && pedido.users?.email && !pedido.users.email.includes("@pos.cafecortero.com")) {
+      emailRow.classList.remove("hidden");
+      $id("correoCliente").textContent = pedido.users.email;
+    } else if (emailRow) {
+      emailRow.classList.add("hidden");
+    }
+    const phoneRow = document.getElementById("f-customer-phone-row");
+    if (phoneRow && pedido.users?.phone) {
+      phoneRow.classList.remove("hidden");
+      $id("telefonoCliente").textContent = pedido.users.phone;
+    } else if (phoneRow) {
+      phoneRow.classList.add("hidden");
+    }
+    if (pedido.addresses) {
+      $id("direccionCliente").textContent = `${pedido.addresses.street || ""}, ${pedido.addresses.city || ""}`.trim().replace(/^,/, "");
+    } else {
+      $id("direccionCliente").textContent = "Recogida local / Sin dirección";
+    }
   }
 
   /* PRODUCTOS */
-  $id("listaProductos").innerHTML = pedido.order_items.map((it, idx) => {
-    const sub = it.quantity * it.price;
+  let subtotal = 0;
+  $id("listaProductos").innerHTML = (pedido.order_items || []).map((it) => {
+    const lineTotal = it.quantity * it.price;
+    subtotal += lineTotal;
     const imgSrc = resolveImgUrl(it.products?.image_url);
+    const desc = [it.products?.category, it.products?.grind_type, it.products?.presentation?.replace('1lb','1 lb (454 g)')].filter(Boolean).join(' • ') || 'Café';
     return `
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;padding:8px 0;${idx < pedido.order_items.length - 1 ? 'border-bottom:1px solid rgba(55,123,76,0.3)' : ''}">
-        <div style="display:flex;gap:8px;flex:1;min-width:0">
-          <img src="${imgSrc}" alt="${it.products.name}" style="width:64px;height:auto;object-fit:contain;border-radius:8px;flex-shrink:0;filter:drop-shadow(0 2px 6px rgba(0,0,0,0.10))" onerror="this.onerror=null;this.src='/imagenes/no-image.png'">
-          <div style="display:flex;flex-direction:column;justify-content:center;min-width:0">
-            <span style="font-family:'Poppins',sans-serif;font-weight:700;font-size:0.95rem;color:#553722">${it.products.name}</span>
-            <span style="font-family:'Poppins',sans-serif;font-size:0.7rem;color:#50453e;margin-top:2px;line-height:1.2">${[it.products?.category, it.products?.grind_type, it.products?.presentation?.replace('1lb','1 lb (454 g)')].filter(Boolean).join(' · ') || 'Café'}</span>
+      <tr>
+        <td class="left col-prod">
+          <div class="prod-info-cell" style="display:flex;align-items:center;gap:12px;">
+            <img src="${imgSrc}" alt="${it.products?.name}" style="width:60px;height:60px;object-fit:contain;flex-shrink:0;background:transparent;border:none;" onerror="this.onerror=null;this.src='/imagenes/no-image.png'">
+            <div>
+              <p class="item-name">${it.products?.name}</p>
+              <p class="item-desc">${desc}</p>
+            </div>
           </div>
-        </div>
-        <div style="display:flex;flex-direction:column;align-items:flex-end;flex-shrink:0;justify-content:center">
-          <span style="font-family:'Poppins',sans-serif;font-weight:700;font-size:0.95rem;color:#377b4c">L ${sub.toFixed(2)}</span>
-          <span style="font-family:'Poppins',sans-serif;font-size:0.85rem;color:#50453e">Cant: ${it.quantity}</span>
-        </div>
-      </div>`;
+        </td>
+        <td class="col-qty"><span class="qty-prefix">Cant: </span>${it.quantity}</td>
+        <td class="right col-price" style="font-weight:700;color:var(--espresso);">L ${Number(it.price).toFixed(2)}</td>
+      </tr>`;
   }).join("");
+
+  const totalDescuento = Number(pedido.discount || pedido.discount_amount || 0);
+  const fDescuento = document.getElementById("f-descuento");
+  if (fDescuento) {
+    fDescuento.textContent = `-L ${totalDescuento.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  }
+  const finalTotal = pedido.total || subtotal;
+  $id("totalPedido").textContent = finalTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+  const isPos = pedido.channel === "pos" || (pedido.notes && pedido.notes.toLowerCase().includes("pos")) || (pedido.delivery_address && pedido.delivery_address.toLowerCase().includes("pos"));
+  const payTitle = document.getElementById("f-pay-title");
+  const paySub = document.getElementById("f-pay-subtitle");
+  const payIcon = document.getElementById("f-pay-icon");
+  if (payTitle) payTitle.textContent = isPos ? "Pedido POS" : "Pedido Web";
+  if (paySub) paySub.textContent = isPos ? "Venta en mostrador" : "Operación autorizada";
+  if (payIcon) {
+    payIcon.innerHTML = isPos
+      ? '<span class="material-symbols-outlined" style="font-variation-settings: \'FILL\' 1;">point_of_sale</span>'
+      : '<span class="material-symbols-outlined" style="font-variation-settings: \'FILL\' 1;">verified</span>';
+  }
+
+  const fGravado = document.getElementById("f-gravado");
+  if (fGravado) fGravado.textContent = `L ${subtotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const fIsv = document.getElementById("f-isv");
+  if (fIsv) fIsv.textContent = `L ${(subtotal * 0.15).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const fLetras = document.getElementById("f-letras");
+  if (fLetras) fLetras.textContent = numeroALetras(finalTotal);
 
   /* ===============================
      COMPROBANTE — SOLO IMAGEN + INFO

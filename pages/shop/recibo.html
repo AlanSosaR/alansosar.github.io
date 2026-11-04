@@ -4,212 +4,193 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#377b4c" />
   <title>Detalles del pedido | Café Cortero</title>
 
-  <!-- M3 Expressive tokens — definidos en recibo.css como CSS custom properties y utility classes -->
-
   <!-- Fonts & Icons -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <!-- Styles -->
   <link rel="stylesheet" href="/css/ui/header.css">
   <link rel="stylesheet" href="/css/ui/footer.css">
   <link rel="stylesheet" href="/css/pages/recibo.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 
-<body class="page-recibo header-checkout font-body text-on-surface antialiased bg-white">
+<body class="page-recibo header-checkout antialiased">
 
   <main class="recibo-container fade-in">
-    <section class="recibo-card">
+    <section class="invoice-container recibo-card">
 
-      <!-- Back -->
-      <a href="/pages/profile/datos_cliente.html" id="btn-back" class="btn-volver-premium variant-white card-back btn-back-icon-only" aria-label="Volver">
-        <div class="circle-icon">
-          <span class="material-symbols-outlined">arrow_back</span>
-        </div>
-      </a>
-
-      <div class="inner-card-full">
-
-        <!-- Header -->
-        <div class="flex flex-col items-center text-center gap-1 mb-4">
-          <h2 class="font-headline text-headline-lg text-primary">
-            Pedido N.º <span id="numeroPedido">—</span>
-          </h2>
-          <div class="flex gap-md text-on-surface-variant font-body text-body-md mt-1">
-            <span class="flex items-center gap-1">
-              <span class="material-symbols-outlined text-[18px] text-verde">calendar_today</span>
-              <span id="fechaPedido">—</span>
-            </span>
-            <span class="flex items-center gap-1">
-              <span class="material-symbols-outlined text-[18px] text-verde">schedule</span>
-              <span id="horaPedido">—</span>
-            </span>
+      <!-- Header Section -->
+      <div class="header-section">
+        <div class="brand-header">
+          <img src="/imagenes/logo-tight.png" alt="Café Cortero" class="invoice-logo">
+          <div class="company-details">
+            <h1>Café Cortero</h1>
+            <p>Danlí, El Paraíso, Honduras</p>
+            <p>RTN: 05019654135885</p>
           </div>
         </div>
-
-        <!-- Estado -->
-        <section id="estadoPedido" class="pedido-progreso">
-          <p class="progreso-title">Estado del pedido</p>
-          <div id="estado-pildora-container"></div>
-        </section>
-
-        <!-- Línea divisoria verde -->
-        <div class="w-full h-px bg-verde/30 my-4"></div>
-
-        <!-- Datos del cliente -->
-        <section class="flex flex-col gap-md mb-6">
-          <h3 class="font-headline text-[18px] font-bold text-primary flex items-center gap-2">
-            <span class="material-symbols-outlined text-verde">person</span>
-            Datos del cliente
-          </h3>
-          <div class="rounded-xl p-md grid grid-cols-1 md:grid-cols-2 gap-y-sm gap-x-lg bg-surface-container-lowest" style="box-shadow:0 4px 20px rgba(85,55,34,0.06);border:1px solid rgba(212,195,186,0.25)">
-            <div class="flex flex-col gap-1">
-              <span class="font-label text-label-sm text-secondary uppercase tracking-wider">Nombre</span>
-              <span class="font-body text-body-lg text-on-surface" id="nombreCliente">—</span>
-            </div>
-            <div class="flex flex-col gap-1">
-              <span class="font-label text-label-sm text-secondary uppercase tracking-wider">Correo</span>
-              <span class="font-body text-body-lg text-on-surface" id="correoCliente">—</span>
-            </div>
-            <div class="flex flex-col gap-1">
-              <span class="font-label text-label-sm text-secondary uppercase tracking-wider">Teléfono</span>
-              <span class="font-body text-body-lg text-on-surface" id="telefonoCliente">—</span>
-            </div>
-            <div class="flex flex-col gap-1">
-              <span class="font-label text-label-sm text-secondary uppercase tracking-wider">Zona</span>
-              <span class="font-body text-body-lg text-on-surface" id="zonaCliente">—</span>
-            </div>
-            <div class="flex flex-col gap-1 md:col-span-2">
-              <span class="font-label text-label-sm text-secondary uppercase tracking-wider">Dirección</span>
-              <span class="font-body text-body-lg text-on-surface" id="direccionCliente">—</span>
-            </div>
-            <div class="flex flex-col gap-1 md:col-span-2 mt-2 pt-2 border-t border-outline-variant/50">
-              <span class="font-label text-label-sm text-on-surface-variant uppercase tracking-wider flex items-center gap-1">
-                <span class="material-symbols-outlined text-[14px]">notes</span> Nota
-              </span>
-              <span class="font-body text-body-md text-on-surface-variant italic" id="notaCliente">Sin nota adicional</span>
-            </div>
-          </div>
-        </section>
-
-        <!-- Productos -->
-        <section class="flex flex-col gap-md">
-          <h2 class="font-headline-sm text-headline-sm text-primary flex items-center gap-2">
-            <img src="/imagenes/selecion.png" alt="" class="object-contain flex-shrink-0" style="width:16px;height:16px;">
-            Selección de cafés
-          </h2>
-          <div id="listaProductos" class="rounded-xl p-md flex flex-col gap-sm bg-surface-container-lowest" style="box-shadow:0 4px 20px rgba(85,55,34,0.06);border:1px solid rgba(212,195,186,0.25)"></div>
-        </section>
-
-        <!-- Línea divisoria punteada -->
-        <div class="relative py-4 flex items-center">
-          <div class="absolute left-[-24px] w-4 h-8 bg-white rounded-r-full border-r border-y border-outline-variant shadow-inner"></div>
-          <div class="w-full" style="border-top: 1px dotted rgba(55,123,76,0.5);"></div>
-          <div class="absolute right-[-24px] w-4 h-8 bg-white rounded-l-full border-l border-y border-outline-variant shadow-inner"></div>
+        <div class="document-info">
+          <h2>Pedido</h2>
+          <div class="number">Nº <span id="numeroPedido">—</span></div>
         </div>
-
-        <!-- Total -->
-        <div class="flex justify-between items-end mb-6">
-          <span class="font-headline text-headline-sm font-bold text-primary">Total:</span>
-          <span class="font-headline text-[28px] font-bold text-verde tracking-tight">
-            L <span id="totalPedido">0.00</span>
-          </span>
-        </div>
-
-        <!-- ================= COMPROBANTE — VISTA RECIBO ================= -->
-        <div id="previewComprobanteRecibo" class="preview hidden">
-          <img id="imgComprobanteRecibo" alt="Comprobante de pago">
-        </div>
-
-        <!-- ================= MÉTODOS DE PAGO ================= -->
-        <section id="metodo-pago-section" class="flex flex-col gap-md">
-          <h2 class="font-headline-sm text-headline-sm text-primary flex items-center gap-2">
-            <span class="material-symbols-outlined text-secondary">payments</span>
-            Método de pago
-          </h2>
-          <div class="pagos">
-
-          <!-- Wrapper for view-mode hide (hidden by default, shown in checkout) -->
-          <div class="pago-select-label hidden">
-            <!-- Hidden select for JS compatibility -->
-            <select id="metodoPago" class="hidden">
-              <option value="" selected disabled>Selecciona un método de pago</option>
-              <option value="bank_transfer">Depósito bancario</option>
-              <option value="cash">Pago en efectivo</option>
-
-            </select>
-
-            <!-- Chips de pago visibles -->
-            <div class="pago-chips" id="pagoChipsContainer">
-              <button class="pago-chip" data-value="bank_transfer">
-                <span class="material-symbols-outlined">account_balance</span>
-                <span>Depósito bancario</span>
-              </button>
-              <button class="pago-chip" data-value="cash">
-                <span class="material-symbols-outlined">payments</span>
-                <span>Pago en efectivo</span>
-              </button>
-
-            </div>
-          </div>
-
-          <!-- ================= DEPÓSITO ================= -->
-          <div id="pago-deposito" class="pago-bloque hidden">
-            <div class="rounded-xl p-md border border-outline-variant bg-surface-container-lowest flex flex-col gap-md">
-              <p class="font-body text-body-md text-on-surface-variant">
-                Realiza el depósito y sube el comprobante para validar tu pedido.
-              </p>
-              <div class="rounded-lg p-sm border border-outline-variant/50 bg-surface-container-low">
-                <ul class="flex flex-col gap-1 font-body text-body-md text-on-surface">
-                  <li class="flex items-center gap-2">
-                    <span class="font-label text-label-sm text-secondary uppercase w-16">Banco:</span>
-                    <span>Atlántida</span>
-                  </li>
-                  <li class="flex items-center gap-2">
-                    <span class="font-label text-label-sm text-secondary uppercase w-16">Cuenta:</span>
-                    <span>123456789</span>
-                  </li>
-                  <li class="flex items-center gap-2">
-                    <span class="font-label text-label-sm text-secondary uppercase w-16">Tipo:</span>
-                    <span>Cuenta de ahorro</span>
-                  </li>
-                </ul>
-              </div>
-              <button class="comprobante-link" id="btnSubirComprobante">
-                <span class="material-symbols-outlined">upload</span>
-                Subir comprobante
-              </button>
-              <input type="file" id="inputComprobante" accept="image/*" hidden>
-              <div id="previewComprobante" class="preview hidden">
-                <img id="imgComprobante" alt="Comprobante">
-              </div>
-            </div>
-          </div>
-
-          <!-- ================= EFECTIVO ================= -->
-          <div id="pago-efectivo" class="pago-bloque hidden">
-            <div class="rounded-xl p-md border border-outline-variant bg-surface-container-lowest flex flex-col gap-md">
-              <p class="font-body text-body-md text-on-surface-variant">
-                El pago se realizará al momento de la entrega del pedido.
-              </p>
-            </div>
-          </div>
-
-        </div>
-        </section>
-
-        <!-- Acción -->
-        <div class="recibo-botones mt-6">
-          <button id="btnEnviar" class="btn-primary" disabled>
-            <span class="btn-text" id="btnText">Enviar pedido</span>
-            <i class="fa-solid fa-circle-notch fa-spin hidden" id="loaderAccion"></i>
-          </button>
-        </div>
-
       </div>
+
+      <!-- Twin Metas -->
+      <div class="meta-grid">
+        <!-- Client Box -->
+        <div class="box-card" id="seccionDatosCliente">
+          <span class="lbl">Cliente</span>
+          <div class="client-name" id="nombreCliente">—</div>
+          <div class="client-p" id="f-customer-email-row" style="display:flex;align-items:center;gap:6px;">
+            <span class="material-symbols-outlined" style="font-size:14px;color:var(--primary);">mail</span>
+            <span id="correoCliente">—</span>
+          </div>
+          <div class="client-p" id="f-customer-phone-row" style="display:flex;align-items:center;gap:6px;">
+            <span class="material-symbols-outlined" style="font-size:14px;color:var(--primary);">call</span>
+            <span id="telefonoCliente">—</span>
+          </div>
+          <div class="divider"></div>
+          <div class="client-p" style="line-height:1.6;" id="direccionCliente">—</div>
+          <span id="zonaCliente" class="hidden"></span>
+        </div>
+
+        <!-- Issue Box -->
+        <div class="box-card">
+          <div class="emision-top">
+            <div>
+              <span class="lbl">Fecha de emisión</span>
+              <div class="emision-val" id="fechaPedido">—</div>
+              <div style="font-size:12px;color:var(--text-secondary);margin-top:2px;" id="horaPedido">—</div>
+            </div>
+            <div class="right">
+              <span class="lbl">Lugar</span>
+              <div class="emision-val">Danlí, Honduras</div>
+            </div>
+          </div>
+                    <div class="status-block">
+            <div class="icon" id="f-pay-icon">
+              <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">point_of_sale</span>
+            </div>
+            <div>
+              <div class="status-title" id="f-pay-title">Pedido POS</div>
+              <div class="status-subtitle" id="f-pay-subtitle">Venta en mostrador</div>
+            </div>
+          </div>
+          <div id="estado-pildora-container" style="margin-top:14px;"></div>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="items-area">
+        <table class="invoice-table">
+          <thead>
+            <tr>
+              <th class="left">Producto / Descripción</th>
+              <th>Cant.</th>
+              <th class="right">Precio</th>
+            </tr>
+          </thead>
+          <tbody id="listaProductos">
+            <!-- Dinámico -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Totals & Payment Info -->
+      <div class="bottom-section">
+        <!-- Left: Letters & Dynamic Payment Method Info -->
+        <div class="bottom-left">
+          <!-- Información del método de pago seleccionado -->
+          <div class="metodo-pago-box" id="metodo-pago-section">
+            <span class="lbl">Método de pago</span>
+            
+            <div class="pago-select-label">
+              <select id="metodoPago" class="hidden">
+                <option value="" selected disabled>Selecciona un método de pago</option>
+                <option value="bank_transfer">Depósito bancario</option>
+                <option value="cash">Pago en efectivo</option>
+              </select>
+
+              <div class="pago-chips" id="pagoChipsContainer">
+                <button class="pago-chip" data-value="bank_transfer" type="button">
+                  <span class="material-symbols-outlined">account_balance</span>
+                  <span>Depósito bancario</span>
+                </button>
+                <button class="pago-chip active" data-value="cash" type="button">
+                  <span class="material-symbols-outlined">payments</span>
+                  <span>Pago en efectivo</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- DEPÓSITO -->
+            <div id="pago-deposito" class="pago-bloque hidden" style="margin-top:14px;">
+              <div class="deposito-box">
+                <p class="deposito-desc">
+                  Realiza el depósito y sube el comprobante para validar tu pedido.
+                </p>
+                <div class="deposito-info">
+                  <ul>
+                    <li><strong>Banco:</strong> <span>Atlántida</span></li>
+                    <li><strong>Cuenta:</strong> <span>123456789</span></li>
+                    <li><strong>Tipo:</strong> <span>Cuenta de ahorro</span></li>
+                  </ul>
+                </div>
+                <button class="comprobante-link" id="btnSubirComprobante" type="button">
+                  <span class="material-symbols-outlined">upload</span>
+                  Subir comprobante
+                </button>
+                <input type="file" id="inputComprobante" accept="image/*" hidden>
+                <div id="previewComprobante" class="preview hidden" style="margin-top:10px;">
+                  <img id="imgComprobante" alt="Comprobante" style="max-width:100%;max-height:160px;border-radius:8px;object-fit:contain;border:1px solid #ddd;">
+                </div>
+              </div>
+            </div>
+
+            <!-- EFECTIVO -->
+            <div id="pago-efectivo" class="pago-bloque" style="margin-top:14px;">
+              <div class="deposito-box">
+                <p class="deposito-desc" style="margin:0;font-weight:500;color:var(--espresso);">
+                  <span class="material-symbols-outlined" style="vertical-align:middle;font-size:18px;color:var(--primary);margin-right:4px;">payments</span>
+                  El pago se realizará al momento de la entrega en mostrador.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Breakdown -->
+        <div class="bottom-right">
+          <div class="tot-row" id="f-descuento-row"><span>Descuento:</span> <span id="f-descuento">-L 0.00</span></div>
+          <div class="tot-row"><span>Importe Exento:</span> <span>L 0.00</span></div>
+          <div class="tot-row"><span>Importe Gravado 15%:</span> <span id="f-gravado">L 0.00</span></div>
+          <div class="tot-row"><span>ISV 15%:</span> <span id="f-isv">L 0.00</span></div>
+          <div class="tot-row"><span>Envío:</span> <span id="f-envio">L 0.00</span></div>
+
+          <div class="tot-row grand">
+            <span>TOTAL</span>
+            <span class="val">L <span id="totalPedido">0.00</span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= COMPROBANTE — VISTA RECIBO ================= -->
+      <div id="previewComprobanteRecibo" class="preview hidden">
+        <img id="imgComprobanteRecibo" alt="Comprobante de pago">
+      </div>
+
+      <!-- Botón de acción -->
+      <div class="recibo-botones no-print" style="margin-top:28px;">
+        <button id="btnEnviar" class="btn-confirmar-factura" disabled>
+          <span class="btn-text" id="btnText">Confirmar pedido</span>
+          <i class="fa-solid fa-circle-notch fa-spin hidden" id="loaderAccion"></i>
+        </button>
+      </div>
+
     </section>
   </main>
 
@@ -238,17 +219,10 @@
 
   <!-- Show payment selector only in checkout mode -->
   <script>
-    if (!window.IS_READ_ONLY) {
-      document.querySelector(".pago-select-label")?.classList.remove("hidden");
-    } else {
+    if (window.IS_READ_ONLY) {
       document.getElementById("metodo-pago-section")?.classList.add("hidden");
-      document.getElementById("btn-back").href = "/pages/profile/mis-pedidos.html";
-    }
-    if (window.POS_CLIENT) {
-      const zona = document.getElementById("zonaCliente")?.closest(".flex.flex-col.gap-1");
-      const dir = document.getElementById("direccionCliente")?.closest(".flex.flex-col.gap-1");
-      if (zona) zona.style.display = "none";
-      if (dir) dir.style.display = "none";
+      const backBtn = document.getElementById("header-recibo-back");
+      if (backBtn) backBtn.href = "/pages/profile/mis-pedidos.html";
     }
   </script>
 
@@ -266,6 +240,9 @@
         chips.forEach(chip => {
           chip.classList.toggle("active", chip.dataset.value === value);
         });
+        if (typeof window.actualizarPago === "function") {
+          window.actualizarPago();
+        }
       }
 
       chips.forEach(chip => {
@@ -302,8 +279,6 @@
     });
   </script>
 
-
-
   <!-- Script dinámico -->
   <script>
     const script = document.createElement("script");
@@ -312,6 +287,76 @@
       ? "/js/pages/recibo.view.js?t=" + cacheBuster
       : "/js/pages/recibo.checkout.js?t=" + cacheBuster;
     document.body.appendChild(script);
+  </script>
+
+  <!-- Sincronización Header POS y Datos de Cliente -->
+  <script>
+    function renderAttendantInReciboHeader() {
+      const slot = document.getElementById("header-pos-client-slot");
+      if (!slot) return;
+      const admin = JSON.parse(localStorage.getItem("cortero_user") || "null");
+      const isAdmin = admin && (String(admin.rol || admin.role || "").toLowerCase() === "admin");
+      const rawName = (isAdmin && admin.name) ? admin.name : "Alan Sosa";
+      const parts = rawName.trim().split(/\s+/);
+      const shortName = parts.length <= 2 
+        ? rawName.trim() 
+        : (parts.length >= 4 ? `${parts[0]} ${parts[2]}` : `${parts[0]} ${parts[1]}`);
+      const adminPhoto = (isAdmin && admin.photo_url) ? admin.photo_url : "/imagenes/barista.png";
+
+      slot.style.display = "flex";
+      slot.innerHTML = `
+        <div class="pos-selected-client">
+          <div class="selected-client-header">
+            <img src="${adminPhoto}" alt="${shortName}" class="pos-attendant-avatar" onerror="this.src='/imagenes/barista.png'">
+            <div class="pos-attendant-info">
+              <span class="pos-attendant-label">Atendido por</span>
+              <span class="pos-attendant-name">${shortName}</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function syncReciboHeader() {
+      renderAttendantInReciboHeader();
+
+      const titleEl = document.getElementById("header-recibo-title-text");
+      if (titleEl) {
+        titleEl.textContent = "Detalles del pedido";
+      }
+
+      const backBtn = document.getElementById("header-recibo-back");
+      if (backBtn) {
+        backBtn.href = window.IS_READ_ONLY ? "/pages/profile/mis-pedidos.html" : "/pages/profile/datos_cliente.html?from=recibo";
+      }
+    }
+
+    
+      // Botón imprimir
+      const btnImp = document.getElementById("btnImprimir");
+      if (btnImp && !btnImp._hasPrintListener) {
+        btnImp._hasPrintListener = true;
+        btnImp.addEventListener("click", () => window.print());
+      }
+
+      // Botón imprimir en header si no existe
+      const headerRight = document.querySelector(".header-right-stitch");
+      if (headerRight && !document.getElementById("btn-header-print")) {
+        const printBtn = document.createElement("button");
+        printBtn.id = "btn-header-print";
+        printBtn.className = "header-icon-btn no-print";
+        printBtn.type = "button";
+        printBtn.title = "Imprimir recibo";
+        printBtn.setAttribute("aria-label", "Imprimir");
+        printBtn.innerHTML = '<span class="material-symbols-outlined">print</span>';
+        printBtn.onclick = () => window.print();
+        headerRight.insertBefore(printBtn, headerRight.firstChild);
+      }
+    
+    document.addEventListener("DOMContentLoaded", syncReciboHeader);
+    setTimeout(syncReciboHeader, 100);
+    setTimeout(syncReciboHeader, 400);
+    setTimeout(syncReciboHeader, 1000);
   </script>
 
 </body>
