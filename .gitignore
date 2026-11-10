@@ -8,3 +8,7 @@ target/
 coverage/
 tmp/
 temp/
+
+.vercel
+
+server.log

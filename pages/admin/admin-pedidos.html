@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Gestión de Pedidos | Café Cortero</title>
+
+    <!-- Material Symbols & Fonts - REFERENCE SYNC -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;900&family=Roboto:wght@400;500;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <link rel="icon" type="image/png" href="/imagenes/logo.png">
+
+    <!-- Estilos Core -->
+    <link rel="stylesheet" href="/css/core/tipografia.css">
+    <link rel="stylesheet" href="/css/ui/header.css">
+    <link rel="stylesheet" href="/css/ui/footer.css">
+    <link rel="stylesheet" href="/css/ui/header.search.css">
+    <link rel="stylesheet" href="/css/admin/admin-pedidos.css?v=12">
+</head>
+
+<body class="page-admin-orders">
+    <div id="header-placeholder"></div>
+
+    <main class="admin-orders-container fade-in">
+        
+        <!-- Header Institucional Stitch -->
+        <header class="page-title-section-stitch">
+            <div class="title-group">
+                <h1 class="page-title">Gestión de Pedidos</h1>
+                <p class="page-subtitle">Monitorea pedidos en tiempo real, actualiza estados y gestiona la logística.</p>
+            </div>
+        </header>
+
+        <!-- Layout de Panel Dual Stitch -->
+        <div class="orders-layout-stitch" id="main-layout-stitch">
+
+            <!-- SECCIÓN IZQUIERDA: LISTADO -->
+            <aside class="orders-list-section-stitch" id="mobile-list-view">
+                <header class="list-header-stitch">
+                    <h2 class="section-title">Pedidos</h2>
+                    <div id="orders-count-stitch" class="count-badge-stitch">0</div>
+                </header>
+
+                <div id="orders-list" class="orders-list-stitch custom-scroll">
+                    <div class="loading-state">Cargando pedidos...</div>
+                </div>
+
+                <!-- Paginación -->
+                <footer class="list-pagination-footer">
+                    <button class="page-btn" id="list-prev">
+                        <span class="material-symbols-outlined">chevron_left</span>
+                    </button>
+                    <div id="list-page-numbers" class="page-numbers"></div>
+                    <button class="page-btn" id="list-next">
+                        <span class="material-symbols-outlined">chevron_right</span>
+                    </button>
+                </footer>
+            </aside>
+
+            <!-- SECCIÓN DERECHA: DETALLE -->
+            <section id="order-detail" class="order-detail-section-stitch hidden">
+
+                <div id="order-detail-content" class="detail-container-alt hidden">
+                <header class="detail-header-stitch-alt">
+                    <button id="btn-back-to-list" class="btn-mobile-back-inline" aria-label="Volver" title="Volver">
+                        <span class="material-symbols-outlined">arrow_back</span>
+                    </button>
+                    <div class="header-info-stitch">
+                        <h2 id="order-id-display" class="order-number-stitch">Detalle de la venta</h2>
+                        <span id="order-status-badge" class="status-badge-stitch">PENDIENTE</span>
+                    </div>
+                    <div class="header-actions-stitch" style="display:flex;gap:8px;align-items:center">
+                        <button class="btn-icon-mobile" id="btnPrint" title="Imprimir" aria-label="Imprimir">
+                            <span class="material-symbols-outlined">print</span>
+                        </button>
+                    </div>
+                </header>
+
+                <div class="detail-scroll-area custom-scroll">
+                    
+                    <!-- Línea de Tiempo de Estado -->
+                    <div class="timeline-container-stitch">
+                        <div class="timeline-progress-stitch">
+                            <div id="timeline-progress-bar" class="progress-fill"></div>
+                        </div>
+                        <div class="timeline-steps-stitch">
+                            <div class="step step-pending active">
+                                <div class="step-icon"><img src="/imagenes/creado.png" class="step-custom-icon" alt="" /></div>
+                                <span class="step-label">Creado</span>
+                            </div>
+                            <div class="step step-preparing">
+                                <div class="step-icon"><img src="/imagenes/carretilla.png" class="step-custom-icon" alt="" /></div>
+                                <span class="step-label">Preparando</span>
+                            </div>
+                            <div class="step step-shipped">
+                                <div class="step-icon"><img src="/imagenes/camion.png" class="step-custom-icon" alt="" /></div>
+                                <span class="step-label">En Camino</span>
+                            </div>
+                            <div class="step step-delivered">
+                                <div class="step-icon"><img src="/imagenes/contra-reembolso.png" class="step-custom-icon" alt="" /></div>
+                                <span class="step-label">Entregado</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Grid de Información Maestro-Detalle -->
+                    <div class="detail-grid-stitch">
+                        
+                        <!-- Columna Info Cliente -->
+                        <div class="info-card-stitch">
+                            <h3 class="card-title-stitch"><span class="material-symbols-outlined">person</span> Cliente</h3>
+                            <div class="info-group-stitch">
+                                <div class="info-row">
+                                    <label>Nombre:</label>
+                                    <p id="o-client-name">—</p>
+                                </div>
+                                <div class="info-row">
+                                    <label>Email:</label>
+                                    <p id="o-email">—</p>
+                                </div>
+                                <div class="info-row">
+                                    <label>Teléfono:</label>
+                                    <div class="row-with-btn">
+                                        <p id="o-phone">—</p>
+                                    </div>
+                                </div>
+                                <div class="info-row full">
+                                    <label>Dirección de Envío:</label>
+                                    <p id="o-address">—</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Columna Detalle Pago -->
+                        <div class="info-card-stitch">
+                            <h3 class="card-title-stitch"><img src="/imagenes/cupones-de-alimentos.png" class="card-title-icon-img" alt="" /> Pago y Total</h3>
+                            <div class="info-group-stitch">
+                                <div class="info-row">
+                                    <label>Método:</label>
+                                    <p id="p-method">—</p>
+                                </div>
+                                <div class="info-row">
+                                    <label>Fecha:</label>
+                                    <p id="p-date">—</p>
+                                </div>
+                                <div class="total-row-stitch">
+                                    <label>TOTAL:</label>
+                                    <strong id="p-total" class="total-value-stitch">L 0.00</strong>
+                                </div>
+                                <!-- ================= COMPROBANTE — VISTA RECIBO ================= -->
+                                <div id="previewComprobanteRecibo" class="preview-comprobante-stitch" style="margin-top:16px">
+                                    <div class="comprobante-preview-header">
+                                        <span class="comprobante-label">
+                                            <span class="material-symbols-outlined">receipt_long</span>
+                                            Comprobante de pago adjunto
+                                        </span>
+                                        <a id="payment-receipt-link" href="#" target="_blank" class="comprobante-zoom-btn" title="Ver imagen completa">
+                                            <span>Abrir</span>
+                                            <span class="material-symbols-outlined">open_in_new</span>
+                                        </a>
+                                    </div>
+                                    <div class="comprobante-img-container">
+                                        <img id="imgComprobanteRecibo" alt="Comprobante de pago" loading="lazy">
+                                    </div>
+                                    <p class="preview-text">Comprobante de transferencia bancaria adjunto.</p>
+                                </div>
+
+                                <div id="receipt-container" class="receipt-preview-stitch hidden" style="display:none">
+                                    <label>Comprobante:</label>
+                                    <a id="receipt-link" href="#" target="_blank" class="receipt-btn">Ver Imagen <span class="material-symbols-outlined">open_in_new</span></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Resumen de Productos Stitch -->
+                    <div class="products-section-stitch">
+                        <h3 class="card-title-stitch"><img src="/imagenes/clasificacion.png" class="card-title-icon-img" alt="" /> CAFÉS SELECCIONADOS</h3>
+                        <div id="order-items-list" class="items-mini-list">
+                            <!-- Items dinámicos -->
+                        </div>
+                    </div>
+
+                    <!-- Footer de Acciones Integrado en la Tarjeta (Ahora fluye con el contenido) -->
+                    <div class="detail-actions-card-footer-stitch">
+                        <span class="action-label-stitch">Actualizar Estado:</span>
+                        <div class="status-actions-grid">
+                            <button class="status-btn" data-status="pending" id="btn-st-pending">Pendiente</button>
+                            <button class="status-btn" data-status="preparing" id="btn-st-preparing">Preparar</button>
+                            <button class="status-btn" data-status="shipped" id="btn-st-shipped">Enviar</button>
+                            <button class="status-btn" data-status="delivered" id="btn-st-delivered">Entregar</button>
+                            <button class="status-btn" data-status="cancelled" id="btn-st-cancelled">Anular</button>
+                        </div>
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- ESTADO DE SELECCIÓN VACÍO STITCH -->
+            <section id="no-selection" class="no-selection-section-stitch">
+                <div class="empty-state-stitch">
+                    <span class="material-symbols-outlined large-icon">order_approve</span>
+                    <h3>Selecciona un pedido</h3>
+                    <p>Elige un registro del listado para gestionar su logística, pagos y entregas.</p>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Template Tarjeta Pedido Stitch -->
+    <template id="tpl-order-card">
+        <div class="order-card-item-stitch">
+            <div class="card-status-dot"></div>
+            <div class="card-info-stitch">
+                <div class="card-top-row">
+                    <h4 class="card-order-number">—</h4>
+                    <span class="card-date">—</span>
+                </div>
+                <p class="card-user-name title-medium">—</p>
+                <div class="card-bottom-row">
+                    <span class="card-total">—</span>
+                    <span class="card-status-label">—</span>
+                </div>
+            </div>
+            <span class="material-symbols-outlined arrow-stitch">chevron_right</span>
+        </div>
+    </template>
+
+
+
+    <!-- =========================
+         MODAL DE CONTACTO MULTICANAL (PORTADO)
+    ========================= -->
+    <div id="modal-contact" class="modal-overlay hidden">
+        <div class="modal-content contact-modal-stitch fade-in">
+            <header class="modal-header">
+                <h3>Contactar Cliente</h3>
+                <button class="btn-close-modal" id="close-contact-modal">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </header>
+
+            <div class="modal-body">
+                <p class="modal-intro">Selecciona el medio preferido para contactar a <strong><span id="contact-user-name">—</span></strong>:</p>
+                
+                <div class="contact-options-grid">
+                    <!-- WhatsApp -->
+                    <button class="contact-option-btn whatsapp" id="opt-whatsapp">
+                        <div class="option-icon"><i class="fab fa-whatsapp"></i></div>
+                        <div class="option-text">
+                            <strong>WhatsApp</strong>
+                            <span>Mensaje directo al celular</span>
+                        </div>
+                    </button>
+
+                    <!-- Email -->
+                    <button class="contact-option-btn email" id="opt-email">
+                        <div class="option-icon"><span class="material-symbols-outlined">mail</span></div>
+                        <div class="option-text">
+                            <strong>Correo Electrónico</strong>
+                            <span>Enviar email corporativo</span>
+                        </div>
+                    </button>
+
+                    <!-- Push Notification -->
+                    <button class="contact-option-btn push" id="opt-push">
+                        <div class="option-icon"><span class="material-symbols-outlined">notifications_active</span></div>
+                        <div class="option-text">
+                            <strong>Notificación Push</strong>
+                            <span>App en tiempo real (Avanzado)</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SUB-MODAL PUSH (Independiente) -->
+    <div id="modal-push" class="modal-overlay hidden">
+        <div class="modal-content push-modal-stitch fade-in">
+            <header class="modal-header">
+                <h3>Enviar Notificación Push</h3>
+                <button class="btn-close-modal" id="close-push-modal">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </header>
+            <div class="modal-body">
+                <div class="push-info-banner">
+                    <span class="material-symbols-outlined">bolt</span>
+                    <p>El usuario recibirá una alerta directa en su dispositivo móvil si tiene la App instalada.</p>
+                </div>
+                <div class="form-group-stitch">
+                    <label>Título de la Alerta</label>
+                    <input type="text" id="push-title" placeholder="Ej: Actualización de pedido" maxlength="50">
+                </div>
+                <div class="form-group-stitch">
+                    <label>Mensaje Corto</label>
+                    <textarea id="push-message" placeholder="Escribe el mensaje aquí..." maxlength="200"></textarea>
+                </div>
+            </div>
+            <footer class="modal-footer-stitch">
+                <button class="btn-stitch-ghost" id="cancel-push">Cancelar</button>
+                <button class="btn-stitch-primary" id="send-push">
+                    <span class="material-symbols-outlined">send</span>
+                    Enviar Alerta
+                </button>
+            </footer>
+        </div>
+    </div>
+
+    <!-- SUB-MODAL WHATSAPP -->
+    <div id="modal-whatsapp" class="modal-overlay hidden">
+        <div class="modal-content push-modal-stitch fade-in">
+            <header class="modal-header">
+                <h3>Enviar WhatsApp</h3>
+                <button class="btn-close-modal" id="close-whatsapp-modal">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </header>
+            <div class="modal-body">
+                <div class="push-info-banner">
+                    <span class="material-symbols-outlined">smartphone</span>
+                    <p>Se enviará un mensaje al cliente <strong><span id="whatsapp-user-name">—</span></strong> (<span id="whatsapp-user-phone">—</span>).</p>
+                </div>
+                <div class="form-group-stitch">
+                    <label>Mensaje</label>
+                    <textarea id="whatsapp-message" placeholder="Escribe tu mensaje aquí..." maxlength="500" rows="4"></textarea>
+                </div>
+            </div>
+            <footer class="modal-footer-stitch">
+                <button class="btn-stitch-ghost" id="cancel-whatsapp">Cancelar</button>
+                <button class="btn-stitch-primary" id="send-whatsapp">
+                    <i class="fab fa-whatsapp"></i> Enviar WhatsApp
+                </button>
+            </footer>
+        </div>
+    </div>
+
+    <!-- ========================= CONFIRM ACTION SNACKBAR ========================= -->
+    <div id="confirm-snackbar" class="confirm-snack hidden">
+        <div class="confirm-content">
+            <span id="confirm-text">¿Confirmar cambio?</span>
+            <div class="confirm-actions">
+                <button class="btn-snack-ghost" id="btn-confirm-cancel">Cancelar</button>
+                <button class="btn-snack-primary" id="btn-confirm-ok">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Snackbar Global -->
+    <div id="snackbar" class="snackbar"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/js/core/supabase-client-core.js"></script>
+    <script src="/js/core/supabase-auth.js"></script>
+
+    <script>window.PAGE_MODE = "admin-pedidos";</script>
+    <script src="/js/ui/layout.js"></script>
+    <script type="module" src="/js/ui/header.js"></script>
+    
+    <script type="module">
+        import { renderHeaderSearch } from "/js/ui/header.search.js";
+        document.addEventListener("header:ready", () => {
+            const slot = document.getElementById("header-middle-slot");
+            if (slot) {
+                slot.innerHTML = renderHeaderSearch({ showFilter: true, showAdd: false, placeholder: "Buscar # Pedido o Cliente..." });
+                
+                const filter = document.getElementById("header-status-filter");
+                if (filter) {
+                    filter.innerHTML = `
+                        <option value="pending" selected>Pendientes</option>
+                        <option value="preparing">En Preparación</option>
+                        <option value="shipped">Enviados</option>
+                        <option value="delivered">Entregados</option>
+                        <option value="cancelled">Cancelados</option>
+                    `;
+                    filter.addEventListener("change", (e) => {
+                        document.dispatchEvent(new CustomEvent("order:filter", { detail: e.target.value }));
+                    });
+                }
+                const input = document.getElementById("header-search-input");
+                if (input) {
+                    input.addEventListener("input", (e) => {
+                        document.dispatchEvent(new CustomEvent("order:search", { detail: e.target.value.trim() }));
+                    });
+                }
+            }
+        });
+    </script>
+    <script src="/js/admin/admin_pedidos.js?v=25" type="module"></script>
+</body>
+</html>

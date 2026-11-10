@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Finanzas | Café Cortero</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700;800&family=Poppins:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="/imagenes/logo.png">
+
+  <link rel="stylesheet" href="/css/core/tipografia.css">
+  <link rel="stylesheet" href="/css/ui/header.css">
+  <link rel="stylesheet" href="/css/ui/footer.css">
+  <link rel="stylesheet" href="/css/finanzas.css">
+  <link rel="stylesheet" href="/css/finanzas-dona360.css">
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .pb-safe {
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+    .page-fin-dashboard .fin-card {
+      box-shadow: none;
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .animate-spin {
+      display: inline-block;
+      animation: spin 1s linear infinite;
+    }
+
+    /* MODAL DE VISTA PREVIA DE FACTURA */
+    .fin-invoice-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(4px);
+      z-index: 10000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    .fin-invoice-modal-backdrop.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .fin-invoice-modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.96);
+      width: 92%;
+      max-width: 560px;
+      max-height: 90vh;
+      background: #ffffff;
+      border-radius: 20px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+      z-index: 10001;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .fin-invoice-modal.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translate(-50%, -50%) scale(1);
+    }
+    .fin-invoice-modal-header {
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #eef2ef;
+      background: #fafbfa;
+    }
+    .fin-invoice-modal-title-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .fin-invoice-modal-title {
+      font-family: 'Poppins', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: #2e633d;
+      margin: 0;
+      line-height: 1.2;
+    }
+    .fin-invoice-modal-subtitle {
+      font-size: 11px;
+      font-weight: 500;
+      color: #6b6b6b;
+      margin: 2px 0 0 0;
+    }
+    .fin-invoice-modal-close {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 1px solid #e4eae6;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #512615;
+      transition: background 0.15s;
+    }
+    .fin-invoice-modal-close:hover {
+      background: #f0f4f1;
+    }
+    .fin-invoice-modal-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      background: #f5f7f6;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      -webkit-overflow-scrolling: touch;
+    }
+    .fin-invoice-img-container {
+      width: 100%;
+      max-width: 500px;
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+      border: 1px solid #e4eae6;
+    }
+    .fin-invoice-img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .fin-invoice-modal-footer {
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #ffffff;
+      border-top: 1px solid #eef2ef;
+    }
+    .fin-modal-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s ease;
+      flex: 1;
+    }
+    .fin-modal-btn-wa {
+      background: #25D366;
+      color: #ffffff;
+      flex: 1.4;
+      font-weight: 700;
+    }
+    .fin-modal-btn-wa:hover {
+      background: #20bd5a;
+    }
+    .fin-modal-btn-pdf {
+      background: #f0f4f1;
+      color: #2e633d;
+      border: 1px solid #dce5df;
+    }
+    .fin-modal-btn-pdf:hover {
+      background: #e2ede5;
+    }
+    .fin-modal-btn-download {
+      background: #f8f9fa;
+      color: #512615;
+      border: 1px solid #e4eae6;
+    }
+    .fin-modal-btn-download:hover {
+      background: #eef1ef;
+    }
+    @media (max-width: 600px) {
+      .fin-invoice-modal {
+        width: 96%;
+        max-height: 94vh;
+      }
+      .fin-invoice-modal-footer {
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .fin-modal-btn-wa {
+        flex-basis: 100%;
+        order: 1;
+        padding: 11px;
+        font-size: 13px;
+      }
+      .fin-modal-btn-pdf {
+        flex-basis: calc(50% - 3px);
+        order: 2;
+      }
+      .fin-modal-btn-download {
+        flex-basis: calc(50% - 3px);
+        order: 3;
+      }
+    }
+  </style>
+</head>
+<body class="finanzas-page page-fin-dashboard">
+  <div id="header-placeholder"></div>
+
+  <main class="fin-page">
+
+    <!-- TOP APP BAR -->
+    <header class="fin-top-app-bar">
+      <h1 class="fin-title">Finanzas</h1>
+      <div class="fin-top-actions">
+        <button class="fin-icon-btn" aria-label="Notificaciones">
+          <span class="material-symbols-outlined">notifications</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="fin-content">
+
+      <!-- 1. HERO ANALYTICS CARD (HERO CONTAINER M3) -->
+      <section class="fin-hero-card" id="fin-hero-card">
+
+        <!-- A. BANNER SUPERIOR DE CATEGORÍA ACTIVA (OCULTO - REDUNDANTE CON CENTRO DONA) -->
+        <div class="fin-active-pill" id="fin-active-pill" style="display:none !important;" aria-hidden="true">
+          <div class="fin-active-pill-leading">
+            <div class="fin-active-pill-icon" id="active-pill-icon">
+              <span class="material-symbols-outlined" id="active-pill-icon-sym">account_balance_wallet</span>
+            </div>
+            <div class="fin-active-pill-info">
+              <div class="fin-active-pill-title" id="active-pill-title">Balance General</div>
+              <div class="fin-active-pill-sub" id="active-pill-sub">
+                <span id="saldo-compare-text">Iniciando análisis del período...</span>
+              </div>
+            </div>
+          </div>
+          <div class="fin-active-pill-trailing">
+            <div class="fin-active-pill-monto" id="active-pill-monto">HNL 0.00</div>
+            <button class="fin-active-pill-clear" id="active-pill-clear" title="Restablecer filtro a Ambos" aria-label="Limpiar filtro">
+              <span class="material-symbols-outlined">close</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- B. SELECTOR DE PERÍODO Y CONMUTADOR DE VISTA -->
+        <div class="fin-hero-controls">
+          <!-- Selector Temporal (Día | Semana | Mes) -->
+          <div class="fin-segmented-wrapper hero-segmented">
+            <div class="fin-segmented" id="periodo-segmented">
+              <button class="fin-seg-btn" data-periodo="dia">Día</button>
+              <button class="fin-seg-btn active" data-periodo="semana">Semana</button>
+              <button class="fin-seg-btn" data-periodo="mes">Mes</button>
+            </div>
+          </div>
+
+          <!-- Navegación de Período (< 12 oct – 18 oct 2026 >) -->
+          <div class="fin-periodo-nav hero-periodo-nav">
+            <button class="fin-periodo-arrow" id="periodo-prev" aria-label="Anterior">
+              <span class="material-symbols-outlined">chevron_left</span>
+            </button>
+            <div class="fin-periodo-label" id="periodo-label"></div>
+            <button class="fin-periodo-arrow" id="periodo-next" aria-label="Siguiente">
+              <span class="material-symbols-outlined">chevron_right</span>
+            </button>
+          </div>
+
+          <!-- Conmutador de Gráfica (Dona 360 vs Ingresos vs Egresos) -->
+          <div class="fin-view-toggle">
+            <button class="fin-view-btn active" id="view-btn-donut" data-view="donut">
+              <span class="material-symbols-outlined">donut_large</span>
+              <span>Dona 360</span>
+            </button>
+            <button class="fin-view-btn" id="view-btn-bar" data-view="barchart">
+              <span class="material-symbols-outlined">bar_chart</span>
+              <span>Ingresos vs Egresos</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- C. VISTA PRINCIPAL: DONA 360 Ó BARRAS -->
+        <div class="fin-visual-container">
+          <!-- VISTA DONA 360 -->
+          <div class="fin-donut-view" id="fin-donut-view">
+            <div class="fin-donut-stage">
+              <!-- SVG 280x280 cx=140 cy=140 R=102 stroke-width=28 -->
+              <svg id="fin-donut-svg" viewBox="0 0 280 280" class="fin-donut-svg" aria-label="Dona 360 de finanzas">
+                <!-- Arcos SVG generados matemáticamente por dashboard.js -->
+              </svg>
+
+              <!-- CENTRO DE LA DONA INTERACTIVO -->
+              <div class="fin-donut-center" id="fin-donut-center" role="button" tabindex="0" aria-label="Restablecer filtro a Ambos" title="Tocar para restablecer a Ambos">
+                <span class="fin-donut-center-label" id="fin-donut-center-label">SALDO ACTUAL · HNL</span>
+                <div class="fin-saldo-monto" id="fin-saldo-monto-hero" style="white-space: nowrap;">0.00</div>
+                <div class="fin-saldo-compare" id="saldo-compare">
+                  <span class="material-symbols-outlined fin-saldo-compare-icon" id="saldo-compare-icon">trending_up</span>
+                  <span class="fin-saldo-compare-badge" id="saldo-compare-badge">+0.00</span>
+                </div>
+                <div class="fin-donut-reset-hint" id="fin-donut-reset-hint" style="display:none; font-family:'Poppins',sans-serif; font-size:10px; font-weight:600; color:#8D6E63; margin-top:4px;">&#x21A9; Tocar centro para ver todo</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- VISTA BARRAS SEMANALES INTEGRADA -->
+          <div class="fin-barchart-view" id="fin-barchart-view" style="display:none;">
+            <div class="fin-chart-container" style="height:280px;position:relative;">
+              <canvas id="fin-chart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. CUADRÍCULA COMPACTA DE KPIs (2x2) -->
+        <div class="fin-kpi-grid">
+          <!-- INGRESOS -->
+          <div class="fin-kpi-card" id="kpi-ingresos" data-rubro="ingreso">
+            <div class="fin-kpi-head">
+              <span class="fin-kpi-label">Ingresos</span>
+              <div class="fin-kpi-icon primary">
+                <span class="material-symbols-outlined">trending_up</span>
+              </div>
+            </div>
+            <div class="fin-kpi-monto primary" id="ingresos-monto">
+              <span style="color:#377b4c;font-weight:700;">HNL</span> <span>0.00</span>
+            </div>
+            <div class="fin-stat-compare fin-kpi-sub" id="ingresos-compare"></div>
+          </div>
+
+          <!-- EGRESOS -->
+          <div class="fin-kpi-card" id="kpi-egresos" data-rubro="egreso">
+            <div class="fin-kpi-head">
+              <span class="fin-kpi-label">Egresos</span>
+              <div class="fin-kpi-icon error">
+                <span class="material-symbols-outlined">trending_down</span>
+              </div>
+            </div>
+            <div class="fin-kpi-monto error" id="egresos-monto">
+              <span style="color:#C62828;font-weight:700;">HNL</span> <span>0.00</span>
+            </div>
+            <div class="fin-stat-compare fin-kpi-sub" id="egresos-compare"></div>
+          </div>
+
+          <!-- AHORRO -->
+          <div class="fin-kpi-card" id="kpi-ahorro" data-rubro="ahorro">
+            <div class="fin-kpi-head">
+              <span class="fin-kpi-label">Ahorro</span>
+              <div class="fin-kpi-icon secondary">
+                <span class="material-symbols-outlined">savings</span>
+              </div>
+            </div>
+            <div class="fin-kpi-monto secondary" id="ahorro-monto">
+              <span style="color:#512615;font-weight:700;">HNL</span> <span>0.00</span>
+            </div>
+            <div class="fin-stat-compare fin-kpi-sub" id="ahorro-compare"></div>
+          </div>
+
+          <!-- POR COBRAR -->
+          <div class="fin-kpi-card" id="porcobrar-card" data-rubro="porcobrar">
+            <div class="fin-kpi-head">
+              <span class="fin-kpi-label">Por cobrar</span>
+              <div class="fin-kpi-icon warning">
+                <span class="material-symbols-outlined">receipt_long</span>
+              </div>
+            </div>
+            <div class="fin-kpi-monto warning" id="porcobrar-monto">
+              <span style="color:#F9A825;font-weight:700;">HNL</span> <span>0.00</span>
+            </div>
+            <div class="fin-kpi-sub" style="display:flex;align-items:center;gap:6px;">
+              <span id="porcobrar-count" class="fin-kpi-badge">0</span>
+              <span class="fin-porcobrar-dash" id="porcobrar-detalle" style="font-size:11px;opacity:0.8;"></span>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- 3. HISTORIAL DE MOVIMIENTOS -->
+      <section class="fin-card fin-historial-card">
+        <div class="fin-historial-header">
+          <!-- FILA 1: TÍTULO Y ACCIONES (BUSCAR Y EXPORTAR) -->
+          <div class="fin-historial-top-row">
+            <h2 class="fin-card-title" style="margin-bottom:0;">Historial</h2>
+            <div class="fin-historial-actions">
+              <button class="fin-btn-search" id="btn-search" title="Buscar" aria-label="Buscar movimientos">
+                <span class="material-symbols-outlined">search</span>
+              </button>
+              <button class="fin-btn-export" id="btn-exportar" title="Exportar a Excel" aria-label="Exportar a Excel">
+                <span class="material-symbols-outlined">download</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- FILA DE BÚSQUEDA DESPLEGABLE -->
+          <div class="fin-search-row" id="fin-search-row">
+            <div class="fin-search-field" id="fin-search-field">
+              <input type="text" class="fin-search-input" id="fin-search-input" placeholder="Buscar por categoría, nota o monto (HNL)...">
+              <button class="fin-search-clear" id="fin-search-clear" title="Limpiar" aria-label="Limpiar búsqueda">
+                <span class="material-symbols-outlined">close</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- FILA 2: CARRUSEL DE FILTER CHIPS (SALTO ABAJO) -->
+          <div class="fin-filter-chips-carousel">
+            <div class="fin-filter-chips">
+              <button class="fin-chip active" data-filter="ambos">Ambos</button>
+              <button class="fin-chip" data-filter="ingreso">Ingresos</button>
+              <button class="fin-chip secondary" data-filter="ahorro">Ahorro</button>
+              <button class="fin-chip" data-filter="egreso">Egresos</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="fin-historial-list"></div>
+
+        <div class="fin-history-footer" id="fin-history-footer">
+          <button class="fin-pag-btn" id="pag-prev">
+            <span class="material-symbols-outlined">chevron_left</span>
+          </button>
+          <span class="fin-pagination-info" id="fin-pagination-info"></span>
+          <button class="fin-pag-btn" id="pag-next">
+            <span class="material-symbols-outlined">chevron_right</span>
+          </button>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- FAB CIRCULAR FIJO M3 -->
+    <a href="/pages/admin/finanzas/registrar.html" class="fin-fab" id="fin-fab" aria-label="Nuevo Movimiento" title="Nuevo Movimiento">
+      <span class="material-symbols-outlined">add</span>
+    </a>
+
+    <!-- 3. M3 BOTTOM SHEET MODAL (COMPROBANTE Y WHATSAPP) -->
+    <div class="fin-sheet-backdrop" id="fin-sheet-backdrop"></div>
+    <div class="fin-bottomsheet" id="fin-bottomsheet" role="dialog" aria-modal="true" aria-hidden="true">
+      <div class="fin-sheet-handle"></div>
+      
+      <div class="fin-sheet-header">
+        <div class="fin-sheet-icon" id="sheet-icon">
+          <span class="material-symbols-outlined" id="sheet-icon-sym">receipt_long</span>
+        </div>
+        <div class="fin-sheet-heading">
+          <span class="fin-sheet-type-badge" id="sheet-type-badge">Ingreso</span>
+          <h3 class="fin-sheet-title" id="sheet-title">Pedido POS</h3>
+        </div>
+        <button class="fin-sheet-close" id="sheet-close-btn" aria-label="Cerrar">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <div class="fin-sheet-monto-box">
+        <div class="fin-sheet-monto" id="sheet-monto">HNL 0.00</div>
+        <div class="fin-sheet-monto-sub" id="sheet-monto-sub" style="display:none;">—</div>
+      </div>
+
+      <div class="fin-sheet-body" id="sheet-body">
+        <div class="fin-sheet-row" id="sheet-row-cliente" style="display:none;">
+          <span class="fin-sheet-label">Cliente / Comprador</span>
+          <span class="fin-sheet-val" id="sheet-cliente">—</span>
+        </div>
+        <div class="fin-sheet-row" id="sheet-row-notas" style="display:none;">
+          <span class="fin-sheet-label">Notas</span>
+          <span class="fin-sheet-val" id="sheet-notas">—</span>
+        </div>
+        <div class="fin-sheet-row">
+          <span class="fin-sheet-label">Fecha y Hora</span>
+          <span class="fin-sheet-val" id="sheet-fecha">—</span>
+        </div>
+        <div class="fin-sheet-row">
+          <span class="fin-sheet-label">Método de Pago</span>
+          <span class="fin-sheet-val" id="sheet-metodo">—</span>
+        </div>
+        <div class="fin-sheet-row">
+          <span class="fin-sheet-label">Registrado por</span>
+          <span class="fin-sheet-val" id="sheet-usuario">—</span>
+        </div>
+      </div>
+
+      <div class="fin-sheet-actions">
+        <div class="fin-sheet-subactions">
+          <button class="fin-btn-outlined" id="sheet-btn-factura" title="Compartir Factura por WhatsApp">
+            <span class="material-symbols-outlined">share</span>
+            <span>Compartir</span>
+          </button>
+          <button class="fin-btn-outlined" id="sheet-btn-edit">
+            <span class="material-symbols-outlined">edit</span>
+            <span>Editar</span>
+          </button>
+          <button class="fin-btn-outlined fin-btn-danger" id="sheet-btn-delete">
+            <span class="material-symbols-outlined">delete</span>
+            <span>Eliminar</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL DE VISTA PREVIA DE FACTURA (IMAGEN & COMPARTIR) -->
+    <div class="fin-invoice-modal-backdrop" id="fin-invoice-modal-backdrop"></div>
+    <div class="fin-invoice-modal" id="fin-invoice-modal" role="dialog" aria-modal="true" aria-hidden="true">
+      <div class="fin-invoice-modal-header">
+        <div class="fin-invoice-modal-title-box">
+          <span class="material-symbols-outlined" style="color: #2e633d; font-size: 24px;">receipt_long</span>
+          <div>
+            <h3 class="fin-invoice-modal-title" id="invoice-modal-title">Vista Previa de Factura</h3>
+            <p class="fin-invoice-modal-subtitle" id="invoice-modal-subtitle">Factura Digital Café Cortero</p>
+          </div>
+        </div>
+        <button class="fin-invoice-modal-close" id="invoice-modal-close-btn" aria-label="Cerrar vista previa">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <div class="fin-invoice-modal-body">
+        <div class="fin-invoice-img-container">
+          <img id="invoice-modal-img" class="fin-invoice-img" alt="Vista Previa de Factura" src="" />
+        </div>
+      </div>
+
+      <div class="fin-invoice-modal-footer">
+        <button class="fin-modal-btn fin-modal-btn-wa" id="invoice-modal-btn-wa">
+          <span class="material-symbols-outlined">chat</span>
+          <span>Enviar por WhatsApp</span>
+        </button>
+        <button class="fin-modal-btn fin-modal-btn-pdf" id="invoice-modal-btn-pdf">
+          <span class="material-symbols-outlined">picture_as_pdf</span>
+          <span>Factura PDF</span>
+        </button>
+        <button class="fin-modal-btn fin-modal-btn-download" id="invoice-modal-btn-download">
+          <span class="material-symbols-outlined">download</span>
+          <span>Descargar</span>
+        </button>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/js/core/supabase-client-core.js"></script>
+  <script src="/js/core/supabase-auth.js"></script>
+  <script>window.PAGE_MODE = "finanzas-dashboard";</script>
+  <script src="/js/ui/layout.js"></script>
+  <script type="module" src="/js/ui/header.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="/js/finanzas/dashboard.js"></script>
+</body>
+</html>

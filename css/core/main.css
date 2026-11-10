@@ -1,0 +1,2347 @@
+/* ============================================
+   VARIABLES GLOBALES
+============================================ */
+
+:root {
+  --marron: #512615;
+  --verde: #377b4c;
+  --verde-hover: #2e663f;
+  --verde-light: #f1f8f3;
+  --blanco: #ffffff;
+  --fondo: #fafafa;
+  --acento: #8D6E63;
+  --principal: #377b4c;
+
+  /* Altura del header fijo */
+  --header-height: 72px;
+}
+
+/* Mobile */
+@media (max-width: 900px) {
+  :root {
+    --header-height: 64px;
+  }
+}
+
+/* ============================================
+   RESET BÁSICO
+============================================ */
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  /* Remove blue tap highlight on mobile */
+}
+
+/* Material 3 Focus State - Sutil and Accessible */
+:focus-visible {
+  outline: 2px solid var(--verde);
+  outline-offset: 2px;
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* =====================================================
+   BODY — AJUSTE POR HEADER FIJO (CORREGIDO)
+===================================================== */
+
+html {
+  overflow-x: hidden;
+  overflow-y: auto;
+  width: 100%;
+  max-width: 100%;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar {
+  display: none;
+}
+
+body {
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
+}
+
+body {
+  font-family: "Poppins", sans-serif;
+  background: var(--fondo);
+  color: var(--marron);
+  -webkit-tap-highlight-color: transparent;
+
+  /* Espacio real para header fijo */
+  padding-top: var(--header-height);
+
+  /* Mejora de renderizado */
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Home page: carrusel detrás del navbar transparente */
+body.home-page {
+  padding-top: 0 !important;
+}
+
+/* =========================================================
+   HERO — LAYOUT GENERAL (FIX DEFINITIVO)
+========================================================= */
+
+.hero {
+  padding-top: clamp(1.5rem, 3vh, 2.5rem);
+  padding-bottom: clamp(1rem, 2vh, 1.5rem);
+  padding-inline: 20px;
+
+  text-align: center;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+
+  margin-bottom: 1.5rem;
+}
+
+/* =========================================================
+   HERO TEXT
+========================================================= */
+
+.hero-text {
+  margin-bottom: clamp(1.2rem, 2.5vh, 1.8rem);
+}
+
+.hero-text h1 {
+  font-family: "Playfair Display", serif;
+  font-size: clamp(2rem, 4vw, 2.6rem);
+  font-weight: 600;
+  line-height: 1.15;
+  color: var(--verde);
+  margin: 0;
+}
+
+.hero-text p {
+  color: var(--marron);
+  margin-top: 0.6rem;
+  max-width: 680px;
+  margin-inline: auto;
+}
+
+/* Mobile control fino */
+@media (max-width: 900px) {
+  .hero-text h1 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+/* =========================================================
+   HERO CARD — MATERIAL 3 EXPRESSIVE
+========================================================= */
+.hero-card {
+  position: relative;
+  width: 100%;
+
+  background: var(--blanco);
+  max-width: 1200px;
+  margin-inline: auto;
+
+  /* 🔑 margen controlado */
+  margin-bottom: 2.5rem;
+
+  border-radius: 28px;
+  overflow: visible;
+
+  box-shadow:
+    0 20px 48px rgba(0, 0, 0, 0.16),
+    0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+@media (max-width: 900px) {
+  .hero-card {
+    margin-bottom: 1.75rem;
+    /* 👈 elimina el salto */
+    border-radius: 22px;
+  }
+}
+
+/* Hover solo desktop real */
+@media (hover: hover) and (pointer: fine) {
+  .hero-card:hover {
+    transform: translateY(-4px);
+    box-shadow:
+      0 28px 64px rgba(0, 0, 0, 0.2),
+      0 10px 26px rgba(0, 0, 0, 0.14);
+  }
+}
+
+/* Mobile spacing */
+@media (max-width: 900px) {
+  .hero-card {
+    margin-bottom: 72px;
+  }
+}
+
+/* =========================================================
+   HERO MEDIA (IMÁGENES) — FIX DEFINITIVO
+========================================================= */
+.hero-media {
+  position: relative;
+  isolation: isolate;
+  /* 🔑 OBLIGATORIO */
+  width: 100%;
+  height: clamp(320px, 45vh, 460px);
+  overflow: hidden;
+  background: #f6f8f5;
+  border-radius: 22px;
+}
+
+/* TODAS ocultas */
+.hero-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center;
+
+  opacity: 0;
+  z-index: 1;
+  transition: opacity 600ms ease;
+}
+
+/* SOLO LA ACTIVA SE VE */
+.hero-img.active {
+  opacity: 1;
+  z-index: 2;
+}
+
+/* overlay NO tapa imágenes */
+.hero-media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom,
+      rgba(20, 60, 40, 0.12),
+      rgba(20, 60, 40, 0.32));
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* =====================================================
+   SNACKBAR — PREMIUM CAPSULE DESIGN
+===================================================== */
+#snackbar.snackbar {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translate(-50%, 18px);
+  max-width: 520px;
+  width: calc(100% - 56px);
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: rgba(20, 22, 24, 0.92);
+  color: #fff;
+  font-size: 14.5px;
+  line-height: 1.25;
+  font-weight: 600;
+  box-shadow: 0 18px 44px rgba(0,0,0,.55), 0 6px 16px rgba(0,0,0,.35), 0 0 0 1px rgba(255,255,255,.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 99999;
+  transition: opacity .22s ease, transform .22s cubic-bezier(.2,0,0,1);
+}
+
+#snackbar.snackbar::before {
+  content: "";
+  width: 6px;
+  align-self: stretch;
+  border-radius: 999px;
+  background: #33c26b;
+  opacity: .95;
+}
+
+#snackbar.snackbar.show {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, 0);
+}
+
+#snackbar.snackbar.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+#snackbar.snackbar.error::before { background: #ff4b4b; }
+#snackbar.snackbar.warn::before { background: #f6c343; }
+#snackbar.snackbar.success::before { background: #33c26b; }
+
+@media (max-width: 900px) {
+  #snackbar.snackbar {
+    bottom: 20px;
+    width: calc(100% - 64px);
+    max-width: 480px;
+    padding: 13px 14px;
+    border-radius: 16px;
+    font-size: 14px;
+  }
+}
+
+.snackbar-action-btn {
+  background: #fff;
+  color: #377b4c;
+  /* Verde Cortero */
+  border: none;
+  padding: 8px 20px;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.snackbar-action-btn:hover {
+  background: #f0f0f0;
+  transform: scale(1.05);
+}
+
+.snackbar-action-btn:active {
+  transform: scale(0.95);
+}
+
+/* =========================================================
+   PÍLDORAS — MATERIAL 3 EXPRESSIVE
+========================================================= */
+
+.hero-pill-group {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translate(-50%, 50%);
+
+  display: flex;
+  gap: 4px;
+
+  padding: 6px;
+  border-radius: 999px;
+
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+
+  box-shadow:
+    0 10px 28px rgba(0, 0, 0, 0.25),
+    0 4px 10px rgba(0, 0, 0, 0.18);
+
+  z-index: 5;
+}
+
+/* Segmentos */
+.pill-segment {
+  padding: 10px 20px;
+  border-radius: 999px;
+  border: none;
+
+  background: transparent;
+  color: #2f3e34;
+
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+
+  transition:
+    background 250ms ease,
+    color 250ms ease,
+    box-shadow 250ms ease,
+    transform 250ms ease;
+}
+
+/* Activo */
+.pill-segment.active {
+  background: #3e6b4f;
+  color: #ffffff;
+
+  box-shadow: 0 4px 10px rgba(0, 0, 0, .25);
+  transform: scale(1.03);
+}
+
+/* Hover */
+.pill-segment:not(.active):hover {
+  background: rgba(62, 107, 79, 0.12);
+}
+
+/* =========================================================
+   RESPONSIVE — HERO (CORREGIDO)
+========================================================= */
+
+@media (max-width: 1200px) {
+  .hero-media {
+    height: clamp(300px, 42vh, 420px);
+  }
+}
+
+@media (max-width: 900px) {
+
+  .hero-card {
+    border-radius: 22px;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+  }
+
+  .hero-media {
+    height: clamp(280px, 40vh, 360px);
+  }
+
+  .hero-pill-group {
+    bottom: 16px;
+    gap: 8px;
+  }
+
+  .pill-segment {
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+}
+
+/* ================= PRODUCTO PRINCIPAL ================= */
+
+.product-main {
+  max-width: 1100px;
+  width: 92%;
+  /* Asegura margen en tablets */
+  margin: 2.5rem auto;
+  background: var(--blanco);
+  border-radius: 24px;
+  box-shadow: var(--sombra);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  padding: 2.5rem;
+  align-items: center;
+}
+
+@media (max-width: 900px) {
+  .discount-pill {
+    align-self: flex-start !important;
+    max-width: 100% !important;
+    width: fit-content !important;
+    box-sizing: border-box !important;
+  }
+
+  .product-main {
+    grid-template-columns: 1fr;
+    width: auto;
+    margin: 2rem 1rem;
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .product-main {
+    grid-template-columns: minmax(0, 1fr);
+    width: calc(100% - 12px);
+    margin: 1rem auto;
+    padding: 1.35rem 0.85rem;
+    border-radius: 20px;
+    gap: 0.85rem;
+    align-items: stretch;
+    box-sizing: border-box;
+  }
+
+  .product-main .product-text {
+    display: contents;
+  }
+
+  .product-main .product-title {
+    order: 1;
+  }
+
+  .product-main .product-badges-row {
+    order: 2;
+    margin-top: -0.25rem;
+  }
+
+  .product-main .product-description {
+    order: 3;
+  }
+
+  .product-main .product-img-wrap {
+    order: 4;
+    margin: 0.75rem 0;
+  }
+
+  .product-main .product-specs {
+    order: 5;
+    z-index: 2;
+  }
+
+  .product-main .product-status {
+    order: 6;
+  }
+
+  .product-main .product-actions {
+    order: 7;
+  }
+}
+
+.quantity-container {
+  order: 1;
+  margin-top: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  background: #f5f7f6;
+  border: 1.5px solid rgba(55, 123, 76, 0.22);
+  border-radius: 999px;
+  padding: 5px 12px;
+  width: fit-content;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
+}
+
+.qty-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.minus-btn {
+  color: var(--marron);
+  font-weight: 600;
+}
+
+.plus-btn {
+  color: var(--verde);
+  font-weight: 600;
+}
+
+@media (min-width: 901px) {
+  .qty-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.qty-number {
+  font-size: 1.25rem;
+  font-weight: 700;
+  min-width: 26px;
+  text-align: center;
+  color: var(--marron);
+}
+
+/* ================= TEXTO PRODUCTO ================= */
+
+.product-label small {
+  font-weight: 600;
+  color: var(--marron);
+}
+
+.product-label .subtext {
+  color: #a78c7c;
+  font-size: 0.9rem;
+}
+
+/* ESPACIADO PREMIUM ENTRE SECCIONES DEL BLOQUE DE TEXTO */
+.product-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  /* más aire general */
+}
+
+/* TÍTULO PRINCIPAL */
+.product-text h2 {
+  font-family: "Playfair Display", serif;
+  font-size: 2.2rem;
+  color: var(--verde);
+  margin: 0;
+  line-height: 1.15;
+}
+
+/* DESCRIPCIÓN (CAFÉ) */
+.product-description {
+  margin: 0;
+  line-height: 1.55;
+  color: var(--marron);
+  /* café */
+}
+
+/* FICHA TÉCNICA */
+.product-specs {
+  margin: 0.2rem 0;
+  padding: 1rem 1.25rem;
+  background: #fdfdfd;
+  border-radius: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  position: relative;
+}
+
+.specs-mobile-toggle {
+  display: none;
+}
+
+.specs-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.specs-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  /* Espacio vertical reducido */
+}
+
+/* Línea divisoria vertical entre columnas */
+.specs-col:first-child {
+  border-right: 1px dashed rgba(55, 123, 76, 0.2);
+  padding-right: 1rem;
+}
+
+.spec-row-full {
+  grid-column: 1 / -1;
+  padding-top: 0.6rem;
+  margin-top: 0.4rem;
+  border-top: 1px dashed rgba(55, 123, 76, 0.15);
+}
+
+.spec-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+}
+
+.spec-contact {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  margin-top: 0.4rem;
+  padding-top: 0.6rem;
+  border-top: 1px dashed rgba(55, 123, 76, 0.15);
+  width: 100%;
+  position: relative;
+  overflow: visible;
+}
+
+.contact-info-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.spec-item .material-symbols-outlined,
+.spec-icon-png {
+  color: var(--verde);
+  font-size: 1.4rem;
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  opacity: 0.9;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.spec-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.spec-label {
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--marron);
+  font-weight: 700;
+}
+
+.spec-value {
+  font-size: 0.82rem;
+  color: var(--verde);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.prep-chips-wrap {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.prep-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(55,123,76,.1);
+  color: var(--verde);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.prep-chip .material-symbols-outlined {
+  font-size: 1rem;
+  color: var(--verde);
+}
+
+.contact-link {
+  color: inherit;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.contact-link:hover {
+  text-decoration: underline;
+  opacity: 0.8;
+}
+
+@media (max-width: 768px) {
+  .product-specs {
+    width: calc(100% + 0.6rem);
+    margin: 0.2rem -0.3rem;
+    padding: 0;
+    border-radius: 14px;
+    border: 1px solid rgba(55, 123, 76, 0.18);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    cursor: pointer;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+    box-sizing: border-box;
+  }
+
+  .product-specs.expanded {
+    border-color: rgba(55, 123, 76, 0.32);
+    box-shadow: 0 6px 18px rgba(55, 123, 76, 0.08);
+  }
+
+  .specs-mobile-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0.9rem 1rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    text-align: left;
+    box-sizing: border-box;
+  }
+
+  .product-specs.expanded .specs-mobile-toggle {
+    position: absolute;
+    top: 0.65rem;
+    right: 0.75rem;
+    width: auto;
+    padding: 0.25rem;
+    z-index: 5;
+  }
+
+  .product-specs.expanded .specs-toggle-left {
+    display: none;
+  }
+
+  .specs-toggle-left {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+  }
+
+  .specs-toggle-icon {
+    color: var(--verde);
+    font-size: 1.35rem;
+  }
+
+  .specs-toggle-text {
+    color: var(--marron);
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  .specs-toggle-chevron {
+    color: var(--verde);
+    font-size: 1.45rem;
+    transition: transform 0.3s ease;
+  }
+
+  .product-specs.expanded .specs-toggle-chevron {
+    transform: rotate(180deg);
+  }
+
+  .specs-body {
+    display: none;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding: 0.85rem 0.75rem;
+  }
+
+  .product-specs.expanded .specs-body {
+    display: grid;
+    animation: specsFadeIn 0.25s ease-out;
+  }
+
+  .specs-col:first-child {
+    border-right: none;
+    border-bottom: 1px dashed rgba(55, 123, 76, 0.2);
+    padding-right: 0;
+    padding-bottom: 0.8rem;
+  }
+
+  .prep-chips-wrap {
+    flex-wrap: wrap;
+  }
+
+  .spec-contact {
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .product-footer-sheet {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+
+@keyframes specsFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* PÍLDORA UNIFICADA DEBAJO DEL TÍTULO (#product-badge + .discount-pill) */
+.product-badges-row {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: stretch;
+  flex-wrap: nowrap;
+  gap: 0;
+  background: #fff;
+  border: 1px solid rgba(55, 123, 76, 0.22);
+  border-radius: 999px;
+  overflow: hidden;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+  width: fit-content;
+  max-width: 100%;
+  align-self: flex-start;
+}
+
+/* Segmento izquierdo: presentación / molido / categoría */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  background: #fff;
+  color: var(--marron);
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
+  padding: 0.42rem 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  align-self: stretch;
+  width: fit-content;
+  white-space: nowrap;
+}
+
+/* ESTADO DEL PRODUCTO (dinámico por clases) */
+.product-status {
+  margin: 0.15rem 0 0;
+  font-size: 0.98rem;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+/* Colores del estado */
+.product-status.available {
+  color: var(--verde);
+}
+
+.product-status.low {
+  color: #b7791f;
+}
+
+/* ámbar (pocas unidades) */
+.product-status.out {
+  color: #b91c1c;
+  /* rojo (agotado) */
+}
+
+.product-footer-sheet {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 1rem;
+  position: relative;
+}
+
+.arabica-seal {
+  width: 135px;
+  height: 135px;
+  object-fit: contain;
+  opacity: 1;
+  position: absolute;
+  right: -5px;
+  top: 80%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Ajuste móvil para mayor visibilidad a la izquierda y sin solapar texto */
+@media (max-width: 768px) {
+  .spec-contact {
+    padding-bottom: 7rem;
+  }
+  .arabica-seal {
+    width: 135px;
+    height: 135px;
+    left: -15px;
+    right: auto;
+    top: auto;
+    bottom: -15px;
+    transform: none;
+    pointer-events: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .arabica-seal {
+    width: 140px;
+    left: -15px;
+    bottom: -20px;
+  }
+}
+
+.footer-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.enjoy-msg {
+  font-family: inherit;
+  font-size: 1.1rem;
+  color: var(--verde);
+  font-weight: 700;
+  font-style: italic;
+  margin: 0;
+}
+
+.product-weight {
+  font-size: 0.9rem;
+  color: var(--marron);
+  font-weight: 600;
+  margin: 0;
+  opacity: 0.8;
+}
+
+.price-discount-note {
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--marron);
+  opacity: 0.7;
+  margin-left: 4px;
+}
+
+/* Separación extra antes de acciones (precio + cantidad) */
+.product-actions {
+  margin-top: 1.4rem;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .product-main .product-actions {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    gap: 0.65rem;
+    width: 100%;
+    margin: 0.5rem 0 0;
+  }
+
+  .product-main .quantity-container {
+    order: 1;
+    margin-top: 0;
+    gap: 0.9rem;
+    padding: 5px 11px;
+    flex-shrink: 0;
+  }
+
+  .product-main .product-split {
+    order: 2;
+    margin-top: 0;
+    margin-left: 0;
+    flex-shrink: 1;
+    min-width: 0;
+  }
+
+  .product-main .product-split .price-part {
+    padding: 0.68rem 1.15rem;
+    font-size: 0.93rem;
+    white-space: nowrap;
+  }
+
+  .product-main .product-split .icon-part {
+    padding: 0.68rem 1rem;
+  }
+
+  .product-main .qty-btn {
+    width: 34px;
+    height: 34px;
+    font-size: 1.2rem;
+  }
+
+  .product-main .qty-number {
+    font-size: 1.2rem;
+    min-width: 26px;
+  }
+}
+
+@media (max-width: 430px) {
+  .product-main .product-actions {
+    gap: 0.5rem;
+  }
+
+  .product-main .quantity-container {
+    gap: 0.55rem;
+    padding: 4px 8px;
+  }
+
+  .product-main .qty-btn {
+    width: 30px;
+    height: 30px;
+    font-size: 1.1rem;
+  }
+
+  .product-main .qty-number {
+    font-size: 1.05rem;
+    min-width: 20px;
+  }
+
+  .product-main .product-split .price-part {
+    padding: 0.6rem 0.85rem;
+    font-size: 0.86rem;
+  }
+
+  .product-main .product-split .icon-part {
+    padding: 0.6rem 0.75rem;
+  }
+}
+
+/* Split button */
+
+.product-split {
+  order: 2;
+  display: inline-flex;
+  align-items: center;
+  background: var(--verde);
+  color: #fff;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 0;
+  box-shadow: 0 6px 16px rgba(51, 103, 59, 0.3);
+}
+
+.product-split .price-part {
+  padding: 0.7rem 1.6rem;
+}
+
+.product-split .icon-part {
+  background: rgba(255, 255, 255, 0.18);
+  padding: 0.7rem 1.3rem;
+  cursor: pointer;
+  border-left: 1px solid rgba(255, 255, 255, 0.25);
+  transition: transform 0.12s, background 0.2s;
+}
+
+.product-split .icon-part:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.product-split .icon-part:active {
+  transform: translateY(2px);
+}
+
+/* TARJETA DE IMAGEN VISUAL DEL PRODUCTO (FULL COVER) */
+
+.product-img-wrap {
+  width: 100%;
+  height: 520px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  position: relative;
+}
+
+/* Badge de Descuento (Miniaturas) */
+.discount-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: var(--marron); /* Marrón original de la app */
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  z-index: 5;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.discount-badge span {
+  font-size: 0.65rem;
+  font-weight: 500;
+  opacity: 0.95;
+}
+
+/* Segmento derecho de la píldora unificada (Descuento) */
+.discount-pill {
+  display: inline-flex;
+  align-items: center;
+  align-self: stretch;
+  gap: 0.5rem;
+  background: var(--marron); /* Marrón original de la app */
+  color: #fff;
+  padding: 0.42rem 0.9rem;
+  border-radius: 0;
+  margin-bottom: 0;
+  box-shadow: none;
+  border-left: 3px solid var(--verde);
+  font-family: var(--fuente-texto);
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.discount-pill .pill-off {
+  font-weight: 700;
+  font-size: 0.86rem;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.discount-pill .pill-label {
+  font-size: 0.74rem;
+  opacity: 0.92;
+  border-left: 1px solid rgba(255,255,255,0.25);
+  padding-left: 0.5rem;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+  .product-badges-row {
+    gap: 0;
+    flex-wrap: nowrap;
+  }
+
+  .pill {
+    padding: 0.36rem 0.68rem;
+    font-size: 0.76rem;
+  }
+
+  .discount-pill {
+    padding: 0.36rem 0.68rem;
+    gap: 0.38rem;
+  }
+
+  .discount-pill .pill-off {
+    font-size: 0.78rem;
+  }
+
+  .discount-pill .pill-label {
+    font-size: 0.68rem;
+    padding-left: 0.38rem;
+  }
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Sincronización del badge con el hover de la bolsa */
+.product-img-inner {
+  transition: transform 0.4s ease;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* El zoom ahora se aplica al contenedor para mover bolsa + badge juntos */
+.product-img-wrap:hover .product-img-inner {
+  transform: translateY(-5px) scale(1.03);
+  /* Zoom muy sutil y controlado */
+}
+
+/* Regla para la imagen: base estable */
+.product-img-wrap img {
+  transform: scale(1);
+  /* Reset de escala para evitar gigantismo */
+  transition: filter 0.4s ease;
+}
+
+/* El efecto de bolsa que "sale" del contenedor */
+@media (min-width: 901px) {
+  .product-img-wrap {
+    height: 480px;
+    /* Altura estándar balanceada */
+    margin-top: 0;
+  }
+
+  /* Reset de transformaciones directas en la imagen para usar el contenedor inner */
+  .product-img-wrap img {
+    transform: none;
+    transition: filter 0.4s ease;
+  }
+
+  /* Hover sincronizado (vía inner) */
+  .product-img-wrap:hover .product-img-inner {
+    filter: drop-shadow(0 10px 15px rgba(55, 123, 76, 0.25)) drop-shadow(0 15px 30px rgba(0, 0, 0, 0.1));
+  }
+}
+
+.product-img-wrap img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  display: block;
+
+  filter: drop-shadow(0 12px 18px rgba(55, 123, 76, 0.35)) drop-shadow(0 25px 50px rgba(0, 0, 0, 0.12));
+  transform: scale(1.8);
+  transition: transform 0.4s ease, filter 0.4s ease;
+}
+
+/* Hover Genérico (Móvil/Tablet): Zoom suave */
+.product-img-wrap img:hover {
+  transform: translateY(-8px) scale(1.85);
+  filter: drop-shadow(0 20px 25px rgba(55, 123, 76, 0.4)) drop-shadow(0 35px 60px rgba(0, 0, 0, 0.15));
+}
+
+/* 📱 Ajuste para mobile */
+@media (max-width: 768px) {
+  .product-img-wrap {
+    height: 300px;
+  }
+  .product-img-wrap img {
+    transform: scale(1.4) !important;
+  }
+  .product-img-wrap img:hover {
+    transform: translateY(-5px) scale(1.45) !important;
+  }
+}
+
+/* =====================================================
+   CARRUSEL SIMILARES — NAVEGACIÓN INFERIOR (PC)
+   Flechas alineadas al inicio y fin REAL del carrusel
+===================================================== */
+
+/* El contenedor del carrusel */
+.carousel-container {
+  position: relative;
+  overflow: visible;
+  /* 🔑 permite que las flechas sobresalgan */
+}
+
+/* =====================
+   BLOQUE DE NAVEGACIÓN
+   (MISMO ANCHO QUE EL CARRUSEL)
+===================== */
+.carousel-nav {
+  position: relative;
+  margin: 22px auto 0;
+
+  /* 🔑 MISMO ANCHO QUE .similar-list */
+  max-width: 1100px;
+  width: 100%;
+
+  height: 44px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Solo PC */
+@media (max-width: 900px) {
+  .carousel-nav {
+    display: none;
+  }
+}
+
+/* =====================
+   FLECHAS CIRCULARES
+   Estilo Google / Material
+===================== */
+.carousel-prev-circle,
+.carousel-next-circle {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+
+  /* 🔑 MÁS GRANDES (Google-like) */
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+
+  background: #fff;
+  border: none;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* Elevación Material */
+  box-shadow:
+    0 6px 16px rgba(0, 0, 0, 0.18),
+    0 2px 6px rgba(0, 0, 0, 0.12);
+
+  transition:
+    transform .18s ease,
+    box-shadow .18s ease,
+    opacity .25s ease,
+    visibility .25s ease;
+}
+
+/* Ocultar flechas */
+.carousel-prev-circle.hidden,
+.carousel-next-circle.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* INICIO REAL — FUERA DEL CARRUSEL */
+.carousel-prev-circle {
+  left: -32px;
+  /* 🔑 separación tipo Google */
+}
+
+/* FINAL REAL — FUERA DEL CARRUSEL */
+.carousel-next-circle {
+  right: -32px;
+  /* 🔑 separación tipo Google */
+}
+
+/* =====================
+   ICONO
+===================== */
+.carousel-prev-circle i,
+.carousel-next-circle i {
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: var(--verde);
+}
+
+/* Hover (PC) */
+.carousel-prev-circle:hover,
+.carousel-next-circle:hover {
+  transform: translateY(-50%) scale(1.08);
+  /* Aumentado ligeramente para mejor feedback */
+  box-shadow:
+    0 10px 22px rgba(0, 0, 0, 0.22),
+    0 4px 10px rgba(0, 0, 0, 0.14);
+}
+
+/* Flecha desactivada */
+.carousel-prev-circle:disabled,
+.carousel-next-circle:disabled {
+  opacity: 0.35;
+  cursor: default;
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.carousel-prev-circle,
+.carousel-next-circle {
+  z-index: 5;
+}
+
+/* =====================
+   PUNTOS CENTRADOS
+===================== */
+.carousel-dots {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Punto normal */
+.carousel-dots .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #cfcfcf;
+  transition:
+    transform .2s ease,
+    background-color .2s ease;
+}
+
+/* Punto activo */
+.carousel-dots .dot.active {
+  background: var(--verde);
+  transform: scale(1.35);
+}
+
+/* =====================
+   DESHABILITADO
+===================== */
+.carousel-prev-circle:disabled,
+.carousel-next-circle:disabled {
+  opacity: 0.35;
+  cursor: default;
+  transform: translateY(-50%);
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+/* ============================================
+   CARRUSEL SIMILARES — OCULTAR FLECHAS EN MÓVIL
+============================================ */
+
+/* Móvil y tablet */
+@media (max-width: 900px) {
+
+  /* Flechas carrusel */
+  #similar-prev,
+  #similar-next {
+    display: none !important;
+  }
+
+}
+
+/* ================= CARRUSEL SIMILARES ================= */
+
+.related {
+  max-width: 1100px;
+  margin: 3.5rem auto 6rem;
+  padding: 0 1rem;
+}
+
+.similar-title {
+  font-size: 1.4rem;
+  margin-bottom: 3.5rem;
+  /* Más espacio para evitar que la bolsa pegue al subir */
+  font-weight: 600;
+  color: var(--marron);
+}
+
+@media (max-width: 768px) {
+  .related {
+    margin: 2rem auto 4rem;
+    padding: 0 0.85rem;
+  }
+
+  .related .similar-title {
+    margin-bottom: 2rem;
+    font-size: clamp(0.92rem, 4.2vw, 1.3rem);
+    white-space: nowrap;
+  }
+}
+
+/* CONTENEDOR VISIBLE DEL CARRUSEL */
+.carousel-container {
+  display: flex;
+  justify-content: center;
+  overflow: visible;
+  /* 🔑 CAMBIO CLAVE */
+}
+
+/* =====================================================
+   CARRUSEL SIMILARES — LISTA DESLIZABLE
+===================================================== */
+
+.similar-list {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  /* Un poco más de aire entre tarjetas */
+  padding: 14px 0 60px;
+  /* 60px abajo para que la píldora (-48px) se vea completa */
+
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+
+  width: 100%;
+  overflow-x: auto;
+  /* 📱 móvil: swipe */
+  overflow-y: visible;
+
+  scrollbar-width: none;
+}
+
+.similar-list::-webkit-scrollbar {
+  display: none;
+}
+
+/* =====================
+   TARJETA
+===================== */
+/* =====================
+   TARJETA PREMIUM (BOLSAS ELEVADAS)
+   ===================== */
+.similar-card {
+  flex: 0 0 170px;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  scroll-snap-align: center;
+  transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  overflow: visible;
+  /* 🔑 permite que la bolsa sobresalga */
+  position: relative;
+  /* Estilo de tarjeta en el contenedor PADRE */
+  background: #ffffff;
+  border-radius: 20px;
+  border: 1.5px solid transparent;
+  /* reserva espacio pal borde */
+  margin-top: 60px;
+  /* (Más espacio arriba para el pop-up) */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+}
+
+/* Contenedor de la bolsa */
+.similar-img-cont {
+  width: 100%;
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  position: relative;
+  /* Para badge de descuento */
+  /* encima de la base */
+  transition: transform 0.4s ease, margin-bottom 0.4s ease;
+  margin-top: 10px;
+  margin-bottom: 0;
+  /* (Bajar más, pegado al texto) */
+  padding-bottom: 0;
+  /* quitar espacio */
+}
+
+.similar-img-cont img {
+  max-width: 100%;
+  /* Ocupar más ancho */
+  max-height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.15));
+  transition: transform 0.4s ease;
+  transform: scale(1.25);
+  /* (Gigante por defecto) */
+}
+
+/* Base blanca inferior */
+.similar-info {
+  width: 100%;
+  background: transparent;
+  /* ya no tiene fondo propio */
+  padding: 0 12px 20px;
+  /* Menos padding arriba para acercar texto */
+  text-align: center;
+  z-index: 1;
+  box-shadow: none;
+  /* sin sombra propia */
+  transition: all 0.4s ease;
+}
+
+.similar-info h4 {
+  font-size: 0.95rem;
+  margin-bottom: 12px;
+  color: var(--marron);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: 'Poppins', sans-serif;
+  text-align: left;
+  padding: 0 4px;
+}
+
+/* Footer de la tarjeta con 3 áreas */
+.card-footer-3col {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  width: 100%;
+  padding-top: 8px;
+}
+
+.weight-label {
+  font-size: 0.85rem;
+  color: var(--marron);
+  font-weight: 500;
+}
+
+.fav-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--marron);
+  font-size: 1.15rem;
+  transition: all 0.3s ease;
+  padding: 4px;
+  opacity: 0.55;
+}
+
+.fav-btn.active {
+  color: #c62828;
+  /* Corazón rojo */
+  opacity: 1;
+  transform: scale(1.15);
+}
+
+.fav-btn:hover {
+  transform: scale(1.2);
+}
+
+/* Píldora de precio al borde inferior */
+.price-pill {
+  position: absolute;
+  bottom: -48px;
+  /* Ajustado para quedar al borde de la tarjeta */
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--verde);
+  /* Píldora verde oficial */
+  color: #ffffff;
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
+  z-index: 10;
+}
+
+
+/* ESTADO ACTIVO / HOVER */
+/* ESTADO ACTIVO (SOLO CLICK) */
+
+.similar-card.active-card {
+  box-shadow: 0 15px 40px rgba(51, 103, 59, 0.15);
+  border-color: var(--verde);
+  background: #fdfdfd;
+}
+
+.similar-card.active-card .similar-info {
+  background: transparent;
+  box-shadow: none;
+  border: none;
+}
+
+.similar-card.active-card .similar-img-cont {
+  /* La bolsa sale de la caja (-55px) y el texto sube con ella (margin-bottom: -32px) */
+  transform: translateY(-55px) scale(1.35);
+  margin-bottom: -32px;
+}
+
+.similar-card.active-card .similar-img-cont img {
+  filter: drop-shadow(0 25px 45px rgba(0, 0, 0, 0.22));
+}
+
+/* =====================================================
+   NAVEGACIÓN — SOLO PC
+===================================================== */
+
+/* ❌ Ocultar flechas y dots en móvil */
+.carousel-nav {
+  display: none;
+}
+
+/* 🖥 PC */
+@media (min-width: 901px) {
+
+  .carousel-nav {
+    display: flex;
+    /* ✔ flechas visibles */
+  }
+
+  .similar-list {
+    width: calc((190px * 5) + (1rem * 3));
+    overflow-x: hidden;
+    /* ✔ solo flechas */
+  }
+}
+
+/* ================= SOBRE NOSOTROS ================= */
+
+.about {
+  max-width: 1100px;
+  margin: 4rem auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5rem;
+  padding: 0 1rem;
+}
+
+/* ===== Base texto ===== */
+.about-text {
+  color: var(--marron);
+}
+
+.about-text * {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, sans-serif;
+  line-height: 1.55;
+}
+
+/* ===== TÍTULO PRINCIPAL ===== */
+.about-text h2 {
+  font-size: 2.3rem;
+  margin-bottom: 0.4rem;
+  font-weight: 700;
+  color: var(--verde);
+  /* 🔑 principal en verde */
+  letter-spacing: -0.4px;
+}
+
+/* ===== SUBTÍTULO (si lo usas) ===== */
+.about-text h3 {
+  font-size: 1.45rem;
+  margin-bottom: 1.2rem;
+  font-weight: 600;
+  color: var(--marron);
+}
+
+/* ===== TEXTO LEAD ===== */
+.about-text .about-lead {
+  font-size: 1.25rem;
+  margin-bottom: 1.2rem;
+  color: #5a3a28;
+  /* café suave */
+}
+
+/* ===== TEXTO NORMAL ===== */
+.about-text p {
+  font-size: 1.15rem;
+  margin-bottom: 1.4rem;
+  color: #6a3f2b;
+}
+
+/* ===== CTA – Material 3 Expressive ===== */
+.about-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  margin-top: 0.5rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+
+  color: var(--verde);
+  text-decoration: none;
+  position: relative;
+
+  padding-bottom: 2px;
+}
+
+/* Subrayado expresivo */
+.about-btn::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+
+  width: 100%;
+  height: 2px;
+  background: var(--verde);
+  opacity: 0.35;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.about-btn:hover::after {
+  opacity: 1;
+  transform: scaleX(1.05);
+}
+
+.about-img img {
+  width: 100%;
+  height: 820px;
+  object-fit: cover;
+  border-radius: 22px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
+  transition: transform 0.45s, box-shadow 0.45s;
+}
+
+.about-img img:hover {
+  transform: translateY(-12px);
+}
+
+@media (max-width: 900px) {
+  .about {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .about-img img {
+    height: 460px;
+    border-radius: 18px;
+  }
+}
+
+/* ================= CONTACTO ================= */
+
+.contacto {
+  text-align: center;
+  margin: 0;
+  width: 100%;
+  background: var(--marron);
+  padding: 3rem 2rem;
+  border-radius: 0;
+}
+
+/* Título en blanco */
+.contacto h2 {
+  font-family: "Playfair Display", serif;
+  color: #ffffff;
+  font-size: 2.2rem;
+  margin-bottom: 0.8rem;
+}
+
+/* Texto base en blanco */
+.contacto p {
+  color: rgba(255,255,255,0.85);
+  font-size: 1.05rem;
+  line-height: 1.7;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+/* Palabras destacadas en blanco con peso */
+.contacto .verde {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* ================= FOOTER ================= */
+
+footer {
+  background: var(--blanco);
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  padding: 1rem 1rem 1.4rem;
+
+  /* Layout */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+
+  flex-wrap: nowrap;
+  /* PC: una sola línea */
+}
+
+/* Texto principal */
+footer p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--marron);
+
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  white-space: nowrap;
+}
+
+/* Logo inline */
+.footer-logo-inline {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  opacity: 0.95;
+}
+
+/* Footer simplificado (auth/legal/profile) — oculta logo */
+.footer-simple .footer-logo-inline {
+  display: none;
+}
+
+/* ===== Links legales ===== */
+.footer-legal {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.footer-legal a {
+  color: var(--marron);
+  /* 🔑 café */
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.footer-legal a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* 🔑 Punto separador en VERDE */
+.footer-legal .footer-sep {
+  color: var(--verde);
+  font-weight: 700;
+}
+
+/* ===== Mobile ===== */
+@media (max-width: 600px) {
+  footer {
+    flex-direction: column;
+    /* se apila */
+    gap: 6px;
+    text-align: center;
+  }
+
+  footer p,
+  .footer-legal {
+    white-space: normal;
+    justify-content: center;
+    font-size: 0.85rem;
+  }
+
+  .footer-logo-inline {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+/* ================= FAB — Material 3 Speed Dial & Spring Motion ================= */
+
+/* ===== SCRIM BACKDROP FADE ===== */
+.fab-scrim {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 25, 18, 0.42);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 9995;
+  transition: opacity 0.32s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.fab-scrim.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.fab-container {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 9999;
+
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: 14px;
+  pointer-events: none;
+}
+
+/* ===== FAB PRINCIPAL ===== */
+.fab-main {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--verde);
+  color: #fff;
+  pointer-events: auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  cursor: pointer;
+  outline: none;
+  position: relative;
+  overflow: hidden;
+
+  box-shadow:
+    0 6px 14px rgba(0, 0, 0, .20),
+    0 2px 5px rgba(0, 0, 0, .14);
+
+  transition:
+    transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+    background 0.3s ease,
+    box-shadow 0.3s ease;
+
+  -webkit-tap-highlight-color: transparent;
+}
+
+.fab-main:hover {
+  transform: translateY(-2px) scale(1.04);
+  box-shadow:
+    0 10px 24px rgba(0, 0, 0, .24),
+    0 4px 10px rgba(0, 0, 0, .16);
+}
+
+.fab-main:active {
+  transform: scale(.94);
+}
+
+/* Estado abierto en botón principal */
+.fab-container.open .fab-main {
+  background: var(--marron);
+  box-shadow:
+    0 10px 24px rgba(0, 0, 0, .28),
+    0 4px 10px rgba(0, 0, 0, .20);
+}
+
+/* Iconos y morphing */
+.fab-main .material-symbols-outlined {
+  font-size: 30px;
+  font-variation-settings:
+    'FILL' 1,
+    'wght' 600,
+    'GRAD' 0,
+    'opsz' 28;
+  position: absolute;
+  transition:
+    transform 0.38s cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 0.28s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.fab-main .fab-icon-chat {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+
+.fab-main .fab-icon-close {
+  opacity: 0;
+  transform: rotate(-90deg) scale(0.4);
+}
+
+.fab-container.open .fab-icon-chat {
+  opacity: 0;
+  transform: rotate(90deg) scale(0.4);
+}
+
+.fab-container.open .fab-icon-close {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+
+/* ===== OPCIONES (SPEED DIAL) ===== */
+.fab-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  pointer-events: none;
+}
+
+.fab-container.open .fab-options {
+  pointer-events: auto;
+}
+
+/* Botones secundarios (cerrado con salida escalonada) */
+.fab-options a {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #fff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  text-decoration: none;
+
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(22px) scale(.45);
+
+  box-shadow:
+    0 6px 16px rgba(0, 0, 0, .18),
+    0 2px 6px rgba(0, 0, 0, .12);
+
+  transition:
+    opacity 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.26s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.22s ease;
+}
+
+/* Retrasos de cierre en reversa (de arriba a abajo) */
+.fab-options a:nth-child(1) { transition-delay: 0.08s; }
+.fab-options a:nth-child(2) { transition-delay: 0.04s; }
+.fab-options a:nth-child(3) { transition-delay: 0s; }
+
+/* ===== ESTADO ABIERTO — Staggered Spring Motion (Física de rebote en cascada) ===== */
+.fab-container.open .fab-options a {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+
+  transition:
+    opacity 0.32s cubic-bezier(0.2, 0, 0, 1),
+    transform 0.44s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.25s ease;
+}
+
+/* Retrasos de apertura en cascada con rebote (de abajo hacia arriba) */
+.fab-container.open .fab-options a:nth-child(3) { transition-delay: 0.04s; }
+.fab-container.open .fab-options a:nth-child(2) { transition-delay: 0.09s; }
+.fab-container.open .fab-options a:nth-child(1) { transition-delay: 0.14s; }
+
+/* Hover en opciones */
+.fab-options a:hover {
+  transform: translateY(-2px) scale(1.12);
+  box-shadow:
+    0 10px 22px rgba(0, 0, 0, .22),
+    0 4px 10px rgba(0, 0, 0, .15);
+}
+
+.fab-options a:active {
+  transform: scale(0.96);
+}
+
+/* Iconos de marcas */
+.fab-options i {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.fa-whatsapp {
+  color: #25D366;
+}
+
+.fa-facebook-f {
+  color: #1877F2;
+}
+
+.fa-instagram {
+  color: #E1306C;
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .fab-container {
+    right: 18px;
+    bottom: 18px;
+    gap: 10px;
+  }
+
+  .fab-main {
+    width: 58px;
+    height: 58px;
+  }
+
+  .fab-options {
+    gap: 10px;
+  }
+
+  .fab-options a {
+    width: 48px;
+    height: 48px;
+  }
+
+  .fab-options i {
+    font-size: 1.45rem;
+  }
+}
+
+/* ================= ANIMACIONES DEL CARRITO ================= */
+
+.cart-count.animate {
+  animation: cartSoftBounce 0.35s ease-out;
+  transform-origin: center;
+}
+
+@keyframes cartSoftBounce {
+  0% {
+    transform: scale(1);
+  }
+
+  35% {
+    transform: scale(1.25);
+  }
+
+  70% {
+    transform: scale(0.90);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+#cart-btn.animate {
+  animation: cartShake 0.6s ease;
+}
+
+@keyframes cartShake {
+  0% {
+    transform: rotate(0);
+  }
+
+  25% {
+    transform: rotate(-12deg);
+  }
+
+  50% {
+    transform: rotate(12deg);
+  }
+
+  75% {
+    transform: rotate(-8deg);
+  }
+
+  100% {
+    transform: rotate(0);
+  }
+}
+
+/* ============================================================
+   EMPTY CATALOG — ESTADO VACÍO (CLIENTE)
+============================================================ */
+
+.empty-catalog {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 64px 20px;
+  background: var(--fondo);
+}
+
+.empty-catalog.hidden {
+  display: none;
+}
+
+.empty-box {
+  max-width: 420px;
+  text-align: center;
+  background: var(--blanco);
+  padding: 36px 28px;
+  border-radius: 20px;
+
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+  animation: fadeUp 0.45s ease-out;
+}
+
+/* =========================
+   LOGO
+========================= */
+.empty-logo {
+  width: 72px;
+  height: auto;
+  margin-bottom: 18px;
+  opacity: 0.95;
+}
+
+/* =========================
+   TEXTO
+========================= */
+.empty-box h3 {
+  font-family: "Playfair Display", serif;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--marron);
+  margin-bottom: 12px;
+}
+
+.empty-box p {
+  font-family: "Poppins", sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  color: #555;
+  margin-bottom: 12px;
+}
+
+.empty-box small {
+  display: block;
+  font-size: 13px;
+  color: #888;
+}
+
+/* =========================
+   ANIMACIÓN SUAVE
+========================= */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =========================
+   MÓVIL
+========================= */
+@media (max-width: 600px) {
+  .empty-box {
+    padding: 28px 20px;
+    border-radius: 16px;
+  }
+
+  .empty-logo {
+    width: 60px;
+  }
+
+  .empty-box h3 {
+    font-size: 20px;
+  }
+}
+
+/* =========================
+   SNACKBAR — MATERIAL 3 EXPRESSIVE
+========================= */
+
+/* Bloque redundante de snackbar eliminado. Diseño unificado en línea 217. */
+
+
+/* (Estilos de notificaciones u otros continúan abajo si los hay) */

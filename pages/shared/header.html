@@ -1,0 +1,203 @@
+<!-- =====================================================
+     HEADER — RESTAURACIÓN ORIGINAL FIEL
+     Variedades + Nosotros + Carrito + Iniciar Sesión
+====================================================== -->
+<header class="header-fixed no-user" id="main-header">
+
+  <!-- BLOQUE IZQUIERDA: LOGO -->
+  <div class="header-left-stitch">
+    <button id="menu-toggle" class="menu-toggle mobile-only" aria-label="Menú">
+      <span class="material-symbols-outlined">menu</span>
+      <span id="menu-notification-badge" class="notification-badge hidden"><i class="fa-solid fa-bell"></i></span>
+    </button>
+
+    <a href="/pages/home/index.html#productos" class="header-cart-back-btn header-icon-btn" id="header-cart-back" aria-label="Volver">
+      <span class="material-symbols-outlined">arrow_back</span>
+    </a>
+
+    <!-- Botón Volver para Datos Cliente -->
+    <a href="/pages/shop/carrito.html" class="header-datos-back-btn header-icon-btn" id="header-datos-back" aria-label="Volver">
+      <span class="material-symbols-outlined">arrow_back</span>
+    </a>
+
+    <!-- Botón Volver para Admin Clientes Detalle -->
+    <button type="button" class="header-customer-detail-back-btn header-icon-btn" id="header-customer-detail-back" aria-label="Volver a la lista">
+      <span class="material-symbols-outlined">arrow_back</span>
+    </button>
+
+    <!-- Botón Volver para Recibo -->
+    <a href="/pages/profile/datos_cliente.html" class="header-recibo-back-btn header-icon-btn" id="header-recibo-back" aria-label="Volver">
+      <span class="material-symbols-outlined">arrow_back</span>
+    </a>
+
+    <a href="/pages/home/index.html" class="header-logo-link">
+      <img src="/imagenes/logo.png" alt="Café Cortero" class="header-logo">
+    </a>
+
+    <!-- Slot para pos-header en el header -->
+    <div id="header-pos-header-slot" class="header-pos-header-slot"></div>
+
+    <!-- TÍTULO CARRITO: junto a la flecha (misma fila izquierda) -->
+    <div id="header-cart-title" class="header-cart-title">
+      <span class="cart-title-text">Mi carrito</span>
+      <span id="count-items" class="cart-title-sub"></span>
+    </div>
+
+    <!-- TÍTULO DETALLE CLIENTE: junto a la flecha -->
+    <div id="header-customer-detail-title" class="header-customer-detail-title">
+      <span class="customer-detail-title-text" id="header-customer-detail-title-text">Detalle del cliente</span>
+    </div>
+
+    <!-- TÍTULO RECIBO: junto a la flecha -->
+    <div id="header-recibo-title" class="header-recibo-title">
+      <span class="recibo-title-text" id="header-recibo-title-text">Detalles del pedido</span>
+    </div>
+  </div>
+
+  <!-- BLOQUE CENTRO: TÍTULOS Y BUSCADORES (RESTAURADO) -->
+  <div class="header-middle-stitch" id="header-middle-slot">
+    <!-- Slot para buscador inyectado -->
+    <div id="header-search-slot"></div>
+    <!-- Aquí se inyectan los títulos dinámicos de cada página -->
+  </div>
+
+  <!-- BLOQUE DERECHA: NAV + ACCIONES -->
+  <div class="header-right-stitch">
+    <!-- Slot para cliente POS en el header -->
+    <div id="header-pos-client-slot" class="header-pos-client-slot"></div>
+    
+
+
+    <!-- Autenticación -->
+    <div class="header-auth-group">
+      <button class="header-avatar-button" id="btn-header-user" aria-label="Mi Perfil">
+        <img id="avatar-user" src="/imagenes/barista.png" alt="Usuario">
+        <span id="avatar-notification-badge" class="notification-badge hidden"><i class="fa-solid fa-bell"></i></span>
+      </button>
+    </div>
+
+    <!-- Carrito con Contador Rojo -->
+    <button class="header-icon-btn" id="cart-btn" aria-label="Ver carrito">
+      <span class="material-symbols-outlined">shopping_cart</span>
+      <span id="cart-count" class="cart-badge-red">0</span>
+    </button>
+
+  </div>
+
+</header>
+
+<div id="user-scrim" class="user-scrim"></div>
+
+<!-- =====================================================
+     DRAWER — MATERIAL 3 (FUNCIONALIDAD COMPLETA)
+====================================================== -->
+<aside id="user-drawer" class="user-drawer">
+  <div class="drawer-scroll">
+
+    <div class="drawer-header logged hidden">
+       <a href="/pages/profile/perfil.html" class="user-drawer-profile-link">
+          <div class="user-drawer-avatar">
+            <img id="avatar-user-drawer" src="/imagenes/barista.png" alt="Usuario">
+          </div>
+          <div class="user-drawer-profile-texts">
+            <p id="drawer-name">Usuario</p>
+            <p id="drawer-email">correo@ejemplo.com</p>
+          </div>
+          <span class="material-symbols-outlined">chevron_right</span>
+       </a>
+    </div>
+
+    <hr class="user-drawer-divider logged hidden">
+
+    <!-- PRIVADO: CLIENTE -->
+    <div class="drawer-nav-section client-only logged hidden">
+        <a href="/pages/home/index.html" class="user-drawer-item">
+          <span class="material-symbols-outlined">home</span>
+          Inicio
+        </a>
+        <a href="/pages/profile/mis-pedidos.html" class="user-drawer-item">
+          <span class="material-symbols-outlined">shopping_bag</span>
+          <span>Mis pedidos</span>
+          <span class="drawer-badge hidden" id="my-orders-count">0</span>
+        </a>
+        <a href="/pages/profile/historial.html" class="user-drawer-item">
+          <span class="material-symbols-outlined">history</span>
+          Historial
+        </a>
+    </div>
+
+    <!-- PRIVADO: ADMIN -->
+    <div class="drawer-nav-section admin-only logged hidden">
+        <a href="/pages/home/index.html" class="user-drawer-item">
+          <span class="material-symbols-outlined">home</span>
+          Inicio
+        </a>
+        <a href="/pages/admin/admin-pedidos.html" class="user-drawer-item">
+          <span class="material-symbols-outlined">inventory_2</span>
+          Pedidos
+          <span class="drawer-badge hidden" id="admin-orders-count">0</span>
+        </a>
+        <a href="/pages/admin/finanzas/index.html" class="user-drawer-item">
+          <span class="material-symbols-outlined">account_balance_wallet</span>
+          Finanzas
+        </a>
+        <a href="/pages/admin/admin-clientes.html" class="user-drawer-item">
+          <span class="material-symbols-outlined">groups</span>
+          Clientes
+        </a>
+        <a href="/pages/admin/admin-usuarios.html" class="user-drawer-item">
+          <span class="material-symbols-outlined">person</span>
+          Usuarios
+        </a>
+        <a href="/pages/admin/admin-productos.html" class="user-drawer-item">
+          <span class="material-symbols-outlined">inventory</span>
+          Productos
+        </a>
+        <a href="/pages/admin/admin-whatsapp.html" class="user-drawer-item">
+          <span class="material-symbols-outlined">chat</span>
+          WhatsApp
+          <span class="drawer-badge hidden" id="wa-notif-count">0</span>
+        </a>
+        <a href="/pages/admin/admin-configuracion.html" class="user-drawer-item">
+          <span class="material-symbols-outlined">settings</span>
+          Configuración del sitio
+        </a>
+    </div>
+
+    <!-- PÚBLICO -->
+    <div class="drawer-nav-section">
+        <a href="/pages/home/index.html#productos" class="user-drawer-item">
+          <span class="material-symbols-outlined">local_cafe</span>
+          Variedades de café
+        </a>
+        <a href="/pages/about/sobre-nosotros.html" class="user-drawer-item">
+          <span class="material-symbols-outlined">info</span>
+          Quiénes somos
+        </a>
+        <a href="/pages/home/index.html#contacto" class="user-drawer-item">
+          <span class="material-symbols-outlined">mail</span>
+          Contáctanos
+        </a>
+        <button id="pwa-install-btn" class="user-drawer-item hidden" style="background: transparent; border: none; width: 100%; text-align: left; font-family: inherit; font-size: inherit;">
+          <span class="material-symbols-outlined">download</span>
+          Instalar App
+        </button>
+    </div>
+
+    <hr class="user-drawer-divider">
+
+    <div class="drawer-footer">
+        <a href="/pages/auth/login.html" class="user-drawer-item no-user">
+          <span class="material-symbols-outlined">login</span>
+          Iniciar Sesión
+        </a>
+        <button id="logout-btn" class="user-drawer-item logout logged hidden">
+          <span class="material-symbols-outlined">logout</span>
+          Cerrar sesión
+        </button>
+    </div>
+
+  </div>
+</aside>
+
+<script type="module" src="/js/ui/header.js"></script>

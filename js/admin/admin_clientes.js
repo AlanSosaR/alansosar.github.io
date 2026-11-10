@@ -1,0 +1,1013 @@
+// Lógica de Admin Clientes
+const initAdminClientes = () => {
+    // 1. SELECTORES
+    const listContainer = document.getElementById("customers-list");
+    const customersCount = document.getElementById("customers-count");
+    const customerDetail = document.getElementById("customer-detail");
+    const noSelection = document.getElementById("no-selection");
+    const tplCard = document.getElementById("tpl-customer-card");
+
+    // Restaurar inmediatamente el estado en móvil si hay id en URL o sessionStorage para no parpadear
+    try {
+        const p = new URLSearchParams(window.location.search);
+        const savedId = p.get("id") || sessionStorage.getItem("admin_selected_customer_id");
+        if (savedId) {
+            document.body.classList.add("detail-view-active");
+            if (customerDetail) customerDetail.classList.remove("hidden");
+            if (noSelection) noSelection.classList.add("hidden");
+        }
+    } catch(e) {}
+
+    // Detalle
+    const cPhoto = document.getElementById("c-photo");
+    const cName = document.getElementById("c-name");
+    const cLocation = document.getElementById("c-location");
+    const cTotalSpent = document.getElementById("c-total-spent");
+    const cTotalOrders = document.getElementById("c-total-orders");
+    const cRegDate = document.getElementById("c-reg-date");
+    const historyBody = document.getElementById("history-body");
+    const pageInfo = document.getElementById("page-info");
+    const btnContact = document.getElementById("btnSendMessage");
+
+    // Modal Contacto Multicanal
+    const modalContact = document.getElementById("modal-contact");
+    const closeContactModal = document.getElementById("close-contact-modal");
+    const contactClientName = document.getElementById("contact-client-name");
+    const optWhatsApp = document.getElementById("opt-whatsapp");
+    const optEmail = document.getElementById("opt-email");
+    const optPush = document.getElementById("opt-push");
+
+    // Admin period filter
+    const adminPeriodoFilter = document.getElementById("admin-periodo-filter");
+    const adminPeriodoLabel = document.getElementById("admin-periodo-label");
+    const adminStatTopProduct = document.getElementById("admin-stat-top-product");
+    const cTopProductName = document.getElementById("c-top-product-name");
+    const cTopProductCount = document.getElementById("c-top-product-count");
+    const cTopProductImg = document.getElementById("c-top-product-img");
+
+    // Modal Push
+    const modalPush = document.getElementById("modal-push");
+    const closePush = document.getElementById("close-push-modal");
+    const cancelPush = document.getElementById("cancel-push");
+    const sendPush = document.getElementById("send-push");
+    const inputTitle = document.getElementById("push-title");
+    const inputMessage = document.getElementById("push-message");
+
+    // 2. ESTADO GLOBAL
+    let allCustomers = [];
+    let filteredCustomers = [];
+    let selectedCustomerId = null;
+    let historyPage = 1;
+    const historyPerPage = 5;
+
+    // Paginación de Lista de Clientes
+    let custCurrentPage = 1;
+    const custItemsPerPage = 8;
+
+    let adminId = null;
+    let adminPeriodo = "semana";
+    let adminPeriodoOffset = 0;
+
+    function fmtDate(d) {
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, "0");
+        const day = String(d.getDate()).padStart(2, "0");
+        return `${y}-${m}-${day}`;
+    }
+
+    function getAdminRango(per, offset) {
+        offset = offset || 0;
+        const now = new Date();
+        let base = new Date(now);
+        if (per === "semana") base.setDate(base.getDate() + offset * 7);
+        else if (per === "dia") base.setDate(base.getDate() + offset);
+        else if (per === "mes") base.setMonth(base.getMonth() + offset);
+
+        const y = base.getFullYear();
+        const m = base.getMonth();
+        const d = base.getDate();
+        let desde, hasta, label;
+
+        switch (per) {
+            case "dia":
+                desde = new Date(y, m, d);
+                hasta = new Date(y, m, d + 1);
+                label = desde.toLocaleDateString("es-HN", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+                break;
+            case "semana": {
+                const day = base.getDay();
+                const diff = day === 0 ? 6 : day - 1;
+                desde = new Date(y, m, d - diff);
+                hasta = new Date(y, m, d - diff + 7);
+                label = `${desde.toLocaleDateString("es-HN", { day: "numeric", month: "short" })} – ${new Date(hasta.getTime() - 86400000).toLocaleDateString("es-HN", { day: "numeric", month: "short", year: "numeric" })}`;
+                break;
+            }
+            case "mes":
+                desde = new Date(y, m, 1);
+                hasta = new Date(y, m + 1, 1);
+                label = desde.toLocaleDateString("es-HN", { month: "long", year: "numeric" });
+                break;
+        }
+
+        return {
+            desde: fmtDate(desde),
+            hasta: fmtDate(hasta),
+            label,
+        };
+    }
+
+    async function fetchAdminSalesData(adminIdVal, desde, hasta) {
+        try {
+            const { data, error } = await window.supabase
+                .from("finanzas_movimientos")
+                .select("monto, order_id")
+                .eq("created_by", adminIdVal)
+                .eq("tipo", "ingreso")
+                .gte("fecha", desde)
+                .lt("fecha", hasta);
+
+            if (error) throw error;
+
+            const total = (data || []).reduce((sum, r) => sum + (parseFloat(r.monto) || 0), 0);
+            const orderIds = new Set();
+            let nullCount = 0;
+            (data || []).forEach(r => {
+                if (r.order_id) orderIds.add(r.order_id);
+                else nullCount++;
+            });
+            const count = orderIds.size + nullCount;
+            return { totalVendido: total, ventasAtendidas: count };
+        } catch (err) {
+            console.error("❌ Error fetchAdminSalesData:", err);
+            return { totalVendido: 0, ventasAtendidas: 0 };
+        }
+    }
+
+    async function fetchAdminSalesHistory(adminIdVal, desde, hasta) {
+        try {
+            const { data, error } = await window.supabase
+                .from("finanzas_movimientos")
+                .select("fecha, monto, order_id")
+                .eq("created_by", adminIdVal)
+                .eq("tipo", "ingreso")
+                .gte("fecha", desde)
+                .lt("fecha", hasta)
+                .order("fecha", { ascending: false });
+
+            if (error) throw error;
+
+            const orderIds = (data || []).filter(r => r.order_id).map(r => r.order_id);
+            let orderMap = {};
+            if (orderIds.length > 0) {
+                const { data: orders, error: ordErr } = await window.supabase
+                    .from("orders")
+                    .select("id, order_number, status")
+                    .in("id", orderIds);
+                if (!ordErr) {
+                    orders.forEach(o => { orderMap[o.id] = o; });
+                }
+            }
+
+            return (data || []).map(r => ({
+                fecha: r.fecha,
+                monto: r.monto,
+                order_id: r.order_id,
+                order_number: r.order_id && orderMap[r.order_id] ? orderMap[r.order_id].order_number : "—",
+                status: r.order_id && orderMap[r.order_id] ? orderMap[r.order_id].status : "—",
+                hasOrder: !!r.order_id,
+            }));
+        } catch (err) {
+            console.error("❌ Error fetchAdminSalesHistory:", err);
+            return [];
+        }
+    }
+
+    async function fetchAdminTopProduct(adminIdVal, desde, hasta) {
+        try {
+            const { data: movs, error } = await window.supabase
+                .from("finanzas_movimientos")
+                .select("product_id, order_id")
+                .eq("created_by", adminIdVal)
+                .eq("tipo", "ingreso")
+                .gte("fecha", desde)
+                .lt("fecha", hasta)
+                .not("product_id", "is", null);
+
+            if (error) throw error;
+
+            if (!movs || movs.length === 0) return null;
+
+            const orderIds = [...new Set(movs.map(r => r.order_id).filter(Boolean))];
+            const pidCounts = {};
+            movs.forEach(r => { pidCounts[r.product_id] = (pidCounts[r.product_id] || 0) + 1; });
+            const topPid = Object.keys(pidCounts).reduce((a, b) => pidCounts[a] > pidCounts[b] ? a : b);
+
+            let totalUnits = pidCounts[topPid];
+
+            if (orderIds.length > 0) {
+                const { data: oi } = await window.supabase
+                    .from("order_items")
+                    .select("product_id, quantity")
+                    .in("order_id", orderIds)
+                    .eq("product_id", topPid);
+
+                if (oi && oi.length > 0) {
+                    totalUnits = oi.reduce((sum, r) => sum + (r.quantity || 0), 0);
+                }
+            }
+
+            const { data: products } = await window.supabase
+                .from("products")
+                .select("name, image_url")
+                .eq("id", topPid)
+                .single();
+
+            return {
+                name: products?.name || "Producto desconocido",
+                image_url: products?.image_url || null,
+                veces_vendido: totalUnits,
+            };
+        } catch (err) {
+            console.error("❌ Error fetchAdminTopProduct:", err);
+            return null;
+        }
+    }
+
+    // 3. INICIO
+    const init = async () => {
+        console.log("🚀 Iniciando Admin Clientes...");
+        if (!window.supabase) {
+            console.error("❌ Error: Supabase no detectado en render");
+            if(listContainer) listContainer.innerHTML = `<div class="error-state">Error: Cliente no inicializado.</div>`;
+            return;
+        }
+
+        const adminUser = JSON.parse(localStorage.getItem("cortero_user") || "null");
+        adminId = adminUser?.id || null;
+
+        // Verificamos sesión para depurar problemas de RLS
+        const { data: { session } } = await window.supabase.auth.getSession();
+        if (session) {
+            console.log(`👤 Sesión activa: ${session.user.email} (ID: ${session.user.id})`);
+        } else {
+            console.warn("⚠️ No hay sesión activa. Posible causa de lista vacía por RLS.");
+        }
+
+        await fetchCustomers();
+        renderCustomerList();
+        const params = new URLSearchParams(window.location.search);
+        const preselectedId = params.get("id") || sessionStorage.getItem("admin_selected_customer_id");
+        if (preselectedId) {
+          const customer = allCustomers.find(c => c.id === preselectedId);
+          if (customer) {
+            selectCustomer(customer);
+          } else {
+            backToList();
+          }
+        } else if (adminId && window.innerWidth >= 1024) {
+          const adminUser = allCustomers.find(c => c.id === adminId);
+          if (adminUser) setTimeout(() => selectCustomer(adminUser), 100);
+        }
+    };
+
+    // 4. FUNCIONES DE DATOS
+    const fetchCustomers = async () => {
+        try {
+            console.log("📥 Consultando clientes (v. columns)...");
+            // Pedimos columnas específicas para evitar bloqueos por RLS en columnas sensibles si no se es admin
+            const { data, error } = await window.supabase
+                .from("users")
+                .select("id, name, email, phone, rol, country, photo_url, created_at")
+                .order("name", { ascending: true });
+
+            if (error) {
+                console.error("❌ Error de Supabase:", error);
+                throw error;
+            }
+            
+            console.log(`✅ Clientes cargados: ${data?.length || 0}`);
+            allCustomers = data || [];
+            filteredCustomers = [...allCustomers];
+            window.__adminCustomers = allCustomers;
+            document.dispatchEvent(new CustomEvent("customers:ready", { detail: allCustomers }));
+
+            // Actualizar contadores en las píldoras de roles
+            const elTodos = document.getElementById("chip-count-todos");
+            const elAdmin = document.getElementById("chip-count-admin");
+            const elUser = document.getElementById("chip-count-usuario");
+            if (elTodos) elTodos.textContent = allCustomers.length;
+            if (elAdmin) elAdmin.textContent = allCustomers.filter(c => c.rol === "admin" || (adminId && c.id === adminId)).length;
+            if (elUser) elUser.textContent = allCustomers.filter(c => c.rol !== "admin" && (!adminId || c.id !== adminId)).length;
+        } catch (err) {
+            console.error("❌ Error fetchCustomers:", err);
+            if(listContainer) listContainer.innerHTML = `<div class="error-state">Error al cargar clientes: ${err.message || 'Error desconocido'}</div>`;
+        }
+    };
+
+    const fetchCustomerStats = async (userId) => {
+        try {
+            const { data: orders, error } = await window.supabase
+                .from("orders")
+                .select("id, total, status, order_number, created_at")
+                .eq("user_id", userId)
+                .order("created_at", { ascending: false });
+
+            if (error) throw error;
+
+            const totalSpent = orders.reduce((acc, o) => acc + (parseFloat(o.total) || 0), 0);
+            return {
+                totalSpent: totalSpent.toLocaleString("es-HN", { style: "currency", currency: "HNL" }),
+                totalOrders: orders.length,
+                orders: orders
+            };
+        } catch (err) {
+            console.error("❌ Error fetching stats:", err);
+            return { totalSpent: "L 0.00", totalOrders: 0, orders: [] };
+        }
+    };
+
+
+
+    // 5. RENDERIZADO
+    const renderCustomerList = () => {
+        if (!listContainer) return;
+
+        listContainer.innerHTML = "";
+        customersCount.textContent = filteredCustomers.length;
+
+        if (filteredCustomers.length === 0) {
+            listContainer.innerHTML = `<div class="empty-state-list">No se encontraron clientes.</div>`;
+            return;
+        }
+
+        const totalPages = Math.ceil(filteredCustomers.length / custItemsPerPage);
+        const start = (custCurrentPage - 1) * custItemsPerPage;
+        const end = start + custItemsPerPage;
+        const pageItems = filteredCustomers.slice(start, end);
+
+        pageItems.forEach(customer => {
+            const clone = tplCard.content.cloneNode(true);
+            const card = clone.querySelector(".customer-card");
+            const avatarPlaceholder = clone.querySelector(".card-avatar-placeholder");
+            const name = clone.querySelector(".card-name");
+            const email = clone.querySelector(".card-email");
+            const badge = clone.querySelector(".admin-badge");
+
+            // Avatar Dinámico (Foto o Iniciales)
+            avatarPlaceholder.innerHTML = getAvatarHtml(customer, "card-img", "avatar-init-small");
+            name.textContent = customer.name || "Sin nombre";
+            email.textContent = customer.email || "Sin email";
+
+            if (adminId && customer.id === adminId) {
+                badge.classList.remove("hidden");
+            }
+
+            if (selectedCustomerId === customer.id) card.classList.add("active");
+
+            card.onclick = () => selectCustomer(customer);
+            listContainer.appendChild(clone);
+        });
+
+        renderCustPagination(totalPages);
+    };
+
+    const renderCustPagination = (totalPages) => {
+        const prevBtn = document.getElementById("cust-prev");
+        const nextBtn = document.getElementById("cust-next");
+        const numbersDiv = document.getElementById("cust-page-numbers");
+
+        if (!prevBtn || !nextBtn || !numbersDiv) return;
+
+        numbersDiv.innerHTML = "";
+        
+        for(let i=1; i<=totalPages; i++) {
+            if (i > 3 && i < totalPages) {
+                if (i === 4) {
+                    const span = document.createElement("span");
+                    span.textContent = "...";
+                    numbersDiv.appendChild(span);
+                }
+                continue;
+            }
+            const btn = document.createElement("button");
+            btn.className = `page-btn ${i === custCurrentPage ? 'active' : ''}`;
+            btn.textContent = i;
+            btn.onclick = () => {
+                custCurrentPage = i;
+                renderCustomerList();
+                listContainer.scrollTop = 0;
+            };
+            numbersDiv.appendChild(btn);
+        }
+
+        prevBtn.disabled = custCurrentPage === 1;
+        nextBtn.disabled = custCurrentPage === totalPages || totalPages === 0;
+
+        prevBtn.onclick = () => {
+            if (custCurrentPage > 1) {
+                custCurrentPage--;
+                renderCustomerList();
+                listContainer.scrollTop = 0;
+            }
+        };
+
+        nextBtn.onclick = () => {
+            if (custCurrentPage < totalPages) {
+                custCurrentPage++;
+                renderCustomerList();
+                listContainer.scrollTop = 0;
+            }
+        };
+    };
+
+    const selectCustomer = async (customer) => {
+        window.__selectCustomer = selectCustomer;
+        selectedCustomerId = customer.id;
+
+        // Persistir en URL y sessionStorage para que al refrescar en móvil se mantenga en el detalle
+        try {
+            const url = new URL(window.location);
+            url.searchParams.set("id", customer.id);
+            window.history.replaceState({ customerId: customer.id }, "", url);
+            sessionStorage.setItem("admin_selected_customer_id", customer.id);
+        } catch (e) {}
+        renderCustomerList();
+
+        noSelection.classList.add("hidden");
+        customerDetail.classList.remove("hidden");
+        customerDetail.style.opacity = "0.5";
+        document.body.classList.add("detail-view-active");
+        if (window.innerWidth <= 1024) {
+            // window.scrollTo prevent
+        }
+
+        const cPhotoWrapper = document.getElementById("c-photo-wrapper");
+        if (cPhotoWrapper) {
+            cPhotoWrapper.innerHTML = getAvatarHtml(customer, "profile-img", "avatar-init-large");
+        }
+        
+        cName.textContent = customer.name;
+        cLocation.innerHTML = `<span class="material-symbols-outlined">location_on</span><span>${customer.country || "Ubicación desconocida"}</span>`;
+        cRegDate.textContent = new Date(customer.created_at).toLocaleDateString("es-ES", { month: "short", year: "numeric" });
+
+        const isAdmin = adminId && customer.id === adminId;
+
+        if (cLocation) cLocation.style.display = isAdmin ? "none" : "";
+        if (btnContact) btnContact.style.display = isAdmin ? "none" : "";
+        if (adminPeriodoFilter) adminPeriodoFilter.classList.toggle("hidden", !isAdmin);
+        if (adminStatTopProduct) adminStatTopProduct.classList.toggle("hidden", !isAdmin);
+        const adminStatReg = document.getElementById("admin-stat-reg");
+        if (adminStatReg) adminStatReg.classList.toggle("hidden", isAdmin);
+
+        document.getElementById("c-stat-label-spent").textContent = isAdmin ? "Total vendido" : "Gasto total";
+        document.getElementById("c-stat-label-orders").textContent = isAdmin ? "Ventas" : "Pedidos totales";
+        document.getElementById("c-stat-label-reg").textContent = isAdmin ? "Activo desde" : "Miembro desde";
+        document.getElementById("c-history-title").textContent = isAdmin ? "Historial de ventas (mostrador)" : "Historial de Compras";
+
+        historyPage = 1;
+        if (isAdmin) {
+            const rango = getAdminRango(adminPeriodo, adminPeriodoOffset);
+            if (adminPeriodoLabel) adminPeriodoLabel.textContent = rango.label;
+            const [salesData, salesHistory, topProduct] = await Promise.all([
+                fetchAdminSalesData(adminId, rango.desde, rango.hasta),
+                fetchAdminSalesHistory(adminId, rango.desde, rango.hasta),
+                fetchAdminTopProduct(adminId, rango.desde, rango.hasta),
+            ]);
+            cTotalSpent.textContent = `L ${salesData.totalVendido.toFixed(2)}`;
+            cTotalOrders.textContent = salesData.ventasAtendidas;
+            if (cTopProductName) {
+                cTopProductName.textContent = topProduct ? topProduct.name : "Sin datos";
+            }
+            if (cTopProductCount) {
+                cTopProductCount.textContent = topProduct ? `${topProduct.veces_vendido} unidades` : "";
+            }
+            if (cTopProductImg) {
+                if (topProduct && topProduct.image_url) {
+                    cTopProductImg.src = topProduct.image_url;
+                    cTopProductImg.style.display = "";
+                } else {
+                    cTopProductImg.style.display = "none";
+                }
+            }
+            customer.fetchedOrders = salesHistory;
+            renderHistory(salesHistory, true);
+        } else {
+            const stats = await fetchCustomerStats(customer.id);
+            cTotalSpent.textContent = stats.totalSpent;
+            cTotalOrders.textContent = stats.totalOrders;
+            customer.fetchedOrders = stats.orders;
+            renderHistory(stats.orders, false);
+        }
+
+        customerDetail.style.opacity = "1";
+    };
+
+    const renderHistory = (items, isAdminMode = false) => {
+        if (!historyBody) return;
+        historyBody.innerHTML = "";
+        
+        const start = (historyPage - 1) * historyPerPage;
+        const end = start + historyPerPage;
+        const paginated = items.slice(start, end);
+
+        if (paginated.length === 0) {
+            historyBody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 40px; color: #999;">Sin historial</td></tr>`;
+            pageInfo.textContent = "Sin registros";
+            return;
+        }
+
+        paginated.forEach(item => {
+            const row = document.createElement("tr");
+            if (!isAdminMode) {
+                row.className = `status-row-${item.status}`;
+                row.style.cursor = "pointer";
+                row.onclick = () => {
+                    window.location.href = `/pages/admin/admin-pedido-detalle.html?id=${item.id}`;
+                };
+                row.innerHTML = `
+                    <td><strong>Pedido #${item.order_number || "—"}</strong></td>
+                    <td>${new Date(item.created_at).toLocaleDateString("es-ES", { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+                    <td><span class="status-badge status-${item.status}">${item.status}</span></td>
+                    <td class="text-right"><strong>L ${parseFloat(item.total).toFixed(2)}</strong></td>
+                `;
+            } else {
+                const status = item.status === "—" ? "" : item.status;
+                const statusMap = {
+                    pending: "Pendiente",
+                    payment_review: "En revisión",
+                    processing: "En proceso",
+                    preparing: "Preparando",
+                    shipped: "Enviado",
+                    delivered: "Entregado",
+                    cancelled: "Cancelado"
+                };
+                const displayStatus = status ? (statusMap[status.toLowerCase()] || status) : "—";
+                row.className = status ? `status-row-${status.toLowerCase()}` : "";
+                row.innerHTML = `
+                    <td><strong>${item.order_number !== "—" ? `Venta #${item.order_number}` : "Venta rápida"}</strong></td>
+                    <td>${new Date(item.fecha + "T00:00:00").toLocaleDateString("es-ES", { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+                    <td>${status ? `<span class="status-badge status-${status.toLowerCase()}">${displayStatus}</span>` : "—"}</td>
+                    <td class="text-right"><strong>L ${parseFloat(item.monto).toFixed(2)}</strong></td>
+                `;
+                if (item.hasOrder) {
+                    row.style.cursor = "pointer";
+                    row.onclick = () => {
+                        window.location.href = `/pages/admin/admin-pedido-detalle.html?id=${item.order_id}`;
+                    };
+                }
+            }
+            historyBody.appendChild(row);
+        });
+
+        const totalPages = Math.ceil(items.length / historyPerPage);
+        pageInfo.textContent = `Página ${historyPage} de ${totalPages || 1}`;
+        
+        document.getElementById("prev-page").disabled = historyPage === 1;
+        document.getElementById("next-page").disabled = historyPage === totalPages || totalPages === 0;
+    };
+
+    const backToList = () => {
+        document.body.classList.remove("detail-view-active");
+        selectedCustomerId = null;
+
+        // Limpiar URL y sessionStorage al volver al listado
+        try {
+            const url = new URL(window.location);
+            url.searchParams.delete("id");
+            window.history.replaceState({}, "", url);
+            sessionStorage.removeItem("admin_selected_customer_id");
+        } catch (e) {}
+        renderCustomerList();
+        if (window.innerWidth <= 1024) {
+            // window.scrollTo prevent
+        }
+    };
+
+    // 6. EVENTOS DIRECTOS
+    document.getElementById("btn-back-to-list")?.addEventListener("click", backToList);
+    document.getElementById("header-customer-detail-back")?.addEventListener("click", backToList);
+
+    // Delegación global para el botón volver del header o lista
+    document.addEventListener("click", (e) => {
+        if (e.target.closest("#header-customer-detail-back, .header-customer-detail-back-btn, #btn-back-to-list")) {
+            backToList();
+        }
+    });
+
+    let currentSearchQuery = "";
+    let currentRoleFilter = "todos";
+
+    const normalizeText = (str) => {
+        return (str || "")
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .trim();
+    };
+
+    const applyFiltersAndRender = () => {
+        const queryNorm = normalizeText(currentSearchQuery);
+        const tokens = queryNorm.split(/\s+/).filter(Boolean);
+
+        filteredCustomers = allCustomers.filter(c => {
+            const matchesRole = (currentRoleFilter === "todos") || 
+                                (currentRoleFilter === "admin" ? (c.rol === "admin" || (adminId && c.id === adminId)) : (c.rol !== "admin" && (!adminId || c.id !== adminId)));
+            if (!matchesRole) return false;
+            if (!tokens.length) return true;
+
+            const nameNorm = normalizeText(c.name);
+            const emailNorm = normalizeText(c.email);
+            const phoneNorm = (c.phone || "").replace(/\s+/g, "");
+
+            return tokens.every(token => 
+                nameNorm.includes(token) || 
+                emailNorm.includes(token) || 
+                phoneNorm.includes(token)
+            );
+        });
+        custCurrentPage = 1;
+        renderCustomerList();
+    };
+
+    const onSearchChange = (query) => {
+        currentSearchQuery = query || "";
+        applyFiltersAndRender();
+    };
+
+    // Escucha eventos globales y directos para filtrado instantáneo
+    document.addEventListener("input", (e) => {
+        if (e.target && e.target.id === "header-search-input") {
+            onSearchChange(e.target.value);
+        }
+    });
+
+    document.addEventListener("customer:search", (e) => {
+        onSearchChange(e.detail);
+    });
+
+    document.addEventListener("header:search", (e) => {
+        onSearchChange(e.detail);
+    });
+
+    document.addEventListener("customer:filter", (e) => {
+        currentRoleFilter = e.detail || "todos";
+        applyFiltersAndRender();
+    });
+
+    const getIsSelectedAdmin = () => {
+        return adminId && selectedCustomerId === adminId;
+    };
+
+    document.getElementById("prev-page").onclick = () => {
+        if (historyPage > 1) {
+            historyPage--;
+            const customer = allCustomers.find(c => c.id === selectedCustomerId);
+            if (customer) renderHistory(customer.fetchedOrders, getIsSelectedAdmin());
+        }
+    };
+
+    document.getElementById("next-page").onclick = () => {
+        const customer = allCustomers.find(c => c.id === selectedCustomerId);
+        if (!customer || !customer.fetchedOrders) return;
+        const totalPages = Math.ceil(customer.fetchedOrders.length / historyPerPage);
+        if (historyPage < totalPages) {
+            historyPage++;
+            renderHistory(customer.fetchedOrders, getIsSelectedAdmin());
+        }
+    };
+
+    // 6b. ADMIN PERIOD FILTER
+    const refreshAdminView = async () => {
+        if (!adminId || selectedCustomerId !== adminId) return;
+        const rango = getAdminRango(adminPeriodo, adminPeriodoOffset);
+        if (adminPeriodoLabel) adminPeriodoLabel.textContent = rango.label;
+        const [salesData, salesHistory, topProduct] = await Promise.all([
+            fetchAdminSalesData(adminId, rango.desde, rango.hasta),
+            fetchAdminSalesHistory(adminId, rango.desde, rango.hasta),
+            fetchAdminTopProduct(adminId, rango.desde, rango.hasta),
+        ]);
+        cTotalSpent.textContent = `L ${salesData.totalVendido.toFixed(2)}`;
+        cTotalOrders.textContent = salesData.ventasAtendidas;
+        if (cTopProductName) {
+            cTopProductName.textContent = topProduct ? topProduct.name : "Sin datos";
+        }
+        if (cTopProductCount) {
+            cTopProductCount.textContent = topProduct ? `${topProduct.veces_vendido} unidades` : "";
+        }
+        if (cTopProductImg) {
+            if (topProduct && topProduct.image_url) {
+                cTopProductImg.src = topProduct.image_url;
+                cTopProductImg.style.display = "";
+            } else {
+                cTopProductImg.style.display = "none";
+            }
+        }
+        const customer = allCustomers.find(c => c.id === selectedCustomerId);
+        if (customer) {
+            customer.fetchedOrders = salesHistory;
+            historyPage = 1;
+            renderHistory(salesHistory, true);
+        }
+    };
+
+    document.querySelectorAll(".periodo-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            document.querySelectorAll(".periodo-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            adminPeriodo = btn.dataset.periodo;
+            adminPeriodoOffset = 0;
+            refreshAdminView();
+        });
+    });
+
+    document.getElementById("admin-periodo-prev")?.addEventListener("click", () => {
+        adminPeriodoOffset--;
+        refreshAdminView();
+    });
+
+    document.getElementById("admin-periodo-next")?.addEventListener("click", () => {
+        adminPeriodoOffset++;
+        refreshAdminView();
+    });
+
+    // 7. CONTACTO MULTICANAL
+    const openContactModal = (id) => {
+        if (id) selectedCustomerId = id;
+        if (!selectedCustomerId) {
+            console.warn("⚠️ No customer selected when calling openContactModal");
+            return;
+        }
+        
+        const customer = allCustomers.find(c => c.id === selectedCustomerId);
+        if (contactClientName) contactClientName.textContent = customer?.name || 'el cliente';
+        
+        modalContact.classList.remove("hidden");
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                modalContact.classList.add("active");
+            });
+        });
+    };
+
+    const closeContactModalFn = () => {
+        modalContact.classList.remove("active");
+        setTimeout(() => modalContact.classList.add("hidden"), 300);
+    }
+
+    const openPushModal = () => {
+        closeContactModalFn();
+        modalPush.classList.remove("hidden");
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                modalPush.classList.add("active");
+            });
+        });
+    }
+
+    const closePushModal = () => {
+        modalPush.classList.remove("active");
+        setTimeout(() => modalPush.classList.add("hidden"), 300);
+    }
+
+    const showSnack = (text, type = "success") => {
+        const snack = document.getElementById("snackbar");
+        if (!snack) return;
+
+        snack.textContent = text;
+        snack.className = "snackbar show";
+        snack.classList.add(type);
+
+        setTimeout(() => snack.classList.remove("show", "success", "error", "warn"), 3500);
+    };
+
+    const showActionConfirm = (text) => {
+        return new Promise((resolve) => {
+            const snack = document.getElementById("confirm-snackbar");
+            const label = document.getElementById("confirm-text");
+            const btnOk = document.getElementById("btn-confirm-ok");
+            const btnCancel = document.getElementById("btn-confirm-cancel");
+
+            if (!snack || !label || !btnOk || !btnCancel) return resolve(false);
+
+            label.innerHTML = text;
+            
+            const cleanup = (result) => {
+                btnOk.replaceWith(btnOk.cloneNode(true));
+                btnCancel.replaceWith(btnCancel.cloneNode(true));
+                snack.classList.remove("active");
+                setTimeout(() => snack.classList.add("hidden"), 300);
+                resolve(result);
+            };
+
+            snack.classList.remove("hidden");
+            requestAnimationFrame(() => requestAnimationFrame(() => snack.classList.add("active")));
+
+            document.getElementById("btn-confirm-ok").onclick = () => cleanup(true);
+            document.getElementById("btn-confirm-cancel").onclick = () => cleanup(false);
+        });
+    };
+
+    const handleSendPush = async () => {
+        const title = inputTitle.value.trim();
+        const message = inputMessage.value.trim();
+
+        if (!title || !message) {
+            showSnack("Por favor completa el título y el mensaje", "error");
+            return;
+        }
+
+        if (!selectedCustomerId) {
+            showSnack("No hay un cliente seleccionado", "error");
+            return;
+        }
+
+        try {
+            sendPush.disabled = true;
+            sendPush.innerHTML = `<span class="material-symbols-outlined rotating">sync</span><span>Enviando...</span>`;
+
+            const { error } = await window.supabase
+                .from("notifications")
+                .insert([
+                    {
+                        user_id: selectedCustomerId,
+                        title: title,
+                        message: message,
+                        type: "push_admin",
+                        is_read: false,
+                        push_sent: false
+                    }
+                ]);
+
+            if (error) throw error;
+
+            showSnack("Notificación enviada con éxito", "success");
+            closePushModal();
+        } catch (err) {
+            console.error("❌ Error enviando push:", err);
+            showSnack("Error: " + (err.message || "No se pudo enviar la notificación"), "error");
+        } finally {
+            sendPush.disabled = false;
+            sendPush.innerHTML = `<span class="material-symbols-outlined">send</span><span>Enviar Notificación</span>`;
+        }
+    };
+
+    // Eventos del Modal
+    if (btnContact) {
+        btnContact.onclick = () => {
+            console.log("🖱️ Clic en botone Contactar. Cliente ID:", selectedCustomerId);
+            openContactModal();
+        };
+    }
+    if (closeContactModal) closeContactModal.onclick = closeContactModalFn;
+    modalContact?.addEventListener("click", (e) => { 
+        if (e.target === modalContact) {
+            console.log("🖱️ Clic fuera del modal para cerrar");
+            closeContactModalFn();
+        }
+    });
+
+    // Opciones de Contacto
+    if (optWhatsApp) optWhatsApp.onclick = () => {
+        const customer = allCustomers.find(c => c.id === selectedCustomerId);
+        if (!customer?.phone) {
+            showSnack("Este cliente no tiene número de teléfono registrado", "error");
+            closeContactModalFn();
+            return;
+        }
+        closeContactModalFn();
+        openWhatsAppModal(customer);
+    };
+
+    if (optEmail) optEmail.onclick = () => {
+        const customer = allCustomers.find(c => c.id === selectedCustomerId);
+        if (customer?.email) {
+            window.open(`mailto:${customer.email}`, "_blank");
+        } else {
+            showSnack("Este cliente no tiene email registrado", "error");
+        }
+        closeContactModalFn();
+    };
+
+    if (optPush) optPush.onclick = openPushModal;
+
+    if (closePush) closePush.onclick = closePushModal;
+    if (cancelPush) cancelPush.onclick = closePushModal;
+    if (sendPush) sendPush.onclick = handleSendPush;
+    modalPush?.addEventListener("click", (e) => { if (e.target === modalPush) closePushModal(); });
+
+    // WhatsApp Modal
+    const openWhatsAppModal = (customer) => {
+        const modal = document.getElementById("modal-whatsapp");
+        const nameSpan = document.getElementById("whatsapp-client-name");
+        const phoneSpan = document.getElementById("whatsapp-client-phone");
+        const msg = document.getElementById("whatsapp-message");
+        if (nameSpan) nameSpan.textContent = customer.name || "Cliente";
+        if (phoneSpan) phoneSpan.textContent = customer.phone || "—";
+        if (msg) msg.value = "";
+        modal.classList.remove("hidden");
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                modal.classList.add("active");
+                if (msg) msg.focus();
+            });
+        });
+    };
+
+    const closeWhatsAppModal = () => {
+        const modal = document.getElementById("modal-whatsapp");
+        modal.classList.remove("active");
+        setTimeout(() => modal.classList.add("hidden"), 300);
+    };
+
+    document.getElementById("close-whatsapp-modal")?.addEventListener("click", closeWhatsAppModal);
+    document.getElementById("cancel-whatsapp")?.addEventListener("click", closeWhatsAppModal);
+    document.getElementById("send-whatsapp")?.addEventListener("click", async () => {
+        const customer = allCustomers.find(c => c.id === selectedCustomerId);
+        const phone = customer?.phone;
+        const message = document.getElementById("whatsapp-message")?.value.trim();
+        if (!message) return showSnack("Escribe un mensaje", "error");
+        if (!phone) return showSnack("No hay teléfono", "error");
+
+        try {
+            const cleanPhone = phone.replace(/\D/g, "");
+            const hasCountryCode = phone.trim().startsWith("+");
+            const fullNumber = hasCountryCode ? cleanPhone : `504${cleanPhone}`;
+            const waApi = "https://cafe-cortero.vercel.app/api/wa-proxy";
+            const waKey = "429683C4C977415CAAFCCE10F7D57E11";
+
+            const res = await fetch(`${waApi}/message/sendText/CafeCortero`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json", apikey: waKey },
+                body: JSON.stringify({ number: fullNumber, text: message })
+            });
+
+            if (!res.ok) throw new Error("HTTP " + res.status);
+            showSnack("WhatsApp enviado con éxito", "success");
+            closeWhatsAppModal();
+        } catch (err) {
+            console.error("❌ Error al enviar WhatsApp:", err);
+            showSnack("Error al enviar WhatsApp", "error");
+        }
+    });
+
+    // Toggle visibilidad del historial con el botón de ojo
+    const btnToggleHistory = document.getElementById("btn-toggle-history");
+    const iconToggleHistory = document.getElementById("icon-toggle-history");
+    const historySection = document.querySelector(".history-section");
+
+    if (btnToggleHistory && historySection) {
+        btnToggleHistory.onclick = (e) => {
+            e.stopPropagation();
+            const isHidden = historySection.classList.toggle("is-hidden");
+            if (iconToggleHistory) {
+                iconToggleHistory.textContent = isHidden ? "visibility_off" : "visibility";
+            }
+            btnToggleHistory.setAttribute("title", isHidden ? "Mostrar historial" : "Ocultar historial");
+            btnToggleHistory.setAttribute("aria-label", isHidden ? "Mostrar historial" : "Ocultar historial");
+            try {
+                localStorage.setItem("admin_hide_history", isHidden ? "true" : "false");
+            } catch (err) {}
+        };
+
+        try {
+            if (localStorage.getItem("admin_hide_history") === "true") {
+                historySection.classList.add("is-hidden");
+                if (iconToggleHistory) iconToggleHistory.textContent = "visibility_off";
+                btnToggleHistory.setAttribute("title", "Mostrar historial");
+                btnToggleHistory.setAttribute("aria-label", "Mostrar historial");
+            }
+        } catch (err) {}
+    }
+
+    init();
+};
+
+// Utils
+const getAvatarHtml = (user, imgClass, initialClass) => {
+    const name = user.name || 'Sin nombre';
+    const initials = name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
+    
+    if (user.photo_url) {
+        return `<img src="${user.photo_url}" class="${imgClass}" alt="${name}" onerror="this.outerHTML='<div class=\\'${initialClass}\\'>${initials}</div>'">`;
+    }
+    return `<div class="${initialClass}">${initials}</div>`;
+};
+
+// Carga Robusta
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initAdminClientes);
+} else {
+    initAdminClientes();
+}
+
+    // Navegación con historial del navegador
+    window.addEventListener("popstate", () => {
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get("id");
+        if (id) {
+            const customer = allCustomers.find(c => c.id === id);
+            if (customer) selectCustomer(customer);
+        } else {
+            backToList();
+        }
+    });

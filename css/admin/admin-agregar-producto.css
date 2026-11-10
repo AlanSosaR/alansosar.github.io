@@ -1,0 +1,694 @@
+/* ============================================================
+   ADMIN — AGREGAR PRODUCTO (FINAL DEFINITIVO)
+   ✔ Material 3 real
+   ✔ Upload con preview reemplazable
+   ✔ Validaciones visuales
+   ✔ Switch de estado correcto
+============================================================ */
+
+/* ================= ROOT ================= */
+:root {
+  --marron: #512615;
+  --verde: #377b4c;
+  --rojo: #B3261E;
+
+  --gris-fondo: #f7f7f7;
+  --blanco: #ffffff;
+
+  --border-cafe: rgba(81, 38, 21, 0.75);
+  --input-border: rgba(0,0,0,0.22);
+  --error: #B3261E;
+  --ok: #377b4c;
+}
+
+/* ================= BASE ================= */
+body {
+  margin: 0;
+  background: var(--gris-fondo);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ================= OFFSET HEADER ================= */
+body.header-checkout {
+  padding-top: 96px;
+}
+@media (max-width: 900px) {
+  body.header-checkout {
+    padding-top: 88px;
+  }
+}
+
+/* ================= CONTENEDOR ================= */
+.profile-container {
+  max-width: 1100px;
+  margin: 32px auto 2.5rem;
+  padding: 0 1rem;
+  transition: max-width 0.3s ease;
+}
+
+/* ================= TARJETA ================= */
+.profile-card {
+  position: relative;
+  background: var(--blanco);
+  border-radius: 26px;
+  padding: 6.8rem 24px 3rem;
+  box-shadow:
+    0 18px 44px rgba(0,0,0,.10),
+    0 6px 16px rgba(0,0,0,.08);
+}
+
+/* ================= BOTÓN ATRÁS ================= */
+.back-btn {
+  position: absolute;
+  top: 22px;
+  left: 22px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #fff;
+  border: none;
+  box-shadow: 0 5px 16px rgba(0,0,0,.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.back-btn .material-symbols-outlined {
+  font-size: 26px;
+  color: var(--verde);
+}
+
+/* ================= TARJETA INTERNA ================= */
+.profile-inner-card {
+  border-radius: 22px;
+  padding: 3rem 2rem;
+  border: 1.8px solid var(--border-cafe);
+  box-shadow: 0 4px 14px rgba(0,0,0,.05);
+}
+
+/* ============================================================
+   UPLOAD DE IMAGEN
+============================================================ */
+.upload-box {
+  position: relative;
+  border: 2px dashed rgba(0,0,0,.25);
+  border-radius: 18px;
+  padding: 2.4rem 1rem;
+  text-align: center;
+  cursor: pointer;
+  background: #fafafa;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.upload-box input[type="file"] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.upload-icon {
+  font-size: 44px;
+  color: var(--verde);
+}
+
+.upload-title {
+  font-weight: 600;
+  margin-top: .75rem;
+}
+
+.upload-hint {
+  font-size: .85rem;
+  color: rgba(0,0,0,.55);
+}
+
+.upload-preview {
+  width: 100%;
+  height: 280px;
+  object-fit: contain;
+  object-position: center;
+  border-radius: 18px;
+  display: block;
+  background-color: #ffffff;
+  border: none;
+  padding: 0;
+  box-sizing: border-box;
+  box-shadow: none;
+}
+
+.upload-preview.hidden {
+  display: none;
+}
+
+/* Ocultar texto cuando hay imagen */
+.upload-box.has-image {
+  padding: 0;
+  border: none;
+}
+
+.upload-box.has-image .upload-icon,
+.upload-box.has-image .upload-title,
+.upload-box.has-image .upload-hint {
+  display: none;
+}
+
+/* ERROR EN UPLOAD */
+.m3-field.error .upload-box {
+  border-color: var(--error);
+  background: #fff5f5;
+}
+
+/* ============================================================
+   CAMPOS MATERIAL 3
+============================================================ */
+.m3-field {
+  margin-bottom: 2rem;
+}
+
+.m3-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: 1rem;
+  border-radius: 14px;
+  background: #fff;
+  border: 1.7px solid var(--input-border);
+  transition: border-color .2s ease;
+}
+
+.m3-input span.material-symbols-outlined {
+  font-size: 1.45rem;
+  color: var(--verde);
+}
+
+.m3-input .currency-symbol {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--verde);
+  font-family: 'Poppins', sans-serif;
+}
+
+.m3-input input,
+.m3-input textarea,
+.m3-input select {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 1rem;
+  color: var(--marron);
+}
+
+/* ================= FLOAT LABEL ================= */
+.floating-label {
+  position: absolute;
+  left: 3rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1rem;
+  color: rgba(0,0,0,.45);
+  pointer-events: none;
+  background: #fff;
+  transition: .22s ease;
+}
+
+.m3-input:focus-within .floating-label,
+.m3-field.filled .floating-label {
+  top: -6px;
+  font-size: .78rem;
+  padding: 0 5px;
+  color: var(--verde);
+}
+
+/* ================= TEXTAREA ================= */
+.textarea-field {
+  align-items: flex-start;
+  padding-top: 1.4rem;
+}
+
+.textarea-field .floating-label {
+  top: 18px;
+}
+
+/* ============================================================
+   ESTADOS DE VALIDACIÓN
+============================================================ */
+.m3-field.error .m3-input {
+  border-color: var(--error);
+}
+
+.m3-field.error .floating-label,
+.m3-field.error .material-symbols-outlined {
+  color: var(--error);
+}
+
+.m3-field.ok .m3-input {
+  border-color: var(--ok);
+}
+
+.m3-field.ok .floating-label,
+.m3-field.ok .material-symbols-outlined {
+  color: var(--ok);
+}
+
+/* ================= ERROR DEBAJO DEL CAMPO ================= */
+.field-error {
+  margin-left: 3rem;
+  margin-top: .35rem;
+  font-size: .8rem;
+  color: var(--error);
+  display: none;
+}
+
+.m3-field.error .field-error {
+  display: block;
+}
+
+/* ============================================================
+   ESTADO — SWITCH REAL
+============================================================ */
+.estado-field {
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+}
+
+.field-title {
+  font-weight: 600;
+  font-size: .95rem;
+  color: var(--marron);
+}
+
+.estado-switch-wrapper {
+  display: flex;
+  align-items: center;
+  gap: .9rem;
+}
+
+/* SWITCH */
+.switch {
+  position: relative;
+  width: 52px;
+  height: 30px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  inset: 0;
+  background: var(--rojo);
+  border-radius: 30px;
+  transition: .25s ease;
+}
+
+.slider::before {
+  content: "";
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  left: 4px;
+  top: 4px;
+  background: #fff;
+  border-radius: 50%;
+  transition: .25s ease;
+}
+
+/* ACTIVO */
+.switch input:checked + .slider {
+  background: var(--verde);
+}
+
+.switch input:checked + .slider::before {
+  transform: translateX(22px);
+}
+
+.estado-label {
+  font-weight: 600;
+}
+
+.estado-label.activo {
+  color: var(--verde);
+}
+
+.estado-label.inactivo {
+  color: var(--rojo);
+}
+
+/* ============================================================
+   BOTÓN
+============================================================ */
+.m3-btn {
+  width: 100%;
+  background: var(--verde);
+  color: #fff;
+  border-radius: 14px;
+  padding: 1.1rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .6rem;
+  cursor: pointer;
+}
+
+.m3-btn:active {
+  transform: scale(.98);
+}
+
+/* ================= LOADER ================= */
+.m3-btn .loader {
+  width: 18px;
+  height: 18px;
+  border: 2.4px solid rgba(255,255,255,.45);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin .9s linear infinite;
+  display: none;
+}
+
+.m3-btn.loading .loader {
+  display: inline-block;
+}
+
+.m3-btn.loading .btn-text {
+  opacity: .6;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================================
+   SNACKBAR — ESTILO LOGIN
+============================================================ */
+#snackbar.snackbar {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translate(-50%, 18px);
+
+  max-width: 520px;
+  width: calc(100% - 56px);
+
+  padding: 14px 16px;
+  border-radius: 18px;
+
+  background: rgba(20, 22, 24, 0.92);
+  color: #fff;
+
+  font-size: 14.5px;
+  line-height: 1.25;
+  font-weight: 600;
+
+  box-shadow:
+    0 18px 44px rgba(0,0,0,.55),
+    0 6px 16px rgba(0,0,0,.35),
+    0 0 0 1px rgba(255,255,255,.08);
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  opacity: 0;
+  pointer-events: none;
+  z-index: 99999;
+
+  transition:
+    opacity .22s ease,
+    transform .22s cubic-bezier(.2,0,0,1);
+}
+
+#snackbar.snackbar::before {
+  content: "";
+  width: 6px;
+  align-self: stretch;
+  border-radius: 999px;
+  background: #33c26b;
+  opacity: .95;
+}
+
+#snackbar.snackbar.show {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, 0);
+}
+
+#snackbar.snackbar.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+#snackbar.snackbar.error::before   { background: #ff4b4b; }
+#snackbar.snackbar.warn::before    { background: #f6c343; }
+#snackbar.snackbar.success::before { background: #33c26b; }
+
+.chip-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.chip-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1.5px solid var(--border-soft, #ddd);
+  background: var(--blanco);
+  cursor: pointer;
+  font-size: 0.88rem;
+  color: var(--gris-text);
+  transition: all 0.2s;
+  user-select: none;
+}
+
+.chip-option input {
+  display: none;
+}
+
+.chip-option .material-symbols-outlined {
+  font-size: 1.2rem;
+}
+
+.chip-option:has(input:checked) {
+  background: var(--verde);
+  border-color: var(--verde);
+  color: #fff;
+}
+
+.chip-option:has(input:checked) .material-symbols-outlined {
+  color: #fff;
+}
+
+.m3-field .field-title {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--cafe);
+  margin: 0 0 4px;
+}
+
+@media (max-width: 900px) {
+  #snackbar.snackbar {
+    bottom: 20px;
+    width: calc(100% - 64px);
+    max-width: 480px;
+    padding: 13px 14px;
+    border-radius: 16px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header-left-stitch {
+    width: 100% !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+  }
+  
+  .header-logo-link {
+    margin-left: auto !important;
+  }
+
+  .profile-card {
+    background: transparent;
+    box-shadow: none;
+    padding: 0;
+  }
+
+  .profile-inner-card {
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    background: transparent;
+  }
+
+  .admin-card-image {
+    padding: 1rem 1rem 1.5rem;
+    box-shadow: 0 4px 16px rgba(0,0,0,.06);
+  }
+
+  .admin-card-info {
+    padding: 1.5rem 1rem;
+    box-shadow: 0 4px 16px rgba(0,0,0,.06);
+  }
+
+  .admin-card-image .back-btn {
+    position: absolute;
+    top: 8px;
+    left: 12px;
+    width: 36px;
+    height: 36px;
+    z-index: 2;
+    box-shadow: 0 3px 10px rgba(0,0,0,.12);
+  }
+
+  .admin-card-image .card-section-title {
+    justify-content: center;
+    padding-left: 52px;
+  }
+
+  .card-section-title {
+    font-size: 1rem;
+  }
+
+  .card-sub-title {
+    font-size: 0.95rem;
+  }
+}
+
+/* ============================================================
+   GRID FORMULARIO (Dos Tarjetas Separadas en PC)
+   ============================================================ */
+.admin-grid-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* TÍTULOS DE SECCIÓN DE TARJETAS (ESTILO MATERIAL DESIGN) */
+.card-section-title {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--marron);
+  margin-top: 0;
+  margin-bottom: 1.8rem;
+  border-bottom: 2px solid rgba(55, 123, 76, 0.15);
+  padding-bottom: 0.6rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* SUBTÍTULOS DE COLUMNAS INTERNAS */
+.card-sub-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--marron);
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px dashed rgba(55, 123, 76, 0.12);
+  padding-bottom: 0.4rem;
+}
+
+/* TARJETAS FÍSICAS INDEPENDIENTES */
+.admin-card-image,
+.admin-card-info {
+  background: var(--blanco);
+  border-radius: 22px;
+  padding: 2.2rem 2rem;
+  box-shadow: 
+    0 10px 30px rgba(0,0,0,.04),
+    0 2px 8px rgba(0,0,0,.02);
+}
+
+.admin-card-image {
+  flex-shrink: 0;
+  position: relative;
+}
+
+/* ESTRUCTURA DE LA INFORMACIÓN DENTRO DE LA TARJETA */
+.info-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.info-column {
+  display: flex;
+  flex-direction: column;
+}
+
+/* BOTONES Y ACCIONES */
+.form-actions {
+  margin-top: 1.5rem;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* AJUSTES PARA PC / PANTALLAS GRANDES */
+@media (min-width: 900px) {
+  /* Hacemos que el wrapper original sea transparente para que las dos tarjetas floten */
+  .profile-card {
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 1rem 0 3rem !important;
+  }
+
+  .profile-inner-card {
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+  }
+
+  /* Disposición en 2 tarjetas */
+  .admin-grid-layout {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 2rem;
+    align-items: start;
+  }
+
+  /* Ampliar el previsualizador de imagen en PC para que llene la tarjeta */
+  .upload-preview {
+    height: 550px !important;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  /* La tarjeta de información a su vez se divide en 2 columnas internas */
+  .info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+
+  .form-actions {
+    margin-top: 2rem;
+  }
+
+  .admin-card-image .card-section-title,
+  .admin-card-info .card-section-title {
+    justify-content: center;
+  }
+}

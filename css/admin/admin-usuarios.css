@@ -1,0 +1,291 @@
+/* =====================================================
+   ADMIN USUARIOS - ESTILOS ESPECÍFICOS DE SEGURIDAD
+   (Coordina con admin-clientes.css)
+===================================================== */
+
+/* Panel de Seguridad y Auditoría */
+.security-panel-stitch {
+    background: var(--fondo-card, #FFFFFF);
+    border-radius: var(--radius-12, 16px);
+    padding: 28px 32px;
+    box-shadow: var(--shadow-editorial, 0 4px 16px rgba(0, 0, 0, 0.04));
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    margin-top: 8px;
+}
+
+.security-main-info h3 {
+    margin: 0 0 20px 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--texto-principal, #2A170E);
+}
+
+.info-group-stitch {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px 24px;
+}
+
+.info-item-stitch {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+}
+
+.info-item-stitch .material-symbols-outlined {
+    font-size: 22px;
+    color: var(--principal, #377b4c);
+    background: rgba(55, 123, 76, 0.08);
+    padding: 8px;
+    border-radius: 10px;
+}
+
+.info-texts {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.info-texts label {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    color: var(--texto-secundario, #715B51);
+    text-transform: uppercase;
+}
+
+.info-texts p {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--texto-principal, #2A170E);
+    word-break: break-word;
+}
+
+.role-select-stitch {
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1.5px solid #D0DDD4;
+    background: #FFFFFF;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--principal, #377b4c);
+    cursor: pointer;
+}
+
+.audit-info-stitch {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--fondo-general, #F5F7F6);
+    font-size: 13px;
+    color: var(--texto-secundario, #715B51);
+}
+
+/* Centro de Control */
+.security-control-center {
+    background: #F8FAF9;
+    border-radius: var(--radius-12, 16px);
+    padding: 24px;
+    border: 1px solid #EAEFEA;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.control-label {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    color: var(--texto-secundario, #715B51);
+}
+
+.control-desc {
+    margin: 4px 0 16px 0;
+    font-size: 13px;
+    color: var(--texto-secundario, #715B51);
+}
+
+.btn-reset-stitch {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 18px;
+    background: #FFFFFF;
+    border: 1.5px solid #D0DDD4;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--principal, #377b4c);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-reset-stitch:hover {
+    background: rgba(55, 123, 76, 0.06);
+    border-color: var(--principal, #377b4c);
+}
+
+.status-toggle-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #EAEFEA;
+}
+
+.status-info strong {
+    font-size: 14px;
+    color: var(--texto-principal, #2A170E);
+    display: block;
+}
+
+.status-info p {
+    margin: 2px 0 0 0;
+    font-size: 12px;
+    color: var(--texto-secundario, #715B51);
+}
+
+.status-label-stitch {
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    color: var(--principal, #377b4c);
+}
+
+/* Switch */
+.switch-stitch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.switch-stitch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider-stitch {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background-color: #CBD5E1;
+    transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 24px;
+}
+
+.slider-stitch:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 50%;
+}
+
+input:checked + .slider-stitch {
+    background-color: var(--principal, #377b4c);
+}
+
+input:checked + .slider-stitch:before {
+    transform: translateX(20px);
+}
+
+.btn-save-stitch {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 24px;
+    background: var(--principal, #377b4c);
+    color: #FFFFFF;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(55, 123, 76, 0.25);
+    transition: all 0.2s ease;
+}
+
+.btn-save-stitch:hover {
+    background: #2D653E;
+    transform: translateY(-1px);
+}
+
+/* Modal Multicanal */
+.contact-options-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.contact-option-btn {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    border: 1.5px solid #EAEFEA;
+    border-radius: 14px;
+    background: #FFFFFF;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    width: 100%;
+}
+
+.contact-option-btn:hover {
+    border-color: var(--principal, #377b4c);
+    background: rgba(55, 123, 76, 0.04);
+}
+
+.option-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: #F4F7F5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--principal, #377b4c);
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.option-text strong {
+    font-size: 14px;
+    color: var(--texto-principal, #2A170E);
+    display: block;
+}
+
+.option-text span {
+    font-size: 12px;
+    color: var(--texto-secundario, #715B51);
+}
+
+/* Responsivo para el panel de seguridad */
+@media (max-width: 768px) {
+    .info-group-stitch {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+    }
+
+    .security-panel-stitch {
+        padding: 20px 16px !important;
+    }
+
+    .security-control-center {
+        padding: 18px 14px !important;
+    }
+}

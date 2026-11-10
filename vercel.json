@@ -1,0 +1,5 @@
+{
+  "rewrites": [
+    { "source": "/api/wa-proxy/(.*)", "destination": "/api/wa-proxy?path=$1" }
+  ]
+}

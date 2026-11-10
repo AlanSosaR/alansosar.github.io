@@ -1,0 +1,555 @@
+/* ============================================================
+   ELIMINAR COMPLETAMENTE EL HIGHLIGHT AZUL EN TODA LA PÁGINA
+============================================================ */
+*,
+*::before,
+*::after {
+  -webkit-tap-highlight-color: transparent !important;
+  outline: none !important;
+}
+
+button,
+a,
+input,
+textarea,
+select,
+label,
+img,
+.material-symbols-outlined,
+.m3-input,
+.m3-btn,
+.back-btn,
+.social-icon {
+  -webkit-tap-highlight-color: transparent !important;
+  outline: none !important;
+}
+
+/* ===============================
+   GENERAL
+=============================== */
+html, body {
+  height: 100%;
+}
+
+body {
+  font-family: "Roboto", sans-serif;
+  background-color: #ffffff;
+  margin: 0;
+  padding: 40px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  color: #2E2A27;
+  position: relative;
+}
+/* =====================================================
+   SNACKBAR — Material 3 Expressive
+   Compatible con:
+   - Snackbar normal (solo texto)
+   - Snackbar con acción (texto + botón)
+===================================================== */
+
+#snackbar.snackbar {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;                 /* Separación cómoda del borde inferior */
+  transform: translate(-50%, 18px);
+
+  max-width: 520px;
+  width: calc(100% - 56px);     /* Evita que se pegue a los lados */
+
+  padding: 14px 16px;
+  border-radius: 18px;
+
+  background: rgba(20, 22, 24, 0.92);
+  color: #fff;
+
+  font-size: 14.5px;
+  line-height: 1.25;
+  font-weight: 600;
+
+  box-shadow:
+    0 18px 44px rgba(0,0,0,.55),
+    0 6px 16px rgba(0,0,0,.35),
+    0 0 0 1px rgba(255,255,255,.08);
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  opacity: 0;
+  pointer-events: none;
+  z-index: 99999;
+
+  transition:
+    opacity .22s ease,
+    transform .22s cubic-bezier(.2,0,0,1);
+}
+
+/* Indicador lateral de estado */
+#snackbar.snackbar::before {
+  content: "";
+  width: 6px;
+  align-self: stretch;
+  border-radius: 999px;
+  background: #33c26b;
+  opacity: .95;
+}
+
+/* Visible */
+#snackbar.snackbar.show {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, 0);
+}
+
+/* Oculto */
+#snackbar.snackbar.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Variantes por tipo */
+#snackbar.snackbar.error::before   { background: #ff4b4b; }
+#snackbar.snackbar.warn::before    { background: #f6c343; }
+#snackbar.snackbar.success::before { background: #33c26b; }
+
+/* Texto del snackbar (normal o con acción) */
+#snackbar.snackbar .snackbar-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Botón de acción */
+#snackbar.snackbar .snackbar-action {
+  flex: 0 0 auto;
+  margin-left: auto;
+
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: rgba(255,255,255,.96);
+
+  font: inherit;
+  font-weight: 800;
+  letter-spacing: .2px;
+
+  padding: 9px 12px;
+  border-radius: 999px;
+
+  cursor: pointer;
+  user-select: none;
+
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.14);
+  transition:
+    background .18s ease,
+    transform .18s cubic-bezier(.2,0,0,1),
+    box-shadow .18s ease;
+}
+
+#snackbar.snackbar .snackbar-action:hover {
+  background: rgba(255,255,255,.10);
+}
+
+#snackbar.snackbar .snackbar-action:active {
+  transform: translateY(1px);
+  background: rgba(255,255,255,.14);
+}
+
+#snackbar.snackbar .snackbar-action:focus-visible {
+  outline: none;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.18),
+    0 0 0 3px rgba(77,163,255,.28);
+}
+
+/* Ajustes para pantallas pequeñas */
+@media (max-width: 900px) {
+  #snackbar.snackbar {
+    bottom: 20px;               /* Aire respecto a la barra del sistema */
+    width: calc(100% - 64px);   /* Más margen lateral en móvil */
+    max-width: 480px;
+
+    padding: 13px 14px;
+    border-radius: 16px;
+    font-size: 14px;
+  }
+
+  /* En móvil permitimos hasta 2 líneas de texto */
+  #snackbar.snackbar .snackbar-text {
+    white-space: normal;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+.login-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+/* ===============================
+   TARJETA PRINCIPAL
+=============================== */
+.login-card {
+  position: relative;
+  background: #ffffff;
+  border: 1.5px solid #E0E0E0;
+  border-radius: 20px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  padding: 50px 40px 30px;
+  max-width: 420px;
+  width: 100%;
+  min-height: 520px;
+  transition: box-shadow 0.3s ease, transform 0.2s ease;
+  margin: 20px 0;
+}
+
+.login-card:hover {
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+/* ===============================
+   BOTÓN ATRÁS
+=============================== */
+.back-btn {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  z-index: 20;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #ffffff;
+  color: #377b4c;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.14);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: .25s ease;
+}
+
+.back-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.18);
+}
+
+.back-btn .material-symbols-outlined {
+  font-size: 26px;
+  font-weight: 600;
+}
+
+/* ===============================
+   HEADER
+=============================== */
+.login-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.logo-container {
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 12px;
+
+  /* Material 3 elevation */
+  filter: drop-shadow(0 10px 24px rgba(0,0,0,.25));
+}
+
+.logo-container img {
+  width: 110px;
+
+  /* Sensación de flotación */
+  transform: translateY(0);
+  transition:
+    transform .35s cubic-bezier(.2,0,0,1),
+    filter .35s ease;
+}
+
+/* Hover (desktop) */
+.logo-container:hover img {
+  transform: translateY(-4px);
+  filter: drop-shadow(0 16px 32px rgba(0,0,0,.35));
+}
+
+/* Touch feedback (mobile) */
+.logo-container:active img {
+  transform: translateY(-2px) scale(0.98);
+}
+
+.login-title {
+  font-family: "Fraunces", serif;
+  font-size: 1.8rem;
+  color: #512615;
+  margin: 0;
+}
+
+/* ===============================
+   TARJETA INTERIOR
+=============================== */
+.login-inner-card {
+  background: #ffffff;
+  border: 1.6px solid #512615;
+  border-radius: 16px;
+  padding: 28px 25px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* ===============================
+   CAMPOS
+=============================== */
+.m3-field {
+  margin-bottom: 22px;
+  position: relative;
+}
+
+/* AHORA SÍ MOSTRAMOS EL ERROR */
+.field-msg {
+  display: block !important;
+  color: #D32F2F;
+  font-size: 0.82rem;
+  margin-top: 4px;
+  opacity: 0;
+  height: 16px;
+  transition: opacity .22s ease;
+}
+
+/* CONTENEDOR INPUT */
+.m3-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border: 1.5px solid #E0E0E0;
+  border-radius: 12px;
+  padding: 16px 12px 6px 12px;
+  background-color: #fff;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+/* INPUT */
+.m3-input input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 1rem;
+  color: #2E2A27;
+}
+
+/* ===============================
+   FLOATING LABEL — CORRECTO
+=============================== */
+
+.floating-label {
+  position: absolute;
+  left: 44px;
+  top: 15px;
+  font-size: 1rem;
+  color: #8a8a8a;
+  background: transparent;
+  pointer-events: none;
+  transition: all .22s ease;
+}
+
+.m3-input input:not(:placeholder-shown) + .floating-label,
+.m3-input:focus-within .floating-label {
+  top: -6px;
+  left: 38px;
+  font-size: 0.78rem;
+  background: #ffffff;
+  padding: 0 4px;
+  color: #377b4c;
+}
+
+/* ===============================
+   ERROR
+=============================== */
+.m3-input.error {
+  border-color: #D32F2F !important;
+  box-shadow: 0 0 0 2px rgba(211,47,47,0.18);
+}
+
+.m3-input.error .floating-label {
+  top: -6px !important;
+  left: 38px !important;
+  font-size: 0.78rem !important;
+  background: #ffffff;
+  padding: 0 4px;
+  color: #D32F2F !important;
+}
+
+/* ===============================
+   SUCCESS
+=============================== */
+.m3-input.success {
+  border-color: #377b4c !important;
+  box-shadow: 0 0 0 2px rgba(51,103,59,0.18);
+}
+
+.m3-input.success .floating-label {
+  color: #377b4c !important;
+}
+
+/* ===============================
+   TOGGLE PASSWORD
+=============================== */
+.toggle-pass {
+  cursor: pointer;
+  font-size: 22px;
+  margin-left: 8px;
+  color: #377b4c;
+}
+
+/* ===============================
+   BOTÓN ACCEDER
+=============================== */
+
+.m3-btn {
+  width: 100%;
+  background-color: #377b4c;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  padding: 12px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px; /* loader a la izquierda */
+}
+
+/* Loader REAL — NO TAPA EL TEXTO */
+.loader {
+  display: none;
+  width: 18px;
+  height: 18px;
+  border: 2.5px solid rgba(255,255,255,0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+}
+
+.m3-btn.loading .loader {
+  display: inline-block;
+}
+
+.m3-btn.loading .btn-text {
+  opacity: 1 !important; /* texto NO desaparece */
+}
+
+@keyframes spin { 
+  to { transform: rotate(360deg); } 
+}
+
+/* ===============================
+   LINKS
+=============================== */
+.links {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.forgot-link {
+  display: inline-block;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  font-size: 0.92rem;
+  color: #512615;
+  text-decoration: underline;
+}
+
+/* ===============================
+   REGISTRO
+=============================== */
+.crear-cuenta-texto {
+  margin: 8px 0;
+  color: #512615;
+  font-size: 0.92rem;
+}
+
+.registrate-link {
+  color: #377b4c;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* ===============================
+   SEPARADOR
+=============================== */
+.separator {
+  margin: 12px 0;
+  text-align: center;
+}
+
+.separator span {
+  padding: 0 10px;
+  background: #fff;
+  color: #512615;
+}
+
+/* ===============================
+   ICONOS SOCIALES
+=============================== */
+.social-login-icons {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+}
+
+.social-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  cursor: pointer;
+  transition: transform .18s, box-shadow .18s;
+}
+
+.social-icon img {
+  width: 22px;
+  height: 22px;
+}
+
+.social-icon:active {
+  transform: scale(0.92);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.10);
+}
+
+/* ===============================
+   RESPONSIVE
+=============================== */
+@media (max-width: 480px) {
+  .login-card { padding: 50px 25px 30px; }
+  .login-inner-card { padding: 22px; }
+  .login-title { font-size: 1.5rem; }
+}
+/* Evita el “flash” del login mientras se valida la sesión */
+html.auth-checking,
+body.auth-checking {
+  visibility: hidden;
+}

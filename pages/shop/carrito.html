@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#377b4c" />
+  <title>Tu selección de café | Café Cortero</title>
+
+  <!-- Tipografía -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- Material Symbols (Material 3) -->
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap">
+
+  <!-- CSS GLOBAL (HEADER + DRAWER) -->
+  <link rel="stylesheet" href="/css/ui/header.css?v=37">
+
+  <!-- CSS CARRITO -->
+  <link rel="stylesheet" href="/css/pages/carrito.css?v=44">
+</head>
+
+<body class="page-carrito">
+
+
+
+  <!-- =====================================================
+     TEMPLATE ITEM CARRITO
+====================================================== -->
+  <template id="template-cart-item">
+    <div class="item">
+
+      <div class="item-img-box">
+        <img class="item-image" alt="">
+      </div>
+
+      <div class="item-info">
+        <div class="item-name"></div>
+        <div class="item-price-wrapper">
+          <div class="item-price-old hidden"></div>
+          <div class="item-discount-badge hidden"></div>
+          <div class="item-price"></div>
+        </div>
+
+        <div class="qty-controls">
+          <button class="qty-btn minus" data-action="minus">
+            <i class="fa-solid fa-minus"></i>
+          </button>
+
+          <span class="qty-number"></span>
+
+          <button class="qty-btn plus" data-action="plus">
+            <i class="fa-solid fa-plus"></i>
+          </button>
+
+          <button class="del-btn" data-action="del">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </template>
+
+  <!-- =====================================================
+     CONTENIDO PRINCIPAL
+====================================================== -->
+  <main>
+
+
+    <div class="grid-carrito">
+
+      <!-- PRODUCTOS -->
+      <div class="col-productos">
+        <div id="cart-container"></div>
+      </div>
+
+      <!-- RESUMEN -->
+      <div class="col-resumen">
+        <div id="cart-sheet-backdrop" class="cart-sheet-backdrop" aria-hidden="true"></div>
+        <div class="resumen-box sheet-open" id="resumen-box">
+          <div class="resumen-sheet-handle-bar" id="resumen-sheet-handle" role="button" tabindex="0" aria-expanded="true" aria-label="Mostrar u ocultar desglose del pedido">
+            <span class="resumen-sheet-handle"></span>
+          </div>
+          <div class="resumen-header-row" id="resumen-header-toggle">
+            <h2 class="resumen-title">Resumen de pedido</h2>
+            <span class="material-symbols-outlined resumen-sheet-chevron" aria-hidden="true">expand_less</span>
+          </div>
+
+          <div id="resumen-items-slot" class="resumen-items-slot"></div>
+
+          <!-- CUPÓN (Oculto por ahora) -->
+          <div class="coupon-section" style="display: none;">
+            <label for="coupon-input">Cupón de descuento</label>
+            <div class="coupon-group">
+              <div class="input-with-icon">
+                <span class="material-symbols-outlined">confirmation_number</span>
+                <input type="text" id="coupon-input" placeholder="Código">
+              </div>
+              <button id="apply-coupon-btn" class="btn-apply">Aplicar</button>
+            </div>
+            <div id="coupon-message" class="coupon-message hidden">
+              <span class="material-symbols-outlined">check_circle</span>
+              <span id="coupon-text"></span>
+            </div>
+          </div>
+
+          <div class="resumen-details">
+            <div class="resumen-row">
+              <span>Subtotal</span>
+              <span id="subtotal-label">L 0.00</span>
+            </div>
+
+            <div id="items-discount-row" class="resumen-row discount-row hidden">
+              <span id="items-discount-description">Ahorro por productos</span>
+              <span id="items-discount-amount">-L 0.00</span>
+            </div>
+
+            <div id="coupon-discount-row" class="resumen-row discount-row hidden">
+              <span id="coupon-discount-description">Cupón</span>
+              <span id="coupon-discount-amount">-L 0.00</span>
+            </div>
+
+            <div class="resumen-row">
+              <span>Envío</span>
+              <span class="free-shipping">GRATIS</span>
+            </div>
+          </div>
+
+          <div class="resumen-total-box">
+            <div class="total-line">
+              <span class="total-text">Total</span>
+              <span id="total-label" class="total-amount">L 0.00</span>
+            </div>
+            <small class="tax-note">IVA INCLUIDO</small>
+          </div>
+
+          <button id="proceder-btn" class="btn-checkout">
+            <span class="btn-checkout-label">Proceder con el pedido</span>
+            <span class="btn-checkout-right">
+              <span id="checkout-btn-total" class="btn-checkout-price">L 0.00</span>
+              <span class="material-symbols-outlined">arrow_forward</span>
+            </span>
+          </button>
+
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- =====================================================
+     LOADER
+====================================================== -->
+  <div id="page-loader" class="page-loader hidden">
+    <div class="loader-circle"></div>
+  </div>
+
+  <!-- SUPABASE -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/js/core/supabase-client-core.js"></script>
+  <script src="/js/core/supabase-auth.js"></script>
+
+  <!-- UI BASE -->
+  <script src="/js/core/auth-ui.js"></script>
+
+  <!-- LAYOUT (inyecta header + drawer en el DOM) -->
+  <script src="/js/ui/layout.js"></script>
+
+  <!-- HEADER (define badges y hooks UI) -->
+  <script type="module" src="/js/ui/header.js"></script>
+
+  <!-- LÓGICA DE LA PÁGINA -->
+  <script src="/js/pages/cart.js?v=2607"></script>
+
+  <!-- SNACKBAR -->
+  <div id="snackbar" class="snackbar" aria-live="polite"></div>
+
+</body>
+
+</html>

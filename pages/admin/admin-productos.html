@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin · Productos | Café Cortero</title>
+
+  <!-- Material Symbols -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+
+  <!-- Estilos -->
+  <link rel="stylesheet" href="/css/core/tipografia.css" />
+  <link rel="stylesheet" href="/css/ui/header.css" />
+  <link rel="stylesheet" href="/css/ui/footer.css" />
+  <link rel="stylesheet" href="/css/ui/header.search.css">
+  <link rel="stylesheet" href="/css/admin/admin-productos.css" />
+</head>
+
+<body class="page-admin-cafes">
+
+  <main class="admin-products-container fade-in">
+
+    <!-- =========================
+       TOBAR
+    ========================= -->
+    <div class="products-topbar">
+      <div class="topbar-left">
+        <button id="btn-back-products-title" class="btn-back-title hidden-desktop" aria-label="Volver">
+          <span class="material-symbols-outlined">arrow_back</span>
+        </button>
+        <div class="topbar-titles">
+          <h1>Productos</h1>
+          <p class="topbar-subtitle">Gestiona el catálogo y visibilidad en tienda</p>
+        </div>
+      </div>
+      <button id="btnAddProduct" class="btn-new-product">
+        <span class="material-symbols-outlined">add</span>
+        Nuevo producto
+      </button>
+    </div>
+
+    <!-- =========================
+       FILTROS PILL
+    ========================= -->
+    <div class="filter-pills" id="filterPills">
+      <button class="pill active" data-filter="all">Todos</button>
+      <button class="pill" data-filter="active">Activos</button>
+      <button class="pill" data-filter="carousel">En carrusel</button>
+    </div>
+
+    <!-- =========================
+       GRID: LISTA + DETALLE
+    ========================= -->
+    <div class="products-grid">
+
+      <!-- COLUMNA IZQUIERDA — LISTA -->
+      <div class="products-list-column">
+        <div id="products-list">
+          <!-- JS renderiza filas -->
+        </div>
+      </div>
+
+      <!-- COLUMNA DERECHA — PANEL DETALLE -->
+      <aside class="detail-panel-column">
+        <div id="product-detail-panel">
+          <!-- JS renderiza detalle o estado vacío -->
+          <div class="detail-empty" id="detailEmpty">
+            <span class="material-symbols-outlined detail-empty-icon">coffee</span>
+            <p class="detail-empty-text">Selecciona un producto para ver el detalle</p>
+          </div>
+        </div>
+
+        <!-- SNACKBAR CONFIRMACIÓN ELIMINAR (dentro del flujo pero fuera del panel) -->
+      </aside>
+
+    </div>
+
+    <!-- =========================
+       ESTADO VACÍO (GLOBAL, SIN PRODUCTOS)
+    ========================= -->
+    <section id="admin-empty-state" class="admin-empty-state hidden">
+      <h2 class="empty-title">No hay cafés registrados</h2>
+      <p class="empty-text">
+        Agrega un café para que los clientes puedan verlo y comprarlo en la tienda.
+      </p>
+      <img src="" alt="Sin resultados" class="empty-illustration hidden">
+    </section>
+
+  </main>
+
+  <div id="snackbar" class="snackbar"></div>
+
+  <!-- SNACKBAR ELIMINAR -->
+  <div id="snackbar-delete" class="snackbar-action">
+    <div class="snackbar-content">
+      <div class="snackbar-text">
+        <strong>¿Seguro que deseas eliminar este café?</strong>
+        <span>Esta acción no se puede deshacer.</span>
+      </div>
+      <div class="snackbar-actions">
+        <button type="button" class="snackbar-btn cancel" id="btnCancelDelete">Cancelar</button>
+        <button type="button" class="snackbar-btn danger" id="btnConfirmDelete">Eliminar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================
+     SCRIPTS
+  ========================= -->
+
+  <!-- Supabase SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- CORE -->
+  <script src="/js/core/supabase-client-core.js"></script>
+  <script src="/js/core/supabase-auth.js"></script>
+
+  <script>
+    window.PAGE_MODE = "admin-products";
+  </script>
+
+  <!-- UI -->
+  <script type="module" src="/js/ui/header.js"></script>
+  <script src="/js/core/auth-ui.js"></script>
+  <script src="/js/ui/layout.js"></script>
+
+  <!-- Buscador global del header — ADMIN PRODUCTOS -->
+  <script type="module">
+    import { renderHeaderSearch } from "/js/ui/header.search.js";
+
+    document.addEventListener("header:ready", () => {
+      const slot = document.getElementById("header-middle-slot");
+      if (!slot) return;
+
+      slot.innerHTML = renderHeaderSearch({
+        showFilter: false,
+        showAdd: false,
+        placeholder: "Nombre, categoría o descripción…"
+      });
+
+      const input = document.getElementById("header-search-input");
+      if (input) {
+        input.addEventListener("input", (e) => {
+          document.dispatchEvent(
+            new CustomEvent("header:search", {
+              detail: e.target.value.trim()
+            })
+          );
+        });
+      }
+
+      console.log("🔍 Buscador listo (Admin productos)");
+    });
+  </script>
+
+  <!-- ADMIN -->
+  <script src="/js/admin/admin-productos.js"></script>
+
+</body>
+
+</html>

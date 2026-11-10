@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#377b4c" />
+  <title>Café Cortero | La esencia de Honduras en cada sorbo</title>
+
+  <!-- Fuentes e iconos -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Playfair+Display:wght@600&family=Material+Symbols+Outlined"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/css/core/main.css?v=1143">
+  <link rel="stylesheet" href="/css/ui/header.css?v=3"> <!-- 🔑 HEADER GLOBAL -->
+  <link rel="stylesheet" href="/css/ui/footer.css">
+  <link rel="stylesheet" href="/css/ui/hero-carousel.css"> <!-- 🆕 HERO CAROUSEL -->
+  <link rel="stylesheet" href="/css/pages/reviews.css?v=9"><!-- 🆕 RESEÑAS -->
+  <link rel="manifest" href="/manifest.webmanifest">
+  <script>
+    console.log("PWA: manifest linked");
+    window.addEventListener('beforeinstallprompt', () => { console.log("PWA: app installable"); });
+  </script>
+</head>
+
+<body>
+
+  <!-- 🔑 HEADER GLOBAL SE INYECTA AQUÍ (layout.js) -->
+
+  <main>
+
+    <!-- HERO (Material 3 Carousel) -->
+    <section class="hero-m3-container" aria-label="Promociones Principales">
+      <div class="hero-carousel" id="heroCarousel">
+
+        <!-- Slides → JS los renderiza desde site_settings -->
+        <div class="hero-slides-wrapper"></div>
+
+        <!-- Contenido Centrado (Sobrepuesto) → JS actualiza título/subtítulo -->
+        <div class="hero-content">
+          <h1 class="display-large"></h1>
+          <p class="headline-small"></p>
+
+          <!-- Discount Card (M3 Surface) -> Now PRIMARY CTA -->
+          <button class="discount-card-m3"
+            onclick="document.getElementById('productos')?.scrollIntoView({behavior: 'smooth'})">
+            <span class="label-large">
+              Comprar ahora
+              <img src="/imagenes/coffeeSHOP.png" alt="" style="height:1.2rem;width:auto;vertical-align:middle;filter:brightness(0) invert(1)">
+            </span>
+          </button>
+
+          <!-- Primary Action REMOVED (Moved to bottom banner) -->
+        </div>
+
+        <!-- GLOBE EXPRESS NAVIGATION -->
+        <div class="carousel-controls">
+          <button class="nav-arrow prev" aria-label="Anterior slide">
+            <span class="material-symbols-outlined">chevron_left</span>
+          </button>
+
+          <div class="progress-section">
+            <span class="current-slide">01</span>
+            <div class="progress-bar">
+              <div class="progress-fill"></div>
+            </div>
+            <span class="total-slides">12</span>
+          </div>
+
+          <button class="nav-arrow next" aria-label="Siguiente slide">
+            <span class="material-symbols-outlined">chevron_right</span>
+          </button>
+        </div>
+      </div>
+    </section>
+    <!-- mensaje estado vacío -->
+    <section id="empty-catalog" class="empty-catalog hidden">
+      <div class="empty-box">
+
+        <!-- LOGO -->
+        <img src="/imagenes/logo.png" alt="Café Cortero" class="empty-logo">
+
+        <h3>Estamos preparando nuevos cafés</h3>
+
+        <p>
+          Muy pronto encontrarás aquí nuevas variedades de café,
+          preparadas con el cuidado y la esencia de Café Cortero.
+        </p>
+
+        <small>Vuelve pronto </small>
+      </div>
+    </section>
+
+    <!-- PRODUCTO PRINCIPAL -->
+    <section id="productos" class="product-main hidden">
+
+      <div class="product-text">
+
+        <!-- TÍTULO -->
+        <h2 id="product-name" class="product-title"></h2>
+
+        <!-- PRESENTACIÓN / MOLIDO / CATEGORÍA + DESCUENTO -->
+        <div id="product-badges-row" class="product-badges-row">
+          <span id="product-badge" class="pill" aria-live="polite"></span>
+        </div>
+
+        <!-- DESCRIPCIÓN -->
+        <p id="product-description" class="product-description"></p>
+
+        <!-- FICHA TÉCNICA -->
+        <div id="product-specs" class="product-specs"></div>
+
+        <!-- ESTADO -->
+        <div id="product-status" class="product-status" aria-live="polite"></div>
+
+        <!-- ACCIÓN -->
+        <div class="product-actions">
+
+          <!-- PRECIO + CARRITO -->
+          <div class="product-split">
+            <span class="price-part" id="product-price"></span>
+
+            <span class="icon-part" id="product-add" aria-label="Agregar al carrito">
+              <i class="fa-solid fa-cart-plus"></i>
+            </span>
+          </div>
+
+          <!-- CANTIDAD -->
+          <div class="quantity-container">
+            <button class="qty-btn minus-btn" id="qty-minus" disabled>−</button>
+
+            <span class="qty-number" id="qty-number">1</span>
+
+            <button class="qty-btn plus-btn" id="qty-plus" disabled>+</button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- IMAGEN -->
+      <div class="product-img-wrap">
+        <div class="product-img-inner">
+          <img id="product-image" alt="" loading="lazy">
+        </div>
+      </div>
+
+    </section>
+
+    <!-- RECOMENDADOS -->
+    <section class="related">
+      <h3 class="similar-title">Explora lo mejor de nuestra cosecha</h3>
+
+      <div class="carousel-container with-arrows">
+        <button id="similar-prev" class="carousel-prev-circle inside">
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+
+        <div class="similar-list" id="lista-similares"></div>
+
+        <button id="similar-next" class="carousel-next-circle inside">
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      </div>
+
+      <div class="carousel-nav desktop-only">
+        <div class="carousel-dots">
+          <span class="dot active"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- NOSOTROS -->
+    <section id="nosotros" class="about">
+      <div class="about-text">
+
+        <!-- TÍTULO PRINCIPAL -->
+        <h2 class="about-title">Nuestra historia</h2>
+
+        <!-- SUBTÍTULO -->
+        <h3 class="about-subtitle">Sobre Café Cortero</h3>
+
+        <!-- TEXTO PRINCIPAL -->
+        <p class="about-lead">
+          Café Cortero es un proyecto familiar nacido del amor por la tierra y el café bien hecho.
+          Cada grano refleja nuestro compromiso con la calidad, el respeto al entorno y el orgullo
+          de producir café hondureño.
+        </p>
+
+        <!-- TEXTO DE APOYO -->
+        <p class="about-body">
+          Desde la siembra hasta el tostado, cuidamos cada etapa de forma artesanal,
+          combinando tradición, dedicación y experiencia para que disfrutes en cada taza
+          un café honesto y lleno de sabor.
+        </p>
+
+        <!-- CTA -->
+        <a href="/pages/about/sobre-nosotros.html" class="about-btn">
+          Descubre nuestra historia
+        </a>
+
+      </div>
+
+      <div class="about-img">
+        <img src="/imagenes/nosotros.jpg" alt="Sobre nosotros">
+      </div>
+    </section>
+
+    <!-- RESEÑAS DE CLIENTES -->
+    <section id="resenas" class="reviews-section">
+      <div class="reviews-header">
+        <span class="material-symbols-outlined reviews-header-icon">star</span>
+        <h2>Lo que dicen nuestros clientes</h2>
+        <p class="reviews-subtitle">La opinión de quienes ya disfrutaron nuestro café</p>
+      </div>
+      <div id="reviews-container">
+        <div class="reviews-loading">Cargando reseñas...</div>
+      </div>
+    </section>
+
+    <!-- CONTACTO -->
+    <section id="contacto" class="contacto">
+      <h2>Contáctanos</h2>
+      <p>
+        Escríbenos por <strong class="verde">WhatsApp</strong> o síguenos en nuestras
+        redes sociales: <strong class="verde">Facebook</strong> e
+        <strong class="verde">Instagram</strong>.
+      </p>
+    </section>
+
+  </main>
+
+  <!-- SCRIM BACKDROP FADE -->
+  <div class="fab-scrim" id="fab-scrim" aria-hidden="true"></div>
+
+  <!-- FAB — Material 3 Speed Dial -->
+  <div class="fab-container" id="fab">
+    <!-- Botón principal -->
+    <button class="fab-main" id="fab-main" aria-label="Abrir opciones de contacto" aria-expanded="false">
+      <span class="material-symbols-outlined fab-icon-chat">
+        mark_chat_unread
+      </span>
+      <span class="material-symbols-outlined fab-icon-close">
+        close
+      </span>
+    </button>
+
+    <!-- Opciones -->
+    <div class="fab-options">
+      <a href="https://wa.me/50496670613" target="_blank" aria-label="Escribir por WhatsApp">
+        <i class="fa-brands fa-whatsapp"></i>
+      </a>
+
+      <a href="https://www.facebook.com/share/1FsrT4DYrU/" target="_blank" aria-label="Visitar Facebook">
+        <i class="fa-brands fa-facebook-f"></i>
+      </a>
+
+      <a href="https://www.instagram.com/TU_USUARIO" target="_blank" aria-label="Visitar Instagram">
+        <i class="fa-brands fa-instagram"></i>
+      </a>
+    </div>
+  </div>
+  <!-- SNACKBAR -->
+  <div id="snackbar" class="snackbar" aria-live="polite"></div>
+  <!-- ===================== SCRIPTS ===================== -->
+  <!-- 1️⃣ SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- 2️⃣ Supabase core -->
+  <script src="/js/core/supabase-client-core.js"></script>
+  <script src="/js/core/supabase-auth.js"></script>
+
+  <!-- 3️⃣ Layout (inyecta header en el DOM) -->
+  <script src="/js/ui/layout.js"></script>
+
+  <!-- 4️⃣ Header (define hooks + UI) -->
+  <script type="module" src="/js/ui/header.js"></script>
+
+  <!-- Site Settings Loader -->
+  <script src="/js/ui/site-settings.js"></script>
+
+  <!-- 🆕 Hero Carousel Logic -->
+  <script src="/js/ui/hero-carousel.js"></script>
+
+  <!-- 5️⃣ Auth UI (listeners de sesión) -->
+  <script src="/js/core/auth-ui.js"></script>
+
+  <!-- 7️⃣ Página -->
+  <script src="/js/pages/main.js?v=37"></script>
+
+</body>
+
+</html>

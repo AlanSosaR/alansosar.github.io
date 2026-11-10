@@ -1,0 +1,603 @@
+console.log("⚙️ admin-configuracion.js");
+
+/* ============================================================
+   LIMPIAR URL LOCALHOST (datos corruptos)
+   ============================================================ */
+function urlValida(url) {
+  if (!url) return "";
+  if (/localhost|127\.0\.0\.1/.test(url)) return "";
+  return url;
+}
+
+/* ============================================================
+   ESPERAR SUPABASE
+   ============================================================ */
+function esperarSupabase() {
+  return new Promise(resolve => {
+    if (window.supabaseClient) return resolve();
+    const i = setInterval(() => {
+      if (window.supabaseClient) { clearInterval(i); resolve(); }
+    }, 80);
+  });
+}
+
+/* ============================================================
+   ELEMENTOS
+   ============================================================ */
+const form = document.getElementById("configForm");
+const slidesContainer = document.getElementById("slides-container");
+const btnAddSlide = document.getElementById("btnAddSlide");
+const slideUploadInput = document.getElementById("slideUploadInput");
+
+const historiaTitulo = document.getElementById("historia_titulo");
+const historiaSubtitulo = document.getElementById("historia_subtitulo");
+const historiaLead = document.getElementById("historia_lead");
+const historiaBody = document.getElementById("historia_body");
+const historiaPreview = document.getElementById("historiaPreview");
+const historiaImgUpload = document.getElementById("historiaImgUpload");
+const historiaImgInput = document.getElementById("historiaImgInput");
+
+const whatsappNumero = document.getElementById("whatsapp_numero");
+const whatsappNumero2 = document.getElementById("whatsapp_numero2");
+const facebookUrl = document.getElementById("facebook_url");
+const instagramUrl = document.getElementById("instagram_url");
+const btnSave = document.getElementById("btnSaveConfig");
+
+// Logo y footer
+const logoInput = document.getElementById("logoInput");
+const logoPreview = document.getElementById("logoPreview");
+const btnUploadLogo = document.getElementById("btnUploadLogo");
+const btnRestoreLogo = document.getElementById("btnRestoreLogo");
+const logoInputSec = document.getElementById("logoInputSec");
+const logoSecPreview = document.getElementById("logoSecPreview");
+const btnUploadLogoSec = document.getElementById("btnUploadLogoSec");
+const btnRestoreLogoSec = document.getElementById("btnRestoreLogoSec");
+const footerTextInput = document.getElementById("footerTextInput");
+
+// Reseñas
+const reviewsAdminList = document.getElementById("reviewsAdminList");
+
+let logoBlob = null;
+let logoSecBlob = null;
+let originalLogoUrl = "";
+let originalLogoSecUrl = "";
+let originalHistoriaImgUrl = "";
+
+// Páginas legales
+const privacyEditor = document.getElementById("privacyEditor");
+const termsEditor = document.getElementById("termsEditor");
+
+const BUCKET = "site-assets";
+const STORAGE_URL = "https://eaipcuvvddyrqkbmjmvw.supabase.co/storage/v1/object/public";
+
+let slides = [];
+let historiaImagenBlob = null;
+let pendingSlideUploads = []; // índices de slides con nuevas imágenes por subir
+
+/* ============================================================
+   COMPRIMIR IMAGEN (max 1920px, WebP/JPEG)
+   ============================================================ */
+function comprimirImagen(file, maxWidth = 1920, quality = 0.82) {
+  return new Promise(resolve => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      let w = img.width, h = img.height;
+      if (w > maxWidth) { h = h * maxWidth / w; w = maxWidth; }
+      canvas.width = w; canvas.height = h;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, w, h);
+      canvas.toBlob(blob => resolve(blob), "image/webp", quality);
+    };
+    img.src = URL.createObjectURL(file);
+  });
+}
+
+/* ============================================================
+   SUBIR ARCHIVO AL BUCKET
+   ============================================================ */
+async function subirArchivo(blob, fileName) {
+  const { data, error } = await window.supabaseClient
+    .storage
+    .from(BUCKET)
+    .upload(fileName, blob, { upsert: true, contentType: "image/webp" });
+  if (error) throw error;
+  return `${STORAGE_URL}/${BUCKET}/${fileName}`;
+}
+
+/* ============================================================
+   GENERAR NOMBRE ÚNICO
+   ============================================================ */
+function generarNombre() {
+  return `slide_${Date.now()}_${Math.random().toString(36).slice(2, 8)}.webp`;
+}
+
+/* ============================================================
+   RENDERIZAR SLIDES
+   ============================================================ */
+function renderSlides() {
+  slidesContainer.innerHTML = "";
+  slides.forEach((slide, i) => {
+    const div = document.createElement("div");
+    div.className = "slide-item";
+    div.draggable = true;
+
+    const imgSrc = slide._blob
+      ? URL.createObjectURL(slide._blob)
+      : slide.url || "/imagenes/no-image.png";
+
+    div.innerHTML = `
+      <img class="slide-thumb" src="${imgSrc}" alt="Slide ${i + 1}">
+      <div class="slide-fields">
+        <div class="slide-fields-row">
+          <input type="text" class="slide-title-input" placeholder="Título (opcional)" value="${escapeHtml(slide.titulo || "")}">
+          <input type="text" class="slide-subtitle-input" placeholder="Subtítulo (opcional)" value="${escapeHtml(slide.subtitulo || "")}">
+        </div>
+      </div>
+      <div class="slide-actions">
+        <button type="button" class="slide-btn move-up" title="Subir" ${i === 0 ? "disabled style='opacity:.3'" : ""}>
+          <span class="material-symbols-outlined">keyboard_arrow_up</span>
+        </button>
+        <button type="button" class="slide-btn move-down" title="Bajar" ${i === slides.length - 1 ? "disabled style='opacity:.3'" : ""}>
+          <span class="material-symbols-outlined">keyboard_arrow_down</span>
+        </button>
+        <button type="button" class="slide-btn delete" title="Eliminar">
+          <span class="material-symbols-outlined">delete</span>
+        </button>
+      </div>
+    `;
+
+    const titleInput = div.querySelector(".slide-title-input");
+    const subtitleInput = div.querySelector(".slide-subtitle-input");
+
+    titleInput.addEventListener("input", () => { slide.titulo = titleInput.value; });
+    subtitleInput.addEventListener("input", () => { slide.subtitulo = subtitleInput.value; });
+
+    div.querySelector(".move-up").addEventListener("click", () => {
+      if (i > 0) {
+        [slides[i - 1], slides[i]] = [slides[i], slides[i - 1]];
+        renderSlides();
+      }
+    });
+
+    div.querySelector(".move-down").addEventListener("click", () => {
+      if (i < slides.length - 1) {
+        [slides[i], slides[i + 1]] = [slides[i + 1], slides[i]];
+        renderSlides();
+      }
+    });
+
+    div.querySelector(".delete").addEventListener("click", () => {
+      slides.splice(i, 1);
+      renderSlides();
+    });
+
+    // Click en thumbnail para reemplazar imagen
+    const thumb = div.querySelector(".slide-thumb");
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = "image/jpeg,image/png,image/webp";
+    fileInput.hidden = true;
+    div.appendChild(fileInput);
+    thumb.addEventListener("click", () => fileInput.click());
+    fileInput.addEventListener("change", async () => {
+      const file = fileInput.files[0];
+      if (!file) return;
+      const blob = await comprimirImagen(file);
+      slide._blob = blob;
+      slide._dirty = true;
+      renderSlides();
+    });
+
+    // Drag & Drop events
+    div.addEventListener("dragstart", (e) => {
+      e.dataTransfer.effectAllowed = "move";
+      e.dataTransfer.setData("text/plain", i);
+      div.classList.add("dragging");
+    });
+
+    div.addEventListener("dragend", () => {
+      div.classList.remove("dragging");
+      slidesContainer.querySelectorAll(".slide-item").forEach(el => el.classList.remove("drag-over"));
+    });
+
+    div.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = "move";
+      slidesContainer.querySelectorAll(".slide-item").forEach(el => el.classList.remove("drag-over"));
+      div.classList.add("drag-over");
+    });
+
+    div.addEventListener("dragleave", () => {
+      div.classList.remove("drag-over");
+    });
+
+    div.addEventListener("drop", (e) => {
+      e.preventDefault();
+      div.classList.remove("drag-over");
+      const from = parseInt(e.dataTransfer.getData("text/plain"));
+      const to = i;
+      if (from !== to) {
+        const [moved] = slides.splice(from, 1);
+        slides.splice(to, 0, moved);
+        renderSlides();
+      }
+    });
+
+    slidesContainer.appendChild(div);
+  });
+}
+
+function escapeHtml(str) {
+  const d = document.createElement("div");
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+/* ============================================================
+   CARGAR CONFIGURACIÓN DESDE SUPABASE
+   ============================================================ */
+async function cargarConfiguracion() {
+  const { data, error } = await window.supabaseClient
+    .from("site_settings")
+    .select("*")
+    .eq("id", 1)
+    .single();
+
+  if (error || !data) {
+    console.warn("⚠️ No se pudo cargar site_settings, usando defaults");
+    slides = [
+      { url: "/imagenes/origen1.jpg", orden: 0, titulo: "La esencia de Honduras en cada sorbo", subtitulo: "Café de altura cultivado a 1100 msnm, fresco y directo de la finca." },
+      { url: "/imagenes/origen2.jpg", orden: 1, titulo: "", subtitulo: "" },
+      { url: "/imagenes/origen3.jpg", orden: 2, titulo: "", subtitulo: "" },
+      { url: "/imagenes/cosecha1.jpg", orden: 3, titulo: "", subtitulo: "" },
+      { url: "/imagenes/cosecha2.jpg", orden: 4, titulo: "", subtitulo: "" },
+      { url: "/imagenes/cosecha3.jpg", orden: 5, titulo: "", subtitulo: "" },
+      { url: "/imagenes/cosecha4.jpg", orden: 6, titulo: "", subtitulo: "" },
+      { url: "/imagenes/cosecha5.jpg", orden: 7, titulo: "", subtitulo: "" },
+      { url: "/imagenes/tostado1.jpg", orden: 8, titulo: "", subtitulo: "" },
+      { url: "/imagenes/tostado2.jpg", orden: 9, titulo: "", subtitulo: "" },
+      { url: "/imagenes/tostado3.jpg", orden: 10, titulo: "", subtitulo: "" },
+      { url: "/imagenes/tostado4.jpg", orden: 11, titulo: "", subtitulo: "" }
+    ];
+    historiaTitulo.value = "Nuestra historia";
+    historiaSubtitulo.value = "Sobre Café Cortero";
+    historiaLead.value = "Café Cortero es un proyecto familiar nacido del amor por la tierra y el café bien hecho. Cada grano refleja nuestro compromiso con la calidad, el respeto al entorno y el orgullo de producir café hondureño.";
+    historiaBody.value = "Desde la siembra hasta el tostado, cuidamos cada etapa de forma artesanal, combinando tradición, dedicación y experiencia para que disfrutes en cada taza un café honesto y lleno de sabor.";
+    historiaPreview.src = "/imagenes/nosotros.jpg";
+    whatsappNumero.value = "50496670613";
+    whatsappNumero2.value = "50498675101";
+    facebookUrl.value = "https://www.facebook.com/share/1FsrT4DYrU/";
+    instagramUrl.value = "https://www.instagram.com/TU_USUARIO";
+    logoPreview.src = "/imagenes/logo.png";
+    logoSecPreview.src = "/imagenes/logo_secundario.png";
+    footerTextInput.value = "2026 Café Cortero. Todos los derechos reservados.";
+
+    renderSlides();
+    return;
+  }
+
+  historiaTitulo.value = data.historia_titulo || "";
+  historiaSubtitulo.value = data.historia_subtitulo || "";
+  historiaLead.value = data.historia_lead || "";
+  historiaBody.value = data.historia_body || "";
+  historiaPreview.src = urlValida(data.historia_imagen_url) || "/imagenes/nosotros.jpg";
+  originalHistoriaImgUrl = urlValida(data.historia_imagen_url);
+  whatsappNumero.value = data.whatsapp_numero || "";
+  whatsappNumero2.value = data.whatsapp_numero2 || "";
+  facebookUrl.value = data.facebook_url || "";
+  instagramUrl.value = data.instagram_url || "";
+  logoPreview.src = urlValida(data.logo_url) || "/imagenes/logo.png";
+  originalLogoUrl = urlValida(data.logo_url);
+  logoSecPreview.src = urlValida(data.logo_secundario_url) || "/imagenes/logo_secundario.png";
+  originalLogoSecUrl = urlValida(data.logo_secundario_url);
+  footerTextInput.value = data.footer_text || "2026 Café Cortero. Todos los derechos reservados.";
+  if (privacyEditor) privacyEditor.innerHTML = data.privacy_content || "";
+  if (termsEditor) termsEditor.innerHTML = data.terms_content || "";
+
+  slides = (data.hero_slides || []).map(s => ({ ...s }));
+  renderSlides();
+}
+
+/* ============================================================
+   GUARDAR CONFIGURACIÓN (UPSERT)
+   ============================================================ */
+async function guardarConfiguracion(e) {
+  e.preventDefault();
+  btnSave.classList.add("loading");
+  btnSave.textContent = "Guardando...";
+
+  try {
+    // 1. Subir imágenes pendientes de slides
+    for (let i = 0; i < slides.length; i++) {
+      const slide = slides[i];
+      if (slide._blob) {
+        const fileName = generarNombre();
+        const url = await subirArchivo(slide._blob, fileName);
+        slide.url = url;
+        delete slide._blob;
+        delete slide._dirty;
+      }
+    }
+
+    // 2. Subir imagen de historia si cambió
+    let historiaImagenUrl = originalHistoriaImgUrl;
+    if (historiaImagenBlob) {
+      const fileName = `historia_${Date.now()}.webp`;
+      historiaImagenUrl = await subirArchivo(historiaImagenBlob, fileName);
+      historiaPreview.src = historiaImagenUrl;
+      originalHistoriaImgUrl = historiaImagenUrl;
+      historiaImagenBlob = null;
+    }
+
+    // 2b. Subir logo principal si cambió
+    let logoUrl = originalLogoUrl;
+    if (logoBlob) {
+      const fileName = `logo_${Date.now()}.webp`;
+      logoUrl = await subirArchivo(logoBlob, fileName);
+      logoPreview.src = logoUrl;
+      originalLogoUrl = logoUrl;
+      logoBlob = null;
+    }
+
+    // 2c. Subir logo secundario si cambió
+    let logoSecUrl = originalLogoSecUrl;
+    if (logoSecBlob) {
+      const fileName = `logo_sec_${Date.now()}.webp`;
+      logoSecUrl = await subirArchivo(logoSecBlob, fileName);
+      logoSecPreview.src = logoSecUrl;
+      originalLogoSecUrl = logoSecUrl;
+      logoSecBlob = null;
+    }
+
+    // 3. Construir payload
+    const payload = {
+      id: 1,
+      hero_slides: slides.map((s, i) => ({
+        url: s.url,
+        orden: i,
+        titulo: s.titulo || "",
+        subtitulo: s.subtitulo || ""
+      })),
+      historia_titulo: historiaTitulo.value.trim(),
+      historia_subtitulo: historiaSubtitulo.value.trim(),
+      historia_lead: historiaLead.value.trim(),
+      historia_body: historiaBody.value.trim(),
+      historia_imagen_url: historiaImagenUrl,
+      whatsapp_numero: whatsappNumero.value.trim(),
+      whatsapp_numero2: whatsappNumero2.value.trim(),
+      facebook_url: facebookUrl.value.trim(),
+      instagram_url: instagramUrl.value.trim(),
+      logo_url: logoUrl,
+      logo_secundario_url: logoSecUrl,
+      footer_text: footerTextInput.value.trim(),
+      privacy_content: privacyEditor ? privacyEditor.innerHTML.trim() : "",
+      terms_content: termsEditor ? termsEditor.innerHTML.trim() : "",
+      updated_at: new Date().toISOString()
+    };
+
+    // 4. Upsert (inserta si no existe, actualiza si ya existe)
+    const { error } = await window.supabaseClient
+      .from("site_settings")
+      .upsert(payload, { onConflict: "id" });
+
+    if (error) throw error;
+
+    showSnackbar("✅ Configuración guardada correctamente", "success");
+  } catch (err) {
+    console.error("❌ Error al guardar:", err);
+    showSnackbar("❌ Error al guardar la configuración", "error");
+  } finally {
+    btnSave.classList.remove("loading");
+    btnSave.innerHTML = '<span class="material-symbols-outlined">save</span> Guardar cambios';
+  }
+}
+
+/* ============================================================
+   AGREGAR SLIDE
+   ============================================================ */
+btnAddSlide.addEventListener("click", () => slideUploadInput.click());
+
+slideUploadInput.addEventListener("change", async () => {
+  const files = Array.from(slideUploadInput.files);
+  if (!files.length) return;
+  for (const file of files) {
+    const blob = await comprimirImagen(file);
+    slides.push({
+      url: URL.createObjectURL(blob),
+      orden: slides.length,
+      titulo: "",
+      subtitulo: "",
+      _blob: blob,
+      _dirty: true
+    });
+  }
+  slideUploadInput.value = "";
+  renderSlides();
+});
+
+/* ============================================================
+   SUBIR IMAGEN DE HISTORIA
+   ============================================================ */
+historiaImgUpload.addEventListener("click", () => historiaImgInput.click());
+
+historiaImgInput.addEventListener("change", async () => {
+  const file = historiaImgInput.files[0];
+  if (!file) return;
+  historiaImagenBlob = await comprimirImagen(file);
+  historiaPreview.src = URL.createObjectURL(historiaImagenBlob);
+});
+
+/* ============================================================
+   ACCORDEÓN
+   ============================================================ */
+document.addEventListener("click", (e) => {
+  const header = e.target.closest(".card-header-stitch");
+  if (!header) return;
+  const card = header.closest(".config-card");
+  if (!card) return;
+  card.classList.toggle("collapsed");
+});
+
+/* ============================================================
+   CARGAR RESEÑAS (ADMIN)
+   ============================================================ */
+async function cargarReviewsAdmin() {
+  reviewsAdminList.innerHTML = '<div class="reviews-admin-loading">Cargando reseñas...</div>';
+
+  const { data: reviews, error } = await window.supabaseClient
+    .from("reviews")
+    .select("id, rating, comment, user_id, hidden, created_at")
+    .order("created_at", { ascending: false });
+
+  if (error || !reviews?.length) {
+    reviewsAdminList.innerHTML = '<div class="reviews-admin-empty">No hay reseñas registradas aún.</div>';
+    return;
+  }
+
+  const userIds = [...new Set(reviews.map(r => r.user_id))];
+  const { data: users } = await window.supabaseClient
+    .from("users")
+    .select("id, name, photo_url")
+    .in("id", userIds);
+
+  const userMap = Object.fromEntries((users || []).map(u => [u.id, u]));
+  const userPhoto = u => {
+    const url = userMap[u]?.photo_url;
+    return url ? `<img src="${url}" alt="" class="reviews-admin-avatar" onerror="this.style.display='none'">` : '<span class="reviews-admin-avatar-placeholder">👤</span>';
+  };
+
+  reviewsAdminList.innerHTML = reviews.map(r => {
+    const hidden = r.hidden === true;
+    return `
+    <div class="reviews-admin-item" data-id="${r.id}">
+      <div class="reviews-admin-item-left">
+        ${userPhoto(r.user_id)}
+        <div class="reviews-admin-item-info">
+          <div class="reviews-admin-item-name">${userMap[r.user_id]?.name || "Cliente"}</div>
+          <div class="reviews-admin-item-stars">${Array(5).fill(0).map((_, i) => `<span class="star${i < r.rating ? ' active' : ''}">★</span>`).join('')}</div>
+          <div class="reviews-admin-item-comment">"${(r.comment || 'Sin comentario')}"</div>
+        </div>
+      </div>
+      <label class="toggle-switch">
+        <input type="checkbox" class="review-toggle" ${!hidden ? 'checked' : ''} />
+        <span class="toggle-slider"></span>
+      </label>
+    </div>`;
+  }).join("");
+
+  // Toggle directo
+  reviewsAdminList.querySelectorAll(".review-toggle").forEach(toggle => {
+    toggle.addEventListener("change", async () => {
+      const item = toggle.closest(".reviews-admin-item");
+      const id = item.dataset.id;
+      const newHidden = !toggle.checked;
+      const prevState = toggle.checked;
+
+      const { error } = await window.supabaseClient
+        .from("reviews")
+        .update({ hidden: newHidden })
+        .eq("id", id);
+
+      if (error) {
+        toggle.checked = prevState;
+        showSnackbar("❌ Error al actualizar la reseña", "error");
+      } else {
+        showSnackbar(newHidden ? "🔇 Reseña ocultada" : "🔊 Reseña visible", "success");
+      }
+    });
+  });
+}
+
+/* ============================================================
+   SNACKBAR
+   ============================================================ */
+function showSnackbar(message, type = "success") {
+  const el = document.getElementById("snackbar");
+  if (!el) return;
+  el.textContent = message;
+  el.className = "snackbar show";
+  if (type) el.classList.add(type);
+  setTimeout(() => el.classList.remove("show", "success", "error", "warn"), 3500);
+}
+
+/* ============================================================
+   DEFAULT LEGAL CONTENT
+   ============================================================ */
+function getDefaultPrivacyContent() {
+  return `<h2>Datos que recopilamos</h2>
+<ul>
+  <li>Correo electrónico y nombre básico (si inicias sesión con Google).</li>
+  <li>Datos necesarios para operar tu cuenta dentro de la aplicación.</li>
+</ul>
+<h2>Cómo usamos tus datos</h2>
+<p>Usamos esta información únicamente para autenticarte y gestionar tu cuenta dentro de Café Cortero. No vendemos tus datos.</p>
+<h2>Google Sign-In</h2>
+<p>No almacenamos tu contraseña de Google. El acceso se gestiona mediante OAuth y tokens de sesión.</p>
+<h2>Compartición con terceros</h2>
+<p>No compartimos información personal con terceros, salvo cuando sea necesario para el funcionamiento del inicio de sesión (por ejemplo, el proveedor de autenticación).</p>
+<h2>Contacto</h2>
+<p class="contacto">Si tienes preguntas, escríbenos a: <a href="mailto:cafecortero@gmail.com"><strong>cafecortero@gmail.com</strong></a></p>`;
+}
+
+function getDefaultTermsContent() {
+  return `<p>Al utilizar Café Cortero aceptas los presentes Términos del Servicio.</p>
+<h2>Uso del servicio</h2>
+<p>El servicio se proporciona "tal cual", sin garantías de disponibilidad continua ni ausencia de errores.</p>
+<h2>Responsabilidad del usuario</h2>
+<p>El uso de la aplicación es responsabilidad exclusiva del usuario, quien se compromete a utilizarla de forma lícita y adecuada.</p>
+<h2>Modificaciones</h2>
+<p>Café Cortero se reserva el derecho de modificar estos términos en cualquier momento. Las modificaciones entrarán en vigor una vez publicadas.</p>`;
+}
+
+/* ============================================================
+   LOGO UPLOAD / RESTORE
+   ============================================================ */
+function setupLogoUpload(btn, input, preview, blobVarSetter) {
+  btn.addEventListener("click", () => input.click());
+  input.addEventListener("change", async () => {
+    const file = input.files[0];
+    if (!file) return;
+    const blob = await comprimirImagen(file);
+    blobVarSetter(blob);
+    preview.src = URL.createObjectURL(blob);
+  });
+}
+
+setupLogoUpload(btnUploadLogo, logoInput, logoPreview, b => { logoBlob = b; });
+setupLogoUpload(btnUploadLogoSec, logoInputSec, logoSecPreview, b => { logoSecBlob = b; });
+
+btnRestoreLogo.addEventListener("click", () => {
+  logoBlob = null;
+  logoPreview.src = "/imagenes/logo.png";
+});
+
+btnRestoreLogoSec.addEventListener("click", () => {
+  logoSecBlob = null;
+  logoSecPreview.src = "/imagenes/logo_secundario.png";
+});
+
+/* ============================================================
+   INIT
+   ============================================================ */
+(async function init() {
+  await esperarSupabase();
+
+  if (localStorage.getItem("cortero_logged") !== "1") {
+    location.href = "/pages/auth/login.html";
+    return;
+  }
+
+  try {
+    const user = JSON.parse(localStorage.getItem("cortero_user"));
+    if (user?.rol !== "admin") {
+      location.href = "/pages/home/index.html";
+      return;
+    }
+  } catch { location.href = "/pages/auth/login.html"; return; }
+
+  form.addEventListener("submit", guardarConfiguracion);
+
+  await cargarConfiguracion();
+  cargarReviewsAdmin();
+})();

@@ -1,0 +1,1140 @@
+:root {
+  --marron: #512615;
+  --verde: #377b4c;
+  --blanco: #ffffff;
+  --fondo: #fafafa;
+}
+
+/* RESET */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Poppins", sans-serif;
+  background: var(--fondo);
+  color: var(--marron);
+  -webkit-tap-highlight-color: transparent;
+}
+
+
+
+/* =====================================================
+   SEGUIR COMPRANDO
+===================================================== */
+.seguir-comprando {
+  max-width: 1100px;
+  margin: 1.7rem auto 1rem;
+  padding: 0 1rem;
+
+  display: flex;
+  align-items: center;
+}
+
+/* El estilo base viene de main.css (.btn-volver-premium) */
+
+/* Offset Header */
+body.page-carrito {
+  padding-top: 100px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+body.page-carrito main {
+  flex: 1;
+}
+
+/* Ocultar el botón antiguo o cualquier contenedor residual */
+.seguir-comprando {
+  display: none !important;
+}
+
+@media (max-width: 900px) {
+  body.page-carrito .seguir-comprando {
+    margin-top: calc(72px + 0.5rem);
+  }
+}
+
+/* =====================================================
+   GRID PRINCIPAL
+===================================================== */
+.grid-carrito {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem 3rem;
+
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 2.5rem;
+  align-items: start;
+}
+
+/* =====================================================
+   HEADER CARRITO (NUEVO)
+===================================================== */
+.cart-header-container {
+  max-width: 1100px;
+  margin: 65px auto 1rem;
+  padding: 0 1rem;
+}
+
+.page-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #2B2B2B;
+  margin-bottom: 0.2rem;
+  letter-spacing: -1px;
+}
+
+.page-subtitle {
+  font-size: 1.1rem;
+  color: #377b4c;
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+}
+
+.seguir-comprando-inline {
+  display: flex;
+  justify-content: flex-start;
+}
+
+/* Reutilizamos el estilo premium con ajustes para que se integre bien */
+.seguir-comprando-inline .btn-volver-premium.variant-white {
+  background: #FFFFFF;
+  padding: 4px 14px 4px 4px;
+  border-radius: 50px;
+  border: 1px solid rgba(55, 123, 76, 0.1);
+  font-size: 0.9rem;
+}
+
+@media (max-width: 760px) {
+  .grid-carrito {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .item {
+    width: 100%;
+  }
+
+  .cart-header-container {
+    margin-top: 60px;
+    margin-bottom: 1rem;
+    text-align: center;
+    padding: 0 1.5rem;
+  }
+
+  .seguir-comprando-inline {
+    justify-content: flex-start !important;
+    /* ⬅️ Siempre a la izquierda */
+    margin-top: 1rem;
+    padding-left: 0;
+  }
+
+  .page-title {
+    font-size: 2rem;
+    text-align: center;
+  }
+
+  .page-subtitle {
+    font-size: 1rem;
+    text-align: center;
+  }
+}
+
+/* =====================================================
+   ITEM DEL CARRITO
+===================================================== */
+.item {
+  display: flex;
+  position: relative;
+  /* Espacio reservado para la imagen grande del producto con holgura a la derecha */
+  padding: 1.5rem 1.5rem 1.5rem 230px;
+  background: #FFFFFF;
+  border-radius: 24px;
+  border: 1px solid rgba(55, 123, 76, 0.08);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+  margin-bottom: 1.5rem;
+  align-items: center;
+  min-height: 210px; /* Asegura espacio vertical para la imagen */
+}
+
+/* =====================================================
+   IMAGEN — ITEM CARRITO (MÁS GRANDE Y PROPORCIONADA)
+===================================================== */
+
+.item-img-box {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  width: 180px;
+  height: 180px;
+  max-height: 180px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateY(-50%);
+  background: transparent;
+}
+
+.item-img-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  opacity: 1;
+  transform: scale(1.08);
+  transition: transform 0.3s ease;
+}
+
+/* Desktop */
+@media (min-width: 768px) {
+  .item-img-box {
+    width: 185px;
+    height: 185px;
+    max-height: 185px;
+  }
+}
+
+@media (max-width: 600px) {
+  .item {
+    padding: 1.25rem 1.2rem 1.25rem 165px;
+    min-height: 170px;
+  }
+  .item-img-box {
+    width: 135px;
+    height: 135px;
+    max-height: 135px;
+    left: 4px;
+  }
+  .item-info {
+    padding-left: 1.2rem;
+  }
+}
+
+/* Textos */
+.item-info {
+  flex: 1;
+  padding-left: 2.2rem;
+}
+
+.item-name {
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Precios y Descuentos en Item */
+.item-price-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 0.6rem;
+}
+
+.item-price-old {
+  font-size: 0.85rem;
+  color: #8D6E63;
+  /* Acento café */
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+.item-discount-badge {
+  background: #c8e6c9;
+  border: 1px solid #a5d6a7;
+  color: #1b5e20;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.item-price {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--verde);
+}
+
+.item-price .unit-text {
+  color: var(--acento, #8D6E63);
+  font-weight: 500;
+  font-size: 0.88em;
+}
+
+/* Controles */
+.qty-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.qty-btn,
+.del-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  min-width: 34px;
+  min-height: 34px;
+
+  background: #f5f7f6;
+  border: 1.5px solid rgba(55, 123, 76, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  transition: 0.15s ease;
+}
+
+.qty-btn.plus i {
+  color: var(--verde);
+}
+
+.qty-btn.minus i {
+  color: var(--marron);
+}
+
+.del-btn i {
+  color: #d72638;
+}
+
+.qty-number {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* =====================================================
+   RESUMEN DEL PEDIDO — PREMIUM REDESIGN
+===================================================== */
+.resumen-box {
+  background: #fdfdfd;
+  padding: 1.5rem;
+  border-radius: 24px;
+  border: 1px solid rgba(55, 123, 76, 0.1);
+  box-shadow: 0 10px 40px rgba(55, 123, 76, 0.05);
+  position: sticky;
+  top: 100px;
+  max-width: 100%;
+}
+
+.summary-title {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--marron);
+  /* Café Principal */
+  margin-bottom: 2rem;
+  letter-spacing: -0.5px;
+}
+
+.resumen-sheet-handle-bar,
+.resumen-sheet-chevron,
+.cart-sheet-backdrop,
+.resumen-items-slot {
+  display: none;
+}
+
+.resumen-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+
+.resumen-title {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--marron);
+  margin-bottom: 0;
+  letter-spacing: -0.5px;
+}
+
+/* SECCIÓN CUPÓN (Oculto por ahora) */
+.coupon-section {
+  display: none !important;
+  margin-bottom: 2.5rem;
+}
+
+.coupon-section label {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--verde);
+  margin-bottom: 0.8rem;
+}
+
+.coupon-group {
+  display: flex;
+  gap: 10px;
+}
+
+.input-with-icon {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-with-icon span {
+  position: absolute;
+  left: 14px;
+  color: #8d6e63;
+  font-size: 20px;
+}
+
+.input-with-icon input {
+  width: 100%;
+  padding: 12px 14px 12px 42px;
+  border-radius: 999px;
+  border: 1px solid rgba(55, 123, 76, 0.1);
+  background: #f0f3f1;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.input-with-icon input:focus {
+  outline: none;
+  background: #f5f7f6;
+  border-color: var(--verde);
+  box-shadow: 0 0 0 4px rgba(55, 123, 76, 0.1);
+}
+
+.btn-apply {
+  padding: 0 24px;
+  border-radius: 999px;
+  border: none;
+  background: #e8ede9;
+  color: #377b4c;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-apply:hover {
+  background: #dde5de;
+}
+
+/* Mensaje de cupón aplicado */
+.coupon-message {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  color: var(--verde);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.coupon-message.hidden {
+  display: none;
+}
+
+.coupon-message span:first-child {
+  font-size: 18px;
+}
+
+.resumen-details {
+  border-bottom: 2px dotted #377b4c;
+  /* Verde Principal */
+  padding-bottom: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.resumen-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--marron);
+  /* Café Principal */
+}
+
+.discount-row {
+  color: var(--verde);
+  font-size: 0.8rem;
+  /* Más pequeño para que quepa en una línea */
+  font-weight: 700;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.discount-row span:last-child {
+  white-space: nowrap;
+}
+
+.free-shipping {
+  font-weight: 700;
+  color: var(--verde);
+  letter-spacing: 0.5px;
+}
+
+/* TOTAL */
+.resumen-total-box {
+  margin-bottom: 2rem;
+}
+
+.total-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 4px;
+}
+
+.total-text {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--marron);
+  /* Café Principal */
+}
+
+.total-amount {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #377b4c;
+  /* Total en Verde Principal */
+  letter-spacing: -1px;
+}
+
+.tax-note {
+  display: block;
+  text-align: right;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--marron);
+  /* Café Principal */
+}
+
+/* BOTÓN IR A PAGAR */
+.btn-checkout {
+  width: 100%;
+  padding: 1.1rem;
+  border-radius: 999px;
+  border: none;
+  background: #377b4c;
+  color: #f5f7f6;
+  font-size: 1.15rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 8px 24px rgba(62, 125, 84, 0.25);
+  margin-bottom: 2.5rem;
+}
+
+.btn-checkout:hover {
+  background: #356b48;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(62, 125, 84, 0.35);
+}
+
+.btn-checkout-right {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-checkout-price {
+  display: none;
+}
+
+.btn-checkout .material-symbols-outlined {
+  font-size: 20px;
+  font-weight: 300 !important;
+  font-variation-settings: 'wght' 300, 'opsz' 24 !important;
+  transition: transform 0.2s ease;
+}
+
+.btn-checkout:hover .material-symbols-outlined {
+  transform: translateX(4px);
+}
+
+/* DISTINTIVOS DE CONFIANZA */
+.trust-badges {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.trust-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.trust-item span:first-child {
+  font-size: 24px;
+  color: #8D6E63;
+  /* Acento café */
+}
+
+.trust-item span:last-child {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #8d6e63;
+  /* Texto secundario oficial */
+  white-space: nowrap;
+}
+
+/* =====================================================
+   EMPTY STATE
+===================================================== */
+.empty-container {
+  text-align: center;
+  margin-top: 2.5rem;
+  padding: 0 1rem;
+  opacity: 0;
+  transform: translateY(14px);
+  animation: emptyFadeIn .45s ease forwards;
+}
+
+.empty-img-box {
+  margin: 1.5rem auto 2.5rem;
+  width: 100%;
+  max-width: 380px;
+}
+
+.empty-img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+@keyframes emptyFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.empty-title {
+  font-size: 1.55rem;
+  font-weight: 600;
+  color: var(--marron);
+  margin-bottom: .3rem;
+}
+
+.empty-sub {
+  font-size: 1rem;
+  color: rgba(0, 0, 0, 0.55);
+  margin-bottom: 1.5rem;
+}
+
+.empty-btn {
+  padding: 12px 26px;
+  border-radius: 30px;
+  border: 2px solid var(--verde);
+  background: #f5f7f6;
+  color: var(--verde);
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all .25s ease;
+}
+
+.empty-btn:hover {
+  background: var(--verde);
+  color: white;
+}
+
+/* =====================================================
+   SNACKBAR — Material 3 Expressive (GENÉRICO)
+   HTML: <div id="snackbar" class="snackbar hidden"></div>
+===================================================== */
+
+#snackbar.snackbar {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translate(-50%, 18px);
+  max-width: 520px;
+  width: calc(100% - 56px);
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: rgba(20, 22, 24, 0.92);
+  color: #fff;
+  font-size: 14.5px;
+  line-height: 1.25;
+  font-weight: 600;
+  box-shadow: 0 18px 44px rgba(0,0,0,.55), 0 6px 16px rgba(0,0,0,.35), 0 0 0 1px rgba(255,255,255,.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 99999;
+  transition: opacity .22s ease, transform .22s cubic-bezier(.2,0,0,1);
+}
+
+#snackbar.snackbar::before {
+  content: "";
+  width: 6px;
+  align-self: stretch;
+  border-radius: 999px;
+  background: #33c26b;
+  opacity: .95;
+}
+
+#snackbar.snackbar.show {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, 0);
+}
+
+#snackbar.snackbar.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+#snackbar.snackbar.error::before { background: #ff4b4b; }
+#snackbar.snackbar.warn::before { background: #f6c343; }
+#snackbar.snackbar.success::before { background: #33c26b; }
+
+.snackbar-action {
+  background: #33c26b;
+  border: none;
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 6px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background .2s;
+}
+.snackbar-action:hover { background: #2bad5b; }
+
+@media (max-width: 900px) {
+  #snackbar.snackbar {
+    bottom: 20px;
+    width: calc(100% - 64px);
+    max-width: 480px;
+    padding: 13px 14px;
+    border-radius: 16px;
+    font-size: 14px;
+  }
+}
+
+/* ============================================================
+   Carrito vacío en PC — centrado horizontal y más arriba
+============================================================ */
+@media (min-width: 768px) {
+
+  main.carrito-vacio-activo {
+    display: block;
+    min-height: calc(100vh - 72px);
+  }
+
+  main.carrito-vacio-activo .grid-carrito {
+    max-width: 700px;
+    margin: 0 auto;
+    display: block;
+  }
+
+  main.carrito-vacio-activo #cart-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+
+  main.carrito-vacio-activo .empty-container {
+    text-align: center;
+    margin-top: 4.5rem;
+    transform: none;
+  }
+}
+
+/* =====================================================
+   OCULTAR FOOTER EN LA PÁGINA DEL CARRITO Y ELEMENTOS
+   CUANDO EL CARRITO ESTÁ VACÍO O NO LOGUEADO
+===================================================== */
+body.page-carrito #site-footer,
+body.page-carrito footer,
+body.page-carrito.carrito-vacio .seguir-comprando,
+body.page-carrito.carrito-vacio .header-pos-client-slot,
+body.page-carrito.carrito-vacio #header-pos-client-slot,
+body.page-carrito header.no-user .header-pos-client-slot,
+body.page-carrito.no-user .header-pos-client-slot {
+  display: none !important;
+}
+
+/* =====================================================
+   COMPENSAR ESPACIO CUANDO SE OCULTA "SEGUIR COMPRANDO"
+===================================================== */
+main.carrito-vacio-activo {
+  padding-top: calc(72px + 1.5rem);
+}
+
+@media (max-width: 900px) {
+  main.carrito-vacio-activo {
+    padding-top: calc(72px + 1rem);
+  }
+}
+
+/* =====================================================
+   BOTÓN VOLVER PREMIUM (Píldora Blanca)
+   ===================================================== */
+.btn-volver-premium {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  background: transparent;
+  padding: 8px 12px;
+  border-radius: 999px;
+  width: fit-content;
+  user-select: none;
+}
+
+.btn-volver-premium .circle-icon {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  border-radius: 50%;
+  background: var(--verde);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(51, 103, 59, 0.2);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-volver-premium .circle-icon span,
+.btn-volver-premium .circle-icon i {
+  color: #f5f7f6;
+  font-size: 20px;
+  font-weight: 700;
+  transition: transform 0.25s ease;
+}
+
+.btn-volver-premium .text {
+  color: var(--verde);
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: -0.2px;
+}
+
+/* Variante con fondo blanco (Píldora blanca con círculo verde) */
+.btn-volver-premium.variant-white {
+  background: #f5f7f6;
+  padding: 6px 18px 6px 6px;
+  border: 1px solid rgba(55, 123, 76, 0.1);
+  box-shadow: 0 4px 12px rgba(55, 123, 76, 0.1);
+}
+
+.btn-volver-premium.variant-white .circle-icon {
+  background: var(--verde);
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  box-shadow: none;
+}
+
+.btn-volver-premium.variant-white .circle-icon span,
+.btn-volver-premium.variant-white .circle-icon i {
+  color: #f5f7f6;
+  font-size: 18px;
+}
+
+.btn-volver-premium.variant-white .text {
+  color: var(--verde);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+@media (hover: hover) {
+  .btn-volver-premium.variant-white:hover {
+    background: #fdfdfd;
+    box-shadow: 0 6px 16px rgba(55, 123, 76, 0.15);
+    transform: translateY(-1px);
+  }
+}
+
+.btn-volver-premium:active {
+  transform: scale(0.96);
+}
+
+/* =====================================================
+   RESPONSIVIDAD EXTRA
+===================================================== */
+@media (max-width: 1024px) {
+  .grid-carrito {
+    grid-template-columns: 1fr 300px;
+    gap: 1.5rem;
+  }
+
+  .resumen-title {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 900px) {
+  body.page-carrito {
+    padding-top: 64px;
+    min-height: 100dvh;
+  }
+
+  body.page-carrito main {
+    width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .grid-carrito {
+    display: flex;
+    flex-direction: column;
+    grid-template-columns: 1fr;
+    width: 100%;
+    max-width: 100%;
+    flex: 1;
+    align-items: stretch;
+    gap: 0;
+    padding: 0;
+  }
+
+  .col-productos {
+    display: none;
+    width: 100%;
+  }
+
+  body.page-carrito.carrito-vacio .col-productos {
+    display: block;
+    padding: 0 1rem;
+  }
+
+  #cart-container {
+    width: 100%;
+  }
+
+  .col-resumen {
+    width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  main.carrito-vacio-activo .grid-carrito {
+    padding-bottom: 0;
+  }
+
+  .item {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+
+  .item-img-box {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    z-index: 2;
+  }
+
+  .item-img-box img.item-image {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  /* Ocultar elementos propios de Bottom Sheet en la vista plana */
+  .cart-sheet-backdrop,
+  .resumen-sheet-handle-bar,
+  .resumen-sheet-chevron {
+    display: none !important;
+  }
+
+  /* Vista plana en móvil manteniendo el mismo diseño interno */
+  .resumen-box,
+  .resumen-box.sheet-open {
+    position: static;
+    width: 100%;
+    flex: 1;
+    min-height: calc(100dvh - 64px);
+    display: flex !important;
+    flex-direction: column;
+    margin: 0;
+    padding: 0.9rem 1.15rem calc(0.9rem + env(safe-area-inset-bottom, 0px));
+    background: transparent;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+    box-sizing: border-box;
+    overflow: visible;
+  }
+
+  body.page-carrito.carrito-vacio .col-resumen,
+  body.page-carrito.carrito-vacio .resumen-box {
+    display: none !important;
+  }
+
+  .resumen-header-row,
+  .resumen-title {
+    display: none !important;
+  }
+
+  /* Productos en la vista plana móvil */
+  .resumen-items-slot,
+  .resumen-box.sheet-open .resumen-items-slot {
+    display: block;
+    flex: 1;
+    min-height: 0;
+    max-height: none;
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin-bottom: 0.85rem;
+    padding-right: 0;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    animation: none;
+  }
+
+  .resumen-items-slot::-webkit-scrollbar,
+  .resumen-box::-webkit-scrollbar,
+  #cart-container::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+
+  .resumen-items-slot .item {
+    position: relative;
+    padding: 0.95rem 0.5rem 0.95rem 132px;
+    min-height: 124px;
+    margin-bottom: 0;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  /* Material 3 Inset divider en lista de productos abarcando desde la imagen */
+  .resumen-items-slot .item::after {
+    content: "";
+    position: absolute;
+    left: 6px;
+    right: 6px;
+    bottom: 0;
+    height: 1px;
+    background: rgba(55, 123, 76, 0.16);
+  }
+
+  .resumen-items-slot .item-img-box {
+    width: 108px;
+    height: 108px;
+    max-height: 108px;
+    left: 6px;
+  }
+
+  .resumen-items-slot .item-info {
+    padding-left: 0.25rem;
+  }
+
+  /* Desglose inferior fijo al pie de la vista plana */
+  .resumen-details,
+  .resumen-box.sheet-open .resumen-details {
+    display: block;
+    flex-shrink: 0;
+    margin-top: auto;
+    border-top: 1.5px dotted rgba(55, 123, 76, 0.35);
+    border-bottom: none;
+    padding-top: 0.75rem;
+    padding-bottom: 0.45rem;
+    margin-bottom: 0.55rem;
+    animation: none;
+  }
+
+  .resumen-row {
+    margin-bottom: 0.55rem;
+    font-size: 0.95rem;
+  }
+
+  .resumen-row:last-child {
+    margin-bottom: 0;
+  }
+
+  .resumen-total-box {
+    display: none !important;
+  }
+
+  .btn-checkout {
+    justify-content: space-between;
+    padding: 0.7rem 0.75rem 0.7rem 1.25rem;
+    font-size: 0.98rem;
+    margin-bottom: 0;
+  }
+
+  .btn-checkout-right {
+    background: rgba(255, 255, 255, 0.18);
+    padding: 6px 12px;
+    border-radius: 999px;
+    gap: 6px;
+  }
+
+  .btn-checkout-price {
+    display: inline-block;
+    font-weight: 800;
+    font-size: 1rem;
+    letter-spacing: -0.3px;
+    color: #ffffff;
+    white-space: nowrap;
+  }
+}
+
+@keyframes sheetDetailsFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =====================================================
+   HEADER: nombre "Mi carrito" junto a la flecha
+   (el layout base vive en css/ui/header.css; aquí solo se
+   garantiza que no vuelva al centrado absoluto anterior)
+===================================================== */
+body.page-carrito .header-left-stitch .header-cart-title {
+  position: static;
+  left: auto;
+  top: auto;
+  transform: none;
+}
+

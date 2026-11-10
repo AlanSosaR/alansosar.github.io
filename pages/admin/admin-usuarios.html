@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin – Usuarios | Café Cortero</title>
+
+  <!-- Material Symbols & Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;900&family=Roboto:wght@400;500;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- Estilos Core y Clientes Unificados -->
+  <link rel="stylesheet" href="/css/core/tipografia.css">
+  <link rel="stylesheet" href="/css/ui/header.css?v=20">
+  <link rel="stylesheet" href="/css/ui/footer.css">
+  <link rel="stylesheet" href="/css/ui/header.search.css?v=6">
+  <link rel="stylesheet" href="/css/admin/admin-clientes.css?v=36">
+  <link rel="stylesheet" href="/css/admin/admin-usuarios.css?v=36">
+  <link rel="icon" type="image/png" href="/imagenes/logo.png">
+</head>
+
+<body class="page-admin-users">
+  <div id="header-placeholder"></div>
+
+  <main class="admin-customers-container admin-users-container fade-in">
+    <!-- Header Institucional con Chips de Filtro -->
+    <header class="page-title-section">
+        <div class="title-group">
+            <h1 class="page-title">Gestión de Usuarios</h1>
+            <p class="page-subtitle">Administra roles, permisos y accesos de seguridad del personal.</p>
+        </div>
+        <div class="customers-filter-chips users-filter-chips">
+            <button class="customer-chip active" data-filter="all">Todos los Roles <span id="chip-count-all" class="chip-count">0</span></button>
+            <button class="customer-chip" data-filter="admin">Administradores <span id="chip-count-admin" class="chip-count">0</span></button>
+            <button class="customer-chip" data-filter="user">Usuarios <span id="chip-count-user" class="chip-count">0</span></button>
+        </div>
+    </header>
+
+    <!-- =========================
+         LAYOUT DE PANEL DUAL
+    ========================= -->
+    <div class="customers-layout users-layout-stitch" id="main-layout-stitch">
+
+        <!-- SECCIÓN IZQUIERDA: LISTADO -->
+        <section class="customers-list-section users-list-section-stitch" id="mobile-list-view">
+            <header class="list-header">
+                <h2 class="section-title">Usuarios</h2>
+                <div id="users-count" class="count-badge">0</div>
+            </header>
+            <div id="users-list" class="customers-list users-list-stitch">
+                <div class="loading-state">Cargando directorio de usuarios...</div>
+            </div>
+
+            <!-- Paginación de la Lista de Usuarios -->
+            <footer class="list-pagination-footer">
+                <button class="page-btn" id="list-prev" aria-label="Página anterior">
+                    <span class="material-symbols-outlined">chevron_left</span>
+                </button>
+                <div id="list-page-numbers" class="page-numbers"></div>
+                <button class="page-btn" id="list-next" aria-label="Página siguiente">
+                    <span class="material-symbols-outlined">chevron_right</span>
+                </button>
+            </footer>
+        </section>
+
+        <!-- SECCIÓN DERECHA: FICHA MAESTRA -->
+        <section id="user-detail" class="customer-detail-section user-detail-section-stitch hidden">
+            <!-- BOTÓN VOLVER MÓVIL (STITCH) -->
+            <button id="btn-back-to-list" class="btn-mobile-back">
+                <span class="material-symbols-outlined">arrow_back</span>
+                Volver a la lista
+            </button>
+
+            <!-- Portada y Perfil -->
+            <header class="detail-cover detail-header-stitch">
+                <div class="detail-profile-wrapper detail-profile-wrapper-stitch">
+                    <div id="u-avatar-placeholder" class="card-avatar-placeholder avatar-large-wrapper"></div>
+                    <div class="profile-text profile-text-stitch">
+                        <h2 id="u-name" class="client-name user-display-name-stitch">-</h2>
+                        <p id="u-location" class="client-location">
+                            <span class="material-symbols-outlined">badge</span>
+                            <span id="u-role-text">Usuario</span>
+                        </p>
+                    </div>
+                </div>
+                <div class="header-actions header-actions-stitch">
+                    <button class="btn-primary" id="btnContact" aria-label="Contactar al usuario" title="Contactar">
+                        <span class="material-symbols-outlined">mail</span>
+                        <span class="btn-contact-text">Contactar</span>
+                    </button>
+                </div>
+            </header>
+
+            <div class="detail-content detail-content-stitch">
+                <!-- Grid de Estadísticas Rápidas (2 niveles) -->
+                <div class="stats-grid stats-grid-stitch">
+                    <div class="stat-card stat-card-stitch">
+                        <span class="stat-label" id="u-stat-label-spent">GASTO TOTAL</span>
+                        <strong class="stat-value" id="u-total-spent">L 0.00</strong>
+                    </div>
+                    <div class="stat-card stat-card-stitch">
+                        <span class="stat-label" id="u-stat-label-orders">PEDIDOS TOTALES</span>
+                        <strong class="stat-value" id="u-total-orders">0</strong>
+                    </div>
+                    <div class="stat-card stat-card-stitch">
+                        <span class="stat-label" id="u-stat-label-reg">MIEMBRO DESDE</span>
+                        <strong id="u-reg-date-stat" class="stat-value">-</strong>
+                    </div>
+                </div>
+
+                <!-- Bloque de Información y Seguridad -->
+                <section class="security-panel-stitch">
+                    <div class="security-main-info">
+                        <h3>Información y Seguridad del Usuario</h3>
+
+                        <div class="info-group-stitch">
+                            <div class="info-item-stitch">
+                                <span class="material-symbols-outlined">badge</span>
+                                <div class="info-texts">
+                                    <label>ROL ASIGNADO</label>
+                                    <select id="u-role-select" class="role-select-stitch">
+                                        <option value="user">Usuario</option>
+                                        <option value="admin">Administrador</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="info-item-stitch">
+                                <span class="material-symbols-outlined">alternate_email</span>
+                                <div class="info-texts">
+                                    <label>CORREO ELECTRÓNICO</label>
+                                    <p id="u-email-text">-</p>
+                                </div>
+                            </div>
+
+                            <div class="info-item-stitch">
+                                <span class="material-symbols-outlined">call</span>
+                                <div class="info-texts">
+                                    <label>NÚMERO DE TELÉFONO</label>
+                                    <p id="u-phone-text">-</p>
+                                </div>
+                            </div>
+
+                            <div class="info-item-stitch">
+                                <span class="material-symbols-outlined">home_pin</span>
+                                <div class="info-texts">
+                                    <label>DIRECCIÓN / PAÍS</label>
+                                    <p id="u-address-text">-</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="audit-info-stitch">
+                            <p><strong>Fecha Registro:</strong> <span id="u-created-at">-</span></p>
+                        </div>
+                    </div>
+
+                    <!-- Centro de Control Lado Derecho -->
+                    <div class="security-control-center">
+                        <div class="control-box">
+                            <label class="control-label">CENTRO DE CONTROL</label>
+                            <p class="control-desc">Gestiona el acceso y el estado de la cuenta del personal de forma segura.</p>
+
+                            <button class="btn-reset-stitch" id="btnResetPass">
+                                <span class="material-symbols-outlined">lock_reset</span>
+                                Enviar enlace de restablecimiento de contraseña
+                            </button>
+
+                            <div class="status-toggle-wrapper">
+                                <div class="status-info">
+                                    <strong>Estado de la Cuenta</strong>
+                                    <p>Define si el usuario puede acceder al sistema</p>
+                                </div>
+                                <label class="switch-stitch">
+                                    <input type="checkbox" id="u-status-toggle" checked>
+                                    <span class="slider-stitch"></span>
+                                </label>
+                                <span class="status-label-stitch">ACTIVO</span>
+                            </div>
+                        </div>
+
+                        <button class="btn-save-stitch" id="btnSaveChanges">
+                            <span class="material-symbols-outlined">save</span>
+                            Guardar Cambios de Seguridad
+                        </button>
+                    </div>
+                </section>
+            </div>
+        </section>
+
+        <!-- ESTADO DE SELECCIÓN VACÍO -->
+        <section id="no-selection" class="customer-detail-section no-selection-section-stitch">
+            <div class="empty-state-stitch">
+                <span class="material-symbols-outlined large-icon">shield_person</span>
+                <h3>Selecciona un usuario</h3>
+                <p>Elige un miembro del directorio para gestionar sus permisos y seguridad operacional.</p>
+            </div>
+        </section>
+
+    </div>
+  </main>
+
+  <!-- Template Usuario (Sincronizado con Clientes) -->
+  <template id="tpl-user-card">
+    <div class="customer-card">
+        <div class="card-avatar-placeholder"></div>
+        <div class="card-info">
+            <h4 class="card-name">—</h4>
+            <p class="card-email">—</p>
+        </div>
+        <span class="admin-badge hidden">Admin</span>
+        <span class="material-symbols-outlined arrow">chevron_right</span>
+    </div>
+  </template>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/js/core/supabase-client-core.js"></script>
+  <script src="/js/core/supabase-auth.js"></script>
+
+  <script>
+    window.PAGE_MODE = "admin-usuarios";
+  </script>
+
+  <script src="/js/ui/layout.js"></script>
+  <script type="module" src="/js/ui/header.js"></script>
+
+  <script type="module">
+    import { renderHeaderSearch } from "/js/ui/header.search.js?v=6";
+
+    function setupUserHeaderSearch() {
+      const slot = document.getElementById("header-middle-slot");
+      if (!slot) return;
+
+      if (!document.getElementById("header-search-input")) {
+        slot.innerHTML = renderHeaderSearch({
+          showFilter: false,
+          showAdd: false,
+          placeholder: "Nombre, email o cargo..."
+        });
+      }
+
+      const input = document.getElementById("header-search-input");
+      if (input) {
+        input.addEventListener("input", (e) => {
+          document.dispatchEvent(new CustomEvent("user:search", { detail: e.target.value.trim() }));
+          document.dispatchEvent(new CustomEvent("header:search", { detail: e.target.value.trim() }));
+        });
+      }
+    }
+
+    document.addEventListener("header:ready", setupUserHeaderSearch);
+    if (document.getElementById("header-middle-slot")) {
+      setupUserHeaderSearch();
+    }
+  </script>
+
+  <script src="/js/admin/admin-usuarios.js?v=40" type="module"></script>
+
+  <div id="snackbar" class="snackbar"></div>
+
+  <!-- =========================
+       MODAL DE CONTACTO (MATERIAL 3 BOTTOM SHEET)
+  ========================= -->
+  <div id="modal-contact" class="modal-overlay hidden">
+    <div class="modal-content contact-modal-stitch fade-in">
+      <div class="bottom-sheet-drag-handle" aria-hidden="true"></div>
+      <header class="modal-header">
+        <h3>Contactar Usuario</h3>
+        <button class="btn-close-modal" id="close-contact-modal" aria-label="Cerrar modal">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </header>
+
+      <div class="modal-body">
+        <p class="modal-intro">Selecciona el medio preferido para contactar a <strong><span id="contact-user-name">-</span></strong>:</p>
+
+        <div class="contact-options-grid">
+          <!-- WhatsApp -->
+          <button class="contact-option-btn whatsapp" id="opt-whatsapp">
+            <div class="option-icon"><i class="fab fa-whatsapp"></i></div>
+            <div class="option-text">
+              <strong>WhatsApp</strong>
+              <span>Mensaje directo al celular</span>
+            </div>
+          </button>
+
+          <!-- Email -->
+          <button class="contact-option-btn email" id="opt-email">
+            <div class="option-icon"><span class="material-symbols-outlined">mail</span></div>
+            <div class="option-text">
+              <strong>Correo Electrónico</strong>
+              <span>Enviar email corporativo</span>
+            </div>
+          </button>
+
+          <!-- Push Notification -->
+          <button class="contact-option-btn push" id="opt-push">
+            <div class="option-icon"><span class="material-symbols-outlined">notifications_active</span></div>
+            <div class="option-text">
+              <strong>Notificación Push</strong>
+              <span>App en tiempo real (Avanzado)</span>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUB-MODAL PUSH -->
+  <div id="modal-push" class="modal-overlay hidden">
+    <div class="modal-content push-modal-stitch">
+      <header class="modal-header">
+        <h3>Enviar Notificación Push</h3>
+        <button class="btn-close-modal" id="close-push-modal" aria-label="Cerrar modal">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </header>
+      <div class="modal-body">
+        <div class="push-info-banner">
+          <span class="material-symbols-outlined">bolt</span>
+          <p>El usuario <strong><span id="push-user-name">-</span></strong> recibirá una alerta directa en su dispositivo móvil si tiene la App instalada.</p>
+        </div>
+        <div class="form-group-stitch">
+          <label>Título de la Alerta</label>
+          <input type="text" id="push-title" placeholder="Ej: Actualización de seguridad" maxlength="50">
+        </div>
+        <div class="form-group-stitch">
+          <label>Mensaje Corto</label>
+          <textarea id="push-message" placeholder="Escribe el mensaje aquí..." maxlength="200"></textarea>
+        </div>
+      </div>
+      <footer class="modal-footer-stitch">
+        <button class="btn-stitch-ghost" id="cancel-push">Cancelar</button>
+        <button class="btn-stitch-primary" id="send-push">
+          <span class="material-symbols-outlined">send</span>
+          Enviar Alerta
+        </button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- ========================= CONFIRM ACTION SNACKBAR ========================= -->
+  <div id="confirm-snackbar" class="confirm-snack hidden">
+    <div class="confirm-content">
+      <span id="confirm-text">¿Confirmar acción?</span>
+      <div class="confirm-actions">
+        <button class="btn-snack-ghost" id="btn-confirm-cancel">Cancelar</button>
+        <button class="btn-snack-primary" id="btn-confirm-ok">Confirmar</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

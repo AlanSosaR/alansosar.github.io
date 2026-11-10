@@ -1,0 +1,1 @@
+{"code":"PGRST204","details":null,"hint":null,"message":"Could not find the 'updated_at' column of 'notifications' in the schema cache"}

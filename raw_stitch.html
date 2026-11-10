@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;600;700;800;900&amp;family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "inverse-on-surface": "#eff1f0",
+            "on-error-container": "#93000a",
+            "primary-fixed": "#abf3b9",
+            "tertiary-container": "#85675c",
+            "surface-container-low": "#f2f4f3",
+            "surface-container-highest": "#e1e3e2",
+            "on-secondary-fixed-variant": "#005313",
+            "inverse-surface": "#2e3131",
+            "background": "#f8faf9",
+            "tertiary-fixed": "#ffdbce",
+            "secondary-container": "#91f78e",
+            "surface-bright": "#f8faf9",
+            "on-secondary": "#ffffff",
+            "error-container": "#ffdad6",
+            "on-surface-variant": "#404940",
+            "primary": "#1b6236",
+            "surface-container": "#eceeed",
+            "secondary-fixed-dim": "#78dc77",
+            "surface-tint": "#266b3e",
+            "surface-container-high": "#e6e9e8",
+            "error": "#ba1a1a",
+            "tertiary-fixed-dim": "#e4beb2",
+            "on-surface": "#191c1c",
+            "on-tertiary-fixed-variant": "#5b4137",
+            "on-secondary-fixed": "#002204",
+            "on-primary": "#ffffff",
+            "primary-container": "#377b4c",
+            "on-tertiary-fixed": "#2b160f",
+            "tertiary": "#6b4f45",
+            "secondary": "#006e1c",
+            "inverse-primary": "#90d69f",
+            "on-error": "#ffffff",
+            "outline-variant": "#c0c9be",
+            "outline": "#707a70",
+            "on-primary-container": "#c7ffd0",
+            "on-secondary-container": "#00731e",
+            "surface-dim": "#d8dad9",
+            "surface": "#f8faf9",
+            "on-primary-fixed-variant": "#035228",
+            "on-background": "#191c1c",
+            "on-tertiary": "#ffffff",
+            "surface-container-lowest": "#ffffff",
+            "on-primary-fixed": "#00210c",
+            "secondary-fixed": "#94f990",
+            "primary-fixed-dim": "#90d69f",
+            "on-tertiary-container": "#ffeee8",
+            "surface-variant": "#e1e3e2"
+          },
+          fontFamily: {
+            "headline": ["Epilogue"],
+            "body": ["Manrope"],
+            "label": ["Manrope"]
+          },
+          borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    body { font-family: 'Manrope', sans-serif; background-color: #f8faf9; color: #191c1c; }
+    h1, h2, h3 { font-family: 'Epilogue', sans-serif; }
+  </style>
+</head>
+<body class="bg-background text-on-surface">
+<!-- TopNavBar Implementation -->
+<nav class="fixed top-0 w-full z-50 bg-[#f8faf9]/80 backdrop-blur-md shadow-[0_20px_40px_rgba(25,28,28,0.06)] h-20 px-8 flex justify-between items-center max-w-full mx-auto">
+<div class="flex items-center gap-8">
+<span class="text-2xl font-bold text-[#1b6236] uppercase tracking-tighter font-['Epilogue']">Café Cortero</span>
+<div class="hidden md:flex items-center gap-6">
+<a class="text-[#6b4f45] font-medium hover:text-[#1b6236] transition-colors duration-300" href="#">Dashboard</a>
+<a class="text-[#6b4f45] font-medium hover:text-[#1b6236] transition-colors duration-300" href="#">Inventory</a>
+<a class="text-[#1b6236] font-semibold border-b-2 border-[#1b6236] pb-1" href="#">Orders</a>
+<a class="text-[#6b4f45] font-medium hover:text-[#1b6236] transition-colors duration-300" href="#">Roastery</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 rounded-full hover:bg-[#f2f4f3] transition-colors duration-300 text-[#1b6236]">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 rounded-full hover:bg-[#f2f4f3] transition-colors duration-300 text-[#1b6236]">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="w-10 h-10 rounded-full overflow-hidden bg-surface-container-high ml-2 border-2 border-primary/10">
+<img class="w-full h-full object-cover" data-alt="Professional portrait of a male coffee roastery administrator in a clean modern environment" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDz6uONE5R64MLzWAtVvIQIZX1drdBZEZQYLaVtzNQ03-knA4mP237t2nGZBdHYuzNU5jKbSCB7m0KGRrg6aoeeeTCqLPUxgz6xhLKgnjIqFWX3eV-ZkP0xiUOoOKofL7GPxvR0_okyPDRTUXw-F90MflFFQlEI8vLq-hN8WRYUWvdS2YyZNQdhVWCi8yv-pnE9udieBT55Le_s3JzzgmcvuUlRPTxAC58vms5N5eGhwANF1cTnXNSBYLPfnjj41okG6kIOfHbXyJc"/>
+</div>
+</div>
+<div class="bg-[#f2f4f3] h-[1px] w-full absolute bottom-0 left-0"></div>
+</nav>
+<main class="pt-32 pb-24 px-4 md:px-8 max-w-7xl mx-auto">
+<!-- Order Header -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+<div>
+<div class="flex items-center gap-4 mb-2">
+<a class="text-primary hover:translate-x-[-4px] transition-transform flex items-center" href="#">
+<span class="material-symbols-outlined">arrow_back</span>
+</a>
+<span class="text-tertiary font-label text-sm tracking-widest uppercase">Gestión de Pedidos</span>
+</div>
+<h1 class="text-4xl md:text-5xl font-black text-on-surface tracking-tight mb-2">Pedido #CC-8902</h1>
+<div class="flex items-center gap-3">
+<span class="px-3 py-1 rounded-full bg-secondary-container text-on-secondary-container text-xs font-bold uppercase tracking-wider">Entregado</span>
+<span class="text-on-surface-variant text-sm">Realizado el 24 Oct, 2023 • 14:32</span>
+</div>
+</div>
+<div class="flex flex-wrap gap-3">
+<button class="flex items-center gap-2 px-6 py-3 rounded-xl bg-surface-container-high text-on-surface font-semibold hover:bg-surface-container-highest transition-colors">
+<span class="material-symbols-outlined">print</span>
+          Imprimir Factura
+        </button>
+<button class="flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-on-primary font-semibold hover:opacity-90 transition-opacity shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined">mail</span>
+          Contactar Cliente
+        </button>
+</div>
+</div>
+<!-- Bento Grid Content -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Left Column: Details & Products -->
+<div class="lg:col-span-2 space-y-8">
+<!-- Order Timeline -->
+<section class="bg-surface-container-lowest p-8 rounded-xl">
+<h2 class="text-xl font-bold mb-8 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">history</span>
+            Historial del Pedido
+          </h2>
+<div class="relative flex justify-between">
+<div class="absolute top-5 left-0 w-full h-[2px] bg-surface-container-high"></div>
+<!-- Progress Line -->
+<div class="absolute top-5 left-0 w-full h-[2px] bg-primary"></div>
+<div class="relative z-10 flex flex-col items-center gap-3 text-center w-1/4">
+<div class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-md">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div>
+<p class="font-bold text-sm">Creado</p>
+<p class="text-[10px] text-on-surface-variant uppercase">24 Oct, 14:32</p>
+</div>
+</div>
+<div class="relative z-10 flex flex-col items-center gap-3 text-center w-1/4">
+<div class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-md">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div>
+<p class="font-bold text-sm">Preparando</p>
+<p class="text-[10px] text-on-surface-variant uppercase">24 Oct, 15:45</p>
+</div>
+</div>
+<div class="relative z-10 flex flex-col items-center gap-3 text-center w-1/4">
+<div class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-md">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div>
+<p class="font-bold text-sm">Enviado</p>
+<p class="text-[10px] text-on-surface-variant uppercase">25 Oct, 09:10</p>
+</div>
+</div>
+<div class="relative z-10 flex flex-col items-center gap-3 text-center w-1/4">
+<div class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-md">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div>
+<p class="font-bold text-sm">Entregado</p>
+<p class="text-[10px] text-on-surface-variant uppercase">26 Oct, 11:20</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Product Table -->
+<section class="bg-surface-container-lowest p-0 rounded-xl overflow-hidden">
+<div class="p-8 border-b border-surface-container-high">
+<h2 class="text-xl font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">shopping_basket</span>
+              Productos Comprados
+            </h2>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low text-tertiary text-xs uppercase tracking-widest font-bold">
+<th class="px-8 py-4">Producto</th>
+<th class="px-8 py-4">Precio</th>
+<th class="px-8 py-4">Cantidad</th>
+<th class="px-8 py-4 text-right">Subtotal</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container-high">
+<tr class="group hover:bg-surface-container-low/30 transition-colors">
+<td class="px-8 py-6">
+<div class="flex items-center gap-4">
+<div class="w-16 h-16 rounded-lg bg-surface-container overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Bag of premium roasted Ethiopian coffee beans with minimalist design packaging on a wooden surface" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAaiAZAdkpIx9MjBn8pnbNIc1v9F3FHaSwNtg4DEON05a8Dyy_zB9VGcULgV7yQ3aMtMxZ4IAfXioPmrbfS5Ot5mWcih557EmVqMyOALa7_BjkfPTv-YE80p5EgZThgb863IKXfpTI0GaGybmX63bTCUntq6k3u69CAmsGKOIdtshsk-VqPZRD-kZCcLg2kryzWUiBZpQQrNua90NJjtfnthFYu5Gt9Y76PalglQL8LcjIE1IWAB-vQpXzC9X7yVhp8A5rYCRp_5OU"/>
+</div>
+<div>
+<p class="font-bold text-on-surface">Etíope Sidamo G4</p>
+<p class="text-xs text-tertiary">Molienda: Fina • 500g</p>
+</div>
+</div>
+</td>
+<td class="px-8 py-6 text-on-surface-variant">$24.50</td>
+<td class="px-8 py-6 font-medium text-on-surface">x2</td>
+<td class="px-8 py-6 text-right font-bold text-primary">$49.00</td>
+</tr>
+<tr class="group hover:bg-surface-container-low/30 transition-colors">
+<td class="px-8 py-6">
+<div class="flex items-center gap-4">
+<div class="w-16 h-16 rounded-lg bg-surface-container overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="High-quality ceramic coffee dripper and server set for pour over brewing method" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAmPNw8VcmaYDrRw2doPzMGafiETyl_iC6ExE6NzmR4RgD9zkzs3ifk6g7QkSIzqOarOA6MIXFQOgh1vruVFW2s5P6xyJTXFeEdgunOUVcyyiBVFePJEe0hnWuGS0krKA2uQU6wG1tqMN2VjpDnsizfdBu4fHmVU9YjwyUwFGNdC-4Y1D7QrRH-szx65Qe21RERszoxpavNiaIvJL03FCIWGmzoyMvUXGh8vKgSqKb6J31kl7pxD7OHzXJW99Sm-bgSMjaehjbYHMM"/>
+</div>
+<div>
+<p class="font-bold text-on-surface">Kit de Goteo Cerámico</p>
+<p class="text-xs text-tertiary">Blanco Mate • Talla 02</p>
+</div>
+</div>
+</td>
+<td class="px-8 py-6 text-on-surface-variant">$35.00</td>
+<td class="px-8 py-6 font-medium text-on-surface">x1</td>
+<td class="px-8 py-6 text-right font-bold text-primary">$35.00</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+<!-- Right Column: Customer & Payment -->
+<div class="space-y-8">
+<!-- Customer Info -->
+<section class="bg-surface-container-lowest p-8 rounded-xl">
+<h2 class="text-xl font-bold mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">person</span>
+            Información del Cliente
+          </h2>
+<div class="space-y-6">
+<div class="flex items-start gap-4">
+<div class="w-12 h-12 rounded-full bg-tertiary-fixed text-on-tertiary-fixed flex items-center justify-center font-bold text-lg">
+                AM
+              </div>
+<div>
+<p class="font-bold text-on-surface">Alejandro Mendoza</p>
+<p class="text-sm text-on-surface-variant">mendoza.alex@email.com</p>
+<p class="text-sm text-on-surface-variant">+34 612 345 678</p>
+</div>
+</div>
+<div class="pt-6 border-t border-surface-container-high">
+<p class="text-xs font-bold text-tertiary uppercase tracking-widest mb-3">Dirección de Envío</p>
+<div class="flex gap-3">
+<span class="material-symbols-outlined text-on-surface-variant text-sm">location_on</span>
+<p class="text-sm text-on-surface-variant leading-relaxed">
+                  Calle de la Infanta Mercedes, 12<br/>
+                  Piso 4, Puerta B<br/>
+                  28020 Madrid, España
+                </p>
+</div>
+</div>
+</div>
+</section>
+<!-- Payment Summary -->
+<section class="bg-primary text-on-primary p-8 rounded-xl shadow-xl shadow-primary/10">
+<h2 class="text-xl font-bold mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined">receipt_long</span>
+            Resumen de Pago
+          </h2>
+<div class="space-y-4">
+<div class="flex justify-between items-center opacity-80">
+<span class="text-sm">Subtotal</span>
+<span class="font-medium">$84.00</span>
+</div>
+<div class="flex justify-between items-center opacity-80">
+<span class="text-sm">Envío (Express)</span>
+<span class="font-medium">$5.50</span>
+</div>
+<div class="flex justify-between items-center opacity-80">
+<span class="text-sm">Impuestos (IVA 10%)</span>
+<span class="font-medium">$8.95</span>
+</div>
+<div class="pt-4 border-t border-on-primary/20 flex justify-between items-center">
+<span class="text-lg font-bold">Total</span>
+<span class="text-2xl font-black">$98.45</span>
+</div>
+</div>
+<div class="mt-8 p-4 rounded-lg bg-on-primary/10 flex items-center gap-3">
+<span class="material-symbols-outlined">verified_user</span>
+<div class="text-xs">
+<p class="font-bold uppercase tracking-tight">Pago Verificado</p>
+<p class="opacity-70">Transacción ID: STRIPE_90210X</p>
+</div>
+</div>
+</section>
+<!-- Internal Notes -->
+<section class="bg-surface-container-low p-8 rounded-xl">
+<p class="text-xs font-bold text-tertiary uppercase tracking-widest mb-4">Notas Internas</p>
+<p class="text-sm text-on-surface-variant italic mb-4">"Cliente solicitó molienda fina específica para cafetera espresso doméstica. Empaque de regalo incluido."</p>
+<button class="text-primary font-bold text-sm hover:underline">Editar Notas</button>
+</section>
+</div>
+</div>
+</main>
+</body></html>
