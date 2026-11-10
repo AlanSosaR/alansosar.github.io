@@ -340,11 +340,25 @@ body.page-carrito main {
   letter-spacing: -0.5px;
 }
 
+.resumen-sheet-handle-bar,
+.resumen-sheet-chevron,
+.cart-sheet-backdrop,
+.resumen-items-slot {
+  display: none;
+}
+
+.resumen-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+
 .resumen-title {
   font-size: 1.8rem;
   font-weight: 800;
   color: var(--marron);
-  margin-bottom: 2rem;
+  margin-bottom: 0;
   letter-spacing: -0.5px;
 }
 
@@ -534,14 +548,24 @@ body.page-carrito main {
   box-shadow: 0 12px 28px rgba(62, 125, 84, 0.35);
 }
 
-.btn-checkout span:last-child {
+.btn-checkout-right {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-checkout-price {
+  display: none;
+}
+
+.btn-checkout .material-symbols-outlined {
   font-size: 20px;
   font-weight: 300 !important;
   font-variation-settings: 'wght' 300, 'opsz' 24 !important;
   transition: transform 0.2s ease;
 }
 
-.btn-checkout:hover span:last-child {
+.btn-checkout:hover .material-symbols-outlined {
   transform: translateX(4px);
 }
 
@@ -750,9 +774,16 @@ body.page-carrito main {
 }
 
 /* =====================================================
-   OCULTAR "SEGUIR COMPRANDO" CUANDO EL CARRITO ESTÁ VACÍO
+   OCULTAR FOOTER EN LA PÁGINA DEL CARRITO Y ELEMENTOS
+   CUANDO EL CARRITO ESTÁ VACÍO O NO LOGUEADO
 ===================================================== */
-body.page-carrito.carrito-vacio .seguir-comprando {
+body.page-carrito #site-footer,
+body.page-carrito footer,
+body.page-carrito.carrito-vacio .seguir-comprando,
+body.page-carrito.carrito-vacio .header-pos-client-slot,
+body.page-carrito.carrito-vacio #header-pos-client-slot,
+body.page-carrito header.no-user .header-pos-client-slot,
+body.page-carrito.no-user .header-pos-client-slot {
   display: none !important;
 }
 
@@ -870,24 +901,228 @@ main.carrito-vacio-activo {
 }
 
 @media (max-width: 900px) {
+  body.page-carrito {
+    padding-top: 64px;
+    min-height: 100dvh;
+  }
+
+  body.page-carrito main {
+    width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
   .grid-carrito {
+    display: flex;
+    flex-direction: column;
     grid-template-columns: 1fr;
+    width: 100%;
     max-width: 100%;
+    flex: 1;
     align-items: stretch;
+    gap: 0;
+    padding: 0;
+  }
+
+  .col-productos {
+    display: none;
+    width: 100%;
+  }
+
+  body.page-carrito.carrito-vacio .col-productos {
+    display: block;
+    padding: 0 1rem;
+  }
+
+  #cart-container {
+    width: 100%;
+  }
+
+  .col-resumen {
+    width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  main.carrito-vacio-activo .grid-carrito {
+    padding-bottom: 0;
   }
 
   .item {
     width: 100%;
+    margin-bottom: 1rem;
   }
 
-  .resumen-box {
+  .item-img-box {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    z-index: 2;
+  }
+
+  .item-img-box img.item-image {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  /* Ocultar elementos propios de Bottom Sheet en la vista plana */
+  .cart-sheet-backdrop,
+  .resumen-sheet-handle-bar,
+  .resumen-sheet-chevron {
+    display: none !important;
+  }
+
+  /* Vista plana en móvil manteniendo el mismo diseño interno */
+  .resumen-box,
+  .resumen-box.sheet-open {
     position: static;
-    margin-top: 1rem;
-    padding: 1.25rem;
+    width: 100%;
+    flex: 1;
+    min-height: calc(100dvh - 64px);
+    display: flex !important;
+    flex-direction: column;
+    margin: 0;
+    padding: 0.9rem 1.15rem calc(0.9rem + env(safe-area-inset-bottom, 0px));
+    background: transparent;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+    box-sizing: border-box;
+    overflow: visible;
   }
 
+  body.page-carrito.carrito-vacio .col-resumen,
+  body.page-carrito.carrito-vacio .resumen-box {
+    display: none !important;
+  }
+
+  .resumen-header-row,
   .resumen-title {
-    margin-bottom: 1.5rem;
+    display: none !important;
+  }
+
+  /* Productos en la vista plana móvil */
+  .resumen-items-slot,
+  .resumen-box.sheet-open .resumen-items-slot {
+    display: block;
+    flex: 1;
+    min-height: 0;
+    max-height: none;
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin-bottom: 0.85rem;
+    padding-right: 0;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    animation: none;
+  }
+
+  .resumen-items-slot::-webkit-scrollbar,
+  .resumen-box::-webkit-scrollbar,
+  #cart-container::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+
+  .resumen-items-slot .item {
+    position: relative;
+    padding: 0.95rem 0.5rem 0.95rem 132px;
+    min-height: 124px;
+    margin-bottom: 0;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  /* Material 3 Inset divider en lista de productos abarcando desde la imagen */
+  .resumen-items-slot .item::after {
+    content: "";
+    position: absolute;
+    left: 6px;
+    right: 6px;
+    bottom: 0;
+    height: 1px;
+    background: rgba(55, 123, 76, 0.16);
+  }
+
+  .resumen-items-slot .item-img-box {
+    width: 108px;
+    height: 108px;
+    max-height: 108px;
+    left: 6px;
+  }
+
+  .resumen-items-slot .item-info {
+    padding-left: 0.25rem;
+  }
+
+  /* Desglose inferior fijo al pie de la vista plana */
+  .resumen-details,
+  .resumen-box.sheet-open .resumen-details {
+    display: block;
+    flex-shrink: 0;
+    margin-top: auto;
+    border-top: 1.5px dotted rgba(55, 123, 76, 0.35);
+    border-bottom: none;
+    padding-top: 0.75rem;
+    padding-bottom: 0.45rem;
+    margin-bottom: 0.55rem;
+    animation: none;
+  }
+
+  .resumen-row {
+    margin-bottom: 0.55rem;
+    font-size: 0.95rem;
+  }
+
+  .resumen-row:last-child {
+    margin-bottom: 0;
+  }
+
+  .resumen-total-box {
+    display: none !important;
+  }
+
+  .btn-checkout {
+    justify-content: space-between;
+    padding: 0.7rem 0.75rem 0.7rem 1.25rem;
+    font-size: 0.98rem;
+    margin-bottom: 0;
+  }
+
+  .btn-checkout-right {
+    background: rgba(255, 255, 255, 0.18);
+    padding: 6px 12px;
+    border-radius: 999px;
+    gap: 6px;
+  }
+
+  .btn-checkout-price {
+    display: inline-block;
+    font-weight: 800;
+    font-size: 1rem;
+    letter-spacing: -0.3px;
+    color: #ffffff;
+    white-space: nowrap;
+  }
+}
+
+@keyframes sheetDetailsFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 

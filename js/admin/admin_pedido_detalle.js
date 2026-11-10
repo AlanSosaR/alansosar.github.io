@@ -29,11 +29,58 @@ console.log("🛠️ admin_pedido_detalle.js — INIT");
         cancelled: "cancelled"
     };
 
+    function resolveImgUrl(url) {
+        if (!url) return "/imagenes/no-image.png";
+        if (url.startsWith("http://") || url.startsWith("https://")) return url;
+        return "https://" + url.replace(/^\/+/, "");
+    }
+
+    function numeroALetras(num) {
+        const Unidades = (n) => {
+            const u = ["", "UN", "DOS", "TRES", "CUATRO", "CINCO", "SEIS", "SIETE", "OCHO", "NUEVE"];
+            return u[n] || "";
+        };
+        const Decenas = (n) => {
+            const d = ["", "DIEZ", "VEINTE", "TREINTA", "CUARENTA", "CINCUENTA", "SESENTA", "SETENTA", "OCHENTA", "NOVENTA"];
+            if (n < 10) return Unidades(n);
+            if (n === 11) return "ONCE";
+            if (n === 12) return "DOCE";
+            if (n === 13) return "TRECE";
+            if (n === 14) return "CATORCE";
+            if (n === 15) return "QUINCE";
+            if (n < 20) return "DIECI" + Unidades(n - 10);
+            if (n === 20) return "VEINTE";
+            if (n < 30) return "VEINTI" + Unidades(n - 20);
+            const u = n % 10;
+            return d[Math.floor(n / 10)] + (u > 0 ? " Y " + Unidades(u) : "");
+        };
+        const Centenas = (n) => {
+            if (n === 100) return "CIEN";
+            if (n < 100) return Decenas(n);
+            const c = ["", "CIENTO", "DOSCIENTOS", "TRESCIENTOS", "CUATROCIENTOS", "QUINIENTOS", "SEISCIENTOS", "SETECIENTOS", "OCHOCIENTOS", "NOVECIENTOS"];
+            const d = n % 100;
+            return c[Math.floor(n / 100)] + (d > 0 ? " " + Decenas(d) : "");
+        };
+        const Miles = (n) => {
+            if (n < 1000) return Centenas(n);
+            const m = Math.floor(n / 1000);
+            const r = n % 1000;
+            const strM = m === 1 ? "MIL" : Centenas(m) + " MIL";
+            return strM + (r > 0 ? " " + Centenas(r) : "");
+        };
+
+        const entero = Math.floor(num);
+        const centavos = Math.round((num - entero) * 100);
+        const letras = Miles(entero);
+        const strCentavos = String(centavos).padStart(2, "0") + "/100 L.";
+        return `${letras} LEMPIRAS CON ${strCentavos}`;
+    }
+
     // DOM Elements
     const DOM = {
-        orderNumber: document.getElementById("detail-order-number"),
+        orderNumber: document.getElementById("detail-order-number") || document.getElementById("detail-order-number-mobile"),
         orderNumberMobile: document.getElementById("detail-order-number-mobile"),
-        statusBadge: document.getElementById("detail-status"),
+        statusBadge: document.getElementById("detail-status") || document.getElementById("detail-status-mobile"),
         statusBadgeMobile: document.getElementById("detail-status-mobile"),
         date: document.getElementById("detail-date"),
 
@@ -160,6 +207,23 @@ console.log("🛠️ admin_pedido_detalle.js — INIT");
                 posPaymentMethod = fm?.[0]?.metodo_pago || null;
             }
 
+            // Normalizar comprobantes de pago
+            if (!data.payment_receipts && data.receipt) {
+                data.payment_receipts = data.receipt;
+            }
+            if (!data.payment_receipts || data.payment_receipts.length === 0) {
+                try {
+                    const { data: rcList } = await sb
+                        .from("payment_receipts")
+                        .select("file_url")
+                        .eq("order_id", orderId);
+                    if (rcList && rcList.length > 0) {
+                        data.payment_receipts = rcList;
+                        data.receipt = rcList;
+                    }
+                } catch (e) {}
+            }
+
             renderOrderData(orderData);
         } catch (err) {
             console.error("❌ Error cargando el detalle del pedido:", err);
@@ -175,9 +239,14 @@ console.log("🛠️ admin_pedido_detalle.js — INIT");
         const a = o.address || {};
 
         // 1. Header Info
-        const orderLabel = `Pedido #${String(o.order_number).padStart(4, "0")}`;
-        if (DOM.orderNumber) DOM.orderNumber.textContent = orderLabel;
-        if (DOM.orderNumberMobile) DOM.orderNumberMobile.textContent = orderLabel;
+        const customerRaw = u.name || a.full_name || "Consumidor final";
+        const isVentaRapida = isPOS ||
+                              customerRaw.toLowerCase().includes("venta rápida") ||
+                              customerRaw.toLowerCase().includes("venta rapida");
+
+        const headerTitleText = isVentaRapida ? "Detalle de la venta" : "Detalle del pedido";
+        if (DOM.orderNumber) DOM.orderNumber.textContent = headerTitleText;
+        if (DOM.orderNumberMobile) DOM.orderNumberMobile.textContent = headerTitleText;
 
         if (DOM.date) {
             DOM.date.textContent = `Realizado el ${new Date(o.created_at).toLocaleString("es-HN", {
@@ -197,157 +266,236 @@ console.log("🛠️ admin_pedido_detalle.js — INIT");
             DOM.statusBadgeMobile.className = `status-badge-stitch ${badgeClass}`;
         }
 
-        // 2. Client Info — POS variant vs regular
-        if (isPOS) {
-            const leftCard = document.querySelector(".info-card-stitch");
-            if (leftCard) {
-                leftCard.innerHTML = `
-                    <h3 class="card-title-stitch"><img src="/imagenes/clasificacion.png" class="card-title-icon-img" alt="" /> Productos vendidos</h3>
-                    <div id="pos-items-list" class="items-mini-list"></div>
-                `;
-                const posList = document.getElementById("pos-items-list");
-                if (posList && o.items) {
-                    o.items.forEach(item => {
-                        const prod = item.products || {};
-                        const name = prod.name || "Producto";
-                        const imgUrl = prod.image_url
-                            ? (prod.image_url.startsWith("http") ? prod.image_url : `https://${prod.image_url}`)
-                            : null;
-                        const div = document.createElement("div");
-                        div.className = "summary-item";
-                        div.innerHTML = `
-                            ${imgUrl ? `<img src="${imgUrl}" alt="${name}" class="item-img">` : `<div class="item-img-placeholder"><span class="material-symbols-outlined">coffee</span></div>`}
-                            <div class="item-info">
-                                <div class="item-name">${name}</div>
-                                <div class="item-details">Cant: ${item.quantity}</div>
-                            </div>
-                            <span class="item-price">L ${item.price.toFixed(2)} c/u</span>
-                        `;
-                        posList.appendChild(div);
-                    });
-                }
-            }
-            const rightItems = document.getElementById("detail-items-body");
-            if (rightItems) rightItems.style.display = "none";
-            const adminRow = document.getElementById("admin-row");
-            const adminNameEl = document.getElementById("detail-admin-name");
-            if (adminRow) adminRow.style.display = "flex";
-            if (adminNameEl) {
-                const adminUser = JSON.parse(localStorage.getItem("cortero_user") || "{}");
-                adminNameEl.textContent = adminUser.name || "Admin";
-            }
-        } else {
-            const cName = a.full_name || u.name || "Cliente";
+        // ========================================================
+        // RENDERIZADO DEL COMPROBANTE COMPLETO (OFICIAL RECIBO CAFÉ CORTERO)
+        // ========================================================
+        const adminUser = JSON.parse(localStorage.getItem("cortero_user") || "{}");
+        const adminName = adminUser.name || "Administrador";
 
-            if (DOM.clientName) DOM.clientName.textContent = cName;
-            if (DOM.clientEmail) DOM.clientEmail.textContent = u.email || "—";
-            if (DOM.clientPhone) DOM.clientPhone.textContent = a.phone || u.phone || "—";
+        // Document info
+        const docTypeEl = document.getElementById("invoiceDocType");
+        if (docTypeEl) docTypeEl.textContent = isVentaRapida ? "Venta" : "Pedido";
 
+        const numPedidoEl = document.getElementById("numeroPedido");
+        if (numPedidoEl) numPedidoEl.textContent = o.order_number || "—";
 
-            const addressParts = [a.street, a.city, a.state, a.country, a.postal_code].filter(Boolean);
-            if (DOM.shippingAddress) {
-                DOM.shippingAddress.innerHTML = addressParts.join(", ") || "—";
-            }
+        // Client box
+        const lblClienteEl = document.getElementById("lblCliente");
+        if (lblClienteEl) lblClienteEl.textContent = isVentaRapida ? "PEDIDO POS" : "Cliente";
+
+        const nombreClienteEl = document.getElementById("nombreCliente");
+        if (nombreClienteEl) {
+            nombreClienteEl.textContent = isVentaRapida ? "VENTA EN MOSTRADOR" : customerRaw;
         }
 
-        // 3. Productos (Items) — summary style
-        DOM.itemsBody.innerHTML = "";
-        let subtotalFloat = 0;
-        const shippingFloat = 60;
-        let discountFloat = 0;
-
-        if (o.items && o.items.length > 0) {
-            o.items.forEach(item => {
-                const prod = item.products || {};
-                const name = prod.name || "Producto General";
-                const lineTotal = item.quantity * item.price;
-                subtotalFloat += lineTotal;
-
-                const imgUrl = prod.image_url
-                    ? (prod.image_url.startsWith("http") ? prod.image_url : `https://${prod.image_url}`)
-                    : null;
-
-                const div = document.createElement("div");
-                div.className = "summary-item";
-                div.innerHTML = `
-                    ${imgUrl ? `<img src="${imgUrl}" alt="${name}" class="item-img">` : `<div class="item-img-placeholder"><span class="material-symbols-outlined">coffee</span></div>`}
-                    <div class="item-info">
-                        <div class="item-name">${name}</div>
-                        <div class="item-details">Cant: ${item.quantity}</div>
-                    </div>
-                    <span class="item-price">L ${lineTotal.toFixed(2)}</span>
-                `;
-                DOM.itemsBody.appendChild(div);
-            });
-        } else {
-            DOM.itemsBody.innerHTML = `<div style="text-align:center;padding:24px;color:var(--text-muted);font-size:14px">No hay productos en este pedido.</div>`;
-        }
-
-        // 4. Pago y Totales
-        const shippingTotal = subtotalFloat >= 150 ? 0 : shippingFloat;
-        const discountVal = subtotalFloat - parseFloat(o.total || subtotalFloat);
-        discountFloat = discountVal > 0 ? discountVal : 0;
-
-        const subtotalEl = document.getElementById("detail-subtotal");
-        const shippingEl = document.getElementById("detail-shipping");
-        const discountEl = document.getElementById("detail-discount");
-        const discountRow = document.getElementById("discount-row");
-
-        if (subtotalEl) subtotalEl.textContent = `L ${subtotalFloat.toFixed(2)}`;
-        if (shippingEl) shippingEl.textContent = shippingTotal === 0 ? "Gratis" : `L ${shippingTotal.toFixed(2)}`;
-        if (discountFloat > 0 && discountEl) {
-            discountRow.style.display = "flex";
-            discountEl.textContent = `- L ${discountFloat.toFixed(2)}`;
-        } else if (discountRow) {
-            discountRow.style.display = "none";
-        }
-
-        if (DOM.paymentMethod) {
-            DOM.paymentMethod.textContent = o.payment_method === "cash_on_delivery" || o.payment_method === "cash"
-                ? "Pago en mano" : "Transferencia";
-        }
-        if (DOM.paymentDate) {
-            DOM.paymentDate.textContent = `${new Date(o.created_at).toLocaleDateString("es-HN", {
-                day: '2-digit', month: 'short', year: 'numeric'
-            })} · ${new Date(o.created_at).toLocaleTimeString("es-HN", {
-                hour: '2-digit', minute: '2-digit'
-            })}`;
-        }
-        if (DOM.total) {
-            DOM.total.textContent = `L ${parseFloat(o.total || subtotalFloat).toFixed(2)}`;
-        }
-
-        // Receipt link
-        if (isPOS || o.payment_method === "Contra Entrega" || !o.receipt || o.receipt.length === 0) {
-            if (DOM.receiptContainer) DOM.receiptContainer.classList.add("hidden");
-        } else {
-            if (DOM.receiptContainer) DOM.receiptContainer.classList.remove("hidden");
-            if (DOM.paymentReceiptLink) DOM.paymentReceiptLink.href = o.receipt[0].file_url;
-        }
-
-        // 5. Order Notes
-        if (DOM.orderNotes) {
-            if (o.order_notes) {
-                DOM.orderNotes.textContent = o.order_notes;
-                DOM.orderNotes.style.opacity = "1";
+        const emailRow = document.getElementById("f-customer-email-row");
+        const correoClienteEl = document.getElementById("correoCliente");
+        if (emailRow && correoClienteEl) {
+            if (!isVentaRapida && u.email && !u.email.includes("@pos.cafecortero.com")) {
+                emailRow.classList.remove("hidden");
+                emailRow.style.display = "flex";
+                correoClienteEl.textContent = u.email;
             } else {
-                DOM.orderNotes.textContent = 'El cliente no dejó notas.';
-                DOM.orderNotes.style.opacity = "0.7";
+                emailRow.classList.add("hidden");
+                emailRow.style.display = "none";
+            }
+        }
+
+        const phoneRow = document.getElementById("f-customer-phone-row");
+        const telefonoClienteEl = document.getElementById("telefonoCliente");
+        if (phoneRow && telefonoClienteEl) {
+            const phoneVal = a.phone || u.phone;
+            if (!isVentaRapida && phoneVal) {
+                phoneRow.classList.remove("hidden");
+                phoneRow.style.display = "flex";
+                telefonoClienteEl.textContent = phoneVal;
+            } else {
+                phoneRow.classList.add("hidden");
+                phoneRow.style.display = "none";
+            }
+        }
+
+        const direccionClienteEl = document.getElementById("direccionCliente");
+        if (direccionClienteEl) {
+            if (isVentaRapida) {
+                direccionClienteEl.textContent = `POR: ${adminName}`;
+            } else {
+                const addrParts = [a.street, a.city, a.state, a.country].filter(Boolean);
+                direccionClienteEl.textContent = addrParts.join(", ") || "Recogida local / Sin dirección";
+            }
+        }
+
+        // Issue box
+        const fechaPedidoEl = document.getElementById("fechaPedido");
+        const horaPedidoEl = document.getElementById("horaPedido");
+        if (fechaPedidoEl && o.created_at) {
+            const d = new Date(o.created_at);
+            fechaPedidoEl.textContent = d.toLocaleDateString("es-HN", {
+                day: "2-digit", month: "2-digit", year: "numeric"
+            });
+            if (horaPedidoEl) {
+                horaPedidoEl.textContent = d.toLocaleTimeString("es-HN", {
+                    hour: "2-digit", minute: "2-digit"
+                });
+            }
+        }
+
+        const statusBlock = document.querySelector(".status-block");
+        const payTitle = document.getElementById("f-pay-title");
+        const paySub = document.getElementById("f-pay-subtitle");
+        const payIcon = document.getElementById("f-pay-icon");
+
+        if (isVentaRapida) {
+            if (statusBlock) statusBlock.style.display = "none";
+        } else {
+            if (statusBlock) statusBlock.style.display = "";
+            if (payTitle) payTitle.textContent = isPOS ? "Pedido POS" : "Pedido Web";
+            if (paySub) paySub.textContent = isPOS ? "Venta en mostrador" : "Operación autorizada";
+            if (payIcon) {
+                payIcon.innerHTML = isPOS
+                    ? '<span class="material-symbols-outlined" style="font-variation-settings: \'FILL\' 1;">point_of_sale</span>'
+                    : '<span class="material-symbols-outlined" style="font-variation-settings: \'FILL\' 1;">verified</span>';
+            }
+        }
+
+        // Table items
+        const listaProdEl = document.getElementById("listaProductos");
+        let subtotal = 0;
+        if (listaProdEl) {
+            if (o.items && o.items.length > 0) {
+                listaProdEl.innerHTML = o.items.map(it => {
+                    const prod = it.products || {};
+                    const lineTotal = it.quantity * it.price;
+                    subtotal += lineTotal;
+                    const imgSrc = resolveImgUrl(prod.image_url);
+                    const desc = [
+                        prod.category,
+                        prod.grind_type,
+                        prod.presentation?.replace('1lb', '1 lb (454 g)')
+                    ].filter(Boolean).join(' • ') || 'Café';
+
+                    return `
+                        <tr>
+                            <td class="left col-prod">
+                                <div class="prod-info-cell" style="display:flex;align-items:center;gap:12px;">
+                                    <img src="${imgSrc}" alt="${prod.name || 'Café'}" style="width:60px;height:60px;object-fit:contain;flex-shrink:0;background:transparent;border:none;" onerror="this.onerror=null;this.src='/imagenes/no-image.png'">
+                                    <div>
+                                        <p class="item-name" style="margin:0;font-weight:700;color:var(--espresso,#2A170E);font-size:14px;">${prod.name || 'Café'}</p>
+                                        <p class="item-desc" style="margin:2px 0 0 0;font-size:12px;color:var(--text-secondary,#715B51);">${desc}</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="col-qty" style="text-align:center;font-weight:600;"><span class="qty-prefix">Cant: </span>${it.quantity}</td>
+                            <td class="right col-price" style="text-align:right;font-weight:700;color:var(--espresso,#2A170E);">L ${Number(it.price).toFixed(2)}</td>
+                        </tr>
+                    `;
+                }).join("");
+            } else {
+                listaProdEl.innerHTML = `<tr><td colspan="3" style="text-align:center;padding:24px;color:#888;">No hay productos registrados en este pedido.</td></tr>`;
+            }
+        }
+
+        // Totales y Desglose
+        const finalTotal = parseFloat(o.total || subtotal);
+        const fGravado = document.getElementById("f-gravado");
+        if (fGravado) fGravado.textContent = `L ${subtotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+        const fIsv = document.getElementById("f-isv");
+        if (fIsv) fIsv.textContent = `L ${(subtotal * 0.15).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+        const fEnvio = document.getElementById("f-envio");
+        if (fEnvio) {
+            fEnvio.textContent = isPOS ? "L 0.00" : (subtotal >= 150 ? "Gratis" : "L 60.00");
+        }
+
+        const totalPedidoEl = document.getElementById("totalPedido");
+        if (totalPedidoEl) {
+            totalPedidoEl.textContent = finalTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        const fLetras = document.getElementById("f-letras");
+        if (fLetras) fLetras.textContent = numeroALetras(finalTotal);
+
+        // Descuento
+        const totalDescuento = Number(o.discount || o.discount_amount || 0);
+        const fDescuentoRow = document.getElementById("f-descuento-row");
+        const fDescuento = document.getElementById("f-descuento");
+        if (totalDescuento > 0 && fDescuentoRow && fDescuento) {
+            fDescuentoRow.style.display = "flex";
+            fDescuento.textContent = `-L ${totalDescuento.toFixed(2)}`;
+        } else if (fDescuentoRow) {
+            fDescuentoRow.style.display = "none";
+        }
+
+        // Método de pago y atendido por
+        const metodoPagoTexto = document.getElementById("metodoPagoTexto");
+        const atendidoPorTexto = document.getElementById("atendidoPorTexto");
+        const notasOrdenTexto = document.getElementById("notasOrdenTexto");
+
+        const isCash = o.payment_method === "cash_on_delivery" ||
+                       o.payment_method === "cash" ||
+                       o.payment_method === "Pago en mano" ||
+                       o.payment_method === "Contra Entrega" ||
+                       posPaymentMethod === "Efectivo";
+
+        if (metodoPagoTexto) {
+            metodoPagoTexto.textContent = isCash ? "Pago en efectivo / mano" : "Transferencia bancaria";
+        }
+
+        if (atendidoPorTexto) {
+            if (isPOS) {
+                atendidoPorTexto.style.display = "block";
+                atendidoPorTexto.textContent = `Atendido por: ${adminName}`;
+            } else {
+                atendidoPorTexto.style.display = "none";
+            }
+        }
+
+        if (notasOrdenTexto) {
+            if (o.order_notes) {
+                notasOrdenTexto.textContent = `Nota: ${o.order_notes}`;
+                notasOrdenTexto.style.display = "block";
+            } else {
+                notasOrdenTexto.style.display = "none";
+            }
+        }
+
+        // Comprobante adjunto (si el cliente subió imagen de depósito)
+        const receiptList = Array.isArray(o.payment_receipts)
+            ? o.payment_receipts
+            : (Array.isArray(o.receipt) ? o.receipt : (o.receipt ? [o.receipt] : []));
+
+        const preview = document.getElementById("previewComprobanteRecibo");
+        const img = document.getElementById("imgComprobanteRecibo");
+        const receiptLink = document.getElementById("payment-receipt-link");
+        const hasReceiptFile = receiptList.length > 0 && Boolean(receiptList[0]?.file_url);
+
+        if (preview && img) {
+            if (hasReceiptFile && !isCash) {
+                preview.classList.remove("hidden");
+                preview.style.display = "block";
+                img.style.display = "block";
+                img.src = receiptList[0].file_url;
+                img.onclick = () => window.open(receiptList[0].file_url, "_blank");
+                if (receiptLink) receiptLink.href = receiptList[0].file_url;
+            } else {
+                preview.classList.add("hidden");
+                preview.style.display = "none";
             }
         }
 
 
 
         // Timeline & Action Buttons
-        renderTimeline(o.status);
+        renderTimeline(o.status, isVentaRapida);
         renderActionButtons(o);
     }
 
     /* =========================
        TIMELINE (mis-pedidos style)
     ========================= */
-    function renderTimeline(status) {
-        if (isPOS) {
+    function renderTimeline(status, isVentaRapida = false) {
+        if (isPOS || isVentaRapida) {
             const container = document.querySelector(".timeline-container-stitch");
             if (container) container.style.display = "none";
             return;

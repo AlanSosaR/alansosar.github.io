@@ -13,11 +13,11 @@
 
   <!-- Estilos Core y Clientes Unificados -->
   <link rel="stylesheet" href="/css/core/tipografia.css">
-  <link rel="stylesheet" href="/css/ui/header.css">
+  <link rel="stylesheet" href="/css/ui/header.css?v=20">
   <link rel="stylesheet" href="/css/ui/footer.css">
   <link rel="stylesheet" href="/css/ui/header.search.css?v=6">
-  <link rel="stylesheet" href="/css/admin/admin-clientes.css?v=30">
-  <link rel="stylesheet" href="/css/admin/admin-usuarios.css?v=30">
+  <link rel="stylesheet" href="/css/admin/admin-clientes.css?v=36">
+  <link rel="stylesheet" href="/css/admin/admin-usuarios.css?v=36">
   <link rel="icon" type="image/png" href="/imagenes/logo.png">
 </head>
 
@@ -45,17 +45,21 @@
 
         <!-- SECCIÓN IZQUIERDA: LISTADO -->
         <section class="customers-list-section users-list-section-stitch" id="mobile-list-view">
+            <header class="list-header">
+                <h2 class="section-title">Usuarios</h2>
+                <div id="users-count" class="count-badge">0</div>
+            </header>
             <div id="users-list" class="customers-list users-list-stitch">
                 <div class="loading-state">Cargando directorio de usuarios...</div>
             </div>
 
-            <!-- Paginación Circular -->
-            <footer class="pagination-footer list-pagination-footer-stitch">
-                <button class="page-btn-icon" id="list-prev" aria-label="Página anterior">
+            <!-- Paginación de la Lista de Usuarios -->
+            <footer class="list-pagination-footer">
+                <button class="page-btn" id="list-prev" aria-label="Página anterior">
                     <span class="material-symbols-outlined">chevron_left</span>
                 </button>
                 <div id="list-page-numbers" class="page-numbers"></div>
-                <button class="page-btn-icon" id="list-next" aria-label="Página siguiente">
+                <button class="page-btn" id="list-next" aria-label="Página siguiente">
                     <span class="material-symbols-outlined">chevron_right</span>
                 </button>
             </footer>
@@ -93,15 +97,15 @@
                 <!-- Grid de Estadísticas Rápidas (2 niveles) -->
                 <div class="stats-grid stats-grid-stitch">
                     <div class="stat-card stat-card-stitch">
-                        <span class="stat-label">GASTO TOTAL</span>
-                        <strong class="stat-value">L 0.00</strong>
+                        <span class="stat-label" id="u-stat-label-spent">GASTO TOTAL</span>
+                        <strong class="stat-value" id="u-total-spent">L 0.00</strong>
                     </div>
                     <div class="stat-card stat-card-stitch">
-                        <span class="stat-label">PEDIDOS TOTALES</span>
-                        <strong class="stat-value">0</strong>
+                        <span class="stat-label" id="u-stat-label-orders">PEDIDOS TOTALES</span>
+                        <strong class="stat-value" id="u-total-orders">0</strong>
                     </div>
                     <div class="stat-card stat-card-stitch">
-                        <span class="stat-label">MIEMBRO DESDE</span>
+                        <span class="stat-label" id="u-stat-label-reg">MIEMBRO DESDE</span>
                         <strong id="u-reg-date-stat" class="stat-value">-</strong>
                     </div>
                 </div>
@@ -200,14 +204,14 @@
 
   <!-- Template Usuario (Sincronizado con Clientes) -->
   <template id="tpl-user-card">
-    <div class="customer-card user-card-item-stitch">
+    <div class="customer-card">
         <div class="card-avatar-placeholder"></div>
-        <div class="customer-info card-info-stitch">
-            <h4 class="card-name card-name-stitch">-</h4>
-            <p class="card-email card-email-stitch">-</p>
+        <div class="card-info">
+            <h4 class="card-name">—</h4>
+            <p class="card-email">—</p>
         </div>
-        <span class="admin-badge hidden">ADMIN</span>
-        <span class="material-symbols-outlined arrow arrow-stitch">chevron_right</span>
+        <span class="admin-badge hidden">Admin</span>
+        <span class="material-symbols-outlined arrow">chevron_right</span>
     </div>
   </template>
 
@@ -225,25 +229,35 @@
 
   <script type="module">
     import { renderHeaderSearch } from "/js/ui/header.search.js?v=6";
-    document.addEventListener("header:ready", () => {
+
+    function setupUserHeaderSearch() {
       const slot = document.getElementById("header-middle-slot");
       if (!slot) return;
-      slot.innerHTML = renderHeaderSearch({ showFilter: true, showAdd: false, placeholder: "Nombre, email o cargo..." });
 
-      const filter = document.getElementById("header-status-filter");
-      if (filter) {
-        filter.innerHTML = `<option value="all">Todos los Roles</option><option value="admin">Administradores</option><option value="user">Usuarios</option>`;
-        filter.addEventListener("change", (e) => document.dispatchEvent(new CustomEvent("user:filter", { detail: e.target.value })));
+      if (!document.getElementById("header-search-input")) {
+        slot.innerHTML = renderHeaderSearch({
+          showFilter: false,
+          showAdd: false,
+          placeholder: "Nombre, email o cargo..."
+        });
       }
 
       const input = document.getElementById("header-search-input");
       if (input) {
-        input.addEventListener("input", (e) => document.dispatchEvent(new CustomEvent("user:search", { detail: e.target.value.trim() })));
+        input.addEventListener("input", (e) => {
+          document.dispatchEvent(new CustomEvent("user:search", { detail: e.target.value.trim() }));
+          document.dispatchEvent(new CustomEvent("header:search", { detail: e.target.value.trim() }));
+        });
       }
-    });
+    }
+
+    document.addEventListener("header:ready", setupUserHeaderSearch);
+    if (document.getElementById("header-middle-slot")) {
+      setupUserHeaderSearch();
+    }
   </script>
 
-  <script src="/js/admin/admin-usuarios.js?v=30" type="module"></script>
+  <script src="/js/admin/admin-usuarios.js?v=40" type="module"></script>
 
   <div id="snackbar" class="snackbar"></div>
 

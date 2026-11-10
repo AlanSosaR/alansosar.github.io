@@ -149,6 +149,7 @@ header.header-fixed.navbar-transparent,
     right: -2px !important;
     background: #D32F2F !important;
     color: white !important;
+    border: none !important;
     z-index: 10 !important;
   }
 
@@ -393,6 +394,13 @@ body.page-datos-cliente .header-pos-client-slot,
 body.page-carrito .header-pos-client-slot {
   display: flex !important;
   align-items: center;
+}
+
+body.page-carrito.carrito-vacio .header-pos-client-slot,
+body.page-carrito.carrito-vacio #header-pos-client-slot,
+body.page-carrito header.no-user .header-pos-client-slot,
+body.page-carrito.no-user .header-pos-client-slot {
+  display: none !important;
 }
 
 /* En datos_cliente la flecha y el título "Pedido POS" viven en la fila izquierda,
@@ -739,16 +747,16 @@ body[class*="page-admin-"] .header-right-new {
   right: 0;
   background: #D32F2F !important; /* Rojo Intenso */
   color: #FFFFFF !important;
-  font-size: 10px;
-  font-weight: 900;
+  font-size: 11px;
+  font-weight: 800;
   min-width: 18px;
   height: 18px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2.5px solid #FFFFFF;
-  box-shadow: 0 4px 10px rgba(211, 47, 47, 0.45);
+  border: none !important;
+  box-shadow: 0 3px 8px rgba(211, 47, 47, 0.45);
   box-sizing: border-box;
 }
 
@@ -1993,6 +2001,11 @@ body.page-recibo #header-pos-client-slot {
   body.page-admin-customers.detail-view-active #header-middle-slot,
   body.page-admin-customers.detail-view-active .header-search-wrap,
   body.page-admin-customers.detail-view-active .header-search-box,
+  body.page-admin-users.detail-view-active #menu-toggle,
+  body.page-admin-users.detail-view-active .header-logo-link,
+  body.page-admin-users.detail-view-active .header-middle-stitch,
+  body.page-admin-users.detail-view-active #header-middle-slot,
+  body.page-admin-users.detail-view-active .header-search-wrap,
   body.page-admin-users.detail-view-active .header-search-box {
     display: none !important;
   }
@@ -2028,18 +2041,18 @@ body.page-recibo #header-pos-client-slot {
     flex-shrink: 0 !important;
   }
 
-  body.page-admin-customers.detail-view-active .header-customer-detail-back-btn,
+  body.page-admin-customers.detail-view-active .header-customer-detail-back-btn:hover,
   body.page-admin-users.detail-view-active .header-customer-detail-back-btn:hover {
     box-shadow: 0 6px 16px rgba(55, 123, 76, 0.15) !important;
     transform: translateY(-2px);
   }
 
-  body.page-admin-customers.detail-view-active .header-customer-detail-back-btn,
+  body.page-admin-customers.detail-view-active .header-customer-detail-back-btn:active,
   body.page-admin-users.detail-view-active .header-customer-detail-back-btn:active {
     transform: scale(0.96);
   }
 
-  body.page-admin-customers.detail-view-active .header-customer-detail-back-btn,
+  body.page-admin-customers.detail-view-active .header-customer-detail-back-btn .material-symbols-outlined,
   body.page-admin-users.detail-view-active .header-customer-detail-back-btn .material-symbols-outlined {
     font-size: 22px !important;
     color: var(--verde, #377b4c) !important;
@@ -2052,6 +2065,7 @@ body.page-recibo #header-pos-client-slot {
 
   body.page-admin-customers.detail-view-active .header-customer-detail-title,
   body.page-admin-customers.detail-view-active #header-customer-detail-title,
+  body.page-admin-users.detail-view-active .header-customer-detail-title,
   body.page-admin-users.detail-view-active #header-customer-detail-title {
     display: flex !important;
     align-items: center !important;

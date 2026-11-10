@@ -18,11 +18,10 @@
     href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap">
 
   <!-- CSS GLOBAL (HEADER + DRAWER) -->
-  <link rel="stylesheet" href="/css/ui/header.css?v=36">
-  <link rel="stylesheet" href="/css/ui/footer.css">
+  <link rel="stylesheet" href="/css/ui/header.css?v=37">
 
   <!-- CSS CARRITO -->
-  <link rel="stylesheet" href="/css/pages/carrito.css?v=30">
+  <link rel="stylesheet" href="/css/pages/carrito.css?v=44">
 </head>
 
 <body class="page-carrito">
@@ -82,8 +81,17 @@
 
       <!-- RESUMEN -->
       <div class="col-resumen">
-        <div class="resumen-box">
-          <h2 class="resumen-title">Resumen de pedido</h2>
+        <div id="cart-sheet-backdrop" class="cart-sheet-backdrop" aria-hidden="true"></div>
+        <div class="resumen-box sheet-open" id="resumen-box">
+          <div class="resumen-sheet-handle-bar" id="resumen-sheet-handle" role="button" tabindex="0" aria-expanded="true" aria-label="Mostrar u ocultar desglose del pedido">
+            <span class="resumen-sheet-handle"></span>
+          </div>
+          <div class="resumen-header-row" id="resumen-header-toggle">
+            <h2 class="resumen-title">Resumen de pedido</h2>
+            <span class="material-symbols-outlined resumen-sheet-chevron" aria-hidden="true">expand_less</span>
+          </div>
+
+          <div id="resumen-items-slot" class="resumen-items-slot"></div>
 
           <!-- CUPÓN (Oculto por ahora) -->
           <div class="coupon-section" style="display: none;">
@@ -132,8 +140,11 @@
           </div>
 
           <button id="proceder-btn" class="btn-checkout">
-            <span>Proceder con el pedido</span>
-            <span class="material-symbols-outlined">arrow_forward</span>
+            <span class="btn-checkout-label">Proceder con el pedido</span>
+            <span class="btn-checkout-right">
+              <span id="checkout-btn-total" class="btn-checkout-price">L 0.00</span>
+              <span class="material-symbols-outlined">arrow_forward</span>
+            </span>
           </button>
 
         </div>
@@ -164,7 +175,7 @@
   <script type="module" src="/js/ui/header.js"></script>
 
   <!-- LÓGICA DE LA PÁGINA -->
-  <script src="/js/pages/cart.js?v=2601"></script>
+  <script src="/js/pages/cart.js?v=2607"></script>
 
   <!-- SNACKBAR -->
   <div id="snackbar" class="snackbar" aria-live="polite"></div>

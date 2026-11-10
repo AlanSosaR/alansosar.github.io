@@ -19,13 +19,12 @@
 
   <!-- ================= CSS GLOBAL HEADER ================= -->
   <link rel="stylesheet" href="/css/ui/header.css?v=37">
-  <link rel="stylesheet" href="/css/ui/footer.css">
 
   <!-- ================= LEAFLET MAPA ================= -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
   <!-- ================= CSS PANTALLA ================= -->
-  <link rel="stylesheet" href="/css/pages/datos_cliente.css?v=37">
+  <link rel="stylesheet" href="/css/pages/datos_cliente.css?v=42">
 </head>
 
 <body class="page-datos-cliente">
@@ -308,13 +307,13 @@
               <span>Subtotal</span>
               <span id="sum-subtotal">L 0.00</span>
             </div>
+            <div id="sum-discount-row" class="total-row discount-text hidden">
+              <span id="sum-discount-label">Ahorro por productos</span>
+              <span id="sum-discount-amount">- L 0.00</span>
+            </div>
             <div class="total-row">
               <span>Envío</span>
-              <span id="sum-shipping">L 60.00</span>
-            </div>
-            <div id="sum-discount-row" class="total-row discount-text hidden">
-              <span id="sum-discount-label">Descuento</span>
-              <span id="sum-discount-amount">- L 0.00</span>
+              <span id="sum-shipping">GRATIS</span>
             </div>
             <hr>
             <div class="total-row final-total">
@@ -324,8 +323,11 @@
           </div>
 
           <button type="submit" form="cliente-form" id="btn-submit-desktop" class="primary-checkout-btn">
-            Finalizar la compra
-            <span class="material-symbols-outlined">arrow_forward</span>
+            <span class="btn-checkout-label">Finalizar la compra</span>
+            <span class="btn-checkout-right">
+              <span class="btn-checkout-price sum-btn-total">L 0.00</span>
+              <span class="material-symbols-outlined">arrow_forward</span>
+            </span>
           </button>
 
           <!-- Botón crear cliente POS (en el resumen) -->
@@ -336,8 +338,11 @@
 
           <!-- Botón continuar POS (en el resumen) -->
           <button id="pos-continuar-btn" class="btn-primary hidden" style="margin-top:16px;width:100%;">
-            Continuar con el pedido
-            <span class="material-symbols-outlined">arrow_forward</span>
+            <span class="btn-checkout-label">Continuar con el pedido</span>
+            <span class="btn-checkout-right">
+              <span class="btn-checkout-price sum-btn-total">L 0.00</span>
+              <span class="material-symbols-outlined">arrow_forward</span>
+            </span>
           </button>
 
           <!-- ===================== POS ADMIN: CONFIRMAR ===================== -->

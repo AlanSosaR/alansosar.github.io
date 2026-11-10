@@ -74,14 +74,21 @@ function renderResumen() {
     subtotalOriginal += originalPrice * qty;
     totalConDescuentoItems += currentPrice * qty;
 
+    const hasDiscount = Number(item.discount_percent || 0) > 0;
     const itemDiv = document.createElement("div");
     itemDiv.className = "summary-item";
     itemDiv.innerHTML = `
-      <img src="${item.img || '/imagenes/no-image.png'}" alt="${item.name}" class="item-img">
+      <div class="item-img-box">
+        <img src="${item.img || '/imagenes/no-image.png'}" alt="${item.name}" class="item-img">
+      </div>
       <div class="item-info">
         <div class="item-name">${item.name}</div>
-        <div class="item-details">Cant: ${qty}</div>
-        <div class="item-price">L ${currentPrice.toFixed(2)}</div>
+        <div class="item-price-wrapper">
+          <div class="item-price-old ${hasDiscount ? '' : 'hidden'}">L ${originalPrice.toFixed(2)}</div>
+          <div class="item-discount-badge ${hasDiscount ? '' : 'hidden'}">${item.discount_percent || 0}% OFF</div>
+          <div class="item-price">L ${currentPrice.toFixed(2)} <span class="unit-text">/ unidad</span></div>
+        </div>
+        <div class="item-details">Cant: <span class="qty-number">${qty}</span></div>
       </div>
     `;
     summaryItemsContainer.appendChild(itemDiv);
@@ -92,14 +99,17 @@ function renderResumen() {
   const finalTotal = totalConDescuentoItems;
 
   sumSubtotalEl.textContent = `L ${subtotalOriginal.toFixed(2)}`;
-  sumShippingEl.textContent = `Gratis`;
+  sumShippingEl.textContent = `GRATIS`;
   if (ahorroItems > 0) {
     sumDiscountRow.classList.remove("hidden");
-    sumDiscountAmount.textContent = `- L ${ahorroItems.toFixed(2)}`;
+    sumDiscountAmount.textContent = `-L ${ahorroItems.toFixed(2)}`;
   } else {
     sumDiscountRow.classList.add("hidden");
   }
   sumTotalEl.textContent = `L ${finalTotal.toFixed(2)}`;
+  document.querySelectorAll(".sum-btn-total").forEach(el => {
+    el.textContent = `L ${finalTotal.toFixed(2)}`;
+  });
   summaryCouponBox.classList.add("hidden");
 }
 

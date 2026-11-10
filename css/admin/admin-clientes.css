@@ -58,9 +58,12 @@ body.page-admin-customers, body.page-admin-users {
 /* =========================================================
    ELIMINAR FOOTER DE GESTIÓN DE CLIENTES
 ========================================================= */
-body.page-admin-customers, body.page-admin-users footer#site-footer,
-body.page-admin-customers, body.page-admin-users .site-footer,
-body.page-admin-customers, body.page-admin-users .admin-footer {
+body.page-admin-customers footer#site-footer,
+body.page-admin-users footer#site-footer,
+body.page-admin-customers .site-footer,
+body.page-admin-users .site-footer,
+body.page-admin-customers .admin-footer,
+body.page-admin-users .admin-footer {
     display: none !important;
     visibility: hidden !important;
     height: 0 !important;
@@ -214,8 +217,10 @@ body.page-admin-customers, body.page-admin-users .admin-footer {
 
 @media (max-width: 1024px) {
     /* HEADER FIJO */
-    body.page-admin-customers, body.page-admin-users header#main-header,
-    body.page-admin-customers, body.page-admin-users header.header-fixed {
+    body.page-admin-customers header#main-header,
+    body.page-admin-users header#main-header,
+    body.page-admin-customers header.header-fixed,
+    body.page-admin-users header.header-fixed {
         position: fixed !important;
         top: 0 !important;
         left: 0 !important;
@@ -226,7 +231,8 @@ body.page-admin-customers, body.page-admin-users .admin-footer {
     }
 
     /* SECCIÓN DE TÍTULO PERMANENTEMENTE FIJA EN MÓVIL */
-    body.page-admin-customers, body.page-admin-users .page-title-section {
+    body.page-admin-customers .page-title-section,
+    body.page-admin-users .page-title-section {
         position: fixed !important;
         top: 64px !important;
         left: 0 !important;
@@ -242,8 +248,10 @@ body.page-admin-customers, body.page-admin-users .admin-footer {
     }
 
     /* Ocultar sección de título si el buscador o el detalle están activos */
-    body.page-admin-customers, body.page-admin-users.header-search-active .page-title-section,
-    body.page-admin-customers, body.page-admin-users.detail-view-active .page-title-section {
+    body.page-admin-customers.header-search-active .page-title-section,
+    body.page-admin-users.header-search-active .page-title-section,
+    body.page-admin-customers.detail-view-active .page-title-section,
+    body.page-admin-users.detail-view-active .page-title-section {
         display: none !important;
     }
 
@@ -267,11 +275,13 @@ body.page-admin-customers, body.page-admin-users .admin-footer {
     }
 
     /* Al buscar o ver detalle, no hay barra de título fija arriba */
-    body.page-admin-customers, body.page-admin-users.header-search-active .customers-layout {
+    body.page-admin-customers.header-search-active .customers-layout,
+    body.page-admin-users.header-search-active .customers-layout {
         margin-top: 74px !important;
     }
 
-    body.page-admin-customers, body.page-admin-users.detail-view-active .customers-layout {
+    body.page-admin-customers.detail-view-active .customers-layout,
+    body.page-admin-users.detail-view-active .customers-layout {
         margin-top: 74px !important;
     }
 
@@ -317,7 +327,8 @@ body.page-admin-customers, body.page-admin-users .admin-footer {
         display: none !important;
     }
 
-    body.page-admin-customers, body.page-admin-users .admin-customers-container {
+    body.page-admin-customers .admin-customers-container,
+    body.page-admin-users .admin-customers-container {
         padding-bottom: 24px !important;
     }
 
@@ -365,7 +376,9 @@ body.page-admin-customers, body.page-admin-users .admin-footer {
         transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
     }
 
-    .card-info {
+    .card-info,
+    .card-info-stitch,
+    .customer-info {
         flex: 1;
         min-width: 0;
         overflow: hidden;
@@ -395,7 +408,9 @@ body.page-admin-customers, body.page-admin-users .admin-footer {
     }
 
     .list-pagination-footer #cust-prev,
-    .list-pagination-footer #cust-next {
+    .list-pagination-footer #cust-next,
+    .list-pagination-footer #list-prev,
+    .list-pagination-footer #list-next {
         display: none !important;
     }
 }
@@ -504,68 +519,105 @@ body.page-admin-customers, body.page-admin-users .admin-footer {
     border-left: 4px solid var(--principal);
 }
 
-.card-avatar-placeholder img, .avatar-init-small {
+.card-avatar-placeholder {
     width: 36px;
     height: 36px;
+    min-width: 36px;
+    min-height: 36px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.card-avatar-placeholder img,
+.card-avatar-placeholder .card-img,
+.avatar-init-small {
+    width: 100%;
+    height: 100%;
     border-radius: 50%;
     object-fit: cover;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .avatar-init-small {
     background: #E8F5E9;
-    color: var(--principal);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    color: var(--principal, #377b4c);
     font-weight: 700;
     font-size: 14px;
+    user-select: none;
 }
 
-.card-info {
+.card-info,
+.card-info-stitch,
+.customer-info {
     flex: 1;
+    min-width: 0;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
-.card-info h4 {
-    margin: 0;
-    font-size: 15px;
-    font-weight: 600;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+.card-info h4,
+.card-info-stitch h4,
+.customer-info h4,
+.card-name,
+.card-name-stitch {
+    margin: 0 !important;
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    color: var(--texto-principal, #2A170E) !important;
+    line-height: 1.3 !important;
 }
 
-.card-info p {
-    margin: 0;
-    font-size: 13px;
-    color: var(--texto-secundario);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+.card-info p,
+.card-info-stitch p,
+.customer-info p,
+.card-email,
+.card-email-stitch {
+    margin: 2px 0 0 0 !important;
+    font-size: 13px !important;
+    color: var(--texto-secundario, #715B51) !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    line-height: 1.2 !important;
 }
 
-.arrow {
+.arrow,
+.arrow-stitch {
     color: var(--verde, #377b4c) !important;
-    font-size: 20px;
-    font-weight: 600;
-    opacity: 0.9;
-    transition: transform 0.2s ease, opacity 0.2s ease;
+    font-size: 20px !important;
+    font-weight: 600 !important;
+    opacity: 0.9 !important;
+    transition: transform 0.2s ease, opacity 0.2s ease !important;
+    flex-shrink: 0 !important;
 }
 
-.customer-card:hover .arrow {
-    opacity: 1;
-    transform: translateX(3px);
+.customer-card:hover .arrow,
+.customer-card:hover .arrow-stitch {
+    opacity: 1 !important;
+    transform: translateX(3px) !important;
 }
 
 .admin-badge {
-    background: #512615;
-    color: #fff;
-    font-size: 10px;
-    font-weight: 700;
-    padding: 2px 8px;
-    border-radius: 10px;
-    letter-spacing: 0.3px;
-    text-transform: uppercase;
+    background: #512615 !important;
+    color: #fff !important;
+    font-size: 10px !important;
+    font-weight: 700 !important;
+    padding: 3px 8px !important;
+    border-radius: 10px !important;
+    letter-spacing: 0.3px !important;
+    text-transform: uppercase !important;
+    flex-shrink: 0 !important;
 }
 
 /* SECCIÓN DERECHA: DETALLE */
@@ -1265,7 +1317,9 @@ body.page-admin-customers, body.page-admin-users .admin-footer {
     }
 
     .list-pagination-footer #cust-prev,
-    .list-pagination-footer #cust-next {
+    .list-pagination-footer #cust-next,
+    .list-pagination-footer #list-prev,
+    .list-pagination-footer #list-next {
         display: none !important;
     }
     .page-numbers {
@@ -1782,8 +1836,10 @@ body.page-admin-customers, body.page-admin-users .admin-footer {
 /* =========================================================
    HEADER Y TÍTULO FIJOS / STICKY SIN SCROLL
 ========================================================= */
-body.page-admin-customers, body.page-admin-users header#main-header,
-body.page-admin-customers, body.page-admin-users header.header-fixed {
+body.page-admin-customers header#main-header,
+body.page-admin-users header#main-header,
+body.page-admin-customers header.header-fixed,
+body.page-admin-users header.header-fixed {
     position: fixed !important;
     top: 0 !important;
     left: 0 !important;
@@ -1793,7 +1849,8 @@ body.page-admin-customers, body.page-admin-users header.header-fixed {
     transform: none !important;
 }
 
-body.page-admin-customers, body.page-admin-users .page-title-section {
+body.page-admin-customers .page-title-section,
+body.page-admin-users .page-title-section {
     position: sticky !important;
     top: 72px !important;
     z-index: 85 !important;
@@ -1804,7 +1861,8 @@ body.page-admin-customers, body.page-admin-users .page-title-section {
 }
 
 @media (max-width: 1024px) {
-    body.page-admin-customers, body.page-admin-users .page-title-section {
+    body.page-admin-customers .page-title-section,
+    body.page-admin-users .page-title-section {
         position: fixed !important;
         top: 64px !important;
         left: 0 !important;
@@ -1819,8 +1877,10 @@ body.page-admin-customers, body.page-admin-users .page-title-section {
         box-shadow: 0 4px 12px -4px rgba(0, 0, 0, 0.06) !important;
     }
 
-    body.page-admin-customers, body.page-admin-users.detail-view-active .page-title-section,
-    body.page-admin-customers, body.page-admin-users.header-search-active .page-title-section {
+    body.page-admin-customers.detail-view-active .page-title-section,
+    body.page-admin-users.detail-view-active .page-title-section,
+    body.page-admin-customers.header-search-active .page-title-section,
+    body.page-admin-users.header-search-active .page-title-section {
         display: none !important;
     }
 }

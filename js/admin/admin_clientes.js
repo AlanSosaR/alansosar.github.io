@@ -532,11 +532,21 @@ const initAdminClientes = () => {
                 `;
             } else {
                 const status = item.status === "—" ? "" : item.status;
-                row.className = status ? `status-row-${status}` : "";
+                const statusMap = {
+                    pending: "Pendiente",
+                    payment_review: "En revisión",
+                    processing: "En proceso",
+                    preparing: "Preparando",
+                    shipped: "Enviado",
+                    delivered: "Entregado",
+                    cancelled: "Cancelado"
+                };
+                const displayStatus = status ? (statusMap[status.toLowerCase()] || status) : "—";
+                row.className = status ? `status-row-${status.toLowerCase()}` : "";
                 row.innerHTML = `
-                    <td><strong>${item.order_number !== "—" ? `Pedido #${item.order_number}` : "Venta rápida"}</strong></td>
+                    <td><strong>${item.order_number !== "—" ? `Venta #${item.order_number}` : "Venta rápida"}</strong></td>
                     <td>${new Date(item.fecha + "T00:00:00").toLocaleDateString("es-ES", { day: '2-digit', month: 'short', year: 'numeric' })}</td>
-                    <td>${status ? `<span class="status-badge status-${status}">${status}</span>` : "—"}</td>
+                    <td>${status ? `<span class="status-badge status-${status.toLowerCase()}">${displayStatus}</span>` : "—"}</td>
                     <td class="text-right"><strong>L ${parseFloat(item.monto).toFixed(2)}</strong></td>
                 `;
                 if (item.hasOrder) {

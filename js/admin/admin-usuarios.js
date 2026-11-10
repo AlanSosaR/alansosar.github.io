@@ -38,6 +38,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 function initEventListeners() {
     // Escuchar eventos del Header
     document.addEventListener('user:search', (e) => handleSearch(e.detail));
+    document.addEventListener('header:search', (e) => handleSearch(e.detail));
     document.addEventListener('user:filter', (e) => handleFilter(e.detail));
 
     // Flechas de Paginación
@@ -45,6 +46,8 @@ function initEventListeners() {
         if (currentPage > 1) {
             currentPage--;
             renderUsersList();
+            const listEl = document.getElementById('users-list');
+            if (listEl) listEl.scrollTop = 0;
         }
     });
 
@@ -53,6 +56,8 @@ function initEventListeners() {
         if (currentPage < totalPages) {
             currentPage++;
             renderUsersList();
+            const listEl = document.getElementById('users-list');
+            if (listEl) listEl.scrollTop = 0;
         }
     });
 
@@ -151,10 +156,12 @@ function updateChipCounts() {
     const elAll = document.getElementById('chip-count-all');
     const elAdmin = document.getElementById('chip-count-admin');
     const elUser = document.getElementById('chip-count-user');
+    const elCount = document.getElementById('users-count');
 
     if (elAll) elAll.textContent = totalAll;
     if (elAdmin) elAdmin.textContent = totalAdmin;
     if (elUser) elUser.textContent = totalUser;
+    if (elCount) elCount.textContent = totalAll;
 }
 
 // --- RENDERIZADO (LISTADO) ---
@@ -164,6 +171,9 @@ function renderUsersList() {
 
     if (!container || !tpl) return;
     container.innerHTML = '';
+
+    const elCount = document.getElementById('users-count');
+    if (elCount) elCount.textContent = filteredUsers.length;
 
     // Calcular Paginación
     const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
@@ -240,6 +250,8 @@ function updatePaginationUI(totalPages) {
         btn.onclick = () => {
             currentPage = i;
             renderUsersList();
+            const listEl = document.getElementById('users-list');
+            if (listEl) listEl.scrollTop = 0;
         };
         numbersDiv.appendChild(btn);
     }
@@ -297,6 +309,9 @@ function selectUser(user) {
     const months = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
     document.getElementById('u-reg-date-stat').textContent = `${months[regDate.getMonth()]} ${regDate.getFullYear()}`;
 
+    // Cargar estadísticas dinámicas de ventas o compras
+    loadUserStats(user);
+
     // Panel de Seguridad
     const validRoles = ['user', 'admin'];
     const roleMap = { 'moderator': 'user', 'suspendido': 'user' };
@@ -316,6 +331,82 @@ function selectUser(user) {
     // Efecto Feedback en Móvil
     if (window.innerWidth <= 768) {
         window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+}
+
+async function loadUserStats(user) {
+    const labelSpent = document.getElementById('u-stat-label-spent');
+    const labelOrders = document.getElementById('u-stat-label-orders');
+    const labelReg = document.getElementById('u-stat-label-reg');
+    const valSpent = document.getElementById('u-total-spent');
+    const valOrders = document.getElementById('u-total-orders');
+
+    const isAdmin = user.rol === 'admin';
+
+    // 1. Configurar etiquetas según rol (para administradores: VENTAS TOTALES / VENTAS ATENDIDAS)
+    if (labelSpent) labelSpent.textContent = isAdmin ? "VENTAS TOTALES" : "GASTO TOTAL";
+    if (labelOrders) labelOrders.textContent = isAdmin ? "VENTAS ATENDIDAS" : "PEDIDOS TOTALES";
+    if (labelReg) labelReg.textContent = isAdmin ? "ACTIVO DESDE" : "MIEMBRO DESDE";
+
+    // 2. Placeholder de carga
+    if (valSpent) valSpent.textContent = "...";
+    if (valOrders) valOrders.textContent = "...";
+
+    try {
+        if (isAdmin) {
+            // Ventas generadas por el administrador (finanzas_movimientos)
+            const { data, error } = await _supabase
+                .from("finanzas_movimientos")
+                .select("monto, order_id")
+                .eq("created_by", user.id)
+                .eq("tipo", "ingreso");
+
+            if (error) throw error;
+
+            const totalVendido = (data || []).reduce((sum, r) => sum + (parseFloat(r.monto) || 0), 0);
+            const orderIds = new Set();
+            let nullCount = 0;
+            (data || []).forEach(r => {
+                if (r.order_id) orderIds.add(r.order_id);
+                else nullCount++;
+            });
+            const totalVentas = orderIds.size + nullCount;
+
+            // Fallback por si también tuviera compras en orders
+            if (totalVentas === 0) {
+                const { data: ordData } = await _supabase
+                    .from("orders")
+                    .select("total")
+                    .eq("user_id", user.id);
+                if (ordData && ordData.length > 0) {
+                    const fallbackSpent = ordData.reduce((sum, o) => sum + (parseFloat(o.total) || 0), 0);
+                    if (valSpent) valSpent.textContent = `L ${fallbackSpent.toLocaleString("es-HN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                    if (valOrders) valOrders.textContent = ordData.length;
+                    return;
+                }
+            }
+
+            if (valSpent) valSpent.textContent = `L ${totalVendido.toLocaleString("es-HN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            if (valOrders) valOrders.textContent = totalVentas;
+        } else {
+            // Compras del cliente (orders)
+            const { data, error } = await _supabase
+                .from("orders")
+                .select("total")
+                .eq("user_id", user.id);
+
+            if (error) throw error;
+
+            const totalGasto = (data || []).reduce((sum, o) => sum + (parseFloat(o.total) || 0), 0);
+            const totalPedidos = (data || []).length;
+
+            if (valSpent) valSpent.textContent = `L ${totalGasto.toLocaleString("es-HN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            if (valOrders) valOrders.textContent = totalPedidos;
+        }
+    } catch (err) {
+        console.error("❌ Error cargando estadísticas del usuario:", err);
+        if (valSpent) valSpent.textContent = "L 0.00";
+        if (valOrders) valOrders.textContent = "0";
     }
 }
 
@@ -537,10 +628,12 @@ function showSnack(type, message) {
 
 // --- HELPER AVATARES ---
 function getAvatarHtml(user, imgClass, initClass) {
-    if (user.avatar_url || user.photo_url) {
-        return `<img src="${user.avatar_url || user.photo_url}" class="${imgClass}" alt="${user.name}" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'${initClass}\\'>${getInitials(user.name)}</div>'" />`;
+    const initials = getInitials(user.name);
+    const photo = user.avatar_url || user.photo_url;
+    if (photo) {
+        return `<img src="${photo}" class="${imgClass}" alt="${user.name || ''}" onerror="this.outerHTML='<div class=\\'${initClass}\\'>${initials}</div>'" />`;
     }
-    return `<div class="${initClass}">${getInitials(user.name)}</div>`;
+    return `<div class="${initClass}">${initials}</div>`;
 }
 
 function getInitials(name) {

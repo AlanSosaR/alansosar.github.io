@@ -297,38 +297,57 @@ function renderMainProduct(product) {
       `;
     })();
 
+    specsContainer.classList.remove("expanded");
     specsContainer.innerHTML = `
-      <div class="specs-col">
-        ${leftSpecs.filter(s => s.value).map(renderSpec).join("")}
-      </div>
-      <div class="specs-col">
-        ${rightSpecs.filter(s => s.value).map(renderSpec).join("")}
-      </div>
-      ${prepHtml}
-      <div class="spec-contact">
-        <div class="contact-info-wrap">
-          <img src="/imagenes/contact-mail.png" class="spec-icon-png" alt="Contacto">
-          <div class="spec-info">
-            <span class="spec-label">Contacto:</span>
-            <span class="spec-value">
-              ${formatPhoneLink(window.siteSettings?.whatsapp_numero || "50496670613")} / 
-              ${formatPhoneLink(window.siteSettings?.whatsapp_numero2 || "50498675101")}
-            </span>
-          </div>
+      <button type="button" class="specs-mobile-toggle" aria-expanded="false">
+        <span class="specs-toggle-left">
+          <span class="material-symbols-outlined specs-toggle-icon">receipt_long</span>
+          <span class="specs-toggle-text">Ver ficha técnica</span>
+        </span>
+        <span class="material-symbols-outlined specs-toggle-chevron">expand_more</span>
+      </button>
+      <div class="specs-body">
+        <div class="specs-col">
+          ${leftSpecs.filter(s => s.value).map(renderSpec).join("")}
         </div>
-        <img src="/imagenes/arabica.svg" class="arabica-seal" alt="100% Arábica">
-      </div>
-      <div class="product-footer-sheet">
-        <div class="footer-text">
-          <p class="enjoy-msg">¡Disfrútalo y Compártelo!</p>
-          <span id="product-badge" class="pill" aria-live="polite"></span>
+        <div class="specs-col">
+          ${rightSpecs.filter(s => s.value).map(renderSpec).join("")}
+        </div>
+        ${prepHtml}
+        <div class="spec-contact">
+          <div class="contact-info-wrap">
+            <img src="/imagenes/contact-mail.png" class="spec-icon-png" alt="Contacto">
+            <div class="spec-info">
+              <span class="spec-label">Contacto:</span>
+              <span class="spec-value">
+                ${formatPhoneLink(window.siteSettings?.whatsapp_numero || "50496670613")} / 
+                ${formatPhoneLink(window.siteSettings?.whatsapp_numero2 || "50498675101")}
+              </span>
+            </div>
+          </div>
+          <img src="/imagenes/arabica.svg" class="arabica-seal" alt="100% Arábica">
+        </div>
+        <div class="product-footer-sheet">
+          <div class="footer-text">
+            <p class="enjoy-msg">¡Disfrútalo y Compártelo!</p>
+          </div>
         </div>
       </div>
     `;
 
-    const badgeEl = safe("product-badge");
-    if (badgeEl) badgeEl.textContent = badge;
+    specsContainer.onclick = (e) => {
+      if (!window.matchMedia("(max-width: 768px)").matches) return;
+      if (e.target.closest("a")) return;
+      const isExpanded = specsContainer.classList.toggle("expanded");
+      const toggleBtn = specsContainer.querySelector(".specs-mobile-toggle");
+      if (toggleBtn) {
+        toggleBtn.setAttribute("aria-expanded", isExpanded ? "true" : "false");
+      }
+    };
   }
+
+  const badgeEl = safe("product-badge");
+  if (badgeEl) badgeEl.textContent = badge;
 
   const activeDiscount = getActiveDiscount(product);
   const finalPrice = activeDiscount > 0 ? Math.floor(product.price * (1 - activeDiscount / 100)) : product.price;
@@ -344,11 +363,10 @@ function renderMainProduct(product) {
   img.src = product.image_url || "/imagenes/no-image.png";
   img.onerror = () => img.src = "/imagenes/no-image.png";
 
-  // Mover Badge de descuento al inicio de la columna de texto (no sobre la bolsa)
-  const productText = document.querySelector(".product-text");
-  if (productText) {
-    const oldPill = productText.querySelector(".discount-pill");
-    if (oldPill) oldPill.remove();
+  // Mover Badge de descuento a la par de #product-badge (debajo del título)
+  const badgesRow = safe("product-badges-row") || document.querySelector(".product-text");
+  if (badgesRow) {
+    document.querySelectorAll(".product-text .discount-pill").forEach(el => el.remove());
 
     if (activeDiscount > 0) {
       const pill = document.createElement("div");
@@ -357,7 +375,7 @@ function renderMainProduct(product) {
         <span class="pill-off">${activeDiscount}% OFF</span>
         <span class="pill-label">en tu primer pedido</span>
       `;
-      productText.prepend(pill);
+      badgesRow.appendChild(pill);
     }
   }
 
@@ -826,6 +844,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     qtyNumber.textContent = "1";
     updateQtyControls(productId, stockBD);
+    syncProductPrice();
 
     const statusEl = safe("product-status");
     if (statusEl) {

@@ -208,7 +208,22 @@ if (!window.__HEADER_CORE_LOADED__) {
     const clientSlot = $("header-pos-client-slot");
     if (!clientSlot || (!document.body.classList.contains("page-carrito") && !document.body.classList.contains("page-datos-cliente"))) return;
 
-    const u = currentUser || getUserCache();
+    const u = currentUser !== undefined ? currentUser : getUserCache();
+    let isCartEmpty = document.body.classList.contains("carrito-vacio");
+    if (!isCartEmpty && document.body.classList.contains("page-carrito")) {
+      try {
+        const cart = JSON.parse(localStorage.getItem("cafecortero_cart")) || [];
+        if (!cart.length) isCartEmpty = true;
+      } catch {
+        isCartEmpty = true;
+      }
+    }
+
+    if ((document.body.classList.contains("page-carrito") && isCartEmpty) || !u) {
+      clientSlot.innerHTML = "";
+      return;
+    }
+
     const isAdmin = u && (u.rol === "admin" || u.role === "admin");
     const adminPhoto = (isAdmin && u.photo_url) ? u.photo_url : "/imagenes/barista.png";
     const rawName = (isAdmin && u.name) ? u.name : "Barista";
@@ -357,6 +372,7 @@ if (!window.__HEADER_CORE_LOADED__) {
     window.addEventListener("cartUpdated", () => {
       updateCartCount();
       updateHeaderCartTitle();
+      syncAttendantHeader();
     });
 
     document.addEventListener("userLoggedIn", () => {

@@ -15,7 +15,7 @@
   <!-- Styles -->
   <link rel="stylesheet" href="/css/ui/header.css">
   <link rel="stylesheet" href="/css/ui/footer.css">
-  <link rel="stylesheet" href="/css/pages/recibo.css">
+  <link rel="stylesheet" href="/css/pages/recibo.css?v=20">
 </head>
 
 <body class="page-recibo header-checkout antialiased">
@@ -187,6 +187,10 @@
       <div class="recibo-botones no-print" style="margin-top:28px;">
         <button id="btnEnviar" class="btn-confirmar-factura" disabled>
           <span class="btn-text" id="btnText">Confirmar pedido</span>
+          <span class="btn-checkout-right" id="btnTotalWrap">
+            <span class="btn-checkout-price" id="btnTotalPedido">L 0.00</span>
+            <span class="material-symbols-outlined">arrow_forward</span>
+          </span>
           <i class="fa-solid fa-circle-notch fa-spin hidden" id="loaderAccion"></i>
         </button>
       </div>
@@ -212,7 +216,7 @@
     } catch {}
   </script>
 
-  <script src="/js/pages/recibo.core.js"></script>
+  <script src="/js/pages/recibo.core.js?v=6"></script>
   <script src="/js/core/auth-ui.js"></script>
   <script src="/js/ui/layout.js"></script>
   <script type="module" src="/js/ui/header.js"></script>
@@ -268,13 +272,17 @@
       if (!btn || !text) return;
 
       if (window.IS_READ_ONLY) {
+        document.body.classList.add("is-read-only");
+        document.getElementById("btnTotalWrap")?.classList.add("hidden");
         text.textContent = "Cancelar pedido";
         btn.classList.add("btn-cancelar");
         btn.id = "btnCancelarPedido";
         btn.disabled = false;
       }
       if (window.POS_CLIENT) {
-        text.textContent = "Confirmar pedido";
+        const isVentaRapida = String(window.POS_CLIENT.name || "").toLowerCase().includes("venta rápida") ||
+                              String(window.POS_CLIENT.name || "").toLowerCase().includes("venta rapida");
+        text.textContent = isVentaRapida ? "Confirmar venta" : "Confirmar pedido";
       }
     });
   </script>
@@ -327,7 +335,11 @@
 
       const backBtn = document.getElementById("header-recibo-back");
       if (backBtn) {
-        backBtn.href = window.IS_READ_ONLY ? "/pages/profile/mis-pedidos.html" : "/pages/profile/datos_cliente.html?from=recibo";
+        if (window.__ORDER_COMPLETED__) {
+          backBtn.href = "/pages/home/index.html";
+        } else {
+          backBtn.href = window.IS_READ_ONLY ? "/pages/profile/mis-pedidos.html" : "/pages/profile/datos_cliente.html?from=recibo";
+        }
       }
     }
 

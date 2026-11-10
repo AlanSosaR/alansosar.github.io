@@ -411,12 +411,22 @@ console.log("🛠️ admin_pedidos.js — INIT STITCH");
     }
 
     function renderDetail(o) {
-        // Cabecera
-        document.getElementById("order-id-display").textContent = `Pedido #${o.order_number}`;
+        // Cabecera unificada
+        const customerRaw = o.users?.name || o.address?.full_name || "Consumidor final";
+        const isVentaRapida = (o.users?.email && o.users.email.includes("@pos.cafecortero.com")) ||
+                              customerRaw.toLowerCase().includes("venta rápida") ||
+                              customerRaw.toLowerCase().includes("venta rapida");
+        const titleText = isVentaRapida ? "Detalle de la venta" : "Detalle del pedido";
+        const orderIdEl = document.getElementById("order-id-display");
+        if (orderIdEl) orderIdEl.textContent = titleText;
+
         const badge = document.getElementById("order-status-badge");
         const config = STATUS_MAP[o.status] || STATUS_MAP.pending;
-        badge.textContent = config.label;
-        badge.style.backgroundColor = config.color;
+        if (badge) {
+            badge.textContent = (config.label || o.status).toUpperCase();
+            badge.className = `status-badge-stitch ${o.status || 'pending'}`;
+            badge.style.backgroundColor = "";
+        }
 
         // Fecha
         const dateEl = document.getElementById("o-date");
@@ -448,13 +458,82 @@ console.log("🛠️ admin_pedidos.js — INIT STITCH");
         document.getElementById("p-date").textContent = new Date(o.created_at).toLocaleString();
         document.getElementById("p-total").textContent = `L ${Number(o.total).toLocaleString('es-HN', { minimumFractionDigits: 2 })}`;
 
-        // Comprobante
-        const receiptBox = document.getElementById("receipt-container");
-        if (o.receipt && o.receipt[0]) {
-            receiptBox.classList.remove("hidden");
-            document.getElementById("receipt-link").href = o.receipt[0].file_url;
-        } else {
-            receiptBox.classList.add("hidden");
+        // Comprobante (Sincronizado con recibo.core.js:410-445)
+        const receiptList = Array.isArray(o.payment_receipts)
+            ? o.payment_receipts
+            : (Array.isArray(o.receipt) ? o.receipt : (o.receipt ? [o.receipt] : []));
+
+        const preview = document.getElementById("previewComprobanteRecibo");
+        const img = document.getElementById("imgComprobanteRecibo");
+        const imgContainer = preview ? preview.querySelector(".comprobante-img-container") : null;
+        const receiptLink = document.getElementById("payment-receipt-link");
+        const previewLabel = preview ? preview.querySelector(".comprobante-label") : null;
+        let pText = preview ? preview.querySelector(".preview-text") : null;
+
+        if (preview) {
+            preview.classList.remove("hidden");
+            preview.style.display = "flex";
+
+            const isCash = o.payment_method === "cash_on_delivery" ||
+                           o.payment_method === "cash" ||
+                           o.payment_method === "Pago en mano" ||
+                           o.payment_method === "Contra Entrega";
+            const hasReceiptFile = receiptList.length > 0 && Boolean(receiptList[0]?.file_url);
+
+            if (hasReceiptFile) {
+                if (imgContainer) imgContainer.style.display = "flex";
+                if (img) {
+                    img.style.display = "block";
+                    img.src = receiptList[0].file_url;
+                    img.alt = "Comprobante de pago";
+                    img.loading = "lazy";
+                    img.onclick = () => window.open(receiptList[0].file_url, "_blank");
+                    img.onerror = () => {
+                        if (imgContainer) imgContainer.style.display = "none";
+                        if (receiptLink) receiptLink.style.display = "none";
+                        if (pText) pText.textContent = "El archivo del comprobante no pudo cargarse.";
+                    };
+                }
+                if (receiptLink) {
+                    receiptLink.style.display = "inline-flex";
+                    receiptLink.href = receiptList[0].file_url;
+                }
+                if (previewLabel) {
+                    previewLabel.innerHTML = `
+                        <span class="material-symbols-outlined">receipt_long</span>
+                        Comprobante de pago adjunto
+                    `;
+                }
+                if (pText) {
+                    pText.textContent = "Comprobante de transferencia bancaria adjunto.";
+                }
+            } else if (isCash) {
+                if (imgContainer) imgContainer.style.display = "none";
+                if (receiptLink) receiptLink.style.display = "none";
+                if (previewLabel) {
+                    previewLabel.innerHTML = `
+                        <span class="material-symbols-outlined" style="color:#2E7D32">payments</span>
+                        Comprobante de pago
+                        <span class="comprobante-badge cash">Efectivo / En mano</span>
+                    `;
+                }
+                if (pText) {
+                    pText.textContent = "Este pedido fue atendido con pago en efectivo / en mano (no requiere comprobante de transferencia bancaria).";
+                }
+            } else {
+                if (imgContainer) imgContainer.style.display = "none";
+                if (receiptLink) receiptLink.style.display = "none";
+                if (previewLabel) {
+                    previewLabel.innerHTML = `
+                        <span class="material-symbols-outlined" style="color:#E65100">hourglass_top</span>
+                        Comprobante de pago
+                        <span class="comprobante-badge pending">Sin comprobante</span>
+                    `;
+                }
+                if (pText) {
+                    pText.textContent = "No se ha adjuntado ningún comprobante bancario para este pedido.";
+                }
+            }
         }
 
         // Productos

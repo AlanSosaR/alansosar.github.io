@@ -19,7 +19,7 @@
     <link rel="stylesheet" href="/css/ui/header.css">
     <link rel="stylesheet" href="/css/ui/footer.css">
     <link rel="stylesheet" href="/css/ui/header.search.css">
-    <link rel="stylesheet" href="/css/admin/admin-pedidos.css?v=6">
+    <link rel="stylesheet" href="/css/admin/admin-pedidos.css?v=12">
 </head>
 
 <body class="page-admin-orders">
@@ -66,21 +66,16 @@
 
                 <div id="order-detail-content" class="detail-container-alt hidden">
                 <header class="detail-header-stitch-alt">
-                    <button id="btn-back-to-list" class="btn-mobile-back-inline">
-                        <span class="material-symbols-outlined">chevron_left</span>
+                    <button id="btn-back-to-list" class="btn-mobile-back-inline" aria-label="Volver" title="Volver">
+                        <span class="material-symbols-outlined">arrow_back</span>
                     </button>
                     <div class="header-info-stitch">
-                        <h2 id="order-id-display" class="order-number-stitch">Pedido #0000</h2>
+                        <h2 id="order-id-display" class="order-number-stitch">Detalle de la venta</h2>
                         <span id="order-status-badge" class="status-badge-stitch">PENDIENTE</span>
                     </div>
-                    <div class="header-actions-stitch">
-                        <button class="btn-stitch-secondary" id="btnPrint">
+                    <div class="header-actions-stitch" style="display:flex;gap:8px;align-items:center">
+                        <button class="btn-icon-mobile" id="btnPrint" title="Imprimir" aria-label="Imprimir">
                             <span class="material-symbols-outlined">print</span>
-                            Factura
-                        </button>
-                        <button class="btn-stitch-secondary" id="btnContact">
-                            <span class="material-symbols-outlined">mail</span>
-                            Contactar
                         </button>
                     </div>
                 </header>
@@ -156,7 +151,25 @@
                                     <label>TOTAL:</label>
                                     <strong id="p-total" class="total-value-stitch">L 0.00</strong>
                                 </div>
-                                <div id="receipt-container" class="receipt-preview-stitch hidden">
+                                <!-- ================= COMPROBANTE — VISTA RECIBO ================= -->
+                                <div id="previewComprobanteRecibo" class="preview-comprobante-stitch" style="margin-top:16px">
+                                    <div class="comprobante-preview-header">
+                                        <span class="comprobante-label">
+                                            <span class="material-symbols-outlined">receipt_long</span>
+                                            Comprobante de pago adjunto
+                                        </span>
+                                        <a id="payment-receipt-link" href="#" target="_blank" class="comprobante-zoom-btn" title="Ver imagen completa">
+                                            <span>Abrir</span>
+                                            <span class="material-symbols-outlined">open_in_new</span>
+                                        </a>
+                                    </div>
+                                    <div class="comprobante-img-container">
+                                        <img id="imgComprobanteRecibo" alt="Comprobante de pago" loading="lazy">
+                                    </div>
+                                    <p class="preview-text">Comprobante de transferencia bancaria adjunto.</p>
+                                </div>
+
+                                <div id="receipt-container" class="receipt-preview-stitch hidden" style="display:none">
                                     <label>Comprobante:</label>
                                     <a id="receipt-link" href="#" target="_blank" class="receipt-btn">Ver Imagen <span class="material-symbols-outlined">open_in_new</span></a>
                                 </div>
@@ -381,6 +394,6 @@
             }
         });
     </script>
-    <script src="/js/admin/admin_pedidos.js?v=22" type="module"></script>
+    <script src="/js/admin/admin_pedidos.js?v=25" type="module"></script>
 </body>
 </html>

@@ -32,7 +32,7 @@ body.page-datos-cliente #avatar-notification-badge {
 }
 
 body {
-  background: var(--crema-fondo);
+  background: #ffffff;
   font-family: 'Poppins', sans-serif;
   color: var(--marron);
   line-height: 1.6;
@@ -1932,4 +1932,285 @@ body.page-datos-cliente main {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* =========================================================
+   OCULTAR FOOTER EN DATOS_CLIENTE
+   ========================================================= */
+body.page-datos-cliente #site-footer,
+body.page-datos-cliente footer {
+  display: none !important;
+}
+
+/* =========================================================
+   BOTONES CHECKOUT CON PRECIO EN PÍLDORA + RESUMEN PLANO EN MÓVIL
+   (Mismo diseño que la vista de carrito)
+   ========================================================= */
+.btn-checkout-right {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-checkout-price {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  body.page-datos-cliente {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    background: #ffffff !important;
+  }
+
+  body.page-datos-cliente main.checkout-container {
+    flex: 1;
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    padding-bottom: calc(0.9rem + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  body.page-datos-cliente .checkout-grid,
+  body.page-datos-cliente .summary-section {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+
+  /* Eliminar tarjeta contenedora del resumen en móvil (vista plana) */
+  .summary-card,
+  body.page-datos-cliente .summary-card {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    background: transparent !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0.4rem 0.25rem 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Ocultar título "Resumen del pedido" en móvil */
+  .summary-card > h3,
+  body.page-datos-cliente .summary-card > h3 {
+    display: none !important;
+  }
+
+  /* Lista de productos con Inset Dividers (Material 3) igual que en carrito */
+  .summary-items-list {
+    flex: 1 !important;
+    min-height: 0 !important;
+    margin-bottom: 0.85rem !important;
+    padding-right: 0 !important;
+  }
+
+  .summary-item,
+  body.page-datos-cliente .summary-item {
+    position: relative !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 0 !important;
+    padding: 0.95rem 0.5rem 0.95rem 132px !important;
+    min-height: 124px !important;
+    margin-bottom: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .summary-item::after {
+    content: "";
+    position: absolute;
+    left: 6px;
+    right: 6px;
+    bottom: 0;
+    height: 1px;
+    background: rgba(55, 123, 76, 0.16);
+  }
+
+  .summary-item .item-img-box {
+    position: absolute !important;
+    left: 6px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    width: 108px !important;
+    height: 108px !important;
+    max-height: 108px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .summary-item .item-img {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 108px !important;
+    object-fit: contain !important;
+    transform: scale(1.08) !important;
+    filter: none !important;
+  }
+
+  .summary-item .item-info {
+    flex: 1 !important;
+    padding-left: 0.25rem !important;
+    margin-left: 0 !important;
+    align-items: flex-start !important;
+    text-align: left !important;
+    gap: 0 !important;
+  }
+
+  .summary-item .item-name {
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    color: var(--marron) !important;
+    margin-bottom: 0.25rem !important;
+    text-align: left !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .summary-item .item-price-wrapper {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    flex-wrap: wrap !important;
+    margin-bottom: 0.45rem !important;
+  }
+
+  .summary-item .item-price-old {
+    font-size: 0.85rem !important;
+    color: #8D6E63 !important;
+    text-decoration: line-through !important;
+    opacity: 0.6 !important;
+  }
+
+  .summary-item .item-discount-badge {
+    background: #c8e6c9 !important;
+    border: 1px solid #a5d6a7 !important;
+    color: #1b5e20 !important;
+    font-size: 0.72rem !important;
+    font-weight: 800 !important;
+    padding: 2px 8px !important;
+    border-radius: 999px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+  }
+
+  .summary-item .item-price {
+    font-size: 0.95rem !important;
+    font-weight: 600 !important;
+    color: var(--verde) !important;
+    text-align: left !important;
+  }
+
+  .summary-item .item-price .unit-text {
+    color: #8D6E63 !important;
+    font-weight: 500 !important;
+    font-size: 0.88em !important;
+  }
+
+  .summary-item .item-details {
+    font-size: 0.95rem !important;
+    font-weight: 600 !important;
+    color: var(--marron) !important;
+    text-align: left !important;
+  }
+
+  .summary-item .qty-number {
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    color: var(--marron) !important;
+  }
+
+  /* Desglose inferior con línea punteada superior y margin-top: auto igual que en carrito */
+  .summary-totals {
+    flex-shrink: 0 !important;
+    margin-top: auto !important;
+    border-top: 1.5px dotted rgba(55, 123, 76, 0.35) !important;
+    padding-top: 0.75rem !important;
+    padding-bottom: 0.45rem !important;
+    margin-bottom: 0.55rem !important;
+  }
+
+  .summary-totals .total-row {
+    margin-bottom: 0.55rem !important;
+    font-size: 0.95rem !important;
+    font-weight: 600 !important;
+    color: var(--marron) !important;
+  }
+
+  .summary-totals .total-row:last-of-type {
+    margin-bottom: 0 !important;
+  }
+
+  .summary-totals .total-row.discount-text {
+    font-size: 0.95rem !important;
+    font-weight: 700 !important;
+    color: var(--verde) !important;
+  }
+
+  #sum-subtotal {
+    color: var(--marron) !important;
+    font-weight: 600 !important;
+  }
+
+  #sum-shipping {
+    color: var(--verde) !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.5px !important;
+  }
+
+  /* Ocultar fila Total separada porque el monto va dentro del botón píldora */
+  .summary-totals hr,
+  .summary-totals .total-row.final-total {
+    display: none !important;
+  }
+
+  /* Píldora de acción ("Continuar con el pedido" / "Finalizar la compra") con el precio adentro */
+  #pos-continuar-btn,
+  #btn-submit-desktop {
+    border-radius: 999px !important;
+    background: #377b4c !important;
+    justify-content: space-between !important;
+    padding: 0.7rem 0.75rem 0.7rem 1.25rem !important;
+    font-size: 0.98rem !important;
+    font-weight: 700 !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    box-shadow: 0 8px 24px rgba(62, 125, 84, 0.25) !important;
+  }
+
+  #pos-continuar-btn .btn-checkout-right,
+  #btn-submit-desktop .btn-checkout-right {
+    background: rgba(255, 255, 255, 0.18);
+    padding: 6px 12px;
+    border-radius: 999px;
+    gap: 6px;
+  }
+
+  #pos-continuar-btn .btn-checkout-price,
+  #btn-submit-desktop .btn-checkout-price {
+    display: inline-block;
+    font-weight: 800;
+    font-size: 1rem;
+    letter-spacing: -0.3px;
+    color: #ffffff;
+    white-space: nowrap;
+  }
+
+  #pos-continuar-btn .material-symbols-outlined,
+  #btn-submit-desktop .material-symbols-outlined {
+    font-size: 20px !important;
+    font-weight: 300 !important;
+    font-variation-settings: 'wght' 300, 'opsz' 24 !important;
+  }
 }

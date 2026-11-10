@@ -15,6 +15,7 @@ if (window.__LAYOUT_LOADED__) {
   document.addEventListener("DOMContentLoaded", async () => {
 
     const isLoginPage = document.body.dataset.page === "login";
+    const isCartPage = document.body.classList.contains("page-carrito") || document.body.classList.contains("page-datos-cliente") || document.body.classList.contains("page-recibo") || window.location.pathname.includes("carrito") || window.location.pathname.includes("datos_cliente") || window.location.pathname.includes("recibo");
     const isAdminCustomersPage = document.body.classList.contains("page-admin-customers") || document.body.classList.contains("page-admin-users") || window.location.pathname.includes("admin-clientes") || window.location.pathname.includes("admin-usuarios");
     const isSimpleFooter = /^\/(pages\/(auth|legal|profile)\/)/.test(window.location.pathname);
 
@@ -40,8 +41,8 @@ if (window.__LAYOUT_LOADED__) {
         }
       }
 
-      // ================= INYECTAR FOOTER (excepto login) =================
-      if (!isLoginPage && !isAdminCustomersPage && !document.getElementById("site-footer")) {
+      // ================= INYECTAR FOOTER (excepto login y carrito) =================
+      if (!isLoginPage && !isCartPage && !isAdminCustomersPage && !document.getElementById("site-footer")) {
         const footerRes = await fetch("/pages/shared/footer.html", { cache: "no-store" });
         if (!footerRes.ok) throw new Error("footer.html no encontrado");
         const footerHtml = await footerRes.text();

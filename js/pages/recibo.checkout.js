@@ -255,13 +255,29 @@ async function cargarResumen() {
 
     const isVentaRapida = String(window.POS_CLIENT.name || "").toLowerCase().includes("venta rápida") ||
                           String(window.POS_CLIENT.name || "").toLowerCase().includes("venta rapida");
+    const statusBlock = document.querySelector(".status-block");
+    const lblCliente = document.querySelector("#seccionDatosCliente .lbl");
+    const docTitle = document.querySelector(".document-info h2");
+    const btnTextEl = document.getElementById("btnText");
+    const adminCache = JSON.parse(localStorage.getItem("cortero_user") || "null");
+    const fallbackAdmin = String(window.POS_CLIENT.name || "").replace(/\s*\(Venta\s+r[aá]pida\)/i, "").trim();
+    const adminName = adminCache?.name || user?.name || fallbackAdmin || "Administrador";
+
     if (isVentaRapida) {
-      $("nombreCliente").textContent = "Consumidor final";
+      if (docTitle) docTitle.textContent = "Venta";
+      if (btnTextEl && !window.IS_READ_ONLY) btnTextEl.textContent = "Confirmar venta";
+      if (lblCliente) lblCliente.textContent = "PEDIDO POS";
+      $("nombreCliente").textContent = "VENTA EN MOSTRADOR";
       document.getElementById("f-customer-email-row")?.classList.add("hidden");
       document.getElementById("f-customer-phone-row")?.classList.add("hidden");
-      $("direccionCliente").textContent = "Venta en mostrador / POS";
+      $("direccionCliente").textContent = `POR: ${adminName}`;
       if ($("notaCliente")) $("notaCliente").textContent = "";
+      if (statusBlock) statusBlock.style.display = "none";
     } else {
+      if (docTitle) docTitle.textContent = "Pedido";
+      if (btnTextEl && !window.IS_READ_ONLY) btnTextEl.textContent = "Confirmar pedido";
+      if (lblCliente) lblCliente.textContent = "Cliente";
+      if (statusBlock) statusBlock.style.display = "";
       $("nombreCliente").textContent = window.POS_CLIENT.name;
       const rawPosMail = window.POS_CLIENT.email || "";
       const isDummyMail = !rawPosMail || rawPosMail.includes("@pos.cafecortero.com") || rawPosMail.startsWith("pos_");
@@ -367,6 +383,8 @@ function renderCarrito() {
 
   const formattedTotal = totalPedido.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   $("totalPedido").textContent = formattedTotal;
+  const btnTotalEl = document.getElementById("btnTotalPedido");
+  if (btnTotalEl) btnTotalEl.textContent = `L ${formattedTotal}`;
 
   const fGravado = document.getElementById("f-gravado");
   if (fGravado) fGravado.textContent = `L ${formattedTotal}`;
@@ -408,11 +426,19 @@ function mostrarConfirmacionEnvio() {
   const bar = $("snackbar");
   if (!bar) return;
 
+  const isVentaRapida = window.POS_CLIENT && (
+    String(window.POS_CLIENT.name || "").toLowerCase().includes("venta rápida") ||
+    String(window.POS_CLIENT.name || "").toLowerCase().includes("venta rapida")
+  );
+  const snackMsg = isVentaRapida
+    ? "¿Confirmar venta?"
+    : (window.POS_CLIENT ? "¿Confirmar compra?" : "¿Confirmar envío del pedido?");
+
   bar.innerHTML = `
     <div class="snackbar-action-content">
       <div class="snackbar-text-wrap">
         <span class="material-symbols-outlined snackbar-icon">help_outline</span>
-        <span class="snack-text">${window.POS_CLIENT ? "¿Confirmar compra?" : "¿Confirmar envío del pedido?"}</span>
+        <span class="snack-text">${snackMsg}</span>
       </div>
       <div class="snackbar-actions">
         <button id="snack-editar" type="button" class="btn-snack-secondary">
@@ -486,6 +512,10 @@ async function enviarPedido() {
   const user = window.supabaseAuth.getCurrentUser();
 
   const isPOS = !!window.POS_CLIENT;
+  const isVentaRapida = isPOS && (
+    String(window.POS_CLIENT.name || "").toLowerCase().includes("venta rápida") ||
+    String(window.POS_CLIENT.name || "").toLowerCase().includes("venta rapida")
+  );
   let orderUserId = isPOS ? window.POS_CLIENT.id : user?.id;
   const customerName = isPOS ? window.POS_CLIENT.name : user?.name;
 
@@ -547,10 +577,15 @@ async function enviarPedido() {
         total: totalPedido,
         payment_method: paymentMethod,
         status: isPOS ? "delivered" : "pending",
-        order_notes: orderNotes
+        order_notes: isVentaRapida ? (orderNotes ? `${orderNotes} [VENTA_RAPIDA]` : "[VENTA_RAPIDA]") : (isPOS ? (orderNotes ? `${orderNotes} [POS]` : "[POS]") : orderNotes)
       })
       .select("id")
       .single();
+
+    if (order?.id) {
+      sessionStorage.setItem("order_channel_" + order.id, isVentaRapida ? "venta_rapida" : (isPOS ? "pos" : "web"));
+      sessionStorage.setItem("last_completed_order", order.id);
+    }
 
     if (error || !order) {
       console.error("❌ Error en orders.insert:", error);
@@ -680,11 +715,16 @@ async function enviarPedido() {
     localStorage.setItem(CART_KEY, "[]");
     sessionStorage.removeItem("current_order_notes");
     sessionStorage.removeItem("pos_client");
+    window.dispatchEvent(new Event("cartUpdated"));
 
-    window.showSnack(isPOS ? "Compra creada con éxito" : "Pedido enviado con éxito");
-    setTimeout(() => {
-      location.href = isPOS ? `/pages/admin/admin-clientes.html?id=${orderUserId}` : "/pages/profile/mis-pedidos.html";
-    }, 2000);
+    mostrarExito({
+      order,
+      orderNumber,
+      isPOS,
+      isVentaRapida,
+      orderUserId,
+      customerName
+    });
 
   } catch (e) {
     console.error("❌ Error en enviarPedido:", e);
@@ -694,6 +734,192 @@ async function enviarPedido() {
   } finally {
     loader.classList.add("hidden");
   }
+}
+
+/* =========================================================
+   PANTALLA DE ÉXITO POST-CONFIRMACIÓN
+========================================================= */
+function mostrarExito({ order, orderNumber, isPOS, isVentaRapida, orderUserId, customerName }) {
+  window.__ORDER_COMPLETED__ = true;
+  document.body.classList.add("is-read-only");
+  window.IS_READ_ONLY = true;
+
+  // Actualizar la URL sin recargar para fijar el ID del pedido y evitar que al recargar se trate como checkout
+  window.history.replaceState({ page: "recibo-success" }, "", `/pages/shop/recibo.html?id=${order.id}`);
+
+  // Reconfigurar la flecha de volver del header y del recibo para que lleven al index
+  const backBtn = document.getElementById("header-recibo-back");
+  if (backBtn) {
+    backBtn.href = "/pages/home/index.html";
+    backBtn.onclick = (e) => {
+      e.preventDefault();
+      window.location.href = "/pages/home/index.html";
+    };
+  }
+
+  const btnBack = document.getElementById("btn-back");
+  if (btnBack) {
+    btnBack.onclick = (e) => {
+      e.preventDefault();
+      window.location.href = "/pages/home/index.html";
+    };
+  }
+
+  // Atrapamos el gesto o botón atrás del navegador para que redirija al index y no a checkout
+  window.history.pushState({ page: "recibo-success" }, "", window.location.href);
+  window.onpopstate = function () {
+    window.location.href = "/pages/home/index.html";
+  };
+
+  // Actualizar título del header
+  const headerTitle = document.getElementById("header-recibo-title-text");
+  if (headerTitle) {
+    headerTitle.textContent = isVentaRapida ? "Venta confirmada" : "Pedido confirmado";
+  }
+
+  // Ocultar toda la información previa de la factura
+  const invoiceContainer = document.querySelector(".invoice-container");
+  if (invoiceContainer) {
+    invoiceContainer.classList.add("hidden");
+  }
+
+  // Textos según tipo de venta / pedido
+  const titleText = isVentaRapida
+    ? "Venta creada con éxito"
+    : (isPOS ? "Venta creada con éxito" : "Pedido enviado con éxito");
+
+  const subtitleHtml = isVentaRapida
+    ? ""
+    : `<p class="success-screen-desc">${isPOS ? `El pedido para ${customerName || "el cliente"} se registró correctamente.` : `Tu pedido #${orderNumber} ha sido recibido y estamos procesándolo.`}</p>`;
+
+  const clientPillRow = isVentaRapida
+    ? ""
+    : `
+      <div class="summary-pill-row">
+        <span class="pill-label">Cliente</span>
+        <span class="pill-value">${customerName || "Cliente"}</span>
+      </div>
+    `;
+
+  const docPillRow = `
+    <div class="summary-pill-row">
+      <span class="pill-label">${isVentaRapida ? "Comprobante" : "Documento"}</span>
+      <span class="pill-value">${isVentaRapida ? "Venta" : "Pedido"} Nº ${orderNumber}</span>
+    </div>
+  `;
+
+  const perfilUrl = isPOS
+    ? `/pages/admin/admin-clientes.html?id=${orderUserId}`
+    : "/pages/profile/mis-pedidos.html";
+
+  const perfilTxt = isPOS ? "Ver en clientes" : "Ver en mi perfil";
+  const nuevaTxt = isPOS ? "Crear nueva venta" : "Crear nuevo pedido";
+  const formattedTotal = Number(totalPedido || 0).toFixed(2);
+  const metodoNombre = metodoPago.value === "cash" ? "Pago en efectivo" : "Transferencia bancaria";
+
+  // Insertar y mostrar SOLO la nueva pantalla limpia de éxito en la misma vista
+  const reciboContainer = document.querySelector(".recibo-container");
+  let pantallaExito = document.getElementById("pantallaExito");
+  if (!pantallaExito && reciboContainer) {
+    pantallaExito = document.createElement("section");
+    pantallaExito.id = "pantallaExito";
+    pantallaExito.className = "success-screen-card fade-in";
+    reciboContainer.appendChild(pantallaExito);
+  }
+
+  if (pantallaExito) {
+    pantallaExito.innerHTML = `
+      <div class="success-screen-icon-wrap">
+        <span class="material-symbols-outlined success-screen-icon">check_circle</span>
+      </div>
+
+      <h2 class="success-screen-title">${titleText}</h2>
+      ${subtitleHtml}
+
+      <div class="success-screen-summary">
+        ${clientPillRow}
+        ${docPillRow}
+        <div class="summary-pill-row">
+          <span class="pill-label">Total cobrado</span>
+          <span class="pill-value highlight">L ${formattedTotal}</span>
+        </div>
+        <div class="summary-pill-row">
+          <span class="pill-label">Método de pago</span>
+          <span class="pill-value">${metodoNombre}</span>
+        </div>
+      </div>
+
+      <div class="success-screen-actions">
+        <button type="button" class="btn-action-primary" id="btnNuevaVenta">
+          <span class="material-symbols-outlined">add_circle</span>
+          <span>${nuevaTxt}</span>
+        </button>
+
+        <a href="${perfilUrl}" class="btn-action-secondary" id="btnVerPerfil">
+          <span class="material-symbols-outlined">receipt_long</span>
+          <span>${perfilTxt}</span>
+        </a>
+
+        <button type="button" class="btn-ver-factura-link" id="btnToggleFactura">
+          <span class="material-symbols-outlined">visibility</span>
+          <span>Ver comprobante completo</span>
+        </button>
+      </div>
+    `;
+
+    document.getElementById("btnNuevaVenta")?.addEventListener("click", () => {
+      window.location.href = "/pages/home/index.html";
+    });
+
+    document.getElementById("btnToggleFactura")?.addEventListener("click", () => {
+      if (invoiceContainer && pantallaExito) {
+        pantallaExito.classList.add("hidden");
+        invoiceContainer.classList.remove("hidden");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    });
+  }
+
+  // Eliminar barra superior si existía previamente
+  document.getElementById("comprobanteTopBar")?.remove();
+
+  // Botones inferiores dentro de invoiceContainer
+  const botonesContainer = document.querySelector(".recibo-botones");
+  if (botonesContainer) {
+    botonesContainer.innerHTML = `
+      <button type="button" class="btn-action-primary" id="btnNuevaVentaBottom">
+        <span class="material-symbols-outlined">add_circle</span>
+        <span>${nuevaTxt}</span>
+      </button>
+      <button type="button" class="btn-action-secondary" id="btnVolverPantallaExitoBottom">
+        <span class="material-symbols-outlined">arrow_back</span>
+        <span>Volver a la confirmación</span>
+      </button>
+      <button type="button" class="btn-imprimir-recibo" id="btnImprimirFacturaBottom">
+        <span class="material-symbols-outlined">print</span>
+        <span>Imprimir</span>
+      </button>
+    `;
+
+    document.getElementById("btnNuevaVentaBottom")?.addEventListener("click", () => {
+      window.location.href = "/pages/home/index.html";
+    });
+
+    document.getElementById("btnVolverPantallaExitoBottom")?.addEventListener("click", () => {
+      invoiceContainer.classList.add("hidden");
+      if (pantallaExito) {
+        pantallaExito.classList.remove("hidden");
+      }
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    document.getElementById("btnImprimirFacturaBottom")?.addEventListener("click", () => {
+      window.print();
+    });
+  }
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  window.showSnack(titleText);
 }
 
 /* =========================================================

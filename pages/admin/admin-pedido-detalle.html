@@ -12,7 +12,8 @@
     <link rel="stylesheet" href="/css/ui/header.css" />
     <link rel="stylesheet" href="/css/ui/footer.css" />
     <!-- Specific CSS -->
-    <link rel="stylesheet" href="/css/admin/admin-pedido-detalle.css?v=2" />
+    <link rel="stylesheet" href="/css/pages/recibo.css?v=35" />
+    <link rel="stylesheet" href="/css/admin/admin-pedido-detalle.css?v=35" />
     <link rel="icon" type="image/png" href="/imagenes/logo.png">
 </head>
 
@@ -22,54 +23,25 @@
             <!-- SCROLL CONTENT (mis-pedidos style) -->
             <div id="order-detail-content" class="detail-container-alt">
 
-                <!-- Mobile Header -->
-                <header class="detail-header-stitch-alt hidden-desktop">
-                    <button onclick="history.back()" class="btn-mobile-back-inline">
-                        <span class="material-symbols-outlined">chevron_left</span>
+                <!-- Header Unificado (PC y Móvil) -->
+                <header class="detail-header-stitch-alt">
+                    <button onclick="history.back()" class="btn-mobile-back-inline" aria-label="Volver" title="Volver">
+                        <span class="material-symbols-outlined">arrow_back</span>
                     </button>
                     <div class="header-info-stitch">
-                        <h2 class="order-number-stitch" id="detail-order-number-mobile">Pedido #—</h2>
+                        <h2 class="order-number-stitch" id="detail-order-number-mobile">Detalle de la venta</h2>
                         <span class="status-badge-stitch" id="detail-status-mobile">CARGANDO</span>
                     </div>
                     <div class="mobile-header-actions" style="display:flex;gap:8px;align-items:center">
-                        <button class="btn-icon-mobile" id="btnPrintMobile" title="Imprimir" style="background:none;border:none;cursor:pointer">
+                        <button class="btn-icon-mobile" id="btnPrintMobile" title="Imprimir" aria-label="Imprimir">
                             <span class="material-symbols-outlined">print</span>
                         </button>
-
                     </div>
                 </header>
 
                 <div class="detail-scroll-area custom-scroll">
 
                     <div class="main-detail-card">
-
-                        <!-- ====== HEADER DESKTOP ====== -->
-                        <header class="pedido-header hidden-mobile">
-                            <div class="pedido-title-col">
-                                <div class="breadcrumb">
-                                    <button class="btn-back" onclick="history.back()" title="Volver">
-                                        <span class="material-symbols-outlined">arrow_back</span>
-                                    </button>
-                                    <span class="breadcrumb-text">Gestión de Pedidos</span>
-                                </div>
-                                <h1 class="order-number-stitch" id="detail-order-number">Pedido #—</h1>
-                            </div>
-                            
-                            <div class="pedido-actions-col">
-                                <div class="payment-status-display">
-                                    <span class="material-symbols-outlined">check_circle</span>
-                                    <span class="payment-status-text">Venta completada</span>
-                                    <span class="payment-subtext">Cobrado en mostrador</span>
-                                </div>
-                                <div class="pedido-action-buttons">
-                                    <button class="btn-outline" id="btnPrint">
-                                        <span class="material-symbols-outlined">print</span>
-                                        Imprimir Factura
-                                    </button>
-
-                                </div>
-                            </div>
-                        </header>
 
                         <!-- TIMELINE -->
                         <div class="timeline-container-stitch">
@@ -96,86 +68,132 @@
                             </div>
                         </div>
 
-                        <!-- INFO GRID -->
-                        <div class="detail-grid-stitch">
+                        <!-- ========================================================
+                             COMPROBANTE COMPLETO OFICIAL DE CAFÉ CORTERO
+                             (VISTA AL DARLE 'VER COMPROBANTE COMPLETO' EN RECIBO)
+                             ======================================================== -->
+                        <section class="invoice-container recibo-card" style="margin: 0 auto; box-shadow:0 4px 20px rgba(0,0,0,0.06); width:100% !important; max-width:900px !important; box-sizing:border-box;">
 
-                            <div class="info-card-stitch">
-                                <h3 class="card-title-stitch"><span class="material-symbols-outlined" style="font-size:18px;color:var(--primary-green)">person</span> Cliente</h3>
-                                <div class="info-group-stitch">
-                                    <div class="info-row">
-                                        <label>Nombre:</label>
-                                        <p id="detail-client-name">—</p>
-                                    </div>
-                                    <div class="info-row">
-                                        <label>Email:</label>
-                                        <p id="detail-client-email">—</p>
-                                    </div>
-                                    <div class="info-row">
-                                        <label>Teléfono:</label>
-                                        <p id="detail-client-phone">—</p>
+                            <!-- Header Section -->
+                            <div class="header-section">
+                                <div class="brand-header">
+                                    <img src="/imagenes/logo-tight.png" alt="Café Cortero" class="invoice-logo">
+                                    <div class="company-details">
+                                        <h1>Café Cortero</h1>
+                                        <p>Danlí, El Paraíso, Honduras</p>
+                                        <p>RTN: 05019654135885</p>
                                     </div>
                                 </div>
-                                <div class="shipping-info" style="margin-top:12px">
-                                    <h3 class="card-title-stitch" style="font-size:0.9rem;margin-bottom:0.5rem;font-weight:500"><span class="material-symbols-outlined" style="font-size:16px;color:var(--primary-green)">location_on</span> Dirección de Envío</h3>
-                                    <p id="detail-shipping-address">—</p>
-                                </div>
-                                <div class="shipping-info" style="margin-top:12px">
-                                    <h3 class="card-title-stitch" style="font-size:0.9rem;margin-bottom:0.5rem;font-weight:500"><span class="material-symbols-outlined" style="font-size:16px;color:var(--primary-green)">notes</span> Notas Internas</h3>
-                                    <p id="detail-order-notes">El cliente no dejó notas.</p>
+                                <div class="document-info">
+                                    <h2 id="invoiceDocType">Pedido</h2>
+                                    <div class="number">Nº <span id="numeroPedido">—</span></div>
                                 </div>
                             </div>
 
-                            <div class="info-card-stitch">
-                                <h3 class="card-title-stitch"><img src="/imagenes/cupones-de-alimentos.png" class="card-title-icon-img" alt="" /> Resumen del pedido</h3>
-
-                                <div id="detail-items-body" class="summary-items-list"></div>
-
-                                <div class="payment-info-rows">
-                                    <div class="pay-row" id="admin-row" style="display:none">
-                                        <span>Atendido por:</span>
-                                        <span id="detail-admin-name">—</span>
+                            <!-- Twin Metas -->
+                            <div class="meta-grid">
+                                <!-- Client Box -->
+                                <div class="box-card" id="seccionDatosCliente">
+                                    <span class="lbl" id="lblCliente">Cliente</span>
+                                    <div class="client-name" id="nombreCliente">—</div>
+                                    <div class="client-p" id="f-customer-email-row" style="display:flex;align-items:center;gap:6px;">
+                                        <span class="material-symbols-outlined" style="font-size:14px;color:var(--primary,#2e5a36);">mail</span>
+                                        <span id="correoCliente">—</span>
                                     </div>
-                                    <div class="pay-row">
-                                        <span>Método:</span>
-                                        <span id="detail-payment-method">—</span>
+                                    <div class="client-p" id="f-customer-phone-row" style="display:flex;align-items:center;gap:6px;">
+                                        <span class="material-symbols-outlined" style="font-size:14px;color:var(--primary,#2e5a36);">call</span>
+                                        <span id="telefonoCliente">—</span>
                                     </div>
-                                    <div class="pay-row">
-                                        <span>Fecha:</span>
-                                        <span id="detail-payment-date">—</span>
-                                    </div>
+                                    <div class="divider"></div>
+                                    <div class="client-p" style="line-height:1.6;" id="direccionCliente">—</div>
                                 </div>
 
-                                <hr class="summary-divider">
-
-                                <div class="summary-totals">
-                                    <div class="sum-row">
-                                        <span>Subtotal</span>
-                                        <span id="detail-subtotal">L 0.00</span>
+                                <!-- Issue Box -->
+                                <div class="box-card">
+                                    <div class="emision-top">
+                                        <div>
+                                            <span class="lbl">Fecha de emisión</span>
+                                            <div class="emision-val" id="fechaPedido">—</div>
+                                            <div style="font-size:12px;color:var(--text-secondary,#715B51);margin-top:2px;" id="horaPedido">—</div>
+                                        </div>
+                                        <div class="right">
+                                            <span class="lbl">Lugar</span>
+                                            <div class="emision-val">Danlí, Honduras</div>
+                                        </div>
                                     </div>
-                                    <div class="sum-row">
-                                        <span>Envío</span>
-                                        <span id="detail-shipping">Gratis</span>
+                                    <div class="status-block">
+                                        <div class="icon" id="f-pay-icon">
+                                            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">point_of_sale</span>
+                                        </div>
+                                        <div>
+                                            <div class="status-title" id="f-pay-title">Pedido POS</div>
+                                            <div class="status-subtitle" id="f-pay-subtitle">Venta en mostrador</div>
+                                        </div>
                                     </div>
-                                    <div class="sum-row discount-text" id="discount-row" style="display:none">
-                                        <span>Descuento</span>
-                                        <span id="detail-discount">- L 0.00</span>
-                                    </div>
-                                </div>
-
-                                <hr class="summary-divider">
-
-                                <div class="final-total-row">
-                                    <span>Total</span>
-                                    <strong id="detail-total-amount" class="total-value-stitch">L 0.00</strong>
-                                </div>
-
-                                <div id="receipt-container" class="receipt-preview-stitch hidden" style="margin-top:16px">
-                                    <label>Comprobante:</label>
-                                    <a id="payment-receipt-link" href="#" target="_blank" class="receipt-btn">Ver Imagen <span class="material-symbols-outlined">open_in_new</span></a>
+                                    <div id="estado-pildora-container" style="margin-top:14px;"></div>
                                 </div>
                             </div>
 
-                        </div>
+                            <!-- Table -->
+                            <div class="items-area">
+                                <table class="invoice-table">
+                                    <thead>
+                                        <tr>
+                                            <th class="left">Producto / Descripción</th>
+                                            <th>Cant.</th>
+                                            <th class="right">Precio</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="listaProductos">
+                                        <!-- Dinámico -->
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Totals & Payment Info -->
+                            <div class="bottom-section">
+                                <div class="bottom-left">
+                                    <div class="metodo-pago-box" id="metodo-pago-section" style="padding:14px;background:#fbfbfb;border-radius:10px;border:1px solid #eee;">
+                                        <span class="lbl" style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;">Método de pago</span>
+                                        <p id="metodoPagoTexto" style="margin:4px 0 0 0;font-weight:600;color:var(--espresso,#2A170E);">—</p>
+                                        <p id="atendidoPorTexto" style="margin:4px 0 0 0;font-size:12px;color:#666;display:none;">Atendido por: —</p>
+                                        <p id="notasOrdenTexto" style="margin:6px 0 0 0;font-size:12px;color:#888;font-style:italic;"></p>
+                                    </div>
+                                </div>
+
+                                <div class="bottom-right">
+                                    <div class="tot-row" id="f-descuento-row" style="display:none"><span>Descuento:</span> <span id="f-descuento">-L 0.00</span></div>
+                                    <div class="tot-row"><span>Importe Exento:</span> <span>L 0.00</span></div>
+                                    <div class="tot-row"><span>Importe Gravado 15%:</span> <span id="f-gravado">L 0.00</span></div>
+                                    <div class="tot-row"><span>ISV 15%:</span> <span id="f-isv">L 0.00</span></div>
+                                    <div class="tot-row"><span>Envío:</span> <span id="f-envio">Gratis</span></div>
+
+                                    <div class="tot-row grand">
+                                        <span>TOTAL</span>
+                                        <span class="val">L <span id="totalPedido">0.00</span></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- ================= COMPROBANTE ADJUNTO (SI EXISTE) ================= -->
+                            <div id="previewComprobanteRecibo" class="preview hidden" style="margin-top:20px;">
+                                <div class="comprobante-preview-header">
+                                    <span class="comprobante-label">
+                                        <span class="material-symbols-outlined">receipt_long</span>
+                                        Comprobante de pago adjunto
+                                    </span>
+                                    <a id="payment-receipt-link" href="#" target="_blank" class="comprobante-zoom-btn" title="Ver imagen completa">
+                                        <span>Abrir</span>
+                                        <span class="material-symbols-outlined">open_in_new</span>
+                                    </a>
+                                </div>
+                                <div class="comprobante-img-container" style="margin-top:10px;">
+                                    <img id="imgComprobanteRecibo" alt="Comprobante de pago" loading="lazy">
+                                </div>
+                                <p class="preview-text" style="margin-top:8px;">Comprobante de transferencia bancaria adjunto.</p>
+                            </div>
+
+                        </section>
 
                     </div>
 
@@ -208,7 +226,7 @@
     
     <script src="/js/ui/layout.js"></script>
     <script type="module" src="/js/ui/header.js"></script>
-    <script type="module" src="/js/admin/admin_pedido_detalle.js"></script>
+    <script type="module" src="/js/admin/admin_pedido_detalle.js?v=35"></script>
 </body>
 
 </html>

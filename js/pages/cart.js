@@ -81,15 +81,19 @@ function updateHeaderCartTitle(cart) {
 
 /* ================= RENDER ================= */
 let stocksCache = {};
+let imagesCache = {};
 
 async function fetchStocks(ids) {
   if (!ids.length) return;
   const sb = getSupabaseClient();
   if (!sb) return;
 
-  const { data } = await sb.from("products").select("id, stock").in("id", ids);
+  const { data } = await sb.from("products").select("id, stock, image_url").in("id", ids);
   if (data) {
-    data.forEach(p => stocksCache[p.id] = p.stock);
+    data.forEach(p => {
+      stocksCache[p.id] = p.stock;
+      if (p.image_url) imagesCache[p.id] = p.image_url;
+    });
   }
 }
 
@@ -147,9 +151,14 @@ async function renderCart() {
   if (!cart.length) {
     main?.classList.add("carrito-vacio-activo");
     document.body.classList.add("carrito-vacio");
+    syncCartContainerPlacement();
     const headerNav = document.getElementById("cart-header-nav");
     if (headerNav) headerNav.style.display = "none";
-    if (resumenBox) resumenBox.style.display = "none";
+    if (resumenBox) {
+      resumenBox.style.display = "none";
+      resumenBox.classList.remove("sheet-open");
+    }
+    document.getElementById("cart-sheet-backdrop")?.classList.remove("active");
     container.innerHTML = `
       <div class="empty-container">
         <div class="empty-title">Tu selección está vacía</div>
@@ -167,7 +176,14 @@ async function renderCart() {
 
   main?.classList.remove("carrito-vacio-activo");
   document.body.classList.remove("carrito-vacio");
-  if (resumenBox) resumenBox.style.display = "block";
+  syncCartContainerPlacement();
+  if (resumenBox) {
+    resumenBox.style.display = "block";
+    if (!resumenBox.dataset.userToggled) {
+      resumenBox.classList.add("sheet-open");
+      document.getElementById("resumen-sheet-handle")?.setAttribute("aria-expanded", "true");
+    }
+  }
 
   const template = document.getElementById("template-cart-item");
   let subtotalOriginal = 0;
@@ -175,7 +191,16 @@ async function renderCart() {
 
   cart.forEach((item, index) => {
     const clone = template.content.cloneNode(true);
-    clone.querySelector(".item-image").src = item.img || "";
+    const imgEl = clone.querySelector(".item-image");
+    const resolvedImg = item.img || item.image_url || imagesCache[item.product_id] || "/imagenes/no-image.png";
+    if (imgEl) {
+      imgEl.src = resolvedImg;
+      imgEl.alt = item.name || "Producto";
+      imgEl.onerror = () => {
+        imgEl.onerror = null;
+        imgEl.src = "/imagenes/no-image.png";
+      };
+    }
     clone.querySelector(".item-name").textContent = item.name || "Producto";
 
     // Desglose de precios por ítem
@@ -255,6 +280,8 @@ async function renderCart() {
   }
 
   if (totalLabel) totalLabel.textContent = `L ${totalFinal.toFixed(2)}`;
+  const checkoutBtnTotal = document.getElementById("checkout-btn-total");
+  if (checkoutBtnTotal) checkoutBtnTotal.textContent = `L ${totalFinal.toFixed(2)}`;
   syncHeaderCounter();
 }
 
@@ -416,11 +443,39 @@ document.getElementById("proceder-btn")?.addEventListener("click", async () => {
   location.href = "/pages/profile/datos_cliente.html";
 });
 
+/* ================= BOTTOM SHEET RESUMEN (MÓVIL) ================= */
+function syncCartContainerPlacement() {
+  const container = document.getElementById("cart-container");
+  const colProductos = document.querySelector(".col-productos");
+  const sheetSlot = document.getElementById("resumen-items-slot");
+  if (!container || !colProductos || !sheetSlot) return;
+
+  const isMobile = window.matchMedia("(max-width: 900px)").matches;
+  const isEmpty = document.body.classList.contains("carrito-vacio");
+
+  if (isMobile && !isEmpty) {
+    if (container.parentElement !== sheetSlot) {
+      sheetSlot.appendChild(container);
+    }
+  } else {
+    if (container.parentElement !== colProductos) {
+      colProductos.appendChild(container);
+    }
+  }
+}
+
+window.addEventListener("resize", syncCartContainerPlacement);
+
+function initResumenBottomSheet() {
+  // Vista plana activa en móvil (sin comportamiento colapsable de Bottom Sheet)
+}
+
 /* ================= INIT ================= */
 try { sessionStorage.removeItem("pos_client"); } catch (_) {}
 window.addEventListener("pageshow", () => {
   try { sessionStorage.removeItem("pos_client"); } catch (_) {}
 });
+initResumenBottomSheet();
 renderCart();
 
 document.addEventListener("header:ready", () => {
