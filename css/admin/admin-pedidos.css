@@ -1172,3 +1172,105 @@ body.page-admin-orders::-webkit-scrollbar { width: 0; height: 0; display: none; 
     color: #E65100;
     border: 1px solid #FFE0B2;
 }
+
+/* Filtro de estado: carrusel de píldoras (todos los anchos) */
+.status-filter-pill {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 8px;
+  margin-top: 12px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding: 2px 2px 4px;
+  cursor: grab;
+}
+.status-filter-pill::-webkit-scrollbar { display: none; }
+.status-chip {
+  flex: 0 0 auto;
+  scroll-snap-align: center;
+  height: 36px;
+  padding: 0 18px;
+  border: 1px solid rgba(55, 123, 76, 0.35);
+  border-radius: 999px;
+  background: #fff;
+  color: #377b4c;
+  font-family: inherit;
+  font-size: .875rem;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color .2s, color .2s, border-color .2s;
+}
+.status-chip:hover { background: #eef6f0; border-color: #377b4c; }
+.status-chip.active { background: #377b4c; border-color: #377b4c; color: #fff; }
+.status-chip:focus-visible { outline: 2px solid #377b4c; outline-offset: 2px; }
+
+@media (max-width: 768px) {
+  .status-filter-pill {
+    margin-left: -16px;
+    margin-right: -16px;
+    width: calc(100% + 32px);
+    max-width: none;
+    padding: 2px 16px 4px;
+  }
+}
+
+/* El contenedor debe tener ancho acotado para que el carrusel desborde y se pueda deslizar */
+.page-title-section-stitch .title-group { min-width: 0; max-width: 100%; }
+@media (max-width: 768px) {
+  .page-title-section-stitch { align-items: stretch; }
+  .page-title-section-stitch .title-group { width: 100%; }
+  .status-filter-pill { touch-action: pan-x; }
+}
+
+/* Móvil: cabecera de página fija, pegada al header */
+@media (max-width: 768px) {
+  .admin-orders-container {
+    margin-top: 64px;
+    padding-top: 0;
+    overflow: clip; /* clip no crea contenedor de scroll, así sticky funciona */
+  }
+  .page-title-section-stitch {
+    position: sticky;
+    top: 64px;
+    z-index: 50;
+    margin-bottom: 8px;
+    padding: 8px 16px 6px;
+    background: var(--surface, #fff);
+  }
+  .page-title-section-stitch .page-subtitle { margin-bottom: 0; }
+}
+
+/* Móvil: que el scroll lo haga la ventana (si no, sticky no funciona) */
+@media (max-width: 768px) {
+  html { overflow-y: visible; }
+  body.page-admin-orders { overflow: visible; }
+  .page-title-section-stitch {
+    position: sticky !important;
+    top: 64px !important;
+  }
+}
+
+/* Móvil: cabecera de página FIJA bajo el header (no se mueve con el scroll) */
+@media (max-width: 768px) {
+  .page-title-section-stitch {
+    position: fixed !important;
+    top: 64px !important;
+    left: 0;
+    right: 0;
+    z-index: 900;
+    margin: 0 !important;
+    background: var(--bg-canvas, #fff);
+  }
+  /* Espacio reservado = alto real de la cabecera fija (lo calcula el script de la página) */
+  .admin-orders-container {
+    padding-top: var(--page-title-h, 150px) !important;
+  }
+}

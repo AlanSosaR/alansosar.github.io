@@ -25,6 +25,15 @@ function esperarSupabase() {
    ELEMENTOS
    ============================================================ */
 const form = document.getElementById("configForm");
+// Conserva los controles originales y sus eventos dentro del campo delineado.
+form.querySelectorAll("input.config-input, textarea.config-input").forEach(control => {
+  const label = form.querySelector(`label[for="${control.id}"]`);
+  if (!label) return;
+  const field = document.createElement("div");
+  field.className = "slide-text-field config-material-field";
+  control.before(field);
+  field.append(control, label);
+});
 const slidesContainer = document.getElementById("slides-container");
 const btnAddSlide = document.getElementById("btnAddSlide");
 const slideUploadInput = document.getElementById("slideUploadInput");
@@ -33,6 +42,17 @@ const historiaTitulo = document.getElementById("historia_titulo");
 const historiaSubtitulo = document.getElementById("historia_subtitulo");
 const historiaLead = document.getElementById("historia_lead");
 const historiaBody = document.getElementById("historia_body");
+function ajustarTextoHistoria() {
+  document.querySelectorAll("textarea.config-textarea").forEach(field => {
+    if (!field || !field.getClientRects().length) return;
+    field.style.height = "auto";
+    const border = field.offsetHeight - field.clientHeight;
+    field.style.height = `${field.scrollHeight + border}px`;
+    field.style.overflowY = "hidden";
+  });
+}
+document.querySelectorAll("textarea.config-textarea").forEach(field => field.addEventListener("input", ajustarTextoHistoria));
+window.addEventListener("resize", ajustarTextoHistoria);
 const historiaPreview = document.getElementById("historiaPreview");
 const historiaImgUpload = document.getElementById("historiaImgUpload");
 const historiaImgInput = document.getElementById("historiaImgInput");
@@ -41,7 +61,7 @@ const whatsappNumero = document.getElementById("whatsapp_numero");
 const whatsappNumero2 = document.getElementById("whatsapp_numero2");
 const facebookUrl = document.getElementById("facebook_url");
 const instagramUrl = document.getElementById("instagram_url");
-const btnSave = document.getElementById("btnSaveConfig");
+
 
 // Logo y footer
 const logoInput = document.getElementById("logoInput");
@@ -121,105 +141,87 @@ function renderSlides() {
     const div = document.createElement("div");
     div.className = "slide-item";
     div.draggable = true;
+    div.tabIndex = 0;
+    div.setAttribute("role", "button");
+    div.setAttribute("aria-label", `Editar imagen ${i + 1}`);
 
-    const imgSrc = slide._blob
-      ? URL.createObjectURL(slide._blob)
-      : slide.url || "/imagenes/no-image.png";
+    div.innerHTML = `<img class="slide-thumb" src="${slideImgSrc(slide)}" alt="Slide ${i + 1}" draggable="false">`;
 
-    div.innerHTML = `
-      <img class="slide-thumb" src="${imgSrc}" alt="Slide ${i + 1}">
-      <div class="slide-fields">
-        <div class="slide-fields-row">
-          <input type="text" class="slide-title-input" placeholder="Título (opcional)" value="${escapeHtml(slide.titulo || "")}">
-          <input type="text" class="slide-subtitle-input" placeholder="Subtítulo (opcional)" value="${escapeHtml(slide.subtitulo || "")}">
-        </div>
-      </div>
-      <div class="slide-actions">
-        <button type="button" class="slide-btn move-up" title="Subir" ${i === 0 ? "disabled style='opacity:.3'" : ""}>
-          <span class="material-symbols-outlined">keyboard_arrow_up</span>
-        </button>
-        <button type="button" class="slide-btn move-down" title="Bajar" ${i === slides.length - 1 ? "disabled style='opacity:.3'" : ""}>
-          <span class="material-symbols-outlined">keyboard_arrow_down</span>
-        </button>
-        <button type="button" class="slide-btn delete" title="Eliminar">
-          <span class="material-symbols-outlined">delete</span>
-        </button>
-      </div>
-    `;
-
-    const titleInput = div.querySelector(".slide-title-input");
-    const subtitleInput = div.querySelector(".slide-subtitle-input");
-
-    titleInput.addEventListener("input", () => { slide.titulo = titleInput.value; });
-    subtitleInput.addEventListener("input", () => { slide.subtitulo = subtitleInput.value; });
-
-    div.querySelector(".move-up").addEventListener("click", () => {
-      if (i > 0) {
-        [slides[i - 1], slides[i]] = [slides[i], slides[i - 1]];
-        renderSlides();
+    // Click en la imagen: abre el side sheet de edición
+    div._slide = slide;
+    let holdTimer, draggingTouch = false, startX = 0, startY = 0;
+    let suppressClickUntil = 0;
+    const finishTouch = (cancelled = false) => {
+      clearTimeout(holdTimer);
+      if (!draggingTouch) return;
+      draggingTouch = false;
+      suppressClickUntil = Date.now() + 700;
+      slidesContainer.dataset.suppressClickUntil = suppressClickUntil;
+      div.classList.remove("touch-reordering");
+      if (!cancelled) {
+        slides = Array.from(slidesContainer.children).map(item => item._slide);
       }
-    });
-
-    div.querySelector(".move-down").addEventListener("click", () => {
-      if (i < slides.length - 1) {
-        [slides[i], slides[i + 1]] = [slides[i + 1], slides[i]];
-        renderSlides();
+      renderSlides();
+    };
+    div.addEventListener("touchstart", e => {
+      if (e.touches.length !== 1) { finishTouch(true); return; }
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+      holdTimer = setTimeout(() => {
+        draggingTouch = true;
+        suppressClickUntil = Date.now() + 60000;
+        div.classList.add("touch-reordering");
+      }, 400);
+    }, { passive: true });
+    div.addEventListener("touchmove", e => {
+      if (e.touches.length !== 1) { finishTouch(true); return; }
+      const touch = e.touches[0];
+      if (!draggingTouch) {
+        if (Math.hypot(touch.clientX - startX, touch.clientY - startY) > 8) clearTimeout(holdTimer);
+        return;
       }
+      if (e.cancelable) e.preventDefault();
+      const target = document.elementFromPoint(touch.clientX, touch.clientY)?.closest(".slide-item");
+      if (!target || target === div || target.parentElement !== slidesContainer) return;
+      const items = Array.from(slidesContainer.children);
+      if (items.indexOf(div) < items.indexOf(target)) target.after(div);
+      else target.before(div);
+    }, { passive: false });
+    div.addEventListener("touchend", () => finishTouch(), { passive: true });
+    div.addEventListener("touchcancel", () => finishTouch(true), { passive: true });
+    div.addEventListener("contextmenu", e => e.preventDefault());
+    div.addEventListener("click", e => {
+      if (Date.now() < Math.max(suppressClickUntil, Number(slidesContainer.dataset.suppressClickUntil) || 0)) { e.preventDefault(); return; }
+      abrirSlideSheet(slide);
+    });
+    div.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); abrirSlideSheet(slide); }
     });
 
-    div.querySelector(".delete").addEventListener("click", () => {
-      slides.splice(i, 1);
-      renderSlides();
-    });
-
-    // Click en thumbnail para reemplazar imagen
-    const thumb = div.querySelector(".slide-thumb");
-    const fileInput = document.createElement("input");
-    fileInput.type = "file";
-    fileInput.accept = "image/jpeg,image/png,image/webp";
-    fileInput.hidden = true;
-    div.appendChild(fileInput);
-    thumb.addEventListener("click", () => fileInput.click());
-    fileInput.addEventListener("change", async () => {
-      const file = fileInput.files[0];
-      if (!file) return;
-      const blob = await comprimirImagen(file);
-      slide._blob = blob;
-      slide._dirty = true;
-      renderSlides();
-    });
-
-    // Drag & Drop events
+    // Drag & Drop para reordenar
     div.addEventListener("dragstart", (e) => {
       e.dataTransfer.effectAllowed = "move";
       e.dataTransfer.setData("text/plain", i);
       div.classList.add("dragging");
     });
-
     div.addEventListener("dragend", () => {
       div.classList.remove("dragging");
       slidesContainer.querySelectorAll(".slide-item").forEach(el => el.classList.remove("drag-over"));
     });
-
     div.addEventListener("dragover", (e) => {
       e.preventDefault();
       e.dataTransfer.dropEffect = "move";
       slidesContainer.querySelectorAll(".slide-item").forEach(el => el.classList.remove("drag-over"));
       div.classList.add("drag-over");
     });
-
-    div.addEventListener("dragleave", () => {
-      div.classList.remove("drag-over");
-    });
-
+    div.addEventListener("dragleave", () => div.classList.remove("drag-over"));
     div.addEventListener("drop", (e) => {
       e.preventDefault();
       div.classList.remove("drag-over");
       const from = parseInt(e.dataTransfer.getData("text/plain"));
-      const to = i;
-      if (from !== to) {
+      if (from !== i) {
         const [moved] = slides.splice(from, 1);
-        slides.splice(to, 0, moved);
+        slides.splice(i, 0, moved);
         renderSlides();
       }
     });
@@ -228,6 +230,191 @@ function renderSlides() {
   });
 }
 
+function slideImgSrc(slide) {
+  return slide._blob ? URL.createObjectURL(slide._blob) : slide.url || "/imagenes/no-image.png";
+}
+
+/* ============================================================
+   SIDE SHEET: EDITAR SLIDE (imagen + título + subtítulo)
+   ============================================================ */
+let slideSheetEl = null;
+
+function crearSlideSheet() {
+  const wrap = document.createElement("div");
+  wrap.className = "side-sheet-root";
+  wrap.innerHTML = `
+    <div class="side-sheet-scrim"></div>
+    <aside class="side-sheet" role="dialog" aria-modal="true" aria-labelledby="slideSheetTitle">
+      <header class="side-sheet-header">
+        <button type="button" class="side-sheet-nav side-sheet-prev" aria-label="Imagen anterior">
+          <span class="material-symbols-outlined">arrow_back</span>
+        </button>
+        <h2 id="slideSheetTitle">Imagen <span class="side-sheet-pos">1 / 1</span></h2>
+        <button type="button" class="side-sheet-nav side-sheet-next" aria-label="Imagen siguiente">
+          <span class="material-symbols-outlined">arrow_forward</span>
+        </button>
+        <button type="button" class="side-sheet-close" aria-label="Cerrar">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </header>
+      <div class="side-sheet-body">
+        <img class="side-sheet-img" alt="Imagen del carrusel">
+        <button type="button" class="side-sheet-replace">
+          <span class="material-symbols-outlined">image</span> Reemplazar imagen
+        </button>
+        <input type="file" accept="image/jpeg,image/png,image/webp" hidden>
+        <div class="slide-text-field">
+          <input id="slideSheetTitleInput" type="text" placeholder=" " aria-describedby="slideTitleHint">
+          <label for="slideSheetTitleInput">Título</label>
+        </div>
+        <span class="slide-field-hint" id="slideTitleHint">Opcional</span>
+        <div class="slide-text-field">
+          <input id="slideSheetSubtitleInput" type="text" placeholder=" " aria-describedby="slideSubtitleHint">
+          <label for="slideSheetSubtitleInput">Subtítulo</label>
+        </div>
+        <span class="slide-field-hint" id="slideSubtitleHint">Opcional</span>
+      </div>
+      <footer class="side-sheet-footer">
+        <button type="button" class="side-sheet-delete" aria-label="Eliminar imagen" title="Eliminar imagen">
+          <span class="material-symbols-outlined" aria-hidden="true">delete</span>
+        </button>
+        <button type="button" class="side-sheet-done">Listo</button>
+      </footer>
+    </aside>`;
+  document.body.appendChild(wrap);
+  slideSheetEl = wrap;
+  const syncViewport = () => {
+    const viewport = window.visualViewport;
+    const visibleTop = viewport?.offsetTop || 0;
+    const visibleBottom = visibleTop + (viewport?.height || window.innerHeight);
+    const headerBottom = document.getElementById("main-header")?.getBoundingClientRect().bottom
+      || (window.innerWidth <= 768 ? 64 : 72);
+    const top = Math.max(visibleTop, headerBottom);
+    wrap.style.top = `${top}px`;
+    wrap.style.height = `${Math.max(0, visibleBottom - top)}px`;
+  };
+  wrap._syncViewport = syncViewport;
+  window.addEventListener("resize", syncViewport);
+  window.visualViewport?.addEventListener("resize", syncViewport);
+  window.visualViewport?.addEventListener("scroll", syncViewport);
+  syncViewport();
+  wrap.querySelector(".side-sheet-scrim").addEventListener("click", cerrarSlideSheet);
+  wrap.querySelector(".side-sheet-close").addEventListener("click", cerrarSlideSheet);
+  wrap.querySelector(".side-sheet-done").addEventListener("click", async (e) => {
+    const scope = wrap._section?.scope || "slides";
+    if (scope === "reviews") { cerrarSlideSheet(); return; }
+    if (await guardarConfiguracion(e, scope, e.currentTarget)) cerrarSlideSheet();
+  });
+  wrap.querySelector(".side-sheet-prev").addEventListener("click", () => navegarSlideSheet(-1));
+  wrap.querySelector(".side-sheet-next").addEventListener("click", () => navegarSlideSheet(1));
+  document.addEventListener("keydown", (e) => {
+    if (!slideSheetEl.classList.contains("open")) return;
+    if (e.key === "Escape") cerrarSlideSheet();
+    if (e.target.matches("input, textarea")) return;
+    if (e.key === "ArrowLeft") navegarSlideSheet(-1);
+    if (e.key === "ArrowRight") navegarSlideSheet(1);
+  });
+  return wrap;
+}
+
+function abrirSlideSheet(slide) {
+  const sheet = slideSheetEl || crearSlideSheet();
+  sheet._slide = slide;
+  sheet.querySelector(".side-sheet-done").textContent = "Guardar cambios";
+  const img = sheet.querySelector(".side-sheet-img");
+  const titleIn = sheet.querySelector("#slideSheetTitleInput");
+  const subIn = sheet.querySelector("#slideSheetSubtitleInput");
+  const fileIn = sheet.querySelector("input[type=file]");
+  const replaceBtn = sheet.querySelector(".side-sheet-replace");
+  const delBtn = sheet.querySelector(".side-sheet-delete");
+
+  const pos = slides.indexOf(slide);
+  sheet.querySelector(".side-sheet-pos").textContent = `${pos + 1} / ${slides.length}`;
+  sheet.querySelector(".side-sheet-prev").disabled = pos <= 0;
+  const nextBtn = sheet.querySelector(".side-sheet-next");
+  nextBtn.disabled = !!slide._draft && pos === slides.length - 1;
+  nextBtn.setAttribute("aria-label", pos === slides.length - 1 && !slide._draft ? "Agregar nueva imagen" : "Imagen siguiente");
+  nextBtn.title = pos === slides.length - 1 && !slide._draft ? "Agregar nueva imagen" : "Imagen siguiente";
+  img.hidden = !slide.url && !slide._blob;
+  img.src = slideImgSrc(slide);
+  replaceBtn.lastChild.textContent = slide._draft ? " Seleccionar imagen" : " Reemplazar imagen";
+  titleIn.value = slide.titulo || "";
+  subIn.value = slide.subtitulo || "";
+
+  // oninput/onclick/onchange reemplazan los handlers del slide anterior
+  titleIn.oninput = () => { slide.titulo = titleIn.value; };
+  subIn.oninput = () => { slide.subtitulo = subIn.value; };
+  replaceBtn.onclick = () => fileIn.click();
+  fileIn.value = "";
+  fileIn.onchange = async () => {
+    const file = fileIn.files[0];
+    if (!file) return;
+    slide._blob = await comprimirImagen(file);
+    slide._dirty = true;
+    img.hidden = false;
+    img.src = slideImgSrc(slide);
+    renderSlides();
+  };
+  delBtn.onclick = () => {
+    const idx = slides.indexOf(slide);
+    if (idx > -1) slides.splice(idx, 1);
+    renderSlides();
+    cerrarSlideSheet();
+  };
+
+  mostrarConfigSheet(sheet);
+}
+
+function mostrarConfigSheet(sheet) {
+  if (!sheet.classList.contains("open")) {
+    sheet._returnFocus = document.activeElement;
+    sheet._background = document.querySelector(".admin-config-container");
+    sheet._wasInert = sheet._background?.inert;
+    sheet._overflow = [document.documentElement.style.overflow, document.body.style.overflow];
+    if (sheet._background) sheet._background.inert = true;
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+  }
+  sheet._syncViewport();
+  sheet.classList.add("open");
+  sheet.querySelector(".side-sheet-close").focus({ preventScroll: true });
+}
+
+function navegarSlideSheet(dir) {
+  if (slideSheetEl?._section) return;
+  const cur = slideSheetEl && slideSheetEl._slide;
+  const idx = slides.indexOf(cur) + dir;
+  if (idx >= 0 && idx < slides.length) abrirSlideSheet(slides[idx]);
+  else if (dir === 1 && idx === slides.length && cur && !cur._draft) {
+    const draft = { url: "", titulo: "", subtitulo: "", _draft: true };
+    slides.push(draft);
+    abrirSlideSheet(draft);
+  }
+}
+
+function cerrarSlideSheet() {
+  const sheet = slideSheetEl;
+  if (!sheet?.classList.contains("open")) return;
+  sheet.classList.remove("open");
+  if (slides.some(slide => slide._draft)) {
+    slides = slides.filter(slide => !slide._draft);
+    renderSlides();
+  }
+  if (sheet._section) {
+    const state = sheet._section;
+    state.marker.replaceWith(state.content);
+    state.body.remove();
+    sheet.querySelector(".side-sheet-body").style.display = "";
+    sheet.querySelector("#slideSheetTitle").innerHTML = state.title;
+    sheet.querySelectorAll(".side-sheet-nav, .side-sheet-delete").forEach(el => { el.style.display = ""; });
+    sheet._section = null;
+  }
+  if (sheet._background) sheet._background.inert = sheet._wasInert;
+  document.documentElement.style.overflow = sheet._overflow[0];
+  document.body.style.overflow = sheet._overflow[1];
+  if (sheet._returnFocus?.isConnected) sheet._returnFocus.focus({ preventScroll: true });
+  else slidesContainer.querySelector(".slide-item")?.focus({ preventScroll: true });
+}
 function escapeHtml(str) {
   const d = document.createElement("div");
   d.textContent = str;
@@ -302,14 +489,19 @@ async function cargarConfiguracion() {
 /* ============================================================
    GUARDAR CONFIGURACIÓN (UPSERT)
    ============================================================ */
-async function guardarConfiguracion(e) {
+async function guardarConfiguracion(e, scope = "slides", btnSave = e.currentTarget) {
   e.preventDefault();
+  if (btnSave.disabled) return false;
+  btnSave.disabled = true;
   btnSave.classList.add("loading");
   btnSave.textContent = "Guardando...";
 
   try {
     // 1. Subir imágenes pendientes de slides
-    for (let i = 0; i < slides.length; i++) {
+    if (scope === "slides" && slides.some(s => !s.url && !s._blob)) {
+      throw new Error("Selecciona una imagen antes de guardar");
+    }
+    for (let i = 0; scope === "slides" && i < slides.length; i++) {
       const slide = slides[i];
       if (slide._blob) {
         const fileName = generarNombre();
@@ -322,7 +514,7 @@ async function guardarConfiguracion(e) {
 
     // 2. Subir imagen de historia si cambió
     let historiaImagenUrl = originalHistoriaImgUrl;
-    if (historiaImagenBlob) {
+    if (scope === "history" && historiaImagenBlob) {
       const fileName = `historia_${Date.now()}.webp`;
       historiaImagenUrl = await subirArchivo(historiaImagenBlob, fileName);
       historiaPreview.src = historiaImagenUrl;
@@ -332,7 +524,7 @@ async function guardarConfiguracion(e) {
 
     // 2b. Subir logo principal si cambió
     let logoUrl = originalLogoUrl;
-    if (logoBlob) {
+    if (scope === "branding" && logoBlob) {
       const fileName = `logo_${Date.now()}.webp`;
       logoUrl = await subirArchivo(logoBlob, fileName);
       logoPreview.src = logoUrl;
@@ -342,7 +534,7 @@ async function guardarConfiguracion(e) {
 
     // 2c. Subir logo secundario si cambió
     let logoSecUrl = originalLogoSecUrl;
-    if (logoSecBlob) {
+    if (scope === "branding" && logoSecBlob) {
       const fileName = `logo_sec_${Date.now()}.webp`;
       logoSecUrl = await subirArchivo(logoSecBlob, fileName);
       logoSecPreview.src = logoSecUrl;
@@ -376,27 +568,46 @@ async function guardarConfiguracion(e) {
       updated_at: new Date().toISOString()
     };
 
-    // 4. Upsert (inserta si no existe, actualiza si ya existe)
+    const scopeFields = {
+      slides: ["hero_slides"],
+      history: ["historia_titulo", "historia_subtitulo", "historia_lead", "historia_body", "historia_imagen_url"],
+      contact: ["whatsapp_numero", "whatsapp_numero2", "facebook_url", "instagram_url"],
+      branding: ["logo_url", "logo_secundario_url", "footer_text"],
+      legal: ["privacy_content", "terms_content"]
+    };
+    const allowed = new Set(["id", "updated_at", ...(scopeFields[scope] || [])]);
+    Object.keys(payload).forEach(key => { if (!allowed.has(key)) delete payload[key]; });
+    // Solo persiste los campos de la sección activa.
     const { error } = await window.supabaseClient
       .from("site_settings")
       .upsert(payload, { onConflict: "id" });
 
     if (error) throw error;
 
-    showSnackbar("✅ Configuración guardada correctamente", "success");
+    if (scope === "slides") slides.forEach(slide => { delete slide._draft; });
+    showSnackbar("✅ Cambios de la sección guardados", "success");
+    renderSlides();
+    return true;
   } catch (err) {
     console.error("❌ Error al guardar:", err);
-    showSnackbar("❌ Error al guardar la configuración", "error");
+    showSnackbar(err.message || "Error al guardar la sección", "error");
+    return false;
   } finally {
+    btnSave.disabled = false;
     btnSave.classList.remove("loading");
-    btnSave.innerHTML = '<span class="material-symbols-outlined">save</span> Guardar cambios';
+    btnSave.textContent = "Guardar cambios";
   }
 }
 
 /* ============================================================
    AGREGAR SLIDE
    ============================================================ */
-btnAddSlide.addEventListener("click", () => slideUploadInput.click());
+btnAddSlide.addEventListener("click", () => {
+  const slide = { url: "", titulo: "", subtitulo: "", _draft: true };
+  slides.push(slide);
+  abrirSlideSheet(slide);
+});
+
 
 slideUploadInput.addEventListener("change", async () => {
   const files = Array.from(slideUploadInput.files);
@@ -436,8 +647,40 @@ document.addEventListener("click", (e) => {
   if (!header) return;
   const card = header.closest(".config-card");
   if (!card) return;
-  card.classList.toggle("collapsed");
+  if (card === form.querySelector(".config-card")) {
+    card.classList.toggle("collapsed");
+    return;
+  }
+  abrirSeccionSheet(card);
 });
+
+function abrirSeccionSheet(card) {
+  const sheet = slideSheetEl || crearSlideSheet();
+  if (sheet.classList.contains("open")) cerrarSlideSheet();
+  const content = card.querySelector(".config-card-body");
+  if (!content) return;
+  const marker = document.createComment("section-sheet-placeholder");
+  const title = sheet.querySelector("#slideSheetTitle");
+  const body = document.createElement("div");
+  body.className = "side-sheet-body section-sheet-body";
+  const index = Array.from(form.querySelectorAll(":scope > .config-card")).indexOf(card);
+  const scope = ["slides", "history", "contact", "branding", "reviews", "legal"][index];
+  sheet._section = { content, marker, body, title: title.innerHTML, scope };
+  sheet.querySelector(".side-sheet-done").textContent = scope === "reviews" ? "Listo" : "Guardar cambios";
+  sheet._slide = null;
+  content.replaceWith(marker);
+  // Mantiene la asociación con configForm aun fuera del formulario.
+  content.querySelectorAll("input, textarea, select, button").forEach(el => {
+    if (!el.hasAttribute("form")) el.setAttribute("form", "configForm");
+  });
+  body.appendChild(content);
+  sheet.querySelector(".side-sheet-body").style.display = "none";
+  sheet.querySelector(".side-sheet-footer").before(body);
+  title.textContent = card.querySelector("h2").textContent;
+  sheet.querySelectorAll(".side-sheet-nav, .side-sheet-delete").forEach(el => { el.style.display = "none"; });
+  mostrarConfigSheet(sheet);
+  requestAnimationFrame(ajustarTextoHistoria);
+}
 
 /* ============================================================
    CARGAR RESEÑAS (ADMIN)
@@ -596,7 +839,7 @@ btnRestoreLogoSec.addEventListener("click", () => {
     }
   } catch { location.href = "/pages/auth/login.html"; return; }
 
-  form.addEventListener("submit", guardarConfiguracion);
+  form.addEventListener("submit", e => e.preventDefault());
 
   await cargarConfiguracion();
   cargarReviewsAdmin();

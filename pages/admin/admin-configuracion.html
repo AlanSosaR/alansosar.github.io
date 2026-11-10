@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
   <title>Admin · Configuración | Café Cortero</title>
 
   <!-- Material Symbols -->
@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="/css/core/tipografia.css" />
   <link rel="stylesheet" href="/css/ui/header.css">
   <link rel="stylesheet" href="/css/ui/footer.css">
-  <link rel="stylesheet" href="/css/admin/admin-configuracion.css" />
+  <link rel="stylesheet" href="/css/admin/admin-configuracion.css?v=26" />
 </head>
 
 <body class="page-admin-config">
@@ -54,6 +54,17 @@
         </div>
         <p class="card-desc-stitch">Edita el texto y la imagen de la sección "Nuestra historia".</p>
         <div class="config-card-body">
+          <div class="field-group">
+            <label>Imagen de la historia</label>
+            <div class="historia-img-upload" id="historiaImgUpload">
+              <img id="historiaPreview" src="" alt="Previsualización" />
+              <div class="historia-img-overlay">
+                <span class="material-symbols-outlined">camera_alt</span>
+                <span>Cambiar imagen</span>
+              </div>
+            </div>
+            <input type="file" id="historiaImgInput" accept="image/jpeg,image/png,image/webp" hidden>
+          </div>
           <div class="form-grid-2col">
             <div class="field-group">
               <label for="historia_titulo">Título</label>
@@ -71,17 +82,6 @@
           <div class="field-group">
             <label for="historia_body">Texto secundario</label>
             <textarea id="historia_body" class="config-input config-textarea" rows="3"></textarea>
-          </div>
-          <div class="field-group">
-            <label>Imagen de la historia</label>
-            <div class="historia-img-upload" id="historiaImgUpload">
-              <img id="historiaPreview" src="" alt="Previsualización" />
-              <div class="historia-img-overlay">
-                <span class="material-symbols-outlined">camera_alt</span>
-                <span>Cambiar imagen</span>
-              </div>
-            </div>
-            <input type="file" id="historiaImgInput" accept="image/jpeg,image/png,image/webp" hidden>
           </div>
         </div>
       </section>
@@ -137,13 +137,12 @@
             <div class="field-group">
               <label for="logo_input">Logo principal (header)</label>
               <div class="logo-preview-row">
-                <img id="logoPreview" class="logo-preview-img" src="/imagenes/logo.png" alt="Vista previa">
+                <button type="button" class="logo-image-picker" id="btnUploadLogo" aria-label="Cambiar logo principal" title="Cambiar logo principal">
+                  <img id="logoPreview" class="logo-preview-img" src="/imagenes/logo.png" alt="Logo principal">
+                </button>
                 <div class="logo-actions">
-                  <button type="button" class="btn-upload-logo" id="btnUploadLogo">
-                    <span class="material-symbols-outlined">camera_alt</span> Subir
-                  </button>
-                  <button type="button" class="btn-restore-logo" id="btnRestoreLogo">
-                    Restaurar predeterminado
+                  <button type="button" class="btn-restore-logo logo-restore-icon" id="btnRestoreLogo" aria-label="Restaurar logo principal predeterminado" title="Restaurar predeterminado">
+                    <span class="material-symbols-outlined" aria-hidden="true">restore</span>
                   </button>
                 </div>
               </div>
@@ -152,13 +151,12 @@
             <div class="field-group">
               <label for="logo_secundario_input">Logo secundario (footer)</label>
               <div class="logo-preview-row">
-                <img id="logoSecPreview" class="logo-preview-img" src="/imagenes/logo_secundario.png" alt="Vista previa">
+                <button type="button" class="logo-image-picker" id="btnUploadLogoSec" aria-label="Cambiar logo secundario" title="Cambiar logo secundario">
+                  <img id="logoSecPreview" class="logo-preview-img" src="/imagenes/logo_secundario.png" alt="Logo secundario">
+                </button>
                 <div class="logo-actions">
-                  <button type="button" class="btn-upload-logo" id="btnUploadLogoSec">
-                    <span class="material-symbols-outlined">camera_alt</span> Subir
-                  </button>
-                  <button type="button" class="btn-restore-logo" id="btnRestoreLogoSec">
-                    Restaurar predeterminado
+                  <button type="button" class="btn-restore-logo logo-restore-icon" id="btnRestoreLogoSec" aria-label="Restaurar logo secundario predeterminado" title="Restaurar predeterminado">
+                    <span class="material-symbols-outlined" aria-hidden="true">restore</span>
                   </button>
                 </div>
               </div>
@@ -167,7 +165,7 @@
           </div>
           <div class="field-group" style="margin-top:16px">
             <label for="footerTextInput">Texto del pie de página</label>
-            <input id="footerTextInput" type="text" class="config-input" placeholder="2026 Café Cortero. Todos los derechos reservados." />
+            <textarea id="footerTextInput" class="config-input config-textarea" rows="3" placeholder="2026 Café Cortero. Todos los derechos reservados."></textarea>
           </div>
         </div>
       </section>
@@ -211,13 +209,7 @@
         </div>
       </section>
 
-      <!-- BOTÓN GUARDAR -->
-      <div class="form-actions">
-        <button type="submit" id="btnSaveConfig" class="btn-save-config">
-          <span class="material-symbols-outlined">save</span>
-          Guardar cambios
-        </button>
-      </div>
+
 
     </form>
   </main>
@@ -230,7 +222,7 @@
   <script src="/js/ui/layout.js"></script>
   <script type="module" src="/js/ui/header.js"></script>
   <script src="/js/core/auth-ui.js"></script>
-  <script src="/js/admin/admin-configuracion.js"></script>
+  <script src="/js/admin/admin-configuracion.js?v=15"></script>
 </body>
 
 </html>

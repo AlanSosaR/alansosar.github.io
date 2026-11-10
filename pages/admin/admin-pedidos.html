@@ -19,7 +19,7 @@
     <link rel="stylesheet" href="/css/ui/header.css">
     <link rel="stylesheet" href="/css/ui/footer.css">
     <link rel="stylesheet" href="/css/ui/header.search.css">
-    <link rel="stylesheet" href="/css/admin/admin-pedidos.css?v=12">
+    <link rel="stylesheet" href="/css/admin/admin-pedidos.css?v=19">
 </head>
 
 <body class="page-admin-orders">
@@ -32,6 +32,7 @@
             <div class="title-group">
                 <h1 class="page-title">Gestión de Pedidos</h1>
                 <p class="page-subtitle">Monitorea pedidos en tiempo real, actualiza estados y gestiona la logística.</p>
+                <div class="status-filter-pill" id="status-filter-pill"></div>
             </div>
         </header>
 
@@ -366,6 +367,16 @@
     <script type="module" src="/js/ui/header.js"></script>
     
     <script type="module">
+        // Reserva el alto real de la cabecera fija (móvil) para que no tape la lista
+        const titleEl = document.querySelector(".page-title-section-stitch");
+        const syncTitleH = () => {
+            if (titleEl) document.documentElement.style.setProperty("--page-title-h", titleEl.offsetHeight + "px");
+        };
+        if (titleEl && "ResizeObserver" in window) new ResizeObserver(syncTitleH).observe(titleEl);
+        window.addEventListener("resize", syncTitleH);
+        syncTitleH();
+    </script>
+    <script type="module">
         import { renderHeaderSearch } from "/js/ui/header.search.js";
         document.addEventListener("header:ready", () => {
             const slot = document.getElementById("header-middle-slot");
@@ -374,16 +385,50 @@
                 
                 const filter = document.getElementById("header-status-filter");
                 if (filter) {
-                    filter.innerHTML = `
-                        <option value="pending" selected>Pendientes</option>
-                        <option value="preparing">En Preparación</option>
-                        <option value="shipped">Enviados</option>
-                        <option value="delivered">Entregados</option>
-                        <option value="cancelled">Cancelados</option>
-                    `;
-                    filter.addEventListener("change", (e) => {
-                        document.dispatchEvent(new CustomEvent("order:filter", { detail: e.target.value }));
-                    });
+                    const options = [
+                        ["pending", "Pendientes"],
+                        ["preparing", "En Preparación"],
+                        ["shipped", "Enviados"],
+                        ["delivered", "Entregados"],
+                        ["cancelled", "Cancelados"]
+                    ];
+                    filter.innerHTML = options.map(([v, l], i) =>
+                        `<option value="${v}"${i === 0 ? " selected" : ""}>${l}</option>`).join("");
+                    // El select queda oculto como fuente de verdad; las píldoras lo controlan
+                    filter.hidden = true;
+                    const pillSlot = document.getElementById("status-filter-pill");
+                    if (pillSlot) {
+                        pillSlot.setAttribute("role", "tablist");
+                        pillSlot.setAttribute("aria-label", "Filtrar por estado");
+                        pillSlot.innerHTML = options.map(([v, l], i) =>
+                            `<button type="button" class="status-chip${i === 0 ? " active" : ""}" data-status="${v}" role="tab" aria-selected="${i === 0}">${l}</button>`).join("");
+                        pillSlot.addEventListener("click", (e) => {
+                            if (pillSlot.dataset.dragged === "1") { pillSlot.dataset.dragged = "0"; return; }
+                            const chip = e.target.closest(".status-chip");
+                            if (!chip) return;
+                            pillSlot.querySelectorAll(".status-chip").forEach(c => {
+                                const on = c === chip;
+                                c.classList.toggle("active", on);
+                                c.setAttribute("aria-selected", on);
+                            });
+                            filter.value = chip.dataset.status;
+                            chip.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+                            document.dispatchEvent(new CustomEvent("order:filter", { detail: chip.dataset.status }));
+                        });
+                        // Arrastrar con el ratón (escritorio); en táctil el scroll es nativo
+                        let down = false, startX = 0, startLeft = 0;
+                        pillSlot.addEventListener("pointerdown", (e) => {
+                            if (e.pointerType !== "mouse") return;
+                            down = true; startX = e.clientX; startLeft = pillSlot.scrollLeft;
+                        });
+                        window.addEventListener("pointermove", (e) => {
+                            if (!down) return;
+                            const dx = e.clientX - startX;
+                            if (Math.abs(dx) > 5) pillSlot.dataset.dragged = "1";
+                            pillSlot.scrollLeft = startLeft - dx;
+                        });
+                        window.addEventListener("pointerup", () => { down = false; });
+                    }
                 }
                 const input = document.getElementById("header-search-input");
                 if (input) {
