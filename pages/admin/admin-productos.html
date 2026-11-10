@@ -14,10 +14,16 @@
   <link rel="stylesheet" href="/css/ui/header.css" />
   <link rel="stylesheet" href="/css/ui/footer.css" />
   <link rel="stylesheet" href="/css/ui/header.search.css">
-  <link rel="stylesheet" href="/css/admin/admin-productos.css" />
+  <link rel="stylesheet" href="/css/admin/admin-productos.css?v=10" />
 </head>
 
 <body class="page-admin-cafes">
+  <button type="button" id="btn-back-product-detail" class="product-detail-back" aria-label="Volver a productos">
+    <span class="material-symbols-outlined" aria-hidden="true">arrow_back</span>
+  </button>
+  <button type="button" id="btnAddProduct" class="btn-new-product" aria-label="Nuevo producto" title="Nuevo producto">
+    <span class="material-symbols-outlined" aria-hidden="true">add</span>
+  </button>
 
   <main class="admin-products-container fade-in">
 
@@ -32,22 +38,19 @@
         <div class="topbar-titles">
           <h1>Productos</h1>
           <p class="topbar-subtitle">Gestiona el catálogo y visibilidad en tienda</p>
+          <div class="filter-pills" id="filterPills">
+            <button class="pill active" data-filter="all">Todos</button>
+            <button class="pill" data-filter="active">Activos</button>
+            <button class="pill" data-filter="carousel">En carrusel</button>
+          </div>
         </div>
       </div>
-      <button id="btnAddProduct" class="btn-new-product">
-        <span class="material-symbols-outlined">add</span>
-        Nuevo producto
-      </button>
+
     </div>
 
     <!-- =========================
        FILTROS PILL
     ========================= -->
-    <div class="filter-pills" id="filterPills">
-      <button class="pill active" data-filter="all">Todos</button>
-      <button class="pill" data-filter="active">Activos</button>
-      <button class="pill" data-filter="carousel">En carrusel</button>
-    </div>
 
     <!-- =========================
        GRID: LISTA + DETALLE
@@ -123,11 +126,11 @@
   <!-- UI -->
   <script type="module" src="/js/ui/header.js"></script>
   <script src="/js/core/auth-ui.js"></script>
-  <script src="/js/ui/layout.js"></script>
+  <script src="/js/ui/layout.js?v=products-no-footer"></script>
 
   <!-- Buscador global del header — ADMIN PRODUCTOS -->
   <script type="module">
-    import { renderHeaderSearch } from "/js/ui/header.search.js";
+    import { renderHeaderSearch } from "/js/ui/header.search.js?v=products-search-4";
 
     document.addEventListener("header:ready", () => {
       const slot = document.getElementById("header-middle-slot");
@@ -154,8 +157,59 @@
     });
   </script>
 
+  <script>
+    const productsTopbar = document.querySelector('.products-topbar');
+    const syncProductsTopbar = () => {
+      const header = document.getElementById('main-header');
+      if (header) document.body.style.setProperty('--products-header-offset', header.offsetHeight + 'px');
+      document.body.style.setProperty('--products-topbar-height', productsTopbar.offsetHeight + 'px');
+    };
+    new ResizeObserver(syncProductsTopbar).observe(productsTopbar);
+    const mountProductDetailHeader = () => {
+      const slot = document.querySelector('#main-header .header-left-stitch');
+      const back = document.getElementById('btn-back-product-detail');
+      if (slot && back && !slot.querySelector('.product-detail-header')) {
+        const group = document.createElement('div');
+        group.className = 'product-detail-header';
+        const title = document.createElement('span');
+        title.className = 'product-detail-header-title';
+        title.textContent = 'Detalles del producto';
+        group.append(back, title);
+        slot.prepend(group);
+      }
+
+      const rightSlot = document.querySelector('#main-header .header-right-stitch');
+      if (rightSlot && !rightSlot.querySelector('.product-detail-header-actions')) {
+        const actionsGroup = document.createElement('div');
+        actionsGroup.className = 'product-detail-header-actions';
+        actionsGroup.innerHTML = `
+          <button type="button" class="header-action-icon-btn delete-icon-btn" id="header-btn-delete-product" aria-label="Eliminar producto" title="Eliminar producto">
+            <span class="material-symbols-outlined">delete</span>
+          </button>
+          <button type="button" class="header-action-icon-btn edit-icon-btn" id="header-btn-edit-product" aria-label="Editar producto" title="Editar producto">
+            <span class="material-symbols-outlined">edit</span>
+          </button>
+        `;
+        rightSlot.prepend(actionsGroup);
+
+        actionsGroup.querySelector('#header-btn-delete-product').addEventListener('click', () => {
+          document.dispatchEvent(new CustomEvent('product:action-delete'));
+        });
+        actionsGroup.querySelector('#header-btn-edit-product').addEventListener('click', () => {
+          document.dispatchEvent(new CustomEvent('product:action-edit'));
+        });
+      }
+    };
+    document.addEventListener('header:ready', () => {
+      syncProductsTopbar();
+      mountProductDetailHeader();
+    });
+    mountProductDetailHeader();
+    window.addEventListener('resize', syncProductsTopbar);
+    syncProductsTopbar();
+  </script>
   <!-- ADMIN -->
-  <script src="/js/admin/admin-productos.js"></script>
+  <script src="/js/admin/admin-productos.js?v=9"></script>
 
 </body>
 

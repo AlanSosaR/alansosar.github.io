@@ -39,9 +39,102 @@ a {
 /* =========================================================
    CONTENEDOR GENERAL
 ========================================================= */
+body.page-admin-cafes { padding-top: 0; }
+/* Detalle de producto: sin buscador ni menú; se conserva el botón de volver. */
+body.page-admin-cafes.detail-view-active #header-middle-slot,
+body.page-admin-cafes.detail-view-active #header-search-slot,
+body.page-admin-cafes.detail-view-active #menu-toggle,
+body.page-admin-cafes.detail-view-active #btnAddProduct {
+  display: none !important;
+}
+body.page-admin-cafes.detail-view-active .products-topbar { display: none; }
+body.page-admin-cafes.detail-view-active .admin-products-container {
+  padding-top: calc(var(--products-header-offset, 72px) + 8px);
+}
+.product-detail-back { display: none; }
+body.page-admin-cafes.detail-view-active .product-detail-back {
+  display: inline-flex; align-items: center; justify-content: center;
+  position: static; flex-shrink: 0;
+  width: 42px; height: 42px; padding: 0; border: none;
+  border-radius: 50%; background: #fff; color: #377b4c;
+  box-shadow: 0 4px 12px rgba(0,0,0,.08); cursor: pointer;
+}
+.product-detail-header { display: none; }
+body.page-admin-cafes.detail-view-active .product-detail-header {
+  display: flex; align-items: center; gap: 12px; min-width: 0;
+}
+.product-detail-header-title {
+  font-size: 16px; font-weight: 600; color: #2B2B2B;
+  white-space: nowrap;
+}
+body.page-admin-cafes.detail-view-active #main-header .header-logo-link { display: none !important; }
+body.page-admin-cafes.detail-view-active #main-header .header-left-stitch { flex: 1; min-width: 0; }
+
+body.page-admin-cafes.detail-view-active #main-header .header-right-stitch {
+  display: flex !important;
+  width: auto !important;
+  min-width: auto !important;
+  flex: 0 0 auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.product-detail-header-actions {
+  display: none;
+}
+body.page-admin-cafes.detail-view-active .product-detail-header-actions {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+.header-action-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.header-action-icon-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+.header-action-icon-btn:active {
+  transform: scale(0.96);
+}
+.header-action-icon-btn.delete-icon-btn {
+  color: var(--rojo, #d32f2f);
+}
+.header-action-icon-btn.edit-icon-btn {
+  color: var(--verde, #377b4c);
+}
+.header-action-icon-btn .material-symbols-outlined {
+  font-size: 22px;
+  line-height: 1;
+}
+
+body.page-admin-cafes.detail-view-active #main-header .header-auth-group,
+body.page-admin-cafes.detail-view-active #main-header #cart-btn {
+  display: none !important;
+}
+
+.detail-actions {
+  display: none !important;
+}
+
 .admin-products-container {
   padding: 20px;
-  padding-top: calc(var(--header-height, 72px) + 16px);
+  padding-top: calc(var(--products-header-offset, 72px) + var(--products-topbar-height, 100px) + 8px);
+  padding-bottom: calc(120px + env(safe-area-inset-bottom, 0px));
   background: var(--gris-bg);
   min-height: 100vh;
 }
@@ -50,6 +143,12 @@ a {
    TOPBAR
 ========================================================= */
 .products-topbar {
+  position: fixed;
+  top: var(--products-header-offset, 72px);
+  left: 0; right: 0;
+  z-index: 100;
+  padding: 16px 20px;
+  background: var(--gris-bg);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -76,14 +175,21 @@ a {
 }
 
 .btn-new-product {
+  position: fixed;
+  right: max(24px, env(safe-area-inset-right, 0px));
+  bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  z-index: 200;
+  width: 80px; height: 80px;
+  justify-content: center;
+  box-shadow: 0 6px 16px rgba(0,0,0,.2);
   display: flex;
   align-items: center;
   gap: 6px;
   background: var(--verde-btn);
   color: #fff;
   border: none;
-  border-radius: 10px;
-  padding: 0.65rem 1.25rem;
+  border-radius: 28px;
+  padding: 0;
   font-size: 0.92rem;
   font-weight: 600;
   cursor: pointer;
@@ -96,12 +202,21 @@ a {
 }
 
 .btn-new-product .material-symbols-outlined {
-  font-size: 20px;
+  font-size: 32px;
+}
+.btn-new-product:active { transform: scale(.96); }
+.btn-new-product:focus-visible { outline: 2px solid #377b4c; outline-offset: 4px; }
+@media (max-width: 768px) {
+  .page-admin-cafes { --products-header-offset: 64px; }
 }
 
 /* =========================================================
    FILTROS PILL
 ========================================================= */
+.products-topbar .topbar-left { min-width: 0; width: 100%; }
+.products-topbar .topbar-titles { min-width: 0; flex: 1; }
+.products-topbar .filter-pills { margin: 16px 0 0; overflow-x: auto; }
+.products-topbar .filter-pills .pill { flex-shrink: 0; white-space: nowrap; }
 .filter-pills {
   display: flex;
   gap: 8px;
@@ -244,8 +359,10 @@ a {
 }
 
 #product-detail-panel {
-  background: var(--blanco);
-  border-radius: 12px;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
   overflow: hidden;
 }
 

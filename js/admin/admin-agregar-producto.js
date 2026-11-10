@@ -30,6 +30,18 @@ const form = document.getElementById("producto-form");
 const imagenInput = document.getElementById("imagen");
 const nombreInput = document.getElementById("nombre");
 const descInput = document.getElementById("descripcion");
+function ajustarDescripcion() {
+  descInput.style.height = "auto";
+  descInput.style.height = `${descInput.scrollHeight + descInput.offsetHeight - descInput.clientHeight}px`;
+}
+descInput.addEventListener("input", ajustarDescripcion);
+new ResizeObserver(() => {
+  if (descInput.dataset.width !== String(descInput.clientWidth)) {
+    descInput.dataset.width = String(descInput.clientWidth);
+    ajustarDescripcion();
+  }
+}).observe(descInput);
+requestAnimationFrame(ajustarDescripcion);
 const categoriaSel = document.getElementById("categoria");
 const tipoCafeSel = document.getElementById("tipoCafe");
 const presentacion = document.getElementById("presentacion");
@@ -309,6 +321,7 @@ async function cargarProducto() {
 
   nombreInput.value = data.name || "";
   descInput.value = data.description || "";
+  ajustarDescripcion();
   categoriaSel.value = data.category || "";
   tipoCafeSel.value = data.grind_type || "";
   presentacion.value = data.presentation || "";
@@ -342,6 +355,59 @@ async function cargarProducto() {
 }
 
 /* ============================================================
+   CONTROL DE CAMBIOS SIN GUARDAR (DIRTY STATE)
+============================================================ */
+let initialFormData = null;
+let formSavedSuccessfully = false;
+
+function capturarEstadoFormulario() {
+  const inputs = Array.from(form.querySelectorAll("input, textarea, select"));
+  const obj = {};
+  inputs.forEach((el, index) => {
+    const key = el.id || el.name || `field_${index}`;
+    if (el.type === "checkbox" || el.type === "radio") {
+      obj[key] = el.checked;
+    } else if (el.type === "file") {
+      obj[key] = el.files && el.files.length > 0 ? el.files[0].name : "";
+    } else {
+      obj[key] = el.value;
+    }
+  });
+  return JSON.stringify(obj);
+}
+
+window.__isProductFormDirty = function() {
+  if (formSavedSuccessfully) return false;
+  if (!initialFormData) return false;
+  return capturarEstadoFormulario() !== initialFormData;
+};
+
+const snackbarUnsaved = document.getElementById("snackbar-unsaved");
+const btnCancelLeave = document.getElementById("btnCancelLeave");
+const btnConfirmLeave = document.getElementById("btnConfirmLeave");
+let pendingRedirectUrl = null;
+
+window.__showUnsavedDialog = function(redirectUrl) {
+  pendingRedirectUrl = redirectUrl;
+  if (snackbarUnsaved) {
+    snackbarUnsaved.classList.add("show");
+  }
+};
+
+btnCancelLeave?.addEventListener("click", () => {
+  if (snackbarUnsaved) snackbarUnsaved.classList.remove("show");
+  pendingRedirectUrl = null;
+});
+
+btnConfirmLeave?.addEventListener("click", () => {
+  formSavedSuccessfully = true;
+  if (snackbarUnsaved) snackbarUnsaved.classList.remove("show");
+  if (pendingRedirectUrl) {
+    location.href = pendingRedirectUrl;
+  }
+});
+
+/* ============================================================
    SUBMIT
 ============================================================ */
 form.addEventListener("submit", async (e) => {
@@ -352,6 +418,9 @@ form.addEventListener("submit", async (e) => {
 
   try {
     await guardarProducto();
+
+    formSavedSuccessfully = true;
+    initialFormData = capturarEstadoFormulario();
 
     showSnackbar(
       IS_EDIT ? "Cambios guardados" : "Café agregado",
@@ -396,6 +465,7 @@ document.querySelector(".back-btn")?.addEventListener("click", (e) => {
     document.title = "Editar café | Café Cortero";
     await cargarProducto();
   }
+  initialFormData = capturarEstadoFormulario();
 
   syncFloatingLabels();
 })();

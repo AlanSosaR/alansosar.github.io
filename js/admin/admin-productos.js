@@ -270,8 +270,8 @@ function renderDetail(product) {
     <div class="detail-content">
       <div class="detail-main">
         <div class="detail-image-wrap">
-          <img src="${imgUrl}?v=${Date.now()}" alt="${product.name}"
-            onerror="this.src='/imagenes/no-image.png'">
+          <img src="${imgUrl}" alt="${product.name}" loading="eager" fetchpriority="high" decoding="async"
+            onerror="this.onerror=null;this.src='/imagenes/no-image.png'">
         </div>
         <div class="detail-info">
           <h3 class="detail-name">${product.name || "—"}</h3>
@@ -308,16 +308,6 @@ function renderDetail(product) {
         </label>
       </div>
     </div>
-    <div class="detail-actions">
-      <button class="detail-action-btn delete-btn" id="d-delete-btn">
-        <span class="material-symbols-outlined">delete</span>
-        Eliminar
-      </button>
-      <button class="detail-action-btn edit-btn" id="d-edit-btn">
-        <span class="material-symbols-outlined">edit</span>
-        Editar producto
-      </button>
-    </div>
   `;
 
   /* =====================
@@ -351,18 +341,9 @@ function renderDetail(product) {
   };
 
   /* =====================
-     BOTÓN ELIMINAR
+     EVENTOS DE ACCIÓN EN HEADER / DETALLE
   ===================== */
-  document.getElementById("d-delete-btn").addEventListener("click", () => {
-    showDeleteConfirm(product);
-  });
-
-  /* =====================
-     BOTÓN EDITAR
-  ===================== */
-  document.getElementById("d-edit-btn").addEventListener("click", () => {
-    location.href = `/pages/admin/admin-agregar-producto.html?id=${product.id}`;
-  });
+  window.__currentDetailProduct = product;
 }
 
 /* ============================================================
@@ -392,16 +373,42 @@ function selectProduct(id, { fromUserClick = false } = {}) {
 /* ============================================================
    FILTRO
 ============================================================ */
-function aplicarFiltro(query) {
-  searchActive = (typeof query === "string" ? query : "").toLowerCase().trim();
+function normalizarBusquedaProducto(value) {
+  return String(value || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+}
+window.__searchAdminProducts = query => {
+  const tokens = normalizarBusquedaProducto(query).split(/\s+/).filter(Boolean);
+  return products.filter(product => {
+    const text = normalizarBusquedaProducto([product.name, product.category, product.description, product.grind_type].join(" "));
+    return tokens.every(token => text.includes(token));
+  }).map(product => ({ ...product, searchImageUrl: getImageUrl(product) }));
+};
+document.addEventListener("product:search-select", event => {
+  const product = products.find(item => item.id === event.detail);
+  if (!product) return;
+  activeFilter = "all";
+  document.querySelectorAll("#filterPills .pill").forEach(pill => pill.classList.toggle("active", pill.dataset.filter === "all"));
+  aplicarFiltro(product.name || "");
+  selectProduct(product.id, { fromUserClick: true });
+});
+// Delegación: funciona aunque el header vuelva a crear el campo de búsqueda.
+document.addEventListener("input", event => {
+  if (event.target.matches("#header-search-input")) aplicarFiltro(event.target.value);
+}, true);
+document.addEventListener("search", event => {
+  if (event.target.matches("#header-search-input")) aplicarFiltro(event.target.value);
+}, true);
+
+function aplicarFiltro(query = searchActive) {
+  searchActive = normalizarBusquedaProducto(query);
 
   let base = !searchActive
     ? [...products]
     : products.filter(p => {
-        const nameMatch = (p.name || "").toLowerCase().includes(searchActive);
-        const descMatch = (p.description || "").toLowerCase().includes(searchActive);
-        const catMatch = (p.category || "").toLowerCase().includes(searchActive);
-        const grindMatch = (p.grind_type || "").toLowerCase().includes(searchActive);
+        const nameMatch = normalizarBusquedaProducto(p.name).includes(searchActive);
+        const descMatch = normalizarBusquedaProducto(p.description).includes(searchActive);
+        const catMatch = normalizarBusquedaProducto(p.category).includes(searchActive);
+        const grindMatch = normalizarBusquedaProducto(p.grind_type).includes(searchActive);
         return nameMatch || descMatch || catMatch || grindMatch;
       });
 
@@ -493,7 +500,13 @@ async function cargarProductos() {
     .order("created_at", { ascending: false });
 
   products = data || [];
-  aplicarFiltro();
+  aplicarFiltro(document.getElementById("header-search-input")?.value || searchActive);
+  const detailId = new URLSearchParams(location.search).get("id");
+  const requestedProduct = products.find(product => String(product.id) === detailId);
+  if (requestedProduct) {
+    selectProduct(requestedProduct.id, { fromUserClick: true });
+    document.body.classList.add("detail-view-active");
+  }
 }
 
 /* ============================================================
@@ -541,8 +554,22 @@ async function cargarProductos() {
       location.href = "/pages/admin/admin-agregar-producto.html";
     });
 
-    document.getElementById("btn-back-products-title")?.addEventListener("click", () => {
-      document.body.classList.remove("detail-view-active");
+    document.addEventListener("product:action-delete", () => {
+      if (window.__currentDetailProduct) {
+        showDeleteConfirm(window.__currentDetailProduct);
+      }
+    });
+
+    document.addEventListener("product:action-edit", () => {
+      if (window.__currentDetailProduct) {
+        location.href = `/pages/admin/admin-agregar-producto.html?id=${window.__currentDetailProduct.id}`;
+      }
+    });
+
+    ["btn-back-products-title", "btn-back-product-detail"].forEach(id => {
+      document.getElementById(id)?.addEventListener("click", () => {
+        document.body.classList.remove("detail-view-active");
+      });
     });
 
     cargarProductos();

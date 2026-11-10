@@ -42,7 +42,7 @@ if (window.__LAYOUT_LOADED__) {
       }
 
       // ================= INYECTAR FOOTER (excepto login y carrito) =================
-      if (!isLoginPage && !isCartPage && !isAdminCustomersPage && !document.getElementById("site-footer")) {
+      if (!isLoginPage && !isCartPage && !isAdminCustomersPage && !document.body.classList.contains("page-admin-config") && !document.body.classList.contains("page-admin-cafes") && !document.body.classList.contains("page-admin-agregar-cafe") && !document.getElementById("site-footer")) {
         const footerRes = await fetch("/pages/shared/footer.html", { cache: "no-store" });
         if (!footerRes.ok) throw new Error("footer.html no encontrado");
         const footerHtml = await footerRes.text();

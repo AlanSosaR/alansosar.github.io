@@ -286,7 +286,7 @@ function crearSlideSheet() {
   const syncViewport = () => {
     const viewport = window.visualViewport;
     const visibleTop = viewport?.offsetTop || 0;
-    const visibleBottom = visibleTop + (viewport?.height || window.innerHeight);
+    const visibleBottom = Math.min(window.innerHeight, visibleTop + (viewport?.height || window.innerHeight));
     const headerBottom = document.getElementById("main-header")?.getBoundingClientRect().bottom
       || (window.innerWidth <= 768 ? 64 : 72);
     const top = Math.max(visibleTop, headerBottom);

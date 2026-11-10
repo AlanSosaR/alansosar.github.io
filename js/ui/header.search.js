@@ -199,6 +199,7 @@ function attachSurfaceItemEvents() {
 }
 
 function renderSuggestions() {
+  if (document.body.classList.contains("page-admin-cafes")) { renderProductSearch(""); return; }
   const content = document.getElementById("search-surface-content");
   if (!content) return;
 
@@ -269,7 +270,39 @@ function renderSuggestions() {
   attachSurfaceItemEvents();
 }
 
+function renderProductSearch(query) {
+  const content = document.getElementById("search-surface-content");
+  if (!content) return;
+  const matches = window.__searchAdminProducts?.(query) || [];
+  content.innerHTML = `<div class="search-section">
+    <div class="search-section-header"><span class="material-symbols-outlined header-icon">search</span><span>Productos (${matches.length})</span></div>
+    <div class="search-results-list">${matches.slice(0, 20).map(product => `
+      <div class="search-result-item" role="button" tabindex="0" data-product-id="${escapeHtml(String(product.id))}">
+        <div class="search-item-avatar"><img class="search-item-avatar-img" src="${escapeHtml(product.searchImageUrl || '/imagenes/no-image.png')}" alt="${escapeHtml(product.name || 'Producto')}" loading="lazy"></div>
+        <div class="search-item-info"><div class="search-item-name">${highlightMatch(product.name || "Sin nombre", query)}</div>
+        <div class="search-item-email">${escapeHtml(product.category || "")} · ${escapeHtml(String(product.price ?? ""))} ${escapeHtml(product.currency || "HNL")}</div></div>
+        <span class="material-symbols-outlined search-item-arrow">chevron_right</span>
+      </div>`).join("")}</div>
+    ${matches.length ? "" : '<div class="search-empty-state"><p class="empty-title">Sin productos</p><p class="empty-subtitle">Prueba con otro nombre o categoría.</p></div>'}
+  </div>`;
+  content.querySelectorAll("[data-product-id]").forEach(item => {
+    const select = () => {
+      const product = matches.find(p => String(p.id) === item.dataset.productId);
+      if (!product) return;
+      const input = document.getElementById("header-search-input");
+      if (input) input.value = product.name || "";
+      document.dispatchEvent(new CustomEvent("product:search-select", { detail: product.id }));
+      closeFocusedSearch();
+    };
+    item.addEventListener("click", select);
+    item.addEventListener("keydown", event => {
+      if (event.key === "Enter" || event.key === " ") { event.preventDefault(); select(); }
+    });
+  });
+}
+
 function renderLiveResults(query) {
+  if (document.body.classList.contains("page-admin-cafes")) { renderProductSearch(query); return; }
   const content = document.getElementById("search-surface-content");
   if (!content) return;
 

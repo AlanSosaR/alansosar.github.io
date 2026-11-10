@@ -21,7 +21,8 @@
   <link rel="stylesheet" href="/css/ui/footer.css">
 
   <!-- CSS PROPIO ADMIN (YA MOVIDO) -->
-  <link rel="stylesheet" href="/css/admin/admin-agregar-producto.css?v=3">
+  <link rel="stylesheet" href="/css/admin/admin-agregar-producto.css?v=14">
+  <link rel="stylesheet" href="/css/admin/product-date-picker.css?v=1">
   <link rel="icon" type="image/png" href="/imagenes/logo.png">
 </head>
 
@@ -38,10 +39,6 @@
             
             <!-- TARJETA IZQUIERDA: IMAGEN DEL PRODUCTO -->
             <div class="admin-card-image">
-              <!-- BOTÓN ATRÁS -->
-              <button class="back-btn" data-back="/pages/home/index.html" aria-label="Volver">
-                <span class="material-symbols-outlined">chevron_left</span>
-              </button>
               <h3 class="card-section-title">Imagen del café</h3>
               <!-- ================= IMAGEN ================= -->
               <div class="m3-field">
@@ -293,8 +290,8 @@
 
               </div>
 
-              <!-- BOTÓN DE ACCIÓN -->
-              <div class="form-actions">
+              <!-- BOTÓN DE ACCIÓN (MOVIDO AL HEADER) -->
+              <div class="form-actions" style="display: none;">
                 <button type="submit" id="btn-submit" class="m3-btn">
                   <span class="loader"></span>
                   <span class="btn-text">Guardar producto</span>
@@ -314,6 +311,20 @@
   <!-- SNACKBAR GLOBAL -->
   <div id="snackbar" class="snackbar"></div>
 
+  <!-- MODAL / SNACKBAR CONFIRMAR CAMBIOS SIN GUARDAR -->
+  <div id="snackbar-unsaved" class="snackbar-action">
+    <div class="snackbar-content">
+      <div class="snackbar-text">
+        <strong>Tienes cambios sin guardar</strong>
+        <span>¿Deseas salir y descartar las modificaciones?</span>
+      </div>
+      <div class="snackbar-actions">
+        <button type="button" class="snackbar-btn cancel" id="btnCancelLeave">Seguir editando</button>
+        <button type="button" class="snackbar-btn danger" id="btnConfirmLeave">Descartar y salir</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ================= SCRIPTS ================= -->
 
   <!-- Supabase SDK -->
@@ -325,10 +336,55 @@
   <script src="/js/core/auth-ui.js"></script>
 
   <!-- UI -->
-  <script src="/js/ui/layout.js"></script>
+  <script src="/js/ui/layout.js?v=editor-no-footer"></script>
   <script type="module" src="/js/ui/header.js"></script>
+  <script>
+    function mountProductEditorBack() {
+      const slot = document.querySelector('#main-header .header-left-stitch');
+      if (slot && !slot.querySelector('.product-editor-back')) {
+        const back = document.createElement('a');
+        back.className = 'product-editor-back';
+        const productId = new URLSearchParams(location.search).get('id');
+        back.href = '/pages/admin/admin-productos.html' + (productId ? '?id=' + encodeURIComponent(productId) : '');
+        back.setAttribute('aria-label', productId ? 'Volver al detalle del producto' : 'Volver a productos');
+        back.innerHTML = '<span class="material-symbols-outlined" aria-hidden="true">arrow_back</span>';
+        const handleBackClick = (e) => {
+          if (typeof window.__isProductFormDirty === 'function' && window.__isProductFormDirty()) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (typeof window.__showUnsavedDialog === 'function') {
+              window.__showUnsavedDialog(back.href);
+            }
+          }
+        };
+        back.addEventListener('click', handleBackClick, true);
+        const title = document.createElement('span');
+        title.className = 'product-editor-header-title';
+        title.textContent = productId ? 'Actualización de datos' : 'Crear nuevo producto';
+        slot.prepend(back, title);
+      }
+
+      const rightSlot = document.querySelector('#main-header .header-right-stitch');
+      if (rightSlot && !rightSlot.querySelector('.header-btn-save-product')) {
+        const saveBtn = document.createElement('button');
+        saveBtn.type = 'button';
+        saveBtn.className = 'header-action-icon-btn header-btn-save-product';
+        saveBtn.id = 'header-btn-save-product';
+        saveBtn.setAttribute('aria-label', 'Guardar cambios');
+        saveBtn.setAttribute('title', 'Guardar');
+        saveBtn.innerHTML = '<span class="material-symbols-outlined" aria-hidden="true">save</span>';
+        saveBtn.addEventListener('click', () => {
+          document.getElementById('producto-form')?.requestSubmit();
+        });
+        rightSlot.prepend(saveBtn);
+      }
+    }
+    document.addEventListener('header:ready', mountProductEditorBack);
+    mountProductEditorBack();
+  </script>
   <!-- ADMIN -->
-  <script src="/js/admin/admin-agregar-producto.js"></script>
+  <script src="/js/admin/admin-agregar-producto.js?v=5"></script>
+  <script type="module" src="/js/admin/product-date-picker.js?v=1"></script>
 
 </body>
 

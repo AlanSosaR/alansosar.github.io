@@ -36,7 +36,22 @@ body.page-admin-config {
   margin: 0 auto;
   padding: 20px;
   padding-top: calc(var(--header-height, 72px) + 24px);
-  overflow-x: hidden;
+  overflow: visible;
+}
+/* En Preview, el documento completo incluye también el footer inyectado. */
+html:has(body.page-admin-config):not(:has(.side-sheet-root.open)) {
+  overflow-y: auto !important;
+  height: auto;
+}
+body.page-admin-config:not(:has(.side-sheet-root.open)) {
+  overflow-y: visible !important;
+  overflow-x: clip;
+  height: auto;
+}
+body.page-admin-config #site-footer {
+  position: relative;
+  flex-shrink: 0;
+  margin-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 .config-topbar {
@@ -865,6 +880,7 @@ body.page-admin-config {
   display: flex; flex-direction: column;
   background: #fff;
   border-radius: 28px 0 0 28px;
+  overflow: hidden;
   box-shadow: -4px 0 24px rgba(0,0,0,.18);
   transform: translateX(100%);
   transition: transform .3s cubic-bezier(.2,0,0,1);
@@ -942,9 +958,12 @@ body.page-admin-config {
 .side-sheet-footer {
   flex-direction: row;
   display: flex; justify-content: space-between; align-items: center; gap: 12px;
-  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  flex: 0 0 auto;
+  margin: 0;
   flex-wrap: nowrap;
-  padding: 12px 24px max(20px, env(safe-area-inset-bottom, 0px));
+  padding: 16px 24px calc(24px + env(safe-area-inset-bottom, 0px));
   background: #fff;
   border-top: 1px solid var(--border-soft);
 }
@@ -962,8 +981,11 @@ body.page-admin-config {
   background: var(--verde); color: #fff; font: 600 .875rem 'Poppins', sans-serif;
 }
 
+@media (max-width: 768px) {
+  .side-sheet { border-radius: 24px 0 0 24px; }
+}
 @media (max-width: 420px) {
-  .side-sheet { width: 100%; border-radius: 0; }
+  .side-sheet { width: 100%; }
 }
 
 /* Side sheet: sin barra de scroll visible (sigue siendo desplazable) */
