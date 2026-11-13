@@ -7,6 +7,22 @@
    Accents: M3 Expressive (28px image radius, circular badges, pill buttons)
 ===================================================== */
 
+html {
+  scroll-behavior: smooth;
+}
+
+#story,
+.ns-section {
+  scroll-margin-top: 72px;
+}
+
+@media (max-width: 900px) {
+  #story,
+  .ns-section {
+    scroll-margin-top: 64px;
+  }
+}
+
 /* =====================
    CONTAINER / BASICS
 ===================== */
@@ -17,7 +33,7 @@
 }
 
 .ns-section {
-  padding-block: clamp(4rem, 8vh, 7rem);
+  padding-block: clamp(2rem, 5vh, 3.8rem);
 }
 
 .ns-section-alt {
@@ -143,22 +159,6 @@
   animation: ns-fade-up 0.9s ease-out;
 }
 
-@media (max-width: 768px) {
-  .ns-hero {
-    min-height: auto;
-  }
-
-  .ns-hero-content {
-    justify-content: flex-start;
-    padding-block: 0;
-    padding-top: 2.5rem;
-  }
-
-  .ns-scroll-indicator {
-    display: none;
-  }
-}
-
 .ns-hero-badge {
   display: inline-block;
   font-family: Poppins, sans-serif;
@@ -176,21 +176,33 @@
 .ns-hero-title {
   font-family: Poppins, sans-serif;
   font-weight: 800;
-  font-size: clamp(2.2rem, 5vw, 3.6rem);
+  font-size: clamp(2rem, 5vw, 3.6rem);
   letter-spacing: -0.02em;
   line-height: 1.15;
   color: var(--blanco);
   margin-bottom: 1.2rem;
+  text-align: center;
+}
+
+.ns-hero-title .ns-title-line {
+  display: block;
 }
 
 .ns-hero-subtitle {
   font-family: Poppins, sans-serif;
-  font-size: clamp(0.9rem, 1.5vw, 1.05rem);
+  font-size: clamp(0.95rem, 1.5vw, 1.05rem);
   font-weight: 400;
-  line-height: 1.8;
+  line-height: 1.55;
   color: var(--blanco);
-  opacity: 0.85;
-  margin-bottom: 2rem;
+  opacity: 0.92;
+  text-align: justify;
+  text-justify: inter-word;
+  margin-bottom: 0.9rem;
+  max-width: 720px;
+}
+
+.ns-hero-subtitle:last-of-type {
+  margin-bottom: 1.8rem;
 }
 
 .ns-scroll-indicator {
@@ -209,6 +221,71 @@
 }
 
 /* =====================================================
+   HERO MOBILE — Sobrescribe estilos base en móviles
+===================================================== */
+@media (max-width: 768px) {
+  .ns-hero {
+    min-height: calc(100vh + 40px);
+    min-height: calc(100dvh + 40px);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    box-sizing: border-box;
+    padding-top: 3.2rem;
+    padding-bottom: 3.5rem;
+  }
+
+  .ns-hero-title {
+    font-size: clamp(1.65rem, 6.5vw, 2.4rem);
+    line-height: 1.22;
+    margin-top: 0;
+    margin-bottom: 1.35rem;
+    text-align: center;
+  }
+
+  .ns-hero-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding-block: 0;
+    width: 100%;
+  }
+
+  .ns-hero-subtitle {
+    font-size: clamp(1.15rem, 4.3vw, 1.3rem) !important;
+    line-height: 1.65 !important;
+    margin-bottom: 1.35rem !important;
+    max-width: 700px;
+    text-align: justify;
+    text-justify: inter-word;
+  }
+
+  .ns-hero-subtitle:last-of-type {
+    margin-bottom: 1.6rem !important;
+  }
+
+  .ns-hero .ns-btn-primary {
+    margin-top: 1rem !important;
+    font-size: 1.05rem !important;
+    padding: 0.85rem 2.4rem !important;
+  }
+
+  .ns-scroll-indicator {
+    display: none;
+  }
+
+  .ns-hero + .ns-section {
+    padding-top: 1.8rem;
+  }
+
+  .ns-section {
+    padding-block: 1.8rem;
+  }
+}
+
+/* =====================================================
    2. STORY — "De dónde venimos" (reuses .ns-grid-2col)
 ===================================================== */
 .ns-story-grid {
@@ -216,7 +293,7 @@
 }
 
 .ns-story-image-col {
-  border-radius: 28px;
+  border-radius: 12px;
   overflow: hidden;
   height: 100%;
 }
@@ -306,7 +383,7 @@
 }
 
 .ns-image-card {
-  border-radius: 28px;
+  border-radius: 12px;
   overflow: hidden;
 }
 
@@ -329,7 +406,7 @@
   gap: 6px;
   height: clamp(320px, 45vw, 520px);
   margin-block: 2rem;
-  border-radius: 28px;
+  border-radius: 12px;
   overflow: hidden;
 }
 
@@ -651,6 +728,12 @@
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
     padding-bottom: 0.5rem;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .ns-land-v2-strip::-webkit-scrollbar {
+    display: none;
   }
 
   .ns-land-v2-strip-item {

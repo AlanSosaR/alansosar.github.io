@@ -43,10 +43,18 @@ Para garantizar precisión, calidad y **mínimo consumo de tokens**, cada tarea 
 [ Respuesta Concisa al Usuario ]
 ```
 
+### 📊 Matriz de Asignación con tu Menú Exacto de Modelos
 ### 📊 Matriz de Asignación y Cadena de Relevo Automática (Failover de Modelos)
 
+Mapeo específico según los modelos de tus dos suscripciones (**Google Antigravity** y **Codex / ChatGPT** con 100% de cuota):
 Mapeo estricto según las suscripciones activas (**Codex** con 100% de cuota y **Google Antigravity**). El Orquestador aplica esta cascada automáticamente: si el modelo primario agota su cuota de 5h o semanal (error de rate limit / cuota), **debe saltar de inmediato al siguiente nivel sin detenerse a consultar**:
 
+| Rol / Agente | Modelo Principal (Recomendado) | Modelo Alternativo | ¿Por qué y qué hace? |
+|---|---|---|---|
+| **1. Desarrollador** *(Developer / Coder)* | **GPT-6.1-Sol** *(Codex 100%)* | **Claude Sonnet 5.5** | **El programador estrella.** Máxima inteligencia y precisión en diffs (`edit_file`). Escribe JavaScript, lógica de carrito, checkout e integración con Supabase sin errores de sintaxis. Al estar al 100% en Codex, no consume tu cuota de Claude. |
+| **2. Orquestador** *(Coordinator / Lead)* | **Gemini 3.8 Flash** | **GPT-6-Astra** | **El director del equipo.** Ultrarrápido y ligero. Descompone la solicitud en subtareas, decide qué archivos leer y coordina sin quemar cuota pesada (usa la ventana móvil de 5 horas de Gemini). |
+| **3. Diseñador** *(UI / UX Guardian)* | **GPT-6-Luna** *(Codex)* | **Gemini 3.8 Flash** | **El custodio visual.** Los modelos *Luna / Flash* son ultraligeros. Perfectos para verificar paleta de colores (`#377b4c`), reglas CSS, espaciados en múltiplos de 4px y comportamiento móvil sin costo innecesario de tokens. |
+| **4. Auditor** *(QA & Validación)* | **GPT-6-Astra** / **Terra** *(Codex)* | **Gemini 3.8 Flash** | **El inspector de calidad.** Excelente capacidad analítica intermedia para pre-check de BD (verificar que no se inventen tablas en Supabase) y post-check (probar que el servidor responda 200 OK y no haya regresiones). |
 | Rol / Agente | Nivel 1 (Principal por Defecto) | Nivel 2 (Primer Relevo - Codex) | Nivel 3 (Segundo Relevo - Flash) | Nivel 4 (Emergencia Final) |
 |---|---|---|---|---|
 | **1. Desarrollador** *(Código, JS, Supabase, Diffs)* | **`GPT-6.1-Sol`** | **`GPT-6-Sol`** | **`GPT-6.1 Terra`** | **`Claude Sonnet 5.5`** |
@@ -54,6 +62,12 @@ Mapeo estricto según las suscripciones activas (**Codex** con 100% de cuota y *
 | **3. Diseñador** *(CSS, Paleta, Móvil, 4px)* | **`GPT-6-Luna`** | **`GPT-5.6-Luna`** | **`Gemini 3.8 Flash`** | **`Gemini 3.5 Flash`** |
 | **4. Auditor** *(QA, BD Supabase, Post-check)* | **`GPT-6.1 Terra`** | **`GPT-6-Astra`** | **`Gemini 3.8 Flash`** | **`GPT-5.6-Terra`** |
 
+> [!TIP]
+> **Guía Rápida para Elegir en el Desplegable:**
+> - **Para codificar funciones o reparar errores complejos:** Selecciona **`GPT-6.1-Sol`** (tienes 100% de cuota semanal y de 5h en Codex).
+> - **Para flujo de trabajo ágil, consultas, diseño o tareas generales:** Selecciona **`Gemini 3.8 Flash`** (Google) o **`GPT-6-Astra`** (Codex).
+> - **Para retoques rápidos de CSS / diseño:** Selecciona **`GPT-6-Luna`** (Codex) o **`Gemini 3.8 Flash`**.
+> - **Reserva de emergencia:** Deja **`Claude Sonnet 5.5`** o **`Claude Opus 5.5`** únicamente para cuando requieras una segunda opinión arquitectónica de altísimo nivel.
 ### ⚡ Protocolo de Conmutación Automática por Cuota (Sin Interrupción)
 1. **Detección Inmediata:** Si cualquier llamada a un modelo devuelve advertencia de cuota agotada, rate limit (429) o bloqueo de ventana móvil:
    - El Orquestador **no se detiene ni pide confirmación**.

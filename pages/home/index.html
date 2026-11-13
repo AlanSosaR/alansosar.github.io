@@ -102,10 +102,11 @@
         <!-- TÍTULO -->
         <h2 id="product-name" class="product-title"></h2>
 
-        <!-- PRESENTACIÓN / MOLIDO / CATEGORÍA + DESCUENTO -->
-        <div id="product-badges-row" class="product-badges-row">
-          <span id="product-badge" class="pill" aria-live="polite"></span>
-        </div>
+        <!-- PRESENTACIÓN / MOLIDO / CATEGORÍA -->
+        <div id="product-subtitle" class="product-subtitle"></div>
+
+        <!-- PRECIO DESTACADO (DESCUENTO + TACHADO + BADGE) -->
+        <div id="product-hero-price" class="product-hero-price"></div>
 
         <!-- DESCRIPCIÓN -->
         <p id="product-description" class="product-description"></p>
@@ -119,23 +120,21 @@
         <!-- ACCIÓN -->
         <div class="product-actions">
 
-          <!-- PRECIO + CARRITO -->
-          <div class="product-split">
-            <span class="price-part" id="product-price"></span>
-
-            <span class="icon-part" id="product-add" aria-label="Agregar al carrito">
-              <i class="fa-solid fa-cart-plus"></i>
-            </span>
-          </div>
-
           <!-- CANTIDAD -->
           <div class="quantity-container">
-            <button class="qty-btn minus-btn" id="qty-minus" disabled>−</button>
+            <button class="qty-btn minus-btn" id="qty-minus" disabled aria-label="Disminuir cantidad">−</button>
 
             <span class="qty-number" id="qty-number">1</span>
 
-            <button class="qty-btn plus-btn" id="qty-plus" disabled>+</button>
+            <button class="qty-btn plus-btn" id="qty-plus" disabled aria-label="Aumentar cantidad">+</button>
           </div>
+
+          <!-- BOTÓN AGREGAR (PÍLDORA VERDE) -->
+          <button type="button" class="product-add-btn" id="product-add" aria-label="Agregar al carrito">
+            <span class="add-label">Agregar</span>
+            <span class="add-dot">·</span>
+            <span class="price-part" id="product-price">L 0.00</span>
+          </button>
 
         </div>
       </div>
@@ -224,46 +223,109 @@
 
     <!-- CONTACTO -->
     <section id="contacto" class="contacto">
-      <h2>Contáctanos</h2>
-      <p>
-        Escríbenos por <strong class="verde">WhatsApp</strong> o síguenos en nuestras
-        redes sociales: <strong class="verde">Facebook</strong> e
-        <strong class="verde">Instagram</strong>.
-      </p>
+      <div class="contacto-content">
+        <h2>Contáctanos</h2>
+        <p class="contacto-sub">
+          ¿Tienes dudas o quieres hacer un pedido?<br>
+          Estamos a un clic de distancia para atenderte.
+        </p>
+
+        <!-- BOTONES DE CONTACTO -->
+        <div class="contacto-actions">
+          <!-- BOTÓN PRINCIPAL WHATSAPP (ABRE BOTTOM SHEET) -->
+          <button type="button" id="contact-whatsapp-btn" class="contact-btn-wa" aria-haspopup="dialog" aria-expanded="false" aria-label="Escríbenos por WhatsApp">
+            <svg class="contact-icon wa-svg" viewBox="0 0 32 32" width="28" height="28" fill="none" aria-hidden="true">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M16 2C8.268 2 2 8.268 2 16c0 2.652.734 5.132 2.012 7.255L2.5 29.5l6.438-1.488A13.918 13.918 0 0016 30c7.732 0 14-6.268 14-14S23.732 2 16 2zm0 25.667c-2.28 0-4.417-.638-6.241-1.748l-.447-.271-4.324 1 1.026-4.185-.297-.472A11.604 11.604 0 014.333 16c0-6.443 5.224-11.667 11.667-11.667 6.443 0 11.667 5.224 11.667 11.667 0 6.443-5.224 11.667-11.667 11.667zm6.398-8.736c-.35-.175-2.072-1.023-2.394-1.14-.32-.116-.554-.175-.788.176-.233.35-.904 1.14-1.108 1.374-.204.233-.409.262-.759.087-.35-.175-1.478-.545-2.815-1.737-1.04-.928-1.743-2.075-1.947-2.425-.205-.35-.022-.54.153-.713.158-.157.35-.409.525-.613.175-.204.233-.35.35-.583.117-.234.058-.438-.03-.613-.087-.175-.788-1.9-1.08-2.6-.284-.683-.573-.59-.788-.601l-.672-.012c-.233 0-.613.088-.934.438-.32.35-1.226 1.2-1.226 2.923 0 1.724 1.255 3.39 1.43 3.624.176.234 2.47 3.771 5.984 5.287.836.361 1.488.577 1.996.738.839.267 1.603.229 2.207.139.674-.101 2.072-.847 2.364-1.664.292-.818.292-1.52.204-1.666-.087-.146-.32-.233-.67-.408z" fill="#ffffff"/>
+            </svg>
+            <span>Escríbenos por WhatsApp</span>
+          </button>
+
+          <!-- FILA SECUNDARIA: FACEBOOK E INSTAGRAM -->
+          <div class="contacto-secondary-row">
+            <a id="contact-facebook" href="https://www.facebook.com/share/1FsrT4DYrU/" target="_blank" rel="noopener noreferrer" class="contact-btn-sub" aria-label="Facebook">
+              <svg class="contact-icon fb-svg" viewBox="0 0 32 32" width="28" height="28" fill="none" aria-hidden="true">
+                <circle cx="16" cy="16" r="16" fill="#1877F2"/>
+                <path d="M21.5 16.5l.6-4.2h-4v-2.7c0-1.1.5-2.2 2.3-2.2H22V4c-.6-.1-1.7-.3-3.2-.3-3.3 0-5.4 2-5.4 5.6v3.2H9.8v4.2h3.6V28h4.5V16.5h3.6z" fill="#ffffff"/>
+              </svg>
+              <span>Facebook</span>
+            </a>
+
+            <a id="contact-instagram" href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" class="contact-btn-sub" aria-label="Instagram">
+              <svg class="contact-icon ig-svg" viewBox="0 0 32 32" width="28" height="28" fill="none" aria-hidden="true">
+                <defs>
+                  <linearGradient id="ig-grad-new" x1="0%" y1="100%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#f09433"/>
+                    <stop offset="25%" stop-color="#e6683c"/>
+                    <stop offset="50%" stop-color="#dc2743"/>
+                    <stop offset="75%" stop-color="#cc2366"/>
+                    <stop offset="100%" stop-color="#bc1888"/>
+                  </linearGradient>
+                </defs>
+                <rect x="3" y="3" width="26" height="26" rx="7" stroke="url(#ig-grad-new)" stroke-width="2.5"/>
+                <circle cx="16" cy="16" r="5.5" stroke="url(#ig-grad-new)" stroke-width="2.5"/>
+                <circle cx="23" cy="9" r="1.6" fill="url(#ig-grad-new)"/>
+              </svg>
+              <span>Instagram</span>
+            </a>
+          </div>
+        </div>
+      </div>
     </section>
 
   </main>
 
-  <!-- SCRIM BACKDROP FADE -->
-  <div class="fab-scrim" id="fab-scrim" aria-hidden="true"></div>
+  <!-- BOTTOM SHEET WHATSAPP (M3 SELECCIÓN DE LÍNEAS) -->
+  <div id="wa-sheet-backdrop" class="wa-sheet-backdrop" aria-hidden="true"></div>
+  <div id="wa-sheet" class="wa-bottom-sheet" role="dialog" aria-modal="true" aria-labelledby="wa-sheet-title" aria-hidden="true">
+    <div class="wa-sheet-handle"></div>
 
-  <!-- FAB — Material 3 Speed Dial -->
-  <div class="fab-container" id="fab">
-    <!-- Botón principal -->
-    <button class="fab-main" id="fab-main" aria-label="Abrir opciones de contacto" aria-expanded="false">
-      <span class="material-symbols-outlined fab-icon-chat">
-        mark_chat_unread
-      </span>
-      <span class="material-symbols-outlined fab-icon-close">
-        close
-      </span>
-    </button>
+    <div class="wa-sheet-header">
+      <div class="wa-sheet-icon">
+        <svg viewBox="0 0 32 32" width="28" height="28" fill="none" aria-hidden="true">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M16 2C8.268 2 2 8.268 2 16c0 2.652.734 5.132 2.012 7.255L2.5 29.5l6.438-1.488A13.918 13.918 0 0016 30c7.732 0 14-6.268 14-14S23.732 2 16 2zm0 25.667c-2.28 0-4.417-.638-6.241-1.748l-.447-.271-4.324 1 1.026-4.185-.297-.472A11.604 11.604 0 014.333 16c0-6.443 5.224-11.667 11.667-11.667 6.443 0 11.667 5.224 11.667 11.667 0 6.443-5.224 11.667-11.667 11.667zm6.398-8.736c-.35-.175-2.072-1.023-2.394-1.14-.32-.116-.554-.175-.788.176-.233.35-.904 1.14-1.108 1.374-.204.233-.409.262-.759.087-.35-.175-1.478-.545-2.815-1.737-1.04-.928-1.743-2.075-1.947-2.425-.205-.35-.022-.54.153-.713.158-.157.35-.409.525-.613.175-.204.233-.35.35-.583.117-.234.058-.438-.03-.613-.087-.175-.788-1.9-1.08-2.6-.284-.683-.573-.59-.788-.601l-.672-.012c-.233 0-.613.088-.934.438-.32.35-1.226 1.2-1.226 2.923 0 1.724 1.255 3.39 1.43 3.624.176.234 2.47 3.771 5.984 5.287.836.361 1.488.577 1.996.738.839.267 1.603.229 2.207.139.674-.101 2.072-.847 2.364-1.664.292-.818.292-1.52.204-1.666-.087-.146-.32-.233-.67-.408z" fill="#25D366"/>
+        </svg>
+      </div>
+      <h3 id="wa-sheet-title">Elige una línea de WhatsApp</h3>
+      <p class="wa-sheet-desc">Selecciona con quién deseas comunicarte:</p>
+    </div>
 
-    <!-- Opciones -->
-    <div class="fab-options">
-      <a href="https://wa.me/50496670613" target="_blank" aria-label="Escribir por WhatsApp">
-        <i class="fa-brands fa-whatsapp"></i>
+    <div class="wa-sheet-options">
+      <!-- LÍNEA 1 -->
+      <a id="wa-opt-1" href="https://wa.me/50496670613?text=Hola%20Caf%C3%A9%20Cortero,%20deseo%20hacer%20un%20pedido." target="_blank" rel="noopener noreferrer" class="wa-sheet-item">
+        <div class="wa-item-icon">
+          <svg viewBox="0 0 32 32" width="22" height="22" fill="none" aria-hidden="true">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M16 2C8.268 2 2 8.268 2 16c0 2.652.734 5.132 2.012 7.255L2.5 29.5l6.438-1.488A13.918 13.918 0 0016 30c7.732 0 14-6.268 14-14S23.732 2 16 2zm0 25.667c-2.28 0-4.417-.638-6.241-1.748l-.447-.271-4.324 1 1.026-4.185-.297-.472A11.604 11.604 0 014.333 16c0-6.443 5.224-11.667 11.667-11.667 6.443 0 11.667 5.224 11.667 11.667 0 6.443-5.224 11.667-11.667 11.667zm6.398-8.736c-.35-.175-2.072-1.023-2.394-1.14-.32-.116-.554-.175-.788.176-.233.35-.904 1.14-1.108 1.374-.204.233-.409.262-.759.087-.35-.175-1.478-.545-2.815-1.737-1.04-.928-1.743-2.075-1.947-2.425-.205-.35-.022-.54.153-.713.158-.157.35-.409.525-.613.175-.204.233-.35.35-.583.117-.234.058-.438-.03-.613-.087-.175-.788-1.9-1.08-2.6-.284-.683-.573-.59-.788-.601l-.672-.012c-.233 0-.613.088-.934.438-.32.35-1.226 1.2-1.226 2.923 0 1.724 1.255 3.39 1.43 3.624.176.234 2.47 3.771 5.984 5.287.836.361 1.488.577 1.996.738.839.267 1.603.229 2.207.139.674-.101 2.072-.847 2.364-1.664.292-.818.292-1.52.204-1.666-.087-.146-.32-.233-.67-.408z" fill="#25D366"/>
+          </svg>
+        </div>
+        <div class="wa-item-info">
+          <span class="wa-item-label">Línea Principal · Pedidos</span>
+          <span class="wa-item-number" id="wa-num-1">+504 9667-0613</span>
+        </div>
+        <span class="wa-item-badge">Disponible</span>
       </a>
 
-      <a href="https://www.facebook.com/share/1FsrT4DYrU/" target="_blank" aria-label="Visitar Facebook">
-        <i class="fa-brands fa-facebook-f"></i>
-      </a>
-
-      <a href="https://www.instagram.com/TU_USUARIO" target="_blank" aria-label="Visitar Instagram">
-        <i class="fa-brands fa-instagram"></i>
+      <!-- LÍNEA 2 -->
+      <a id="wa-opt-2" href="https://wa.me/50498675101?text=Hola%20Caf%C3%A9%20Cortero,%20deseo%20hacer%20una%20consulta." target="_blank" rel="noopener noreferrer" class="wa-sheet-item">
+        <div class="wa-item-icon">
+          <svg viewBox="0 0 32 32" width="22" height="22" fill="none" aria-hidden="true">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M16 2C8.268 2 2 8.268 2 16c0 2.652.734 5.132 2.012 7.255L2.5 29.5l6.438-1.488A13.918 13.918 0 0016 30c7.732 0 14-6.268 14-14S23.732 2 16 2zm0 25.667c-2.28 0-4.417-.638-6.241-1.748l-.447-.271-4.324 1 1.026-4.185-.297-.472A11.604 11.604 0 014.333 16c0-6.443 5.224-11.667 11.667-11.667 6.443 0 11.667 5.224 11.667 11.667 0 6.443-5.224 11.667-11.667 11.667zm6.398-8.736c-.35-.175-2.072-1.023-2.394-1.14-.32-.116-.554-.175-.788.176-.233.35-.904 1.14-1.108 1.374-.204.233-.409.262-.759.087-.35-.175-1.478-.545-2.815-1.737-1.04-.928-1.743-2.075-1.947-2.425-.205-.35-.022-.54.153-.713.158-.157.35-.409.525-.613.175-.204.233-.35.35-.583.117-.234.058-.438-.03-.613-.087-.175-.788-1.9-1.08-2.6-.284-.683-.573-.59-.788-.601l-.672-.012c-.233 0-.613.088-.934.438-.32.35-1.226 1.2-1.226 2.923 0 1.724 1.255 3.39 1.43 3.624.176.234 2.47 3.771 5.984 5.287.836.361 1.488.577 1.996.738.839.267 1.603.229 2.207.139.674-.101 2.072-.847 2.364-1.664.292-.818.292-1.52.204-1.666-.087-.146-.32-.233-.67-.408z" fill="#25D366"/>
+          </svg>
+        </div>
+        <div class="wa-item-info">
+          <span class="wa-item-label">Línea Secundaria · Atención</span>
+          <span class="wa-item-number" id="wa-num-2">+504 9867-5101</span>
+        </div>
+        <span class="wa-item-badge">Disponible</span>
       </a>
     </div>
+
+    <button type="button" id="wa-sheet-close" class="wa-sheet-cancel-btn">Cerrar</button>
   </div>
+      </div>
+    </section>
+
+  </main>
+
   <!-- SNACKBAR -->
   <div id="snackbar" class="snackbar" aria-live="polite"></div>
   <!-- ===================== SCRIPTS ===================== -->

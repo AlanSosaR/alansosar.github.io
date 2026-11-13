@@ -18,7 +18,7 @@
   <link rel="stylesheet" href="/css/core/main.css">
   <link rel="stylesheet" href="/css/ui/header.css">
   <link rel="stylesheet" href="/css/ui/footer.css">
-  <link rel="stylesheet" href="/css/pages/sobre-nosotros.css">
+  <link rel="stylesheet" href="/css/pages/sobre-nosotros.css?v=20261113e">
 </head>
 
 <body>
@@ -34,13 +34,17 @@
       </div>
       <div class="ns-hero-content">
         <h1 class="ns-hero-title">
-          La esencia de Honduras en cada sorbo
+          <span class="ns-title-line">La esencia de Honduras</span>
+          <span class="ns-title-line">en cada sorbo</span>
         </h1>
         <p class="ns-hero-subtitle">
           Hay cafés que simplemente se cultivan. Y hay cafés que se cuidan
           desde el primer día. El nuestro nació en familia, entre montañas,
           madrugadas y el compromiso de hacer las cosas con paciencia y
-          dedicación. Porque sabemos que un buen café no se apresura; se cultiva
+          dedicación.
+        </p>
+        <p class="ns-hero-subtitle">
+          Porque sabemos que un buen café no se apresura; se cultiva
           con respeto por la tierra y pasión por cada cosecha.
         </p>
         <p class="ns-hero-subtitle">
@@ -48,7 +52,7 @@
           llevamos hasta tu taza algo que no se fabrica: el sabor de un café que
           alguien cuidó con sus manos, desde la semilla hasta el último grano.
         </p>
-        <a href="#identity" class="ns-btn-primary">Conocer más</a>
+        <a href="#story" class="ns-btn-primary">Conocer más</a>
       </div>
       <div class="ns-scroll-indicator">
         <span class="material-symbols-outlined">arrow_downward</span>
@@ -58,7 +62,7 @@
     <!-- =====================================================
          2. STORY — De dónde venimos
     ====================================================== -->
-    <section class="ns-section ns-section-alt">
+    <section id="story" class="ns-section ns-section-alt">
       <div class="ns-container">
           <div class="ns-grid-2col ns-story-grid">
           <div class="ns-story-image-col ns-reveal">
@@ -315,6 +319,29 @@
           nextBtn.style.display = currentIndex === total - 1 ? 'none' : 'flex';
         }
 
+        var autoTimer = null;
+        var resumeTimeout = null;
+
+        function startAuto() {
+          stopAuto();
+          autoTimer = setInterval(function () {
+            goTo((currentIndex + 1) % total);
+          }, 4000);
+        }
+
+        function stopAuto() {
+          if (autoTimer) {
+            clearInterval(autoTimer);
+            autoTimer = null;
+          }
+        }
+
+        function pauseAndRestartAuto() {
+          stopAuto();
+          clearTimeout(resumeTimeout);
+          resumeTimeout = setTimeout(startAuto, 6000);
+        }
+
         function goTo(index) {
           if (index < 0) index = total - 1;
           if (index >= total) index = 0;
@@ -322,14 +349,24 @@
           render();
         }
 
-        prevBtn.addEventListener('click', function () { goTo(currentIndex - 1); });
-        nextBtn.addEventListener('click', function () { goTo(currentIndex + 1); });
+        prevBtn.addEventListener('click', function () {
+          pauseAndRestartAuto();
+          goTo(currentIndex - 1);
+        });
+        nextBtn.addEventListener('click', function () {
+          pauseAndRestartAuto();
+          goTo(currentIndex + 1);
+        });
 
         dots.forEach(function (dot) {
-          dot.addEventListener('click', function () { goTo(parseInt(dot.dataset.index)); });
+          dot.addEventListener('click', function () {
+            pauseAndRestartAuto();
+            goTo(parseInt(dot.dataset.index));
+          });
         });
 
         previewCard.addEventListener('click', function () {
+          pauseAndRestartAuto();
           goTo(parseInt(previewCard.dataset.index));
         });
         previewCard.style.cursor = 'pointer';
@@ -337,29 +374,133 @@
         var activeCol = document.querySelector('.ns-hero-active-col');
         var touchStartX = 0;
         activeCol.addEventListener('touchstart', function (e) {
+          pauseAndRestartAuto();
           touchStartX = e.changedTouches[0].screenX;
         }, { passive: true });
         activeCol.addEventListener('touchend', function (e) {
           var diff = touchStartX - e.changedTouches[0].screenX;
           if (Math.abs(diff) > 40) {
+            pauseAndRestartAuto();
             goTo(diff > 0 ? currentIndex + 1 : currentIndex - 1);
           }
         }, { passive: true });
 
         render();
+        startAuto();
       });
     </script>
 
     <script>
+      // 1. Carrusel de fotos Nuestra Tierra (.ns-land-v2-strip)
+      document.addEventListener('DOMContentLoaded', function () {
+        var strip = document.querySelector('.ns-land-v2-strip');
+        if (!strip) return;
+
+        var timer = null;
+        var userInteracting = false;
+        var resumeTimeout = null;
+
+        function stepNext() {
+          if (userInteracting) return;
+          var item = strip.querySelector('.ns-land-v2-strip-item');
+          if (!item) return;
+          var step = item.offsetWidth + 12;
+          var maxScroll = strip.scrollWidth - strip.clientWidth;
+
+          if (strip.scrollLeft >= maxScroll - 15) {
+            strip.scrollTo({ left: 0, behavior: 'smooth' });
+          } else {
+            strip.scrollBy({ left: step, behavior: 'smooth' });
+          }
+        }
+
+        function startTimer() {
+          if (timer) clearInterval(timer);
+          timer = setInterval(stepNext, 3500);
+        }
+
+        function onInteraction() {
+          userInteracting = true;
+          clearTimeout(resumeTimeout);
+          resumeTimeout = setTimeout(function () {
+            userInteracting = false;
+          }, 5000);
+        }
+
+        strip.addEventListener('touchstart', onInteraction, { passive: true });
+        strip.addEventListener('mousedown', onInteraction);
+        strip.addEventListener('scroll', function () {
+          clearTimeout(resumeTimeout);
+          resumeTimeout = setTimeout(function () {
+            userInteracting = false;
+          }, 5000);
+        }, { passive: true });
+
+        startTimer();
+      });
+
+      // 2. Carrusel de imágenes Respeto por la Tierra (.ns-bento-imgs)
       document.addEventListener('DOMContentLoaded', function () {
         var imgs = document.querySelector('.ns-bento-imgs');
         if (!imgs) return;
-        document.querySelector('.ns-bento-arrow-prev').addEventListener('click', function () {
-          imgs.scrollBy({ left: -imgs.clientWidth, behavior: 'smooth' });
-        });
-        document.querySelector('.ns-bento-arrow-next').addEventListener('click', function () {
-          imgs.scrollBy({ left: imgs.clientWidth, behavior: 'smooth' });
-        });
+        var prevBtn = document.querySelector('.ns-bento-arrow-prev');
+        var nextBtn = document.querySelector('.ns-bento-arrow-next');
+
+        var timer = null;
+        var userInteracting = false;
+        var resumeTimeout = null;
+
+        function scrollNext() {
+          if (userInteracting) return;
+          var maxScroll = imgs.scrollWidth - imgs.clientWidth;
+          if (imgs.scrollLeft >= maxScroll - 15) {
+            imgs.scrollTo({ left: 0, behavior: 'smooth' });
+          } else {
+            imgs.scrollBy({ left: imgs.clientWidth, behavior: 'smooth' });
+          }
+        }
+
+        function startTimer() {
+          if (timer) clearInterval(timer);
+          timer = setInterval(scrollNext, 3500);
+        }
+
+        function onInteraction() {
+          userInteracting = true;
+          clearTimeout(resumeTimeout);
+          resumeTimeout = setTimeout(function () {
+            userInteracting = false;
+          }, 5000);
+        }
+
+        if (prevBtn) {
+          prevBtn.addEventListener('click', function () {
+            onInteraction();
+            if (imgs.scrollLeft <= 10) {
+              imgs.scrollTo({ left: imgs.scrollWidth, behavior: 'smooth' });
+            } else {
+              imgs.scrollBy({ left: -imgs.clientWidth, behavior: 'smooth' });
+            }
+          });
+        }
+
+        if (nextBtn) {
+          nextBtn.addEventListener('click', function () {
+            onInteraction();
+            scrollNext();
+          });
+        }
+
+        imgs.addEventListener('touchstart', onInteraction, { passive: true });
+        imgs.addEventListener('mousedown', onInteraction);
+        imgs.addEventListener('scroll', function () {
+          clearTimeout(resumeTimeout);
+          resumeTimeout = setTimeout(function () {
+            userInteracting = false;
+          }, 5000);
+        }, { passive: true });
+
+        startTimer();
       });
     </script>
 

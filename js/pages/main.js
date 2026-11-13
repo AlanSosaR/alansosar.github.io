@@ -244,16 +244,19 @@ function renderMainProduct(product) {
   if (specsContainer) {
     const leftSpecs = [
       { label: "Finca", value: product.finca, icon: "/imagenes/field.png" },
-      { label: "Productor", value: product.productor, icon: "/imagenes/farmer.png" },
-      { label: "Origen", value: product.origen, icon: "/imagenes/map.png" },
-      { label: "Fecha de tueste", value: product.fecha_tueste, icon: "/imagenes/calendar.png" }
+      { label: "Variedad", value: product.variedad, icon: "/imagenes/sprouts.png" },
+      { label: "Proceso", value: product.proceso, icon: "/imagenes/smart-factory.png" }
     ];
 
     const rightSpecs = [
+      { label: "Productor", value: product.productor, icon: "/imagenes/farmer.png" },
       { label: "Altitud", value: product.altitud, icon: "/imagenes/mountain.png" },
-      { label: "Variedad", value: product.variedad, icon: "/imagenes/sprouts.png" },
-      { label: "Proceso", value: product.proceso, icon: "/imagenes/smart-factory.png" },
-      { label: "Perfil", value: product.perfil, icon: "palette" }
+      { label: "Fecha de tueste", value: product.fecha_tueste, icon: "/imagenes/calendar.png" }
+    ];
+
+    const bottomSpecs = [
+      { label: "Perfil", value: product.perfil, icon: "palette" },
+      { label: "Origen", value: product.origen, icon: "/imagenes/map.png" }
     ];
 
     const prepIcons = {
@@ -302,7 +305,7 @@ function renderMainProduct(product) {
       <button type="button" class="specs-mobile-toggle" aria-expanded="false">
         <span class="specs-toggle-left">
           <span class="material-symbols-outlined specs-toggle-icon">receipt_long</span>
-          <span class="specs-toggle-text">Ver ficha técnica</span>
+          <span class="specs-toggle-text">Perfil y trazabilidad</span>
         </span>
         <span class="material-symbols-outlined specs-toggle-chevron">expand_more</span>
       </button>
@@ -313,6 +316,11 @@ function renderMainProduct(product) {
         <div class="specs-col">
           ${rightSpecs.filter(s => s.value).map(renderSpec).join("")}
         </div>
+        ${bottomSpecs.filter(s => s.value).map(s => `
+          <div class="spec-row-full">
+            ${renderSpec(s)}
+          </div>
+        `).join("")}
         ${prepHtml}
         <div class="spec-contact">
           <div class="contact-info-wrap">
@@ -346,14 +354,39 @@ function renderMainProduct(product) {
     };
   }
 
-  const badgeEl = safe("product-badge");
-  if (badgeEl) badgeEl.textContent = badge;
+  const subtitleEl = safe("product-subtitle") || safe("product-badge");
+  if (subtitleEl) subtitleEl.textContent = badge;
 
   const activeDiscount = getActiveDiscount(product);
   const finalPrice = activeDiscount > 0 ? Math.floor(product.price * (1 - activeDiscount / 100)) : product.price;
 
+  // Precio destacado debajo del título (estilo nuevo: precio + tachado + chip descuento)
+  const heroPriceEl = safe("product-hero-price");
+  if (heroPriceEl) {
+    if (activeDiscount > 0) {
+      heroPriceEl.innerHTML = `
+        <span class="hero-price-val">L ${Number(finalPrice).toFixed(2)}</span>
+        <span class="hero-price-original">L ${Number(product.price).toFixed(2)}</span>
+        <div class="hero-discount-wrap">
+          <span class="hero-price-discount">-${activeDiscount}%</span>
+          <span class="hero-discount-note">en tu primer pedido</span>
+        </div>
+      `;
+    } else {
+      heroPriceEl.innerHTML = `
+        <span class="hero-price-val">L ${Number(finalPrice).toFixed(2)}</span>
+      `;
+    }
+  }
+
   const priceEl = safe("product-price");
-  priceEl.innerHTML = `L ${Number(finalPrice).toFixed(2)}${activeDiscount > 0 ? ' <small class="price-discount-note">(con descuento)</small>' : ''}`;
+  if (priceEl) {
+    if (activeDiscount > 0) {
+      priceEl.innerHTML = `L ${Number(finalPrice).toFixed(2)} <span class="hero-price-striked">L ${Number(product.price).toFixed(2)}</span>`;
+    } else {
+      priceEl.innerHTML = `L ${Number(finalPrice).toFixed(2)}`;
+    }
+  }
 
   const img = safe("product-image");
   img.classList.remove("swap");
@@ -362,22 +395,6 @@ function renderMainProduct(product) {
 
   img.src = product.image_url || "/imagenes/no-image.png";
   img.onerror = () => img.src = "/imagenes/no-image.png";
-
-  // Mover Badge de descuento a la par de #product-badge (debajo del título)
-  const badgesRow = safe("product-badges-row") || document.querySelector(".product-text");
-  if (badgesRow) {
-    document.querySelectorAll(".product-text .discount-pill").forEach(el => el.remove());
-
-    if (activeDiscount > 0) {
-      const pill = document.createElement("div");
-      pill.className = "discount-pill main-pill";
-      pill.innerHTML = `
-        <span class="pill-off">${activeDiscount}% OFF</span>
-        <span class="pill-label">en tu primer pedido</span>
-      `;
-      badgesRow.appendChild(pill);
-    }
-  }
 
   const addBtn = safe("product-add");
   addBtn.dataset.id = product.id;
@@ -412,9 +429,15 @@ function syncProductPrice() {
     : currentProduct.price;
 
   const totalPrice = unitPrice * qty;
+  const totalOriginal = currentProduct.price * qty;
+
   const priceEl = safe("product-price");
   if (priceEl) {
-    priceEl.innerHTML = `L ${Number(totalPrice).toFixed(2)}${activeDiscount > 0 ? ' <small class="price-discount-note">(con descuento)</small>' : ''}`;
+    if (activeDiscount > 0) {
+      priceEl.innerHTML = `L ${Number(totalPrice).toFixed(2)} <span class="hero-price-striked">L ${Number(totalOriginal).toFixed(2)}</span>`;
+    } else {
+      priceEl.innerHTML = `L ${Number(totalPrice).toFixed(2)}`;
+    }
   }
 }
 
@@ -483,6 +506,9 @@ async function loadSimilarProducts() {
     const activeFav = isFavorite(p.id) ? 'active' : '';
     const heartIcon = isFavorite(p.id) ? 'fa-solid fa-heart' : 'fa-regular fa-heart';
     const activeDiscount = getActiveDiscount(p);
+    const finalPrice = activeDiscount > 0
+      ? Math.floor(p.price * (1 - activeDiscount / 100))
+      : p.price;
 
     return `
     <div class="similar-card"
@@ -521,7 +547,10 @@ async function loadSimilarProducts() {
             <i class="${heartIcon}"></i>
           </button>
 
-          <div class="price-pill">L ${Number(p.price).toFixed(2)}</div>
+          <div class="price-pill-wrap">
+            <div class="price-pill">L ${Number(finalPrice).toFixed(2)}</div>
+            ${activeDiscount > 0 ? `<span class="price-original-striked">L ${Number(p.price).toFixed(2)}</span>` : ""}
+          </div>
         </div>
       </div>
     </div>
@@ -757,13 +786,131 @@ async function cargarSiteSettings() {
   if (aboutBody && s.historia_body) aboutBody.textContent = s.historia_body;
   if (aboutImg && s.historia_imagen_url) aboutImg.src = s.historia_imagen_url;
 
-  // FAB — enlaces de contacto
-  const fabLinks = document.querySelectorAll(".fab-options a");
-  if (fabLinks.length >= 3) {
-    if (s.whatsapp_numero) fabLinks[0].href = `https://wa.me/${s.whatsapp_numero.replace(/\D/g, "")}`;
-    if (s.facebook_url) fabLinks[1].href = s.facebook_url;
-    if (s.instagram_url) fabLinks[2].href = s.instagram_url;
+  // Enlaces de contacto (redes sociales y WhatsApp)
+  const num1 = s.whatsapp_numero || "50496670613";
+  const num2 = s.whatsapp_numero2 || "50498675101";
+  const fbUrl = s.facebook_url || null;
+  const igUrl = s.instagram_url || null;
+
+  const opt1 = safe("wa-opt-1");
+  const opt2 = safe("wa-opt-2");
+  const numEl1 = safe("wa-num-1");
+  const numEl2 = safe("wa-num-2");
+
+  const clean1 = num1.replace(/\D/g, "");
+  const clean2 = num2.replace(/\D/g, "");
+
+  if (opt1) opt1.href = `https://wa.me/${clean1}?text=${encodeURIComponent("Hola Café Cortero, deseo hacer un pedido.")}`;
+  if (opt2) opt2.href = `https://wa.me/${clean2}?text=${encodeURIComponent("Hola Café Cortero, deseo hacer una consulta.")}`;
+
+  const formatDigits = (digits) => {
+    if (digits.length === 11) {
+      return `+${digits.slice(0, 3)} ${digits.slice(3, 7)}-${digits.slice(7)}`;
+    }
+    return `+${digits}`;
+  };
+
+  if (numEl1) numEl1.textContent = formatDigits(clean1);
+  if (numEl2) numEl2.textContent = formatDigits(clean2);
+
+  if (fbUrl) {
+    document.querySelectorAll("#contact-facebook").forEach(el => el.href = fbUrl);
   }
+  if (igUrl) {
+    document.querySelectorAll("#contact-instagram").forEach(el => el.href = igUrl);
+  }
+}
+
+/* =========================
+   BOTTOM SHEET DE WHATSAPP
+========================= */
+function initWhatsAppBottomSheet() {
+  const openBtn = safe("contact-whatsapp-btn");
+  const sheet = safe("wa-sheet");
+  const backdrop = safe("wa-sheet-backdrop");
+  const closeBtn = safe("wa-sheet-close");
+
+  if (!openBtn || !sheet || !backdrop) return;
+
+  const openSheet = () => {
+    sheet.classList.add("open");
+    backdrop.classList.add("open");
+    sheet.setAttribute("aria-hidden", "false");
+    backdrop.setAttribute("aria-hidden", "false");
+    document.body.classList.add("no-scroll");
+  };
+
+  const closeSheet = () => {
+    sheet.classList.remove("open");
+    backdrop.classList.remove("open");
+    sheet.setAttribute("aria-hidden", "true");
+    backdrop.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("no-scroll");
+  };
+
+  openBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    openSheet();
+  });
+
+  closeBtn?.addEventListener("click", closeSheet);
+  backdrop.addEventListener("click", closeSheet);
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && sheet.classList.contains("open")) {
+      closeSheet();
+    }
+  });
+
+  // Cerrar al pulsar un enlace
+  sheet.querySelectorAll(".wa-sheet-item").forEach(item => {
+    item.addEventListener("click", () => {
+      setTimeout(closeSheet, 300);
+    });
+  });
+}
+
+/* =========================
+   STICKY BAR MÓVIL (DESDE PRODUCTO HASTA NUESTRA HISTORIA)
+======================== */
+function initMobileStickyBar() {
+  const updateStickyState = () => {
+    if (window.innerWidth > 768) {
+      document.body.classList.remove("sticky-bar-visible");
+      return;
+    }
+
+    const productSec = safe("productos") || document.querySelector(".product-main");
+    const aboutSec = safe("nosotros") || document.querySelector(".about");
+
+    if (!productSec || productSec.classList.contains("hidden")) {
+      document.body.classList.remove("sticky-bar-visible");
+      return;
+    }
+
+    const prodRect = productSec.getBoundingClientRect();
+    // La barra aparece desde que el usuario llega a esta sección de producto (Café Convencional)
+    const reachedProduct = prodRect.top <= 220;
+
+    // Se oculta al llegar a donde empieza "Nuestra historia"
+    let reachedAbout = false;
+    if (aboutSec) {
+      const aboutRect = aboutSec.getBoundingClientRect();
+      reachedAbout = aboutRect.top <= (window.innerHeight - 50);
+    }
+
+    const shouldShow = reachedProduct && !reachedAbout;
+
+    if (shouldShow) {
+      document.body.classList.add("sticky-bar-visible");
+    } else {
+      document.body.classList.remove("sticky-bar-visible");
+    }
+  };
+
+  window.addEventListener("scroll", updateStickyState, { passive: true });
+  window.addEventListener("resize", updateStickyState, { passive: true });
+  updateStickyState();
 }
 
 /* =========================
@@ -780,6 +927,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   cargarSiteSettings();
   initContactFAB();
+  initMobileStickyBar();
+  initWhatsAppBottomSheet();
 
   const qtyNumber = safe("qty-number");
 
