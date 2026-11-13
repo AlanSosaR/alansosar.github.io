@@ -141,7 +141,7 @@ html {
   position: absolute;
   inset: 0;
   z-index: 0;
-  background-image: url('/imagenes/hero-finca-cosecha.jpg');
+  background-image: url('/imagenes/hero-finca-cosecha.jpg?v=4k');
   background-size: cover;
   background-position: center 35%;
   transform: scale(1.02);
