@@ -1,0 +1,837 @@
+/* ==========================================================================
+   CAFÉ CORTERO — Módulo de Maquila y Tueste (Material 3 Expressive)
+   Fondo Blanco Puro (#ffffff) · Estética Luminous Light Surface
+   Tokens Oficiales:
+     --brand-green: #377b4c;
+     --brand-brown: #512615;
+     --surface-white: #ffffff;
+     --surface-tonal: #f2f8f4;
+     --border-subtle: #dce5dd;
+     --border-capsule: #e2ebe4;
+     --text-primary: #1c241e;
+     --text-secondary: #526056;
+   ========================================================================== */
+
+:root {
+  --m3-surface: #ffffff;
+  --m3-surface-tonal: #f2f8f4;
+  --m3-surface-tonal-hover: #eaf4ed;
+  --m3-primary: #377b4c;
+  --m3-primary-hover: #2E7D32;
+  --m3-title-brown: #512615;
+  --m3-text-primary: #1c241e;
+  --m3-text-secondary: #526056;
+  --m3-border-subtle: #dce5dd;
+  --m3-border-capsule: #e2ebe4;
+  --m3-shadow-soft: 0 4px 20px rgba(55, 123, 76, 0.06);
+  --m3-shadow-elevated: 0 8px 28px rgba(55, 123, 76, 0.12);
+  --m3-radius-container: 28px;
+  --m3-radius-card: 24px;
+  --m3-radius-pill: 9999px;
+  --m3-radius-morph-base: 18px;
+  --m3-ease-elastic: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --m3-ease-smooth: cubic-bezier(0.2, 0.0, 0, 1.0);
+}
+
+/* ==========================================================================
+   1. CÁPSULA DE NAVEGACIÓN UNIFICADA (Bajo el Hero)
+   ========================================================================== */
+.home-nav-capsule-wrap {
+  position: relative;
+  z-index: 30;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: -28px;
+  margin-bottom: 28px;
+  padding: 0 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.home-nav-capsule {
+  display: inline-flex;
+  align-items: center;
+  background: var(--m3-surface);
+  border: 1.5px solid var(--m3-border-capsule);
+  border-radius: var(--m3-radius-pill);
+  padding: 5px;
+  gap: 6px;
+  box-shadow: 0 8px 24px rgba(55, 123, 76, 0.08), 0 2px 8px rgba(0, 0, 0, 0.03);
+  max-width: 100%;
+}
+
+.home-tab-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 22px;
+  border-radius: var(--m3-radius-pill);
+  border: 1.5px solid transparent;
+  background: transparent;
+  color: var(--m3-primary);
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.28s var(--m3-ease-elastic);
+  white-space: nowrap;
+  user-select: none;
+}
+
+.home-tab-pill .tab-pill-icon {
+  font-size: 1.15rem;
+  line-height: 1;
+  display: inline-block;
+  transition: transform 0.28s var(--m3-ease-elastic);
+}
+
+.home-tab-pill:hover:not(.active) {
+  background: var(--m3-surface-tonal);
+  color: var(--m3-primary);
+}
+
+.home-tab-pill:hover:not(.active) .tab-pill-icon {
+  transform: scale(1.15);
+}
+
+.home-tab-pill.active {
+  background: var(--m3-primary);
+  color: #ffffff;
+  border-color: var(--m3-primary);
+  box-shadow: 0 4px 14px rgba(55, 123, 76, 0.28);
+}
+
+.home-tab-pill.active .tab-pill-icon {
+  transform: scale(1.08);
+}
+
+@media (max-width: 480px) {
+  .home-nav-capsule-wrap {
+    margin-top: -24px;
+    margin-bottom: 20px;
+  }
+  .home-tab-pill {
+    padding: 8px 16px;
+    font-size: 0.88rem;
+    gap: 6px;
+  }
+}
+
+/* ==========================================================================
+   2. CONTENEDOR PRINCIPAL DE MAQUILA (Mismo Patrón de Nuestros Cafés)
+   ========================================================================== */
+.maquila-section {
+  max-width: 1100px;
+  width: 92%;
+  margin: 2.5rem auto;
+  background: var(--m3-surface);
+  color: var(--m3-text-primary);
+  border-radius: 24px;
+  box-shadow: var(--sombra, 0 8px 28px rgba(0, 0, 0, 0.06));
+  padding: 2.5rem;
+  box-sizing: border-box;
+  animation: fadeInMaquila 0.35s ease-out;
+}
+
+@media (max-width: 900px) {
+  .maquila-section {
+    width: auto;
+    margin: 2rem 1rem;
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .maquila-section {
+    width: calc(100% - 12px);
+    margin: 1rem auto;
+    padding: 1.35rem 0.85rem;
+    border-radius: 20px;
+  }
+}
+
+@keyframes fadeInMaquila {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.maquila-section.hidden {
+  display: none !important;
+}
+
+.maquila-container {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  background: var(--m3-surface);
+}
+
+/* ENCABEZADO ALINEADO A LA IZQUIERDA (PATRÓN NUESTROS CAFÉS) */
+.maquila-header {
+  text-align: left;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.maquila-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 2.2rem;
+  font-weight: 600;
+  color: var(--m3-primary);
+  line-height: 1.15;
+  margin: 0 0 8px 0;
+}
+
+.maquila-subtitle {
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 0.98rem;
+  color: var(--m3-title-brown);
+  line-height: 1.55;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .maquila-title {
+    font-size: 1.75rem;
+  }
+  .maquila-subtitle {
+    font-size: 0.94rem;
+  }
+}
+
+/* ==========================================================================
+   3. TARJETAS DE SERVICIOS (Multi-select Outlined / Elevated M3)
+   ========================================================================== */
+.maquila-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  align-items: stretch;
+}
+
+@media (max-width: 900px) {
+  .maquila-cards-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
+.maquila-card {
+  position: relative;
+  background: var(--m3-surface);
+  border: 1.5px solid var(--m3-border-subtle);
+  border-radius: var(--m3-radius-card);
+  padding: 22px 20px 20px;
+  box-shadow: var(--m3-shadow-soft);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  user-select: none;
+  transition: border-color 0.25s ease, background-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.maquila-card:hover {
+  border-color: rgba(55, 123, 76, 0.45);
+  box-shadow: var(--m3-shadow-elevated);
+  transform: translateY(-2px);
+}
+
+/* ESTADO SELECCIONADO (ACTIVE TONAL SURFACE) */
+.maquila-card.selected {
+  background: var(--m3-surface-tonal);
+  border: 1.5px solid var(--m3-primary);
+  box-shadow: 0 6px 24px rgba(55, 123, 76, 0.12);
+}
+
+.maquila-card-top {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.maquila-card-header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.maquila-card-title-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Checkbox Circular M3 */
+.maquila-step-badge {
+  position: relative;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid #c2d1c6;
+  color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  transition: all 0.25s var(--m3-ease-elastic);
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.maquila-card:hover .maquila-step-badge {
+  border-color: var(--m3-primary);
+}
+
+.maquila-step-badge .step-check {
+  opacity: 0;
+  transform: scale(0.4);
+  font-size: 0.95rem;
+  color: #ffffff;
+  line-height: 1;
+  transition: all 0.22s var(--m3-ease-elastic);
+}
+
+.maquila-card.selected .maquila-step-badge {
+  background: var(--m3-primary);
+  border-color: var(--m3-primary);
+  color: #ffffff;
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(55, 123, 76, 0.28);
+}
+
+.maquila-card.selected .maquila-step-badge .step-check {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Icon Box */
+.maquila-card-icon-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #f4f7f5;
+  color: var(--m3-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.25s ease;
+  flex-shrink: 0;
+}
+
+.maquila-card.selected .maquila-card-icon-box {
+  background: #e0eee4;
+}
+
+.maquila-card-icon-box .material-symbols-outlined {
+  font-size: 26px;
+}
+
+/* Meta: Título, Precio y Descripción */
+.maquila-card-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.maquila-card-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.maquila-card-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.18rem;
+  font-weight: 700;
+  color: var(--m3-text-primary);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.maquila-price-chip {
+  display: inline-flex;
+  align-items: center;
+  background: #edf5ef;
+  color: var(--m3-primary);
+  border: 1px solid rgba(55, 123, 76, 0.2);
+  border-radius: var(--m3-radius-pill);
+  padding: 3px 10px;
+  font-family: 'Poppins', monospace, sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.maquila-card.selected .maquila-price-chip {
+  background: #ffffff;
+  border-color: var(--m3-primary);
+}
+
+.maquila-card-desc {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.88rem;
+  line-height: 1.48;
+  color: var(--m3-text-secondary);
+  margin: 4px 0 0 0;
+}
+
+/* Indicador de Acción (Solicitar / Etapa Seleccionada) */
+.maquila-card-action {
+  margin-top: 16px;
+  padding-top: 12px;
+  display: flex;
+  align-items: center;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.25s ease;
+}
+
+.maquila-card-action .action-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.25s ease;
+}
+
+.maquila-card-action .action-unselected {
+  color: var(--m3-primary);
+  display: inline-flex;
+}
+
+.maquila-card-action .action-selected {
+  color: var(--m3-primary);
+  font-weight: 700;
+  display: none;
+}
+
+.maquila-card.selected .maquila-card-action .action-unselected {
+  display: none;
+}
+
+.maquila-card.selected .maquila-card-action .action-selected {
+  display: inline-flex;
+}
+
+/* ==========================================================================
+   4. SUB-OPCIONES DINÁMICAS (Filter Chips M3)
+   ========================================================================== */
+.maquila-suboptions {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--m3-border-subtle);
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+  animation: slideDownSuboptions 0.28s ease-out;
+}
+
+@keyframes slideDownSuboptions {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.maquila-card.selected .maquila-suboptions {
+  display: flex;
+}
+
+.maquila-sub-label {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--m3-text-primary);
+  text-transform: none;
+  letter-spacing: 0.01em;
+}
+
+.maquila-chip-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Filter Chip M3 */
+.maquila-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--m3-surface);
+  border: 1.5px solid var(--m3-border-subtle);
+  border-radius: var(--m3-radius-pill);
+  padding: 7px 14px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.84rem;
+  font-weight: 500;
+  color: var(--m3-text-primary);
+  cursor: pointer;
+  outline: none;
+  transition: all 0.22s var(--m3-ease-elastic);
+  user-select: none;
+  white-space: nowrap;
+}
+
+.maquila-chip .chip-emoji {
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+.maquila-chip:hover:not(.active) {
+  background: #edf5ef;
+  border-color: rgba(55, 123, 76, 0.4);
+}
+
+.maquila-chip.active {
+  background: var(--m3-primary);
+  border-color: var(--m3-primary);
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 3px 10px rgba(55, 123, 76, 0.25);
+  transform: scale(1.02);
+}
+
+/* ==========================================================================
+   5. SELECTOR DE PESO DEL LOTE (Superficie Clara M3)
+   ========================================================================== */
+.maquila-weight-card {
+  background: var(--m3-surface);
+  border: 1.5px solid var(--m3-border-subtle);
+  border-radius: var(--m3-radius-card);
+  padding: 24px 28px;
+  box-shadow: var(--m3-shadow-soft);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-top: 10px;
+}
+
+.weight-control-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.weight-label-col {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.weight-label-col .weight-icon {
+  font-size: 26px;
+  color: var(--m3-primary);
+}
+
+.weight-label-col .weight-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--m3-text-primary);
+}
+
+/* Stepper [- 10 lb +] */
+.weight-stepper {
+  display: inline-flex;
+  align-items: center;
+  background: var(--m3-surface-tonal);
+  border: 1.5px solid rgba(55, 123, 76, 0.25);
+  border-radius: var(--m3-radius-pill);
+  padding: 3px 6px;
+  gap: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.stepper-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1px solid var(--m3-border-subtle);
+  color: var(--m3-primary);
+  font-size: 1.3rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.22s var(--m3-ease-elastic);
+  flex-shrink: 0;
+}
+
+.stepper-btn:hover:not(:disabled) {
+  background: var(--m3-primary);
+  color: #ffffff;
+  border-color: var(--m3-primary);
+  transform: scale(1.08);
+}
+
+.stepper-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.weight-value {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--m3-primary);
+  min-width: 65px;
+  text-align: center;
+  letter-spacing: -0.01em;
+}
+
+/* Píldoras rápidas de peso */
+.weight-presets-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.weight-preset-pill {
+  padding: 8px 18px;
+  border-radius: var(--m3-radius-pill);
+  border: 1.5px solid var(--m3-border-subtle);
+  background: var(--m3-surface-tonal);
+  color: var(--m3-text-primary);
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.24s var(--m3-ease-elastic);
+  user-select: none;
+}
+
+.weight-preset-pill:hover:not(.active) {
+  background: #e2eee4;
+  border-color: rgba(55, 123, 76, 0.35);
+}
+
+.weight-preset-pill.active {
+  background: var(--m3-primary);
+  border-color: var(--m3-primary);
+  color: #ffffff;
+  box-shadow: 0 3px 12px rgba(55, 123, 76, 0.24);
+  transform: scale(1.03);
+}
+
+.weight-card-divider {
+  height: 1px;
+  background: var(--m3-border-subtle);
+  width: 100%;
+}
+
+/* Resumen del Servicio */
+.weight-summary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.summary-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.summary-caption {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.84rem;
+  color: var(--m3-text-secondary);
+}
+
+.summary-stages {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--m3-text-primary);
+}
+
+.summary-total-price {
+  font-family: 'Poppins', monospace, sans-serif;
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: var(--m3-primary);
+  letter-spacing: -0.02em;
+}
+
+/* Botón Desktop (Shape-Morphing Micro-interaction) */
+.maquila-desktop-action {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 6px;
+}
+
+.maquila-submit-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: var(--m3-primary);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--m3-radius-morph-base);
+  padding: 14px 34px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  box-shadow: 0 6px 18px rgba(55, 123, 76, 0.28);
+  transition: all 0.35s var(--m3-ease-elastic), border-radius 0.4s var(--m3-ease-elastic);
+}
+
+.maquila-submit-btn:hover {
+  background: var(--m3-primary-hover);
+  border-radius: var(--m3-radius-pill);
+  box-shadow: 0 10px 24px rgba(55, 123, 76, 0.36);
+  transform: translateY(-2px);
+}
+
+.maquila-submit-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.maquila-submit-btn .btn-icon {
+  font-size: 1.25rem;
+  transition: transform 0.25s ease;
+}
+
+.maquila-submit-btn:hover .btn-icon {
+  transform: scale(1.15);
+}
+
+/* ==========================================================================
+   6. BARRA INFERIOR UNIFICADA (Mismo patrón de Nuestros Cafés · #ffffff)
+   ========================================================================== */
+.maquila-section .maquila-actions {
+  margin-top: 0.5rem;
+}
+
+.maquila-section .maquila-actions #weight-display {
+  min-width: 48px;
+  text-align: center;
+  font-weight: 700;
+  color: var(--m3-primary);
+}
+
+@media (max-width: 768px) {
+  .maquila-section .maquila-actions {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    margin: 0;
+    z-index: 9990;
+    background: #ffffff;
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px));
+    box-shadow: 0 -4px 22px rgba(0, 0, 0, 0.09);
+    border-top: 1px solid rgba(55, 123, 76, 0.14);
+    box-sizing: border-box;
+    transform: translateY(120%);
+    transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    gap: 0.65rem;
+  }
+
+  body.sticky-bar-visible .maquila-section .maquila-actions {
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  /* Cuando Maquila está activa, oculta la barra de producto si estuviera visible */
+  body.maquila-tab-active .product-main .product-actions {
+    display: none !important;
+  }
+
+  .maquila-section .quantity-container {
+    order: 1;
+    margin-top: 0;
+    gap: 0.65rem;
+    padding: 2px 5px;
+    height: 48px;
+    box-sizing: border-box;
+    flex-shrink: 0;
+  }
+
+  .maquila-section .product-add-btn {
+    height: 48px;
+    padding: 0 1rem;
+    font-size: 0.94rem;
+    gap: 6px;
+  }
+
+  .maquila-section .qty-btn {
+    width: 44px;
+    height: 44px;
+    font-size: 1.3rem;
+  }
+
+  .maquila-section .qty-number {
+    font-size: 1.1rem;
+    min-width: 48px;
+  }
+}
+
+@media (max-width: 430px) {
+  .maquila-section .maquila-actions {
+    padding: 8px 10px calc(8px + env(safe-area-inset-bottom, 0px));
+    gap: 0.5rem;
+  }
+
+  .maquila-section .quantity-container {
+    gap: 0.4rem;
+    padding: 2px 4px;
+    height: 48px;
+  }
+
+  .maquila-section .qty-btn {
+    width: 44px;
+    height: 44px;
+    font-size: 1.25rem;
+  }
+
+  .maquila-section .qty-number {
+    font-size: 1.05rem;
+    min-width: 44px;
+  }
+
+  .maquila-section .product-add-btn {
+    height: 48px;
+    padding: 0 0.65rem;
+    font-size: 0.88rem;
+  }
+}

@@ -70,7 +70,7 @@ const $id = (id) => document.getElementById(id);
 
 function resolveImgUrl(src) {
   if (!src) return '/imagenes/no-image.png';
-  if (src.startsWith('http')) return src;
+  if (src.startsWith('http') || src.startsWith('/')) return src;
   return `https://eaipcuvvddyrqkbmjmvw.supabase.co/storage/v1/object/public/product-images/${src}`;
 }
 
@@ -272,7 +272,7 @@ window.cargarPedidoExistente = async (orderId) => {
     .from("orders")
     .select(`
       *,
-      users(name,email,phone),
+      users(name,email,phone,rol),
       addresses(state,city,street),
       order_items(quantity,price,products(name,category,presentation,grind_type,image_url)),
       payment_receipts(file_url)
@@ -283,6 +283,26 @@ window.cargarPedidoExistente = async (orderId) => {
   if (error || !pedido) {
     window.showSnack("No se encontró el pedido");
     return;
+  }
+
+  let posCreatorName = null;
+  if (!pedido.address_id) {
+    try {
+      const { data: fm } = await sb
+        .from("finanzas_movimientos")
+        .select("created_by")
+        .eq("order_id", orderId)
+        .limit(1);
+      const creatorId = fm?.[0]?.created_by || null;
+      if (creatorId) {
+        const { data: creatorUser } = await sb
+          .from("users")
+          .select("name")
+          .eq("id", creatorId)
+          .maybeSingle();
+        posCreatorName = creatorUser?.name || null;
+      }
+    } catch (_) {}
   }
 
   /* CABECERA */
@@ -298,15 +318,21 @@ window.cargarPedidoExistente = async (orderId) => {
 
   /* CLIENTE */
   const customerName = pedido.users?.name || "Consumidor final";
-  const isVentaRapida = customerName.toLowerCase().includes("venta rápida") || customerName.toLowerCase().includes("venta rapida");
+  const notesStr = String(pedido.order_notes || "");
+  const isVentaRapida = notesStr.includes("[VENTA_RAPIDA]") ||
+                        pedido.users?.rol === "admin" ||
+                        customerName.toLowerCase().includes("venta rápida") ||
+                        customerName.toLowerCase().includes("venta rapida");
   const statusBlock = document.querySelector(".status-block");
   const lblCliente = document.querySelector("#seccionDatosCliente .lbl");
   const docTitle = document.querySelector(".document-info h2");
   const adminCache = window.getUserCache?.() || JSON.parse(localStorage.getItem("cortero_user") || "null");
   const cleanAdminFromOrder = customerName.replace(/\s*\(Venta\s+r[aá]pida\)/i, "").trim();
-  const adminName = (cleanAdminFromOrder && cleanAdminFromOrder.toLowerCase() !== "consumidor final")
-    ? cleanAdminFromOrder
-    : (adminCache?.name || "Administrador");
+  const adminName = posCreatorName || (
+    (cleanAdminFromOrder && cleanAdminFromOrder.toLowerCase() !== "consumidor final")
+      ? cleanAdminFromOrder
+      : (adminCache?.name || "Administrador")
+  );
 
   if (isVentaRapida) {
     if (docTitle) docTitle.textContent = "Venta";

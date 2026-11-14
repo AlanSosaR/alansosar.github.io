@@ -52,7 +52,7 @@ function formatPrice(value, currency = "HNL") {
 
 function getImageUrl(product) {
   if (!product?.image_url) return "/imagenes/no-image.png";
-  if (product.image_url.startsWith("http")) return product.image_url;
+  if (product.image_url.startsWith("http") || product.image_url.startsWith("/")) return product.image_url;
   return `https://eaipcuvvddyrqkbmjmvw.supabase.co/storage/v1/object/public/product-images/${product.image_url}`;
 }
 

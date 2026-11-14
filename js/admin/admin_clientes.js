@@ -358,7 +358,7 @@ const initAdminClientes = () => {
             name.textContent = customer.name || "Sin nombre";
             email.textContent = customer.email || "Sin email";
 
-            if (adminId && customer.id === adminId) {
+            if (customer.rol === "admin" || (adminId && customer.id === adminId)) {
                 badge.classList.remove("hidden");
             }
 
@@ -450,7 +450,7 @@ const initAdminClientes = () => {
         cLocation.innerHTML = `<span class="material-symbols-outlined">location_on</span><span>${customer.country || "Ubicación desconocida"}</span>`;
         cRegDate.textContent = new Date(customer.created_at).toLocaleDateString("es-ES", { month: "short", year: "numeric" });
 
-        const isAdmin = adminId && customer.id === adminId;
+        const isAdmin = customer.rol === "admin" || (adminId && customer.id === adminId);
 
         if (cLocation) cLocation.style.display = isAdmin ? "none" : "";
         if (btnContact) btnContact.style.display = isAdmin ? "none" : "";
@@ -469,9 +469,9 @@ const initAdminClientes = () => {
             const rango = getAdminRango(adminPeriodo, adminPeriodoOffset);
             if (adminPeriodoLabel) adminPeriodoLabel.textContent = rango.label;
             const [salesData, salesHistory, topProduct] = await Promise.all([
-                fetchAdminSalesData(adminId, rango.desde, rango.hasta),
-                fetchAdminSalesHistory(adminId, rango.desde, rango.hasta),
-                fetchAdminTopProduct(adminId, rango.desde, rango.hasta),
+                fetchAdminSalesData(customer.id, rango.desde, rango.hasta),
+                fetchAdminSalesHistory(customer.id, rango.desde, rango.hasta),
+                fetchAdminTopProduct(customer.id, rango.desde, rango.hasta),
             ]);
             cTotalSpent.textContent = `L ${salesData.totalVendido.toFixed(2)}`;
             cTotalOrders.textContent = salesData.ventasAtendidas;
@@ -655,7 +655,8 @@ const initAdminClientes = () => {
     });
 
     const getIsSelectedAdmin = () => {
-        return adminId && selectedCustomerId === adminId;
+        const customer = allCustomers.find(c => c.id === selectedCustomerId);
+        return Boolean(customer?.rol === "admin" || (adminId && selectedCustomerId === adminId));
     };
 
     document.getElementById("prev-page").onclick = () => {
@@ -678,13 +679,14 @@ const initAdminClientes = () => {
 
     // 6b. ADMIN PERIOD FILTER
     const refreshAdminView = async () => {
-        if (!adminId || selectedCustomerId !== adminId) return;
+        const customer = allCustomers.find(c => c.id === selectedCustomerId);
+        if (!customer || !getIsSelectedAdmin()) return;
         const rango = getAdminRango(adminPeriodo, adminPeriodoOffset);
         if (adminPeriodoLabel) adminPeriodoLabel.textContent = rango.label;
         const [salesData, salesHistory, topProduct] = await Promise.all([
-            fetchAdminSalesData(adminId, rango.desde, rango.hasta),
-            fetchAdminSalesHistory(adminId, rango.desde, rango.hasta),
-            fetchAdminTopProduct(adminId, rango.desde, rango.hasta),
+            fetchAdminSalesData(customer.id, rango.desde, rango.hasta),
+            fetchAdminSalesHistory(customer.id, rango.desde, rango.hasta),
+            fetchAdminTopProduct(customer.id, rango.desde, rango.hasta),
         ]);
         cTotalSpent.textContent = `L ${salesData.totalVendido.toFixed(2)}`;
         cTotalOrders.textContent = salesData.ventasAtendidas;
@@ -702,12 +704,9 @@ const initAdminClientes = () => {
                 cTopProductImg.style.display = "none";
             }
         }
-        const customer = allCustomers.find(c => c.id === selectedCustomerId);
-        if (customer) {
-            customer.fetchedOrders = salesHistory;
-            historyPage = 1;
-            renderHistory(salesHistory, true);
-        }
+        customer.fetchedOrders = salesHistory;
+        historyPage = 1;
+        renderHistory(salesHistory, true);
     };
 
     document.querySelectorAll(".periodo-btn").forEach(btn => {

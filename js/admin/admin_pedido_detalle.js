@@ -11,6 +11,7 @@ console.log("🛠️ admin_pedido_detalle.js — INIT");
     let orderData = null;
     let isPOS = false;
     let posPaymentMethod = null;
+    let posCreatorName = null;
 
     const STATUS_LABELS = {
         pending: "Nuevo",
@@ -31,7 +32,7 @@ console.log("🛠️ admin_pedido_detalle.js — INIT");
 
     function resolveImgUrl(url) {
         if (!url) return "/imagenes/no-image.png";
-        if (url.startsWith("http://") || url.startsWith("https://")) return url;
+        if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("/")) return url;
         return "https://" + url.replace(/^\/+/, "");
     }
 
@@ -185,7 +186,7 @@ console.log("🛠️ admin_pedido_detalle.js — INIT");
                     created_at,
                     order_notes,
                     payment_method,
-                    users ( name, email, phone ),
+                    users ( name, email, phone, rol ),
                     address:addresses ( country, state, city, street, postal_code, phone, full_name ),
                     items:order_items ( quantity, price, products ( name, presentation, grind_type, image_url ) ),
                     receipt:payment_receipts ( file_url )
@@ -201,10 +202,19 @@ console.log("🛠️ admin_pedido_detalle.js — INIT");
             if (isPOS) {
                 const { data: fm } = await sb
                     .from("finanzas_movimientos")
-                    .select("metodo_pago")
+                    .select("metodo_pago, created_by")
                     .eq("order_id", orderId)
                     .limit(1);
                 posPaymentMethod = fm?.[0]?.metodo_pago || null;
+                const creatorId = fm?.[0]?.created_by || null;
+                if (creatorId) {
+                    const { data: creatorUser } = await sb
+                        .from("users")
+                        .select("name")
+                        .eq("id", creatorId)
+                        .maybeSingle();
+                    posCreatorName = creatorUser?.name || null;
+                }
             }
 
             // Normalizar comprobantes de pago
@@ -240,7 +250,9 @@ console.log("🛠️ admin_pedido_detalle.js — INIT");
 
         // 1. Header Info
         const customerRaw = u.name || a.full_name || "Consumidor final";
-        const isVentaRapida = isPOS ||
+        const notesStr = String(o.order_notes || "");
+        const isVentaRapida = notesStr.includes("[VENTA_RAPIDA]") ||
+                              u.rol === "admin" ||
                               customerRaw.toLowerCase().includes("venta rápida") ||
                               customerRaw.toLowerCase().includes("venta rapida");
 
@@ -270,7 +282,8 @@ console.log("🛠️ admin_pedido_detalle.js — INIT");
         // RENDERIZADO DEL COMPROBANTE COMPLETO (OFICIAL RECIBO CAFÉ CORTERO)
         // ========================================================
         const adminUser = JSON.parse(localStorage.getItem("cortero_user") || "{}");
-        const adminName = adminUser.name || "Administrador";
+        const cleanOrderUserName = customerRaw.replace(/\s*\(Venta\s+r[aá]pida\)/i, "").trim();
+        const adminName = posCreatorName || (u.rol === "admin" ? cleanOrderUserName : null) || cleanOrderUserName || adminUser.name || "Administrador";
 
         // Document info
         const docTypeEl = document.getElementById("invoiceDocType");

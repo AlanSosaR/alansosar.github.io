@@ -19,6 +19,7 @@
   <link rel="stylesheet" href="/css/ui/footer.css">
   <link rel="stylesheet" href="/css/ui/hero-carousel.css"> <!-- 🆕 HERO CAROUSEL -->
   <link rel="stylesheet" href="/css/pages/reviews.css?v=9"><!-- 🆕 RESEÑAS -->
+  <link rel="stylesheet" href="/css/pages/maquila.css?v=5"><!-- 🆕 MAQUILA Y TUESTE -->
   <link rel="manifest" href="/manifest.webmanifest">
   <script>
     console.log("PWA: manifest linked");
@@ -44,16 +45,6 @@
           <h1 class="display-large"></h1>
           <p class="headline-small"></p>
 
-          <!-- Discount Card (M3 Surface) -> Now PRIMARY CTA -->
-          <button class="discount-card-m3"
-            onclick="document.getElementById('productos')?.scrollIntoView({behavior: 'smooth'})">
-            <span class="label-large">
-              Comprar ahora
-              <img src="/imagenes/coffeeSHOP.png" alt="" style="height:1.2rem;width:auto;vertical-align:middle;filter:brightness(0) invert(1)">
-            </span>
-          </button>
-
-          <!-- Primary Action REMOVED (Moved to bottom banner) -->
         </div>
 
         <!-- GLOBE EXPRESS NAVIGATION -->
@@ -74,6 +65,119 @@
             <span class="material-symbols-outlined">chevron_right</span>
           </button>
         </div>
+      </div>
+    </section>
+
+    <!-- 🧭 CÁPSULA DE NAVEGACIÓN UNIFICADA (M3 Expressive) -->
+    <nav class="home-nav-capsule-wrap" id="homeTabsNav" aria-label="Navegación de secciones">
+      <div class="home-nav-capsule" role="tablist">
+        <button type="button" class="home-tab-pill active" id="tab-cafes" data-target="cafes" role="tab" aria-selected="true" aria-controls="productos">
+          <span class="tab-pill-text">Nuestros Cafés</span>
+        </button>
+        <button type="button" class="home-tab-pill" id="tab-maquila" data-target="maquila" role="tab" aria-selected="false" aria-controls="maquila-section">
+          <span class="tab-pill-text">Nuestros Servicios</span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- ⚙️ MÓDULO DE MAQUILA Y TUESTE (Material 3 Expressive - Light Surface #ffffff) -->
+    <section id="maquila-section" class="maquila-section hidden" aria-label="Servicios de Maquila y Tueste">
+      <div class="maquila-container">
+
+        <!-- Encabezado editorial limpio -->
+        <header class="maquila-header">
+          <h2 class="maquila-title">Procesamos tu café del grano seco a la taza</h2>
+          <p class="maquila-subtitle">Combina los servicios que necesites. Toca cada tarjeta para activar o personalizar la etapa:</p>
+        </header>
+
+        <!-- Grid de Tarjetas de Servicios -->
+        <div class="maquila-cards-grid">
+
+          <!-- TARJETA 1: TRILLADO -->
+          <article class="maquila-card" id="card-trillado" data-service="trillado" data-price="3">
+            <div class="maquila-card-top">
+              <div class="maquila-card-header-bar">
+                <div class="maquila-card-title-group">
+                  <div class="maquila-step-badge" role="checkbox" aria-checked="false" aria-label="Seleccionar Trillado">
+                    <span class="step-check">✓</span>
+                  </div>
+                  <h3 class="maquila-card-title">Trillado</h3>
+                </div>
+                <span class="maquila-price-chip">L 3.00 / lb</span>
+              </div>
+              <p class="maquila-card-desc">Retiramos el pergamino del café seco para dejarlo listo para tostar.</p>
+            </div>
+          </article>
+
+          <!-- TARJETA 2: TOSTADO (Seleccionada por defecto) -->
+          <article class="maquila-card selected" id="card-tostado" data-service="tostado" data-price="7">
+            <div class="maquila-card-top">
+              <div class="maquila-card-header-bar">
+                <div class="maquila-card-title-group">
+                  <div class="maquila-step-badge" role="checkbox" aria-checked="true" aria-label="Seleccionar Tostado">
+                    <span class="step-check">✓</span>
+                  </div>
+                  <h3 class="maquila-card-title">Tostado</h3>
+                </div>
+                <span class="maquila-price-chip">L 7.00 / lb</span>
+              </div>
+              <p class="maquila-card-desc">Convertimos tu café en grano en café tostado, con el nivel de tueste que prefieras.</p>
+            </div>
+
+            <!-- Sub-opciones dinámicas: Nivel de Tueste -->
+            <div class="maquila-suboptions" id="suboptions-tostado">
+              <label class="maquila-sub-label">Selecciona el nivel de tueste:</label>
+              <div class="maquila-chip-group" role="radiogroup" aria-label="Nivel de tueste">
+                <button type="button" class="maquila-chip" data-tueste="Claro" role="radio" aria-checked="false">Claro</button>
+                <button type="button" class="maquila-chip active" data-tueste="Medio" role="radio" aria-checked="true">Medio</button>
+                <button type="button" class="maquila-chip" data-tueste="Oscuro" role="radio" aria-checked="false">Oscuro</button>
+              </div>
+            </div>
+          </article>
+
+          <!-- TARJETA 3: MOLIDO -->
+          <article class="maquila-card" id="card-molido" data-service="molido" data-price="3">
+            <div class="maquila-card-top">
+              <div class="maquila-card-header-bar">
+                <div class="maquila-card-title-group">
+                  <div class="maquila-step-badge" role="checkbox" aria-checked="false" aria-label="Seleccionar Molido">
+                    <span class="step-check">✓</span>
+                  </div>
+                  <h3 class="maquila-card-title">Molido</h3>
+                </div>
+                <span class="maquila-price-chip">L 3.00 / lb</span>
+              </div>
+              <p class="maquila-card-desc">Molemos tu café tostado a la medida de tu método: filtro, prensa francesa o espresso.</p>
+            </div>
+
+            <!-- Sub-opciones dinámicas: Tipo de Molienda -->
+            <div class="maquila-suboptions" id="suboptions-molido">
+              <label class="maquila-sub-label">Selecciona la medida de molienda:</label>
+              <div class="maquila-chip-group" role="radiogroup" aria-label="Tipo de molienda">
+                <button type="button" class="maquila-chip active" data-molienda="Filtro / V60" role="radio" aria-checked="true">Filtro / V60</button>
+                <button type="button" class="maquila-chip" data-molienda="Prensa Francesa" role="radio" aria-checked="false">Prensa Francesa</button>
+                <button type="button" class="maquila-chip" data-molienda="Espresso" role="radio" aria-checked="false">Espresso</button>
+              </div>
+            </div>
+          </article>
+
+        </div>
+
+        <!-- BARRA DE ACCIÓN UNIFICADA (SELECTOR DE LIBRAS + AGREGAR) -->
+        <div class="product-actions maquila-actions" id="maquila-actions">
+          <div class="quantity-container">
+            <button type="button" class="qty-btn minus-btn" id="weight-minus" disabled aria-label="Reducir peso">−</button>
+            <span class="qty-number" id="weight-display">1 lb</span>
+            <button type="button" class="qty-btn plus-btn" id="weight-plus" aria-label="Aumentar peso">+</button>
+          </div>
+
+          <button type="button" class="product-add-btn" id="bar-maquila-add" aria-label="Agregar servicio al carrito">
+            <span class="add-label">Agregar</span>
+            <span class="add-dot">·</span>
+            <span class="price-part" id="bar-maquila-price">L 7.00</span>
+          </button>
+        </div>
+
       </div>
     </section>
     <!-- mensaje estado vacío -->
@@ -353,6 +457,9 @@
 
   <!-- 7️⃣ Página -->
   <script src="/js/pages/main.js?v=37"></script>
+
+  <!-- 8️⃣ Maquila y Tueste Logic -->
+  <script src="/js/pages/maquila.js?v=5"></script>
 
 </body>
 

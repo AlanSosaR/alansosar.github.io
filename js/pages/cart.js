@@ -15,7 +15,47 @@ const CHECKOUT_KEY = "checkout_cart";
 /* ================= HELPERS ================= */
 function getCart() {
   try {
-    return JSON.parse(localStorage.getItem(CART_KEY)) || [];
+    const raw = JSON.parse(localStorage.getItem(CART_KEY)) || [];
+    let migrated = false;
+    const clean = [];
+    const catalog = {
+      trillado: { id: "00000000-0000-4000-8000-000000000001", baseName: "Servicio de Trillado", img: "/imagenes/clasificacion.png", price: 3.00, grind: "En grano" },
+      tostado:  { id: "00000000-0000-4000-8000-000000000002", baseName: "Servicio de Tostado", img: "/imagenes/machine.png", price: 7.00, grind: "En grano" },
+      molido:   { id: "00000000-0000-4000-8000-000000000003", baseName: "Servicio de Molido", img: "/imagenes/smart-factory.png", price: 3.00, grind: "Molido" }
+    };
+    raw.forEach((it) => {
+      if (String(it.product_id || "").startsWith("service_maquila_")) {
+        migrated = true;
+        const stages = it.metadata?.stages || ["tostado"];
+        const lbs = Number(it.metadata?.pounds || it.qty || 1);
+        stages.forEach((st) => {
+          const m = catalog[st];
+          if (m) {
+            const name = st === "tostado" ? `${m.baseName} (${it.metadata?.tueste || "Medio"})` : st === "molido" ? `${m.baseName} (${it.metadata?.molienda || "Filtro / V60"})` : m.baseName;
+            clean.push({
+              product_id: m.id,
+              type: "service",
+              name,
+              price: m.price,
+              price_original: m.price,
+              discount_percent: 0,
+              img: m.img,
+              image_url: m.img,
+              qty: lbs,
+              category: "Servicios",
+              presentation: `${lbs} lb`,
+              grind: st === "molido" ? (it.metadata?.molienda || "Molido") : m.grind
+            });
+          }
+        });
+      } else {
+        clean.push(it);
+      }
+    });
+    if (migrated) {
+      localStorage.setItem(CART_KEY, JSON.stringify(clean));
+    }
+    return clean;
   } catch {
     return [];
   }
@@ -131,7 +171,7 @@ function calculateDiscount(subtotal, cart) {
 
 async function renderCart() {
   const cart = getCart();
-  const ids = [...new Set(cart.map(i => i.product_id))];
+  const ids = [...new Set(cart.filter(i => i.type !== "service" && !String(i.product_id).startsWith("service_")).map(i => i.product_id))];
 
   await fetchStocks(ids);
   updateHeaderCartTitle(cart);
@@ -222,11 +262,12 @@ async function renderCart() {
     currentPriceEl.innerHTML = `L ${Number(item.price || 0).toFixed(2)} <span class="unit-text">/ unidad</span>`;
     clone.querySelector(".qty-number").textContent = item.qty || 1;
 
-    const stock = stocksCache[item.product_id] ?? 999;
+    const isService = item.type === "service" || String(item.product_id).startsWith("service_");
+    const stock = isService ? 9999 : (stocksCache[item.product_id] ?? 999);
     const btnPlus = clone.querySelector('[data-action="plus"]');
     if (btnPlus && item.qty >= stock) btnPlus.disabled = true;
 
-    if (item.qty >= stock) {
+    if (!isService && item.qty >= stock) {
       const warning = document.createElement("div");
       warning.className = "stock-warning";
       warning.textContent = item.qty > stock ? "⚠ Cantidad supera el stock" : "No nos quedan más bolsas de café en inventario";
@@ -410,31 +451,35 @@ document.getElementById("proceder-btn")?.addEventListener("click", async () => {
     return;
   }
 
-  const ids = [...new Set(cart.map(i => String(i.product_id)))];
-  const { data: products, error: productsError } = await sb
-    .from("products")
-    .select("id, stock, name")
-    .in("id", ids);
+  const physicalItems = cart.filter(i => i.type !== "service" && !String(i.product_id).startsWith("service_"));
+  const ids = [...new Set(physicalItems.map(i => String(i.product_id)))];
 
-  if (productsError) {
-    showSnackbar("No se pudo validar el carrito. Intenta de nuevo.");
-    return;
-  }
+  if (ids.length) {
+    const { data: products, error: productsError } = await sb
+      .from("products")
+      .select("id, stock, name")
+      .in("id", ids);
 
-  const stockMap = {};
-  (products || []).forEach(p => stockMap[String(p.id)] = { stock: p.stock, name: p.name });
-
-  const missing = ids.filter(id => !stockMap[id]);
-  if (missing.length) {
-    showSnackbar("Algunos productos ya no están disponibles. Vuelve a agregarlos.");
-    return;
-  }
-
-  for (const item of cart) {
-    const meta = stockMap[String(item.product_id)];
-    if (item.qty > meta.stock) {
-      showSnackbar(`Lo sentimos, solo quedan ${meta.stock} unidades de ${meta.name}.`);
+    if (productsError) {
+      showSnackbar("No se pudo validar el carrito. Intenta de nuevo.");
       return;
+    }
+
+    const stockMap = {};
+    (products || []).forEach(p => stockMap[String(p.id)] = { stock: p.stock, name: p.name });
+
+    const missing = ids.filter(id => !stockMap[id]);
+    if (missing.length) {
+      showSnackbar("Algunos productos ya no están disponibles. Vuelve a agregarlos.");
+      return;
+    }
+
+    for (const item of physicalItems) {
+      const meta = stockMap[String(item.product_id)];
+      if (meta && item.qty > meta.stock) {
+        showSnackbar(`Lo sentimos, solo quedan ${meta.stock} unidades de ${meta.name}.`);
+        return;
+      }
     }
   }
 

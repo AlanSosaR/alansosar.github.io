@@ -447,7 +447,7 @@ function renderDetail(pedido) {
   if (pedido.items) {
     pedido.items.forEach((item) => {
       const imgUrl = item.products?.image_url
-        ? item.products.image_url.startsWith("http")
+        ? (item.products.image_url.startsWith("http") || item.products.image_url.startsWith("/"))
           ? item.products.image_url
           : `https://${item.products.image_url}`
         : null;

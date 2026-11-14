@@ -76,7 +76,7 @@ const $ = (id) => document.getElementById(id);
 
 function resolveImgUrl(src) {
   if (!src) return '/imagenes/no-image.png';
-  if (src.startsWith('http')) return src;
+  if (src.startsWith('http') || src.startsWith('/')) return src;
   return `https://eaipcuvvddyrqkbmjmvw.supabase.co/storage/v1/object/public/product-images/${src}`;
 }
 
@@ -106,7 +106,47 @@ let isFirstOrder = false;
 let orderNotesCache = null;
 
 const CART_KEY = "cafecortero_cart";
-const carrito = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
+const rawCarrito = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
+let migratedCart = false;
+const carrito = [];
+
+rawCarrito.forEach((it) => {
+  if (String(it.product_id || "").startsWith("service_maquila_")) {
+    migratedCart = true;
+    const stages = it.metadata?.stages || ["tostado"];
+    const lbs = Number(it.metadata?.pounds || it.qty || 1);
+    const catalog = {
+      trillado: { id: "00000000-0000-4000-8000-000000000001", name: "Servicio de Trillado", img: "/imagenes/clasificacion.png", price: 3.00, grind: "En grano" },
+      tostado:  { id: "00000000-0000-4000-8000-000000000002", name: `Servicio de Tostado (${it.metadata?.tueste || "Medio"})`, img: "/imagenes/machine.png", price: 7.00, grind: `Tueste ${it.metadata?.tueste || "Medio"}` },
+      molido:   { id: "00000000-0000-4000-8000-000000000003", name: `Servicio de Molido (${it.metadata?.molienda || "Filtro / V60"})`, img: "/imagenes/smart-factory.png", price: 3.00, grind: it.metadata?.molienda || "Molido" }
+    };
+    stages.forEach((st) => {
+      const m = catalog[st];
+      if (m) {
+        carrito.push({
+          product_id: m.id,
+          type: "service",
+          name: m.name,
+          price: m.price,
+          price_original: m.price,
+          discount_percent: 0,
+          img: m.img,
+          image_url: m.img,
+          qty: lbs,
+          category: "Servicios",
+          presentation: `${lbs} lb`,
+          grind: m.grind
+        });
+      }
+    });
+  } else {
+    carrito.push(it);
+  }
+});
+
+if (migratedCart) {
+  localStorage.setItem(CART_KEY, JSON.stringify(carrito));
+}
 
 /* =========================================================
    HELPERS POS Y USUARIO

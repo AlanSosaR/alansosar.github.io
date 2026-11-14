@@ -543,7 +543,7 @@ console.log("🛠️ admin_pedidos.js — INIT STITCH");
             const name = prod.name || "Producto General";
             const lineTotal = item.quantity * item.price;
             const imgUrl = prod.image_url
-                ? (prod.image_url.startsWith("http") ? prod.image_url : `https://${prod.image_url}`)
+                ? ((prod.image_url.startsWith("http") || prod.image_url.startsWith("/")) ? prod.image_url : `https://${prod.image_url}`)
                 : null;
             return `
                 <div class="item-mini-row">
