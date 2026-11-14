@@ -264,7 +264,8 @@ function renderDetail(product) {
     tags.push(product.presentation === "1lb" ? "1 lb" : product.presentation);
   }
 
-  const featuredActive = product.featured === true;
+  const isServiceItem = product.category === "Servicios";
+  const featuredActive = !isServiceItem && product.featured === true;
 
   detailPanel.innerHTML = `
     <div class="detail-content">
@@ -287,10 +288,11 @@ function renderDetail(product) {
           <p class="stat-value">${formatPrice(product.price, product.currency)}</p>
         </div>
         <div class="stat-card">
-          <p class="stat-label">En almacén</p>
-          <p class="stat-value">${stock}</p>
+          <p class="stat-label">${isServiceItem ? "Tipo" : "En almacén"}</p>
+          <p class="stat-value">${isServiceItem ? "Servicio" : stock}</p>
         </div>
       </div>
+      ${isServiceItem ? "" : `
       <div class="detail-row">
         <span class="detail-row-label">Fecha de tueste</span>
         <span class="detail-row-value">${product.fecha_tueste || "No especificada"}</span>
@@ -306,7 +308,7 @@ function renderDetail(product) {
           <input type="checkbox" id="d-carousel-toggle" ${featuredActive ? "checked" : ""}>
           <span class="slider"></span>
         </label>
-      </div>
+      </div>`}
     </div>
   `;
 
@@ -314,7 +316,8 @@ function renderDetail(product) {
      CARRUSEL TOGGLE
   ===================== */
   const toggle = document.getElementById("d-carousel-toggle");
-  toggle.onchange = async () => {
+  if (toggle) {
+    toggle.onchange = async () => {
     const nuevoEstado = toggle.checked;
     const note = detailPanel.querySelector(".detail-carousel-note");
     note.textContent = nuevoEstado ? "Visible en la tienda" : "No visible en tienda";
@@ -338,7 +341,8 @@ function renderDetail(product) {
     if (p) p.featured = nuevoEstado;
     const fp = filteredProducts.find(p => p.id === product.id);
     if (fp) fp.featured = nuevoEstado;
-  };
+    };
+  }
 
   /* =====================
      EVENTOS DE ACCIÓN EN HEADER / DETALLE

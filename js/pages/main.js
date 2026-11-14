@@ -481,6 +481,7 @@ async function loadSimilarProducts() {
     .select("*")
     .eq("featured", true)
     .eq("status", "activo")
+    .neq("category", "Servicios")
     .gt("stock", 0)
     .order("created_at", { ascending: false });
 

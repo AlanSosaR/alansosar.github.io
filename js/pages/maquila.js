@@ -64,6 +64,15 @@
     return `L ${Number(amount || 0).toFixed(2)}`;
   }
 
+  function isCurrentUserAdmin() {
+    try {
+      const u = window.currentUser || JSON.parse(localStorage.getItem('cortero_user') || 'null');
+      return Boolean(u && u.rol === 'admin');
+    } catch {
+      return false;
+    }
+  }
+
   function showSnackMessage(msg, isWarn = false) {
     const snackbar = $('snackbar');
     if (!snackbar) {
@@ -150,8 +159,32 @@
     }
 
     const barPrice = $('bar-maquila-price');
-    if (barPrice) {
-      barPrice.textContent = formatMoney(total);
+    const barLabel = $('bar-maquila-label');
+    const barDot = $('bar-maquila-dot');
+    const qtyBox = $('maquila-qty-box');
+    const actionsBar = $('maquila-actions');
+    const isAdmin = isCurrentUserAdmin();
+
+    if (qtyBox) {
+      qtyBox.style.display = isAdmin ? 'inline-flex' : 'none';
+    }
+    if (actionsBar) {
+      actionsBar.classList.toggle('guest-mode', !isAdmin);
+    }
+
+    if (isAdmin) {
+      if (barLabel) barLabel.innerHTML = 'Agregar';
+      if (barDot) barDot.style.display = '';
+      if (barPrice) {
+        barPrice.style.display = '';
+        barPrice.textContent = formatMoney(total);
+      }
+    } else {
+      if (barLabel) {
+        barLabel.innerHTML = '<i class="fa-brands fa-whatsapp" style="font-size:1.15rem;margin-right:6px;vertical-align:-1px;"></i>Solicitar servicio por WhatsApp';
+      }
+      if (barDot) barDot.style.display = 'none';
+      if (barPrice) barPrice.style.display = 'none';
     }
 
     // 5. Estado de tarjetas
@@ -341,8 +374,46 @@
   }
 
   /* ==========================================================================
-     INTEGRACIÓN AL ESTADO DEL CARRITO (JSON UNIFICADO CON UUIDs EN BD)
+     ACCIÓN PRINCIPAL (ADMIN: AGREGAR AL CARRITO | CLIENTE/INVITADO: WHATSAPP)
      ========================================================================== */
+  function requestMaquilaWhatsApp() {
+    const { stages } = calculateTotal();
+    const stagesSummary = stages.length ? stages.join(', ') : 'Maquila y Tueste';
+    const customMsg = `Hola Café Cortero, deseo solicitar el servicio de: ${stagesSummary}.`;
+
+    const sheet = $('wa-sheet');
+    const backdrop = $('wa-sheet-backdrop');
+    const opt1 = $('wa-opt-1');
+    const opt2 = $('wa-opt-2');
+
+    if (opt1 && opt1.href) {
+      const base1 = opt1.href.split('?')[0];
+      opt1.href = `${base1}?text=${encodeURIComponent(customMsg)}`;
+    }
+    if (opt2 && opt2.href) {
+      const base2 = opt2.href.split('?')[0];
+      opt2.href = `${base2}?text=${encodeURIComponent(customMsg)}`;
+    }
+
+    if (sheet && backdrop) {
+      sheet.classList.add('open');
+      backdrop.classList.add('open');
+      sheet.setAttribute('aria-hidden', 'false');
+      backdrop.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('no-scroll');
+    } else {
+      window.open(`https://wa.me/50496670613?text=${encodeURIComponent(customMsg)}`, '_blank');
+    }
+  }
+
+  function handleMaquilaPrimaryAction() {
+    if (isCurrentUserAdmin()) {
+      addMaquilaToCart();
+    } else {
+      requestMaquilaWhatsApp();
+    }
+  }
+
   function addMaquilaToCart() {
     const { stages } = calculateTotal();
 
@@ -428,10 +499,20 @@
 
   function initCartButtons() {
     // Botón en tarjeta Desktop
-    $('maquila-desktop-add-btn')?.addEventListener('click', addMaquilaToCart);
+    $('maquila-desktop-add-btn')?.addEventListener('click', handleMaquilaPrimaryAction);
 
-    // Botón en Barra Fija Inferior (Móvil)
-    $('bar-maquila-add')?.addEventListener('click', addMaquilaToCart);
+    // Botón en Barra de Acción Unificada
+    $('bar-maquila-add')?.addEventListener('click', handleMaquilaPrimaryAction);
+
+    // Actualizar automáticamente si cambia la sesión (login / logout)
+    document.addEventListener('userLoggedIn', updateUI);
+    document.addEventListener('userLoggedOut', updateUI);
+    document.addEventListener('auth:ready', updateUI);
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'cortero_user' || e.key === 'cortero_logged') {
+        updateUI();
+      }
+    });
   }
 
   /* ==========================================================================

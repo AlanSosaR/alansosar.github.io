@@ -163,17 +163,17 @@
 
         </div>
 
-        <!-- BARRA DE ACCIÓN UNIFICADA (SELECTOR DE LIBRAS + AGREGAR) -->
+        <!-- BARRA DE ACCIÓN UNIFICADA (ADMIN: LIBRAS + AGREGAR | CLIENTE/INVITADO: WHATSAPP) -->
         <div class="product-actions maquila-actions" id="maquila-actions">
-          <div class="quantity-container">
+          <div class="quantity-container" id="maquila-qty-box">
             <button type="button" class="qty-btn minus-btn" id="weight-minus" disabled aria-label="Reducir peso">−</button>
             <span class="qty-number" id="weight-display">1 lb</span>
             <button type="button" class="qty-btn plus-btn" id="weight-plus" aria-label="Aumentar peso">+</button>
           </div>
 
           <button type="button" class="product-add-btn" id="bar-maquila-add" aria-label="Agregar servicio al carrito">
-            <span class="add-label">Agregar</span>
-            <span class="add-dot">·</span>
+            <span class="add-label" id="bar-maquila-label">Agregar</span>
+            <span class="add-dot" id="bar-maquila-dot">·</span>
             <span class="price-part" id="bar-maquila-price">L 7.00</span>
           </button>
         </div>
@@ -459,7 +459,7 @@
   <script src="/js/pages/main.js?v=37"></script>
 
   <!-- 8️⃣ Maquila y Tueste Logic -->
-  <script src="/js/pages/maquila.js?v=5"></script>
+  <script src="/js/pages/maquila.js?v=6"></script>
 
 </body>
 
